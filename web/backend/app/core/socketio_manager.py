@@ -207,7 +207,7 @@ class MySocketIONamespace(AsyncNamespace):
         reconnection_manager.mark_reconnected(sid)
 
         # Initialize streaming state for this connection
-        streaming_service = get_streaming_service()
+        get_streaming_service()
         # Note: Streaming subscriptions are explicitly managed via on_subscribe_market_stream
         logger.info(
             "🎬 Streaming support initialized for connection",

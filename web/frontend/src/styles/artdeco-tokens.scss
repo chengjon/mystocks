@@ -1,0 +1,251 @@
+/**
+ * Art Deco Design Tokens
+ * MyStocks 量化交易平台 - 装饰艺术设计系统
+ *
+ * Design Philosophy: The Great Gatsby meets Fritz Lang's "Metropolis"
+ * 设计理念: 《了不起的盖茨比》遇见弗里茨·朗的《大都会》
+ *
+ * Core Principles:
+ * - Maximalist restraint - every element intentional and ornamental
+ * - Geometry as decoration (triangles, chevrons, sunbursts, zigzag)
+ * - Extreme tonal contrast (obsidian black vs metallic gold)
+ * - Symmetry and balance with central axes
+ * - Verticality and aspiration (skyscraper-inspired)
+ * - Material luxury (brass, etched glass, lacquered wood)
+ *
+ * Author: MyStocks Frontend Team
+ * Updated: 2025-12-30
+ */
+
+// ============================================
+//   SCSS VARIABLES (for compilation)
+//   SCSS 变量（编译时使用）
+// ============================================
+
+/* ------------------------------------------
+   Background Colors - 背景色
+   ------------------------------------------ */
+
+/// Main background - 极深黑曜石色
+$artdeco-bg-primary: #0A0A0A;
+
+/// Rich Charcoal - 深炭色（卡片背景）
+$artdeco-bg-card: #141414;
+
+/// Midnight Blue - 午夜蓝（次要强调）
+$artdeco-bg-secondary: #1E3D59;
+
+/// Overlay/Mask background - 遮罩层
+$artdeco-bg-overlay: rgba(10, 10, 10, 0.92);
+
+/* ------------------------------------------
+   Foreground Colors - 前景色（文字色）
+   ------------------------------------------ */
+
+/// Primary text - 香槟奶油色
+$artdeco-fg-primary: #F2F0E4;
+
+/// Secondary text - 次要文字
+$artdeco-fg-secondary: #D4D0C0;
+
+/// Muted text - 锡灰色（弱化文字）
+$artdeco-fg-muted: #888888;
+
+/* ------------------------------------------
+   Accent Colors - 强调色
+   ------------------------------------------ */
+
+/// Metallic Gold - 核心奢华元素（主强调色）
+$artdeco-accent-gold: #D4AF37;
+
+/// Light Gold - 用于悬停状态
+$artdeco-accent-gold-light: #F2E8C4;
+
+/* ------------------------------------------
+   Market Colors - A股市场颜色
+   ------------------------------------------ */
+
+/// UP color - 红色（上涨）
+$artdeco-color-up: #FF5252;
+
+/// DOWN color - 绿色（下跌）
+$artdeco-color-down: #00E676;
+
+/// FLAT color - 灰色（平盘）
+$artdeco-color-flat: #B0B3B8;
+
+/* ------------------------------------------
+   Typography - 字体系统
+   ------------------------------------------ */
+
+/// Display Font - 装饰艺术风格标题字体
+$artdeco-font-display: 'Marcellus', serif;
+
+/// Body Font - 几何复古风格正文字体
+$artdeco-font-body: 'Josefin Sans', sans-serif;
+
+/// Font Sizes - 字体大小
+$artdeco-font-size-h1: 60px;
+$artdeco-font-size-h2: 48px;
+$artdeco-font-size-h3: 36px;
+$artdeco-font-size-h4: 24px;
+$artdeco-font-size-body: 18px;
+$artdeco-font-size-small: 14px;
+$artdeco-font-size-xs: 12px;
+
+/// Letter Spacing - 字间距
+$artdeco-tracking-widest: 0.2em;
+$artdeco-tracking-wider: 0.15em;
+$artdeco-tracking-normal: 0.05em;
+
+/* ------------------------------------------
+   Spacing - 间距系统（8px 基础单位）
+   ------------------------------------------ */
+
+$artdeco-spacing-1: 8px;
+$artdeco-spacing-2: 16px;
+$artdeco-spacing-3: 24px;
+$artdeco-spacing-4: 32px;
+$artdeco-spacing-5: 40px;
+$artdeco-spacing-6: 48px;
+$artdeco-spacing-8: 64px;
+$artdeco-spacing-12: 96px;
+$artdeco-spacing-16: 128px;
+
+/* ------------------------------------------
+   Borders - 边框系统
+   ------------------------------------------ */
+
+/// Border Width - 边框宽度
+$artdeco-border-width-thin: 1px;
+$artdeco-border-width-medium: 2px;
+$artdeco-border-width-thick: 3px;
+
+/// Border Radius - 边框圆角（Art Deco 风格：0px 或极小）
+$artdeco-radius-none: 0;
+$artdeco-radius-sm: 2px;
+
+/* ------------------------------------------
+   Shadows & Glows - 阴影和发光效果
+   ------------------------------------------ */
+
+/// Glow Effects - 发光效果（Art Deco 使用发光而非传统阴影）
+$artdeco-glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);
+$artdeco-glow-medium: 0 0 20px rgba(212, 175, 55, 0.3);
+$artdeco-glow-intense: 0 0 30px rgba(212, 175, 55, 0.4);
+
+/// Drop Shadows - 传统阴影（少量使用）
+$artdeco-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+$artdeco-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+$artdeco-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+
+/* ------------------------------------------
+   Transitions - 过渡动画
+   ------------------------------------------ */
+
+$artdeco-transition-fast: 150ms;
+$artdeco-transition-base: 300ms;
+$artdeco-transition-slow: 500ms;
+
+/// Easing Functions - 缓动函数
+$artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
+$artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+/* ------------------------------------------
+   Z-Index Layers - 层级系统
+   ------------------------------------------ */
+
+$artdeco-z-dropdown: 1000;
+$artdeco-z-sticky: 1020;
+$artdeco-z-fixed: 1030;
+$artdeco-z-modal-backdrop: 1040;
+$artdeco-z-modal: 1050;
+$artdeco-z-popover: 1060;
+$artdeco-z-tooltip: 1070;
+
+// ============================================
+//   CSS CUSTOM PROPERTIES (for runtime)
+//   CSS 自定义属性（运行时使用）
+//   NOTE: Wrapped in :root to enable SCSS compilation
+//   注意：包装在 :root 中以启用 SCSS 编译
+// ============================================
+
+:root {
+  /* Background Colors */
+  --artdeco-bg-primary: #{$artdeco-bg-primary};
+  --artdeco-bg-card: #{$artdeco-bg-card};
+  --artdeco-bg-secondary: #{$artdeco-bg-secondary};
+  --artdeco-bg-overlay: #{$artdeco-bg-overlay};
+
+  /* Foreground Colors */
+  --artdeco-fg-primary: #{$artdeco-fg-primary};
+  --artdeco-fg-secondary: #{$artdeco-fg-secondary};
+  --artdeco-fg-muted: #{$artdeco-fg-muted};
+
+  /* Accent Colors */
+  --artdeco-accent-gold: #{$artdeco-accent-gold};
+  --artdeco-accent-gold-light: #{$artdeco-accent-gold-light};
+
+  /* Market Colors */
+  --artdeco-color-up: #{$artdeco-color-up};
+  --artdeco-color-down: #{$artdeco-color-down};
+  --artdeco-color-flat: #{$artdeco-color-flat};
+
+  /* Typography */
+  --artdeco-font-display: #{$artdeco-font-display};
+  --artdeco-font-body: #{$artdeco-font-body};
+
+  /* Font Sizes */
+  --artdeco-font-size-h1: #{$artdeco-font-size-h1};
+  --artdeco-font-size-h2: #{$artdeco-font-size-h2};
+  --artdeco-font-size-h3: #{$artdeco-font-size-h3};
+  --artdeco-font-size-h4: #{$artdeco-font-size-h4};
+  --artdeco-font-size-body: #{$artdeco-font-size-body};
+  --artdeco-font-size-small: #{$artdeco-font-size-small};
+  --artdeco-font-size-xs: #{$artdeco-font-size-xs};
+
+  /* Letter Spacing */
+  --artdeco-tracking-widest: #{$artdeco-tracking-widest};
+  --artdeco-tracking-wider: #{$artdeco-tracking-wider};
+  --artdeco-tracking-normal: #{$artdeco-tracking-normal};
+
+  /* Spacing */
+  --artdeco-spacing-1: #{$artdeco-spacing-1};
+  --artdeco-spacing-2: #{$artdeco-spacing-2};
+  --artdeco-spacing-3: #{$artdeco-spacing-3};
+  --artdeco-spacing-4: #{$artdeco-spacing-4};
+  --artdeco-spacing-5: #{$artdeco-spacing-5};
+  --artdeco-spacing-6: #{$artdeco-spacing-6};
+  --artdeco-spacing-8: #{$artdeco-spacing-8};
+  --artdeco-spacing-12: #{$artdeco-spacing-12};
+  --artdeco-spacing-16: #{$artdeco-spacing-16};
+
+  /* Borders */
+  --artdeco-border-width-thin: #{$artdeco-border-width-thin};
+  --artdeco-border-width-medium: #{$artdeco-border-width-medium};
+  --artdeco-border-width-thick: #{$artdeco-border-width-thick};
+  --artdeco-radius-none: #{$artdeco-radius-none};
+  --artdeco-radius-sm: #{$artdeco-radius-sm};
+
+  /* Shadows & Glows */
+  --artdeco-glow-subtle: #{$artdeco-glow-subtle};
+  --artdeco-glow-medium: #{$artdeco-glow-medium};
+  --artdeco-glow-intense: #{$artdeco-glow-intense};
+  --artdeco-shadow-sm: #{$artdeco-shadow-sm};
+  --artdeco-shadow-md: #{$artdeco-shadow-md};
+  --artdeco-shadow-lg: #{$artdeco-shadow-lg};
+
+  /* Transitions */
+  --artdeco-transition-fast: #{$artdeco-transition-fast};
+  --artdeco-transition-base: #{$artdeco-transition-base};
+  --artdeco-transition-slow: #{$artdeco-transition-slow};
+
+  /* Z-Index */
+  --artdeco-z-dropdown: #{$artdeco-z-dropdown};
+  --artdeco-z-sticky: #{$artdeco-z-sticky};
+  --artdeco-z-fixed: #{$artdeco-z-fixed};
+  --artdeco-z-modal-backdrop: #{$artdeco-z-modal-backdrop};
+  --artdeco-z-modal: #{$artdeco-z-modal};
+  --artdeco-z-popover: #{$artdeco-z-popover};
+  --artdeco-z-tooltip: #{$artdeco-z-tooltip};
+}

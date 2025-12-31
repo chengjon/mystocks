@@ -406,7 +406,7 @@ class WebSocketStabilityManager:
 
         # 使用断路器保护
         circuit_breaker = self.circuit_breakers[connection_id]
-        message_queue = self.message_queues[connection_id]
+        self.message_queues[connection_id]
 
         try:
             # 通过断路器发送

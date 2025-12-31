@@ -45,7 +45,6 @@ try:
         DatabaseException,
         ConfigException,
         NetworkException,
-        SecurityException,
         ProcessingException,
         BusinessLogicException,
         DataSourceException,

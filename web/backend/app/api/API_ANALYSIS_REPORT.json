@@ -1,0 +1,399 @@
+{
+  "analysis_metadata": {
+    "generated_at": "2025-12-30T12:00:00Z",
+    "working_directory": "/opt/claude/mystocks_spec",
+    "api_base_path": "web/backend/app/api"
+  },
+  "api_structure_summary": {
+    "total_api_endpoints": 356,
+    "total_api_modules": 41,
+    "modules_with_openapi_docs": 28,
+    "modules_with_contract_integration": 1,
+    "modules_using_mock_data": 18
+  },
+  "summary_table": [
+    {
+      "module_name": "contract",
+      "endpoints": 12,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "low"
+    },
+    {
+      "module_name": "stock_search",
+      "endpoints": 10,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "high"
+    },
+    {
+      "module_name": "market",
+      "endpoints": 12,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "high"
+    },
+    {
+      "module_name": "market_v2",
+      "endpoints": 6,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "announcement",
+      "endpoints": 13,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "announcement/routes",
+      "endpoints": 14,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "data",
+      "endpoints": 17,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "high"
+    },
+    {
+      "module_name": "trade/routes",
+      "endpoints": 7,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "risk_management",
+      "endpoints": 12,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "strategy",
+      "endpoints": 15,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "strategy_management",
+      "endpoints": 8,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "strategy_mgmt",
+      "endpoints": 10,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "technical_analysis",
+      "endpoints": 8,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "technical/routes",
+      "endpoints": 4,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "low"
+    },
+    {
+      "module_name": "monitoring",
+      "endpoints": 15,
+      "mock_data_status": true,
+      "contract_docs_status": "none",
+      "priority": "high"
+    },
+    {
+      "module_name": "monitoring/routes",
+      "endpoints": 4,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "low"
+    },
+    {
+      "module_name": "multi_source",
+      "endpoints": 3,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "multi_source/routes",
+      "endpoints": 3,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "low"
+    },
+    {
+      "module_name": "wencai",
+      "endpoints": 9,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "watchlist",
+      "endpoints": 6,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "tradingview",
+      "endpoints": 6,
+      "mock_data_status": true,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "auth",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "high"
+    },
+    {
+      "module_name": "system",
+      "endpoints": 20,
+      "mock_data_status": true,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "health",
+      "endpoints": 4,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "high"
+    },
+    {
+      "module_name": "indicators",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "industry_concept_analysis",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "data_quality",
+      "endpoints": 8,
+      "mock_data_status": true,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "tasks",
+      "endpoints": 16,
+      "mock_data_status": true,
+      "contract_docs_status": "full",
+      "priority": "medium"
+    },
+    {
+      "module_name": "cache",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "metrics",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "prometheus_exporter",
+      "endpoints": 3,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "gpu_monitoring",
+      "endpoints": 4,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "notification",
+      "endpoints": 6,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "sse_endpoints",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "backtest_ws",
+      "endpoints": 3,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "tdx",
+      "endpoints": 4,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "ml",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "dashboard",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "medium"
+    },
+    {
+      "module_name": "backup_recovery",
+      "endpoints": 6,
+      "mock_data_status": false,
+      "contract_docs_status": "none",
+      "priority": "low"
+    },
+    {
+      "module_name": "pool_monitoring",
+      "endpoints": 5,
+      "mock_data_status": false,
+      "contract_docs_status": "full",
+      "priority": "high"
+    }
+  ],
+  "contract_management_status": {
+    "enabled": true,
+    "module": "contract",
+    "features": [
+      "契约版本管理",
+      "契约差异检测",
+      "契约验证",
+      "契约同步",
+      "OpenAPI规范生成"
+    ],
+    "integration_points": [
+      "code_to_db",
+      "db_to_code"
+    ]
+  },
+  "data_source_breakdown": {
+    "mock_only_modules": 9,
+    "real_only_modules": 19,
+    "hybrid_modules": 8,
+    "mock_data_modules": [
+      "stock_search",
+      "trade/routes",
+      "tradingview",
+      "monitoring",
+      "strategy_management",
+      "wencai",
+      "system",
+      "data_quality",
+      "tasks"
+    ],
+    "real_data_modules": [
+      "announcement",
+      "announcement/routes",
+      "market_v2",
+      "auth",
+      "health",
+      "indicators",
+      "industry_concept_analysis",
+      "cache",
+      "metrics",
+      "prometheus_exporter",
+      "gpu_monitoring",
+      "notification",
+      "sse_endpoints",
+      "backtest_ws",
+      "tdx",
+      "ml",
+      "dashboard",
+      "backup_recovery",
+      "pool_monitoring"
+    ],
+    "hybrid_modules": [
+      "market",
+      "data",
+      "risk_management",
+      "strategy",
+      "strategy_mgmt",
+      "technical_analysis",
+      "watchlist",
+      "multi_source"
+    ]
+  },
+  "priority_matrix": {
+    "high_priority_for_data_integration": [
+      {
+        "module": "stock_search",
+        "current_status": "hybrid",
+        "target": "real",
+        "reason": "Core user-facing functionality"
+      },
+      {
+        "module": "market",
+        "current_status": "hybrid",
+        "target": "real",
+        "reason": "Core market data functionality"
+      },
+      {
+        "module": "data",
+        "current_status": "factory",
+        "target": "real",
+        "reason": "Core data access layer"
+      },
+      {
+        "module": "monitoring",
+        "current_status": "hybrid",
+        "target": "real",
+        "reason": "System monitoring accuracy"
+      }
+    ],
+    "medium_priority_for_docs": [
+      "announcement",
+      "risk_management",
+      "strategy",
+      "technical_analysis"
+    ],
+    "low_priority": [
+      "contract",
+      "multi_source",
+      "tdx",
+      "ml",
+      "backup_recovery"
+    ]
+  }
+}

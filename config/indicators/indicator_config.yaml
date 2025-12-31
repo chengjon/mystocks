@@ -1,0 +1,629 @@
+# Indicator Configuration File
+# ============================
+#
+# 指标参数配置文件
+# 格式: YAML
+# 用途: 集中管理所有指标的默认参数
+#
+# 字段说明:
+#   abbreviation: 指标缩写（唯一标识）
+#   version: 指标版本号
+#   enabled: 是否启用
+#   parameters: 参数列表
+#   display: 显示配置
+#   dependencies: 依赖的其他指标
+#
+# 修改此文件后需要重新加载配置
+
+version: "1.0.0"
+
+indicators:
+  # ==================== 趋势指标 (Trend) ====================
+
+  SMA:
+    full_name: "Simple Moving Average"
+    chinese_name: "简单移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "简单移动平均线，对价格进行平滑处理"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        step: 1
+        display_name: 周期
+        unit: 交易日
+        description: "计算周期"
+    dependencies: []
+    display:
+      panel: "overlay"
+      colors: ["#FF6B6B"]
+      line_width: 1.5
+
+  EMA:
+    full_name: "Exponential Moving Average"
+    chinese_name: "指数移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "指数移动平均线，对近期价格赋予更高权重"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        display_name: 周期
+        unit: 交易日
+    dependencies: []
+    display:
+      panel: "overlay"
+      colors: ["#4ECDC4"]
+      line_width: 1.5
+
+  WMA:
+    full_name: "Weighted Moving Average"
+    chinese_name: "加权移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "加权移动平均线"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "overlay"
+      colors: ["#45B7D1"]
+      line_width: 1.5
+
+  DEMA:
+    full_name: "Double Exponential Moving Average"
+    chinese_name: "双指数移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "双指数移动平均线"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        display_name: 周期
+    dependencies: ["EMA"]
+    display:
+      panel: "overlay"
+      colors: ["#96CEB4"]
+      line_width: 1.5
+
+  TEMA:
+    full_name: "Triple Exponential Moving Average"
+    chinese_name: "三指数移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "三指数移动平均线"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        display_name: 周期
+    dependencies: ["EMA"]
+    display:
+      panel: "overlay"
+      colors: ["#FFEAA7"]
+      line_width: 1.5
+
+  MACD:
+    full_name: "Moving Average Convergence Divergence"
+    chinese_name: "异同移动平均线"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "MACD指标，显示快慢均线的差值"
+    parameters:
+      - name: fastperiod
+        type: "int"
+        default: 12
+        min: 2
+        max: 100
+        display_name: 快线周期
+      - name: slowperiod
+        type: "int"
+        default: 26
+        min: 2
+        max: 100
+        display_name: 慢线周期
+      - name: signalperiod
+        type: "int"
+        default: 9
+        min: 2
+        max: 100
+        display_name: 信号周期
+    dependencies: ["EMA"]
+    display:
+      panel: "oscillator"
+      colors: ["#45B7D1", "#FFA502", "#FF6348"]
+      line_width: 1.5
+      reference_lines: [0]
+
+  BBANDS:
+    full_name: "Bollinger Bands"
+    chinese_name: "布林带"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "布林带，显示价格的波动区间"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 20
+        min: 2
+        max: 200
+        display_name: 周期
+      - name: nbdevup
+        type: "float"
+        default: 2.0
+        min: 0.1
+        max: 5.0
+        step: 0.1
+        display_name: 上轨倍数
+      - name: nbdevdn
+        type: "float"
+        default: 2.0
+        min: 0.1
+        max: 5.0
+        step: 0.1
+        display_name: 下轨倍数
+    dependencies: []
+    display:
+      panel: "overlay"
+      colors: ["#2ECC71", "#F39C12", "#E74C3C"]
+      line_width: 1.5
+
+  SAR:
+    full_name: "Parabolic SAR"
+    chinese_name: "抛物线转向"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "抛物线转向指标"
+    parameters:
+      - name: acceleration
+        type: "float"
+        default: 0.02
+        min: 0.01
+        max: 0.2
+        display_name: 加速因子
+      - name: maximum
+        type: "float"
+        default: 0.2
+        min: 0.1
+        max: 0.5
+        display_name: 最大值
+    dependencies: []
+    display:
+      panel: "overlay"
+      colors: ["#9B59B6"]
+      line_width: 1.5
+
+  ADX:
+    full_name: "Average Directional Movement Index"
+    chinese_name: "平均趋向指数"
+    category: "trend"
+    enabled: true
+    version: "1.0.0"
+    description: "平均趋向指数，衡量趋势强度"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 2
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#3498DB"]
+      line_width: 1.5
+      reference_lines: [20, 40]
+
+  # ==================== 动量指标 (Momentum) ====================
+
+  RSI:
+    full_name: "Relative Strength Index"
+    chinese_name: "相对强弱指数"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "相对强弱指数，显示超买超卖状态"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 2
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#9B59B6"]
+      line_width: 1.5
+      reference_lines: [30, 70]
+
+  KDJ:
+    full_name: "Stochastic Indicator"
+    chinese_name: "随机指标(KDJ)"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "随机指标(KD值)，显示价格动量"
+    parameters:
+      - name: fastk_period
+        type: "int"
+        default: 9
+        min: 1
+        max: 100
+        display_name: K周期
+      - name: slowk_period
+        type: "int"
+        default: 3
+        min: 1
+        max: 100
+        display_name: D平滑周期
+      - name: slowd_period
+        type: "int"
+        default: 3
+        min: 1
+        max: 100
+        display_name: D周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#3498DB", "#E74C3C"]
+      line_width: 1.5
+      reference_lines: [20, 80]
+
+  CCI:
+    full_name: "Commodity Channel Index"
+    chinese_name: "顺势指标"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "顺势指标，衡量价格偏离程度"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 2
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#E67E22"]
+      line_width: 1.5
+      reference_lines: [-100, 100]
+
+  MFI:
+    full_name: "Money Flow Index"
+    chinese_name: "资金流量指标"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "资金流量指标，结合价格和成交量"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 2
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#1ABC9C"]
+      line_width: 1.5
+      reference_lines: [20, 80]
+
+  WILLR:
+    full_name: "Williams %R"
+    chinese_name: "威廉指标"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "威廉指标，反向显示超买超卖"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 2
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#F39C12"]
+      line_width: 1.5
+      reference_lines: [-20, -80]
+
+  ROC:
+    full_name: "Rate of Change"
+    chinese_name: "变动率指标"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "变动率指标，显示价格变化百分比"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 10
+        min: 1
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#E74C3C"]
+      line_width: 1.5
+      reference_lines: [0]
+
+  MOM:
+    full_name: "Momentum"
+    chinese_name: "动量指标"
+    category: "momentum"
+    enabled: true
+    version: "1.0.0"
+    description: "动量指标，显示价格绝对变化"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 10
+        min: 1
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#8E44AD"]
+      line_width: 1.5
+      reference_lines: [0]
+
+  # ==================== 波动率指标 (Volatility) ====================
+
+  ATR:
+    full_name: "Average True Range"
+    chinese_name: "真实波幅均值"
+    category: "volatility"
+    enabled: true
+    version: "1.0.0"
+    description: "真实波幅均值，衡量价格波动性"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 1
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#95A5A6"]
+      line_width: 1.5
+
+  NATR:
+    full_name: "Normalized Average True Range"
+    chinese_name: "标准化真实波幅"
+    category: "volatility"
+    enabled: true
+    version: "1.0.0"
+    description: "标准化真实波幅"
+    parameters:
+      - name: timeperiod
+        type: "int"
+        default: 14
+        min: 1
+        max: 100
+        display_name: 周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#7F8C8D"]
+      line_width: 1.5
+
+  TRANGE:
+    full_name: "True Range"
+    chinese_name: "真实波幅"
+    category: "volatility"
+    enabled: true
+    version: "1.0.0"
+    description: "真实波幅"
+    parameters: []
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#BDC3C7"]
+      line_width: 1.5
+
+  # ==================== 成交量指标 (Volume) ====================
+
+  OBV:
+    full_name: "On Balance Volume"
+    chinese_name: "能量潮"
+    category: "volume"
+    enabled: true
+    version: "1.0.0"
+    description: "能量潮指标，累积成交量变化"
+    parameters: []
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#1ABC9C"]
+      line_width: 1.5
+
+  AD:
+    full_name: "Chaikin A/D Line"
+    chinese_name: "累积/派发线"
+    category: "volume"
+    enabled: true
+    version: "1.0.0"
+    description: "累积/派发线"
+    parameters: []
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#16A085"]
+      line_width: 1.5
+
+  ADOSC:
+    full_name: "Chaikin A/D Oscillator"
+    chinese_name: "累积/派发震荡"
+    category: "volume"
+    enabled: true
+    version: "1.0.0"
+    description: "累积/派发震荡指标"
+    parameters:
+      - name: fastperiod
+        type: "int"
+        default: 3
+        min: 2
+        max: 100
+        display_name: 快线周期
+      - name: slowperiod
+        type: "int"
+        default: 10
+        min: 2
+        max: 100
+        display_name: 慢线周期
+    dependencies: []
+    display:
+      panel: "oscillator"
+      colors: ["#2ECC71"]
+      line_width: 1.5
+      reference_lines: [0]
+
+# ==================== 指标模板 ====================
+templates:
+  short_term:
+    name: "短线交易"
+    description: "适用于1-5天短线交易"
+    market_type: "short"
+    tags: ["短线", "高频"]
+    indicators:
+      - abbreviation: SMA
+        parameters:
+          - name: timeperiod
+            value: 10
+      - abbreviation: RSI
+        parameters:
+          - name: timeperiod
+            value: 9
+      - abbreviation: KDJ
+        parameters:
+          - name: fastk_period
+            value: 9
+          - name: slowk_period
+            value: 3
+          - name: slowd_period
+            value: 3
+
+  medium_term:
+    name: "中线趋势"
+    description: "适用于1-4周趋势跟踪"
+    market_type: "medium"
+    tags: ["中线", "趋势"]
+    indicators:
+      - abbreviation: SMA
+        parameters:
+          - name: timeperiod
+            value: 30
+      - abbreviation: EMA
+        parameters:
+          - name: timeperiod
+            value: 20
+      - abbreviation: MACD
+        parameters:
+          - name: fastperiod
+            value: 12
+          - name: slowperiod
+            value: 26
+          - name: signalperiod
+            value: 9
+
+  long_term:
+    name: "长线投资"
+    description: "适用于1-6月趋势跟踪"
+    market_type: "long"
+    tags: ["长线", "投资"]
+    indicators:
+      - abbreviation: SMA
+        parameters:
+          - name: timeperiod
+            value: 60
+      - abbreviation: EMA
+        parameters:
+          - name: timeperiod
+            value: 50
+      - abbreviation: BBANDS
+        parameters:
+          - name: timeperiod
+            value: 30
+          - name: nbdevup
+            value: 2.0
+          - name: nbdevdn
+            value: 2.0
+      - abbreviation: ATR
+        parameters:
+          - name: timeperiod
+            value: 20
+
+  volatility:
+    name: "波动率交易"
+    description: "适用于波动率较大的市场"
+    market_type: "medium"
+    tags: ["波动率", "突破"]
+    indicators:
+      - abbreviation: BBANDS
+        parameters:
+          - name: timeperiod
+            value: 20
+          - name: nbdevup
+            value: 2.5
+          - name: nbdevdn
+            value: 2.5
+      - abbreviation: ATR
+        parameters:
+          - name: timeperiod
+            value: 14
+
+# ==================== 环境配置 ====================
+environments:
+  development:
+    debug_mode: true
+    enable_hot_reload: true
+    cache_enabled: false
+    log_level: "DEBUG"
+
+  testing:
+    debug_mode: true
+    enable_hot_reload: false
+    cache_enabled: true
+    cache_ttl: 60
+    log_level: "DEBUG"
+
+  production:
+    debug_mode: false
+    enable_hot_reload: false
+    cache_enabled: true
+    cache_ttl: 3600
+    log_level: "WARNING"

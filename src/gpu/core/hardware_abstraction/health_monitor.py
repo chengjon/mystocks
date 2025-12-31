@@ -292,7 +292,9 @@ class DeviceHealthMonitor:
             AlertType.HIGH_MEMORY_USAGE: f"High memory usage: {metrics.get('memory_utilization', 0):.1%}",
             AlertType.HIGH_COMPUTE_USAGE: f"High compute usage: {metrics.get('compute_utilization', 0):.1%}",
             AlertType.TEMPERATURE_HIGH: f"High temperature: {metrics.get('temperature', 0):.1f}°C",
-            AlertType.PERFORMANCE_DEGRADATION: f"Performance degradation: {metrics.get('response_time', 0):.1f}ms response time",
+            AlertType.PERFORMANCE_DEGRADATION: (
+                f"Performance degradation: {metrics.get('response_time', 0):.1f}ms response time"
+            ),
             AlertType.DEVICE_ERROR: "Device error detected",
             AlertType.DRIVER_ERROR: "Driver error detected",
             AlertType.MEMORY_ERROR: "Memory error detected",

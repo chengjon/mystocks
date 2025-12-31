@@ -51,6 +51,26 @@
           }
         ],
         "timeout": 5
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-web-dev-file-tracker.sh"
+          }
+        ],
+        "timeout": 3
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-web-dev-document-organizer.sh"
+          }
+        ],
+        "timeout": 3
       }
     ],
     "Stop": [
@@ -59,6 +79,15 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-python-quality-gate.sh"
+          }
+        ],
+        "timeout": 120
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-web-dev-quality-gate.sh"
           }
         ],
         "timeout": 120

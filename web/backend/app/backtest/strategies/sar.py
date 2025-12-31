@@ -152,7 +152,7 @@ class SARStrategy(BaseStrategy):
 
         current_high = current_data["high"]
         current_low = current_data["low"]
-        current_close = current_data["close"]
+        current_data["close"]
 
         initial_af = self.parameters["initial_af"]
         af_increment = self.parameters["af_increment"]
@@ -309,7 +309,10 @@ class SARStrategy(BaseStrategy):
                             symbol=symbol,
                             signal_type=SignalType.LONG,
                             strength=0.5,
-                            reason=f"SAR上升趋势: 价格{current_price:.2f}, SAR{sar:.2f} (距离{distance_pct * 100:.1f}%)",
+                            reason=(
+                                f"SAR上升趋势: 价格{current_price:.2f}, SAR{sar:.2f} "
+                                f"(距离{distance_pct * 100:.1f}%)"
+                            ),
                             stop_loss=Decimal(str(sar)),
                             metadata={
                                 "sar": sar,

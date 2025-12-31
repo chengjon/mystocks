@@ -6,7 +6,7 @@ API契约管理 数据库模型
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, JSON, ForeignKey
 
-from web.backend.app.core.database import Base
+from app.core.database import Base
 
 
 class ContractVersion(Base):

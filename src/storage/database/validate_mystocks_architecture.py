@@ -68,7 +68,9 @@ def test_data_classification_strategy():
     for classification, expected_target in expected_routing.items():
         actual_target = DataManager().get_target_database(classification)
         if actual_target != expected_target:
-            logger.error("❌ 路由错误: %s 期望→%s, 实际→%s", classification.value, expected_target.value, actual_target.value)
+            logger.error(
+                "❌ 路由错误: %s 期望→%s, 实际→%s", classification.value, expected_target.value, actual_target.value
+            )
             routing_correct = False
 
     if routing_correct:
@@ -107,18 +109,18 @@ def test_unified_manager_initialization():
 
         # 检查监控系统
         monitoring_init = init_result.get("monitoring_initialized", False)
-        logger.info("📈 监控系统: %s", '已初始化' if monitoring_init else '未初始化')
+        logger.info("📈 监控系统: %s", "已初始化" if monitoring_init else "未初始化")
 
         # 检查自动化维护
         maintenance_started = init_result.get("maintenance_started", False)
-        logger.info("🔧 自动化维护: %s", '已启动' if maintenance_started else '未启动')
+        logger.info("🔧 自动化维护: %s", "已启动" if maintenance_started else "未启动")
 
         # 获取系统状态
         try:
             status = unified_manager.get_system_status()
             monitoring = status.get("monitoring", {})
             op_stats = monitoring.get("operation_statistics", {})
-            logger.info("📊 系统操作统计: %s 次操作", op_stats.get('total_operations', 0))
+            logger.info("📊 系统操作统计: %s 次操作", op_stats.get("total_operations", 0))
         except Exception as e:
             logger.warning("⚠️ 无法获取系统状态: %s", e)
 
@@ -152,7 +154,7 @@ def test_data_source_integration():
 
             if data is not None and hasattr(data, "empty") and not data.empty:
                 logger.info("✅ 数据获取成功: %s 行, %s 列", len(data), len(data.columns))
-                logger.info("📋 数据列名: %s...", list(data.columns)[)  # 只显示前5列
+                logger.info("📋 数据列名: %s...", list(data.columns)[:5])  # 只显示前5列
                 return True, data
             else:
                 logger.warning("⚠️ 获取到空数据")

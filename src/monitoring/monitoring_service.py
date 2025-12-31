@@ -287,7 +287,7 @@ class MonitoringDatabase:
                 cursor.close()
                 connection.close()
 
-                logger.debug("操作日志插入成功: %s", log_data['operation_id'])
+                logger.debug("操作日志插入成功: %s", log_data["operation_id"])
 
         except Exception as e:
             logger.error("插入操作日志失败: %s", e)
@@ -654,7 +654,7 @@ class DataQualityMonitor:
             # 生成建议
             report["recommendations"] = self._generate_recommendations(report)
 
-            logger.info("数据质量报告生成完成，整体评分: %s", report['overall_score'])
+            logger.info("数据质量报告生成完成，整体评分: %s", report["overall_score"])
             return report
 
         except Exception as e:
@@ -808,7 +808,7 @@ class PerformanceMonitor:
             # 按持续时间降序排序
             slow_operations.sort(key=lambda x: x["duration"], reverse=True)
 
-            logger.info("获取慢操作列表: %s 个操作", len(slow_operations[)
+            logger.info("获取慢操作列表: %s 个操作", len(slow_operations))
             return slow_operations[:limit]
 
         except Exception as e:
@@ -1043,7 +1043,8 @@ class WebhookAlertChannel(AlertChannel):
                 logger.warning("Webhook告警: 未配置URL")
                 return
 
-            {
+            # 构建告警payload
+            payload = {
                 "alert_id": alert.alert_id,
                 "level": alert.level.value,
                 "title": alert.title,
@@ -1053,7 +1054,7 @@ class WebhookAlertChannel(AlertChannel):
             }
 
             # 这里实现HTTP请求逻辑
-            logger.info("Webhook告警发送至: %s", self.url)
+            logger.info("Webhook告警发送至: %s, payload: %s", self.url, payload)
 
         except Exception as e:
             logger.error("发送Webhook告警失败: %s", e)

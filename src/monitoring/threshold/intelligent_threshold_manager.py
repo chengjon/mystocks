@@ -281,10 +281,11 @@ class IntelligentThresholdManager:
                 await self._save_adjustment_to_db(adjustment)
             except Exception as e:
                 logger.error("保存调整记录到数据库失败: %s", e)
-self.logger.info("智能阈值初始化完成")
-        logger.info("阈值优化完成: {rule_name} {old_threshold} -> {optimization_result.recommended_threshold} "
-            f"(置信度: {optimization_result.confidence_score:.2f})"
-        )
+                self.logger.info("智能阈值初始化完成")
+                logger.info(
+                    "阈值优化完成: {rule_name} {old_threshold} -> {optimization_result.recommended_threshold} "
+                    f"(置信度: {optimization_result.confidence_score:.2f})"
+                )
 
     async def _get_metric_history(self, metric_name: str, hours_back: int = 24) -> tuple[List[float], List[datetime]]:
         """获取指标历史数据"""

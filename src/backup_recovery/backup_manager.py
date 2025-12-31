@@ -159,10 +159,12 @@ class BackupManager:
 
             # 保存元数据
             self._save_metadata(metadata)
-self.logger.info("备份管理器初始化完成")
-            logger.info("TDengine full backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
-                f"ratio={compression_ratio:.2f}x"
+            logger.info(
+                "TDengine full backup completed: %s, rows=%d, size=%.2fMB, ratio=%.2fx",
+                backup_id,
+                total_rows,
+                backup_size / 1024 / 1024,
+                compression_ratio,
             )
 
             return metadata
@@ -275,9 +277,11 @@ self.logger.info("备份管理器初始化完成")
             )
 
             self._save_metadata(metadata)
-self.logger.info("备份任务完成")
-            logger.info("TDengine incremental backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB"
+            logger.info(
+                "TDengine incremental backup completed: %s, rows=%d, size=%.2fMB",
+                backup_id,
+                total_rows,
+                backup_size / 1024 / 1024,
             )
 
             return metadata
@@ -381,10 +385,12 @@ self.logger.info("备份任务完成")
             )
 
             self._save_metadata(metadata)
-self.logger.info("恢复任务完成")
-            logger.info("PostgreSQL full backup completed: {backup_id}, "
-                f"rows={total_rows}, size={backup_size / 1024 / 1024:.2f}MB, "
-                f"ratio={compression_ratio:.2f}x"
+            logger.info(
+                "PostgreSQL full backup completed: %s, rows=%d, size=%.2fMB, ratio=%.2fx",
+                backup_id,
+                total_rows,
+                backup_size / 1024 / 1024,
+                compression_ratio,
             )
 
             return metadata

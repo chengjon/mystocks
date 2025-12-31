@@ -139,11 +139,18 @@ class ContractTestReportGenerator:
     <style>
         * {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }}
         body {{ margin: 20px; background: #f5f5f5; }}
-        .container {{ max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
+        .container {{
+            max-width: 1200px; margin: 0 auto; background: white;
+            padding: 30px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }}
         h1 {{ color: #333; border-bottom: 3px solid #007bff; padding-bottom: 10px; }}
         h2 {{ color: #555; margin-top: 30px; }}
         .summary {{ display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }}
-        .card {{ background: #f9f9f9; padding: 15px; border-radius: 5px; text-align: center; border-left: 4px solid #007bff; }}
+        .card {{
+            background: #f9f9f9; padding: 15px; border-radius: 5px;
+            text-align: center; border-left: 4px solid #007bff;
+        }}
         .card h3 {{ margin: 0; color: #555; }}
         .card .number {{ font-size: 28px; font-weight: bold; color: #007bff; }}
         .passed {{ border-left-color: #28a745; }}
@@ -196,7 +203,12 @@ class ContractTestReportGenerator:
         <h2>Critical Issues</h2>
         <p>Critical issues must be resolved before deployment.</p>
         <div class="issues">
-            {"".join([f'<div class="test-result consistency-critical">❌ {d["type"]}: {d["description"]}</div>' for d in self.discrepancies if d.get("severity") == "critical"])}
+            {"".join([
+                f'<div class="test-result consistency-critical">❌ '
+                f'{d["type"]}: {d["description"]}</div>'
+                for d in self.discrepancies
+                if d.get("severity") == "critical"
+            ])}
         </div>
 
         <div class="footer">

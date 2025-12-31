@@ -617,7 +617,7 @@ class MonitoringService:
             # 告警统计
             unread_alerts = (
                 session.query(AlertRecord)
-                .filter(and_(AlertRecord.alert_time >= today, AlertRecord.is_read == False))
+                .filter(and_(AlertRecord.alert_time >= today, AlertRecord.is_read is False))
                 .count()
             )
 

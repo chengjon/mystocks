@@ -1,0 +1,557 @@
+/**
+ * Bitcoin DeFi Web3 Global Styles
+ * MyStocks 量化交易平台 - Web3全局样式
+ *
+ * This file applies the Web3 design system globally:
+ * - Google Fonts imports (Space Grotesk, Inter, JetBrains Mono)
+ * - CSS Custom Properties (Web3 tokens)
+ * - Grid pattern background (blockchain network effect)
+ * - Typography base styles with 3 font families
+ * - Global scrollbar styling with orange accents
+ * - Root-level design decisions
+ *
+ * Author: MyStocks Frontend Team
+ * Updated: 2025-12-30
+ */
+
+// ============================================
+//   GOOGLE FONTS IMPORT - 字体导入
+//   CRITICAL: Load Web3 fonts first
+// ============================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+// ============================================
+//   IMPORT TOKENS - 导入设计令牌
+// ============================================
+
+@import './web3-tokens.scss';
+
+// ============================================
+//   GRID PATTERN BACKGROUND
+//   Signature blockchain network effect
+// ============================================
+
+/// MANDATORY: Apply grid pattern background
+/// This creates the blockchain network effect
+@mixin web3-grid-bg($size: var(--web3-grid-size), $color: var(--web3-grid-color)) {
+  background-color: var(--web3-bg-primary);
+  background-size: $size $size;
+  background-image:
+    linear-gradient(to right, $color 1px, transparent 1px),
+    linear-gradient(to bottom, $color 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+/// MANDATORY: Radial blur glow effect
+/// Creates luminescent energy centers
+@mixin web3-radial-glow($color: var(--web3-blur-color), $size: var(--web3-blur-size), $opacity: 0.10) {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: $size;
+    height: $size;
+    background: radial-gradient(circle, $color 0%, transparent 70%);
+    opacity: $opacity;
+    filter: blur($size);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+/// MANDATORY: Glass morphism effect
+@mixin web3-glass($bg: var(--web3-bg-glass-light), $blur: 16px) {
+  background: $bg;
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid var(--web3-border-subtle);
+}
+
+// ============================================
+//   BODY & HTML - 基础元素样式
+//   Apply Web3 aesthetic globally
+// ============================================
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  // MANDATORY: Grid pattern background (blockchain network effect)
+  @include web3-grid-bg();
+
+  // Web3 typography
+  font-family: var(--web3-font-body);
+  font-size: var(--web3-text-base);
+  font-weight: var(--web3-weight-normal);
+  line-height: var(--web3-leading-normal);
+  color: var(--web3-fg-primary);
+  background-color: var(--web3-bg-primary);
+
+  // Smooth rendering for digital precision
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  // Smooth transitions for theme changes
+  transition-property: background-color, color;
+  transition-duration: var(--web3-duration-slow);
+  transition-timing-function: var(--web3-ease-in-out);
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+// ============================================
+//   TYPOGRAPHY BASE STYLES - 字体基础样式
+//   Web3 display typography
+// ============================================
+
+// Font family classes
+.font-heading {
+  font-family: var(--web3-font-heading) !important;
+}
+
+.font-body {
+  font-family: var(--web3-font-body) !important;
+}
+
+.font-mono {
+  font-family: var(--web3-font-mono) !important;
+}
+
+// Headings - 标题 (Space Grotesk, dramatic contrast)
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--web3-font-heading);
+  font-weight: var(--web3-weight-semibold);
+  color: var(--web3-fg-primary);
+  line-height: var(--web3-leading-tight);
+  margin-bottom: var(--web3-spacing-4);
+}
+
+h1 {
+  font-size: var(--web3-text-4xl); // 36px
+
+  @media (min-width: 768px) {
+    font-size: var(--web3-text-5xl); // 48px
+  }
+
+  @media (min-width: 1024px) {
+    font-size: var(--web3-text-7xl); // 72px - massive hero
+  }
+}
+
+h2 {
+  font-size: var(--web3-text-3xl); // 30px
+
+  @media (min-width: 768px) {
+    font-size: var(--web3-text-4xl); // 36px
+  }
+
+  @media (min-width: 1024px) {
+    font-size: var(--web3-text-5xl); // 48px
+  }
+}
+
+h3 {
+  font-size: var(--web3-text-2xl); // 24px
+
+  @media (min-width: 768px) {
+    font-size: var(--web3-text-3xl); // 30px
+  }
+}
+
+h4 {
+  font-size: var(--web3-text-xl); // 20px
+
+  @media (min-width: 768px) {
+    font-size: var(--web3-text-2xl); // 24px
+  }
+}
+
+h5 {
+  font-size: var(--web3-text-lg); // 18px
+}
+
+h6 {
+  font-size: var(--web3-text-base); // 16px
+}
+
+// Body text - 正文 (Inter)
+p {
+  font-family: var(--web3-font-body);
+  font-size: var(--web3-text-base);
+  font-weight: var(--web3-weight-normal);
+  line-height: var(--web3-leading-relaxed);
+  color: var(--web3-fg-secondary);
+  margin-bottom: var(--web3-spacing-4);
+}
+
+// Links - 链接 (Bitcoin orange)
+a {
+  color: var(--web3-accent-primary);
+  text-decoration: none;
+  transition: color var(--web3-duration-base);
+
+  &:hover {
+    color: var(--web3-accent-gold);
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+//   SCROLLBAR STYLING - 滚动条样式
+//   Web3 themed scrollbars (orange accents)
+// ============================================
+
+// WebKit browsers (Chrome, Safari, Edge)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--web3-bg-primary);
+  border-left: 1px solid var(--web3-border-subtle);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(247, 147, 26, 0.3);
+  border: 1px solid var(--web3-accent-primary);
+  border-radius: var(--web3-radius-sm);
+  transition: background var(--web3-duration-base);
+
+  &:hover {
+    background: var(--web3-accent-primary);
+  }
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--web3-bg-primary);
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 147, 26, 0.3) var(--web3-bg-primary);
+}
+
+// ============================================
+//   SELECTION STYLING - 文本选择样式
+//   Bitcoin orange highlight for selected text
+// ============================================
+
+::selection {
+  background-color: var(--web3-accent-primary);
+  color: var(--web3-bg-primary);
+}
+
+::-moz-selection {
+  background-color: var(--web3-accent-primary);
+  color: var(--web3-bg-primary);
+}
+
+// ============================================
+//   FOCUS STYLES - 焦点样式
+//   WCAG AA accessibility compliance with orange glow
+// ============================================
+
+*:focus-visible {
+  outline: 2px solid var(--web3-accent-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(247, 147, 26, 0.1);
+}
+
+// Remove default outline for mouse users
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// ============================================
+//   UTILITY CLASSES - 工具类
+//   Web3 specific utilities
+// ============================================
+
+// Text colors - 文本颜色
+.text-web3-primary {
+  color: var(--web3-fg-primary) !important;
+}
+
+.text-web3-secondary {
+  color: var(--web3-fg-secondary) !important;
+}
+
+.text-web3-muted {
+  color: var(--web3-fg-muted) !important;
+}
+
+.text-web3-orange {
+  color: var(--web3-accent-primary) !important;
+}
+
+.text-web3-gold {
+  color: var(--web3-accent-gold) !important;
+}
+
+// Gradient text - 渐变文字 (MANDATORY for headlines)
+.text-gradient {
+  background: var(--web3-gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+// Background colors - 背景颜色
+.bg-web3-primary {
+  background-color: var(--web3-bg-primary) !important;
+}
+
+.bg-web3-surface {
+  background-color: var(--web3-bg-surface) !important;
+}
+
+.bg-web3-glass {
+  @include web3-glass();
+}
+
+// Grid pattern background - 网格背景
+.bg-web3-grid {
+  @include web3-grid-bg();
+}
+
+// Border utilities - 边框工具
+.border-web3-subtle {
+  border-color: var(--web3-border-subtle) !important;
+}
+
+.border-web3-orange {
+  border-color: var(--web3-accent-primary) !important;
+}
+
+// Glow utilities - 发光工具
+.web3-glow-orange {
+  box-shadow: var(--web3-glow-orange-md) !important;
+}
+
+.web3-glow-gold {
+  box-shadow: var(--web3-glow-gold) !important;
+}
+
+.web3-glow-card {
+  box-shadow: var(--web3-glow-card) !important;
+}
+
+// Glass morphism - 玻璃态
+.web3-glass {
+  @include web3-glass();
+}
+
+// Hover glow effect - 悬停发光
+.web3-glow-hover {
+  transition: box-shadow var(--web3-duration-base);
+
+  &:hover {
+    box-shadow: var(--web3-glow-orange-md) !important;
+    border-color: var(--web3-border-hover);
+  }
+}
+
+// ============================================
+//   ANIMATIONS - 动画
+//   GPU-accelerated animations only
+// ============================================
+
+// Float animation (hero elements)
+@keyframes web3-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-web3-float {
+  animation: web3-float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+// Spin animation (orbital rings)
+@keyframes web3-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-web3-spin {
+  animation: web3-spin 10s linear infinite;
+  will-change: transform;
+}
+
+// Bounce animation (stat cards)
+@keyframes web3-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-web3-bounce {
+  animation: web3-bounce 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+// Pulse animation (live indicators)
+@keyframes web3-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-web3-pulse {
+  animation: web3-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Ping animation (badges)
+@keyframes web3-ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-web3-ping {
+  animation: web3-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+// ============================================
+//   ACCESSIBILITY - 无障碍访问
+//   Skip link and screen reader utilities
+// ============================================
+
+// Skip to content link
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--web3-accent-primary);
+  color: var(--web3-bg-primary);
+  padding: var(--web3-spacing-2) var(--web3-spacing-4);
+  text-decoration: none;
+  z-index: var(--web3-z-tooltip);
+  font-weight: var(--web3-weight-semibold);
+  font-family: var(--web3-font-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--web3-tracking-wide);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// Screen reader only
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ============================================
+//   RESPONSIVE DESIGN - 响应式设计
+//   Mobile optimization
+// ============================================
+
+@media (max-width: 768px) {
+  :root {
+    // Adjust font sizes for mobile
+    --web3-text-7xl: 48px; // Reduce from 72px
+    --web3-text-6xl: 40px; // Reduce from 60px
+    --web3-text-5xl: 32px; // Reduce from 48px
+    --web3-text-4xl: 28px; // Reduce from 36px
+  }
+
+  h1 {
+    font-size: var(--web3-text-5xl); // 32px on mobile
+  }
+
+  h2 {
+    font-size: var(--web3-text-4xl); // 28px on mobile
+  }
+
+  h3 {
+    font-size: var(--web3-text-2xl); // 24px on mobile
+  }
+}
+
+// ============================================
+//   PRINT STYLES - 打印样式
+//   Optimized for printing
+// ============================================
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    @include web3-grid-bg(#000, 0.02);
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  img {
+    page-break-inside: avoid;
+  }
+}
+
+// ============================================
+//   END: web3-global.scss
+//   MyStocks Bitcoin DeFi Web3 Design System
+// ============================================

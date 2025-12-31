@@ -42,11 +42,9 @@ class DataSourceLogger:
             result is not None
             and not isinstance(result, str)
             or (isinstance(result, str) and not result.startswith("Error"))
-self.logger.info("数据源日志完成")
-        self.logger.info("Adapter Call: {adapter_type}.{method} "
-            f"Params: {params} "
-            f"Success: {success} "
-            f"Duration: {duration:.3f}s"
+        )
+        self.logger.info(
+            "Adapter Call: %s.%s " f"Params: {params} " f"Success: {success} " f"Duration: {duration:.3f}s"
         )
 
     def log_error(self, adapter_type: str, method: str, params: Dict, error: str):
@@ -136,17 +134,21 @@ def log_data_source_method(adapter_type: str, method_name: str):
                     success = False
                 elif result is None:
                     success = False
-self.logger.info("性能统计完成")
-                data_source_logger.logger.info("DS Call: {adapter_type}.{method_name} "
+
+                data_source_logger.logger.info(
+                    "DS Call: %s.%s "
                     f"Success: {success} "
                     f"Duration: {duration:.3f}s "
-                    f"Params: {params if len(str(params)) < 200 else str(params)[:200] + '...'}"
+                    f"Params: {params if len(str(params)) < 200 else str(params)[:200] + '...'}",
+                    adapter_type,
+                    method_name,
                 )
 
                 return result
             except Exception as e:
                 duration = time.time() - start_time
-                data_source_logger.logger.error("DS Error: {adapter_type}.{method_name} "
+                data_source_logger.logger.error(
+                    "DS Error: {adapter_type}.{method_name} "
                     f"Duration: {duration:.3f}s "
                     f"Error: {str(e)} "
                     f"Params: {params if len(str(params)) < 200 else str(params)[:200] + '...'}"

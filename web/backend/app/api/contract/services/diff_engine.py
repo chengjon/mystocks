@@ -13,7 +13,7 @@ except ImportError:
     DEEPDIFF_AVAILABLE = False
 
 
-from web.backend.app.api.contract.schemas import (
+from app.api.contract.schemas import (
     DiffResult,
     ContractDiffResponse,
 )

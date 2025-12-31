@@ -275,7 +275,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
             session = service.SessionLocal()
 
             try:
-                rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active == True).all()
+                rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active is True).all()
 
                 return [
                     {

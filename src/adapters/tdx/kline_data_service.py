@@ -439,7 +439,7 @@ class KlineDataService(BaseTdxAdapter):
             if period not in period_mapping:
                 raise ValueError(f"不支持的分钟周期: {period}")
 
-            frequency = period_mapping[period]
+            period_mapping[period]
 
             # 获取分钟线数据 (使用 get_history_minute_time_data)
             # 注意: TDX API 不支持按数量获取，这里获取最新日期的分钟数据

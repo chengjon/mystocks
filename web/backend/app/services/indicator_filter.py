@@ -249,7 +249,7 @@ class IndicatorCalculator:
         # 计算K线
         recent_highs = highs[-k_period:]
         recent_lows = lows[-k_period:]
-        recent_closes = prices[-k_period:]
+        prices[-k_period:]
 
         highest = max(recent_highs)
         lowest = min(recent_lows)

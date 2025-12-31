@@ -311,7 +311,8 @@ class StockScreener:
         self.stats["excluded_price"] = len(excluded)
 
         if excluded:
-            self.logger.info("价格过滤: 排除%slen(excluded")}只 " f"(范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
+            self.logger.info(
+                f"价格过滤: 排除{len(excluded)}只 (范围: {self.criteria.min_price}-{self.criteria.max_price}元)"
             )
 
         return symbols - excluded
@@ -435,17 +436,17 @@ class StockScreener:
         """打印筛选摘要"""
         self.logger.info("=" * 60)
         self.logger.info("股票筛选摘要")
-        self.logger.info("输入股票数: %s", self.stats['total_input'])
-        self.logger.info("  - 排除ST股票: %s", self.stats['excluded_st'])
-        self.logger.info("  - 排除停牌股票: %s", self.stats['excluded_suspended'])
-        self.logger.info("  - 排除次新股: %s", self.stats['excluded_new_stocks'])
-        self.logger.info("  - 价格过滤: %s", self.stats['excluded_price'])
-        self.logger.info("  - 成交量过滤: %s", self.stats['excluded_volume'])
-        self.logger.info("  - 市值过滤: %s", self.stats['excluded_market_cap'])
-        self.logger.info("  - 行业过滤: %s", self.stats['excluded_industry'])
-        self.logger.info("  - 自定义过滤: %s", self.stats['excluded_custom'])
-        self.logger.info("输出股票数: %s", self.stats['total_output'])
-        self.logger.info("筛选通过率: %s%", self.stats['total_output'] / self.stats['total_input'] * 100)
+        self.logger.info("输入股票数: %s", self.stats["total_input"])
+        self.logger.info("  - 排除ST股票: %s", self.stats["excluded_st"])
+        self.logger.info("  - 排除停牌股票: %s", self.stats["excluded_suspended"])
+        self.logger.info("  - 排除次新股: %s", self.stats["excluded_new_stocks"])
+        self.logger.info("  - 价格过滤: %s", self.stats["excluded_price"])
+        self.logger.info("  - 成交量过滤: %s", self.stats["excluded_volume"])
+        self.logger.info("  - 市值过滤: %s", self.stats["excluded_market_cap"])
+        self.logger.info("  - 行业过滤: %s", self.stats["excluded_industry"])
+        self.logger.info("  - 自定义过滤: %s", self.stats["excluded_custom"])
+        self.logger.info("输出股票数: %s", self.stats["total_output"])
+        self.logger.info("筛选通过率: %s%", self.stats["total_output"] / self.stats["total_input"] * 100)
         self.logger.info("=" * 60)
 
 

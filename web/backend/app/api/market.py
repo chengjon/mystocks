@@ -13,6 +13,7 @@
 - GET /api/market/heatmap - 获取市场热力图数据
 """
 
+import logging
 import os
 from datetime import date, datetime
 from typing import List, Optional
@@ -36,6 +37,7 @@ from app.schemas.market_schemas import (
 from app.services.market_data_service import MarketDataService, get_market_data_service
 
 router = APIRouter(prefix="/api/market", tags=["市场数据"])
+logger = logging.getLogger(__name__)
 
 
 # ============================================================================

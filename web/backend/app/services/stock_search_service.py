@@ -112,19 +112,31 @@ class StockSearchError(Exception):
     pass
 
 
+class FinnhubAPIError(Exception):
+    """Finnhub API 错误"""
+
+    pass
+
+
 class StockSearchService:
     """
     统一股票搜索服务
     支持多市场和多数据源
     """
 
-    def __init__(self):
+    def __init__(self, api_key: Optional[str] = None, base_url: str = "https://finnhub.io/api/v1"):
         """
         初始化股票搜索服务
+
+        Args:
+            api_key: Finnhub API密钥 (可选)
+            base_url: Finnhub API基础URL (默认为官方API)
         """
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "MyStocks/1.0"})
         self.akshare_available = AKSHARE_AVAILABLE
+        self.api_key = api_key
+        self.base_url = base_url
 
     def _make_request(self, endpoint: str, params: Dict = None) -> Dict:
         """

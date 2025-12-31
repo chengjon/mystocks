@@ -304,7 +304,8 @@ def monitor_connection_performance(func):
             if MEMORY_MANAGEMENT_AVAILABLE:
                 memory_stats = get_memory_stats()
                 print(
-                    f"连接操作性能: 执行时间={execution_time:.3f}s, 内存使用={memory_stats['current']['process_memory_mb']:.2f}MB"
+                    f"连接操作性能: 执行时间={execution_time:.3f}s, "
+                    f"内存使用={memory_stats['current']['process_memory_mb']:.2f}MB"
                 )
 
             return result

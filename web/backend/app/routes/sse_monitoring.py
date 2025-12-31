@@ -171,7 +171,7 @@ async def get_sse_status():
     """
     try:
         manager = get_sse_manager()
-        broadcaster = get_sse_broadcaster()
+        get_sse_broadcaster()
 
         # 基础状态
         total_connections = manager.get_connection_count()

@@ -163,7 +163,7 @@ class DataSourceQualityMetrics:
             return None
 
         metric = self.metrics[metric_name]
-        old_severity = metric.get_severity()
+        metric.get_severity()
         metric.update_value(value)
         new_severity = metric.get_severity()
 
@@ -174,7 +174,10 @@ class DataSourceQualityMetrics:
                 id=f"{self.source_name}_{metric_name}_{int(time.time())}",
                 metric_name=metric_name,
                 severity=new_severity,
-                message=f"{metric.description}: {value}{metric.unit} (threshold: {metric.threshold_critical}{metric.unit})",
+                message=(
+                    f"{metric.description}: {value}{metric.unit} "
+                    f"(threshold: {metric.threshold_critical}{metric.unit})"
+                ),
                 source=self.source_name,
                 metadata={
                     "current_value": value,

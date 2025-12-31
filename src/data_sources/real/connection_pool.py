@@ -141,7 +141,9 @@ class PostgreSQLConnectionPool:
         self._health_check_thread = None
         self._cleanup_thread = None
 
-        logger.info("PostgreSQL连接池初始化完成: min=%s, max=%s", self.config.min_connections, self.config.max_connections)
+        logger.info(
+            "PostgreSQL连接池初始化完成: min=%s, max=%s", self.config.min_connections, self.config.max_connections
+        )
 
         # 预热连接池
         self._initialize_pool()
@@ -359,7 +361,7 @@ class PostgreSQLConnectionPool:
         finally:
             execution_time = time.time() - start_time
             if execution_time > 1.0:  # 记录慢查询
-                logger.warning("慢查询检测: 执行时间 %ss, SQL: %s...", execution_time, query[)
+                logger.warning("慢查询检测: 执行时间 %ss, SQL: %s...", execution_time, query[:100])
 
     def execute_transaction(self, queries: List[tuple]) -> bool:
         """

@@ -306,7 +306,7 @@ async def get_system_status_overview():
         # 获取数据质量监控状态
         monitor = get_data_quality_monitor()
         health_summary = monitor.get_overall_health_summary()
-        all_alerts = monitor.get_all_alerts()
+        monitor.get_all_alerts()
 
         # 获取环境配置
         mode = get_factory_mode()
@@ -429,9 +429,9 @@ async def get_quality_trends(
 
         # 计算趋势数据
         if recent_evaluations:
-            timestamps = [datetime.fromisoformat(eval["timestamp"]) for eval in recent_evaluations]
-            quality_scores = [eval["quality_score"] for eval in recent_evaluations]
-            response_times = [eval.get("response_time", 0) for eval in recent_evaluations]
+            [datetime.fromisoformat(eval["timestamp"]) for eval in recent_evaluations]
+            [eval["quality_score"] for eval in recent_evaluations]
+            [eval.get("response_time", 0) for eval in recent_evaluations]
 
             # 按小时分组
             hourly_data = {}

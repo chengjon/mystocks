@@ -104,7 +104,8 @@ class FinancialDataSource(IDataSource):
         self.data_cache = {}
         self._init_data_sources()
         logger.info(
-            "数据源初始化完成 (efinance: {'可用' if self.efinance_available else '不可用'}, easyquotation: {'可用' if self.easyquotation_available else '不可用'})"
+            "数据源初始化完成 (efinance: {'可用' if self.efinance_available else '不可用'}, "
+            "easyquotation: {'可用' if self.easyquotation_available else '不可用'})"
         )
 
     def _get_cache_key(self, symbol: str, data_type: str, **kwargs) -> str:

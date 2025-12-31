@@ -1,0 +1,178 @@
+{
+  "name": "TechStyle Dark",
+  "id": "tech-style-dark",
+  "mode": "dark",
+  "description": "Dark variant of minimalist modern design with Electric Blue accent",
+  "colors": {
+    "background": "#0F172A",
+    "foreground": "#FAFAFA",
+    "muted": "#1E293B",
+    "mutedForeground": "#94A3B8",
+    "accent": "#0052FF",
+    "accentSecondary": "#4D7CFF",
+    "accentForeground": "#FFFFFF",
+    "border": "#334155",
+    "card": "#1E293B",
+    "ring": "#0052FF",
+    "destructive": "#EF4444",
+    "success": "#10B981",
+    "warning": "#F59E0B",
+    "info": "#3B82F6"
+  },
+  "gradients": {
+    "accent": "linear-gradient(to right, #0052FF, #4D7CFF)",
+    "accentDiagonal": "linear-gradient(135deg, #0052FF, #4D7CFF)",
+    "accentSubtle": "linear-gradient(to right, rgba(0, 82, 255, 0.2), rgba(77, 124, 255, 0.15))",
+    "overlay": "radial-gradient(circle at center, rgba(0, 82, 255, 0.12), transparent)"
+  },
+  "typography": {
+    "fontFamily": {
+      "display": ["Calistoga", "Georgia", "serif"],
+      "body": ["Inter", "system-ui", "sans-serif"],
+      "mono": ["JetBrains Mono", "monospace"]
+    },
+    "fontSize": {
+      "xs": "0.75rem",
+      "sm": "0.875rem",
+      "base": "1rem",
+      "lg": "1.125rem",
+      "xl": "1.25rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+      "4xl": "2.25rem",
+      "5xl": "3rem",
+      "6xl": "3.75rem"
+    },
+    "fontWeight": {
+      "normal": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700"
+    },
+    "lineHeight": {
+      "tight": "1.05",
+      "normal": "1.5",
+      "relaxed": "1.625"
+    },
+    "letterSpacing": {
+      "tight": "-0.02em",
+      "normal": "0",
+      "wide": "0.15em"
+    }
+  },
+  "spacing": {
+    "xs": "0.25rem",
+    "sm": "0.5rem",
+    "md": "1rem",
+    "lg": "1.5rem",
+    "xl": "2rem",
+    "2xl": "3rem",
+    "3xl": "4rem",
+    "section": "7rem",
+    "sectionLarge": "11rem"
+  },
+  "borderRadius": {
+    "sm": "0.25rem",
+    "md": "0.375rem",
+    "lg": "0.5rem",
+    "xl": "0.75rem",
+    "2xl": "1rem",
+    "full": "9999px"
+  },
+  "shadows": {
+    "sm": "0 1px 3px rgba(0,0,0,0.3)",
+    "md": "0 4px 6px rgba(0,0,0,0.4)",
+    "lg": "0 10px 15px rgba(0,0,0,0.5)",
+    "xl": "0 20px 25px rgba(0,0,0,0.6)",
+    "accent": "0 4px 14px rgba(0,82,255,0.4)",
+    "accentLg": "0 8px 24px rgba(0,82,255,0.5)"
+  },
+  "animations": {
+    "duration": {
+      "fast": "150ms",
+      "normal": "200ms",
+      "slow": "300ms",
+      "slower": "500ms"
+    },
+    "easing": {
+      "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "in": "cubic-bezier(0.4, 0, 1, 1)",
+      "out": "cubic-bezier(0, 0, 0.2, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    "continuous": {
+      "rotate": "60s",
+      "float": "5s",
+      "pulse": "2s"
+    }
+  },
+  "texture": {
+    "dotPattern": {
+      "size": "32px",
+      "opacity": "0.05",
+      "color": "#FFFFFF"
+    }
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": "linear-gradient(to right, #0052FF, #4D7CFF)",
+        "color": "#FFFFFF",
+        "borderRadius": "0.75rem",
+        "padding": "0.75rem 1.5rem",
+        "fontWeight": "500",
+        "shadow": "0 1px 3px rgba(0,0,0,0.3)",
+        "hoverShadow": "0 8px 24px rgba(0,82,255,0.5)",
+        "hoverTransform": "translateY(-2px)",
+        "activeTransform": "scale(0.98)"
+      },
+      "secondary": {
+        "background": "transparent",
+        "color": "#FAFAFA",
+        "border": "1px solid #334155",
+        "borderRadius": "0.75rem",
+        "padding": "0.75rem 1.5rem",
+        "fontWeight": "500",
+        "hoverBackground": "#1E293B",
+        "hoverBorder": "rgba(0, 82, 255, 0.4)"
+      },
+      "ghost": {
+        "background": "transparent",
+        "color": "#94A3B8",
+        "border": "none",
+        "hoverColor": "#FAFAFA"
+      }
+    },
+    "card": {
+      "background": "#1E293B",
+      "border": "1px solid #334155",
+      "borderRadius": "0.75rem",
+      "padding": "1.5rem",
+      "shadow": "0 4px 6px rgba(0,0,0,0.4)",
+      "hoverShadow": "0 20px 25px rgba(0,0,0,0.6)",
+      "gradientBorder": "linear-gradient(to right, #0052FF, #4D7CFF)"
+    },
+    "input": {
+      "height": "3rem",
+      "border": "1px solid #334155",
+      "borderRadius": "0.5rem",
+      "background": "transparent",
+      "focusRing": "0 0 0 2px #0052FF",
+      "placeholder": "#94A3B8",
+      "placeholderOpacity": 0.5
+    },
+    "sectionLabel": {
+      "background": "rgba(0, 82, 255, 0.1)",
+      "border": "1px solid rgba(0, 82, 255, 0.4)",
+      "borderRadius": "9999px",
+      "padding": "0.5rem 1.25rem",
+      "fontSize": "0.75rem",
+      "fontWeight": "400",
+      "letterSpacing": "0.15em",
+      "textTransform": "uppercase",
+      "color": "#0052FF",
+      "dotSize": "0.5rem",
+      "dotColor": "#0052FF"
+    }
+  }
+}

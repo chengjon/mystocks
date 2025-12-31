@@ -1,0 +1,6562 @@
+openapi: 3.1.0
+info:
+  title: MyStocks Web API
+  description: '
+
+    # MyStocks 量化交易数据管理系统 Web API
+
+
+    MyStocks是一个专业的量化交易数据管理系统，提供全面的股票市场数据获取、分析和管理功能。
+
+
+    ## 主要功能模块
+
+
+    ### 📊 市场数据 (Market Data)
+
+    - 实时行情数据获取
+
+    - 历史K线数据查询
+
+    - 资金流向分析
+
+    - ETF数据分析
+
+    - 筹码分布数据
+
+
+    ### 💾 缓存管理 (Cache Management)
+
+    - TDengine时序数据库缓存
+
+    - 缓存统计和监控
+
+    - 缓存淘汰策略
+
+    - 缓存预热功能
+
+
+    ### 📈 技术指标 (Technical Indicators)
+
+    - 常用技术指标计算
+
+    - 自定义指标支持
+
+    - 实时指标推送
+
+
+    ### 🤖 机器学习 (Machine Learning)
+
+    - 股票预测模型
+
+    - 特征工程
+
+    - 模型训练和评估
+
+
+    ### 📋 策略管理 (Strategy Management)
+
+    - 策略创建和配置
+
+    - 回测系统
+
+    - 风险管理
+
+
+    ### 🔔 实时推送 (Real-time Push)
+
+    - WebSocket实时数据推送
+
+    - SSE (Server-Sent Events) 流式推送
+
+    - 告警通知
+
+
+    ### 🔐 认证授权 (Authentication)
+
+    - JWT Token认证
+
+    - CSRF保护
+
+    - 权限管理
+
+
+    ## 架构特点
+
+
+    - **双数据库架构**: TDengine (时序数据) + PostgreSQL (关系数据)
+
+    - **统一响应格式**: 所有API遵循标准化响应结构
+
+    - **完整监控体系**: 性能监控、数据质量监控、告警系统
+
+    - **配置驱动**: YAML配置驱动的表管理和自动化
+
+
+    ## 技术栈
+
+
+    - **后端框架**: FastAPI 0.104+ (Python 3.9+)
+
+    - **数据库**: TDengine 3.x, PostgreSQL 15+
+
+    - **缓存**: TDengine 时序缓存
+
+    - **异步**: asyncio, httpx
+
+    - **数据验证**: Pydantic v2
+
+    - **日志**: structlog
+
+
+    ## 联系方式
+
+
+    - 项目文档: `/api/docs` (Swagger UI)
+
+    - 备用文档: `/api/redoc` (ReDoc)
+
+    - 健康检查: `/health`
+
+
+    ---
+
+
+    **Version**: 2.0.0
+
+    **Last Updated**: 2025-11-06
+
+    **Environment**: Production
+
+    '
+  version: 2.0.0
+paths:
+  /api/technical/{symbol}/indicators:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get All Indicators
+      description: '获取股票的所有技术指标
+
+
+        参数:
+
+        - symbol: 股票代码 (如: 600519)
+
+        - period: 数据周期 (daily, weekly, monthly)
+
+        - start_date: 开始日期 (可选)
+
+        - end_date: 结束日期 (可选)
+
+        - limit: 数据点数量限制 (可选)
+
+
+        返回:
+
+        - 包含趋势、动量、波动性、成交量指标的综合数据
+
+
+        **验证**: P0改进 Task 2 - 使用TechnicalIndicatorQueryModel验证参数
+
+
+        示例:
+
+        - GET /api/technical/600519/indicators
+
+        - GET /api/technical/600519/indicators?period=weekly
+
+        - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23'
+      operationId: get_all_indicators_api_technical__symbol__indicators_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 股票代码
+          title: Symbol
+        description: 股票代码
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(daily|weekly|monthly)$
+          description: '数据周期: daily, weekly, monthly'
+          default: daily
+          title: Period
+        description: '数据周期: daily, weekly, monthly'
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 开始日期 YYYY-MM-DD
+          title: Start Date
+        description: 开始日期 YYYY-MM-DD
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 结束日期 YYYY-MM-DD
+          title: End Date
+        description: 结束日期 YYYY-MM-DD
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 5000
+            minimum: 10
+          - type: 'null'
+          description: 数据点数量限制
+          title: Limit
+        description: 数据点数量限制
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllIndicatorsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/trend:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: 获取趋势指标
+      description: '获取趋势指标
+
+
+        包括:
+
+        - MA (移动平均线): 5, 10, 20, 30, 60, 120, 250日
+
+        - EMA (指数移动平均线): 12, 26, 50日
+
+        - MACD (指数平滑异同移动平均线)
+
+        - DMI (动向指标): ADX, +DI, -DI
+
+        - SAR (抛物线转向指标)
+
+
+        **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+        示例:
+
+        - GET /api/technical/600519/trend'
+      operationId: get_trend_indicators_api_technical__symbol__trend_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 20
+          pattern: ^[A-Z0-9.]+$
+          description: 股票代码
+          title: Symbol
+        description: 股票代码
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(daily|weekly|monthly)$
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      - name: ma_periods
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: '自定义MA周期，逗号分隔，如: 5,10,20'
+          title: Ma Periods
+        description: '自定义MA周期，逗号分隔，如: 5,10,20'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/momentum:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Momentum Indicators
+      description: '获取动量指标
+
+
+        包括:
+
+        - RSI (相对强弱指标): 6, 12, 24日
+
+        - KDJ (随机指标): K, D, J
+
+        - CCI (顺势指标)
+
+        - WR (威廉指标)
+
+        - ROC (变动率指标)
+
+
+        **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+        示例:
+
+        - GET /api/technical/600519/momentum'
+      operationId: get_momentum_indicators_api_technical__symbol__momentum_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Get Momentum Indicators Api Technical  Symbol  Momentum
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/volatility:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Volatility Indicators
+      description: '获取波动性指标
+
+
+        包括:
+
+        - Bollinger Bands (布林带): upper, middle, lower, width
+
+        - ATR (平均真实波幅)
+
+        - Keltner Channel (肯特纳通道)
+
+        - Standard Deviation (标准差)
+
+
+        **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+        示例:
+
+        - GET /api/technical/600519/volatility'
+      operationId: get_volatility_indicators_api_technical__symbol__volatility_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Get Volatility Indicators Api Technical  Symbol  Volatility
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/volume:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Volume Indicators
+      description: '获取成交量指标
+
+
+        包括:
+
+        - OBV (能量潮指标)
+
+        - VWAP (成交量加权平均价)
+
+        - Volume MA (成交量均线): 5, 10日
+
+        - Volume Ratio (量比)
+
+
+        **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+        示例:
+
+        - GET /api/technical/600519/volume'
+      operationId: get_volume_indicators_api_technical__symbol__volume_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Get Volume Indicators Api Technical  Symbol  Volume
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/signals:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Trading Signals
+      description: '获取交易信号
+
+
+        基于技术指标生成买入/卖出/持有信号
+
+
+        信号类型:
+
+        - macd_golden_cross: MACD金叉 (买入信号)
+
+        - macd_death_cross: MACD死叉 (卖出信号)
+
+        - rsi_oversold: RSI超卖 (买入信号)
+
+        - rsi_overbought: RSI超买 (卖出信号)
+
+
+        **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+        示例:
+
+        - GET /api/technical/600519/signals'
+      operationId: get_trading_signals_api_technical__symbol__signals_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Get Trading Signals Api Technical  Symbol  Signals
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/{symbol}/history:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Stock History
+      description: '获取股票历史行情数据
+
+
+        用于前端绘制 K 线图和指标图表
+
+
+        参数:
+
+        - symbol: 股票代码
+
+        - period: 周期 (daily, weekly, monthly)
+
+        - start_date: 开始日期 (可选)
+
+        - end_date: 结束日期 (可选)
+
+        - limit: 返回数据点数量 (默认100，最多1000)
+
+
+        返回:
+
+        - OHLCV 数据及基础指标
+
+
+        示例:
+
+        - GET /api/technical/600519/history?limit=200
+
+        - GET /api/technical/600519/history?start_date=2024-01-01'
+      operationId: get_stock_history_api_technical__symbol__history_get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 开始日期
+          title: Start Date
+        description: 开始日期
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 结束日期
+          title: End Date
+        description: 结束日期
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 10
+          description: 返回数据点数量
+          default: 100
+          title: Limit
+        description: 返回数据点数量
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/batch/indicators:
+    post:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Get Batch Indicators
+      description: '批量获取多只股票的技术指标
+
+
+        参数:
+
+        - symbols: 股票代码列表 (最多20只)
+
+
+        示例:
+
+        - POST /api/technical/batch/indicators?symbols=600519&symbols=000001&symbols=600000'
+      operationId: get_batch_indicators_api_technical_batch_indicators_post
+      parameters:
+      - name: symbols
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: 股票代码列表
+          title: Symbols
+        description: 股票代码列表
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/technical/patterns/{symbol}:
+    get:
+      tags:
+      - technical-analysis
+      - technical-analysis
+      summary: Detect Patterns
+      description: '检测技术形态 (预留功能)
+
+
+        将实现:
+
+        - 头肩顶/底
+
+        - 双顶/底
+
+        - 三角形整理
+
+        - 矩形整理
+
+        - 旗形、楔形
+
+        等常见形态
+
+
+        示例:
+
+        - GET /api/technical/patterns/600519'
+      operationId: detect_patterns_api_technical_patterns__symbol__get
+      parameters:
+      - name: symbol
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Symbol
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 数据周期
+          default: daily
+          title: Period
+        description: 数据周期
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    APIResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Data
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse
+      description: '向后兼容的成功响应模型
+
+
+        @deprecated 推荐使用 UnifiedResponse，保留此类以维持向后兼容性'
+    APIResponse_AccountInfo_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AccountInfo'
+          - type: 'null'
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[AccountInfo]
+    APIResponse_HealthCheckResponse_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HealthCheckResponse'
+          - type: 'null'
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[HealthCheckResponse]
+    APIResponse_PositionsResponse_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PositionsResponse'
+          - type: 'null'
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[PositionsResponse]
+    APIResponse_TradeHistoryResponse_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/TradeHistoryResponse'
+          - type: 'null'
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[TradeHistoryResponse]
+    APIResponse_TradeStatistics_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/TradeStatistics'
+          - type: 'null'
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[TradeStatistics]
+    APIResponse_dict_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 操作是否成功
+          default: true
+        data:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Data
+          description: 响应数据
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: 响应消息
+          default: 操作成功
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+          description: 响应时间戳
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: 请求ID，用于追踪
+      type: object
+      title: APIResponse[dict]
+    AccountInfo:
+      properties:
+        account_id:
+          type: string
+          title: Account Id
+          description: 账户ID
+        account_type:
+          type: string
+          title: Account Type
+          description: 账户类型 (stock/derivatives)
+        total_assets:
+          type: string
+          title: Total Assets
+          description: 总资产
+        cash:
+          type: string
+          title: Cash
+          description: 可用资金
+        market_value:
+          type: string
+          title: Market Value
+          description: 证券市值
+        frozen_cash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Frozen Cash
+          description: 冻结资金
+        total_profit_loss:
+          type: string
+          title: Total Profit Loss
+          description: 总盈亏
+        profit_loss_percent:
+          type: number
+          title: Profit Loss Percent
+          description: 盈亏比例(%)
+        risk_level:
+          type: string
+          title: Risk Level
+          description: 风险等级 (low/medium/high)
+          default: low
+        last_update:
+          type: string
+          format: date-time
+          title: Last Update
+          description: 最后更新时间
+      type: object
+      required:
+      - account_id
+      - account_type
+      - total_assets
+      - cash
+      - market_value
+      - total_profit_loss
+      - profit_loss_percent
+      - last_update
+      title: AccountInfo
+      description: 账户信息
+      example:
+        account_id: ACC_123456
+        account_type: stock
+        cash: '50000.00'
+        last_update: '2025-12-29T15:30:00'
+        market_value: '50000.00'
+        profit_loss_percent: 5.0
+        risk_level: low
+        total_assets: '100000.00'
+        total_profit_loss: '5000.00'
+    ActiveAlert:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: 预警ID
+        name:
+          type: string
+          title: Name
+          description: 预警名称
+        metric_type:
+          type: string
+          title: Metric Type
+          description: 监控指标类型
+        threshold_value:
+          type: number
+          title: Threshold Value
+          description: 阈值
+      type: object
+      required:
+      - id
+      - name
+      - metric_type
+      - threshold_value
+      title: ActiveAlert
+      description: 活跃预警模型
+    AddWatchlistRequest:
+      properties:
+        symbol:
+          type: string
+          maxLength: 20
+          minLength: 1
+          pattern: ^[A-Z0-9.]+$
+          title: Symbol
+          description: 股票代码
+        display_name:
+          anyOf:
+          - type: string
+            maxLength: 100
+          - type: 'null'
+          title: Display Name
+          description: 显示名称
+        exchange:
+          anyOf:
+          - type: string
+            maxLength: 20
+            pattern: ^[A-Z]+$
+          - type: 'null'
+          title: Exchange
+          description: 交易所
+        market:
+          anyOf:
+          - type: string
+            maxLength: 5
+            pattern: ^(CN|HK|US)$
+          - type: 'null'
+          title: Market
+          description: 市场（CN/HK/US）
+        notes:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Notes
+          description: 备注
+        group_id:
+          anyOf:
+          - type: integer
+            minimum: 1.0
+          - type: 'null'
+          title: Group Id
+          description: 分组ID
+        group_name:
+          anyOf:
+          - type: string
+            maxLength: 50
+            minLength: 1
+          - type: 'null'
+          title: Group Name
+          description: 分组名称（如果不存在则自动创建）
+      type: object
+      required:
+      - symbol
+      title: AddWatchlistRequest
+      description: 添加自选股请求
+    AllIndicatorsResponse:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        latest_price:
+          type: number
+          title: Latest Price
+        latest_date:
+          type: string
+          title: Latest Date
+        data_points:
+          type: integer
+          title: Data Points
+        total_indicators:
+          type: integer
+          title: Total Indicators
+        trend:
+          type: object
+          title: Trend
+        momentum:
+          type: object
+          title: Momentum
+        volatility:
+          type: object
+          title: Volatility
+        volume:
+          type: object
+          title: Volume
+      type: object
+      required:
+      - symbol
+      - latest_price
+      - latest_date
+      - data_points
+      - total_indicators
+      - trend
+      - momentum
+      - volatility
+      - volume
+      title: AllIndicatorsResponse
+      description: 所有指标综合响应
+    BacktestListResponse:
+      properties:
+        total_count:
+          type: integer
+          title: Total Count
+          description: 总数量
+        backtests:
+          items:
+            $ref: '#/components/schemas/BacktestResultSummary'
+          type: array
+          title: Backtests
+          description: 回测列表
+        page:
+          type: integer
+          minimum: 1.0
+          title: Page
+          description: 当前页码
+          default: 1
+        page_size:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Page Size
+          description: 每页数量
+          default: 20
+      type: object
+      required:
+      - total_count
+      - backtests
+      title: BacktestListResponse
+      description: 回测列表响应
+    BacktestResult:
+      properties:
+        backtest_id:
+          type: integer
+          title: Backtest Id
+          description: 回测ID
+        strategy_id:
+          type: integer
+          title: Strategy Id
+          description: 策略ID
+        user_id:
+          type: integer
+          title: User Id
+          description: 用户ID
+        symbols:
+          items:
+            type: string
+          type: array
+          title: Symbols
+          description: 股票代码列表
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+          description: 开始日期
+        end_date:
+          type: string
+          format: date
+          title: End Date
+          description: 结束日期
+        initial_capital:
+          type: number
+          title: Initial Capital
+          description: 初始资金
+        final_capital:
+          type: number
+          minimum: 0.0
+          title: Final Capital
+          description: 最终资金
+        performance:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        equity_curve:
+          items:
+            $ref: '#/components/schemas/EquityCurvePoint'
+          type: array
+          title: Equity Curve
+          description: 权益曲线
+        trades:
+          items:
+            $ref: '#/components/schemas/TradeRecord'
+          type: array
+          title: Trades
+          description: 交易记录
+        status:
+          $ref: '#/components/schemas/BacktestStatus'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+          description: 完成时间
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+          description: 错误消息
+      type: object
+      required:
+      - backtest_id
+      - strategy_id
+      - user_id
+      - symbols
+      - start_date
+      - end_date
+      - initial_capital
+      - final_capital
+      - performance
+      - status
+      - created_at
+      title: BacktestResult
+      description: 回测结果
+      example:
+        backtest_id: 456
+        completed_at: '2024-12-01T10:05:00'
+        created_at: '2024-12-01T10:00:00'
+        end_date: '2024-12-31'
+        equity_curve: []
+        final_capital: 115000.0
+        initial_capital: 100000.0
+        performance:
+          alpha: 7.0
+          annual_return: 15.0
+          benchmark_return: 8.0
+          beta: 1.05
+          calmar_ratio: 1.76
+          max_drawdown: -8.5
+          profit_factor: 1.85
+          sharpe_ratio: 1.8
+          sortino_ratio: 2.1
+          total_return: 15.0
+          total_trades: 45
+          volatility: 12.3
+          win_rate: 62.2
+        start_date: '2024-01-01'
+        status: completed
+        strategy_id: 123
+        symbols:
+        - 000001.SZ
+        - 600000.SH
+        trades: []
+        user_id: 1001
+    BacktestResultSummary:
+      properties:
+        backtest_id:
+          type: integer
+          title: Backtest Id
+          description: 回测ID
+        strategy_id:
+          type: integer
+          title: Strategy Id
+          description: 策略ID
+        strategy_name:
+          type: string
+          title: Strategy Name
+          description: 策略名称
+        symbols:
+          items:
+            type: string
+          type: array
+          title: Symbols
+          description: 股票列表
+        date_range:
+          type: string
+          title: Date Range
+          description: 日期范围
+        total_return:
+          type: number
+          title: Total Return
+          description: 总收益率 (%)
+        sharpe_ratio:
+          type: number
+          title: Sharpe Ratio
+          description: 夏普比率
+        max_drawdown:
+          type: number
+          title: Max Drawdown
+          description: 最大回撤 (%)
+        status:
+          $ref: '#/components/schemas/BacktestStatus'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+      type: object
+      required:
+      - backtest_id
+      - strategy_id
+      - strategy_name
+      - symbols
+      - date_range
+      - total_return
+      - sharpe_ratio
+      - max_drawdown
+      - status
+      - created_at
+      title: BacktestResultSummary
+      description: 回测结果汇总
+    BacktestStatus:
+      type: string
+      enum:
+      - pending
+      - running
+      - completed
+      - failed
+      title: BacktestStatus
+      description: 回测状态
+    BetaRequest:
+      properties:
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 实体类型 ('backtest', 'portfolio', 'strategy')
+        entity_id:
+          type: integer
+          minimum: 1.0
+          title: Entity Id
+          description: 实体ID
+        market_index:
+          type: string
+          title: Market Index
+          description: 市场指数代码 (默认上证指数)
+          default: '000001'
+      type: object
+      required:
+      - entity_type
+      - entity_id
+      title: BetaRequest
+      description: Beta 系数计算请求模型
+      example:
+        entity_id: 101
+        entity_type: portfolio
+        market_index: 000300.SH
+    BetaResult:
+      properties:
+        beta:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Beta
+          description: Beta 系数
+        correlation:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Correlation
+          description: 与市场指数的相关系数
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+          description: 实体类型
+        entity_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Entity Id
+          description: 实体ID
+        market_index:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Market Index
+          description: 市场指数代码
+      type: object
+      title: BetaResult
+      description: Beta 系数计算结果响应模型
+      example:
+        beta: 1.23
+        correlation: 0.85
+    Body_export_config_api_tasks_export_post:
+      properties:
+        output_path:
+          type: string
+          title: Output Path
+      type: object
+      required:
+      - output_path
+      title: Body_export_config_api_tasks_export_post
+    Body_import_config_api_tasks_import_post:
+      properties:
+        config_path:
+          type: string
+          title: Config Path
+      type: object
+      required:
+      - config_path
+      title: Body_import_config_api_tasks_import_post
+    Body_login_for_access_token_api_v1_auth_login_post:
+      properties:
+        grant_type:
+          anyOf:
+          - type: string
+            pattern: password
+          - type: 'null'
+          title: Grant Type
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        scope:
+          type: string
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Id
+        client_secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Secret
+      type: object
+      required:
+      - username
+      - password
+      title: Body_login_for_access_token_api_v1_auth_login_post
+    ChartConfigRequest:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: '市场类型: CN, US, HK'
+          default: CN
+        interval:
+          type: string
+          title: Interval
+          description: '时间间隔: 1, 5, 15, 60, D, W, M'
+          default: D
+        theme:
+          type: string
+          title: Theme
+          description: '主题: light, dark'
+          default: dark
+        locale:
+          type: string
+          title: Locale
+          description: '语言: zh_CN, en'
+          default: zh_CN
+        container_id:
+          type: string
+          title: Container Id
+          description: 容器ID
+          default: tradingview_chart
+      type: object
+      required:
+      - symbol
+      title: ChartConfigRequest
+      description: 图表配置请求
+    ChipRaceResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        symbol:
+          type: string
+          title: Symbol
+        name:
+          type: string
+          title: Name
+        trade_date:
+          type: string
+          format: date
+          title: Trade Date
+        race_type:
+          type: string
+          title: Race Type
+          description: '抢筹类型: open/end'
+        latest_price:
+          type: number
+          title: Latest Price
+        change_percent:
+          type: number
+          title: Change Percent
+          description: 涨跌幅(%)
+        prev_close:
+          type: number
+          title: Prev Close
+        open_price:
+          type: number
+          title: Open Price
+        race_amount:
+          type: number
+          title: Race Amount
+          description: 抢筹金额(元)
+        race_amplitude:
+          type: number
+          title: Race Amplitude
+          description: 抢筹幅度(%)
+        race_commission:
+          type: number
+          title: Race Commission
+          description: 抢筹委托金额
+        race_transaction:
+          type: number
+          title: Race Transaction
+          description: 抢筹成交金额
+        race_ratio:
+          type: number
+          title: Race Ratio
+          description: 抢筹占比(%)
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+      type: object
+      required:
+      - id
+      - symbol
+      - name
+      - trade_date
+      - race_type
+      - latest_price
+      - change_percent
+      - prev_close
+      - open_price
+      - race_amount
+      - race_amplitude
+      - race_commission
+      - race_transaction
+      - race_ratio
+      title: ChipRaceResponse
+      description: 竞价抢筹响应
+    ConceptListResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 请求是否成功
+          default: true
+        data:
+          type: object
+          title: Data
+          description: 响应数据
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 响应时间戳
+      type: object
+      required:
+      - data
+      - timestamp
+      title: ConceptListResponse
+      description: 概念列表响应模型
+      example:
+        data:
+          concepts:
+          - amount: 2543210000.0
+            change_amount: 0.81
+            change_percent: 3.25
+            concept_code: GN001
+            concept_name: 人工智能
+            down_count: 40
+            latest_price: 25.68
+            leader_stock: 300033.SZ
+            stock_count: 85
+            total_market_value: 123456000000.0
+            turnover_rate: 2.15
+            up_count: 45
+            updated_at: '2025-11-17T10:30:00'
+            volume: 987654321
+          total_count: 1
+        success: true
+        timestamp: '2025-11-17T10:30:00'
+    ConnectionTestRequest:
+      properties:
+        db_type:
+          type: string
+          title: Db Type
+        host:
+          type: string
+          title: Host
+        port:
+          type: integer
+          title: Port
+      type: object
+      required:
+      - db_type
+      - host
+      - port
+      title: ConnectionTestRequest
+      description: 数据库连接测试请求
+    ConnectionTestResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - success
+      title: ConnectionTestResponse
+      description: 数据库连接测试响应
+    ContractDiffRequest:
+      properties:
+        from_version_id:
+          type: integer
+          title: From Version Id
+          description: 源版本ID
+        to_version_id:
+          type: integer
+          title: To Version Id
+          description: 目标版本ID
+      type: object
+      required:
+      - from_version_id
+      - to_version_id
+      title: ContractDiffRequest
+      description: 契约差异检测请求
+    ContractDiffResponse:
+      properties:
+        from_version:
+          type: string
+          title: From Version
+          description: 源版本号
+        to_version:
+          type: string
+          title: To Version
+          description: 目标版本号
+        total_changes:
+          type: integer
+          title: Total Changes
+          description: 总变更数
+        breaking_changes:
+          type: integer
+          title: Breaking Changes
+          description: 破坏性变更数
+        non_breaking_changes:
+          type: integer
+          title: Non Breaking Changes
+          description: 非破坏性变更数
+        diffs:
+          items:
+            $ref: '#/components/schemas/DiffResult'
+          type: array
+          title: Diffs
+          description: 差异列表
+        summary:
+          type: string
+          title: Summary
+          description: 差异摘要
+      type: object
+      required:
+      - from_version
+      - to_version
+      - total_changes
+      - breaking_changes
+      - non_breaking_changes
+      - summary
+      title: ContractDiffResponse
+      description: 契约差异检测响应
+    ContractListResponse:
+      properties:
+        contracts:
+          items:
+            $ref: '#/components/schemas/ContractMetadata'
+          type: array
+          title: Contracts
+          description: 契约列表
+        total:
+          type: integer
+          title: Total
+          description: 总数
+      type: object
+      required:
+      - total
+      title: ContractListResponse
+      description: 契约列表响应
+    ContractMetadata:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 契约名称
+        latest_version:
+          type: string
+          title: Latest Version
+          description: 最新版本
+        total_versions:
+          type: integer
+          title: Total Versions
+          description: 版本总数
+        last_updated:
+          type: string
+          format: date-time
+          title: Last Updated
+          description: 最后更新时间
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 契约描述
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 标签
+      type: object
+      required:
+      - name
+      - latest_version
+      - total_versions
+      - last_updated
+      title: ContractMetadata
+      description: 契约元数据
+    ContractSyncRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 契约名称
+        source_path:
+          type: string
+          title: Source Path
+          description: 源文件路径
+        direction:
+          $ref: '#/components/schemas/SyncDirection'
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+          description: 指定版本号 (默认自动递增)
+        commit:
+          type: boolean
+          title: Commit
+          description: 是否提交到Git
+          default: false
+      type: object
+      required:
+      - name
+      - source_path
+      - direction
+      title: ContractSyncRequest
+      description: 契约同步请求
+    ContractSyncResponse:
+      properties:
+        sync_id:
+          type: string
+          title: Sync Id
+          description: 同步任务ID
+        status:
+          type: string
+          title: Status
+          description: '状态: running|completed|failed'
+        results:
+          items:
+            $ref: '#/components/schemas/SyncResult'
+          type: array
+          title: Results
+          description: 同步结果列表
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+          description: 开始时间
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+          description: 完成时间
+      type: object
+      required:
+      - sync_id
+      - status
+      - started_at
+      title: ContractSyncResponse
+      description: 契约同步响应
+    ContractValidateRequest:
+      properties:
+        spec:
+          type: object
+          title: Spec
+          description: 待验证的OpenAPI规范
+        check_breaking_changes:
+          type: boolean
+          title: Check Breaking Changes
+          description: 是否检查破坏性变更
+          default: true
+        compare_to_version_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Compare To Version Id
+          description: 对比的版本ID
+      type: object
+      required:
+      - spec
+      title: ContractValidateRequest
+      description: 契约验证请求
+    ContractValidateResponse:
+      properties:
+        valid:
+          type: boolean
+          title: Valid
+          description: 是否通过验证
+        error_count:
+          type: integer
+          title: Error Count
+          description: 错误数
+        warning_count:
+          type: integer
+          title: Warning Count
+          description: 警告数
+        results:
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+          type: array
+          title: Results
+          description: 验证结果列表
+      type: object
+      required:
+      - valid
+      - error_count
+      - warning_count
+      title: ContractValidateResponse
+      description: 契约验证响应
+    ContractVersionCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: '契约名称 (如: market-api, trade-api)'
+        version:
+          type: string
+          title: Version
+          description: '版本号 (如: 1.0.0)'
+        spec:
+          type: object
+          title: Spec
+          description: OpenAPI规范内容
+        commit_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Commit Hash
+          description: Git commit hash
+        author:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author
+          description: 作者
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 版本描述
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 版本标签
+      type: object
+      required:
+      - name
+      - version
+      - spec
+      title: ContractVersionCreate
+      description: 创建契约版本请求
+    ContractVersionResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: 版本ID
+        name:
+          type: string
+          title: Name
+          description: 契约名称
+        version:
+          type: string
+          title: Version
+          description: 版本号
+        spec:
+          type: object
+          title: Spec
+          description: OpenAPI规范内容
+        commit_hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Commit Hash
+          description: Git commit hash
+        author:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Author
+          description: 作者
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 版本描述
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 版本标签
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+        is_active:
+          type: boolean
+          title: Is Active
+          description: 是否为当前激活版本
+      type: object
+      required:
+      - id
+      - name
+      - version
+      - spec
+      - created_at
+      - is_active
+      title: ContractVersionResponse
+      description: 契约版本响应
+    ContractVersionUpdate:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 版本描述
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+          description: 版本标签
+      type: object
+      title: ContractVersionUpdate
+      description: 更新契约版本请求
+    CreateGroupRequest:
+      properties:
+        group_name:
+          type: string
+          maxLength: 50
+          minLength: 1
+          pattern: ^[^\s<>"\'/\\]+$
+          title: Group Name
+          description: 分组名称
+      type: object
+      required:
+      - group_name
+      title: CreateGroupRequest
+      description: 创建分组请求
+    DashboardResponse:
+      properties:
+        user_id:
+          type: integer
+          title: User Id
+          description: 用户ID
+        trade_date:
+          type: string
+          format: date
+          title: Trade Date
+          description: 交易日期
+        generated_at:
+          type: string
+          format: date-time
+          title: Generated At
+          description: 生成时间
+        market_overview:
+          anyOf:
+          - $ref: '#/components/schemas/MarketOverview'
+          - type: 'null'
+          description: 市场概览
+        watchlist:
+          anyOf:
+          - $ref: '#/components/schemas/WatchlistSummary'
+          - type: 'null'
+          description: 自选股汇总
+        portfolio:
+          anyOf:
+          - $ref: '#/components/schemas/PortfolioSummary'
+          - type: 'null'
+          description: 持仓汇总
+        risk_alerts:
+          anyOf:
+          - $ref: '#/components/schemas/RiskAlertSummary'
+          - type: 'null'
+          description: 风险预警汇总
+        data_source:
+          type: string
+          title: Data Source
+          description: 数据源类型
+          default: composite
+        cache_hit:
+          type: boolean
+          title: Cache Hit
+          description: 是否命中缓存
+          default: false
+      type: object
+      required:
+      - user_id
+      - trade_date
+      - generated_at
+      title: DashboardResponse
+      description: 仪表盘响应模型
+      example:
+        cache_hit: false
+        data_source: composite
+        generated_at: '2025-11-21T10:30:00'
+        market_overview:
+          down_count: 1500
+          flat_count: 100
+          indices:
+          - change_percent: 1.2
+            current_price: 3100.5
+            name: 上证指数
+            symbol: '000001'
+          up_count: 2500
+        portfolio:
+          position_count: 5
+          positions: []
+          total_cost: 95000.0
+          total_market_value: 100000.0
+          total_profit_loss: 5000.0
+          total_profit_loss_percent: 5.26
+        risk_alerts:
+          alerts: []
+          critical_count: 1
+          total_count: 3
+          unread_count: 2
+        trade_date: '2025-11-21'
+        user_id: 1001
+        watchlist:
+          avg_change_percent: 0.5
+          items: []
+          total_count: 10
+    DiffResult:
+      properties:
+        change_type:
+          type: string
+          title: Change Type
+          description: '变更类型: added|removed|modified'
+        path:
+          type: string
+          title: Path
+          description: 'JSON路径 (如: paths./api/market.get)'
+        old_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Old Value
+          description: 旧值
+        new_value:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: New Value
+          description: 新值
+        is_breaking:
+          type: boolean
+          title: Is Breaking
+          description: 是否为破坏性变更
+          default: false
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 变更描述
+      type: object
+      required:
+      - change_type
+      - path
+      title: DiffResult
+      description: 差异检测结果
+    EquityCurvePoint:
+      properties:
+        date_field:
+          type: string
+          format: date
+          title: Date Field
+          description: 日期
+        equity:
+          type: number
+          minimum: 0.0
+          title: Equity
+          description: 权益
+        drawdown:
+          type: number
+          maximum: 0.0
+          title: Drawdown
+          description: 回撤 (%)
+        benchmark_equity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Benchmark Equity
+          description: 基准权益
+      type: object
+      required:
+      - date_field
+      - equity
+      - drawdown
+      title: EquityCurvePoint
+      description: 权益曲线点
+    FeatureGenerationRequest:
+      properties:
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场代码
+          default: sh
+        step:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Step
+          description: 滚动窗口大小
+          default: 10
+        include_indicators:
+          type: boolean
+          title: Include Indicators
+          description: 是否包含技术指标
+          default: true
+      type: object
+      required:
+      - stock_code
+      title: FeatureGenerationRequest
+      description: 特征生成请求
+    FeatureGenerationResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        total_samples:
+          type: integer
+          title: Total Samples
+          description: 样本总数
+        feature_dim:
+          type: integer
+          title: Feature Dim
+          description: 特征维度
+        step:
+          type: integer
+          title: Step
+          description: 窗口大小
+        feature_columns:
+          items:
+            type: string
+          type: array
+          title: Feature Columns
+          description: 特征列名
+        metadata:
+          type: object
+          title: Metadata
+          description: 元数据
+      type: object
+      required:
+      - success
+      - message
+      - total_samples
+      - feature_dim
+      - step
+      - feature_columns
+      - metadata
+      title: FeatureGenerationResponse
+      description: 特征生成响应
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthCheckResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        service:
+          type: string
+          title: Service
+      type: object
+      required:
+      - status
+      - service
+      title: HealthCheckResponse
+      description: 健康检查响应
+    HyperparameterSearchRequest:
+      properties:
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场代码
+          default: sh
+        step:
+          type: integer
+          title: Step
+          description: 滚动窗口大小
+          default: 10
+        cv:
+          type: integer
+          maximum: 10.0
+          minimum: 2.0
+          title: Cv
+          description: 交叉验证折数
+          default: 5
+        param_grid:
+          anyOf:
+          - additionalProperties:
+              items: {}
+              type: array
+            type: object
+          - type: 'null'
+          title: Param Grid
+          description: 参数网格
+          example:
+            learning_rate:
+            - 0.01
+            - 0.1
+            - 0.2
+            n_estimators:
+            - 10
+            - 40
+            - 70
+            - 100
+            num_leaves:
+            - 5
+            - 10
+            - 15
+            - 20
+            - 25
+      type: object
+      required:
+      - stock_code
+      title: HyperparameterSearchRequest
+      description: 超参数搜索请求
+    HyperparameterSearchResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        best_params:
+          type: object
+          title: Best Params
+          description: 最佳参数
+        best_rmse:
+          type: number
+          title: Best Rmse
+          description: 最佳RMSE
+        best_mse:
+          type: number
+          title: Best Mse
+          description: 最佳MSE
+        cv_results:
+          type: object
+          title: Cv Results
+          description: 交叉验证结果
+      type: object
+      required:
+      - success
+      - message
+      - best_params
+      - best_rmse
+      - best_mse
+      - cv_results
+      title: HyperparameterSearchResponse
+      description: 超参数搜索响应
+    IndexQuoteResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: 指数代码
+        name:
+          type: string
+          title: Name
+          description: 指数名称
+        price:
+          type: number
+          title: Price
+          description: 当前点位
+        pre_close:
+          type: number
+          title: Pre Close
+          description: 昨收点位
+        open:
+          type: number
+          title: Open
+          description: 开盘点位
+        high:
+          type: number
+          title: High
+          description: 最高点位
+        low:
+          type: number
+          title: Low
+          description: 最低点位
+        volume:
+          type: integer
+          title: Volume
+          description: 成交量
+        amount:
+          type: number
+          title: Amount
+          description: 成交额
+        change:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change
+          description: 涨跌点数
+        change_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Pct
+          description: 涨跌幅(%)
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 查询时间戳
+      type: object
+      required:
+      - code
+      - name
+      - price
+      - pre_close
+      - open
+      - high
+      - low
+      - volume
+      - amount
+      - timestamp
+      title: IndexQuoteResponse
+      description: 指数行情响应模型
+      example:
+        amount: 450000000000.0
+        change: 5.5
+        change_pct: 0.17
+        code: '000001'
+        high: 3252.0
+        low: 3244.0
+        name: 上证指数
+        open: 3246.0
+        pre_close: 3245.0
+        price: 3250.5
+        timestamp: '2025-10-15 14:30:00'
+        volume: 1234567890
+    IndicatorCalculateBatchRequest:
+      properties:
+        calculations:
+          items:
+            $ref: '#/components/schemas/IndicatorCalculateRequest'
+          type: array
+          maxItems: 10
+          minItems: 1
+          title: Calculations
+          description: 批量计算请求列表，最多10个
+      type: object
+      required:
+      - calculations
+      title: IndicatorCalculateBatchRequest
+      description: 批量技术指标计算请求
+    IndicatorCalculateRequest:
+      properties:
+        symbol:
+          type: string
+          maxLength: 9
+          minLength: 9
+          title: Symbol
+          description: '股票代码 (格式: XXXXXX.SH 或 XXXXXX.SZ)'
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+          description: 开始日期 (YYYY-MM-DD)
+        end_date:
+          type: string
+          format: date
+          title: End Date
+          description: 结束日期 (YYYY-MM-DD)
+        indicators:
+          items:
+            $ref: '#/components/schemas/IndicatorSpec'
+          type: array
+          maxItems: 10
+          minItems: 1
+          title: Indicators
+          description: 指标列表
+        use_cache:
+          type: boolean
+          title: Use Cache
+          description: 是否使用缓存 (默认true)
+          default: true
+      type: object
+      required:
+      - symbol
+      - start_date
+      - end_date
+      - indicators
+      title: IndicatorCalculateRequest
+      description: "指标计算请求\n\nExample:\n    {\n        \"symbol\": \"600519.SH\",\n\
+        \        \"start_date\": \"2024-01-01\",\n        \"end_date\": \"2024-12-31\"\
+        ,\n        \"indicators\": [\n            {\"abbreviation\": \"SMA\", \"parameters\"\
+        : {\"timeperiod\": 20}},\n            {\"abbreviation\": \"RSI\", \"parameters\"\
+        : {\"timeperiod\": 14}}\n        ],\n        \"use_cache\": true\n    }"
+    IndicatorConfigCreateRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: 配置名称
+        indicators:
+          items:
+            $ref: '#/components/schemas/IndicatorSpec'
+          type: array
+          maxItems: 20
+          minItems: 1
+          title: Indicators
+          description: 指标列表
+      type: object
+      required:
+      - name
+      - indicators
+      title: IndicatorConfigCreateRequest
+      description: "创建指标配置请求\n\nExample:\n    {\n        \"name\": \"我的常用配置\",\n \
+        \       \"indicators\": [\n            {\"abbreviation\": \"MA\", \"parameters\"\
+        : {\"timeperiod\": 20}},\n            {\"abbreviation\": \"RSI\", \"parameters\"\
+        : {\"timeperiod\": 14}}\n        ]\n    }"
+    IndicatorConfigListResponse:
+      properties:
+        total_count:
+          type: integer
+          minimum: 0.0
+          title: Total Count
+          description: 配置总数
+        configs:
+          items:
+            $ref: '#/components/schemas/IndicatorConfigResponse'
+          type: array
+          title: Configs
+          description: 配置列表
+      type: object
+      required:
+      - total_count
+      - configs
+      title: IndicatorConfigListResponse
+      description: "指标配置列表响应\n\nExample:\n    {\n        \"total_count\": 5,\n   \
+        \     \"configs\": [\n            {...},\n            {...}\n        ]\n \
+        \   }"
+    IndicatorConfigResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: 配置ID
+        user_id:
+          type: integer
+          title: User Id
+          description: 用户ID
+        name:
+          type: string
+          title: Name
+          description: 配置名称
+        indicators:
+          items:
+            type: object
+          type: array
+          title: Indicators
+          description: 指标列表 (JSON格式)
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: 更新时间
+        last_used_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Used At
+          description: 最后使用时间
+      type: object
+      required:
+      - id
+      - user_id
+      - name
+      - indicators
+      - created_at
+      - updated_at
+      title: IndicatorConfigResponse
+      description: "指标配置响应\n\nExample:\n    {\n        \"id\": 1,\n        \"user_id\"\
+        : 123,\n        \"name\": \"我的常用配置\",\n        \"indicators\": [\n       \
+        \     {\"abbreviation\": \"MA\", \"parameters\": {\"timeperiod\": 20}},\n\
+        \            {\"abbreviation\": \"RSI\", \"parameters\": {\"timeperiod\":\
+        \ 14}}\n        ],\n        \"created_at\": \"2024-01-01T10:00:00\",\n   \
+        \     \"updated_at\": \"2024-01-02T15:30:00\",\n        \"last_used_at\":\
+        \ \"2024-01-03T09:00:00\"\n    }"
+    IndicatorConfigUpdateRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 100
+            minLength: 1
+          - type: 'null'
+          title: Name
+          description: 配置名称 (可选)
+        indicators:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/IndicatorSpec'
+            type: array
+            maxItems: 20
+            minItems: 1
+          - type: 'null'
+          title: Indicators
+          description: 指标列表 (可选)
+      type: object
+      title: IndicatorConfigUpdateRequest
+      description: "更新指标配置请求\n\nExample:\n    {\n        \"name\": \"我的新配置名称\",\n\
+        \        \"indicators\": [...]\n    }"
+    IndicatorMetadata:
+      properties:
+        abbreviation:
+          type: string
+          title: Abbreviation
+          description: 指标缩写
+        full_name:
+          type: string
+          title: Full Name
+          description: 完整英文名称
+        chinese_name:
+          type: string
+          title: Chinese Name
+          description: 中文名称
+        category:
+          type: string
+          title: Category
+          description: '指标分类: trend, momentum, volatility, volume, candlestick'
+        description:
+          type: string
+          title: Description
+          description: 指标描述
+        panel_type:
+          type: string
+          title: Panel Type
+          description: '面板类型: overlay 或 oscillator'
+        parameters:
+          items:
+            type: object
+          type: array
+          title: Parameters
+          description: 参数定义列表
+        outputs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Outputs
+          description: 输出定义列表
+        reference_lines:
+          anyOf:
+          - items:
+              type: number
+            type: array
+          - type: 'null'
+          title: Reference Lines
+          description: 参考线数值
+        min_data_points_formula:
+          type: string
+          title: Min Data Points Formula
+          description: 最小数据点计算公式
+      type: object
+      required:
+      - abbreviation
+      - full_name
+      - chinese_name
+      - category
+      - description
+      - panel_type
+      - outputs
+      - min_data_points_formula
+      title: IndicatorMetadata
+      description: "指标元数据\n\nExample:\n    {\n        \"abbreviation\": \"SMA\",\n\
+        \        \"full_name\": \"Simple Moving Average\",\n        \"chinese_name\"\
+        : \"简单移动平均线\",\n        \"category\": \"trend\",\n        \"description\"\
+        : \"计算收盘价的算术平均值\",\n        \"panel_type\": \"overlay\",\n        \"parameters\"\
+        : [\n            {\n                \"name\": \"timeperiod\",\n          \
+        \      \"type\": \"int\",\n                \"default\": 20,\n            \
+        \    \"min\": 2,\n                \"max\": 200,\n                \"description\"\
+        : \"周期\"\n            }\n        ],\n        \"outputs\": [\n            {\n\
+        \                \"name\": \"sma\",\n                \"description\": \"SMA值\"\
+        \n            }\n        ],\n        \"reference_lines\": null,\n        \"\
+        min_data_points_formula\": \"timeperiod\"\n    }"
+    IndicatorRegistryResponse:
+      properties:
+        total_count:
+          type: integer
+          minimum: 0.0
+          title: Total Count
+          description: 指标总数
+        categories:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Categories
+          description: 各分类指标数量
+        indicators:
+          items:
+            $ref: '#/components/schemas/IndicatorMetadata'
+          type: array
+          title: Indicators
+          description: 指标元数据列表
+      type: object
+      required:
+      - total_count
+      - categories
+      - indicators
+      title: IndicatorRegistryResponse
+      description: "指标注册表响应\n\nExample:\n    {\n        \"total_count\": 161,\n  \
+        \      \"categories\": {\n            \"trend\": 15,\n            \"momentum\"\
+        : 20,\n            \"volatility\": 10,\n            \"volume\": 8,\n     \
+        \       \"candlestick\": 61\n        },\n        \"indicators\": [\n     \
+        \       {...},\n            {...}\n        ]\n    }"
+    IndicatorSpec:
+      properties:
+        abbreviation:
+          type: string
+          maxLength: 20
+          minLength: 2
+          title: Abbreviation
+          description: 指标缩写 (如 SMA, RSI, MACD)
+        parameters:
+          type: object
+          title: Parameters
+          description: 指标参数字典
+      type: object
+      required:
+      - abbreviation
+      title: IndicatorSpec
+      description: "单个指标规格\n\nExample:\n    {\"abbreviation\": \"SMA\", \"parameters\"\
+        : {\"timeperiod\": 20}}"
+    IndustryListResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 请求是否成功
+          default: true
+        data:
+          type: object
+          title: Data
+          description: 响应数据
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 响应时间戳
+      type: object
+      required:
+      - data
+      - timestamp
+      title: IndustryListResponse
+      description: 行业列表响应模型
+      example:
+        data:
+          industries:
+          - amount: 1543210000.0
+            change_amount: 0.16
+            change_percent: 1.25
+            down_count: 27
+            industry_code: BK0475
+            industry_name: 银行
+            latest_price: 12.56
+            leader_stock: 600036.SH
+            stock_count: 42
+            total_market_value: 54321000000.0
+            turnover_rate: 0.85
+            up_count: 15
+            updated_at: '2025-11-17T10:30:00'
+            volume: 123456789
+          total_count: 1
+        success: true
+        timestamp: '2025-11-17T10:30:00'
+    IndustryPerformanceResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 请求是否成功
+          default: true
+        data:
+          type: object
+          title: Data
+          description: 响应数据
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 响应时间戳
+      type: object
+      required:
+      - data
+      - timestamp
+      title: IndustryPerformanceResponse
+      description: 行业表现响应模型
+      example:
+        data:
+          down_count: 27
+          industry:
+            amount: 1543210000.0
+            change_amount: 0.16
+            change_percent: 1.25
+            down_count: 27
+            industry_code: BK0475
+            industry_name: 银行
+            latest_price: 12.56
+            leader_stock: 600036.SH
+            stock_count: 42
+            total_market_value: 54321000000.0
+            turnover_rate: 0.85
+            up_count: 15
+            updated_at: '2025-11-17T10:30:00'
+            volume: 123456789
+          leader_stock:
+            change_percent: 1.85
+            price: 38.45
+            symbol: 600036.SH
+          stocks_performance:
+          - change_percent: 1.85
+            latest_price: 38.45
+            symbol: 600036.SH
+          up_count: 15
+        success: true
+        timestamp: '2025-11-17T10:30:00'
+    KlineDataPoint:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: 日期时间
+        open:
+          type: number
+          title: Open
+          description: 开盘价
+        high:
+          type: number
+          title: High
+          description: 最高价
+        low:
+          type: number
+          title: Low
+          description: 最低价
+        close:
+          type: number
+          title: Close
+          description: 收盘价
+        volume:
+          type: integer
+          title: Volume
+          description: 成交量
+        amount:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Amount
+          description: 成交额
+      type: object
+      required:
+      - date
+      - open
+      - high
+      - low
+      - close
+      - volume
+      title: KlineDataPoint
+      description: K线数据点模型
+      example:
+        amount: 22800000.0
+        close: 1848.5
+        date: '2025-10-15 09:30:00'
+        high: 1850.0
+        low: 1844.0
+        open: 1845.0
+        volume: 12345
+    KlineResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: 股票/指数代码
+        period:
+          type: string
+          title: Period
+          description: K线周期
+        data:
+          items:
+            $ref: '#/components/schemas/KlineDataPoint'
+          type: array
+          title: Data
+          description: K线数据列表
+        count:
+          type: integer
+          title: Count
+          description: 数据条数
+      type: object
+      required:
+      - code
+      - period
+      - data
+      - count
+      title: KlineResponse
+      description: K线数据响应模型
+      example:
+        code: '600519'
+        count: 1
+        data:
+        - amount: 22800000.0
+          close: 1848.5
+          date: '2025-10-15 09:30:00'
+          high: 1850.0
+          low: 1844.0
+          open: 1845.0
+          volume: 12345
+        period: 5m
+    LogQueryResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        data:
+          items:
+            $ref: '#/components/schemas/SystemLog'
+          type: array
+          title: Data
+        total:
+          type: integer
+          title: Total
+        filtered:
+          type: integer
+          title: Filtered
+        timestamp:
+          type: string
+          title: Timestamp
+      type: object
+      required:
+      - success
+      - data
+      - total
+      - filtered
+      - timestamp
+      title: LogQueryResponse
+      description: 日志查询响应
+    LongHuBangResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        symbol:
+          type: string
+          title: Symbol
+        name:
+          type: string
+          title: Name
+        trade_date:
+          type: string
+          format: date
+          title: Trade Date
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: 上榜原因
+        buy_amount:
+          type: number
+          title: Buy Amount
+          description: 买入总额(元)
+        sell_amount:
+          type: number
+          title: Sell Amount
+          description: 卖出总额(元)
+        net_amount:
+          type: number
+          title: Net Amount
+          description: 净买入额(元)
+        turnover_rate:
+          type: number
+          title: Turnover Rate
+          description: 换手率(%)
+        institution_buy:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Institution Buy
+          description: 机构买入额
+        institution_sell:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Institution Sell
+          description: 机构卖出额
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+      type: object
+      required:
+      - id
+      - symbol
+      - name
+      - trade_date
+      - reason
+      - buy_amount
+      - sell_amount
+      - net_amount
+      - turnover_rate
+      - institution_buy
+      - institution_sell
+      title: LongHuBangResponse
+      description: 龙虎榜响应
+    MarketIndexItem:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 指数代码
+        name:
+          type: string
+          title: Name
+          description: 指数名称
+        current_price:
+          type: number
+          title: Current Price
+          description: 当前价格
+        change_percent:
+          type: number
+          title: Change Percent
+          description: 涨跌幅(%)
+        volume:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Volume
+          description: 成交量
+        turnover:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Turnover
+          description: 成交额
+        update_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Update Time
+          description: 更新时间
+      type: object
+      required:
+      - symbol
+      - name
+      - current_price
+      - change_percent
+      title: MarketIndexItem
+      description: 市场指数项
+    MarketOverview:
+      properties:
+        indices:
+          items:
+            $ref: '#/components/schemas/MarketIndexItem'
+          type: array
+          title: Indices
+          description: 市场指数列表
+        up_count:
+          type: integer
+          title: Up Count
+          description: 上涨家数
+          default: 0
+        down_count:
+          type: integer
+          title: Down Count
+          description: 下跌家数
+          default: 0
+        flat_count:
+          type: integer
+          title: Flat Count
+          description: 平盘家数
+          default: 0
+        total_volume:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Total Volume
+          description: 总成交量
+        total_turnover:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Total Turnover
+          description: 总成交额
+        top_gainers:
+          items:
+            type: object
+          type: array
+          title: Top Gainers
+          description: 涨幅榜
+        top_losers:
+          items:
+            type: object
+          type: array
+          title: Top Losers
+          description: 跌幅榜
+        most_active:
+          items:
+            type: object
+          type: array
+          title: Most Active
+          description: 成交额榜
+      type: object
+      title: MarketOverview
+      description: 市场概览
+    MessageResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          type: string
+          title: Message
+        data:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Data
+      type: object
+      required:
+      - success
+      - message
+      title: MessageResponse
+      description: 通用消息响应
+    ModelDetailResponse:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 模型名称
+        metadata:
+          type: object
+          title: Metadata
+          description: 模型元数据
+        training_history:
+          items:
+            type: object
+          type: array
+          title: Training History
+          description: 训练历史
+        feature_importance:
+          anyOf:
+          - items:
+              type: object
+            type: array
+          - type: 'null'
+          title: Feature Importance
+          description: 特征重要性
+      type: object
+      required:
+      - name
+      - metadata
+      - training_history
+      title: ModelDetailResponse
+      description: 模型详情响应
+    ModelEvaluationRequest:
+      properties:
+        model_name:
+          type: string
+          title: Model Name
+          description: 模型名称
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场代码
+          default: sh
+      type: object
+      required:
+      - model_name
+      - stock_code
+      title: ModelEvaluationRequest
+      description: 模型评估请求
+    ModelEvaluationResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        model_name:
+          type: string
+          title: Model Name
+          description: 模型名称
+        metrics:
+          type: object
+          title: Metrics
+          description: 评估指标
+      type: object
+      required:
+      - success
+      - message
+      - model_name
+      - metrics
+      title: ModelEvaluationResponse
+      description: 模型评估响应
+    ModelInfo:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 模型名称
+        path:
+          type: string
+          title: Path
+          description: 模型路径
+        trained_at:
+          type: string
+          title: Trained At
+          description: 训练时间
+        test_rmse:
+          type: number
+          title: Test Rmse
+          description: 测试集RMSE
+        test_r2:
+          type: number
+          title: Test R2
+          description: 测试集R²
+        train_samples:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Train Samples
+          description: 训练样本数
+        test_samples:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Test Samples
+          description: 测试样本数
+        feature_dim:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Feature Dim
+          description: 特征维度
+      type: object
+      required:
+      - name
+      - path
+      - trained_at
+      - test_rmse
+      - test_r2
+      title: ModelInfo
+      description: 模型信息
+    ModelListResponse:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: 模型总数
+        models:
+          items:
+            $ref: '#/components/schemas/ModelInfo'
+          type: array
+          title: Models
+          description: 模型列表
+      type: object
+      required:
+      - total
+      - models
+      title: ModelListResponse
+      description: 模型列表响应
+    ModelPredictRequest:
+      properties:
+        model_name:
+          type: string
+          title: Model Name
+          description: 模型名称
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场代码
+          default: sh
+        days:
+          type: integer
+          maximum: 30.0
+          minimum: 1.0
+          title: Days
+          description: 预测天数
+          default: 1
+      type: object
+      required:
+      - model_name
+      - stock_code
+      title: ModelPredictRequest
+      description: 模型预测请求
+    ModelPredictResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        model_name:
+          type: string
+          title: Model Name
+          description: 使用的模型名称
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        predictions:
+          items:
+            $ref: '#/components/schemas/PredictionResult'
+          type: array
+          title: Predictions
+          description: 预测结果列表
+      type: object
+      required:
+      - success
+      - message
+      - model_name
+      - stock_code
+      - predictions
+      title: ModelPredictResponse
+      description: 模型预测响应
+    ModelTrainRequest:
+      properties:
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场代码
+          default: sh
+        step:
+          type: integer
+          title: Step
+          description: 滚动窗口大小
+          default: 10
+        test_size:
+          type: number
+          maximum: 0.5
+          minimum: 0.1
+          title: Test Size
+          description: 测试集比例
+          default: 0.2
+        model_name:
+          type: string
+          title: Model Name
+          description: 模型名称
+        model_params:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Model Params
+          description: 模型参数
+      type: object
+      required:
+      - stock_code
+      - model_name
+      title: ModelTrainRequest
+      description: 模型训练请求
+    ModelTrainResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        model_name:
+          type: string
+          title: Model Name
+          description: 模型名称
+        metrics:
+          type: object
+          title: Metrics
+          description: 评估指标
+      type: object
+      required:
+      - success
+      - message
+      - model_name
+      - metrics
+      title: ModelTrainResponse
+      description: 模型训练响应
+    MoveStockRequest:
+      properties:
+        symbol:
+          type: string
+          maxLength: 20
+          minLength: 1
+          pattern: ^[A-Z0-9.]+$
+          title: Symbol
+          description: 股票代码
+        from_group_id:
+          type: integer
+          minimum: 1.0
+          title: From Group Id
+          description: 原分组ID
+        to_group_id:
+          type: integer
+          minimum: 1.0
+          title: To Group Id
+          description: 目标分组ID
+      type: object
+      required:
+      - symbol
+      - from_group_id
+      - to_group_id
+      title: MoveStockRequest
+      description: 移动股票请求
+    NewsItem:
+      properties:
+        headline:
+          type: string
+          maxLength: 200
+          title: Headline
+          description: 标题
+        summary:
+          type: string
+          maxLength: 1000
+          title: Summary
+          description: 摘要
+        source:
+          type: string
+          maxLength: 100
+          title: Source
+          description: 来源
+        datetime:
+          type: number
+          title: Datetime
+          description: 时间戳
+        url:
+          type: string
+          maxLength: 500
+          title: Url
+          description: 链接
+        image:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Image
+          description: 图片
+        category:
+          anyOf:
+          - type: string
+            maxLength: 50
+          - type: 'null'
+          title: Category
+          description: 分类
+      type: object
+      required:
+      - headline
+      - summary
+      - source
+      - datetime
+      - url
+      title: NewsItem
+      description: 新闻条目
+    NotificationPreferences:
+      properties:
+        email_enabled:
+          type: boolean
+          title: Email Enabled
+          description: 是否启用邮件通知
+          default: true
+        websocket_enabled:
+          type: boolean
+          title: Websocket Enabled
+          description: 是否启用WebSocket通知
+          default: true
+        price_alerts:
+          type: boolean
+          title: Price Alerts
+          description: 是否接收价格提醒
+          default: true
+        news_alerts:
+          type: boolean
+          title: News Alerts
+          description: 是否接收新闻提醒
+          default: true
+        system_alerts:
+          type: boolean
+          title: System Alerts
+          description: 是否接收系统提醒
+          default: true
+        quiet_hours:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Quiet Hours
+          description: '免打扰时间段 {''start'': ''22:00'', ''end'': ''08:00''}'
+        max_daily_emails:
+          type: integer
+          maximum: 200.0
+          minimum: 1.0
+          title: Max Daily Emails
+          description: 每日最大邮件数量
+          default: 50
+      type: object
+      title: NotificationPreferences
+      description: 用户通知偏好设置
+    NotificationTestRequest:
+      properties:
+        notification_type:
+          type: string
+          title: Notification Type
+          description: 通知类型 (e.g., 'email', 'webhook')
+        config_data:
+          type: object
+          title: Config Data
+          description: '通知配置数据 (e.g., {''email'': ''test@example.com''})'
+      type: object
+      required:
+      - notification_type
+      - config_data
+      title: NotificationTestRequest
+      description: 测试通知请求模型
+      example:
+        config_data:
+          email: test@example.com
+          message: Hello
+          subject: Test
+        notification_type: email
+    NotificationTestResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功发送
+        message:
+          type: string
+          title: Message
+          description: 消息
+      type: object
+      required:
+      - success
+      - message
+      title: NotificationTestResponse
+      description: 测试通知响应模型
+      example:
+        message: 测试通知发送成功
+        success: true
+    PerformanceMetrics:
+      properties:
+        total_return:
+          type: number
+          title: Total Return
+          description: 总收益率 (%)
+        annual_return:
+          type: number
+          title: Annual Return
+          description: 年化收益率 (%)
+        benchmark_return:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Benchmark Return
+          description: 基准收益率 (%)
+        alpha:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Alpha
+          description: 阿尔法值
+        beta:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Beta
+          description: 贝塔值
+        sharpe_ratio:
+          type: number
+          title: Sharpe Ratio
+          description: 夏普比率
+        max_drawdown:
+          type: number
+          maximum: 0.0
+          title: Max Drawdown
+          description: 最大回撤 (%)
+        volatility:
+          type: number
+          minimum: 0.0
+          title: Volatility
+          description: 波动率 (%)
+        total_trades:
+          type: integer
+          minimum: 0.0
+          title: Total Trades
+          description: 总交易次数
+        win_rate:
+          type: number
+          maximum: 100.0
+          minimum: 0.0
+          title: Win Rate
+          description: 胜率 (%)
+        profit_factor:
+          type: number
+          minimum: 0.0
+          title: Profit Factor
+          description: 盈亏比
+        calmar_ratio:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Calmar Ratio
+          description: 卡玛比率
+        sortino_ratio:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sortino Ratio
+          description: 索提诺比率
+      type: object
+      required:
+      - total_return
+      - annual_return
+      - sharpe_ratio
+      - max_drawdown
+      - volatility
+      - total_trades
+      - win_rate
+      - profit_factor
+      title: PerformanceMetrics
+      description: 绩效指标
+    PortfolioSummary:
+      properties:
+        total_market_value:
+          type: number
+          title: Total Market Value
+          description: 总市值
+          default: 0
+        total_cost:
+          type: number
+          title: Total Cost
+          description: 总成本
+          default: 0
+        total_profit_loss:
+          type: number
+          title: Total Profit Loss
+          description: 总盈亏
+          default: 0
+        total_profit_loss_percent:
+          type: number
+          title: Total Profit Loss Percent
+          description: 总盈亏比例(%)
+          default: 0
+        position_count:
+          type: integer
+          title: Position Count
+          description: 持仓股票数
+          default: 0
+        positions:
+          items:
+            $ref: '#/components/schemas/PositionItem'
+          type: array
+          title: Positions
+          description: 持仓列表
+      type: object
+      title: PortfolioSummary
+      description: 持仓汇总
+    Position:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        symbol_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Symbol Name
+          description: 股票名称
+        quantity:
+          type: integer
+          title: Quantity
+          description: 持仓数量
+        available_quantity:
+          type: integer
+          title: Available Quantity
+          description: 可用数量
+        cost_price:
+          type: string
+          title: Cost Price
+          description: 成本价
+        current_price:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Current Price
+          description: 当前价
+        market_value:
+          type: string
+          title: Market Value
+          description: 市值
+        profit_loss:
+          type: string
+          title: Profit Loss
+          description: 浮动盈亏
+        profit_loss_percent:
+          type: number
+          title: Profit Loss Percent
+          description: 盈亏比例(%)
+        last_update:
+          type: string
+          format: date-time
+          title: Last Update
+          description: 最后更新时间
+      type: object
+      required:
+      - symbol
+      - quantity
+      - available_quantity
+      - cost_price
+      - market_value
+      - profit_loss
+      - profit_loss_percent
+      - last_update
+      title: Position
+      description: 持仓信息
+      example:
+        available_quantity: 1000
+        cost_price: '10.00'
+        current_price: '10.50'
+        last_update: '2025-12-29T15:30:00'
+        market_value: '10500.00'
+        profit_loss: '500.00'
+        profit_loss_percent: 5.0
+        quantity: 1000
+        symbol: 000001.SZ
+        symbol_name: 平安银行
+    PositionItem:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: 股票名称
+        quantity:
+          type: number
+          minimum: 0.0
+          title: Quantity
+          description: 持仓数量
+        avg_cost:
+          type: number
+          minimum: 0.0
+          title: Avg Cost
+          description: 平均成本
+        current_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Current Price
+          description: 当前价格
+        market_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Market Value
+          description: 市值
+        profit_loss:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Profit Loss
+          description: 盈亏金额
+        profit_loss_percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Profit Loss Percent
+          description: 盈亏比例(%)
+        position_percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Position Percent
+          description: 持仓占比(%)
+      type: object
+      required:
+      - symbol
+      - quantity
+      - avg_cost
+      title: PositionItem
+      description: 持仓项
+    PositionsResponse:
+      properties:
+        positions:
+          items:
+            $ref: '#/components/schemas/Position'
+          type: array
+          title: Positions
+          description: 持仓列表
+        total_count:
+          type: integer
+          title: Total Count
+          description: 持仓数量
+        total_market_value:
+          type: string
+          title: Total Market Value
+          description: 总市值
+        total_profit_loss:
+          type: string
+          title: Total Profit Loss
+          description: 总浮动盈亏
+        total_profit_loss_percent:
+          type: number
+          title: Total Profit Loss Percent
+          description: 总盈亏比例(%)
+      type: object
+      required:
+      - positions
+      - total_count
+      - total_market_value
+      - total_profit_loss
+      - total_profit_loss_percent
+      title: PositionsResponse
+      description: 持仓列表响应
+    PredictionResult:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: 日期
+        predicted_price:
+          type: number
+          title: Predicted Price
+          description: 预测价格
+        confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Confidence
+          description: 置信度
+      type: object
+      required:
+      - date
+      - predicted_price
+      title: PredictionResult
+      description: 单次预测结果
+    RealTimeQuoteResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: 股票代码
+        name:
+          type: string
+          title: Name
+          description: 股票名称
+        price:
+          type: number
+          title: Price
+          description: 最新价
+        pre_close:
+          type: number
+          title: Pre Close
+          description: 昨收价
+        open:
+          type: number
+          title: Open
+          description: 开盘价
+        high:
+          type: number
+          title: High
+          description: 最高价
+        low:
+          type: number
+          title: Low
+          description: 最低价
+        volume:
+          type: integer
+          title: Volume
+          description: 成交量(手)
+        amount:
+          type: number
+          title: Amount
+          description: 成交额(元)
+        bid1:
+          type: number
+          title: Bid1
+          description: 买一价
+        bid1_volume:
+          type: integer
+          title: Bid1 Volume
+          description: 买一量
+        ask1:
+          type: number
+          title: Ask1
+          description: 卖一价
+        ask1_volume:
+          type: integer
+          title: Ask1 Volume
+          description: 卖一量
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 查询时间戳
+        change:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change
+          description: 涨跌额
+        change_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Pct
+          description: 涨跌幅(%)
+      type: object
+      required:
+      - code
+      - name
+      - price
+      - pre_close
+      - open
+      - high
+      - low
+      - volume
+      - amount
+      - bid1
+      - bid1_volume
+      - ask1
+      - ask1_volume
+      - timestamp
+      title: RealTimeQuoteResponse
+      description: 实时行情响应模型
+      example:
+        amount: 228000000.0
+        ask1: 1851.0
+        ask1_volume: 150
+        bid1: 1850.0
+        bid1_volume: 100
+        change: 5.5
+        change_pct: 0.3
+        code: '600519'
+        high: 1852.0
+        low: 1844.0
+        name: 贵州茅台
+        open: 1846.0
+        pre_close: 1845.0
+        price: 1850.5
+        timestamp: '2025-10-15 14:30:00'
+        volume: 123456
+    RiskAlert:
+      properties:
+        alert_id:
+          type: integer
+          title: Alert Id
+          description: 预警ID
+        alert_type:
+          type: string
+          title: Alert Type
+          description: 预警类型
+        alert_level:
+          type: string
+          title: Alert Level
+          description: '预警级别: info/warning/critical'
+        symbol:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Symbol
+          description: 相关股票代码
+        message:
+          type: string
+          title: Message
+          description: 预警消息
+        triggered_at:
+          type: string
+          format: date-time
+          title: Triggered At
+          description: 触发时间
+        is_read:
+          type: boolean
+          title: Is Read
+          description: 是否已读
+          default: false
+      type: object
+      required:
+      - alert_id
+      - alert_type
+      - alert_level
+      - message
+      - triggered_at
+      title: RiskAlert
+      description: 风险预警项
+    RiskAlertCreate:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: 预警规则名称
+        metric_type:
+          type: string
+          title: Metric Type
+          description: 监控指标类型 (e.g., 'VaR', 'MaxDrawdown', 'Beta')
+        threshold_value:
+          type: number
+          title: Threshold Value
+          description: 阈值
+        condition:
+          type: string
+          pattern: ^[<>=!]+$
+          title: Condition
+          description: 触发条件 (e.g., '>', '<', '=')
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 关联实体类型 ('portfolio', 'strategy', 'system')
+        entity_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Entity Id
+          description: 关联实体ID (可选)
+        is_active:
+          type: boolean
+          title: Is Active
+          description: 是否启用
+          default: true
+        notification_channels:
+          items:
+            type: string
+          type: array
+          title: Notification Channels
+          description: 通知渠道 (e.g., 'email', 'webhook')
+      type: object
+      required:
+      - name
+      - metric_type
+      - threshold_value
+      - condition
+      - entity_type
+      title: RiskAlertCreate
+      description: 创建风险预警规则请求模型
+      example:
+        condition: '>'
+        entity_id: 101
+        entity_type: portfolio
+        is_active: true
+        metric_type: VaR
+        name: 组合VaR超限预警
+        notification_channels:
+        - email
+        threshold_value: 0.05
+    RiskAlertResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: 预警ID
+        name:
+          type: string
+          title: Name
+          description: 预警规则名称
+        metric_type:
+          type: string
+          title: Metric Type
+          description: 监控指标类型
+        threshold_value:
+          type: number
+          title: Threshold Value
+          description: 阈值
+        condition:
+          type: string
+          title: Condition
+          description: 触发条件
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 关联实体类型
+        entity_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Entity Id
+          description: 关联实体ID
+        is_active:
+          type: boolean
+          title: Is Active
+          description: 是否启用
+        notification_channels:
+          items:
+            type: string
+          type: array
+          title: Notification Channels
+          description: 通知渠道
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: 创建时间
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+          description: 更新时间
+      type: object
+      required:
+      - id
+      - name
+      - metric_type
+      - threshold_value
+      - condition
+      - entity_type
+      - is_active
+      - created_at
+      title: RiskAlertResponse
+      description: 风险预警规则响应模型
+      example:
+        condition: '>'
+        created_at: '2024-12-26T10:00:00'
+        entity_id: 101
+        entity_type: portfolio
+        id: 1
+        is_active: true
+        metric_type: VaR
+        name: 组合VaR超限预警
+        notification_channels:
+        - email
+        threshold_value: 0.05
+        updated_at: '2024-12-26T11:00:00'
+    RiskAlertSummary:
+      properties:
+        total_count:
+          type: integer
+          title: Total Count
+          description: 预警总数
+          default: 0
+        unread_count:
+          type: integer
+          title: Unread Count
+          description: 未读预警数
+          default: 0
+        critical_count:
+          type: integer
+          title: Critical Count
+          description: 严重预警数
+          default: 0
+        alerts:
+          items:
+            $ref: '#/components/schemas/RiskAlert'
+          type: array
+          title: Alerts
+          description: 预警列表
+      type: object
+      title: RiskAlertSummary
+      description: 风险预警汇总
+    RiskAlertUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 100
+            minLength: 1
+          - type: 'null'
+          title: Name
+          description: 预警规则名称
+        metric_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Metric Type
+          description: 监控指标类型
+        threshold_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Threshold Value
+          description: 阈值
+        condition:
+          anyOf:
+          - type: string
+            pattern: ^[<>=!]+$
+          - type: 'null'
+          title: Condition
+          description: 触发条件
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+          description: 关联实体类型
+        entity_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Entity Id
+          description: 关联实体ID
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+          description: 是否启用
+        notification_channels:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Notification Channels
+          description: 通知渠道
+      type: object
+      title: RiskAlertUpdate
+      description: 更新风险预警规则请求模型
+      example:
+        is_active: false
+        name: 组合VaR超限预警 (更新)
+        threshold_value: 0.06
+    RiskDashboardResponse:
+      properties:
+        metrics:
+          allOf:
+          - $ref: '#/components/schemas/RiskMetricsSummary'
+          description: 风险指标汇总
+        active_alerts:
+          items:
+            $ref: '#/components/schemas/ActiveAlert'
+          type: array
+          title: Active Alerts
+          description: 活跃预警列表
+        risk_history:
+          items:
+            $ref: '#/components/schemas/RiskHistoryPoint'
+          type: array
+          title: Risk History
+          description: 风险历史数据
+      type: object
+      required:
+      - metrics
+      title: RiskDashboardResponse
+      description: 风险仪表盘响应模型
+      example:
+        active_alerts:
+        - id: 1
+          metric_type: VaR
+          name: VaR超限
+          threshold_value: 0.03
+        metrics:
+          beta: 1.1
+          cvar_95: -0.03
+          var_95_hist: -0.025
+        risk_history:
+        - beta: 1.0
+          cvar_95: -0.015
+          date: '2024-01-01'
+          var_95_hist: -0.01
+        - beta: 1.05
+          cvar_95: -0.018
+          date: '2024-01-02'
+          var_95_hist: -0.012
+    RiskHistoryPoint:
+      properties:
+        date:
+          type: string
+          format: date
+          title: Date
+          description: 日期
+        var_95_hist:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Var 95 Hist
+          description: 95% 历史 VaR
+        cvar_95:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Cvar 95
+          description: 95% CVaR
+        beta:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Beta
+          description: Beta 系数
+      type: object
+      required:
+      - date
+      title: RiskHistoryPoint
+      description: 风险历史数据点模型
+    RiskMetricsSummary:
+      properties:
+        var_95_hist:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Var 95 Hist
+          description: 最新 95% 历史 VaR
+        cvar_95:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Cvar 95
+          description: 最新 95% CVaR
+        beta:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Beta
+          description: 最新 Beta 系数
+      type: object
+      title: RiskMetricsSummary
+      description: 风险指标汇总模型
+    SendEmailRequest:
+      properties:
+        to_addresses:
+          items:
+            type: string
+            format: email
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: To Addresses
+          description: 收件人列表，最多100个邮箱地址
+        subject:
+          type: string
+          maxLength: 200
+          minLength: 1
+          title: Subject
+          description: 邮件主题，1-200字符
+        content:
+          type: string
+          maxLength: 100000
+          minLength: 1
+          title: Content
+          description: 邮件内容，1-100000字符
+        content_type:
+          type: string
+          pattern: ^(plain|html)$
+          title: Content Type
+          description: '内容类型: plain 或 html'
+          default: plain
+        priority:
+          type: string
+          pattern: ^(low|normal|high|urgent)$
+          title: Priority
+          description: 邮件优先级
+          default: normal
+        scheduled_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Scheduled At
+          description: 定时发送时间（UTC），为空则立即发送
+      type: object
+      required:
+      - to_addresses
+      - subject
+      - content
+      title: SendEmailRequest
+      description: 发送邮件请求 - Phase 4C Enhanced
+    SendNewsletterRequest:
+      properties:
+        user_email:
+          type: string
+          format: email
+          title: User Email
+          description: 用户邮箱
+        user_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: User Name
+          description: 用户姓名
+        watchlist_symbols:
+          items:
+            type: string
+            maxLength: 20
+            minLength: 1
+          type: array
+          maxItems: 50
+          minItems: 1
+          title: Watchlist Symbols
+          description: 自选股列表，1-50个股票代码
+        news_data:
+          items:
+            type: object
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: News Data
+          description: 新闻数据，1-100条新闻
+        newsletter_type:
+          type: string
+          pattern: ^(daily|weekly|monthly)$
+          title: Newsletter Type
+          description: 简报类型
+          default: daily
+      type: object
+      required:
+      - user_email
+      - user_name
+      - watchlist_symbols
+      - news_data
+      title: SendNewsletterRequest
+      description: 发送新闻简报请求 - Phase 4C Enhanced
+    SendPriceAlertRequest:
+      properties:
+        user_email:
+          type: string
+          format: email
+          title: User Email
+          description: 用户邮箱
+        user_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: User Name
+          description: 用户姓名
+        symbol:
+          type: string
+          maxLength: 20
+          minLength: 1
+          pattern: ^[A-Za-z0-9\.]+$
+          title: Symbol
+          description: 股票代码
+        stock_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Stock Name
+          description: 股票名称
+        current_price:
+          type: number
+          exclusiveMinimum: 0.0
+          title: Current Price
+          description: 当前价格，必须大于0
+        alert_condition:
+          type: string
+          pattern: ^(高于|低于|突破|跌破)$
+          title: Alert Condition
+          description: 提醒条件
+        alert_price:
+          type: number
+          exclusiveMinimum: 0.0
+          title: Alert Price
+          description: 提醒价格，必须大于0
+        percentage_change:
+          anyOf:
+          - type: number
+            maximum: 1000.0
+            minimum: -100.0
+          - type: 'null'
+          title: Percentage Change
+          description: 价格变化百分比，-100%到1000%
+      type: object
+      required:
+      - user_email
+      - user_name
+      - symbol
+      - stock_name
+      - current_price
+      - alert_condition
+      - alert_price
+      title: SendPriceAlertRequest
+      description: 发送价格提醒请求 - Phase 4C Enhanced
+    SendWelcomeEmailRequest:
+      properties:
+        user_email:
+          type: string
+          format: email
+          title: User Email
+          description: 用户邮箱
+        user_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: User Name
+          description: 用户姓名，1-100字符
+        welcome_offer:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Welcome Offer
+          description: 欢迎优惠信息，最多500字符
+        language:
+          type: string
+          pattern: ^(zh-CN|en-US)$
+          title: Language
+          description: 邮件语言
+          default: zh-CN
+      type: object
+      required:
+      - user_email
+      - user_name
+      title: SendWelcomeEmailRequest
+      description: 发送欢迎邮件请求 - Phase 4C Enhanced
+    StockListResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 请求是否成功
+          default: true
+        data:
+          type: object
+          title: Data
+          description: 响应数据
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 响应时间戳
+      type: object
+      required:
+      - data
+      - timestamp
+      title: StockListResponse
+      description: 股票列表响应模型
+      example:
+        data:
+          industry_code: BK0475
+          stocks:
+          - amount: 1754321000.0
+            change_percent: 1.85
+            latest_price: 38.45
+            name: 招商银行
+            symbol: 600036.SH
+            volume: 45678901
+          total_count: 1
+        success: true
+        timestamp: '2025-11-17T10:30:00'
+    StockQuote:
+      properties:
+        symbol:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Symbol
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        current:
+          type: number
+          title: Current
+          description: 当前价格
+        change:
+          type: number
+          title: Change
+          description: 涨跌额
+        percent_change:
+          type: number
+          title: Percent Change
+          description: 涨跌幅
+        high:
+          type: number
+          title: High
+          description: 最高价
+        low:
+          type: number
+          title: Low
+          description: 最低价
+        open:
+          type: number
+          title: Open
+          description: 开盘价
+        previous_close:
+          type: number
+          title: Previous Close
+          description: 昨收
+        volume:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Volume
+          description: 成交量
+        amount:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Amount
+          description: 成交额
+        timestamp:
+          type: number
+          title: Timestamp
+          description: 时间戳
+      type: object
+      required:
+      - current
+      - change
+      - percent_change
+      - high
+      - low
+      - open
+      - previous_close
+      - timestamp
+      title: StockQuote
+      description: 股票报价
+    StockSearchResult:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        description:
+          type: string
+          title: Description
+          description: 股票名称
+        displaySymbol:
+          type: string
+          title: Displaysymbol
+          description: 显示代码
+        type:
+          type: string
+          title: Type
+          description: 类型
+        exchange:
+          type: string
+          title: Exchange
+          description: 交易所
+        market:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Market
+          description: 市场
+      type: object
+      required:
+      - symbol
+      - description
+      - displaySymbol
+      - type
+      - exchange
+      title: StockSearchResult
+      description: 股票搜索结果
+    StrategyConfig:
+      properties:
+        strategy_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Strategy Id
+          description: 策略ID (创建时为None)
+        user_id:
+          type: integer
+          minimum: 1.0
+          title: User Id
+          description: 用户ID
+        strategy_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Strategy Name
+          description: 策略名称
+        strategy_type:
+          $ref: '#/components/schemas/StrategyType'
+        description:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Description
+          description: 策略描述
+        parameters:
+          items:
+            $ref: '#/components/schemas/StrategyParameter'
+          type: array
+          title: Parameters
+          description: 策略参数列表
+        max_position_size:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Max Position Size
+          description: 最大仓位比例 (0-1)
+          default: 0.1
+        stop_loss_percent:
+          anyOf:
+          - type: number
+            maximum: 100.0
+            minimum: 0.0
+          - type: 'null'
+          title: Stop Loss Percent
+          description: 止损百分比
+        take_profit_percent:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Take Profit Percent
+          description: 止盈百分比
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StrategyStatus'
+          description: 策略状态
+          default: draft
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          description: 创建时间
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+          description: 更新时间
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 标签列表
+      type: object
+      required:
+      - user_id
+      - strategy_name
+      - strategy_type
+      title: StrategyConfig
+      description: 策略配置
+      example:
+        description: 基于5日和20日均线的金叉死叉策略
+        max_position_size: 0.2
+        parameters:
+        - data_type: int
+          description: 短期均线周期
+          name: short_period
+          value: 5
+        - data_type: int
+          description: 长期均线周期
+          name: long_period
+          value: 20
+        status: active
+        stop_loss_percent: 5.0
+        strategy_name: 双均线策略
+        strategy_type: momentum
+        tags:
+        - 均线
+        - 趋势跟踪
+        take_profit_percent: 10.0
+        user_id: 1001
+    StrategyCreateRequest:
+      properties:
+        user_id:
+          type: integer
+          minimum: 1.0
+          title: User Id
+          description: 用户ID
+        strategy_name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Strategy Name
+          description: 策略名称
+        strategy_type:
+          $ref: '#/components/schemas/StrategyType'
+        description:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Description
+          description: 策略描述
+        parameters:
+          items:
+            $ref: '#/components/schemas/StrategyParameter'
+          type: array
+          title: Parameters
+          description: 策略参数
+        max_position_size:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Max Position Size
+          description: 最大仓位比例
+          default: 0.1
+        stop_loss_percent:
+          anyOf:
+          - type: number
+            maximum: 100.0
+            minimum: 0.0
+          - type: 'null'
+          title: Stop Loss Percent
+          description: 止损百分比
+        take_profit_percent:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Take Profit Percent
+          description: 止盈百分比
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 标签列表
+      type: object
+      required:
+      - user_id
+      - strategy_name
+      - strategy_type
+      title: StrategyCreateRequest
+      description: 创建策略请求
+    StrategyListResponse:
+      properties:
+        total_count:
+          type: integer
+          title: Total Count
+          description: 总数量
+        strategies:
+          items:
+            $ref: '#/components/schemas/StrategyConfig'
+          type: array
+          title: Strategies
+          description: 策略列表
+        page:
+          type: integer
+          minimum: 1.0
+          title: Page
+          description: 当前页码
+          default: 1
+        page_size:
+          type: integer
+          maximum: 100.0
+          minimum: 1.0
+          title: Page Size
+          description: 每页数量
+          default: 20
+      type: object
+      required:
+      - total_count
+      - strategies
+      title: StrategyListResponse
+      description: 策略列表响应
+    StrategyParameter:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: 参数名称
+        value:
+          title: Value
+          description: 参数值
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 参数说明
+        data_type:
+          type: string
+          title: Data Type
+          description: '数据类型: string/int/float/bool'
+          default: string
+      type: object
+      required:
+      - name
+      - value
+      title: StrategyParameter
+      description: 策略参数
+    StrategyStatus:
+      type: string
+      enum:
+      - draft
+      - active
+      - paused
+      - archived
+      title: StrategyStatus
+      description: 策略状态
+    StrategyType:
+      type: string
+      enum:
+      - momentum
+      - mean_reversion
+      - breakout
+      - grid
+      - custom
+      title: StrategyType
+      description: 策略类型
+    StrategyUpdateRequest:
+      properties:
+        strategy_name:
+          anyOf:
+          - type: string
+            maxLength: 100
+            minLength: 1
+          - type: 'null'
+          title: Strategy Name
+          description: 策略名称
+        description:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Description
+          description: 策略描述
+        parameters:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/StrategyParameter'
+            type: array
+          - type: 'null'
+          title: Parameters
+          description: 策略参数
+        max_position_size:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Max Position Size
+          description: 最大仓位比例
+        stop_loss_percent:
+          anyOf:
+          - type: number
+            maximum: 100.0
+            minimum: 0.0
+          - type: 'null'
+          title: Stop Loss Percent
+          description: 止损百分比
+        take_profit_percent:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Take Profit Percent
+          description: 止盈百分比
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/StrategyStatus'
+          - type: 'null'
+          description: 策略状态
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+          description: 标签列表
+      type: object
+      title: StrategyUpdateRequest
+      description: 更新策略请求
+    SymbolItem:
+      properties:
+        proName:
+          type: string
+          title: Proname
+          description: 代码（如 NASDAQ:AAPL）
+        title:
+          type: string
+          title: Title
+          description: 显示名称
+      type: object
+      required:
+      - proName
+      - title
+      title: SymbolItem
+      description: 股票代码条目
+    SyncDirection:
+      properties:
+        code_to_contract:
+          type: boolean
+          title: Code To Contract
+          description: 从代码生成契约
+          default: true
+        contract_to_typescript:
+          type: boolean
+          title: Contract To Typescript
+          description: 从契约生成TypeScript
+          default: false
+      type: object
+      title: SyncDirection
+      description: 同步方向
+    SyncResult:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        operation:
+          type: string
+          title: Operation
+          description: 操作类型
+        message:
+          type: string
+          title: Message
+          description: 结果消息
+        files_created:
+          items:
+            type: string
+          type: array
+          title: Files Created
+          description: 创建的文件
+        files_modified:
+          items:
+            type: string
+          type: array
+          title: Files Modified
+          description: 修改的文件
+        version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version
+          description: 新版本号
+      type: object
+      required:
+      - success
+      - operation
+      - message
+      title: SyncResult
+      description: 同步结果
+    SystemLog:
+      properties:
+        id:
+          type: integer
+          title: Id
+        timestamp:
+          type: string
+          title: Timestamp
+        level:
+          type: string
+          title: Level
+        category:
+          type: string
+          title: Category
+        operation:
+          type: string
+          title: Operation
+        message:
+          type: string
+          title: Message
+        details:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Details
+        duration_ms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Ms
+        has_error:
+          type: boolean
+          title: Has Error
+          default: false
+      type: object
+      required:
+      - id
+      - timestamp
+      - level
+      - category
+      - operation
+      - message
+      title: SystemLog
+      description: 系统日志模型
+    TaskConfig:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+          description: 任务ID
+        task_name:
+          type: string
+          title: Task Name
+          description: 任务名称
+        task_type:
+          allOf:
+          - $ref: '#/components/schemas/TaskType'
+          description: 任务类型
+        task_module:
+          type: string
+          title: Task Module
+          description: 任务模块路径
+        task_function:
+          type: string
+          title: Task Function
+          description: 任务函数名称
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 任务描述
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/TaskPriority'
+          description: 任务优先级
+          default: 500
+        schedule:
+          anyOf:
+          - $ref: '#/components/schemas/TaskSchedule'
+          - type: 'null'
+          description: 调度配置
+        params:
+          type: object
+          title: Params
+          description: 任务参数
+        timeout:
+          type: integer
+          title: Timeout
+          description: 超时时间(秒)
+          default: 3600
+        retry_count:
+          type: integer
+          title: Retry Count
+          description: 重试次数
+          default: 0
+        retry_delay:
+          type: integer
+          title: Retry Delay
+          description: 重试延迟(秒)
+          default: 60
+        dependencies:
+          items:
+            type: string
+          type: array
+          title: Dependencies
+          description: 依赖任务ID列表
+        tags:
+          items:
+            type: string
+          type: array
+          title: Tags
+          description: 任务标签
+        auto_restart:
+          type: boolean
+          title: Auto Restart
+          description: 是否自动重启
+          default: false
+        stop_on_error:
+          type: boolean
+          title: Stop On Error
+          description: 错误时停止
+          default: true
+      type: object
+      required:
+      - task_id
+      - task_name
+      - task_type
+      - task_module
+      - task_function
+      title: TaskConfig
+      description: 任务配置
+    TaskExecution:
+      properties:
+        execution_id:
+          type: string
+          title: Execution Id
+          description: 执行ID
+        task_id:
+          type: string
+          title: Task Id
+          description: 任务ID
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TaskStatus'
+          description: 执行状态
+          default: pending
+        start_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Start Time
+          description: 开始时间
+        end_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End Time
+          description: 结束时间
+        duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Duration
+          description: 执行时长(秒)
+        result:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Result
+          description: 执行结果
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+          description: 错误信息
+        log_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Log Path
+          description: 日志文件路径
+        retry_count:
+          type: integer
+          title: Retry Count
+          description: 已重试次数
+          default: 0
+      type: object
+      required:
+      - execution_id
+      - task_id
+      title: TaskExecution
+      description: 任务执行记录
+    TaskPriority:
+      type: integer
+      enum:
+      - 100
+      - 200
+      - 500
+      - 800
+      - 900
+      title: TaskPriority
+      description: 任务优先级
+    TaskResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        message:
+          type: string
+          title: Message
+        data:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Data
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        execution_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Execution Id
+      type: object
+      required:
+      - success
+      - message
+      title: TaskResponse
+      description: 任务响应模型
+    TaskSchedule:
+      properties:
+        schedule_type:
+          type: string
+          title: Schedule Type
+          description: '调度类型: cron, interval, once'
+        cron_expression:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cron Expression
+          description: Cron表达式
+        interval_seconds:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Interval Seconds
+          description: 执行间隔(秒)
+        start_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Start Time
+          description: 开始时间
+        end_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End Time
+          description: 结束时间
+        enabled:
+          type: boolean
+          title: Enabled
+          description: 是否启用
+          default: true
+      type: object
+      required:
+      - schedule_type
+      title: TaskSchedule
+      description: 任务调度配置
+    TaskStatistics:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        task_name:
+          type: string
+          title: Task Name
+        total_executions:
+          type: integer
+          title: Total Executions
+          default: 0
+        success_count:
+          type: integer
+          title: Success Count
+          default: 0
+        failed_count:
+          type: integer
+          title: Failed Count
+          default: 0
+        avg_duration:
+          type: number
+          title: Avg Duration
+          default: 0.0
+        last_execution_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Execution Time
+        last_status:
+          anyOf:
+          - $ref: '#/components/schemas/TaskStatus'
+          - type: 'null'
+        success_rate:
+          type: number
+          title: Success Rate
+          default: 0.0
+      type: object
+      required:
+      - task_id
+      - task_name
+      title: TaskStatistics
+      description: 任务统计信息
+    TaskStatus:
+      type: string
+      enum:
+      - pending
+      - running
+      - success
+      - failed
+      - paused
+      - cancelled
+      title: TaskStatus
+      description: 任务状态枚举
+    TaskType:
+      type: string
+      enum:
+      - cron
+      - supervisor
+      - manual
+      - data_sync
+      - indicator_calc
+      - market_fetch
+      - data_processing
+      - strategy_backtest
+      - cache_cleanup
+      - market_sync
+      - notification
+      - health_check
+      - cache_warmup
+      - report_generation
+      title: TaskType
+      description: 任务类型枚举
+    TdxDataRequest:
+      properties:
+        stock_code:
+          type: string
+          title: Stock Code
+          description: 股票代码
+          example: '000001'
+        market:
+          type: string
+          title: Market
+          description: 市场代码（sh/sz）
+          default: sh
+          example: sh
+      type: object
+      required:
+      - stock_code
+      title: TdxDataRequest
+      description: 通达信数据请求
+    TdxDataResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: 股票代码
+        market:
+          type: string
+          title: Market
+          description: 市场
+        data:
+          items:
+            type: object
+          type: array
+          title: Data
+          description: OHLCV数据列表
+        total_records:
+          type: integer
+          title: Total Records
+          description: 总记录数
+      type: object
+      required:
+      - code
+      - market
+      - data
+      - total_records
+      title: TdxDataResponse
+      description: 通达信数据响应
+    TdxHealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: 服务状态
+        tdx_connected:
+          type: boolean
+          title: Tdx Connected
+          description: TDX服务器连接状态
+        timestamp:
+          type: string
+          title: Timestamp
+          description: 检查时间
+        server_info:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Server Info
+          description: 服务器信息
+      type: object
+      required:
+      - status
+      - tdx_connected
+      - timestamp
+      title: TdxHealthResponse
+      description: TDX服务健康检查响应
+    TickerTapeConfigRequest:
+      properties:
+        symbols:
+          items:
+            $ref: '#/components/schemas/SymbolItem'
+          type: array
+          title: Symbols
+          description: 股票列表
+        theme:
+          type: string
+          title: Theme
+          description: 主题
+          default: dark
+        locale:
+          type: string
+          title: Locale
+          description: 语言
+          default: zh_CN
+        container_id:
+          type: string
+          title: Container Id
+          description: 容器ID
+          default: tradingview_ticker_tape
+      type: object
+      title: TickerTapeConfigRequest
+      description: Ticker Tape 配置请求
+    Token:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+        expires_in:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Expires In
+        user:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: User
+      type: object
+      required:
+      - access_token
+      - token_type
+      title: Token
+      description: JWT Token 模型
+    TradeHistoryItem:
+      properties:
+        trade_id:
+          type: string
+          title: Trade Id
+          description: 成交ID
+        order_id:
+          type: string
+          title: Order Id
+          description: 委托ID
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        direction:
+          type: string
+          title: Direction
+          description: 交易方向 (buy/sell)
+        price:
+          type: string
+          title: Price
+          description: 成交价格
+        quantity:
+          type: integer
+          title: Quantity
+          description: 成交数量
+        amount:
+          type: string
+          title: Amount
+          description: 成交金额
+        commission:
+          type: string
+          title: Commission
+          description: 手续费
+        trade_time:
+          type: string
+          format: date-time
+          title: Trade Time
+          description: 成交时间
+        trade_type:
+          type: string
+          title: Trade Type
+          description: 成交类型 (normal/issue/transfer)
+      type: object
+      required:
+      - trade_id
+      - order_id
+      - symbol
+      - direction
+      - price
+      - quantity
+      - amount
+      - commission
+      - trade_time
+      - trade_type
+      title: TradeHistoryItem
+      description: 成交记录
+    TradeHistoryResponse:
+      properties:
+        trades:
+          items:
+            $ref: '#/components/schemas/TradeHistoryItem'
+          type: array
+          title: Trades
+          description: 成交记录列表
+        total_count:
+          type: integer
+          title: Total Count
+          description: 总记录数
+        total_amount:
+          type: string
+          title: Total Amount
+          description: 总成交金额
+        total_commission:
+          type: string
+          title: Total Commission
+          description: 总手续费
+        page:
+          type: integer
+          title: Page
+          description: 当前页码
+        page_size:
+          type: integer
+          title: Page Size
+          description: 每页数量
+      type: object
+      required:
+      - trades
+      - total_count
+      - total_amount
+      - total_commission
+      - page
+      - page_size
+      title: TradeHistoryResponse
+      description: 交易历史响应
+    TradeRecord:
+      properties:
+        trade_id:
+          type: integer
+          title: Trade Id
+          description: 交易ID
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        trade_date:
+          type: string
+          format: date
+          title: Trade Date
+          description: 交易日期
+        action:
+          type: string
+          title: Action
+          description: '操作: buy/sell'
+        price:
+          type: number
+          minimum: 0.0
+          title: Price
+          description: 成交价格
+        quantity:
+          type: integer
+          minimum: 0.0
+          title: Quantity
+          description: 数量
+        amount:
+          type: number
+          minimum: 0.0
+          title: Amount
+          description: 交易金额
+        commission:
+          type: number
+          minimum: 0.0
+          title: Commission
+          description: 手续费
+        profit_loss:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Profit Loss
+          description: 盈亏金额
+      type: object
+      required:
+      - trade_id
+      - symbol
+      - trade_date
+      - action
+      - price
+      - quantity
+      - amount
+      - commission
+      title: TradeRecord
+      description: 交易记录
+    TradeStatistics:
+      properties:
+        total_trades:
+          type: integer
+          title: Total Trades
+        buy_count:
+          type: integer
+          title: Buy Count
+        sell_count:
+          type: integer
+          title: Sell Count
+        position_count:
+          type: integer
+          title: Position Count
+        total_buy_amount:
+          type: number
+          title: Total Buy Amount
+        total_sell_amount:
+          type: number
+          title: Total Sell Amount
+        total_commission:
+          type: number
+          title: Total Commission
+        realized_profit:
+          type: number
+          title: Realized Profit
+      type: object
+      required:
+      - total_trades
+      - buy_count
+      - sell_count
+      - position_count
+      - total_buy_amount
+      - total_sell_amount
+      - total_commission
+      - realized_profit
+      title: TradeStatistics
+      description: 交易统计数据
+    UpdateGroupRequest:
+      properties:
+        group_name:
+          type: string
+          maxLength: 50
+          minLength: 1
+          pattern: ^[^\s<>"\'/\\]+$
+          title: Group Name
+          description: 新的分组名称
+      type: object
+      required:
+      - group_name
+      title: UpdateGroupRequest
+      description: 更新分组请求
+    UpdateWatchlistNotesRequest:
+      properties:
+        notes:
+          type: string
+          maxLength: 500
+          minLength: 0
+          title: Notes
+          description: 备注内容
+      type: object
+      required:
+      - notes
+      title: UpdateWatchlistNotesRequest
+      description: 更新备注请求
+    User:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        username:
+          type: string
+          title: Username
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
+        role:
+          type: string
+          title: Role
+          default: user
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+      type: object
+      required:
+      - username
+      title: User
+      description: 用户模型
+    VaRCVaRRequest:
+      properties:
+        entity_type:
+          type: string
+          title: Entity Type
+          description: 实体类型 ('backtest', 'portfolio', 'strategy')
+        entity_id:
+          type: integer
+          minimum: 1.0
+          title: Entity Id
+          description: 实体ID
+        confidence_level:
+          type: number
+          maximum: 0.9999
+          minimum: 0.01
+          title: Confidence Level
+          description: 置信水平 (e.g., 0.90, 0.95, 0.99)
+          default: 0.95
+      type: object
+      required:
+      - entity_type
+      - entity_id
+      title: VaRCVaRRequest
+      description: VaR/CVaR 计算请求模型
+      example:
+        confidence_level: 0.95
+        entity_id: 101
+        entity_type: portfolio
+    VaRCVaRResult:
+      properties:
+        var_95_hist:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Var 95 Hist
+          description: 95% 历史 VaR
+        var_95_param:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Var 95 Param
+          description: 95% 参数 VaR
+        var_99_hist:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Var 99 Hist
+          description: 99% 历史 VaR
+        cvar_95:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Cvar 95
+          description: 95% CVaR
+        cvar_99:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Cvar 99
+          description: 99% CVaR
+        entity_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entity Type
+          description: 实体类型
+        entity_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Entity Id
+          description: 实体ID
+        confidence_level:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Confidence Level
+          description: 置信水平
+      type: object
+      title: VaRCVaRResult
+      description: VaR/CVaR 计算结果响应模型
+      example:
+        cvar_95: -0.036
+        cvar_99: -0.0432
+        var_95_hist: -0.0289
+        var_95_param: -0.0309
+        var_99_hist: -0.0385
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ValidationResult:
+      properties:
+        valid:
+          type: boolean
+          title: Valid
+          description: 是否通过验证
+        category:
+          type: string
+          title: Category
+          description: '问题类别: error|warning|info'
+        path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Path
+          description: 问题路径
+        message:
+          type: string
+          title: Message
+          description: 问题描述
+        suggestion:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggestion
+          description: 修复建议
+      type: object
+      required:
+      - valid
+      - category
+      - message
+      title: ValidationResult
+      description: 验证结果
+    WatchlistSummary:
+      properties:
+        total_count:
+          type: integer
+          title: Total Count
+          description: 自选股总数
+          default: 0
+        items:
+          items:
+            $ref: '#/components/schemas/app__models__dashboard__WatchlistItem'
+          type: array
+          title: Items
+          description: 自选股列表
+        avg_change_percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Change Percent
+          description: 平均涨跌幅
+      type: object
+      title: WatchlistSummary
+      description: 自选股汇总
+    WencaiCustomQueryRequest:
+      properties:
+        query_text:
+          type: string
+          maxLength: 500
+          minLength: 5
+          title: Query Text
+          description: 自定义查询语句（自然语言）
+          example: 请列出今天涨幅超过5%的股票
+        pages:
+          type: integer
+          maximum: 5.0
+          minimum: 1.0
+          title: Pages
+          description: 获取页数
+          default: 1
+          example: 1
+      type: object
+      required:
+      - query_text
+      title: WencaiCustomQueryRequest
+      description: '自定义查询请求
+
+
+        用于POST /api/market/wencai/custom-query'
+    WencaiCustomQueryResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        query_text:
+          type: string
+          title: Query Text
+          description: 查询语句
+        total_records:
+          type: integer
+          minimum: 0.0
+          title: Total Records
+          description: 获取的总记录数
+        results:
+          items:
+            type: object
+          type: array
+          title: Results
+          description: 查询结果列表
+        columns:
+          items:
+            type: string
+          type: array
+          title: Columns
+          description: 列名列表
+        fetch_time:
+          type: string
+          format: date-time
+          title: Fetch Time
+          description: 数据获取时间
+      type: object
+      required:
+      - success
+      - message
+      - query_text
+      - total_records
+      - results
+      - columns
+      - fetch_time
+      title: WencaiCustomQueryResponse
+      description: '自定义查询响应
+
+
+        用于POST /api/market/wencai/custom-query'
+    WencaiHistoryItem:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: 日期
+          example: '2025-10-17'
+        total_records:
+          type: integer
+          minimum: 0.0
+          title: Total Records
+          description: 记录数
+        fetch_count:
+          type: integer
+          minimum: 0.0
+          title: Fetch Count
+          description: 获取次数
+      type: object
+      required:
+      - date
+      - total_records
+      - fetch_count
+      title: WencaiHistoryItem
+      description: 历史数据项
+    WencaiHistoryResponse:
+      properties:
+        query_name:
+          type: string
+          title: Query Name
+          description: 查询名称
+        date_range:
+          items:
+            type: string
+          type: array
+          title: Date Range
+          description: 日期范围
+        history:
+          items:
+            $ref: '#/components/schemas/WencaiHistoryItem'
+          type: array
+          title: History
+          description: 历史数据
+        total_days:
+          type: integer
+          minimum: 0.0
+          title: Total Days
+          description: 总天数
+      type: object
+      required:
+      - query_name
+      - date_range
+      - history
+      - total_days
+      title: WencaiHistoryResponse
+      description: '历史数据响应
+
+
+        用于GET /api/market/wencai/history/{query_name}'
+    WencaiQueryInfo:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: 查询ID
+        query_name:
+          type: string
+          title: Query Name
+          description: 查询名称
+          example: qs_1
+        query_text:
+          type: string
+          title: Query Text
+          description: 查询语句
+          example: 请列出...
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: 查询说明
+        is_active:
+          type: boolean
+          title: Is Active
+          description: 是否启用
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          description: 创建时间
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+          description: 更新时间
+      type: object
+      required:
+      - id
+      - query_name
+      - query_text
+      - is_active
+      title: WencaiQueryInfo
+      description: '查询信息
+
+
+        用于GET /api/market/wencai/queries'
+    WencaiQueryListResponse:
+      properties:
+        queries:
+          items:
+            $ref: '#/components/schemas/WencaiQueryInfo'
+          type: array
+          title: Queries
+          description: 查询列表
+        total:
+          type: integer
+          title: Total
+          description: 总数量
+      type: object
+      required:
+      - queries
+      - total
+      title: WencaiQueryListResponse
+      description: '查询列表响应
+
+
+        用于GET /api/market/wencai/queries'
+    WencaiQueryRequest:
+      properties:
+        query_name:
+          type: string
+          maxLength: 20
+          minLength: 4
+          title: Query Name
+          description: 查询名称，如qs_1, qs_2, ..., qs_9
+          example: qs_9
+        pages:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Pages
+          description: 获取页数
+          default: 1
+          example: 1
+      type: object
+      required:
+      - query_name
+      title: WencaiQueryRequest
+      description: '执行问财查询请求
+
+
+        用于POST /api/market/wencai/query'
+    WencaiQueryResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: 是否成功
+        message:
+          type: string
+          title: Message
+          description: 消息
+        query_name:
+          type: string
+          title: Query Name
+          description: 查询名称
+        total_records:
+          type: integer
+          minimum: 0.0
+          title: Total Records
+          description: 获取的总记录数
+        new_records:
+          type: integer
+          minimum: 0.0
+          title: New Records
+          description: 新增记录数
+        duplicate_records:
+          type: integer
+          minimum: 0.0
+          title: Duplicate Records
+          description: 重复记录数
+        table_name:
+          type: string
+          title: Table Name
+          description: 结果表名
+        fetch_time:
+          type: string
+          format: date-time
+          title: Fetch Time
+          description: 数据获取时间
+      type: object
+      required:
+      - success
+      - message
+      - query_name
+      - total_records
+      - new_records
+      - duplicate_records
+      - table_name
+      - fetch_time
+      title: WencaiQueryResponse
+      description: '查询执行响应
+
+
+        用于POST /api/market/wencai/query'
+    WencaiRefreshResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: 任务状态
+          example: refreshing
+        message:
+          type: string
+          title: Message
+          description: 消息
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+          description: 后台任务ID
+        query_name:
+          type: string
+          title: Query Name
+          description: 查询名称
+      type: object
+      required:
+      - status
+      - message
+      - query_name
+      title: WencaiRefreshResponse
+      description: '刷新任务响应
+
+
+        用于POST /api/market/wencai/refresh/{query_name}'
+    WencaiResultsResponse:
+      properties:
+        query_name:
+          type: string
+          title: Query Name
+          description: 查询名称
+        total:
+          type: integer
+          minimum: 0.0
+          title: Total
+          description: 总记录数
+        results:
+          items:
+            type: object
+          type: array
+          title: Results
+          description: 结果列表
+        columns:
+          items:
+            type: string
+          type: array
+          title: Columns
+          description: 列名列表
+        latest_fetch_time:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Latest Fetch Time
+          description: 最新数据时间
+      type: object
+      required:
+      - query_name
+      - total
+      - results
+      - columns
+      title: WencaiResultsResponse
+      description: '查询结果列表响应
+
+
+        用于GET /api/market/wencai/results/{query_name}'
+    app__api__watchlist__WatchlistItem:
+      properties:
+        id:
+          type: integer
+          minimum: 1.0
+          title: Id
+          description: 条目ID
+        symbol:
+          type: string
+          maxLength: 20
+          minLength: 1
+          title: Symbol
+          description: 股票代码
+        display_name:
+          anyOf:
+          - type: string
+            maxLength: 100
+          - type: 'null'
+          title: Display Name
+          description: 显示名称
+        exchange:
+          anyOf:
+          - type: string
+            maxLength: 20
+          - type: 'null'
+          title: Exchange
+          description: 交易所
+        added_at:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          title: Added At
+          description: 添加时间
+        notes:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Notes
+          description: 备注
+      type: object
+      required:
+      - id
+      - symbol
+      - added_at
+      title: WatchlistItem
+      description: 自选股条目
+    app__models__dashboard__WatchlistItem:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+          description: 股票代码
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: 股票名称
+        current_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Current Price
+          description: 当前价格
+        change_percent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Change Percent
+          description: 涨跌幅(%)
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+          description: 备注
+        added_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Added At
+          description: 添加时间
+      type: object
+      required:
+      - symbol
+      title: WatchlistItem
+      description: 自选股项
+    app__models__strategy_schemas__BacktestRequest:
+      properties:
+        strategy_id:
+          type: integer
+          minimum: 1.0
+          title: Strategy Id
+          description: 策略ID
+        user_id:
+          type: integer
+          minimum: 1.0
+          title: User Id
+          description: 用户ID
+        symbols:
+          items:
+            type: string
+          type: array
+          minItems: 1
+          title: Symbols
+          description: 股票代码列表
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+          description: 开始日期
+        end_date:
+          type: string
+          format: date
+          title: End Date
+          description: 结束日期
+        initial_capital:
+          type: number
+          minimum: 1000.0
+          title: Initial Capital
+          description: 初始资金
+          default: 100000.0
+        commission_rate:
+          type: number
+          maximum: 0.01
+          minimum: 0.0
+          title: Commission Rate
+          description: 手续费率
+          default: 0.0003
+        slippage_rate:
+          type: number
+          maximum: 0.01
+          minimum: 0.0
+          title: Slippage Rate
+          description: 滑点率
+          default: 0.001
+        benchmark:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Benchmark
+          description: 基准指数代码
+        include_analysis:
+          type: boolean
+          title: Include Analysis
+          description: 是否包含详细分析
+          default: true
+      type: object
+      required:
+      - strategy_id
+      - user_id
+      - symbols
+      - start_date
+      - end_date
+      title: BacktestRequest
+      description: 回测请求
+      example:
+        benchmark: 000300.SH
+        commission_rate: 0.0003
+        end_date: '2024-12-31'
+        include_analysis: true
+        initial_capital: 100000.0
+        slippage_rate: 0.001
+        start_date: '2024-01-01'
+        strategy_id: 123
+        symbols:
+        - 000001.SZ
+        - 600000.SH
+        user_id: 1001
+    app__schemas__backtest_schemas__BacktestRequest:
+      properties:
+        strategy_name:
+          type: string
+          title: Strategy Name
+          description: Name of the strategy to backtest
+        symbols:
+          items:
+            type: string
+          type: array
+          title: Symbols
+          description: List of stock symbols to backtest
+        start_date:
+          type: string
+          format: date
+          title: Start Date
+          description: Start date of the backtest
+        end_date:
+          type: string
+          format: date
+          title: End Date
+          description: End date of the backtest
+        initial_capital:
+          type: number
+          exclusiveMinimum: 0.0
+          title: Initial Capital
+          description: Initial capital for the backtest
+        parameters:
+          type: object
+          title: Parameters
+          description: Strategy parameters
+      type: object
+      required:
+      - strategy_name
+      - symbols
+      - start_date
+      - end_date
+      - initial_capital
+      title: BacktestRequest
+      description: Request model for initiating a backtest.
+      example:
+        end_date: '2024-12-31'
+        initial_capital: 100000.0
+        parameters:
+          long_window: 30
+          short_window: 10
+        start_date: '2024-01-01'
+        strategy_name: SimpleMovingAverage
+        symbols:
+        - 600000.SH
+        - 000001.SZ
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: /api/auth/login
+    HTTPBearer:
+      type: http
+      scheme: bearer

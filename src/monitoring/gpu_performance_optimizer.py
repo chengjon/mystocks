@@ -505,7 +505,10 @@ class GPUPerformanceOptimizer:
                 new_factor = max(balance_factor * 0.9, 0.5)
                 self.adaptive_params["cpu_gpu_balance_factor"] = new_factor
                 self.optimization_stats["task_redistributions"] += 1
-                return f"负载均衡优化: GPU ({gpu_metrics.gpu_utilization:.1f}%) → CPU卸载因子 {balance_factor:.2f} → {new_factor:.2f}"
+                return (
+                    f"负载均衡优化: GPU ({gpu_metrics.gpu_utilization:.1f}%) → "
+                    f"CPU卸载因子 {balance_factor:.2f} → {new_factor:.2f}"
+                )
 
             return None
 

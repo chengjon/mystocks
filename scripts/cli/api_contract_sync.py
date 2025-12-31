@@ -100,6 +100,36 @@ def api_request(method: str, endpoint: str, data: Optional[Dict] = None) -> Dict
         sys.exit(1)
 
 
+def is_success(result: Any) -> bool:
+    """判断API请求是否成功"""
+    if not isinstance(result, dict):
+        return False
+    # 支持旧格式 (字符串代码)
+    if result.get("code") == "SUCCESS":
+        return True
+    # 支持新格式 (布尔标志)
+    if result.get("success") is True:
+        return True
+    # 支持 HTTP 状态码作为业务代码
+    if result.get("code") in [200, 201]:
+        return True
+    # 支持未包装的契约响应 (兜底逻辑)
+    if "id" in result and "name" in result and "version" in result:
+        return True
+    return False
+
+
+def get_data(result: Any) -> Any:
+    """提取响应中的业务数据"""
+    if not isinstance(result, dict):
+        return result
+    # 如果有 data 字段且不为 None，则返回 data
+    if "data" in result and result["data"] is not None:
+        return result["data"]
+    # 否则返回整个字典 (针对未包装响应)
+    return result
+
+
 def load_openapi_spec(file_path: str) -> Dict[str, Any]:
     """加载OpenAPI规范文件"""
     path = Path(file_path)
@@ -176,8 +206,8 @@ def create_version(name, version, spec, commit_hash, author, description, tag, a
     # 发送请求
     result = api_request("POST", "/versions", data)
 
-    if result.get("code") == "SUCCESS":
-        version_data = result.get("data", {})
+    if is_success(result):
+        version_data = get_data(result)
         print_success(f"契约版本创建成功 (ID: {version_data.get('id')})")
 
         # 显示版本信息
@@ -198,7 +228,7 @@ def create_version(name, version, spec, commit_hash, author, description, tag, a
         if activate and not version_data.get('is_active'):
             print_info("正在激活版本...")
             activate_result = api_request("POST", f"/versions/{version_data.get('id')}/activate")
-            if activate_result.get("code") == "SUCCESS":
+            if is_success(activate_result):
                 print_success("版本已激活")
     else:
         print_error(f"创建失败: {result.get('message')}")
@@ -224,35 +254,39 @@ def list_versions(name, limit, offset):
 
     result = api_request("GET", "/versions", params)
 
-    if result.get("code") == "SUCCESS":
-        versions = result.get("data", [])
-
-        if not versions:
-            print_warning("未找到契约版本")
-            return
-
-        # 创建表格
-        table = Table(title=f"契约版本列表 ({len(versions)} 条)")
-        table.add_column("ID", style="cyan", width=6)
-        table.add_column("名称", style="green", width=20)
-        table.add_column("版本", style="yellow", width=10)
-        table.add_column("作者", style="blue", width=15)
-        table.add_column("激活", style="red", width=6)
-        table.add_column("创建时间", style="dim", width=20)
-
-        for v in versions:
-            table.add_row(
-                str(v.get("id")),
-                v.get("name"),
-                v.get("version"),
-                v.get("author", "N/A"),
-                "✅" if v.get("is_active") else "❌",
-                v.get("created_at", "")[:19]
-            )
-
-        console.print(table)
-    else:
+    versions = []
+    if isinstance(result, list):
+        versions = result
+    elif is_success(result):
+        versions = get_data(result)
+    elif isinstance(result, dict):
         print_error(f"查询失败: {result.get('message')}")
+        return
+
+    if not versions:
+        print_warning("未找到契约版本")
+        return
+
+    # 创建表格
+    table = Table(title=f"契约版本列表 ({len(versions)} 条)")
+    table.add_column("ID", style="cyan", width=6)
+    table.add_column("名称", style="green", width=20)
+    table.add_column("版本", style="yellow", width=10)
+    table.add_column("作者", style="blue", width=15)
+    table.add_column("激活", style="red", width=6)
+    table.add_column("创建时间", style="dim", width=20)
+
+    for v in versions:
+        table.add_row(
+            str(v.get("id")),
+            v.get("name"),
+            v.get("version"),
+            v.get("author", "N/A"),
+            "✅" if v.get("is_active") else "❌",
+            v.get("created_at", "")[:19]
+        )
+
+    console.print(table)
 
 
 @cli.command("show")
@@ -268,8 +302,8 @@ def show_version(version_id):
 
     result = api_request("GET", f"/versions/{version_id}")
 
-    if result.get("code") == "SUCCESS":
-        version_data = result.get("data", {})
+    if is_success(result):
+        version_data = get_data(result)
 
         # 显示版本信息
         console.print(Panel(
@@ -308,8 +342,8 @@ def get_active_version(name):
 
     result = api_request("GET", f"/versions/{name}/active")
 
-    if result.get("code") == "SUCCESS":
-        version_data = result.get("data", {})
+    if is_success(result):
+        version_data = get_data(result)
 
         console.print(Panel(
             f"""
@@ -341,7 +375,7 @@ def activate_version(version_id):
 
     result = api_request("POST", f"/versions/{version_id}/activate")
 
-    if result.get("code") == "SUCCESS":
+    if is_success(result):
         print_success("版本已激活")
     else:
         print_error(f"激活失败: {result.get('message')}")
@@ -370,7 +404,7 @@ def delete_version(version_id, force):
 
     result = api_request("DELETE", f"/versions/{version_id}")
 
-    if result.get("code") == "SUCCESS":
+    if is_success(result):
         print_success("版本已删除")
     else:
         print_error(f"删除失败: {result.get('message')}")
@@ -390,8 +424,8 @@ def list_contracts():
 
     result = api_request("GET", "/contracts")
 
-    if result.get("code") == "SUCCESS":
-        data = result.get("data", {})
+    if is_success(result):
+        data = get_data(result)
         contracts = data.get("contracts", [])
 
         if not contracts:
@@ -442,8 +476,8 @@ def compare_versions(from_version, to_version, json_output):
 
     result = api_request("POST", "/diff", data)
 
-    if result.get("code") == "SUCCESS":
-        diff_data = result.get("data", {})
+    if is_success(result):
+        diff_data = get_data(result)
 
         if json_output:
             console.print(JSON(diff_data))
@@ -521,8 +555,8 @@ def validate_contract(spec_file, check_breaking, compare_to):
     # 发送请求
     result = api_request("POST", "/validate", data)
 
-    if result.get("code") == "SUCCESS":
-        validation_data = result.get("data", {})
+    if is_success(result):
+        validation_data = get_data(result)
 
         # 显示验证结果
         is_valid = validation_data.get("is_valid")
@@ -598,8 +632,8 @@ def sync_contract(name, source, direction, version, commit):
     # 发送请求
     result = api_request("POST", "/sync", data)
 
-    if result.get("code") == "SUCCESS":
-        sync_data = result.get("data", {})
+    if is_success(result):
+        sync_data = get_data(result)
 
         console.print(Panel(
             f"""
@@ -641,7 +675,7 @@ def export_version(version_id, output, format):
     # 获取版本详情
     result = api_request("GET", f"/versions/{version_id}")
 
-    if result.get("code") != "SUCCESS":
+    if not is_success(result):
         print_error(f"获取版本失败: {result.get('message')}")
         return
 
@@ -690,14 +724,14 @@ def import_version(name, version, file, activate):
 
     result = api_request("POST", "/versions", data)
 
-    if result.get("code") == "SUCCESS":
-        version_data = result.get("data", {})
+    if is_success(result):
+        version_data = get_data(result)
         print_success(f"契约版本导入成功 (ID: {version_data.get('id')})")
 
         if activate:
             print_info("正在激活版本...")
             activate_result = api_request("POST", f"/versions/{version_data.get('id')}/activate")
-            if activate_result.get("code") == "SUCCESS":
+            if is_success(activate_result):
                 print_success("版本已激活")
     else:
         print_error(f"导入失败: {result.get('message')}")

@@ -857,7 +857,9 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
                 {
                     "type": "max_drawdown_exceeded",
                     "severity": "CRITICAL",
-                    "message": f"最大回撤超限: {abs(current_drawdown) * 100:.2f}% > {max_drawdown_threshold * 100:.2f}%",
+                    "message": (
+                        f"最大回撤超限: {abs(current_drawdown) * 100:.2f}% > " f"{max_drawdown_threshold * 100:.2f}%"
+                    ),
                     "timestamp": alert_time,
                     "suggestion": "立即减仓或平仓，控制风险敞口",
                 }

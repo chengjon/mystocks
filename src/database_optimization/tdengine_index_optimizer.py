@@ -74,7 +74,11 @@ class TDengineIndexOptimizer:
                 "priority": "HIGH",
                 "recommendation": "Use INTERVAL() for K-line aggregation",
                 "impact": "Sub-second aggregation for minute/hourly K-lines",
-                "implementation": "SELECT INTERVAL(ts, 1m) as time_bucket, first(close) as open, max(high), min(low), last(close), sum(volume) FROM tick_data GROUP BY time_bucket",
+                "implementation": (
+                    "SELECT INTERVAL(ts, 1m) as time_bucket, first(close) as open, "
+                    "max(high), min(low), last(close), sum(volume) FROM tick_data "
+                    "GROUP BY time_bucket"
+                ),
             }
         )
 

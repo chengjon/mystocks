@@ -400,6 +400,7 @@ class DataQualityMonitor:
         classification: str,
         database_type: str,
         table_name: str,
+        check_type: str,
         metrics: Dict[str, Any],
     ):
         """创建质量告警"""

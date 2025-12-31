@@ -260,14 +260,14 @@ class TdxImporter:
     def _print_summary(self):
         """打印导入统计摘要"""
         duration = (self.stats["end_time"] - self.stats["start_time"]).total_seconds()
-self.logger.info("TDX数据导入完成")
+        self.logger.info("TDX数据导入完成")
         self.logger.info("\n" + "=" * 70)
         self.logger.info("导入完成")
         self.logger.info("=" * 70)
-        self.logger.info("总股票数:     %s", self.stats['total_symbols'])
-        self.logger.info("成功导入:     %s", self.stats['success_count'])
-        self.logger.info("导入失败:     %s", self.stats['fail_count'])
-        self.logger.info("总记录数:     %s", self.stats['total_records'])
+        self.logger.info("总股票数:     %s", self.stats["total_symbols"])
+        self.logger.info("成功导入:     %s", self.stats["success_count"])
+        self.logger.info("导入失败:     %s", self.stats["fail_count"])
+        self.logger.info("总记录数:     %s", self.stats["total_records"])
         self.logger.info("耗时:         %s 秒", duration)
 
         if duration > 0:

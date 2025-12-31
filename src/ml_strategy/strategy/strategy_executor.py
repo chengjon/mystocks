@@ -232,7 +232,8 @@ class StrategyExecutor:
                     strategy_id=self.strategy.strategy_id,
                     batch_insert=True,
                 )
-                self.logger.info("信号保存完成: 成功={save_result['saved_count']}, " f"失败={save_result['failed_count']}"
+                self.logger.info(
+                    "信号保存完成: 成功={save_result['saved_count']}, " f"失败={save_result['failed_count']}"
                 )
             except Exception as e:
                 self.logger.error("保存信号时出错: %s", e)
@@ -282,7 +283,7 @@ class StrategyExecutor:
         self.logger.info("失败股票: %s", self.progress.failed_symbols)
         self.logger.info("生成信号: %s", self.progress.signals_found)
         self.logger.info("执行时间: %s秒", self.progress.elapsed_seconds)
-        self.logger.info("处理速度: %s 股票/秒", result['statistics']['stocks_per_second'])
+        self.logger.info("处理速度: %s 股票/秒", result["statistics"]["stocks_per_second"])
         self.logger.info("=" * 60)
 
         return result
@@ -302,8 +303,9 @@ class StrategyExecutor:
 
                 # 进度日志
                 if (i + 1) % 10 == 0:
-                    self.logger.info("进度: %sself.progress.get_progress_pct("):.1f}% "
-                        f"({self.progress.processed_symbols}/{self.progress.total_symbols})"
+                    self.logger.info(
+                        "进度: %.1f%% " f"({self.progress.processed_symbols}/{self.progress.total_symbols})",
+                        self.progress.get_progress_pct(),
                     )
 
             except Exception as e:
@@ -348,9 +350,12 @@ class StrategyExecutor:
                     self.progress.failed_symbols += len(batch_errors)
 
                     # 进度日志
-                    self.logger.info("批次 %sbatch_idx + 1/%slen(batches")} 完成 | "
+                    self.logger.info(
+                        "批次 %d/%d 完成 | "
                         f"进度: {self.progress.get_progress_pct():.1f}% | "
-                        f"信号: +{len(batch_signals)}"
+                        f"信号: +{len(batch_signals)}",
+                        batch_idx + 1,
+                        len(batches),
                     )
 
                 except Exception as e:

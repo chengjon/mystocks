@@ -221,7 +221,8 @@ USE db_monitor;
     table_name VARCHAR(255) NOT NULL COMMENT '表名',
     database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
     database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
-    operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE', 'save_data', 'save_data_with_dedup', 'load_data', 'upsert_data', 'insert_data') NOT NULL COMMENT '操作类型',
+    operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE', 'save_data', 'save_data_with_dedup', \
+'load_data', 'upsert_data', 'insert_data') NOT NULL COMMENT '操作类型',
     operation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
     operation_status ENUM('success', 'failed', 'processing') NOT NULL COMMENT '操作状态',
     operation_details JSON NOT NULL COMMENT '操作详情（JSON格式）',
@@ -307,7 +308,7 @@ def create_database_and_tables(drop_existing=False):
                         elif "DROP TABLE" in cmd:
                             logger.warning("🗑️ [%s/%s] 删除表", i, total_commands)
                         else:
-                            logger.debug("📋 [%s/%s] 执行 SQL: %s...", i, total_commands, cmd[)
+                            logger.debug("📋 [%s/%s] 执行 SQL: %s...", i, total_commands, cmd[:100])
 
                         connection.execute(text(cmd))
                         cmd_time = time.time() - cmd_start_time
@@ -319,8 +320,10 @@ def create_database_and_tables(drop_existing=False):
                     except Exception as cmd_error:
                         cmd_time = time.time() - cmd_start_time
                         failed_commands += 1
-                        logger.error("❌ [%s/%s] SQL执行失败 (耗时: %ss): %s", i, total_commands, cmd_time, str(cmd_error))
-                        logger.debug("失败的SQL: %s...", cmd[)
+                        logger.error(
+                            "❌ [%s/%s] SQL执行失败 (耗时: %ss): %s", i, total_commands, cmd_time, str(cmd_error)
+                        )
+                        logger.debug("失败的SQL: %s...", cmd[:200])
 
         total_time = time.time() - start_time
 
@@ -435,7 +438,7 @@ if __name__ == "__main__":
     logger.info("=" * 60)
     logger.info("🎯 数据库监控初始化程序启动")
     logger.info("⚙️ 参数设置: drop_existing=%s", drop_existing)
-    logger.info("🌐 运行环境: %s", 'Jupyter' if in_jupyter else 'Command Line')
+    logger.info("🌐 运行环境: %s", "Jupyter" if in_jupyter else "Command Line")
     logger.info("=" * 60)
 
     # 执行数据库初始化

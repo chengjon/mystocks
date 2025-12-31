@@ -293,15 +293,15 @@ def get_default_manager() -> DataSourceManager:
     try:
         tdx = TdxDataSource()
         manager.register_source("tdx", tdx)
-self.logger.info("数据源管理器初始化完成")
-        logging.warning(f"TDX数据源注册失败: {e}")
+    except Exception as e:
+        logging.warning("TDX数据源注册失败: %s", e)
 
     # 注册AKShare数据源
     try:
         akshare = AkshareDataSource()
         manager.register_source("akshare", akshare)
-self.logger.info("成功加载配置")
-        logging.warning(f"AKShare数据源注册失败: {e}")
+    except Exception as e:
+        logging.warning("AKShare数据源注册失败: %s", e)
 
     return manager
 

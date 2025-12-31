@@ -724,7 +724,8 @@ class PostgreSQLRelationalDataSource(IRelationalDataSource):
 
             # UPSERT操作
             sql = f"""
-                INSERT INTO user_preferences (user_id, display_settings, notification_settings, trading_settings, updated_at)
+                INSERT INTO user_preferences
+                (user_id, display_settings, notification_settings, trading_settings, updated_at)
                 VALUES (%s, '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id) DO UPDATE SET {set_sql}
             """

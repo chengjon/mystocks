@@ -314,7 +314,7 @@ async def execute_custom_query(
 
         if use_mock:
             # 使用Mock数据 - 模拟自定义查询
-            mock_manager = get_mock_data_manager()
+            get_mock_data_manager()
 
             # 生成模拟查询结果
             mock_results = [

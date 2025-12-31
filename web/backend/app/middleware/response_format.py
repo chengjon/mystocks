@@ -107,7 +107,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             )
 
             return JSONResponse(
-                content=error_response.model_dump(exclude_unset=True),
+                content=error_response.model_dump(mode="json", exclude_unset=True),
                 status_code=500,
             )
 
@@ -214,7 +214,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             )
 
         return JSONResponse(
-            content=unified_response.model_dump(exclude_unset=True),
+            content=unified_response.model_dump(mode="json", exclude_unset=True),
             status_code=status_code,
         )
 
@@ -270,7 +270,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
             )
 
         return JSONResponse(
-            content=unified.model_dump(exclude_unset=True),
+            content=unified.model_dump(mode="json", exclude_unset=True),
             status_code=status_code,
         )
 
@@ -285,7 +285,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
         )
 
         return JSONResponse(
-            content=unified.model_dump(exclude_unset=True),
+            content=unified.model_dump(mode="json", exclude_unset=True),
             status_code=status_code,
         )
 

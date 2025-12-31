@@ -15,6 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.core.database import db_service
 from app.core.responses import create_error_response, ErrorCodes
 from app.core.security import User, get_current_user
+from app.services.unified_data_service import UnifiedDataService
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -933,7 +934,7 @@ async def get_stock_detail(
             return cached_data
 
         # 查询股票基本信息
-        df = db_service.query_stocks_basic(limit=1)
+        db_service.query_stocks_basic(limit=1)
 
         # 模拟股票详细信息
         import random

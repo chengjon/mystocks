@@ -21,7 +21,6 @@ try:
         validate_currency,
         StockSymbolFormat,
         DateFormat,
-        TimestampFormat,
     )
 except (ImportError, ModuleNotFoundError):
     # Fallback for script execution

@@ -220,14 +220,19 @@ class EmailNotificationService:
 
                     <div class="watchlist">
                         <h3>您的自选股：</h3>
-                        <p style="color: #2563eb; font-weight: bold;">{", ".join(watchlist_symbols) if watchlist_symbols else "暂无自选股"}</p>
+                        <p style="color: #2563eb; font-weight: bold;">
+                            {", ".join(watchlist_symbols) if watchlist_symbols else "暂无自选股"}
+                        </p>
                     </div>
 
                     <h3>📰 最新新闻</h3>
                     {news_content}
 
                     <p style="margin-top: 30px;">
-                        <a href="https://mystocks.com/dashboard" style="background-color: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                        <a href="https://mystocks.com/dashboard"
+                           style="background-color: #2563eb; color: white;
+                                  padding: 10px 20px; text-decoration: none;
+                                  border-radius: 5px;">
                             访问控制台
                         </a>
                     </p>

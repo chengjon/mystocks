@@ -205,9 +205,8 @@ class StrategyRepository:
             # 转换为Pydantic模型
             strategies = [self._orm_to_pydantic(s) for s in strategies_orm]
 
-            logger.info(
-                f"查询策略列表: user_id={user_id}, total={total_count}, page={page}/{(total_count + page_size - 1) // page_size}"
-            )
+            total_pages = (total_count + page_size - 1) // page_size
+            logger.info(f"查询策略列表: user_id={user_id}, total={total_count}, " f"page={page}/{total_pages}")
 
             return strategies, total_count
 

@@ -7,8 +7,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from web.backend.app.core.database import get_db
-from web.backend.app.api.contract.schemas import (
+from app.core.database import get_db
+from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionUpdate,
     ContractVersionResponse,
@@ -18,11 +18,10 @@ from web.backend.app.api.contract.schemas import (
     ContractValidateRequest,
     ContractValidateResponse,
     ContractSyncRequest,
-    ContractSyncResponse,
 )
-from web.backend.app.api.contract.services.version_manager import VersionManager
-from web.backend.app.api.contract.services.diff_engine import DiffEngine
-from web.backend.app.api.contract.services.validator import ContractValidator
+from app.api.contract.services.version_manager import VersionManager
+from app.api.contract.services.diff_engine import DiffEngine
+from app.api.contract.services.validator import ContractValidator
 
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
@@ -169,8 +168,8 @@ async def validate_contract(request: ContractValidateRequest):
 
     # 如果需要对比破坏性变更
     if request.check_breaking_changes and request.compare_to_version_id:
-        from web.backend.app.api.contract.services.version_manager import VersionManager
-        from web.backend.app.core.database import SessionLocal
+        from app.api.contract.services.version_manager import VersionManager
+        from app.core.database import SessionLocal
 
         db = SessionLocal()
         try:
@@ -193,31 +192,47 @@ async def validate_contract(request: ContractValidateRequest):
 # ==================== 契约同步 ====================
 
 
-@router.post("/sync", response_model=ContractSyncResponse)
-async def sync_contract(request: ContractSyncRequest):
+@router.post("/sync")
+async def sync_contract(request: ContractSyncRequest, db: Session = Depends(get_db)):
     """
     同步契约
 
     - **name**: 契约名称
-    - **source_path**: 源文件路径
-    - **direction**: 同步方向
-    - **version**: 指定版本号 (默认自动递增)
-    - **commit**: 是否提交到Git
+    - **direction**: 同步方向 (code_to_db | db_to_code)
+    - **commit_hash**: Git commit hash (可选)
+    - **author**: 作者 (可选)
+    - **description**: 版本描述 (可选)
 
     返回同步结果
+
+    Code-to-DB: 从 FastAPI 代码生成 OpenAPI Spec 并保存到数据库
+    DB-to-Code: 从数据库导出 OpenAPI Spec 到文件
     """
-    from datetime import datetime
-    import uuid
 
-    # 这里应该实现实际的同步逻辑
-    # 目前返回一个模拟结果
-
-    sync_id = str(uuid.uuid4())
-
-    return ContractSyncResponse(
-        sync_id=sync_id,
-        status="completed",
-        results=[],
-        started_at=datetime.now(),
-        completed_at=datetime.now(),
+    result = VersionManager.sync(
+        db=db,
+        contract_name=request.name,
+        direction=request.direction,
+        commit_hash=request.commit_hash,
+        author=request.author,
+        description=request.description,
     )
+
+    return result
+
+
+@router.get("/sync/report")
+async def get_sync_report(db: Session = Depends(get_db)):
+    """
+    获取同步报告
+
+    返回当前可以同步的端点信息
+    """
+    from app.main import app as fastapi_app
+    from app.api.contract.services.openapi_generator import OpenAPIGenerator
+
+    generator = OpenAPIGenerator()
+    generator.scan_app(fastapi_app)
+    report = generator.get_sync_report()
+
+    return report
