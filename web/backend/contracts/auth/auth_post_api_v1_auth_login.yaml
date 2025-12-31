@@ -1,0 +1,48 @@
+api_id: auth_post_api_v1_auth_login
+module: auth
+path: /api/v1/auth/login
+method: POST
+summary: Login For Access Token
+description: '用户登录获取访问令牌
+
+  支持 OAuth2 标准的 form data 格式'
+tags:
+- auth
+priority: P0
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/Token'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.008717'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.822454'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

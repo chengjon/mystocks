@@ -1,0 +1,60 @@
+api_id: contract_management_post_api_contracts_sync
+module: contract-management
+path: /api/contracts/sync
+method: POST
+summary: Sync Contract
+description: '同步契约
+
+
+  - **name**: 契约名称
+
+  - **source_path**: 源文件路径
+
+  - **direction**: 同步方向
+
+  - **version**: 指定版本号 (默认自动递增)
+
+  - **commit**: 是否提交到Git
+
+
+  返回同步结果'
+tags:
+- contract-management
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: '#/components/schemas/ContractSyncRequest'
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/ContractSyncResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.487234'
+  version: 1.0.0
+  stable: false
+  deprecated: false

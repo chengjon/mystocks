@@ -1,0 +1,79 @@
+api_id: strategy_post_api_strategy_run_batch
+module: strategy
+path: /api/strategy/run/batch
+method: POST
+summary: Run Strategy Batch
+description: "批量运行策略\n\nArgs:\n    strategy_code: 策略代码\n    symbols: 股票代码列表，逗号分隔 (如:\
+  \ 600519,000001)\n    market: 市场类型 (A=全部, SH=上证, SZ=深证, CYB=创业板, KCB=科创板)\n    limit:\
+  \ 限制处理数量\n    check_date: 检查日期 (可选)\n\nReturns:\n    批量执行结果统计"
+tags:
+- strategy
+- strategy
+priority: P0
+request:
+  params:
+    strategy_code:
+      in: query
+      required: true
+      description: 策略代码
+    symbols:
+      in: query
+      required: false
+      description: 股票代码列表，逗号分隔
+    market:
+      in: query
+      required: false
+      description: 市场类型 (A/SH/SZ/CYB/KCB)
+    limit:
+      in: query
+      required: false
+      description: 限制处理数量
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: STRATEGY_NOT_FOUND
+    http_status: 404
+    message: 策略不存在
+  - code: STRATEGY_ALREADY_RUNNING
+    http_status: 409
+    message: 策略已在运行中
+  - code: STRATEGY_PARAMETER_INVALID
+    http_status: 400
+    message: 策略参数无效
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.291709'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.871020'
+  enhanced_version: '2.0'
+pydantic_models:
+  request: StrategyCreateRequest
+  response: StrategyResponse
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

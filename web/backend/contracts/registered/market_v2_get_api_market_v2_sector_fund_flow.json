@@ -1,0 +1,149 @@
+{
+  "name": "market-v2-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_v2_get_api_market_v2_sector_fund_flow",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market-v2 API",
+      "version": "1.0.0",
+      "description": "查询行业/概念板块资金流向\n\nArgs:\n    sector_type: 行业、概念或地域板块\n    timeframe: 今日、3日、5日或10日"
+    },
+    "paths": {
+      "/api/market/v2/sector/fund-flow": {
+        "get": {
+          "summary": "查询行业/概念资金流向",
+          "description": "查询行业/概念板块资金流向\n\nArgs:\n    sector_type: 行业、概念或地域板块\n    timeframe: 今日、3日、5日或10日",
+          "tags": [
+            "market-v2",
+            "市场数据V2"
+          ],
+          "parameters": [
+            {
+              "name": "sector_type",
+              "in": "query",
+              "required": false,
+              "description": "板块类型: 行业/概念/地域",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "timeframe",
+              "in": "query",
+              "required": false,
+              "description": "时间维度: 今日/3日/5日/10日",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回数量",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "查询行业/概念资金流向",
+  "tags": [
+    "market-v2",
+    "市场数据V2",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.778681"
+}

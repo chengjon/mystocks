@@ -1,0 +1,63 @@
+api_id: monitoring_post_monitoring_analyze
+module: monitoring
+path: /monitoring/analyze
+method: POST
+summary: Analyze Data
+description: "监控数据AI智能分析\n\n使用AI模型对实时监控数据进行智能分析，识别异常行为和市场风险。\n该端点专注于监控告警数据的深度分析，提供风险预警和投资建议。\n\
+  \n**功能说明**:\n- AI驱动的监控数据异常检测\n- 识别价格异常波动和成交量异常\n- 分析龙虎榜数据和资金流向\n- 生成风险评估和预警信号\n\
+  - 检测市场操纵行为特征\n- 提供多维度的监控分析结果\n\n**使用场景**:\n- 实时监控告警的智能筛选\n- 异常交易行为识别\n- 资金流向分析和主力动向追踪\n\
+  - 市场风险评估和预警\n- 涨跌停板监控分析\n- 龙虎榜数据智能解读\n\n**请求参数**:\n- alert_type (可选): 告警类型（limit_up/limit_down/volume_spike）\n\
+  - symbols (可选): 股票代码列表\n- time_range (可选): 时间范围（1h/1d/1w）\n- analysis_type (可选):\
+  \ 分析类型（anomaly/risk/flow）\n- sensitivity (可选): 灵敏度（low/medium/high）\n\n**返回值**:\n\
+  - result: 分析结果描述\n- endpoint: 服务端点标识\n- anomalies (可选): 检测到的异常列表\n  - symbol: 股票代码\n\
+  \  - anomaly_type: 异常类型\n  - severity: 严重程度\n  - description: 异常描述\n- risk_level\
+  \ (可选): 风险等级（low/medium/high/critical）\n- recommendations (可选): AI建议列表\n\n**示例**:\n\
+  ```bash\n# 监控数据异常分析\ncurl -X POST \"http://localhost:8000/api/monitoring/analyze\"\
+  \ \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"alert_type\": \"\
+  volume_spike\",\n    \"symbols\": [\"600519\", \"000001\"],\n    \"time_range\"\
+  : \"1d\",\n    \"analysis_type\": \"anomaly\",\n    \"sensitivity\": \"high\"\n\
+  \  }'\n```\n\n**响应示例**:\n```json\n{\n  \"result\": \"分析完成\",\n  \"endpoint\": \"\
+  monitoring\",\n  \"anomalies\": [\n    {\n      \"symbol\": \"600519\",\n      \"\
+  anomaly_type\": \"volume_spike\",\n      \"severity\": \"high\",\n      \"description\"\
+  : \"成交量突增300%，疑似重大利好消息\"\n    }\n  ],\n  \"risk_level\": \"medium\",\n  \"recommendations\"\
+  : [\n    \"建议关注该股后续资金流向\",\n    \"注意主力资金是否持续流入\"\n  ]\n}\n```\n\n**注意事项**:\n- 当前版本为开发中状态，返回模拟结果\n\
+  - AI分析基于历史模式，不能预测未来\n- 异常检测可能存在误报，需人工复核\n- 建议结合多个数据源综合判断\n- 高频调用可能影响系统性能\n- 分析结果的准确性受数据完整性影响"
+tags:
+- monitoring
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        type: object
+        title: Data
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.305684'
+  version: 1.0.0
+  stable: false
+  deprecated: false

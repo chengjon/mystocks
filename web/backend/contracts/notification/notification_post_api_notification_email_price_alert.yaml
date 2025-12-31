@@ -1,0 +1,50 @@
+api_id: notification_post_api_notification_email_price_alert
+module: notification
+path: /api/notification/email/price-alert
+method: POST
+summary: Send Price Alert
+description: 发送价格提醒邮件
+tags:
+- notification
+priority: P1
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: SendPriceAlertRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Send Price Alert Api Notification Email Price Alert Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.253575'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.919342'
+  enhanced_version: '2.0'

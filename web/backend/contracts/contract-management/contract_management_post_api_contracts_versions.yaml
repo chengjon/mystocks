@@ -1,0 +1,61 @@
+api_id: contract_management_post_api_contracts_versions
+module: contract-management
+path: /api/contracts/versions
+method: POST
+summary: Create Version
+description: '创建新的契约版本
+
+
+  - **name**: 契约名称 (如: market-api, trade-api)
+
+  - **version**: 版本号 (如: 1.0.0)
+
+  - **spec**: OpenAPI规范内容
+
+  - **commit_hash**: Git commit hash (可选)
+
+  - **author**: 作者 (可选)
+
+  - **description**: 版本描述 (可选)
+
+  - **tags**: 版本标签 (可选)'
+tags:
+- contract-management
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: '#/components/schemas/ContractVersionCreate'
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/ContractVersionResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.469252'
+  version: 1.0.0
+  stable: false
+  deprecated: false

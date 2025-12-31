@@ -1,0 +1,92 @@
+api_id: technical_analysis_get_api_technical_symbol_indicators
+module: technical-analysis
+path: /api/technical/{symbol}/indicators
+method: GET
+summary: Get All Indicators
+description: '获取股票的所有技术指标
+
+
+  参数:
+
+  - symbol: 股票代码 (如: 600519)
+
+  - period: 数据周期 (daily, weekly, monthly)
+
+  - start_date: 开始日期 (可选)
+
+  - end_date: 结束日期 (可选)
+
+  - limit: 数据点数量限制 (可选)
+
+
+  返回:
+
+  - 包含趋势、动量、波动性、成交量指标的综合数据
+
+
+  **验证**: P0改进 Task 2 - 使用TechnicalIndicatorQueryModel验证参数
+
+
+  示例:
+
+  - GET /api/technical/600519/indicators
+
+  - GET /api/technical/600519/indicators?period=weekly
+
+  - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23'
+tags:
+- technical-analysis
+- technical-analysis
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+    period:
+      in: query
+      required: false
+      description: '数据周期: daily, weekly, monthly'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    limit:
+      in: query
+      required: false
+      description: 数据点数量限制
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/AllIndicatorsResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.318141'
+  version: 1.0.0
+  stable: false
+  deprecated: false

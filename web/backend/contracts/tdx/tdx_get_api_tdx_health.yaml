@@ -1,0 +1,42 @@
+api_id: tdx_get_api_tdx_health
+module: tdx
+path: /api/tdx/health
+method: GET
+summary: TDX服务健康检查
+description: 检查TDX服务器连接状态
+tags:
+- tdx
+- TDX行情数据
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/TdxHealthResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.096645'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,41 @@
+api_id: stock_search_post_api_stock_search_cache_clear
+module: stock-search
+path: /api/stock-search/cache/clear
+method: POST
+summary: Clear Search Cache
+description: "清除搜索缓存\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限\n    - 操作审计记录"
+tags:
+- stock-search
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/APIResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.196292'
+  version: 1.0.0
+  stable: false
+  deprecated: false

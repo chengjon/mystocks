@@ -1,0 +1,119 @@
+{
+  "name": "auth-api-contract",
+  "version": "1.0.0",
+  "api_id": "auth_get_api_v1_auth_users",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "auth API",
+      "version": "1.0.0",
+      "description": "获取用户列表（仅管理员）\n从PostgreSQL数据库获取所有活跃用户"
+    },
+    "paths": {
+      "/api/v1/auth/users": {
+        "get": {
+          "summary": "Get Users",
+          "description": "获取用户列表（仅管理员）\n从PostgreSQL数据库获取所有活跃用户",
+          "tags": [
+            "auth"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Get Users",
+  "tags": [
+    "auth",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.790269"
+}

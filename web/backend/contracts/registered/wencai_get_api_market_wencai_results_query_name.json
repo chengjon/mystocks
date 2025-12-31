@@ -1,0 +1,147 @@
+{
+  "name": "wencai-api-contract",
+  "version": "1.0.0",
+  "api_id": "wencai_get_api_market_wencai_results_query_name",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "wencai API",
+      "version": "1.0.0",
+      "description": "获取指定查询的最新结果数据"
+    },
+    "paths": {
+      "/api/market/wencai/results/{query_name}": {
+        "get": {
+          "summary": "获取查询结果",
+          "description": "获取指定查询的最新结果数据",
+          "tags": [
+            "wencai"
+          ],
+          "parameters": [
+            {
+              "name": "query_name",
+              "in": "path",
+              "required": true,
+              "description": "",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回条数",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "offset",
+              "in": "query",
+              "required": false,
+              "description": "偏移量",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "获取查询结果",
+  "tags": [
+    "wencai",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.791727"
+}

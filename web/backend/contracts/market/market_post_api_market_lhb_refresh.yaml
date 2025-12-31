@@ -1,0 +1,71 @@
+api_id: market_post_api_market_lhb_refresh
+module: market
+path: /api/market/lhb/refresh
+method: POST
+summary: 刷新龙虎榜
+description: '刷新指定日期的龙虎榜数据
+
+
+  **数据源:** 东方财富网 (via akshare)
+
+  **更新时机:** 每日20:00之后
+
+  **说明:** 龙虎榜数据次日公布'
+tags:
+- market
+- 市场数据
+priority: P0
+request:
+  params:
+    trade_date:
+      in: query
+      required: true
+      description: 交易日期 YYYY-MM-DD
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/MessageResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: MARKET_DATA_NOT_FOUND
+    http_status: 404
+    message: 行情数据不存在
+  - code: MARKET_DATA_UNAVAILABLE
+    http_status: 503
+    message: 行情服务暂时不可用
+  - code: SYMBOL_INVALID
+    http_status: 400
+    message: 股票代码格式错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.060874'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.953137'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute
+cache:
+  enabled: true
+  ttl: 60
+  strategy: LRU

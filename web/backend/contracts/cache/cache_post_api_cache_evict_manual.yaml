@@ -1,0 +1,47 @@
+api_id: cache_post_api_cache_evict_manual
+module: cache
+path: /api/cache/evict/manual
+method: POST
+summary: Manual Cache Eviction
+description: "手动触发缓存淘汰任务\n\nReturns:\n    淘汰结果，包含:\n    - success: 操作成功标志\n    - message:\
+  \ 操作消息\n    - deleted_count: 删除的缓存条数\n    - timestamp: 操作时间戳\n\nExamples:\n    POST\
+  \ /api/cache/evict/manual\n\n    Response:\n    {\n        \"success\": true,\n\
+  \        \"message\": \"缓存淘汰成功\",\n        \"deleted_count\": 150,\n        \"timestamp\"\
+  : \"2025-11-06T...\"\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Manual Cache Eviction Api Cache Evict Manual Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.125044'
+  version: 1.0.0
+  stable: false
+  deprecated: false

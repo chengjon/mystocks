@@ -1,0 +1,50 @@
+api_id: stock_search_get_api_stock_search_quote_symbol
+module: stock-search
+path: /api/stock-search/quote/{symbol}
+method: GET
+summary: Get Stock Quote
+description: "获取股票实时报价\n\nSecurity:\n    - 需要用户认证\n    - 股票代码格式验证\n    - 访问频率限制\n\
+  \    - 操作分析记录\n\nArgs:\n    symbol: 股票代码\n    market: 市场类型（cn=A股, hk=港股）"
+tags:
+- stock-search
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn, hk'
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/StockQuote'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.186778'
+  version: 1.0.0
+  stable: false
+  deprecated: false

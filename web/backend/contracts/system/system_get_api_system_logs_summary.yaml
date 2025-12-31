@@ -1,0 +1,50 @@
+api_id: system_get_api_system_logs_summary
+module: system
+path: /api/system/logs/summary
+method: GET
+summary: Get Logs Summary
+description: '获取日志统计摘要
+
+
+  返回:
+
+  - 总日志数
+
+  - 各级别日志数量
+
+  - 各分类日志数量
+
+  - 最近错误数'
+tags:
+- system
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.025650'
+  version: 1.0.0
+  stable: false
+  deprecated: false

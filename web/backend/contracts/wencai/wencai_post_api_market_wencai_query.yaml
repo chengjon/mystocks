@@ -1,0 +1,52 @@
+api_id: wencai_post_api_market_wencai_query
+module: wencai
+path: /api/market/wencai/query
+method: POST
+summary: 执行问财查询
+description: 执行指定的问财查询并保存结果到数据库
+tags:
+- wencai
+priority: P0
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: WencaiQueryRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/WencaiQueryResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.173783'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.849699'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

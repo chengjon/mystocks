@@ -1,0 +1,5678 @@
+version: 1.0.0
+generated_at: '2025-12-30'
+generated_from: openapi_json
+total_apis: 285
+modules:
+  api:
+    name: api
+    total_endpoints: 4
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 4
+  data:
+    name: data
+    total_endpoints: 16
+    priority_distribution:
+      P0: 16
+      P1: 0
+      P2: 0
+  data-quality:
+    name: data-quality
+    total_endpoints: 9
+    priority_distribution:
+      P0: 0
+      P1: 9
+      P2: 0
+  auth:
+    name: auth
+    total_endpoints: 6
+    priority_distribution:
+      P0: 6
+      P1: 0
+      P2: 0
+  system:
+    name: system
+    total_endpoints: 9
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 9
+  indicators:
+    name: indicators
+    total_endpoints: 11
+    priority_distribution:
+      P0: 0
+      P1: 11
+      P2: 0
+  market:
+    name: market
+    total_endpoints: 13
+    priority_distribution:
+      P0: 13
+      P1: 0
+      P2: 0
+  market-v2:
+    name: market-v2
+    total_endpoints: 13
+    priority_distribution:
+      P0: 13
+      P1: 0
+      P2: 0
+  tdx:
+    name: tdx
+    total_endpoints: 5
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 5
+  health:
+    name: health
+    total_endpoints: 3
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 3
+  metrics:
+    name: metrics
+    total_endpoints: 6
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 6
+  pool-monitoring:
+    name: pool-monitoring
+    total_endpoints: 4
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 4
+  cache:
+    name: cache
+    total_endpoints: 12
+    priority_distribution:
+      P0: 0
+      P1: 12
+      P2: 0
+  tasks:
+    name: tasks
+    total_endpoints: 15
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 15
+  trade:
+    name: trade
+    total_endpoints: 6
+    priority_distribution:
+      P0: 6
+      P1: 0
+      P2: 0
+  wencai:
+    name: wencai
+    total_endpoints: 8
+    priority_distribution:
+      P0: 8
+      P1: 0
+      P2: 0
+  stock-search:
+    name: stock-search
+    total_endpoints: 10
+    priority_distribution:
+      P0: 0
+      P1: 10
+      P2: 0
+  watchlist:
+    name: watchlist
+    total_endpoints: 15
+    priority_distribution:
+      P0: 0
+      P1: 15
+      P2: 0
+  tradingview:
+    name: tradingview
+    total_endpoints: 6
+    priority_distribution:
+      P0: 0
+      P1: 6
+      P2: 0
+  notification:
+    name: notification
+    total_endpoints: 8
+    priority_distribution:
+      P0: 0
+      P1: 8
+      P2: 0
+  machine-learning:
+    name: machine-learning
+    total_endpoints: 9
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 9
+  strategy:
+    name: strategy
+    total_endpoints: 6
+    priority_distribution:
+      P0: 6
+      P1: 0
+      P2: 0
+  monitoring:
+    name: monitoring
+    total_endpoints: 3
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 3
+  gpu-monitoring:
+    name: gpu-monitoring
+    total_endpoints: 4
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 4
+  technical-analysis:
+    name: technical-analysis
+    total_endpoints: 9
+    priority_distribution:
+      P0: 0
+      P1: 9
+      P2: 0
+  dashboard:
+    name: dashboard
+    total_endpoints: 3
+    priority_distribution:
+      P0: 0
+      P1: 3
+      P2: 0
+  strategy-mgmt:
+    name: strategy-mgmt
+    total_endpoints: 10
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 10
+  multi-source:
+    name: multi-source
+    total_endpoints: 3
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 3
+  announcement:
+    name: announcement
+    total_endpoints: 14
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 14
+  策略管理-Week1:
+    name: 策略管理-Week1
+    total_endpoints: 12
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 12
+  风险管理-Week1:
+    name: 风险管理-Week1
+    total_endpoints: 12
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 12
+  SSE实时推送:
+    name: SSE实时推送
+    total_endpoints: 5
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 5
+  industry-concept-analysis:
+    name: industry-concept-analysis
+    total_endpoints: 5
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 5
+  contract-management:
+    name: contract-management
+    total_endpoints: 11
+    priority_distribution:
+      P0: 0
+      P1: 0
+      P2: 11
+apis:
+- api_id: api_get_health
+  module: api
+  path: /health
+  method: GET
+  summary: Health Check
+  description: 系统健康检查
+  priority: P2
+  tags: []
+- api_id: api_get_api_socketio_status
+  module: api
+  path: /api/socketio-status
+  method: GET
+  summary: Socketio Status
+  description: Socket.IO服务器状态
+  priority: P2
+  tags: []
+- api_id: api_get_api_csrf_token
+  module: api
+  path: /api/csrf-token
+  method: GET
+  summary: Get Csrf Token
+  description: '获取CSRF Token端点
+
+    SECURITY: 前端应在应用启动时调用此端点获取CSRF token
+
+    返回一个新的CSRF token供后续修改操作使用'
+  priority: P2
+  tags: []
+- api_id: api_get_root
+  module: api
+  path: /
+  method: GET
+  summary: Root
+  description: 根路径重定向到 API 文档
+  priority: P2
+  tags: []
+- api_id: data_get_api_data_stocks_basic
+  module: data
+  path: /api/data/stocks/basic
+  method: GET
+  summary: Get Stocks Basic
+  description: '获取股票基本信息列表 - 支持行业/概念筛选、行情排序和分页
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+    search:
+      in: query
+      required: false
+      description: 股票代码或名称搜索关键词
+    industry:
+      in: query
+      required: false
+      description: 行业筛选
+    concept:
+      in: query
+      required: false
+      description: 概念筛选
+    market:
+      in: query
+      required: false
+      description: '市场筛选: SH/SZ'
+    sort_field:
+      in: query
+      required: false
+      description: '排序字段: symbol,name,industry,price,change_pct,turnover,volume'
+    sort_order:
+      in: query
+      required: false
+      description: '排序方向: asc,desc'
+- api_id: data_get_api_data_stocks_industries
+  module: data
+  path: /api/data/stocks/industries
+  method: GET
+  summary: Get Stocks Industries
+  description: 获取所有行业分类列表（用于股票列表筛选）
+  priority: P0
+  tags:
+  - data
+- api_id: data_get_api_data_stocks_concepts
+  module: data
+  path: /api/data/stocks/concepts
+  method: GET
+  summary: Get Stocks Concepts
+  description: 获取所有概念分类列表（用于股票列表筛选）
+  priority: P0
+  tags:
+  - data
+- api_id: data_get_api_data_stocks_daily
+  module: data
+  path: /api/data/stocks/daily
+  method: GET
+  summary: Get Daily Kline
+  description: '获取股票日线数据
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: '股票代码，如: 000001.SZ'
+    start_date:
+      in: query
+      required: false
+      description: '开始日期，格式: YYYY-MM-DD'
+    end_date:
+      in: query
+      required: false
+      description: '结束日期，格式: YYYY-MM-DD'
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+- api_id: data_get_api_data_markets_overview
+  module: data
+  path: /api/data/markets/overview
+  method: GET
+  summary: Get Market Overview
+  description: '获取市场概览数据
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+- api_id: data_get_api_data_stocks_search
+  module: data
+  path: /api/data/stocks/search
+  method: GET
+  summary: Search Stocks
+  description: '股票搜索接口
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    keyword:
+      in: query
+      required: true
+      description: 搜索关键词
+    limit:
+      in: query
+      required: false
+      description: 返回结果数量限制
+- api_id: data_get_api_data_kline
+  module: data
+  path: /api/data/kline
+  method: GET
+  summary: Get Kline
+  description: 获取股票K线数据（stocks/daily的别名）
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: '股票代码，如: 000001.SZ'
+    start_date:
+      in: query
+      required: false
+      description: '开始日期，格式: YYYY-MM-DD'
+    end_date:
+      in: query
+      required: false
+      description: '结束日期，格式: YYYY-MM-DD'
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+- api_id: data_get_api_data_stocks_kline
+  module: data
+  path: /api/data/stocks/kline
+  method: GET
+  summary: Get Kline Data
+  description: 获取股票K线数据（标准化接口，符合cmd5规范）
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码（含市场后缀）
+    start_date:
+      in: query
+      required: true
+      description: 开始日期（格式YYYY-MM-DD）
+    end_date:
+      in: query
+      required: true
+      description: 结束日期（格式YYYY-MM-DD）
+    period:
+      in: query
+      required: false
+      description: K线周期（支持day/week/month）
+- api_id: data_get_api_data_financial
+  module: data
+  path: /api/data/financial
+  method: GET
+  summary: Get Financial Data
+  description: '获取股票财务数据
+
+
+    **报表类型**:
+
+    - balance: 资产负债表
+
+    - income: 利润表
+
+    - cashflow: 现金流量表
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: '股票代码，如: 000001'
+    report_type:
+      in: query
+      required: false
+      description: '报表类型: balance/income/cashflow'
+    period:
+      in: query
+      required: false
+      description: '报告期: quarterly/annual/all'
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+- api_id: data_get_api_data_markets_price_distribution
+  module: data
+  path: /api/data/markets/price-distribution
+  method: GET
+  summary: Get Price Distribution
+  description: '获取全市场涨跌分布统计
+
+    返回上涨>5%、上涨0-5%、平盘、下跌0-5%、下跌>5%的股票数量'
+  priority: P0
+  tags:
+  - data
+- api_id: data_get_api_data_markets_hot_industries
+  module: data
+  path: /api/data/markets/hot-industries
+  method: GET
+  summary: Get Hot Industries
+  description: 获取热门行业TOP5表现数据
+  priority: P0
+  tags:
+  - data
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回数量，默认5
+- api_id: data_get_api_data_markets_hot_concepts
+  module: data
+  path: /api/data/markets/hot-concepts
+  method: GET
+  summary: Get Hot Concepts
+  description: 获取热门概念TOP5表现数据
+  priority: P0
+  tags:
+  - data
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回数量，默认5
+- api_id: data_get_api_data_stocks_intraday
+  module: data
+  path: /api/data/stocks/intraday
+  method: GET
+  summary: Get Intraday Data
+  description: '获取股票分时数据（用于分时图显示）
+
+
+    使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: '股票代码，如: 000001.SZ'
+    date:
+      in: query
+      required: false
+      description: '交易日期，格式: YYYY-MM-DD，默认今天'
+- api_id: data_get_api_data_stocks_symbol_detail
+  module: data
+  path: /api/data/stocks/{symbol}/detail
+  method: GET
+  summary: Get Stock Detail
+  description: 获取股票详细信息（包含行业概念标签）
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+- api_id: data_get_api_data_stocks_symbol_trading_summary
+  module: data
+  path: /api/data/stocks/{symbol}/trading-summary
+  method: GET
+  summary: Get Trading Summary
+  description: 获取股票历史交易摘要统计
+  priority: P0
+  tags:
+  - data
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: '统计周期: 1w(1周), 1m(1月), 3m(3月), 6m(6月), 1y(1年)'
+- api_id: data_get_api_data_test_factory
+  module: data
+  path: /api/data/test/factory
+  method: GET
+  summary: Test Data Source Factory
+  description: '测试数据源工厂集成 (无需认证)
+
+    验证DataDataSourceAdapter是否正常工作'
+  priority: P0
+  tags:
+  - data
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 测试数据返回数量限制
+- api_id: data_quality_get_api_data_quality_health
+  module: data-quality
+  path: /api/data-quality/health
+  method: GET
+  summary: Get Sources Health
+  description: 获取所有数据源健康状态
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+- api_id: data_quality_get_api_data_quality_metrics
+  module: data-quality
+  path: /api/data-quality/metrics
+  method: GET
+  summary: Get Data Quality Metrics
+  description: 获取数据质量指标
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    source:
+      in: query
+      required: false
+      description: Filter by specific data source
+- api_id: data_quality_get_api_data_quality_alerts
+  module: data-quality
+  path: /api/data-quality/alerts
+  method: GET
+  summary: Get Active Alerts
+  description: 获取活跃告警
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    severity:
+      in: query
+      required: false
+      description: Filter by severity level
+    source:
+      in: query
+      required: false
+      description: Filter by data source
+    limit:
+      in: query
+      required: false
+      description: Maximum number of alerts to return
+- api_id: data_quality_post_api_data_quality_alerts_alert_id_acknowledge
+  module: data-quality
+  path: /api/data-quality/alerts/{alert_id}/acknowledge
+  method: POST
+  summary: Acknowledge Alert
+  description: 确认告警
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    alert_id:
+      in: path
+      required: true
+      description: ''
+- api_id: data_quality_post_api_data_quality_alerts_alert_id_resolve
+  module: data-quality
+  path: /api/data-quality/alerts/{alert_id}/resolve
+  method: POST
+  summary: Resolve Alert
+  description: 解决告警
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    alert_id:
+      in: path
+      required: true
+      description: ''
+- api_id: data_quality_get_api_data_quality_config_mode
+  module: data-quality
+  path: /api/data-quality/config/mode
+  method: GET
+  summary: Get Data Source Mode
+  description: 获取当前数据源模式配置
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+- api_id: data_quality_get_api_data_quality_status_overview
+  module: data-quality
+  path: /api/data-quality/status/overview
+  method: GET
+  summary: Get System Status Overview
+  description: 获取系统状态概览
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+- api_id: data_quality_post_api_data_quality_test_quality
+  module: data-quality
+  path: /api/data-quality/test/quality
+  method: POST
+  summary: Test Data Quality
+  description: 测试数据质量监控
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    source:
+      in: query
+      required: true
+      description: Data source name
+    body:
+      in: body
+      required: false
+      content_type: application/json
+- api_id: data_quality_get_api_data_quality_metrics_trends
+  module: data-quality
+  path: /api/data-quality/metrics/trends
+  method: GET
+  summary: Get Quality Trends
+  description: 获取数据质量趋势
+  priority: P1
+  tags:
+  - data-quality
+  - data-quality
+  request_params:
+    source:
+      in: query
+      required: true
+      description: Data source name
+    hours:
+      in: query
+      required: false
+      description: Number of hours to analyze
+- api_id: auth_post_api_v1_auth_login
+  module: auth
+  path: /api/v1/auth/login
+  method: POST
+  summary: Login For Access Token
+  description: '用户登录获取访问令牌
+
+    支持 OAuth2 标准的 form data 格式'
+  priority: P0
+  tags:
+  - auth
+- api_id: auth_post_api_v1_auth_logout
+  module: auth
+  path: /api/v1/auth/logout
+  method: POST
+  summary: Logout
+  description: 用户登出
+  priority: P0
+  tags:
+  - auth
+- api_id: auth_get_api_v1_auth_me
+  module: auth
+  path: /api/v1/auth/me
+  method: GET
+  summary: Read Users Me
+  description: 获取当前用户信息
+  priority: P0
+  tags:
+  - auth
+- api_id: auth_post_api_v1_auth_refresh
+  module: auth
+  path: /api/v1/auth/refresh
+  method: POST
+  summary: Refresh Token
+  description: 刷新访问令牌
+  priority: P0
+  tags:
+  - auth
+- api_id: auth_get_api_v1_auth_users
+  module: auth
+  path: /api/v1/auth/users
+  method: GET
+  summary: Get Users
+  description: '获取用户列表（仅管理员）
+
+    从PostgreSQL数据库获取所有活跃用户'
+  priority: P0
+  tags:
+  - auth
+- api_id: auth_get_api_v1_auth_csrf_token
+  module: auth
+  path: /api/v1/auth/csrf/token
+  method: GET
+  summary: Get Csrf Token
+  description: "获取CSRF保护令牌 - v1版本 (标准化端点)\n\n用于防止跨站请求伪造（CSRF）攻击。\n前端应该在发送修改请求（POST/PUT/PATCH/DELETE）时，\n\
+    在X-CSRF-Token请求头中包含此令牌。\n\n**响应示例**:\n```json\n{\n    \"code\": \"SUCCESS\",\n\
+    \    \"message\": \"CSRF token generated successfully\",\n    \"data\": {\n  \
+    \      \"token\": \"...base64-encoded-token...\",\n        \"token_type\": \"\
+    csrf\",\n        \"expires_in\": 3600\n    },\n    \"timestamp\": 1733318400.123\n\
+    }\n```\n\n**使用示例**:\n```javascript\n// 获取CSRF token\nconst response = await fetch('/api/v1/auth/csrf/token');\n\
+    const { data } = await response.json();\nconst csrfToken = data.token;\n\n// 发送受保护的请求\n\
+    fetch('/api/v1/data', {\n    method: 'POST',\n    headers: {\n        'X-CSRF-Token':\
+    \ csrfToken,\n        'Content-Type': 'application/json'\n    },\n    body: JSON.stringify({\
+    \ ... })\n});\n```\n\n**错误码**:\n- SUCCESS: Token生成成功\n- INTERNAL_SERVER_ERROR:\
+    \ Token生成失败\n\n**HTTP状态码**:\n- 200: 成功获取token\n- 500: 服务器错误\n\n**Rate Limit**:\
+    \ 无限制（CSRF token获取不计入速率限制）"
+  priority: P0
+  tags:
+  - auth
+- api_id: system_get_api_system_health
+  module: system
+  path: /api/system/health
+  method: GET
+  summary: System Health
+  description: '系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
+
+
+    返回:
+
+    - 数据库连接状态
+
+    - 系统运行时间
+
+    - 服务状态'
+  priority: P2
+  tags:
+  - system
+- api_id: system_get_api_system_adapters_health
+  module: system
+  path: /api/system/adapters/health
+  method: GET
+  summary: Get Adapters Health
+  description: '🚀 适配器健康检查端点（新增）
+
+
+    检查所有数据适配器的健康状态：
+
+    - akshare: AkShare适配器
+
+    - tdx: 通达信适配器
+
+    - financial: 财务数据适配器
+
+
+    返回:
+
+    - 每个适配器的健康状态
+
+    - 最后检查时间
+
+    - 错误信息（如果有）
+
+
+    用于监控和自动降级'
+  priority: P2
+  tags:
+  - system
+- api_id: system_get_api_system_datasources
+  module: system
+  path: /api/system/datasources
+  method: GET
+  summary: Get Datasources
+  description: '获取已配置的数据源列表
+
+
+    返回所有可用的数据源配置信息'
+  priority: P2
+  tags:
+  - system
+- api_id: system_post_api_system_test_connection
+  module: system
+  path: /api/system/test-connection
+  method: POST
+  summary: Test Database Connection
+  description: '测试数据库连接 (双数据库架构)
+
+
+    支持的数据库类型:
+
+    - postgresql: PostgreSQL (主数据库)
+
+    - tdengine: TDengine (时序数据库)'
+  priority: P2
+  tags:
+  - system
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: system_get_api_system_logs
+  module: system
+  path: /api/system/logs
+  method: GET
+  summary: Get System Logs
+  description: '获取系统运行日志
+
+
+    参数:
+
+    - filter_errors: 是否只显示有问题的日志 (WARNING/ERROR/CRITICAL)
+
+    - limit: 返回条数限制 (1-1000)
+
+    - offset: 偏移量，用于分页
+
+    - level: 日志级别筛选
+
+    - category: 日志分类筛选
+
+
+    返回:
+
+    - 系统运行日志列表，包含时间戳、级别、分类、操作、消息等信息
+
+
+    示例:
+
+    - GET /api/system/logs - 获取所有日志
+
+    - GET /api/system/logs?filter_errors=true - 只获取有问题的日志
+
+    - GET /api/system/logs?level=ERROR - 只获取ERROR级别日志
+
+    - GET /api/system/logs?category=database - 只获取数据库相关日志'
+  priority: P2
+  tags:
+  - system
+  request_params:
+    filter_errors:
+      in: query
+      required: false
+      description: 是否只显示有问题的日志
+    limit:
+      in: query
+      required: false
+      description: 返回条数限制
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+    level:
+      in: query
+      required: false
+      description: 日志级别筛选 (INFO/WARNING/ERROR/CRITICAL)
+    category:
+      in: query
+      required: false
+      description: 日志分类筛选 (database/api/adapter/system)
+- api_id: system_get_api_system_logs_summary
+  module: system
+  path: /api/system/logs/summary
+  method: GET
+  summary: Get Logs Summary
+  description: '获取日志统计摘要
+
+
+    返回:
+
+    - 总日志数
+
+    - 各级别日志数量
+
+    - 各分类日志数量
+
+    - 最近错误数'
+  priority: P2
+  tags:
+  - system
+- api_id: system_get_api_system_architecture
+  module: system
+  path: /api/system/architecture
+  method: GET
+  summary: Get System Architecture
+  description: '获取系统架构信息 (Week 3简化后 - 双数据库架构)
+
+
+    返回完整的系统架构信息，包括:
+
+    - 数据库架构 (TDengine + PostgreSQL)
+
+    - 数据分类路由策略
+
+    - 架构简化指标
+
+    - 技术栈信息
+
+    - MySQL/Redis移除详情
+
+
+    用于架构可视化页面展示'
+  priority: P2
+  tags:
+  - system
+- api_id: system_get_api_system_database_health
+  module: system
+  path: /api/system/database/health
+  method: GET
+  summary: Database Health
+  description: "数据库健康检查 (US2 - 双数据库架构)\n\n检查TDengine和PostgreSQL的连接状态和基本健康指标\n\nReturns:\n\
+    \    {\n        \"success\": true,\n        \"message\": \"数据库健康检查完成\",\n    \
+    \    \"data\": {\n            \"tdengine\": {...},\n            \"postgresql\"\
+    : {...},\n            \"summary\": {...}\n        }\n    }"
+  priority: P2
+  tags:
+  - system
+- api_id: system_get_api_system_database_stats
+  module: system
+  path: /api/system/database/stats
+  method: GET
+  summary: Database Stats
+  description: "数据库统计信息 (US2 - 双数据库架构)\n\nReturns:\n    {\n        \"success\": true,\n\
+    \        \"message\": \"数据库统计信息获取成功\",\n        \"data\": {\n            \"architecture\"\
+    : \"dual-database\",\n            \"total_classifications\": 34,\n           \
+    \ \"routing\": {...},\n            \"features\": {...}\n        }\n    }"
+  priority: P2
+  tags:
+  - system
+- api_id: indicators_get_api_indicators_registry
+  module: indicators
+  path: /api/indicators/registry
+  method: GET
+  summary: Get Indicator Registry Endpoint
+  description: '获取指标注册表 - Phase 4C Enhanced
+
+
+    返回所有可用的技术指标及其元数据，支持分类筛选和搜索'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    category:
+      in: query
+      required: false
+      description: 筛选指定分类的指标
+    search:
+      in: query
+      required: false
+      description: 搜索指标名称或描述
+    include_advanced:
+      in: query
+      required: false
+      description: 是否包含高级指标
+- api_id: indicators_get_api_indicators_registry_category
+  module: indicators
+  path: /api/indicators/registry/{category}
+  method: GET
+  summary: Get Indicators By Category
+  description: '获取指定分类的指标
+
+
+    - **category**: 指标分类 (trend, momentum, volatility, volume, candlestick)'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    category:
+      in: path
+      required: true
+      description: ''
+- api_id: indicators_post_api_indicators_calculate
+  module: indicators
+  path: /api/indicators/calculate
+  method: POST
+  summary: Calculate Indicators
+  description: "计算技术指标 - Phase 4C Enhanced\n\n根据股票代码、日期范围和指标列表,计算技术指标值\n支持智能缓存、批量优化和性能监控\n\
+    \n**请求示例**:\n```json\n{\n    \"symbol\": \"600519.SH\",\n    \"start_date\": \"\
+    2024-01-01\",\n    \"end_date\": \"2024-12-31\",\n    \"indicators\": [\n    \
+    \    {\"abbreviation\": \"SMA\", \"parameters\": {\"timeperiod\": 20}},\n    \
+    \    {\"abbreviation\": \"RSI\", \"parameters\": {\"timeperiod\": 14}}\n    ],\n\
+    \    \"use_cache\": true\n}\n```"
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: indicators_post_api_indicators_calculate_batch
+  module: indicators
+  path: /api/indicators/calculate/batch
+  method: POST
+  summary: Calculate Indicators Batch
+  description: '批量计算技术指标 - Phase 4C Enhanced
+
+
+    支持一次性计算多个股票/日期范围的指标，提高计算效率'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: indicators_get_api_indicators_cache_stats
+  module: indicators
+  path: /api/indicators/cache/stats
+  method: GET
+  summary: Get Cache Statistics
+  description: 获取指标计算缓存统计信息
+  priority: P1
+  tags:
+  - indicators
+- api_id: indicators_post_api_indicators_cache_clear
+  module: indicators
+  path: /api/indicators/cache/clear
+  method: POST
+  summary: Clear Cache
+  description: '清理指标计算缓存
+
+
+    仅管理员可执行'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    pattern:
+      in: query
+      required: false
+      description: '清理模式: all, expired, or symbol prefix'
+- api_id: indicators_get_api_indicators_configs
+  module: indicators
+  path: /api/indicators/configs
+  method: GET
+  summary: List Indicator Configs
+  description: '获取用户的指标配置列表
+
+
+    返回当前用户的所有已保存指标配置'
+  priority: P1
+  tags:
+  - indicators
+- api_id: indicators_post_api_indicators_configs
+  module: indicators
+  path: /api/indicators/configs
+  method: POST
+  summary: Create Indicator Config
+  description: "创建指标配置\n\n保存用户的常用指标组合配置,方便下次快速加载\n\n**请求示例**:\n```json\n{\n    \"\
+    name\": \"我的常用配置\",\n    \"indicators\": [\n        {\"abbreviation\": \"SMA\"\
+    , \"parameters\": {\"timeperiod\": 20}},\n        {\"abbreviation\": \"RSI\",\
+    \ \"parameters\": {\"timeperiod\": 14}}\n    ]\n}\n```"
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: indicators_get_api_indicators_configs_config_id
+  module: indicators
+  path: /api/indicators/configs/{config_id}
+  method: GET
+  summary: Get Indicator Config
+  description: '获取指定的指标配置详情
+
+
+    - **config_id**: 配置ID'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    config_id:
+      in: path
+      required: true
+      description: ''
+- api_id: indicators_put_api_indicators_configs_config_id
+  module: indicators
+  path: /api/indicators/configs/{config_id}
+  method: PUT
+  summary: Update Indicator Config
+  description: '更新指标配置
+
+
+    可以更新配置名称和/或指标列表
+
+
+    - **config_id**: 配置ID'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    config_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: indicators_delete_api_indicators_configs_config_id
+  module: indicators
+  path: /api/indicators/configs/{config_id}
+  method: DELETE
+  summary: Delete Indicator Config
+  description: '删除指标配置
+
+
+    - **config_id**: 配置ID'
+  priority: P1
+  tags:
+  - indicators
+  request_params:
+    config_id:
+      in: path
+      required: true
+      description: ''
+- api_id: market_get_api_market_fund_flow
+  module: market
+  path: /api/market/fund-flow
+  method: GET
+  summary: 查询资金流向
+  description: '查询个股资金流向历史数据（使用数据源工厂）
+
+
+    **参数说明:**
+
+    - symbol: 股票代码 (如: 600519.SH)
+
+    - timeframe: 1=今日, 3=3日, 5=5日, 10=10日
+
+    - start_date/end_date: 时间范围筛选
+
+
+    **缓存策略:** 5分钟TTL（减少数据库压力）
+
+    **数据源:** 数据源工厂（Mock/Real/Hybrid模式）
+
+    **验证:** P0改进 Task 2 - 使用Pydantic验证模型
+
+    **返回:** 资金流向列表'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    timeframe:
+      in: query
+      required: false
+      description: '时间维度: 1/3/5/10天'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+- api_id: market_post_api_market_fund_flow_refresh
+  module: market
+  path: /api/market/fund-flow/refresh
+  method: POST
+  summary: 刷新资金流向
+  description: '从数据源刷新资金流向数据并保存到数据库
+
+
+    **数据源:** 东方财富网 (via akshare)'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    timeframe:
+      in: query
+      required: false
+      description: 时间维度
+- api_id: market_get_api_market_etf_list
+  module: market
+  path: /api/market/etf/list
+  method: GET
+  summary: 查询ETF列表
+  description: '查询ETF实时行情数据（带缓存优化）
+
+
+    **查询方式:**
+
+    - 指定symbol: 返回单个ETF数据
+
+    - 指定keyword: 模糊搜索名称/代码
+
+    - 不指定条件: 返回全市场ETF(按涨跌幅排序)
+
+
+    **缓存策略:** 1分钟TTL（平衡实时性和性能）
+
+    **返回:** ETF数据列表'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: ETF代码
+    keyword:
+      in: query
+      required: false
+      description: 关键词搜索
+    market:
+      in: query
+      required: false
+      description: 市场类型
+    category:
+      in: query
+      required: false
+      description: ETF类型
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+- api_id: market_post_api_market_etf_refresh
+  module: market
+  path: /api/market/etf/refresh
+  method: POST
+  summary: 刷新ETF数据
+  description: '刷新全市场ETF实时数据
+
+
+    **数据源:** 东方财富网 (via akshare)
+
+    **更新频率:** 建议每5分钟调用一次'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+- api_id: market_get_api_market_chip_race
+  module: market
+  path: /api/market/chip-race
+  method: GET
+  summary: 查询竞价抢筹
+  description: '查询竞价抢筹数据（带缓存优化）
+
+
+    **类型说明:**
+
+    - open: 早盘抢筹(集合竞价)
+
+    - end: 尾盘抢筹(收盘竞价)
+
+
+    **缓存策略:** 5分钟TTL
+
+    **返回:** 按抢筹金额倒序排列'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    race_type:
+      in: query
+      required: false
+      description: '抢筹类型: open/end'
+    trade_date:
+      in: query
+      required: false
+      description: 交易日期
+    min_race_amount:
+      in: query
+      required: false
+      description: 最小抢筹金额
+    limit:
+      in: query
+      required: false
+      description: ''
+- api_id: market_post_api_market_chip_race_refresh
+  module: market
+  path: /api/market/chip-race/refresh
+  method: POST
+  summary: 刷新抢筹数据
+  description: '刷新竞价抢筹数据
+
+
+    **数据源:** 通达信TQLEX
+
+    **更新时机:**
+
+    - open: 9:30之后
+
+    - end: 15:05之后'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    race_type:
+      in: query
+      required: false
+      description: 抢筹类型
+    trade_date:
+      in: query
+      required: false
+      description: 交易日期 YYYY-MM-DD
+- api_id: market_get_api_market_lhb
+  module: market
+  path: /api/market/lhb
+  method: GET
+  summary: 查询龙虎榜
+  description: '查询龙虎榜详细数据（带缓存优化）
+
+
+    **筛选条件:**
+
+    - symbol: 查询指定股票的历史龙虎榜记录
+
+    - start_date/end_date: 时间范围
+
+    - min_net_amount: 净买入额下限(元)
+
+
+    **缓存策略:** 24小时TTL（龙虎榜数据每日更新）
+
+    **返回:** 按日期倒序排列'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    min_net_amount:
+      in: query
+      required: false
+      description: 最小净买入额
+    limit:
+      in: query
+      required: false
+      description: ''
+- api_id: market_post_api_market_lhb_refresh
+  module: market
+  path: /api/market/lhb/refresh
+  method: POST
+  summary: 刷新龙虎榜
+  description: '刷新指定日期的龙虎榜数据
+
+
+    **数据源:** 东方财富网 (via akshare)
+
+    **更新时机:** 每日20:00之后
+
+    **说明:** 龙虎榜数据次日公布'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    trade_date:
+      in: query
+      required: true
+      description: 交易日期 YYYY-MM-DD
+- api_id: market_get_api_market_quotes
+  module: market
+  path: /api/market/quotes
+  method: GET
+  summary: 查询实时行情
+  description: '获取实时市场行情数据（使用数据源工厂）
+
+
+    **参数**:
+
+    - symbols: 股票代码列表（可选）。不指定则返回热门股票行情
+
+
+    **缓存策略:** 10秒TTL（实时行情需要较高频率更新）
+
+    **数据源**: 数据源工厂（Mock/Real/Hybrid模式）
+
+    **返回**: 实时行情列表'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    symbols:
+      in: query
+      required: false
+      description: '股票代码列表，逗号分隔，如: 000001,600519'
+- api_id: market_get_api_market_stocks
+  module: market
+  path: /api/market/stocks
+  method: GET
+  summary: 查询股票列表
+  description: '获取股票基本信息列表
+
+
+    **查询条件**:
+
+    - search: 关键词搜索（代码或名称）
+
+    - exchange: 按交易所筛选（SSE上交所/SZSE深交所）
+
+    - security_type: 按证券类型筛选
+
+    - limit: 返回数量限制
+
+
+    **数据源**: PostgreSQL stock_info表 或 Mock数据
+
+    **返回**: 股票列表'
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+    search:
+      in: query
+      required: false
+      description: 股票代码或名称搜索关键词
+    exchange:
+      in: query
+      required: false
+      description: '交易所筛选: SSE/SZSE'
+    security_type:
+      in: query
+      required: false
+      description: 证券类型筛选
+- api_id: market_get_api_market_kline
+  module: market
+  path: /api/market/kline
+  method: GET
+  summary: 查询K线数据
+  description: "获取股票K线（蜡烛图）历史数据\n\n**参数说明**:\n- stock_code: 股票代码，支持 \"600519\" 或 \"\
+    600519.SH\" 格式\n- period:\n  - \"daily\" (日K线)\n  - \"weekly\" (周K线)\n  - \"monthly\"\
+    \ (月K线)\n- adjust:\n  - \"qfq\" (前复权，推荐)\n  - \"hfq\" (后复权)\n  - \"\" (不复权)\n\
+    - start_date/end_date: 日期范围（可选，默认最近60个交易日）\n\n**数据源**: AKShare stock_zh_a_hist()\n\
+    **验证**: P0改进 Task 2 - 使用MarketDataQueryModel验证参数\n**返回**: K线数据数组，包含OHLCV及技术指标"
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    stock_code:
+      in: query
+      required: true
+      description: 股票代码（6位数字或带交易所后缀）
+    period:
+      in: query
+      required: false
+      description: '时间周期: daily/weekly/monthly'
+    adjust:
+      in: query
+      required: false
+      description: '复权类型: qfq/hfq/空字符串'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+- api_id: market_get_api_market_heatmap
+  module: market
+  path: /api/market/heatmap
+  method: GET
+  summary: 获取市场热力图数据
+  description: "获取市场热力图数据，用于可视化展示各股票的涨跌情况\n\n**参数说明:**\n- market: 市场类型\n  - \"cn\"\
+    \ - 中国A股市场\n  - \"hk\" - 香港股市\n- limit: 返回的股票数量 (10-200)\n\n**数据源:** AKShare 或\
+    \ Mock数据\n**返回:** 股票列表，包含代码、名称、涨跌幅、价格、成交量、市值等"
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  request_params:
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn(A股)/hk(港股)'
+    limit:
+      in: query
+      required: false
+      description: 返回股票数量
+- api_id: market_get_api_market_health
+  module: market
+  path: /api/market/health
+  method: GET
+  summary: 市场数据 API 健康检查
+  description: 检查市场数据 API 服务的健康状态
+  priority: P0
+  tags:
+  - market
+  - 市场数据
+  - health
+- api_id: market_v2_get_api_market_v2_fund_flow
+  module: market-v2
+  path: /api/market/v2/fund-flow
+  method: GET
+  summary: 查询个股资金流向
+  description: "查询个股资金流向历史数据\n\nArgs:\n    symbol: 股票代码 (如: 600519)\n    timeframe:\
+    \ 1=今日, 3=3日, 5=5日, 10=10日\n    start_date/end_date: 时间范围筛选"
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    timeframe:
+      in: query
+      required: false
+      description: '时间维度: 1/3/5/10天'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+- api_id: market_v2_post_api_market_v2_fund_flow_refresh
+  module: market-v2
+  path: /api/market/v2/fund-flow/refresh
+  method: POST
+  summary: 刷新资金流向数据
+  description: '从东方财富刷新资金流向数据
+
+
+    不传symbol则刷新全市场数据（约4000+只股票）'
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码，不传则刷新全市场
+    timeframe:
+      in: query
+      required: false
+      description: '时间维度: 今日/3日/5日/10日'
+- api_id: market_v2_get_api_market_v2_etf_list
+  module: market-v2
+  path: /api/market/v2/etf/list
+  method: GET
+  summary: 查询ETF列表
+  description: '查询ETF实时行情数据
+
+
+    支持按代码精确查询或按关键词模糊搜索'
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: ETF代码
+    keyword:
+      in: query
+      required: false
+      description: 关键词搜索
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: market_v2_post_api_market_v2_etf_refresh
+  module: market-v2
+  path: /api/market/v2/etf/refresh
+  method: POST
+  summary: 刷新ETF数据
+  description: 从东方财富刷新全市场ETF数据
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+- api_id: market_v2_get_api_market_v2_lhb
+  module: market-v2
+  path: /api/market/v2/lhb
+  method: GET
+  summary: 查询龙虎榜
+  description: '查询龙虎榜详细数据
+
+
+    支持按股票代码、日期范围、净买入额筛选'
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    min_net_amount:
+      in: query
+      required: false
+      description: 最小净买入额(元)
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: market_v2_post_api_market_v2_lhb_refresh
+  module: market-v2
+  path: /api/market/v2/lhb/refresh
+  method: POST
+  summary: 刷新龙虎榜数据
+  description: 从东方财富刷新指定日期的龙虎榜数据
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    trade_date:
+      in: query
+      required: true
+      description: 交易日期 (YYYY-MM-DD)
+- api_id: market_v2_get_api_market_v2_sector_fund_flow
+  module: market-v2
+  path: /api/market/v2/sector/fund-flow
+  method: GET
+  summary: 查询行业/概念资金流向
+  description: "查询行业/概念板块资金流向\n\nArgs:\n    sector_type: 行业、概念或地域板块\n    timeframe:\
+    \ 今日、3日、5日或10日"
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    sector_type:
+      in: query
+      required: false
+      description: '板块类型: 行业/概念/地域'
+    timeframe:
+      in: query
+      required: false
+      description: '时间维度: 今日/3日/5日/10日'
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: market_v2_post_api_market_v2_sector_fund_flow_refresh
+  module: market-v2
+  path: /api/market/v2/sector/fund-flow/refresh
+  method: POST
+  summary: 刷新行业/概念资金流向
+  description: 从东方财富刷新行业/概念资金流向数据
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    sector_type:
+      in: query
+      required: false
+      description: '板块类型: 行业/概念/地域'
+    timeframe:
+      in: query
+      required: false
+      description: '时间维度: 今日/3日/5日/10日'
+- api_id: market_v2_get_api_market_v2_dividend
+  module: market-v2
+  path: /api/market/v2/dividend
+  method: GET
+  summary: 查询股票分红配送
+  description: "查询股票分红配送历史记录\n\nArgs:\n    symbol: 股票代码 (如: 600519)"
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: market_v2_post_api_market_v2_dividend_refresh
+  module: market-v2
+  path: /api/market/v2/dividend/refresh
+  method: POST
+  summary: 刷新股票分红配送数据
+  description: 从东方财富刷新股票分红配送数据
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+- api_id: market_v2_get_api_market_v2_blocktrade
+  module: market-v2
+  path: /api/market/v2/blocktrade
+  method: GET
+  summary: 查询股票大宗交易
+  description: "查询股票大宗交易记录\n\nArgs:\n    symbol: 股票代码 (可选)\n    start_date/end_date:\
+    \ 日期范围 (可选)"
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: market_v2_post_api_market_v2_blocktrade_refresh
+  module: market-v2
+  path: /api/market/v2/blocktrade/refresh
+  method: POST
+  summary: 刷新股票大宗交易数据
+  description: 从东方财富刷新大宗交易数据
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+  request_params:
+    trade_date:
+      in: query
+      required: false
+      description: 交易日期 (YYYY-MM-DD)，不传则获取最新
+- api_id: market_v2_post_api_market_v2_refresh_all
+  module: market-v2
+  path: /api/market/v2/refresh-all
+  method: POST
+  summary: 批量刷新所有市场数据
+  description: '一键刷新所有市场数据（用于定时任务）
+
+
+    包括：
+
+    - 全市场资金流向（今日）
+
+    - 全市场ETF数据
+
+    - 行业资金流向
+
+    - 概念资金流向
+
+    - 当日龙虎榜
+
+    - 当日大宗交易'
+  priority: P0
+  tags:
+  - market-v2
+  - 市场数据V2
+- api_id: tdx_get_api_tdx_quote_symbol
+  module: tdx
+  path: /api/tdx/quote/{symbol}
+  method: GET
+  summary: 获取股票实时行情
+  description: 查询指定股票的实时行情数据,包括最新价、涨跌幅、成交量、五档行情等
+  priority: P2
+  tags:
+  - tdx
+  - TDX行情数据
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+- api_id: tdx_get_api_tdx_kline
+  module: tdx
+  path: /api/tdx/kline
+  method: GET
+  summary: 获取股票K线数据
+  description: 查询股票历史K线数据,支持多种周期(1m/5m/15m/30m/1h/1d)
+  priority: P2
+  tags:
+  - tdx
+  - TDX行情数据
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码(6位数字)
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    period:
+      in: query
+      required: false
+      description: 'K线周期: 1m/5m/15m/30m/1h/1d'
+- api_id: tdx_get_api_tdx_index_quote_symbol
+  module: tdx
+  path: /api/tdx/index/quote/{symbol}
+  method: GET
+  summary: 获取指数实时行情
+  description: 查询指定指数的实时点位和涨跌幅
+  priority: P2
+  tags:
+  - tdx
+  - TDX行情数据
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+- api_id: tdx_get_api_tdx_index_kline
+  module: tdx
+  path: /api/tdx/index/kline
+  method: GET
+  summary: 获取指数K线数据
+  description: 查询指数历史K线数据,支持多种周期
+  priority: P2
+  tags:
+  - tdx
+  - TDX行情数据
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 指数代码(6位数字)
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    period:
+      in: query
+      required: false
+      description: 'K线周期: 1m/5m/15m/30m/1h/1d'
+- api_id: tdx_get_api_tdx_health
+  module: tdx
+  path: /api/tdx/health
+  method: GET
+  summary: TDX服务健康检查
+  description: 检查TDX服务器连接状态
+  priority: P2
+  tags:
+  - tdx
+  - TDX行情数据
+- api_id: health_get_api_health
+  module: health
+  path: /api/health
+  method: GET
+  summary: Check System Health
+  description: '系统健康检查API端点
+
+
+    返回系统各个组件的健康状态'
+  priority: P2
+  tags:
+  - health
+- api_id: metrics_get_api_status
+  module: metrics
+  path: /api/status
+  method: GET
+  summary: Basic Status
+  description: "基础系统状态\n\nReturns:\n    APIResponse: 系统状态信息\n\nSecurity:\n    - 无需认证\n\
+    \    - 仅提供基础状态信息"
+  priority: P2
+  tags:
+  - metrics
+- api_id: metrics_get_api_basic
+  module: metrics
+  path: /api/basic
+  method: GET
+  summary: Basic Metrics
+  description: "基础监控指标\n\nReturns:\n    APIResponse: 基础监控数据\n\nSecurity:\n    - 需要用户认证\n\
+    \    - 应用访问频率限制\n    - 仅返回基础监控数据"
+  priority: P2
+  tags:
+  - metrics
+- api_id: metrics_get_api_performance
+  module: metrics
+  path: /api/performance
+  method: GET
+  summary: Performance Metrics
+  description: "性能监控指标\n\nReturns:\n    APIResponse: 性能监控数据\n\nSecurity:\n    - 需要用户认证\n\
+    \    - 应用访问频率限制\n    - 返回性能相关指标"
+  priority: P2
+  tags:
+  - metrics
+- api_id: metrics_get_api_metrics
+  module: metrics
+  path: /api/metrics
+  method: GET
+  summary: Prometheus Metrics
+  description: "Prometheus metrics端点\n\nReturns:\n    Response: Prometheus格式的监控指标\n\
+    \nSecurity:\n    - 需要管理员权限\n    - 严格访问频率限制\n    - 返回完整的Prometheus指标"
+  priority: P2
+  tags:
+  - metrics
+- api_id: metrics_get_api_detailed
+  module: metrics
+  path: /api/detailed
+  method: GET
+  summary: Detailed Metrics
+  description: "详细系统指标\n\nReturns:\n    APIResponse: 详细的系统监控数据\n\nSecurity:\n    -\
+    \ 需要管理员权限\n    - 严格访问频率限制\n    - 返回完整的系统监控数据"
+  priority: P2
+  tags:
+  - metrics
+- api_id: metrics_post_api_reset
+  module: metrics
+  path: /api/reset
+  method: POST
+  summary: Reset Metrics
+  description: "重置监控指标\n\nReturns:\n    APIResponse: 重置结果\n\nSecurity:\n    - 仅管理员可访问\n\
+    \    - 需要管理员权限"
+  priority: P2
+  tags:
+  - metrics
+- api_id: pool_monitoring_get_api_pool_monitoring_postgresql_stats
+  module: pool-monitoring
+  path: /api/pool-monitoring/postgresql/stats
+  method: GET
+  summary: PostgreSQL连接池统计
+  description: "获取PostgreSQL连接池统计信息\n\nReturns:\n    - pool_size: 当前连接池大小\n    - checked_in:\
+    \ 空闲连接数\n    - checked_out: 活跃连接数\n    - overflow: 溢出连接数\n    - pool_status: 连接池状态描述\n\
+    \    - timestamp: 查询时间戳"
+  priority: P2
+  tags:
+  - pool-monitoring
+  - Connection Pool Monitoring
+- api_id: pool_monitoring_get_api_pool_monitoring_tdengine_stats
+  module: pool-monitoring
+  path: /api/pool-monitoring/tdengine/stats
+  method: GET
+  summary: TDengine连接池统计
+  description: "获取TDengine连接池统计信息\n\nReturns:\n    - total_created: 总创建连接数\n    -\
+    \ total_closed: 总关闭连接数\n    - active_connections: 当前活跃连接数\n    - idle_connections:\
+    \ 当前空闲连接数\n    - connection_requests: 总连接请求数\n    - connection_timeouts: 连接超时次数\n\
+    \    - connection_errors: 连接错误次数\n    - pool_size: 当前连接池大小\n    - timestamp: 查询时间戳"
+  priority: P2
+  tags:
+  - pool-monitoring
+  - Connection Pool Monitoring
+- api_id: pool_monitoring_get_api_pool_monitoring_health
+  module: pool-monitoring
+  path: /api/pool-monitoring/health
+  method: GET
+  summary: 连接池综合健康检查
+  description: "检查所有连接池的健康状态\n\nReturns:\n    - postgresql: PostgreSQL连接池健康状态\n  \
+    \  - tdengine: TDengine连接池健康状态\n    - overall_status: 总体健康状态\n    - timestamp:\
+    \ 检查时间戳"
+  priority: P2
+  tags:
+  - pool-monitoring
+  - Connection Pool Monitoring
+- api_id: pool_monitoring_get_api_pool_monitoring_alerts
+  module: pool-monitoring
+  path: /api/pool-monitoring/alerts
+  method: GET
+  summary: 连接池告警检测
+  description: "检测连接池是否存在需要告警的情况\n\n告警条件:\n- 连接池使用率 > 80%\n- 连接错误率 > 5%\n- 连接超时率 >\
+    \ 2%\n\nReturns:\n    - has_alerts: 是否存在告警\n    - alerts: 告警列表\n    - timestamp:\
+    \ 检查时间戳"
+  priority: P2
+  tags:
+  - pool-monitoring
+  - Connection Pool Monitoring
+- api_id: cache_get_api_cache_status
+  module: cache
+  path: /api/cache/status
+  method: GET
+  summary: Get Cache Status
+  description: "获取缓存统计信息\n\nReturns:\n    缓存统计信息，包含:\n    - hit_rate: 缓存命中率\n    -\
+    \ cache_hits: 命中次数\n    - cache_misses: 未命中次数\n    - total_reads: 总读取次数\n    -\
+    \ total_writes: 总写入次数\n    - timestamp: 统计时间戳\n\nExamples:\n    GET /api/cache/status\n\
+    \    Response:\n    {\n        \"success\": true,\n        \"timestamp\": \"2025-11-06T12:34:56.789Z\"\
+    ,\n        \"data\": {\n            \"total_reads\": 1000,\n            \"total_writes\"\
+    : 500,\n            \"cache_hits\": 850,\n            \"cache_misses\": 150,\n\
+    \            \"hit_rate\": 0.85,\n            \"hit_rate_percent\": \"85.0%\"\
+    ,\n            ...\n        }\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_get_api_cache_symbol_data_type
+  module: cache
+  path: /api/cache/{symbol}/{data_type}
+  method: GET
+  summary: Get Cached Data
+  description: "读取特定的缓存数据\n\nArgs:\n    symbol: 股票代码 (e.g., \"000001\")\n    data_type:\
+    \ 数据类型 (e.g., \"fund_flow\", \"etf\", \"chip_race\")\n    timeframe: 时间维度 (可选，e.g.,\
+    \ \"1d\", \"3d\")\n\nReturns:\n    缓存数据（如果存在），或错误信息\n\nExamples:\n    GET /api/cache/000001/fund_flow\n\
+    \    GET /api/cache/000001/etf?timeframe=1d\n\n    Response (缓存命中):\n    {\n \
+    \       \"success\": true,\n        \"source\": \"cache\",\n        \"timestamp\"\
+    : \"2025-11-06T...\",\n        \"data\": {\n            \"main_net_inflow\": 10000,\n\
+    \            ...\n        }\n    }\n\n    Response (缓存未命中):\n    {\n        \"\
+    success\": false,\n        \"message\": \"缓存未找到\",\n        \"data\": null\n \
+    \   }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    timeframe:
+      in: query
+      required: false
+      description: ''
+- api_id: cache_post_api_cache_symbol_data_type
+  module: cache
+  path: /api/cache/{symbol}/{data_type}
+  method: POST
+  summary: Write Cache Data
+  description: "写入或更新缓存数据\n\nArgs:\n    symbol: 股票代码\n    data_type: 数据类型\n    data:\
+    \ 要缓存的数据对象\n    timeframe: 时间维度 (可选)\n    ttl_days: 缓存生存时间 (天数，默认7天)\n\nReturns:\n\
+    \    写入结果\n\nExamples:\n    POST /api/cache/000001/fund_flow\n    Body:\n    {\n\
+    \        \"data\": {\n            \"main_net_inflow\": 10000,\n            \"\
+    rate\": 0.5\n        },\n        \"timeframe\": \"1d\",\n        \"ttl_days\"\
+    : 1\n    }\n\n    Response:\n    {\n        \"success\": true,\n        \"message\"\
+    : \"缓存写入成功\",\n        \"symbol\": \"000001\",\n        \"data_type\": \"fund_flow\"\
+    ,\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    timeframe:
+      in: query
+      required: false
+      description: ''
+    ttl_days:
+      in: query
+      required: false
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: cache_delete_api_cache_symbol
+  module: cache
+  path: /api/cache/{symbol}
+  method: DELETE
+  summary: Invalidate Symbol Cache
+  description: "清除特定符号的缓存\n\nArgs:\n    symbol: 股票代码\n\nReturns:\n    清除结果\n\nExamples:\n\
+    \    DELETE /api/cache/000001\n\n    Response:\n    {\n        \"success\": true,\n\
+    \        \"message\": \"缓存已清除\",\n        \"symbol\": \"000001\",\n        \"\
+    deleted_count\": 3,\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+- api_id: cache_delete_api_cache
+  module: cache
+  path: /api/cache
+  method: DELETE
+  summary: Clear All Cache
+  description: "清除所有缓存 (需要确认)\n\nArgs:\n    confirm: 确认标志，必须为True才能执行清除\n\nReturns:\n\
+    \    清除结果\n\nExamples:\n    DELETE /api/cache?confirm=true\n\n    Response:\n\
+    \    {\n        \"success\": true,\n        \"message\": \"所有缓存已清除\",\n      \
+    \  \"deleted_count\": 100,\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+  request_params:
+    confirm:
+      in: query
+      required: false
+      description: ''
+- api_id: cache_get_api_cache_symbol_data_type_fresh
+  module: cache
+  path: /api/cache/{symbol}/{data_type}/fresh
+  method: GET
+  summary: Check Cache Freshness
+  description: "检查缓存是否新鲜（有效且未过期）\n\nArgs:\n    symbol: 股票代码\n    data_type: 数据类型\n\
+    \    max_age_days: 最大缓存年龄（天）\n\nReturns:\n    缓存新鲜度检查结果\n\nExamples:\n    GET\
+    \ /api/cache/000001/fund_flow/fresh\n\n    Response:\n    {\n        \"success\"\
+    : true,\n        \"symbol\": \"000001\",\n        \"data_type\": \"fund_flow\"\
+    ,\n        \"is_fresh\": true,\n        \"max_age_days\": 7,\n        \"timestamp\"\
+    : \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    max_age_days:
+      in: query
+      required: false
+      description: ''
+- api_id: cache_post_api_cache_evict_manual
+  module: cache
+  path: /api/cache/evict/manual
+  method: POST
+  summary: Manual Cache Eviction
+  description: "手动触发缓存淘汰任务\n\nReturns:\n    淘汰结果，包含:\n    - success: 操作成功标志\n    -\
+    \ message: 操作消息\n    - deleted_count: 删除的缓存条数\n    - timestamp: 操作时间戳\n\nExamples:\n\
+    \    POST /api/cache/evict/manual\n\n    Response:\n    {\n        \"success\"\
+    : true,\n        \"message\": \"缓存淘汰成功\",\n        \"deleted_count\": 150,\n \
+    \       \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_get_api_cache_eviction_stats
+  module: cache
+  path: /api/cache/eviction/stats
+  method: GET
+  summary: Get Eviction Statistics
+  description: "获取缓存淘汰策略统计信息\n\nReturns:\n    淘汰策略统计，包含:\n    - ttl_days: TTL天数\n\
+    \    - frequency_tracking: 访问频率追踪统计\n    - hot_data: 热点数据列表\n    - cache_stats:\
+    \ 缓存统计\n    - timestamp: 统计时间戳\n\nExamples:\n    GET /api/cache/eviction/stats\n\
+    \n    Response:\n    {\n        \"success\": true,\n        \"data\": {\n    \
+    \        \"ttl_days\": 7,\n            \"frequency_tracking\": {\n           \
+    \     \"total_tracked\": 100,\n                \"total_accesses\": 5000,\n   \
+    \             \"average_frequency\": 50.0\n            },\n            \"hot_data\"\
+    : [\n                {\n                    \"cache_key\": \"000001:fund_flow:1d\"\
+    ,\n                    \"access_count\": 500,\n                    \"last_access\"\
+    : \"2025-11-06T...\"\n                }\n            ],\n            \"cache_stats\"\
+    : {\n                \"hit_rate\": 0.85,\n                \"cache_hits\": 850,\n\
+    \                \"cache_misses\": 150\n            }\n        },\n        \"\
+    timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_post_api_cache_prewarming_trigger
+  module: cache
+  path: /api/cache/prewarming/trigger
+  method: POST
+  summary: Trigger Cache Prewarming
+  description: "触发缓存预热任务\n\nReturns:\n    预热结果，包含:\n    - success: 操作成功标志\n    - prewarmed_count:\
+    \ 预热的缓存条数\n    - failed_count: 失败的缓存条数\n    - elapsed_seconds: 预热耗时\n\nExamples:\n\
+    \    POST /api/cache/prewarming/trigger\n\n    Response:\n    {\n        \"success\"\
+    : true,\n        \"message\": \"缓存预热成功\",\n        \"prewarmed_count\": 20,\n\
+    \        \"failed_count\": 0,\n        \"elapsed_seconds\": 2.5,\n        \"timestamp\"\
+    : \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_get_api_cache_prewarming_status
+  module: cache
+  path: /api/cache/prewarming/status
+  method: GET
+  summary: Get Prewarming Status
+  description: "获取缓存预热状态\n\nReturns:\n    预热状态信息，包含:\n    - last_prewarming: 最后预热时间\n\
+    \    - prewarmed_keys_count: 已预热的缓存键数\n\nExamples:\n    GET /api/cache/prewarming/status\n\
+    \n    Response:\n    {\n        \"success\": true,\n        \"data\": {\n    \
+    \        \"last_prewarming\": \"2025-11-06T12:00:00.000000\",\n            \"\
+    prewarmed_keys_count\": 20\n        },\n        \"timestamp\": \"2025-11-06T...\"\
+    \n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_get_api_cache_monitoring_metrics
+  module: cache
+  path: /api/cache/monitoring/metrics
+  method: GET
+  summary: Get Cache Monitoring Metrics
+  description: "获取缓存监控指标\n\nReturns:\n    缓存性能指标，包含:\n    - hit_rate: 命中率\n    - hit_count:\
+    \ 命中次数\n    - miss_count: 未命中次数\n    - average_latency_ms: 平均延迟（毫秒）\n    - health_status:\
+    \ 健康状态\n\nExamples:\n    GET /api/cache/monitoring/metrics\n\n    Response:\n\
+    \    {\n        \"success\": true,\n        \"data\": {\n            \"hit_count\"\
+    : 850,\n            \"miss_count\": 150,\n            \"hit_rate\": 85.0,\n  \
+    \          \"average_latency_ms\": 2.5,\n            \"health_status\": \"healthy\"\
+    \n        },\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: cache_get_api_cache_monitoring_health
+  module: cache
+  path: /api/cache/monitoring/health
+  method: GET
+  summary: Get Cache Health Status
+  description: "获取缓存系统健康状态\n\nReturns:\n    缓存系统健康状态，包含:\n    - status: 健康状态 (healthy/warning/critical)\n\
+    \    - hit_rate: 命中率\n    - metrics: 详细指标\n\nExamples:\n    GET /api/cache/monitoring/health\n\
+    \n    Response:\n    {\n        \"success\": true,\n        \"status\": \"healthy\"\
+    ,\n        \"hit_rate\": 85.0,\n        \"message\": \"缓存系统运行正常，命中率 85.0%\",\n\
+    \        \"timestamp\": \"2025-11-06T...\"\n    }"
+  priority: P1
+  tags:
+  - cache
+  - cache
+- api_id: tasks_post_api_tasks_register
+  module: tasks
+  path: /api/tasks/register
+  method: POST
+  summary: Register Task
+  description: "注册新任务\n\nSecurity:\n    - 需要用户认证\n    - 管理员权限优先\n    - 访问频率限制\n  \
+    \  - 操作审计日志"
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: tasks_delete_api_tasks_task_id
+  module: tasks
+  path: /api/tasks/{task_id}
+  method: DELETE
+  summary: Unregister Task
+  description: "注销任务\n\nSecurity:\n    - 需要用户认证\n    - 管理员权限优先\n    - 访问频率限制\n   \
+    \ - 操作审计日志"
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_id:
+      in: path
+      required: true
+      description: 任务ID
+- api_id: tasks_get_api_tasks_task_id
+  module: tasks
+  path: /api/tasks/{task_id}
+  method: GET
+  summary: Get Task
+  description: 获取任务详情
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_id:
+      in: path
+      required: true
+      description: 任务ID
+- api_id: tasks_get_api_tasks
+  module: tasks
+  path: /api/tasks/
+  method: GET
+  summary: List Tasks
+  description: "列出所有任务\n\nSecurity:\n    - 需要用户认证\n    - 管理员可查看所有任务，普通用户仅查看自己创建的任务\n\
+    \    - 访问频率限制"
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_type:
+      in: query
+      required: false
+      description: 任务类型
+    tags:
+      in: query
+      required: false
+      description: 逗号分隔的任务标签
+    status:
+      in: query
+      required: false
+      description: 任务状态
+    enabled:
+      in: query
+      required: false
+      description: 是否启用
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+- api_id: tasks_post_api_tasks_task_id_start
+  module: tasks
+  path: /api/tasks/{task_id}/start
+  method: POST
+  summary: Start Task
+  description: 启动任务
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: false
+      content_type: application/json
+- api_id: tasks_post_api_tasks_task_id_stop
+  module: tasks
+  path: /api/tasks/{task_id}/stop
+  method: POST
+  summary: Stop Task
+  description: 停止任务
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_id:
+      in: path
+      required: true
+      description: ''
+- api_id: tasks_get_api_tasks_executions
+  module: tasks
+  path: /api/tasks/executions/
+  method: GET
+  summary: List Task Executions
+  description: 列出任务执行历史
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    task_id:
+      in: query
+      required: false
+      description: ''
+    limit:
+      in: query
+      required: false
+      description: ''
+- api_id: tasks_get_api_tasks_executions_execution_id
+  module: tasks
+  path: /api/tasks/executions/{execution_id}
+  method: GET
+  summary: Get Execution
+  description: 获取执行记录详情
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    execution_id:
+      in: path
+      required: true
+      description: ''
+- api_id: tasks_get_api_tasks_statistics
+  module: tasks
+  path: /api/tasks/statistics/
+  method: GET
+  summary: Get Task Statistics
+  description: 获取任务统计信息
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+- api_id: tasks_post_api_tasks_import
+  module: tasks
+  path: /api/tasks/import
+  method: POST
+  summary: Import Config
+  description: 导入任务配置
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: tasks_post_api_tasks_export
+  module: tasks
+  path: /api/tasks/export
+  method: POST
+  summary: Export Config
+  description: 导出任务配置
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: tasks_delete_api_tasks_executions_cleanup
+  module: tasks
+  path: /api/tasks/executions/cleanup
+  method: DELETE
+  summary: Cleanup Executions
+  description: 清理旧的执行记录
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    days:
+      in: query
+      required: false
+      description: ''
+- api_id: tasks_get_api_tasks_health
+  module: tasks
+  path: /api/tasks/health
+  method: GET
+  summary: 任务管理健康检查
+  description: 检查后台任务系统的运行状态
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  - health
+- api_id: tasks_get_api_tasks_audit_logs
+  module: tasks
+  path: /api/tasks/audit/logs
+  method: GET
+  summary: Get Audit Logs
+  description: "获取任务操作审计日志\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限\n    - 支持操作类型和用户名过滤"
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回记录数
+    operation:
+      in: query
+      required: false
+      description: 操作类型过滤
+    username:
+      in: query
+      required: false
+      description: 用户名过滤
+- api_id: tasks_post_api_tasks_cleanup_audit
+  module: tasks
+  path: /api/tasks/cleanup/audit
+  method: POST
+  summary: Cleanup Audit Logs
+  description: "清理旧的审计日志\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限"
+  priority: P2
+  tags:
+  - tasks
+  - tasks
+  request_params:
+    days:
+      in: query
+      required: false
+      description: 保留最近几天的日志
+- api_id: trade_get_api_trade_health
+  module: trade
+  path: /api/trade/health
+  method: GET
+  summary: Health Check
+  description: 健康检查
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+- api_id: trade_get_api_trade_portfolio
+  module: trade
+  path: /api/trade/portfolio
+  method: GET
+  summary: Get Portfolio
+  description: '获取投资组合概览
+
+
+    返回账户总资产、可用资金、持仓市值、盈亏等信息'
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+- api_id: trade_get_api_trade_positions
+  module: trade
+  path: /api/trade/positions
+  method: GET
+  summary: Get Positions
+  description: '获取持仓列表
+
+
+    返回用户当前所有持仓的详细信息，包括股票代码、数量、成本价、当前价、盈亏等'
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+- api_id: trade_get_api_trade_trades
+  module: trade
+  path: /api/trade/trades
+  method: GET
+  summary: Get Trades
+  description: '获取交易记录列表
+
+
+    支持按股票代码、日期范围过滤，返回分页的交易历史记录'
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码 (可选)
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+- api_id: trade_get_api_trade_statistics
+  module: trade
+  path: /api/trade/statistics
+  method: GET
+  summary: Get Statistics
+  description: '获取交易统计数据
+
+
+    返回总交易次数、买卖次数、持仓数量、成交金额、手续费、已实现盈亏等统计信息'
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+- api_id: trade_post_api_trade_execute
+  module: trade
+  path: /api/trade/execute
+  method: POST
+  summary: Execute Trade
+  description: "执行买卖交易\n\n接收交易指令，验证参数，模拟执行交易并返回结果\n\nArgs:\n    order: 交易信息字典，包含 type,\
+    \ symbol, quantity, price 等字段\n\nReturns:\n    APIResponse: 包含交易执行结果的响应"
+  priority: P0
+  tags:
+  - trade
+  - 交易执行
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: wencai_get_api_market_wencai_queries
+  module: wencai
+  path: /api/market/wencai/queries
+  method: GET
+  summary: 获取所有查询列表
+  description: 获取所有可用的问财查询配置
+  priority: P0
+  tags:
+  - wencai
+- api_id: wencai_get_api_market_wencai_queries_query_name
+  module: wencai
+  path: /api/market/wencai/queries/{query_name}
+  method: GET
+  summary: 获取指定查询信息
+  description: 根据查询名称获取查询配置详情
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    query_name:
+      in: path
+      required: true
+      description: ''
+- api_id: wencai_post_api_market_wencai_query
+  module: wencai
+  path: /api/market/wencai/query
+  method: POST
+  summary: 执行问财查询
+  description: 执行指定的问财查询并保存结果到数据库
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: wencai_get_api_market_wencai_results_query_name
+  module: wencai
+  path: /api/market/wencai/results/{query_name}
+  method: GET
+  summary: 获取查询结果
+  description: 获取指定查询的最新结果数据
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    query_name:
+      in: path
+      required: true
+      description: ''
+    limit:
+      in: query
+      required: false
+      description: 返回条数
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+- api_id: wencai_post_api_market_wencai_refresh_query_name
+  module: wencai
+  path: /api/market/wencai/refresh/{query_name}
+  method: POST
+  summary: 刷新查询数据
+  description: 在后台异步刷新指定查询的数据
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    query_name:
+      in: path
+      required: true
+      description: ''
+    pages:
+      in: query
+      required: false
+      description: 获取页数
+- api_id: wencai_get_api_market_wencai_history_query_name
+  module: wencai
+  path: /api/market/wencai/history/{query_name}
+  method: GET
+  summary: 获取查询历史
+  description: 获取指定查询的历史数据统计
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    query_name:
+      in: path
+      required: true
+      description: ''
+    days:
+      in: query
+      required: false
+      description: 查询天数
+- api_id: wencai_post_api_market_wencai_custom_query
+  module: wencai
+  path: /api/market/wencai/custom-query
+  method: POST
+  summary: 执行自定义查询
+  description: 执行用户自定义的问财查询（直接返回结果，不保存到数据库）
+  priority: P0
+  tags:
+  - wencai
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: wencai_get_api_market_wencai_health
+  module: wencai
+  path: /api/market/wencai/health
+  method: GET
+  summary: 健康检查
+  description: 检查问财API服务状态
+  priority: P0
+  tags:
+  - wencai
+- api_id: stock_search_get_api_stock_search_search
+  module: stock-search
+  path: /api/stock-search/search
+  method: GET
+  summary: Search Stocks
+  description: "搜索股票\n\nSecurity:\n    - 需要用户认证\n    - 搜索频率限制\n    - 搜索关键词验证和清理\n\
+    \    - 操作分析记录\n\n支持：\n- A 股：股票代码或名称\n- H 股（港股）：股票代码或名称"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    q:
+      in: query
+      required: true
+      description: 搜索关键词
+    market:
+      in: query
+      required: false
+      description: '市场类型: auto, cn, hk'
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+    sort_by:
+      in: query
+      required: false
+      description: 排序字段
+    sort_order:
+      in: query
+      required: false
+      description: '排序顺序: asc, desc'
+- api_id: stock_search_get_api_stock_search_quote_symbol
+  module: stock-search
+  path: /api/stock-search/quote/{symbol}
+  method: GET
+  summary: Get Stock Quote
+  description: "获取股票实时报价\n\nSecurity:\n    - 需要用户认证\n    - 股票代码格式验证\n    - 访问频率限制\n\
+    \    - 操作分析记录\n\nArgs:\n    symbol: 股票代码\n    market: 市场类型（cn=A股, hk=港股）"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn, hk'
+- api_id: stock_search_get_api_stock_search_profile_symbol
+  module: stock-search
+  path: /api/stock-search/profile/{symbol}
+  method: GET
+  summary: Get Company Profile
+  description: "获取公司基本信息\n\nArgs:\n    symbol: 股票代码\n    market: 市场类型"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn, hk'
+- api_id: stock_search_get_api_stock_search_news_symbol
+  module: stock-search
+  path: /api/stock-search/news/{symbol}
+  method: GET
+  summary: Get Stock News
+  description: "获取股票新闻\n\nArgs:\n    symbol: 股票代码\n    market: 市场类型（cn=A股, hk=港股）\n\
+    \    days: 获取最近几天的新闻"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn, hk'
+    days:
+      in: query
+      required: false
+      description: 获取最近几天的新闻
+- api_id: stock_search_get_api_stock_search_news_market_category
+  module: stock-search
+  path: /api/stock-search/news/market/{category}
+  method: GET
+  summary: Get Market News
+  description: "获取市场新闻\n\nArgs:\n    category: 新闻类别\n    market: 市场类型（cn=A股, hk=港股）"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    category:
+      in: path
+      required: true
+      description: ''
+    market:
+      in: query
+      required: false
+      description: '市场类型: cn, hk'
+- api_id: stock_search_get_api_stock_search_recommendation_symbol
+  module: stock-search
+  path: /api/stock-search/recommendation/{symbol}
+  method: GET
+  summary: Get Recommendation Trends
+  description: "获取分析师推荐趋势\n\nArgs:\n    symbol: 股票代码"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+- api_id: stock_search_post_api_stock_search_cache_clear
+  module: stock-search
+  path: /api/stock-search/cache/clear
+  method: POST
+  summary: Clear Search Cache
+  description: "清除搜索缓存\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限\n    - 操作审计记录"
+  priority: P1
+  tags:
+  - stock-search
+- api_id: stock_search_get_api_stock_search_analytics_searches
+  module: stock-search
+  path: /api/stock-search/analytics/searches
+  method: GET
+  summary: Get Search Analytics
+  description: "获取搜索操作分析数据\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限\n    - 支持过滤查询"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 返回记录数
+    operation:
+      in: query
+      required: false
+      description: 操作类型过滤
+    username:
+      in: query
+      required: false
+      description: 用户名过滤
+- api_id: stock_search_post_api_stock_search_analytics_cleanup
+  module: stock-search
+  path: /api/stock-search/analytics/cleanup
+  method: POST
+  summary: Cleanup Search Analytics
+  description: "清理旧的搜索分析数据\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    days:
+      in: query
+      required: false
+      description: 保留最近几天的数据
+- api_id: stock_search_get_api_stock_search_rate_limits_status
+  module: stock-search
+  path: /api/stock-search/rate-limits/status
+  method: GET
+  summary: Get Rate Limits Status
+  description: "获取访问频率限制状态\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限"
+  priority: P1
+  tags:
+  - stock-search
+  request_params:
+    user_id:
+      in: query
+      required: false
+      description: 查询特定用户的限制状态
+- api_id: watchlist_get_api_watchlist
+  module: watchlist
+  path: /api/watchlist/
+  method: GET
+  summary: Get My Watchlist
+  description: 获取当前用户的自选股列表
+  priority: P1
+  tags:
+  - watchlist
+- api_id: watchlist_get_api_watchlist_symbols
+  module: watchlist
+  path: /api/watchlist/symbols
+  method: GET
+  summary: Get My Watchlist Symbols
+  description: 获取当前用户的自选股代码列表
+  priority: P1
+  tags:
+  - watchlist
+- api_id: watchlist_post_api_watchlist_add
+  module: watchlist
+  path: /api/watchlist/add
+  method: POST
+  summary: Add To Watchlist
+  description: '添加股票到自选股列表
+
+    支持通过 group_id 或 group_name 指定分组
+
+    如果提供 group_name 且分组不存在，会自动创建'
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: watchlist_delete_api_watchlist_remove_symbol
+  module: watchlist
+  path: /api/watchlist/remove/{symbol}
+  method: DELETE
+  summary: Remove From Watchlist
+  description: 从自选股列表中删除股票
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+- api_id: watchlist_get_api_watchlist_check_symbol
+  module: watchlist
+  path: /api/watchlist/check/{symbol}
+  method: GET
+  summary: Check In Watchlist
+  description: 检查股票是否在自选股列表中
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+- api_id: watchlist_put_api_watchlist_notes_symbol
+  module: watchlist
+  path: /api/watchlist/notes/{symbol}
+  method: PUT
+  summary: Update Watchlist Notes
+  description: 更新自选股备注
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: watchlist_get_api_watchlist_count
+  module: watchlist
+  path: /api/watchlist/count
+  method: GET
+  summary: Get Watchlist Count
+  description: 获取自选股数量
+  priority: P1
+  tags:
+  - watchlist
+- api_id: watchlist_delete_api_watchlist_clear
+  module: watchlist
+  path: /api/watchlist/clear
+  method: DELETE
+  summary: Clear Watchlist
+  description: 清空当前用户的自选股列表
+  priority: P1
+  tags:
+  - watchlist
+- api_id: watchlist_get_api_watchlist_groups
+  module: watchlist
+  path: /api/watchlist/groups
+  method: GET
+  summary: Get User Groups
+  description: 获取当前用户的所有自选股分组
+  priority: P1
+  tags:
+  - watchlist
+- api_id: watchlist_post_api_watchlist_groups
+  module: watchlist
+  path: /api/watchlist/groups
+  method: POST
+  summary: Create Group
+  description: 创建新的自选股分组
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: watchlist_put_api_watchlist_groups_group_id
+  module: watchlist
+  path: /api/watchlist/groups/{group_id}
+  method: PUT
+  summary: Update Group
+  description: 修改分组名称
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    group_id:
+      in: path
+      required: true
+      description: 分组ID
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: watchlist_delete_api_watchlist_groups_group_id
+  module: watchlist
+  path: /api/watchlist/groups/{group_id}
+  method: DELETE
+  summary: Delete Group
+  description: 删除分组（会同时删除该分组下的所有自选股）
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    group_id:
+      in: path
+      required: true
+      description: 分组ID
+- api_id: watchlist_get_api_watchlist_group_group_id
+  module: watchlist
+  path: /api/watchlist/group/{group_id}
+  method: GET
+  summary: Get Watchlist By Group
+  description: 获取指定分组的自选股列表
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    group_id:
+      in: path
+      required: true
+      description: 分组ID
+- api_id: watchlist_put_api_watchlist_move
+  module: watchlist
+  path: /api/watchlist/move
+  method: PUT
+  summary: Move Stock To Group
+  description: 将股票从一个分组移动到另一个分组
+  priority: P1
+  tags:
+  - watchlist
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: watchlist_get_api_watchlist_with_groups
+  module: watchlist
+  path: /api/watchlist/with-groups
+  method: GET
+  summary: Get Watchlist With Groups
+  description: 获取所有分组及其包含的自选股（分组视图）
+  priority: P1
+  tags:
+  - watchlist
+- api_id: tradingview_post_api_tradingview_chart_config
+  module: tradingview
+  path: /api/tradingview/chart/config
+  method: POST
+  summary: Get Chart Config
+  description: '获取 TradingView 图表配置
+
+
+    返回用于前端嵌入的图表配置'
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: tradingview_post_api_tradingview_mini_chart_config
+  module: tradingview
+  path: /api/tradingview/mini-chart/config
+  method: POST
+  summary: Get Mini Chart Config
+  description: 获取 TradingView 迷你图表配置
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    market:
+      in: query
+      required: false
+      description: 市场类型
+    theme:
+      in: query
+      required: false
+      description: 主题
+    locale:
+      in: query
+      required: false
+      description: 语言
+    container_id:
+      in: query
+      required: false
+      description: 容器ID
+- api_id: tradingview_post_api_tradingview_ticker_tape_config
+  module: tradingview
+  path: /api/tradingview/ticker-tape/config
+  method: POST
+  summary: Get Ticker Tape Config
+  description: 获取 TradingView Ticker Tape 配置
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: tradingview_get_api_tradingview_market_overview_config
+  module: tradingview
+  path: /api/tradingview/market-overview/config
+  method: GET
+  summary: Get Market Overview Config
+  description: 获取 TradingView 市场概览配置
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    market:
+      in: query
+      required: false
+      description: '市场类型: china, us, crypto'
+    theme:
+      in: query
+      required: false
+      description: 主题
+    locale:
+      in: query
+      required: false
+      description: 语言
+    container_id:
+      in: query
+      required: false
+      description: 容器ID
+- api_id: tradingview_get_api_tradingview_screener_config
+  module: tradingview
+  path: /api/tradingview/screener/config
+  method: GET
+  summary: Get Screener Config
+  description: 获取 TradingView 股票筛选器配置
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    market:
+      in: query
+      required: false
+      description: '市场类型: china, america, crypto'
+    theme:
+      in: query
+      required: false
+      description: 主题
+    locale:
+      in: query
+      required: false
+      description: 语言
+    container_id:
+      in: query
+      required: false
+      description: 容器ID
+- api_id: tradingview_get_api_tradingview_symbol_convert
+  module: tradingview
+  path: /api/tradingview/symbol/convert
+  method: GET
+  summary: Convert Symbol
+  description: 将股票代码转换为 TradingView 格式
+  priority: P1
+  tags:
+  - tradingview
+  request_params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    market:
+      in: query
+      required: false
+      description: 市场类型
+- api_id: notification_get_api_notification_status
+  module: notification
+  path: /api/notification/status
+  method: GET
+  summary: Get Email Service Status
+  description: '获取邮件服务状态 - Phase 4C Enhanced
+
+
+    返回邮件服务的详细配置状态和统计信息'
+  priority: P1
+  tags:
+  - notification
+- api_id: notification_post_api_notification_email_send
+  module: notification
+  path: /api/notification/email/send
+  method: POST
+  summary: Send Email
+  description: '发送邮件 - Phase 4C Enhanced（需要管理员权限）
+
+
+    支持定时发送、优先级设置等高级功能'
+  priority: P1
+  tags:
+  - notification
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: notification_post_api_notification_email_welcome
+  module: notification
+  path: /api/notification/email/welcome
+  method: POST
+  summary: Send Welcome Email
+  description: '发送欢迎邮件 - Phase 4C Enhanced
+
+
+    支持多语言和个性化欢迎信息'
+  priority: P1
+  tags:
+  - notification
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: notification_post_api_notification_email_newsletter
+  module: notification
+  path: /api/notification/email/newsletter
+  method: POST
+  summary: Send Daily Newsletter
+  description: 发送每日新闻简报
+  priority: P1
+  tags:
+  - notification
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: notification_post_api_notification_email_price_alert
+  module: notification
+  path: /api/notification/email/price-alert
+  method: POST
+  summary: Send Price Alert
+  description: 发送价格提醒邮件
+  priority: P1
+  tags:
+  - notification
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: notification_post_api_notification_test_email
+  module: notification
+  path: /api/notification/test-email
+  method: POST
+  summary: Send Test Email
+  description: "发送测试邮件到当前用户邮箱\n\n向已登录用户的注册邮箱发送测试邮件，用于验证邮件服务配置是否正确。该端点会\n立即发送邮件，并返回发送结果。\n\
+    \n**功能说明**:\n- 发送HTML格式的测试邮件\n- 验证SMTP服务器配置正确性\n- 检查邮箱地址有效性\n- 测试邮件发送延迟和送达率\n\
+    - 同步返回发送结果（非后台任务）\n\n**使用场景**:\n- 初次配置邮件服务后的功能验证\n- 检查邮件服务是否正常工作\n- 验证用户邮箱地址是否有效\n\
+    - 排查邮件发送失败问题\n- 测试邮件模板渲染效果\n\n**认证要求**:\n- 需要用户登录（JWT Token认证）\n- 用户必须在个人资料中设置了邮箱地址\n\
+    - 无角色限制，所有用户均可使用\n\n**返回值**:\n成功响应:\n- success: 发送成功标志（true）\n- message: 成功消息描述\n\
+    - recipient: 接收邮箱地址\n\n失败响应:\n- 400: 用户未设置邮箱\n- 503: 邮件服务未配置\n- 500: 邮件发送失败\n\n\
+    **示例**:\n```bash\n# 发送测试邮件（需要认证Token）\ncurl -X POST \"http://localhost:8000/api/notification/test-email\"\
+    \ \\\n  -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n\
+    ```\n\n**成功响应示例**:\n```json\n{\n  \"success\": true,\n  \"message\": \"测试邮件已发送至\
+    \ user@example.com\",\n  \"recipient\": \"user@example.com\"\n}\n```\n\n**用户未设置邮箱响应**:\n\
+    ```json\n{\n  \"detail\": \"用户未设置邮箱\"\n}\n```\n\n**邮件服务未配置响应**:\n```json\n{\n\
+    \  \"detail\": \"邮件服务未配置\"\n}\n```\n\n**注意事项**:\n- 该端点会立即发送邮件，不使用后台任务\n- 发送失败会抛出HTTP异常，前端需处理错误\n\
+    - 测试邮件包含用户名和发送时间信息\n- 频繁调用可能触发SMTP限流，建议间隔至少30秒\n- 某些邮箱服务商可能将测试邮件标记为垃圾邮件\n- 发送前会检查邮件服务配置状态"
+  priority: P1
+  tags:
+  - notification
+- api_id: notification_get_api_notification_preferences
+  module: notification
+  path: /api/notification/preferences
+  method: GET
+  summary: Get Notification Preferences
+  description: 获取用户通知偏好设置
+  priority: P1
+  tags:
+  - notification
+- api_id: notification_post_api_notification_preferences
+  module: notification
+  path: /api/notification/preferences
+  method: POST
+  summary: Update Notification Preferences
+  description: 更新用户通知偏好设置
+  priority: P1
+  tags:
+  - notification
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_post_api_ml_tdx_data
+  module: machine-learning
+  path: /api/ml/tdx/data
+  method: POST
+  summary: Get Tdx Data
+  description: '获取通达信股票数据
+
+
+    - **stock_code**: 股票代码（如：000001）
+
+    - **market**: 市场代码（sh/sz）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_get_api_ml_tdx_stocks_market
+  module: machine-learning
+  path: /api/ml/tdx/stocks/{market}
+  method: GET
+  summary: List Tdx Stocks
+  description: '列出可用的股票代码
+
+
+    - **market**: 市场代码（sh/sz）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    market:
+      in: path
+      required: true
+      description: ''
+- api_id: machine_learning_post_api_ml_features_generate
+  module: machine-learning
+  path: /api/ml/features/generate
+  method: POST
+  summary: Generate Features
+  description: '生成特征数据
+
+
+    - **stock_code**: 股票代码
+
+    - **market**: 市场代码
+
+    - **step**: 滚动窗口大小（默认10）
+
+    - **include_indicators**: 是否包含技术指标（默认True）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_post_api_ml_models_train
+  module: machine-learning
+  path: /api/ml/models/train
+  method: POST
+  summary: Train Model
+  description: '训练预测模型
+
+
+    - **stock_code**: 股票代码
+
+    - **market**: 市场代码
+
+    - **step**: 滚动窗口大小
+
+    - **test_size**: 测试集比例（0.1-0.5）
+
+    - **model_name**: 模型名称
+
+    - **model_params**: 模型参数（可选）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_post_api_ml_models_predict
+  module: machine-learning
+  path: /api/ml/models/predict
+  method: POST
+  summary: Predict With Model
+  description: '使用模型进行预测
+
+
+    - **model_name**: 模型名称
+
+    - **stock_code**: 股票代码
+
+    - **market**: 市场代码
+
+    - **days**: 预测天数（1-30）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_get_api_ml_models
+  module: machine-learning
+  path: /api/ml/models
+  method: GET
+  summary: List Models
+  description: 列出所有已保存的模型
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+- api_id: machine_learning_get_api_ml_models_model_name
+  module: machine-learning
+  path: /api/ml/models/{model_name}
+  method: GET
+  summary: Get Model Detail
+  description: 获取模型详情
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    model_name:
+      in: path
+      required: true
+      description: ''
+- api_id: machine_learning_post_api_ml_models_hyperparameter_search
+  module: machine-learning
+  path: /api/ml/models/hyperparameter-search
+  method: POST
+  summary: Hyperparameter Search
+  description: '超参数搜索
+
+
+    - **stock_code**: 股票代码
+
+    - **market**: 市场代码
+
+    - **step**: 滚动窗口大小
+
+    - **cv**: 交叉验证折数
+
+    - **param_grid**: 参数网格（可选）'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: machine_learning_post_api_ml_models_evaluate
+  module: machine-learning
+  path: /api/ml/models/evaluate
+  method: POST
+  summary: Evaluate Model
+  description: '评估模型性能
+
+
+    - **model_name**: 模型名称
+
+    - **stock_code**: 股票代码
+
+    - **market**: 市场代码'
+  priority: P2
+  tags:
+  - machine-learning
+  - Machine Learning
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: strategy_get_api_strategy_definitions
+  module: strategy
+  path: /api/strategy/definitions
+  method: GET
+  summary: Get Strategy Definitions
+  description: "获取所有策略定义\n\nReturns:\n    所有可用策略的定义列表"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+- api_id: strategy_post_api_strategy_run_single
+  module: strategy
+  path: /api/strategy/run/single
+  method: POST
+  summary: Run Strategy Single
+  description: "对单只股票运行策略\n\nArgs:\n    strategy_code: 策略代码 (如: volume_surge)\n  \
+    \  symbol: 股票代码 (如: 600519)\n    stock_name: 股票名称 (可选)\n    check_date: 检查日期 (可选，默认今天)\n\
+    \nReturns:\n    策略执行结果"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+  request_params:
+    strategy_code:
+      in: query
+      required: true
+      description: 策略代码
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    stock_name:
+      in: query
+      required: false
+      description: 股票名称
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+- api_id: strategy_post_api_strategy_run_batch
+  module: strategy
+  path: /api/strategy/run/batch
+  method: POST
+  summary: Run Strategy Batch
+  description: "批量运行策略\n\nArgs:\n    strategy_code: 策略代码\n    symbols: 股票代码列表，逗号分隔\
+    \ (如: 600519,000001)\n    market: 市场类型 (A=全部, SH=上证, SZ=深证, CYB=创业板, KCB=科创板)\n\
+    \    limit: 限制处理数量\n    check_date: 检查日期 (可选)\n\nReturns:\n    批量执行结果统计"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+  request_params:
+    strategy_code:
+      in: query
+      required: true
+      description: 策略代码
+    symbols:
+      in: query
+      required: false
+      description: 股票代码列表，逗号分隔
+    market:
+      in: query
+      required: false
+      description: 市场类型 (A/SH/SZ/CYB/KCB)
+    limit:
+      in: query
+      required: false
+      description: 限制处理数量
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+- api_id: strategy_get_api_strategy_results
+  module: strategy
+  path: /api/strategy/results
+  method: GET
+  summary: Query Strategy Results
+  description: "查询策略结果\n\nArgs:\n    strategy_code: 策略代码 (可选)\n    symbol: 股票代码 (可选)\n\
+    \    check_date: 检查日期 (可选)\n    match_result: 是否匹配 (可选)\n    limit: 返回数量 (默认100)\n\
+    \    offset: 偏移量 (默认0)\n\nReturns:\n    策略结果列表"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+  request_params:
+    strategy_code:
+      in: query
+      required: false
+      description: 策略代码
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+    match_result:
+      in: query
+      required: false
+      description: 是否匹配
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+- api_id: strategy_get_api_strategy_matched_stocks
+  module: strategy
+  path: /api/strategy/matched-stocks
+  method: GET
+  summary: Get Matched Stocks
+  description: "获取匹配指定策略的股票列表\n\nArgs:\n    strategy_code: 策略代码\n    check_date: 检查日期\
+    \ (可选，默认最新)\n    limit: 返回数量 (默认100)\n\nReturns:\n    匹配的股票列表"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+  request_params:
+    strategy_code:
+      in: query
+      required: true
+      description: 策略代码
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+- api_id: strategy_get_api_strategy_stats_summary
+  module: strategy
+  path: /api/strategy/stats/summary
+  method: GET
+  summary: Get Strategy Summary
+  description: "获取策略统计摘要\n\nArgs:\n    check_date: 检查日期 (可选，默认今天)\n\nReturns:\n  \
+    \  各策略的匹配数量统计"
+  priority: P0
+  tags:
+  - strategy
+  - strategy
+  request_params:
+    check_date:
+      in: query
+      required: false
+      description: 检查日期 YYYY-MM-DD
+- api_id: monitoring_get_monitoring_health
+  module: monitoring
+  path: /monitoring/health
+  method: GET
+  summary: Health Check
+  description: 健康检查
+  priority: P2
+  tags:
+  - monitoring
+- api_id: monitoring_get_monitoring_status
+  module: monitoring
+  path: /monitoring/status
+  method: GET
+  summary: Get Status
+  description: 获取服务状态
+  priority: P2
+  tags:
+  - monitoring
+- api_id: monitoring_post_monitoring_analyze
+  module: monitoring
+  path: /monitoring/analyze
+  method: POST
+  summary: Analyze Data
+  description: "监控数据AI智能分析\n\n使用AI模型对实时监控数据进行智能分析，识别异常行为和市场风险。\n该端点专注于监控告警数据的深度分析，提供风险预警和投资建议。\n\
+    \n**功能说明**:\n- AI驱动的监控数据异常检测\n- 识别价格异常波动和成交量异常\n- 分析龙虎榜数据和资金流向\n- 生成风险评估和预警信号\n\
+    - 检测市场操纵行为特征\n- 提供多维度的监控分析结果\n\n**使用场景**:\n- 实时监控告警的智能筛选\n- 异常交易行为识别\n- 资金流向分析和主力动向追踪\n\
+    - 市场风险评估和预警\n- 涨跌停板监控分析\n- 龙虎榜数据智能解读\n\n**请求参数**:\n- alert_type (可选): 告警类型（limit_up/limit_down/volume_spike）\n\
+    - symbols (可选): 股票代码列表\n- time_range (可选): 时间范围（1h/1d/1w）\n- analysis_type (可选):\
+    \ 分析类型（anomaly/risk/flow）\n- sensitivity (可选): 灵敏度（low/medium/high）\n\n**返回值**:\n\
+    - result: 分析结果描述\n- endpoint: 服务端点标识\n- anomalies (可选): 检测到的异常列表\n  - symbol:\
+    \ 股票代码\n  - anomaly_type: 异常类型\n  - severity: 严重程度\n  - description: 异常描述\n- risk_level\
+    \ (可选): 风险等级（low/medium/high/critical）\n- recommendations (可选): AI建议列表\n\n**示例**:\n\
+    ```bash\n# 监控数据异常分析\ncurl -X POST \"http://localhost:8000/api/monitoring/analyze\"\
+    \ \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"alert_type\"\
+    : \"volume_spike\",\n    \"symbols\": [\"600519\", \"000001\"],\n    \"time_range\"\
+    : \"1d\",\n    \"analysis_type\": \"anomaly\",\n    \"sensitivity\": \"high\"\n\
+    \  }'\n```\n\n**响应示例**:\n```json\n{\n  \"result\": \"分析完成\",\n  \"endpoint\":\
+    \ \"monitoring\",\n  \"anomalies\": [\n    {\n      \"symbol\": \"600519\",\n\
+    \      \"anomaly_type\": \"volume_spike\",\n      \"severity\": \"high\",\n  \
+    \    \"description\": \"成交量突增300%，疑似重大利好消息\"\n    }\n  ],\n  \"risk_level\": \"\
+    medium\",\n  \"recommendations\": [\n    \"建议关注该股后续资金流向\",\n    \"注意主力资金是否持续流入\"\
+    \n  ]\n}\n```\n\n**注意事项**:\n- 当前版本为开发中状态，返回模拟结果\n- AI分析基于历史模式，不能预测未来\n- 异常检测可能存在误报，需人工复核\n\
+    - 建议结合多个数据源综合判断\n- 高频调用可能影响系统性能\n- 分析结果的准确性受数据完整性影响"
+  priority: P2
+  tags:
+  - monitoring
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: gpu_monitoring_get_api_gpu_status
+  module: gpu-monitoring
+  path: /api/gpu/status
+  method: GET
+  summary: Get Gpu Status
+  description: "获取GPU实时状态\n\nArgs:\n    device_id: GPU设备ID（可选，不指定则返回所有GPU）\n\nReturns:\n\
+    \    GPU状态列表"
+  priority: P2
+  tags:
+  - gpu-monitoring
+  - gpu-monitoring
+  request_params:
+    device_id:
+      in: query
+      required: false
+      description: ''
+- api_id: gpu_monitoring_get_api_gpu_performance
+  module: gpu-monitoring
+  path: /api/gpu/performance
+  method: GET
+  summary: Get Gpu Performance
+  description: "获取GPU性能指标\n\nArgs:\n    device_id: GPU设备ID（可选，不指定则返回所有GPU）\n\nReturns:\n\
+    \    GPU性能指标列表"
+  priority: P2
+  tags:
+  - gpu-monitoring
+  - gpu-monitoring
+  request_params:
+    device_id:
+      in: query
+      required: false
+      description: ''
+- api_id: gpu_monitoring_get_api_gpu_metrics
+  module: gpu-monitoring
+  path: /api/gpu/metrics
+  method: GET
+  summary: Get Prometheus Metrics
+  description: "Prometheus格式指标导出端点\n\n由Prometheus定期抓取（scrape_interval: 10s）\n\nReturns:\n\
+    \    Prometheus格式的文本指标"
+  priority: P2
+  tags:
+  - gpu-monitoring
+  - gpu-monitoring
+- api_id: gpu_monitoring_get_api_gpu_history
+  module: gpu-monitoring
+  path: /api/gpu/history
+  method: GET
+  summary: Get Gpu History
+  description: "获取GPU历史监控数据\n\nArgs:\n    device_id: GPU设备ID\n    start_time: 开始时间戳（可选）\n\
+    \    end_time: 结束时间戳（可选）\n    limit: 返回记录数（默认100）\n\nReturns:\n    GPU历史数据列表"
+  priority: P2
+  tags:
+  - gpu-monitoring
+  - gpu-monitoring
+  request_params:
+    device_id:
+      in: query
+      required: true
+      description: GPU设备ID
+    start_time:
+      in: query
+      required: false
+      description: 开始时间戳
+    end_time:
+      in: query
+      required: false
+      description: 结束时间戳
+    limit:
+      in: query
+      required: false
+      description: 返回记录数
+- api_id: technical_analysis_get_api_technical_symbol_indicators
+  module: technical-analysis
+  path: /api/technical/{symbol}/indicators
+  method: GET
+  summary: Get All Indicators
+  description: '获取股票的所有技术指标
+
+
+    参数:
+
+    - symbol: 股票代码 (如: 600519)
+
+    - period: 数据周期 (daily, weekly, monthly)
+
+    - start_date: 开始日期 (可选)
+
+    - end_date: 结束日期 (可选)
+
+    - limit: 数据点数量限制 (可选)
+
+
+    返回:
+
+    - 包含趋势、动量、波动性、成交量指标的综合数据
+
+
+    **验证**: P0改进 Task 2 - 使用TechnicalIndicatorQueryModel验证参数
+
+
+    示例:
+
+    - GET /api/technical/600519/indicators
+
+    - GET /api/technical/600519/indicators?period=weekly
+
+    - GET /api/technical/600519/indicators?start_date=2024-01-01&end_date=2025-10-23'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+    period:
+      in: query
+      required: false
+      description: '数据周期: daily, weekly, monthly'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    limit:
+      in: query
+      required: false
+      description: 数据点数量限制
+- api_id: technical_analysis_get_api_technical_symbol_trend
+  module: technical-analysis
+  path: /api/technical/{symbol}/trend
+  method: GET
+  summary: 获取趋势指标
+  description: '获取趋势指标
+
+
+    包括:
+
+    - MA (移动平均线): 5, 10, 20, 30, 60, 120, 250日
+
+    - EMA (指数移动平均线): 12, 26, 50日
+
+    - MACD (指数平滑异同移动平均线)
+
+    - DMI (动向指标): ADX, +DI, -DI
+
+    - SAR (抛物线转向指标)
+
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+    示例:
+
+    - GET /api/technical/600519/trend'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+    period:
+      in: query
+      required: false
+      description: 数据周期
+    ma_periods:
+      in: query
+      required: false
+      description: '自定义MA周期，逗号分隔，如: 5,10,20'
+- api_id: technical_analysis_get_api_technical_symbol_momentum
+  module: technical-analysis
+  path: /api/technical/{symbol}/momentum
+  method: GET
+  summary: Get Momentum Indicators
+  description: '获取动量指标
+
+
+    包括:
+
+    - RSI (相对强弱指标): 6, 12, 24日
+
+    - KDJ (随机指标): K, D, J
+
+    - CCI (顺势指标)
+
+    - WR (威廉指标)
+
+    - ROC (变动率指标)
+
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+    示例:
+
+    - GET /api/technical/600519/momentum'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: technical_analysis_get_api_technical_symbol_volatility
+  module: technical-analysis
+  path: /api/technical/{symbol}/volatility
+  method: GET
+  summary: Get Volatility Indicators
+  description: '获取波动性指标
+
+
+    包括:
+
+    - Bollinger Bands (布林带): upper, middle, lower, width
+
+    - ATR (平均真实波幅)
+
+    - Keltner Channel (肯特纳通道)
+
+    - Standard Deviation (标准差)
+
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+    示例:
+
+    - GET /api/technical/600519/volatility'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: technical_analysis_get_api_technical_symbol_volume
+  module: technical-analysis
+  path: /api/technical/{symbol}/volume
+  method: GET
+  summary: Get Volume Indicators
+  description: '获取成交量指标
+
+
+    包括:
+
+    - OBV (能量潮指标)
+
+    - VWAP (成交量加权平均价)
+
+    - Volume MA (成交量均线): 5, 10日
+
+    - Volume Ratio (量比)
+
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+    示例:
+
+    - GET /api/technical/600519/volume'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: technical_analysis_get_api_technical_symbol_signals
+  module: technical-analysis
+  path: /api/technical/{symbol}/signals
+  method: GET
+  summary: Get Trading Signals
+  description: '获取交易信号
+
+
+    基于技术指标生成买入/卖出/持有信号
+
+
+    信号类型:
+
+    - macd_golden_cross: MACD金叉 (买入信号)
+
+    - macd_death_cross: MACD死叉 (卖出信号)
+
+    - rsi_oversold: RSI超卖 (买入信号)
+
+    - rsi_overbought: RSI超买 (卖出信号)
+
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+    示例:
+
+    - GET /api/technical/600519/signals'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: technical_analysis_get_api_technical_symbol_history
+  module: technical-analysis
+  path: /api/technical/{symbol}/history
+  method: GET
+  summary: Get Stock History
+  description: '获取股票历史行情数据
+
+
+    用于前端绘制 K 线图和指标图表
+
+
+    参数:
+
+    - symbol: 股票代码
+
+    - period: 周期 (daily, weekly, monthly)
+
+    - start_date: 开始日期 (可选)
+
+    - end_date: 结束日期 (可选)
+
+    - limit: 返回数据点数量 (默认100，最多1000)
+
+
+    返回:
+
+    - OHLCV 数据及基础指标
+
+
+    示例:
+
+    - GET /api/technical/600519/history?limit=200
+
+    - GET /api/technical/600519/history?start_date=2024-01-01'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    limit:
+      in: query
+      required: false
+      description: 返回数据点数量
+- api_id: technical_analysis_post_api_technical_batch_indicators
+  module: technical-analysis
+  path: /api/technical/batch/indicators
+  method: POST
+  summary: Get Batch Indicators
+  description: '批量获取多只股票的技术指标
+
+
+    参数:
+
+    - symbols: 股票代码列表 (最多20只)
+
+
+    示例:
+
+    - POST /api/technical/batch/indicators?symbols=600519&symbols=000001&symbols=600000'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbols:
+      in: query
+      required: true
+      description: 股票代码列表
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: technical_analysis_get_api_technical_patterns_symbol
+  module: technical-analysis
+  path: /api/technical/patterns/{symbol}
+  method: GET
+  summary: Detect Patterns
+  description: '检测技术形态 (预留功能)
+
+
+    将实现:
+
+    - 头肩顶/底
+
+    - 双顶/底
+
+    - 三角形整理
+
+    - 矩形整理
+
+    - 旗形、楔形
+
+    等常见形态
+
+
+    示例:
+
+    - GET /api/technical/patterns/600519'
+  priority: P1
+  tags:
+  - technical-analysis
+  - technical-analysis
+  request_params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+- api_id: dashboard_get_api_dashboard_summary
+  module: dashboard
+  path: /api/dashboard/summary
+  method: GET
+  summary: 获取仪表盘汇总数据
+  description: 获取用户的完整仪表盘数据，包括市场概览、自选股、持仓、风险预警等信息
+  priority: P1
+  tags:
+  - dashboard
+  - dashboard
+  request_params:
+    user_id:
+      in: query
+      required: true
+      description: 用户ID
+    trade_date:
+      in: query
+      required: false
+      description: 交易日期，默认为今天
+    include_market:
+      in: query
+      required: false
+      description: 是否包含市场概览
+    include_watchlist:
+      in: query
+      required: false
+      description: 是否包含自选股
+    include_portfolio:
+      in: query
+      required: false
+      description: 是否包含持仓
+    include_alerts:
+      in: query
+      required: false
+      description: 是否包含风险预警
+    bypass_cache:
+      in: query
+      required: false
+      description: 是否跳过缓存直接获取新数据
+- api_id: dashboard_get_api_dashboard_market_overview
+  module: dashboard
+  path: /api/dashboard/market-overview
+  method: GET
+  summary: 获取市场概览
+  description: 获取市场指数、涨跌家数、榜单等市场概览信息
+  priority: P1
+  tags:
+  - dashboard
+  - dashboard
+  request_params:
+    limit:
+      in: query
+      required: false
+      description: 榜单数量限制
+- api_id: dashboard_get_api_dashboard_health
+  module: dashboard
+  path: /api/dashboard/health
+  method: GET
+  summary: 仪表盘健康检查
+  description: 检查仪表盘服务和数据源的健康状态
+  priority: P1
+  tags:
+  - dashboard
+  - dashboard
+  - health
+- api_id: strategy_mgmt_post_api_strategy_mgmt_strategies
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/strategies
+  method: POST
+  summary: 创建新策略
+  description: 创建一个新的交易策略配置
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: strategy_mgmt_get_api_strategy_mgmt_strategies
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/strategies
+  method: GET
+  summary: 获取策略列表
+  description: 获取用户的策略列表，支持分页和状态筛选
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    user_id:
+      in: query
+      required: true
+      description: 用户ID
+    status:
+      in: query
+      required: false
+      description: 策略状态筛选
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+- api_id: strategy_mgmt_get_api_strategy_mgmt_strategies_strategy_id
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/strategies/{strategy_id}
+  method: GET
+  summary: 获取策略详情
+  description: 根据ID获取策略的完整配置信息
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: 策略ID
+- api_id: strategy_mgmt_put_api_strategy_mgmt_strategies_strategy_id
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/strategies/{strategy_id}
+  method: PUT
+  summary: 更新策略
+  description: 更新策略的配置信息
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: 策略ID
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: strategy_mgmt_delete_api_strategy_mgmt_strategies_strategy_id
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/strategies/{strategy_id}
+  method: DELETE
+  summary: 删除策略
+  description: 删除指定的策略配置
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: 策略ID
+- api_id: strategy_mgmt_post_api_strategy_mgmt_backtest_execute
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/backtest/execute
+  method: POST
+  summary: 执行回测
+  description: 异步执行策略回测,返回回测任务信息
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: strategy_mgmt_get_api_strategy_mgmt_backtest_results_backtest_id
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/backtest/results/{backtest_id}
+  method: GET
+  summary: 获取回测结果
+  description: 根据回测ID获取完整的回测结果
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    backtest_id:
+      in: path
+      required: true
+      description: 回测ID
+- api_id: strategy_mgmt_get_api_strategy_mgmt_backtest_results
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/backtest/results
+  method: GET
+  summary: 获取回测列表
+  description: 获取用户的回测历史列表，支持分页
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    user_id:
+      in: query
+      required: true
+      description: 用户ID
+    strategy_id:
+      in: query
+      required: false
+      description: 策略ID筛选
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+- api_id: strategy_mgmt_get_api_strategy_mgmt_health
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/health
+  method: GET
+  summary: 健康检查
+  description: 检查策略管理服务和数据库连接的健康状态
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+- api_id: strategy_mgmt_get_api_strategy_mgmt_backtest_status_backtest_id
+  module: strategy-mgmt
+  path: /api/strategy-mgmt/backtest/status/{backtest_id}
+  method: GET
+  summary: 获取回测任务状态
+  description: 获取回测任务的当前执行状态和进度
+  priority: P2
+  tags:
+  - strategy-mgmt
+  - strategy-mgmt
+  request_params:
+    backtest_id:
+      in: path
+      required: true
+      description: 回测ID
+- api_id: multi_source_get_multi_source_health
+  module: multi-source
+  path: /multi_source/health
+  method: GET
+  summary: Health Check
+  description: 健康检查
+  priority: P2
+  tags:
+  - multi-source
+- api_id: multi_source_get_multi_source_status
+  module: multi-source
+  path: /multi_source/status
+  method: GET
+  summary: Get Status
+  description: 获取服务状态
+  priority: P2
+  tags:
+  - multi-source
+- api_id: multi_source_post_multi_source_analyze
+  module: multi-source
+  path: /multi_source/analyze
+  method: POST
+  summary: Analyze Data
+  description: "多数据源AI综合分析\n\n整合多个数据源（技术面、基本面、舆情、资金流等）进行AI综合分析，生成全方位\n的投资决策支持。该端点提供最全面的股票分析结果。\n\
+    \n**功能说明**:\n- 整合技术分析、基本面、舆情等多维数据\n- AI驱动的跨数据源关联分析\n- 生成综合评分和投资建议\n- 识别多源数据的一致性和矛盾点\n\
+    - 提供决策置信度评估\n- 支持自定义数据源权重配置\n\n**使用场景**:\n- 全面投资决策支持\n- 多维度股票评估和排序\n- 投资组合优化建议\n\
+    - 风险收益综合评估\n- 跨市场数据关联分析\n- 智能投研报告生成\n\n**请求参数**:\n- symbol (可选): 股票代码\n- data_sources\
+    \ (可选): 数据源列表（technical/fundamental/sentiment/flow）\n- analysis_depth (可选): 分析深度（basic/standard/advanced）\n\
+    - weights (可选): 各数据源权重配置\n- time_range (可选): 分析时间范围\n\n**返回值**:\n- result: 分析结果描述\n\
+    - endpoint: 服务端点标识\n- comprehensive_score (可选): 综合评分（0-100）\n- technical_score\
+    \ (可选): 技术面评分\n- fundamental_score (可选): 基本面评分\n- sentiment_score (可选): 舆情评分\n\
+    - recommendation (可选): 投资建议（strong_buy/buy/hold/sell/strong_sell）\n- confidence\
+    \ (可选): 分析置信度（0-1）\n- key_insights (可选): 关键洞察列表\n- risk_factors (可选): 风险因素列表\n\
+    \n**示例**:\n```bash\n# 多数据源综合分析\ncurl -X POST \"http://localhost:8000/api/multi_source/analyze\"\
+    \ \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"symbol\": \"\
+    600519\",\n    \"data_sources\": [\"technical\", \"fundamental\", \"sentiment\"\
+    , \"flow\"],\n    \"analysis_depth\": \"advanced\",\n    \"weights\": {\n    \
+    \  \"technical\": 0.3,\n      \"fundamental\": 0.4,\n      \"sentiment\": 0.2,\n\
+    \      \"flow\": 0.1\n    },\n    \"time_range\": \"3m\"\n  }'\n```\n\n**响应示例**:\n\
+    ```json\n{\n  \"result\": \"分析完成\",\n  \"endpoint\": \"multi_source\",\n  \"comprehensive_score\"\
+    : 82,\n  \"technical_score\": 78,\n  \"fundamental_score\": 88,\n  \"sentiment_score\"\
+    : 75,\n  \"flow_score\": 85,\n  \"recommendation\": \"buy\",\n  \"confidence\"\
+    : 0.83,\n  \"key_insights\": [\n    \"基本面强劲，ROE持续提升\",\n    \"技术面突破关键阻力位\",\n\
+    \    \"主力资金持续流入\",\n    \"市场舆情整体积极\"\n  ],\n  \"risk_factors\": [\n    \"估值处于历史高位\"\
+    ,\n    \"短期技术指标超买\"\n  ]\n}\n```\n\n**注意事项**:\n- 当前版本为开发中状态，返回模拟结果\n- 综合分析需要较长处理时间，建议异步调用\n\
+    - 不同数据源的时效性可能不一致\n- AI建议仅供参考，投资需谨慎\n- 建议定期更新分析结果\n- 数据源权重配置需根据市场环境调整\n- 分析结果的准确性受所有数据源质量影响"
+  priority: P2
+  tags:
+  - multi-source
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: announcement_get_api_announcement_health
+  module: announcement
+  path: /api/announcement/health
+  method: GET
+  summary: Health Check
+  description: 健康检查
+  priority: P2
+  tags:
+  - announcement
+- api_id: announcement_get_api_announcement_status
+  module: announcement
+  path: /api/announcement/status
+  method: GET
+  summary: Get Status
+  description: 获取服务状态
+  priority: P2
+  tags:
+  - announcement
+- api_id: announcement_post_api_announcement_analyze
+  module: announcement
+  path: /api/announcement/analyze
+  method: POST
+  summary: Analyze Data
+  description: AI分析数据
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: announcement_post_api_announcement_fetch
+  module: announcement
+  path: /api/announcement/fetch
+  method: POST
+  summary: Fetch Announcements
+  description: "从数据源获取并保存公告\n\nArgs:\n    symbol: 股票代码（可选）\n    start_date: 开始日期\n\
+    \    end_date: 结束日期\n    category: 公告类别\n\nReturns:\n    Dict: 获取结果"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    category:
+      in: query
+      required: false
+      description: 公告类别
+- api_id: announcement_get_api_announcement_list
+  module: announcement
+  path: /api/announcement/list
+  method: GET
+  summary: Get Announcements
+  description: "查询公告列表\n\nArgs:\n    stock_code: 股票代码\n    start_date: 开始日期\n    end_date:\
+    \ 结束日期\n    announcement_type: 公告类型\n    min_importance: 最小重要性级别\n    page: 页码\n\
+    \    page_size: 每页数量\n\nReturns:\n    Dict: 公告列表"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    stock_code:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    announcement_type:
+      in: query
+      required: false
+      description: 公告类型
+    min_importance:
+      in: query
+      required: false
+      description: 最小重要性级别
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+- api_id: announcement_get_api_announcement_today
+  module: announcement
+  path: /api/announcement/today
+  method: GET
+  summary: Get Today Announcements
+  description: "获取今日公告\n\nArgs:\n    min_importance: 最小重要性级别\n\nReturns:\n    Dict:\
+    \ 今日公告列表"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    min_importance:
+      in: query
+      required: false
+      description: 最小重要性级别
+- api_id: announcement_get_api_announcement_important
+  module: announcement
+  path: /api/announcement/important
+  method: GET
+  summary: Get Important Announcements
+  description: "获取重要公告\n\nArgs:\n    days: 查询天数（默认7天）\n    min_importance: 最小重要性级别（默认3）\n\
+    \nReturns:\n    Dict: 重要公告列表"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    days:
+      in: query
+      required: false
+      description: 查询天数
+    min_importance:
+      in: query
+      required: false
+      description: 最小重要性级别
+- api_id: announcement_get_api_announcement_stats
+  module: announcement
+  path: /api/announcement/stats
+  method: GET
+  summary: Get Announcement Stats
+  description: "获取公告统计信息\n\nReturns:\n    Dict: 统计信息"
+  priority: P2
+  tags:
+  - announcement
+- api_id: announcement_get_api_announcement_monitor_rules
+  module: announcement
+  path: /api/announcement/monitor-rules
+  method: GET
+  summary: Get Monitor Rules
+  description: "获取监控规则列表\n\nReturns:\n    List: 监控规则列表"
+  priority: P2
+  tags:
+  - announcement
+- api_id: announcement_post_api_announcement_monitor_rules
+  module: announcement
+  path: /api/announcement/monitor-rules
+  method: POST
+  summary: Create Monitor Rule
+  description: "创建监控规则\n\nArgs:\n    rule_data: 监控规则创建请求\n\nReturns:\n    Dict: 创建的规则"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: announcement_put_api_announcement_monitor_rules_rule_id
+  module: announcement
+  path: /api/announcement/monitor-rules/{rule_id}
+  method: PUT
+  summary: Update Monitor Rule
+  description: "更新监控规则\n\nArgs:\n    rule_id: 规则ID\n    updates: 更新内容\n\nReturns:\n\
+    \    Dict: 更新后的规则"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    rule_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: announcement_delete_api_announcement_monitor_rules_rule_id
+  module: announcement
+  path: /api/announcement/monitor-rules/{rule_id}
+  method: DELETE
+  summary: Delete Monitor Rule
+  description: "删除监控规则\n\nArgs:\n    rule_id: 规则ID\n\nReturns:\n    Dict: 操作结果"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    rule_id:
+      in: path
+      required: true
+      description: ''
+- api_id: announcement_get_api_announcement_triggered_records
+  module: announcement
+  path: /api/announcement/triggered-records
+  method: GET
+  summary: Get Triggered Records
+  description: "获取触发记录列表\n\nArgs:\n    rule_id: 规则ID\n    stock_code: 股票代码\n    page:\
+    \ 页码\n    page_size: 每页数量\n\nReturns:\n    Dict: 触发记录列表"
+  priority: P2
+  tags:
+  - announcement
+  request_params:
+    rule_id:
+      in: query
+      required: false
+      description: 规则ID
+    stock_code:
+      in: query
+      required: false
+      description: 股票代码
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+- api_id: announcement_post_api_announcement_monitor_evaluate
+  module: announcement
+  path: /api/announcement/monitor/evaluate
+  method: POST
+  summary: Evaluate Monitor Rules
+  description: "评估所有监控规则\n\n检查是否有新公告触发监控规则\n\nReturns:\n    Dict: 评估结果"
+  priority: P2
+  tags:
+  - announcement
+- api_id: 策略管理_Week1_get_api_v1_strategy_strategies
+  module: 策略管理-Week1
+  path: /api/v1/strategy/strategies
+  method: GET
+  summary: List Strategies
+  description: "获取策略列表\n\nArgs:\n    status: 过滤状态 ('draft', 'active', 'archived')\n\
+    \    page: 页码\n    page_size: 每页数量\n\nReturns:\n    {\n        \"items\": [...],\n\
+    \        \"total\": 100,\n        \"page\": 1,\n        \"page_size\": 20\n  \
+    \  }\n\n支持Mock数据模式切换"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    status:
+      in: query
+      required: false
+      description: ''
+    page:
+      in: query
+      required: false
+      description: ''
+    page_size:
+      in: query
+      required: false
+      description: ''
+- api_id: 策略管理_Week1_post_api_v1_strategy_strategies
+  module: 策略管理-Week1
+  path: /api/v1/strategy/strategies
+  method: POST
+  summary: Create Strategy
+  description: "创建新策略\n\nArgs:\n    strategy_data: 策略创建数据\n\nReturns:\n    创建的策略对象\n\
+    \n支持Mock数据模式切换"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 策略管理_Week1_get_api_v1_strategy_strategies_strategy_id
+  module: 策略管理-Week1
+  path: /api/v1/strategy/strategies/{strategy_id}
+  method: GET
+  summary: Get Strategy
+  description: 获取策略详情
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 策略管理_Week1_put_api_v1_strategy_strategies_strategy_id
+  module: 策略管理-Week1
+  path: /api/v1/strategy/strategies/{strategy_id}
+  method: PUT
+  summary: Update Strategy
+  description: 更新策略
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 策略管理_Week1_delete_api_v1_strategy_strategies_strategy_id
+  module: 策略管理-Week1
+  path: /api/v1/strategy/strategies/{strategy_id}
+  method: DELETE
+  summary: Delete Strategy
+  description: 删除策略
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    strategy_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 策略管理_Week1_post_api_v1_strategy_models_train
+  module: 策略管理-Week1
+  path: /api/v1/strategy/models/train
+  method: POST
+  summary: Train Model
+  description: "启动模型训练任务\n\nArgs:\n    config: 训练配置\n\nReturns:\n    {\"task_id\"\
+    : \"task_xxx\", \"model_id\": 123}"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 策略管理_Week1_get_api_v1_strategy_models_training_task_id_status
+  module: 策略管理-Week1
+  path: /api/v1/strategy/models/training/{task_id}/status
+  method: GET
+  summary: Get Training Status
+  description: "查询训练状态\n\nReturns:\n    {\n        \"status\": \"training\" | \"completed\"\
+    \ | \"failed\",\n        \"progress\": 75,\n        \"metrics\": {...}\n    }"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    task_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 策略管理_Week1_get_api_v1_strategy_models
+  module: 策略管理-Week1
+  path: /api/v1/strategy/models
+  method: GET
+  summary: List Models
+  description: 获取模型列表
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    model_type:
+      in: query
+      required: false
+      description: ''
+    status:
+      in: query
+      required: false
+      description: ''
+- api_id: 策略管理_Week1_post_api_v1_strategy_backtest_run
+  module: 策略管理-Week1
+  path: /api/v1/strategy/backtest/run
+  method: POST
+  summary: Run Backtest
+  description: "执行回测\n\nArgs:\n    request: 回测请求参数\n\nReturns:\n    {\"backtest_id\"\
+    : 123}"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 策略管理_Week1_get_api_v1_strategy_backtest_results
+  module: 策略管理-Week1
+  path: /api/v1/strategy/backtest/results
+  method: GET
+  summary: List Backtest Results
+  description: 获取回测结果列表
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    strategy_id:
+      in: query
+      required: false
+      description: ''
+    page:
+      in: query
+      required: false
+      description: ''
+    page_size:
+      in: query
+      required: false
+      description: ''
+- api_id: 策略管理_Week1_get_api_v1_strategy_backtest_results_backtest_id
+  module: 策略管理-Week1
+  path: /api/v1/strategy/backtest/results/{backtest_id}
+  method: GET
+  summary: Get Backtest Result
+  description: 获取回测详细结果
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    backtest_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 策略管理_Week1_get_api_v1_strategy_backtest_results_backtest_id_chart_data
+  module: 策略管理-Week1
+  path: /api/v1/strategy/backtest/results/{backtest_id}/chart-data
+  method: GET
+  summary: Get Backtest Chart Data
+  description: "获取回测图表数据\n\n获取指定回测任务的可视化图表数据，包括资金曲线、回撤曲线和收益分布等。\n该端点专门为前端图表组件（如ECharts）提供格式化的时序数据。\n\
+    \n**功能说明**:\n- 提取回测结果中的时序数据\n- 生成资金曲线（Equity Curve）数据点\n- 计算回撤曲线（Drawdown Curve）数据\n\
+    - 统计收益分布（Returns Distribution）直方图\n- 返回前端图表库可直接使用的数据格式\n- 支持多种图表类型的数据输出\n\n**使用场景**:\n\
+    - 回测结果页面的可视化展示\n- 生成资金曲线图（折线图）\n- 绘制回撤曲线图（面积图）\n- 展示收益分布直方图\n- 导出图表数据用于报告\n- 对比多个回测结果\n\
+    \n**路径参数**:\n- backtest_id: 回测任务ID（整数）\n  - 必需参数\n  - 通过 /backtest/run 接口返回的ID\n\
+    \  - 对应数据库中的回测记录\n\n**返回值**:\n- equity_curve: 资金曲线数据（数组）\n  - 每个元素: [timestamp,\
+    \ equity_value]\n  - 时间戳: ISO 8601格式或Unix时间戳\n  - 资金价值: 账户总资产（浮点数）\n- drawdown_curve:\
+    \ 回撤曲线数据（数组）\n  - 每个元素: [timestamp, drawdown_percentage]\n  - 回撤百分比: 负值，如-0.15表示15%回撤\n\
+    - returns_distribution: 收益分布数据（数组）\n  - 每个元素: [return_range, frequency]\n  - 收益区间:\
+    \ 如\"-2%到-1%\"\n  - 频率: 该区间的交易次数\n\n**示例**:\n```bash\n# 获取回测图表数据\ncurl -X GET\
+    \ \"http://localhost:8000/api/v1/strategy/backtest/results/123/chart-data\"\n\
+    ```\n\n**响应示例**:\n```json\n{\n  \"equity_curve\": [\n    [\"2024-01-01T00:00:00\"\
+    , 1000000],\n    [\"2024-01-02T00:00:00\", 1005230],\n    [\"2024-01-03T00:00:00\"\
+    , 1012450],\n    [\"2024-01-04T00:00:00\", 1008900]\n  ],\n  \"drawdown_curve\"\
+    : [\n    [\"2024-01-01T00:00:00\", 0],\n    [\"2024-01-02T00:00:00\", 0],\n  \
+    \  [\"2024-01-03T00:00:00\", 0],\n    [\"2024-01-04T00:00:00\", -0.0035]\n  ],\n\
+    \  \"returns_distribution\": [\n    [\"-3% to -2%\", 5],\n    [\"-2% to -1%\"\
+    , 12],\n    [\"-1% to 0%\", 45],\n    [\"0% to 1%\", 78],\n    [\"1% to 2%\",\
+    \ 42],\n    [\"2% to 3%\", 8]\n  ]\n}\n```\n\n**回测不存在响应**:\n```json\n{\n  \"detail\"\
+    : \"回测不存在\"\n}\n```\n\n**注意事项**:\n- 该端点仅返回图表数据，不包含完整回测结果\n- 数据格式已针对前端图表库优化（ECharts、Chart.js等）\n\
+    - equity_curve数据点数量取决于回测周期和频率\n- 如果回测尚未完成，部分字段可能为空数组\n- 建议先调用 /backtest/results/{id}\
+    \ 检查回测状态\n- 大数据量时可能需要前端分页或采样展示"
+  priority: P2
+  tags:
+  - 策略管理-Week1
+  request_params:
+    backtest_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 风险管理_Week1_post_api_v1_risk_var_cvar
+  module: 风险管理-Week1
+  path: /api/v1/risk/var-cvar
+  method: POST
+  summary: Calculate Var Cvar
+  description: "计算VaR和CVaR\n\nArgs:\n    request: 请求参数\n\nReturns:\n    VaRCVaRResult"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_post_api_v1_risk_beta
+  module: 风险管理-Week1
+  path: /api/v1/risk/beta
+  method: POST
+  summary: Calculate Beta
+  description: "计算Beta系数\n\nArgs:\n    request: 请求参数\n\nReturns:\n    BetaResult"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_get_api_v1_risk_dashboard
+  module: 风险管理-Week1
+  path: /api/v1/risk/dashboard
+  method: GET
+  summary: Get Risk Dashboard
+  description: "获取风险仪表盘数据\n\nReturns:\n    RiskDashboardResponse"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+- api_id: 风险管理_Week1_get_api_v1_risk_metrics_history
+  module: 风险管理-Week1
+  path: /api/v1/risk/metrics/history
+  method: GET
+  summary: Get Risk Metrics History
+  description: 获取风险指标历史数据
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    entity_type:
+      in: query
+      required: true
+      description: ''
+    entity_id:
+      in: query
+      required: true
+      description: ''
+    start_date:
+      in: query
+      required: true
+      description: ''
+    end_date:
+      in: query
+      required: true
+      description: ''
+- api_id: 风险管理_Week1_get_api_v1_risk_alerts
+  module: 风险管理-Week1
+  path: /api/v1/risk/alerts
+  method: GET
+  summary: List Risk Alerts
+  description: 获取风险预警规则列表
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    is_active:
+      in: query
+      required: false
+      description: ''
+- api_id: 风险管理_Week1_post_api_v1_risk_alerts
+  module: 风险管理-Week1
+  path: /api/v1/risk/alerts
+  method: POST
+  summary: Create Risk Alert
+  description: 创建风险预警规则
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_put_api_v1_risk_alerts_alert_id
+  module: 风险管理-Week1
+  path: /api/v1/risk/alerts/{alert_id}
+  method: PUT
+  summary: Update Risk Alert
+  description: 更新风险预警规则
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    alert_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_delete_api_v1_risk_alerts_alert_id
+  module: 风险管理-Week1
+  path: /api/v1/risk/alerts/{alert_id}
+  method: DELETE
+  summary: Delete Risk Alert
+  description: 删除风险预警规则（软删除：设置为非活跃）
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    alert_id:
+      in: path
+      required: true
+      description: ''
+- api_id: 风险管理_Week1_post_api_v1_risk_notifications_test
+  module: 风险管理-Week1
+  path: /api/v1/risk/notifications/test
+  method: POST
+  summary: Test Notification
+  description: 发送测试通知
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_post_api_v1_risk_metrics_calculate
+  module: 风险管理-Week1
+  path: /api/v1/risk/metrics/calculate
+  method: POST
+  summary: Calculate Risk Metrics
+  description: "计算完整的风险指标（使用主项目RiskMetrics类）\n\n## 请求示例\n```json\n{\n  \"equity_curve\"\
+    : [100000, 102000, 101000, 103000, 105000],\n  \"returns\": [0.02, -0.01, 0.02,\
+    \ 0.02],\n  \"trades\": [],\n  \"total_return\": 0.05,\n  \"max_drawdown\": -0.02,\n\
+    \  \"risk_free_rate\": 0.03\n}\n```"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_post_api_v1_risk_position_assess
+  module: 风险管理-Week1
+  path: /api/v1/risk/position/assess
+  method: POST
+  summary: Assess Position Risk
+  description: "评估仓位风险\n\n## 请求示例\n```json\n{\n  \"positions\": [\n    {\"symbol\"\
+    : \"sh600000\", \"value\": 150000, \"sector\": \"金融\"},\n    {\"symbol\": \"sh600036\"\
+    , \"value\": 120000, \"sector\": \"金融\"}\n  ],\n  \"total_capital\": 1000000,\n\
+    \  \"config\": {\n    \"max_position_size\": 0.10,\n    \"daily_loss_limit\":\
+    \ 0.05\n  }\n}\n```"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: 风险管理_Week1_post_api_v1_risk_alerts_generate
+  module: 风险管理-Week1
+  path: /api/v1/risk/alerts/generate
+  method: POST
+  summary: Generate Risk Alerts
+  description: "生成风险告警\n\n## 请求示例\n```json\n{\n  \"current_drawdown\": -0.25,\n  \"\
+    daily_pnl\": -60000,\n  \"total_capital\": 1000000,\n  \"config\": {\n    \"max_drawdown_threshold\"\
+    : 0.30,\n    \"daily_loss_limit\": 0.05\n  }\n}\n```"
+  priority: P2
+  tags:
+  - 风险管理-Week1
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: SSE实时推送_get_api_v1_sse_training
+  module: SSE实时推送
+  path: /api/v1/sse/training
+  method: GET
+  summary: Sse Training Stream
+  description: "SSE endpoint for model training progress updates\n\n**Event Types:**\n\
+    - `connected`: Initial connection confirmation\n- `training_progress`: Training\
+    \ progress update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+    ```json\n{\n    \"event\": \"training_progress\",\n    \"data\": {\n        \"\
+    task_id\": \"training-uuid\",\n        \"progress\": 45.5,\n        \"status\"\
+    : \"running\",\n        \"message\": \"Training epoch 10/100\",\n        \"metrics\"\
+    : {\n            \"loss\": 0.023,\n            \"accuracy\": 0.95\n        }\n\
+    \    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\n**Example (JavaScript):**\n\
+    ```javascript\nconst eventSource = new EventSource('/api/v1/sse/training');\n\n\
+    eventSource.addEventListener('training_progress', (event) => {\n    const data\
+    \ = JSON.parse(event.data);\n    updateProgressBar(data.data.progress);\n    updateMetrics(data.data.metrics);\n\
+    });\n\neventSource.addEventListener('error', () => {\n    console.error('SSE connection\
+    \ error');\n    eventSource.close();\n});\n```"
+  priority: P2
+  tags:
+  - SSE实时推送
+  request_params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+- api_id: SSE实时推送_get_api_v1_sse_backtest
+  module: SSE实时推送
+  path: /api/v1/sse/backtest
+  method: GET
+  summary: Sse Backtest Stream
+  description: "SSE endpoint for backtest execution progress updates\n\n**Event Types:**\n\
+    - `connected`: Initial connection confirmation\n- `backtest_progress`: Backtest\
+    \ progress update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+    ```json\n{\n    \"event\": \"backtest_progress\",\n    \"data\": {\n        \"\
+    backtest_id\": \"backtest-uuid\",\n        \"progress\": 67.8,\n        \"status\"\
+    : \"running\",\n        \"message\": \"Simulating 2024-06-15\",\n        \"current_date\"\
+    : \"2024-06-15\",\n        \"results\": {\n            \"total_return\": 0.15,\n\
+    \            \"sharpe_ratio\": 1.8,\n            \"max_drawdown\": -0.08\n   \
+    \     }\n    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\n**Example\
+    \ (JavaScript):**\n```javascript\nconst eventSource = new EventSource('/api/v1/sse/backtest');\n\
+    \neventSource.addEventListener('backtest_progress', (event) => {\n    const data\
+    \ = JSON.parse(event.data);\n    updateBacktestProgress(data.data.progress);\n\
+    \    updateCurrentDate(data.data.current_date);\n    if (data.data.results) {\n\
+    \        updateResultsChart(data.data.results);\n    }\n});\n```"
+  priority: P2
+  tags:
+  - SSE实时推送
+  request_params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+- api_id: SSE实时推送_get_api_v1_sse_alerts
+  module: SSE实时推送
+  path: /api/v1/sse/alerts
+  method: GET
+  summary: Sse Alerts Stream
+  description: "SSE endpoint for risk alert notifications\n\n**Event Types:**\n- `connected`:\
+    \ Initial connection confirmation\n- `risk_alert`: Risk alert notification\n-\
+    \ `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n```json\n\
+    {\n    \"event\": \"risk_alert\",\n    \"data\": {\n        \"alert_type\": \"\
+    var_exceeded\",\n        \"severity\": \"high\",\n        \"message\": \"VaR exceeded\
+    \ threshold\",\n        \"metric_name\": \"var_95\",\n        \"metric_value\"\
+    : 0.06,\n        \"threshold\": 0.05,\n        \"entity_type\": \"portfolio\"\
+    ,\n        \"entity_id\": \"portfolio-123\"\n    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\
+    \n}\n```\n\n**Severity Levels:**\n- `low`: Informational alerts\n- `medium`: Warning\
+    \ alerts\n- `high`: Important alerts requiring attention\n- `critical`: Critical\
+    \ alerts requiring immediate action\n\n**Example (JavaScript):**\n```javascript\n\
+    const eventSource = new EventSource('/api/v1/sse/alerts');\n\neventSource.addEventListener('risk_alert',\
+    \ (event) => {\n    const data = JSON.parse(event.data);\n    showNotification({\n\
+    \        title: data.data.message,\n        severity: data.data.severity,\n  \
+    \      details: `${data.data.metric_name}: ${data.data.metric_value}`\n    });\n\
+    });\n```"
+  priority: P2
+  tags:
+  - SSE实时推送
+  request_params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+- api_id: SSE实时推送_get_api_v1_sse_dashboard
+  module: SSE实时推送
+  path: /api/v1/sse/dashboard
+  method: GET
+  summary: Sse Dashboard Stream
+  description: "SSE endpoint for real-time dashboard updates\n\n**Event Types:**\n\
+    - `connected`: Initial connection confirmation\n- `dashboard_update`: Dashboard\
+    \ data update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+    ```json\n{\n    \"event\": \"dashboard_update\",\n    \"data\": {\n        \"\
+    update_type\": \"metrics\",\n        \"data\": {\n            \"total_value\"\
+    : 1500000.0,\n            \"daily_return\": 0.025,\n            \"positions_count\"\
+    : 15\n        }\n    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\
+    \n**Update Types:**\n- `metrics`: Portfolio metrics update\n- `positions`: Positions\
+    \ update\n- `orders`: Orders update\n- `market`: Market data update\n\n**Example\
+    \ (JavaScript):**\n```javascript\nconst eventSource = new EventSource('/api/v1/sse/dashboard');\n\
+    \neventSource.addEventListener('dashboard_update', (event) => {\n    const data\
+    \ = JSON.parse(event.data);\n\n    switch (data.data.update_type) {\n        case\
+    \ 'metrics':\n            updatePortfolioMetrics(data.data.data);\n          \
+    \  break;\n        case 'positions':\n            updatePositionsTable(data.data.data);\n\
+    \            break;\n        case 'orders':\n            updateOrdersTable(data.data.data);\n\
+    \            break;\n    }\n});\n```"
+  priority: P2
+  tags:
+  - SSE实时推送
+  request_params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+- api_id: SSE实时推送_get_api_v1_sse_status
+  module: SSE实时推送
+  path: /api/v1/sse/status
+  method: GET
+  summary: Sse Status
+  description: "Get SSE server status\n\nReturns:\n    Connection statistics for all\
+    \ channels"
+  priority: P2
+  tags:
+  - SSE实时推送
+- api_id: industry_concept_analysis_get_api_analysis_industry_list
+  module: industry-concept-analysis
+  path: /api/analysis/industry/list
+  method: GET
+  summary: Get Industry List
+  description: "获取所有行业分类列表\n\nReturns:\n    IndustryListResponse: 行业列表"
+  priority: P2
+  tags:
+  - industry-concept-analysis
+- api_id: industry_concept_analysis_get_api_analysis_concept_list
+  module: industry-concept-analysis
+  path: /api/analysis/concept/list
+  method: GET
+  summary: Get Concept List
+  description: "获取所有概念分类列表\n\nReturns:\n    ConceptListResponse: 概念列表"
+  priority: P2
+  tags:
+  - industry-concept-analysis
+- api_id: industry_concept_analysis_get_api_analysis_industry_stocks
+  module: industry-concept-analysis
+  path: /api/analysis/industry/stocks
+  method: GET
+  summary: Get Industry Stocks
+  description: "获取指定行业的成分股列表\n\nArgs:\n    industry_code: 行业代码\n    limit: 限制返回数量\n\
+    \nReturns:\n    StockListResponse: 成分股列表"
+  priority: P2
+  tags:
+  - industry-concept-analysis
+  request_params:
+    industry_code:
+      in: query
+      required: true
+      description: 行业代码
+    limit:
+      in: query
+      required: false
+      description: 限制返回数量
+- api_id: industry_concept_analysis_get_api_analysis_concept_stocks
+  module: industry-concept-analysis
+  path: /api/analysis/concept/stocks
+  method: GET
+  summary: Get Concept Stocks
+  description: "获取指定概念的成分股列表\n\nArgs:\n    concept_code: 概念代码\n    limit: 限制返回数量\n\
+    \nReturns:\n    StockListResponse: 成分股列表"
+  priority: P2
+  tags:
+  - industry-concept-analysis
+  request_params:
+    concept_code:
+      in: query
+      required: true
+      description: 概念代码
+    limit:
+      in: query
+      required: false
+      description: 限制返回数量
+- api_id: industry_concept_analysis_get_api_analysis_industry_performance
+  module: industry-concept-analysis
+  path: /api/analysis/industry/performance
+  method: GET
+  summary: Get Industry Performance
+  description: "获取行业整体表现数据\n\nArgs:\n    industry_code: 行业代码\n\nReturns:\n    IndustryPerformanceResponse:\
+    \ 行业表现数据"
+  priority: P2
+  tags:
+  - industry-concept-analysis
+  request_params:
+    industry_code:
+      in: query
+      required: true
+      description: 行业代码
+- api_id: contract_management_post_api_contracts_versions
+  module: contract-management
+  path: /api/contracts/versions
+  method: POST
+  summary: Create Version
+  description: '创建新的契约版本
+
+
+    - **name**: 契约名称 (如: market-api, trade-api)
+
+    - **version**: 版本号 (如: 1.0.0)
+
+    - **spec**: OpenAPI规范内容
+
+    - **commit_hash**: Git commit hash (可选)
+
+    - **author**: 作者 (可选)
+
+    - **description**: 版本描述 (可选)
+
+    - **tags**: 版本标签 (可选)'
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: contract_management_get_api_contracts_versions
+  module: contract-management
+  path: /api/contracts/versions
+  method: GET
+  summary: List Versions
+  description: 列出版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    name:
+      in: query
+      required: false
+      description: ''
+    limit:
+      in: query
+      required: false
+      description: ''
+    offset:
+      in: query
+      required: false
+      description: ''
+- api_id: contract_management_get_api_contracts_versions_version_id
+  module: contract-management
+  path: /api/contracts/versions/{version_id}
+  method: GET
+  summary: Get Version
+  description: 获取指定契约版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    version_id:
+      in: path
+      required: true
+      description: ''
+- api_id: contract_management_put_api_contracts_versions_version_id
+  module: contract-management
+  path: /api/contracts/versions/{version_id}
+  method: PUT
+  summary: Update Version
+  description: 更新契约版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    version_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: contract_management_delete_api_contracts_versions_version_id
+  module: contract-management
+  path: /api/contracts/versions/{version_id}
+  method: DELETE
+  summary: Delete Version
+  description: 删除契约版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    version_id:
+      in: path
+      required: true
+      description: ''
+- api_id: contract_management_get_api_contracts_versions_name_active
+  module: contract-management
+  path: /api/contracts/versions/{name}/active
+  method: GET
+  summary: Get Active Version
+  description: 获取契约的当前激活版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    name:
+      in: path
+      required: true
+      description: ''
+- api_id: contract_management_post_api_contracts_versions_version_id_activate
+  module: contract-management
+  path: /api/contracts/versions/{version_id}/activate
+  method: POST
+  summary: Activate Version
+  description: 激活指定版本
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    version_id:
+      in: path
+      required: true
+      description: ''
+- api_id: contract_management_get_api_contracts_contracts
+  module: contract-management
+  path: /api/contracts/contracts
+  method: GET
+  summary: List Contracts
+  description: 列出所有契约及其元数据
+  priority: P2
+  tags:
+  - contract-management
+- api_id: contract_management_post_api_contracts_diff
+  module: contract-management
+  path: /api/contracts/diff
+  method: POST
+  summary: Compare Versions
+  description: '对比两个契约版本的差异
+
+
+    - **from_version_id**: 源版本ID
+
+    - **to_version_id**: 目标版本ID
+
+
+    返回差异详情，包括：
+
+    - 总变更数
+
+    - 破坏性变更数
+
+    - 非破坏性变更数
+
+    - 详细差异列表'
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: contract_management_post_api_contracts_validate
+  module: contract-management
+  path: /api/contracts/validate
+  method: POST
+  summary: Validate Contract
+  description: '验证OpenAPI规范
+
+
+    - **spec**: 待验证的OpenAPI规范
+
+    - **check_breaking_changes**: 是否检查破坏性变更
+
+    - **compare_to_version_id**: 对比的版本ID (可选)
+
+
+    返回验证结果，包括：
+
+    - 是否通过验证
+
+    - 错误数
+
+    - 警告数
+
+    - 详细验证结果'
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: contract_management_post_api_contracts_sync
+  module: contract-management
+  path: /api/contracts/sync
+  method: POST
+  summary: Sync Contract
+  description: '同步契约
+
+
+    - **name**: 契约名称
+
+    - **source_path**: 源文件路径
+
+    - **direction**: 同步方向
+
+    - **version**: 指定版本号 (默认自动递增)
+
+    - **commit**: 是否提交到Git
+
+
+    返回同步结果'
+  priority: P2
+  tags:
+  - contract-management
+  request_params:
+    body:
+      in: body
+      required: true
+      content_type: application/json
+- api_id: health_get_api_health_detailed
+  module: health
+  path: /api/health/detailed
+  method: GET
+  summary: Detailed Health Check
+  description: '详细健康检查
+
+
+    返回系统各个组件的详细健康状态'
+  priority: P2
+  tags:
+  - health
+- api_id: health_get_api_reports_health_timestamp
+  module: health
+  path: /api/reports/health/{timestamp}
+  method: GET
+  summary: Get Health Report
+  description: '获取健康检查报告
+
+
+    参数:
+
+    - timestamp: 报告时间戳'
+  priority: P2
+  tags:
+  - health
+  request_params:
+    timestamp:
+      in: path
+      required: true
+      description: ''

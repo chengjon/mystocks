@@ -1,0 +1,57 @@
+api_id: 策略管理_Week1_get_api_v1_strategy_strategies
+module: 策略管理-Week1
+path: /api/v1/strategy/strategies
+method: GET
+summary: List Strategies
+description: "获取策略列表\n\nArgs:\n    status: 过滤状态 ('draft', 'active', 'archived')\n\
+  \    page: 页码\n    page_size: 每页数量\n\nReturns:\n    {\n        \"items\": [...],\n\
+  \        \"total\": 100,\n        \"page\": 1,\n        \"page_size\": 20\n    }\n\
+  \n支持Mock数据模式切换"
+tags:
+- 策略管理-Week1
+priority: P2
+request:
+  params:
+    status:
+      in: query
+      required: false
+      description: ''
+    page:
+      in: query
+      required: false
+      description: ''
+    page_size:
+      in: query
+      required: false
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response List Strategies Api V1 Strategy Strategies Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.396913'
+  version: 1.0.0
+  stable: false
+  deprecated: false

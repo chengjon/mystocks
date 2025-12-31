@@ -1,0 +1,58 @@
+api_id: strategy_mgmt_get_api_strategy_mgmt_strategies
+module: strategy-mgmt
+path: /api/strategy-mgmt/strategies
+method: GET
+summary: 获取策略列表
+description: 获取用户的策略列表，支持分页和状态筛选
+tags:
+- strategy-mgmt
+- strategy-mgmt
+priority: P2
+request:
+  params:
+    user_id:
+      in: query
+      required: true
+      description: 用户ID
+    status:
+      in: query
+      required: false
+      description: 策略状态筛选
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/StrategyListResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.344017'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,59 @@
+api_id: trade_get_api_trade_portfolio
+module: trade
+path: /api/trade/portfolio
+method: GET
+summary: Get Portfolio
+description: '获取投资组合概览
+
+
+  返回账户总资产、可用资金、持仓市值、盈亏等信息'
+tags:
+- trade
+- 交易执行
+priority: P0
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/APIResponse_AccountInfo_'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: ORDER_NOT_FOUND
+    http_status: 404
+    message: 订单不存在
+  - code: INSUFFICIENT_FUNDS
+    http_status: 400
+    message: 资金不足
+  - code: ORDER_REJECTED
+    http_status: 403
+    message: 订单被拒绝
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.161492'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.598098'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

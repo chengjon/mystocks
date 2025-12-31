@@ -1,0 +1,59 @@
+api_id: indicators_put_api_indicators_configs_config_id
+module: indicators
+path: /api/indicators/configs/{config_id}
+method: PUT
+summary: Update Indicator Config
+description: '更新指标配置
+
+
+  可以更新配置名称和/或指标列表
+
+
+  - **config_id**: 配置ID'
+tags:
+- indicators
+priority: P1
+request:
+  params:
+    config_id:
+      in: path
+      required: true
+      description: ''
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: IndicatorConfigUpdateRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/IndicatorConfigResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.045094'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:03.030201'
+  enhanced_version: '2.0'

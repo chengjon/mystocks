@@ -1,0 +1,46 @@
+api_id: pool_monitoring_get_api_pool_monitoring_postgresql_stats
+module: pool-monitoring
+path: /api/pool-monitoring/postgresql/stats
+method: GET
+summary: PostgreSQL连接池统计
+description: "获取PostgreSQL连接池统计信息\n\nReturns:\n    - pool_size: 当前连接池大小\n    - checked_in:\
+  \ 空闲连接数\n    - checked_out: 活跃连接数\n    - overflow: 溢出连接数\n    - pool_status: 连接池状态描述\n\
+  \    - timestamp: 查询时间戳"
+tags:
+- pool-monitoring
+- Connection Pool Monitoring
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Postgresql Pool Stats Api Pool Monitoring Postgresql Stats
+        Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.108269'
+  version: 1.0.0
+  stable: false
+  deprecated: false

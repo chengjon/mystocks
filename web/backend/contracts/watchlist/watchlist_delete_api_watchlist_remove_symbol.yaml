@@ -1,0 +1,46 @@
+api_id: watchlist_delete_api_watchlist_remove_symbol
+module: watchlist
+path: /api/watchlist/remove/{symbol}
+method: DELETE
+summary: Remove From Watchlist
+description: 从自选股列表中删除股票
+tags:
+- watchlist
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Remove From Watchlist Api Watchlist Remove  Symbol  Delete
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.209434'
+  version: 1.0.0
+  stable: false
+  deprecated: false

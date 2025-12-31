@@ -1,0 +1,67 @@
+api_id: multi_source_post_multi_source_analyze
+module: multi-source
+path: /multi_source/analyze
+method: POST
+summary: Analyze Data
+description: "多数据源AI综合分析\n\n整合多个数据源（技术面、基本面、舆情、资金流等）进行AI综合分析，生成全方位\n的投资决策支持。该端点提供最全面的股票分析结果。\n\
+  \n**功能说明**:\n- 整合技术分析、基本面、舆情等多维数据\n- AI驱动的跨数据源关联分析\n- 生成综合评分和投资建议\n- 识别多源数据的一致性和矛盾点\n\
+  - 提供决策置信度评估\n- 支持自定义数据源权重配置\n\n**使用场景**:\n- 全面投资决策支持\n- 多维度股票评估和排序\n- 投资组合优化建议\n\
+  - 风险收益综合评估\n- 跨市场数据关联分析\n- 智能投研报告生成\n\n**请求参数**:\n- symbol (可选): 股票代码\n- data_sources\
+  \ (可选): 数据源列表（technical/fundamental/sentiment/flow）\n- analysis_depth (可选): 分析深度（basic/standard/advanced）\n\
+  - weights (可选): 各数据源权重配置\n- time_range (可选): 分析时间范围\n\n**返回值**:\n- result: 分析结果描述\n\
+  - endpoint: 服务端点标识\n- comprehensive_score (可选): 综合评分（0-100）\n- technical_score (可选):\
+  \ 技术面评分\n- fundamental_score (可选): 基本面评分\n- sentiment_score (可选): 舆情评分\n- recommendation\
+  \ (可选): 投资建议（strong_buy/buy/hold/sell/strong_sell）\n- confidence (可选): 分析置信度（0-1）\n\
+  - key_insights (可选): 关键洞察列表\n- risk_factors (可选): 风险因素列表\n\n**示例**:\n```bash\n#\
+  \ 多数据源综合分析\ncurl -X POST \"http://localhost:8000/api/multi_source/analyze\" \\\n\
+  \  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"symbol\": \"600519\"\
+  ,\n    \"data_sources\": [\"technical\", \"fundamental\", \"sentiment\", \"flow\"\
+  ],\n    \"analysis_depth\": \"advanced\",\n    \"weights\": {\n      \"technical\"\
+  : 0.3,\n      \"fundamental\": 0.4,\n      \"sentiment\": 0.2,\n      \"flow\":\
+  \ 0.1\n    },\n    \"time_range\": \"3m\"\n  }'\n```\n\n**响应示例**:\n```json\n{\n\
+  \  \"result\": \"分析完成\",\n  \"endpoint\": \"multi_source\",\n  \"comprehensive_score\"\
+  : 82,\n  \"technical_score\": 78,\n  \"fundamental_score\": 88,\n  \"sentiment_score\"\
+  : 75,\n  \"flow_score\": 85,\n  \"recommendation\": \"buy\",\n  \"confidence\":\
+  \ 0.83,\n  \"key_insights\": [\n    \"基本面强劲，ROE持续提升\",\n    \"技术面突破关键阻力位\",\n  \
+  \  \"主力资金持续流入\",\n    \"市场舆情整体积极\"\n  ],\n  \"risk_factors\": [\n    \"估值处于历史高位\"\
+  ,\n    \"短期技术指标超买\"\n  ]\n}\n```\n\n**注意事项**:\n- 当前版本为开发中状态，返回模拟结果\n- 综合分析需要较长处理时间，建议异步调用\n\
+  - 不同数据源的时效性可能不一致\n- AI建议仅供参考，投资需谨慎\n- 建议定期更新分析结果\n- 数据源权重配置需根据市场环境调整\n- 分析结果的准确性受所有数据源质量影响"
+tags:
+- multi-source
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        type: object
+        title: Data
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.366505'
+  version: 1.0.0
+  stable: false
+  deprecated: false

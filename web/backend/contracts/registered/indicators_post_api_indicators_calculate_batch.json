@@ -1,0 +1,129 @@
+{
+  "name": "indicators-api-contract",
+  "version": "1.0.0",
+  "api_id": "indicators_post_api_indicators_calculate_batch",
+  "priority": "P1",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "indicators API",
+      "version": "1.0.0",
+      "description": "批量计算技术指标 - Phase 4C Enhanced\n\n支持一次性计算多个股票/日期范围的指标，提高计算效率"
+    },
+    "paths": {
+      "/api/indicators/calculate/batch": {
+        "post": {
+          "summary": "Calculate Indicators Batch",
+          "description": "批量计算技术指标 - Phase 4C Enhanced\n\n支持一次性计算多个股票/日期范围的指标，提高计算效率",
+          "tags": [
+            "indicators"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "IndicatorCalculateBatchRequest",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Calculate Indicators Batch",
+  "tags": [
+    "indicators",
+    "P1"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.800612"
+}

@@ -1,0 +1,54 @@
+api_id: notification_post_api_notification_test_email
+module: notification
+path: /api/notification/test-email
+method: POST
+summary: Send Test Email
+description: "发送测试邮件到当前用户邮箱\n\n向已登录用户的注册邮箱发送测试邮件，用于验证邮件服务配置是否正确。该端点会\n立即发送邮件，并返回发送结果。\n\
+  \n**功能说明**:\n- 发送HTML格式的测试邮件\n- 验证SMTP服务器配置正确性\n- 检查邮箱地址有效性\n- 测试邮件发送延迟和送达率\n- 同步返回发送结果（非后台任务）\n\
+  \n**使用场景**:\n- 初次配置邮件服务后的功能验证\n- 检查邮件服务是否正常工作\n- 验证用户邮箱地址是否有效\n- 排查邮件发送失败问题\n- 测试邮件模板渲染效果\n\
+  \n**认证要求**:\n- 需要用户登录（JWT Token认证）\n- 用户必须在个人资料中设置了邮箱地址\n- 无角色限制，所有用户均可使用\n\n**返回值**:\n\
+  成功响应:\n- success: 发送成功标志（true）\n- message: 成功消息描述\n- recipient: 接收邮箱地址\n\n失败响应:\n\
+  - 400: 用户未设置邮箱\n- 503: 邮件服务未配置\n- 500: 邮件发送失败\n\n**示例**:\n```bash\n# 发送测试邮件（需要认证Token）\n\
+  curl -X POST \"http://localhost:8000/api/notification/test-email\" \\\n  -H \"Authorization:\
+  \ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n```\n\n**成功响应示例**:\n```json\n\
+  {\n  \"success\": true,\n  \"message\": \"测试邮件已发送至 user@example.com\",\n  \"recipient\"\
+  : \"user@example.com\"\n}\n```\n\n**用户未设置邮箱响应**:\n```json\n{\n  \"detail\": \"用户未设置邮箱\"\
+  \n}\n```\n\n**邮件服务未配置响应**:\n```json\n{\n  \"detail\": \"邮件服务未配置\"\n}\n```\n\n**注意事项**:\n\
+  - 该端点会立即发送邮件，不使用后台任务\n- 发送失败会抛出HTTP异常，前端需处理错误\n- 测试邮件包含用户名和发送时间信息\n- 频繁调用可能触发SMTP限流，建议间隔至少30秒\n\
+  - 某些邮箱服务商可能将测试邮件标记为垃圾邮件\n- 发送前会检查邮件服务配置状态"
+tags:
+- notification
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Send Test Email Api Notification Test Email Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.255214'
+  version: 1.0.0
+  stable: false
+  deprecated: false

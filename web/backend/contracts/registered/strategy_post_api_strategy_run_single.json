@@ -1,0 +1,200 @@
+{
+  "name": "strategy-api-contract",
+  "version": "1.0.0",
+  "api_id": "strategy_post_api_strategy_run_single",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "strategy API",
+      "version": "1.0.0",
+      "description": "对单只股票运行策略\n\nArgs:\n    strategy_code: 策略代码 (如: volume_surge)\n    symbol: 股票代码 (如: 600519)\n    stock_name: 股票名称 (可选)\n    check_date: 检查日期 (可选，默认今天)\n\nReturns:\n    策略执行结果"
+    },
+    "paths": {
+      "/api/strategy/run/single": {
+        "post": {
+          "summary": "Run Strategy Single",
+          "description": "对单只股票运行策略\n\nArgs:\n    strategy_code: 策略代码 (如: volume_surge)\n    symbol: 股票代码 (如: 600519)\n    stock_name: 股票名称 (可选)\n    check_date: 检查日期 (可选，默认今天)\n\nReturns:\n    策略执行结果",
+          "tags": [
+            "strategy",
+            "strategy"
+          ],
+          "parameters": [
+            {
+              "name": "strategy_code",
+              "in": "query",
+              "required": true,
+              "description": "策略代码",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "symbol",
+              "in": "query",
+              "required": true,
+              "description": "股票代码",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "stock_name",
+              "in": "query",
+              "required": false,
+              "description": "股票名称",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "check_date",
+              "in": "query",
+              "required": false,
+              "description": "检查日期 YYYY-MM-DD",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "策略参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "策略不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "策略已在运行中",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Run Strategy Single",
+  "tags": [
+    "strategy",
+    "strategy",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.793036"
+}

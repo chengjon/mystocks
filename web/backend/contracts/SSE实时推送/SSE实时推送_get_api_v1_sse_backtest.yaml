@@ -1,0 +1,56 @@
+api_id: SSE实时推送_get_api_v1_sse_backtest
+module: SSE实时推送
+path: /api/v1/sse/backtest
+method: GET
+summary: Sse Backtest Stream
+description: "SSE endpoint for backtest execution progress updates\n\n**Event Types:**\n\
+  - `connected`: Initial connection confirmation\n- `backtest_progress`: Backtest\
+  \ progress update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+  ```json\n{\n    \"event\": \"backtest_progress\",\n    \"data\": {\n        \"backtest_id\"\
+  : \"backtest-uuid\",\n        \"progress\": 67.8,\n        \"status\": \"running\"\
+  ,\n        \"message\": \"Simulating 2024-06-15\",\n        \"current_date\": \"\
+  2024-06-15\",\n        \"results\": {\n            \"total_return\": 0.15,\n   \
+  \         \"sharpe_ratio\": 1.8,\n            \"max_drawdown\": -0.08\n        }\n\
+  \    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\n**Example (JavaScript):**\n\
+  ```javascript\nconst eventSource = new EventSource('/api/v1/sse/backtest');\n\n\
+  eventSource.addEventListener('backtest_progress', (event) => {\n    const data =\
+  \ JSON.parse(event.data);\n    updateBacktestProgress(data.data.progress);\n   \
+  \ updateCurrentDate(data.data.current_date);\n    if (data.data.results) {\n   \
+  \     updateResultsChart(data.data.results);\n    }\n});\n```"
+tags:
+- SSE实时推送
+priority: P2
+request:
+  params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.446747'
+  version: 1.0.0
+  stable: false
+  deprecated: false

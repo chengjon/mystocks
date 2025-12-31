@@ -1,0 +1,131 @@
+{
+  "name": "market-v2-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_v2_post_api_market_v2_blocktrade_refresh",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market-v2 API",
+      "version": "1.0.0",
+      "description": "从东方财富刷新大宗交易数据"
+    },
+    "paths": {
+      "/api/market/v2/blocktrade/refresh": {
+        "post": {
+          "summary": "刷新股票大宗交易数据",
+          "description": "从东方财富刷新大宗交易数据",
+          "tags": [
+            "market-v2",
+            "市场数据V2"
+          ],
+          "parameters": [
+            {
+              "name": "trade_date",
+              "in": "query",
+              "required": false,
+              "description": "交易日期 (YYYY-MM-DD)，不传则获取最新",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "刷新股票大宗交易数据",
+  "tags": [
+    "market-v2",
+    "市场数据V2",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.779157"
+}

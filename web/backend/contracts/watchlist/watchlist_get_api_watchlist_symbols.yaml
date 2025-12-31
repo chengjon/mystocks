@@ -1,0 +1,44 @@
+api_id: watchlist_get_api_watchlist_symbols
+module: watchlist
+path: /api/watchlist/symbols
+method: GET
+summary: Get My Watchlist Symbols
+description: 获取当前用户的自选股代码列表
+tags:
+- watchlist
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      items:
+        type: string
+      type: array
+      title: Response Get My Watchlist Symbols Api Watchlist Symbols Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.206209'
+  version: 1.0.0
+  stable: false
+  deprecated: false

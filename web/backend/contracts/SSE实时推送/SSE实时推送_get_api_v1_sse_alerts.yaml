@@ -1,0 +1,58 @@
+api_id: SSE实时推送_get_api_v1_sse_alerts
+module: SSE实时推送
+path: /api/v1/sse/alerts
+method: GET
+summary: Sse Alerts Stream
+description: "SSE endpoint for risk alert notifications\n\n**Event Types:**\n- `connected`:\
+  \ Initial connection confirmation\n- `risk_alert`: Risk alert notification\n- `ping`:\
+  \ Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n```json\n{\n   \
+  \ \"event\": \"risk_alert\",\n    \"data\": {\n        \"alert_type\": \"var_exceeded\"\
+  ,\n        \"severity\": \"high\",\n        \"message\": \"VaR exceeded threshold\"\
+  ,\n        \"metric_name\": \"var_95\",\n        \"metric_value\": 0.06,\n     \
+  \   \"threshold\": 0.05,\n        \"entity_type\": \"portfolio\",\n        \"entity_id\"\
+  : \"portfolio-123\"\n    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\
+  \n**Severity Levels:**\n- `low`: Informational alerts\n- `medium`: Warning alerts\n\
+  - `high`: Important alerts requiring attention\n- `critical`: Critical alerts requiring\
+  \ immediate action\n\n**Example (JavaScript):**\n```javascript\nconst eventSource\
+  \ = new EventSource('/api/v1/sse/alerts');\n\neventSource.addEventListener('risk_alert',\
+  \ (event) => {\n    const data = JSON.parse(event.data);\n    showNotification({\n\
+  \        title: data.data.message,\n        severity: data.data.severity,\n    \
+  \    details: `${data.data.metric_name}: ${data.data.metric_value}`\n    });\n});\n\
+  ```"
+tags:
+- SSE实时推送
+priority: P2
+request:
+  params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.449104'
+  version: 1.0.0
+  stable: false
+  deprecated: false

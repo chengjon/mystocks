@@ -1,0 +1,85 @@
+api_id: data_get_api_data_financial
+module: data
+path: /api/data/financial
+method: GET
+summary: Get Financial Data
+description: '获取股票财务数据
+
+
+  **报表类型**:
+
+  - balance: 资产负债表
+
+  - income: 利润表
+
+  - cashflow: 现金流量表
+
+
+  使用数据源工厂模式，支持Mock/Real/Hybrid自动切换'
+tags:
+- data
+priority: P0
+request:
+  params:
+    symbol:
+      in: query
+      required: true
+      description: '股票代码，如: 000001'
+    report_type:
+      in: query
+      required: false
+      description: '报表类型: balance/income/cashflow'
+    period:
+      in: query
+      required: false
+      description: '报告期: quarterly/annual/all'
+    limit:
+      in: query
+      required: false
+      description: 返回记录数限制
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Financial Data Api Data Financial Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: DATA_SOURCE_ERROR
+    http_status: 502
+    message: 数据源错误
+  - code: DATA_NOT_FOUND
+    http_status: 404
+    message: 数据不存在
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:25.983153'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.762443'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute
+cache:
+  enabled: true
+  ttl: 60
+  strategy: LRU

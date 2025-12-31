@@ -1,0 +1,56 @@
+api_id: announcement_post_api_announcement_fetch
+module: announcement
+path: /api/announcement/fetch
+method: POST
+summary: Fetch Announcements
+description: "从数据源获取并保存公告\n\nArgs:\n    symbol: 股票代码（可选）\n    start_date: 开始日期\n \
+  \   end_date: 结束日期\n    category: 公告类别\n\nReturns:\n    Dict: 获取结果"
+tags:
+- announcement
+priority: P2
+request:
+  params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    category:
+      in: query
+      required: false
+      description: 公告类别
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.375416'
+  version: 1.0.0
+  stable: false
+  deprecated: false

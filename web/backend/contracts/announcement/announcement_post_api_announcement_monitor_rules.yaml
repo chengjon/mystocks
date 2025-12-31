@@ -1,0 +1,45 @@
+api_id: announcement_post_api_announcement_monitor_rules
+module: announcement
+path: /api/announcement/monitor-rules
+method: POST
+summary: Create Monitor Rule
+description: "创建监控规则\n\nArgs:\n    rule_data: 监控规则创建请求\n\nReturns:\n    Dict: 创建的规则"
+tags:
+- announcement
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        type: object
+        title: Rule Data
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.388025'
+  version: 1.0.0
+  stable: false
+  deprecated: false

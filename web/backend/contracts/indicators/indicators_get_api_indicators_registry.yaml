@@ -1,0 +1,56 @@
+api_id: indicators_get_api_indicators_registry
+module: indicators
+path: /api/indicators/registry
+method: GET
+summary: Get Indicator Registry Endpoint
+description: '获取指标注册表 - Phase 4C Enhanced
+
+
+  返回所有可用的技术指标及其元数据，支持分类筛选和搜索'
+tags:
+- indicators
+priority: P1
+request:
+  params:
+    category:
+      in: query
+      required: false
+      description: 筛选指定分类的指标
+    search:
+      in: query
+      required: false
+      description: 搜索指标名称或描述
+    include_advanced:
+      in: query
+      required: false
+      description: 是否包含高级指标
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/IndicatorRegistryResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.030982'
+  version: 1.0.0
+  stable: false
+  deprecated: false

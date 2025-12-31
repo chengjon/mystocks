@@ -1,0 +1,58 @@
+api_id: tradingview_get_api_tradingview_screener_config
+module: tradingview
+path: /api/tradingview/screener/config
+method: GET
+summary: Get Screener Config
+description: 获取 TradingView 股票筛选器配置
+tags:
+- tradingview
+priority: P1
+request:
+  params:
+    market:
+      in: query
+      required: false
+      description: '市场类型: china, america, crypto'
+    theme:
+      in: query
+      required: false
+      description: 主题
+    locale:
+      in: query
+      required: false
+      description: 语言
+    container_id:
+      in: query
+      required: false
+      description: 容器ID
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Screener Config Api Tradingview Screener Config Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.242588'
+  version: 1.0.0
+  stable: false
+  deprecated: false

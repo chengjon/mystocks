@@ -1,0 +1,48 @@
+api_id: system_get_api_system_health
+module: system
+path: /api/system/health
+method: GET
+summary: System Health
+description: '系统健康检查端点 (双数据库架构: TDengine + PostgreSQL)
+
+
+  返回:
+
+  - 数据库连接状态
+
+  - 系统运行时间
+
+  - 服务状态'
+tags:
+- system
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.017649'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,55 @@
+api_id: SSE实时推送_get_api_v1_sse_training
+module: SSE实时推送
+path: /api/v1/sse/training
+method: GET
+summary: Sse Training Stream
+description: "SSE endpoint for model training progress updates\n\n**Event Types:**\n\
+  - `connected`: Initial connection confirmation\n- `training_progress`: Training\
+  \ progress update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+  ```json\n{\n    \"event\": \"training_progress\",\n    \"data\": {\n        \"task_id\"\
+  : \"training-uuid\",\n        \"progress\": 45.5,\n        \"status\": \"running\"\
+  ,\n        \"message\": \"Training epoch 10/100\",\n        \"metrics\": {\n   \
+  \         \"loss\": 0.023,\n            \"accuracy\": 0.95\n        }\n    },\n\
+  \    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\n**Example (JavaScript):**\n\
+  ```javascript\nconst eventSource = new EventSource('/api/v1/sse/training');\n\n\
+  eventSource.addEventListener('training_progress', (event) => {\n    const data =\
+  \ JSON.parse(event.data);\n    updateProgressBar(data.data.progress);\n    updateMetrics(data.data.metrics);\n\
+  });\n\neventSource.addEventListener('error', () => {\n    console.error('SSE connection\
+  \ error');\n    eventSource.close();\n});\n```"
+tags:
+- SSE实时推送
+priority: P2
+request:
+  params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.444553'
+  version: 1.0.0
+  stable: false
+  deprecated: false

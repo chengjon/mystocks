@@ -1,0 +1,44 @@
+api_id: pool_monitoring_get_api_pool_monitoring_alerts
+module: pool-monitoring
+path: /api/pool-monitoring/alerts
+method: GET
+summary: 连接池告警检测
+description: "检测连接池是否存在需要告警的情况\n\n告警条件:\n- 连接池使用率 > 80%\n- 连接错误率 > 5%\n- 连接超时率 > 2%\n\
+  \nReturns:\n    - has_alerts: 是否存在告警\n    - alerts: 告警列表\n    - timestamp: 检查时间戳"
+tags:
+- pool-monitoring
+- Connection Pool Monitoring
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Check Connection Pool Alerts Api Pool Monitoring Alerts Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.112533'
+  version: 1.0.0
+  stable: false
+  deprecated: false

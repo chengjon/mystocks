@@ -1,0 +1,540 @@
+{
+  "generated_at": "2025-12-30T22:33:46.801884",
+  "total_registered": 86,
+  "by_priority": {
+    "P0": 68,
+    "P1": 18,
+    "P2": 0
+  },
+  "by_module": {
+    "watchlist": 5,
+    "notification": 5,
+    "data": 17,
+    "auth": 6,
+    "strategy": 6,
+    "market": 26,
+    "indicators": 4,
+    "trade": 6,
+    "wencai": 8,
+    "tradingview": 2,
+    "cache": 1
+  },
+  "contracts": [
+    {
+      "api_id": "watchlist_put_api_watchlist_move",
+      "module": "watchlist",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "notification_post_api_notification_email_welcome",
+      "module": "notification",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_intraday",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_post_api_v1_auth_login",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_get_api_strategy_definitions",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_quality_post_api_data_quality_test_quality",
+      "module": "data",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_post_api_strategy_run_single",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_kline",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_get_api_v1_auth_csrf_token",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_post_api_strategy_run_batch",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_concepts",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_blocktrade_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_refresh_all",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_etf_list",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_etf_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_post_api_v1_auth_logout",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_etf_list",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_get_api_strategy_matched_stocks",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "indicators_post_api_indicators_configs",
+      "module": "indicators",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_post_api_trade_execute",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_daily",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_heatmap",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_markets_hot_industries",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_industries",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_stocks",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_post_api_market_wencai_refresh_query_name",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_kline",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_post_api_market_chip_race_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_quotes",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_kline",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_dividend_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_get_api_trade_portfolio",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "tradingview_post_api_tradingview_ticker_tape_config",
+      "module": "tradingview",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_markets_hot_concepts",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_lhb",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_lhb_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_dividend",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_get_api_market_wencai_results_query_name",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_get_api_v1_auth_users",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "indicators_post_api_indicators_calculate",
+      "module": "indicators",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_get_api_trade_trades",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "watchlist_put_api_watchlist_groups_group_id",
+      "module": "watchlist",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_markets_price_distribution",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "notification_post_api_notification_preferences",
+      "module": "notification",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "watchlist_post_api_watchlist_groups",
+      "module": "watchlist",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_get_api_market_wencai_queries_query_name",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_get_api_trade_health",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "notification_post_api_notification_email_send",
+      "module": "notification",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_test_factory",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_symbol_detail",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_get_api_trade_positions",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_get_api_market_wencai_history_query_name",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_blocktrade",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_search",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_get_api_market_wencai_health",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "indicators_put_api_indicators_configs_config_id",
+      "module": "indicators",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_post_api_market_fund_flow_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_fund_flow",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_fund_flow_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_chip_race",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_financial",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "cache_post_api_cache_symbol_data_type",
+      "module": "cache",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_post_api_market_wencai_custom_query",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_lhb",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_get_api_strategy_stats_summary",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_fund_flow",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_post_api_v1_auth_refresh",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "tradingview_post_api_tradingview_chart_config",
+      "module": "tradingview",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "watchlist_put_api_watchlist_notes_symbol",
+      "module": "watchlist",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_post_api_market_etf_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "auth_get_api_v1_auth_me",
+      "module": "auth",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_basic",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_post_api_market_wencai_query",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_stocks_symbol_trading_summary",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "trade_get_api_trade_statistics",
+      "module": "trade",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_post_api_market_v2_sector_fund_flow_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_post_api_market_lhb_refresh",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "wencai_get_api_market_wencai_queries",
+      "module": "wencai",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "indicators_post_api_indicators_calculate_batch",
+      "module": "indicators",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_get_api_market_health",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "notification_post_api_notification_email_price_alert",
+      "module": "notification",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "notification_post_api_notification_email_newsletter",
+      "module": "notification",
+      "priority": "P1",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "strategy_get_api_strategy_results",
+      "module": "strategy",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "market_v2_get_api_market_v2_sector_fund_flow",
+      "module": "market",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "data_get_api_data_markets_overview",
+      "module": "data",
+      "priority": "P0",
+      "version": "1.0.0"
+    },
+    {
+      "api_id": "watchlist_post_api_watchlist_add",
+      "module": "watchlist",
+      "priority": "P1",
+      "version": "1.0.0"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+api_id: technical_analysis_post_api_technical_batch_indicators
+module: technical-analysis
+path: /api/technical/batch/indicators
+method: POST
+summary: Get Batch Indicators
+description: '批量获取多只股票的技术指标
+
+
+  参数:
+
+  - symbols: 股票代码列表 (最多20只)
+
+
+  示例:
+
+  - POST /api/technical/batch/indicators?symbols=600519&symbols=000001&symbols=600000'
+tags:
+- technical-analysis
+- technical-analysis
+priority: P1
+request:
+  params:
+    symbols:
+      in: query
+      required: true
+      description: 股票代码列表
+    period:
+      in: query
+      required: false
+      description: 数据周期
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.332504'
+  version: 1.0.0
+  stable: false
+  deprecated: false

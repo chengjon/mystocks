@@ -1,0 +1,46 @@
+api_id: stock_search_get_api_stock_search_recommendation_symbol
+module: stock-search
+path: /api/stock-search/recommendation/{symbol}
+method: GET
+summary: Get Recommendation Trends
+description: "获取分析师推荐趋势\n\nArgs:\n    symbol: 股票代码"
+tags:
+- stock-search
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Recommendation Trends Api Stock Search Recommendation  Symbol  Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.194524'
+  version: 1.0.0
+  stable: false
+  deprecated: false

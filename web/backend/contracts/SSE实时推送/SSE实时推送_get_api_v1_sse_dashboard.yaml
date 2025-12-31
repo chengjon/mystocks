@@ -1,0 +1,58 @@
+api_id: SSE实时推送_get_api_v1_sse_dashboard
+module: SSE实时推送
+path: /api/v1/sse/dashboard
+method: GET
+summary: Sse Dashboard Stream
+description: "SSE endpoint for real-time dashboard updates\n\n**Event Types:**\n-\
+  \ `connected`: Initial connection confirmation\n- `dashboard_update`: Dashboard\
+  \ data update\n- `ping`: Keepalive heartbeat (every 30s)\n\n**Event Data Structure:**\n\
+  ```json\n{\n    \"event\": \"dashboard_update\",\n    \"data\": {\n        \"update_type\"\
+  : \"metrics\",\n        \"data\": {\n            \"total_value\": 1500000.0,\n \
+  \           \"daily_return\": 0.025,\n            \"positions_count\": 15\n    \
+  \    }\n    },\n    \"timestamp\": \"2025-10-24T14:30:00Z\"\n}\n```\n\n**Update\
+  \ Types:**\n- `metrics`: Portfolio metrics update\n- `positions`: Positions update\n\
+  - `orders`: Orders update\n- `market`: Market data update\n\n**Example (JavaScript):**\n\
+  ```javascript\nconst eventSource = new EventSource('/api/v1/sse/dashboard');\n\n\
+  eventSource.addEventListener('dashboard_update', (event) => {\n    const data =\
+  \ JSON.parse(event.data);\n\n    switch (data.data.update_type) {\n        case\
+  \ 'metrics':\n            updatePortfolioMetrics(data.data.data);\n            break;\n\
+  \        case 'positions':\n            updatePositionsTable(data.data.data);\n\
+  \            break;\n        case 'orders':\n            updateOrdersTable(data.data.data);\n\
+  \            break;\n    }\n});\n```"
+tags:
+- SSE实时推送
+priority: P2
+request:
+  params:
+    client_id:
+      in: query
+      required: false
+      description: 客户端ID（可选，自动生成）
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.454565'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,48 @@
+api_id: cache_post_api_cache_prewarming_trigger
+module: cache
+path: /api/cache/prewarming/trigger
+method: POST
+summary: Trigger Cache Prewarming
+description: "触发缓存预热任务\n\nReturns:\n    预热结果，包含:\n    - success: 操作成功标志\n    - prewarmed_count:\
+  \ 预热的缓存条数\n    - failed_count: 失败的缓存条数\n    - elapsed_seconds: 预热耗时\n\nExamples:\n\
+  \    POST /api/cache/prewarming/trigger\n\n    Response:\n    {\n        \"success\"\
+  : true,\n        \"message\": \"缓存预热成功\",\n        \"prewarmed_count\": 20,\n  \
+  \      \"failed_count\": 0,\n        \"elapsed_seconds\": 2.5,\n        \"timestamp\"\
+  : \"2025-11-06T...\"\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Trigger Cache Prewarming Api Cache Prewarming Trigger Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.128439'
+  version: 1.0.0
+  stable: false
+  deprecated: false

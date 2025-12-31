@@ -1,0 +1,42 @@
+api_id: machine_learning_get_api_ml_models
+module: machine-learning
+path: /api/ml/models
+method: GET
+summary: List Models
+description: 列出所有已保存的模型
+tags:
+- machine-learning
+- Machine Learning
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/ModelListResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.276232'
+  version: 1.0.0
+  stable: false
+  deprecated: false

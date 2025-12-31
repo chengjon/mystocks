@@ -1,0 +1,425 @@
+generated_at: '2025-12-30T22:14:26.492523'
+modules:
+  SSE实时推送:
+    contracts:
+    - SSE实时推送_get_api_v1_sse_alerts
+    - SSE实时推送_get_api_v1_sse_backtest
+    - SSE实时推送_get_api_v1_sse_dashboard
+    - SSE实时推送_get_api_v1_sse_status
+    - SSE实时推送_get_api_v1_sse_training
+    path: contracts/SSE实时推送
+    total_contracts: 5
+  announcement:
+    contracts:
+    - announcement_delete_api_announcement_monitor_rules_rule_id
+    - announcement_get_api_announcement_health
+    - announcement_get_api_announcement_important
+    - announcement_get_api_announcement_list
+    - announcement_get_api_announcement_monitor_rules
+    - announcement_get_api_announcement_stats
+    - announcement_get_api_announcement_status
+    - announcement_get_api_announcement_today
+    - announcement_get_api_announcement_triggered_records
+    - announcement_post_api_announcement_analyze
+    - announcement_post_api_announcement_fetch
+    - announcement_post_api_announcement_monitor_evaluate
+    - announcement_post_api_announcement_monitor_rules
+    - announcement_put_api_announcement_monitor_rules_rule_id
+    path: contracts/announcement
+    total_contracts: 14
+  api:
+    contracts:
+    - api_get_api_csrf_token
+    - api_get_api_socketio_status
+    - api_get_health
+    - api_get_root
+    path: contracts/api
+    total_contracts: 4
+  auth:
+    contracts:
+    - auth_get_api_v1_auth_csrf_token
+    - auth_get_api_v1_auth_me
+    - auth_get_api_v1_auth_users
+    - auth_post_api_v1_auth_login
+    - auth_post_api_v1_auth_logout
+    - auth_post_api_v1_auth_refresh
+    path: contracts/auth
+    total_contracts: 6
+  cache:
+    contracts:
+    - cache_delete_api_cache
+    - cache_delete_api_cache_symbol
+    - cache_get_api_cache_eviction_stats
+    - cache_get_api_cache_monitoring_health
+    - cache_get_api_cache_monitoring_metrics
+    - cache_get_api_cache_prewarming_status
+    - cache_get_api_cache_status
+    - cache_get_api_cache_symbol_data_type
+    - cache_get_api_cache_symbol_data_type_fresh
+    - cache_post_api_cache_evict_manual
+    - cache_post_api_cache_prewarming_trigger
+    - cache_post_api_cache_symbol_data_type
+    path: contracts/cache
+    total_contracts: 12
+  contract-management:
+    contracts:
+    - contract_management_delete_api_contracts_versions_version_id
+    - contract_management_get_api_contracts_contracts
+    - contract_management_get_api_contracts_versions
+    - contract_management_get_api_contracts_versions_name_active
+    - contract_management_get_api_contracts_versions_version_id
+    - contract_management_post_api_contracts_diff
+    - contract_management_post_api_contracts_sync
+    - contract_management_post_api_contracts_validate
+    - contract_management_post_api_contracts_versions
+    - contract_management_post_api_contracts_versions_version_id_activate
+    - contract_management_put_api_contracts_versions_version_id
+    path: contracts/contract-management
+    total_contracts: 11
+  dashboard:
+    contracts:
+    - dashboard_get_api_dashboard_health
+    - dashboard_get_api_dashboard_market_overview
+    - dashboard_get_api_dashboard_summary
+    path: contracts/dashboard
+    total_contracts: 3
+  data:
+    contracts:
+    - data_get_api_data_financial
+    - data_get_api_data_kline
+    - data_get_api_data_markets_hot_concepts
+    - data_get_api_data_markets_hot_industries
+    - data_get_api_data_markets_overview
+    - data_get_api_data_markets_price_distribution
+    - data_get_api_data_stocks_basic
+    - data_get_api_data_stocks_concepts
+    - data_get_api_data_stocks_daily
+    - data_get_api_data_stocks_industries
+    - data_get_api_data_stocks_intraday
+    - data_get_api_data_stocks_kline
+    - data_get_api_data_stocks_search
+    - data_get_api_data_stocks_symbol_detail
+    - data_get_api_data_stocks_symbol_trading_summary
+    - data_get_api_data_test_factory
+    path: contracts/data
+    total_contracts: 16
+  data-quality:
+    contracts:
+    - data_quality_get_api_data_quality_alerts
+    - data_quality_get_api_data_quality_config_mode
+    - data_quality_get_api_data_quality_health
+    - data_quality_get_api_data_quality_metrics
+    - data_quality_get_api_data_quality_metrics_trends
+    - data_quality_get_api_data_quality_status_overview
+    - data_quality_post_api_data_quality_alerts_alert_id_acknowledge
+    - data_quality_post_api_data_quality_alerts_alert_id_resolve
+    - data_quality_post_api_data_quality_test_quality
+    path: contracts/data-quality
+    total_contracts: 9
+  gpu-monitoring:
+    contracts:
+    - gpu_monitoring_get_api_gpu_history
+    - gpu_monitoring_get_api_gpu_metrics
+    - gpu_monitoring_get_api_gpu_performance
+    - gpu_monitoring_get_api_gpu_status
+    path: contracts/gpu-monitoring
+    total_contracts: 4
+  health:
+    contracts:
+    - health_get_api_health
+    - health_get_api_health_detailed
+    - health_get_api_reports_health_timestamp
+    path: contracts/health
+    total_contracts: 3
+  indicators:
+    contracts:
+    - indicators_delete_api_indicators_configs_config_id
+    - indicators_get_api_indicators_cache_stats
+    - indicators_get_api_indicators_configs
+    - indicators_get_api_indicators_configs_config_id
+    - indicators_get_api_indicators_registry
+    - indicators_get_api_indicators_registry_category
+    - indicators_post_api_indicators_cache_clear
+    - indicators_post_api_indicators_calculate
+    - indicators_post_api_indicators_calculate_batch
+    - indicators_post_api_indicators_configs
+    - indicators_put_api_indicators_configs_config_id
+    path: contracts/indicators
+    total_contracts: 11
+  industry-concept-analysis:
+    contracts:
+    - industry_concept_analysis_get_api_analysis_concept_list
+    - industry_concept_analysis_get_api_analysis_concept_stocks
+    - industry_concept_analysis_get_api_analysis_industry_list
+    - industry_concept_analysis_get_api_analysis_industry_performance
+    - industry_concept_analysis_get_api_analysis_industry_stocks
+    path: contracts/industry-concept-analysis
+    total_contracts: 5
+  machine-learning:
+    contracts:
+    - machine_learning_get_api_ml_models
+    - machine_learning_get_api_ml_models_model_name
+    - machine_learning_get_api_ml_tdx_stocks_market
+    - machine_learning_post_api_ml_features_generate
+    - machine_learning_post_api_ml_models_evaluate
+    - machine_learning_post_api_ml_models_hyperparameter_search
+    - machine_learning_post_api_ml_models_predict
+    - machine_learning_post_api_ml_models_train
+    - machine_learning_post_api_ml_tdx_data
+    path: contracts/machine-learning
+    total_contracts: 9
+  market:
+    contracts:
+    - market_get_api_market_chip_race
+    - market_get_api_market_etf_list
+    - market_get_api_market_fund_flow
+    - market_get_api_market_health
+    - market_get_api_market_heatmap
+    - market_get_api_market_kline
+    - market_get_api_market_lhb
+    - market_get_api_market_quotes
+    - market_get_api_market_stocks
+    - market_post_api_market_chip_race_refresh
+    - market_post_api_market_etf_refresh
+    - market_post_api_market_fund_flow_refresh
+    - market_post_api_market_lhb_refresh
+    path: contracts/market
+    total_contracts: 13
+  market-v2:
+    contracts:
+    - market_v2_get_api_market_v2_blocktrade
+    - market_v2_get_api_market_v2_dividend
+    - market_v2_get_api_market_v2_etf_list
+    - market_v2_get_api_market_v2_fund_flow
+    - market_v2_get_api_market_v2_lhb
+    - market_v2_get_api_market_v2_sector_fund_flow
+    - market_v2_post_api_market_v2_blocktrade_refresh
+    - market_v2_post_api_market_v2_dividend_refresh
+    - market_v2_post_api_market_v2_etf_refresh
+    - market_v2_post_api_market_v2_fund_flow_refresh
+    - market_v2_post_api_market_v2_lhb_refresh
+    - market_v2_post_api_market_v2_refresh_all
+    - market_v2_post_api_market_v2_sector_fund_flow_refresh
+    path: contracts/market-v2
+    total_contracts: 13
+  metrics:
+    contracts:
+    - metrics_get_api_basic
+    - metrics_get_api_detailed
+    - metrics_get_api_metrics
+    - metrics_get_api_performance
+    - metrics_get_api_status
+    - metrics_post_api_reset
+    path: contracts/metrics
+    total_contracts: 6
+  monitoring:
+    contracts:
+    - monitoring_get_monitoring_health
+    - monitoring_get_monitoring_status
+    - monitoring_post_monitoring_analyze
+    path: contracts/monitoring
+    total_contracts: 3
+  multi-source:
+    contracts:
+    - multi_source_get_multi_source_health
+    - multi_source_get_multi_source_status
+    - multi_source_post_multi_source_analyze
+    path: contracts/multi-source
+    total_contracts: 3
+  notification:
+    contracts:
+    - notification_get_api_notification_preferences
+    - notification_get_api_notification_status
+    - notification_post_api_notification_email_newsletter
+    - notification_post_api_notification_email_price_alert
+    - notification_post_api_notification_email_send
+    - notification_post_api_notification_email_welcome
+    - notification_post_api_notification_preferences
+    - notification_post_api_notification_test_email
+    path: contracts/notification
+    total_contracts: 8
+  pool-monitoring:
+    contracts:
+    - pool_monitoring_get_api_pool_monitoring_alerts
+    - pool_monitoring_get_api_pool_monitoring_health
+    - pool_monitoring_get_api_pool_monitoring_postgresql_stats
+    - pool_monitoring_get_api_pool_monitoring_tdengine_stats
+    path: contracts/pool-monitoring
+    total_contracts: 4
+  stock-search:
+    contracts:
+    - stock_search_get_api_stock_search_analytics_searches
+    - stock_search_get_api_stock_search_news_market_category
+    - stock_search_get_api_stock_search_news_symbol
+    - stock_search_get_api_stock_search_profile_symbol
+    - stock_search_get_api_stock_search_quote_symbol
+    - stock_search_get_api_stock_search_rate_limits_status
+    - stock_search_get_api_stock_search_recommendation_symbol
+    - stock_search_get_api_stock_search_search
+    - stock_search_post_api_stock_search_analytics_cleanup
+    - stock_search_post_api_stock_search_cache_clear
+    path: contracts/stock-search
+    total_contracts: 10
+  strategy:
+    contracts:
+    - strategy_get_api_strategy_definitions
+    - strategy_get_api_strategy_matched_stocks
+    - strategy_get_api_strategy_results
+    - strategy_get_api_strategy_stats_summary
+    - strategy_post_api_strategy_run_batch
+    - strategy_post_api_strategy_run_single
+    path: contracts/strategy
+    total_contracts: 6
+  strategy-mgmt:
+    contracts:
+    - strategy_mgmt_delete_api_strategy_mgmt_strategies_strategy_id
+    - strategy_mgmt_get_api_strategy_mgmt_backtest_results
+    - strategy_mgmt_get_api_strategy_mgmt_backtest_results_backtest_id
+    - strategy_mgmt_get_api_strategy_mgmt_backtest_status_backtest_id
+    - strategy_mgmt_get_api_strategy_mgmt_health
+    - strategy_mgmt_get_api_strategy_mgmt_strategies
+    - strategy_mgmt_get_api_strategy_mgmt_strategies_strategy_id
+    - strategy_mgmt_post_api_strategy_mgmt_backtest_execute
+    - strategy_mgmt_post_api_strategy_mgmt_strategies
+    - strategy_mgmt_put_api_strategy_mgmt_strategies_strategy_id
+    path: contracts/strategy-mgmt
+    total_contracts: 10
+  system:
+    contracts:
+    - system_get_api_system_adapters_health
+    - system_get_api_system_architecture
+    - system_get_api_system_database_health
+    - system_get_api_system_database_stats
+    - system_get_api_system_datasources
+    - system_get_api_system_health
+    - system_get_api_system_logs
+    - system_get_api_system_logs_summary
+    - system_post_api_system_test_connection
+    path: contracts/system
+    total_contracts: 9
+  tasks:
+    contracts:
+    - tasks_delete_api_tasks_executions_cleanup
+    - tasks_delete_api_tasks_task_id
+    - tasks_get_api_tasks
+    - tasks_get_api_tasks_audit_logs
+    - tasks_get_api_tasks_executions
+    - tasks_get_api_tasks_executions_execution_id
+    - tasks_get_api_tasks_health
+    - tasks_get_api_tasks_statistics
+    - tasks_get_api_tasks_task_id
+    - tasks_post_api_tasks_cleanup_audit
+    - tasks_post_api_tasks_export
+    - tasks_post_api_tasks_import
+    - tasks_post_api_tasks_register
+    - tasks_post_api_tasks_task_id_start
+    - tasks_post_api_tasks_task_id_stop
+    path: contracts/tasks
+    total_contracts: 15
+  tdx:
+    contracts:
+    - tdx_get_api_tdx_health
+    - tdx_get_api_tdx_index_kline
+    - tdx_get_api_tdx_index_quote_symbol
+    - tdx_get_api_tdx_kline
+    - tdx_get_api_tdx_quote_symbol
+    path: contracts/tdx
+    total_contracts: 5
+  technical-analysis:
+    contracts:
+    - technical_analysis_get_api_technical_patterns_symbol
+    - technical_analysis_get_api_technical_symbol_history
+    - technical_analysis_get_api_technical_symbol_indicators
+    - technical_analysis_get_api_technical_symbol_momentum
+    - technical_analysis_get_api_technical_symbol_signals
+    - technical_analysis_get_api_technical_symbol_trend
+    - technical_analysis_get_api_technical_symbol_volatility
+    - technical_analysis_get_api_technical_symbol_volume
+    - technical_analysis_post_api_technical_batch_indicators
+    path: contracts/technical-analysis
+    total_contracts: 9
+  trade:
+    contracts:
+    - trade_get_api_trade_health
+    - trade_get_api_trade_portfolio
+    - trade_get_api_trade_positions
+    - trade_get_api_trade_statistics
+    - trade_get_api_trade_trades
+    - trade_post_api_trade_execute
+    path: contracts/trade
+    total_contracts: 6
+  tradingview:
+    contracts:
+    - tradingview_get_api_tradingview_market_overview_config
+    - tradingview_get_api_tradingview_screener_config
+    - tradingview_get_api_tradingview_symbol_convert
+    - tradingview_post_api_tradingview_chart_config
+    - tradingview_post_api_tradingview_mini_chart_config
+    - tradingview_post_api_tradingview_ticker_tape_config
+    path: contracts/tradingview
+    total_contracts: 6
+  watchlist:
+    contracts:
+    - watchlist_delete_api_watchlist_clear
+    - watchlist_delete_api_watchlist_groups_group_id
+    - watchlist_delete_api_watchlist_remove_symbol
+    - watchlist_get_api_watchlist
+    - watchlist_get_api_watchlist_check_symbol
+    - watchlist_get_api_watchlist_count
+    - watchlist_get_api_watchlist_group_group_id
+    - watchlist_get_api_watchlist_groups
+    - watchlist_get_api_watchlist_symbols
+    - watchlist_get_api_watchlist_with_groups
+    - watchlist_post_api_watchlist_add
+    - watchlist_post_api_watchlist_groups
+    - watchlist_put_api_watchlist_groups_group_id
+    - watchlist_put_api_watchlist_move
+    - watchlist_put_api_watchlist_notes_symbol
+    path: contracts/watchlist
+    total_contracts: 15
+  wencai:
+    contracts:
+    - wencai_get_api_market_wencai_health
+    - wencai_get_api_market_wencai_history_query_name
+    - wencai_get_api_market_wencai_queries
+    - wencai_get_api_market_wencai_queries_query_name
+    - wencai_get_api_market_wencai_results_query_name
+    - wencai_post_api_market_wencai_custom_query
+    - wencai_post_api_market_wencai_query
+    - wencai_post_api_market_wencai_refresh_query_name
+    path: contracts/wencai
+    total_contracts: 8
+  策略管理-Week1:
+    contracts:
+    - 策略管理_Week1_delete_api_v1_strategy_strategies_strategy_id
+    - 策略管理_Week1_get_api_v1_strategy_backtest_results
+    - 策略管理_Week1_get_api_v1_strategy_backtest_results_backtest_id
+    - 策略管理_Week1_get_api_v1_strategy_backtest_results_backtest_id_chart_data
+    - 策略管理_Week1_get_api_v1_strategy_models
+    - 策略管理_Week1_get_api_v1_strategy_models_training_task_id_status
+    - 策略管理_Week1_get_api_v1_strategy_strategies
+    - 策略管理_Week1_get_api_v1_strategy_strategies_strategy_id
+    - 策略管理_Week1_post_api_v1_strategy_backtest_run
+    - 策略管理_Week1_post_api_v1_strategy_models_train
+    - 策略管理_Week1_post_api_v1_strategy_strategies
+    - 策略管理_Week1_put_api_v1_strategy_strategies_strategy_id
+    path: contracts/策略管理-Week1
+    total_contracts: 12
+  风险管理-Week1:
+    contracts:
+    - 风险管理_Week1_delete_api_v1_risk_alerts_alert_id
+    - 风险管理_Week1_get_api_v1_risk_alerts
+    - 风险管理_Week1_get_api_v1_risk_dashboard
+    - 风险管理_Week1_get_api_v1_risk_metrics_history
+    - 风险管理_Week1_post_api_v1_risk_alerts
+    - 风险管理_Week1_post_api_v1_risk_alerts_generate
+    - 风险管理_Week1_post_api_v1_risk_beta
+    - 风险管理_Week1_post_api_v1_risk_metrics_calculate
+    - 风险管理_Week1_post_api_v1_risk_notifications_test
+    - 风险管理_Week1_post_api_v1_risk_position_assess
+    - 风险管理_Week1_post_api_v1_risk_var_cvar
+    - 风险管理_Week1_put_api_v1_risk_alerts_alert_id
+    path: contracts/风险管理-Week1
+    total_contracts: 12
+total_contracts: 285
+version: 1.0.0

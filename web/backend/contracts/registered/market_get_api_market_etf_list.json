@@ -1,0 +1,218 @@
+{
+  "name": "market-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_get_api_market_etf_list",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market API",
+      "version": "1.0.0",
+      "description": "查询ETF实时行情数据（带缓存优化）\n\n**查询方式:**\n- 指定symbol: 返回单个ETF数据\n- 指定keyword: 模糊搜索名称/代码\n- 不指定条件: 返回全市场ETF(按涨跌幅排序)\n\n**缓存策略:** 1分钟TTL（平衡实时性和性能）\n**返回:** ETF数据列表"
+    },
+    "paths": {
+      "/api/market/etf/list": {
+        "get": {
+          "summary": "查询ETF列表",
+          "description": "查询ETF实时行情数据（带缓存优化）\n\n**查询方式:**\n- 指定symbol: 返回单个ETF数据\n- 指定keyword: 模糊搜索名称/代码\n- 不指定条件: 返回全市场ETF(按涨跌幅排序)\n\n**缓存策略:** 1分钟TTL（平衡实时性和性能）\n**返回:** ETF数据列表",
+          "tags": [
+            "market",
+            "市场数据"
+          ],
+          "parameters": [
+            {
+              "name": "symbol",
+              "in": "query",
+              "required": false,
+              "description": "ETF代码",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "keyword",
+              "in": "query",
+              "required": false,
+              "description": "关键词搜索",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "market",
+              "in": "query",
+              "required": false,
+              "description": "市场类型",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "category",
+              "in": "query",
+              "required": false,
+              "description": "ETF类型",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回数量",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "offset",
+              "in": "query",
+              "required": false,
+              "description": "偏移量",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "股票代码格式错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "行情数据不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "行情服务暂时不可用",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "查询ETF列表",
+  "tags": [
+    "market",
+    "市场数据",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.798460"
+}

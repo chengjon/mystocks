@@ -1,0 +1,60 @@
+api_id: 风险管理_Week1_get_api_v1_risk_metrics_history
+module: 风险管理-Week1
+path: /api/v1/risk/metrics/history
+method: GET
+summary: Get Risk Metrics History
+description: 获取风险指标历史数据
+tags:
+- 风险管理-Week1
+priority: P2
+request:
+  params:
+    entity_type:
+      in: query
+      required: true
+      description: ''
+    entity_id:
+      in: query
+      required: true
+      description: ''
+    start_date:
+      in: query
+      required: true
+      description: ''
+    end_date:
+      in: query
+      required: true
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: array
+      items:
+        type: object
+      title: Response Get Risk Metrics History Api V1 Risk Metrics History Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.426757'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,50 @@
+api_id: tradingview_get_api_tradingview_symbol_convert
+module: tradingview
+path: /api/tradingview/symbol/convert
+method: GET
+summary: Convert Symbol
+description: 将股票代码转换为 TradingView 格式
+tags:
+- tradingview
+priority: P1
+request:
+  params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码
+    market:
+      in: query
+      required: false
+      description: 市场类型
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Convert Symbol Api Tradingview Symbol Convert Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.244998'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,79 @@
+api_id: trade_get_api_trade_trades
+module: trade
+path: /api/trade/trades
+method: GET
+summary: Get Trades
+description: '获取交易记录列表
+
+
+  支持按股票代码、日期范围过滤，返回分页的交易历史记录'
+tags:
+- trade
+- 交易执行
+priority: P0
+request:
+  params:
+    symbol:
+      in: query
+      required: false
+      description: 股票代码 (可选)
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    page:
+      in: query
+      required: false
+      description: 页码
+    page_size:
+      in: query
+      required: false
+      description: 每页数量
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/APIResponse_TradeHistoryResponse_'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: ORDER_NOT_FOUND
+    http_status: 404
+    message: 订单不存在
+  - code: INSUFFICIENT_FUNDS
+    http_status: 400
+    message: 资金不足
+  - code: ORDER_REJECTED
+    http_status: 403
+    message: 订单被拒绝
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.164319'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.609851'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

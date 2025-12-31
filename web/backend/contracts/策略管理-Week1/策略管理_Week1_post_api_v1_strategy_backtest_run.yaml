@@ -1,0 +1,50 @@
+api_id: 策略管理_Week1_post_api_v1_strategy_backtest_run
+module: 策略管理-Week1
+path: /api/v1/strategy/backtest/run
+method: POST
+summary: Run Backtest
+description: "执行回测\n\nArgs:\n    request: 回测请求参数\n\nReturns:\n    {\"backtest_id\"\
+  : 123}"
+tags:
+- 策略管理-Week1
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: '#/components/schemas/app__schemas__backtest_schemas__BacktestRequest'
+response:
+  code: 200
+  data:
+    schema:
+      additionalProperties:
+        type: integer
+      type: object
+      title: Response Run Backtest Api V1 Strategy Backtest Run Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.411191'
+  version: 1.0.0
+  stable: false
+  deprecated: false

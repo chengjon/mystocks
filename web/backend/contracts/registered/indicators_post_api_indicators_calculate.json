@@ -1,0 +1,129 @@
+{
+  "name": "indicators-api-contract",
+  "version": "1.0.0",
+  "api_id": "indicators_post_api_indicators_calculate",
+  "priority": "P1",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "indicators API",
+      "version": "1.0.0",
+      "description": "计算技术指标 - Phase 4C Enhanced\n\n根据股票代码、日期范围和指标列表,计算技术指标值\n支持智能缓存、批量优化和性能监控\n\n**请求示例**:\n```json\n{\n    \"symbol\": \"600519.SH\",\n    \"start_date\": \"2024-01-01\",\n    \"end_date\": \"2024-12-31\",\n    \"indicators\": [\n        {\"abbreviation\": \"SMA\", \"parameters\": {\"timeperiod\": 20}},\n        {\"abbreviation\": \"RSI\", \"parameters\": {\"timeperiod\": 14}}\n    ],\n    \"use_cache\": true\n}\n```"
+    },
+    "paths": {
+      "/api/indicators/calculate": {
+        "post": {
+          "summary": "Calculate Indicators",
+          "description": "计算技术指标 - Phase 4C Enhanced\n\n根据股票代码、日期范围和指标列表,计算技术指标值\n支持智能缓存、批量优化和性能监控\n\n**请求示例**:\n```json\n{\n    \"symbol\": \"600519.SH\",\n    \"start_date\": \"2024-01-01\",\n    \"end_date\": \"2024-12-31\",\n    \"indicators\": [\n        {\"abbreviation\": \"SMA\", \"parameters\": {\"timeperiod\": 20}},\n        {\"abbreviation\": \"RSI\", \"parameters\": {\"timeperiod\": 14}}\n    ],\n    \"use_cache\": true\n}\n```",
+          "tags": [
+            "indicators"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "IndicatorCalculateRequest",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Calculate Indicators",
+  "tags": [
+    "indicators",
+    "P1"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.800286"
+}

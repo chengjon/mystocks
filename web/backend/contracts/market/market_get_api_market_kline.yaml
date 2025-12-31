@@ -1,0 +1,85 @@
+api_id: market_get_api_market_kline
+module: market
+path: /api/market/kline
+method: GET
+summary: 查询K线数据
+description: "获取股票K线（蜡烛图）历史数据\n\n**参数说明**:\n- stock_code: 股票代码，支持 \"600519\" 或 \"\
+  600519.SH\" 格式\n- period:\n  - \"daily\" (日K线)\n  - \"weekly\" (周K线)\n  - \"monthly\"\
+  \ (月K线)\n- adjust:\n  - \"qfq\" (前复权，推荐)\n  - \"hfq\" (后复权)\n  - \"\" (不复权)\n- start_date/end_date:\
+  \ 日期范围（可选，默认最近60个交易日）\n\n**数据源**: AKShare stock_zh_a_hist()\n**验证**: P0改进 Task 2\
+  \ - 使用MarketDataQueryModel验证参数\n**返回**: K线数据数组，包含OHLCV及技术指标"
+tags:
+- market
+- 市场数据
+priority: P0
+request:
+  params:
+    stock_code:
+      in: query
+      required: true
+      description: 股票代码（6位数字或带交易所后缀）
+    period:
+      in: query
+      required: false
+      description: '时间周期: daily/weekly/monthly'
+    adjust:
+      in: query
+      required: false
+      description: '复权类型: qfq/hfq/空字符串'
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: MARKET_DATA_NOT_FOUND
+    http_status: 404
+    message: 行情数据不存在
+  - code: MARKET_DATA_UNAVAILABLE
+    http_status: 503
+    message: 行情服务暂时不可用
+  - code: SYMBOL_INVALID
+    http_status: 400
+    message: 股票代码格式错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.065170'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.972253'
+  enhanced_version: '2.0'
+pydantic_models:
+  response: KlineData
+  request: KlineQueryParams
+rate_limit:
+  default: 100/minute
+  burst: 200/minute
+cache:
+  enabled: true
+  ttl: 60
+  strategy: LRU

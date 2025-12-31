@@ -1,0 +1,55 @@
+api_id: tasks_get_api_tasks_audit_logs
+module: tasks
+path: /api/tasks/audit/logs
+method: GET
+summary: Get Audit Logs
+description: "获取任务操作审计日志\n\nSecurity:\n    - 仅管理员可访问\n    - 需要管理员权限\n    - 支持操作类型和用户名过滤"
+tags:
+- tasks
+- tasks
+priority: P2
+request:
+  params:
+    limit:
+      in: query
+      required: false
+      description: 返回记录数
+    operation:
+      in: query
+      required: false
+      description: 操作类型过滤
+    username:
+      in: query
+      required: false
+      description: 用户名过滤
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Audit Logs Api Tasks Audit Logs Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.155978'
+  version: 1.0.0
+  stable: false
+  deprecated: false

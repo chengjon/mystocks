@@ -1,0 +1,53 @@
+api_id: tradingview_post_api_tradingview_chart_config
+module: tradingview
+path: /api/tradingview/chart/config
+method: POST
+summary: Get Chart Config
+description: '获取 TradingView 图表配置
+
+
+  返回用于前端嵌入的图表配置'
+tags:
+- tradingview
+priority: P1
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: ChartConfigRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Chart Config Api Tradingview Chart Config Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.234587'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:03.008104'
+  enhanced_version: '2.0'

@@ -1,0 +1,50 @@
+api_id: watchlist_post_api_watchlist_groups
+module: watchlist
+path: /api/watchlist/groups
+method: POST
+summary: Create Group
+description: 创建新的自选股分组
+tags:
+- watchlist
+priority: P1
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: CreateGroupRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Create Group Api Watchlist Groups Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.219407'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.731700'
+  enhanced_version: '2.0'

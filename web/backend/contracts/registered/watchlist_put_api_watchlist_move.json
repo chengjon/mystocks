@@ -1,0 +1,129 @@
+{
+  "name": "watchlist-api-contract",
+  "version": "1.0.0",
+  "api_id": "watchlist_put_api_watchlist_move",
+  "priority": "P1",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "watchlist API",
+      "version": "1.0.0",
+      "description": "将股票从一个分组移动到另一个分组"
+    },
+    "paths": {
+      "/api/watchlist/move": {
+        "put": {
+          "summary": "Move Stock To Group",
+          "description": "将股票从一个分组移动到另一个分组",
+          "tags": [
+            "watchlist"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "MoveStockRequest",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Move Stock To Group",
+  "tags": [
+    "watchlist",
+    "P1"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.782746"
+}

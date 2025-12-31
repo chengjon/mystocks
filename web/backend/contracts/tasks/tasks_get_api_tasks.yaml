@@ -1,0 +1,70 @@
+api_id: tasks_get_api_tasks
+module: tasks
+path: /api/tasks/
+method: GET
+summary: List Tasks
+description: "列出所有任务\n\nSecurity:\n    - 需要用户认证\n    - 管理员可查看所有任务，普通用户仅查看自己创建的任务\n\
+  \    - 访问频率限制"
+tags:
+- tasks
+- tasks
+priority: P2
+request:
+  params:
+    task_type:
+      in: query
+      required: false
+      description: 任务类型
+    tags:
+      in: query
+      required: false
+      description: 逗号分隔的任务标签
+    status:
+      in: query
+      required: false
+      description: 任务状态
+    enabled:
+      in: query
+      required: false
+      description: 是否启用
+    limit:
+      in: query
+      required: false
+      description: 返回数量
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+response:
+  code: 200
+  data:
+    schema:
+      type: array
+      items:
+        $ref: '#/components/schemas/TaskConfig'
+      title: Response List Tasks Api Tasks  Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.140470'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,58 @@
+api_id: tdx_get_api_tdx_kline
+module: tdx
+path: /api/tdx/kline
+method: GET
+summary: 获取股票K线数据
+description: 查询股票历史K线数据,支持多种周期(1m/5m/15m/30m/1h/1d)
+tags:
+- tdx
+- TDX行情数据
+priority: P2
+request:
+  params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码(6位数字)
+    start_date:
+      in: query
+      required: false
+      description: 开始日期 YYYY-MM-DD
+    end_date:
+      in: query
+      required: false
+      description: 结束日期 YYYY-MM-DD
+    period:
+      in: query
+      required: false
+      description: 'K线周期: 1m/5m/15m/30m/1h/1d'
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/KlineResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.091814'
+  version: 1.0.0
+  stable: false
+  deprecated: false

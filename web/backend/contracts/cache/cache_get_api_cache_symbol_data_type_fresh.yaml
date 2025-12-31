@@ -1,0 +1,59 @@
+api_id: cache_get_api_cache_symbol_data_type_fresh
+module: cache
+path: /api/cache/{symbol}/{data_type}/fresh
+method: GET
+summary: Check Cache Freshness
+description: "检查缓存是否新鲜（有效且未过期）\n\nArgs:\n    symbol: 股票代码\n    data_type: 数据类型\n \
+  \   max_age_days: 最大缓存年龄（天）\n\nReturns:\n    缓存新鲜度检查结果\n\nExamples:\n    GET /api/cache/000001/fund_flow/fresh\n\
+  \n    Response:\n    {\n        \"success\": true,\n        \"symbol\": \"000001\"\
+  ,\n        \"data_type\": \"fund_flow\",\n        \"is_fresh\": true,\n        \"\
+  max_age_days\": 7,\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    max_age_days:
+      in: query
+      required: false
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Check Cache Freshness Api Cache  Symbol   Data Type  Fresh Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.123160'
+  version: 1.0.0
+  stable: false
+  deprecated: false

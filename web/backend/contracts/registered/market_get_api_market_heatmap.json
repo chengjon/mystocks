@@ -1,0 +1,182 @@
+{
+  "name": "market-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_get_api_market_heatmap",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market API",
+      "version": "1.0.0",
+      "description": "获取市场热力图数据，用于可视化展示各股票的涨跌情况\n\n**参数说明:**\n- market: 市场类型\n  - \"cn\" - 中国A股市场\n  - \"hk\" - 香港股市\n- limit: 返回的股票数量 (10-200)\n\n**数据源:** AKShare 或 Mock数据\n**返回:** 股票列表，包含代码、名称、涨跌幅、价格、成交量、市值等"
+    },
+    "paths": {
+      "/api/market/heatmap": {
+        "get": {
+          "summary": "获取市场热力图数据",
+          "description": "获取市场热力图数据，用于可视化展示各股票的涨跌情况\n\n**参数说明:**\n- market: 市场类型\n  - \"cn\" - 中国A股市场\n  - \"hk\" - 香港股市\n- limit: 返回的股票数量 (10-200)\n\n**数据源:** AKShare 或 Mock数据\n**返回:** 股票列表，包含代码、名称、涨跌幅、价格、成交量、市值等",
+          "tags": [
+            "market",
+            "市场数据"
+          ],
+          "parameters": [
+            {
+              "name": "market",
+              "in": "query",
+              "required": false,
+              "description": "市场类型: cn(A股)/hk(港股)",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回股票数量",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "股票代码格式错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "行情数据不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "行情服务暂时不可用",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "获取市场热力图数据",
+  "tags": [
+    "market",
+    "市场数据",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.798109"
+}

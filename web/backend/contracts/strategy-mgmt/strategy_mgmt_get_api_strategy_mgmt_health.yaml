@@ -1,0 +1,40 @@
+api_id: strategy_mgmt_get_api_strategy_mgmt_health
+module: strategy-mgmt
+path: /api/strategy-mgmt/health
+method: GET
+summary: 健康检查
+description: 检查策略管理服务和数据库连接的健康状态
+tags:
+- strategy-mgmt
+- strategy-mgmt
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.360499'
+  version: 1.0.0
+  stable: false
+  deprecated: false

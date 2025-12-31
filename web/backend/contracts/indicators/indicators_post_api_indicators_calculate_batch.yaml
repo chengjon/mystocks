@@ -1,0 +1,53 @@
+api_id: indicators_post_api_indicators_calculate_batch
+module: indicators
+path: /api/indicators/calculate/batch
+method: POST
+summary: Calculate Indicators Batch
+description: '批量计算技术指标 - Phase 4C Enhanced
+
+
+  支持一次性计算多个股票/日期范围的指标，提高计算效率'
+tags:
+- indicators
+priority: P1
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: IndicatorCalculateBatchRequest
+        type: object
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Calculate Indicators Batch Api Indicators Calculate Batch Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.035656'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:03.026493'
+  enhanced_version: '2.0'

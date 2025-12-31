@@ -1,0 +1,200 @@
+{
+  "name": "market-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_get_api_market_stocks",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market API",
+      "version": "1.0.0",
+      "description": "获取股票基本信息列表\n\n**查询条件**:\n- search: 关键词搜索（代码或名称）\n- exchange: 按交易所筛选（SSE上交所/SZSE深交所）\n- security_type: 按证券类型筛选\n- limit: 返回数量限制\n\n**数据源**: PostgreSQL stock_info表 或 Mock数据\n**返回**: 股票列表"
+    },
+    "paths": {
+      "/api/market/stocks": {
+        "get": {
+          "summary": "查询股票列表",
+          "description": "获取股票基本信息列表\n\n**查询条件**:\n- search: 关键词搜索（代码或名称）\n- exchange: 按交易所筛选（SSE上交所/SZSE深交所）\n- security_type: 按证券类型筛选\n- limit: 返回数量限制\n\n**数据源**: PostgreSQL stock_info表 或 Mock数据\n**返回**: 股票列表",
+          "tags": [
+            "market",
+            "市场数据"
+          ],
+          "parameters": [
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回记录数限制",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "search",
+              "in": "query",
+              "required": false,
+              "description": "股票代码或名称搜索关键词",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "exchange",
+              "in": "query",
+              "required": false,
+              "description": "交易所筛选: SSE/SZSE",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "security_type",
+              "in": "query",
+              "required": false,
+              "description": "证券类型筛选",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "股票代码格式错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "行情数据不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "行情服务暂时不可用",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "查询股票列表",
+  "tags": [
+    "market",
+    "市场数据",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.796524"
+}

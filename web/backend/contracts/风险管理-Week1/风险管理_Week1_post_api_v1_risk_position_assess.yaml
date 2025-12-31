@@ -1,0 +1,52 @@
+api_id: 风险管理_Week1_post_api_v1_risk_position_assess
+module: 风险管理-Week1
+path: /api/v1/risk/position/assess
+method: POST
+summary: Assess Position Risk
+description: "评估仓位风险\n\n## 请求示例\n```json\n{\n  \"positions\": [\n    {\"symbol\":\
+  \ \"sh600000\", \"value\": 150000, \"sector\": \"金融\"},\n    {\"symbol\": \"sh600036\"\
+  , \"value\": 120000, \"sector\": \"金融\"}\n  ],\n  \"total_capital\": 1000000,\n\
+  \  \"config\": {\n    \"max_position_size\": 0.10,\n    \"daily_loss_limit\": 0.05\n\
+  \  }\n}\n```"
+tags:
+- 风险管理-Week1
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        type: object
+        title: Request
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Assess Position Risk Api V1 Risk Position Assess Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.440521'
+  version: 1.0.0
+  stable: false
+  deprecated: false

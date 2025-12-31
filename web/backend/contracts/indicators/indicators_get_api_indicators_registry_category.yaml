@@ -1,0 +1,51 @@
+api_id: indicators_get_api_indicators_registry_category
+module: indicators
+path: /api/indicators/registry/{category}
+method: GET
+summary: Get Indicators By Category
+description: '获取指定分类的指标
+
+
+  - **category**: 指标分类 (trend, momentum, volatility, volume, candlestick)'
+tags:
+- indicators
+priority: P1
+request:
+  params:
+    category:
+      in: path
+      required: true
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: array
+      items:
+        $ref: '#/components/schemas/IndicatorMetadata'
+      title: Response Get Indicators By Category Api Indicators Registry  Category  Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.032532'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,70 @@
+api_id: 策略管理_Week1_get_api_v1_strategy_backtest_results_backtest_id_chart_data
+module: 策略管理-Week1
+path: /api/v1/strategy/backtest/results/{backtest_id}/chart-data
+method: GET
+summary: Get Backtest Chart Data
+description: "获取回测图表数据\n\n获取指定回测任务的可视化图表数据，包括资金曲线、回撤曲线和收益分布等。\n该端点专门为前端图表组件（如ECharts）提供格式化的时序数据。\n\
+  \n**功能说明**:\n- 提取回测结果中的时序数据\n- 生成资金曲线（Equity Curve）数据点\n- 计算回撤曲线（Drawdown Curve）数据\n\
+  - 统计收益分布（Returns Distribution）直方图\n- 返回前端图表库可直接使用的数据格式\n- 支持多种图表类型的数据输出\n\n**使用场景**:\n\
+  - 回测结果页面的可视化展示\n- 生成资金曲线图（折线图）\n- 绘制回撤曲线图（面积图）\n- 展示收益分布直方图\n- 导出图表数据用于报告\n- 对比多个回测结果\n\
+  \n**路径参数**:\n- backtest_id: 回测任务ID（整数）\n  - 必需参数\n  - 通过 /backtest/run 接口返回的ID\n\
+  \  - 对应数据库中的回测记录\n\n**返回值**:\n- equity_curve: 资金曲线数据（数组）\n  - 每个元素: [timestamp,\
+  \ equity_value]\n  - 时间戳: ISO 8601格式或Unix时间戳\n  - 资金价值: 账户总资产（浮点数）\n- drawdown_curve:\
+  \ 回撤曲线数据（数组）\n  - 每个元素: [timestamp, drawdown_percentage]\n  - 回撤百分比: 负值，如-0.15表示15%回撤\n\
+  - returns_distribution: 收益分布数据（数组）\n  - 每个元素: [return_range, frequency]\n  - 收益区间:\
+  \ 如\"-2%到-1%\"\n  - 频率: 该区间的交易次数\n\n**示例**:\n```bash\n# 获取回测图表数据\ncurl -X GET \"\
+  http://localhost:8000/api/v1/strategy/backtest/results/123/chart-data\"\n```\n\n\
+  **响应示例**:\n```json\n{\n  \"equity_curve\": [\n    [\"2024-01-01T00:00:00\", 1000000],\n\
+  \    [\"2024-01-02T00:00:00\", 1005230],\n    [\"2024-01-03T00:00:00\", 1012450],\n\
+  \    [\"2024-01-04T00:00:00\", 1008900]\n  ],\n  \"drawdown_curve\": [\n    [\"\
+  2024-01-01T00:00:00\", 0],\n    [\"2024-01-02T00:00:00\", 0],\n    [\"2024-01-03T00:00:00\"\
+  , 0],\n    [\"2024-01-04T00:00:00\", -0.0035]\n  ],\n  \"returns_distribution\"\
+  : [\n    [\"-3% to -2%\", 5],\n    [\"-2% to -1%\", 12],\n    [\"-1% to 0%\", 45],\n\
+  \    [\"0% to 1%\", 78],\n    [\"1% to 2%\", 42],\n    [\"2% to 3%\", 8]\n  ]\n\
+  }\n```\n\n**回测不存在响应**:\n```json\n{\n  \"detail\": \"回测不存在\"\n}\n```\n\n**注意事项**:\n\
+  - 该端点仅返回图表数据，不包含完整回测结果\n- 数据格式已针对前端图表库优化（ECharts、Chart.js等）\n- equity_curve数据点数量取决于回测周期和频率\n\
+  - 如果回测尚未完成，部分字段可能为空数组\n- 建议先调用 /backtest/results/{id} 检查回测状态\n- 大数据量时可能需要前端分页或采样展示"
+tags:
+- 策略管理-Week1
+priority: P2
+request:
+  params:
+    backtest_id:
+      in: path
+      required: true
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      additionalProperties:
+        type: array
+        items: {}
+      title: Response Get Backtest Chart Data Api V1 Strategy Backtest Results  Backtest
+        Id  Chart Data Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.418233'
+  version: 1.0.0
+  stable: false
+  deprecated: false

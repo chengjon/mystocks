@@ -1,0 +1,88 @@
+api_id: technical_analysis_get_api_technical_symbol_history
+module: technical-analysis
+path: /api/technical/{symbol}/history
+method: GET
+summary: Get Stock History
+description: '获取股票历史行情数据
+
+
+  用于前端绘制 K 线图和指标图表
+
+
+  参数:
+
+  - symbol: 股票代码
+
+  - period: 周期 (daily, weekly, monthly)
+
+  - start_date: 开始日期 (可选)
+
+  - end_date: 结束日期 (可选)
+
+  - limit: 返回数据点数量 (默认100，最多1000)
+
+
+  返回:
+
+  - OHLCV 数据及基础指标
+
+
+  示例:
+
+  - GET /api/technical/600519/history?limit=200
+
+  - GET /api/technical/600519/history?start_date=2024-01-01'
+tags:
+- technical-analysis
+- technical-analysis
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+    start_date:
+      in: query
+      required: false
+      description: 开始日期
+    end_date:
+      in: query
+      required: false
+      description: 结束日期
+    limit:
+      in: query
+      required: false
+      description: 返回数据点数量
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.330462'
+  version: 1.0.0
+  stable: false
+  deprecated: false

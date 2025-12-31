@@ -1,0 +1,73 @@
+api_id: data_get_api_data_stocks_kline
+module: data
+path: /api/data/stocks/kline
+method: GET
+summary: Get Kline Data
+description: 获取股票K线数据（标准化接口，符合cmd5规范）
+tags:
+- data
+priority: P0
+request:
+  params:
+    symbol:
+      in: query
+      required: true
+      description: 股票代码（含市场后缀）
+    start_date:
+      in: query
+      required: true
+      description: 开始日期（格式YYYY-MM-DD）
+    end_date:
+      in: query
+      required: true
+      description: 结束日期（格式YYYY-MM-DD）
+    period:
+      in: query
+      required: false
+      description: K线周期（支持day/week/month）
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Kline Data Api Data Stocks Kline Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: DATA_SOURCE_ERROR
+    http_status: 502
+    message: 数据源错误
+  - code: DATA_NOT_FOUND
+    http_status: 404
+    message: 数据不存在
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:25.981389'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.818435'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute
+cache:
+  enabled: true
+  ttl: 60
+  strategy: LRU

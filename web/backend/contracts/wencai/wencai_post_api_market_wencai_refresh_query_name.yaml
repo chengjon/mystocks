@@ -1,0 +1,54 @@
+api_id: wencai_post_api_market_wencai_refresh_query_name
+module: wencai
+path: /api/market/wencai/refresh/{query_name}
+method: POST
+summary: 刷新查询数据
+description: 在后台异步刷新指定查询的数据
+tags:
+- wencai
+priority: P0
+request:
+  params:
+    query_name:
+      in: path
+      required: true
+      description: ''
+    pages:
+      in: query
+      required: false
+      description: 获取页数
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/WencaiRefreshResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.177286'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.866932'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

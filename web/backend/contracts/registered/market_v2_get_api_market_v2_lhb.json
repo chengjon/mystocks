@@ -1,0 +1,167 @@
+{
+  "name": "market-v2-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_v2_get_api_market_v2_lhb",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market-v2 API",
+      "version": "1.0.0",
+      "description": "查询龙虎榜详细数据\n\n支持按股票代码、日期范围、净买入额筛选"
+    },
+    "paths": {
+      "/api/market/v2/lhb": {
+        "get": {
+          "summary": "查询龙虎榜",
+          "description": "查询龙虎榜详细数据\n\n支持按股票代码、日期范围、净买入额筛选",
+          "tags": [
+            "market-v2",
+            "市场数据V2"
+          ],
+          "parameters": [
+            {
+              "name": "symbol",
+              "in": "query",
+              "required": false,
+              "description": "股票代码",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "start_date",
+              "in": "query",
+              "required": false,
+              "description": "开始日期",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "end_date",
+              "in": "query",
+              "required": false,
+              "description": "结束日期",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "min_net_amount",
+              "in": "query",
+              "required": false,
+              "description": "最小净买入额(元)",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "description": "返回数量",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "查询龙虎榜",
+  "tags": [
+    "market-v2",
+    "市场数据V2",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.779604"
+}

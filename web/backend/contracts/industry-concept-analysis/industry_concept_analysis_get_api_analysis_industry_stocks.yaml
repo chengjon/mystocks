@@ -1,0 +1,50 @@
+api_id: industry_concept_analysis_get_api_analysis_industry_stocks
+module: industry-concept-analysis
+path: /api/analysis/industry/stocks
+method: GET
+summary: Get Industry Stocks
+description: "获取指定行业的成分股列表\n\nArgs:\n    industry_code: 行业代码\n    limit: 限制返回数量\n\n\
+  Returns:\n    StockListResponse: 成分股列表"
+tags:
+- industry-concept-analysis
+priority: P2
+request:
+  params:
+    industry_code:
+      in: query
+      required: true
+      description: 行业代码
+    limit:
+      in: query
+      required: false
+      description: 限制返回数量
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/StockListResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.462720'
+  version: 1.0.0
+  stable: false
+  deprecated: false

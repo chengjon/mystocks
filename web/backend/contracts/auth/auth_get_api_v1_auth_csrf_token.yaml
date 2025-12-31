@@ -1,0 +1,54 @@
+api_id: auth_get_api_v1_auth_csrf_token
+module: auth
+path: /api/v1/auth/csrf/token
+method: GET
+summary: Get Csrf Token
+description: "获取CSRF保护令牌 - v1版本 (标准化端点)\n\n用于防止跨站请求伪造（CSRF）攻击。\n前端应该在发送修改请求（POST/PUT/PATCH/DELETE）时，\n\
+  在X-CSRF-Token请求头中包含此令牌。\n\n**响应示例**:\n```json\n{\n    \"code\": \"SUCCESS\",\n \
+  \   \"message\": \"CSRF token generated successfully\",\n    \"data\": {\n     \
+  \   \"token\": \"...base64-encoded-token...\",\n        \"token_type\": \"csrf\"\
+  ,\n        \"expires_in\": 3600\n    },\n    \"timestamp\": 1733318400.123\n}\n\
+  ```\n\n**使用示例**:\n```javascript\n// 获取CSRF token\nconst response = await fetch('/api/v1/auth/csrf/token');\n\
+  const { data } = await response.json();\nconst csrfToken = data.token;\n\n// 发送受保护的请求\n\
+  fetch('/api/v1/data', {\n    method: 'POST',\n    headers: {\n        'X-CSRF-Token':\
+  \ csrfToken,\n        'Content-Type': 'application/json'\n    },\n    body: JSON.stringify({\
+  \ ... })\n});\n```\n\n**错误码**:\n- SUCCESS: Token生成成功\n- INTERNAL_SERVER_ERROR: Token生成失败\n\
+  \n**HTTP状态码**:\n- 200: 成功获取token\n- 500: 服务器错误\n\n**Rate Limit**: 无限制（CSRF token获取不计入速率限制）"
+tags:
+- auth
+priority: P0
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.015278'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.835472'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute

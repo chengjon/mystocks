@@ -1,0 +1,90 @@
+api_id: system_get_api_system_logs
+module: system
+path: /api/system/logs
+method: GET
+summary: Get System Logs
+description: '获取系统运行日志
+
+
+  参数:
+
+  - filter_errors: 是否只显示有问题的日志 (WARNING/ERROR/CRITICAL)
+
+  - limit: 返回条数限制 (1-1000)
+
+  - offset: 偏移量，用于分页
+
+  - level: 日志级别筛选
+
+  - category: 日志分类筛选
+
+
+  返回:
+
+  - 系统运行日志列表，包含时间戳、级别、分类、操作、消息等信息
+
+
+  示例:
+
+  - GET /api/system/logs - 获取所有日志
+
+  - GET /api/system/logs?filter_errors=true - 只获取有问题的日志
+
+  - GET /api/system/logs?level=ERROR - 只获取ERROR级别日志
+
+  - GET /api/system/logs?category=database - 只获取数据库相关日志'
+tags:
+- system
+priority: P2
+request:
+  params:
+    filter_errors:
+      in: query
+      required: false
+      description: 是否只显示有问题的日志
+    limit:
+      in: query
+      required: false
+      description: 返回条数限制
+    offset:
+      in: query
+      required: false
+      description: 偏移量
+    level:
+      in: query
+      required: false
+      description: 日志级别筛选 (INFO/WARNING/ERROR/CRITICAL)
+    category:
+      in: query
+      required: false
+      description: 日志分类筛选 (database/api/adapter/system)
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/LogQueryResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.023246'
+  version: 1.0.0
+  stable: false
+  deprecated: false

@@ -1,0 +1,64 @@
+api_id: contract_management_post_api_contracts_validate
+module: contract-management
+path: /api/contracts/validate
+method: POST
+summary: Validate Contract
+description: '验证OpenAPI规范
+
+
+  - **spec**: 待验证的OpenAPI规范
+
+  - **check_breaking_changes**: 是否检查破坏性变更
+
+  - **compare_to_version_id**: 对比的版本ID (可选)
+
+
+  返回验证结果，包括：
+
+  - 是否通过验证
+
+  - 错误数
+
+  - 警告数
+
+  - 详细验证结果'
+tags:
+- contract-management
+priority: P2
+request:
+  params:
+    body:
+      in: body
+      required: true
+      schema:
+        $ref: '#/components/schemas/ContractValidateRequest'
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/ContractValidateResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.484712'
+  version: 1.0.0
+  stable: false
+  deprecated: false

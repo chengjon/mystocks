@@ -1,0 +1,129 @@
+{
+  "name": "notification-api-contract",
+  "version": "1.0.0",
+  "api_id": "notification_post_api_notification_email_price_alert",
+  "priority": "P1",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "notification API",
+      "version": "1.0.0",
+      "description": "发送价格提醒邮件"
+    },
+    "paths": {
+      "/api/notification/email/price-alert": {
+        "post": {
+          "summary": "Send Price Alert",
+          "description": "发送价格提醒邮件",
+          "tags": [
+            "notification"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "SendPriceAlertRequest",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Send Price Alert",
+  "tags": [
+    "notification",
+    "P1"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.794116"
+}

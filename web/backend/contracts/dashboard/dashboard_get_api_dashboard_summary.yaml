@@ -1,0 +1,70 @@
+api_id: dashboard_get_api_dashboard_summary
+module: dashboard
+path: /api/dashboard/summary
+method: GET
+summary: 获取仪表盘汇总数据
+description: 获取用户的完整仪表盘数据，包括市场概览、自选股、持仓、风险预警等信息
+tags:
+- dashboard
+- dashboard
+priority: P1
+request:
+  params:
+    user_id:
+      in: query
+      required: true
+      description: 用户ID
+    trade_date:
+      in: query
+      required: false
+      description: 交易日期，默认为今天
+    include_market:
+      in: query
+      required: false
+      description: 是否包含市场概览
+    include_watchlist:
+      in: query
+      required: false
+      description: 是否包含自选股
+    include_portfolio:
+      in: query
+      required: false
+      description: 是否包含持仓
+    include_alerts:
+      in: query
+      required: false
+      description: 是否包含风险预警
+    bypass_cache:
+      in: query
+      required: false
+      description: 是否跳过缓存直接获取新数据
+response:
+  code: 200
+  data:
+    schema:
+      $ref: '#/components/schemas/DashboardResponse'
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.336350'
+  version: 1.0.0
+  stable: false
+  deprecated: false

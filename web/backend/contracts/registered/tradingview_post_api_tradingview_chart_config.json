@@ -1,0 +1,129 @@
+{
+  "name": "tradingview-api-contract",
+  "version": "1.0.0",
+  "api_id": "tradingview_post_api_tradingview_chart_config",
+  "priority": "P1",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "tradingview API",
+      "version": "1.0.0",
+      "description": "获取 TradingView 图表配置\n\n返回用于前端嵌入的图表配置"
+    },
+    "paths": {
+      "/api/tradingview/chart/config": {
+        "post": {
+          "summary": "Get Chart Config",
+          "description": "获取 TradingView 图表配置\n\n返回用于前端嵌入的图表配置",
+          "tags": [
+            "tradingview"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "ChartConfigRequest",
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "Get Chart Config",
+  "tags": [
+    "tradingview",
+    "P1"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.799560"
+}

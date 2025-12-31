@@ -1,0 +1,49 @@
+api_id: cache_get_api_cache_monitoring_metrics
+module: cache
+path: /api/cache/monitoring/metrics
+method: GET
+summary: Get Cache Monitoring Metrics
+description: "获取缓存监控指标\n\nReturns:\n    缓存性能指标，包含:\n    - hit_rate: 命中率\n    - hit_count:\
+  \ 命中次数\n    - miss_count: 未命中次数\n    - average_latency_ms: 平均延迟（毫秒）\n    - health_status:\
+  \ 健康状态\n\nExamples:\n    GET /api/cache/monitoring/metrics\n\n    Response:\n  \
+  \  {\n        \"success\": true,\n        \"data\": {\n            \"hit_count\"\
+  : 850,\n            \"miss_count\": 150,\n            \"hit_rate\": 85.0,\n    \
+  \        \"average_latency_ms\": 2.5,\n            \"health_status\": \"healthy\"\
+  \n        },\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Cache Monitoring Metrics Api Cache Monitoring Metrics Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.131579'
+  version: 1.0.0
+  stable: false
+  deprecated: false

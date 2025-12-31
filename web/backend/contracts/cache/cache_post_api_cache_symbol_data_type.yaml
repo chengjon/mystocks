@@ -1,0 +1,75 @@
+api_id: cache_post_api_cache_symbol_data_type
+module: cache
+path: /api/cache/{symbol}/{data_type}
+method: POST
+summary: Write Cache Data
+description: "写入或更新缓存数据\n\nArgs:\n    symbol: 股票代码\n    data_type: 数据类型\n    data:\
+  \ 要缓存的数据对象\n    timeframe: 时间维度 (可选)\n    ttl_days: 缓存生存时间 (天数，默认7天)\n\nReturns:\n\
+  \    写入结果\n\nExamples:\n    POST /api/cache/000001/fund_flow\n    Body:\n    {\n\
+  \        \"data\": {\n            \"main_net_inflow\": 10000,\n            \"rate\"\
+  : 0.5\n        },\n        \"timeframe\": \"1d\",\n        \"ttl_days\": 1\n   \
+  \ }\n\n    Response:\n    {\n        \"success\": true,\n        \"message\": \"\
+  缓存写入成功\",\n        \"symbol\": \"000001\",\n        \"data_type\": \"fund_flow\"\
+  ,\n        \"timestamp\": \"2025-11-06T...\"\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    timeframe:
+      in: query
+      required: false
+      description: ''
+    ttl_days:
+      in: query
+      required: false
+      description: ''
+    body:
+      in: body
+      required: true
+      schema:
+        type: object
+        properties: {}
+        required_fields: []
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Write Cache Data Api Cache  Symbol   Data Type  Post
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.117683'
+  version: 1.0.0
+  stable: false
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:03.061283'
+  enhanced_version: '2.0'

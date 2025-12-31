@@ -1,0 +1,40 @@
+api_id: data_quality_get_api_data_quality_health
+module: data-quality
+path: /api/data-quality/health
+method: GET
+summary: Get Sources Health
+description: 获取所有数据源健康状态
+tags:
+- data-quality
+- data-quality
+priority: P1
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:25.996117'
+  version: 1.0.0
+  stable: false
+  deprecated: false

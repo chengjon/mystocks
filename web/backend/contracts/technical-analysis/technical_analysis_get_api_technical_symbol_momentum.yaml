@@ -1,0 +1,72 @@
+api_id: technical_analysis_get_api_technical_symbol_momentum
+module: technical-analysis
+path: /api/technical/{symbol}/momentum
+method: GET
+summary: Get Momentum Indicators
+description: '获取动量指标
+
+
+  包括:
+
+  - RSI (相对强弱指标): 6, 12, 24日
+
+  - KDJ (随机指标): K, D, J
+
+  - CCI (顺势指标)
+
+  - WR (威廉指标)
+
+  - ROC (变动率指标)
+
+
+  **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+  示例:
+
+  - GET /api/technical/600519/momentum'
+tags:
+- technical-analysis
+- technical-analysis
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    period:
+      in: query
+      required: false
+      description: 数据周期
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Momentum Indicators Api Technical  Symbol  Momentum Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.322839'
+  version: 1.0.0
+  stable: false
+  deprecated: false

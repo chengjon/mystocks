@@ -1,0 +1,73 @@
+api_id: technical_analysis_get_api_technical_symbol_trend
+module: technical-analysis
+path: /api/technical/{symbol}/trend
+method: GET
+summary: 获取趋势指标
+description: '获取趋势指标
+
+
+  包括:
+
+  - MA (移动平均线): 5, 10, 20, 30, 60, 120, 250日
+
+  - EMA (指数移动平均线): 12, 26, 50日
+
+  - MACD (指数平滑异同移动平均线)
+
+  - DMI (动向指标): ADX, +DI, -DI
+
+  - SAR (抛物线转向指标)
+
+
+  **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+
+  示例:
+
+  - GET /api/technical/600519/trend'
+tags:
+- technical-analysis
+- technical-analysis
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: 股票代码
+    period:
+      in: query
+      required: false
+      description: 数据周期
+    ma_periods:
+      in: query
+      required: false
+      description: '自定义MA周期，逗号分隔，如: 5,10,20'
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.320499'
+  version: 1.0.0
+  stable: false
+  deprecated: false

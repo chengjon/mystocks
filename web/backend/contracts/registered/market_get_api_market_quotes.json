@@ -1,0 +1,173 @@
+{
+  "name": "market-api-contract",
+  "version": "1.0.0",
+  "api_id": "market_get_api_market_quotes",
+  "priority": "P0",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "market API",
+      "version": "1.0.0",
+      "description": "获取实时市场行情数据（使用数据源工厂）\n\n**参数**:\n- symbols: 股票代码列表（可选）。不指定则返回热门股票行情\n\n**缓存策略:** 10秒TTL（实时行情需要较高频率更新）\n**数据源**: 数据源工厂（Mock/Real/Hybrid模式）\n**返回**: 实时行情列表"
+    },
+    "paths": {
+      "/api/market/quotes": {
+        "get": {
+          "summary": "查询实时行情",
+          "description": "获取实时市场行情数据（使用数据源工厂）\n\n**参数**:\n- symbols: 股票代码列表（可选）。不指定则返回热门股票行情\n\n**缓存策略:** 10秒TTL（实时行情需要较高频率更新）\n**数据源**: 数据源工厂（Mock/Real/Hybrid模式）\n**返回**: 实时行情列表",
+          "tags": [
+            "market",
+            "市场数据"
+          ],
+          "parameters": [
+            {
+              "name": "symbols",
+              "in": "query",
+              "required": false,
+              "description": "股票代码列表，逗号分隔，如: 000001,600519",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "股票代码格式错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权访问",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "行情数据不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "行情服务暂时不可用",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "description": "查询实时行情",
+  "tags": [
+    "market",
+    "市场数据",
+    "P0"
+  ],
+  "is_active": true,
+  "created_at": "2025-12-30T22:33:46.795966"
+}

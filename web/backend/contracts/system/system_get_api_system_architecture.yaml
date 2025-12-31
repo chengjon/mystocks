@@ -1,0 +1,55 @@
+api_id: system_get_api_system_architecture
+module: system
+path: /api/system/architecture
+method: GET
+summary: Get System Architecture
+description: '获取系统架构信息 (Week 3简化后 - 双数据库架构)
+
+
+  返回完整的系统架构信息，包括:
+
+  - 数据库架构 (TDengine + PostgreSQL)
+
+  - 数据分类路由策略
+
+  - 架构简化指标
+
+  - 技术栈信息
+
+  - MySQL/Redis移除详情
+
+
+  用于架构可视化页面展示'
+tags:
+- system
+priority: P2
+request:
+  params: {}
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.026843'
+  version: 1.0.0
+  stable: false
+  deprecated: false

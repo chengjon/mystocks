@@ -1,0 +1,74 @@
+api_id: market_get_api_market_quotes
+module: market
+path: /api/market/quotes
+method: GET
+summary: 查询实时行情
+description: '获取实时市场行情数据（使用数据源工厂）
+
+
+  **参数**:
+
+  - symbols: 股票代码列表（可选）。不指定则返回热门股票行情
+
+
+  **缓存策略:** 10秒TTL（实时行情需要较高频率更新）
+
+  **数据源**: 数据源工厂（Mock/Real/Hybrid模式）
+
+  **返回**: 实时行情列表'
+tags:
+- market
+- 市场数据
+priority: P0
+request:
+  params:
+    symbols:
+      in: query
+      required: false
+      description: '股票代码列表，逗号分隔，如: 000001,600519'
+response:
+  code: 200
+  data: {}
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+  - code: MARKET_DATA_NOT_FOUND
+    http_status: 404
+    message: 行情数据不存在
+  - code: MARKET_DATA_UNAVAILABLE
+    http_status: 503
+    message: 行情服务暂时不可用
+  - code: SYMBOL_INVALID
+    http_status: 400
+    message: 股票代码格式错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.062259'
+  version: 1.0.0
+  stable: true
+  deprecated: false
+  enhanced_at: '2025-12-30T22:33:02.949047'
+  enhanced_version: '2.0'
+rate_limit:
+  default: 100/minute
+  burst: 200/minute
+cache:
+  enabled: true
+  ttl: 60
+  strategy: LRU

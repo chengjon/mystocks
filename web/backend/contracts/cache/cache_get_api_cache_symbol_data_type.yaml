@@ -1,0 +1,62 @@
+api_id: cache_get_api_cache_symbol_data_type
+module: cache
+path: /api/cache/{symbol}/{data_type}
+method: GET
+summary: Get Cached Data
+description: "读取特定的缓存数据\n\nArgs:\n    symbol: 股票代码 (e.g., \"000001\")\n    data_type:\
+  \ 数据类型 (e.g., \"fund_flow\", \"etf\", \"chip_race\")\n    timeframe: 时间维度 (可选，e.g.,\
+  \ \"1d\", \"3d\")\n\nReturns:\n    缓存数据（如果存在），或错误信息\n\nExamples:\n    GET /api/cache/000001/fund_flow\n\
+  \    GET /api/cache/000001/etf?timeframe=1d\n\n    Response (缓存命中):\n    {\n   \
+  \     \"success\": true,\n        \"source\": \"cache\",\n        \"timestamp\"\
+  : \"2025-11-06T...\",\n        \"data\": {\n            \"main_net_inflow\": 10000,\n\
+  \            ...\n        }\n    }\n\n    Response (缓存未命中):\n    {\n        \"success\"\
+  : false,\n        \"message\": \"缓存未找到\",\n        \"data\": null\n    }"
+tags:
+- cache
+- cache
+priority: P1
+request:
+  params:
+    symbol:
+      in: path
+      required: true
+      description: ''
+    data_type:
+      in: path
+      required: true
+      description: ''
+    timeframe:
+      in: query
+      required: false
+      description: ''
+response:
+  code: 200
+  data:
+    schema:
+      type: object
+      title: Response Get Cached Data Api Cache  Symbol   Data Type  Get
+  error_codes:
+  - code: SUCCESS
+    http_status: 200
+    message: 操作成功
+  - code: BAD_REQUEST
+    http_status: 400
+    message: 请求参数错误
+  - code: UNAUTHORIZED
+    http_status: 401
+    message: 未授权访问
+  - code: INTERNAL_SERVER_ERROR
+    http_status: 500
+    message: 服务器内部错误
+examples:
+  request:
+    params: {}
+  response:
+    success: true
+    message: 操作成功
+    data: null
+metadata:
+  created_at: '2025-12-30T22:14:26.115732'
+  version: 1.0.0
+  stable: false
+  deprecated: false
