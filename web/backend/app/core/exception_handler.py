@@ -62,7 +62,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
+    request_id = getattr(request.state, "request_id", "unknown")
 
     # 确定错误码和HTTP状态码
     error_code, http_status = _determine_error_code_and_status(exc)
@@ -106,7 +106,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
+    request_id = getattr(request.state, "request_id", "unknown")
 
     # 确定错误码和HTTP状态码
     error_code = _map_http_status_to_error_code(exc.status_code)
@@ -163,7 +163,7 @@ async def validation_exception_handler(
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
+    request_id = getattr(request.state, "request_id", "unknown")
 
     # 确定错误码
     error_code = ErrorCode.VALIDATION_ERROR
@@ -214,7 +214,7 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
         JSONResponse - 统一错误响应格式
     """
     # 获取请求ID
-    _ = getattr(request.state, "request_id", "unknown")  # noqa: F841
+    request_id = getattr(request.state, "request_id", "unknown")
 
     # 确定错误码
     error_code = ErrorCode.DATABASE_ERROR

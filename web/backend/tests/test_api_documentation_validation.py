@@ -13,7 +13,7 @@ Date: 2025-12-03
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import pytest
 from fastapi.routing import APIRoute
