@@ -6,8 +6,8 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 
-from web.backend.app.api.contract.models import ContractVersion
-from web.backend.app.api.contract.schemas import (
+from app.api.contract.models import ContractVersion
+from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionUpdate,
     ContractVersionResponse,

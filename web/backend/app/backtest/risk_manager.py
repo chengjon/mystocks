@@ -253,8 +253,10 @@ class RiskManager:
         # 计算今日盈亏
         if len(portfolio.equity_curve) > 1:
             yesterday_equity = portfolio.equity_curve[-2]["equity"]
-            daily_pnl = float(portfolio.equity - yesterday_equity)
-            daily_return = float(daily_pnl / yesterday_equity) if yesterday_equity > 0 else 0.0
+            # 确保类型一致性：转换为 float 进行计算
+            yesterday_equity_float = float(yesterday_equity)
+            daily_pnl = float(portfolio.equity) - yesterday_equity_float
+            daily_return = daily_pnl / yesterday_equity_float if yesterday_equity_float > 0 else 0.0
         else:
             daily_pnl = 0.0
             daily_return = 0.0
