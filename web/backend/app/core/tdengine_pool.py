@@ -145,7 +145,7 @@ class TDengineConnectionPool:
                 database=self.database,
             )
 
-            conn_id = id(conn)
+            conn_id = str(id(conn))
             self._all_connections.append(conn)
             self._connection_meta[conn_id] = {
                 "created_at": datetime.utcnow(),
@@ -185,7 +185,7 @@ class TDengineConnectionPool:
             conn = self._pool.get(timeout=timeout)
 
             # 更新连接元数据
-            conn_id = id(conn)
+            conn_id = str(id(conn))
             if conn_id in self._connection_meta:
                 self._connection_meta[conn_id]["last_used_at"] = datetime.utcnow()
                 self._connection_meta[conn_id]["total_uses"] += 1
@@ -284,7 +284,7 @@ class TDengineConnectionPool:
     def _close_connection(self, conn: TaosConnection):
         """关闭连接"""
         try:
-            conn_id = id(conn)
+            conn_id = str(id(conn))
             conn.close()
 
             # 从跟踪列表中移除
@@ -316,7 +316,7 @@ class TDengineConnectionPool:
 
         # 检查所有连接的空闲时间
         for conn in list(self._all_connections):
-            conn_id = id(conn)
+            conn_id = str(id(conn))
             if conn_id in self._connection_meta:
                 last_used = self._connection_meta[conn_id]["last_used_at"]
                 idle_seconds = (now - last_used).total_seconds()
