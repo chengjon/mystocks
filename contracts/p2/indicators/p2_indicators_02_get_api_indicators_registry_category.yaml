@@ -1,0 +1,28 @@
+api_id: p2_indicators_02_get_api_indicators_registry_category
+priority: P2
+module: indicators
+path: /api/indicators/registry/{category}
+method: GET
+description: 获取指定分类的指标
+request_params:
+  path_params:
+  - name: category
+    type: string
+    required: true
+    description: category参数
+  query_params: []
+response:
+  success_code: 200
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: false
+rate_limit: 60/minute
+tags:
+- indicators
+- p2
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

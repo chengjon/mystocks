@@ -1,0 +1,25 @@
+api_id: p1_backtest_06_post_api_v1_strategy_models_train
+priority: P1
+module: backtest
+path: /api/v1/strategy/models/train
+method: POST
+description: 启动模型训练
+request_params:
+  path_params: []
+  query_params: []
+  body_params: {}
+response:
+  success_code: 201
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: true
+rate_limit: 60/minute
+tags:
+- backtest
+- p1
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

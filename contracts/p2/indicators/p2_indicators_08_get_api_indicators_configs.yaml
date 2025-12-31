@@ -1,0 +1,24 @@
+api_id: p2_indicators_08_get_api_indicators_configs
+priority: P2
+module: indicators
+path: /api/indicators/configs
+method: GET
+description: 获取用户的指标配置列表
+request_params:
+  path_params: []
+  query_params: []
+response:
+  success_code: 200
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: false
+rate_limit: 60/minute
+tags:
+- indicators
+- p2
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

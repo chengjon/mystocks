@@ -1,0 +1,25 @@
+api_id: p1_market_12_get_api_market_heatmap
+priority: P1
+module: market
+path: /api/market/heatmap
+method: GET
+description: 获取市场热力图数据
+request_params:
+  path_params: []
+  query_params: []
+response:
+  success_code: 200
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: false
+rate_limit: 60/minute
+tags:
+- market
+- p1
+- market
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

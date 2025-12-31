@@ -1,0 +1,25 @@
+api_id: p1_tasks_10_post_api_tasks_import
+priority: P1
+module: tasks
+path: /api/tasks/import
+method: POST
+description: 导入任务
+request_params:
+  path_params: []
+  query_params: []
+  body_params: {}
+response:
+  success_code: 201
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: true
+rate_limit: 60/minute
+tags:
+- tasks
+- p1
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

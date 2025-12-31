@@ -1,0 +1,26 @@
+api_id: p1_market_17_post_api_market_v2_etf_refresh
+priority: P1
+module: market
+path: /api/market-v2/etf/refresh
+method: POST
+description: 刷新ETF数据
+request_params:
+  path_params: []
+  query_params: []
+  body_params: {}
+response:
+  success_code: 201
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: true
+rate_limit: 60/minute
+tags:
+- market
+- p1
+- market
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

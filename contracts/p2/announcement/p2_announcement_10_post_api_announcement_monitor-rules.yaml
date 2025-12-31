@@ -1,0 +1,25 @@
+api_id: p2_announcement_10_post_api_announcement_monitor-rules
+priority: P2
+module: announcement
+path: /api/announcement/monitor-rules
+method: POST
+description: 创建监控规则
+request_params:
+  path_params: []
+  query_params: []
+  body_params: {}
+response:
+  success_code: 201
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: true
+rate_limit: 60/minute
+tags:
+- announcement
+- p2
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

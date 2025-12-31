@@ -1,0 +1,24 @@
+api_id: p1_dashboard_03_get_api_dashboard_health
+priority: P1
+module: dashboard
+path: /api/dashboard/health
+method: GET
+description: 仪表盘健康检查
+request_params:
+  path_params: []
+  query_params: []
+response:
+  success_code: 200
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: false
+rate_limit: 60/minute
+tags:
+- dashboard
+- p1
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

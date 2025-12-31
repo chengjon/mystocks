@@ -1,0 +1,28 @@
+api_id: p1_backtest_13_ws_ws_backtest_backtest_id
+priority: P1
+module: backtest
+path: /ws/backtest/{backtest_id}
+method: WS
+description: 回测进度WebSocket推送
+request_params:
+  path_params:
+  - name: backtest_id
+    type: string
+    required: true
+    description: backtest_id参数
+  query_params: []
+response:
+  success_code: 200
+  success_data: {}
+  error_codes:
+  - 400
+  - 401
+  - 404
+  - 500
+auth_required: false
+rate_limit: 60/minute
+tags:
+- backtest
+- p1
+created_at: '2025-12-31'
+updated_at: '2025-12-31'

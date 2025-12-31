@@ -1,0 +1,134 @@
+priority: P1
+total_apis: 110
+modules:
+  backtest: 14
+  risk: 12
+  user: 6
+  trade: 6
+  technical: 7
+  dashboard: 3
+  data: 16
+  sse: 5
+  tasks: 15
+created_at: '2025-12-31'
+contracts:
+  backtest:
+  - p1_backtest_01_get_api_v1_strategy_strategies
+  - p1_backtest_02_post_api_v1_strategy_strategies
+  - p1_backtest_03_get_api_v1_strategy_strategies_strategy_id
+  - p1_backtest_04_put_api_v1_strategy_strategies_strategy_id
+  - p1_backtest_05_delete_api_v1_strategy_strategies_strategy_id
+  - p1_backtest_06_post_api_v1_strategy_models_train
+  - p1_backtest_07_get_api_v1_strategy_models_training_task_id__status
+  - p1_backtest_08_get_api_v1_strategy_models
+  - p1_backtest_09_post_api_v1_strategy_backtest_run
+  - p1_backtest_10_get_api_v1_strategy_backtest_results
+  - p1_backtest_11_get_api_v1_strategy_backtest_results_backtest_id
+  - p1_backtest_12_get_api_v1_strategy_backtest_results_backtest_id__chart_data
+  - p1_backtest_13_ws_ws_backtest_backtest_id
+  - p1_backtest_14_get_ws_status
+  risk:
+  - p1_risk_01_post_api_v1_risk_var_cvar
+  - p1_risk_02_post_api_v1_risk_beta
+  - p1_risk_03_get_api_v1_risk_dashboard
+  - p1_risk_04_get_api_v1_risk_metrics_history
+  - p1_risk_05_get_api_v1_risk_alerts
+  - p1_risk_06_post_api_v1_risk_alerts
+  - p1_risk_07_put_api_v1_risk_alerts_alert_id
+  - p1_risk_08_delete_api_v1_risk_alerts_alert_id
+  - p1_risk_09_post_api_v1_risk_notifications_test
+  - p1_risk_10_post_api_v1_risk_metrics_calculate
+  - p1_risk_11_post_api_v1_risk_position_assess
+  - p1_risk_12_post_api_v1_risk_alerts_generate
+  user:
+  - p1_user_01_post_api_v1_auth_login
+  - p1_user_02_post_api_v1_auth_logout
+  - p1_user_03_get_api_v1_auth_me
+  - p1_user_04_post_api_v1_auth_refresh
+  - p1_user_05_get_api_v1_auth_users
+  - p1_user_06_get_api_v1_auth_csrf_token
+  trade:
+  - p1_trade_01_get_trade_health
+  - p1_trade_02_get_trade_portfolio
+  - p1_trade_03_get_trade_positions
+  - p1_trade_04_get_trade_trades
+  - p1_trade_05_get_trade_statistics
+  - p1_trade_06_post_trade_execute
+  technical:
+  - p1_technical_01_post_api_technical_indicators_trend
+  - p1_technical_02_post_api_technical_indicators_momentum
+  - p1_technical_03_post_api_technical_indicators_volatility
+  - p1_technical_04_post_api_technical_indicators_volume
+  - p1_technical_05_post_api_technical_indicators_all
+  - p1_technical_06_get_api_technical_analysis_signals
+  - p1_technical_07_get_api_technical_analysis_patterns
+  dashboard:
+  - p1_dashboard_01_get_api_dashboard_summary
+  - p1_dashboard_02_get_api_dashboard_market_overview
+  - p1_dashboard_03_get_api_dashboard_health
+  data:
+  - p1_data_01_get_api_data_stocks_basic
+  - p1_data_02_get_api_data_stocks_industries
+  - p1_data_03_get_api_data_stocks_concepts
+  - p1_data_04_get_api_data_stocks_daily
+  - p1_data_05_get_api_data_markets_overview
+  - p1_data_06_get_api_data_stocks_search
+  - p1_data_07_get_api_data_kline
+  - p1_data_08_get_api_data_stocks_kline
+  - p1_data_09_get_api_data_financial
+  - p1_data_10_get_api_data_markets_price_distribution
+  - p1_data_11_get_api_data_markets_hot_industries
+  - p1_data_12_get_api_data_markets_hot_concepts
+  - p1_data_13_get_api_data_stocks_intraday
+  - p1_data_14_get_api_data_stocks_symbol__detail
+  - p1_data_15_get_api_data_stocks_symbol__trading_summary
+  - p1_data_16_get_api_data_test_factory
+  sse:
+  - p1_sse_01_get_sse_training
+  - p1_sse_02_get_sse_backtest
+  - p1_sse_03_get_sse_alerts
+  - p1_sse_04_get_sse_dashboard
+  - p1_sse_05_get_sse_status
+  tasks:
+  - p1_tasks_01_post_api_tasks_register
+  - p1_tasks_02_delete_api_tasks_task_id
+  - p1_tasks_03_get_api_tasks
+  - p1_tasks_04_get_api_tasks_task_id
+  - p1_tasks_05_post_api_tasks_task_id__start
+  - p1_tasks_06_post_api_tasks_task_id__stop
+  - p1_tasks_07_get_api_tasks_executions
+  - p1_tasks_08_get_api_tasks_executions_execution_id
+  - p1_tasks_09_get_api_tasks_statistics
+  - p1_tasks_10_post_api_tasks_import
+  - p1_tasks_11_post_api_tasks_export
+  - p1_tasks_12_delete_api_tasks_executions_cleanup
+  - p1_tasks_13_get_api_tasks_health
+  - p1_tasks_14_get_api_tasks_audit_logs
+  - p1_tasks_15_post_api_tasks_cleanup_audit
+  market:
+  - p1_market_01_get_api_market_fund_flow
+  - p1_market_02_post_api_market_fund_flow_refresh
+  - p1_market_03_get_api_market_etf_list
+  - p1_market_04_post_api_market_etf_refresh
+  - p1_market_05_get_api_market_chip_race
+  - p1_market_06_post_api_market_chip_race_refresh
+  - p1_market_07_get_api_market_lhb
+  - p1_market_08_post_api_market_lhb_refresh
+  - p1_market_09_get_api_market_quotes
+  - p1_market_10_get_api_market_stocks
+  - p1_market_11_get_api_market_kline
+  - p1_market_12_get_api_market_heatmap
+  - p1_market_13_get_api_market_health
+  - p1_market_14_get_api_market_v2_fund_flow
+  - p1_market_15_post_api_market_v2_fund_flow_refresh
+  - p1_market_16_get_api_market_v2_etf_list
+  - p1_market_17_post_api_market_v2_etf_refresh
+  - p1_market_18_get_api_market_v2_lhb
+  - p1_market_19_post_api_market_v2_lhb_refresh
+  - p1_market_20_get_api_market_v2_sector_fund_flow
+  - p1_market_21_post_api_market_v2_sector_fund_flow_refresh
+  - p1_market_22_get_api_market_v2_dividend
+  - p1_market_23_post_api_market_v2_dividend_refresh
+  - p1_market_24_get_api_market_v2_blocktrade
+  - p1_market_25_post_api_market_v2_blocktrade_refresh
+  - p1_market_26_post_api_market_v2_refresh_all

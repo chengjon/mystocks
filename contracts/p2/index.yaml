@@ -1,0 +1,64 @@
+priority: P2
+total_apis: 53
+modules:
+  indicators: 11
+  announcement: 13
+  system: 29
+created_at: '2025-12-31'
+contracts:
+  indicators:
+  - p2_indicators_01_get_api_indicators_registry
+  - p2_indicators_02_get_api_indicators_registry_category
+  - p2_indicators_03_post_api_indicators_calculate
+  - p2_indicators_04_post_api_indicators_calculate_batch
+  - p2_indicators_05_get_api_indicators_cache_stats
+  - p2_indicators_06_post_api_indicators_cache_clear
+  - p2_indicators_07_post_api_indicators_configs
+  - p2_indicators_08_get_api_indicators_configs
+  - p2_indicators_09_get_api_indicators_configs_config_id
+  - p2_indicators_10_put_api_indicators_configs_config_id
+  - p2_indicators_11_delete_api_indicators_configs_config_id
+  announcement:
+  - p2_announcement_01_get_api_announcement_health
+  - p2_announcement_02_get_api_announcement_status
+  - p2_announcement_03_post_api_announcement_analyze
+  - p2_announcement_04_post_api_announcement_fetch
+  - p2_announcement_05_get_api_announcement_list
+  - p2_announcement_06_get_api_announcement_today
+  - p2_announcement_07_get_api_announcement_important
+  - p2_announcement_08_get_api_announcement_stats
+  - p2_announcement_09_get_api_announcement_monitor-rules
+  - p2_announcement_10_post_api_announcement_monitor-rules
+  - p2_announcement_11_put_api_announcement_monitor-rules_rule_id
+  - p2_announcement_12_delete_api_announcement_monitor-rules_rule_id
+  - p2_announcement_13_get_api_announcement_triggered-records
+  system:
+  - p2_system_01_get_api_system_health
+  - p2_system_02_get_api_system_adapters_health
+  - p2_system_03_get_api_system_datasources
+  - p2_system_04_post_api_system_test-connection
+  - p2_system_05_get_api_system_logs
+  - p2_system_06_get_api_system_logs_summary
+  - p2_system_07_get_api_system_architecture
+  - p2_system_08_get_api_system_database_health
+  - p2_system_09_get_api_system_database_stats
+  - p2_system_10_get_api_health
+  - p2_system_11_get_api_health_detailed
+  - p2_system_12_get_api_health_reports_timestamp
+  - p2_system_13_get_api_monitoring_alert-rules
+  - p2_system_14_post_api_monitoring_alert-rules
+  - p2_system_15_put_api_monitoring_alert-rules_rule_id
+  - p2_system_16_delete_api_monitoring_alert-rules_rule_id
+  - p2_system_17_get_api_monitoring_alerts
+  - p2_system_18_post_api_monitoring_alerts_alert_id_mark-read
+  - p2_system_19_post_api_monitoring_alerts_mark-all-read
+  - p2_system_20_get_api_monitoring_realtime_symbol
+  - p2_system_21_get_api_monitoring_realtime
+  - p2_system_22_post_api_monitoring_realtime_fetch
+  - p2_system_23_get_api_monitoring_dragon-tiger
+  - p2_system_24_post_api_monitoring_dragon-tiger_fetch
+  - p2_system_25_get_api_monitoring_summary
+  - p2_system_26_get_api_monitoring_stats_today
+  - p2_system_27_post_api_monitoring_control_start
+  - p2_system_28_post_api_monitoring_control_stop
+  - p2_system_29_get_api_monitoring_control_status

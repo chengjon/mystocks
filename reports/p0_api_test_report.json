@@ -1,0 +1,173 @@
+{
+  "timestamp": "2025-12-31T21:00:29.964288",
+  "summary": {
+    "total": 7,
+    "success": 3,
+    "failed": 4,
+    "success_rate": 42.86,
+    "avg_response_time_ms": 24.63
+  },
+  "by_module": {
+    "health": {
+      "total": 1,
+      "success": 1,
+      "failed": 0,
+      "response_times": [
+        3.48
+      ],
+      "avg_response_time": 3.48
+    },
+    "market": {
+      "total": 2,
+      "success": 1,
+      "failed": 1,
+      "response_times": [
+        6.64
+      ],
+      "avg_response_time": 6.64
+    },
+    "cache": {
+      "total": 2,
+      "success": 0,
+      "failed": 2,
+      "response_times": [],
+      "avg_response_time": null
+    },
+    "system": {
+      "total": 1,
+      "success": 1,
+      "failed": 0,
+      "response_times": [
+        63.76
+      ],
+      "avg_response_time": 63.76
+    },
+    "data": {
+      "total": 1,
+      "success": 0,
+      "failed": 1,
+      "response_times": [],
+      "avg_response_time": null
+    }
+  },
+  "details": [
+    {
+      "name": "Health Check",
+      "method": "GET",
+      "path": "/health",
+      "module": "health",
+      "priority": "P0",
+      "success": true,
+      "status_code": 200,
+      "response_time_ms": 3.48,
+      "error": null,
+      "response_size": 317,
+      "timestamp": "2025-12-31T21:00:29.809170",
+      "has_json": true,
+      "json_keys": [
+        "success",
+        "code",
+        "message",
+        "data",
+        "timestamp",
+        "request_id",
+        "errors"
+      ]
+    },
+    {
+      "name": "Market Overview",
+      "method": "GET",
+      "path": "/api/data/markets/overview",
+      "module": "market",
+      "priority": "P0",
+      "success": false,
+      "status_code": 500,
+      "response_time_ms": 63.56,
+      "error": "HTTP 500",
+      "response_size": 140,
+      "timestamp": "2025-12-31T21:00:29.812708"
+    },
+    {
+      "name": "Real-time Quotes",
+      "method": "GET",
+      "path": "/api/market/quotes",
+      "module": "market",
+      "priority": "P0",
+      "success": true,
+      "status_code": 200,
+      "response_time_ms": 6.64,
+      "error": null,
+      "response_size": 309,
+      "timestamp": "2025-12-31T21:00:29.876297",
+      "has_json": true,
+      "json_keys": [
+        "success",
+        "data",
+        "message",
+        "timestamp",
+        "request_id"
+      ]
+    },
+    {
+      "name": "Cache Statistics",
+      "method": "GET",
+      "path": "/api/cache/status",
+      "module": "cache",
+      "priority": "P0",
+      "success": false,
+      "status_code": 500,
+      "response_time_ms": 6.09,
+      "error": "HTTP 500",
+      "response_size": 140,
+      "timestamp": "2025-12-31T21:00:29.883000"
+    },
+    {
+      "name": "Cache Health Check",
+      "method": "GET",
+      "path": "/api/cache/monitoring/health",
+      "module": "cache",
+      "priority": "P0",
+      "success": false,
+      "status_code": 500,
+      "response_time_ms": 5.64,
+      "error": "HTTP 500",
+      "response_size": 140,
+      "timestamp": "2025-12-31T21:00:29.889125"
+    },
+    {
+      "name": "System Health Check",
+      "method": "GET",
+      "path": "/api/system/health",
+      "module": "system",
+      "priority": "P0",
+      "success": true,
+      "status_code": 200,
+      "response_time_ms": 63.76,
+      "error": null,
+      "response_size": 197,
+      "timestamp": "2025-12-31T21:00:29.894790",
+      "has_json": true,
+      "json_keys": [
+        "status",
+        "timestamp",
+        "databases",
+        "service",
+        "version",
+        "architecture"
+      ]
+    },
+    {
+      "name": "Stock Basic Info",
+      "method": "GET",
+      "path": "/api/data/stocks/basic",
+      "module": "data",
+      "priority": "P0",
+      "success": false,
+      "status_code": 500,
+      "response_time_ms": 4.83,
+      "error": "HTTP 500",
+      "response_size": 140,
+      "timestamp": "2025-12-31T21:00:29.958599"
+    }
+  ]
+}
