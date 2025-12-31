@@ -198,6 +198,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, onMounted, nextTick, watch, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'

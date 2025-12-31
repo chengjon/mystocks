@@ -17,9 +17,13 @@
   </div>
 </template>
 
+<script lang="ts">
+
+</script>
+
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import * as klinecharts from 'klinecharts';
+import { init, dispose, type Chart, type LayoutChildType, type ActionType } from 'klinecharts';
 import type { KLineData } from '@/types/kline';
 import type { OscillatorType } from '@/utils/indicator';
 import { calculateOscillator, formatOscillatorValue } from '@/utils/indicator/oscillator';
@@ -37,7 +41,7 @@ const props = withDefaults(defineProps<{
 
 const chartContainer = ref<HTMLElement | null>(null);
 const chartRef = ref<HTMLElement | null>(null);
-let chartInstance: ReturnType<typeof klinecharts.init> | null = null;
+let chartInstance: Chart | null = null;
 
 const currentValues = ref<{ label: string; value: string; color: string }[]>([]);
 
@@ -92,7 +96,7 @@ const updateChart = () => {
   const colors = displayColors.value;
 
   const chartData = props.klineData.map((kline, i) => {
-    const data: Record<string, unknown> = {
+    const data: KLineData = {
       timestamp: kline.timestamp,
       open: kline.open,
       high: kline.high,
@@ -156,11 +160,11 @@ const initChart = () => {
     }
   };
 
-  chartInstance = klinecharts.init(chartRef.value, {
+  chartInstance = init(chartRef.value, {
     locale: 'zh-CN',
     styles: chartStyles,
     layout: [
-      { type: 'xAxis' as const, height: 25 }
+      { type: 'xAxis' as LayoutChildType, options: { height: 25 } }
     ]
   });
 
@@ -209,7 +213,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {
     try {
-      chartInstance.dispose();
+      dispose(chartInstance);
+      chartInstance = null;
     } catch (e) {
       console.warn('Failed to dispose chart:', e);
     }

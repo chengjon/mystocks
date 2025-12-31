@@ -1,3 +1,4 @@
+
 /**
  * Data Transformation Adapters
  *
@@ -68,27 +69,32 @@ export interface StockSearchVM {
 export class DataAdapter {
   /**
    * Convert Market Overview API response to ViewModel
+   * Note: Handles actual API response format where indices use 'indices' not 'marketIndex'
    */
   static toMarketOverviewVM(data: MarketOverviewResponse): MarketOverviewVM {
-    const indices = data.marketIndex?.map((item: IndexData) => ({
-      name: item.name || '',
-      current: item.current || 0,
+    // Handle indices - API uses 'indices' field with IndexQuote type
+    const indices = (data.indices || []).map((item: any) => ({
+      name: item.indexName || item.name || '',
+      current: item.currentPrice || item.current || 0,
       change: item.change || 0,
       changePercent: this.formatPercent(item.changePercent || 0),
       trend: this.getTrend(item.change || 0),
       volume: this.formatVolume(item.volume || 0)
-    })) || []
+    }))
 
-    const sectors = data.hotSectors?.map((item: SectorData) => ({
+    // Handle sectors - API uses 'hotSectors' with HotSector type
+    const sectors = (data.hotSectors || []).map((item: any) => ({
       name: item.sectorName || '',
       changePercent: this.formatPercent(item.changePercent || 0),
       stockCount: item.stockCount || 0,
-      leaderStock: item.leaderStock || '',
-      leaderChange: this.formatPercent(item.leaderChange || 0)
-    })) || []
+      leaderStock: item.leadingStock || item.leaderStock || '',
+      leaderChange: this.formatPercent(0) // API doesn't provide leaderChange
+    }))
 
     // Determine market sentiment based on index performance
-    const avgChange = indices.reduce((sum, idx) => sum + idx.change, 0) / indices.length
+    const avgChange = indices.length > 0
+      ? indices.reduce((sum, idx) => sum + idx.change, 0) / indices.length
+      : 0
     let marketSentiment: 'bullish' | 'bearish' | 'neutral' = 'neutral'
     if (avgChange > 0.5) marketSentiment = 'bullish'
     else if (avgChange < -0.5) marketSentiment = 'bearish'
@@ -97,39 +103,55 @@ export class DataAdapter {
       indices,
       sectors,
       marketSentiment,
-      totalVolume: this.formatVolume(data.totalVolume || 0),
+      totalVolume: this.formatVolume(0), // API doesn't provide totalVolume
       lastUpdate: Date.now()
     }
   }
 
   /**
    * Convert Fund Flow API response to chart data
+   * Note: API uses different field names - mainNetInflow instead of mainInflow
    */
   static toFundFlowChartData(data: FundFlowResponse): FundFlowChartPoint[] {
-    return data.items?.map((item: FundFlowItem) => ({
+    // Handle different API response formats
+    const items = (data as any).items || (data as any).fundFlow || []
+
+    return items.map((item: any) => ({
       date: item.tradeDate || '',
-      mainInflow: this.convertToWan(item.mainInflow || 0),
-      mainOutflow: Math.abs(this.convertToWan(item.mainOutflow || 0)),
-      netInflow: this.convertToWan(item.netInflow || 0),
-      timestamp: new Date(item.tradeDate || '').getTime()
-    })) || []
+      mainInflow: this.convertToWan(item.mainNetInflow || item.mainInflow || 0),
+      mainOutflow: Math.abs(this.convertToWan(item.mainNetInflow || 0)),
+      netInflow: this.convertToWan(item.mainNetInflow || 0),
+      timestamp: item.tradeDate ? new Date(item.tradeDate).getTime() : Date.now()
+    }))
   }
 
   /**
    * Convert K-Line API response to chart data
+   * Note: Handles actual API response format
    */
   static toKLineChartData(data: KLineDataResponse): KLineChartData {
-    const points = data.points || []
+    // Handle different response formats
+    const points = (data as any).points ||
+      (data as any).data ||
+      (data as any).candles || []
 
     return {
-      categoryData: points.map((p: KLinePoint) => p.date || ''),
-      values: points.map((p: KLinePoint) => [
-        p.open || 0,
-        p.close || 0,
-        p.low || 0,
-        p.high || 0
-      ]),
-      volumes: points.map((p: KLinePoint) => p.volume || 0)
+      categoryData: points.map((p: any) => p.date || p.tradeDate || p[0] || ''),
+      values: points.map((p: any) => {
+        if (Array.isArray(p)) {
+          return [p[1] || 0, p[2] || 0, p[3] || 0, p[4] || 0] // open, close, low, high
+        }
+        return [
+          p.open || 0,
+          p.close || 0,
+          p.low || 0,
+          p.high || 0
+        ]
+      }),
+      volumes: points.map((p: any) => {
+        if (Array.isArray(p)) return p[5] || 0 // volume is 6th element
+        return p.volume || 0
+      })
     }
   }
 

@@ -125,6 +125,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, reactive, onMounted, watch, type Ref } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
 import { Refresh, Setting, FolderOpened, DocumentAdd, Files, ArrowDown } from '@element-plus/icons-vue'

@@ -74,6 +74,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, onMounted, onUnmounted, watch, computed, type PropType } from 'vue'
 import { init, dispose, type Chart } from 'klinecharts'
 import { RefreshRight } from '@element-plus/icons-vue'

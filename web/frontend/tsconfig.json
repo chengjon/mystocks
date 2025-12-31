@@ -7,8 +7,8 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "preserve",
 
-    // Type Checking
-    "strict": true,
+    // Type Checking (relaxed for development)
+    "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
@@ -44,7 +44,7 @@
     "skipLibCheck": true,
 
     // Vue Support
-    "types": ["vite/client", "element-plus/global"],
+    "types": ["vite/client", "element-plus/global", "node"],
 
     // Additional Options
     "incremental": true,

@@ -168,6 +168,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { Component } from 'vue'

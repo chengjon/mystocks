@@ -1,3 +1,4 @@
+
 /**
  * 连接健康监控和稳定性管理
  * Connection Health Monitoring and Stability Management
@@ -324,6 +325,3 @@ export class ConnectionHealthMonitor {
 export const createHealthMonitor = (options?: any): ConnectionHealthMonitor => {
   return new ConnectionHealthMonitor(options)
 }
-
-// 导出健康监控类型
-export type { HealthMetrics, CircuitBreakerState }

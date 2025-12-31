@@ -9,8 +9,8 @@
 import { apiGet } from '../apiClient';
 import type { UnifiedResponse } from '../apiClient';
 import type {
-  MarketOverviewResponse,
-  FundFlowResponse,
+  MarketOverviewDetailedResponse as MarketOverviewResponse,
+  FundFlowAPIResponse,
   KLineDataResponse,
 } from '../types/generated-types';
 
@@ -38,8 +38,8 @@ export class MarketApiService {
     startDate?: string;
     endDate?: string;
     market?: string;
-  }): Promise<UnifiedResponse<FundFlowResponse>> {
-    return apiGet<UnifiedResponse<FundFlowResponse>>(
+  }): Promise<UnifiedResponse<FundFlowAPIResponse>> {
+    return apiGet<UnifiedResponse<FundFlowAPIResponse>>(
       `${this.baseUrl}/fund-flow`,
       params
     );

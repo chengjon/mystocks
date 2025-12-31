@@ -7,15 +7,13 @@
 
 import type { UnifiedResponse } from '../apiClient';
 import type {
-  MarketOverviewData,
   MarketOverviewVM,
   FundFlowChartPoint,
   KLineChartData,
-  KLineData,
 } from '../types/market';
 import type {
-  MarketOverviewResponse,
-  FundFlowResponse,
+  MarketOverviewDetailedResponse as MarketOverviewResponse,
+  FundFlowAPIResponse,
   KLineDataResponse,
 } from '../types/generated-types';
 
@@ -83,7 +81,7 @@ export class MarketAdapter {
    * @returns Array of adapted FundFlowChartPoint objects (falls back to mock on error)
    */
   static adaptFundFlow(
-    apiResponse: UnifiedResponse<FundFlowResponse>
+    apiResponse: UnifiedResponse<FundFlowAPIResponse>
   ): FundFlowChartPoint[] {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[MarketAdapter] Fund flow API failed, using mock data:', apiResponse.message);
@@ -91,14 +89,15 @@ export class MarketAdapter {
     }
 
     try {
-      const fundFlowData = apiResponse.data.fundFlow || [];
+      // Access fundFlow array directly from the response data
+      const fundFlowData = apiResponse.data?.fundFlow || [];
 
       return fundFlowData.map((item) => ({
-        date: item.date || '',
-        mainInflow: item.mainInflow || 0,
-        mainOutflow: item.mainOutflow || 0,
-        netInflow: item.netInflow || 0,
-        timestamp: item.date ? new Date(item.date).getTime() : Date.now(),
+        date: item.tradeDate || '',
+        mainInflow: item.superLargeNetInflow || 0,
+        mainOutflow: item.largeNetInflow || 0,
+        netInflow: item.mainNetInflow || 0,
+        timestamp: item.tradeDate ? new Date(item.tradeDate).getTime() : Date.now(),
       }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
@@ -171,14 +170,15 @@ export class MarketAdapter {
   private static getMockFundFlow(): FundFlowChartPoint[] {
     console.log('[MarketAdapter] 📦 Using Mock Fund Flow data');
 
-    const mockResponse: UnifiedResponse<FundFlowResponse> = {
-      success: true,
-      code: 200,
-      message: 'Mock data',
-      data: mockFundFlow,
-      timestamp: new Date().toISOString(),
-      request_id: 'mock',
-      errors: null,
+    // mockFundFlow is in UnifiedResponse format - extract the data part and wrap properly
+    const mockResponse: UnifiedResponse<FundFlowAPIResponse> = {
+      success: mockFundFlow.success,
+      code: mockFundFlow.code,
+      message: mockFundFlow.message,
+      data: mockFundFlow.data,
+      timestamp: mockFundFlow.timestamp,
+      request_id: mockFundFlow.request_id,
+      errors: mockFundFlow.errors,
     };
 
     return this.adaptFundFlow(mockResponse);
@@ -190,17 +190,23 @@ export class MarketAdapter {
   private static getMockKLineData(): KLineChartData {
     console.log('[MarketAdapter] 📦 Using Mock K-Line data');
 
-    const mockResponse: UnifiedResponse<KLineDataResponse> = {
+    // Wrap mock data in KlineResponse structure
+    const mockWrappedResponse: UnifiedResponse<KLineDataResponse> = {
       success: true,
       code: 200,
       message: 'Mock data',
-      data: mockKLineData,
+      data: {
+        symbol: '000001',
+        period: '1d',
+        data: mockKLineData,
+        count: mockKLineData.length,
+      },
       timestamp: new Date().toISOString(),
       request_id: 'mock',
       errors: null,
     };
 
-    return this.adaptKLineData(mockResponse);
+    return this.adaptKLineData(mockWrappedResponse);
   }
 
   // ==================== Validation Methods ====================

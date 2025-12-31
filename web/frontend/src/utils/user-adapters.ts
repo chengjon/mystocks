@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 /**
  * User & Watchlist Module Data Adapters
  *

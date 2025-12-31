@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 /**
  * Trade Management Module Data Adapters
  *

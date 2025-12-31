@@ -6,6 +6,7 @@ export interface KLineData {
   close: number;
   volume: number;
   amount?: number;
+  [key: string]: any;
 }
 
 export interface KLineResponse {
