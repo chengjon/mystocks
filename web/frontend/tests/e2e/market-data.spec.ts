@@ -6,6 +6,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { loginAndSetupAuth } from './helpers/auth';
 
 /**
  * Desktop viewports to test
@@ -22,27 +23,13 @@ const desktopViewports = [
  */
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 
-/**
- * Helper: Login to the application
- */
-async function login(page) {
-  await page.goto(`${BASE_URL}/login`);
-
-  // Fill in login credentials
-  await page.fill('input[name="username"]', 'admin');
-  await page.fill('input[name="password"]', 'password');
-
-  // Click login button
-  await page.click('button[type="submit"]');
-
-  // Wait for navigation to complete
-  await page.waitForURL('**/dashboard');
-}
-
 test.describe('Market Data Module - E2E Tests', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     // Set default viewport
     await page.setViewportSize({ width: 1920, height: 1080 });
+
+    // Setup authentication using the new auth helper
+    await loginAndSetupAuth(request, page);
   });
 
   test.describe('Market Overview Page', () => {
