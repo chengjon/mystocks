@@ -225,54 +225,68 @@ async def csrf_protection_middleware(request: Request, call_next):
     CSRF保护中间件 - 验证修改操作的CSRF token
     SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
 
-    NOTE: 在测试环境（ENVIRONMENT=test）中自动禁用CSRF保护
+    NOTE:
+    - 在测试环境（testing=True）中自动禁用CSRF保护
+    - 可通过csrf_enabled配置显式控制（默认True）
+    - 测试环境会记录调试日志但不阻止请求
     """
-    # 检查是否为测试环境 - 如果是则跳过CSRF验证
-    is_testing_environment = os.getenv("ENVIRONMENT", "development") == "test"
+    from app.core.config import settings
+
+    # 确定是否启用CSRF保护
+    # 测试环境或配置禁用时跳过CSRF验证
+    should_enforce_csrf = settings.csrf_enabled and not settings.testing
 
     # 对于修改操作，检查CSRF token
-    if request.method in ["POST", "PUT", "PATCH", "DELETE"] and not is_testing_environment:
-        # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
-        exclude_paths = [
-            "/api/v1/csrf/token",
-            "/api/csrf-token",
-            "/api/v1/auth/login",
-            "/api/v1/auth/register",
-            "/api/auth/login",  # 添加登录端点
-            "/api/auth/register",  # 添加注册端点
-            "/docs",
-            "/redoc",
-            "/openapi.json",
-            "/swagger-ui",
-            "/health",  # 健康检查
-        ]
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        if settings.testing:
+            # 测试环境：记录调试日志但不阻止
+            logger.debug(f"🧪 CSRF验证跳过 (测试环境): {request.method} {request.url.path}")
+        elif not settings.csrf_enabled:
+            # CSRF被显式禁用：记录警告
+            logger.warning(f"⚠️  CSRF保护已禁用: {request.method} {request.url.path}")
 
-        if not any(request.url.path.startswith(path) for path in exclude_paths):
-            # 获取CSRF token from header
-            csrf_token = request.headers.get("x-csrf-token")
+        if should_enforce_csrf:
+            # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
+            exclude_paths = [
+                "/api/v1/csrf/token",
+                "/api/csrf-token",
+                "/api/v1/auth/login",
+                "/api/v1/auth/register",
+                "/api/auth/login",  # 添加登录端点
+                "/api/auth/register",  # 添加注册端点
+                "/docs",
+                "/redoc",
+                "/openapi.json",
+                "/swagger-ui",
+                "/health",  # 健康检查
+            ]
 
-            if not csrf_token:
-                logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
-                return JSONResponse(
-                    status_code=403,
-                    content={
-                        "code": "CSRF_TOKEN_MISSING",
-                        "message": "CSRF token is required for this request",
-                        "data": None,
-                    },
-                )
+            if not any(request.url.path.startswith(path) for path in exclude_paths):
+                # 获取CSRF token from header
+                csrf_token = request.headers.get("x-csrf-token")
 
-            # 验证CSRF token
-            if not csrf_manager.validate_token(csrf_token):
-                logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
-                return JSONResponse(
-                    status_code=403,
-                    content={
-                        "code": "CSRF_TOKEN_INVALID",
-                        "message": "CSRF token is invalid or expired",
-                        "data": None,
-                    },
-                )
+                if not csrf_token:
+                    logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
+                    return JSONResponse(
+                        status_code=403,
+                        content={
+                            "code": "CSRF_TOKEN_MISSING",
+                            "message": "CSRF token is required for this request",
+                            "data": None,
+                        },
+                    )
+
+                # 验证CSRF token
+                if not csrf_manager.validate_token(csrf_token):
+                    logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                    return JSONResponse(
+                        status_code=403,
+                        content={
+                            "code": "CSRF_TOKEN_INVALID",
+                            "message": "CSRF token is invalid or expired",
+                            "data": None,
+                        },
+                    )
 
     response = await call_next(request)
     return response
