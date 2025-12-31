@@ -11,7 +11,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2Pas
 from app.core.config import settings
 from app.core.responses import create_success_response
 from app.core.security import (
-    Token,
     User,
     authenticate_user,
     create_access_token,
@@ -102,13 +101,14 @@ async def get_current_active_user(
     return current_user
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-) -> Dict[str, Any]:
+):
     """
     用户登录获取访问令牌
     支持 OAuth2 标准的 form data 格式
+    返回 APIResponse 格式以匹配前端期望
     """
     # 验证用户身份
     user = authenticate_user(form_data.username, form_data.password)
@@ -126,12 +126,16 @@ async def login_for_access_token(
         expires_delta=access_token_expires,
     )
 
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "expires_in": settings.access_token_expire_minutes * 60,
-        "user": {"username": user.username, "email": user.email, "role": user.role},
-    }
+    # 返回 APIResponse 格式，使用 "token" 而不是 "access_token" 以匹配前端期望
+    return create_success_response(
+        data={
+            "token": access_token,
+            "token_type": "bearer",
+            "expires_in": settings.access_token_expire_minutes * 60,
+            "user": {"username": user.username, "email": user.email, "role": user.role},
+        },
+        message="登录成功",
+    )
 
 
 @router.post("/logout")

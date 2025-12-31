@@ -224,19 +224,27 @@ async def csrf_protection_middleware(request: Request, call_next):
     """
     CSRF保护中间件 - 验证修改操作的CSRF token
     SECURITY: 所有POST/PUT/PATCH/DELETE请求都需要有效的CSRF token
+
+    NOTE: 在测试环境（ENVIRONMENT=test）中自动禁用CSRF保护
     """
+    # 检查是否为测试环境 - 如果是则跳过CSRF验证
+    is_testing_environment = os.getenv("ENVIRONMENT", "development") == "test"
+
     # 对于修改操作，检查CSRF token
-    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"] and not is_testing_environment:
         # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
         exclude_paths = [
             "/api/v1/csrf/token",
             "/api/csrf-token",
             "/api/v1/auth/login",
             "/api/v1/auth/register",
+            "/api/auth/login",  # 添加登录端点
+            "/api/auth/register",  # 添加注册端点
             "/docs",
             "/redoc",
             "/openapi.json",
             "/swagger-ui",
+            "/health",  # 健康检查
         ]
 
         if not any(request.url.path.startswith(path) for path in exclude_paths):

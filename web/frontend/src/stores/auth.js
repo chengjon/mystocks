@@ -12,18 +12,26 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await authApi.login(username, password)
 
-      // 注意：响应拦截器已经返回了 response.data，所以这里直接使用 response
-      token.value = response.access_token
-      user.value = response.user
+      // 响应拦截器已经返回了 response.data
+      // 后端返回格式: { success: true, data: { token: "...", user: {...} } }
+      if (response.success && response.data) {
+        token.value = response.data.token
+        user.value = response.data.user
 
-      localStorage.setItem('token', token.value)
-      localStorage.setItem('user', JSON.stringify(user.value))
+        localStorage.setItem('token', token.value)
+        localStorage.setItem('user', JSON.stringify(user.value))
 
-      return { success: true }
+        return { success: true }
+      } else {
+        return {
+          success: false,
+          message: response.message || '登录失败'
+        }
+      }
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.detail || '登录失败'
+        message: error.response?.data?.detail || error.message || '登录失败'
       }
     }
   }

@@ -36,7 +36,7 @@ class HealthCheckResponse(BaseModel):
     service: str
 
 
-@router.get("/health", response_model=APIResponse[HealthCheckResponse])
+@router.get("/health", response_model=APIResponse)
 async def health_check():
     """健康检查"""
     return create_success_response(data={"status": "ok", "service": "trade"}, message="服务正常")
@@ -45,7 +45,7 @@ async def health_check():
 # ==================== Portfolio (Account Info) ====================
 
 
-@router.get("/portfolio", response_model=APIResponse[AccountInfo])
+@router.get("/portfolio", response_model=APIResponse)
 async def get_portfolio():
     """
     获取投资组合概览
@@ -84,7 +84,7 @@ async def get_portfolio():
 # ==================== Positions ====================
 
 
-@router.get("/positions", response_model=APIResponse[PositionsResponse])
+@router.get("/positions", response_model=APIResponse)
 async def get_positions():
     """
     获取持仓列表
@@ -157,7 +157,7 @@ async def get_positions():
 # ==================== Trade History ====================
 
 
-@router.get("/trades", response_model=APIResponse[TradeHistoryResponse])
+@router.get("/trades", response_model=APIResponse)
 async def get_trades(
     symbol: Optional[str] = Query(None, description="股票代码 (可选)"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
@@ -258,7 +258,7 @@ class TradeStatistics(BaseModel):
     realized_profit: float
 
 
-@router.get("/statistics", response_model=APIResponse[TradeStatistics])
+@router.get("/statistics", response_model=APIResponse)
 async def get_statistics():
     """
     获取交易统计数据
@@ -292,7 +292,7 @@ async def get_statistics():
 # ==================== Execute Trade ====================
 
 
-@router.post("/execute", response_model=APIResponse[dict])
+@router.post("/execute", response_model=APIResponse)
 async def execute_trade(order: dict):
     """
     执行买卖交易
