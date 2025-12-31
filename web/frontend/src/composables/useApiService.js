@@ -124,3 +124,5 @@ export function useApiService() {
     postData
   }
 }
+
+export default useApiService

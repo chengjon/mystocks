@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { klineCache } from '../utils/cacheManager';
 import type { KLineResponse, IndicatorResponse, StopLimitData, KLineData, IntervalType, AdjustType } from '../types/kline';
 
@@ -36,6 +36,12 @@ apiClient.interceptors.request.use(
   error => Promise.reject(error)
 );
 
+// Helper to get unwrapped response
+async function getUnwrapped<T>(promise: Promise<AxiosResponse<T>>): Promise<T> {
+  const response = await promise;
+  return response.data;
+}
+
 export const klineApi = {
   async getKline(
     symbol: string,
@@ -59,7 +65,7 @@ export const klineApi = {
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
 
-    const response = await apiGet<KLineResponse>(`/market/kline?${params}`);
+    const response = await getUnwrapped(apiClient.get<KLineResponse>(`/market/kline?${params}`));
     klineCache.set(cacheKey, response);
     return response;
   },
@@ -72,7 +78,7 @@ export const klineApi = {
   ): Promise<IndicatorResponse> {
     const queryParams = new URLSearchParams({ symbol, interval, indicators: indicators.join(',') });
     if (params) queryParams.append('params', JSON.stringify(params));
-    return apiGet<IndicatorResponse>(`/indicators/overlay?${queryParams}`);
+    return getUnwrapped(apiClient.get<IndicatorResponse>(`/indicators/overlay?${queryParams}`));
   },
 
   async getOscillatorIndicators(
@@ -83,16 +89,16 @@ export const klineApi = {
   ): Promise<IndicatorResponse> {
     const queryParams = new URLSearchParams({ symbol, interval, indicators: indicators.join(',') });
     if (params) queryParams.append('params', JSON.stringify(params));
-    return apiGet<IndicatorResponse>(`/indicators/oscillator?${queryParams}`);
+    return getUnwrapped(apiClient.get<IndicatorResponse>(`/indicators/oscillator?${queryParams}`));
   },
 
   async getStopLimit(symbol: string, date: string, prevClose: number): Promise<{ data: StopLimitData }> {
     const params = new URLSearchParams({ symbol, date, prev_close: prevClose.toString() });
-    return apiGet<{ data: StopLimitData }>(`/astock/stop-limit?${params}`);
+    return getUnwrapped(apiClient.get(`/astock/stop-limit?${params}`));
   },
 
   async getT1Sellable(buyDate: string): Promise<{ data: { sellable_date: string; t_status: string } }> {
-    return apiGet<{ data: { sellable_date: string; t_status: string } }>(`/astock/t1-sellable?buy_date=${buyDate}`);
+    return getUnwrapped(apiClient.get(`/astock/t1-sellable?buy_date=${buyDate}`));
   },
 
   clearCache(): void {

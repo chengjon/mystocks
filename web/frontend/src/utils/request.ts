@@ -1,3 +1,4 @@
+
 /**
  * Unified HTTP Client with Axios
  *
@@ -8,12 +9,7 @@
  * - Request/response interceptors
  */
 
-import axios, {
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-  AxiosResponse,
-  AxiosError
-} from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
 import { ElMessage, ElNotification } from 'element-plus'
 import type { APIResponse } from '@/api/types/generated-types'
 
@@ -45,16 +41,20 @@ const instance: AxiosInstance = axios.create({
 
 // Request interceptor for CSRF token
 instance.interceptors.request.use(
-  async (config: any) => {
+  async (config: InternalAxiosRequestConfig<any>) => {
+    // Initialize headers if not exists
+    if (!config.headers) {
+      config.headers = {} as AxiosRequestHeaders
+    }
+
     // Skip CSRF for GET requests and explicitly marked requests
     if (
       config.method?.toUpperCase() !== 'GET' &&
-      !config.skipCSRF &&
-      config.headers?.['X-CSRF-Token'] === undefined
+      !(config as any).skipCSRF &&
+      config.headers['X-CSRF-Token'] === undefined
     ) {
       try {
         const token = await getCSRFToken()
-        config.headers = config.headers || {}
         config.headers['X-CSRF-Token'] = token
       } catch (error) {
         console.error('Failed to get CSRF token:', error)

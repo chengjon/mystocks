@@ -8,15 +8,11 @@
 
 import { apiGet } from '../apiClient';
 import type { UnifiedResponse } from '../apiClient';
-import type { components } from '../../types/market-data-api';
-
-// Type aliases for easier usage
-export type MarketOverviewData = components["schemas"]["MarketOverviewData"];
-export type FundFlowData = components["schemas"]["FundFlowData"];
-export type KlineData = components["schemas"]["KlineData"];
-export type ETFData = components["schemas"]["ETFData"];
-export type LongHuBangData = components["schemas"]["LongHuBangData"];
-export type ChipRaceData = components["schemas"]["ChipRaceData"];
+import type {
+  MarketOverviewDetailedResponse as MarketOverviewResponse,
+  FundFlowAPIResponse,
+  KLineDataResponse,
+} from '../types/generated-types';
 
 export class MarketApiService {
   private readonly baseUrl = '/api/market';
@@ -35,13 +31,12 @@ export class MarketApiService {
    * Get fund flow data
    * GET /api/market/fund-flow
    */
-  async getFundFlow(params: {
-    symbol: string;
-    timeframe?: "1" | "3" | "5" | "10";
-    start_date?: string;
-    end_date?: string;
-  }): Promise<UnifiedResponse<FundFlowData>> {
-    return apiGet<UnifiedResponse<FundFlowData>>(
+  async getFundFlow(params?: {
+    startDate?: string;
+    endDate?: string;
+    market?: string;
+  }): Promise<UnifiedResponse<FundFlowAPIResponse>> {
+    return apiGet<UnifiedResponse<FundFlowAPIResponse>>(
       `${this.baseUrl}/fund-flow`,
       params
     );

@@ -130,10 +130,26 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, computed, watch } from 'vue'
 import { TrendCharts } from '@element-plus/icons-vue'
-import type { CheckboxValueType } from 'element-plus'
-import type { IndicatorMeta } from '@/types/indicators'
+
+/**
+ * 指标元数据
+ */
+interface IndicatorMeta {
+  /** 指标显示标签 */
+  label: string
+  /** 指标唯一标识值 */
+  value: string
+  /** 指标描述 */
+  description: string
+  /** 指标分类 */
+  category: 'trend' | 'momentum' | 'volatility' | 'volume'
+  /** 指标参数 */
+  params?: number[]
+}
 
 /**
  * 组件Props

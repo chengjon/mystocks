@@ -1,9 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import router from '@/router'
 import cacheManager from '@/utils/cache'
 
-import dashboardApi from './dashboard'
 // 创建 axios 实例
 const request = axios.create({
   baseURL: '/api',
@@ -12,9 +10,6 @@ const request = axios.create({
     'Content-Type': 'application/json'
   }
 })
-
-// 导入行业概念分析API
-import industryConceptApi from './industryConcept'
 
 // 请求拦截器 - 开发环境使用mock认证
 request.interceptors.request.use(

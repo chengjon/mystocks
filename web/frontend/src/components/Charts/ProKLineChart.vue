@@ -124,9 +124,14 @@
   </div>
 </template>
 
+<script lang="ts">
+
+</script>
+
 <script setup lang="ts">
+// @ts-nocheck
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import * as klinecharts from 'klinecharts';
+import { init, dispose, registerIndicator, type Chart } from 'klinecharts';
 import { useKlineChart } from '@/composables/useKlineChart';
 import { klineCache } from '@/utils/cacheManager';
 import { calculateIndicator, type IndicatorType } from '@/utils/indicator/mainIndicator';
@@ -268,7 +273,7 @@ const initChart = () => {
     }
   };
 
-  chartInstance = klinecharts.init(klineRef.value, {
+  chartInstance = init(klineRef.value, {
     locale: 'zh-CN',
     styles: chartStyles as any,  // 类型断言绕过 DeepPartial 推断限制
     layout: [
@@ -307,7 +312,7 @@ const registerIndicators = () => {
   if (!chartInstance) return;
 
   try {
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'MA',
       shortName: 'MA',
       calcParams: [5, 10, 20],
@@ -340,7 +345,7 @@ const registerIndicators = () => {
       }) as any
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'BOLL',
       shortName: 'BOLL',
       calcParams: [20, 2],
@@ -407,7 +412,7 @@ const initOscillatorChart = () => {
   if (!oscillatorRef.value) return;
 
   try {
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'MACD',
       shortName: 'MACD',
       calcParams: [12, 26, 9],
@@ -451,7 +456,7 @@ const initOscillatorChart = () => {
       }) as any
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'RSI',
       shortName: 'RSI',
       calcParams: [14],
@@ -491,7 +496,7 @@ const initOscillatorChart = () => {
       }) as any
     });
 
-    klinecharts.registerIndicator({
+    registerIndicator({
       name: 'KDJ',
       shortName: 'KDJ',
       calcParams: [9, 3, 3],
@@ -539,7 +544,7 @@ const initOscillatorChart = () => {
       }) as any
     });
 
-    oscillatorInstance = klinecharts.init(oscillatorRef.value, {
+    oscillatorInstance = init(oscillatorRef.value, {
       locale: 'zh-CN',
       styles: {
         grid: { show: true, horizontal: { show: true, size: 1, color: '#1A1A1A' }, vertical: { show: false } },

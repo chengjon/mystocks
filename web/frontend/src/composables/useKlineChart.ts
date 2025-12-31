@@ -141,3 +141,6 @@ export const useKlineChart = (options: { useMock?: boolean } = {}) => {
     clearCache
   };
 };
+
+// Default export for compatibility
+export default useKlineChart;

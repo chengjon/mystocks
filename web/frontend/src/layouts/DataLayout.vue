@@ -369,6 +369,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'

@@ -46,17 +46,24 @@ class TypeConverter:
         "Decimal": "number",
         "UUID": "string",
         "bytes": "string",
-        "list": "any[]",
+        # Handle Python built-in types
         "dict": "Record<string, any>",
-        "Dict": "Record<string, any>",
-        "Any": "any",
-        "EmailStr": "string",
-        "HttpUrl": "string",
-        "PyObject": "any",
-        "Json": "any",
-        "T": "any",
-        "False": "false",
-        "True": "true",
+        "date_type": "string | Date",
+        "list": "any[]",
+        "tuple": "any[]",
+    }
+
+    # Complex type patterns
+    COMPLEX_PATTERNS = {
+        r"List\[(.+?)\]": r"\1[]",
+        r"Optional\[(.+?)\]": r"\1 | null",
+        r"Union\[(.+?)\]": r"\1",
+        r"Dict\[(.+?),\s*(.+?)\]": r"Record<\1, \2>",
+        r"Set\[(.+?)\]": r"Set<\1>",
+        r"Tuple\[(.+?)\]": r"[\1]",
+        r"Literal\[(.+?)\]": r"\1",
+        r"Any": "any",
+        "object": "any",
     }
 
     @classmethod
@@ -122,16 +129,120 @@ class TypeConverter:
                                 quoted_parts.append(f"'{part}'")
                         return " | ".join(quoted_parts)
                     else:
-                        # Single value
-                        if cleaned in ["True", "False"]:
-                            return cleaned.lower()
-                        elif cleaned.isdigit() or cleaned.replace(".", "").isdigit():
-                            return cleaned
-                        else:
-                            return f"'{cleaned}'"
-                except:
-                    # Fallback: return original
-                    return literal_content
+                        break
+
+            # Handle List/Array types - use greedy match for nested types
+            if 'List[' in type_str:
+                # Count brackets to find the matching closing bracket
+                while 'List[' in type_str:
+                    start = type_str.find('List[')
+                    depth = 0
+                    end = start + 5  # Start after 'List['
+                    for i, char in enumerate(type_str[start+5:], start=start+5):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    # Extract the content and replace
+                    inner = type_str[start+5:end]
+                    type_str = type_str[:start] + inner + '[]' + type_str[end+1:]
+
+            # Handle Set types
+            if 'Set[' in type_str or 'Set<' in type_str:
+                type_str = re.sub(r'Set\[(.+?)\]', r'Set<\1>', type_str)
+
+            # Handle Optional/Union types - match brackets properly
+            if 'Union[' in type_str:
+                while 'Union[' in type_str:
+                    start = type_str.find('Union[')
+                    depth = 0
+                    end = -1
+                    for i, char in enumerate(type_str[start+6:], start=start+6):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    if end != -1:
+                        inner = type_str[start+6:end]
+                        type_str = type_str[:start] + inner + type_str[end+1:]
+                    else:
+                        break
+            if 'Optional[' in type_str:
+                while 'Optional[' in type_str:
+                    start = type_str.find('Optional[')
+                    depth = 0
+                    end = -1
+                    for i, char in enumerate(type_str[start+9:], start=start+9):
+                        if char == '[':
+                            depth += 1
+                        elif char == ']':
+                            if depth == 0:
+                                end = i
+                                break
+                            depth -= 1
+                    if end != -1:
+                        inner = type_str[start+9:end]
+                        type_str = type_str[:start] + inner + ' | null' + type_str[end+1:]
+                    else:
+                        break
+
+            # If no changes, we're done
+            if type_str == original:
+                break
+
+        # Fix Python type names
+        type_str = cls._fix_python_type_names(type_str)
+
+        # Handle union types with |
+        if " | " in type_str:
+            parts = type_str.split(" | ")
+            converted_parts = [cls.convert_type(part.strip()) for part in parts]
+            return " | ".join(converted_parts)
+
+        return type_str
+
+    @classmethod
+    def _fix_python_type_names(cls, type_str: str) -> str:
+        """Fix Python type names in generated TypeScript code"""
+        # Replace Python type names with TypeScript equivalents
+        replacements = {
+            r'\bstr\b': 'string',
+            r'\bint\b': 'number',
+            r'\bfloat\b': 'number',
+            r'\bbool\b': 'boolean',
+            r'\bAny\b': 'any',  # Python typing.Any -> TypeScript any
+            r'\bdict\b': 'Record<string, any>',  # Python dict -> TypeScript Record
+            r'\bdate_type\b': 'string | Date',  # Python date_type -> Date
+        }
+
+        for py_type, ts_type in replacements.items():
+            type_str = re.sub(py_type, ts_type, type_str)
+
+        # Fix ast.unparse() adding parentheses around type names
+        # e.g., Record<(string, any)> -> Record<string, any>
+        type_str = re.sub(r'\(([^)]+)\)', r'\1', type_str)
+
+        # Fix Record types with missing closing >
+        # Record<string, any[>  -> Record<string, any[]>
+        type_str = re.sub(r'Record<([^>]+)\[>', r'Record<\1[]', type_str)
+
+        # Fix malformed array syntax
+        type_str = re.sub(r'\[>;', '[];', type_str)  # [...[>;  -> [...[];
+        # Fix Record types with missing closing >
+        # Record<string, any[>  -> Record<string, any[]>
+        type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
+
+        # Fix standalone 'T' type parameter (generic) -> 'any'
+        type_str = re.sub(r'\bT\b', 'any', type_str)
+
+        # Fix any remaining dict[] patterns (dict followed by [])
+        type_str = re.sub(r'dict\[\]', 'Record<string, any>[]', type_str)
 
         return type_str
 
@@ -277,7 +388,109 @@ class TypeScriptGenerator:
                     output.append(f"export type {name} = any;")
             output.append("")
 
-        return "\n".join(output)
+        # Add all interfaces
+        output.append("// API Response Types")
+        output.extend(self.interfaces)
+
+        # Post-process to fix any remaining syntax issues
+        ts_code = "\n".join(output)
+        ts_code = self._fix_common_syntax_issues(ts_code)
+
+        return ts_code
+
+    def _fix_common_syntax_issues(self, ts_code: str) -> str:
+        """Fix common TypeScript syntax issues in generated code"""
+        original = ts_code
+
+        # Fix array types with malformed syntax
+        # Record<string, any[>;  -> Record<string, any>[];
+        ts_code = re.sub(r'\[>;', '[];', ts_code)
+
+        # Fix extra closing brackets
+        # ...[]];  -> ...[];
+        ts_code = re.sub(r'\[\]\];', r'[];', ts_code)
+
+        # Fix Record<(type, ...)> -> Record<type, ...>
+        ts_code = re.sub(r'Record<\(([^)]+)\)', r'Record<\1', ts_code)
+
+        # Fix complex array/union patterns
+        # type[ | null]>;  -> type[] | null;
+        ts_code = re.sub(r'\[ \| null\]>;', '[] | null;', ts_code)
+
+        # Fix any remaining parentheses around type names
+        ts_code = re.sub(r'\(([^()]+)\)', r'\1', ts_code)
+
+        # Fix Python dict[] patterns
+        ts_code = re.sub(r'dict\[\]', 'Record<string, any>[]', ts_code)
+        ts_code = re.sub(r':\s*dict(;|,|\s)', ': Record<string, any>\1', ts_code)
+
+        # Fix standalone T type parameter -> any
+        ts_code = re.sub(r':\s*T\b', ': any', ts_code)
+
+        # Fix APIResponse interface to be generic
+        # Change "export interface APIResponse {" to "export interface APIResponse<T = any> {"
+        # Only if it has "data: T | null" field
+        ts_code = re.sub(
+            r'export interface APIResponse\s*\{[^}]*data:\s*T\s*\|\s*null',
+            'export interface APIResponse<T = any> {\n  success: boolean;\n  code: number;\n  message: string;\n  data: T | null',
+            ts_code
+        )
+
+        # Fix PaginatedResponse to be generic
+        ts_code = re.sub(
+            r'export interface PaginatedResponse\s*\{[^}]*data\?\:\s*dict\[\]',
+            'export interface PaginatedResponse<T = any> {\n  total?: number;\n  page?: number;\n  pageSize?: number;\n  data?: T[]',
+            ts_code
+        )
+
+        # Debug: print if changes were made
+        if ts_code != original:
+            print(f"  🔧 Fixed syntax issues ({len(original) - len(ts_code)} chars removed)")
+
+        return ts_code
+
+    def _generate_interface(self, model_name: str, model_info: Dict) -> str:
+        """Generate a TypeScript interface for a model"""
+        fields = model_info.get("fields", {})
+        if not fields:
+            return None
+
+        interface_lines = [f"export interface {model_name} {{", ""]
+
+        # Generate each field
+        for field_name, field_info in fields.items():
+            ts_field_name = self.type_converter.convert_field_name(field_name)
+            ts_type = self.type_converter.convert_type(field_info["type"])
+
+            # Fix common type syntax issues in the generated type string
+            ts_type = self._fix_field_type(ts_type)
+
+            # Add optional marker if not required
+            optional = "?" if field_info["required"] else ""
+            comment = (
+                f" // Default: {field_info['default']}" if field_info["default"] else ""
+            )
+
+            interface_lines.append(f"  {ts_field_name}{optional}: {ts_type};{comment}")
+
+        interface_lines.append("}")
+        interface_lines.append("")
+
+        return "\n".join(interface_lines)
+
+    def _fix_field_type(self, type_str: str) -> str:
+        """Fix type string syntax issues"""
+        # Fix malformed array syntax
+        # type[>;  -> type[];
+        type_str = re.sub(r'\[>;', '[];', type_str)
+
+        # Fix type[ | null]>;  -> type[] | null;
+        type_str = re.sub(r'\[ \| null\]>;', '[] | null;', type_str)
+
+        # Fix parentheses around type names
+        type_str = re.sub(r'\(([^()]+)\)', r'\1', type_str)
+
+        return type_str
 
     def _sort_models_by_dependency(self, models: Dict[str, Dict]) -> Dict[str, Dict]:
         """Sort models by dependency order"""
@@ -312,10 +525,144 @@ def main():
     generator = TypeScriptGenerator()
     ts_code = generator.generate(extractor.models)
 
-    # Write to output file
+    # Custom types to append (not overwritten by generator)
+    custom_types = '''
+// ============================================
+// Custom Type Aliases (appended by generator)
+// ============================================
+
+// Type alias for backward compatibility
+export type KLineDataResponse = KlineResponse;
+
+// API wrapper response type for FundFlow (inner data structure)
+export interface FundFlowAPIResponse {
+  fundFlow?: FundFlowItem[];
+  total?: number;
+  symbol?: string | null;
+  timeframe?: string | null;
+}
+
+// Full API response wrapper for FundFlow (with success/code/message)
+export interface FundFlowFullResponse {
+  success?: boolean;
+  code?: number;
+  message?: string;
+  data?: FundFlowAPIResponse | null;
+  timestamp?: string;
+  request_id?: string;
+  errors?: any;
+}
+
+// Index data for market overview
+export interface IndexData {
+  code?: string;
+  name?: string;
+  current?: number;
+  change?: number;
+  changePercent?: number;
+  volume?: number;
+  timestamp?: string;
+}
+
+// Sector data for market heatmap
+export interface SectorData {
+  name?: string;
+  changePercent?: number;
+  stockCount?: number;
+  leadingStock?: string | null;
+  avgPrice?: number;
+}
+
+// K-line point for chart data
+export interface KLinePoint {
+  time?: string;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number | null;
+}
+
+// Stock search result
+export interface StockSearchResult {
+  symbol?: string;
+  name?: string;
+  market?: string;
+  type?: string;
+  current?: number;
+  change?: number;
+  changePercent?: number;
+}
+
+// Indicator parameter type
+export interface IndicatorParameter {
+  name?: string;
+  type?: string;
+  default?: any;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+// System status response
+export interface SystemStatusResponse {
+  status?: string;
+  version?: string;
+  uptime?: number;
+  cpu?: number;
+  memory?: number;
+  disk?: number;
+  components?: Record<string, any>;
+  timestamp?: string;
+}
+
+// Monitoring alert response
+export interface MonitoringAlertResponse {
+  alerts?: MonitoringAlert[];
+  totalCount?: number;
+}
+
+export interface MonitoringAlert {
+  id?: number;
+  severity?: string;
+  message?: string;
+  timestamp?: string;
+  acknowledged?: boolean;
+}
+
+// Log entry response
+export interface LogEntryResponse {
+  logs?: LogEntry[];
+  totalCount?: number;
+}
+
+export interface LogEntry {
+  level?: string;
+  message?: string;
+  timestamp?: string;
+  source?: string;
+}
+
+// Data quality response
+export interface DataQualityResponse {
+  checks?: DataQualityCheck[];
+  summary?: Record<string, any>;
+}
+
+export interface DataQualityCheck {
+  checkName?: string;
+  status?: string;
+  message?: string;
+  details?: Record<string, any>;
+}
+'''
+
+    # Write to output file (generated types + custom types)
     output_file = OUTPUT_DIR / "generated-types.ts"
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(ts_code)
+        f.write(custom_types)
 
     print(f"✅ Generated TypeScript types: {output_file}")
     print(f"   Found {len(extractor.models)} models/enums")

@@ -74,9 +74,8 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck - klinecharts official type definitions are incomplete and don't match runtime API
-// See: /opt/claude/KLineChart/docs/DOCUMENT_INDEX.md and /opt/claude/KLineChart/docs/guide/styles.md
-// All API calls use correct runtime values documented in official guides
+// @ts-nocheck
+
 import { ref, onMounted, onUnmounted, watch, computed, type PropType } from 'vue'
 import { init, dispose, type Chart } from 'klinecharts'
 import { CandleType, TooltipShowRule, TooltipShowType, LineType, YAxisPosition } from 'klinecharts'

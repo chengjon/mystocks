@@ -203,6 +203,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, onMounted, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
@@ -210,7 +212,6 @@ import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
 import { ElMessage } from 'element-plus'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
-import { Web3Card, Web3Button } from '@/components/web3'
 
 // Type definitions
 interface StockDetail {

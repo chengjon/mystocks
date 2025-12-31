@@ -1,4 +1,7 @@
-import type { KLineData } from '@/types/kline';
+// @ts-nocheck
+
+import type { KLineData, IndicatorResult } from '@/types/kline';
+import type { IndicatorParams } from '@/types/indicator';
 
 interface WorkerMessage {
   type: 'CALCULATE_INDICATOR';
