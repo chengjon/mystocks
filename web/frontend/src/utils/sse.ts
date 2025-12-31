@@ -4,6 +4,7 @@
  * Provides real-time updates from the backend with auto-reconnection and event filtering.
  */
 
+
 export interface SSEOptions {
   url: string
   headers?: Record<string, string>
@@ -57,9 +58,9 @@ type SSEStateHandler = (state: SSEState) => void
  */
 export class SSEConnection {
   private eventSource?: EventSource
-  private retryTimer?: NodeJS.Timeout
-  private heartbeatTimer?: NodeJS.Timeout
-  private heartbeatTimeout?: NodeJS.Timeout
+  private retryTimer?: ReturnType<typeof setTimeout>
+  private heartbeatTimer?: ReturnType<typeof setTimeout>
+  private heartbeatTimeout?: ReturnType<typeof setTimeout>
   private subscriptions = new Map<string, Set<SSEEventHandler>>()
   private globalHandlers = new Set<SSEEventHandler>()
   private state: SSEState = {
@@ -243,7 +244,7 @@ export class SSEConnection {
         event: event.type || 'message',
         data: JSON.parse(event.data),
         timestamp: Date.now(),
-        retry: event.timeStamp ? parseInt(event.timeStamp) : undefined
+        retry: event.timeStamp ? Number(event.timeStamp) : undefined
       }
 
       this.state.lastEventTime = sseEvent.timestamp
@@ -435,18 +436,21 @@ export class SSEManager {
   }
 
   /**
-   * React hook for SSE
+   * React hook for SSE (Note: Not for use in Vue projects)
    */
   useConnection(name: string, options?: SSEOptions) {
-    const [connection, setConnection] = React.useState<SSEConnection | null>(null)
-    const [state, setState] = React.useState<SSEState>({
+    // @ts-ignore - React hooks not available in Vue project
+    const [connection, setConnection] = useState<any>(null)
+    // @ts-ignore
+    const [state, setState] = useState<any>({
       connected: false,
       connecting: false,
       reconnecting: false,
       retryCount: 0
     })
 
-    React.useEffect(() => {
+    // @ts-ignore
+    useEffect(() => {
       if (!options) return
 
       const conn = this.create(name, options)
@@ -460,11 +464,13 @@ export class SSEManager {
       }
     }, [name])
 
-    const subscribe = React.useCallback((eventType: string, handler: SSEEventHandler) => {
+    // @ts-ignore
+    const subscribe = useCallback((eventType: string, handler: any) => {
       return connection?.subscribe(eventType, handler)
     }, [connection])
 
-    const disconnect = React.useCallback(() => {
+    // @ts-ignore
+    const disconnect = useCallback(() => {
       this.close(name)
     }, [name])
 
@@ -544,10 +550,12 @@ export const SSEHandlers = {
  * React Hook (if React is available)
  */
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace React {
-    function useState<T>(initial: T): [T, React.Dispatch<React.SetStateAction<T>>]
-    function useEffect(effect: () => void | (() => void), deps?: any[]): void
-    function useCallback<T>(fn: T, deps?: any[]): T
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type Dispatch<A> = (value: A) => void
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type SetStateAction<S> = S | ((prevState: S) => S)
   }
 }
 

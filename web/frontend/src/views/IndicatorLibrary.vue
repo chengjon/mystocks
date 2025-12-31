@@ -1,48 +1,54 @@
 <template>
-  <div class="indicator-library">
-    <!-- 页面头部 -->
-    <div class="page-header">
-      <h1>技术指标库</h1>
-      <p class="subtitle">共161个TA-Lib技术指标，涵盖趋势、动量、波动率、成交量和K线形态5大类</p>
+  <div class="web3-indicator-library">
+    <!-- Page header with gradient text -->
+    <div class="web3-page-header">
+      <h1 class="web3-page-title">
+        <span class="gradient-text">TECHNICAL INDICATOR LIBRARY</span>
+      </h1>
+      <p class="web3-page-subtitle">161 TA-LIB TECHNICAL INDICATORS ACROSS 5 CATEGORIES</p>
     </div>
 
-    <!-- 统计卡片 -->
+    <!-- Statistics Cards -->
     <div class="stats-cards">
-      <el-card shadow="hover" class="stat-card">
+      <Web3Card class="stat-card" hoverable>
         <div class="stat-content">
-          <el-icon class="stat-icon" color="#409eff"><DataLine /></el-icon>
+          <div class="stat-icon-wrapper">
+            <el-icon :size="48" color="#F7931A"><DataLine /></el-icon>
+          </div>
           <div class="stat-info">
-            <div class="stat-value">{{ registry?.total_count || 0 }}</div>
-            <div class="stat-label">总指标数</div>
+            <div class="stat-value gradient-text">{{ registry?.total_count || 0 }}</div>
+            <div class="stat-label">TOTAL INDICATORS</div>
           </div>
         </div>
-      </el-card>
+      </Web3Card>
 
-      <el-card
-        v-for="(count, category) in registry?.categories"
+      <Web3Card
+        v-for="(count, category) in (registry as any)?.categories"
         :key="category"
-        shadow="hover"
         class="stat-card"
+        hoverable
       >
         <div class="stat-content">
-          <el-icon class="stat-icon" :color="getCategoryColor(category)">
-            <component :is="getCategoryIcon(category)" />
-          </el-icon>
+          <div class="stat-icon-wrapper">
+            <el-icon :size="48" :color="getCategoryColor(String(category))">
+              <component :is="getCategoryIcon(String(category))" />
+            </el-icon>
+          </div>
           <div class="stat-info">
-            <div class="stat-value">{{ count }}</div>
-            <div class="stat-label">{{ getCategoryLabel(category) }}</div>
+            <div class="stat-value gradient-text">{{ count }}</div>
+            <div class="stat-label">{{ getCategoryLabel(String(category)) }}</div>
           </div>
         </div>
-      </el-card>
+      </Web3Card>
     </div>
 
-    <!-- 搜索和筛选 -->
-    <el-card class="search-card">
+    <!-- Search and Filter -->
+    <Web3Card class="search-card" hoverable>
       <el-row :gutter="16">
         <el-col :span="12">
           <el-input
             v-model="searchQuery"
-            placeholder="搜索指标名称、缩写或描述..."
+            placeholder="SEARCH INDICATOR NAME, ABBREVIATION OR DESCRIPTION..."
             :prefix-icon="Search"
             clearable
             size="large"
@@ -51,78 +57,78 @@
         <el-col :span="12">
           <el-select
             v-model="selectedCategory"
-            placeholder="选择分类"
+            placeholder="SELECT CATEGORY"
             clearable
             size="large"
             style="width: 100%"
           >
-            <el-option label="全部分类" value="" />
-            <el-option label="趋势指标" value="trend" />
-            <el-option label="动量指标" value="momentum" />
-            <el-option label="波动率指标" value="volatility" />
-            <el-option label="成交量指标" value="volume" />
-            <el-option label="K线形态" value="candlestick" />
+            <el-option label="ALL CATEGORIES" value="" />
+            <el-option label="TREND" value="trend" />
+            <el-option label="MOMENTUM" value="momentum" />
+            <el-option label="VOLATILITY" value="volatility" />
+            <el-option label="VOLUME" value="volume" />
+            <el-option label="CANDLESTICK" value="candlestick" />
           </el-select>
         </el-col>
       </el-row>
-    </el-card>
+    </Web3Card>
 
-    <!-- 指标列表 -->
+    <!-- Indicators List -->
     <div v-loading="loading" class="indicators-container">
-      <el-card
+      <Web3Card
         v-for="indicator in filteredIndicators"
         :key="indicator.abbreviation"
         class="indicator-detail-card"
-        shadow="hover"
+        hoverable
       >
         <template #header>
           <div class="indicator-header">
             <div class="indicator-title-group">
-              <span class="indicator-abbr">{{ indicator.abbreviation }}</span>
-              <el-tag :type="getCategoryTagType(indicator.category)" size="small">
+              <span class="indicator-abbr gradient-text">{{ indicator.abbreviation }}</span>
+              <el-tag :type="getCategoryTagType(indicator.category)" size="small" class="web3-tag">
                 {{ getCategoryLabel(indicator.category) }}
               </el-tag>
-              <el-tag :type="getPanelTagType(indicator.panel_type)" size="small">
-                {{ getPanelLabel(indicator.panel_type) }}
+              <el-tag :type="getPanelTagType(indicator.panel_type as any)" size="small" class="web3-tag">
+                {{ getPanelLabel(indicator.panel_type as any) }}
               </el-tag>
             </div>
           </div>
         </template>
 
         <div class="indicator-content">
-          <!-- 基本信息 -->
+          <!-- Basic Information -->
           <div class="info-section">
             <h3>{{ indicator.full_name }}</h3>
             <h4>{{ indicator.chinese_name }}</h4>
             <p class="description">{{ indicator.description }}</p>
           </div>
 
-          <!-- 参数说明 -->
+          <!-- Parameters -->
           <div v-if="indicator.parameters && indicator.parameters.length > 0" class="params-section">
             <h4 class="section-title">
               <el-icon><Setting /></el-icon>
-              参数配置
+              PARAMETERS
             </h4>
-            <el-table :data="indicator.parameters" size="small" border>
-              <el-table-column prop="display_name" label="参数名" width="120" />
-              <el-table-column prop="type" label="类型" width="80" />
-              <el-table-column prop="default" label="默认值" width="80" />
-              <el-table-column label="范围" width="100">
+            <el-table :data="indicator.parameters" size="small" border class="web3-table">
+              <el-table-column prop="display_name" label="NAME" width="120" />
+              <el-table-column prop="type" label="TYPE" width="80" />
+              <el-table-column prop="default" label="DEFAULT" width="80" />
+              <el-table-column label="RANGE" width="100">
                 <template #default="{ row }">
                   {{ row.min !== undefined ? `[${row.min}, ${row.max}]` : '-' }}
                 </template>
               </el-table-column>
-              <el-table-column prop="description" label="说明" />
+              <el-table-column prop="description" label="DESCRIPTION" />
             </el-table>
           </div>
 
-          <!-- 输出说明 -->
+          <!-- Outputs -->
           <div class="outputs-section">
             <h4 class="section-title">
               <el-icon><TrendCharts /></el-icon>
-              输出字段
+              OUTPUT FIELDS
             </h4>
-            <el-descriptions :column="2" size="small" border>
+            <el-descriptions :column="2" size="small" border class="web3-descriptions">
               <el-descriptions-item
                 v-for="(output, idx) in indicator.outputs"
                 :key="idx"
@@ -133,11 +139,11 @@
             </el-descriptions>
           </div>
 
-          <!-- 参考线 -->
+          <!-- Reference Lines -->
           <div v-if="indicator.reference_lines && indicator.reference_lines.length > 0" class="reference-section">
             <h4 class="section-title">
               <el-icon><Position /></el-icon>
-              参考线
+              REFERENCE LINES
             </h4>
             <el-space wrap>
               <el-tag
@@ -145,32 +151,32 @@
                 :key="idx"
                 type="info"
                 effect="plain"
+                class="web3-tag"
               >
                 {{ line }}
               </el-tag>
             </el-space>
           </div>
 
-          <!-- 最小数据点 -->
+          <!-- Minimum Data Points -->
           <div class="min-data-section">
             <el-text size="small" type="info">
               <el-icon><InfoFilled /></el-icon>
-              最小数据点: {{ indicator.min_data_points_formula }}
+              MINIMUM DATA POINTS: {{ indicator.min_data_points_formula }}
             </el-text>
           </div>
         </div>
-      </el-card>
+      </Web3Card>
 
-      <!-- 无结果提示 -->
-      <el-empty v-if="filteredIndicators.length === 0 && !loading" description="未找到匹配的指标" />
+      <!-- No Results Message -->
+      <el-empty v-if="filteredIndicators.length === 0 && !loading" description="NO MATCHING INDICATORS FOUND" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
+import { ref, computed, onMounted, type Ref, type ComputedRef, type Component } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { Component } from 'vue'
 import {
   Search,
   DataLine,
@@ -184,103 +190,56 @@ import {
   PieChart
 } from '@element-plus/icons-vue'
 import { indicatorService } from '@/services/indicatorService'
+import type { IndicatorMetadata, IndicatorRegistryResponse } from '@/api/types/generated-types'
+import { Web3Card } from '@/components/web3'
 
-// ============================================
-// 类型定义
-// ============================================
-
-/**
- * 指标元数据
- */
-interface IndicatorMetadata {
-  abbreviation: string
-  full_name: string
-  chinese_name: string
-  category: string
-  description: string
-  panel_type: 'overlay' | 'separate'
-  parameters?: any[]
-}
-
-/**
- * 指标注册表
- */
-interface IndicatorRegistry {
-  indicators: IndicatorMetadata[]
-  total_count: number
-}
-
-/**
- * 分类类型
- */
+// Type definitions
 type CategoryType = 'trend' | 'momentum' | 'volatility' | 'volume' | 'candlestick'
-
-/**
- * 面板类型
- */
 type PanelType = 'overlay' | 'separate'
+type TagType = 'primary' | 'success' | 'warning' | 'info' | 'danger'
 
-/**
- * Element Plus 标签类型
- */
-type TagType = 'primary' | 'success' | 'warning' | 'info' | 'danger' | ''
-
-// ============================================
-// 状态管理
-// ============================================
-
+// State
 const loading: Ref<boolean> = ref(false)
-const registry: Ref<IndicatorRegistry | null> = ref(null)
+const registry: Ref<IndicatorRegistryResponse | null> = ref(null)
 const searchQuery: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
 
-// ============================================
-// 生命周期与方法
-// ============================================
-
-/**
- * 组件挂载时获取指标注册表
- */
+// Lifecycle
 onMounted(async (): Promise<void> => {
   await fetchIndicatorRegistry()
 })
 
-/**
- * 获取指标注册表
- */
+// Methods
 const fetchIndicatorRegistry = async (): Promise<void> => {
   loading.value = true
   try {
     registry.value = await indicatorService.getRegistry()
   } catch (error: any) {
     console.error('Failed to fetch indicator registry:', error)
-    ElMessage.error('加载指标库失败')
+    ElMessage.error('FAILED TO LOAD INDICATOR LIBRARY')
   } finally {
     loading.value = false
   }
 }
 
-/**
- * 过滤指标
- */
 const filteredIndicators: ComputedRef<IndicatorMetadata[]> = computed(() => {
   if (!registry.value?.indicators) return []
 
   let indicators = registry.value.indicators
 
-  // 分类过滤
+  // Category filter
   if (selectedCategory.value) {
     indicators = indicators.filter(ind => ind.category === selectedCategory.value)
   }
 
-  // 搜索过滤
+  // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     indicators = indicators.filter(ind => {
       return (
-        ind.abbreviation.toLowerCase().includes(query) ||
-        ind.full_name.toLowerCase().includes(query) ||
-        ind.chinese_name.includes(query) ||
+        (ind as any).abbreviation.toLowerCase().includes(query) ||
+        (ind as any).full_name.toLowerCase().includes(query) ||
+        (ind as any).chinese_name.includes(query) ||
         ind.description.toLowerCase().includes(query)
       )
     })
@@ -289,9 +248,6 @@ const filteredIndicators: ComputedRef<IndicatorMetadata[]> = computed(() => {
   return indicators
 })
 
-/**
- * 获取分类标签类型
- */
 const getCategoryTagType = (category: string): TagType => {
   const typeMap: Record<string, TagType> = {
     trend: 'primary',
@@ -303,51 +259,36 @@ const getCategoryTagType = (category: string): TagType => {
   return typeMap[category] || 'info'
 }
 
-/**
- * 获取面板类型标签
- */
-const getPanelTagType = (panelType: PanelType): TagType => {
-  return panelType === 'overlay' ? '' : 'warning'
+const getPanelTagType = (panelType: string): TagType => {
+  return panelType === 'overlay' ? 'info' : 'warning'
 }
 
-/**
- * 获取面板类型标签文本
- */
 const getPanelLabel = (panelType: PanelType): string => {
-  return panelType === 'overlay' ? '主图叠加' : '独立面板'
+  return panelType === 'overlay' ? 'MAIN OVERLAY' : 'SEPARATE PANEL'
 }
 
-/**
- * 获取分类标签文本
- */
 const getCategoryLabel = (category: string): string => {
   const labelMap: Record<string, string> = {
-    trend: '趋势',
-    momentum: '动量',
-    volatility: '波动率',
-    volume: '成交量',
-    candlestick: 'K线形态'
+    trend: 'TREND',
+    momentum: 'MOMENTUM',
+    volatility: 'VOLATILITY',
+    volume: 'VOLUME',
+    candlestick: 'CANDLESTICK'
   }
   return labelMap[category] || category
 }
 
-/**
- * 获取分类颜色
- */
 const getCategoryColor = (category: string): string => {
   const colorMap: Record<string, string> = {
-    trend: '#409eff',
-    momentum: '#67c23a',
-    volatility: '#e6a23c',
-    volume: '#909399',
-    candlestick: '#f56c6c'
+    trend: '#F7931A',
+    momentum: '#00E676',
+    volatility: '#FFD700',
+    volume: '#6B7280',
+    candlestick: '#EF4444'
   }
-  return colorMap[category] || '#909399'
+  return colorMap[category] || '#6B7280'
 }
 
-/**
- * 获取分类图标
- */
 const getCategoryIcon = (category: string): Component => {
   const iconMap: Record<string, Component> = {
     trend: TrendCharts,
@@ -361,58 +302,86 @@ const getCategoryIcon = (category: string): Component => {
 </script>
 
 <style scoped lang="scss">
-.indicator-library {
-  padding: 24px;
-  background: #f5f7fa;
+@import '@/styles/web3-tokens.scss';
+@import '@/styles/web3-global.scss';
+
+.web3-indicator-library {
+  @include web3-grid-bg;
   min-height: 100vh;
+  padding: var(--web3-spacing-6);
 
-  .page-header {
-    margin-bottom: 24px;
+  .web3-page-header {
+    text-align: center;
+    padding: var(--web3-spacing-10) 0;
+    margin-bottom: var(--web3-spacing-8);
 
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: 28px;
-      font-weight: 700;
-      color: #303133;
+    .web3-page-title {
+      font-family: var(--web3-font-heading);
+      font-size: var(--web3-text-4xl);
+      font-weight: var(--web3-weight-bold);
+      margin: 0 0 var(--web3-spacing-3) 0;
+      line-height: var(--web3-leading-tight);
+
+      .gradient-text {
+        background: var(--web3-gradient-orange);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
     }
 
-    .subtitle {
+    .web3-page-subtitle {
+      font-family: var(--web3-font-body);
+      font-size: var(--web3-text-sm);
+      color: var(--web3-fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
       margin: 0;
-      font-size: 14px;
-      color: #909399;
     }
   }
 
   .stats-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: var(--web3-spacing-4);
+    margin-bottom: var(--web3-spacing-6);
 
     .stat-card {
       .stat-content {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: var(--web3-spacing-4);
 
-        .stat-icon {
-          font-size: 48px;
+        .stat-icon-wrapper {
+          .el-icon {
+            font-size: 48px;
+          }
         }
 
         .stat-info {
           flex: 1;
 
           .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #303133;
+            font-size: var(--web3-text-3xl);
+            font-weight: var(--web3-weight-bold);
+            color: var(--web3-fg-primary);
             line-height: 1.2;
+            font-family: var(--web3-font-mono);
+
+            &.gradient-text {
+              background: var(--web3-gradient-orange);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            }
           }
 
           .stat-label {
-            margin-top: 4px;
-            font-size: 14px;
-            color: #909399;
+            margin-top: var(--web3-spacing-1);
+            font-size: var(--web3-text-xs);
+            text-transform: uppercase;
+            letter-spacing: var(--web3-tracking-wide);
+            color: var(--web3-fg-muted);
           }
         }
       }
@@ -420,24 +389,31 @@ const getCategoryIcon = (category: string): Component => {
   }
 
   .search-card {
-    margin-bottom: 24px;
+    margin-bottom: var(--web3-spacing-6);
   }
 
   .indicators-container {
     display: grid;
-    gap: 20px;
+    gap: var(--web3-spacing-5);
 
     .indicator-detail-card {
       .indicator-header {
         .indicator-title-group {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--web3-spacing-3);
 
           .indicator-abbr {
-            font-size: 20px;
-            font-weight: 700;
-            color: #409eff;
+            font-size: var(--web3-text-xl);
+            font-weight: var(--web3-weight-bold);
+            font-family: var(--web3-font-heading);
+
+            &.gradient-text {
+              background: var(--web3-gradient-orange);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            }
           }
         }
       }
@@ -445,27 +421,27 @@ const getCategoryIcon = (category: string): Component => {
       .indicator-content {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: var(--web3-spacing-5);
 
         .info-section {
           h3 {
-            margin: 0 0 4px 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #303133;
+            margin: 0 0 var(--web3-spacing-1) 0;
+            font-size: var(--web3-text-lg);
+            font-weight: var(--web3-weight-semibold);
+            color: var(--web3-fg-primary);
           }
 
           h4 {
-            margin: 0 0 12px 0;
-            font-size: 16px;
-            font-weight: 500;
-            color: #606266;
+            margin: 0 0 var(--web3-spacing-3) 0;
+            font-size: var(--web3-text-base);
+            font-weight: var(--web3-weight-normal);
+            color: var(--web3-fg-secondary);
           }
 
           .description {
             margin: 0;
-            font-size: 14px;
-            color: #909399;
+            font-size: var(--web3-text-sm);
+            color: var(--web3-fg-muted);
             line-height: 1.8;
           }
         }
@@ -473,41 +449,98 @@ const getCategoryIcon = (category: string): Component => {
         .section-title {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin: 0 0 12px 0;
-          font-size: 16px;
-          font-weight: 600;
-          color: #303133;
+          gap: var(--web3-spacing-2);
+          margin: 0 0 var(--web3-spacing-3) 0;
+          font-size: var(--web3-text-base);
+          font-weight: var(--web3-weight-semibold);
+          color: var(--web3-fg-primary);
 
           .el-icon {
-            color: #409eff;
+            color: #F7931A;
           }
         }
 
         .min-data-section {
-          padding: 12px;
-          background: #f5f7fa;
-          border-radius: 4px;
+          padding: var(--web3-spacing-3);
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: var(--web3-radius-md);
+          border: 1px solid var(--web3-border-subtle);
 
           .el-text {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: var(--web3-spacing-1);
           }
         }
       }
     }
   }
+
+  .web3-table {
+    :deep(.el-table__header) {
+      th {
+        background: rgba(255, 255, 255, 0.02) !important;
+        color: var(--web3-fg-secondary) !important;
+        font-family: var(--web3-font-heading);
+        font-weight: var(--web3-weight-semibold);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--web3-border-subtle) !important;
+      }
+    }
+
+    :deep(.el-table__body) {
+      tr {
+        background: transparent !important;
+        transition: background var(--web3-duration-fast);
+
+        &:hover {
+          background: rgba(247, 147, 26, 0.05) !important;
+        }
+
+        td {
+          border-bottom: 1px solid var(--web3-border-subtle) !important;
+          color: var(--web3-fg-primary);
+        }
+      }
+    }
+  }
+
+  .web3-descriptions {
+    :deep(.el-descriptions__label) {
+      font-family: var(--web3-font-body);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
+      color: var(--web3-fg-muted);
+    }
+
+    :deep(.el-descriptions__content) {
+      font-family: var(--web3-font-body);
+      color: var(--web3-fg-primary);
+    }
+  }
+
+  .gradient-text {
+    background: var(--web3-gradient-orange);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .web3-tag {
+    font-family: var(--web3-font-body);
+    text-transform: uppercase;
+    letter-spacing: var(--web3-tracking-wide);
+  }
 }
 
-// 响应式设计
+// Responsive
 @media (max-width: 768px) {
-  .indicator-library {
-    padding: 16px;
+  .web3-indicator-library {
+    padding: var(--web3-spacing-4);
 
-    .page-header {
-      h1 {
-        font-size: 24px;
+    .web3-page-header {
+      .web3-page-title {
+        font-size: var(--web3-text-2xl);
       }
     }
 

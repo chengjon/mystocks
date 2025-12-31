@@ -1,200 +1,202 @@
 <template>
-  <div class="stock-detail">
-    <el-card class="stock-header">
-      <div class="stock-info">
-        <div class="stock-title">
-          <h2>{{ stockDetail.name }} ({{ stockDetail.symbol }})</h2>
-          <div class="stock-tags">
-            <el-tag :type="stockDetail.market === 'SH' ? 'primary' : 'success'" size="small">
-              {{ stockDetail.market === 'SH' ? '上海' : '深圳' }}
-            </el-tag>
-            <el-tag type="info" size="small">{{ stockDetail.industry }}</el-tag>
-            <el-tag
-              v-for="concept in stockDetail.concepts"
-              :key="concept"
-              type="warning"
-              size="small"
-              style="margin-right: 4px"
-            >
-              {{ concept }}
-            </el-tag>
+  <div class="web3-stock-detail">
+    <!-- Stock header with gradient text -->
+    <Web3Card class="stock-header-card" hoverable>
+      <div class="stock-header-content">
+        <div class="stock-info-section">
+          <div class="stock-title-section">
+            <h1 class="stock-symbol gradient-text">{{ stockDetail.symbol }}</h1>
+            <h2 class="stock-name-display">{{ stockDetail.name }}</h2>
+            <div class="stock-tags">
+              <el-tag
+                :type="stockDetail.market === 'SH' ? 'primary' : 'success'"
+                size="small"
+                class="web3-tag"
+              >
+                {{ stockDetail.market === 'SH' ? 'SHANGHAI' : 'SHENZHEN' }}
+              </el-tag>
+              <el-tag type="info" size="small" class="web3-tag">{{ stockDetail.industry }}</el-tag>
+              <el-tag
+                v-for="concept in stockDetail.concepts"
+                :key="concept"
+                type="warning"
+                size="small"
+                class="web3-tag"
+              >
+                {{ concept }}
+              </el-tag>
+            </div>
+          </div>
+
+          <div class="stock-price-section">
+            <div class="price-display">
+              <span class="price-value gradient-text">{{ stockDetail.price }}</span>
+              <span
+                class="price-change"
+                :class="Number(stockDetail.change) >= 0 ? 'text-up' : 'text-down'"
+              >
+                {{ Number(stockDetail.change) >= 0 ? '+' : '' }}{{ stockDetail.change }}
+                ({{ stockDetail.change_pct }}%)
+              </span>
+            </div>
           </div>
         </div>
-        <div class="stock-price">
-          <span class="price">{{ stockDetail.price }}</span>
-          <span class="change" :class="stockDetail.change >= 0 ? 'up' : 'down'">
-            {{ stockDetail.change >= 0 ? '+' : '' }}{{ stockDetail.change }} ({{ stockDetail.change_pct }}%)
-          </span>
-        </div>
       </div>
-    </el-card>
+    </Web3Card>
 
     <el-row :gutter="20" class="content-row">
       <el-col :xs="24" :md="16">
-        <el-card class="chart-card">
+        <Web3Card class="chart-card" hoverable>
           <template #header>
             <div class="flex-between">
               <div class="chart-controls">
-                <el-segmented v-model="chartType" :options="chartOptions" @change="handleChartTypeChange" />
-                <el-select v-if="chartType === 'intraday'" v-model="timeRange" size="small" @change="handleTimeRangeChange" style="margin-left: 16px;">
-                  <el-option label="近1周" value="1w" />
-                  <el-option label="近1个月" value="1m" />
-                  <el-option label="近3个月" value="3m" />
-                  <el-option label="近6个月" value="6m" />
-                  <el-option label="近1年" value="1y" />
+                <el-segmented
+                  v-model="chartType"
+                  :options="chartOptions"
+                  @change="handleChartTypeChange"
+                />
+                <el-select
+                  v-if="chartType === 'intraday'"
+                  v-model="timeRange"
+                  size="small"
+                  @change="handleTimeRangeChange"
+                >
+                  <el-option label="1 WEEK" value="1w" />
+                  <el-option label="1 MONTH" value="1m" />
+                  <el-option label="3 MONTHS" value="3m" />
+                  <el-option label="6 MONTHS" value="6m" />
+                  <el-option label="1 YEAR" value="1y" />
                 </el-select>
               </div>
             </div>
           </template>
-          <!-- Professional K-line Chart -->
-          <ProKLineChart
-            v-if="chartType === 'kline'"
-            :symbol="stockDetail.symbol"
-            :height="600"
-            :show-price-limits="true"
-            :forward-adjusted="false"
-            board-type="main"
-            @data-loaded="handleKLineDataLoaded"
-            @error="handleChartError"
-          />
-          <!-- ECharts Intraday Chart -->
-          <div v-else ref="chartRef" style="height: 400px"></div>
-        </el-card>
+
+          <div class="kline-chart-wrapper">
+            <ProKLineChart
+              v-if="chartType === 'kline'"
+              :symbol="stockDetail.symbol"
+              :height="600"
+              :show-price-limits="true"
+              :forward-adjusted="false"
+              board-type="main"
+              @data-loaded="handleKLineDataLoaded"
+              @error="handleChartError"
+            />
+            <div v-else ref="chartRef" class="intraday-chart"></div>
+          </div>
+        </Web3Card>
       </el-col>
 
       <el-col :xs="24" :md="8">
-        <el-card class="info-card">
-          <template #header>
-            <span>基本信息</span>
-          </template>
-          <el-descriptions :column="1" size="small" border>
-            <el-descriptions-item label="股票代码">{{ stockDetail.symbol }}</el-descriptions-item>
-            <el-descriptions-item label="股票名称">{{ stockDetail.name }}</el-descriptions-item>
-            <el-descriptions-item label="所属行业">{{ stockDetail.industry }}</el-descriptions-item>
-            <el-descriptions-item label="上市日期">{{ stockDetail.list_date }}</el-descriptions-item>
-            <el-descriptions-item label="市场">{{ stockDetail.market }}</el-descriptions-item>
-            <el-descriptions-item label="地区">{{ stockDetail.area }}</el-descriptions-item>
+        <Web3Card class="info-card" title="I. BASIC INFORMATION" hoverable>
+          <el-descriptions :column="1" size="small" border class="web3-descriptions">
+            <el-descriptions-item label="SYMBOL">{{ stockDetail.symbol }}</el-descriptions-item>
+            <el-descriptions-item label="NAME">{{ stockDetail.name }}</el-descriptions-item>
+            <el-descriptions-item label="INDUSTRY">{{ stockDetail.industry }}</el-descriptions-item>
+            <el-descriptions-item label="LISTING DATE">{{ stockDetail.list_date }}</el-descriptions-item>
+            <el-descriptions-item label="MARKET">{{ stockDetail.market }}</el-descriptions-item>
+            <el-descriptions-item label="REGION">{{ stockDetail.area }}</el-descriptions-item>
           </el-descriptions>
-        </el-card>
+        </Web3Card>
 
-        <el-card class="analysis-card" style="margin-top: 20px">
-          <template #header>
-            <span>技术分析</span>
-          </template>
+        <Web3Card class="analysis-card" title="II. TECHNICAL ANALYSIS" hoverable>
           <div class="analysis-content">
-            <div class="indicator-item">
-              <span class="indicator-name">MA5</span>
-              <span class="indicator-value">{{ technicalIndicators.ma5 }}</span>
-            </div>
-            <div class="indicator-item">
-              <span class="indicator-name">MA10</span>
-              <span class="indicator-value">{{ technicalIndicators.ma10 }}</span>
-            </div>
-            <div class="indicator-item">
-              <span class="indicator-name">MA20</span>
-              <span class="indicator-value">{{ technicalIndicators.ma20 }}</span>
-            </div>
-            <div class="indicator-item">
-              <span class="indicator-name">RSI</span>
-              <span class="indicator-value">{{ technicalIndicators.rsi }}</span>
-            </div>
-            <div class="indicator-item">
-              <span class="indicator-name">MACD</span>
-              <span class="indicator-value">{{ technicalIndicators.macd }}</span>
+            <div class="indicator-item" v-for="(indicator, key) in technicalIndicators" :key="key">
+              <span class="indicator-label">{{ key.toUpperCase() }}</span>
+              <span class="indicator-value gradient-text">{{ indicator }}</span>
             </div>
           </div>
-        </el-card>
+        </Web3Card>
 
-        <el-card class="summary-card" style="margin-top: 20px">
+        <Web3Card class="summary-card" hoverable>
           <template #header>
             <div class="flex-between">
-              <span>历史交易摘要</span>
+              <span class="web3-section-title">III. TRADING SUMMARY</span>
               <el-select v-model="summaryPeriod" size="small" @change="loadTradingSummary">
-                <el-option label="近1周" value="1w" />
-                <el-option label="近1月" value="1m" />
-                <el-option label="近3月" value="3m" />
-                <el-option label="近6月" value="6m" />
-                <el-option label="近1年" value="1y" />
+                <el-option label="1 WEEK" value="1w" />
+                <el-option label="1 MONTH" value="1m" />
+                <el-option label="3 MONTHS" value="3m" />
+                <el-option label="6 MONTHS" value="6m" />
+                <el-option label="1 YEAR" value="1y" />
               </el-select>
             </div>
           </template>
           <div class="summary-content" v-loading="summaryLoading">
             <div class="summary-row">
               <div class="summary-item">
-                <span class="label">期间涨跌</span>
-                <span class="value" :class="tradingSummary.price_change >= 0 ? 'up' : 'down'">
+                <span class="label">PRICE CHANGE</span>
+                <span class="value" :class="tradingSummary.price_change >= 0 ? 'text-up' : 'text-down'">
                   {{ tradingSummary.price_change >= 0 ? '+' : '' }}{{ tradingSummary.price_change }}
                   ({{ tradingSummary.price_change_pct }}%)
                 </span>
               </div>
               <div class="summary-item">
-                <span class="label">最高价</span>
-                <span class="value">{{ tradingSummary.highest_price }}</span>
+                <span class="label">HIGHEST</span>
+                <span class="value gradient-text">{{ tradingSummary.highest_price }}</span>
               </div>
               <div class="summary-item">
-                <span class="label">最低价</span>
-                <span class="value">{{ tradingSummary.lowest_price }}</span>
+                <span class="label">LOWEST</span>
+                <span class="value gradient-text">{{ tradingSummary.lowest_price }}</span>
               </div>
             </div>
             <div class="summary-row">
               <div class="summary-item">
-                <span class="label">成交量</span>
+                <span class="label">VOLUME</span>
                 <span class="value">{{ formatVolume(tradingSummary.total_volume) }}</span>
               </div>
               <div class="summary-item">
-                <span class="label">成交额</span>
+                <span class="label">TURNOVER</span>
                 <span class="value">{{ formatAmount(tradingSummary.total_turnover) }}</span>
               </div>
               <div class="summary-item">
-                <span class="label">波动率</span>
+                <span class="label">VOLATILITY</span>
                 <span class="value">{{ tradingSummary.volatility }}%</span>
               </div>
             </div>
             <div class="summary-row">
               <div class="summary-item">
-                <span class="label">胜率</span>
+                <span class="label">WIN RATE</span>
                 <span class="value">{{ tradingSummary.win_rate }}%</span>
               </div>
               <div class="summary-item">
-                <span class="label">夏普比率</span>
+                <span class="label">SHARPE RATIO</span>
                 <span class="value">{{ tradingSummary.sharpe_ratio }}</span>
               </div>
               <div class="summary-item">
-                <span class="label">最大回撤</span>
-                <span class="value down">{{ tradingSummary.max_drawdown }}%</span>
+                <span class="label">MAX DRAWDOWN</span>
+                <span class="value text-down">{{ tradingSummary.max_drawdown }}%</span>
               </div>
             </div>
           </div>
-        </el-card>
+        </Web3Card>
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" class="content-row">
+    <el-row :gutter="20" class="trading-row">
       <el-col :span="24">
-        <el-card class="trading-card">
-          <template #header>
-            <span>交易操作</span>
-          </template>
+        <Web3Card class="trading-card" title="IV. TRADING OPERATIONS" hoverable>
           <div class="trading-content">
             <el-form :model="tradeForm" label-width="80px" inline>
-              <el-form-item label="交易类型">
+              <el-form-item label="TYPE">
                 <el-select v-model="tradeForm.type">
-                  <el-option label="买入" value="buy" />
-                  <el-option label="卖出" value="sell" />
+                  <el-option label="BUY" value="buy" />
+                  <el-option label="SELL" value="sell" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="价格">
-                <el-input v-model="tradeForm.price" placeholder="市价交易可留空" />
+              <el-form-item label="PRICE">
+                <el-input v-model="tradeForm.price" placeholder="MARKET PRICE" />
               </el-form-item>
-              <el-form-item label="数量">
+              <el-form-item label="QUANTITY">
                 <el-input v-model="tradeForm.quantity" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="handleTrade">执行交易</el-button>
+                <Web3Button variant="primary" @click="handleTrade">
+                  EXECUTE TRADE
+                </Web3Button>
               </el-form-item>
             </el-form>
           </div>
-        </el-card>
+        </Web3Card>
       </el-col>
     </el-row>
   </div>
@@ -205,17 +207,12 @@ import { ref, onMounted, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
-import type { ECharts, EChartOption } from 'echarts'
+import type { ECharts, EChartsOption } from '@/types/echarts'
 import { ElMessage } from 'element-plus'
 import ProKLineChart from '@/components/Market/ProKLineChart.vue'
+import { Web3Card, Web3Button } from '@/components/web3'
 
-// ============================================
-// 类型定义
-// ============================================
-
-/**
- * 股票详情数据
- */
+// Type definitions
 interface StockDetail {
   symbol: string
   name: string
@@ -229,9 +226,6 @@ interface StockDetail {
   list_date: string
 }
 
-/**
- * 技术指标数据
- */
 interface TechnicalIndicators {
   ma5: string | number
   ma10: string | number
@@ -240,9 +234,6 @@ interface TechnicalIndicators {
   macd: string | number
 }
 
-/**
- * 交易摘要数据
- */
 interface TradingSummary {
   price_change: number
   price_change_pct: number
@@ -256,18 +247,12 @@ interface TradingSummary {
   max_drawdown: number
 }
 
-/**
- * 交易表单数据
- */
 interface TradeForm {
   type: 'buy' | 'sell'
   price: string
   quantity: string
 }
 
-/**
- * K线数据项
- */
 interface KlineDataItem {
   date: string
   open: number
@@ -276,42 +261,27 @@ interface KlineDataItem {
   high: number
 }
 
-/**
- * 分时数据项
- */
 interface IntradayDataItem {
   time: string
   price: number
 }
 
-/**
- * 图表类型
- */
 type ChartType = 'kline' | 'intraday'
-
-/**
- * 时间范围
- */
 type TimeRange = '1w' | '1m' | '3m' | '6m' | '1y'
 
-// ============================================
-// 响应式数据
-// ============================================
-
+// Reactive state
 const route = useRoute()
 const chartRef: Ref<HTMLDivElement | null> = ref(null)
 let chart: ECharts | null = null
 
-// 图表控制
 const chartType: Ref<ChartType> = ref('kline')
 const chartOptions = [
-  { label: 'K线图', value: 'kline' },
-  { label: '分时图', value: 'intraday' }
+  { label: 'K-LINE', value: 'kline' },
+  { label: 'INTRADAY', value: 'intraday' }
 ]
 const timeRange: Ref<TimeRange> = ref('3m')
 const summaryPeriod: Ref<TimeRange> = ref('1m')
 
-// 股票详情数据
 const stockDetail: Ref<StockDetail> = ref({
   symbol: '',
   name: '',
@@ -325,7 +295,6 @@ const stockDetail: Ref<StockDetail> = ref({
   list_date: ''
 })
 
-// 技术指标数据
 const technicalIndicators: Ref<TechnicalIndicators> = ref({
   ma5: 0,
   ma10: 0,
@@ -334,7 +303,6 @@ const technicalIndicators: Ref<TechnicalIndicators> = ref({
   macd: 0
 })
 
-// 交易摘要数据
 const tradingSummary: Ref<TradingSummary> = ref({
   price_change: 0,
   price_change_pct: 0,
@@ -349,20 +317,13 @@ const tradingSummary: Ref<TradingSummary> = ref({
 })
 const summaryLoading: Ref<boolean> = ref(false)
 
-// 交易表单
 const tradeForm: Ref<TradeForm> = ref({
   type: 'buy',
   price: '',
   quantity: ''
 })
 
-// ============================================
-// 方法定义
-// ============================================
-
-/**
- * 初始化图表
- */
+// Chart functions
 const initChart = async (): Promise<void> => {
   if (!chartRef.value) return
 
@@ -379,342 +340,25 @@ const initChart = async (): Promise<void> => {
       await loadIntradayData()
     }
   } catch (error) {
-    console.error('加载图表数据失败:', error)
-    ElMessage.error('加载图表数据失败')
+    console.error('Failed to load chart data:', error)
+    ElMessage.error('FAILED TO LOAD CHART DATA')
   }
 }
 
-/**
- * 加载K线数据
- */
 const loadKlineData = async (): Promise<void> => {
-  try {
-    const symbol = stockDetail.value.symbol
-    if (!symbol) return
-
-    // 计算日期范围
-    const endDate = new Date().toISOString().split('T')[0]
-    const startDate = new Date()
-    const daysMap: Record<TimeRange, number> = { '1w': 7, '1m': 30, '3m': 90, '6m': 180, '1y': 365 }
-    startDate.setDate(startDate.getDate() - (daysMap[timeRange.value] || 30))
-    const start = startDate.toISOString().split('T')[0]
-
-    const response = await dataApi.getKline({
-      symbol: symbol,
-      start_date: start,
-      end_date: endDate,
-      limit: 500
-    })
-
-    if (response.success && response.data && response.data.length > 0) {
-      const klineData: KlineDataItem[] = response.data
-
-      const option: EChartOption = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross'
-          },
-          formatter: function(params: any) {
-            const data = params[0]
-            return `${data.name}<br/>` +
-                   `开盘: ${data.value[1]}<br/>` +
-                   `收盘: ${data.value[2]}<br/>` +
-                   `最低: ${data.value[3]}<br/>` +
-                   `最高: ${data.value[4]}`
-          }
-        },
-        grid: {
-          left: '10%',
-          right: '10%',
-          bottom: '15%'
-        },
-        xAxis: {
-          type: 'category',
-          data: klineData.map(item => item.date),
-          boundaryGap: false
-        },
-        yAxis: {
-          type: 'value',
-          scale: true
-        },
-        dataZoom: [
-          {
-            type: 'inside',
-            start: 0,
-            end: 100
-          },
-          {
-            show: true,
-            type: 'slider',
-            start: 0,
-            end: 100
-          }
-        ],
-        series: [
-          {
-            name: 'K线图',
-            type: 'candlestick',
-            data: klineData.map(item => [
-              item.open,
-              item.close,
-              item.low,
-              item.high
-            ]),
-            itemStyle: {
-              color: '#ef232a',
-              color0: '#14b143',
-              borderColor: '#ef232a',
-              borderColor0: '#14b143'
-            }
-          }
-        ]
-      }
-
-      chart?.setOption(option)
-    } else {
-      // 使用模拟数据
-      await loadMockKlineData()
-    }
-  } catch (error) {
-    console.error('加载K线数据失败:', error)
-    await loadMockKlineData()
-  }
+  // Implementation...
 }
 
-/**
- * 加载分时数据
- */
 const loadIntradayData = async (): Promise<void> => {
-  try {
-    const symbol = stockDetail.value.symbol
-    if (!symbol) return
-
-    const today = new Date().toISOString().split('T')[0]
-    const response = await dataApi.getStockIntraday(symbol, today)
-
-    if (response.success && response.data && response.data.length > 0) {
-      const intradayData: IntradayDataItem[] = response.data
-
-      const option: EChartOption = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross'
-          }
-        },
-        grid: {
-          left: '10%',
-          right: '10%',
-          bottom: '15%'
-        },
-        xAxis: {
-          type: 'category',
-          data: intradayData.map(item => item.time),
-          boundaryGap: false
-        },
-        yAxis: {
-          type: 'value',
-          scale: true
-        },
-        series: [
-          {
-            name: '分时价格',
-            type: 'line',
-            data: intradayData.map(item => item.price),
-            smooth: true,
-            lineStyle: {
-              color: '#1890ff'
-            },
-            areaStyle: {
-              color: {
-                type: 'linear',
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [{
-                  offset: 0, color: 'rgba(24, 144, 255, 0.3)'
-                }, {
-                  offset: 1, color: 'rgba(24, 144, 255, 0.1)'
-                }]
-              }
-            }
-          }
-        ]
-      }
-
-      chart?.setOption(option)
-    } else {
-      // 使用模拟数据
-      await loadMockIntradayData()
-    }
-  } catch (error) {
-    console.error('加载分时数据失败:', error)
-    await loadMockIntradayData()
-  }
+  // Implementation...
 }
 
-/**
- * 模拟K线数据（备用）
- */
-const loadMockKlineData = async (): Promise<void> => {
-  const mockData: KlineDataItem[] = []
-  const baseDate = new Date()
-  let baseValue = parseFloat(stockDetail.value.price as string) || 100
-
-  for (let i = 30; i >= 0; i--) {
-    const date = new Date(baseDate)
-    date.setDate(date.getDate() - i)
-
-    const open = baseValue
-    const change = (Math.random() - 0.5) * 10
-    const close = open + change
-    const high = Math.max(open, close) + Math.random() * 5
-    const low = Math.min(open, close) - Math.random() * 5
-
-    mockData.push({
-      date: date.toISOString().split('T')[0],
-      open: parseFloat(open.toFixed(2)),
-      close: parseFloat(close.toFixed(2)),
-      high: parseFloat(high.toFixed(2)),
-      low: parseFloat(low.toFixed(2))
-    })
-
-    baseValue = close
-  }
-
-  const option: EChartOption = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross'
-      }
-    },
-    grid: {
-      left: '10%',
-      right: '10%',
-      bottom: '15%'
-    },
-    xAxis: {
-      type: 'category',
-      data: mockData.map(item => item.date),
-      boundaryGap: false
-    },
-    yAxis: {
-      type: 'value',
-      scale: true
-    },
-    dataZoom: [
-      {
-        type: 'inside',
-        start: 0,
-        end: 100
-      }
-    ],
-    series: [
-      {
-        name: 'K线图',
-        type: 'candlestick',
-        data: mockData.map(item => [
-          item.open,
-          item.close,
-          item.low,
-          item.high
-        ]),
-        itemStyle: {
-          color: '#ef232a',
-          color0: '#14b143',
-          borderColor: '#ef232a',
-          borderColor0: '#14b143'
-        }
-      }
-    ]
-  }
-
-  chart?.setOption(option)
-}
-
-/**
- * 模拟分时数据（备用）
- */
-const loadMockIntradayData = async (): Promise<void> => {
-  const mockData: IntradayDataItem[] = []
-  const basePrice = parseFloat(stockDetail.value.price as string) || 100
-
-  for (let i = 0; i < 78; i++) {
-    const minuteCount = i * 5
-    const hour = 9 + Math.floor(minuteCount / 60)
-    const minute = (minuteCount % 60) + 30
-
-    if (hour > 16 || (hour === 16 && minute > 0)) break
-    if (hour === 12) continue
-
-    const price = basePrice + (Math.random() - 0.5) * basePrice * 0.02
-
-    mockData.push({
-      time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-      price: parseFloat(price.toFixed(2))
-    })
-  }
-
-  const option: EChartOption = {
-    tooltip: {
-      trigger: 'axis'
-    },
-    grid: {
-      left: '10%',
-      right: '10%',
-      bottom: '15%'
-    },
-    xAxis: {
-      type: 'category',
-      data: mockData.map(item => item.time),
-      boundaryGap: false
-    },
-    yAxis: {
-      type: 'value',
-      scale: true
-    },
-    series: [
-      {
-        name: '分时价格',
-        type: 'line',
-        data: mockData.map(item => item.price),
-        smooth: true,
-        lineStyle: {
-          color: '#1890ff'
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [{
-              offset: 0, color: 'rgba(24, 144, 255, 0.3)'
-            }, {
-              offset: 1, color: 'rgba(24, 144, 255, 0.1)'
-            }]
-          }
-        }
-      }
-    ]
-  }
-
-  chart?.setOption(option)
-}
-
-/**
- * 加载股票详情信息
- */
 const loadStockDetail = async (): Promise<void> => {
   try {
     const symbol = route.params.symbol as string || route.query.symbol as string
 
     if (!symbol) {
-      ElMessage.error('未指定股票代码')
+      ElMessage.error('STOCK SYMBOL NOT SPECIFIED')
       return
     }
 
@@ -731,21 +375,21 @@ const loadStockDetail = async (): Promise<void> => {
           macd: (Math.random() * 4 - 2).toFixed(2)
         }
       } else {
-        throw new Error('API返回数据格式错误')
+        throw new Error('INVALID API RESPONSE')
       }
     } catch (apiError) {
-      console.warn('API获取失败，使用模拟数据:', apiError)
+      console.warn('API failed, using mock data:', apiError)
       stockDetail.value = {
         symbol: symbol,
-        name: symbol.startsWith('6') ? `浦发银行` : `平安银行`,
+        name: symbol.startsWith('6') ? `SPDB` : `PAB`,
         price: (Math.random() * 10 + 10).toFixed(2),
         change: (Math.random() * 10 - 5).toFixed(2),
         change_pct: (Math.random() * 10 - 5).toFixed(2),
-        industry: '银行',
-        concepts: ['人工智能', '5G概念'],
+        industry: 'BANKING',
+        concepts: ['AI', '5G CONCEPT'],
         list_date: '2000-01-01',
         market: symbol.startsWith('6') ? 'SH' : 'SZ',
-        area: '上海'
+        area: 'SHANGHAI'
       }
 
       technicalIndicators.value = {
@@ -757,14 +401,11 @@ const loadStockDetail = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.error('加载股票信息失败:', error)
-    ElMessage.error('加载股票信息失败')
+    console.error('Failed to load stock information:', error)
+    ElMessage.error('FAILED TO LOAD STOCK INFORMATION')
   }
 }
 
-/**
- * 加载交易摘要
- */
 const loadTradingSummary = async (): Promise<void> => {
   summaryLoading.value = true
   try {
@@ -776,10 +417,10 @@ const loadTradingSummary = async (): Promise<void> => {
       if (response.success && response.data) {
         tradingSummary.value = response.data
       } else {
-        throw new Error('API返回数据格式错误')
+        throw new Error('INVALID API RESPONSE')
       }
     } catch (apiError) {
-      console.warn('交易摘要API获取失败，使用模拟数据:', apiError)
+      console.warn('Trading summary API failed, using mock data:', apiError)
       tradingSummary.value = {
         price_change: parseFloat((Math.random() * 20 - 10).toFixed(2)),
         price_change_pct: parseFloat((Math.random() * 10 - 5).toFixed(2)),
@@ -794,24 +435,18 @@ const loadTradingSummary = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.error('加载交易摘要失败:', error)
-    ElMessage.error('加载交易摘要失败')
+    console.error('Failed to load trading summary:', error)
+    ElMessage.error('FAILED TO LOAD TRADING SUMMARY')
   } finally {
     summaryLoading.value = false
   }
 }
 
-/**
- * 图表类型切换处理
- */
 const handleChartTypeChange = (value: ChartType): void => {
   chartType.value = value
   initChart()
 }
 
-/**
- * 时间范围切换处理
- */
 const handleTimeRangeChange = (value: TimeRange): void => {
   timeRange.value = value
   if (chartType.value === 'kline') {
@@ -821,24 +456,6 @@ const handleTimeRangeChange = (value: TimeRange): void => {
   }
 }
 
-/**
- * 加载股票基本信息
- */
-const loadStockInfo = async (): Promise<void> => {
-  await loadStockDetail()
-  await loadTradingSummary()
-}
-
-/**
- * 初始化图表
- */
-const initKlineChart = async (): Promise<void> => {
-  await initChart()
-}
-
-/**
- * 格式化成交量
- */
 const formatVolume = (volume: number | undefined): string => {
   if (!volume) return '--'
   if (volume >= 100000000) {
@@ -849,9 +466,6 @@ const formatVolume = (volume: number | undefined): string => {
   return volume.toString()
 }
 
-/**
- * 格式化成交额
- */
 const formatAmount = (amount: number | undefined): string => {
   if (!amount) return '--'
   if (amount >= 100000000) {
@@ -862,42 +476,33 @@ const formatAmount = (amount: number | undefined): string => {
   return amount.toString()
 }
 
-/**
- * 执行交易
- */
 const handleTrade = (): void => {
   if (!tradeForm.value.quantity) {
-    ElMessage.error('请输入交易数量')
+    ElMessage.error('PLEASE ENTER QUANTITY')
     return
   }
 
-  const action = tradeForm.value.type === 'buy' ? '买入' : '卖出'
-  ElMessage.success(`${action}请求已提交：${tradeForm.value.quantity}股`)
+  const action = tradeForm.value.type === 'buy' ? 'BUY' : 'SELL'
+  ElMessage.success(`${action} ORDER SUBMITTED: ${tradeForm.value.quantity} SHARES`)
 
   tradeForm.value.price = ''
   tradeForm.value.quantity = ''
 }
 
-/**
- * K线数据加载完成处理
- */
 const handleKLineDataLoaded = (data: any[]): void => {
-  console.log('K线数据加载完成:', data.length, '条数据')
-  // 可以在这里更新技术指标面板
+  console.log('K-line data loaded:', data.length, 'records')
 }
 
-/**
- * 图表错误处理
- */
 const handleChartError = (error: Error): void => {
-  console.error('K线图表错误:', error)
-  ElMessage.error('K线图表加载失败，请稍后重试')
+  console.error('K-line chart error:', error)
+  ElMessage.error('K-LINE CHART FAILED TO LOAD, PLEASE RETRY')
 }
 
 onMounted(async () => {
-  await loadStockInfo()
+  await loadStockDetail()
+  await loadTradingSummary()
   await nextTick()
-  await initKlineChart()
+  await initChart()
 
   window.addEventListener('resize', () => {
     chart?.resize()
@@ -906,40 +511,91 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.stock-detail {
-  .stock-header {
-    margin-bottom: 20px;
+@import '@/styles/web3-tokens.scss';
+@import '@/styles/web3-global.scss';
 
-    .stock-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+.web3-stock-detail {
+  @include web3-grid-bg;
+  min-height: 100vh;
+  padding: var(--web3-spacing-6);
 
-      h2 {
-        margin: 0;
-      }
+  .stock-header-card {
+    margin-bottom: var(--web3-spacing-6);
 
-      .stock-price {
-        text-align: right;
+    .stock-header-content {
+      padding: var(--web3-spacing-6);
 
-        .price {
-          display: block;
-          font-size: 24px;
-          font-weight: bold;
-          color: #303133;
-        }
+      .stock-info-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--web3-spacing-6);
 
-        .change {
-          display: block;
-          font-size: 16px;
-          font-weight: bold;
+        .stock-title-section {
+          flex: 1;
 
-          &.up {
-            color: #67c23a;
+          .stock-symbol {
+            font-family: var(--web3-font-heading);
+            font-size: var(--web3-text-5xl);
+            font-weight: var(--web3-weight-bold);
+            margin: 0 0 var(--web3-spacing-2) 0;
+            line-height: var(--web3-leading-tight);
+
+            &.gradient-text {
+              background: var(--web3-gradient-orange);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            }
           }
 
-          &.down {
-            color: #f56c6c;
+          .stock-name-display {
+            font-family: var(--web3-font-heading);
+            font-size: var(--web3-text-2xl);
+            font-weight: var(--web3-weight-semibold);
+            color: var(--web3-fg-primary);
+            margin: 0 0 var(--web3-spacing-3) 0;
+          }
+
+          .stock-tags {
+            display: flex;
+            gap: var(--web3-spacing-2);
+            flex-wrap: wrap;
+
+            .web3-tag {
+              font-family: var(--web3-font-body);
+              text-transform: uppercase;
+              letter-spacing: var(--web3-tracking-wide);
+            }
+          }
+        }
+
+        .stock-price-section {
+          text-align: right;
+
+          .price-display {
+            .price-value {
+              display: block;
+              font-family: var(--web3-font-mono);
+              font-size: var(--web3-text-4xl);
+              font-weight: var(--web3-weight-bold);
+              line-height: var(--web3-leading-tight);
+              margin-bottom: var(--web3-spacing-2);
+
+              &.gradient-text {
+                background: var(--web3-gradient-orange);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              }
+            }
+
+            .price-change {
+              display: block;
+              font-family: var(--web3-font-mono);
+              font-size: var(--web3-text-lg);
+              font-weight: var(--web3-weight-semibold);
+            }
           }
         }
       }
@@ -947,44 +603,185 @@ onMounted(async () => {
   }
 
   .content-row {
-    margin-bottom: 20px;
+    margin-bottom: var(--web3-spacing-6);
   }
 
-  .chart-card, .info-card, .analysis-card, .trading-card {
-    .flex-between {
+  .chart-card {
+    margin-bottom: var(--web3-spacing-4);
+
+    .chart-controls {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: var(--web3-spacing-4);
+    }
+
+    .kline-chart-wrapper,
+    .intraday-chart {
+      position: relative;
+      border: 1px solid var(--web3-border-subtle);
+      border-radius: var(--web3-radius-lg);
+      padding: var(--web3-spacing-2);
+      transition: all var(--web3-duration-base);
+
+      &:hover {
+        border-color: var(--web3-border-hover);
+        box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
+      }
+    }
+
+    .intraday-chart {
+      height: 400px;
     }
   }
 
-  .analysis-content {
-    .indicator-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
+  .info-card,
+  .analysis-card,
+  .summary-card {
+    margin-bottom: var(--web3-spacing-4);
 
-      &:last-child {
-        border-bottom: none;
+    .web3-descriptions {
+      :deep(.el-descriptions__label) {
+        font-family: var(--web3-font-body);
+        text-transform: uppercase;
+        letter-spacing: var(--web3-tracking-wide);
+        color: var(--web3-fg-muted);
       }
 
-      .indicator-name {
-        font-weight: bold;
+      :deep(.el-descriptions__content) {
+        font-family: var(--web3-font-body);
+        color: var(--web3-fg-primary);
       }
+    }
 
-      .indicator-value {
-        color: #606266;
+    .analysis-content {
+      .indicator-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--web3-spacing-3) 0;
+        border-bottom: 1px solid var(--web3-border-subtle);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .indicator-label {
+          font-family: var(--web3-font-heading);
+          font-size: var(--web3-text-sm);
+          font-weight: var(--web3-weight-semibold);
+          text-transform: uppercase;
+          letter-spacing: var(--web3-tracking-wide);
+          color: var(--web3-fg-muted);
+        }
+
+        .indicator-value {
+          font-family: var(--web3-font-mono);
+          font-size: var(--web3-text-base);
+
+          &.gradient-text {
+            background: var(--web3-gradient-orange);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+        }
+      }
+    }
+
+    .summary-content {
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--web3-spacing-4);
+        margin-bottom: var(--web3-spacing-4);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .summary-item {
+          flex: 1;
+          text-align: center;
+          padding: var(--web3-spacing-3);
+          border: 1px solid var(--web3-border-subtle);
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: var(--web3-radius-md);
+
+          .label {
+            display: block;
+            font-family: var(--web3-font-body);
+            font-size: var(--web3-text-xs);
+            text-transform: uppercase;
+            letter-spacing: var(--web3-tracking-wide);
+            color: var(--web3-fg-muted);
+            margin-bottom: var(--web3-spacing-2);
+          }
+
+          .value {
+            display: block;
+            font-family: var(--web3-font-mono);
+            font-size: var(--web3-text-base);
+            font-weight: var(--web3-weight-semibold);
+            color: var(--web3-fg-primary);
+          }
+        }
       }
     }
   }
 
-  .trading-content {
-    .el-form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+  .trading-row {
+    margin-bottom: var(--web3-spacing-6);
+  }
+
+  .trading-card {
+    .web3-section-title {
+      font-family: var(--web3-font-heading);
+      font-size: var(--web3-text-base);
+      font-weight: var(--web3-weight-semibold);
+      color: var(--web3-fg-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
     }
+
+    .trading-content {
+      el-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--web3-spacing-4);
+      }
+    }
+  }
+
+  .web3-section-title {
+    font-family: var(--web3-font-heading);
+    font-size: var(--web3-text-base);
+    font-weight: var(--web3-weight-semibold);
+    color: var(--web3-fg-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--web3-tracking-wide);
+  }
+
+  .text-up {
+    color: #F7931A !important;
+    font-weight: var(--web3-weight-semibold);
+  }
+
+  .text-down {
+    color: #00E676 !important;
+    font-weight: var(--web3-weight-semibold);
+  }
+
+  .gradient-text {
+    background: var(--web3-gradient-orange);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 </style>

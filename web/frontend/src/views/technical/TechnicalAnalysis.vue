@@ -1,28 +1,31 @@
 <template>
-  <div class="technical-analysis">
-    <div class="page-header">
-      <h1>📈 技术分析系统</h1>
-      <p class="subtitle">基于26个技术指标的股票分析和交易信号生成</p>
+  <div class="web3-technical-analysis">
+    <!-- Page header with gradient text -->
+    <div class="web3-page-header">
+      <h1 class="web3-page-title">
+        <span class="gradient-text">TECHNICAL ANALYSIS SYSTEM</span>
+      </h1>
+      <p class="web3-page-subtitle">26 TECHNICAL INDICATORS & TRADING SIGNAL GENERATION</p>
     </div>
 
-    <!-- 搜索和筛选 -->
-    <el-card class="search-card" shadow="hover">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="股票代码">
-          <el-input
+    <!-- Search and Filter -->
+    <Web3Card class="search-card" hoverable>
+      <el-form :inline="true" :model="searchForm" class="web3-search-form">
+        <el-form-item label="SYMBOL">
+          <Web3Input
             v-model="searchForm.symbol"
-            placeholder="请输入股票代码"
+            placeholder="ENTER STOCK SYMBOL"
             clearable
-            style="width: 150px"
+            style="width: 180px"
           />
         </el-form-item>
 
-        <el-form-item label="技术指标">
+        <el-form-item label="INDICATORS">
           <el-select
             v-model="searchForm.indicators"
             multiple
-            placeholder="请选择技术指标"
-            style="width: 300px"
+            placeholder="SELECT INDICATORS"
+            style="width: 320px"
           >
             <el-option
               v-for="indicator in availableIndicators"
@@ -33,130 +36,132 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="时间范围">
+        <el-form-item label="DATE RANGE">
           <el-date-picker
             v-model="searchForm.dateRange"
             type="daterange"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            start-placeholder="START DATE"
+            end-placeholder="END DATE"
             value-format="YYYY-MM-DD"
           />
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="fetchTechnicalData" :loading="loading.search">
-            <el-icon><Search /></el-icon>
-            搜索
-          </el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <Web3Button variant="primary" @click="fetchTechnicalData" :loading="loading.search">
+            SEARCH
+          </Web3Button>
+          <Web3Button variant="outline" @click="resetSearch">
+            RESET
+          </Web3Button>
         </el-form-item>
       </el-form>
-    </el-card>
+    </Web3Card>
 
-    <!-- 指标概览 -->
+    <!-- Indicators Overview -->
     <el-row :gutter="20" class="indicators-overview">
       <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="indicator-card" shadow="hover">
+        <Web3Card class="indicator-card" hoverable>
           <div class="indicator-content">
             <div class="indicator-header">
-              <el-icon class="indicator-icon"><TrendCharts /></el-icon>
-              <h3>趋势指标</h3>
+              <div class="icon-wrapper">
+                <el-icon :size="32"><TrendCharts /></el-icon>
+              </div>
+              <h3>TREND</h3>
             </div>
-            <div class="indicator-value">
-              {{ indicatorStats.trend || 0 }} 个
+            <div class="indicator-value gradient-text">
+              {{ indicatorStats.trend || 0 }} INDICATORS
             </div>
             <div class="indicator-description">
-              MA, EMA, MACD, BOLL等
+              MA, EMA, MACD, BOLL
             </div>
           </div>
-        </el-card>
+        </Web3Card>
       </el-col>
 
       <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="indicator-card" shadow="hover">
+        <Web3Card class="indicator-card" hoverable>
           <div class="indicator-content">
             <div class="indicator-header">
-              <el-icon class="indicator-icon"><Speed /></el-icon>
-              <h3>动量指标</h3>
+              <div class="icon-wrapper">
+                <el-icon :size="32"><Odometer /></el-icon>
+              </div>
+              <h3>MOMENTUM</h3>
             </div>
-            <div class="indicator-value">
-              {{ indicatorStats.momentum || 0 }} 个
+            <div class="indicator-value gradient-text">
+              {{ indicatorStats.momentum || 0 }} INDICATORS
             </div>
             <div class="indicator-description">
-              RSI, KDJ, CCI, W%R等
+              RSI, KDJ, CCI, W%R
             </div>
           </div>
-        </el-card>
+        </Web3Card>
       </el-col>
 
       <el-col :xs="24" :sm="12" :md="8">
-        <el-card class="indicator-card" shadow="hover">
+        <Web3Card class="indicator-card" hoverable>
           <div class="indicator-content">
             <div class="indicator-header">
-              <el-icon class="indicator-icon"><DataAnalysis /></el-icon>
-              <h3>交易信号</h3>
+              <div class="icon-wrapper">
+                <el-icon :size="32"><DataAnalysis /></el-icon>
+              </div>
+              <h3>SIGNALS</h3>
             </div>
             <div class="indicator-value" :class="signalCountClass">
-              {{ indicatorStats.signals || 0 }} 个
+              {{ indicatorStats.signals || 0 }} SIGNALS
             </div>
             <div class="indicator-description">
-              买入/卖出信号
+              BUY / SELL SIGNALS
             </div>
           </div>
-        </el-card>
+        </Web3Card>
       </el-col>
     </el-row>
 
-    <!-- 技术指标图表 -->
-    <el-card class="chart-card" shadow="hover">
+    <!-- Technical Indicators Chart -->
+    <Web3Card class="chart-card" hoverable>
       <template #header>
-        <div class="card-header">
-          <span class="title">
-            <el-icon><Histogram /></el-icon>
-            {{ selectedStock ? selectedStock.symbol + ' ' + selectedStock.name : '技术指标图表' }}
+        <div class="flex-between">
+          <span class="web3-section-title">
+            I. {{ selectedStock ? selectedStock.symbol.toUpperCase() + ' ' + selectedStock.name.toUpperCase() : 'TECHNICAL INDICATORS CHART' }}
           </span>
           <div class="card-actions">
-            <el-button size="small" @click="exportChart">
-              <el-icon><Download /></el-icon>
-              导出图表
-            </el-button>
+            <Web3Button variant="outline" size="sm" @click="exportChart">
+              EXPORT CHART
+            </Web3Button>
           </div>
         </div>
       </template>
 
-      <div v-if="selectedStock" class="chart-container">
-        <div ref="chartContainer" style="width: 100%; height: 500px;"></div>
+      <div v-if="selectedStock" class="chart-wrapper">
+        <div ref="chartContainer" class="web3-chart-container"></div>
       </div>
-      <el-empty v-else description="请选择股票查看技术指标" />
-    </el-card>
+      <el-empty v-else description="PLEASE SELECT A STOCK TO VIEW TECHNICAL INDICATORS" />
+    </Web3Card>
 
-    <!-- 指标详情表格 -->
-    <el-card class="indicators-card" shadow="hover">
+    <!-- Indicators Details Table -->
+    <Web3Card class="indicators-card" hoverable>
       <template #header>
-        <div class="card-header">
-          <span class="title">
-            <el-icon><List /></el-icon>
-            技术指标详情
-          </span>
+        <div class="flex-between">
+          <span class="web3-section-title">II. INDICATORS DETAILS</span>
         </div>
       </template>
 
       <el-table
         :data="indicatorsData"
-        style="width: 100%"
+        class="web3-table"
         v-loading="loading.indicators"
         row-key="id"
       >
-        <el-table-column prop="name" label="指标名称" width="150">
+        <el-table-column prop="name" label="INDICATOR" width="180">
           <template #default="{ row }">
-            <strong>{{ row.name }}</strong>
-            <el-tag size="small" :type="getIndicatorTypeTag(row.type)" style="margin-left: 8px;">
+            <strong class="gradient-text">{{ row.name }}</strong>
+            <el-tag size="small" :type="getIndicatorTypeTag(row.type) as any" class="web3-tag">
               {{ formatIndicatorType(row.type) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="value" label="当前值" width="120">
+        <el-table-column prop="value" label="CURRENT VALUE" width="140" align="right">
           <template #default="{ row }">
             <span :class="getValueClass(row)">
               {{ formatIndicatorValue(row) }}
@@ -164,55 +169,51 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="signal" label="交易信号" width="120">
+        <el-table-column prop="signal" label="SIGNAL" width="120" align="center">
           <template #default="{ row }">
-            <el-tag v-if="row.signal" :type="getSignalTagType(row.signal)" size="small">
+            <el-tag v-if="row.signal" :type="getSignalTagType(row.signal) as any" size="small" class="web3-tag">
               {{ formatSignal(row.signal) }}
             </el-tag>
             <span v-else>-</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="STATUS" width="120" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusTagType(row.status)" size="small">
+            <el-tag :type="getStatusTagType(row.status) as any" size="small" class="web3-tag">
               {{ formatStatus(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="description" label="说明" min-width="200" />
-
-        <el-table-column prop="last_updated" label="更新时间" width="160" />
+        <el-table-column prop="description" label="DESCRIPTION" min-width="220" />
+        <el-table-column prop="last_updated" label="UPDATED" width="160" />
       </el-table>
-    </el-card>
+    </Web3Card>
 
-    <!-- 批量计算 -->
-    <el-card class="batch-card" shadow="hover">
+    <!-- Batch Calculation -->
+    <Web3Card class="batch-card" hoverable>
       <template #header>
-        <div class="card-header">
-          <span class="title">
-            <el-icon><Operation /></el-icon>
-            批量计算
-          </span>
+        <div class="flex-between">
+          <span class="web3-section-title">III. BATCH CALCULATION</span>
         </div>
       </template>
 
-      <el-form :inline="true" :model="batchForm" class="batch-form">
-        <el-form-item label="股票代码列表">
-          <el-input
+      <el-form :inline="true" :model="batchForm" class="web3-batch-form">
+        <el-form-item label="SYMBOLS">
+          <Web3Input
             v-model="batchForm.symbols"
-            placeholder="请输入股票代码，用逗号分隔"
-            style="width: 400px"
+            placeholder="ENTER STOCK SYMBOLS, COMMA-SEPARATED"
+            style="width: 440px"
           />
         </el-form-item>
 
-        <el-form-item label="计算指标">
+        <el-form-item label="INDICATORS">
           <el-select
             v-model="batchForm.indicators"
             multiple
-            placeholder="请选择要计算的指标"
-            style="width: 300px"
+            placeholder="SELECT INDICATORS TO CALCULATE"
+            style="width: 320px"
           >
             <el-option
               v-for="indicator in availableIndicators"
@@ -224,15 +225,14 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button
-            type="success"
+          <Web3Button
+            variant="primary"
             @click="calculateBatchIndicators"
             :loading="loading.batch"
             :disabled="!batchForm.symbols"
           >
-            <el-icon><Cpu /></el-icon>
-            开始计算
-          </el-button>
+            START CALCULATION
+          </Web3Button>
         </el-form-item>
       </el-form>
 
@@ -245,35 +245,71 @@
           <template #default>
             <p>{{ batchResult.message }}</p>
             <div v-if="batchResult.data">
-              <p>计算股票数: {{ batchResult.data.stocks_count }}</p>
-              <p>成功计算: {{ batchResult.data.success_count }}</p>
-              <p>生成信号: {{ batchResult.data.signals_count }}</p>
+              <p>STOCKS CALCULATED: {{ batchResult.data.stocks_count }}</p>
+              <p>SUCCESSFUL CALCULATIONS: {{ batchResult.data.success_count }}</p>
+              <p>SIGNALS GENERATED: {{ batchResult.data.signals_count }}</p>
             </div>
           </template>
         </el-alert>
       </div>
-    </el-card>
+    </Web3Card>
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, onMounted, nextTick, computed, type Ref } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
 import {
-  Search, TrendCharts, Speed, DataAnalysis,
-  Histogram, Download, List, Operation, Cpu
+  TrendCharts, DataAnalysis,
+  Odometer
 } from '@element-plus/icons-vue'
 import { technicalApi } from '@/api'
 import * as echarts from 'echarts'
+import type { ECharts, EChartsOption } from '@/types/echarts'
+import { Web3Card, Web3Button, Web3Input } from '@/components/web3'
 
-// 响应式数据
-const searchForm = reactive({
+// Type definitions
+interface SearchForm {
+  symbol: string
+  indicators: string[]
+  dateRange: string[]
+}
+
+interface BatchForm {
+  symbols: string
+  indicators: string[]
+}
+
+interface IndicatorStat {
+  trend: number
+  momentum: number
+  signals: number
+}
+
+interface IndicatorItem {
+  id: string
+  name: string
+  type: 'trend' | 'momentum' | 'volatility' | 'volume'
+  value: number
+  signal?: 'buy' | 'sell' | 'hold'
+  status: 'normal' | 'warning' | 'alert'
+  description: string
+  last_updated: string
+}
+
+interface SelectedStock {
+  symbol: string
+  name: string
+}
+
+// Reactive state
+const searchForm = reactive<SearchForm>({
   symbol: '',
   indicators: [],
   dateRange: []
 })
 
-const batchForm = reactive({
+const batchForm = reactive<BatchForm>({
   symbols: '',
   indicators: []
 })
@@ -284,81 +320,63 @@ const loading = reactive({
   batch: false
 })
 
-const selectedStock = ref(null)
-const indicatorsData = ref([])
-const chartContainer = ref(null)
-const chartInstance = ref(null)
-const batchResult = ref(null)
+const selectedStock: Ref<SelectedStock | null> = ref(null)
+const indicatorsData: Ref<IndicatorItem[]> = ref([])
+const chartContainer: Ref<HTMLDivElement | null> = ref(null)
+const chartInstance: Ref<ECharts | null> = ref(null)
+const batchResult: Ref<any> = ref(null)
 
-// 可用的技术指标
 const availableIndicators = [
-  { value: 'ma', label: 'MA (移动平均线)' },
-  { value: 'ema', label: 'EMA (指数移动平均线)' },
+  { value: 'ma', label: 'MA (MOVING AVERAGE)' },
+  { value: 'ema', label: 'EMA (EXPONENTIAL MA)' },
   { value: 'macd', label: 'MACD' },
-  { value: 'boll', label: 'BOLL (布林带)' },
-  { value: 'rsi', label: 'RSI (相对强弱指数)' },
-  { value: 'kdj', label: 'KDJ (随机指标)' },
-  { value: 'cci', label: 'CCI (顺势指标)' },
-  { value: 'wr', label: 'W%R (威廉指标)' },
-  { value: 'obv', label: 'OBV (能量潮)' },
-  { value: 'atr', label: 'ATR (平均真实波幅)' }
+  { value: 'boll', label: 'BOLL (BOLLINGER BANDS)' },
+  { value: 'rsi', label: 'RSI (RELATIVE STRENGTH)' },
+  { value: 'kdj', label: 'KDJ (STOCHASTIC)' },
+  { value: 'cci', label: 'CCI (COMMODITY CHANNEL)' },
+  { value: 'wr', label: 'W%R (WILLIAMS %R)' },
+  { value: 'obv', label: 'OBV (ON-BALANCE VOLUME)' },
+  { value: 'atr', label: 'ATR (AVERAGE TRUE RANGE)' }
 ]
 
-// 指标统计
-const indicatorStats = ref({
+const indicatorStats: Ref<IndicatorStat> = ref({
   trend: 0,
   momentum: 0,
   signals: 0
 })
 
-// 获取指标类型标签
-const getIndicatorTypeTag = (type) => {
+// Utility functions
+const getIndicatorTypeTag = (type: string): string => {
   switch (type) {
-    case 'trend':
-      return 'primary'
-    case 'momentum':
-      return 'success'
-    case 'volatility':
-      return 'warning'
-    case 'volume':
-      return 'info'
-    default:
-      return 'info'
+    case 'trend': return 'primary'
+    case 'momentum': return 'success'
+    case 'volatility': return 'warning'
+    case 'volume': return 'info'
+    default: return 'info'
   }
 }
 
-// 格式化指标类型
-const formatIndicatorType = (type) => {
-  const typeMap = {
-    'trend': '趋势',
-    'momentum': '动量',
-    'volatility': '波动',
-    'volume': '成交量'
+const formatIndicatorType = (type: string): string => {
+  const typeMap: Record<string, string> = {
+    'trend': 'TREND',
+    'momentum': 'MOMENTUM',
+    'volatility': 'VOLATILITY',
+    'volume': 'VOLUME'
   }
   return typeMap[type] || type
 }
 
-// 获取值的CSS类
-const getValueClass = (row) => {
+const getValueClass = (row: IndicatorItem): string => {
   if (row.name === 'RSI') {
-    if (row.value > 70) return 'text-overbought'
-    if (row.value < 30) return 'text-oversold'
-  } else if (row.name === 'MACD') {
-    if (row.value > 0) return 'text-bullish'
-    if (row.value < 0) return 'text-bearish'
+    if (row.value > 70) return 'text-up'
+    if (row.value < 30) return 'text-down'
   }
   return ''
 }
 
-// 格式化指标值
-const formatIndicatorValue = (row) => {
+const formatIndicatorValue = (row: IndicatorItem): string | number => {
   if (typeof row.value === 'number') {
-    // 对于百分比类指标保留2位小数
-    if (row.name === 'RSI' || row.name === 'KDJ' || row.name.includes('%')) {
-      return row.value.toFixed(2)
-    }
-    // 对于价格类指标保留2位小数
-    if (row.name.includes('MA') || row.name.includes('EMA') || row.name.includes('BOLL')) {
+    if (row.name === 'RSI' || row.name === 'KDJ') {
       return row.value.toFixed(2)
     }
     return row.value
@@ -366,66 +384,53 @@ const formatIndicatorValue = (row) => {
   return row.value
 }
 
-// 获取信号标签类型
-const getSignalTagType = (signal) => {
+const getSignalTagType = (signal: string): string => {
   switch (signal) {
-    case 'buy':
-      return 'success'
-    case 'sell':
-      return 'danger'
-    case 'hold':
-      return 'info'
-    default:
-      return 'info'
+    case 'buy': return 'success'
+    case 'sell': return 'danger'
+    case 'hold': return 'info'
+    default: return 'info'
   }
 }
 
-// 格式化信号
-const formatSignal = (signal) => {
-  const signalMap = {
-    'buy': '买入',
-    'sell': '卖出',
-    'hold': '持有'
+const formatSignal = (signal: string): string => {
+  const signalMap: Record<string, string> = {
+    'buy': 'BUY',
+    'sell': 'SELL',
+    'hold': 'HOLD'
   }
   return signalMap[signal] || signal
 }
 
-// 获取状态标签类型
-const getStatusTagType = (status) => {
+const getStatusTagType = (status: string): string => {
   switch (status) {
-    case 'normal':
-      return 'success'
-    case 'warning':
-      return 'warning'
-    case 'alert':
-      return 'danger'
-    default:
-      return 'info'
+    case 'normal': return 'success'
+    case 'warning': return 'warning'
+    case 'alert': return 'danger'
+    default: return 'info'
   }
 }
 
-// 格式化状态
-const formatStatus = (status) => {
-  const statusMap = {
-    'normal': '正常',
-    'warning': '警告',
-    'alert': '警报'
+const formatStatus = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'normal': 'NORMAL',
+    'warning': 'WARNING',
+    'alert': 'ALERT'
   }
   return statusMap[status] || status
 }
 
-// 获取信号数量的CSS类
 const signalCountClass = computed(() => {
   const count = indicatorStats.value.signals || 0
-  if (count > 5) return 'text-high-signal'
-  if (count > 0) return 'text-medium-signal'
+  if (count > 5) return 'text-up'
+  if (count > 0) return 'gradient-text'
   return ''
 })
 
-// 获取技术指标数据
-const fetchTechnicalData = async () => {
+// Data fetching
+const fetchTechnicalData = async (): Promise<void> => {
   if (!searchForm.symbol) {
-    ElMessage.warning('请输入股票代码')
+    ElMessage.warning('PLEASE ENTER STOCK SYMBOL')
     return
   }
 
@@ -433,36 +438,31 @@ const fetchTechnicalData = async () => {
   loading.indicators = true
 
   try {
-    // 获取指标数据
     const response = await technicalApi.getIndicators(searchForm.symbol)
-    indicatorsData.value = response.indicators || response
+    indicatorsData.value = (response as any).indicators || response
 
-    // 更新统计信息
     updateIndicatorStats()
 
-    // 设置选中股票
     selectedStock.value = {
       symbol: searchForm.symbol,
-      name: response.stock_name || '未知股票'
+      name: (response as any).stock_name || 'UNKNOWN STOCK'
     }
 
-    // 渲染图表
     await nextTick()
     renderChart()
 
-    ElMessage.success('技术指标数据获取成功')
+    ElMessage.success('TECHNICAL INDICATOR DATA RETRIEVED SUCCESSFULLY')
   } catch (error) {
-    console.error('获取技术指标数据失败:', error)
-    ElMessage.error('获取技术指标数据失败')
+    console.error('Failed to fetch technical indicator data:', error)
+    ElMessage.error('FAILED TO FETCH TECHNICAL INDICATOR DATA')
   } finally {
     loading.search = false
     loading.indicators = false
   }
 }
 
-// 更新指标统计
-const updateIndicatorStats = () => {
-  const stats = {
+const updateIndicatorStats = (): void => {
+  const stats: IndicatorStat = {
     trend: 0,
     momentum: 0,
     signals: 0
@@ -477,26 +477,21 @@ const updateIndicatorStats = () => {
   indicatorStats.value = stats
 }
 
-// 渲染图表
-const renderChart = () => {
+const renderChart = (): void => {
   if (!chartContainer.value || !selectedStock.value) return
 
-  // 销毁之前的图表实例
   if (chartInstance.value) {
     chartInstance.value.dispose()
   }
 
-  // 初始化图表
   chartInstance.value = echarts.init(chartContainer.value)
 
-  // 示例数据（实际应该从API获取）
-  const dates = []
-  const prices = []
-  const ma5 = []
-  const ma10 = []
-  const rsi = []
+  const dates: string[] = []
+  const prices: string[] = []
+  const ma5: string[] = []
+  const ma10: string[] = []
+  const rsi: number[] = []
 
-  // 生成示例数据
   for (let i = 30; i >= 0; i--) {
     const date = new Date()
     date.setDate(date.getDate() - i)
@@ -504,24 +499,33 @@ const renderChart = () => {
 
     const price = 100 + Math.random() * 20 - 10
     prices.push(price.toFixed(2))
-
     ma5.push((price + Math.random() * 5).toFixed(2))
     ma10.push((price + Math.random() * 8).toFixed(2))
     rsi.push(Math.floor(Math.random() * 100))
   }
 
-  // 配置图表选项
-  const option = {
+  const option: EChartsOption = {
+    backgroundColor: 'transparent',
     title: {
-      text: `${selectedStock.value.symbol} ${selectedStock.value.name} 技术指标`,
-      left: 'center'
+      text: `${selectedStock.value.symbol} ${selectedStock.value.name} TECHNICAL INDICATORS`,
+      left: 'center',
+      textStyle: {
+        color: '#F7931A',
+        fontFamily: 'Space Grotesk, sans-serif',
+        fontSize: 18,
+        fontWeight: '600' as any
+      }
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
+      backgroundColor: 'rgba(3, 3, 4, 0.95)',
+      borderColor: '#F7931A',
+      textStyle: { color: '#E5E7EB' }
     },
     legend: {
-      data: ['价格', 'MA5', 'MA10', 'RSI'],
-      top: 30
+      data: ['PRICE', 'MA5', 'MA10', 'RSI'],
+      top: 30,
+      textStyle: { color: '#E5E7EB' }
     },
     grid: {
       left: '3%',
@@ -529,68 +533,90 @@ const renderChart = () => {
       bottom: '3%',
       containLabel: true
     },
-    xAxis: [
-      {
-        type: 'category',
-        boundaryGap: false,
-        data: dates
-      }
-    ],
+    xAxis: [{
+      type: 'category',
+      boundaryGap: false,
+      data: dates,
+      axisLine: { lineStyle: { color: '#374151' } },
+      axisLabel: { color: '#9CA3AF' }
+    }],
     yAxis: [
       {
         type: 'value',
-        name: '价格',
-        position: 'left'
+        name: 'PRICE',
+        position: 'left',
+        axisLine: { lineStyle: { color: '#374151' } },
+        axisLabel: { color: '#9CA3AF' },
+        splitLine: { lineStyle: { color: 'rgba(55, 65, 81, 0.3)' } }
       },
       {
         type: 'value',
         name: 'RSI',
         position: 'right',
         min: 0,
-        max: 100
+        max: 100,
+        axisLine: { lineStyle: { color: '#374151' } },
+        axisLabel: { color: '#9CA3AF' },
+        splitLine: { show: false }
       }
     ],
     series: [
       {
-        name: '价格',
+        name: 'PRICE',
         type: 'line',
-        stack: '总量',
         data: prices,
-        smooth: true
+        smooth: true,
+        lineStyle: { color: '#F7931A' },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+              offset: 0,
+              color: 'rgba(247, 147, 26, 0.3)'
+            }, {
+              offset: 1,
+              color: 'rgba(247, 147, 26, 0.1)'
+            }]
+          }
+        }
       },
       {
         name: 'MA5',
         type: 'line',
         data: ma5,
-        smooth: true
+        smooth: true,
+        lineStyle: { color: '#FFD700' }
       },
       {
         name: 'MA10',
         type: 'line',
         data: ma10,
-        smooth: true
+        smooth: true,
+        lineStyle: { color: '#E5E7EB' }
       },
       {
         name: 'RSI',
         type: 'line',
         yAxisIndex: 1,
         data: rsi,
-        smooth: true
+        smooth: true,
+        lineStyle: { color: '#FFFFFF', type: 'dashed' }
       }
     ]
   }
 
-  // 设置图表选项
   chartInstance.value.setOption(option)
 
-  // 监听窗口大小变化
   window.addEventListener('resize', () => {
     chartInstance.value?.resize()
   })
 }
 
-// 重置搜索
-const resetSearch = () => {
+const resetSearch = (): void => {
   searchForm.symbol = ''
   searchForm.indicators = []
   searchForm.dateRange = []
@@ -598,17 +624,15 @@ const resetSearch = () => {
   indicatorsData.value = []
   indicatorStats.value = { trend: 0, momentum: 0, signals: 0 }
 
-  // 清空图表
   if (chartInstance.value) {
     chartInstance.value.dispose()
     chartInstance.value = null
   }
 }
 
-// 导出图表
-const exportChart = () => {
+const exportChart = (): void => {
   if (!chartInstance.value) {
-    ElMessage.warning('没有可导出的图表')
+    ElMessage.warning('NO CHART TO EXPORT')
     return
   }
 
@@ -616,26 +640,24 @@ const exportChart = () => {
     const dataUrl = chartInstance.value.getDataURL({
       type: 'png',
       pixelRatio: 2,
-      backgroundColor: '#fff'
+      backgroundColor: '#030304'
     })
 
-    // 创建下载链接
     const link = document.createElement('a')
     link.download = `${selectedStock.value?.symbol || 'chart'}_technical_analysis.png`
     link.href = dataUrl
     link.click()
 
-    ElMessage.success('图表导出成功')
+    ElMessage.success('CHART EXPORTED SUCCESSFULLY')
   } catch (error) {
-    console.error('导出图表失败:', error)
-    ElMessage.error('导出图表失败')
+    console.error('Failed to export chart:', error)
+    ElMessage.error('FAILED TO EXPORT CHART')
   }
 }
 
-// 批量计算指标
-const calculateBatchIndicators = async () => {
+const calculateBatchIndicators = async (): Promise<void> => {
   if (!batchForm.symbols) {
-    ElMessage.warning('请输入股票代码')
+    ElMessage.warning('PLEASE ENTER STOCK SYMBOLS')
     return
   }
 
@@ -651,184 +673,254 @@ const calculateBatchIndicators = async () => {
 
     batchResult.value = response
 
-    if (response.success) {
+    if ((response as any).success) {
       ElNotification({
-        title: '批量计算完成',
-        message: `成功计算 ${symbols.length} 只股票的技术指标`,
+        title: 'BATCH CALCULATION COMPLETED',
+        message: `SUCCESSFULLY CALCULATED ${symbols.length} STOCKS`,
         type: 'success'
       })
     } else {
-      ElMessage.error('批量计算失败')
+      ElMessage.error('BATCH CALCULATION FAILED')
     }
-  } catch (error) {
-    console.error('批量计算失败:', error)
-    ElMessage.error('批量计算失败')
+  } catch (error: any) {
+    console.error('Batch calculation failed:', error)
+    ElMessage.error('BATCH CALCULATION FAILED')
     batchResult.value = {
       success: false,
-      message: '批量计算失败: ' + (error.response?.data?.message || error.message)
+      message: 'BATCH CALCULATION FAILED: ' + (error.response?.data?.message || error.message)
     }
   } finally {
     loading.batch = false
   }
 }
 
-// 页面加载时的初始化
 onMounted(() => {
-  // 可以在这里初始化一些默认数据
   console.log('Technical Analysis page mounted')
 })
 </script>
 
 <style scoped lang="scss">
-.technical-analysis {
-  padding: 20px;
+@import '@/styles/web3-tokens.scss';
+@import '@/styles/web3-global.scss';
 
-  .page-header {
-    margin-bottom: 20px;
+.web3-technical-analysis {
+  @include web3-grid-bg;
+  min-height: 100vh;
+  padding: var(--web3-spacing-6);
 
-    h1 {
-      font-size: 28px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
+  .web3-page-header {
+    text-align: center;
+    padding: var(--web3-spacing-10) 0;
+    margin-bottom: var(--web3-spacing-8);
+
+    .web3-page-title {
+      font-family: var(--web3-font-heading);
+      font-size: var(--web3-text-4xl);
+      font-weight: var(--web3-weight-bold);
+      margin: 0 0 var(--web3-spacing-3) 0;
+      line-height: var(--web3-leading-tight);
+
+      .gradient-text {
+        background: var(--web3-gradient-orange);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
     }
 
-    .subtitle {
-      font-size: 14px;
-      color: #909399;
+    .web3-page-subtitle {
+      font-family: var(--web3-font-body);
+      font-size: var(--web3-text-sm);
+      color: var(--web3-fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
       margin: 0;
     }
   }
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--web3-spacing-6);
 
-    .search-form {
+    .web3-search-form {
       .el-form-item {
-        margin-right: 20px;
+        margin-right: var(--web3-spacing-4);
         margin-bottom: 0;
       }
     }
   }
 
   .indicators-overview {
-    margin-bottom: 20px;
+    margin-bottom: var(--web3-spacing-6);
 
     .indicator-card {
-      border-radius: 12px;
-      overflow: hidden;
-
       .indicator-content {
         text-align: center;
-        padding: 20px 0;
+        padding: var(--web3-spacing-6) 0;
 
         .indicator-header {
           display: flex;
           flex-direction: column;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: var(--web3-spacing-4);
 
-          .indicator-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-            color: #409eff;
+          .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--web3-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--web3-gradient-orange);
+            color: white;
+            margin-bottom: var(--web3-spacing-3);
           }
 
           h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #303133;
+            font-family: var(--web3-font-heading);
+            font-size: var(--web3-text-xl);
+            font-weight: var(--web3-weight-semibold);
+            color: var(--web3-fg-primary);
+            text-transform: uppercase;
+            letter-spacing: var(--web3-tracking-wide);
             margin: 0;
           }
         }
 
         .indicator-value {
-          font-size: 28px;
-          font-weight: 700;
-          color: #303133;
-          margin-bottom: 8px;
+          font-size: var(--web3-text-2xl);
+          font-weight: var(--web3-weight-bold);
+          margin-bottom: var(--web3-spacing-2);
+          font-family: var(--web3-font-mono);
 
-          &.text-high-signal {
-            color: #f56c6c;
-          }
-
-          &.text-medium-signal {
-            color: #e6a23c;
+          &.gradient-text {
+            background: var(--web3-gradient-orange);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
           }
         }
 
         .indicator-description {
-          font-size: 12px;
-          color: #909399;
+          font-size: var(--web3-text-xs);
+          color: var(--web3-fg-muted);
+          text-transform: uppercase;
+          letter-spacing: var(--web3-tracking-wide);
         }
       }
-    }
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #303133;
-
-      .el-icon {
-        font-size: 18px;
-      }
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
     }
   }
 
   .chart-card,
   .indicators-card,
   .batch-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--web3-spacing-6);
+
+    .web3-section-title {
+      font-family: var(--web3-font-heading);
+      font-size: var(--web3-text-base);
+      font-weight: var(--web3-weight-semibold);
+      color: var(--web3-fg-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--web3-tracking-wide);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: var(--web3-spacing-2);
+    }
   }
 
-  .chart-container {
-    width: 100%;
+  .chart-wrapper {
+    position: relative;
+    padding: var(--web3-spacing-4);
+    border: 1px solid var(--web3-border-subtle);
+    border-radius: var(--web3-radius-lg);
+  }
+
+  .web3-chart-container {
     height: 500px;
+    width: 100%;
   }
 
-  .batch-form {
+  .web3-table {
+    :deep(.el-table__header) {
+      th {
+        background: rgba(255, 255, 255, 0.02) !important;
+        color: var(--web3-fg-secondary) !important;
+        font-family: var(--web3-font-heading);
+        font-weight: var(--web3-weight-semibold);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--web3-border-subtle) !important;
+      }
+    }
+
+    :deep(.el-table__body) {
+      tr {
+        background: transparent !important;
+        transition: background var(--web3-duration-fast);
+
+        &:hover {
+          background: rgba(247, 147, 26, 0.05) !important;
+        }
+
+        td {
+          border-bottom: 1px solid var(--web3-border-subtle) !important;
+          color: var(--web3-fg-primary);
+        }
+      }
+    }
+  }
+
+  .web3-batch-form {
     .el-form-item {
-      margin-right: 20px;
+      margin-right: var(--web3-spacing-4);
       margin-bottom: 0;
     }
   }
 
   .batch-result {
-    margin-top: 20px;
+    margin-top: var(--web3-spacing-4);
+
+    .el-alert {
+      background: rgba(247, 147, 26, 0.05);
+      border: 1px solid var(--web3-border-subtle);
+      color: var(--web3-fg-primary);
+
+      p {
+        font-family: var(--web3-font-body);
+        text-transform: uppercase;
+        letter-spacing: var(--web3-tracking-wide);
+      }
+    }
   }
 
-  .text-overbought {
-    color: #f56c6c;
-    font-weight: bold;
+  .gradient-text {
+    background: var(--web3-gradient-orange);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .text-oversold {
-    color: #67c23a;
-    font-weight: bold;
+  .text-up {
+    color: #F7931A !important;
+    font-weight: var(--web3-weight-semibold);
   }
 
-  .text-bullish {
-    color: #67c23a;
-    font-weight: bold;
+  .web3-tag {
+    font-family: var(--web3-font-body);
+    text-transform: uppercase;
+    letter-spacing: var(--web3-tracking-wide);
   }
 
-  .text-bearish {
-    color: #f56c6c;
-    font-weight: bold;
+  .flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: var(--web3-spacing-2);
   }
 }
 </style>

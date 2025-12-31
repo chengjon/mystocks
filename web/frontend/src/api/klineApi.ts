@@ -22,6 +22,11 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Helper function to get data directly (reflected by interceptor)
+async function apiGet<T>(url: string): Promise<T> {
+  return apiClient.get<T>(url) as Promise<T>;
+}
+
 apiClient.interceptors.request.use(
   config => {
     const timestamp = new Date().toISOString();
@@ -54,7 +59,7 @@ export const klineApi = {
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
 
-    const response = await apiClient.get<KLineResponse>(`/market/kline?${params}`);
+    const response = await apiGet<KLineResponse>(`/market/kline?${params}`);
     klineCache.set(cacheKey, response);
     return response;
   },
@@ -63,31 +68,31 @@ export const klineApi = {
     symbol: string,
     interval: IntervalType,
     indicators: string[],
-    params?: Record<string, unknown>
+    params?: Record<string,unknown>
   ): Promise<IndicatorResponse> {
     const queryParams = new URLSearchParams({ symbol, interval, indicators: indicators.join(',') });
     if (params) queryParams.append('params', JSON.stringify(params));
-    return apiClient.get<IndicatorResponse>(`/indicators/overlay?${queryParams}`);
+    return apiGet<IndicatorResponse>(`/indicators/overlay?${queryParams}`);
   },
 
   async getOscillatorIndicators(
     symbol: string,
     interval: IntervalType,
     indicators: string[],
-    params?: Record<string, unknown>
+    params?: Record<string,unknown>
   ): Promise<IndicatorResponse> {
     const queryParams = new URLSearchParams({ symbol, interval, indicators: indicators.join(',') });
     if (params) queryParams.append('params', JSON.stringify(params));
-    return apiClient.get<IndicatorResponse>(`/indicators/oscillator?${queryParams}`);
+    return apiGet<IndicatorResponse>(`/indicators/oscillator?${queryParams}`);
   },
 
   async getStopLimit(symbol: string, date: string, prevClose: number): Promise<{ data: StopLimitData }> {
     const params = new URLSearchParams({ symbol, date, prev_close: prevClose.toString() });
-    return apiClient.get(`/astock/stop-limit?${params}`);
+    return apiGet<{ data: StopLimitData }>(`/astock/stop-limit?${params}`);
   },
 
   async getT1Sellable(buyDate: string): Promise<{ data: { sellable_date: string; t_status: string } }> {
-    return apiClient.get(`/astock/t1-sellable?buy_date=${buyDate}`);
+    return apiGet<{ data: { sellable_date: string; t_status: string } }>(`/astock/t1-sellable?buy_date=${buyDate}`);
   },
 
   clearCache(): void {

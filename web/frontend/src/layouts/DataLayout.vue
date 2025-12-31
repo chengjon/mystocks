@@ -372,6 +372,23 @@
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import {
+  Search,
+  Delete,
+  Download,
+  Refresh,
+  Odometer,
+  TrendCharts,
+  DataLine,
+  Money,
+  ShoppingCart,
+  Flag,
+  Grid,
+  Setting,
+  Bell,
+  PieChart,
+  Tickets
+} from '@element-plus/icons-vue'
 
 // ============================================
 // 类型定义

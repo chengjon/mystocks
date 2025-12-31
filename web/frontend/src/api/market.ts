@@ -9,7 +9,7 @@ import { DataAdapter } from '@/utils/adapters'
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KLineDataResponse
+  KlineResponse
 } from '@/api/types/generated-types'
 import type {
   MarketOverviewVM,
@@ -53,7 +53,7 @@ class MarketApiService {
     endDate?: string
     limit?: number
   }): Promise<KLineChartData> {
-    const rawData = await request.get<KLineDataResponse>(`${this.baseUrl}/kline`, {
+    const rawData = await request.get<KlineResponse>(`${this.baseUrl}/kline`, {
       params
     })
     return DataAdapter.toKLineChartData(rawData)

@@ -1,79 +1,336 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-27T19:53:18.200752
+// Generated at: 2025-12-31T08:14:10.525021
 
 // API Response Types
 export interface APIResponse {
-
   success?: boolean;
-  data?: any | null;
-  error?: ErrorDetail | null;
+  data?: Record<string, any> | null;
   timestamp?: string;
 }
 
-export interface ActiveAlert {
+export interface AccountInfo {
+  account_id?: string;
+  account_type?: string;
+  total_assets?: number;
+  cash?: number;
+  market_value?: number;
+  frozen_cash?: number | null;
+  total_profit_loss?: number;
+  profit_loss_percent?: number;
+  risk_level?: string;
+  last_update?: string;
+}
 
+export interface ActiveAlert {
   id?: number;
   name?: string;
-  metricType?: string;
-  thresholdValue?: number;
+  metric_type?: string;
+  threshold_value?: number;
+}
+
+export interface AddWatchlistRequest {
+  symbol?: string;
+  display_name?: string | null;
+  exchange?: string | null;
+  market?: string | null;
+  notes?: string | null;
+  group_id?: number | null;
+  group_name?: string | null;
+}
+
+export type AlertLevel = 'info' | 'warning' | 'critical';
+
+export interface AlertRecordResponse {
+  id?: number;
+  rule_id?: number | null;
+  rule_name?: string | null;
+  symbol?: string;
+  stock_name?: string | null;
+  alert_time?: string;
+  alert_type?: string;
+  alert_level?: string;
+  alert_title?: string | null;
+  alert_message?: string | null;
+  alert_details?: Record<string, any> | null;
+  snapshot_data?: Record<string, any> | null;
+  is_read?: boolean;
+  is_handled?: boolean;
+  created_at?: string;
+}
+
+export interface AlertRecordsResponse {
+  success?: boolean;
+  data?: AlertRecordResponse[];
+  total?: number;
+  limit?: number;
+  offset?: number;
+}
+
+export interface AlertRuleCreate {
+  rule_name?: string;
+  rule_type?: AlertRuleType;
+  description?: string | null;
+  symbol?: string | null;
+  stock_name?: string | null;
+  parameters?: Record<string, any>;
+  trigger_conditions?: Record<string, any>;
+  notification_config?: Record<string, any>;
+  priority?: number;
+  is_active?: boolean;
+}
+
+export interface AlertRuleResponse {
+  id?: number;
+  rule_name?: string;
+  rule_type?: string;
+  description?: string | null;
+  symbol?: string | null;
+  stock_name?: string | null;
+  parameters?: Record<string, any>;
+  trigger_conditions?: Record<string, any>;
+  notification_config?: Record<string, any>;
+  is_active?: boolean;
+  priority?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type AlertRuleType = 'price_change' | 'volume_surge' | 'technical_break' | 'limit_up' | 'limit_down' | 'dragon_tiger';
+
+export interface AlertRuleUpdate {
+  rule_name?: string | null;
+  description?: string | null;
+  parameters?: Record<string, any> | null;
+  trigger_conditions?: Record<string, any> | null;
+  notification_config?: Record<string, any> | null;
+  priority?: number | null;
+  is_active?: boolean | null;
+}
+
+export interface AllIndicatorsResponse {
+  symbol?: string;
+  latest_price?: number;
+  latest_date?: string;
+  data_points?: number;
+  total_indicators?: number;
+  trend?: Record<string, any>;
+  momentum?: Record<string, any>;
+  volatility?: Record<string, any>;
+  volume?: Record<string, any>;
+}
+
+export interface AnnouncementBase {
+  stock_code?: string;
+  stock_name?: string | null;
+  announcement_title?: string;
+  announcement_type?: string | null;
+  publish_date?: string;
+  publish_time?: string | null;
+  url?: string | null;
+  content?: string | null;
+  summary?: string | null;
+  keywords?: any[];
+  importance_level?: number;
+  data_source?: string;
+  source_id?: string | null;
+  sentiment?: string | null;
+  impact_score?: number | null;
+}
+
+export interface AnnouncementMonitorRecordResponse {
+  id?: number;
+  rule_id?: number;
+  announcement_id?: number;
+  matched_keywords?: any[];
+  triggered_at?: string;
+  notified?: boolean;
+  notified_at?: string | null;
+  notification_result?: string | null;
+  rule_name?: string | null;
+  announcement_title?: string | null;
+}
+
+export interface AnnouncementMonitorRuleBase {
+  rule_name?: string;
+  keywords?: any[];
+  announcement_types?: any[];
+  stock_codes?: any[];
+  min_importance_level?: number;
+  notify_enabled?: boolean;
+  notify_channels?: any[];
+}
+
+export interface AnnouncementMonitorRuleUpdate {
+  rule_name?: string | null;
+  keywords?: any[] | null;
+  announcement_types?: any[] | null;
+  stock_codes?: any[] | null;
+  min_importance_level?: number | null;
+  notify_enabled?: boolean | null;
+  notify_channels?: any[] | null;
+  is_active?: boolean | null;
+}
+
+export interface AnnouncementSearchRequest {
+  keywords?: string | null;
+  stock_code?: string | null;
+  announcement_type?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  min_importance_level?: number | null;
+  data_source?: string | null;
+  page?: number;
+  page_size?: number;
+}
+
+export interface AnnouncementStatsResponse {
+  total_count?: number;
+  today_count?: number;
+  important_count?: number;
+  by_source?: Record<string, any>;
+  by_type?: Record<string, any>;
+  by_sentiment?: Record<string, any>;
+}
+
+export interface BOLLParams {
+  period?: number;
+  std_dev?: number;
+}
+
+export interface BacktestExecuteRequest {
+  strategy_id?: number;
+  user_id?: number;
+  symbols?: string[];
+  start_date?: string;
+  end_date?: string;
+  initial_capital?: number;
+  commission_rate?: number;
+  slippage_rate?: number;
+  benchmark?: string | null;
+}
+
+export interface BacktestListResponse {
+  total_count?: number;
+  backtests?: BacktestResultSummary[];
+  page?: number;
+  page_size?: number;
 }
 
 export interface BacktestRequest {
-
-  strategyName?: string;
+  strategy_id?: number;
+  user_id?: number;
   symbols?: string[];
-  startDate?: string;
-  endDate?: string;
-  initialCapital?: number;
-  parameters?: Record<string, any>;
+  start_date?: string;
+  end_date?: string;
+  initial_capital?: number;
+  commission_rate?: number;
+  slippage_rate?: number;
+  benchmark?: string | null;
+  include_analysis?: boolean;
 }
 
 export interface BacktestResponse {
-
-  taskId?: string;
+  task_id?: string;
   status?: string;
   summary?: BacktestResultSummary | null;
-  equityCurve?: Record<string, any>[];
+  equity_curve?: Record<string, any>[];
   trades?: BacktestTrade[];
-  errorMessage?: string | null;
+  error_message?: string | null;
+}
+
+export interface BacktestResult {
+  backtest_id?: number;
+  strategy_id?: number;
+  user_id?: number;
+  symbols?: string[];
+  start_date?: string;
+  end_date?: string;
+  initial_capital?: number;
+  final_capital?: number;
+  performance?: PerformanceMetrics;
+  equity_curve?: EquityCurvePoint[];
+  trades?: TradeRecord[];
+  status?: BacktestStatus;
+  created_at?: string;
+  completed_at?: string | null;
+  error_message?: string | null;
 }
 
 export interface BacktestResultSummary {
-
-  totalReturn?: number;
-  annualizedReturn?: number;
-  maxDrawdown?: number;
-  sharpeRatio?: number;
-  winRate?: number;
-  totalTrades?: number;
+  backtest_id?: number;
+  strategy_id?: number;
+  strategy_name?: string;
+  symbols?: string[];
+  date_range?: string;
+  total_return?: number;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  status?: BacktestStatus;
+  created_at?: string;
 }
 
-export interface BacktestTrade {
+export type BacktestStatus = 'pending' | 'running' | 'completed' | 'failed';
 
+export interface BacktestTrade {
   symbol?: string;
-  entryDate?: string;
-  exitDate?: string;
-  entryPrice?: number;
-  exitPrice?: number;
+  entry_date?: string;
+  exit_date?: string;
+  entry_price?: number;
+  exit_price?: number;
   quantity?: number;
   pnl?: number;
-  returnPct?: number;
+  return_pct?: number;
+}
+
+export interface BackupListQueryParams {
+  database?: string | null;
+  backup_type?: string | null;
+  status?: string | null;
+  limit?: number;
+  offset?: number;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface BackupMetadata {
+  backup_id?: string;
+  backup_type?: string;
+  database?: string;
+  start_time?: string;
+  end_time?: string | null;
+  duration_seconds?: number | null;
+  tables_backed_up?: string[];
+  total_rows?: number;
+  backup_size_mb?: number;
+  compression_ratio?: number | null;
+  status?: string;
+  error_message?: string | null;
+  description?: string | null;
+  tags?: string[] | null;
+}
+
+export interface BackupRequestBase {
+}
+
+export interface BaseResponse {
+  success?: boolean;
+  message?: string;
+  data?: any | null;
+  timestamp?: string;
+  request_id?: string | null;
 }
 
 export interface BatchOperation {
-
   operation?: string;
   data?: Record<string, any>;
   id?: string | null;
 }
 
 export interface BatchOperationRequest {
-
   operations?: BatchOperation[];
 }
 
 export interface BatchOperationResult {
-
   id?: string | null;
   success?: boolean;
   data?: any | null;
@@ -81,320 +338,725 @@ export interface BatchOperationResult {
 }
 
 export interface BetaRequest {
-
-  entityType?: string;
-  entityId?: number;
-  marketIndex?: string;
+  entity_type?: string;
+  entity_id?: number;
+  market_index?: string;
 }
 
 export interface BetaResult {
-
   beta?: number | null;
   correlation?: number | null;
-  entityType?: string | null;
-  entityId?: number | null;
-  marketIndex?: string | null;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  market_index?: string | null;
+}
+
+export interface CancelOrderRequest {
+  order_id?: string;
+}
+
+export interface CancelOrderResponse {
+  order_id?: string;
+  success?: boolean;
+  message?: string;
+  cancelled_quantity?: number;
+  remaining_quantity?: number;
+  cancelled_at?: string;
+}
+
+export interface ChartConfigRequest {
+  symbol?: string;
+  market?: string;
+  interval?: string;
+  theme?: string;
+  locale?: string;
+  container_id?: string;
 }
 
 export interface ChipRaceItem {
-
   symbol?: string;
   name?: string;
-  raceAmount?: number;
-  changePercent?: number;
+  race_amount?: number;
+  change_percent?: number;
 }
 
 export interface ChipRaceRequest {
-
-  raceType: string; // Default: 'open'
-  tradeDate?: string | null;
-  minRaceAmount?: number | null;
-  limit: number; // Default: 100
+  race_type?: string;
+  trade_date?: string | null;
+  min_race_amount?: number | null;
+  limit?: number;
 }
 
 export interface ChipRaceResponse {
-
   id?: number;
   symbol?: string;
   name?: string;
-  tradeDate?: string;
-  raceType?: string;
-  latestPrice?: number;
-  changePercent?: number;
-  prevClose?: number;
-  openPrice?: number;
-  raceAmount?: number;
-  raceAmplitude?: number;
-  raceCommission?: number;
-  raceTransaction?: number;
-  raceRatio?: number;
-  createdAt: string | null; // Default: None
+  trade_date?: string;
+  race_type?: string;
+  latest_price?: number;
+  change_percent?: number;
+  prev_close?: number;
+  open_price?: number;
+  race_amount?: number;
+  race_amplitude?: number;
+  race_commission?: number;
+  race_transaction?: number;
+  race_ratio?: number;
+  created_at?: string | null;
+}
+
+export interface CleanupBackupsRequest {
+  retention_days?: number;
+  database?: string | null;
+  backup_type?: string | null;
+  dry_run?: boolean;
+  force?: boolean;
+}
+
+export interface CleanupResult {
+  success?: boolean;
+  message?: string;
+  deleted_count?: number;
+  freed_space_mb?: number;
+  deleted_files?: string[] | null;
+  retention_days?: number;
+  dry_run?: boolean;
+}
+
+export interface CommonError {
+  code?: number;
+  message?: string;
+  data?: Record<string, any> | null;
+  detail?: string | null;
+}
+
+export interface ConceptInfo {
+  concept_code?: string;
+  concept_name?: string;
+  stock_count?: number | null;
+  up_count?: number | null;
+  down_count?: number | null;
+  leader_stock?: string | null;
+  latest_price?: number | null;
+  change_percent?: number | null;
+  change_amount?: number | null;
+  volume?: number | null;
+  amount?: number | null;
+  total_market_value?: number | null;
+  turnover_rate?: number | null;
+  updated_at?: string | null;
+}
+
+export interface ConceptListResponse {
+  success?: boolean;
+  data?: Record<string, any>;
+  timestamp?: string;
+}
+
+export interface ConnectionTestRequest {
+  db_type?: string;
+  host?: string;
+  port?: number;
+}
+
+export interface ConnectionTestResponse {
+  success?: boolean;
+  message?: string | null;
+  error?: string | null;
+}
+
+export interface ContractDiffRequest {
+  from_version_id?: number;
+  to_version_id?: number;
+}
+
+export interface ContractDiffResponse {
+  from_version?: string;
+  to_version?: string;
+  total_changes?: number;
+  breaking_changes?: number;
+  non_breaking_changes?: number;
+  diffs?: DiffResult[];
+  summary?: string;
+}
+
+export interface ContractListResponse {
+  contracts?: ContractMetadata[];
+  total?: number;
+}
+
+export interface ContractMetadata {
+  name?: string;
+  latest_version?: string;
+  total_versions?: number;
+  last_updated?: string;
+  description?: string | null;
+  tags?: string[];
+}
+
+export interface ContractSyncRequest {
+  name?: string;
+  direction?: string;
+  commit_hash?: string | null;
+  author?: string | null;
+  description?: string | null;
+}
+
+export interface ContractSyncResponse {
+  sync_id?: string;
+  status?: string;
+  results?: SyncResult[];
+  started_at?: string;
+  completed_at?: string | null;
+}
+
+export interface ContractValidateRequest {
+  spec?: Record<string, any>;
+  check_breaking_changes?: boolean;
+  compare_to_version_id?: number | null;
+}
+
+export interface ContractValidateResponse {
+  valid?: boolean;
+  error_count?: number;
+  warning_count?: number;
+  results?: ValidationResult[];
+}
+
+export interface ContractVersionCreate {
+  name?: string;
+  version?: string;
+  spec?: Record<string, any>;
+  commit_hash?: string | null;
+  author?: string | null;
+  description?: string | null;
+  tags?: string[];
+}
+
+export interface ContractVersionResponse {
+  id?: number;
+  name?: string;
+  version?: string;
+  spec?: Record<string, any>;
+  commit_hash?: string | null;
+  author?: string | null;
+  description?: string | null;
+  tags?: string[];
+  created_at?: string;
+  is_active?: boolean;
+}
+
+export interface ContractVersionUpdate {
+  description?: string | null;
+  tags?: string[] | null;
+}
+
+export interface CreateGroupRequest {
+  group_name?: string;
 }
 
 export interface CurrencyField {
+  amount?: number;
+}
 
-  amount?: string;
+export interface DashboardRequest {
+  user_id?: number;
+  trade_date?: string | null;
+  include_market_overview?: boolean;
+  include_watchlist?: boolean;
+  include_portfolio?: boolean;
+  include_risk_alerts?: boolean;
+}
+
+export interface DashboardResponse {
+  user_id?: number;
+  trade_date?: string;
+  generated_at?: string;
+  market_overview?: MarketOverview | null;
+  watchlist?: WatchlistSummary | null;
+  portfolio?: PortfolioSummary | null;
+  risk_alerts?: RiskAlertSummary | null;
+  data_source?: string;
+  cache_hit?: boolean;
+}
+
+export interface DataFetchResponse {
+  success?: boolean;
+  source?: string | null;
+  data?: Record<string, any> | null;
+  count?: number | null;
+  response_time?: number | null;
+  cached?: boolean | null;
+  error?: string | null;
+}
+
+export interface DataSourceHealthResponse {
+  source_type?: string;
+  status?: string;
+  enabled?: boolean;
+  priority?: number;
+  success_rate?: number;
+  avg_response_time?: number;
+  error_count?: number;
+  last_check?: string;
+  supported_categories?: string[];
+  total_requests?: number;
+  success_count?: number;
 }
 
 export interface DateField {
-
   date?: string;
 }
 
-export interface ETFDataRequest {
+export interface DateRangeModel {
+  start_date?: string;
+  end_date?: string;
+}
 
+export interface DiffResult {
+  change_type?: string;
+  path?: string;
+  old_value?: any | null;
+  new_value?: any | null;
+  is_breaking?: boolean;
+  description?: string | null;
+}
+
+export interface DragonTigerListResponse {
+  id?: number;
+  symbol?: string;
+  stock_name?: string | null;
+  trade_date?: string;
+  reason?: string | null;
+  total_buy_amount?: number | null;
+  total_sell_amount?: number | null;
+  net_amount?: number | null;
+  institution_buy_count?: number;
+  institution_sell_count?: number;
+  institution_net_amount?: number | null;
+  detail_data?: Record<string, any> | null;
+  impact_score?: number | null;
+}
+
+export interface EMAParams {
+  period?: number;
+  price_type?: string;
+}
+
+export interface ETFDataRequest {
   symbol?: string | null;
   keyword?: string | null;
-  limit: number; // Default: 50
+  limit?: number;
 }
 
 export interface ETFDataResponse {
-
   id?: number;
   symbol?: string;
   name?: string;
-  tradeDate?: string;
-  latestPrice?: number;
-  changePercent?: number;
-  changeAmount?: number;
+  trade_date?: string;
+  latest_price?: number;
+  change_percent?: number;
+  change_amount?: number;
   volume?: number;
   amount?: number;
-  openPrice?: number;
-  highPrice?: number;
-  lowPrice?: number;
-  prevClose?: number;
-  turnoverRate?: number;
-  totalMarketCap?: number;
-  circulatingMarketCap?: number;
-  createdAt: string | null; // Default: None
+  open_price?: number;
+  high_price?: number;
+  low_price?: number;
+  prev_close?: number;
+  turnover_rate?: number;
+  total_market_cap?: number;
+  circulating_market_cap?: number;
+  created_at?: string | null;
+}
+
+export interface ETFQueryParams {
+  symbol?: string | null;
+  keyword?: string | null;
+  market?: string | null;
+  category?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface EquityCurvePoint {
+  date_field?: string;
+  equity?: number;
+  drawdown?: number;
+  benchmark_equity?: number | null;
 }
 
 export interface ErrorDetail {
-
-  errorCode?: string;
-  errorMessage?: string;
+  error_code?: string;
+  error_message?: string;
   details?: Record<string, any> | null;
 }
 
 export interface ErrorResponse {
-
-  error?: string;
+  success?: false;
   message?: string;
-  detail?: string | null;
+  error_code?: string;
+  details?: Record<string, any> | null;
+  timestamp?: string;
+  path?: string | null;
+  request_id?: string | null;
+}
+
+export interface ErrorResponseModel {
+  code?: string;
+  message?: string;
+  details?: any | null;
+  timestamp?: number;
 }
 
 export interface FeatureGenerationRequest {
-
-  stockCode?: string;
-  market: string; // Default: 'sh'
-  step: number; // Default: 10
-  includeIndicators: boolean; // Default: True
+  stock_code?: string;
+  market?: string;
+  step?: number;
+  include_indicators?: boolean;
 }
 
 export interface FeatureGenerationResponse {
-
   success?: boolean;
   message?: string;
-  totalSamples?: number;
-  featureDim?: number;
+  total_samples?: number;
+  feature_dim?: number;
   step?: number;
-  featureColumns?: string[];
+  feature_columns?: string[];
   metadata?: Record<string, any>;
 }
 
 export interface FilterRequest {
-
   filters?: Record<string, any> | null;
 }
 
 export interface FundFlowDataResponse {
-
-  fundFlow?: FundFlowItem[];
+  fund_flow?: FundFlowItem[];
   total?: number;
   symbol?: string | null;
   timeframe?: string | null;
 }
 
 export interface FundFlowItem {
-
-  tradeDate?: string;
-  mainNetInflow?: number;
-  mainNetInflowRate: number; // Default: 0
-  superLargeNetInflow?: number;
-  largeNetInflow?: number;
-  mediumNetInflow?: number;
-  smallNetInflow?: number;
+  trade_date?: string;
+  main_net_inflow?: number;
+  main_net_inflow_rate?: number;
+  super_large_net_inflow?: number;
+  large_net_inflow?: number;
+  medium_net_inflow?: number;
+  small_net_inflow?: number;
 }
 
 export interface FundFlowRequest {
-
   symbol?: string;
-  timeframe: string; // Default: '1'
-  startDate?: string | null;
-  endDate?: string | null;
+  timeframe?: string;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 export interface FundFlowResponse {
-
   id?: number;
   symbol?: string;
-  tradeDate?: string;
+  trade_date?: string;
   timeframe?: string;
-  mainNetInflow?: number;
-  mainNetInflowRate?: number;
-  superLargeNetInflow?: number;
-  largeNetInflow?: number;
-  mediumNetInflow?: number;
-  smallNetInflow?: number;
-  createdAt: string | null; // Default: None
+  main_net_inflow?: number;
+  main_net_inflow_rate?: number;
+  super_large_net_inflow?: number;
+  large_net_inflow?: number;
+  medium_net_inflow?: number;
+  small_net_inflow?: number;
+  created_at?: string | null;
+}
+
+export interface GPUPerformanceMetrics {
+  device_id?: number;
+  matrix_gflops?: number | null;
+  matrix_speedup?: number | null;
+  memory_gflops?: number | null;
+  memory_speedup?: number | null;
+  throughput?: number | null;
+  timestamp?: number | null;
+}
+
+export interface GPUStatus {
+  device_id?: number;
+  name?: string;
+  gpu_utilization?: number;
+  memory_used?: number;
+  memory_total?: number;
+  memory_utilization?: number;
+  temperature?: number;
+  power_usage?: number;
+  sm_clock?: number;
+  memory_clock?: number;
+}
+
+export interface HealthCheckResponse {
+  status?: string;
+  version?: string;
+  uptime?: number;
+  timestamp?: string;
+  services?: Record<string, any> | null;
+}
+
+export interface HealthResponse {
+  timestamp?: string;
+  overall_status?: string;
+  services?: Record<string, HealthStatus>;
+  report_url?: string | null;
+}
+
+export interface HealthStatus {
+  service?: string;
+  status?: string;
+  details?: string | null;
+  response_time?: number | null;
 }
 
 export interface HeatmapResponse {
-
   sector?: string;
   stocks?: HeatmapStock[];
-  avgChange?: number;
+  avg_change?: number;
 }
 
 export interface HeatmapStock {
-
   symbol?: string;
   name?: string;
-  changePercent?: number;
-  marketCap?: number | null;
+  change_percent?: number;
+  market_cap?: number | null;
+}
+
+export interface HotSector {
+  sector_name?: string;
+  change_percent?: number;
+  leading_stock?: string | null;
+  stock_count?: number;
 }
 
 export interface HyperparameterSearchRequest {
-
-  stockCode?: string;
-  market: string; // Default: 'sh'
-  step: number; // Default: 10
-  cv: number; // Default: 5
-  paramGrid?: Record<string, any[]> | null;
+  stock_code?: string;
+  market?: string;
+  step?: number;
+  cv?: number;
+  param_grid?: Record<string, any[]> | null;
 }
 
 export interface HyperparameterSearchResponse {
-
   success?: boolean;
   message?: string;
-  bestParams?: Record<string, any>;
-  bestRmse?: number;
-  bestMse?: number;
-  cvResults?: Record<string, any>;
+  best_params?: Record<string, any>;
+  best_rmse?: number;
+  best_mse?: number;
+  cv_results?: Record<string, any>;
+}
+
+export interface IndexQuote {
+  index_code?: string;
+  index_name?: string;
+  current_price?: number;
+  change?: number;
+  change_percent?: number;
+  volume?: number | null;
+  amount?: number | null;
 }
 
 export interface IndexQuoteResponse {
-
   code?: string;
   name?: string;
   price?: number;
-  preClose?: number;
+  pre_close?: number;
   open?: number;
   high?: number;
   low?: number;
   volume?: number;
   amount?: number;
   change?: number | null;
-  changePct?: number | null;
+  change_pct?: number | null;
   timestamp?: string;
 }
 
-export interface IndicatorCalculateRequest {
+export interface IndicatorCalculateBatchRequest {
+  calculations?: IndicatorCalculateRequest[];
+}
 
+export interface IndicatorCalculateRequest {
   symbol?: string;
-  startDate?: string;
-  endDate?: string;
+  start_date?: string;
+  end_date?: string;
   indicators?: IndicatorSpec[];
-  useCache: boolean; // Default: True
+  use_cache?: boolean;
 }
 
 export interface IndicatorCalculateResponse {
-
   symbol?: string;
-  symbolName?: string;
-  startDate?: string;
-  endDate?: string;
+  symbol_name?: string;
+  start_date?: string;
+  end_date?: string;
   ohlcv?: OHLCVData;
   indicators?: IndicatorResult[];
-  calculationTimeMs?: number;
-  cached: boolean; // Default: False
+  calculation_time_ms?: number;
+  cached?: boolean;
 }
 
 export interface IndicatorConfigCreateRequest {
-
   name?: string;
   indicators?: IndicatorSpec[];
 }
 
 export interface IndicatorConfigListResponse {
-
-  totalCount?: number;
+  total_count?: number;
   configs?: IndicatorConfigResponse[];
 }
 
 export interface IndicatorConfigResponse {
-
   id?: number;
-  userId?: number;
+  user_id?: number;
   name?: string;
   indicators?: Record<string, any>[];
-  createdAt?: string;
-  updatedAt?: string;
-  lastUsedAt?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  last_used_at?: string | null;
 }
 
 export interface IndicatorConfigUpdateRequest {
-
   name?: string | null;
   indicators?: IndicatorSpec[] | null;
 }
 
-export interface IndicatorMetadata {
-
-  abbreviation?: string;
-  fullName?: string;
-  chineseName?: string;
+export interface IndicatorInfo {
+  indicator_type?: string;
+  indicator_name?: string;
   category?: string;
   description?: string;
-  panelType?: string;
+  default_params?: Record<string, any>;
+  output_fields?: string[];
+}
+
+export interface IndicatorMetadata {
+  abbreviation?: string;
+  full_name?: string;
+  chinese_name?: string;
+  category?: string;
+  description?: string;
+  panel_type?: string;
   parameters?: Record<string, any>[];
   outputs?: Record<string, string>[];
-  referenceLines?: number[] | null;
-  minDataPointsFormula?: string;
+  reference_lines?: number[] | null;
+  min_data_points_formula?: string;
+}
+
+export interface IndicatorOptimizationRequest {
+  symbol?: string;
+  start_date?: string;
+  end_date?: string;
+  indicator_abbr?: string;
+  parameter_ranges?: Record<string, number | number[]>;
+  optimization_target?: string;
+  max_iterations?: number;
 }
 
 export interface IndicatorRegistryResponse {
+  indicators?: IndicatorInfo[];
+  total_count?: number;
+  last_updated?: string;
+}
 
-  totalCount?: number;
-  categories?: Record<string, number>;
-  indicators?: IndicatorMetadata[];
+export interface IndicatorResponseItem {
+  indicator_type?: string;
+  indicator_name?: string;
+  data?: Record<string, any>[];
+  params?: Record<string, any>;
 }
 
 export interface IndicatorResult {
-
   abbreviation?: string;
   parameters?: Record<string, any>;
   outputs?: IndicatorValueOutput[];
-  panelType?: string;
-  referenceLines?: number[] | null;
+  panel_type?: string;
+  reference_lines?: number[] | null;
   error?: string | null;
 }
 
 export interface IndicatorSpec {
-
   abbreviation?: string;
   parameters?: Record<string, any>;
 }
 
 export interface IndicatorValueOutput {
-
-  outputName?: string;
+  output_name?: string;
   values?: number | null[];
-  displayName?: string;
+  display_name?: string;
+}
+
+export interface IndustryInfo {
+  industry_code?: string;
+  industry_name?: string;
+  stock_count?: number | null;
+  up_count?: number | null;
+  down_count?: number | null;
+  leader_stock?: string | null;
+  latest_price?: number | null;
+  change_percent?: number | null;
+  change_amount?: number | null;
+  volume?: number | null;
+  amount?: number | null;
+  total_market_value?: number | null;
+  turnover_rate?: number | null;
+  updated_at?: string | null;
+}
+
+export interface IndustryListResponse {
+  success?: boolean;
+  data?: Record<string, any>;
+  timestamp?: string;
+}
+
+export interface IndustryPerformanceResponse {
+  success?: boolean;
+  data?: Record<string, any>;
+  timestamp?: string;
+}
+
+export interface IntegrityVerificationResult {
+  backup_id?: string;
+  is_valid?: boolean;
+  verification_details?: Record<string, any>;
+  report_file_path?: string | null;
+  verification_time?: string;
+}
+
+export interface KDJParams {
+  n?: number;
+  m1?: number;
+  m2?: number;
+}
+
+export interface KLineCandleV2 {
+  timestamp?: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number | null;
+}
+
+export interface KLineRequestV2 {
+  symbol?: string;
+  interval?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  adjust?: string;
+  limit?: number;
+}
+
+export interface KLineResponseV2 {
+  klines?: KLineCandleV2[];
+  total_count?: number;
+  symbol?: string;
+  interval?: string;
 }
 
 export interface KlineCandle {
-
   datetime?: string;
   open?: number;
   high?: number;
@@ -405,7 +1067,6 @@ export interface KlineCandle {
 }
 
 export interface KlineDataPoint {
-
   date?: string;
   open?: number;
   high?: number;
@@ -416,180 +1077,317 @@ export interface KlineDataPoint {
 }
 
 export interface KlineRequest {
-
   symbol?: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  period: string; // Default: '1d'
+  start_date?: string | null;
+  end_date?: string | null;
+  period?: string;
 }
 
 export interface KlineResponse {
-
   symbol?: string;
   period?: string;
   data?: KlineCandle[];
   count?: number;
 }
 
-export interface LongHuBangItem {
+export interface LogQueryResponse {
+  success?: boolean;
+  data?: SystemLog[];
+  total?: number;
+  filtered?: number;
+  timestamp?: string;
+}
 
+export interface LongHuBangItem {
   symbol?: string;
   name?: string;
-  netAmount?: number;
+  net_amount?: number;
   reason?: string | null;
 }
 
 export interface LongHuBangRequest {
-
   symbol?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  minNetAmount?: number | null;
-  limit: number; // Default: 100
+  start_date?: string | null;
+  end_date?: string | null;
+  min_net_amount?: number | null;
+  limit?: number;
 }
 
 export interface LongHuBangResponse {
-
   id?: number;
   symbol?: string;
   name?: string;
-  tradeDate?: string;
+  trade_date?: string;
   reason?: string | null;
-  buyAmount?: number;
-  sellAmount?: number;
-  netAmount?: number;
-  turnoverRate?: number;
-  institutionBuy?: number | null;
-  institutionSell?: number | null;
-  createdAt: string | null; // Default: None
+  buy_amount?: number;
+  sell_amount?: number;
+  net_amount?: number;
+  turnover_rate?: number;
+  institution_buy?: number | null;
+  institution_sell?: number | null;
+  created_at?: string | null;
+}
+
+export interface MACDParams {
+  fast_period?: number;
+  slow_period?: number;
+  signal_period?: number;
+}
+
+export interface MAParams {
+  period?: number;
+  price_type?: string;
 }
 
 export interface MLResponse {
-
   success?: boolean;
   message?: string;
   data?: any | null;
 }
 
-export interface MarketOverviewResponse {
+export interface MarketDataQueryModel {
+  symbol?: string;
+  start_date?: string;
+  end_date?: string;
+  interval?: string | null;
+}
 
-  marketStats?: MarketOverviewStats;
-  topEtfs?: TopETFItem[];
-  chipRaces?: ChipRaceItem[];
-  longHuBang?: LongHuBangItem[];
+export interface MarketDataRequest {
+  symbol?: string;
+}
+
+export interface MarketFilterParams {
+  market?: string;
+  limit?: number | null;
+}
+
+export interface MarketIndexItem {
+  symbol?: string;
+  name?: string;
+  current_price?: number;
+  change_percent?: number;
+  volume?: number | null;
+  turnover?: number | null;
+  update_time?: string | null;
+}
+
+export interface MarketOverview {
+  indices?: MarketIndexItem[];
+  up_count?: number;
+  down_count?: number;
+  flat_count?: number;
+  total_volume?: number | null;
+  total_turnover?: number | null;
+  top_gainers?: Record<string, any>[];
+  top_losers?: Record<string, any>[];
+  most_active?: Record<string, any>[];
+}
+
+export interface MarketOverviewDetailedResponse {
+  market_stats?: MarketOverviewStats;
+  top_etfs?: TopETFItem[];
+  chip_races?: ChipRaceItem[];
+  long_hu_bang?: LongHuBangItem[];
   timestamp?: string;
 }
 
-export interface MarketOverviewStats {
+export interface MarketOverviewRequest {
+  date?: string | null;
+}
 
-  totalStocks?: number;
-  risingStocks?: number;
-  fallingStocks?: number;
-  avgChangePercent?: number;
+export interface MarketOverviewResponse {
+  date?: string;
+  indices?: IndexQuote[];
+  marketIndex?: IndexData[];
+  market_index?: IndexData[];
+  hot_sectors?: HotSector[];
+  hotSectors?: SectorData[];
+  market_sentiment?: string;
+  totalVolume?: number;
+  total_volume?: number;
+}
+
+export interface MarketOverviewStats {
+  total_stocks?: number;
+  rising_stocks?: number;
+  falling_stocks?: number;
+  avg_change_percent?: number;
 }
 
 export interface MessageResponse {
-
   success?: boolean;
   message?: string;
-  data: dict | null; // Default: None
+  data?: Record<string, any> | null;
 }
 
-export interface MillisecondTimestampField {
+export type MessageStatus = 'pending' | 'in_progress' | 'success' | 'failed' | 'retry' | 'dead_letter';
 
+export interface MillisecondTimestampField {
   timestamp?: number;
 }
 
 export interface ModelDetailResponse {
-
   name?: string;
   metadata?: Record<string, any>;
-  trainingHistory?: Record<string, any>[];
-  featureImportance?: Record<string, any>[] | null;
+  training_history?: Record<string, any>[];
+  feature_importance?: Record<string, any>[] | null;
 }
 
 export interface ModelEvaluationRequest {
-
-  modelName?: string;
-  stockCode?: string;
-  market: string; // Default: 'sh'
+  model_name?: string;
+  stock_code?: string;
+  market?: string;
 }
 
 export interface ModelEvaluationResponse {
-
   success?: boolean;
   message?: string;
-  modelName?: string;
+  model_name?: string;
   metrics?: Record<string, any>;
 }
 
 export interface ModelInfo {
-
   name?: string;
   path?: string;
-  trainedAt?: string;
-  testRmse?: number;
-  testR2?: number;
-  trainSamples?: number | null;
-  testSamples?: number | null;
-  featureDim?: number | null;
+  trained_at?: string;
+  test_rmse?: number;
+  test_r2?: number;
+  train_samples?: number | null;
+  test_samples?: number | null;
+  feature_dim?: number | null;
 }
 
 export interface ModelListResponse {
-
   total?: number;
   models?: ModelInfo[];
 }
 
 export interface ModelPredictRequest {
-
-  modelName?: string;
-  stockCode?: string;
-  market: string; // Default: 'sh'
-  days: number; // Default: 1
+  model_name?: string;
+  stock_code?: string;
+  market?: string;
+  days?: number;
 }
 
 export interface ModelPredictResponse {
-
   success?: boolean;
   message?: string;
-  modelName?: string;
-  stockCode?: string;
+  model_name?: string;
+  stock_code?: string;
   predictions?: PredictionResult[];
 }
 
 export interface ModelTrainRequest {
-
-  stockCode?: string;
-  market: string; // Default: 'sh'
-  step: number; // Default: 10
-  testSize: number; // Default: 0.2
-  modelName?: string;
-  modelParams?: Record<string, any> | null;
+  stock_code?: string;
+  market?: string;
+  step?: number;
+  test_size?: number;
+  model_name?: string;
+  model_params?: Record<string, any> | null;
 }
 
 export interface ModelTrainResponse {
-
   success?: boolean;
   message?: string;
-  modelName?: string;
+  model_name?: string;
   metrics?: Record<string, any>;
 }
 
-export interface NotificationTestRequest {
+export interface MomentumIndicatorsResponse {
+  rsi6?: number | null;
+  rsi12?: number | null;
+  rsi24?: number | null;
+  kdj_k?: number | null;
+  kdj_d?: number | null;
+  kdj_j?: number | null;
+  cci?: number | null;
+  willr?: number | null;
+  roc?: number | null;
+}
 
-  notificationType?: string;
-  configData?: Record<string, any>;
+export interface MonitoringControlRequest {
+  symbols?: string[] | null;
+  interval?: number;
+}
+
+export interface MonitoringSummaryResponse {
+  total_stocks?: number;
+  limit_up_count?: number;
+  limit_down_count?: number;
+  strong_up_count?: number;
+  strong_down_count?: number;
+  avg_change_percent?: number | null;
+  total_amount?: number | null;
+  active_alerts?: number;
+  unread_alerts?: number;
+}
+
+export interface MoveStockRequest {
+  symbol?: string;
+  from_group_id?: number;
+  to_group_id?: number;
+}
+
+export interface MultiIndicatorRequest {
+  symbol?: string;
+  indicators?: IndicatorSpec[];
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface MultiIndicatorResponse {
+  symbol?: string;
+  indicators?: IndicatorResponseItem[];
+  calculated_at?: string;
+}
+
+export interface NewsItem {
+  headline?: string;
+  summary?: string;
+  source?: string;
+  datetime?: number;
+  url?: string;
+  image?: string | null;
+  category?: string | null;
+}
+
+export interface NotificationPreferences {
+  email_enabled?: boolean;
+  websocket_enabled?: boolean;
+  price_alerts?: boolean;
+  news_alerts?: boolean;
+  system_alerts?: boolean;
+  quiet_hours?: Record<string, string> | null;
+  max_daily_emails?: number;
+}
+
+export interface NotificationResponse {
+  id?: string;
+  type?: string;
+  title?: string;
+  message?: string;
+  data?: Record<string, any> | null;
+  priority?: string;
+  isRead?: boolean;
+  createdAt?: string;
+  expiresAt?: string | null;
+  actionUrl?: string | null;
+  actionText?: string | null;
+  icon?: string | null;
+  category?: string;
+}
+
+export interface NotificationTestRequest {
+  notification_type?: string;
+  config_data?: Record<string, any>;
 }
 
 export interface NotificationTestResponse {
-
   success?: boolean;
   message?: string;
 }
 
 export interface OHLCVData {
-
   dates?: string[];
   open?: number[];
   high?: number[];
@@ -599,241 +1397,1116 @@ export interface OHLCVData {
   turnover?: number[];
 }
 
-export interface PaginatedResponse {
+export type OperationType = 'insert' | 'update' | 'delete' | 'bulk_insert';
 
+export interface OrderRequest {
+  symbol?: string;
+  direction?: string;
+  order_type?: string;
+  price?: number | null;
+  quantity?: number;
+}
+
+export interface OrderResponse {
+  order_id?: string;
+  orderId?: string;
+  symbol?: string;
+  name?: string;
+  direction?: string;
+  side?: string;
+  order_type?: string;
+  type?: string;
+  price?: number | null;
+  quantity?: number;
+  amount?: number;
+  filled_quantity?: number;
+  filledQuantity?: number;
+  filledAmount?: number;
+  average_price?: number | null;
+  averagePrice?: number;
+  status?: string;
+  commission?: number | null;
+  created_at?: string;
+  orderTime?: string;
+  updated_at?: string | null;
+  updateTime?: string;
+  remarks?: string;
+}
+
+export interface OscillatorIndicatorRequest {
+  symbol?: string;
+  indicator_type?: string;
+  params?: Record<string, any> | null;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface OscillatorIndicatorResponse {
+  symbol?: string;
+  indicator_type?: string;
+  indicator_name?: string;
+  values?: OscillatorIndicatorValue[];
+  params?: Record<string, any>;
+  calculated_at?: string;
+}
+
+export interface OscillatorIndicatorValue {
+  timestamp?: number;
+  dif?: number | null;
+  dea?: number | null;
+  macd?: number | null;
+  k?: number | null;
+  d?: number | null;
+  j?: number | null;
+  rsi?: number | null;
+}
+
+export interface OverlayIndicatorRequest {
+  symbol?: string;
+  indicator_type?: string;
+  params?: Record<string, any>;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface OverlayIndicatorResponse {
+  symbol?: string;
+  indicator_type?: string;
+  indicator_name?: string;
+  values?: OverlayIndicatorValue[];
+  params?: Record<string, any>;
+  calculated_at?: string;
+}
+
+export interface OverlayIndicatorValue {
+  timestamp?: number;
+  value?: number;
+  upper?: number | null;
+  middle?: number | null;
+  lower?: number | null;
+}
+
+export interface PagedResponse {
+  success?: boolean;
+  message?: string;
+  data?: any[];
   total?: number;
   page?: number;
-  pageSize?: number;
-  data?: dict[];
+  page_size?: number;
+  total_pages?: number;
+  has_next?: boolean;
+  has_prev?: boolean;
+  timestamp?: string;
+}
+
+export interface PaginatedResponse {
+  total?: number;
+  page?: number;
+  page_size?: number;
+  data?: Record<string, any>[];
 }
 
 export interface PaginationInfo {
-
   page?: number;
-  pageSize?: number;
+  page_size?: number;
   total?: number;
   pages?: number | null;
 }
 
-export interface PaginationRequest {
+export interface PaginationModel {
+  page?: number;
+  page_size?: number;
+}
 
-  page: number; // Default: 1
-  pageSize: number; // Default: 20
+export interface PaginationParams {
+  page?: number;
+  page_size?: number;
+}
+
+export interface PaginationRequest {
+  page?: number;
+  page_size?: number;
 }
 
 export interface PercentageField {
+  percentage?: number;
+}
 
-  percentage?: string;
+export interface PerformanceMetrics {
+  total_return?: number;
+  annual_return?: number;
+  benchmark_return?: number | null;
+  alpha?: number | null;
+  beta?: number | null;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  volatility?: number;
+  total_trades?: number;
+  win_rate?: number;
+  profit_factor?: number;
+  calmar_ratio?: number | null;
+  sortino_ratio?: number | null;
+}
+
+export interface PortfolioSummary {
+  total_market_value?: number;
+  total_cost?: number;
+  total_profit_loss?: number;
+  total_profit_loss_percent?: number;
+  position_count?: number;
+  positions?: PositionItem[];
+}
+
+export interface Position {
+  symbol?: string;
+  symbol_name?: string | null;
+  quantity?: number;
+  available_quantity?: number;
+  cost_price?: number;
+  current_price?: number | null;
+  market_value?: number;
+  profit_loss?: number;
+  profit_loss_percent?: number;
+  last_update?: string;
+}
+
+export interface PositionItem {
+  symbol?: string;
+  name?: string | null;
+  quantity?: number;
+  avg_cost?: number;
+  current_price?: number | null;
+  market_value?: number | null;
+  profit_loss?: number | null;
+  profit_loss_percent?: number | null;
+  position_percent?: number | null;
+}
+
+export interface PositionsResponse {
+  positions?: Position[];
+  total_count?: number;
+  total_market_value?: number;
+  total_profit_loss?: number;
+  total_profit_loss_percent?: number;
 }
 
 export interface PredictionResult {
-
   date?: string;
-  predictedPrice?: number;
+  predicted_price?: number;
   confidence?: number | null;
 }
 
 export interface PriceField {
+  price?: number;
+}
 
-  price?: string;
+export interface RSIParams {
+  period?: number;
+}
+
+export interface RealTimeNotification {
+  notification_id?: string;
+  user_id?: number;
+  type?: string;
+  title?: string;
+  message?: string;
+  data?: Record<string, any> | null;
+  priority?: string;
+  created_at?: string;
+  expires_at?: string | null;
+  action_required?: boolean;
+  action_url?: string | null;
 }
 
 export interface RealTimeQuoteResponse {
-
   code?: string;
   name?: string;
   price?: number;
-  preClose?: number;
+  pre_close?: number;
   open?: number;
   high?: number;
   low?: number;
   volume?: number;
   amount?: number;
   bid1?: number;
-  bid1Volume?: number;
+  bid1_volume?: number;
   ask1?: number;
-  ask1Volume?: number;
+  ask1_volume?: number;
   timestamp?: string;
   change?: number | null;
-  changePct?: number | null;
+  change_pct?: number | null;
+}
+
+export interface RealtimeMonitoringResponse {
+  id?: number;
+  symbol?: string;
+  stock_name?: string | null;
+  timestamp?: string;
+  trade_date?: string;
+  price?: number | null;
+  change_percent?: number | null;
+  volume?: number | null;
+  amount?: number | null;
+  indicators?: Record<string, any> | null;
+  market_strength?: string | null;
+  is_limit_up?: boolean;
+  is_limit_down?: boolean;
+}
+
+export interface RecoveryMetadata {
+  backup_id?: string;
+  recovery_type?: string;
+  target_time?: string | null;
+  target_tables?: string[] | null;
+  dry_run?: boolean;
+  success?: boolean;
+  message?: string;
+  start_time?: string;
+  end_time?: string | null;
+  duration_seconds?: number | null;
+}
+
+export interface RecoveryRequestBase {
+  dry_run?: boolean;
+  force?: boolean;
+  backup_id?: string;
+}
+
+export interface RefreshRequest {
+  symbol?: string;
+  timeframe?: string | null;
+}
+
+export interface ResponseModel {
+  code?: string;
+  message?: string;
+  data?: any | null;
+  timestamp?: number;
+}
+
+export interface RiskAlert {
+  alert_id?: number;
+  alert_type?: string;
+  alert_level?: string;
+  symbol?: string | null;
+  message?: string;
+  triggered_at?: string;
+  is_read?: boolean;
 }
 
 export interface RiskAlertCreate {
-
   name?: string;
-  metricType?: string;
-  thresholdValue?: number;
+  metric_type?: string;
+  threshold_value?: number;
   condition?: string;
-  entityType?: string;
-  entityId?: number | null;
-  isActive?: boolean;
-  notificationChannels?: string[];
+  entity_type?: string;
+  entity_id?: number | null;
+  is_active?: boolean;
+  notification_channels?: string[];
 }
 
 export interface RiskAlertListResponse {
-
   alerts?: RiskAlertResponse[];
 }
 
 export interface RiskAlertResponse {
-
   id?: number;
   name?: string;
-  metricType?: string;
-  thresholdValue?: number;
+  metric_type?: string;
+  threshold_value?: number;
   condition?: string;
-  entityType?: string;
-  entityId?: number | null;
-  isActive?: boolean;
-  notificationChannels?: string[];
-  createdAt?: string;
-  updatedAt?: string | null;
+  entity_type?: string;
+  entity_id?: number | null;
+  is_active?: boolean;
+  notification_channels?: string[];
+  created_at?: string;
+  updated_at?: string | null;
+}
+
+export interface RiskAlertSummary {
+  total_count?: number;
+  unread_count?: number;
+  critical_count?: number;
+  alerts?: RiskAlert[];
 }
 
 export interface RiskAlertUpdate {
-
   name?: string | null;
-  metricType?: string | null;
-  thresholdValue?: number | null;
+  metric_type?: string | null;
+  threshold_value?: number | null;
   condition?: string | null;
-  entityType?: string | null;
-  entityId?: number | null;
-  isActive?: boolean | null;
-  notificationChannels?: string[] | null;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  is_active?: boolean | null;
+  notification_channels?: string[] | null;
 }
 
 export interface RiskDashboardResponse {
-
   metrics?: RiskMetricsSummary;
-  activeAlerts?: ActiveAlert[];
-  riskHistory?: RiskHistoryPoint[];
+  active_alerts?: ActiveAlert[];
+  risk_history?: RiskHistoryPoint[];
 }
 
 export interface RiskHistoryPoint {
-
-  date?: date_type;
-  var95Hist?: number | null;
-  cvar95?: number | null;
+  date?: string;
+  var_95_hist?: number | null;
+  cvar_95?: number | null;
   beta?: number | null;
 }
 
 export interface RiskMetricsHistoryResponse {
-
-  metricsHistory?: RiskHistoryPoint[];
+  metrics_history?: RiskHistoryPoint[];
 }
 
 export interface RiskMetricsSummary {
-
-  var95Hist?: number | null;
-  cvar95?: number | null;
+  var_95_hist?: number | null;
+  cvar_95?: number | null;
   beta?: number | null;
 }
 
-export interface SortRequest {
+export interface ScheduledJobInfo {
+  job_id?: string;
+  job_type?: string;
+  schedule?: string;
+  next_run?: string | null;
+  last_run?: string | null;
+  status?: string;
+  description?: string | null;
+}
 
-  sortBy?: string | null;
-  sortOrder?: string | null;
+export interface SchedulerControlRequest {
+  action?: 'start' | 'stop' | 'restart' | 'status'
+  force?: boolean;
+}
+
+export interface SearchRequest {
+  query?: string;
+  market?: string;
+  limit?: number;
+}
+
+export interface SendEmailRequest {
+  to_addresses?: string[];
+  subject?: string;
+  content?: string;
+  content_type?: string;
+  priority?: string;
+  scheduled_at?: string | null;
+}
+
+export interface SendNewsletterRequest {
+  user_email?: string;
+  user_name?: string;
+  watchlist_symbols?: string[];
+  news_data?: Record<string, any>[];
+  newsletter_type?: string;
+}
+
+export interface SendPriceAlertRequest {
+  user_email?: string;
+  user_name?: string;
+  symbol?: string;
+  stock_name?: string;
+  current_price?: number;
+  alert_condition?: string;
+  alert_price?: number;
+  percentage_change?: number | null;
+}
+
+export interface SendWelcomeEmailRequest {
+  user_email?: string;
+  user_name?: string;
+  welcome_offer?: string | null;
+  language?: string;
+}
+
+export interface SortRequest {
+  sort_by?: string | null;
+  sort_order?: string | null;
 }
 
 export interface StandardResponse {
-
   status?: string;
   code?: number;
   message?: string;
   timestamp?: string;
 }
 
-export interface StockSymbolField {
+export interface StockInfo {
+  symbol?: string;
+  name?: string | null;
+  latest_price?: number | null;
+  change_percent?: number | null;
+  volume?: number | null;
+  amount?: number | null;
+}
 
+export interface StockListResponse {
+  success?: boolean;
+  data?: Record<string, any>;
+  timestamp?: string;
+}
+
+export interface StockQuote {
+  symbol?: string | null;
+  name?: string | null;
+  current?: number;
+  change?: number;
+  percent_change?: number;
+  high?: number;
+  low?: number;
+  open?: number;
+  previous_close?: number;
+  volume?: number | null;
+  amount?: number | null;
+  timestamp?: number;
+}
+
+export interface StockSearchResult {
+  symbol?: string;
+  description?: string;
+  displaySymbol?: string;
+  type?: string;
+  exchange?: string;
+  market?: string | null;
+}
+
+export interface StockSymbolField {
   symbol?: string;
 }
 
-export interface TdxDataRequest {
+export interface StockSymbolModel {
+  symbol?: string;
+}
 
-  stockCode?: string;
-  market: string; // Default: 'sh'
+export interface StrategyConfig {
+  strategy_id?: number | null;
+  user_id?: number;
+  strategy_name?: string;
+  strategy_type?: StrategyType;
+  description?: string | null;
+  parameters?: StrategyParameter[];
+  max_position_size?: number;
+  stop_loss_percent?: number | null;
+  take_profit_percent?: number | null;
+  status?: StrategyStatus;
+  created_at?: string | null;
+  updated_at?: string | null;
+  tags?: string[];
+}
+
+export interface StrategyCreateRequest {
+  user_id?: number;
+  strategy_name?: string;
+  strategy_type?: StrategyType;
+  description?: string | null;
+  parameters?: StrategyParameter[];
+  max_position_size?: number;
+  stop_loss_percent?: number | null;
+  take_profit_percent?: number | null;
+  tags?: string[];
+}
+
+export interface StrategyErrorResponse {
+  error_code?: string;
+  error_message?: string;
+  details?: Record<string, any> | null;
+  timestamp?: string;
+}
+
+export interface StrategyListResponse {
+  total_count?: number;
+  strategies?: StrategyConfig[];
+  page?: number;
+  page_size?: number;
+}
+
+export interface StrategyParameter {
+  name?: string;
+  value?: any;
+  description?: string | null;
+  data_type?: string;
+}
+
+export interface StrategyQueryParams {
+  strategy_code?: string | null;
+  symbol?: string | null;
+  check_date?: string | null;
+  match_result?: boolean | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface StrategyResultResponse {
+  success?: boolean;
+  data?: Record<string, any> | null;
+  message?: string;
+}
+
+export interface StrategyRunRequest {
+  strategy_code?: string;
+  symbol?: string | null;
+  symbols?: string[] | null;
+  check_date?: string | null;
+  limit?: number | null;
+}
+
+export type StrategyStatus = 'draft' | 'active' | 'paused' | 'archived';
+
+export type StrategyType = 'momentum' | 'mean_reversion' | 'breakout' | 'grid' | 'custom';
+
+export interface StrategyUpdateRequest {
+  strategy_name?: string | null;
+  description?: string | null;
+  parameters?: StrategyParameter[] | null;
+  max_position_size?: number | null;
+  stop_loss_percent?: number | null;
+  take_profit_percent?: number | null;
+  status?: StrategyStatus | null;
+  tags?: string[] | null;
+}
+
+export interface SubscriptionInfo {
+  plan?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  trialEndDate?: string | null;
+  autoRenew?: boolean;
+  features?: string[];
+  limits?: Record<string, number>;
+  nextBillingAmount?: number | null;
+  nextBillingDate?: string | null;
+}
+
+export interface SymbolItem {
+  proName?: string;
+  title?: string;
+}
+
+export type SyncDirection = 'tdengine_to_postgresql' | 'postgresql_to_tdengine' | 'bidirectional';
+
+export interface SyncResult {
+  success?: boolean;
+  version_id?: number | null;
+  version?: string | null;
+  direction?: string;
+  changes?: Record<string, any>;
+  message?: string;
+}
+
+export interface SystemLog {
+  id?: number;
+  timestamp?: string;
+  level?: string;
+  category?: string;
+  operation?: string;
+  message?: string;
+  details?: Record<string, any> | null;
+  duration_ms?: number | null;
+  has_error?: boolean;
+}
+
+export interface TDenginePITRRequest {
+  target_time?: string;
+  target_tables?: string[] | null;
+  restore_to_database?: string | null;
+}
+
+export interface TaskConfig {
+  task_id?: string;
+  task_name?: string;
+  task_type?: TaskType;
+  task_module?: string;
+  task_function?: string;
+  description?: string | null;
+  priority?: TaskPriority;
+  schedule?: TaskSchedule | null;
+  params?: Record<string, any>;
+  timeout?: number;
+  retry_count?: number;
+  retry_delay?: number;
+  dependencies?: string[];
+  tags?: string[];
+  auto_restart?: boolean;
+  stop_on_error?: boolean;
+}
+
+export interface TaskExecution {
+  execution_id?: string;
+  task_id?: string;
+  status?: TaskStatus;
+  start_time?: string | null;
+  end_time?: string | null;
+  duration?: number | null;
+  result?: Record<string, any> | null;
+  error_message?: string | null;
+  log_path?: string | null;
+  retry_count?: number;
+}
+
+export interface TaskExecutionRequest {
+  task_id?: string;
+  force?: boolean;
+  params?: Record<string, any> | null;
+}
+
+export type TaskPriority = 100 | 200 | 500 | 800 | 900;
+
+export interface TaskQueryParams {
+  task_type?: string | null;
+  tags?: string | null;
+  status?: string | null;
+  enabled?: boolean | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface TaskRegistrationRequest {
+  name?: string;
+  description?: string | null;
+  task_type?: string;
+  config?: Record<string, any>;
+  tags?: string[] | null;
+  enabled?: boolean;
+  schedule?: string | null;
+}
+
+export interface TaskResponse {
+  success?: boolean;
+  message?: string;
+  data?: Record<string, any> | null;
+  task_id?: string | null;
+  execution_id?: string | null;
+}
+
+export interface TaskSchedule {
+  schedule_type?: string;
+  cron_expression?: string | null;
+  interval_seconds?: number | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  enabled?: boolean;
+}
+
+export interface TaskStatistics {
+  task_id?: string;
+  task_name?: string;
+  total_executions?: number;
+  success_count?: number;
+  failed_count?: number;
+  avg_duration?: number;
+  last_execution_time?: string | null;
+  last_status?: TaskStatus | null;
+  success_rate?: number;
+}
+
+export type TaskStatus = 'pending' | 'running' | 'success' | 'failed' | 'paused' | 'cancelled';
+
+export type TaskType = 'cron' | 'supervisor' | 'manual' | 'data_sync' | 'indicator_calc' | 'market_fetch' | 'data_processing' | 'strategy_backtest' | 'cache_cleanup' | 'market_sync' | 'notification' | 'health_check' | 'cache_warmup' | 'report_generation';
+
+export interface TdxDataRequest {
+  stock_code?: string;
+  market?: string;
 }
 
 export interface TdxDataResponse {
-
   code?: string;
   market?: string;
   data?: Record<string, any>[];
-  totalRecords?: number;
+  total_records?: number;
 }
 
 export interface TdxExportRequest {
-
-  stockCode?: string;
-  market: string; // Default: 'sh'
-  outputFormat: string; // Default: 'csv'
+  stock_code?: string;
+  market?: string;
+  output_format?: string;
 }
 
 export interface TdxHealthResponse {
-
   status?: string;
-  tdxConnected?: boolean;
+  tdx_connected?: boolean;
   timestamp?: string;
-  serverInfo?: dict | null;
+  server_info?: Record<string, any> | null;
+}
+
+export interface TechnicalAnalysisRequest {
+  symbol?: string;
+  period?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  limit?: number | null;
+}
+
+export interface TechnicalIndicatorQueryModel {
+  symbol?: string;
+  indicators?: string[];
+  period?: number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface TickerTapeConfigRequest {
+  symbols?: SymbolItem[];
+  theme?: string;
+  locale?: string;
+  container_id?: string;
 }
 
 export interface TimestampField {
-
   timestamp?: string;
 }
 
 export interface TopETFItem {
-
   symbol?: string;
   name?: string;
-  latestPrice?: number;
-  changePercent?: number;
+  latest_price?: number;
+  change_percent?: number;
   volume?: number;
+}
+
+export interface TradeHistoryItem {
+  trade_id?: string;
+  order_id?: string;
+  symbol?: string;
+  direction?: string;
+  price?: number;
+  quantity?: number;
+  amount?: number;
+  commission?: number;
+  trade_time?: string;
+  trade_type?: string;
+}
+
+export interface TradeHistoryRequest {
+  start_date?: string | null;
+  end_date?: string | null;
+  symbol?: string | null;
+  page?: number;
+  page_size?: number;
+}
+
+export interface TradeHistoryResponse {
+  trades?: TradeHistoryItem[];
+  total_count?: number;
+  total_amount?: number;
+  total_commission?: number;
+  page?: number;
+  page_size?: number;
+  tradeTime?: string;
+}
+
+export interface TradeOrderModel {
+  symbol?: string;
+  order_type?: string;
+  price?: number;
+  quantity?: number;
+  order_validity?: string | null;
+}
+
+export interface TradeRecord {
+  trade_id?: number;
+  symbol?: string;
+  trade_date?: string;
+  action?: string;
+  price?: number;
+  quantity?: number;
+  amount?: number;
+  commission?: number;
+  profit_loss?: number | null;
+}
+
+export interface TradeStatistics {
+  total_trades?: number;
+  buy_count?: number;
+  sell_count?: number;
+  position_count?: number;
+  total_buy_amount?: number;
+  total_sell_amount?: number;
+  total_commission?: number;
+  realized_profit?: number;
+}
+
+export interface TradingSignalItem {
+  type?: string;
+  signal?: string;
+  strength?: number;
+}
+
+export interface TradingSignalsResponse {
+  overall_signal?: string;
+  signal_strength?: number;
+  signals?: TradingSignalItem[];
+  signal_count?: Record<string, any>;
+}
+
+export interface TrendIndicatorsRequest {
+  symbol?: string;
+  period?: string;
+  ma_periods?: number[] | null;
+}
+
+export interface TrendIndicatorsResponse {
+  ma5?: number | null;
+  ma10?: number | null;
+  ma20?: number | null;
+  ma30?: number | null;
+  ma60?: number | null;
+  ma120?: number | null;
+  ma250?: number | null;
+  ema12?: number | null;
+  ema26?: number | null;
+  ema50?: number | null;
+  macd?: number | null;
+  macd_signal?: number | null;
+  macd_hist?: number | null;
+  adx?: number | null;
+  plus_di?: number | null;
+  minus_di?: number | null;
+  sar?: number | null;
+}
+
+export interface UpdateGroupRequest {
+  group_name?: string;
+}
+
+export interface UpdateWatchlistNotesRequest {
+  notes?: string;
+}
+
+export interface UserPermissions {
+  canTrade?: boolean;
+  canWithdraw?: boolean;
+  canUseStrategies?: boolean;
+  canAccessAdvancedFeatures?: boolean;
+  canViewMarketData?: boolean;
+  canExportData?: boolean;
+  canManageUsers?: boolean;
+  canViewAnalytics?: boolean;
+  maxStrategies?: number;
+  maxWatchlists?: number;
+  maxApiCalls?: number;
+}
+
+export interface UserPreferences {
+  theme?: string;
+  language?: string;
+  timezone?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  defaultDashboard?: string;
+  watchlistLayout?: string;
+  chartSettings?: Record<string, any>;
+  notifications?: Record<string, boolean>;
+  privacy?: Record<string, any>;
+}
+
+export interface UserProfileResponse {
+  userId?: string;
+  username?: string;
+  email?: string;
+  displayName?: string | null;
+  avatar?: string | null;
+  role?: string;
+  status?: string;
+  preferences?: UserPreferences;
+  permissions?: UserPermissions;
+  subscription?: SubscriptionInfo;
+  statistics?: UserStatistics;
+  createdAt?: string;
+  lastLoginAt?: string;
+  lastUpdateAt?: string;
+}
+
+export interface UserStatistics {
+  totalTrades?: number;
+  winningTrades?: number;
+  losingTrades?: number;
+  winRate?: number;
+  totalPnL?: number;
+  totalPnLPercent?: number;
+  averageReturn?: number;
+  sharpeRatio?: number;
+  maxDrawdown?: number;
+  totalCommission?: number;
+  joinDate?: string;
+  activeStrategies?: number;
+  activeWatchlists?: number;
+  followers?: number;
+  following?: number;
 }
 
 export interface VaRCVaRRequest {
-
-  entityType?: string;
-  entityId?: number;
-  confidenceLevel?: number;
+  entity_type?: string;
+  entity_id?: number;
+  confidence_level?: number;
 }
 
 export interface VaRCVaRResult {
+  var_95_hist?: number | null;
+  var_95_param?: number | null;
+  var_99_hist?: number | null;
+  cvar_95?: number | null;
+  cvar_99?: number | null;
+  entity_type?: string | null;
+  entity_id?: number | null;
+  confidence_level?: number | null;
+}
 
-  var95Hist?: number | null;
-  var95Param?: number | null;
-  var99Hist?: number | null;
-  cvar95?: number | null;
-  cvar99?: number | null;
-  entityType?: string | null;
-  entityId?: number | null;
-  confidenceLevel?: number | null;
+export interface ValidationResult {
+  valid?: boolean;
+  category?: string;
+  path?: string | null;
+  message?: string;
+  suggestion?: string | null;
+}
+
+export interface VolatilityIndicatorsResponse {
+  bb_upper?: number | null;
+  bb_middle?: number | null;
+  bb_lower?: number | null;
+  bb_width?: number | null;
+  atr?: number | null;
+  atr_percent?: number | null;
+  kc_upper?: number | null;
+  kc_middle?: number | null;
+  kc_lower?: number | null;
+  stddev?: number | null;
 }
 
 export interface VolumeField {
-
   volume?: number;
 }
 
-export interface WencaiCustomQueryRequest {
+export interface VolumeIndicatorsResponse {
+  obv?: number | null;
+  vwap?: number | null;
+  volume_ma5?: number | null;
+  volume_ma10?: number | null;
+  volume_ratio?: number | null;
+}
 
-  queryText?: string;
-  pages: number; // Default: 1
+export interface WatchlistItem {
+  symbol?: string;
+  name?: string | null;
+  current_price?: number | null;
+  change_percent?: number | null;
+  note?: string | null;
+  added_at?: string | null;
+}
+
+export interface WatchlistResponse {
+  id?: string;
+  name?: string;
+  description?: string | null;
+  isDefault?: boolean;
+  isPublic?: boolean;
+  owner?: Record<string, string>;
+  stocks?: WatchlistStockResponse[];
+  statistics?: Record<string, any>;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  lastViewedAt?: string | null;
+  sortOrder?: number;
+}
+
+export interface WatchlistStockResponse {
+  symbol?: string;
+  name?: string;
+  market?: string;
+  currentPrice?: number;
+  changeAmount?: number;
+  changePercent?: number;
+  volume?: number;
+  marketCap?: number;
+  pe?: number | null;
+  pb?: number | null;
+  addedAt?: string;
+  notes?: string | null;
+  alerts?: Record<string, any>[];
+  customFields?: Record<string, any> | null;
+}
+
+export interface WatchlistSummary {
+  total_count?: number;
+  items?: WatchlistItem[];
+  avg_change_percent?: number | null;
+}
+
+export type WebSocketErrorCode = 'AUTH_REQUIRED' | 'AUTH_FAILED' | 'AUTH_TOKEN_EXPIRED' | 'INVALID_MESSAGE_FORMAT' | 'INVALID_ACTION' | 'INVALID_SYMBOL' | 'INVALID_PARAMETERS' | 'PERMISSION_DENIED' | 'RATE_LIMIT_EXCEEDED' | 'ROOM_NOT_FOUND' | 'SUBSCRIPTION_FAILED' | 'ALREADY_SUBSCRIBED' | 'INTERNAL_ERROR' | 'SERVICE_UNAVAILABLE' | 'TIMEOUT';
+
+export interface WebSocketErrorMessage {
+  type?: WebSocketMessageType;
+  request_id?: string | null;
+  error_code?: string;
+  error_message?: string;
+  error_details?: Record<string, any> | null;
+  timestamp?: number;
+  trace_id?: string | null;
+}
+
+export interface WebSocketHeartbeatMessage {
+  type?: WebSocketMessageType;
+  timestamp?: number;
+  server_time?: number | null;
+}
+
+export type WebSocketMessageType = 'request' | 'subscribe' | 'unsubscribe' | 'ping' | 'response' | 'error' | 'notification' | 'pong';
+
+export interface WebSocketNotificationMessage {
+  type?: WebSocketMessageType;
+  room?: string;
+  event?: string;
+  data?: any;
+  timestamp?: number;
+  server_time?: number;
+}
+
+export interface WebSocketRequestMessage {
+  type?: WebSocketMessageType;
+  request_id?: string;
+  action?: string;
+  payload?: Record<string, any>;
+  user_id?: string | null;
+  timestamp?: number;
+  trace_id?: string | null;
+}
+
+export interface WebSocketResponseMessage {
+  type?: WebSocketMessageType;
+  request_id?: string;
+  success?: boolean;
+  data?: any;
+  timestamp?: number;
+  server_time?: number;
+  trace_id?: string | null;
+}
+
+export interface WebSocketSubscribeMessage {
+  type?: WebSocketMessageType;
+  request_id?: string;
+  room?: string;
+  user_id?: string | null;
+  timestamp?: number;
+}
+
+export interface WencaiCustomQueryRequest {
+  query_text?: string;
+  pages?: number;
 }
 
 export interface WencaiCustomQueryResponse {
-
   success?: boolean;
   message?: string;
-  queryText?: string;
-  totalRecords?: number;
+  query_text?: string;
+  total_records?: number;
   results?: Record<string, any>[];
   columns?: string[];
-  fetchTime?: string;
+  fetch_time?: string;
 }
 
 export interface WencaiErrorResponse {
-
   success?: boolean;
   error?: string;
   message?: string;
@@ -841,88 +2514,409 @@ export interface WencaiErrorResponse {
 }
 
 export interface WencaiHistoryItem {
-
   date?: string;
-  totalRecords?: number;
-  fetchCount?: number;
+  total_records?: number;
+  fetch_count?: number;
 }
 
 export interface WencaiHistoryResponse {
-
-  queryName?: string;
-  dateRange?: string[];
+  query_name?: string;
+  date_range?: string[];
   history?: WencaiHistoryItem[];
-  totalDays?: number;
+  total_days?: number;
 }
 
 export interface WencaiQueryInfo {
-
   id?: number;
-  queryName?: string;
-  queryText?: string;
+  query_name?: string;
+  query_text?: string;
   description?: string | null;
-  isActive?: boolean;
-  createdAt?: string | null;
-  updatedAt?: string | null;
+  is_active?: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface WencaiQueryListResponse {
-
   queries?: WencaiQueryInfo[];
   total?: number;
 }
 
 export interface WencaiQueryRequest {
-
-  queryName?: string;
-  pages: number; // Default: 1
+  query_name?: string;
+  pages?: number;
 }
 
 export interface WencaiQueryResponse {
-
   success?: boolean;
   message?: string;
-  queryName?: string;
-  totalRecords?: number;
-  newRecords?: number;
-  duplicateRecords?: number;
-  tableName?: string;
-  fetchTime?: string;
+  query_name?: string;
+  total_records?: number;
+  new_records?: number;
+  duplicate_records?: number;
+  table_name?: string;
+  fetch_time?: string;
 }
 
 export interface WencaiRefreshRequest {
-
-  pages: number; // Default: 1
-  force: boolean; // Default: False
+  pages?: number;
+  force?: boolean;
 }
 
 export interface WencaiRefreshResponse {
-
   status?: string;
   message?: string;
-  taskId?: string | null;
-  queryName?: string;
+  task_id?: string | null;
+  query_name?: string;
 }
 
 export interface WencaiResultItem {
-
   data?: Record<string, any>;
-  fetchTime?: string;
+  fetch_time?: string;
 }
 
 export interface WencaiResultsResponse {
-
-  queryName?: string;
+  query_name?: string;
   total?: number;
   results?: Record<string, any>[];
   columns?: string[];
-  latestFetchTime?: string | null;
+  latest_fetch_time?: string | null;
 }
 
 export interface WencaiStatsResponse {
+  total_queries?: number;
+  active_queries?: number;
+  total_records?: number;
+  last_refresh_time?: string | null;
+}
 
-  totalQueries?: number;
-  activeQueries?: number;
-  totalRecords?: number;
-  lastRefreshTime?: string | null;
+// Additional system types for monitoring and strategy management
+export interface ServiceStatus {
+  name?: string;
+  status?: string;
+  cpu?: number;
+  memory?: number;
+  lastCheck?: string;
+  healthEndpoint?: string;
+}
+
+export interface SystemStatusResponse {
+  status?: string;
+  uptime_seconds?: number;
+  version?: string;
+  last_check?: string;
+  cpu?: CPUMetric;
+  memory?: MemoryMetric;
+  disk?: DiskMetric;
+  gpu?: number;
+  network?: NetworkMetric;
+  database?: DatabaseMetric;
+  api?: APIMetric;
+  websocket?: WebSocketMetric;
+  metrics?: SystemMetrics;
+  services?: ServiceStatus[];
+}
+
+export interface MonitoringAlertResponse {
+  id?: string;
+  alert_id?: string;
+  alert_type?: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  source?: string;
+  severity?: string;
+  message?: string;
+  timestamp?: string;
+  resolved?: boolean;
+  acknowledged?: boolean;
+  assignee?: string;
+  tags?: string[];
+}
+
+export interface LogEntryResponse {
+  id?: string;
+  timestamp?: string;
+  level?: string;
+  message?: string;
+  module?: string;
+  logger?: string;
+  stackTrace?: string;
+  context?: Record<string, any>;
+}
+
+export interface DataQualityResponse {
+  overall_score?: number;
+  overallScore?: number;
+  completeness?: number;
+  accuracy?: number;
+  timeliness?: number;
+  consistency?: number;
+  last_checked?: string;
+  lastCheck?: string;
+  issues?: string[] | DataQualityIssue[];
+}
+
+export interface DataQualityIssue {
+  id?: string;
+  type?: string;
+  severity?: string;
+  description?: string;
+  affectedRecords?: number;
+  suggestion?: string;
+}
+
+export interface StrategyConfigResponse {
+  id?: string;
+  strategy_id?: string;
+  name?: string;
+  description?: string;
+  parameters?: Record<string, any>;
+  enabled?: boolean;
+  last_modified?: string;
+  lastModified?: string;
+  canEdit?: boolean;
+}
+
+// Additional data types for adapters
+export interface IndexData {
+  code?: string;
+  name?: string;
+  current?: number;
+  change?: number;
+  changePercent?: number;
+  change_percent?: number;
+  volume?: number;
+  timestamp?: string;
+}
+
+export interface SectorData {
+  sector?: string;
+  sectorName?: string;
+  changePercent?: number;
+  change_percent?: number;
+  stockCount?: number;
+  stocks_count?: number;
+  marketCap?: number;
+  market_cap?: number;
+  leaderStock?: string;
+  leaderChange?: number;
+}
+
+export interface KLinePoint {
+  date?: string;
+  timestamp?: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  close?: number;
+  volume?: number;
+  amount?: number;
+}
+
+export interface BacktestResultResponse {
+  backtest_id?: string;
+  strategyId?: string;
+  strategy_name?: string;
+  strategyName?: string;
+  total_return?: number;
+  annual_return?: number;
+  annualizedReturn?: number;
+  sharpe_ratio?: number;
+  sharpeRatio?: number;
+  max_drawdown?: number;
+  maxDrawdown?: number;
+  win_rate?: number;
+  winRate?: number;
+  start_date?: string;
+  startDate?: string;
+  end_date?: string;
+  endDate?: string;
+  initialCapital?: number;
+  finalCapital?: number;
+  profitFactor?: number;
+  totalTrades?: number;
+  equityCurve?: EquityCurvePoint[];
+  profitAndLoss?: number;
+  grossProfit?: number;
+  grossLoss?: number;
+  averageTrade?: number;
+  averageWin?: number;
+  averageLoss?: number;
+  largestWin?: number;
+  largestLoss?: number;
+  consecutiveWins?: number;
+  consecutiveLosses?: number;
+}
+
+export interface EquityCurvePoint {
+  date?: string;
+  equity?: number;
+  drawdown?: number;
+}
+
+export interface TechnicalIndicatorResponse {
+  indicator_name?: string;
+  name?: string;
+  displayName?: string;
+  category?: string;
+  parameters?: Record<string, any>;
+  values?: number[];
+  outputs?: string[];
+  signals?: ('buy' | 'sell' | 'hold')[];
+  timestamp?: string;
+  description?: string;
+  formula?: string;
+}
+
+export interface AccountOverviewResponse {
+  total_assets?: number;
+  totalAssets?: number;
+  totalMarketValue?: number;
+  available_cash?: number;
+  availableCash?: number;
+  market_value?: number;
+  marketValue?: number;
+  totalPositionValue?: number;
+  total_pnl?: number;
+  totalPnL?: number;
+  today_pnl?: number;
+  todayPnL?: number;
+  positions_count?: number;
+  positionsCount?: number;
+  currency?: string;
+  assetAllocation?: AssetAllocation[];
+}
+
+export interface AssetAllocation {
+  category?: string;
+  value?: number;
+  percentage?: number;
+  color?: string;
+}
+
+export interface PositionResponse {
+  symbol?: string;
+  quantity?: number;
+  avg_cost?: number;
+  avgCost?: number;
+  avgPrice?: number;
+  current_price?: number;
+  currentPrice?: number;
+  market_value?: number;
+  marketValue?: number;
+  pnl?: number;
+  pnl_percent?: number;
+  pnlPercent?: number;
+  side?: string;
+  costBasis?: number;
+  realizedPnL?: number;
+  unrealizedPnL?: number;
+  unrealizedPnLPercent?: number;
+  positionPnL?: number;
+  positionPnLPercent?: number;
+  name?: string;
+  marginUsed?: number;
+  marginAvailable?: number;
+  lastUpdate?: string;
+}
+
+export interface FundFlowResponse {
+  items?: FundFlowItem[];
+  date?: string;
+}
+
+export interface FundFlowItem {
+  tradeDate?: string;
+  trade_date?: string;
+  mainInflow?: number;
+  main_outflow?: number;
+  mainOutflow?: number;
+  netInflow?: number;
+  net_inflow?: number;
+}
+
+export interface KlineResponse {
+  points?: KLinePoint[];
+  symbol?: string;
+  period?: string;
+}
+
+export interface StockSearchResult {
+  name?: string;
+  code?: string;
+  current?: number;
+  changePercent?: number;
+  change_percent?: number;
+  change?: number;
+  volume?: number;
+}
+
+export interface SystemMetrics {
+  cpu?: CPUMetric;
+  memory?: MemoryMetric;
+  disk?: DiskMetric;
+  network?: NetworkMetric;
+  gpu?: number;
+  database?: DatabaseMetric;
+  api?: APIMetric;
+  websocket?: WebSocketMetric;
+}
+
+export interface CPUMetric {
+  current?: number;
+  total?: number;
+  percentage?: number;
+}
+
+export interface MemoryMetric {
+  current?: number;
+  total?: number;
+  percentage?: number;
+}
+
+export interface DiskMetric {
+  current?: number;
+  total?: number;
+  percentage?: number;
+}
+
+export interface NetworkMetric {
+  inbound?: number;
+  outbound?: number;
+  errors?: number;
+  errorRate?: number;
+}
+
+export interface DatabaseMetric {
+  connections?: number;
+  connected?: boolean;
+  maxConnections?: number;
+  queries?: number;
+  latency?: number;
+  responseTime?: number;
+  status?: string;
+}
+
+export interface APIMetric {
+  requests?: number;
+  uptime?: number;
+  requestsPerMinute?: number;
+  errors?: number;
+  latency?: number;
+  averageResponseTime?: number;
+  errorRate?: number;
+  status?: string;
+}
+
+export interface WebSocketMetric {
+  connections?: number;
+  connected?: boolean;
+  services?: number;
+  messages?: number;
+  errors?: number;
+  status?: string;
+}
+
+export interface SystemStatusResponseExtended extends SystemStatusResponse {
+  metrics?: SystemMetrics;
 }

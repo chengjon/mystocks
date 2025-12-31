@@ -5,7 +5,7 @@
  * for fallback strategy implementation.
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // UnifiedResponse v2.0.0 format
 export interface UnifiedResponse<T = any> {
@@ -24,6 +24,12 @@ interface RequestConfig extends AxiosRequestConfig {
   skipCSRF?: boolean;
 }
 
+// Internal request config for interceptors
+interface InternalRequestConfig extends InternalAxiosRequestConfig {
+  skipErrorHandler?: boolean;
+  skipCSRF?: boolean;
+}
+
 // Create axios instance
 const instance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
@@ -36,7 +42,7 @@ const instance: AxiosInstance = axios.create({
 
 // Request interceptor
 instance.interceptors.request.use(
-  async (config: RequestConfig) => {
+  async (config: InternalRequestConfig) => {
     // Add CSRF token for POST/PUT/PATCH/DELETE
     if (
       config.method?.toUpperCase() !== 'GET' &&
@@ -45,8 +51,10 @@ instance.interceptors.request.use(
     ) {
       try {
         const token = await getCSRFToken();
-        config.headers = config.headers || {};
-        config.headers['X-CSRF-Token'] = token;
+        if (!config.headers) {
+          config.headers = {} as any;
+        }
+        (config.headers as any)['X-CSRF-Token'] = token;
       } catch (error) {
         console.error('[apiClient] Failed to get CSRF token:', error);
       }
@@ -59,7 +67,7 @@ instance.interceptors.request.use(
 
 // Response interceptor - returns full UnifiedResponse
 instance.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse>) => {
+  (response: AxiosResponse<UnifiedResponse>): any => {
     // Return full response for fallback handling
     return response.data;
   },

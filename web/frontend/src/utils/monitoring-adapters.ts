@@ -8,7 +8,8 @@ import type {
   SystemStatusResponse,
   MonitoringAlertResponse,
   LogEntryResponse,
-  DataQualityResponse
+  DataQualityResponse,
+  DataQualityIssue
 } from '@/api/types/generated-types'
 
 // ViewModel interfaces
@@ -110,7 +111,7 @@ export interface QualityMetricVM {
 export interface DataQualityIssueVM {
   id: string
   type: 'missing' | 'invalid' | 'outdated' | 'duplicate'
-  severity: 'low' | 'medium' | 'high'
+  severity: 'low' | 'medium' | 'high' | 'critical'
   description: string
   affectedRecords: number
   suggestion: string
@@ -187,7 +188,7 @@ export class MonitoringAdapter {
       title: alert.title || '',
       description: alert.description || '',
       severity: this.getSeverity(alert.severity),
-      category: alert.category || 'system',
+      category: (alert.category || 'system') as 'system' | 'performance' | 'security' | 'business',
       source: alert.source || 'system',
       timestamp: alert.timestamp ? new Date(alert.timestamp).getTime() : Date.now(),
       acknowledged: alert.acknowledged || false,
@@ -224,14 +225,16 @@ export class MonitoringAdapter {
       timeliness: this.toQualityMetric(data.timeliness),
       consistency: this.toQualityMetric(data.consistency),
       lastCheck: this.formatDateTime(data.lastCheck),
-      issues: (data.issues || []).map(issue => ({
-        id: issue.id || '',
-        type: issue.type || 'missing',
-        severity: this.getSeverity(issue.severity),
-        description: issue.description || '',
-        affectedRecords: issue.affectedRecords || 0,
-        suggestion: issue.suggestion || ''
-      }))
+      issues: (data.issues || [])
+        .filter((issue): issue is DataQualityIssue => typeof issue !== 'string')
+        .map((issue): DataQualityIssueVM => ({
+          id: issue.id || '',
+          type: (issue.type || 'missing') as 'missing' | 'invalid' | 'outdated' | 'duplicate',
+          severity: this.getSeverity(issue.severity),
+          description: issue.description || '',
+          affectedRecords: issue.affectedRecords || 0,
+          suggestion: issue.suggestion || ''
+        }))
     }
   }
 

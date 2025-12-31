@@ -1,20 +1,27 @@
-import type { KLineData, IndicatorResult } from '@/types/kline';
-import type { IndicatorParams } from '@/types/indicator';
+import type { KLineData } from '@/types/kline';
 
 interface WorkerMessage {
   type: 'CALCULATE_INDICATOR';
   payload: {
     data: KLineData[];
     indicatorType: string;
-    params?: IndicatorParams;
+    params?: Record<string, any>;  // Runtime parameters (period, std, fast, slow, etc.)
   };
 }
+
+// Flexible indicator result type for worker responses
+type WorkerIndicatorResult =
+  | { values: number[]; timestamps: string[]; error?: string }  // Single output (MA, EMA, RSI)
+  | { upper: number[]; middle: number[]; lower: number[]; timestamps: string[] }  // BOLL
+  | { dif: number[]; dea: number[]; macd: number[]; timestamps: string[] }  // MACD
+  | { k: number[]; d: number[]; j: number[]; timestamps: string[] }  // KDJ
+  | { error: string };  // Error case
 
 interface WorkerResponse {
   type: 'INDICATOR_RESULT';
   payload: {
     indicatorType: string;
-    result: IndicatorResult;
+    result: WorkerIndicatorResult;
   };
 }
 
@@ -235,7 +242,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     const lows = data.map(d => d.low);
     const timestamps = data.map(d => d.timestamp);
 
-    let result: IndicatorResult;
+    let result: any;
 
     switch (indicatorType.toUpperCase()) {
       case 'MA': {

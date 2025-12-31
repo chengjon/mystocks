@@ -94,12 +94,12 @@ export class StrategyAdapter {
     try {
       const task = apiResponse.data;
       return {
-        taskId: task.task_id || task.taskId,
-        strategyId: task.strategy_id || task.strategyId,
+        taskId: task.taskId,
+        strategyId: task.strategyId,
         status: this.translateBacktestStatus(task.status),
         progress: task.progress || 0,
-        startTime: this.parseDate(task.start_time),
-        endTime: task.end_time ? this.parseDate(task.end_time) : undefined,
+        startTime: task.startTime,
+        endTime: task.endTime,
         result: task.result ? this.adaptBacktestResult(task.result) : undefined,
         error: task.error,
       };

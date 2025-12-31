@@ -37,7 +37,7 @@ export default defineConfig(async () => {
   let availablePort = 3000; // 默认端口
 
   try {
-    availablePort = await findAvailablePort(3000, 3010);
+    availablePort = await findAvailablePort(3020, 3029);
     console.log(`🚀 Using available port: ${availablePort}`);
   } catch (error) {
     console.error(`❌ ${(error as Error).message}`);

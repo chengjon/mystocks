@@ -70,6 +70,7 @@ export interface MarketOverviewVM {
   chipRaces: ChipRaceItem[];
   longHuBang: LongHuBangItem[];
   lastUpdate: Date;
+  marketIndex?: { [key: string]: number };
 }
 
 // ============================================
@@ -144,6 +145,8 @@ export interface KLineChartData {
   categoryData: string[];
   values: number[][];
   volumes: number[];
+  // Optional data property for compatibility with chart components
+  data?: KlineCandle[]
 }
 
 /**

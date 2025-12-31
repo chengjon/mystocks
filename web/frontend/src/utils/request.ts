@@ -8,14 +8,20 @@
  * - Request/response interceptors
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosError
+} from 'axios'
 import { ElMessage, ElNotification } from 'element-plus'
 import type { APIResponse } from '@/api/types/generated-types'
 
 // Type definitions
-export interface RequestConfig extends AxiosRequestConfig {
+export interface RequestConfig extends Partial<Omit<InternalAxiosRequestConfig, 'headers'>> {
   skipErrorHandler?: boolean
   skipCSRF?: boolean
+  headers?: any
 }
 
 export interface ErrorResponse {
@@ -39,7 +45,7 @@ const instance: AxiosInstance = axios.create({
 
 // Request interceptor for CSRF token
 instance.interceptors.request.use(
-  async (config: RequestConfig) => {
+  async (config: any) => {
     // Skip CSRF for GET requests and explicitly marked requests
     if (
       config.method?.toUpperCase() !== 'GET' &&
@@ -69,7 +75,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response: AxiosResponse<APIResponse>) => {
     // Calculate request duration
-    const duration = Date.now() - parseInt(response.config.headers?.['X-Request-Start'] || '0')
+    const duration =
+      Date.now() - parseInt(response.config.headers?.['X-Request-Start'] as string || '0')
 
     // Log slow requests
     if (duration > 3000) {
@@ -78,25 +85,27 @@ instance.interceptors.response.use(
 
     // Handle unified response format
     if (response.data && typeof response.data === 'object') {
-      if ('success' in response.data) {
-        if (response.data.success) {
+      const apiResponse = response.data as APIResponse
+      if ('success' in apiResponse) {
+        if (apiResponse.success) {
           // Return only the data part for successful responses
-          return response.data.data || null
+          return response
         } else {
           // Throw error for API-level errors
-          throw new Error(response.data.message || 'Request failed')
+          const errorMessage = 'message' in apiResponse ? (apiResponse as any).message : 'Request failed'
+          throw new Error(errorMessage)
         }
       }
     }
 
-    // Return response data for non-unified responses
-    return response.data
+    // Return response for non-unified responses
+    return response
   },
   (error: AxiosError<ErrorResponse>) => {
     const { response, config } = error
 
     // Skip error handling if explicitly requested
-    if (config?.skipErrorHandler) {
+    if ((config as RequestConfig)?.skipErrorHandler) {
       return Promise.reject(error)
     }
 
@@ -256,4 +265,3 @@ export default instance
 
 // Export utilities
 export { getCSRFToken }
-export type { RequestConfig, ErrorResponse }

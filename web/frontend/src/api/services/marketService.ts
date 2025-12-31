@@ -8,38 +8,40 @@
 
 import { apiGet } from '../apiClient';
 import type { UnifiedResponse } from '../apiClient';
-import type {
-  MarketOverviewResponse,
-  FundFlowResponse,
-  KLineDataResponse,
-} from '../types/generated-types';
+import type { components } from '../../types/market-data-api';
+
+// Type aliases for easier usage
+export type MarketOverviewData = components["schemas"]["MarketOverviewData"];
+export type FundFlowData = components["schemas"]["FundFlowData"];
+export type KlineData = components["schemas"]["KlineData"];
+export type ETFData = components["schemas"]["ETFData"];
+export type LongHuBangData = components["schemas"]["LongHuBangData"];
+export type ChipRaceData = components["schemas"]["ChipRaceData"];
 
 export class MarketApiService {
   private readonly baseUrl = '/api/market';
 
   /**
    * Get market overview
-   *
-   * @returns UnifiedResponse with market overview data
+   * GET /api/market/overview
    */
-  async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewResponse>> {
-    return apiGet<UnifiedResponse<MarketOverviewResponse>>(
+  async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewData>> {
+    return apiGet<UnifiedResponse<MarketOverviewData>>(
       `${this.baseUrl}/overview`
     );
   }
 
   /**
    * Get fund flow data
-   *
-   * @param params - Query parameters (startDate, endDate, market)
-   * @returns UnifiedResponse with fund flow data
+   * GET /api/market/fund-flow
    */
-  async getFundFlow(params?: {
-    startDate?: string;
-    endDate?: string;
-    market?: string;
-  }): Promise<UnifiedResponse<FundFlowResponse>> {
-    return apiGet<UnifiedResponse<FundFlowResponse>>(
+  async getFundFlow(params: {
+    symbol: string;
+    timeframe?: "1" | "3" | "5" | "10";
+    start_date?: string;
+    end_date?: string;
+  }): Promise<UnifiedResponse<FundFlowData>> {
+    return apiGet<UnifiedResponse<FundFlowData>>(
       `${this.baseUrl}/fund-flow`,
       params
     );
@@ -47,122 +49,73 @@ export class MarketApiService {
 
   /**
    * Get K-line data
-   *
-   * @param params - K-line parameters (symbol, interval, startDate, endDate, limit)
-   * @returns UnifiedResponse with K-line data
+   * GET /api/market/kline
    */
   async getKLineData(params: {
     symbol: string;
-    interval: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M';
-    startDate?: string;
-    endDate?: string;
+    interval?: "1m" | "5m" | "15m" | "30m" | "1h" | "1d";
+    start_date?: string;
+    end_date?: string;
     limit?: number;
-  }): Promise<UnifiedResponse<KLineDataResponse>> {
-    return apiGet<UnifiedResponse<KLineDataResponse>>(
+  }): Promise<UnifiedResponse<KlineData>> {
+    return apiGet<UnifiedResponse<KlineData>>(
       `${this.baseUrl}/kline`,
       params
     );
   }
 
   /**
-   * Get real-time market data for a symbol
-   *
-   * @param symbol - Stock symbol
-   * @returns UnifiedResponse with real-time data
+   * Get ETF list
+   * GET /api/market/etf/list
    */
-  async getRealtimeData(symbol: string): Promise<UnifiedResponse<any>> {
-    return apiGet<UnifiedResponse<any>>(
-      `${this.baseUrl}/realtime/${symbol}`
-    );
-  }
-
-  /**
-   * Get market index data
-   *
-   * @param indices - Index codes (e.g., ['000001', '399001'])
-   * @returns UnifiedResponse with index data
-   */
-  async getMarketIndices(indices?: string[]): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
-      `${this.baseUrl}/indices`,
-      { indices }
-    );
-  }
-
-  /**
-   * Get sector performance data
-   *
-   * @param params - Query parameters (sector, limit)
-   * @returns UnifiedResponse with sector data
-   */
-  async getSectorPerformance(params?: {
-    sector?: string;
+  async getETFList(params?: {
+    symbol?: string;
+    keyword?: string;
+    market?: "SH" | "SZ";
+    category?: "股票" | "债券" | "商品" | "货币" | "QDII";
     limit?: number;
-  }): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
-      `${this.baseUrl}/sectors`,
+    offset?: number;
+  }): Promise<UnifiedResponse<{
+      etfs?: ETFData[];
+      total?: number;
+      page?: number;
+      page_size?: number;
+  }>> {
+    return apiGet<UnifiedResponse<{
+      etfs?: ETFData[];
+      total?: number;
+      page?: number;
+      page_size?: number;
+  }>>(
+      `${this.baseUrl}/etf/list`,
       params
     );
   }
 
   /**
-   * Get top ETFs
-   *
-   * @param limit - Number of ETFs to return (default: 10)
-   * @returns UnifiedResponse with ETF data
-   */
-  async getTopETFs(limit: number = 10): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
-      `${this.baseUrl}/top-etfs`,
-      { limit }
-    );
-  }
-
-  /**
-   * Get chip race data (主力筹码比拼)
-   *
-   * @param params - Query parameters (raceType, tradeDate, limit)
-   * @returns UnifiedResponse with chip race data
-   */
-  async getChipRaces(params?: {
-    raceType?: string;
-    tradeDate?: string;
-    limit?: number;
-  }): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
-      `${this.baseUrl}/chip-races`,
-      params
-    );
-  }
-
-  /**
-   * Get long-hu-bang data (龙虎榜)
-   *
-   * @param params - Query parameters (tradeDate, limit)
-   * @returns UnifiedResponse with long-hu-bang data
+   * Get Long Hu Bang data
+   * GET /api/market/lhb
    */
   async getLongHuBang(params?: {
-    tradeDate?: string;
-    limit?: number;
-  }): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
-      `${this.baseUrl}/long-hu-bang`,
+    date?: string;
+    type?: "rise" | "fall" | "all";
+  }): Promise<UnifiedResponse<LongHuBangData>> {
+    return apiGet<UnifiedResponse<LongHuBangData>>(
+      `${this.baseUrl}/lhb`,
       params
     );
   }
 
   /**
-   * Get market breadth data
-   *
-   * @param params - Query parameters (market, date)
-   * @returns UnifiedResponse with breadth data
+   * Get Chip Race data
+   * GET /api/market/chip-race
    */
-  async getMarketBreadth(params?: {
-    market?: string;
+  async getChipRace(params?: {
     date?: string;
-  }): Promise<UnifiedResponse<any>> {
-    return apiGet<UnifiedResponse<any>>(
-      `${this.baseUrl}/breadth`,
+    limit?: number;
+  }): Promise<UnifiedResponse<ChipRaceData>> {
+    return apiGet<UnifiedResponse<ChipRaceData>>(
+      `${this.baseUrl}/chip-race`,
       params
     );
   }

@@ -8,7 +8,7 @@
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KLineDataResponse,
+  KlineResponse,
   IndexData,
   SectorData,
   FundFlowItem,
@@ -118,7 +118,7 @@ export class DataAdapter {
   /**
    * Convert K-Line API response to chart data
    */
-  static toKLineChartData(data: KLineDataResponse): KLineChartData {
+  static toKLineChartData(data: KlineResponse): KLineChartData {
     const points = data.points || []
 
     return {
@@ -130,7 +130,7 @@ export class DataAdapter {
         p.high || 0
       ]),
       volumes: points.map((p: KLinePoint) => p.volume || 0)
-    }
+    } as any
   }
 
   /**

@@ -127,30 +127,51 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted, onUnmounted, watch, nextTick } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import type { ECharts, EChartsOption } from '@/types/echarts'
 import request from '@/api'
 
+// ============================================
+// 类型定义
+// ============================================
+
+interface QueryForm {
+  symbol: string
+  timeframe: string
+}
+
+interface FundFlowItem {
+  trade_date: string
+  timeframe: string
+  main_net_inflow: number
+  main_net_inflow_rate: number
+  super_large_net_inflow: number
+  large_net_inflow: number
+  medium_net_inflow: number
+  small_net_inflow: number
+}
+
 // 响应式数据
-const queryForm = reactive({
+const queryForm = reactive<QueryForm>({
   symbol: '600519.SH',
   timeframe: '1'
 })
 
-const dateRange = ref([])
-const fundFlowData = ref([])
-const loading = ref(false)
-const refreshing = ref(false)
-const chartRef = ref(null)
-let chartInstance = null
+const dateRange: Ref<string[]> = ref([])
+const fundFlowData: Ref<FundFlowItem[]> = ref([])
+const loading: Ref<boolean> = ref(false)
+const refreshing: Ref<boolean> = ref(false)
+const chartRef: Ref<HTMLDivElement | null> = ref(null)
+let chartInstance: ECharts | null = null
 
 // 使用配置好的request实例，baseURL已经在api/index.js中配置
 
 // 查询资金流向
-const handleQuery = async () => {
+const handleQuery = async (): Promise<void> => {
   if (!queryForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -158,7 +179,7 @@ const handleQuery = async () => {
 
   loading.value = true
   try {
-    const params = {
+    const params: any = {
       symbol: queryForm.symbol,
       timeframe: queryForm.timeframe
     }
@@ -179,7 +200,7 @@ const handleQuery = async () => {
       await nextTick()
       renderChart()
     }
-  } catch (error) {
+  } catch (error: any) {
     ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
   } finally {
     loading.value = false
@@ -187,7 +208,7 @@ const handleQuery = async () => {
 }
 
 // 刷新数据
-const handleRefresh = async () => {
+const handleRefresh = async (): Promise<void> => {
   if (!queryForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -205,7 +226,7 @@ const handleRefresh = async () => {
     ElMessage.success('数据刷新成功')
     // 自动重新查询
     await handleQuery()
-  } catch (error) {
+  } catch (error: any) {
     ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
   } finally {
     refreshing.value = false
@@ -213,7 +234,7 @@ const handleRefresh = async () => {
 }
 
 // 格式化金额
-const formatAmount = (value) => {
+const formatAmount = (value: number): string => {
   if (value === null || value === undefined) return '-'
   const abs = Math.abs(value)
   if (abs >= 100000000) {
@@ -225,20 +246,20 @@ const formatAmount = (value) => {
 }
 
 // 格式化百分比
-const formatPercent = (value) => {
+const formatPercent = (value: number): string => {
   if (value === null || value === undefined) return '-'
   return value.toFixed(2) + '%'
 }
 
 // 获取金额样式类
-const getAmountClass = (value) => {
+const getAmountClass = (value: number): string => {
   if (value > 0) return 'amount-positive'
   if (value < 0) return 'amount-negative'
   return 'amount-neutral'
 }
 
 // 渲染ECharts图表
-const renderChart = () => {
+const renderChart = (): void => {
   if (!chartRef.value || fundFlowData.value.length === 0) return
 
   if (!chartInstance) {
@@ -252,7 +273,7 @@ const renderChart = () => {
 
   console.log('Chart data:', { dates, mainFlow, superLargeFlow, largeFlow })
 
-  const option = {
+  const option: EChartsOption = {
     title: {
       text: `${queryForm.symbol} 资金流向趋势`,
       left: 'center',
@@ -260,9 +281,9 @@ const renderChart = () => {
     },
     tooltip: {
       trigger: 'axis',
-      formatter: function (params) {
+      formatter: function (params: any) {
         let result = params[0].axisValue + '<br/>'
-        params.forEach(param => {
+        params.forEach((param: any) => {
           const value = parseFloat(param.value)
           const color = value >= 0 ? '#67C23A' : '#F56C6C'
           result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
@@ -291,9 +312,8 @@ const renderChart = () => {
     yAxis: {
       type: 'value',
       name: '金额(万元)',
-      nameTextStyle: { padding: [0, 0, 0, 40] },
       axisLabel: {
-        formatter: function(value) {
+        formatter: function(value: any) {
           return value + '万'
         }
       },
@@ -340,10 +360,45 @@ const renderChart = () => {
 
   // 调整图表大小
   nextTick(() => {
-    chartInstance.resize()
+    chartInstance?.resize()
   })
 }
 
+// 监听数据变化
+watch(() => fundFlowData.value, () => {
+  if (fundFlowData.value.length > 0) {
+    nextTick(() => renderChart())
+  }
+})
+
+// 监听窗口大小变化
+const handleResize = (): void => {
+  if (chartInstance) {
+    chartInstance.resize()
+  }
+}
+
+// 组件挂载
+onMounted(() => {
+  // 默认查询
+  handleQuery()
+
+  // 添加窗口大小监听
+  window.addEventListener('resize', handleResize)
+})
+
+// 组件卸载
+onUnmounted(() => {
+  // 移除事件监听
+  window.removeEventListener('resize', handleResize)
+
+  // 销毁图表实例
+  if (chartInstance) {
+    chartInstance.dispose()
+    chartInstance = null
+  }
+})
+</script>
 // 监听数据变化
 watch(() => fundFlowData.value, () => {
   if (fundFlowData.value.length > 0) {

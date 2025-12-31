@@ -324,6 +324,3 @@ export class ConnectionHealthMonitor {
 export const createHealthMonitor = (options?: any): ConnectionHealthMonitor => {
   return new ConnectionHealthMonitor(options)
 }
-
-// 导出健康监控类型
-export type { HealthMetrics, CircuitBreakerState }

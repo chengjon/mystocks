@@ -201,5 +201,11 @@ setInterval(() => {
   cacheManager.cleanup()
 }, 60 * 1000) // 每分钟清理一次
 
+// 导出便捷函数
+export const getCache = (funcName, params = {}) => cacheManager.get(funcName, params)
+export const setCache = (funcName, data, params = {}, ttl) => cacheManager.set(funcName, data, params, ttl)
+export const clearCache = (funcName) => cacheManager.clear(funcName)
+export const clearAllCache = () => cacheManager.clearAll()
+
 export default cacheManager
 export { CacheManager }

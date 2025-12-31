@@ -370,6 +370,19 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRef } from 'vue'
+import {
+  Refresh,
+  Download,
+  Odometer,
+  TrendCharts,
+  DataLine,
+  Money,
+  ShoppingCart,
+  Flag,
+  Search,
+  Grid,
+  VideoCamera
+} from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -431,7 +444,7 @@ const username: Ref<string> = ref('Admin')
 const selectedPeriod: Ref<string> = ref('1d')
 const isRefreshing: Ref<boolean> = ref(false)
 const isRealtime: Ref<boolean> = ref(true)
-const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
+const refreshInterval: Ref<ReturnType<typeof setInterval> | null> = ref(null)
 
 // Market overview data
 const marketOverview: Ref<MarketOverview> = ref({
