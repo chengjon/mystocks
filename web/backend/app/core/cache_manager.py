@@ -81,10 +81,10 @@ class CacheManager:
         }
 
         # 内存缓存层 - 替代Redis
-        self._memory_cache = {}
-        self._cache_ttl = {}
+        self._memory_cache: dict[str, Any] = {}
+        self._cache_ttl: dict[str, float] = {}
         self._cache_lock = Lock()
-        self._access_patterns = defaultdict(list)
+        self._access_patterns: defaultdict[str, list[str]] = defaultdict(list)
 
         # 配置参数
         self._max_memory_entries = 10000  # 内存缓存最大条目数
@@ -146,12 +146,14 @@ class CacheManager:
                 return memory_result
 
             # 第二级：TDengine缓存 (持久化缓存)
-            cache_data = self.tdengine.read_cache(
-                symbol=symbol,
-                data_type=data_type,
-                timeframe=timeframe,
-                days=days,
-            )
+            cache_data = None
+            if self.tdengine is not None:
+                cache_data = self.tdengine.read_cache(
+                    symbol=symbol,
+                    data_type=data_type,
+                    timeframe=timeframe,
+                    days=days,
+                )
 
             if cache_data:
                 response_time = time.time() - start_time
