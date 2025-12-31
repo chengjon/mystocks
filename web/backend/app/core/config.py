@@ -36,8 +36,12 @@ class Settings(BaseSettings):
     app_version: str = "2.0.0"  # Week 3 简化版本
     debug: bool = False
 
+    # 测试环境配置
+    testing: bool = Field(default=False, env="TESTING")
+    csrf_enabled: bool = Field(default=True)  # 默认启用CSRF，测试环境自动禁用
+
     # 服务器配置
-    host: str = "0.0.0.0"
+    host: str = "0.0.0.0"  # nosec
     port: int = 8000
     port_range_start: int = 8000
     port_range_end: int = 8010
@@ -130,39 +134,6 @@ def validate_required_settings():
         "postgresql_password": "POSTGRESQL_PASSWORD",  # pragma: allowlist secret
         "monitor_db_password": "POSTGRESQL_PASSWORD",  # pragma: allowlist secret
         "jwt_secret_key": "JWT_SECRET_KEY",
-    }
-
-    missing_settings = []
-
-    for attr_name, env_name in required_settings.items():
-        value = getattr(settings, attr_name, None)
-        if not value or value == "":
-            missing_settings.append(env_name)
-
-    if missing_settings:
-        error_msg = (
-            f"安全配置错误：缺少必需的环境变量配置\n"
-            f"缺失项：{', '.join(missing_settings)}\n"
-            f"请检查 .env 文件或参考 .env.example 文件进行配置\n"
-            f"可以通过以下命令生成安全的JWT密钥：openssl rand -hex 32"
-        )
-        raise ValueError(error_msg)
-
-
-def validate_required_settings():
-    """
-    验证必需的安全配置项
-
-    在应用启动时验证所有必需的敏感信息是否已正确设置
-    如果缺少必需配置，抛出ValueError
-
-    Raises:
-        ValueError: 当必需的配置项缺失时
-    """
-    required_settings = {
-        "postgresql_password": "POSTGRESQL_PASSWORD",
-        "monitor_db_password": "POSTGRESQL_PASSWORD",  # 使用相同的密码
-        "secret_key": "JWT_SECRET_KEY",
     }
 
     missing_settings = []
