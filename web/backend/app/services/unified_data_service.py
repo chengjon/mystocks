@@ -568,14 +568,18 @@ class UnifiedDataService:
         return await primary_func(*args, **kwargs)
 
 
-# 创建全局实例
-unified_data_service = UnifiedDataService()
+# 创建全局实例 (延迟初始化以避免启动时TDengine连接超时)
+_unified_data_service = None
 
 
 # 便捷函数
 async def get_unified_data_service() -> UnifiedDataService:
-    """获取统一数据服务实例"""
-    return unified_data_service
+    """获取统一数据服务实例 (懒加载)"""
+    global _unified_data_service
+    if _unified_data_service is None:
+        logger.info("懒加载初始化 UnifiedDataService")
+        _unified_data_service = UnifiedDataService()
+    return _unified_data_service
 
 
 async def get_stocks_basic(**params) -> Dict[str, Any]:
