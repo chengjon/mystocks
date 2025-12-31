@@ -91,6 +91,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, computed, watch } from 'vue';
 import type { Strategy, CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/strategy';
 

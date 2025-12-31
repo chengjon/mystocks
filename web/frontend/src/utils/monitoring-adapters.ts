@@ -1,3 +1,4 @@
+
 /**
  * System & Monitoring Module Data Adapters
  *
@@ -120,57 +121,90 @@ export interface DataQualityIssueVM {
 export class MonitoringAdapter {
   /**
    * Convert system status to ViewModel
+   * Note: This adapter handles two API response formats:
+   * 1. cpu/memory/disk as number (direct value) - current format
+   * 2. cpu/memory/disk as object { current, total, percentage } - expected format
    */
   static toSystemStatusVM(data: SystemStatusResponse): SystemStatusVM {
+    // Handle cpu - can be number or object
+    const cpuData = data.cpu
+    const cpu = typeof cpuData === 'number'
+      ? { current: cpuData, total: 100, percentage: cpuData }
+      : (cpuData as any) || { current: 0, total: 100, percentage: 0 }
+
+    // Handle memory - can be number (MB) or object
+    const memoryData = data.memory
+    const memory = typeof memoryData === 'number'
+      ? { current: memoryData, total: 0, percentage: 0 }
+      : (memoryData as any) || { current: 0, total: 0, percentage: 0 }
+
+    // Handle disk - can be number (GB) or object
+    const diskData = data.disk
+    const disk = typeof diskData === 'number'
+      ? { current: diskData, total: 0, percentage: 0 }
+      : (diskData as any) || { current: 0, total: 0, percentage: 0 }
+
+    // Handle network - can be object or undefined
+    const networkData = (data as any).network
+    const network = networkData || { inbound: 0, outbound: 0, errors: 0, status: 'normal' as const, unit: 'req/s' }
+
+    // Handle database - can be object or undefined
+    const databaseData = (data as any).database
+    const database = databaseData || { connected: false, responseTime: 0, connections: 0, maxConnections: 0, status: 'critical' as const }
+
+    // Handle api - can be object or undefined
+    const apiData = (data as any).api
+    const api = apiData || { uptime: 0, requestsPerMinute: 0, averageResponseTime: 0, errorRate: 0, status: 'normal' as const }
+
     return {
       cpu: {
-        current: data.cpu?.current || 0,
-        total: data.cpu?.total || 0,
-        percentage: data.cpu?.percentage || 0,
-        status: this.getMetricStatus(data.cpu?.percentage),
+        current: cpu.current,
+        total: cpu.total,
+        percentage: cpu.percentage,
+        status: this.getMetricStatus(cpu.percentage),
         unit: '%'
       },
       memory: {
-        current: data.memory?.current || 0,
-        total: data.memory?.total || 0,
-        percentage: data.memory?.percentage || 0,
-        status: this.getMetricStatus(data.memory?.percentage),
+        current: memory.current,
+        total: memory.total,
+        percentage: memory.percentage,
+        status: this.getMetricStatus(memory.percentage),
         unit: 'MB'
       },
       disk: {
-        current: data.disk?.current || 0,
-        total: data.disk?.total || 0,
-        percentage: data.disk?.percentage || 0,
-        status: this.getMetricStatus(data.disk?.percentage),
+        current: disk.current,
+        total: disk.total,
+        percentage: disk.percentage,
+        status: this.getMetricStatus(disk.percentage),
         unit: 'GB'
       },
       network: {
-        inbound: data.network?.inbound || 0,
-        outbound: data.network?.outbound || 0,
-        errors: data.network?.errors || 0,
-        status: this.getNetworkStatus(data.network?.errorRate),
+        inbound: network.inbound || 0,
+        outbound: network.outbound || 0,
+        errors: network.errors || 0,
+        status: this.getNetworkStatus(network.errors),
         unit: 'req/s'
       },
       database: {
-        connected: data.database?.connected || false,
-        responseTime: data.database?.responseTime || 0,
-        connections: data.database?.connections || 0,
-        maxConnections: data.database?.maxConnections || 0,
-        status: data.database?.connected ? this.getMetricStatus(data.database?.responseTime) : 'critical'
+        connected: database.connected ?? false,
+        responseTime: database.responseTime ?? 0,
+        connections: database.connections ?? 0,
+        maxConnections: database.maxConnections ?? 0,
+        status: database.connected ? this.getMetricStatus(database.responseTime) : 'critical'
       },
       api: {
-        uptime: data.api?.uptime || 0,
-        requestsPerMinute: data.api?.requestsPerMinute || 0,
-        averageResponseTime: data.api?.averageResponseTime || 0,
-        errorRate: data.api?.errorRate || 0,
-        status: this.getApiStatus(data.api)
+        uptime: api.uptime ?? 0,
+        requestsPerMinute: api.requestsPerMinute ?? 0,
+        averageResponseTime: api.averageResponseTime ?? 0,
+        errorRate: api.errorRate ?? 0,
+        status: this.getApiStatus(api)
       },
-      websocket: data.websocket?.connected || false,
-      services: (data.services || []).map(service => ({
+      websocket: ((data as any).websocket as any)?.connected ?? false,
+      services: ((data as any).services || []).map((service: any) => ({
         name: service.name || '',
         status: this.getServiceStatus(service.status),
-        cpu: service.cpu || 0,
-        memory: service.memory || 0,
+        cpu: service.cpu ?? 0,
+        memory: service.memory ?? 0,
         lastCheck: this.formatDateTime(service.lastCheck),
         healthEndpoint: service.healthEndpoint
       })),
@@ -181,60 +215,73 @@ export class MonitoringAdapter {
 
   /**
    * Convert monitoring alerts to ViewModel
+   * Note: API returns alerts array inside alerts field, with different field names
    */
   static toMonitoringAlertVM(data: MonitoringAlertResponse[]): MonitoringAlertVM[] {
-    return data.map(alert => ({
-      id: alert.id || '',
-      title: alert.title || '',
-      description: alert.description || '',
+    // Handle different response formats
+    const alerts = Array.isArray(data)
+      ? data
+      : (data as any).alerts || []
+
+    return alerts.map((alert: any) => ({
+      id: String(alert.id || ''),
+      title: alert.message || alert.title || '系统告警',
+      description: alert.message || alert.description || '',
       severity: this.getSeverity(alert.severity),
-      category: (alert.category || 'system') as 'system' | 'performance' | 'security' | 'business',
+      category: 'system',
       source: alert.source || 'system',
       timestamp: alert.timestamp ? new Date(alert.timestamp).getTime() : Date.now(),
       acknowledged: alert.acknowledged || false,
       resolved: alert.resolved || false,
       assignee: alert.assignee,
-      tags: alert.tags || []
+      tags: []
     }))
   }
 
   /**
    * Convert log entries to ViewModel
+   * Note: API returns logs array inside logs field, with different field names
    */
   static toLogEntryVM(data: LogEntryResponse[]): LogEntryVM[] {
-    return data.map(log => ({
-      id: log.id || '',
+    // Handle different response formats
+    const logs = Array.isArray(data)
+      ? data
+      : (data as any).logs || []
+
+    return logs.map((log: any) => ({
+      id: String(log.id || Date.now()),
       timestamp: this.formatDateTime(log.timestamp),
       level: this.getLogLevel(log.level) as 'debug' | 'info' | 'warning' | 'error' | 'fatal',
-      logger: log.logger || '',
+      logger: log.source || log.logger || 'system',
       message: log.message || '',
-      module: log.module || '',
-      context: log.context || {},
-      stackTrace: log.stackTrace
+      module: log.module || 'unknown',
+      context: {},
+      stackTrace: undefined
     }))
   }
 
   /**
    * Convert data quality metrics to ViewModel
+   * Note: API returns checks array and summary, not the expected format
    */
   static toDataQualityVM(data: DataQualityResponse): DataQualityVM {
+    // Handle actual API response format
+    const checks = (data as any).checks || []
+    const summary = (data as any).summary || {}
+
+    // Calculate overall score from checks
+    const passedChecks = checks.filter((c: any) => c.status === 'passed' || c.status === 'success').length
+    const totalChecks = checks.length
+    const overallScore = totalChecks > 0 ? (passedChecks / totalChecks) * 100 : 0
+
     return {
-      overallScore: data.overallScore || 0,
-      completeness: this.toQualityMetric(data.completeness),
-      accuracy: this.toQualityMetric(data.accuracy),
-      timeliness: this.toQualityMetric(data.timeliness),
-      consistency: this.toQualityMetric(data.consistency),
-      lastCheck: this.formatDateTime(data.lastCheck),
-      issues: (data.issues || [])
-        .filter((issue): issue is DataQualityIssue => typeof issue !== 'string')
-        .map((issue): DataQualityIssueVM => ({
-          id: issue.id || '',
-          type: (issue.type || 'missing') as 'missing' | 'invalid' | 'outdated' | 'duplicate',
-          severity: this.getSeverity(issue.severity),
-          description: issue.description || '',
-          affectedRecords: issue.affectedRecords || 0,
-          suggestion: issue.suggestion || ''
-        }))
+      overallScore,
+      completeness: this.toQualityMetric(summary.completeness || overallScore),
+      accuracy: this.toQualityMetric(summary.accuracy || overallScore),
+      timeliness: this.toQualityMetric(summary.timeliness || overallScore),
+      consistency: this.toQualityMetric(summary.consistency || overallScore),
+      lastCheck: this.formatDateTime(Date.now()),
+      issues: []
     }
   }
 

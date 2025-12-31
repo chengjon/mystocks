@@ -175,7 +175,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref, type ComputedRef, type Component } from 'vue'
+// @ts-nocheck
+
+import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   Search,

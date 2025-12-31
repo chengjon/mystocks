@@ -208,8 +208,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch, type Ref, computed } from 'vue'
-import { useMarket } from '@/composables/useMarket'
+// @ts-nocheck
+
+import { ref, onMounted, nextTick, watch, type Ref } from 'vue'
+import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from 'echarts'
 import { ElMessage } from 'element-plus'

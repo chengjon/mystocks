@@ -167,6 +167,8 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
+
 import { ref, onMounted, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {

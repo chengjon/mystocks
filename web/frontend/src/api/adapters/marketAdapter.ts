@@ -10,18 +10,14 @@ import type {
   MarketOverviewVM,
   FundFlowChartPoint,
   KLineChartData,
-  ChipRaceItem,
-  LongHuBangItem
 } from '../types/market';
 
 // Import new API types
 import type {
-  MarketOverviewData as ApiMarketOverviewData,
-  FundFlowData as ApiFundFlowData,
-  KlineData as ApiKlineData,
-  ChipRaceData as ApiChipRaceData,
-  LongHuBangData as ApiLongHuBangData
-} from '../services/marketService';
+  MarketOverviewDetailedResponse as MarketOverviewResponse,
+  FundFlowAPIResponse,
+  KLineDataResponse,
+} from '../types/generated-types';
 
 // Import Mock data as fallback
 import mockMarketOverview from '@/mock/marketOverview';
@@ -82,7 +78,7 @@ export class MarketAdapter {
    * @returns Array of adapted FundFlowChartPoint objects (falls back to mock on error)
    */
   static adaptFundFlow(
-    apiResponse: UnifiedResponse<ApiFundFlowData>
+    apiResponse: UnifiedResponse<FundFlowAPIResponse>
   ): FundFlowChartPoint[] {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[MarketAdapter] Fund flow API failed, using mock data:', apiResponse.message);
@@ -90,34 +86,16 @@ export class MarketAdapter {
     }
 
     try {
-      // New API returns a single object with 'timestamp', 'main_net_inflow' etc.
-      // But the adapter expects an array of points for a chart.
-      // The new API endpoint `/api/market/fund-flow` seems to return CURRENT flow for a stock?
-      // Wait, let's check the schema.
-      // FundFlowData: { symbol, main_net_inflow, ... } -> Single point.
-      // If we want a chart, we might need a different endpoint or the API returns history?
-      // The API spec says "查询指定股票的资金流向数据... 时间维度 1/3/5/10天".
-      // But the response schema `FundFlowData` seems to be a single object.
-      // Maybe the `UnifiedResponse` data field contains an array?
-      // No, `getFundFlow` returns `UnifiedResponse<FundFlowData>`.
-      // If the API returns history, the schema should be `FundFlowData[]` or `FundFlowData` should contain a list.
-      // Looking at `market-data-api.ts`:
-      // `getFundFlow` response 200 content: `UnifiedResponse` & { data?: components["schemas"]["FundFlowData"] }
-      // `FundFlowData` has `main_net_inflow`, `timestamp`. It looks like a single point.
+      // Access fundFlow array directly from the response data
+      const fundFlowData = apiResponse.data?.fundFlow || [];
 
-      // If the user wants a chart, this API might be insufficient or I'm misinterpreting "timeframe".
-      // For now, I will wrap the single point into an array.
-
-      const data = apiResponse.data;
-
-      return [{
-        date: data.timestamp || new Date().toISOString(),
-        mainInflow: data.main_net_inflow || 0,
-        mainOutflow: 0, // Not provided
-        netInflow: data.main_net_inflow || 0, // Is net inflow
-        timestamp: data.timestamp ? new Date(data.timestamp).getTime() : Date.now(),
-      }];
-
+      return fundFlowData.map((item) => ({
+        date: item.tradeDate || '',
+        mainInflow: item.superLargeNetInflow || 0,
+        mainOutflow: item.largeNetInflow || 0,
+        netInflow: item.mainNetInflow || 0,
+        timestamp: item.tradeDate ? new Date(item.tradeDate).getTime() : Date.now(),
+      }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
       return this.getMockFundFlow();
@@ -218,7 +196,19 @@ export class MarketAdapter {
    */
   private static getMockFundFlow(): FundFlowChartPoint[] {
     console.log('[MarketAdapter] 📦 Using Mock Fund Flow data');
-    return [];
+
+    // mockFundFlow is in UnifiedResponse format - extract the data part and wrap properly
+    const mockResponse: UnifiedResponse<FundFlowAPIResponse> = {
+      success: mockFundFlow.success,
+      code: mockFundFlow.code,
+      message: mockFundFlow.message,
+      data: mockFundFlow.data,
+      timestamp: mockFundFlow.timestamp,
+      request_id: mockFundFlow.request_id,
+      errors: mockFundFlow.errors,
+    };
+
+    return this.adaptFundFlow(mockResponse);
   }
 
   /**
@@ -226,7 +216,24 @@ export class MarketAdapter {
    */
   private static getMockKLineData(): KLineChartData {
     console.log('[MarketAdapter] 📦 Using Mock K-Line data');
-    return { categoryData: [], values: [], volumes: [] };
+
+    // Wrap mock data in KlineResponse structure
+    const mockWrappedResponse: UnifiedResponse<KLineDataResponse> = {
+      success: true,
+      code: 200,
+      message: 'Mock data',
+      data: {
+        symbol: '000001',
+        period: '1d',
+        data: mockKLineData,
+        count: mockKLineData.length,
+      },
+      timestamp: new Date().toISOString(),
+      request_id: 'mock',
+      errors: null,
+    };
+
+    return this.adaptKLineData(mockWrappedResponse);
   }
 
   // ==================== Validation Methods ====================

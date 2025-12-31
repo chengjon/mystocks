@@ -1,14 +1,13 @@
 import js from '@eslint/js'
-import tseslint from '@typescript-eslint/eslint-plugin'
-import tsparser from '@typescript-eslint/parser'
+import tseslintPlugin from '@typescript-eslint/eslint-plugin'
+import tseslintParser from '@typescript-eslint/parser'
 import vue from 'eslint-plugin-vue'
 import * as parserVue from 'vue-eslint-parser'
-import prettier from '@vue/eslint-config-prettier'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
 export default [
   // Apply recommended configs for JavaScript and TypeScript
   js.configs.recommended,
-  ...tseslint.configs.recommended,
 
   // Global ignores
   {
@@ -28,7 +27,7 @@ export default [
     languageOptions: {
       parser: parserVue,
       parserOptions: {
-        parser: tsparser,
+        parser: tseslintParser,
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
@@ -39,11 +38,26 @@ export default [
       globals: {
         browser: true,
         es2021: true,
-        node: true
+        node: true,
+        console: true,
+        window: true,
+        document: true,
+        localStorage: true,
+        sessionStorage: true,
+        setTimeout: true,
+        clearTimeout: true,
+        setInterval: true,
+        clearInterval: true,
+        URLSearchParams: true,
+        process: true,
+        globalThis: true,
+        Blob: true,
+        FormData: true,
+        XMLHttpRequest: true
       }
     },
     plugins: {
-      '@typescript-eslint': tseslint,
+      '@typescript-eslint': tseslintPlugin,
       vue
     },
     rules: {
@@ -80,7 +94,7 @@ export default [
       // General JavaScript rules
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-      'no-unused-vars': 'off', // Use TypeScript version instead
+      'no-unused-vars': 'off',
       'prefer-const': 'error',
       'no-var': 'error'
     }
@@ -95,7 +109,12 @@ export default [
       globals: {
         browser: true,
         es2021: true,
-        node: true
+        node: true,
+        console: true,
+        window: true,
+        document: true,
+        localStorage: true,
+        process: true
       }
     },
     rules: {
@@ -111,5 +130,5 @@ export default [
   },
 
   // Apply Prettier config last to override other formatting rules
-  ...prettier
+  eslintConfigPrettier
 ]

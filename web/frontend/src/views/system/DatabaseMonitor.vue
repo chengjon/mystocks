@@ -2,7 +2,7 @@
   <div class="database-monitor">
     <el-page-header @back="() => $router.back()" content="数据库监控">
       <template #extra>
-        <el-button :icon="Refresh" @click="refreshData" :loading="loading">
+        <el-button :icon="RefreshIcon as any" @click="refreshData" :loading="loading">
           刷新
         </el-button>
       </template>
@@ -28,7 +28,7 @@
           <el-card shadow="hover">
             <div class="stat-card">
               <div class="stat-icon postgresql">
-                <el-icon :size="40"><Connection /></el-icon>
+                <el-icon :size="40"><ConnectionIcon as any /></el-icon>
               </div>
               <div class="stat-info">
                 <div class="stat-value">{{ statsData.total_classifications || 34 }}</div>
@@ -148,7 +148,7 @@
           <el-col :span="12">
             <div class="routing-section">
               <h4 class="routing-title">
-                <el-icon color="#4E89AE"><Connection /></el-icon>
+                <el-icon color="#4E89AE"><ConnectionIcon as any /></el-icon>
                 PostgreSQL ({{ statsData.routing?.postgresql?.count || 29 }}项)
               </h4>
               <p class="routing-purpose">{{ statsData.routing?.postgresql?.purpose }}</p>
@@ -199,41 +199,95 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Connection } from '@element-plus/icons-vue'
-import axios from 'axios'
+import { request } from '@/utils/request'
+import type { Component } from 'vue'
 
-const loading = ref(false)
-const healthData = ref({})
-const statsData = ref({})
+// Type for icon components
+const RefreshIcon = Refresh as Component
+const ConnectionIcon = Connection as Component
 
-const fetchHealthData = async () => {
-  try {
-    const response = await axios.get('/api/system/database/health')
-    if (response.data.success) {
-      healthData.value = response.data.data
+interface DatabaseHealth {
+  status: 'healthy' | 'unhealthy' | 'unknown'
+  host: string
+  port: number
+  database?: string
+  version?: string
+  message: string
+}
+
+interface DatabaseSummary {
+  healthy: number
+  total_databases: number
+}
+
+interface HealthData {
+  summary?: DatabaseSummary
+  tdengine?: DatabaseHealth
+  postgresql?: DatabaseHealth
+}
+
+interface StatsData {
+  total_classifications?: number
+  routing?: {
+    tdengine?: {
+      count: number
+      purpose?: string
+      classifications?: string[]
+      features?: string[]
     }
+    postgresql?: {
+      count: number
+      purpose?: string
+      categories?: string[]
+      features?: string[]
+    }
+  }
+  architecture?: string
+  simplification_date?: string
+  simplified_from?: string
+  simplified_to?: string
+  removed_databases?: {
+    mysql?: {
+      status: string
+      migrated_to: string
+      rows_migrated: number
+    }
+    redis?: {
+      status: string
+      reason: string
+    }
+  }
+}
+
+const loading = ref<boolean>(false)
+const healthData = ref<HealthData>({})
+const statsData = ref<StatsData>({})
+
+const fetchHealthData = async (): Promise<void> => {
+  try {
+    const response = await request.get<HealthData>('/api/system/database/health')
+    healthData.value = response
   } catch (error) {
     console.error('获取数据库健康状态失败:', error)
     ElMessage.error('获取数据库健康状态失败')
   }
 }
 
-const fetchStatsData = async () => {
+const fetchStatsData = async (): Promise<void> => {
   try {
-    const response = await axios.get('/api/system/database/stats')
-    if (response.data.success) {
-      statsData.value = response.data.data
-    }
+    const response = await request.get<StatsData>('/api/system/database/stats')
+    statsData.value = response
   } catch (error) {
     console.error('获取数据库统计信息失败:', error)
     ElMessage.error('获取数据库统计信息失败')
   }
 }
 
-const refreshData = async () => {
+const refreshData = async (): Promise<void> => {
   loading.value = true
   try {
     await Promise.all([fetchHealthData(), fetchStatsData()])

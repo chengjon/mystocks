@@ -54,7 +54,7 @@ export const mockKlineData: Record<string, KLineData[]> = {
 export const loadMockKlineData = async (
   symbol: string,
   interval: IntervalType = '1d',
-  adjust: AdjustType = 'qfq',
+  _adjust: AdjustType = 'qfq',
   startDate?: string,
   endDate?: string
 ): Promise<{ candles: KLineData[] }> => {

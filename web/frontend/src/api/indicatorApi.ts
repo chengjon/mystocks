@@ -1,14 +1,14 @@
 import apiClient from './apiClient';
 import type {
   OverlayIndicatorResponse,
-  OscillatorIndicatorResponse
-} from '@/api/types/generated-types';
+  OscillatorIndicatorResponse,
+} from '@/api/types/additional-types';
 
 export interface IndicatorRequest {
   symbol: string;
   interval: string;
   indicators: string[];
-  params?: Record<string, any>;  // Runtime parameters
+  params?: Record<string, any>;
 }
 
 export const indicatorApi = {

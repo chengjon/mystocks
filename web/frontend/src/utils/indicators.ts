@@ -1,3 +1,4 @@
+
 /**
  * Technical Indicators Utility
  *
@@ -13,7 +14,7 @@ import {
   Stochastic,
   BollingerBands,
   ATR,
-  // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
+  // AT 不存在于 technicalindicators v3.1.0，已移除
   WMA
 } from 'technicalindicators'
 
@@ -103,7 +104,8 @@ export function calculateMACD(data: KLineDataPoint[]): {
     fastPeriod: 12,
     slowPeriod: 26,
     signalPeriod: 9,
-    SimpleMASignal: false,
+    SimpleMAOscillator: false,
+    SimpleMASignal: false,  // v3.1.0 requires this field
     StandardDeviation: 1,
     MovingAverageType: 'SMA' as const
   }
@@ -167,12 +169,24 @@ export function calculateKDJ(
 
   const stochData = Stochastic.calculate(stochInput)
 
-  const k = stochData.map(d => d.k)
-  const d = stochData.map(d => d.d)
+  // 同步过滤k和d值，确保长度一致
+  const k: number[] = []
+  const d: number[] = []
+
+  for (const item of stochData) {
+    const kVal = item.k
+    const dVal = item.d
+    // 只有当k和d都是有效数字时才添加
+    if (typeof kVal === 'number' && !isNaN(kVal) && isFinite(kVal) &&
+        typeof dVal === 'number' && !isNaN(dVal) && isFinite(dVal)) {
+      k.push(kVal)
+      d.push(dVal)
+    }
+  }
 
   // Calculate J = 3K - 2D
-  const j = k.map((kVal, i) => {
-    const dVal = d[i] || kVal
+  const j: number[] = k.map((kVal, i) => {
+    const dVal = d[i]
     return 3 * kVal - 2 * dVal
   })
 
@@ -196,7 +210,7 @@ export function calculateBOLL(
   const bollInput = {
     period,
     values: closePrices,
-    stdDev: stdDev
+    stdDev  // v3.1.0 uses stdDev instead of stdDevUp/stdDevDown
   }
 
   const bollData = BollingerBands.calculate(bollInput)
