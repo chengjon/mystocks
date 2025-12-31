@@ -8,7 +8,7 @@
 import os
 import traceback
 from typing import Union
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import Request
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -83,16 +83,15 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         message=error_message,
         data=None,
         request_id=request_id,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
+    # NOTE: APIResponse does not have a 'detail' field - skipping detail assignment
+    # The error detail is already logged for debugging purposes
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True, mode="json"),
     )
 
 
@@ -140,16 +139,15 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         message=error_message,
         data=None,
         request_id=request_id,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
+    # NOTE: APIResponse does not have a 'detail' field - skipping detail assignment
+    # The error detail is already logged for debugging purposes
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True, mode="json"),
     )
 
 
@@ -195,16 +193,15 @@ async def validation_exception_handler(
         message=error_message,
         data=None,
         request_id=request_id,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
+    # NOTE: APIResponse does not have a 'detail' field - skipping detail assignment
+    # The error detail is already logged for debugging purposes
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True, mode="json"),
     )
 
 
@@ -249,16 +246,15 @@ async def database_exception_handler(request: Request, exc: SQLAlchemyError) -> 
         message=error_message,
         data=None,
         request_id=request_id,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
     )
 
-    # 在开发环境中添加额外信息
-    if not config.PRODUCTION:
-        response_content.detail = error_detail
+    # NOTE: APIResponse does not have a 'detail' field - skipping detail assignment
+    # The error detail is already logged for debugging purposes
 
     return JSONResponse(
         status_code=http_status,
-        content=response_content.model_dump(exclude_none=True, exclude_unset=True),
+        content=response_content.model_dump(exclude_none=True, exclude_unset=True, mode="json"),
     )
 
 
@@ -340,7 +336,7 @@ def _map_http_status_to_error_code(http_status: int) -> ErrorCode:
         401: ErrorCode.AUTHENTICATION_FAILED,
         403: ErrorCode.AUTHORIZATION_FAILED,
         404: ErrorCode.ORDER_NOT_FOUND,  # 假设大多是资源未找到
-        405: ErrorCode.METHOD_NOT_ALLOWED,
+        405: ErrorCode.BAD_REQUEST,  # Method Not Allowed → BAD_REQUEST
         409: ErrorCode.MARKET_CLOSED,  # 假设大多是业务冲突
         422: ErrorCode.VALIDATION_ERROR,
         429: ErrorCode.RATE_LIMIT_EXCEEDED,

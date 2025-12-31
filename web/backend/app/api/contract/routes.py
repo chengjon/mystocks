@@ -7,8 +7,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from web.backend.app.core.database import get_db
-from web.backend.app.api.contract.schemas import (
+from app.core.database import get_db
+from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionUpdate,
     ContractVersionResponse,
@@ -20,9 +20,9 @@ from web.backend.app.api.contract.schemas import (
     ContractSyncRequest,
     ContractSyncResponse,
 )
-from web.backend.app.api.contract.services.version_manager import VersionManager
-from web.backend.app.api.contract.services.diff_engine import DiffEngine
-from web.backend.app.api.contract.services.validator import ContractValidator
+from app.api.contract.services.version_manager import VersionManager
+from app.api.contract.services.diff_engine import DiffEngine
+from app.api.contract.services.validator import ContractValidator
 
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
@@ -169,8 +169,8 @@ async def validate_contract(request: ContractValidateRequest):
 
     # 如果需要对比破坏性变更
     if request.check_breaking_changes and request.compare_to_version_id:
-        from web.backend.app.api.contract.services.version_manager import VersionManager
-        from web.backend.app.core.database import SessionLocal
+        from app.api.contract.services.version_manager import VersionManager
+        from app.core.database import SessionLocal
 
         db = SessionLocal()
         try:

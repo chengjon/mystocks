@@ -48,9 +48,17 @@ class PerformanceMetrics:
         if not equity_curve or len(equity_curve) == 0:
             return self._empty_metrics()
 
-        # 提取数据
+        # 提取数据（兼容 date 和 trade_date 两种键名）
         equity_values = [float(point["equity"]) for point in equity_curve]
-        dates = [point["date"] for point in equity_curve]
+        # 兼容不同的日期键名
+        dates = []
+        for point in equity_curve:
+            if "date" in point:
+                dates.append(point["date"])
+            elif "trade_date" in point:
+                dates.append(point["trade_date"])
+            else:
+                raise ValueError("equity_curve point must contain 'date' or 'trade_date'")
 
         # 计算基础指标
         total_return = self._calculate_total_return(equity_values, float(initial_capital))
