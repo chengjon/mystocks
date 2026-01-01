@@ -245,7 +245,8 @@ class CacheManager:
 
         try:
             # 验证数据
-            if data is None or not isinstance(data, dict):
+            is_invalid_data = data is None or not isinstance(data, dict)
+            if is_invalid_data:
                 logger.warning(
                     "无效的缓存数据",
                     symbol=symbol,

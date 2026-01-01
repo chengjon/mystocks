@@ -401,5 +401,5 @@ class ConnectionContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """退出上下文，归还连接"""
-        if self.conn:
-            self.pool.release_connection(self.conn)
+        # self.conn is guaranteed to be non-None here because __enter__ raises TimeoutError if it's None
+        self.pool.release_connection(self.conn)
