@@ -70,7 +70,7 @@ class CacheManager:
         """
         self.tdengine = tdengine_manager or get_tdengine_manager()
         self._tdengine_available = self.tdengine is not None
-        self._cache_stats = {
+        self._cache_stats: Dict[str, Any] = {
             "hits": 0,
             "misses": 0,
             "reads": 0,
@@ -82,7 +82,7 @@ class CacheManager:
 
         # 内存缓存层 - 替代Redis
         self._memory_cache: dict[str, Any] = {}
-        self._cache_ttl: dict[str, float] = {}
+        self._cache_ttl: dict[str, datetime] = {}
         self._cache_lock = Lock()
         self._access_patterns: defaultdict[str, list[datetime]] = defaultdict(list)
 
@@ -704,10 +704,11 @@ class CacheManager:
 
     def _calculate_hit_rate(self) -> float:
         """计算缓存命中率"""
-        total_reads = self._cache_stats["reads"]
+        total_reads: int = self._cache_stats["reads"]
         if total_reads == 0:
             return 0.0
-        return self._cache_stats["hits"] / total_reads
+        hits: int = self._cache_stats["hits"]
+        return float(hits) / float(total_reads)
 
     # ==================== 内存缓存层 (替代Redis) ====================
 
@@ -725,7 +726,8 @@ class CacheManager:
 
                 # 更新访问统计
                 self._access_patterns[cache_key].append(datetime.utcnow())
-                return self._memory_cache[cache_key]
+                result: Optional[Dict[str, Any]] = self._memory_cache[cache_key]
+                return result
 
         return None
 
@@ -833,9 +835,8 @@ class CacheManager:
         if "response_time_distribution" not in self._cache_stats:
             self._cache_stats["response_time_distribution"] = {}
 
-        self._cache_stats["response_time_distribution"][cache_level] = (
-            self._cache_stats["response_time_distribution"].get(cache_level, 0) + 1
-        )
+        response_time_dist: Dict[str, int] = self._cache_stats["response_time_distribution"]
+        response_time_dist[cache_level] = response_time_dist.get(cache_level, 0) + 1
 
     def get_memory_cache_stats(self) -> Dict[str, Any]:
         """获取内存缓存统计"""
@@ -844,7 +845,7 @@ class CacheManager:
             total_size_mb = sum(len(str(data)) for data in self._memory_cache.values()) / (1024 * 1024)  # 估算大小
 
             # 计算各数据类型的分布
-            type_distribution = defaultdict(int)
+            type_distribution: defaultdict[str, int] = defaultdict(int)
             for cache_key in self._memory_cache.keys():
                 parts = cache_key.split(":")
                 if len(parts) >= 2:
@@ -907,7 +908,7 @@ class CacheManager:
         Returns:
             健康状态字典
         """
-        health_status = {
+        health_status: Dict[str, Any] = {
             "overall_healthy": True,
             "timestamp": datetime.utcnow().isoformat(),
             "components": {},
@@ -918,7 +919,8 @@ class CacheManager:
         try:
             # 检查 TDengine 连接
             tdengine_healthy = self.tdengine.health_check() if self.tdengine is not None else False
-            health_status["components"]["tdengine"] = {
+            components: Dict[str, Any] = health_status["components"]
+            components["tdengine"] = {
                 "healthy": tdengine_healthy,
                 "status": "OK" if tdengine_healthy else "ERROR",
             }
@@ -933,7 +935,7 @@ class CacheManager:
                 memory_stats["usage_percentage"] < 95 and len(self._memory_cache) < self._max_memory_entries
             )
 
-            health_status["components"]["memory_cache"] = {
+            components["memory_cache"] = {
                 "healthy": memory_healthy,
                 "status": "OK" if memory_healthy else "WARNING",
                 "usage_percentage": memory_stats["usage_percentage"],
@@ -941,7 +943,8 @@ class CacheManager:
             }
 
             if not memory_healthy:
-                health_status["issues"].append("Memory cache usage high")
+                issues: List[str] = health_status["issues"]
+                issues.append("Memory cache usage high")
 
             # 性能指标
             hit_rate = self._calculate_hit_rate()
@@ -949,23 +952,25 @@ class CacheManager:
 
             performance_healthy = hit_rate > 0.5 and avg_response_time < 1.0  # 命中率应该大于50%  # 平均响应时间小于1秒
 
-            health_status["performance_metrics"] = {
+            performance_metrics: Dict[str, Any] = {
                 "hit_rate": hit_rate,
                 "avg_response_time_ms": round(avg_response_time * 1000, 2),
                 "performance_healthy": performance_healthy,
             }
+            health_status["performance_metrics"] = performance_metrics
 
             if not performance_healthy:
                 health_status["overall_healthy"] = False
+                issues = health_status["issues"]
                 if hit_rate < 0.5:
-                    health_status["issues"].append("Cache hit rate too low")
+                    issues.append("Cache hit rate too low")
                 if avg_response_time > 1.0:
-                    health_status["issues"].append("Response time too slow")
+                    issues.append("Response time too slow")
 
             logger.info(
                 "🔍 缓存系统健康检查完成",
                 overall_healthy=health_status["overall_healthy"],
-                issues=len(health_status["issues"]),
+                issues=len(health_status.get("issues", [])),
             )
 
             return health_status
@@ -973,7 +978,8 @@ class CacheManager:
         except Exception as e:
             logger.error("❌ 缓存系统健康检查失败", error=str(e))
             health_status["overall_healthy"] = False
-            health_status["issues"].append(f"Health check error: {str(e)}")
+            error_issues: List[str] = health_status["issues"]
+            error_issues.append(f"Health check error: {str(e)}")
             return health_status
 
     def close(self) -> None:
