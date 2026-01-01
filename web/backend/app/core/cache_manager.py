@@ -112,8 +112,6 @@ class CacheManager:
             return fallback_value
         return self.tdengine
 
-        logger.info("🔧 初始化缓存管理器(含内存缓存层)")
-
     # ==================== 核心缓存操作 ====================
 
     def fetch_from_cache(
@@ -180,7 +178,8 @@ class CacheManager:
                     "source": "cache",
                     "timestamp": datetime.utcnow().isoformat(),
                 }
-                self._add_to_memory_cache(symbol, data_type, timeframe, enriched_data)
+                # timeframe is Optional[str], provide default for _add_to_memory_cache
+                self._add_to_memory_cache(symbol, data_type, timeframe or "1d", enriched_data)
 
                 logger.debug(
                     "✅ TDengine缓存命中",
@@ -444,6 +443,10 @@ class CacheManager:
                     data_type = query.get("data_type")
                     timeframe = query.get("timeframe", "1d")
 
+                    # Type guards for MyPy
+                    if not isinstance(symbol, str) or not isinstance(data_type, str) or not isinstance(timeframe, str):
+                        continue
+
                     cache_key = self.get_cache_key(symbol, data_type, timeframe)
 
                     if cache_key in self._memory_cache:
@@ -461,16 +464,19 @@ class CacheManager:
                                 del self._access_patterns[cache_key]
 
             # 对于未命中的查询，批量TDengine查询
-            remaining_queries = [
-                query
-                for query in unique_queries
-                if self.get_cache_key(
-                    query.get("symbol"),
-                    query.get("data_type"),
-                    query.get("timeframe", "1d"),
-                )
-                not in results
-            ]
+            remaining_queries = []
+            for query in unique_queries:
+                symbol = query.get("symbol")
+                data_type = query.get("data_type")
+                timeframe = query.get("timeframe", "1d")
+
+                # Type guards for MyPy
+                if not isinstance(symbol, str) or not isinstance(data_type, str) or not isinstance(timeframe, str):
+                    continue
+
+                cache_key = self.get_cache_key(symbol, data_type, timeframe)
+                if cache_key not in results:
+                    remaining_queries.append(query)
 
             if remaining_queries:
                 # 批量TDengine查询
@@ -478,6 +484,10 @@ class CacheManager:
                     symbol = query.get("symbol")
                     data_type = query.get("data_type")
                     timeframe = query.get("timeframe", "1d")
+
+                    # Type guards for MyPy
+                    if not isinstance(symbol, str) or not isinstance(data_type, str) or not isinstance(timeframe, str):
+                        continue
 
                     cache_key = self.get_cache_key(symbol, data_type, timeframe)
 
@@ -790,13 +800,14 @@ class CacheManager:
         """异步写入TDengine"""
         try:
             # 使用线程池执行TDengine写入，避免阻塞
-            if self.tdengine is None:
+            tdengine = self.tdengine
+            if tdengine is None:
                 return False
 
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: self.tdengine.write_cache(
+                lambda: tdengine.write_cache(
                     symbol=symbol,
                     data_type=data_type,
                     timeframe=timeframe,
