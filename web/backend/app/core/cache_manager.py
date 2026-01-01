@@ -84,7 +84,7 @@ class CacheManager:
         self._memory_cache: dict[str, Any] = {}
         self._cache_ttl: dict[str, float] = {}
         self._cache_lock = Lock()
-        self._access_patterns: defaultdict[str, list[str]] = defaultdict(list)
+        self._access_patterns: defaultdict[str, list[datetime]] = defaultdict(list)
 
         # 配置参数
         self._max_memory_entries = 10000  # 内存缓存最大条目数
