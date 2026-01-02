@@ -17,7 +17,6 @@
 """
 
 import sys
-import os
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -153,7 +152,7 @@ def test_new_methods():
 
         # 测试health_check
         health = manager.health_check()
-        print(f"✓ health_check() 可用:")
+        print("✓ health_check() 可用:")
         print(f"  - 总计: {health.get('total', 0)}")
         print(f"  - 健康: {health.get('healthy', 0)}")
         print(f"  - 异常: {health.get('unhealthy', 0)}")
@@ -186,7 +185,6 @@ def test_backward_compatible_api():
         manager = DataSourceManager()
 
         # 测试原有的register_source方法仍然可用
-        from src.interfaces.data_source import IDataSource
         from src.adapters.akshare_adapter import AkshareDataSource
 
         try:

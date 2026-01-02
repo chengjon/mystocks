@@ -139,8 +139,8 @@ def generate_api_markdown(catalog: Dict[str, Any]) -> str:
 
     for module, endpoints in catalog["modules"].items():
         md += f"### {module}\n\n"
-        md += f"| 方法 | 路径 | 描述 |\n"
-        md += f"|------|------|------|\n"
+        md += "| 方法 | 路径 | 描述 |\n"
+        md += "|------|------|------|\n"
 
         for ep in endpoints:
             icon = "⚠️" if ep["deprecated"] else ""

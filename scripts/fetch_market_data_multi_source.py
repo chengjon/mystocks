@@ -46,7 +46,7 @@ def fetch_stock_belong_board_efinance(stock_code: str = "300377"):
         if df is not None and not df.empty:
             print(f"✅ 成功获取 {len(df)} 个板块信息")
             print(f"   列: {list(df.columns)}")
-            print(f"\n   前3条数据:")
+            print("\n   前3条数据:")
             print(df.head(3).to_string())
             return df
         else:
@@ -103,9 +103,9 @@ def fetch_stock_industry_baostock(stock_code: str = "300377"):
 
         if data_list:
             df = pd.DataFrame(data_list, columns=rs.fields)
-            print(f"✅ 成功获取行业信息")
+            print("✅ 成功获取行业信息")
             print(f"   列: {list(df.columns)}")
-            print(f"\n   数据:")
+            print("\n   数据:")
             print(df.to_string())
             return df
         else:
@@ -158,7 +158,7 @@ def fetch_market_realtime_efinance(market: str = "沪深A股"):
         if df is not None and not df.empty:
             print(f"✅ 成功获取 {len(df)} 只股票的实时行情")
             print(f"   列: {list(df.columns)}")
-            print(f"\n   前5条数据:")
+            print("\n   前5条数据:")
             print(df.head(5).to_string())
             return df
         else:
@@ -210,7 +210,7 @@ def fetch_market_snapshot_easyquotation(source: str = "tencent", prefix: bool = 
         if not df.empty:
             print(f"✅ 成功获取 {len(df)} 只股票的快照数据")
             print(f"   列: {list(df.columns)}")
-            print(f"\n   前5条数据:")
+            print("\n   前5条数据:")
             print(df.head(5).to_string())
             return df
         else:
@@ -250,7 +250,7 @@ def fetch_all_stock_codes_easyquotation():
 
             # 转换为 DataFrame
             df_codes = pd.DataFrame({'code': codes})
-            print(f"\n   数据预览:")
+            print("\n   数据预览:")
             print(df_codes.head(10).to_string())
 
             return codes
@@ -300,7 +300,7 @@ def fetch_all_stock_codes_mairui(api_key: str = None):
 
             print(f"✅ 成功获取 {len(df)} 只股票信息")
             print(f"   列: {list(df.columns)}")
-            print(f"\n   前5条数据:")
+            print("\n   前5条数据:")
             print(df.head(5).to_string())
 
             return df
@@ -337,7 +337,7 @@ def compare_market_data(stock_code: str = "000001"):
             stock_data = df_ef[df_ef['股票代码'] == stock_code]
             if not stock_data.empty:
                 results['efinance'] = stock_data.iloc[0]
-                print(f"\n✅ [efinance] 获取成功")
+                print("\n✅ [efinance] 获取成功")
                 print(f"   股票名称: {stock_data.iloc[0]['股票名称']}")
                 print(f"   最新价: {stock_data.iloc[0]['最新价']}")
                 print(f"   涨跌幅: {stock_data.iloc[0]['涨跌幅']}")
@@ -354,7 +354,7 @@ def compare_market_data(stock_code: str = "000001"):
         code_sh = f"sh{stock_code}" if stock_code.startswith('6') else f"sz{stock_code}"
         if code_sh in market_data:
             results['easyquotation'] = market_data[code_sh]
-            print(f"\n✅ [easyquotation] 获取成功")
+            print("\n✅ [easyquotation] 获取成功")
             print(f"   股票名称: {market_data[code_sh].get('name', 'N/A')}")
             print(f"   最新价: {market_data[code_sh].get('now', 'N/A')}")
             print(f"   涨跌: {market_data[code_sh].get('涨跌', 'N/A')}")

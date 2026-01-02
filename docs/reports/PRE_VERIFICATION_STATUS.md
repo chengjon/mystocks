@@ -90,8 +90,8 @@ SELECT symbol, name, industry, area, market, list_date
 FROM symbols_info
 
 # 实际表结构
-id, symbol, name, exchange, security_type, list_date, delist_date, 
-status, listing_board, market_cap, circulating_market_cap, total_shares, 
+id, symbol, name, exchange, security_type, list_date, delist_date,
+status, listing_board, market_cap, circulating_market_cap, total_shares,
 circulating_shares, created_at, updated_at
 ```
 
@@ -130,12 +130,12 @@ UPDATE symbols_info SET industry = '其他';
 创建映射表或视图，将`symbols_info`映射为`stocks_basic`：
 ```sql
 CREATE VIEW stocks_basic AS
-SELECT 
-    symbol, 
-    name, 
-    '其他' as industry, 
-    '深圳' as area, 
-    CASE 
+SELECT
+    symbol,
+    name,
+    '其他' as industry,
+    '深圳' as area,
+    CASE
         WHEN symbol LIKE '%.SZ' THEN 'SZ'
         WHEN symbol LIKE '%.SH' THEN 'SH'
         ELSE 'OTHER'

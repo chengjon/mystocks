@@ -84,7 +84,7 @@ def split_api_inventory():
     # 创建Markdown索引文档
     create_markdown_index(index_data, output_dir)
 
-    print(f"\n✅ 拆分完成！")
+    print("\n✅ 拆分完成！")
     print(f"   总文件数: {len(split_files) + 2}")
     print(f"   输出目录: {output_dir}")
 
@@ -187,7 +187,7 @@ def create_markdown_index(index_data: dict, output_dir: Path):
                     examples += f" ... (+{len(endpoints) - 3})"
                 f.write(f"| {filename} | {len(endpoints)} | {examples} |\n")
 
-    print(f"  ✅ 生成Markdown索引: API_SPLIT_INDEX.md")
+    print("  ✅ 生成Markdown索引: API_SPLIT_INDEX.md")
 
 
 if __name__ == "__main__":

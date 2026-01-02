@@ -9,7 +9,6 @@ Tests for market data APIs including:
 """
 
 import pytest
-from fastapi import testclient
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 
@@ -134,9 +133,7 @@ class TestKLineDataAPI:
         end_date = datetime.now().strftime("%Y-%m-%d")
         start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
 
-        response = client.get(
-            f"/api/market/kline?stock_code=000001&start_date={start_date}&end_date={end_date}"
-        )
+        response = client.get(f"/api/market/kline?stock_code=000001&start_date={start_date}&end_date={end_date}")
 
         assert response.status_code == 200
         data = response.json()
@@ -193,7 +190,7 @@ class TestPaginationAndSorting:
 
     def test_paginated_response_model(self):
         """Test PaginatedResponse model"""
-        from app.schemas.pagination import PaginatedResponse, create_paginated_response
+        from app.schemas.pagination import create_paginated_response
         from app.schemas.pagination import PaginationParams
 
         # Create mock data

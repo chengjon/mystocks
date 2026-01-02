@@ -21,21 +21,21 @@ def check_config_strength():
     issues = []
 
     # 检查JWT密钥
-    jwt_secret = os.getenv('JWT_SECRET_KEY', '')
+    jwt_secret = os.getenv("JWT_SECRET_KEY", "")
     if not jwt_secret:
         issues.append("JWT密钥未设置")
     elif len(jwt_secret) < 32:
         issues.append(f"JWT密钥长度不足 ({len(jwt_secret)} < 32字符)")
 
     # 检查PostgreSQL密码
-    pg_password = os.getenv('POSTGRESQL_PASSWORD', '')
+    pg_password = os.getenv("POSTGRESQL_PASSWORD", "")
     if not pg_password:
         issues.append("PostgreSQL密码未设置")
     elif len(pg_password) < 8:
         issues.append(f"PostgreSQL密码过短 ({len(pg_password)} < 8字符)")
 
     # 检查TDengine密码
-    td_password = os.getenv('TDENGINE_PASSWORD', '')
+    td_password = os.getenv("TDENGINE_PASSWORD", "")
     if not td_password:
         issues.append("TDengine密码未设置")
     elif len(td_password) < 8:
@@ -65,6 +65,7 @@ def generate_strong_jwt_secret() -> str:
         32字节的十六进制字符串
     """
     import secrets
+
     return secrets.token_hex(32)
 
 
@@ -76,29 +77,27 @@ def generate_strong_db_password() -> str:
         16字节的base64编码字符串
     """
     import secrets
+
     return secrets.token_urlsafe(16)
 
 
 if __name__ == "__main__":
     # 配置日志
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname)s: %(message)s'
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     # 运行检查
     check_config_strength()
 
     # 如果配置不安全，提供生成命令
-    jwt_secret = os.getenv('JWT_SECRET_KEY', '')
+    jwt_secret = os.getenv("JWT_SECRET_KEY", "")
     if not jwt_secret or len(jwt_secret) < 32:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🔧 快速修复 - 生成强密钥")
-        print("="*60)
-        print(f"\n生成新的JWT密钥:")
+        print("=" * 60)
+        print("\n生成新的JWT密钥:")
         print(f"  JWT_SECRET_KEY={generate_strong_jwt_secret()}")
-        print(f"\n生成新的数据库密码:")
+        print("\n生成新的数据库密码:")
         print(f"  POSTGRESQL_PASSWORD={generate_strong_db_password()}")
         print(f"  TDENGINE_PASSWORD={generate_strong_db_password()}")
         print("\n将以上配置添加到 .env 文件中即可")
-        print("="*60)
+        print("=" * 60)

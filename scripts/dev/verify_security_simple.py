@@ -7,7 +7,6 @@
 """
 
 import sys
-import os
 
 print("="*60)
 print("安全修复验证脚本（简化版）")
@@ -67,7 +66,7 @@ try:
             validate_symbol(symbol)
             print(f"  ✗ {desc:20s} -> 应该被拒绝但通过了！")
             sys.exit(1)
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             print(f"  ✓ {desc:20s} -> 正确拒绝")
 
     print("\n✅ TDengine符号验证: 全部通过\n")
@@ -99,10 +98,10 @@ try:
 
     # 验证对象类型（不需要连接）
     print(f"  查询对象类型: {type(query).__name__}")
-    print(f"  使用psycopg2.sql模块: ✓")
+    print("  使用psycopg2.sql模块: ✓")
 
     # 验证危险字符被正确处理
-    print(f"\n✓ 测试危险表名处理...")
+    print("\n✓ 测试危险表名处理...")
     dangerous_table = "users; DROP TABLE admins--"
     identifier = sql.Identifier(dangerous_table)
 
@@ -110,20 +109,20 @@ try:
     # 不需要转换为字符串验证，只要对象创建成功就说明使用了安全方法
     print(f"  输入: {dangerous_table}")
     print(f"  Identifier对象: {type(identifier).__name__}")
-    print(f"  ✓ 使用Identifier包装（安全）")
+    print("  ✓ 使用Identifier包装（安全）")
 
     # 测试列名处理
-    print(f"\n✓ 测试列名处理...")
+    print("\n✓ 测试列名处理...")
     dangerous_cols = ["symbol; DROP TABLE--", "password', '1'='1"]
     for col in dangerous_cols:
         identifier = sql.Identifier(col)
         print(f"  {col:30s} -> {type(identifier).__name__}对象")
 
     # 说明psycopg2.sql的工作原理
-    print(f"\n说明:")
-    print(f"  - sql.Identifier() 会安全地包装标识符")
-    print(f"  - 在执行时自动添加引号和转义")
-    print(f"  - 防止SQL注入，无需手动转义")
+    print("\n说明:")
+    print("  - sql.Identifier() 会安全地包装标识符")
+    print("  - 在执行时自动添加引号和转义")
+    print("  - 防止SQL注入，无需手动转义")
 
     print("\n✅ PostgreSQL查询构造: 通过\n")
 
@@ -142,7 +141,6 @@ try:
     # 直接导入和测试，不需要完整环境
     import logging
     from io import StringIO
-    from unittest.mock import patch
 
     # 设置日志捕获
     log_stream = StringIO()
@@ -162,9 +160,9 @@ try:
         if not jwt_secret or len(jwt_secret) < 32:
             issues.append(f"JWT密钥长度不足 ({len(jwt_secret)} < 32)")
         if not pg_password or len(pg_password) < 8:
-            issues.append(f"PostgreSQL密码过短")
+            issues.append("PostgreSQL密码过短")
         if not td_password or len(td_password) < 8:
-            issues.append(f"TDengine密码过短")
+            issues.append("TDengine密码过短")
         return issues
 
     # 测试弱配置
@@ -182,7 +180,7 @@ try:
     print("\n✓ 测试强配置...")
     issues = test_config_check("a" * 32, "strong_password_123", "strong_pass_456")
     if len(issues) == 0:
-        print(f"  ✓ 强配置通过检查")
+        print("  ✓ 强配置通过检查")
     else:
         print(f"  ✗ 强配置被错误拒绝: {issues}")
         sys.exit(1)
@@ -197,7 +195,7 @@ try:
         print(f"  ✓ JWT密钥生成成功（长度: {len(jwt_secret)}）")
         print(f"  ✓ 数据库密码生成成功（长度: {len(db_password)}）")
     else:
-        print(f"  ✗ 密钥长度不足")
+        print("  ✗ 密钥长度不足")
         sys.exit(1)
 
     print("\n✅ 配置检查工具: 通过\n")

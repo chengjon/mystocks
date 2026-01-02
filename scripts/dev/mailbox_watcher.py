@@ -10,7 +10,6 @@ Mailbox事件监听器 - 实时响应新消息
 import sys
 import os
 import time
-import json
 import logging
 from pathlib import Path
 from datetime import datetime

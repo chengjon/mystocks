@@ -20,13 +20,12 @@ Usage:
     python scripts/dev/health_check.py --generate-report
 """
 
-import os
 import sys
 import psutil
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 
 
 class CLIHealthChecker:
@@ -446,7 +445,7 @@ def main():
     elif args.all:
         # 检查所有CLI
         print(f"\n{'='*60}")
-        print(f"📊 所有CLI健康检查")
+        print("📊 所有CLI健康检查")
         print(f"{'='*60}\n")
 
         for cli in checker.cli_list:

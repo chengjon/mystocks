@@ -16,7 +16,7 @@ import os
 import sys
 import logging
 from typing import List, Dict, Any
-from sqlalchemy import text, inspect
+from sqlalchemy import text
 from sqlalchemy.engine import Engine
 from datetime import datetime
 import json
@@ -395,13 +395,13 @@ class DatabaseIndexOptimizer:
         self.log("\n" + "=" * 80, "INFO")
         self.log("✅ Database Index Optimization Complete!", "SUCCESS")
         self.log("=" * 80, "INFO")
-        self.log(f"\n📊 Summary:", "INFO")
+        self.log("\n📊 Summary:", "INFO")
         self.log(f"  • Composite indexes created: {composite_count}", "INFO")
         self.log(f"  • Partial indexes created: {partial_count}", "INFO")
         self.log(f"  • Tables analyzed: {analyzed_count}", "INFO")
         self.log(f"  • Total optimization actions: {len(self.optimizer_log)}", "INFO")
 
-        self.log(f"\n📈 Performance Comparison:", "INFO")
+        self.log("\n📈 Performance Comparison:", "INFO")
         if baseline and post_opt:
             for base, post in zip(baseline, post_opt):
                 improvement = (

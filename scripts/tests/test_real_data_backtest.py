@@ -12,7 +12,6 @@ import sys
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-import pandas as pd
 from datetime import datetime
 
 # 添加 web/backend 到路径
@@ -20,7 +19,6 @@ web_backend = os.path.join(project_root, "web", "backend")
 if web_backend not in sys.path:
     sys.path.insert(0, web_backend)
 
-from src.unified_manager import MyStocksUnifiedManager
 from app.services.data_service import DataService
 from app.backtest.backtest_engine import BacktestEngine
 
@@ -98,7 +96,7 @@ def test_database_data():
             print(f"✅ 成功从数据库加载 {len(df)} 条 {symbol} K线记录")
             print(f"   时间范围: {df['trade_date'].min()} 至 {df['trade_date'].max()}")
             print(f"   最新价格: ¥{df['close'].iloc[-1]:.2f}")
-            print(f"   数据来源: 真实市场数据 (PostgreSQL)")
+            print("   数据来源: 真实市场数据 (PostgreSQL)")
             return True
 
     except Exception as e:
@@ -125,7 +123,7 @@ def test_data_service():
         df, ohlcv_dict = data_service.get_daily_ohlcv(symbol, start_date, end_date)
 
         if df.empty:
-            print(f"❌ DataService 未返回数据")
+            print("❌ DataService 未返回数据")
             return False
         else:
             print(f"✅ DataService 成功加载 {len(df)} 条记录")
@@ -212,9 +210,9 @@ def test_backtest_engine():
             print(f"胜率: {trade_metrics['win_rate']:.2%}")
 
         print("\n✅ 回测成功完成，使用的是真实市场数据！")
-        print(f"✅ 数据来源: Akshare实时数据 → PostgreSQL数据库")
+        print("✅ 数据来源: Akshare实时数据 → PostgreSQL数据库")
         print(f"✅ 回测期间: {backtest_config['start_date'].date()} 至 {backtest_config['end_date'].date()}")
-        print(f"✅ 交易日数: 242天")
+        print("✅ 交易日数: 242天")
 
         return True
 

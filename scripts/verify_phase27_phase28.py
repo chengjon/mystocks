@@ -168,8 +168,8 @@ class APIValidator:
             f"**API总数**: {len(self.results)}",
             "\n---\n",
             "## 验证结果汇总\n",
-            f"| API名称 | 状态 | HTTP状态 | 响应时间 | 数据量 |",
-            f"|---------|------|----------|----------|--------|",
+            "| API名称 | 状态 | HTTP状态 | 响应时间 | 数据量 |",
+            "|---------|------|----------|----------|--------|",
         ]
 
         for result in self.results:
@@ -394,7 +394,7 @@ def main():
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report)
 
-    print(f"\n" + "=" * 80)
+    print("\n" + "=" * 80)
     print(f"✅ 验证报告已保存: {report_path}")
     print("=" * 80)
 

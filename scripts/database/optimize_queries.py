@@ -6,8 +6,7 @@ Analyzes query patterns and suggests index improvements
 
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
-import sys
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -277,7 +276,7 @@ def main():
                     continue
 
     summary = analyzer.get_summary()
-    print(f"Analysis Summary:")
+    print("Analysis Summary:")
     print(f"  Total patterns: {summary['total_patterns']}")
     print(f"  Slow patterns: {summary['slow_patterns']}")
     print(f"  Suggestions: {summary['suggestions_count']}")

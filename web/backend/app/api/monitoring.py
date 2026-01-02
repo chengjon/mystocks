@@ -432,7 +432,7 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_use
 async def analyze_monitoring(current_user: User = Depends(get_current_user)):
     """
     监控分析 (Alias for summary)
-    
+
     Compatible with Phase 2.8 requirements
     """
     return await get_monitoring_summary(current_user)

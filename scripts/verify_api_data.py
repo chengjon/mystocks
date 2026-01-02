@@ -5,7 +5,6 @@ Analyze API responses for industries, concepts, and stocks data
 
 import json
 import subprocess
-import sys
 from datetime import datetime
 
 
@@ -156,7 +155,7 @@ def main():
     print(f"   Status: {'✅ SUCCESS' if industries_analysis['success'] else '❌ FAILED'}")
     print(f"   Total Records: {industries_analysis['total_count']}")
     print(f"   Fields: {', '.join(industries_analysis['field_names'])}")
-    print(f"\n   Sample Records:")
+    print("\n   Sample Records:")
     for i, record in enumerate(industries_analysis["sample_records"], 1):
         print(f"     {i}. {record}")
 
@@ -168,7 +167,7 @@ def main():
     print(f"   Total Records: {concepts_analysis['total_count']}")
     print(f"   Returned: {concepts_analysis['returned_count']}")
     print(f"   Fields: {', '.join(concepts_analysis['field_names'])}")
-    print(f"\n   Sample Records:")
+    print("\n   Sample Records:")
     for i, record in enumerate(concepts_analysis["sample_records"], 1):
         print(f"     {i}. {record}")
 
@@ -181,7 +180,7 @@ def main():
     print(f"   Returned: {stocks_analysis['returned_count']}")
     print(f"   Limit Applied: {stocks_analysis['limit_applied']}")
     print(f"   Fields: {', '.join(stocks_analysis['field_names'])}")
-    print(f"\n   Sample Records:")
+    print("\n   Sample Records:")
     for i, record in enumerate(stocks_analysis["sample_records"], 1):
         print(f"     {i}. {record}")
 

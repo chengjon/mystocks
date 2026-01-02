@@ -15,29 +15,28 @@
 创建时间: 2026-01-02
 """
 
-import json
 import os
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-router = APIRouter(
-    prefix="/api/v1/data-sources",
-    tags=["数据源管理"]
-)
+router = APIRouter(prefix="/api/v1/data-sources", tags=["数据源管理"])
 
 
 # ==================== Pydantic Models ====================
 
+
 class DataSourceSearchResponse(BaseModel):
     """数据源搜索响应"""
+
     total: int
     data_sources: List[Dict[str, Any]]
 
 
 class CategoryStatsResponse(BaseModel):
     """分类统计响应"""
+
     category: str
     display_name: str
     total: int
@@ -49,6 +48,7 @@ class CategoryStatsResponse(BaseModel):
 
 class DataSourceUpdate(BaseModel):
     """数据源更新请求"""
+
     priority: Optional[int] = None
     data_quality_score: Optional[float] = None
     status: Optional[str] = None
@@ -57,11 +57,13 @@ class DataSourceUpdate(BaseModel):
 
 class TestRequest(BaseModel):
     """测试请求"""
+
     test_params: Dict[str, Any]
 
 
 class TestResponse(BaseModel):
     """测试响应"""
+
     success: bool
     endpoint_name: str
     test_params: Dict[str, Any]
@@ -74,28 +76,32 @@ class TestResponse(BaseModel):
 
 # ==================== Helper Functions ====================
 
+
 def get_db_connection():
     """获取数据库连接"""
     import psycopg2
     from dotenv import load_dotenv
+
     load_dotenv()
 
     return psycopg2.connect(
-        host=os.getenv('POSTGRESQL_HOST'),
-        port=int(os.getenv('POSTGRESQL_PORT', '5438')),
-        user=os.getenv('POSTGRESQL_USER', 'postgres'),
-        password=os.getenv('POSTGRESQL_PASSWORD'),
-        database=os.getenv('POSTGRESQL_DATABASE', 'mystocks')
+        host=os.getenv("POSTGRESQL_HOST"),
+        port=int(os.getenv("POSTGRESQL_PORT", "5438")),
+        user=os.getenv("POSTGRESQL_USER", "postgres"),
+        password=os.getenv("POSTGRESQL_PASSWORD"),
+        database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
     )
 
 
 def get_manager():
     """获取数据源管理器实例"""
     from src.core.data_source_manager_v2 import DataSourceManagerV2
+
     return DataSourceManagerV2()
 
 
 # ==================== API Endpoints ====================
+
 
 @router.get("/", response_model=DataSourceSearchResponse)
 async def search_data_sources(
@@ -104,7 +110,7 @@ async def search_data_sources(
     source_type: Optional[str] = Query(None, description="数据源类型（如: akshare, tushare）"),
     only_healthy: Optional[bool] = Query(False, description="仅返回健康的数据源"),
     keyword: Optional[str] = Query(None, description="模糊搜索关键词"),
-    status: str = Query("active", description="数据源状态（active/maintenance/deprecated）")
+    status: str = Query("active", description="数据源状态（active/maintenance/deprecated）"),
 ):
     """
     搜索和筛选数据源接口
@@ -141,27 +147,25 @@ async def search_data_sources(
             data_category=data_category,
             classification_level=classification_level,
             source_type=source_type,
-            only_healthy=only_healthy
+            only_healthy=only_healthy,
         )
 
         # 状态筛选
         if status:
-            endpoints = [ep for ep in endpoints if ep.get('status') == status]
+            endpoints = [ep for ep in endpoints if ep.get("status") == status]
 
         # 关键词搜索
         if keyword:
             keyword_lower = keyword.lower()
             endpoints = [
-                ep for ep in endpoints
-                if keyword_lower in ep.get('endpoint_name', '').lower() or
-                   keyword_lower in ep.get('description', '').lower() or
-                   keyword_lower in ep.get('source_name', '').lower()
+                ep
+                for ep in endpoints
+                if keyword_lower in ep.get("endpoint_name", "").lower()
+                or keyword_lower in ep.get("description", "").lower()
+                or keyword_lower in ep.get("source_name", "").lower()
             ]
 
-        return DataSourceSearchResponse(
-            total=len(endpoints),
-            data_sources=endpoints
-        )
+        return DataSourceSearchResponse(total=len(endpoints), data_sources=endpoints)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"搜索失败: {str(e)}")
@@ -190,60 +194,56 @@ async def get_category_stats():
         categories = {}
 
         for endpoint_name, source_data in manager.registry.items():
-            config = source_data.get('config', {})
-            category = config.get('data_category', 'UNKNOWN')
+            config = source_data.get("config", {})
+            category = config.get("data_category", "UNKNOWN")
 
             if category not in categories:
                 categories[category] = {
-                    'category': category,
-                    'display_name': _get_category_display_name(category),
-                    'total': 0,
-                    'healthy': 0,
-                    'unhealthy': 0,
-                    'quality_scores': [],
-                    'response_times': []
+                    "category": category,
+                    "display_name": _get_category_display_name(category),
+                    "total": 0,
+                    "healthy": 0,
+                    "unhealthy": 0,
+                    "quality_scores": [],
+                    "response_times": [],
                 }
 
             stats = categories[category]
-            stats['total'] += 1
+            stats["total"] += 1
 
             # 健康状态统计
-            health_status = config.get('health_status', 'unknown')
-            if health_status == 'healthy':
-                stats['healthy'] += 1
+            health_status = config.get("health_status", "unknown")
+            if health_status == "healthy":
+                stats["healthy"] += 1
             else:
-                stats['unhealthy'] += 1
+                stats["unhealthy"] += 1
 
             # 收集质量指标
-            quality_score = config.get('data_quality_score')
+            quality_score = config.get("data_quality_score")
             if quality_score is not None:
-                stats['quality_scores'].append(quality_score)
+                stats["quality_scores"].append(quality_score)
 
-            response_time = config.get('avg_response_time')
+            response_time = config.get("avg_response_time")
             if response_time is not None:
-                stats['response_times'].append(response_time)
+                stats["response_times"].append(response_time)
 
         # 计算平均值
         result = []
         for category, stats in categories.items():
-            avg_quality = (
-                sum(stats['quality_scores']) / len(stats['quality_scores'])
-                if stats['quality_scores'] else 0
-            )
-            avg_response = (
-                sum(stats['response_times']) / len(stats['response_times'])
-                if stats['response_times'] else 0
-            )
+            avg_quality = sum(stats["quality_scores"]) / len(stats["quality_scores"]) if stats["quality_scores"] else 0
+            avg_response = sum(stats["response_times"]) / len(stats["response_times"]) if stats["response_times"] else 0
 
-            result.append(CategoryStatsResponse(
-                category=stats['category'],
-                display_name=stats['display_name'],
-                total=stats['total'],
-                healthy=stats['healthy'],
-                unhealthy=stats['unhealthy'],
-                avg_quality_score=round(avg_quality, 2),
-                avg_response_time=round(avg_response, 3)
-            ))
+            result.append(
+                CategoryStatsResponse(
+                    category=stats["category"],
+                    display_name=stats["display_name"],
+                    total=stats["total"],
+                    healthy=stats["healthy"],
+                    unhealthy=stats["unhealthy"],
+                    avg_quality_score=round(avg_quality, 2),
+                    avg_response_time=round(avg_response, 3),
+                )
+            )
 
         # 按分类名称排序
         result.sort(key=lambda x: x.category)
@@ -275,12 +275,12 @@ async def get_data_source(endpoint_name: str):
             raise HTTPException(status_code=404, detail=f"接口不存在: {endpoint_name}")
 
         source_data = manager.registry[endpoint_name]
-        config = source_data.get('config', {})
+        config = source_data.get("config", {})
 
         # 添加额外信息
-        config['endpoint_name'] = endpoint_name
-        config['last_call'] = source_data.get('last_call')
-        config['call_count'] = source_data.get('call_count', 0)
+        config["endpoint_name"] = endpoint_name
+        config["last_call"] = source_data.get("last_call")
+        config["call_count"] = source_data.get("call_count", 0)
 
         return config
 
@@ -291,10 +291,7 @@ async def get_data_source(endpoint_name: str):
 
 
 @router.put("/{endpoint_name}")
-async def update_data_source(
-    endpoint_name: str,
-    update: DataSourceUpdate
-):
+async def update_data_source(endpoint_name: str, update: DataSourceUpdate):
     """
     更新数据源配置
 
@@ -327,13 +324,13 @@ async def update_data_source(
         # 构建更新SQL
         updates = {}
         if update.priority is not None:
-            updates['priority'] = update.priority
+            updates["priority"] = update.priority
         if update.data_quality_score is not None:
-            updates['data_quality_score'] = update.data_quality_score
+            updates["data_quality_score"] = update.data_quality_score
         if update.status is not None:
-            updates['status'] = update.status
+            updates["status"] = update.status
         if update.description is not None:
-            updates['description'] = update.description
+            updates["description"] = update.description
 
         if not updates:
             raise HTTPException(status_code=400, detail="无更新内容")
@@ -343,7 +340,7 @@ async def update_data_source(
         cursor = conn.cursor()
 
         set_clause = ", ".join([f"{k} = %({k})s" for k in updates.keys()])
-        updates['updated_at'] = 'NOW()'
+        updates["updated_at"] = "NOW()"
 
         sql = f"""
             UPDATE data_source_registry
@@ -363,7 +360,7 @@ async def update_data_source(
             "success": True,
             "message": "配置已更新",
             "endpoint_name": endpoint_name,
-            "updated_fields": list(updates.keys())
+            "updated_fields": list(updates.keys()),
         }
 
     except HTTPException:
@@ -373,10 +370,7 @@ async def update_data_source(
 
 
 @router.post("/{endpoint_name}/test", response_model=TestResponse)
-async def test_data_source(
-    endpoint_name: str,
-    request: TestRequest
-):
+async def test_data_source(endpoint_name: str, request: TestRequest):
     """
     手动测试数据源
 
@@ -413,14 +407,14 @@ async def test_data_source(
 
         test_params = request.test_params
         result = {
-            'endpoint_name': endpoint_name,
-            'test_params': test_params,
-            'success': False,
-            'duration': None,
-            'row_count': 0,
-            'data_preview': None,
-            'quality_checks': None,
-            'error': None
+            "endpoint_name": endpoint_name,
+            "test_params": test_params,
+            "success": False,
+            "duration": None,
+            "row_count": 0,
+            "data_preview": None,
+            "quality_checks": None,
+            "error": None,
         }
 
         # 执行测试
@@ -429,38 +423,36 @@ async def test_data_source(
         try:
             # 调用数据源
             from src.core.data_source_handlers_v2 import get_handler
-            handler = get_handler(endpoint_name, manager.registry[endpoint_name]['config'])
+
+            handler = get_handler(endpoint_name, manager.registry[endpoint_name]["config"])
             data = handler.fetch(**test_params)
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            result['duration'] = round(duration, 3)
+            result["duration"] = round(duration, 3)
 
             # 处理返回数据
             if data is not None:
-                if hasattr(data, '__len__'):
-                    result['row_count'] = len(data)
+                if hasattr(data, "__len__"):
+                    result["row_count"] = len(data)
 
                     # 数据预览（前3行）
-                    if hasattr(data, 'head') and result['row_count'] > 0:
+                    if hasattr(data, "head") and result["row_count"] > 0:
                         preview_df = data.head(3)
-                        if hasattr(preview_df, 'to_dict'):
-                            result['data_preview'] = preview_df.to_dict(orient='records')
+                        if hasattr(preview_df, "to_dict"):
+                            result["data_preview"] = preview_df.to_dict(orient="records")
 
                     # 数据质量检查
-                    quality_checks = _check_data_quality(
-                        data,
-                        manager.registry[endpoint_name]['config']
-                    )
-                    result['quality_checks'] = quality_checks
+                    quality_checks = _check_data_quality(data, manager.registry[endpoint_name]["config"])
+                    result["quality_checks"] = quality_checks
 
-            result['success'] = True
+            result["success"] = True
 
         except Exception as e:
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            result['duration'] = round(duration, 3)
-            result['error'] = str(e)
+            result["duration"] = round(duration, 3)
+            result["error"] = str(e)
 
         return result
 
@@ -493,15 +485,15 @@ async def health_check_data_source(endpoint_name: str):
             raise HTTPException(status_code=404, detail=f"接口不存在: {endpoint_name}")
 
         # 获取预设的测试参数
-        config = manager.registry[endpoint_name]['config']
-        test_params = config.get('test_parameters', {})
+        config = manager.registry[endpoint_name]["config"]
+        test_params = config.get("test_parameters", {})
 
         if not test_params:
             return {
                 "endpoint_name": endpoint_name,
                 "status": "skipped",
                 "message": "无预设测试参数",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
         # 执行健康检查
@@ -533,7 +525,7 @@ async def health_check_all_data_sources():
         health_result = manager.health_check()
 
         # 添加时间戳
-        health_result['timestamp'] = datetime.now().isoformat()
+        health_result["timestamp"] = datetime.now().isoformat()
 
         return health_result
 
@@ -543,17 +535,18 @@ async def health_check_all_data_sources():
 
 # ==================== Helper Functions ====================
 
+
 def _get_category_display_name(category: str) -> str:
     """获取分类的显示名称"""
     display_names = {
-        'DAILY_KLINE': '日线K线数据',
-        'MINUTE_KLINE': '分钟K线数据',
-        'TICK_DATA': 'Tick逐笔数据',
-        'REALTIME_QUOTES': '实时行情',
-        'REFERENCE_DATA': '参考数据',
-        'FINANCIAL_DATA': '财务数据',
-        'INDEX_DATA': '指数数据',
-        'SECTOR_DATA': '板块数据',
+        "DAILY_KLINE": "日线K线数据",
+        "MINUTE_KLINE": "分钟K线数据",
+        "TICK_DATA": "Tick逐笔数据",
+        "REALTIME_QUOTES": "实时行情",
+        "REFERENCE_DATA": "参考数据",
+        "FINANCIAL_DATA": "财务数据",
+        "INDEX_DATA": "指数数据",
+        "SECTOR_DATA": "板块数据",
         # 添加更多分类...
     }
     return display_names.get(category, category)
@@ -577,66 +570,67 @@ def _check_data_quality(data: Any, config: Dict) -> Dict[str, Any]:
         质量检查结果
     """
     checks = {
-        'has_data': data is not None,
-        'is_empty': False,
-        'column_completeness': {},
-        'data_range': {},
-        'duplicate_check': None,
-        'type_consistency': {}
+        "has_data": data is not None,
+        "is_empty": False,
+        "column_completeness": {},
+        "data_range": {},
+        "duplicate_check": None,
+        "type_consistency": {},
     }
 
     if data is None:
         return checks
 
     # 检查是否为空
-    if hasattr(data, 'empty'):
-        checks['is_empty'] = data.empty
-    elif hasattr(data, '__len__'):
-        checks['is_empty'] = len(data) == 0
+    if hasattr(data, "empty"):
+        checks["is_empty"] = data.empty
+    elif hasattr(data, "__len__"):
+        checks["is_empty"] = len(data) == 0
 
-    if checks['is_empty']:
+    if checks["is_empty"]:
         return checks
 
     # DataFrame类型检查
-    if hasattr(data, 'columns'):
+    if hasattr(data, "columns"):
         import pandas as pd
 
         # 1. 列完整性检查
-        expected_params = config.get('parameters', {})
+        expected_params = config.get("parameters", {})
         actual_cols = data.columns.tolist()
 
         for param_name, param_config in expected_params.items():
             is_present = param_name in actual_cols
-            checks['column_completeness'][param_name] = {
-                'present': is_present,
-                'status': 'exists' if is_present else 'missing'
+            checks["column_completeness"][param_name] = {
+                "present": is_present,
+                "status": "exists" if is_present else "missing",
             }
 
         # 2. 数据范围检查（仅检查前5个数值列）
-        numeric_cols = data.select_dtypes(include=['number']).columns.tolist()[:5]
+        numeric_cols = data.select_dtypes(include=["number"]).columns.tolist()[:5]
 
         for col in numeric_cols:
             if pd.api.types.is_numeric_dtype(data[col]):
-                checks['data_range'][col] = {
-                    'min': float(data[col].min()),
-                    'max': float(data[col].max()),
-                    'mean': float(data[col].mean()),
-                    'null_count': int(data[col].isna().sum()),
-                    'null_rate': float(data[col].isna().sum() / len(data))
+                checks["data_range"][col] = {
+                    "min": float(data[col].min()),
+                    "max": float(data[col].max()),
+                    "mean": float(data[col].mean()),
+                    "null_count": int(data[col].isna().sum()),
+                    "null_rate": float(data[col].isna().sum() / len(data)),
                 }
 
         # 3. 重复数据检查
-        if hasattr(data, 'duplicated'):
+        if hasattr(data, "duplicated"):
             dup_count = int(data.duplicated().sum())
-            checks['duplicate_check'] = {
-                'duplicate_count': dup_count,
-                'duplicate_rate': dup_count / len(data) if len(data) > 0 else 0
+            checks["duplicate_check"] = {
+                "duplicate_count": dup_count,
+                "duplicate_rate": dup_count / len(data) if len(data) > 0 else 0,
             }
 
     return checks
 
 
 # ==================== Startup/Shutdown Events ====================
+
 
 @router.on_event("startup")
 async def startup_event():

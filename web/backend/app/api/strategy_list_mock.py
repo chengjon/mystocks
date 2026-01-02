@@ -1,4 +1,5 @@
 """临时Mock策略列表端点 - 用于E2E测试"""
+
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/api/mock/strategy", tags=["mock-strategy"])
@@ -17,7 +18,7 @@ MOCK_STRATEGIES = [
         "status": "active",
         "tags": ["trend", "macd"],
         "created_at": "2024-01-01T00:00:00",
-        "updated_at": "2024-01-01T00:00:00"
+        "updated_at": "2024-01-01T00:00:00",
     },
     {
         "strategy_id": 2,
@@ -32,16 +33,12 @@ MOCK_STRATEGIES = [
         "status": "active",
         "tags": ["mean_reversion", "rsi"],
         "created_at": "2024-01-02T00:00:00",
-        "updated_at": "2024-01-02T00:00:00"
-    }
+        "updated_at": "2024-01-02T00:00:00",
+    },
 ]
+
 
 @router.get("/strategies")
 async def list_strategies_mock():
     """获取策略列表（Mock数据）"""
-    return {
-        "total_count": len(MOCK_STRATEGIES),
-        "strategies": MOCK_STRATEGIES,
-        "page": 1,
-        "page_size": 20
-    }
+    return {"total_count": len(MOCK_STRATEGIES), "strategies": MOCK_STRATEGIES, "page": 1, "page_size": 20}

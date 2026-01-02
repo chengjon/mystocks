@@ -12,7 +12,6 @@ Expected: 100% pass rate (18/18 tests)
 """
 import pytest
 import requests
-from typing import Dict, Any
 
 
 class TestArchitectureOptimizationE2E:

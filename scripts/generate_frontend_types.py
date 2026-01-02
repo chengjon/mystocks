@@ -10,7 +10,7 @@ import sys
 import re
 import ast
 from pathlib import Path
-from typing import Dict, List, Set, Optional
+from typing import Dict
 from datetime import datetime
 
 # Add backend to path

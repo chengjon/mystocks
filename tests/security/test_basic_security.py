@@ -26,13 +26,13 @@ class TestTDengineSymbolValidation:
 
         # 测试各种有效符号格式
         valid_symbols = [
-            "AAPL",           # 简单股票代码
-            "600519.SH",      # 上海交易所
-            "000001.SZ",      # 深圳交易所
-            "BTC/USDT",       # 加密货币交易对
-            "ETH_USDT",       # 下划线分隔
-            "TSLA-US",        # 连字符分隔
-            "NVDA.US",        # 点号分隔
+            "AAPL",  # 简单股票代码
+            "600519.SH",  # 上海交易所
+            "000001.SZ",  # 深圳交易所
+            "BTC/USDT",  # 加密货币交易对
+            "ETH_USDT",  # 下划线分隔
+            "TSLA-US",  # 连字符分隔
+            "NVDA.US",  # 点号分隔
         ]
 
         for symbol in valid_symbols:
@@ -49,14 +49,14 @@ class TestTDengineSymbolValidation:
 
         # 测试各种无效符号（SQL注入尝试）
         invalid_symbols = [
-            "AAPL' OR '1'='1",           # SQL注入
+            "AAPL' OR '1'='1",  # SQL注入
             "AAPL; DROP TABLE users--",  # SQL注入
-            "AAPL'--",                   # SQL注释
-            "AAPL/*comment*/",           # SQL注释
-            "",                          # 空字符串
-            "A" * 51,                    # 过长(>50字符)
-            123,                         # 非字符串
-            None,                        # None值
+            "AAPL'--",  # SQL注释
+            "AAPL/*comment*/",  # SQL注释
+            "",  # 空字符串
+            "A" * 51,  # 过长(>50字符)
+            123,  # 非字符串
+            None,  # None值
         ]
 
         for symbol in invalid_symbols:
@@ -74,7 +74,7 @@ class TestTDengineSymbolValidation:
         dangerous_symbols = [
             "AAPL'; DROP TABLE--",
             "AAPL' OR '1'='1",
-            "AAPL\" OR \"1\"=\"1",
+            'AAPL" OR "1"="1',
             "AAPL\\x00NULL",  # 包含空字符
         ]
 
@@ -88,7 +88,6 @@ class TestPostgreSQLSecurity:
 
     def test_table_name_whitelist(self):
         """测试表名白名单验证"""
-        from src.data_access.postgresql_access import PostgreSQLDataAccess
 
         # 注意：这个测试需要实际的数据库连接，可能需要mock
         # 这里只测试逻辑，不实际连接数据库
@@ -104,8 +103,8 @@ class TestPostgreSQLSecurity:
         # 无效表名
         invalid_tables = [
             "users; DROP TABLE--",  # SQL注入尝试
-            "nonexistent_table",    # 不在白名单
-            "",                      # 空字符串
+            "nonexistent_table",  # 不在白名单
+            "",  # 空字符串
         ]
 
         # 注意：实际测试需要mock或使用测试数据库
@@ -128,13 +127,13 @@ class TestConfigCheck:
         from src.utils.simple_config_check import check_config_strength
 
         # 模拟弱密钥
-        with patch.dict(os.environ, {'JWT_SECRET_KEY': 'short'}):
+        with patch.dict(os.environ, {"JWT_SECRET_KEY": "short"}):
             with caplog.at_level(logging.WARNING):
                 check_config_strength()
 
         # 应该有警告日志
-        assert 'JWT密钥长度不足' in caplog.text
-        assert '个人项目可以忽略' in caplog.text
+        assert "JWT密钥长度不足" in caplog.text
+        assert "个人项目可以忽略" in caplog.text
 
     def test_missing_password_warning(self, caplog):
         """测试缺失密码警告"""
@@ -143,9 +142,9 @@ class TestConfigCheck:
 
         # 清空所有密码
         env = {
-            'JWT_SECRET_KEY': '',
-            'POSTGRESQL_PASSWORD': '',
-            'TDENGINE_PASSWORD': '',
+            "JWT_SECRET_KEY": "",
+            "POSTGRESQL_PASSWORD": "",
+            "TDENGINE_PASSWORD": "",
         }
 
         with patch.dict(os.environ, env, clear=True):
@@ -153,7 +152,7 @@ class TestConfigCheck:
                 check_config_strength()
 
         # 应该有警告
-        assert '未设置' in caplog.text
+        assert "未设置" in caplog.text
 
     def test_strong_config_pass(self, caplog):
         """测试强配置通过检查"""
@@ -162,9 +161,9 @@ class TestConfigCheck:
 
         # 模拟强配置
         env = {
-            'JWT_SECRET_KEY': 'a' * 32,
-            'POSTGRESQL_PASSWORD': 'strong_password_123',
-            'TDENGINE_PASSWORD': 'strong_password_456',
+            "JWT_SECRET_KEY": "a" * 32,
+            "POSTGRESQL_PASSWORD": "strong_password_123",
+            "TDENGINE_PASSWORD": "strong_password_456",
         }
 
         with patch.dict(os.environ, env, clear=True):
@@ -172,14 +171,11 @@ class TestConfigCheck:
                 check_config_strength()
 
         # 应该通过
-        assert '配置检查通过' in caplog.text
+        assert "配置检查通过" in caplog.text
 
     def test_generate_secrets(self):
         """测试密钥生成功能"""
-        from src.utils.simple_config_check import (
-            generate_strong_jwt_secret,
-            generate_strong_db_password
-        )
+        from src.utils.simple_config_check import generate_strong_jwt_secret, generate_strong_db_password
 
         # 生成JWT密钥
         jwt_secret = generate_strong_jwt_secret()
@@ -203,14 +199,13 @@ class TestPostgreSQLQueryConstruction:
 
         # 使用sql.Identifier（安全方式）
         query = sql.SQL("SELECT {} FROM {}").format(
-            sql.SQL(", ").join(map(sql.Identifier, columns)),
-            sql.Identifier(table_name)
+            sql.SQL(", ").join(map(sql.Identifier, columns)), sql.Identifier(table_name)
         )
 
         # 转换为字符串查看
         query_str = query.as_string(None)
-        assert 'SELECT' in query_str
-        assert 'FROM' in query_str
+        assert "SELECT" in query_str
+        assert "FROM" in query_str
         assert table_name in query_str
 
     def test_identifier_escaping(self):
@@ -228,7 +223,7 @@ class TestPostgreSQLQueryConstruction:
         escaped = identifier.as_string(None)
 
         # 验证转义后不包含危险模式
-        assert ';' not in escaped or '"' in escaped  # 被引号包裹则安全
+        assert ";" not in escaped or '"' in escaped  # 被引号包裹则安全
 
 
 class TestSecurityIntegration:
@@ -242,19 +237,15 @@ class TestSecurityIntegration:
         td_access = TDengineDataAccess(mock_monitoring_db)
 
         # 测试查询构建
-        filters = {
-            'symbol': 'AAPL',  # 有效符号
-            'start_time': '2025-01-01',
-            'end_time': '2025-12-31'
-        }
+        filters = {"symbol": "AAPL", "start_time": "2025-01-01", "end_time": "2025-12-31"}  # 有效符号
 
         # 调用查询构建方法
         # 注意：这里不实际执行，只测试验证逻辑
         try:
             # 模拟查询构建
-            validated_symbol = td_access._validate_symbol(filters['symbol'])
+            validated_symbol = td_access._validate_symbol(filters["symbol"])
             # 验证应该成功
-            assert validated_symbol == 'AAPL'
+            assert validated_symbol == "AAPL"
         except ValueError as e:
             pytest.fail(f"Valid symbol was rejected: {e}")
 
@@ -267,12 +258,12 @@ class TestSecurityIntegration:
 
         # 尝试注入
         injection_filters = {
-            'symbol': "AAPL' OR '1'='1",  # 注入尝试
+            "symbol": "AAPL' OR '1'='1",  # 注入尝试
         }
 
         # 应该抛出异常
         with pytest.raises(ValueError):
-            td_access._validate_symbol(injection_filters['symbol'])
+            td_access._validate_symbol(injection_filters["symbol"])
 
 
 if __name__ == "__main__":

@@ -17,13 +17,12 @@ Usage:
 """
 
 import os
-import sys
 import json
 import argparse
 import re
 from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Dict, List
 
 
 class MetricsCollector:
@@ -270,11 +269,11 @@ class MetricsCollector:
         lines.append(f"- **总协调次数**: {metrics['coordination']['total_coordinations']}")
         lines.append(f"- **今日协调**: {metrics['coordination']['coordinations_today']}")
         lines.append(f"- **协调活跃度**: {metrics['coordination']['coordination_activity']}")
-        
+
         if metrics['coordination']['last_coordination']:
             lines.append("")
             lines.append(f"- **最后协调**: {metrics['coordination']['last_coordination']}")
-        
+
         lines.append("")
         lines.append("---")
         lines.append("")

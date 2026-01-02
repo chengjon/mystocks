@@ -8,7 +8,6 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

@@ -16,7 +16,6 @@ from rich.console import Console
 from rich.table import Table
 from rich.json import JSON
 from rich.panel import Panel
-from rich.syntax import Syntax
 
 # API配置
 API_BASE_URL = "http://localhost:8000"
@@ -355,7 +354,7 @@ Git Commit: {version_data.get('commit_hash', 'N/A')}
 标签: {', '.join(version_data.get('tags', []))}
 创建时间: {version_data.get('created_at')}
             """.strip(),
-            title=f"⭐ 当前激活版本",
+            title="⭐ 当前激活版本",
             border_style="green"
         ))
     else:

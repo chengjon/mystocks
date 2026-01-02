@@ -4,7 +4,7 @@
 
 ### ✅ 已完成
 - MySQL数据库连接正常
-- PostgreSQL数据库连接正常  
+- PostgreSQL数据库连接正常
 - JWT密钥已配置
 - 后端服务运行正常
 - industries表已迁移511条记录

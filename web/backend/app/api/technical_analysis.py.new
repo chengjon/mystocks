@@ -19,7 +19,7 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
     print(f"\n{'='*60}")
     print(f"🚀 SIGNALS ENDPOINT CALLED: symbol={symbol}, period={period}")
     print(f"{'='*60}\n")
-    
+
     try:
         # Step 1: Validate symbol
         print("📍 Step 1: Validating symbol...")

@@ -180,7 +180,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
             filters = {}
             if status:
                 # is_active字段映射：active/active策略，inactive/inactive策略
-                filters["is_active"] = (status == "active")
+                filters["is_active"] = status == "active"
 
             try:
                 # 使用 UnifiedManager 加载数据（表已在table_config.yaml中注册）
@@ -197,7 +197,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
 
                 if strategies_df is not None and len(strategies_df) > 0:
                     paginated_df = strategies_df.iloc[start:end]
-                    items = paginated_df.to_dict('records')
+                    items = paginated_df.to_dict("records")
                 else:
                     items = []
 

@@ -14,8 +14,6 @@
 """
 
 import argparse
-import json
-import os
 import subprocess
 import sys
 from datetime import datetime
@@ -201,12 +199,12 @@ class TypeScriptTypesGenerator:
             f.write("/**\n")
             f.write(" * API类型定义\n")
             f.write(" * 从OpenAPI契约自动生成\n")
-            f.write(f" *\n")
+            f.write(" *\n")
             f.write(f" * 生成时间: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
             f.write(f" * 生成工具: {self.tool}\n")
             f.write(f" * 契约目录: {self.contracts_dir}\n")
-            f.write(f" *\n")
-            f.write(f" * 警告: 此文件由脚本自动生成，请勿手动编辑\n")
+            f.write(" *\n")
+            f.write(" * 警告: 此文件由脚本自动生成，请勿手动编辑\n")
             f.write(" */\n\n")
 
             # 导出所有类型文件
@@ -286,7 +284,7 @@ class TypeScriptTypesGenerator:
             self.generate_readme()
 
         print("")
-        print(f"✅ TypeScript类型定义生成完成")
+        print("✅ TypeScript类型定义生成完成")
         print(f"输出目录: {self.output_dir}")
         print(f"生成文件数: {len(generated_files)}")
 
