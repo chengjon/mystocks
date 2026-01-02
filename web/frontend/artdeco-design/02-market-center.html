@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市场行情中心 - MyStocks ArtDeco</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <!-- Klinecharts for Professional K-line -->
+  <script src="https://cdn.jsdelivr.net/npm/klinecharts@9.8.9/dist/klinecharts.min.js"></script>
+
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+    .artdeco-sidebar {
+      width: 240px;
+      background: var(--artdeco-bg-header);
+      border-right: 1px solid var(--artdeco-gold-dim);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: var(--artdeco-z-fixed);
+    }
+
+    .artdeco-sidebar-header {
+      padding: var(--artdeco-space-lg);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      text-align: center;
+    }
+
+    .artdeco-logo {
+      font-family: var(--artdeco-font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 4px;
+      text-decoration: none;
+    }
+
+    .artdeco-nav { padding: var(--artdeco-space-md); }
+    .artdeco-nav-section { margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-nav-section-title {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: var(--artdeco-space-sm) var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+      padding: 12px var(--artdeco-space-md);
+      color: var(--artdeco-silver-dim);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all var(--artdeco-transition-fast);
+      font-size: 0.875rem;
+    }
+
+    .artdeco-nav-item:hover {
+      background: var(--artdeco-bg-hover);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-nav-item.active {
+      background: var(--artdeco-gold-dim);
+      border-left-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-main {
+      flex: 1;
+      margin-left: 240px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .artdeco-topbar {
+      height: 60px;
+      background: var(--artdeco-bg-header);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--artdeco-space-lg);
+      position: sticky;
+      top: 0;
+      z-index: var(--artdeco-z-sticky);
+    }
+
+    .artdeco-content { flex: 1; padding: var(--artdeco-space-lg); }
+
+    /* Stock Search Bar */
+    .artdeco-stock-search {
+      display: flex;
+      gap: var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-stock-search input {
+      flex: 1;
+      padding: 12px 16px;
+      font-family: var(--artdeco-font-mono);
+      font-size: 1rem;
+      color: var(--artdeco-silver-text);
+      background: var(--artdeco-bg-card);
+      border: 2px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-stock-search input:focus {
+      outline: none;
+      border-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle);
+    }
+
+    /* Time Period Selector */
+    .artdeco-period-selector {
+      display: flex;
+      gap: var(--artdeco-space-sm);
+    }
+
+    .artdeco-period-btn {
+      padding: 8px 20px;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-dim);
+      background: transparent;
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+      cursor: pointer;
+      transition: all var(--artdeco-transition-fast);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .artdeco-period-btn:hover {
+      border-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-period-btn.active {
+      background: var(--artdeco-gold-primary);
+      border-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-global);
+    }
+
+    /* K-line Chart Container */
+    .artdeco-kline-container {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+      height: 500px;
+    }
+
+    .artdeco-kline-container::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      border: 1px solid var(--artdeco-gold-dim);
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    #klineChart {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Market Watch Table */
+    .artdeco-market-watch {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      overflow: hidden;
+    }
+
+    .artdeco-market-watch table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .artdeco-market-watch thead th {
+      position: sticky;
+      top: 0;
+      background: var(--artdeco-bg-header);
+      padding: 12px;
+      text-align: left;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--artdeco-gold-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .artdeco-market-watch thead th:hover {
+      background: var(--artdeco-bg-hover);
+    }
+
+    .artdeco-market-watch tbody td {
+      padding: 12px;
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      cursor: pointer;
+      transition: background var(--artdeco-transition-fast);
+    }
+
+    .artdeco-market-watch tbody tr:hover td {
+      background: var(--artdeco-bg-hover);
+    }
+
+    /* Stock Info Panel */
+    .artdeco-stock-info {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-info-item {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-md);
+      text-align: center;
+    }
+
+    .artdeco-info-label {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--artdeco-space-xs);
+    }
+
+    .artdeco-info-value {
+      font-family: var(--artdeco-font-mono);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-text);
+    }
+
+    @media (max-width: 1440px) {
+      .artdeco-stock-info {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .artdeco-sidebar { transform: translateX(-100%); }
+      .artdeco-main { margin-left: 0; }
+      .artdeco-stock-info { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .artdeco-stock-info { grid-template-columns: 1fr; }
+      .artdeco-kline-container { height: 350px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-bg-pattern"></div>
+
+  <div class="artdeco-layout">
+    <!-- Sidebar -->
+    <aside class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="#" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+      <nav class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">核心功能区</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item">
+            <span>Ⅰ</span><span>主控仪表盘</span>
+          </a>
+          <a href="02-market-center.html" class="artdeco-nav-item active">
+            <span>Ⅱ</span><span>市场行情中心</span>
+          </a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item">
+            <span>Ⅲ</span><span>智能选股池</span>
+          </a>
+          <a href="04-data-analysis.html" class="artdeco-nav-item">
+            <span>Ⅳ</span><span>数据深度分析</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">策略研发区</div>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item">
+            <span>Ⅴ</span><span>策略研配实验室</span>
+          </a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item">
+            <span>Ⅵ</span><span>回测竞技场</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理区</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item">
+            <span>Ⅶ</span><span>实战交易台</span>
+          </a>
+          <a href="08-risk-center.html" class="artdeco-nav-item">
+            <span>Ⅷ</span><span>风险监控中心</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统配置</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item">
+            <span>Ⅸ</span><span>系统配置中心</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="artdeco-main">
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">市场行情中心 / MARKET CENTER</div>
+        <div class="artdeco-topbar-actions">
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot online"></span>
+            <span>实时</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="artdeco-content">
+        <!-- Stock Search -->
+        <div class="artdeco-stock-search">
+          <input
+            type="text"
+            id="stockSearchInput"
+            placeholder="输入股票代码 / 名称 / 拼音缩写 (例如: 600519 / 贵州茅台 / GZMT)"
+          >
+          <button class="artdeco-btn artdeco-btn-primary" onclick="searchStock()">查询</button>
+        </div>
+
+        <!-- Stock Info Panel -->
+        <div class="artdeco-stock-info" id="stockInfoPanel">
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">股票代码</div>
+            <div class="artdeco-info-value">600519.SH</div>
+          </div>
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">股票名称</div>
+            <div class="artdeco-info-value">贵州茅台</div>
+          </div>
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">最新价</div>
+            <div class="artdeco-info-value data-rise">¥1,678.90</div>
+          </div>
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">涨跌幅</div>
+            <div class="artdeco-info-value data-rise">+2.35%</div>
+          </div>
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">成交量</div>
+            <div class="artdeco-info-value">2.35万手</div>
+          </div>
+          <div class="artdeco-info-item">
+            <div class="artdeco-info-label">成交额</div>
+            <div class="artdeco-info-value">39.5亿</div>
+          </div>
+        </div>
+
+        <!-- Period Selector -->
+        <div style="margin-bottom: var(--artdeco-space-md); display: flex; justify-content: space-between; align-items: center;">
+          <div class="artdeco-period-selector">
+            <button class="artdeco-period-btn" data-period="1m">1分</button>
+            <button class="artdeco-period-btn" data-period="5m">5分</button>
+            <button class="artdeco-period-btn" data-period="15m">15分</button>
+            <button class="artdeco-period-btn" data-period="30m">30分</button>
+            <button class="artdeco-period-btn" data-period="60m">60分</button>
+            <button class="artdeco-period-btn active" data-period="1d">日线</button>
+            <button class="artdeco-period-btn" data-period="1w">周线</button>
+            <button class="artdeco-period-btn" data-period="1M">月线</button>
+          </div>
+          <div style="display: flex; gap: var(--artdeco-space-sm);">
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 8px 16px; font-size: 0.75rem;">前复权</button>
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 8px 16px; font-size: 0.75rem;">后复权</button>
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 8px 16px; font-size: 0.75rem;">不复权</button>
+          </div>
+        </div>
+
+        <!-- K-line Chart -->
+        <div class="artdeco-kline-container">
+          <div id="klineChart"></div>
+        </div>
+
+        <!-- Market Watch Table -->
+        <div class="artdeco-market-watch">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortTable('code')">代码 ↕</th>
+                <th onclick="sortTable('name')">名称 ↕</th>
+                <th onclick="sortTable('price')">最新价 ↕</th>
+                <th onclick="sortTable('change')">涨跌幅 ↕</th>
+                <th onclick="sortTable('volume')">成交量 ↕</th>
+                <th onclick="sortTable('turnover')">成交额 ↕</th>
+                <th onclick="sortTable('amplitude')">振幅 ↕</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="marketWatchTable">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = '/api/v1';
+    const DEFAULT_STOCK = '600519.SH'; // 贵州茅台
+    let currentStock = DEFAULT_STOCK;
+    let currentPeriod = '1d';
+    let klineChart = null;
+    let sortColumn = 'change';
+    let sortDirection = 'desc';
+
+    // ==================== API CALLS ====================
+
+    /**
+     * Fetch K-line data
+     * GET /api/v1/market/kline?stock_code={code}&period={period}&adjust={adjust}&limit={limit}
+     */
+    async function fetchKlineData(stockCode, period = '1d', adjust = 'qfq', limit = 500) {
+      try {
+        const url = `${API_BASE_URL}/market/kline?stock_code=${stockCode}&period=${period}&adjust=${adjust}&limit=${limit}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取K线数据失败:', error);
+        return getMockKlineData();
+      }
+    }
+
+    /**
+     * Fetch stock real-time quote
+     * GET /api/v1/market/quote?stock_code={code}
+     */
+    async function fetchStockQuote(stockCode) {
+      try {
+        const url = `${API_BASE_URL}/market/quote?stock_code=${stockCode}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取股票行情失败:', error);
+        return getMockStockQuote(stockCode);
+      }
+    }
+
+    /**
+     * Fetch market watch list
+     * GET /api/v1/market/watchlist
+     */
+    async function fetchMarketWatchlist() {
+      try {
+        const url = `${API_BASE_URL}/market/watchlist`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取市场列表失败:', error);
+        return getMockMarketWatchlist();
+      }
+    }
+
+    // ==================== MOCK DATA ====================
+
+    function getMockKlineData() {
+      const data = [];
+      let basePrice = 1650;
+      const now = new Date();
+
+      for (let i = 0; i < 100; i++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - (100 - i));
+
+        const open = basePrice + (Math.random() - 0.5) * 30;
+        const close = open + (Math.random() - 0.5) * 40;
+        const high = Math.max(open, close) + Math.random() * 20;
+        const low = Math.min(open, close) - Math.random() * 20;
+        const volume = Math.floor(Math.random() * 50000) + 10000;
+
+        data.push({
+          timestamp: date.toISOString().split('T')[0],
+          open: parseFloat(open.toFixed(2)),
+          high: parseFloat(high.toFixed(2)),
+          low: parseFloat(low.toFixed(2)),
+          close: parseFloat(close.toFixed(2)),
+          volume: volume
+        });
+
+        basePrice = close;
+      }
+
+      return { data: data };
+    }
+
+    function getMockStockQuote(stockCode) {
+      return {
+        stock_code: stockCode,
+        stock_name: '贵州茅台',
+        price: 1678.90,
+        change: 2.35,
+        volume: 235000,
+        turnover: 3950000000,
+        amplitude: 3.12,
+        high: 1690.00,
+        low: 1655.50,
+        open: 1660.00,
+        prev_close: 1640.23
+      };
+    }
+
+    function getMockMarketWatchlist() {
+      return [
+        { code: '600519.SH', name: '贵州茅台', price: 1678.90, change: 2.35, volume: 235000, turnover: 3950000000, amplitude: 3.12 },
+        { code: '000858.SZ', name: '五粮液', price: 168.50, change: 1.78, volume: 156000, turnover: 2630000000, amplitude: 2.89 },
+        { code: '600036.SH', name: '招商银行', price: 32.45, change: -0.56, volume: 890000, turnover: 2890000000, amplitude: 1.95 },
+        { code: '000001.SZ', name: '平安银行', price: 12.35, change: 0.89, volume: 1240000, turnover: 1530000000, amplitude: 2.34 },
+        { code: '601318.SH', name: '中国平安', price: 45.67, change: -1.23, volume: 567000, turnover: 2590000000, amplitude: 2.12 },
+        { code: '000002.SZ', name: '万科A', price: 8.95, change: 0.45, volume: 2340000, turnover: 209000000, amplitude: 3.45 },
+        { code: '600276.SH', name: '恒瑞医药', price: 45.89, change: 3.12, volume: 345000, turnover: 1580000000, amplitude: 4.23 },
+        { code: '300750.SZ', name: '宁德时代', price: 198.50, change: 4.56, volume: 456000, turnover: 9060000000, amplitude: 5.67 }
+      ];
+    }
+
+    // ==================== K-LINE CHART ====================
+
+    function initKlineChart() {
+      const container = document.getElementById('klineChart');
+      klineChart = klinecharts.init(container);
+
+      klineChart.createChart('candle-solid', {
+        styles: {
+          candle: {
+            type: 'candle-solid',
+            bar: {
+              upColor: '#C94042',
+              downColor: '#3D9970',
+              noChangeColor: '#888888'
+            },
+            tooltip: {
+              showRule: 'always',
+              showType: 'standard',
+              labels: ['时间: ', '开: ', '收: ', '高: ', '低: ', '成交量: '],
+              text: {
+                size: 12,
+                color: '#D4AF37',
+                family: 'JetBrains Mono'
+              }
+            },
+            area: {
+              lineColor: 'rgba(212, 175, 55, 0.8)',
+              backgroundColor: [{ offset: 0, color: 'rgba(212, 175, 55, 0.3)' }, { offset: 1, color: 'rgba(212, 175, 55, 0)' }]
+            }
+          }
+        }
+      });
+
+      klineChart.createChart('volume', {
+        styles: {
+          candle: {
+            type: 'candle-solid',
+            bar: {
+              upColor: 'rgba(201, 64, 66, 0.5)',
+              downColor: 'rgba(61, 153, 112, 0.5)',
+              noChangeColor: '#888888'
+            }
+          }
+        }
+      });
+
+      return klineChart;
+    }
+
+    async function loadKlineData(stockCode, period) {
+      const data = await fetchKlineData(stockCode, period);
+      klineChart.applyNewData(data.data);
+    }
+
+    // ==================== MARKET WATCH TABLE ====================
+
+    function renderMarketWatchTable(data) {
+      const tbody = document.getElementById('marketWatchTable');
+
+      // Sort data
+      data.sort((a, b) => {
+        let aVal = a[sortColumn];
+        let bVal = b[sortColumn];
+
+        if (typeof aVal === 'string') {
+          return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        }
+
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      });
+
+      tbody.innerHTML = data.map(stock => `
+        <tr onclick="selectStock('${stock.code}')">
+          <td class="text-mono">${stock.code}</td>
+          <td>${stock.name}</td>
+          <td class="text-mono" style="font-weight: 600;">¥${stock.price.toFixed(2)}</td>
+          <td class="text-mono ${stock.change >= 0 ? 'data-rise' : 'data-fall'}">
+            ${stock.change >= 0 ? '▲' : '▼'}${Math.abs(stock.change).toFixed(2)}%
+          </td>
+          <td class="text-mono">${(stock.volume / 10000).toFixed(2)}万手</td>
+          <td class="text-mono">${(stock.turnover / 100000000).toFixed(2)}亿</td>
+          <td class="text-mono">${stock.amplitude.toFixed(2)}%</td>
+          <td>
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); addToWatchlist('${stock.code}')">
+              +自选
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function sortTable(column) {
+      if (sortColumn === column) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = column;
+        sortDirection = 'desc';
+      }
+
+      fetchMarketWatchlist().then(data => renderMarketWatchTable(data));
+    }
+
+    // ==================== USER INTERACTIONS ====================
+
+    async function searchStock() {
+      const input = document.getElementById('stockSearchInput');
+      const query = input.value.trim().toUpperCase();
+
+      if (!query) return;
+
+      currentStock = query;
+      await loadKlineData(currentStock, currentPeriod);
+
+      const quote = await fetchStockQuote(currentStock);
+      updateStockInfo(quote);
+    }
+
+    async function selectStock(stockCode) {
+      currentStock = stockCode;
+      document.getElementById('stockSearchInput').value = stockCode;
+
+      await loadKlineData(currentStock, currentPeriod);
+      const quote = await fetchStockQuote(currentStock);
+      updateStockInfo(quote);
+    }
+
+    function updateStockInfo(quote) {
+      const panel = document.getElementById('stockInfoPanel');
+      panel.innerHTML = `
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">股票代码</div>
+          <div class="artdeco-info-value">${quote.stock_code}</div>
+        </div>
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">股票名称</div>
+          <div class="artdeco-info-value">${quote.stock_name}</div>
+        </div>
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">最新价</div>
+          <div class="artdeco-info-value ${quote.change >= 0 ? 'data-rise' : 'data-fall'}">¥${quote.price.toFixed(2)}</div>
+        </div>
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">涨跌幅</div>
+          <div class="artdeco-info-value ${quote.change >= 0 ? 'data-rise' : 'data-fall'}">
+            ${quote.change >= 0 ? '+' : ''}${quote.change.toFixed(2)}%
+          </div>
+        </div>
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">成交量</div>
+          <div class="artdeco-info-value">${(quote.volume / 10000).toFixed(2)}万手</div>
+        </div>
+        <div class="artdeco-info-item">
+          <div class="artdeco-info-label">成交额</div>
+          <div class="artdeco-info-value">${(quote.turnover / 100000000).toFixed(2)}亿</div>
+        </div>
+      `;
+    }
+
+    function addToWatchlist(stockCode) {
+      console.log('添加到自选股:', stockCode);
+      // API call to add to watchlist
+      // POST /api/v1/user/watchlist
+    }
+
+    // Period selector
+    document.querySelectorAll('.artdeco-period-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.artdeco-period-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        currentPeriod = this.dataset.period;
+        loadKlineData(currentStock, currentPeriod);
+      });
+    });
+
+    // ==================== INITIALIZATION ====================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize K-line chart
+      initKlineChart();
+
+      // Load initial data
+      loadKlineData(currentStock, currentPeriod);
+
+      // Load market watch list
+      fetchMarketWatchlist().then(data => renderMarketWatchTable(data));
+
+      // Load initial stock quote
+      fetchStockQuote(currentStock).then(quote => updateStockInfo(quote));
+
+      // Enter key to search
+      document.getElementById('stockSearchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchStock();
+      });
+
+      // Auto-refresh every 3 seconds
+      setInterval(() => {
+        fetchMarketWatchlist().then(data => renderMarketWatchTable(data));
+        fetchStockQuote(currentStock).then(quote => updateStockInfo(quote));
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

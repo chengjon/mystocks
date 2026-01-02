@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>主控仪表盘 - MyStocks ArtDeco</title>
+
+  <!-- Google Fonts - ArtDeco Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <!-- ECharts for Professional Financial Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    /* Additional page-specific styles */
+    .artdeco-layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Sidebar */
+    .artdeco-sidebar {
+      width: 240px;
+      background: var(--artdeco-bg-header);
+      border-right: 1px solid var(--artdeco-gold-dim);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: var(--artdeco-z-fixed);
+      transition: transform var(--artdeco-transition-base);
+    }
+
+    .artdeco-sidebar-header {
+      padding: var(--artdeco-space-lg);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      text-align: center;
+    }
+
+    .artdeco-logo {
+      font-family: var(--artdeco-font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 4px;
+      text-decoration: none;
+    }
+
+    .artdeco-nav {
+      padding: var(--artdeco-space-md);
+    }
+
+    .artdeco-nav-section {
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-nav-section-title {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: var(--artdeco-space-sm) var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+      padding: 12px var(--artdeco-space-md);
+      color: var(--artdeco-silver-dim);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all var(--artdeco-transition-fast);
+      font-size: 0.875rem;
+    }
+
+    .artdeco-nav-item:hover {
+      background: var(--artdeco-bg-hover);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-nav-item.active {
+      background: var(--artdeco-gold-dim);
+      border-left-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    /* Main Content Area */
+    .artdeco-main {
+      flex: 1;
+      margin-left: 240px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .artdeco-topbar {
+      height: 60px;
+      background: var(--artdeco-bg-header);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--artdeco-space-lg);
+      position: sticky;
+      top: 0;
+      z-index: var(--artdeco-z-sticky);
+    }
+
+    .artdeco-breadcrumb {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 1px;
+    }
+
+    .artdeco-search-box {
+      position: relative;
+      width: 400px;
+    }
+
+    .artdeco-search-input {
+      width: 100%;
+      padding: 8px 40px 8px 16px;
+      font-family: var(--artdeco-font-body);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-search-input:focus {
+      outline: none;
+      border-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle);
+    }
+
+    .artdeco-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+    }
+
+    /* Status Indicator */
+    .artdeco-status {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-sm);
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-family: var(--artdeco-font-mono);
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: artdeco-pulse 2s ease-in-out infinite;
+    }
+
+    .artdeco-status-dot.online {
+      background: var(--artdeco-success);
+      box-shadow: 0 0 8px rgba(39, 174, 96, 0.6);
+    }
+
+    .artdeco-status-dot.warning {
+      background: var(--artdeco-warning);
+      box-shadow: 0 0 8px rgba(230, 126, 34, 0.6);
+    }
+
+    .artdeco-status-dot.offline {
+      background: var(--artdeco-danger);
+      box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+    }
+
+    @keyframes artdeco-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Content Area */
+    .artdeco-content {
+      flex: 1;
+      padding: var(--artdeco-space-lg);
+      overflow-y: auto;
+    }
+
+    /* Dashboard Stats Grid */
+    .artdeco-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-stat-card {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Double border for stat cards */
+    .artdeco-stat-card::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      border: 1px solid var(--artdeco-gold-dim);
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    .artdeco-stat-label {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-stat-value {
+      font-family: var(--artdeco-font-mono);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--artdeco-gold-primary);
+      line-height: 1;
+      margin-bottom: var(--artdeco-space-xs);
+    }
+
+    .artdeco-stat-change {
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-xs);
+    }
+
+    /* Chart Container */
+    .artdeco-chart-container {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-lg);
+      height: 400px;
+      position: relative;
+    }
+
+    .artdeco-chart-container::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      border: 1px solid var(--artdeco-gold-dim);
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    /* Real-time update indicator */
+    .artdeco-live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--artdeco-space-xs);
+      padding: 4px 12px;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      color: var(--artdeco-gold-primary);
+      background: var(--artdeco-gold-dim);
+      border: 1px solid var(--artdeco-gold-muted);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--artdeco-gold-primary);
+      border-radius: 50%;
+      animation: artdeco-pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Responsive Sidebar */
+    @media (max-width: 1440px) {
+      .artdeco-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .artdeco-sidebar {
+        transform: translateX(-100%);
+      }
+
+      .artdeco-main {
+        margin-left: 0;
+      }
+
+      .artdeco-search-box {
+        width: 300px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .artdeco-stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .artdeco-topbar {
+        padding: 0 var(--artdeco-space-md);
+      }
+
+      .artdeco-search-box {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ArtDeco Background Pattern -->
+  <div class="artdeco-bg-pattern"></div>
+
+  <div class="artdeco-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="#" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+
+      <nav class="artdeco-nav">
+        <!-- Core Section -->
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">核心功能区</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item active">
+            <span>Ⅰ</span>
+            <span>主控仪表盘</span>
+          </a>
+          <a href="02-market-center.html" class="artdeco-nav-item">
+            <span>Ⅱ</span>
+            <span>市场行情中心</span>
+          </a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item">
+            <span>Ⅲ</span>
+            <span>智能选股池</span>
+          </a>
+          <a href="04-data-analysis.html" class="artdeco-nav-item">
+            <span>Ⅳ</span>
+            <span>数据深度分析</span>
+          </a>
+        </div>
+
+        <!-- Strategy Section -->
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">策略研发区</div>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item">
+            <span>Ⅴ</span>
+            <span>策略研配实验室</span>
+          </a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item">
+            <span>Ⅵ</span>
+            <span>回测竞技场</span>
+          </a>
+        </div>
+
+        <!-- Trading Section -->
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理区</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item">
+            <span>Ⅶ</span>
+            <span>实战交易台</span>
+          </a>
+          <a href="08-risk-center.html" class="artdeco-nav-item">
+            <span>Ⅷ</span>
+            <span>风险监控中心</span>
+          </a>
+        </div>
+
+        <!-- System Section -->
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统配置</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item">
+            <span>Ⅸ</span>
+            <span>系统配置中心</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="artdeco-main">
+      <!-- Top Bar -->
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">主控仪表盘 / DASHBOARD</div>
+
+        <div class="artdeco-search-box">
+          <input
+            type="text"
+            class="artdeco-search-input"
+            placeholder="搜索股票代码 / 策略名称 / 功能模块..."
+          >
+        </div>
+
+        <div class="artdeco-topbar-actions">
+          <!-- API Status -->
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot online"></span>
+            <span>API</span>
+          </div>
+
+          <!-- Market Status -->
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot online"></span>
+            <span>行情</span>
+          </div>
+
+          <!-- GPU Status -->
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot warning"></span>
+            <span>GPU</span>
+          </div>
+
+          <!-- Notifications -->
+          <button class="artdeco-btn artdeco-btn-secondary" style="padding: 8px 16px;">
+            🔔
+          </button>
+
+          <!-- User -->
+          <div style="width: 32px; height: 32px; background: var(--artdeco-gold-dim); border: 1px solid var(--artdeco-gold-primary);"></div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="artdeco-content">
+        <!-- Market Statistics Cards -->
+        <div class="artdeco-stats-grid artdeco-stagger">
+          <div class="artdeco-stat-card">
+            <div class="artdeco-stat-label">上证综指</div>
+            <div class="artdeco-stat-value">3,245.67</div>
+            <div class="artdeco-stat-change data-rise">
+              <span>▲</span>
+              <span>+1.23%</span>
+            </div>
+          </div>
+
+          <div class="artdeco-stat-card">
+            <div class="artdeco-stat-label">深证成指</div>
+            <div class="artdeco-stat-value">10,892.45</div>
+            <div class="artdeco-stat-change data-fall">
+              <span>▼</span>
+              <span>-0.56%</span>
+            </div>
+          </div>
+
+          <div class="artdeco-stat-card">
+            <div class="artdeco-stat-label">创业板指</div>
+            <div class="artdeco-stat-value">2,156.78</div>
+            <div class="artdeco-stat-change data-rise">
+              <span>▲</span>
+              <span>+2.15%</span>
+            </div>
+          </div>
+
+          <div class="artdeco-stat-card">
+            <div class="artdeco-stat-label">北向资金</div>
+            <div class="artdeco-stat-value">+89.5亿</div>
+            <div class="artdeco-stat-change data-rise">
+              <span>▲</span>
+              <span>净流入</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg);">
+          <!-- Main Chart -->
+          <div class="artdeco-card artdeco-fade-in">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--artdeco-space-md);">
+              <h3 style="margin: 0;">三大指数分时走势</h3>
+              <div style="display: flex; gap: var(--artdeco-space-sm);">
+                <button class="artdeco-btn artdeco-btn-secondary" style="padding: 6px 16px; font-size: 0.75rem;">上证</button>
+                <button class="artdeco-btn artdeco-btn-secondary" style="padding: 6px 16px; font-size: 0.75rem;">深证</button>
+                <button class="artdeco-btn artdeco-btn-secondary" style="padding: 6px 16px; font-size: 0.75rem;">创业板</button>
+              </div>
+            </div>
+            <div id="mainChart" style="height: 320px;"></div>
+          </div>
+
+          <!-- Market Heatmap -->
+          <div class="artdeco-card artdeco-fade-in" style="animation-delay: 0.2s;">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">板块热度</h3>
+            <div id="heatmapChart" style="height: 320px;"></div>
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--artdeco-space-lg);">
+          <!-- Limit Up/Down Stats -->
+          <div class="artdeco-card artdeco-fade-in" style="animation-delay: 0.3s;">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">涨跌停统计</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--artdeco-space-md); text-align: center;">
+              <div>
+                <div class="artdeco-stat-label" style="margin-bottom: var(--artdeco-space-xs);">涨停</div>
+                <div class="artdeco-stat-value data-rise" style="font-size: 1.5rem;">47</div>
+              </div>
+              <div>
+                <div class="artdeco-stat-label" style="margin-bottom: var(--artdeco-space-xs);">跌停</div>
+                <div class="artdeco-stat-value data-fall" style="font-size: 1.5rem;">12</div>
+              </div>
+              <div>
+                <div class="artdeco-stat-label" style="margin-bottom: var(--artdeco-space-xs);">平盘</div>
+                <div class="artdeco-stat-value data-flat" style="font-size: 1.5rem;">8</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Source Status -->
+          <div class="artdeco-card artdeco-fade-in" style="animation-delay: 0.4s;">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">数据源状态</h3>
+            <table class="artdeco-table">
+              <thead>
+                <tr>
+                  <th>数据源</th>
+                  <th>状态</th>
+                  <th>延迟</th>
+                  <th>最后更新</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>AKShare</td>
+                  <td><span class="artdeco-badge artdeco-badge-gold">在线</span></td>
+                  <td class="text-mono">23ms</td>
+                  <td class="text-mono text-dim">刚刚</td>
+                </tr>
+                <tr>
+                  <td>Tushare</td>
+                  <td><span class="artdeco-badge artdeco-badge-gold">在线</span></td>
+                  <td class="text-mono">45ms</td>
+                  <td class="text-mono text-dim">5秒前</td>
+                </tr>
+                <tr>
+                  <td>通达信</td>
+                  <td><span class="artdeco-badge artdeco-badge-gold">在线</span></td>
+                  <td class="text-mono">12ms</td>
+                  <td class="text-mono text-dim">刚刚</td>
+                </tr>
+                <tr>
+                  <td>北向资金</td>
+                  <td><span class="artdeco-badge artdeco-badge-gold">在线</span></td>
+                  <td class="text-mono">67ms</td>
+                  <td class="text-mono text-dim">10秒前</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ==================== API INTEGRATION ====================
+
+    // Configuration
+    const API_BASE_URL = '/api/v1';
+    const WS_BASE_URL = 'ws://localhost:8000/ws/market/realtime';
+
+    // State
+    const state = {
+      marketOverview: null,
+      indices: [],
+      sectorHeatmap: [],
+      dataSources: [],
+      websocket: null
+    };
+
+    // ==================== API CALLS ====================
+
+    /**
+     * Fetch market overview statistics
+     * GET /api/v1/market/overview
+     */
+    async function fetchMarketOverview() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/market/overview`);
+        if (!response.ok) throw new Error('API请求失败');
+        const data = await response.json();
+        state.marketOverview = data;
+        updateMarketStats(data);
+        return data;
+      } catch (error) {
+        console.error('获取市场概览失败:', error);
+        // Use mock data for demo
+        return getMockMarketOverview();
+      }
+    }
+
+    /**
+     * Fetch limit up/down statistics
+     * GET /api/v1/market/limit
+     */
+    async function fetchLimitStats() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/market/limit`);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取涨跌停统计失败:', error);
+        return { limit_up: 47, limit_down: 12, flat: 8 };
+      }
+    }
+
+    /**
+     * Fetch northbound capital flow
+     * GET /api/v1/fund/north_flow
+     */
+    async function fetchNorthFlow() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/fund/north_flow`);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取北向资金失败:', error);
+        return { net_inflow: 89.5, unit: '亿' };
+      }
+    }
+
+    /**
+     * Fetch sector heatmap data
+     * GET /api/v1/sector/heatmap
+     */
+    async function fetchSectorHeatmap() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/sector/heatmap`);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取板块热度失败:', error);
+        return getMockSectorHeatmap();
+      }
+    }
+
+    // ==================== MOCK DATA ====================
+
+    function getMockMarketOverview() {
+      return {
+        sh_index: { value: 3245.67, change: 1.23 },
+        sz_index: { value: 10892.45, change: -0.56 },
+        cyb_index: { value: 2156.78, change: 2.15 },
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    function getMockSectorHeatmap() {
+      return [
+        { name: '半导体', change: 3.45, value: 1250 },
+        { name: '新能源', change: 2.78, value: 980 },
+        { name: '军工', change: 2.12, value: 756 },
+        { name: '医药', change: 1.89, value: 1100 },
+        { name: '消费', change: -0.45, value: 890 },
+        { name: '金融', change: -1.23, value: 650 },
+        { name: '地产', change: -2.15, value: 420 },
+        { name: '钢铁', change: 0.67, value: 380 }
+      ];
+    }
+
+    // ==================== UI UPDATES ====================
+
+    function updateMarketStats(data) {
+      // Update stat cards with real data
+      // This would be implemented with the actual API response structure
+    }
+
+    // ==================== CHARTS ====================
+
+    /**
+     * Initialize main index chart
+     */
+    function initMainChart() {
+      const chart = echarts.init(document.getElementById('mainChart'));
+
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(15, 18, 21, 0.95)',
+          borderColor: '#D4AF37',
+          borderWidth: 1,
+          textStyle: {
+            color: '#E5E4E2',
+            fontFamily: 'JetBrains Mono'
+          }
+        },
+        legend: {
+          data: ['上证综指', '深证成指', '创业板指'],
+          textStyle: {
+            color: '#8B9BB4',
+            fontFamily: 'Cinzel'
+          },
+          top: 10
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['9:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00'],
+          axisLine: {
+            lineStyle: { color: '#5C6B7F' }
+          },
+          axisLabel: {
+            color: '#8B9BB4',
+            fontFamily: 'JetBrains Mono'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: {
+            lineStyle: { color: '#5C6B7F' }
+          },
+          axisLabel: {
+            color: '#8B9BB4',
+            fontFamily: 'JetBrains Mono'
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(212, 175, 55, 0.1)',
+              type: 'dashed'
+            }
+          }
+        },
+        series: [
+          {
+            name: '上证综指',
+            type: 'line',
+            smooth: true,
+            data: [3220, 3235, 3240, 3238, 3242, 3245, 3248, 3246, 3244, 3245.67],
+            lineStyle: {
+              color: '#D4AF37',
+              width: 2
+            },
+            areaStyle: {
+              color: {
+                type: 'linear',
+                x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [
+                  { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
+                  { offset: 1, color: 'rgba(212, 175, 55, 0)' }
+                ]
+              }
+            }
+          },
+          {
+            name: '深证成指',
+            type: 'line',
+            smooth: true,
+            data: [10850, 10870, 10880, 10875, 10885, 10890, 10892, 10890, 10891, 10892.45],
+            lineStyle: {
+              color: '#4A90E2',
+              width: 2
+            }
+          },
+          {
+            name: '创业板指',
+            type: 'line',
+            smooth: true,
+            data: [2140, 2145, 2150, 2148, 2152, 2154, 2156, 2155, 2157, 2156.78],
+            lineStyle: {
+              color: '#27AE60',
+              width: 2
+            }
+          }
+        ]
+      };
+
+      chart.setOption(option);
+      return chart;
+    }
+
+    /**
+     * Initialize sector heatmap chart
+     */
+    function initHeatmapChart() {
+      const chart = echarts.init(document.getElementById('heatmapChart'));
+
+      const data = [
+        [0, 0, 3.45], [0, 1, 2.78], [1, 0, 2.12], [1, 1, 1.89],
+        [2, 0, -0.45], [2, 1, -1.23], [3, 0, -2.15], [3, 1, 0.67]
+      ];
+
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          position: 'top',
+          backgroundColor: 'rgba(15, 18, 21, 0.95)',
+          borderColor: '#D4AF37',
+          borderWidth: 1,
+          textStyle: {
+            color: '#E5E4E2',
+            fontFamily: 'JetBrains Mono'
+          }
+        },
+        grid: {
+          height: '70%',
+          top: '5%'
+        },
+        xAxis: {
+          type: 'category',
+          data: ['科技', '消费', '金融', '周期'],
+          splitArea: { show: true },
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: {
+            color: '#8B9BB4',
+            fontFamily: 'Cinzel'
+          }
+        },
+        yAxis: {
+          type: 'category',
+          data: ['强势', '弱势'],
+          splitArea: { show: true },
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: {
+            color: '#8B9BB4',
+            fontFamily: 'Cinzel'
+          }
+        },
+        visualMap: {
+          min: -3,
+          max: 4,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '0%',
+          textStyle: {
+            color: '#8B9BB4',
+            fontFamily: 'Cinzel'
+          },
+          inRange: {
+            color: ['#3D9970', '#B8B8B8', '#C94042']
+          }
+        },
+        series: [{
+          name: '涨跌幅',
+          type: 'heatmap',
+          data: data,
+          label: {
+            show: true,
+            formatter: '{c}%',
+            fontFamily: 'JetBrains Mono',
+            color: '#E5E4E2'
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowColor: 'rgba(212, 175, 55, 0.5)'
+            }
+          }
+        }]
+      };
+
+      chart.setOption(option);
+      return chart;
+    }
+
+    // ==================== WEBSOCKET ====================
+
+    /**
+     * Initialize WebSocket connection for real-time updates
+     */
+    function initWebSocket() {
+      try {
+        state.websocket = new WebSocket(WS_BASE_URL);
+
+        state.websocket.onopen = () => {
+          console.log('WebSocket连接已建立');
+        };
+
+        state.websocket.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          handleRealtimeUpdate(data);
+        };
+
+        state.websocket.onerror = (error) => {
+          console.error('WebSocket错误:', error);
+        };
+
+        state.websocket.onclose = () => {
+          console.log('WebSocket连接已关闭');
+          // Attempt reconnection after 5 seconds
+          setTimeout(initWebSocket, 5000);
+        };
+      } catch (error) {
+        console.error('WebSocket初始化失败:', error);
+      }
+    }
+
+    function handleRealtimeUpdate(data) {
+      // Handle real-time market data updates
+      console.log('实时更新:', data);
+    }
+
+    // ==================== INITIALIZATION ====================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize charts
+      const mainChart = initMainChart();
+      const heatmapChart = initHeatmapChart();
+
+      // Fetch initial data
+      fetchMarketOverview();
+      fetchLimitStats();
+      fetchNorthFlow();
+      fetchSectorHeatmap();
+
+      // Initialize WebSocket for real-time updates
+      initWebSocket();
+
+      // Set up auto-refresh every 3 seconds
+      setInterval(() => {
+        fetchMarketOverview();
+      }, 3000);
+
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        mainChart.resize();
+        heatmapChart.resize();
+      });
+    });
+  </script>
+</body>
+</html>

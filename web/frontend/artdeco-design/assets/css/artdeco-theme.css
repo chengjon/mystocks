@@ -1,0 +1,510 @@
+/**
+ * ArtDeco Modern Theme - A股量化交易管理系统
+ * Design System: Luxurious geometric aesthetics with sharp precision
+ * Version: 1.0.0
+ * Author: Claude Code Frontend Design Specialist
+ */
+
+/* ==================== CSS VARIABLES ==================== */
+:root {
+  /* Backgrounds - Deep Luxury Dark */
+  --artdeco-bg-global: #0F1215;
+  --artdeco-bg-card: #161B22;
+  --artdeco-bg-header: #0A0C0E;
+  --artdeco-bg-hover: #1E252E;
+  --artdeco-bg-active: #252D38;
+
+  /* Primary - Metallic Gold */
+  --artdeco-gold-primary: #D4AF37;
+  --artdeco-gold-hover: #F4CF57;
+  --artdeco-gold-muted: #8A7120;
+  --artdeco-gold-dim: rgba(212, 175, 55, 0.15);
+
+  /* Secondary - Platinum Silver */
+  --artdeco-silver-text: #E5E4E2;
+  --artdeco-silver-dim: #8B9BB4;
+  --artdeco-silver-muted: #5C6B7F;
+
+  /* A股 Trading Colors */
+  --artdeco-rise: #C94042;      /* Red for rise (A股习惯) */
+  --artdeco-fall: #3D9970;      /* Green for fall */
+  --artdeco-flat: #B8B8B8;      /* Gray for unchanged */
+
+  /* Semantic Colors */
+  --artdeco-info: #4A90E2;
+  --artdeco-warning: #E67E22;
+  --artdeco-success: #27AE60;
+  --artdeco-danger: #E74C3C;
+
+  /* Typography */
+  --artdeco-font-display: 'Cinzel', 'Playfair Display', serif;
+  --artdeco-font-body: 'Montserrat', 'Helvetica Neue', sans-serif;
+  --artdeco-font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
+
+  /* Spacing System */
+  --artdeco-space-xs: 4px;
+  --artdeco-space-sm: 8px;
+  --artdeco-space-md: 16px;
+  --artdeco-space-lg: 24px;
+  --artdeco-space-xl: 32px;
+  --artdeco-space-2xl: 48px;
+
+  /* Border Radius */
+  --artdeco-radius-none: 0;
+  --artdeco-radius-sm: 2px;
+
+  /* Shadows & Glows */
+  --artdeco-glow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
+  --artdeco-glow-subtle: 0 0 10px rgba(212, 175, 55, 0.15);
+  --artdeco-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+  /* Transitions */
+  --artdeco-transition-fast: 150ms ease-out;
+  --artdeco-transition-base: 250ms ease-out;
+  --artdeco-transition-slow: 500ms ease-in-out;
+
+  /* Z-Index Scale */
+  --artdeco-z-dropdown: 1000;
+  --artdeco-z-sticky: 1020;
+  --artdeco-z-fixed: 1030;
+  --artdeco-z-modal-backdrop: 1040;
+  --artdeco-z-modal: 1050;
+  --artdeco-z-tooltip: 1070;
+}
+
+/* ==================== GLOBAL RESET ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--artdeco-font-body);
+  background-color: var(--artdeco-bg-global);
+  color: var(--artdeco-silver-text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ==================== ARTDECO BACKGROUND PATTERN ==================== */
+.artdeco-bg-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--artdeco-gold-primary) 0px,
+      var(--artdeco-gold-primary) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--artdeco-gold-primary) 0px,
+      var(--artdeco-gold-primary) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+/* ==================== TYPOGRAPHY ==================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--artdeco-font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--artdeco-gold-primary);
+  margin-bottom: var(--artdeco-space-md);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+p {
+  margin-bottom: var(--artdeco-space-sm);
+  color: var(--artdeco-silver-dim);
+}
+
+/* ==================== ARTDECO CARD SYSTEM ==================== */
+.artdeco-card {
+  position: relative;
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
+  padding: var(--artdeco-space-lg);
+  margin-bottom: var(--artdeco-space-lg);
+  transition: all var(--artdeco-transition-base);
+  overflow: hidden;
+}
+
+/* Double border effect */
+.artdeco-card::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border: 1px solid var(--artdeco-gold-dim);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Corner decorations - L-shaped brackets */
+.artdeco-card::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 16px;
+  height: 16px;
+  border-top: 2px solid var(--artdeco-gold-primary);
+  border-left: 2px solid var(--artdeco-gold-primary);
+  opacity: 0.3;
+  transition: opacity var(--artdeco-transition-base);
+}
+
+.artdeco-card:hover {
+  border-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-gold);
+  transform: translateY(-2px);
+}
+
+.artdeco-card:hover::after {
+  opacity: 0.8;
+}
+
+/* ==================== ARTDECO BUTTONS ==================== */
+.artdeco-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--artdeco-space-sm);
+  padding: 12px 32px;
+  font-family: var(--artdeco-font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 2px solid var(--artdeco-gold-primary);
+  border-radius: var(--artdeco-radius-none);
+  cursor: pointer;
+  transition: all var(--artdeco-transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary button - gold solid */
+.artdeco-btn-primary {
+  background: var(--artdeco-gold-primary);
+  color: var(--artdeco-bg-global);
+}
+
+.artdeco-btn-primary:hover {
+  background: var(--artdeco-gold-hover);
+  box-shadow: var(--artdeco-glow-gold);
+}
+
+/* Secondary button - transparent with gold border */
+.artdeco-btn-secondary {
+  background: transparent;
+  color: var(--artdeco-gold-primary);
+}
+
+.artdeco-btn-secondary:hover {
+  background: var(--artdeco-gold-dim);
+  color: var(--artdeco-gold-hover);
+}
+
+/* Rise button (A股 red) */
+.artdeco-btn-rise {
+  background: var(--artdeco-rise);
+  border-color: var(--artdeco-rise);
+  color: white;
+}
+
+.artdeco-btn-rise:hover {
+  background: #D94F51;
+  box-shadow: 0 0 20px rgba(201, 64, 66, 0.4);
+}
+
+/* Fall button (A股 green) */
+.artdeco-btn-fall {
+  background: var(--artdeco-fall);
+  border-color: var(--artdeco-fall);
+  color: white;
+}
+
+.artdeco-btn-fall:hover {
+  background: #4DB38C;
+  box-shadow: 0 0 20px rgba(61, 153, 112, 0.4);
+}
+
+/* ==================== DATA TABLES ==================== */
+.artdeco-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--artdeco-font-mono);
+  font-size: 0.875rem;
+}
+
+.artdeco-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--artdeco-bg-header);
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--artdeco-gold-primary);
+  z-index: 10;
+}
+
+.artdeco-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--artdeco-gold-dim);
+  color: var(--artdeco-silver-text);
+  transition: background var(--artdeco-transition-fast);
+}
+
+.artdeco-table tbody tr:hover td {
+  background: var(--artdeco-bg-hover);
+}
+
+/* Data coloring */
+.data-rise { color: var(--artdeco-rise); font-weight: 600; }
+.data-fall { color: var(--artdeco-fall); font-weight: 600; }
+.data-flat { color: var(--artdeco-flat); }
+
+/* ==================== FORM ELEMENTS ==================== */
+.artdeco-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--artdeco-font-mono);
+  font-size: 0.875rem;
+  color: var(--artdeco-silver-text);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--artdeco-silver-muted);
+  border-radius: var(--artdeco-radius-none);
+  transition: all var(--artdeco-transition-base);
+}
+
+.artdeco-input:focus {
+  outline: none;
+  border-bottom-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle);
+}
+
+.artdeco-input::placeholder {
+  color: var(--artdeco-silver-muted);
+}
+
+/* ==================== SELECT DROPDOWN ==================== */
+.artdeco-select {
+  position: relative;
+  display: inline-block;
+}
+
+.artdeco-select select {
+  appearance: none;
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  font-family: var(--artdeco-font-body);
+  font-size: 0.875rem;
+  color: var(--artdeco-silver-text);
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
+  cursor: pointer;
+  transition: all var(--artdeco-transition-base);
+}
+
+.artdeco-select select:focus {
+  outline: none;
+  border-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle);
+}
+
+.artdeco-select::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--artdeco-gold-primary);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+/* ==================== BADGES & TAGS ==================== */
+.artdeco-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-family: var(--artdeco-font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--artdeco-radius-none);
+}
+
+.artdeco-badge-gold {
+  background: var(--artdeco-gold-dim);
+  color: var(--artdeco-gold-primary);
+  border: 1px solid var(--artdeco-gold-muted);
+}
+
+.artdeco-badge-rise {
+  background: rgba(201, 64, 66, 0.15);
+  color: var(--artdeco-rise);
+  border: 1px solid var(--artdeco-rise);
+}
+
+.artdeco-badge-fall {
+  background: rgba(61, 153, 112, 0.15);
+  color: var(--artdeco-fall);
+  border: 1px solid var(--artdeco-fall);
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.text-gold { color: var(--artdeco-gold-primary); }
+.text-silver { color: var(--artdeco-silver-text); }
+.text-dim { color: var(--artdeco-silver-dim); }
+
+.text-mono { font-family: var(--artdeco-font-mono); }
+.text-display { font-family: var(--artdeco-font-display); }
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+
+.uppercase { text-transform: uppercase; }
+.wide-spacing { letter-spacing: 2px; }
+
+/* Spacing utilities */
+.mt-sm { margin-top: var(--artdeco-space-sm); }
+.mt-md { margin-top: var(--artdeco-space-md); }
+.mt-lg { margin-top: var(--artdeco-space-lg); }
+.mb-sm { margin-bottom: var(--artdeco-space-sm); }
+.mb-md { margin-bottom: var(--artdeco-space-md); }
+.mb-lg { margin-bottom: var(--artdeco-space-lg); }
+
+/* Flexbox utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-sm { gap: var(--artdeco-space-sm); }
+.gap-md { gap: var(--artdeco-space-md); }
+
+/* Grid utilities */
+.grid { display: grid; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ==================== LOADING & SPINNERS ==================== */
+.artdeco-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--artdeco-gold-dim);
+  border-top-color: var(--artdeco-gold-primary);
+  border-radius: 50%;
+  animation: artdeco-spin 1s linear infinite;
+}
+
+@keyframes artdeco-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes artdeco-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.artdeco-fade-in {
+  animation: artdeco-fade-in 0.6s ease-out forwards;
+}
+
+/* Staggered children animation */
+.artdeco-stagger > * {
+  opacity: 0;
+  animation: artdeco-fade-in 0.6s ease-out forwards;
+}
+
+.artdeco-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.artdeco-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.artdeco-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.artdeco-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.artdeco-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 1440px) {
+  html { font-size: 15px; }
+}
+
+@media (max-width: 1080px) {
+  html { font-size: 14px; }
+
+  .artdeco-card {
+    padding: var(--artdeco-space-md);
+  }
+
+  .grid-4, .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-4, .grid-3, .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  .artdeco-bg-pattern,
+  .artdeco-sidebar,
+  .artdeco-topbar {
+    display: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .artdeco-card {
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+  }
+}

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选股池 - MyStocks ArtDeco</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+    .artdeco-sidebar {
+      width: 240px;
+      background: var(--artdeco-bg-header);
+      border-right: 1px solid var(--artdeco-gold-dim);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: var(--artdeco-z-fixed);
+    }
+
+    .artdeco-sidebar-header {
+      padding: var(--artdeco-space-lg);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      text-align: center;
+    }
+
+    .artdeco-logo {
+      font-family: var(--artdeco-font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 4px;
+      text-decoration: none;
+    }
+
+    .artdeco-nav { padding: var(--artdeco-space-md); }
+    .artdeco-nav-section { margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-nav-section-title {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: var(--artdeco-space-sm) var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+      padding: 12px var(--artdeco-space-md);
+      color: var(--artdeco-silver-dim);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all var(--artdeco-transition-fast);
+      font-size: 0.875rem;
+    }
+
+    .artdeco-nav-item:hover {
+      background: var(--artdeco-bg-hover);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-nav-item.active {
+      background: var(--artdeco-gold-dim);
+      border-left-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-main {
+      flex: 1;
+      margin-left: 240px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .artdeco-topbar {
+      height: 60px;
+      background: var(--artdeco-bg-header);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--artdeco-space-lg);
+      position: sticky;
+      top: 0;
+      z-index: var(--artdeco-z-sticky);
+    }
+
+    .artdeco-content { flex: 1; padding: var(--artdeco-space-lg); }
+
+    /* Filter Panel */
+    .artdeco-filter-panel {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-md);
+    }
+
+    .artdeco-filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--artdeco-space-xs);
+    }
+
+    .artdeco-filter-label {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .artdeco-filter-input {
+      padding: 8px 12px;
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      background: var(--artdeco-bg-global);
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-filter-input:focus {
+      outline: none;
+      border-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle);
+    }
+
+    /* Stock Pool Tabs */
+    .artdeco-tabs {
+      display: flex;
+      gap: var(--artdeco-space-sm);
+      margin-bottom: var(--artdeco-space-lg);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      padding-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-tab {
+      padding: 12px 24px;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-dim);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--artdeco-transition-fast);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .artdeco-tab:hover {
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-tab.active {
+      color: var(--artdeco-gold-primary);
+      border-bottom-color: var(--artdeco-gold-primary);
+    }
+
+    /* Results Table */
+    .artdeco-results-table {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      overflow: hidden;
+    }
+
+    .artdeco-results-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .artdeco-results-table thead th {
+      position: sticky;
+      top: 0;
+      background: var(--artdeco-bg-header);
+      padding: 12px;
+      text-align: left;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--artdeco-gold-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .artdeco-results-table thead th:hover {
+      background: var(--artdeco-bg-hover);
+    }
+
+    .artdeco-results-table tbody td {
+      padding: 12px;
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      cursor: pointer;
+      transition: background var(--artdeco-transition-fast);
+    }
+
+    .artdeco-results-table tbody tr:hover td {
+      background: var(--artdeco-bg-hover);
+    }
+
+    /* Pagination */
+    .artdeco-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+      margin-top: var(--artdeco-space-lg);
+      padding: var(--artdeco-space-md);
+    }
+
+    .artdeco-pagination-btn {
+      padding: 8px 16px;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-dim);
+      background: transparent;
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+      cursor: pointer;
+      transition: all var(--artdeco-transition-fast);
+    }
+
+    .artdeco-pagination-btn:hover:not(:disabled) {
+      border-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-pagination-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .artdeco-pagination-info {
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-dim);
+    }
+
+    @media (max-width: 1440px) {
+      .artdeco-filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .artdeco-sidebar { transform: translateX(-100%); }
+      .artdeco-main { margin-left: 0; }
+      .artdeco-filter-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .artdeco-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-bg-pattern"></div>
+
+  <div class="artdeco-layout">
+    <!-- Sidebar -->
+    <aside class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="#" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+      <nav class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">核心功能区</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item">
+            <span>Ⅰ</span><span>主控仪表盘</span>
+          </a>
+          <a href="02-market-center.html" class="artdeco-nav-item">
+            <span>Ⅱ</span><span>市场行情中心</span>
+          </a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item active">
+            <span>Ⅲ</span><span>智能选股池</span>
+          </a>
+          <a href="04-data-analysis.html" class="artdeco-nav-item">
+            <span>Ⅳ</span><span>数据深度分析</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">策略研发区</div>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item">
+            <span>Ⅴ</span><span>策略研配实验室</span>
+          </a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item">
+            <span>Ⅵ</span><span>回测竞技场</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理区</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item">
+            <span>Ⅶ</span><span>实战交易台</span>
+          </a>
+          <a href="08-risk-center.html" class="artdeco-nav-item">
+            <span>Ⅷ</span><span>风险监控中心</span>
+          </a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统配置</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item">
+            <span>Ⅸ</span><span>系统配置中心</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="artdeco-main">
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">智能选股池 / STOCK SCREENER</div>
+        <div class="artdeco-topbar-actions">
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot online"></span>
+            <span>数据源: 正常</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="artdeco-content">
+        <!-- Stock Pool Tabs -->
+        <div class="artdeco-tabs">
+          <button class="artdeco-tab active" data-pool="watchlist">自选股池</button>
+          <button class="artdeco-tab" data-pool="strategy">策略股池</button>
+          <button class="artdeco-tab" data-pool="sector">行业股池</button>
+          <button class="artdeco-tab" data-pool="concept">概念股池</button>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="artdeco-filter-panel">
+          <h3 style="margin-bottom: var(--artdeco-space-md);">筛选条件</h3>
+
+          <div class="artdeco-filter-grid">
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">行业板块</label>
+              <select class="artdeco-filter-input" id="filterSector">
+                <option value="">全部行业</option>
+                <option value="半导体">半导体</option>
+                <option value="新能源">新能源</option>
+                <option value="军工">军工</option>
+                <option value="医药">医药</option>
+                <option value="消费">消费</option>
+                <option value="金融">金融</option>
+              </select>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">涨跌幅范围</label>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" id="filterChangeMin" placeholder="最小" value="-10">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" id="filterChangeMax" placeholder="最大" value="10">
+              </div>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">市值范围 (亿)</label>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" id="filterMarketCapMin" placeholder="最小" value="0">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" id="filterMarketCapMax" placeholder="最大" value="10000">
+              </div>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">市盈率 (PE-TTM)</label>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" id="filterPEMin" placeholder="最小" value="0">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" id="filterPEMax" placeholder="最大" value="1000">
+              </div>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">换手率</label>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" id="filterTurnoverMin" placeholder="最小" value="0" step="0.1">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" id="filterTurnoverMax" placeholder="最大" value="100" step="0.1">
+              </div>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">成交量</label>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" id="filterVolumeMin" placeholder="最小" value="0">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" id="filterVolumeMax" placeholder="最大" value="10000000">
+              </div>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">技术指标</label>
+              <select class="artdeco-filter-input" id="filterIndicator">
+                <option value="">不限</option>
+                <option value="macd_golden">MACD金叉</option>
+                <option value="kdj_jincha">KDJ金叉</option>
+                <option value="rsi_oversold">RSI超卖</option>
+                <option value="boll_lower">跌破布林下轨</option>
+              </select>
+            </div>
+
+            <div class="artdeco-filter-group">
+              <label class="artdeco-filter-label">排序方式</label>
+              <select class="artdeco-filter-input" id="filterSort">
+                <option value="change_desc">涨跌幅降序</option>
+                <option value="change_asc">涨跌幅升序</option>
+                <option value="volume_desc">成交量降序</option>
+                <option value="volume_asc">成交量升序</option>
+                <option value="turnover_desc">换手率降序</option>
+                <option value="market_cap_desc">市值降序</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: var(--artdeco-space-md);">
+            <button class="artdeco-btn artdeco-btn-primary" onclick="applyFilters()">应用筛选</button>
+            <button class="artdeco-btn artdeco-btn-secondary" onclick="resetFilters()">重置条件</button>
+            <button class="artdeco-btn artdeco-btn-secondary" onclick="exportResults()">导出结果</button>
+          </div>
+        </div>
+
+        <!-- Results Info -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--artdeco-space-md);">
+          <h3 id="resultsTitle">筛选结果 <span style="color: var(--artdeco-gold-primary);">(共 2,456 只股票)</span></h3>
+          <div style="display: flex; gap: var(--artdeco-space-sm);">
+            <input
+              type="text"
+              class="artdeco-filter-input"
+              id="searchInput"
+              placeholder="搜索股票代码 / 名称..."
+              style="width: 300px;"
+            >
+          </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="artdeco-results-table">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortResults('code')">代码 ↕</th>
+                <th onclick="sortResults('name')">名称 ↕</th>
+                <th onclick="sortResults('price')">最新价 ↕</th>
+                <th onclick="sortResults('change')">涨跌幅 ↕</th>
+                <th onclick="sortResults('volume')">成交量 ↕</th>
+                <th onclick="sortResults('turnover')">换手率 ↕</th>
+                <th onclick="sortResults('market_cap')">市值(亿) ↕</th>
+                <th onclick="sortResults('pe')">PE-TTM ↕</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="artdeco-pagination">
+          <button class="artdeco-pagination-btn" onclick="previousPage()" id="prevBtn">上一页</button>
+          <span class="artdeco-pagination-info">第 <span id="currentPage">1</span> / <span id="totalPages">246</span> 页</span>
+          <button class="artdeco-pagination-btn" onclick="nextPage()" id="nextBtn">下一页</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = '/api/v1';
+    let currentPage = 1;
+    const pageSize = 20;
+    let totalPages = 246;
+    let currentPool = 'watchlist';
+    let sortColumn = 'change';
+    let sortDirection = 'desc';
+    let allResults = [];
+
+    // ==================== API CALLS ====================
+
+    /**
+     * Fetch stock pool data
+     * GET /api/v1/stocks/pool?pool_type={pool}&filters={filters}
+     */
+    async function fetchStockPool(poolType, filters = {}) {
+      try {
+        const queryParams = new URLSearchParams({
+          pool_type: poolType,
+          page: currentPage,
+          page_size: pageSize,
+          ...filters
+        });
+
+        const url = `${API_BASE_URL}/stocks/pool?${queryParams}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('API请求失败');
+        return await response.json();
+      } catch (error) {
+        console.error('获取股票池失败:', error);
+        return getMockStockPool();
+      }
+    }
+
+    /**
+     * Add stock to watchlist
+     * POST /api/v1/user/watchlist
+     */
+    async function addToWatchlist(stockCode) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/user/watchlist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stock_code: stockCode })
+        });
+
+        if (!response.ok) throw new Error('API请求失败');
+        alert(`已将 ${stockCode} 添加到自选股`);
+      } catch (error) {
+        console.error('添加自选股失败:', error);
+        alert('添加失败，请稍后重试');
+      }
+    }
+
+    /**
+     * Remove stock from watchlist
+     * DELETE /api/v1/user/watchlist/{stock_code}
+     */
+    async function removeFromWatchlist(stockCode) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/user/watchlist/${stockCode}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('API请求失败');
+        loadStockPool(currentPool); // Reload data
+        alert(`已将 ${stockCode} 从自选股移除`);
+      } catch (error) {
+        console.error('移除自选股失败:', error);
+        alert('移除失败，请稍后重试');
+      }
+    }
+
+    // ==================== MOCK DATA ====================
+
+    function getMockStockPool() {
+      const sectors = ['半导体', '新能源', '军工', '医药', '消费', '金融', '地产', '钢铁'];
+      const results = [];
+
+      for (let i = 0; i < 100; i++) {
+        const change = (Math.random() * 20 - 10).toFixed(2);
+        const price = (Math.random() * 200 + 5).toFixed(2);
+        const volume = Math.floor(Math.random() * 1000000) + 10000;
+        const marketCap = (Math.random() * 5000 + 50).toFixed(2);
+        const pe = (Math.random() * 100 + 5).toFixed(2);
+        const turnover = (Math.random() * 20).toFixed(2);
+
+        results.push({
+          code: `600${String(i).padStart(3, '0')}.SH`,
+          name: `测试股票${i + 1}`,
+          price: parseFloat(price),
+          change: parseFloat(change),
+          volume: volume,
+          turnover: parseFloat(turnover),
+          market_cap: parseFloat(marketCap),
+          pe: parseFloat(pe),
+          sector: sectors[Math.floor(Math.random() * sectors.length)]
+        });
+      }
+
+      return {
+        data: results,
+        total: 2456,
+        page: currentPage,
+        page_size: pageSize
+      };
+    }
+
+    // ==================== UI FUNCTIONS ====================
+
+    function renderResultsTable(data) {
+      const tbody = document.getElementById('resultsTableBody');
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: var(--artdeco-space-lg); color: var(--artdeco-silver-muted);">
+              暂无符合条件的数据
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.map(stock => `
+        <tr onclick="viewStockDetail('${stock.code}')">
+          <td class="text-mono">${stock.code}</td>
+          <td>${stock.name}</td>
+          <td class="text-mono" style="font-weight: 600;">¥${stock.price.toFixed(2)}</td>
+          <td class="text-mono ${stock.change >= 0 ? 'data-rise' : 'data-fall'}">
+            ${stock.change >= 0 ? '▲' : '▼'}${Math.abs(stock.change).toFixed(2)}%
+          </td>
+          <td class="text-mono">${(stock.volume / 10000).toFixed(2)}万手</td>
+          <td class="text-mono">${stock.turnover.toFixed(2)}%</td>
+          <td class="text-mono">${stock.market_cap.toFixed(2)}</td>
+          <td class="text-mono">${stock.pe.toFixed(2)}</td>
+          <td>
+            <div style="display: flex; gap: var(--artdeco-space-xs);">
+              <button class="artdeco-btn artdeco-btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); addToWatchlist('${stock.code}')">
+                +自选
+              </button>
+              <button class="artdeco-btn artdeco-btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;" onclick="event.stopPropagation(); viewKline('${stock.code}')">
+                K线
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadStockPool(poolType, filters = {}) {
+      currentPool = poolType;
+      const response = await fetchStockPool(poolType, filters);
+
+      allResults = response.data;
+      totalPages = Math.ceil(response.total / pageSize);
+
+      document.getElementById('resultsTitle').innerHTML =
+        `筛选结果 <span style="color: var(--artdeco-gold-primary);">(共 ${response.total.toLocaleString()} 只股票)</span>`;
+
+      renderResultsTable(response.data);
+      updatePagination();
+    }
+
+    function applyFilters() {
+      const filters = {
+        sector: document.getElementById('filterSector').value,
+        change_min: parseFloat(document.getElementById('filterChangeMin').value),
+        change_max: parseFloat(document.getElementById('filterChangeMax').value),
+        market_cap_min: parseFloat(document.getElementById('filterMarketCapMin').value),
+        market_cap_max: parseFloat(document.getElementById('filterMarketCapMax').value),
+        pe_min: parseFloat(document.getElementById('filterPEMin').value),
+        pe_max: parseFloat(document.getElementById('filterPEMax').value),
+        turnover_min: parseFloat(document.getElementById('filterTurnoverMin').value),
+        turnover_max: parseFloat(document.getElementById('filterTurnoverMax').value),
+        volume_min: parseFloat(document.getElementById('filterVolumeMin').value),
+        volume_max: parseFloat(document.getElementById('filterVolumeMax').value),
+        indicator: document.getElementById('filterIndicator').value,
+        sort: document.getElementById('filterSort').value
+      };
+
+      currentPage = 1;
+      loadStockPool(currentPool, filters);
+    }
+
+    function resetFilters() {
+      document.getElementById('filterSector').value = '';
+      document.getElementById('filterChangeMin').value = '-10';
+      document.getElementById('filterChangeMax').value = '10';
+      document.getElementById('filterMarketCapMin').value = '0';
+      document.getElementById('filterMarketCapMax').value = '10000';
+      document.getElementById('filterPEMin').value = '0';
+      document.getElementById('filterPEMax').value = '1000';
+      document.getElementById('filterTurnoverMin').value = '0';
+      document.getElementById('filterTurnoverMax').value = '100';
+      document.getElementById('filterVolumeMin').value = '0';
+      document.getElementById('filterVolumeMax').value = '10000000';
+      document.getElementById('filterIndicator').value = '';
+      document.getElementById('filterSort').value = 'change_desc';
+
+      currentPage = 1;
+      loadStockPool(currentPool);
+    }
+
+    function sortResults(column) {
+      if (sortColumn === column) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortColumn = column;
+        sortDirection = 'desc';
+      }
+
+      allResults.sort((a, b) => {
+        let aVal = a[column];
+        let bVal = b[column];
+
+        if (typeof aVal === 'string') {
+          return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        }
+
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      });
+
+      renderResultsTable(allResults);
+    }
+
+    function updatePagination() {
+      document.getElementById('currentPage').textContent = currentPage;
+      document.getElementById('totalPages').textContent = totalPages;
+
+      document.getElementById('prevBtn').disabled = currentPage <= 1;
+      document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+    }
+
+    function previousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        applyFilters();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        applyFilters();
+      }
+    }
+
+    function viewStockDetail(stockCode) {
+      window.location.href = `02-market-center.html?stock=${stockCode}`;
+    }
+
+    function viewKline(stockCode) {
+      window.open(`02-market-center.html?stock=${stockCode}`, '_blank');
+    }
+
+    function exportResults() {
+      // Export to CSV
+      const headers = ['代码', '名称', '最新价', '涨跌幅', '成交量', '换手率', '市值(亿)', 'PE-TTM'];
+      const csvContent = [
+        headers.join(','),
+        ...allResults.map(stock => [
+          stock.code,
+          stock.name,
+          stock.price.toFixed(2),
+          stock.change.toFixed(2),
+          stock.volume,
+          stock.turnover.toFixed(2),
+          stock.market_cap.toFixed(2),
+          stock.pe.toFixed(2)
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `stock_screener_${currentPool}_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    // Tab switching
+    document.querySelectorAll('.artdeco-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.artdeco-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        const poolType = this.dataset.pool;
+        currentPage = 1;
+        loadStockPool(poolType);
+      });
+    });
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.trim().toUpperCase();
+
+      if (!searchTerm) {
+        renderResultsTable(allResults);
+        return;
+      }
+
+      const filtered = allResults.filter(stock =>
+        stock.code.includes(searchTerm) || stock.name.includes(searchTerm)
+      );
+
+      renderResultsTable(filtered);
+    });
+
+    // ==================== INITIALIZATION ====================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load initial data
+      loadStockPool('watchlist');
+    });
+  </script>
+</body>
+</html>
