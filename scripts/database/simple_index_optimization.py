@@ -9,8 +9,6 @@ Date: 2026-01-01
 import os
 import sys
 from sqlalchemy import create_engine, text
-from datetime import datetime
-import json
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -79,7 +77,7 @@ def main():
                     created_indexes.append(index_name)
                 except Exception as e:
                     if "already exists" in str(e).lower():
-                        print(f"   ℹ️  Index already exists (skipping)")
+                        print("   ℹ️  Index already exists (skipping)")
                     else:
                         print(f"   ⚠️  Failed: {e}")
 

@@ -645,7 +645,7 @@ class TdxDataSource(IDataSource):
             self.logger.error("获取指数成分股失败 %s: %s", symbol, str(e))
             return []
 
-    def get_block_data(self, block_type: str = 'all', result_type: str = 'flat') -> pd.DataFrame:
+    def get_block_data(self, block_type: str = "all", result_type: str = "flat") -> pd.DataFrame:
         """
         获取板块数据
 
@@ -682,7 +682,8 @@ class TdxDataSource(IDataSource):
 
             # 使用环境变量TDX_DATA_PATH
             import os
-            tdx_path = os.getenv('TDX_DATA_PATH')
+
+            tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:
                 self.logger.error("环境变量TDX_DATA_PATH未设置")
                 return pd.DataFrame()
@@ -690,21 +691,21 @@ class TdxDataSource(IDataSource):
             reader = TdxBlockReader(tdx_path)
 
             # 根据类型获取数据
-            if block_type == 'all':
+            if block_type == "all":
                 return reader.get_all_blocks(result_type=result_type)
-            elif block_type == 'index':
+            elif block_type == "index":
                 return reader.get_index_blocks(result_type=result_type)
-            elif block_type == 'style':
+            elif block_type == "style":
                 return reader.get_style_blocks(result_type=result_type)
-            elif block_type == 'concept':
+            elif block_type == "concept":
                 return reader.get_concept_blocks(result_type=result_type)
-            elif block_type == 'default':
+            elif block_type == "default":
                 return reader.get_default_blocks(result_type=result_type)
             else:
                 self.logger.error("不支持的板块类型: %s", block_type)
                 return pd.DataFrame()
 
-        except ImportError as e:
+        except ImportError:
             self.logger.error("导入TdxBlockReader失败，请安装PyTDX: pip install pytdx")
             return pd.DataFrame()
         except FileNotFoundError as e:
@@ -735,7 +736,8 @@ class TdxDataSource(IDataSource):
             from src.data_sources.tdx_block_reader import TdxBlockReader
 
             import os
-            tdx_path = os.getenv('TDX_DATA_PATH')
+
+            tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:
                 self.logger.error("环境变量TDX_DATA_PATH未设置")
                 return []
@@ -767,7 +769,8 @@ class TdxDataSource(IDataSource):
             from src.data_sources.tdx_block_reader import TdxBlockReader
 
             import os
-            tdx_path = os.getenv('TDX_DATA_PATH')
+
+            tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:
                 self.logger.error("环境变量TDX_DATA_PATH未设置")
                 return []
@@ -974,16 +977,16 @@ class TdxDataSource(IDataSource):
         """
         # 周期代码映射 (pytdx category参数)
         period_map = {
-            "1m": 8,   # 1分钟
-            "5m": 0,   # 5分钟
+            "1m": 8,  # 1分钟
+            "5m": 0,  # 5分钟
             "15m": 1,  # 15分钟
             "30m": 2,  # 30分钟
-            "1h": 3,   # 1小时
-            "1d": 9,   # 日线
-            "1w": 5,   # 周线 (新增)
-            "1M": 6,   # 月线 (新增)
+            "1h": 3,  # 1小时
+            "1d": 9,  # 日线
+            "1w": 5,  # 周线 (新增)
+            "1M": 6,  # 月线 (新增)
             "1q": 10,  # 季线 (新增)
-            "1y": 11   # 年线 (新增)
+            "1y": 11,  # 年线 (新增)
         }
 
         if period not in period_map:
@@ -1106,16 +1109,16 @@ class TdxDataSource(IDataSource):
             pd.DataFrame: 指数K线数据
         """
         period_map = {
-            "1m": 8,   # 1分钟
-            "5m": 0,   # 5分钟
+            "1m": 8,  # 1分钟
+            "5m": 0,  # 5分钟
             "15m": 1,  # 15分钟
             "30m": 2,  # 30分钟
-            "1h": 3,   # 1小时
-            "1d": 9,   # 日线
-            "1w": 5,   # 周线 (新增)
-            "1M": 6,   # 月线 (新增)
+            "1h": 3,  # 1小时
+            "1d": 9,  # 日线
+            "1w": 5,  # 周线 (新增)
+            "1M": 6,  # 月线 (新增)
             "1q": 10,  # 季线 (新增)
-            "1y": 11   # 年线 (新增)
+            "1y": 11,  # 年线 (新增)
         }
 
         if period not in period_map:

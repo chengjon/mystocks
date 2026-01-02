@@ -170,11 +170,7 @@ class DataSourceManager:
                 self.logger.info("使用V2智能路由获取股票日线: %s", symbol)
 
                 # V2管理器会自动选择最佳数据源并记录监控指标
-                df = self._v2_manager.get_stock_daily(
-                    symbol=symbol,
-                    start_date=start_date,
-                    end_date=end_date
-                )
+                df = self._v2_manager.get_stock_daily(symbol=symbol, start_date=start_date, end_date=end_date)
 
                 if not df.empty:
                     self.logger.info("✓ V2智能路由成功获取%s条日线数据", len(df))
@@ -234,11 +230,7 @@ class DataSourceManager:
                 self.logger.info("使用V2智能路由获取指数日线: %s", symbol)
 
                 # V2管理器会自动选择最佳数据源
-                df = self._v2_manager.get_stock_daily(
-                    symbol=symbol,
-                    start_date=start_date,
-                    end_date=end_date
-                )
+                df = self._v2_manager.get_stock_daily(symbol=symbol, start_date=start_date, end_date=end_date)
 
                 if not df.empty:
                     self.logger.info("✓ V2智能路由成功获取%s条指数数据", len(df))
@@ -344,9 +336,14 @@ class DataSourceManager:
 
     # ==================== Phase 3: V2管理器便捷访问方法 ====================
 
-    def find_endpoints(self, data_category: str = None, classification_level: int = None,
-                      source_type: str = None, only_healthy: bool = False,
-                      sort_by_priority: bool = True) -> List[Dict]:
+    def find_endpoints(
+        self,
+        data_category: str = None,
+        classification_level: int = None,
+        source_type: str = None,
+        only_healthy: bool = False,
+        sort_by_priority: bool = True,
+    ) -> List[Dict]:
         """
         查找数据源端点（V2功能）
 
@@ -376,7 +373,7 @@ class DataSourceManager:
             classification_level=classification_level,
             source_type=source_type,
             only_healthy=only_healthy,
-            sort_by_priority=sort_by_priority
+            sort_by_priority=sort_by_priority,
         )
 
     def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> Optional[Dict]:
@@ -399,10 +396,7 @@ class DataSourceManager:
             self.logger.warning("V2管理器未启用，无法使用get_best_endpoint()")
             return None
 
-        return self._v2_manager.get_best_endpoint(
-            data_category=data_category,
-            exclude_failed=exclude_failed
-        )
+        return self._v2_manager.get_best_endpoint(data_category=data_category, exclude_failed=exclude_failed)
 
     def health_check(self, endpoint_name: str = None) -> Dict:
         """

@@ -59,7 +59,7 @@ def test_extended_kline_periods():
                     print(f"    日期范围: {df['date'].min()} 至 {df['date'].max()}")
                     print(f"    价格范围: {df['close'].min():.2f} - {df['close'].max():.2f}")
                 else:
-                    print(f"    ⚠️  无数据返回")
+                    print("    ⚠️  无数据返回")
 
             except Exception as e:
                 print(f"    ❌ 失败: {e}")
@@ -100,7 +100,7 @@ def test_index_extended_periods():
                     print(f"    ✅ 成功! 获取 {len(df)} 条数据")
                     print(f"    日期范围: {df['date'].min()} 至 {df['date'].max()}")
                 else:
-                    print(f"    ⚠️  无数据返回")
+                    print("    ⚠️  无数据返回")
 
             except Exception as e:
                 print(f"    ❌ 失败: {e}")
@@ -148,7 +148,7 @@ def test_block_data():
                     stock_count = len(df_concept[df_concept['blockname'] == block])
                     print(f"      {i}. {block} ({stock_count}只股票)")
             else:
-                print(f"    ⚠️  无数据返回")
+                print("    ⚠️  无数据返回")
 
         except Exception as e:
             print(f"    ❌ 失败: {e}")
@@ -165,7 +165,7 @@ def test_block_data():
                 for i, block in enumerate(blocks[:10], 1):
                     print(f"      {i}. {block['blockname']} ({block['block_type']})")
             else:
-                print(f"    ⚠️  未找到板块信息")
+                print("    ⚠️  未找到板块信息")
 
         except Exception as e:
             print(f"    ❌ 失败: {e}")

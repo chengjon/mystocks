@@ -16,7 +16,7 @@
 import json
 import time
 from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 import yaml
 import pandas as pd
@@ -69,6 +69,7 @@ class DataSourceManagerV2:
         """延迟加载数据库管理器（避免循环导入）"""
         if self.db_manager is None:
             from src.storage.database import DatabaseConnectionManager
+
             self.db_manager = DatabaseConnectionManager()
         return self.db_manager
 
@@ -89,16 +90,16 @@ class DataSourceManagerV2:
 
         # 4. 创建处理器和缓存
         for endpoint_name, source_config in all_sources.items():
-            if source_config.get('status') != 'active':
+            if source_config.get("status") != "active":
                 continue
 
             # 延迟创建handler（按需加载）
             self.registry[endpoint_name] = {
-                'config': source_config,
-                'handler': None,  # 延迟创建
-                'cache': LRUCache(maxsize=100),
-                'last_call': None,
-                'call_count': 0
+                "config": source_config,
+                "handler": None,  # 延迟创建
+                "cache": LRUCache(maxsize=100),
+                "last_call": None,
+                "call_count": 0,
             }
 
         logger.info(f"注册表加载完成，活跃数据源：{len(self.registry)} 个")
@@ -145,32 +146,32 @@ class DataSourceManagerV2:
 
             sources = {}
             for _, row in df.iterrows():
-                endpoint_name = row['endpoint_name']
+                endpoint_name = row["endpoint_name"]
                 sources[endpoint_name] = {
-                    'endpoint_name': endpoint_name,
-                    'source_name': row['source_name'],
-                    'source_type': row['source_type'],
-                    'data_category': row['data_category'],
-                    'data_classification': row['data_classification'],
-                    'classification_level': row['classification_level'],
-                    'target_db': row['target_db'],
-                    'table_name': row['table_name'],
-                    'parameters': json.loads(row['parameters']) if row['parameters'] else {},
-                    'data_quality_score': row['data_quality_score'],
-                    'priority': row['priority'],
-                    'status': row['status'],
-                    'health_status': row['health_status'],
-                    'avg_response_time': row['avg_response_time'],
-                    'success_rate': row['success_rate'],
-                    'consecutive_failures': row['consecutive_failures'],
-                    'last_success_time': row['last_success_time'],
-                    'last_failure_time': row['last_failure_time'],
-                    'total_calls': row['total_calls'],
-                    'failed_calls': row['failed_calls'],
-                    'tags': list(row['tags']) if row['tags'] else [],
-                    'version': row['version'],
-                    'description': row['description'],
-                    '_loaded_from': 'database'
+                    "endpoint_name": endpoint_name,
+                    "source_name": row["source_name"],
+                    "source_type": row["source_type"],
+                    "data_category": row["data_category"],
+                    "data_classification": row["data_classification"],
+                    "classification_level": row["classification_level"],
+                    "target_db": row["target_db"],
+                    "table_name": row["table_name"],
+                    "parameters": json.loads(row["parameters"]) if row["parameters"] else {},
+                    "data_quality_score": row["data_quality_score"],
+                    "priority": row["priority"],
+                    "status": row["status"],
+                    "health_status": row["health_status"],
+                    "avg_response_time": row["avg_response_time"],
+                    "success_rate": row["success_rate"],
+                    "consecutive_failures": row["consecutive_failures"],
+                    "last_success_time": row["last_success_time"],
+                    "last_failure_time": row["last_failure_time"],
+                    "total_calls": row["total_calls"],
+                    "failed_calls": row["failed_calls"],
+                    "tags": list(row["tags"]) if row["tags"] else [],
+                    "version": row["version"],
+                    "description": row["description"],
+                    "_loaded_from": "database",
                 }
 
             return sources
@@ -186,16 +187,16 @@ class DataSourceManagerV2:
                 logger.warning(f"YAML配置文件不存在: {self.yaml_config_path}")
                 return {}
 
-            with open(yaml_path, 'r', encoding='utf-8') as f:
+            with open(yaml_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
             sources = {}
-            for endpoint_key, source_config in config.get('data_sources', {}).items():
+            for endpoint_key, source_config in config.get("data_sources", {}).items():
                 # 确保endpoint_name一致
-                if 'endpoint_name' not in source_config:
-                    source_config['endpoint_name'] = endpoint_key
+                if "endpoint_name" not in source_config:
+                    source_config["endpoint_name"] = endpoint_key
 
-                source_config['_loaded_from'] = 'yaml'
+                source_config["_loaded_from"] = "yaml"
                 sources[endpoint_key] = source_config
 
             return sources
@@ -224,9 +225,15 @@ class DataSourceManagerV2:
 
                 # 合并配置字段（保留数据库中的运行时统计）
                 config_fields = [
-                    'parameters', 'description', 'test_parameters',
-                    'source_config', 'quality_rules', 'update_schedule',
-                    'business_scene', 'tags', 'version'
+                    "parameters",
+                    "description",
+                    "test_parameters",
+                    "source_config",
+                    "quality_rules",
+                    "update_schedule",
+                    "business_scene",
+                    "tags",
+                    "version",
                 ]
                 for field in config_fields:
                     if field in yaml_config:
@@ -238,12 +245,15 @@ class DataSourceManagerV2:
     # 查询接口（解决"找接口难"问题）
     # ==========================================================================
 
-    def find_endpoints(self, data_category: str = None,
-                      classification_level: int = None,
-                      source_type: str = None,
-                      only_enabled: bool = True,
-                      only_healthy: bool = False,
-                      sort_by_priority: bool = True) -> List[Dict]:
+    def find_endpoints(
+        self,
+        data_category: str = None,
+        classification_level: int = None,
+        source_type: str = None,
+        only_enabled: bool = True,
+        only_healthy: bool = False,
+        sort_by_priority: bool = True,
+    ) -> List[Dict]:
         """
         查找可用的数据端点
 
@@ -271,52 +281,53 @@ class DataSourceManagerV2:
         matches = []
 
         for endpoint_name, source in self.registry.items():
-            config = source['config']
+            config = source["config"]
 
             # 状态过滤
-            if only_enabled and config.get('status') != 'active':
+            if only_enabled and config.get("status") != "active":
                 continue
 
-            if only_healthy and config.get('health_status') == 'failed':
+            if only_healthy and config.get("health_status") == "failed":
                 continue
 
             # 分类过滤
-            if data_category and config.get('data_category') != data_category:
+            if data_category and config.get("data_category") != data_category:
                 continue
 
-            if classification_level and config.get('classification_level') != classification_level:
+            if classification_level and config.get("classification_level") != classification_level:
                 continue
 
-            if source_type and config.get('source_type') != source_type:
+            if source_type and config.get("source_type") != source_type:
                 continue
 
-            matches.append({
-                'endpoint_name': endpoint_name,
-                'source_name': config.get('source_name'),
-                'source_type': config.get('source_type'),
-                'data_category': config.get('data_category'),
-                'data_classification': config.get('data_classification'),
-                'classification_level': config.get('classification_level'),
-                'target_db': config.get('target_db'),
-                'table_name': config.get('table_name'),
-                'quality_score': config.get('data_quality_score', 0),
-                'priority': config.get('priority', 999),
-                'health_status': config.get('health_status', 'unknown'),
-                'success_rate': config.get('success_rate', 100),
-                'avg_response_time': config.get('avg_response_time', 0),
-                'total_calls': config.get('total_calls', 0),
-                'description': config.get('description', ''),
-                'tags': config.get('tags', [])
-            })
+            matches.append(
+                {
+                    "endpoint_name": endpoint_name,
+                    "source_name": config.get("source_name"),
+                    "source_type": config.get("source_type"),
+                    "data_category": config.get("data_category"),
+                    "data_classification": config.get("data_classification"),
+                    "classification_level": config.get("classification_level"),
+                    "target_db": config.get("target_db"),
+                    "table_name": config.get("table_name"),
+                    "quality_score": config.get("data_quality_score", 0),
+                    "priority": config.get("priority", 999),
+                    "health_status": config.get("health_status", "unknown"),
+                    "success_rate": config.get("success_rate", 100),
+                    "avg_response_time": config.get("avg_response_time", 0),
+                    "total_calls": config.get("total_calls", 0),
+                    "description": config.get("description", ""),
+                    "tags": config.get("tags", []),
+                }
+            )
 
         # 排序：优先级（数字越小优先级越高）→ 质量评分（分数越高越好）
         if sort_by_priority:
-            matches.sort(key=lambda x: (x['priority'], -x['quality_score']))
+            matches.sort(key=lambda x: (x["priority"], -x["quality_score"]))
 
         return matches
 
-    def get_best_endpoint(self, data_category: str,
-                         exclude_failed: bool = True) -> Optional[Dict]:
+    def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> Optional[Dict]:
         """
         获取最佳数据端点（智能路由）
 
@@ -338,10 +349,7 @@ class DataSourceManagerV2:
             if best:
                 print(f"最佳接口: {best['endpoint_name']}, 评分: {best['quality_score']}")
         """
-        endpoints = self.find_endpoints(
-            data_category=data_category,
-            only_healthy=exclude_failed
-        )
+        endpoints = self.find_endpoints(data_category=data_category, only_healthy=exclude_failed)
 
         return endpoints[0] if endpoints else None
 
@@ -355,29 +363,31 @@ class DataSourceManagerV2:
         data = []
 
         for endpoint_name, source in self.registry.items():
-            config = source['config']
+            config = source["config"]
 
-            data.append({
-                '数据源': config.get('source_name'),
-                '端点名称': endpoint_name,
-                '数据分类': config.get('data_category'),
-                '分类层级': config.get('classification_level'),
-                '目标数据库': config.get('target_db'),
-                '目标表': config.get('table_name'),
-                '更新频率': config.get('update_frequency', ''),
-                '质量评分': config.get('data_quality_score'),
-                '优先级': config.get('priority'),
-                '状态': config.get('status'),
-                '健康状态': config.get('health_status'),
-                '成功率': f"{config.get('success_rate', 100):.1f}%",
-                '平均响应时间': f"{config.get('avg_response_time', 0):.2f}s",
-                '调用次数': config.get('total_calls', 0),
-                '失败次数': config.get('failed_calls', 0),
-                '连续失败': config.get('consecutive_failures', 0),
-                '最后成功': config.get('last_success_time'),
-                '版本': config.get('version', ''),
-                '标签': ','.join(config.get('tags', []))
-            })
+            data.append(
+                {
+                    "数据源": config.get("source_name"),
+                    "端点名称": endpoint_name,
+                    "数据分类": config.get("data_category"),
+                    "分类层级": config.get("classification_level"),
+                    "目标数据库": config.get("target_db"),
+                    "目标表": config.get("table_name"),
+                    "更新频率": config.get("update_frequency", ""),
+                    "质量评分": config.get("data_quality_score"),
+                    "优先级": config.get("priority"),
+                    "状态": config.get("status"),
+                    "健康状态": config.get("health_status"),
+                    "成功率": f"{config.get('success_rate', 100):.1f}%",
+                    "平均响应时间": f"{config.get('avg_response_time', 0):.2f}s",
+                    "调用次数": config.get("total_calls", 0),
+                    "失败次数": config.get("failed_calls", 0),
+                    "连续失败": config.get("consecutive_failures", 0),
+                    "最后成功": config.get("last_success_time"),
+                    "版本": config.get("version", ""),
+                    "标签": ",".join(config.get("tags", [])),
+                }
+            )
 
         return pd.DataFrame(data)
 
@@ -385,8 +395,9 @@ class DataSourceManagerV2:
     # 高层业务接口（向后兼容）
     # ==========================================================================
 
-    def get_stock_daily(self, symbol: str, start_date: str = None,
-                       end_date: str = None, adjust: str = 'qfq') -> pd.DataFrame:
+    def get_stock_daily(
+        self, symbol: str, start_date: str = None, end_date: str = None, adjust: str = "qfq"
+    ) -> pd.DataFrame:
         """
         获取日线数据（高层业务接口）
 
@@ -418,9 +429,9 @@ class DataSourceManagerV2:
         logger.info(f"使用接口: {best_endpoint['endpoint_name']}")
 
         # 调用接口（根据数据源类型适配参数）
-        return self._call_endpoint(best_endpoint, symbol=symbol,
-                                   start_date=start_date, end_date=end_date,
-                                   adjust=adjust)
+        return self._call_endpoint(
+            best_endpoint, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust
+        )
 
     def get_stock_realtime(self, symbols: List[str]) -> pd.DataFrame:
         """获取实时行情（高层业务接口）"""
@@ -455,8 +466,8 @@ class DataSourceManagerV2:
         Returns:
             数据DataFrame
         """
-        endpoint_name = endpoint_info['endpoint_name']
-        source_type = endpoint_info['source_type']
+        endpoint_name = endpoint_info["endpoint_name"]
+        source_type = endpoint_info["source_type"]
 
         # 获取或创建handler
         source = self.registry.get(endpoint_name)
@@ -464,10 +475,10 @@ class DataSourceManagerV2:
             raise ValueError(f"端点 {endpoint_name} 未注册")
 
         # 延迟创建handler
-        if source['handler'] is None:
-            source['handler'] = self._create_handler(endpoint_info)
+        if source["handler"] is None:
+            source["handler"] = self._create_handler(endpoint_info)
 
-        handler = source['handler']
+        handler = source["handler"]
 
         # 记录调用开始时间
         start_time = time.time()
@@ -494,23 +505,27 @@ class DataSourceManagerV2:
 
     def _create_handler(self, endpoint_info: Dict):
         """创建数据源处理器（工厂方法）"""
-        source_type = endpoint_info['source_type']
+        source_type = endpoint_info["source_type"]
 
         # 延迟导入（避免循环依赖）
         from src.core.data_source_handlers_v2 import (
-            AkshareHandler, TushareHandler, BaostockHandler,
-            TdxHandler, WebCrawlerHandler, MockHandler
+            AkshareHandler,
+            TushareHandler,
+            BaostockHandler,
+            TdxHandler,
+            WebCrawlerHandler,
+            MockHandler,
         )
 
         handler_map = {
-            'akshare': AkshareHandler,
-            'tushare': TushareHandler,
-            'baostock': BaostockHandler,
-            'tdx': TdxHandler,
-            'database': TdxHandler,
-            'crawler': WebCrawlerHandler,
-            'mock': MockHandler,
-            'api_library': self._select_api_handler(endpoint_info['source_name'])
+            "akshare": AkshareHandler,
+            "tushare": TushareHandler,
+            "baostock": BaostockHandler,
+            "tdx": TdxHandler,
+            "database": TdxHandler,
+            "crawler": WebCrawlerHandler,
+            "mock": MockHandler,
+            "api_library": self._select_api_handler(endpoint_info["source_name"]),
         }
 
         handler_class = handler_map.get(source_type)
@@ -523,23 +538,20 @@ class DataSourceManagerV2:
         """根据数据源名称选择处理器"""
         from src.core.data_source_handlers_v2 import AkshareHandler, TushareHandler
 
-        handler_map = {
-            'akshare': AkshareHandler,
-            'tushare': TushareHandler,
-            'baostock': TushareHandler  # 复用
-        }
+        handler_map = {"akshare": AkshareHandler, "tushare": TushareHandler, "baostock": TushareHandler}  # 复用
 
         return handler_map.get(source_name, AkshareHandler)
 
     def _identify_caller(self) -> str:
         """识别调用方"""
         import traceback
+
         stack = traceback.extract_stack()
 
         # 找到调用者（跳过内部调用）
         for frame in reversed(stack[:-2]):
             filename = frame.filename
-            if 'data_source_manager' not in filename:
+            if "data_source_manager" not in filename:
                 return f"{Path(filename).name}:{frame.lineno}"
 
         return "unknown"
@@ -548,34 +560,33 @@ class DataSourceManagerV2:
     # 监控和记录
     # ==========================================================================
 
-    def _record_success(self, endpoint_name: str, response_time: float,
-                       record_count: int, caller: str):
+    def _record_success(self, endpoint_name: str, response_time: float, record_count: int, caller: str):
         """记录成功调用"""
         source = self.registry.get(endpoint_name)
         if not source:
             return
 
-        config = source['config']
+        config = source["config"]
 
         # 更新内存统计
-        total_calls = config.get('total_calls', 0)
-        failed_calls = config.get('failed_calls', 0)
+        total_calls = config.get("total_calls", 0)
+        failed_calls = config.get("failed_calls", 0)
 
         # 更新平均响应时间
-        old_avg = config.get('avg_response_time', 0)
+        old_avg = config.get("avg_response_time", 0)
         new_avg = (old_avg * total_calls + response_time) / (total_calls + 1)
 
-        config['avg_response_time'] = new_avg
-        config['total_calls'] = total_calls + 1
-        config['success_rate'] = (total_calls + 1 - failed_calls) / (total_calls + 1) * 100
-        config['consecutive_failures'] = 0
-        config['last_success_time'] = datetime.now()
+        config["avg_response_time"] = new_avg
+        config["total_calls"] = total_calls + 1
+        config["success_rate"] = (total_calls + 1 - failed_calls) / (total_calls + 1) * 100
+        config["consecutive_failures"] = 0
+        config["last_success_time"] = datetime.now()
 
         # 更新健康状态
         if response_time > 5.0:
-            config['health_status'] = 'degraded'
+            config["health_status"] = "degraded"
         else:
-            config['health_status'] = 'healthy'
+            config["health_status"] = "healthy"
 
         # 保存到数据库（异步，避免阻塞）
         self._save_call_history_async(
@@ -583,26 +594,25 @@ class DataSourceManagerV2:
             success=True,
             response_time=response_time,
             record_count=record_count,
-            caller=caller
+            caller=caller,
         )
 
-    def _record_failure(self, endpoint_name: str, response_time: float,
-                       error_message: str, caller: str):
+    def _record_failure(self, endpoint_name: str, response_time: float, error_message: str, caller: str):
         """记录失败调用"""
         source = self.registry.get(endpoint_name)
         if not source:
             return
 
-        config = source['config']
+        config = source["config"]
 
         # 更新失败统计
-        config['failed_calls'] = config.get('failed_calls', 0) + 1
-        config['consecutive_failures'] = config.get('consecutive_failures', 0) + 1
-        config['last_failure_time'] = datetime.now()
+        config["failed_calls"] = config.get("failed_calls", 0) + 1
+        config["consecutive_failures"] = config.get("consecutive_failures", 0) + 1
+        config["last_failure_time"] = datetime.now()
 
         # 连续失败3次标记为失败
-        if config['consecutive_failures'] >= 3:
-            config['health_status'] = 'failed'
+        if config["consecutive_failures"] >= 3:
+            config["health_status"] = "failed"
 
         # 保存到数据库
         self._save_call_history_async(
@@ -610,7 +620,7 @@ class DataSourceManagerV2:
             success=False,
             response_time=response_time,
             error_message=error_message,
-            caller=caller
+            caller=caller,
         )
 
     def _save_call_history_async(self, **kwargs):
@@ -625,15 +635,18 @@ class DataSourceManagerV2:
             db_manager = self._get_db_manager()
             with db_manager.get_postgresql_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute(query, (
-                    kwargs.get('endpoint_name'),
-                    datetime.now(),
-                    kwargs.get('success', True),
-                    kwargs.get('response_time'),
-                    kwargs.get('record_count'),
-                    kwargs.get('error_message'),
-                    kwargs.get('caller', 'unknown')
-                ))
+                cursor.execute(
+                    query,
+                    (
+                        kwargs.get("endpoint_name"),
+                        datetime.now(),
+                        kwargs.get("success", True),
+                        kwargs.get("response_time"),
+                        kwargs.get("record_count"),
+                        kwargs.get("error_message"),
+                        kwargs.get("caller", "unknown"),
+                    ),
+                )
                 conn.commit()
         except Exception as e:
             logger.error(f"保存调用历史失败: {e}")
@@ -661,20 +674,17 @@ class DataSourceManagerV2:
         """检查单个端点"""
         source = self.registry.get(endpoint_name)
         if not source:
-            return {
-                'endpoint_name': endpoint_name,
-                'status': 'not_found'
-            }
+            return {"endpoint_name": endpoint_name, "status": "not_found"}
 
-        config = source['config']
-        test_params = config.get('test_parameters', {})
+        config = source["config"]
+        test_params = config.get("test_parameters", {})
 
         try:
             # 获取或创建handler
-            if source['handler'] is None:
-                source['handler'] = self._create_handler(config)
+            if source["handler"] is None:
+                source["handler"] = self._create_handler(config)
 
-            handler = source['handler']
+            handler = source["handler"]
 
             # 使用测试参数调用
             start_time = time.time()
@@ -685,18 +695,14 @@ class DataSourceManagerV2:
             self._validate_data(endpoint_name, data)
 
             return {
-                'endpoint_name': endpoint_name,
-                'status': 'healthy',
-                'response_time': round(response_time, 3),
-                'record_count': len(data) if hasattr(data, '__len__') else 'N/A',
-                'sample': data.head(1).to_dict() if hasattr(data, 'head') else str(data)[:100]
+                "endpoint_name": endpoint_name,
+                "status": "healthy",
+                "response_time": round(response_time, 3),
+                "record_count": len(data) if hasattr(data, "__len__") else "N/A",
+                "sample": data.head(1).to_dict() if hasattr(data, "head") else str(data)[:100],
             }
         except Exception as e:
-            return {
-                'endpoint_name': endpoint_name,
-                'status': 'unhealthy',
-                'error': str(e)
-            }
+            return {"endpoint_name": endpoint_name, "status": "unhealthy", "error": str(e)}
 
     def _check_all_endpoints(self) -> Dict:
         """检查所有端点"""
@@ -706,15 +712,10 @@ class DataSourceManagerV2:
             results[endpoint_name] = self._check_single_endpoint(endpoint_name)
 
         total = len(results)
-        healthy = sum(1 for r in results.values() if r['status'] == 'healthy')
+        healthy = sum(1 for r in results.values() if r["status"] == "healthy")
         unhealthy = total - healthy
 
-        return {
-            'total': total,
-            'healthy': healthy,
-            'unhealthy': unhealthy,
-            'details': results
-        }
+        return {"total": total, "healthy": healthy, "unhealthy": unhealthy, "details": results}
 
     def _validate_data(self, endpoint_name: str, data: Any):
         """验证数据质量"""
@@ -722,18 +723,18 @@ class DataSourceManagerV2:
         if not source:
             return
 
-        quality_rules = source['config'].get('quality_rules', {})
+        quality_rules = source["config"].get("quality_rules", {})
 
         if not isinstance(data, pd.DataFrame):
             return  # 非DataFrame数据跳过验证
 
         # 检查最小记录数
-        min_count = quality_rules.get('min_record_count', 0)
+        min_count = quality_rules.get("min_record_count", 0)
         if len(data) < min_count:
             raise ValueError(f"数据记录数不足: {len(data)} < {min_count}")
 
         # 检查必需列
-        required_columns = quality_rules.get('required_columns', [])
+        required_columns = quality_rules.get("required_columns", [])
         if required_columns:
             missing_columns = set(required_columns) - set(data.columns)
             if missing_columns:
@@ -742,8 +743,10 @@ class DataSourceManagerV2:
 
 class LRUCache:
     """简单的LRU缓存实现"""
+
     def __init__(self, maxsize=100):
         from collections import OrderedDict
+
         self.cache = OrderedDict()
         self.maxsize = maxsize
 
@@ -763,6 +766,7 @@ class LRUCache:
 
 # 便捷的单例模式（可选）
 _instance = None
+
 
 def get_data_source_manager() -> DataSourceManagerV2:
     """获取数据源管理器单例"""

@@ -27,7 +27,6 @@
 import argparse
 import json
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -90,7 +89,7 @@ class DataSourceTester:
 
         # 2. 显示接口配置
         if verbose:
-            print(f"\n📋 接口配置:")
+            print("\n📋 接口配置:")
             print(f"   数据源: {source_config.get('source_name')}")
             print(f"   数据分类: {source_config.get('data_category')}")
             print(f"   目标数据库: {source_config.get('target_db')}")
@@ -100,12 +99,12 @@ class DataSourceTester:
 
         # 3. 显示测试参数
         if verbose:
-            print(f"\n🔧 测试参数:")
+            print("\n🔧 测试参数:")
             for key, value in test_params.items():
                 print(f"   {key}: {value}")
 
         # 4. 执行测试
-        print(f"\n⏳ 正在调用接口...")
+        print("\n⏳ 正在调用接口...")
         result['start_time'] = datetime.now()
 
         try:
@@ -117,7 +116,7 @@ class DataSourceTester:
             result['duration'] = (result['end_time'] - result['start_time']).total_seconds()
 
             # 5. 显示结果
-            print(f"✅ 调用成功")
+            print("✅ 调用成功")
             print(f"   响应时间: {result['duration']:.3f}秒")
 
             # 处理返回数据
@@ -127,7 +126,7 @@ class DataSourceTester:
                     print(f"   返回数据量: {result['row_count']}条")
 
                     if verbose and result['row_count'] > 0:
-                        print(f"\n📊 数据预览:")
+                        print("\n📊 数据预览:")
                         if hasattr(data, 'head'):
                             preview = data.head(3)
                             if hasattr(preview, 'to_string'):
@@ -144,26 +143,26 @@ class DataSourceTester:
                             )
                             result['quality_checks'] = quality_checks
 
-                            print(f"\n📈 数据质量分析:")
+                            print("\n📈 数据质量分析:")
                             self._display_quality_checks(quality_checks)
 
             result['success'] = True
 
             # 7. 记录成功（不使用metrics，避免依赖）
-            print(f"\n✅ 测试通过")
+            print("\n✅ 测试通过")
 
         except Exception as e:
             result['end_time'] = datetime.now()
             result['duration'] = (result['end_time'] - result['start_time']).total_seconds()
             result['error'] = str(e)
 
-            print(f"❌ 调用失败")
+            print("❌ 调用失败")
             print(f"   响应时间: {result['duration']:.3f}秒")
             print(f"   错误信息: {str(e)}")
 
             if verbose:
                 import traceback
-                print(f"\n详细错误堆栈:")
+                print("\n详细错误堆栈:")
                 traceback.print_exc()
 
         # 保存到测试历史
@@ -251,13 +250,13 @@ class DataSourceTester:
         """显示质量检查结果"""
         # 列完整性
         if checks['column_completeness']:
-            print(f"   列完整性:")
+            print("   列完整性:")
             for col, info in checks['column_completeness'].items():
                 print(f"     {col}: {info['status']}")
 
         # 数据范围
         if checks['data_range']:
-            print(f"   数据范围 (前5列):")
+            print("   数据范围 (前5列):")
             for col, info in checks['data_range'].items():
                 print(f"     {col}:")
                 print(f"       范围: {info['min']:.2f} ~ {info['max']:.2f}")
@@ -267,7 +266,7 @@ class DataSourceTester:
         # 重复检查
         if checks['duplicate_check']:
             dup_info = checks['duplicate_check']
-            print(f"   重复数据:")
+            print("   重复数据:")
             print(f"     {dup_info['status']}")
 
     def generate_test_report(self, output_file: Optional[str] = None):
@@ -289,7 +288,7 @@ class DataSourceTester:
                 json.dump(report, f, ensure_ascii=False, indent=2)
             print(f"\n✅ 测试报告已保存: {output_file}")
         else:
-            print(f"\n📄 测试报告:")
+            print("\n📄 测试报告:")
             print(f"   总测试数: {report['total_tests']}")
             print(f"   成功: {report['successful_tests']}")
             print(f"   失败: {report['failed_tests']}")
@@ -340,12 +339,12 @@ def interactive_mode():
 
     # 2. 选择接口
     while True:
-        print(f"\n请选择:")
+        print("\n请选择:")
         print(f"  [1-{len(category_list)}] 按分类选择")
-        print(f"  [0] 直接输入接口名称")
-        print(f"  [q] 退出")
+        print("  [0] 直接输入接口名称")
+        print("  [q] 退出")
 
-        choice = input(f"\n请输入选择: ").strip()
+        choice = input("\n请输入选择: ").strip()
 
         if choice.lower() == 'q':
             print("👋 退出")
@@ -372,18 +371,18 @@ def interactive_mode():
                 endpoint_name = sorted(endpoints)[int(sub_choice) - 1]
                 break
             else:
-                print(f"❌ 无效的编号")
+                print("❌ 无效的编号")
                 continue
         else:
-            print(f"❌ 无效的选择")
+            print("❌ 无效的选择")
             continue
 
     # 3. 输入测试参数
-    print(f"\n🔧 请输入测试参数")
-    print(f"   格式: JSON格式的参数字典")
-    print(f"   示例: {{\"symbol\": \"000001\", \"start_date\": \"20240101\", \"end_date\": \"20240131\"}}")
+    print("\n🔧 请输入测试参数")
+    print("   格式: JSON格式的参数字典")
+    print("   示例: {\"symbol\": \"000001\", \"start_date\": \"20240101\", \"end_date\": \"20240131\"}")
 
-    param_input = input(f"\n请输入参数 (留空使用默认参数): ").strip()
+    param_input = input("\n请输入参数 (留空使用默认参数): ").strip()
 
     if param_input:
         try:
@@ -397,11 +396,11 @@ def interactive_mode():
         test_params = source_config.get('test_parameters', {})
 
         if not test_params:
-            print(f"⚠️  该接口无默认测试参数")
+            print("⚠️  该接口无默认测试参数")
             print(f"   可用参数: {list(source_config.get('parameters', {}).keys())}")
 
             # 让用户手动输入
-            print(f"\n请手动输入参数:")
+            print("\n请手动输入参数:")
             test_params = {}
             for param_name, param_config in source_config.get('parameters', {}).items():
                 if param_config.get('required', False):
@@ -419,7 +418,7 @@ def interactive_mode():
 
         # 5. 是否继续测试
         while True:
-            cont = input(f"\n是否继续测试其他接口？ [y/n]: ").strip().lower()
+            cont = input("\n是否继续测试其他接口？ [y/n]: ").strip().lower()
             if cont == 'n':
                 break
             elif cont == 'y':
@@ -428,7 +427,7 @@ def interactive_mode():
 
     # 6. 生成测试报告
     if len(tester.test_history) > 0:
-        save = input(f"\n是否保存测试报告？ [y/n]: ").strip().lower()
+        save = input("\n是否保存测试报告？ [y/n]: ").strip().lower()
         if save == 'y':
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             report_file = f"docs/reports/data_source_test_report_{timestamp}.json"

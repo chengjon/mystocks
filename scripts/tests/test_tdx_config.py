@@ -39,7 +39,7 @@ def test_config():
 
         # 获取性能配置
         perf = config.get_performance_config()
-        print(f"\n✅ 性能配置:")
+        print("\n✅ 性能配置:")
         print(f"   连接超时: {perf['connect_timeout']}秒")
         print(f"   API超时: {perf['api_timeout']}秒")
         print(f"   重试次数: {perf['retry_count']}")

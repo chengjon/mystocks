@@ -24,9 +24,6 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
-from app.schema import (  # 导入P0改进的验证模型
-    MarketDataQueryModel,
-)
 from app.schemas.market_schemas import (
     ChipRaceResponse,
     ETFDataResponse,
@@ -711,7 +708,7 @@ async def get_kline_data(
                 period=period,
                 adjust=adjust,
                 start_date=start_date,  # 字符串格式 YYYY-MM-DD
-                end_date=end_date,      # 字符串格式 YYYY-MM-DD
+                end_date=end_date,  # 字符串格式 YYYY-MM-DD
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()

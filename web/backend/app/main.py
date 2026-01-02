@@ -33,7 +33,7 @@ from .core.database import close_all_connections, get_postgresql_engine
 from .core.socketio_manager import get_socketio_manager
 
 # 导入统一响应格式中间件
-from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+from .middleware.response_format import ProcessTimeMiddleware
 
 # 导入性能监控中间件 (Phase 5)
 from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
@@ -465,7 +465,6 @@ from .api import (
     tdx,
     technical_analysis,
     tradingview,
-    watchlist,
     watchlist,
     wencai,
 )

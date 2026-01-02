@@ -1,6 +1,6 @@
 # Signals端点500错误调试报告
 
-**日期**: 2026-01-02  
+**日期**: 2026-01-02
 **状态**: ⚠️ 部分调试完成
 
 ---
@@ -213,6 +213,6 @@ async def get_trading_signals_simple(symbol: str):
 
 ---
 
-**报告生成时间**: 2026-01-02 18:22:00  
-**报告作者**: MyStocks AI Assistant  
+**报告生成时间**: 2026-01-02 18:22:00
+**报告作者**: MyStocks AI Assistant
 **下次审查**: 建议尽快完成signals端点调试

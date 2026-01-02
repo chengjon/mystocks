@@ -3,14 +3,12 @@ API契约测试套件
 使用pytest框架测试API契约的正确性和一致性
 """
 
-import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pytest
 import requests
-from pydantic import ValidationError
 import yaml
 
 # 测试配置

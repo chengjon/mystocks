@@ -30,7 +30,6 @@
 
 import sys
 import os
-import time
 import logging
 from pathlib import Path
 
@@ -138,10 +137,10 @@ def main():
     # 获取端口配置
     metrics_port = int(os.getenv('METRICS_PORT', '8001'))
 
-    logger.info(f"配置信息:")
+    logger.info("配置信息:")
     logger.info(f"  - Metrics端口: {metrics_port}")
-    logger.info(f"  - Prometheus地址: http://localhost:9090")
-    logger.info(f"  - Grafana地址: http://localhost:3000")
+    logger.info("  - Prometheus地址: http://localhost:9090")
+    logger.info("  - Grafana地址: http://localhost:3000")
     logger.info(f"  - Metrics端点: http://localhost:{metrics_port}/metrics")
     logger.info("")
 

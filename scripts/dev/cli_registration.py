@@ -121,7 +121,7 @@ class CLIRegistration:
         with open(message_file, 'w', encoding='utf-8') as f:
             f.write(message)
 
-        print(f"✅ 已向main发送报到请求")
+        print("✅ 已向main发送报到请求")
 
     def _send_confirmation_message(self, cli_name, role, assigned_tasks):
         """发送确认消息给CLI"""

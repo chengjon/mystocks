@@ -417,7 +417,7 @@ def main():
 
         try:
             task = pool.claim_task(args.task, args.cli)
-            print(f"\n任务详情:")
+            print("\n任务详情:")
             print(f"  标题: {task['title']}")
             print(f"  描述: {task['description']}")
             print(f"  技能: {', '.join(task['skills'])}")

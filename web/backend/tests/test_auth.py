@@ -12,7 +12,7 @@ Tests for JWT authentication system including:
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
@@ -139,9 +139,7 @@ class TestJWTToken:
 
         # Create token that expired 1 hour ago
         data = {"sub": "testuser", "user_id": 1}
-        token = create_access_token(
-            data, expires_delta=timedelta(hours=-1)
-        )
+        token = create_access_token(data, expires_delta=timedelta(hours=-1))
 
         token_data = verify_token(token)
         assert token_data is None

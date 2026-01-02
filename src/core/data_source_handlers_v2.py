@@ -31,9 +31,9 @@ class BaseDataSourceHandler:
             endpoint_info: 端点信息字典（从DataSourceManagerV2传入）
         """
         self.endpoint_info = endpoint_info
-        self.endpoint_name = endpoint_info['endpoint_name']
-        self.source_name = endpoint_info.get('source_name', '')
-        self.source_type = endpoint_info.get('source_type', '')
+        self.endpoint_name = endpoint_info["endpoint_name"]
+        self.source_name = endpoint_info.get("source_name", "")
+        self.source_type = endpoint_info.get("source_type", "")
         self.config = endpoint_info
 
     def fetch(self, **kwargs) -> pd.DataFrame:
@@ -61,7 +61,7 @@ class BaseDataSourceHandler:
         Returns:
             映射后的参数
         """
-        param_mapping = self.config.get('source_config', {}).get('param_mapping', {})
+        param_mapping = self.config.get("source_config", {}).get("param_mapping", {})
         return {param_mapping.get(k, k): v for k, v in args.items()}
 
 
@@ -70,25 +70,25 @@ class MockHandler(BaseDataSourceHandler):
 
     def __init__(self, endpoint_info: Dict):
         super().__init__(endpoint_info)
-        self.mock_data_path = endpoint_info.get('source_config', {}).get('mock_data_path')
+        self.mock_data_path = endpoint_info.get("source_config", {}).get("mock_data_path")
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """生成Mock数据"""
         logger.info(f"生成Mock数据: {self.endpoint_name}")
 
         # 根据endpoint_name生成不同类型的Mock数据
-        if 'daily_kline' in self.endpoint_name:
+        if "daily_kline" in self.endpoint_name:
             return self._generate_mock_daily_kline(**kwargs)
-        elif 'realtime' in self.endpoint_name:
+        elif "realtime" in self.endpoint_name:
             return self._generate_mock_realtime(**kwargs)
-        elif 'symbols' in self.endpoint_name:
+        elif "symbols" in self.endpoint_name:
             return self._generate_mock_symbols(**kwargs)
         else:
             raise ValueError(f"不支持的Mock接口: {self.endpoint_name}")
 
-    def _generate_mock_daily_kline(self, symbol: str, period: str = 'daily',
-                                  start_date: str = None, end_date: str = None,
-                                  **kwargs) -> pd.DataFrame:
+    def _generate_mock_daily_kline(
+        self, symbol: str, period: str = "daily", start_date: str = None, end_date: str = None, **kwargs
+    ) -> pd.DataFrame:
         """生成Mock日线数据"""
         import numpy as np
         from datetime import datetime, timedelta
@@ -97,34 +97,36 @@ class MockHandler(BaseDataSourceHandler):
         if not end_date:
             end_date = datetime.now()
         else:
-            end_date = datetime.strptime(end_date, '%Y%m%d')
+            end_date = datetime.strptime(end_date, "%Y%m%d")
 
         if not start_date:
             start_date = end_date - timedelta(days=100)
         else:
-            start_date = datetime.strptime(start_date, '%Y%m%d')
+            start_date = datetime.strptime(start_date, "%Y%m%d")
 
         # 生成日期序列
-        dates = pd.date_range(start_date, end_date, freq='B')  # 工作日
+        dates = pd.date_range(start_date, end_date, freq="B")  # 工作日
 
         # 生成随机价格数据
         np.random.seed(42)  # 固定种子，保证可重复
         n = len(dates)
         base_price = 10.0
 
-        data = pd.DataFrame({
-            'trade_date': dates,
-            'open': base_price + np.random.randn(n) * 0.5,
-            'high': base_price + np.random.randn(n) * 0.5 + 0.5,
-            'low': base_price + np.random.randn(n) * 0.5 - 0.5,
-            'close': base_price + np.random.randn(n) * 0.5,
-            'volume': np.random.randint(1000000, 10000000, n),
-            'amount': np.random.randint(10000000, 100000000, n)
-        })
+        data = pd.DataFrame(
+            {
+                "trade_date": dates,
+                "open": base_price + np.random.randn(n) * 0.5,
+                "high": base_price + np.random.randn(n) * 0.5 + 0.5,
+                "low": base_price + np.random.randn(n) * 0.5 - 0.5,
+                "close": base_price + np.random.randn(n) * 0.5,
+                "volume": np.random.randint(1000000, 10000000, n),
+                "amount": np.random.randint(10000000, 100000000, n),
+            }
+        )
 
         # 确保价格逻辑正确（high >= close >= low）
-        data['high'] = data[['open', 'close']].max(axis=1) + np.abs(np.random.randn(n))
-        data['low'] = data[['open', 'close']].min(axis=1) - np.abs(np.random.randn(n))
+        data["high"] = data[["open", "close"]].max(axis=1) + np.abs(np.random.randn(n))
+        data["low"] = data[["open", "close"]].min(axis=1) - np.abs(np.random.randn(n))
 
         return data
 
@@ -136,12 +138,14 @@ class MockHandler(BaseDataSourceHandler):
         data = []
         for symbol in symbols:
             base_price = 10.0 + np.random.randn()
-            data.append({
-                'symbol': symbol,
-                'price': base_price,
-                'volume': np.random.randint(100000, 1000000),
-                'timestamp': datetime.now()
-            })
+            data.append(
+                {
+                    "symbol": symbol,
+                    "price": base_price,
+                    "volume": np.random.randint(100000, 1000000),
+                    "timestamp": datetime.now(),
+                }
+            )
 
         return pd.DataFrame(data)
 
@@ -149,13 +153,9 @@ class MockHandler(BaseDataSourceHandler):
         """生成Mock股票代码列表"""
         symbols = []
         for i in range(1, 100):  # 生成99只股票
-            market = 'SZ' if i % 2 == 0 else 'SH'
+            market = "SZ" if i % 2 == 0 else "SH"
             code = f"{i:06d}.{market}"
-            symbols.append({
-                'code': code,
-                'name': f"测试股票{i:02d}",
-                'market': market
-            })
+            symbols.append({"code": code, "name": f"测试股票{i:02d}", "market": market})
 
         return pd.DataFrame(symbols)
 
@@ -166,7 +166,7 @@ class AkshareHandler(BaseDataSourceHandler):
     def __init__(self, endpoint_info: Dict):
         super().__init__(endpoint_info)
         self.module = None
-        self.function_name = endpoint_info.get('source_config', {}).get('function_name')
+        self.function_name = endpoint_info.get("source_config", {}).get("function_name")
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用AKShare接口"""
@@ -175,7 +175,7 @@ class AkshareHandler(BaseDataSourceHandler):
         try:
             # 延迟导入akshare
             if self.module is None:
-                self.module = importlib.import_module('akshare')
+                self.module = importlib.import_module("akshare")
 
             # 参数映射
             mapped_args = self._map_arguments(kwargs)
@@ -189,8 +189,8 @@ class AkshareHandler(BaseDataSourceHandler):
 
             return data
 
-        except ImportError as e:
-            raise ImportError(f"AKShare未安装: pip install akshare")
+        except ImportError:
+            raise ImportError("AKShare未安装: pip install akshare")
         except Exception as e:
             logger.error(f"AKShare接口调用失败: {self.endpoint_name}, 错误: {e}")
             raise
@@ -199,16 +199,16 @@ class AkshareHandler(BaseDataSourceHandler):
         """标准化列名（统一格式）"""
         # AKShare的列名是中文，映射为英文
         column_mapping = {
-            '日期': 'trade_date',
-            '开盘': 'open',
-            '最高': 'high',
-            '最低': 'low',
-            '收盘': 'close',
-            '成交量': 'volume',
-            '成交额': 'amount',
-            '涨跌幅': 'change_pct',
-            '涨跌额': 'change',
-            '换手率': 'turnover'
+            "日期": "trade_date",
+            "开盘": "open",
+            "最高": "high",
+            "最低": "low",
+            "收盘": "close",
+            "成交量": "volume",
+            "成交额": "amount",
+            "涨跌幅": "change_pct",
+            "涨跌额": "change",
+            "换手率": "turnover",
         }
 
         # 只重命名存在的列
@@ -222,7 +222,7 @@ class TushareHandler(BaseDataSourceHandler):
     def __init__(self, endpoint_info: Dict):
         super().__init__(endpoint_info)
         self.pro = None
-        self.api_name = endpoint_info.get('source_config', {}).get('api_name')
+        self.api_name = endpoint_info.get("source_config", {}).get("api_name")
         self.token = None
 
     def fetch(self, **kwargs) -> pd.DataFrame:
@@ -233,30 +233,28 @@ class TushareHandler(BaseDataSourceHandler):
             # 获取token
             if self.token is None:
                 import os
-                token_env_var = self.config.get('source_config', {}).get('token_env_var')
+
+                token_env_var = self.config.get("source_config", {}).get("token_env_var")
                 if token_env_var:
                     self.token = os.getenv(token_env_var)
                     if not self.token:
                         raise ValueError(f"环境变量 {token_env_var} 未设置")
                 else:
-                    self.token = self.config.get('source_config', {}).get('token')
+                    self.token = self.config.get("source_config", {}).get("token")
 
             # 延迟导入和初始化
             if self.pro is None:
                 import tushare as ts
+
                 self.pro = ts.pro_api(self.token)
 
             # 调用API
-            data = self.pro.query(
-                self.api_name,
-                **kwargs,
-                fields=self.config.get('source_config', {}).get('fields')
-            )
+            data = self.pro.query(self.api_name, **kwargs, fields=self.config.get("source_config", {}).get("fields"))
 
             return data
 
-        except ImportError as e:
-            raise ImportError(f"TuShare未安装: pip install tushare")
+        except ImportError:
+            raise ImportError("TuShare未安装: pip install tushare")
         except Exception as e:
             logger.error(f"TuShare接口调用失败: {self.endpoint_name}, 错误: {e}")
             raise
@@ -278,12 +276,13 @@ class BaostockHandler(BaseDataSourceHandler):
             # 延迟导入
             if self.bs is None:
                 import baostock as bs
+
                 self.bs = bs
 
             # 登录
             if not self.is_logged_in:
                 lg = self.bs.login()
-                if lg.error_code != '0':
+                if lg.error_code != "0":
                     raise ConnectionError(f"BaoStock登录失败: {lg.error_msg}")
                 self.is_logged_in = True
 
@@ -291,15 +290,15 @@ class BaostockHandler(BaseDataSourceHandler):
             mapped_args = self._map_arguments(kwargs)
 
             # 调用接口
-            fields = self.config.get('source_config', {}).get('fields', '')
+            fields = self.config.get("source_config", {}).get("fields", "")
             if fields:
-                mapped_args['fields'] = fields
+                mapped_args["fields"] = fields
 
             rs = self.bs.query_stock_k_data_plus(**mapped_args)
 
             # 转换为DataFrame
             data_list = []
-            while (rs.error_code == '0') & rs.next():
+            while (rs.error_code == "0") & rs.next():
                 data_list.append(rs.get_row_data())
             rs.release()
 
@@ -310,8 +309,8 @@ class BaostockHandler(BaseDataSourceHandler):
 
             return data
 
-        except ImportError as e:
-            raise ImportError(f"BaoStock未安装: pip install baostock")
+        except ImportError:
+            raise ImportError("BaoStock未安装: pip install baostock")
         except Exception as e:
             logger.error(f"BaoStock接口调用失败: {self.endpoint_name}, 错误: {e}")
             self._logout()
@@ -339,9 +338,9 @@ class TdxHandler(BaseDataSourceHandler):
         self.api = None
         self.is_connected = False
 
-        self.conn_config = endpoint_info.get('source_config', {})
-        self.host = self.conn_config.get('host', '119.147.212.81')
-        self.port = self.conn_config.get('port', 7709)
+        self.conn_config = endpoint_info.get("source_config", {})
+        self.host = self.conn_config.get("host", "119.147.212.81")
+        self.port = self.conn_config.get("port", 7709)
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用通达信接口"""
@@ -351,6 +350,7 @@ class TdxHandler(BaseDataSourceHandler):
             # 延迟导入
             if self.api is None:
                 from pytdx.hq import TdxHq_API
+
                 self.api = TdxHq_API()
 
             # 连接
@@ -359,13 +359,13 @@ class TdxHandler(BaseDataSourceHandler):
                 self.is_connected = True
 
             # 根据接口类型调用
-            if 'security_quotes' in self.endpoint_name:
+            if "security_quotes" in self.endpoint_name:
                 return self._get_security_quotes(**kwargs)
             else:
                 raise ValueError(f"不支持的通达信接口: {self.endpoint_name}")
 
-        except ImportError as e:
-            raise ImportError(f"PyTdx未安装: pip install pytdx")
+        except ImportError:
+            raise ImportError("PyTdx未安装: pip install pytdx")
         except Exception as e:
             logger.error(f"通达信接口调用失败: {self.endpoint_name}, 错误: {e}")
             raise
@@ -376,16 +376,16 @@ class TdxHandler(BaseDataSourceHandler):
         tdx_symbols = []
         for symbol in symbols:
             # 判断市场
-            if symbol.endswith('.SH'):
+            if symbol.endswith(".SH"):
                 market = 1  # 上海
-                code = symbol.replace('.SH', '')
-            elif symbol.endswith('.SZ'):
+                code = symbol.replace(".SH", "")
+            elif symbol.endswith(".SZ"):
                 market = 0  # 深圳
-                code = symbol.replace('.SZ', '')
+                code = symbol.replace(".SZ", "")
             else:
                 # 纯数字代码，需要判断
                 code = symbol[:6]
-                if symbol.startswith('6'):
+                if symbol.startswith("6"):
                     market = 1
                 else:
                     market = 0
@@ -404,11 +404,12 @@ class WebCrawlerHandler(BaseDataSourceHandler):
     def __init__(self, endpoint_info: Dict):
         super().__init__(endpoint_info)
         import requests
+
         self.requests = requests
-        self.endpoint_url = endpoint_info.get('endpoint_url')
-        self.method = endpoint_info.get('source_config', {}).get('method', 'GET')
-        self.headers = endpoint_info.get('source_config', {}).get('headers', {})
-        self.response_format = endpoint_info.get('source_config', {}).get('response_format', 'json')
+        self.endpoint_url = endpoint_info.get("endpoint_url")
+        self.method = endpoint_info.get("source_config", {}).get("method", "GET")
+        self.headers = endpoint_info.get("source_config", {}).get("headers", {})
+        self.response_format = endpoint_info.get("source_config", {}).get("response_format", "json")
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用爬虫接口"""
@@ -419,7 +420,7 @@ class WebCrawlerHandler(BaseDataSourceHandler):
         params = {k: v for k, v in kwargs.items() if v is not None}
 
         # 发送请求
-        if self.method.upper() == 'GET':
+        if self.method.upper() == "GET":
             response = self.requests.get(url, params=params, headers=self.headers, timeout=30)
         else:
             response = self.requests.post(url, json=params, headers=self.headers, timeout=30)
@@ -427,11 +428,11 @@ class WebCrawlerHandler(BaseDataSourceHandler):
         response.raise_for_status()
 
         # 解析响应
-        if self.response_format == 'json':
+        if self.response_format == "json":
             data = response.json()
 
             # JSON路径提取
-            json_path = self.config.get('source_config', {}).get('json_path')
+            json_path = self.config.get("source_config", {}).get("json_path")
             if json_path:
                 data = self._parse_json_path(data, json_path)
 
@@ -442,8 +443,8 @@ class WebCrawlerHandler(BaseDataSourceHandler):
     def _parse_json_path(self, data: Any, path: str) -> Any:
         """简单的JSON路径解析"""
         # 支持类似 $.data.diff 的路径
-        if path.startswith('$.'):
-            parts = path[2:].split('.')
+        if path.startswith("$."):
+            parts = path[2:].split(".")
             for part in parts:
                 if isinstance(data, dict):
                     data = data.get(part)

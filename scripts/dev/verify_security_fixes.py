@@ -91,14 +91,14 @@ try:
     identifier = sql.Identifier(dangerous_table)
     escaped = identifier.as_string(None)
 
-    print(f"\n✓ 测试危险表名转义...")
+    print("\n✓ 测试危险表名转义...")
     print(f"  原始: {dangerous_table}")
     print(f"  转义后: {escaped}")
 
     if ';' in dangerous_table and (';' not in escaped or '"' in escaped):
-        print(f"  ✓ 危险字符已被转义或包裹")
+        print("  ✓ 危险字符已被转义或包裹")
     else:
-        print(f"  ⚠ 转义检查需要人工验证")
+        print("  ⚠ 转义检查需要人工验证")
 
     print("\n✅ PostgreSQL查询构造: 通过\n")
 

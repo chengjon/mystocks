@@ -12,12 +12,13 @@
 
 import os
 import pandas as pd
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pathlib import Path
 
 # 尝试从PyTDX导入BlockReader
 try:
     from pytdx.reader.block_reader import BlockReader, BlockReader_TYPE_FLAT, BlockReader_TYPE_GROUP
+
     PYTDX_AVAILABLE = True
 except ImportError:
     PYTDX_AVAILABLE = False
@@ -62,10 +63,7 @@ class TdxBlockReader:
             FileNotFoundError: 通达信路径不存在
         """
         if not PYTDX_AVAILABLE:
-            raise ImportError(
-                "PyTDX未安装，请先安装: pip install pytdx\n"
-                "板块数据功能依赖PyTDX的block_reader模块"
-            )
+            raise ImportError("PyTDX未安装，请先安装: pip install pytdx\n" "板块数据功能依赖PyTDX的block_reader模块")
 
         self.tdx_path = Path(tdx_path)
         if not self.tdx_path.exists():
@@ -75,13 +73,13 @@ class TdxBlockReader:
 
         # 板块文件路径映射
         self.block_files = {
-            'index': self.tdx_path / "T0002/hq_cache/block_zs.dat",   # 指数板块
-            'style': self.tdx_path / "T0002/hq_cache/block_fg.dat",    # 风格板块
-            'concept': self.tdx_path / "T0002/hq_cache/block_gn.dat",  # 概念板块
-            'default': self.tdx_path / "T0002/hq_cache/block.dat"       # 默认板块
+            "index": self.tdx_path / "T0002/hq_cache/block_zs.dat",  # 指数板块
+            "style": self.tdx_path / "T0002/hq_cache/block_fg.dat",  # 风格板块
+            "concept": self.tdx_path / "T0002/hq_cache/block_gn.dat",  # 概念板块
+            "default": self.tdx_path / "T0002/hq_cache/block.dat",  # 默认板块
         }
 
-    def get_index_blocks(self, result_type: str = 'flat') -> pd.DataFrame:
+    def get_index_blocks(self, result_type: str = "flat") -> pd.DataFrame:
         """
         获取指数板块数据
 
@@ -102,14 +100,14 @@ class TdxBlockReader:
             0      上证指数          1           0  000001
             1      上证指数          1           1  000002
         """
-        file_path = self.block_files['index']
+        file_path = self.block_files["index"]
         if not file_path.exists():
             raise FileNotFoundError(f"指数板块文件不存在: {file_path}")
 
-        result_type_code = BlockReader_TYPE_FLAT if result_type == 'flat' else BlockReader_TYPE_GROUP
+        result_type_code = BlockReader_TYPE_FLAT if result_type == "flat" else BlockReader_TYPE_GROUP
         return self.reader.get_df(str(file_path), result_type_code)
 
-    def get_style_blocks(self, result_type: str = 'flat') -> pd.DataFrame:
+    def get_style_blocks(self, result_type: str = "flat") -> pd.DataFrame:
         """
         获取风格板块数据
 
@@ -119,14 +117,14 @@ class TdxBlockReader:
         Returns:
             pd.DataFrame: 风格板块数据
         """
-        file_path = self.block_files['style']
+        file_path = self.block_files["style"]
         if not file_path.exists():
             raise FileNotFoundError(f"风格板块文件不存在: {file_path}")
 
-        result_type_code = BlockReader_TYPE_FLAT if result_type == 'flat' else BlockReader_TYPE_GROUP
+        result_type_code = BlockReader_TYPE_FLAT if result_type == "flat" else BlockReader_TYPE_GROUP
         return self.reader.get_df(str(file_path), result_type_code)
 
-    def get_concept_blocks(self, result_type: str = 'flat') -> pd.DataFrame:
+    def get_concept_blocks(self, result_type: str = "flat") -> pd.DataFrame:
         """
         获取概念板块数据
 
@@ -142,14 +140,14 @@ class TdxBlockReader:
             >>> new_energy = df[df['blockname'].str.contains('新能源')]
             >>> print(new_energy)
         """
-        file_path = self.block_files['concept']
+        file_path = self.block_files["concept"]
         if not file_path.exists():
             raise FileNotFoundError(f"概念板块文件不存在: {file_path}")
 
-        result_type_code = BlockReader_TYPE_FLAT if result_type == 'flat' else BlockReader_TYPE_GROUP
+        result_type_code = BlockReader_TYPE_FLAT if result_type == "flat" else BlockReader_TYPE_GROUP
         return self.reader.get_df(str(file_path), result_type_code)
 
-    def get_default_blocks(self, result_type: str = 'flat') -> pd.DataFrame:
+    def get_default_blocks(self, result_type: str = "flat") -> pd.DataFrame:
         """
         获取默认板块数据
 
@@ -159,14 +157,14 @@ class TdxBlockReader:
         Returns:
             pd.DataFrame: 默认板块数据
         """
-        file_path = self.block_files['default']
+        file_path = self.block_files["default"]
         if not file_path.exists():
             raise FileNotFoundError(f"默认板块文件不存在: {file_path}")
 
-        result_type_code = BlockReader_TYPE_FLAT if result_type == 'flat' else BlockReader_TYPE_GROUP
+        result_type_code = BlockReader_TYPE_FLAT if result_type == "flat" else BlockReader_TYPE_GROUP
         return self.reader.get_df(str(file_path), result_type_code)
 
-    def get_all_blocks(self, result_type: str = 'flat') -> pd.DataFrame:
+    def get_all_blocks(self, result_type: str = "flat") -> pd.DataFrame:
         """
         获取所有板块数据 (合并4种类型)
 
@@ -183,7 +181,7 @@ class TdxBlockReader:
         """
         dfs = []
 
-        for block_type in ['index', 'style', 'concept', 'default']:
+        for block_type in ["index", "style", "concept", "default"]:
             try:
                 df = self.get_blocks_by_type(block_type, result_type)
                 if not df.empty:
@@ -197,7 +195,7 @@ class TdxBlockReader:
 
         return pd.concat(dfs, ignore_index=True)
 
-    def get_blocks_by_type(self, block_type: str, result_type: str = 'flat') -> pd.DataFrame:
+    def get_blocks_by_type(self, block_type: str, result_type: str = "flat") -> pd.DataFrame:
         """
         根据板块类型获取数据
 
@@ -212,17 +210,14 @@ class TdxBlockReader:
             ValueError: 不支持的板块类型
         """
         type_methods = {
-            'index': self.get_index_blocks,
-            'style': self.get_style_blocks,
-            'concept': self.get_concept_blocks,
-            'default': self.get_default_blocks
+            "index": self.get_index_blocks,
+            "style": self.get_style_blocks,
+            "concept": self.get_concept_blocks,
+            "default": self.get_default_blocks,
         }
 
         if block_type not in type_methods:
-            raise ValueError(
-                f"不支持的板块类型: {block_type}\n"
-                f"支持的类型: {list(type_methods.keys())}"
-            )
+            raise ValueError(f"不支持的板块类型: {block_type}\n" f"支持的类型: {list(type_methods.keys())}")
 
         return type_methods[block_type](result_type)
 
@@ -242,21 +237,18 @@ class TdxBlockReader:
             >>> for block in blocks:
             ...     print(f"{block['blockname']} ({block['block_type']})")
         """
-        df_all = self.get_all_blocks(result_type='flat')
+        df_all = self.get_all_blocks(result_type="flat")
 
         if df_all.empty:
             return []
 
         # 筛选指定股票的板块
-        df_stock = df_all[df_all['code'] == stock_code]
+        df_stock = df_all[df_all["code"] == stock_code]
 
         # 转换为字典列表
         blocks = []
         for _, row in df_stock.iterrows():
-            blocks.append({
-                'blockname': row['blockname'],
-                'block_type': row['block_type']
-            })
+            blocks.append({"blockname": row["blockname"], "block_type": row["block_type"]})
 
         return blocks
 
@@ -275,15 +267,15 @@ class TdxBlockReader:
             >>> print(f"白酒板块共 {len(stocks)} 只股票")
             >>> print(stocks[:10])  # 前10只股票
         """
-        df_all = self.get_all_blocks(result_type='flat')
+        df_all = self.get_all_blocks(result_type="flat")
 
         if df_all.empty:
             return []
 
         # 筛选指定板块的股票
-        df_block = df_all[df_all['blockname'] == block_name]
+        df_block = df_all[df_all["blockname"] == block_name]
 
-        return df_block['code'].unique().tolist()
+        return df_block["code"].unique().tolist()
 
     def list_all_block_names(self) -> Dict[str, List[str]]:
         """
@@ -303,22 +295,17 @@ class TdxBlockReader:
             >>> for block_type, names in all_blocks.items():
             ...     print(f"{block_type}: {len(names)}个板块")
         """
-        result = {
-            'index': [],
-            'style': [],
-            'concept': [],
-            'default': []
-        }
+        result = {"index": [], "style": [], "concept": [], "default": []}
 
-        df_all = self.get_all_blocks(result_type='flat')
+        df_all = self.get_all_blocks(result_type="flat")
 
         if df_all.empty:
             return result
 
         # 按类型分组提取板块名称
-        for block_type in ['index', 'style', 'concept', 'default']:
-            df_type = df_all[df_all['block_type'] == block_type]
-            result[block_type] = df_type['blockname'].unique().tolist()
+        for block_type in ["index", "style", "concept", "default"]:
+            df_type = df_all[df_all["block_type"] == block_type]
+            result[block_type] = df_type["blockname"].unique().tolist()
 
         return result
 
@@ -342,25 +329,25 @@ class TdxBlockReader:
             >>> print(f"总板块数: {stats['total_blocks']}")
             >>> print(f"总股票数: {stats['total_stocks']}")
         """
-        df_all = self.get_all_blocks(result_type='flat')
+        df_all = self.get_all_blocks(result_type="flat")
 
         if df_all.empty:
             return {
-                'total_blocks': 0,
-                'total_stocks': 0,
-                'index_blocks': 0,
-                'style_blocks': 0,
-                'concept_blocks': 0,
-                'default_blocks': 0
+                "total_blocks": 0,
+                "total_stocks": 0,
+                "index_blocks": 0,
+                "style_blocks": 0,
+                "concept_blocks": 0,
+                "default_blocks": 0,
             }
 
         return {
-            'total_blocks': df_all['blockname'].nunique(),
-            'total_stocks': df_all['code'].nunique(),
-            'index_blocks': df_all[df_all['block_type'] == '指数板块']['blockname'].nunique(),
-            'style_blocks': df_all[df_all['block_type'] == '风格板块']['blockname'].nunique(),
-            'concept_blocks': df_all[df_all['block_type'] == '概念板块']['blockname'].nunique(),
-            'default_blocks': df_all[df_all['block_type'] == '默认板块']['blockname'].nunique()
+            "total_blocks": df_all["blockname"].nunique(),
+            "total_stocks": df_all["code"].nunique(),
+            "index_blocks": df_all[df_all["block_type"] == "指数板块"]["blockname"].nunique(),
+            "style_blocks": df_all[df_all["block_type"] == "风格板块"]["blockname"].nunique(),
+            "concept_blocks": df_all[df_all["block_type"] == "概念板块"]["blockname"].nunique(),
+            "default_blocks": df_all[df_all["block_type"] == "默认板块"]["blockname"].nunique(),
         }
 
 
@@ -382,23 +369,20 @@ def get_tdx_block_reader(tdx_path: str = None) -> TdxBlockReader:
     """
     if tdx_path is None:
         import os
-        tdx_path = os.getenv('TDX_DATA_PATH')
+
+        tdx_path = os.getenv("TDX_DATA_PATH")
         if tdx_path is None:
-            raise ValueError(
-                "未指定通达信路径，请:\n"
-                "1. 设置环境变量 TDX_DATA_PATH\n"
-                "2. 或直接传入 tdx_path 参数"
-            )
+            raise ValueError("未指定通达信路径，请:\n" "1. 设置环境变量 TDX_DATA_PATH\n" "2. 或直接传入 tdx_path 参数")
 
     return TdxBlockReader(tdx_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 测试代码
     import sys
 
     # 尝试从环境变量获取TDX路径
-    tdx_path = os.getenv('TDX_DATA_PATH', '/mnt/d/ProgramData/tdx_new')
+    tdx_path = os.getenv("TDX_DATA_PATH", "/mnt/d/ProgramData/tdx_new")
 
     print(f"使用TDX路径: {tdx_path}")
 
@@ -420,7 +404,7 @@ if __name__ == '__main__':
 
         # 获取特定股票的板块
         print("\n=== 获取茅台所属板块 ===")
-        blocks = reader.get_stock_blocks('600519')
+        blocks = reader.get_stock_blocks("600519")
         for block in blocks[:10]:  # 显示前10个
             print(f"  - {block['blockname']} ({block['block_type']})")
 

@@ -1123,8 +1123,8 @@
 
 #### views/EnhancedDashboard.vue
 
-**类型**: component  
-**API调用数**: 7  
+**类型**: component
+**API调用数**: 7
 
 ##### API对象调用
 
@@ -1140,8 +1140,8 @@
 
 #### views/Analysis.vue
 
-**类型**: component  
-**API调用数**: 7  
+**类型**: component
+**API调用数**: 7
 
 ##### API对象调用
 
@@ -1157,8 +1157,8 @@
 
 #### views/RiskMonitor.vue
 
-**类型**: component  
-**API调用数**: 6  
+**类型**: component
+**API调用数**: 6
 
 ##### API对象调用
 
@@ -1173,8 +1173,8 @@
 
 #### views/monitoring/MonitoringDashboard.vue
 
-**类型**: component  
-**API调用数**: 6  
+**类型**: component
+**API调用数**: 6
 
 ##### API对象调用
 
@@ -1189,8 +1189,8 @@
 
 #### views/TradeManagement.vue
 
-**类型**: component  
-**API调用数**: 5  
+**类型**: component
+**API调用数**: 5
 
 ##### API对象调用
 
@@ -1204,8 +1204,8 @@
 
 #### views/monitoring/AlertRulesManagement.vue
 
-**类型**: component  
-**API调用数**: 5  
+**类型**: component
+**API调用数**: 5
 
 ##### API对象调用
 
@@ -1219,8 +1219,8 @@
 
 #### views/BacktestAnalysis.vue
 
-**类型**: component  
-**API调用数**: 4  
+**类型**: component
+**API调用数**: 4
 
 ##### API对象调用
 
@@ -1233,8 +1233,8 @@
 
 #### views/Stocks.vue
 
-**类型**: component  
-**API调用数**: 3  
+**类型**: component
+**API调用数**: 3
 
 ##### API对象调用
 
@@ -1246,8 +1246,8 @@
 
 #### views/StockDetail.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1258,8 +1258,8 @@
 
 #### views/technical/TechnicalAnalysis.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1270,8 +1270,8 @@
 
 #### views/strategy/StatsAnalysis.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1282,8 +1282,8 @@
 
 #### views/strategy/SingleRun.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1294,8 +1294,8 @@
 
 #### views/strategy/BatchScan.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1306,8 +1306,8 @@
 
 #### views/strategy/ResultsQuery.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### API对象调用
 
@@ -1318,8 +1318,8 @@
 
 #### components/market/FundFlowPanel.vue
 
-**类型**: component  
-**API调用数**: 2  
+**类型**: component
+**API调用数**: 2
 
 ##### HTTP调用
 
@@ -1330,8 +1330,8 @@
 
 #### views/Market.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### API对象调用
 
@@ -1341,8 +1341,8 @@
 
 #### views/Phase4Dashboard.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### HTTP调用
 
@@ -1352,8 +1352,8 @@
 
 #### views/TechnicalAnalysis.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### API对象调用
 
@@ -1363,8 +1363,8 @@
 
 #### views/demo/Phase4Dashboard.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### HTTP调用
 
@@ -1374,8 +1374,8 @@
 
 #### views/strategy/StrategyList.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### API对象调用
 
@@ -1385,8 +1385,8 @@
 
 #### components/quant/StrategyBuilder.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### HTTP调用
 
@@ -1396,8 +1396,8 @@
 
 #### components/market/ProKLineChart.vue
 
-**类型**: component  
-**API调用数**: 1  
+**类型**: component
+**API调用数**: 1
 
 ##### API对象调用
 

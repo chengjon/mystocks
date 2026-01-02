@@ -8,7 +8,6 @@
 """
 
 import pytest
-from fastapi.testclient import TestClient
 
 
 class TestContractConsistency:
@@ -146,7 +145,7 @@ def test_all_endpoints_conform(api_client, contract_validator):
             errors.append({"endpoint": f"{endpoint['method']} {endpoint['path']}", "error": str(e)})
 
     # 输出结果
-    print(f"\nContract Test Results:")
+    print("\nContract Test Results:")
     print(f"  Passed: {passed}")
     print(f"  Failed: {failed}")
 

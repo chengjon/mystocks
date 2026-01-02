@@ -10,7 +10,7 @@ TDX配置管理模块
 
 import os
 import configparser
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from pathlib import Path
 
 
@@ -35,7 +35,7 @@ class TdxConfigManager:
         if config_file is None:
             # 默认配置文件路径
             project_root = Path(__file__).parent.parent.parent.parent
-            config_file = project_root / 'config' / 'tdx_settings.conf'
+            config_file = project_root / "config" / "tdx_settings.conf"
 
         self.config_file = str(config_file)
         self.config = configparser.ConfigParser()
@@ -48,7 +48,7 @@ class TdxConfigManager:
         如果配置文件不存在，则创建默认配置文件。
         """
         if os.path.exists(self.config_file):
-            self.config.read(self.config_file, encoding='utf-8')
+            self.config.read(self.config_file, encoding="utf-8")
         else:
             logger.warning(f"配置文件不存在: {self.config_file}")
             self._create_default_config()
@@ -56,30 +56,30 @@ class TdxConfigManager:
     def _create_default_config(self):
         """创建默认配置文件"""
         # 创建默认配置节
-        self.config['TDX'] = {
-            'install_path': os.getenv('TDX_DATA_PATH', 'D:\\ProgramData\\tdx_new'),
-            'exe_name': 'TdxW.exe',
-            'local_host': '127.0.0.1',
-            'local_port': '7709'
+        self.config["TDX"] = {
+            "install_path": os.getenv("TDX_DATA_PATH", "D:\\ProgramData\\tdx_new"),
+            "exe_name": "TdxW.exe",
+            "local_host": "127.0.0.1",
+            "local_port": "7709",
         }
 
-        self.config['SERVER'] = {
-            'network_servers': '180.153.18.170:7709,101.227.73.20:7709,119.147.212.81:7709,114.80.63.12:7709'
+        self.config["SERVER"] = {
+            "network_servers": "180.153.18.170:7709,101.227.73.20:7709,119.147.212.81:7709,114.80.63.12:7709"
         }
 
-        self.config['PERFORMANCE'] = {
-            'connect_timeout': '5',
-            'api_timeout': '30',
-            'retry_count': '3',
-            'heartbeat_enabled': 'false',
-            'auto_retry_enabled': 'true'
+        self.config["PERFORMANCE"] = {
+            "connect_timeout": "5",
+            "api_timeout": "30",
+            "retry_count": "3",
+            "heartbeat_enabled": "false",
+            "auto_retry_enabled": "true",
         }
 
-        self.config['VALIDATION'] = {
-            'max_sh_stocks': '30000',
-            'max_sz_stocks': '25000',
-            'min_stock_price': '0.01',
-            'max_stock_price': '10000.0'
+        self.config["VALIDATION"] = {
+            "max_sh_stocks": "30000",
+            "max_sz_stocks": "25000",
+            "min_stock_price": "0.01",
+            "max_stock_price": "10000.0",
         }
 
         # 保存默认配置
@@ -88,7 +88,7 @@ class TdxConfigManager:
     def _save_config(self):
         """保存配置文件"""
         os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
-        with open(self.config_file, 'w', encoding='utf-8') as f:
+        with open(self.config_file, "w", encoding="utf-8") as f:
             self.config.write(f)
         logger.info(f"已创建默认配置文件: {self.config_file}")
 
@@ -108,7 +108,7 @@ class TdxConfigManager:
         """获取布尔配置值"""
         return self.config.getboolean(section, key, fallback=fallback)
 
-    def get_list(self, section: str, key: str, fallback: List[str] = None, separator: str = ',') -> List[str]:
+    def get_list(self, section: str, key: str, fallback: List[str] = None, separator: str = ",") -> List[str]:
         """获取列表配置值"""
         value = self.config.get(section, key, fallback=fallback)
         if value is None:
@@ -125,16 +125,16 @@ class TdxConfigManager:
         servers = []
 
         # 先添加本地服务器
-        local_host = self.get('TDX', 'local_host', '127.0.0.1')
-        local_port = self.get_int('TDX', 'local_port', 7709)
+        local_host = self.get("TDX", "local_host", "127.0.0.1")
+        local_port = self.get_int("TDX", "local_port", 7709)
         servers.append((local_host, local_port))
 
         # 添加网络服务器作为备用
-        network_servers = self.get('SERVER', 'network_servers', '')
-        for server in network_servers.split(','):
+        network_servers = self.get("SERVER", "network_servers", "")
+        for server in network_servers.split(","):
             server = server.strip()
-            if ':' in server:
-                host, port = server.rsplit(':', 1)
+            if ":" in server:
+                host, port = server.rsplit(":", 1)
                 try:
                     servers.append((host, int(port)))
                 except ValueError:
@@ -150,21 +150,21 @@ class TdxConfigManager:
             通达信安装路径（从环境变量或配置文件）
         """
         # 优先使用环境变量
-        env_path = os.getenv('TDX_DATA_PATH')
+        env_path = os.getenv("TDX_DATA_PATH")
         if env_path:
             return env_path
 
         # 否则使用配置文件
-        return self.get('TDX', 'install_path', 'D:\\ProgramData\\tdx_new')
+        return self.get("TDX", "install_path", "D:\\ProgramData\\tdx_new")
 
     def get_performance_config(self) -> Dict[str, any]:
         """获取性能配置"""
         return {
-            'connect_timeout': self.get_int('PERFORMANCE', 'connect_timeout', 5),
-            'api_timeout': self.get_int('PERFORMANCE', 'api_timeout', 30),
-            'retry_count': self.get_int('PERFORMANCE', 'retry_count', 3),
-            'heartbeat_enabled': self.get_bool('PERFORMANCE', 'heartbeat_enabled', False),
-            'auto_retry_enabled': self.get_bool('PERFORMANCE', 'auto_retry_enabled', True)
+            "connect_timeout": self.get_int("PERFORMANCE", "connect_timeout", 5),
+            "api_timeout": self.get_int("PERFORMANCE", "api_timeout", 30),
+            "retry_count": self.get_int("PERFORMANCE", "retry_count", 3),
+            "heartbeat_enabled": self.get_bool("PERFORMANCE", "heartbeat_enabled", False),
+            "auto_retry_enabled": self.get_bool("PERFORMANCE", "auto_retry_enabled", True),
         }
 
 
@@ -192,6 +192,7 @@ try:
     from loguru import logger
 except ImportError:
     import logging
+
     logger = logging.getLogger(__name__)
 
 

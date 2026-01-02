@@ -16,7 +16,7 @@ import os
 import re
 import yaml
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import List, Optional, Tuple
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -253,10 +253,9 @@ class CLIConfigManager:
 
     def _ask_user_confirmation(self, task_id: str, task_data: dict, suggested_cli: str) -> bool:
         """询问用户确认任务分配"""
-        import sys
 
         print("\n" + "="*60)
-        print(f"📋 任务分配确认")
+        print("📋 任务分配确认")
         print("="*60)
         print(f"任务ID: {task_id}")
         print(f"任务标题: {task_data.get('title', 'N/A')}")
@@ -311,13 +310,13 @@ class CLIConfigManager:
 
         task_scope = cli_info.get('task_scope', {})
         if task_scope:
-            print(f"任务范围:")
+            print("任务范围:")
             print(f"  包含: {task_scope.get('include', [])}")
             print(f"  排除: {task_scope.get('exclude', [])}")
 
         limits = cli_info.get('limits', {})
         if limits:
-            print(f"工作限制:")
+            print("工作限制:")
             print(f"  最大并发任务: {limits.get('max_concurrent_tasks', 'N/A')}")
             print(f"  最大任务工时: {limits.get('max_hours_per_task', 'N/A')}小时")
 
@@ -371,7 +370,7 @@ class CLIConfigManager:
         cli_defs[cli_name] = templates[template]
 
         print(f"✅ 已从模板 '{template}' 创建CLI配置: {cli_name}")
-        print(f"   请编辑配置文件添加具体的能力和任务范围")
+        print("   请编辑配置文件添加具体的能力和任务范围")
 
     def list_all_clis(self, show_disabled: bool = False) -> List[dict]:
         """列出所有CLI（包括禁用的）"""
@@ -460,7 +459,7 @@ def main():
     else:
         # 显示配置概览
         print(f"\n{'='*60}")
-        print(f"Multi-CLI 配置概览")
+        print("Multi-CLI 配置概览")
         print(f"{'='*60}")
         print(f"项目: {manager.config['multi_cli']['project_name']}")
         print(f"版本: {manager.config['multi_cli']['version']}")
@@ -473,9 +472,9 @@ def main():
             cli_info = manager.get_cli_info(cli_name)
             print(f"  - {cli_name}: {cli_info.get('role', 'N/A')}")
 
-        print(f"\n💡 使用 --list 查看所有CLI详细信息")
-        print(f"💡 使用 --info=CLI_NAME 查看特定CLI详情")
-        print(f"💡 使用 --match=TASK_ID --skills=skill1,skill2 测试任务匹配")
+        print("\n💡 使用 --list 查看所有CLI详细信息")
+        print("💡 使用 --info=CLI_NAME 查看特定CLI详情")
+        print("💡 使用 --match=TASK_ID --skills=skill1,skill2 测试任务匹配")
         print(f"{'='*60}\n")
 
 

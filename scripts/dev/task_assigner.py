@@ -19,12 +19,11 @@ Usage:
     python scripts/dev/task_assigner.py --suggest
 """
 
-import os
 import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 class TaskAssigner:
@@ -387,7 +386,7 @@ def main():
 
         # 更新TASK.md
         if args.update_task_file:
-            print(f"📝 更新TASK.md文件...")
+            print("📝 更新TASK.md文件...")
             success = assigner.update_cli_task_file(
                 cli_name=args.assign,
                 task_id=args.task,
@@ -397,9 +396,9 @@ def main():
             )
 
             if success:
-                print(f"✅ TASK.md已更新")
+                print("✅ TASK.md已更新")
             else:
-                print(f"❌ TASK.md更新失败")
+                print("❌ TASK.md更新失败")
 
         print()
         return

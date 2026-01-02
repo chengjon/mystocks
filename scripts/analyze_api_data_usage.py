@@ -5,12 +5,11 @@ MyStocks API和Web前端数据使用分析工具（增强版）
 """
 
 import json
-import os
 import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 from hashlib import md5
 
 
@@ -667,10 +666,10 @@ class ReportGenerator:
             used = len(api_usage_count)
             unused = total - used
 
-            f.write(f"```\n")
+            f.write("```\n")
             f.write(f"已使用: {'█' * int(used / total * 50)} {used} ({used / total * 100:.1f}%)\n")
             f.write(f"未使用: {'░' * int(unused / total * 50)} {unused} ({unused / total * 100:.1f}%)\n")
-            f.write(f"```\n\n")
+            f.write("```\n\n")
         else:
             f.write("```\n")
             f.write("无API端点数据\n")
@@ -726,7 +725,7 @@ class ReportGenerator:
         # 按API调用数量排序
         pages_with_calls.sort(key=lambda x: x["api_count"], reverse=True)
 
-        f.write(f"### Top 10 API调用最多的页面\n\n")
+        f.write("### Top 10 API调用最多的页面\n\n")
         f.write("| 页面 | 类型 | API调用数 |\n")
         f.write("|------|------|-----------|\n")
         for page in pages_with_calls[:10]:

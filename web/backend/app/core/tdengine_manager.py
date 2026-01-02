@@ -15,7 +15,7 @@ Features:
 import os
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple, cast
+from typing import Dict, List, Optional, Any, Tuple
 import structlog
 
 # 支持从脚本导入：尝试相对导入
