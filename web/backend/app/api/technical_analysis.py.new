@@ -1,0 +1,115 @@
+@router.get("/{symbol}/signals", response_model=Dict)
+async def get_trading_signals(symbol: str, period: str = Query("daily", description="数据周期")):
+    """
+    获取交易信号
+
+    基于技术指标生成买入/卖出/持有信号
+
+    信号类型:
+    - macd_golden_cross: MACD金叉 (买入信号)
+    - macd_death_cross: MACD死叉 (卖出信号)
+    - rsi_oversold: RSI超卖 (买入信号)
+    - rsi_overbought: RSI超买 (卖出信号)
+
+    **验证**: P0改进 Task 2 - 使用StockSymbolModel验证股票代码
+
+    示例:
+    - GET /api/technical/600519/signals
+    """
+    print(f"\n{'='*60}")
+    print(f"🚀 SIGNALS ENDPOINT CALLED: symbol={symbol}, period={period}")
+    print(f"{'='*60}\n")
+    
+    try:
+        # Step 1: Validate symbol
+        print("📍 Step 1: Validating symbol...")
+        try:
+            validated_symbol = StockSymbolModel(symbol=symbol)
+            print(f"✓ Symbol validated: {validated_symbol.symbol}")
+        except ValidationError as ve:
+            print(f"❌ Symbol validation failed: {ve}")
+            error_details = [{"field": str(err["loc"][0]), "message": err["msg"]} for err in ve.errors()]
+            return create_error_response(
+                error_code="VALIDATION_ERROR", message="股票代码验证失败", details=error_details
+            )
+
+        # Step 2: Get data source
+        print("📍 Step 2: Getting data source from factory...")
+        try:
+            data_source_factory = DataSourceFactory()
+            technical_analysis_adapter = await data_source_factory.get_data_source("technical_analysis")
+            print(f"✓ Got adapter: {type(technical_analysis_adapter)}")
+        except Exception as e:
+            print(f"❌ Failed to get data source: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"获取数据源失败: {str(e)}")
+
+        # Step 3: Call get_data
+        print("📍 Step 3: Calling get_data...")
+        params = {"symbol": validated_symbol.symbol, "period": period}
+        try:
+            result = await technical_analysis_adapter.get_data("signals", params)
+            print(f"✓ Got result: type={type(result)}, keys={result.keys()}")
+            print(f"  Result: {result}")
+        except Exception as e:
+            print(f"❌ get_data failed: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"获取数据失败: {str(e)}")
+
+        # Step 4: Check result
+        print("📍 Step 4: Checking result...")
+        if "error" in result:
+            print(f"❌ Result contains error: {result['error']}")
+            raise HTTPException(
+                status_code=500,
+                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
+            )
+
+        signals_data = result.get("data", {})
+        print(f"✓ Got signals_data: type={type(signals_data)}, data={signals_data}")
+
+        # Step 5: Create response
+        print("📍 Step 5: Creating response...")
+        response_data = {"symbol": validated_symbol.symbol, "signals": signals_data, "period": period}
+        print(f"  Response data: {response_data}")
+
+        # Step 6: Test JSON serialization
+        print("📍 Step 6: Testing JSON serialization...")
+        import json
+        try:
+            json_str = json.dumps(response_data, default=str)
+            print(f"✓ JSON serialization successful: {len(json_str)} chars")
+        except Exception as e:
+            print(f"❌ JSON serialization failed: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"JSON序列化失败: {str(e)}")
+
+        # Step 7: Return response
+        print("📍 Step 7: Returning response...")
+        result = create_success_response(
+            data=response_data,
+            message=f"获取{validated_symbol.symbol}交易信号成功",
+        )
+        print(f"✓ Response created: {type(result)}")
+        print(f"{'='*60}")
+        print("✅ SIGNALS ENDPOINT SUCCESS")
+        print(f"{'='*60}\n")
+        return result
+
+    except HTTPException:
+        print(f"❌ HTTPException raised, re-raising...")
+        print(f"{'='*60}\n")
+        raise
+    except Exception as e:
+        print(f"\n{'='*60}")
+        print(f"❌ UNEXPECTED ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        print(f"{'='*60}\n")
+        raise HTTPException(
+            status_code=500,
+            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取交易信号失败: {str(e)}").model_dump(),
+        )

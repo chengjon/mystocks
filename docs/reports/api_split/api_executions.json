@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/executions",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/executions/",
+      "method": "GET",
+      "file": "tasks.py",
+      "function": "list_task_executions",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 520
+    },
+    {
+      "path": "/executions/{execution_id}",
+      "method": "GET",
+      "file": "tasks.py",
+      "function": "get_execution",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 552
+    },
+    {
+      "path": "/executions/cleanup",
+      "method": "DELETE",
+      "file": "tasks.py",
+      "function": "cleanup_executions",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 629
+    }
+  ]
+}

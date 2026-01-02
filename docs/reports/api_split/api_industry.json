@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/industry",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/industry/list",
+      "method": "GET",
+      "file": "industry_concept_analysis.py",
+      "function": "get_industry_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 29
+    },
+    {
+      "path": "/industry/stocks",
+      "method": "GET",
+      "file": "industry_concept_analysis.py",
+      "function": "get_industry_stocks",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 123
+    },
+    {
+      "path": "/industry/performance",
+      "method": "GET",
+      "file": "industry_concept_analysis.py",
+      "function": "get_industry_performance",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 229
+    }
+  ]
+}

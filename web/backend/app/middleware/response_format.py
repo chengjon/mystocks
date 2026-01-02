@@ -68,6 +68,10 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
     }
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        import sys
+
+        print(f"[DEBUG] ResponseFormatMiddleware: {request.url.path}", file=sys.stderr, flush=True)
+
         # 生成唯一的请求ID
         request_id = str(uuid.uuid4())
         request.state.request_id = request_id

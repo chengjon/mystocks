@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/",
+      "method": "GET",
+      "file": "watchlist.py",
+      "function": "get_my_watchlist",
+      "return_model": "List[Dict]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 154
+    },
+    {
+      "path": "/",
+      "method": "GET",
+      "file": "tasks.py",
+      "function": "list_tasks",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 383
+    }
+  ]
+}

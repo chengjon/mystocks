@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/control",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/control/start",
+      "method": "POST",
+      "file": "monitoring.py",
+      "function": "start_monitoring",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 519
+    },
+    {
+      "path": "/control/stop",
+      "method": "POST",
+      "file": "monitoring.py",
+      "function": "stop_monitoring",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 540
+    },
+    {
+      "path": "/control/status",
+      "method": "GET",
+      "file": "monitoring.py",
+      "function": "get_monitoring_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 550
+    }
+  ]
+}

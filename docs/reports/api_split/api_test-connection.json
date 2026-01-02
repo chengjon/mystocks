@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/test-connection",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/test-connection",
+      "method": "POST",
+      "file": "system.py",
+      "function": "test_database_connection",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 199
+    }
+  ]
+}

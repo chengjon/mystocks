@@ -148,6 +148,20 @@ scrape_configs:
     metrics_path: '/api/multi_source/health'
     scrape_interval: 30s
 
+  # ==================== 数据源监控指标 ====================
+  # 监控 DataSourceManager V2 的数据源调用和健康状态
+  - job_name: 'mystocks-data-sources'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8001'  # 数据源指标服务器端口
+          # - '192.168.123.104:8001'     # Linux Docker - 使用宿主机实际IP
+        labels:
+          service: 'mystocks-data-sources'
+          component: 'data-source-manager'
+
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
   # ==================== Prometheus 自身监控 ====================
   - job_name: 'prometheus'
     static_configs:

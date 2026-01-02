@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/realtime",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/realtime/{symbol}",
+      "method": "GET",
+      "file": "monitoring.py",
+      "function": "get_realtime_monitoring",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 222
+    },
+    {
+      "path": "/realtime",
+      "method": "GET",
+      "file": "monitoring.py",
+      "function": "get_realtime_monitoring_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 257
+    },
+    {
+      "path": "/realtime/fetch",
+      "method": "POST",
+      "file": "monitoring.py",
+      "function": "fetch_realtime_data",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 309
+    }
+  ]
+}

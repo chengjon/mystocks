@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/preferences",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/preferences",
+      "method": "GET",
+      "file": "notification.py",
+      "function": "get_notification_preferences",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 800
+    },
+    {
+      "path": "/preferences",
+      "method": "POST",
+      "file": "notification.py",
+      "function": "update_notification_preferences",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 834
+    }
+  ]
+}

@@ -1,0 +1,251 @@
+# Multi-CLI 系统配置文件
+# 版本: 2.1
+# 说明: 通过此配置文件定义所有CLI的行为和任务分配规则
+
+multi_cli:
+  version: "2.1"
+  project_name: "mystocks_spec"
+
+  # 任务分配模式: auto(自动) | interactive(交互式) | manual(手动)
+  task_assignment_mode: "interactive"
+
+  # 是否自动启动智能协调器
+  auto_coordinate: true
+
+  # 协调器运行间隔（秒）
+  coordinate_interval: 300
+
+# CLI定义
+cli_definitions:
+  # CLI-main (协调器)
+  main:
+    enabled: true
+    type: coordinator
+    description: "主协调器，负责任务分配和CLI协调"
+
+    capabilities:
+      - coordination
+      - monitoring
+      - task_assignment
+      - conflict_resolution
+
+    # 协调器配置
+    coordinator_config:
+      auto_start: true
+      log_file: "coordinator.log"
+      enable_rules:
+        - blockage_resolution
+        - idle_resource_allocation
+        - conflict_prevention
+        - health_check
+
+  # CLI-web (前端开发)
+  web:
+    enabled: true
+    type: worker
+    role: "frontend_developer"
+    description: "前端开发，负责Vue组件和UI实现"
+
+    capabilities:
+      - frontend
+      - Vue
+      - UI-design
+      - CSS
+      - API-integration
+
+    # 任务范围（支持通配符）
+    task_scope:
+      include:
+        - "task-1.*"      # 所有前端任务
+        - "feature-web-*" # 所有前端功能
+      exclude:
+        - "task-1.*.test" # 排除测试任务
+
+    # 工作限制
+    limits:
+      max_concurrent_tasks: 3
+      max_hours_per_task: 16
+
+  # CLI-api (后端开发)
+  api:
+    enabled: true
+    type: worker
+    role: "backend_developer"
+    description: "后端开发，负责API和业务逻辑"
+
+    capabilities:
+      - backend
+      - FastAPI
+      - authentication
+      - API-design
+      - database
+
+    task_scope:
+      include:
+        - "task-2.*"      # 所有后端任务
+        - "feature-api-*" # 所有API功能
+
+    limits:
+      max_concurrent_tasks: 2
+      max_hours_per_task: 12
+
+  # CLI-db (数据库管理)
+  db:
+    enabled: true
+    type: worker
+    role: "database_admin"
+    description: "数据库管理，负责查询优化和数据维护"
+
+    capabilities:
+      - database
+      - PostgreSQL
+      - TDengine
+      - SQL
+      - optimization
+
+    task_scope:
+      include:
+        - "task-3.*"       # 所有数据库任务
+        - "optimization-*" # 所有优化任务
+
+    limits:
+      max_concurrent_tasks: 2
+      max_hours_per_task: 8
+
+  # Worker CLI (IT团队)
+  it/worker1:
+    enabled: false  # 默认禁用，按需启用
+    type: worker
+    role: "general_developer"
+    description: "通用开发助手"
+
+    capabilities:
+      - python
+      - testing
+      - documentation
+
+    task_scope:
+      include:
+        - "task-*"
+
+  it/worker2:
+    enabled: false
+    type: worker
+    role: "general_developer"
+    description: "通用开发助手"
+
+    capabilities:
+      - python
+      - testing
+      - bugfix
+
+    task_scope:
+      include:
+        - "task-*"
+
+  it/worker3:
+    enabled: false
+    type: worker
+    role: "general_developer"
+    description: "通用开发助手"
+
+    capabilities:
+      - python
+      - refactoring
+      - optimization
+
+    task_scope:
+      include:
+        - "task-*"
+
+# 任务类型映射
+task_categories:
+  frontend:
+    name: "前端开发"
+    skills: [frontend, Vue, UI-design]
+    default_cli: "web"
+    priority: HIGH
+
+  backend:
+    name: "后端开发"
+    skills: [backend, FastAPI, API-design]
+    default_cli: "api"
+    priority: HIGH
+
+  database:
+    name: "数据库"
+    skills: [database, PostgreSQL, SQL]
+    default_cli: "db"
+    priority: MEDIUM
+
+  testing:
+    name: "测试"
+    skills: [testing, pytest, e2e]
+    default_cli: "it/worker1"
+    priority: MEDIUM
+
+  documentation:
+    name: "文档"
+    skills: [documentation, writing]
+    default_cli: "it/worker2"
+    priority: LOW
+
+# 任务分配规则
+assignment_rules:
+  # 规则1: 按技能匹配
+  - name: "skill_based_assignment"
+    enabled: true
+    description: "根据任务所需技能自动分配给匹配的CLI"
+    priority: 1
+
+  # 规则2: 按任务范围匹配
+  - name: "scope_based_assignment"
+    enabled: true
+    description: "根据CLI配置的任务范围分配"
+    priority: 2
+
+  # 规则3: 负载均衡
+  - name: "load_balancing"
+    enabled: true
+    description: "将任务分配给当前任务最少的CLI"
+    priority: 3
+
+  # 规则4: 优先级规则
+  - name: "priority_based_assignment"
+    enabled: true
+    description: "高优先级任务优先分配给能力最强的CLI"
+    priority: 4
+
+# 交互式配置
+interactive_config:
+  # 高优先级任务是否需要确认
+  confirm_on_high_priority: true
+
+  # 超过预计工时是否需要确认
+  confirm_on_long_tasks: true
+  long_task_threshold: 16  # 小时
+
+  # 跨技能任务是否需要确认
+  confirm_on_cross_skill: true
+
+  # 默认等待用户响应时间（秒）
+  default_timeout: 60
+
+# 通知配置
+notification_config:
+  # 任务分配通知
+  on_task_assignment:
+    - mailbox
+    - log
+
+  # 任务完成通知
+  on_task_completion:
+    - mailbox
+    - log
+    - update_status
+
+  # 异常情况通知
+  on_exception:
+    - alert
+    - log
+    - notify_main

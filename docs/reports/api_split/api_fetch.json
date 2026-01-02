@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/fetch",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/fetch",
+      "method": "POST",
+      "file": "announcement.py",
+      "function": "fetch_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 31
+    },
+    {
+      "path": "/fetch",
+      "method": "POST",
+      "file": "announcement/routes.py",
+      "function": "fetch_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 46
+    }
+  ]
+}

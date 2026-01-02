@@ -616,6 +616,59 @@ tables:
 
   - database_type: 'PostgreSQL'
     database_name: 'quant_research'
+    table_name: 'strategy_definition'
+    classification: 'model_outputs'
+    description: '策略定义表 - 存储量化策略的配置参数和元数据'
+    columns:
+      - name: 'id'
+        type: 'INTEGER'
+        primary_key: true
+        auto_increment: true
+        comment: '策略ID'
+      - name: 'strategy_code'
+        type: 'VARCHAR'
+        length: 50
+        nullable: false
+        unique: true
+        comment: '策略代码（唯一标识符）'
+      - name: 'strategy_name_cn'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '策略中文名称'
+      - name: 'strategy_name_en'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '策略英文名称'
+      - name: 'description'
+        type: 'TEXT'
+        comment: '策略描述'
+      - name: 'parameters'
+        type: 'JSONB'
+        comment: '策略参数（JSON格式）'
+      - name: 'is_active'
+        type: 'BOOLEAN'
+        default: 'true'
+        comment: '是否激活'
+      - name: 'created_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '创建时间'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
+    indexes:
+      - name: 'idx_strategy_code'
+        columns: ['strategy_code']
+        unique: true
+      - name: 'strategy_definition_pkey'
+        columns: ['id']
+        primary_key: true
+
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
     table_name: 'trading_signals'
     is_timescale_hypertable: true
     time_column: 'signal_time'
@@ -1471,6 +1524,54 @@ tables:
         columns: ['category_name']
       - name: 'idx_stock_industry_concept_symbol_type'
         columns: ['symbol', 'category_type']
+        unique: true
+
+  # =====================================
+  # 新增表：板块数据 - PostgreSQL
+  # =====================================
+  - database_type: 'PostgreSQL'
+    database_name: 'quant_research'
+    table_name: 'stock_blocks'
+    is_timescale_hypertable: false  # 静态参考数据
+    classification: 'reference_data'
+    description: '股票板块分类数据（指数、风格、概念、默认板块）'
+    columns:
+      - name: 'block_id'
+        type: 'BIGINT'
+        primary_key: true
+        auto_increment: true
+        comment: '板块记录ID'
+      - name: 'blockname'
+        type: 'VARCHAR'
+        length: 100
+        nullable: false
+        comment: '板块名称（如：白酒、新能源）'
+      - name: 'block_type'
+        type: 'VARCHAR'
+        length: 50
+        nullable: false
+        comment: '板块类型（指数板块/风格板块/概念板块/默认板块）'
+      - name: 'code'
+        type: 'VARCHAR'
+        length: 10
+        nullable: false
+        comment: '股票代码'
+      - name: 'code_index'
+        type: 'INTEGER'
+        comment: '板块内股票索引'
+      - name: 'updated_at'
+        type: 'TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
+        comment: '更新时间'
+    indexes:
+      - name: 'idx_stock_blocks_blockname'
+        columns: ['blockname']
+      - name: 'idx_stock_blocks_code'
+        columns: ['code']
+      - name: 'idx_stock_blocks_type'
+        columns: ['block_type']
+      - name: 'idx_stock_blocks_blockname_code'
+        columns: ['blockname', 'code']
         unique: true
 
   # =====================================

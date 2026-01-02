@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/remove",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/remove/{symbol}",
+      "method": "DELETE",
+      "file": "watchlist.py",
+      "function": "remove_from_watchlist",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 250
+    }
+  ]
+}

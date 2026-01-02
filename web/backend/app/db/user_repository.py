@@ -316,3 +316,140 @@ class UserRepository:
             print(f"Warning: Failed to log user action: {str(e)}")
             self.session.rollback()
             return False
+
+    def create_user(
+        self,
+        username: str,
+        email: str,
+        hashed_password: str,
+        role: str = "user",
+        is_active: bool = True,
+    ) -> UserInDB:
+        """
+        Create a new user in the database
+
+        Args:
+            username: Username (must be unique)
+            email: Email address (must be unique)
+            hashed_password: Bcrypt hashed password
+            role: User role (default: "user")
+            is_active: Whether user is active (default: True)
+
+        Returns:
+            UserInDB: Created user object
+
+        Raises:
+            DataValidationError: If input data is invalid
+            DatabaseOperationError: If username/email already exists or query fails
+            DatabaseConnectionError: If database connection fails
+        """
+        # Validate input
+        if not username or not isinstance(username, str):
+            raise DataValidationError(
+                message="Username must be a non-empty string",
+                code="INVALID_USERNAME",
+                severity="HIGH",
+            )
+
+        if not email or "@" not in email:
+            raise DataValidationError(
+                message="Email must be a valid email address",
+                code="INVALID_EMAIL",
+                severity="HIGH",
+            )
+
+        if not hashed_password or not isinstance(hashed_password, str):
+            raise DataValidationError(
+                message="Hashed password must be a non-empty string",
+                code="INVALID_PASSWORD",
+                severity="HIGH",
+            )
+
+        if role not in ["user", "admin"]:
+            raise DataValidationError(
+                message="Role must be either 'user' or 'admin'",
+                code="INVALID_ROLE",
+                severity="HIGH",
+            )
+
+        try:
+            # Check if username already exists
+            existing_user = self.get_user_by_username(username)
+            if existing_user:
+                raise DatabaseOperationError(
+                    message=f"Username '{username}' already exists",
+                    code="USERNAME_EXISTS",
+                    severity="MEDIUM",
+                )
+
+            # Check if email already exists
+            existing_email = self.get_user_by_email(email)
+            if existing_email:
+                raise DatabaseOperationError(
+                    message=f"Email '{email}' already exists",
+                    code="EMAIL_EXISTS",
+                    severity="MEDIUM",
+                )
+
+            # Insert new user
+            insert_query = text(
+                """
+                INSERT INTO users (username, email, hashed_password, role, is_active)
+                VALUES (:username, :email, :hashed_password, :role, :is_active)
+                RETURNING id, username, email, hashed_password, role, is_active
+                """
+            )
+
+            result = self.session.execute(
+                insert_query,
+                {
+                    "username": username,
+                    "email": email,
+                    "hashed_password": hashed_password,
+                    "role": role,
+                    "is_active": is_active,
+                },
+            ).fetchone()
+
+            self.session.commit()
+
+            # Return created user
+            return UserInDB(
+                id=result[0],
+                username=result[1],
+                email=result[2],
+                hashed_password=result[3],
+                role=result[4],
+                is_active=result[5],
+            )
+
+        except DatabaseOperationError:
+            # Re-raise our custom errors
+            self.session.rollback()
+            raise
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            if "connection" in str(e).lower():
+                raise DatabaseConnectionError(
+                    message=f"Failed to connect to database when creating user: {str(e)}",
+                    code="DB_CONNECTION_FAILED",
+                    severity="CRITICAL",
+                    original_exception=e,
+                )
+            else:
+                raise DatabaseOperationError(
+                    message=f"Database query failed for user creation: {str(e)}",
+                    code="DB_QUERY_FAILED",
+                    severity="HIGH",
+                    original_exception=e,
+                )
+
+        except Exception as e:
+            self.session.rollback()
+            raise DatabaseOperationError(
+                message=f"Unexpected error during user creation: {str(e)}",
+                code="USER_CREATION_FAILED",
+                severity="HIGH",
+                original_exception=e,
+            )

@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/backup",
+  "total_endpoints": 6,
+  "endpoints": [
+    {
+      "path": "/backup/tdengine/full",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "backup_tdengine_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 145
+    },
+    {
+      "path": "/backup/tdengine/incremental",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "backup_tdengine_incremental",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 235
+    },
+    {
+      "path": "/backup/postgresql/full",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "backup_postgresql_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 333
+    },
+    {
+      "path": "/backup/tdengine/full",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "backup_tdengine_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 184
+    },
+    {
+      "path": "/backup/tdengine/incremental",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "backup_tdengine_incremental",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "tdengine",
+      "line_number": 266
+    },
+    {
+      "path": "/backup/postgresql/full",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "backup_postgresql_full",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 326
+    }
+  ]
+}

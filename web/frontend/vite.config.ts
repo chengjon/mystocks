@@ -60,6 +60,13 @@ export default defineConfig(async () => {
           changeOrigin: true
         }
       }
+    },
+    // 添加 publicDir 配置
+    publicDir: 'public',
+    // 确保正确处理静态资源
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets'
     }
   };
 })

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/blocktrade",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/blocktrade",
+      "method": "GET",
+      "file": "market_v2.py",
+      "function": "get_stock_blocktrade",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 217
+    },
+    {
+      "path": "/blocktrade/refresh",
+      "method": "POST",
+      "file": "market_v2.py",
+      "function": "refresh_stock_blocktrade",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 239
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/monitoring",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/monitoring/metrics",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "get_cache_monitoring_metrics",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 675
+    },
+    {
+      "path": "/monitoring/health",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "get_cache_health_status",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 729
+    }
+  ]
+}

@@ -23,7 +23,7 @@ from app.schemas.trade_schemas import (
     TradeHistoryItem,
 )
 
-router = APIRouter(prefix="/trade", tags=["交易执行"])
+router = APIRouter()
 
 
 # ==================== Health Check ====================

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/run",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/run/single",
+      "method": "POST",
+      "file": "strategy.py",
+      "function": "run_strategy_single",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 218
+    },
+    {
+      "path": "/run/batch",
+      "method": "POST",
+      "file": "strategy.py",
+      "function": "run_strategy_batch",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 272
+    }
+  ]
+}

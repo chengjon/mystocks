@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/integrity",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/integrity/verify/{backup_id}",
+      "method": "GET",
+      "file": "backup_recovery.py",
+      "function": "verify_backup_integrity",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 533
+    },
+    {
+      "path": "/integrity/verify/{backup_id}",
+      "method": "GET",
+      "file": "backup_recovery_secure.py",
+      "function": "verify_backup_integrity",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 805
+    }
+  ]
+}

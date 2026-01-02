@@ -17,7 +17,7 @@ from app.services.strategy_service import get_strategy_service
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/strategy")
+router = APIRouter()
 
 
 # ==================== 请求/响应模型 ====================

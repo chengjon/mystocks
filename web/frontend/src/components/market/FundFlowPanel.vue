@@ -34,10 +34,16 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleQuery" :loading="loading">
+          <el-button type="primary" @click="handleQuery" :loading="loading">
+            <template #icon>
+              <Search />
+            </template>
             查询
           </el-button>
-          <el-button :icon="Refresh" @click="handleRefresh" :loading="refreshing">
+          <el-button @click="handleRefresh" :loading="refreshing">
+            <template #icon>
+              <Refresh />
+            </template>
             刷新数据
           </el-button>
         </el-form-item>
@@ -373,41 +379,6 @@ watch(() => fundFlowData.value, () => {
 
 // 监听窗口大小变化
 const handleResize = (): void => {
-  if (chartInstance) {
-    chartInstance.resize()
-  }
-}
-
-// 组件挂载
-onMounted(() => {
-  // 默认查询
-  handleQuery()
-
-  // 添加窗口大小监听
-  window.addEventListener('resize', handleResize)
-})
-
-// 组件卸载
-onUnmounted(() => {
-  // 移除事件监听
-  window.removeEventListener('resize', handleResize)
-
-  // 销毁图表实例
-  if (chartInstance) {
-    chartInstance.dispose()
-    chartInstance = null
-  }
-})
-</script>
-// 监听数据变化
-watch(() => fundFlowData.value, () => {
-  if (fundFlowData.value.length > 0) {
-    nextTick(() => renderChart())
-  }
-})
-
-// 监听窗口大小变化
-const handleResize = () => {
   if (chartInstance) {
     chartInstance.resize()
   }

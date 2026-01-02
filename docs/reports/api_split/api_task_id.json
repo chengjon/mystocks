@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/{task_id}",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/{task_id}",
+      "method": "DELETE",
+      "file": "tasks.py",
+      "function": "unregister_task",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 347
+    },
+    {
+      "path": "/{task_id}",
+      "method": "GET",
+      "file": "tasks.py",
+      "function": "get_task",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 457
+    },
+    {
+      "path": "/{task_id}/start",
+      "method": "POST",
+      "file": "tasks.py",
+      "function": "start_task",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 490
+    },
+    {
+      "path": "/{task_id}/stop",
+      "method": "POST",
+      "file": "tasks.py",
+      "function": "stop_task",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 505
+    }
+  ]
+}

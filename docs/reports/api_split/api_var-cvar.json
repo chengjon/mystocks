@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/var-cvar",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/var-cvar",
+      "method": "POST",
+      "file": "risk_management.py",
+      "function": "calculate_var_cvar",
+      "return_model": "VaRCVaRResult",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 186
+    }
+  ]
+}

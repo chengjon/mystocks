@@ -129,66 +129,75 @@ class TypeConverter:
                                 quoted_parts.append(f"'{part}'")
                         return " | ".join(quoted_parts)
                     else:
-                        break
+                        # Single value literal, return as-is
+                        return f"'{cleaned}'"
+                except Exception:
+                    # If parsing fails, return original literal content
+                    return literal_content
+
+        # Handle complex nested types with iterative processing
+        original = type_str
+        while True:
+            original = type_str
 
             # Handle List/Array types - use greedy match for nested types
-            if 'List[' in type_str:
+            if "List[" in type_str:
                 # Count brackets to find the matching closing bracket
-                while 'List[' in type_str:
-                    start = type_str.find('List[')
+                while "List[" in type_str:
+                    start = type_str.find("List[")
                     depth = 0
                     end = start + 5  # Start after 'List['
-                    for i, char in enumerate(type_str[start+5:], start=start+5):
-                        if char == '[':
+                    for i, char in enumerate(type_str[start + 5 :], start=start + 5):
+                        if char == "[":
                             depth += 1
-                        elif char == ']':
+                        elif char == "]":
                             if depth == 0:
                                 end = i
                                 break
                             depth -= 1
                     # Extract the content and replace
-                    inner = type_str[start+5:end]
-                    type_str = type_str[:start] + inner + '[]' + type_str[end+1:]
+                    inner = type_str[start + 5 : end]
+                    type_str = type_str[:start] + inner + "[]" + type_str[end + 1 :]
 
             # Handle Set types
-            if 'Set[' in type_str or 'Set<' in type_str:
-                type_str = re.sub(r'Set\[(.+?)\]', r'Set<\1>', type_str)
+            if "Set[" in type_str or "Set<" in type_str:
+                type_str = re.sub(r"Set\[(.+?)\]", r"Set<\1>", type_str)
 
             # Handle Optional/Union types - match brackets properly
-            if 'Union[' in type_str:
-                while 'Union[' in type_str:
-                    start = type_str.find('Union[')
+            if "Union[" in type_str:
+                while "Union[" in type_str:
+                    start = type_str.find("Union[")
                     depth = 0
                     end = -1
-                    for i, char in enumerate(type_str[start+6:], start=start+6):
-                        if char == '[':
+                    for i, char in enumerate(type_str[start + 6 :], start=start + 6):
+                        if char == "[":
                             depth += 1
-                        elif char == ']':
+                        elif char == "]":
                             if depth == 0:
                                 end = i
                                 break
                             depth -= 1
                     if end != -1:
-                        inner = type_str[start+6:end]
-                        type_str = type_str[:start] + inner + type_str[end+1:]
+                        inner = type_str[start + 6 : end]
+                        type_str = type_str[:start] + inner + type_str[end + 1 :]
                     else:
                         break
-            if 'Optional[' in type_str:
-                while 'Optional[' in type_str:
-                    start = type_str.find('Optional[')
+            if "Optional[" in type_str:
+                while "Optional[" in type_str:
+                    start = type_str.find("Optional[")
                     depth = 0
                     end = -1
-                    for i, char in enumerate(type_str[start+9:], start=start+9):
-                        if char == '[':
+                    for i, char in enumerate(type_str[start + 9 :], start=start + 9):
+                        if char == "[":
                             depth += 1
-                        elif char == ']':
+                        elif char == "]":
                             if depth == 0:
                                 end = i
                                 break
                             depth -= 1
                     if end != -1:
-                        inner = type_str[start+9:end]
-                        type_str = type_str[:start] + inner + ' | null' + type_str[end+1:]
+                        inner = type_str[start + 9 : end]
+                        type_str = type_str[:start] + inner + " | null" + type_str[end + 1 :]
                     else:
                         break
 
@@ -212,13 +221,13 @@ class TypeConverter:
         """Fix Python type names in generated TypeScript code"""
         # Replace Python type names with TypeScript equivalents
         replacements = {
-            r'\bstr\b': 'string',
-            r'\bint\b': 'number',
-            r'\bfloat\b': 'number',
-            r'\bbool\b': 'boolean',
-            r'\bAny\b': 'any',  # Python typing.Any -> TypeScript any
-            r'\bdict\b': 'Record<string, any>',  # Python dict -> TypeScript Record
-            r'\bdate_type\b': 'string | Date',  # Python date_type -> Date
+            r"\bstr\b": "string",
+            r"\bint\b": "number",
+            r"\bfloat\b": "number",
+            r"\bbool\b": "boolean",
+            r"\bAny\b": "any",  # Python typing.Any -> TypeScript any
+            r"\bdict\b": "Record<string, any>",  # Python dict -> TypeScript Record
+            r"\bdate_type\b": "string | Date",  # Python date_type -> Date
         }
 
         for py_type, ts_type in replacements.items():
@@ -226,23 +235,23 @@ class TypeConverter:
 
         # Fix ast.unparse() adding parentheses around type names
         # e.g., Record<(string, any)> -> Record<string, any>
-        type_str = re.sub(r'\(([^)]+)\)', r'\1', type_str)
+        type_str = re.sub(r"\(([^)]+)\)", r"\1", type_str)
 
         # Fix Record types with missing closing >
         # Record<string, any[>  -> Record<string, any[]>
-        type_str = re.sub(r'Record<([^>]+)\[>', r'Record<\1[]', type_str)
+        type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
 
         # Fix malformed array syntax
-        type_str = re.sub(r'\[>;', '[];', type_str)  # [...[>;  -> [...[];
+        type_str = re.sub(r"\[>;", "[];", type_str)  # [...[>;  -> [...[];
         # Fix Record types with missing closing >
         # Record<string, any[>  -> Record<string, any[]>
         type_str = re.sub(r"Record<([^>]+)\[>", r"Record<\1[]", type_str)
 
         # Fix standalone 'T' type parameter (generic) -> 'any'
-        type_str = re.sub(r'\bT\b', 'any', type_str)
+        type_str = re.sub(r"\bT\b", "any", type_str)
 
         # Fix any remaining dict[] patterns (dict followed by [])
-        type_str = re.sub(r'dict\[\]', 'Record<string, any>[]', type_str)
+        type_str = re.sub(r"dict\[\]", "Record<string, any>[]", type_str)
 
         return type_str
 
@@ -352,7 +361,7 @@ class PydanticModelExtractor:
             return ", ".join(self._get_type_annotation(elt) for elt in node.elts)
         if isinstance(node, ast.List):
             return ", ".join(self._get_type_annotation(elt) for elt in node.elts)
-        if hasattr(ast, 'unparse'):
+        if hasattr(ast, "unparse"):
             return ast.unparse(node)
         return "any"
 
@@ -362,6 +371,8 @@ class TypeScriptGenerator:
 
     def __init__(self):
         self.type_converter = TypeConverter()
+        self.interfaces = []
+        self.types = []
 
     def generate(self, models: Dict[str, Dict]) -> str:
         """Generate TypeScript code from models"""
@@ -369,7 +380,16 @@ class TypeScriptGenerator:
             "// Auto-generated TypeScript types from backend Pydantic models",
             f"// Generated at: {datetime.now().isoformat()}",
             "",
-            "// API Response Types"
+            "// Standard Unified Response Wrapper",
+            "export interface UnifiedResponse<TData = any> {",
+            "  code: string | number;",
+            "  message: string;",
+            "  data: TData;",
+            "  request_id?: string;",
+            "  timestamp?: number | string;",
+            "}",
+            "",
+            "// API Response Types",
         ]
 
         # Generate each model/enum
@@ -388,10 +408,6 @@ class TypeScriptGenerator:
                     output.append(f"export type {name} = any;")
             output.append("")
 
-        # Add all interfaces
-        output.append("// API Response Types")
-        output.extend(self.interfaces)
-
         # Post-process to fix any remaining syntax issues
         ts_code = "\n".join(output)
         ts_code = self._fix_common_syntax_issues(ts_code)
@@ -404,43 +420,43 @@ class TypeScriptGenerator:
 
         # Fix array types with malformed syntax
         # Record<string, any[>;  -> Record<string, any>[];
-        ts_code = re.sub(r'\[>;', '[];', ts_code)
+        ts_code = re.sub(r"\[>;", "[];", ts_code)
 
         # Fix extra closing brackets
         # ...[]];  -> ...[];
-        ts_code = re.sub(r'\[\]\];', r'[];', ts_code)
+        ts_code = re.sub(r"\[\]\];", r"[];", ts_code)
 
         # Fix Record<(type, ...)> -> Record<type, ...>
-        ts_code = re.sub(r'Record<\(([^)]+)\)', r'Record<\1', ts_code)
+        ts_code = re.sub(r"Record<\(([^)]+)\)", r"Record<\1", ts_code)
 
         # Fix complex array/union patterns
         # type[ | null]>;  -> type[] | null;
-        ts_code = re.sub(r'\[ \| null\]>;', '[] | null;', ts_code)
+        ts_code = re.sub(r"\[ \| null\]>;", "[] | null;", ts_code)
 
         # Fix any remaining parentheses around type names
-        ts_code = re.sub(r'\(([^()]+)\)', r'\1', ts_code)
+        ts_code = re.sub(r"\(([^()]+)\)", r"\1", ts_code)
 
         # Fix Python dict[] patterns
-        ts_code = re.sub(r'dict\[\]', 'Record<string, any>[]', ts_code)
-        ts_code = re.sub(r':\s*dict(;|,|\s)', ': Record<string, any>\1', ts_code)
+        ts_code = re.sub(r"dict\[\]", "Record<string, any>[]", ts_code)
+        ts_code = re.sub(r":\s*dict(;|,|\s)", ": Record<string, any>\1", ts_code)
 
         # Fix standalone T type parameter -> any
-        ts_code = re.sub(r':\s*T\b', ': any', ts_code)
+        ts_code = re.sub(r":\s*T\b", ": any", ts_code)
 
         # Fix APIResponse interface to be generic
         # Change "export interface APIResponse {" to "export interface APIResponse<T = any> {"
         # Only if it has "data: T | null" field
         ts_code = re.sub(
-            r'export interface APIResponse\s*\{[^}]*data:\s*T\s*\|\s*null',
-            'export interface APIResponse<T = any> {\n  success: boolean;\n  code: number;\n  message: string;\n  data: T | null',
-            ts_code
+            r"export interface APIResponse\s*\{[^}]*data:\s*T\s*\|\s*null",
+            "export interface APIResponse<T = any> {\n  success: boolean;\n  code: number;\n  message: string;\n  data: T | null",
+            ts_code,
         )
 
         # Fix PaginatedResponse to be generic
         ts_code = re.sub(
-            r'export interface PaginatedResponse\s*\{[^}]*data\?\:\s*dict\[\]',
-            'export interface PaginatedResponse<T = any> {\n  total?: number;\n  page?: number;\n  pageSize?: number;\n  data?: T[]',
-            ts_code
+            r"export interface PaginatedResponse\s*\{[^}]*data\?\:\s*dict\[\]",
+            "export interface PaginatedResponse<T = any> {\n  total?: number;\n  page?: number;\n  pageSize?: number;\n  data?: T[]",
+            ts_code,
         )
 
         # Debug: print if changes were made
@@ -467,9 +483,7 @@ class TypeScriptGenerator:
 
             # Add optional marker if not required
             optional = "?" if field_info["required"] else ""
-            comment = (
-                f" // Default: {field_info['default']}" if field_info["default"] else ""
-            )
+            comment = f" // Default: {field_info['default']}" if field_info["default"] else ""
 
             interface_lines.append(f"  {ts_field_name}{optional}: {ts_type};{comment}")
 
@@ -482,13 +496,13 @@ class TypeScriptGenerator:
         """Fix type string syntax issues"""
         # Fix malformed array syntax
         # type[>;  -> type[];
-        type_str = re.sub(r'\[>;', '[];', type_str)
+        type_str = re.sub(r"\[>;", "[];", type_str)
 
         # Fix type[ | null]>;  -> type[] | null;
-        type_str = re.sub(r'\[ \| null\]>;', '[] | null;', type_str)
+        type_str = re.sub(r"\[ \| null\]>;", "[] | null;", type_str)
 
         # Fix parentheses around type names
-        type_str = re.sub(r'\(([^()]+)\)', r'\1', type_str)
+        type_str = re.sub(r"\(([^()]+)\)", r"\1", type_str)
 
         return type_str
 
@@ -526,10 +540,14 @@ def main():
     ts_code = generator.generate(extractor.models)
 
     # Custom types to append (not overwritten by generator)
-    custom_types = '''
+    custom_types = """
 // ============================================
 // Custom Type Aliases (appended by generator)
 // ============================================
+
+// Common type aliases for Python backend types
+export type Dict = Record<string, any>;
+export type EmailStr = string;
 
 // Type alias for backward compatibility
 export type KLineDataResponse = KlineResponse;
@@ -656,7 +674,7 @@ export interface DataQualityCheck {
   message?: string;
   details?: Record<string, any>;
 }
-'''
+"""
 
     # Write to output file (generated types + custom types)
     output_file = OUTPUT_DIR / "generated-types.ts"

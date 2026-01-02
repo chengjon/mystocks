@@ -24,7 +24,7 @@ from app.schemas.tdx_schemas import (
 from app.services.tdx_service import get_tdx_service, TdxService
 from app.core.security import get_current_active_user, User
 
-router = APIRouter(prefix="/api/tdx", tags=["TDX行情数据"])
+router = APIRouter()
 
 
 # ==================== 实时行情 ====================

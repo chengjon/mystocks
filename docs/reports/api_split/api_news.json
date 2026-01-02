@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/news",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/news/{symbol}",
+      "method": "GET",
+      "file": "stock_search.py",
+      "function": "get_stock_news",
+      "return_model": "List[Dict]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 508
+    },
+    {
+      "path": "/news/market/{category}",
+      "method": "GET",
+      "file": "stock_search.py",
+      "function": "get_market_news",
+      "return_model": "List[Dict]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 554
+    }
+  ]
+}

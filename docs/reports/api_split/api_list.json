@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/list",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/list",
+      "method": "GET",
+      "file": "announcement.py",
+      "function": "get_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 74
+    },
+    {
+      "path": "/list",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "get_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 88
+    }
+  ]
+}

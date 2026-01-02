@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/heatmap",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/heatmap",
+      "method": "GET",
+      "file": "market.py",
+      "function": "get_market_heatmap",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 745
+    }
+  ]
+}

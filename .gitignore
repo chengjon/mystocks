@@ -20,19 +20,19 @@
 config/.env
 config/.env.*
 config/.env.backup*
-config/.env.simplified
 !config/.env.example
+!config/.env.data_sources.example
 
-# Backend Environment Files
+# Backend Environment Files (all except examples and testing)
 web/backend/.env
 web/backend/.env.*
 !web/backend/.env.example
+!web/backend/.env.testing  # Allowed - contains test credentials only
 
-# Frontend Environment Files
+# Frontend Environment Files (all except examples)
 web/frontend/.env
 web/frontend/.env.*
-!web/frontend/.env.development
-!web/frontend/.env.production
+!web/frontend/.env.mock  # Allowed - Mock data configuration
 
 # API Keys and Certificates
 *.key
@@ -226,3 +226,73 @@ monitoring-stack/data/prometheus/
 
 # Grafana database
 monitoring-stack/data/grafana/grafana.db
+
+# Monitoring Stack Environment Files (contain credentials)
+monitoring-stack/.env
+monitoring-stack/.env.*
+
+# ========================================
+# DOCUMENTATION ARTIFACTS (GENERATED/TEMPORARY)
+# ========================================
+# HTML Prototypes and Samples (development artifacts)
+docs/design/html_sample/
+
+# Test Reports (auto-generated)
+docs/test_reports/
+
+# Analysis Reports (JSON format)
+docs/reports/*.json
+!docs/reports/bugs/manual-bug-template.json
+
+# HTML Reports (auto-generated dashboards)
+docs/reports/*.html
+
+# Edit Tracking Logs (development tracking)
+docs/web-dev/tracing/*.jsonl
+
+# Archive Documents (optional - uncomment if needed)
+# docs/archive/
+# docs/archived/
+# docs/归档文档/
+
+# API Documentation (auto-generated, can be regenerated)
+docs/api/openapi/
+docs/api/*.json
+!docs/api/*.md
+
+# Function Classification Metadata (temporary analysis)
+docs/function-classification-manual/metadata/
+
+# Coverage Reports
+coverage/
+*.coverage
+htmlcov/
+
+# Performance Analysis Reports
+docs/performance/*.json
+docs/reports/performance/*.json
+
+# Code Quality Reports (large JSON files)
+docs/reports/code_quality/*.json
+!docs/reports/code_quality/*.md
+
+# Security Scan Reports (can be regenerated)
+docs/reports/security/*.json
+!docs/reports/security/*.md
+
+# ========================================
+# FRONTEND BUILD ARTIFACTS
+# ========================================
+# Playwright Test Reports
+**/playwright-report/
+**/playwright/.cache/
+
+# Build Output
+**/dist/
+web/frontend/dist/
+
+# Vite Cache
+web/frontend/.vite/
+
+# TypeScript Build Info
+*.tsbuildinfo

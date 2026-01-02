@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/refresh",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/refresh",
+      "method": "POST",
+      "file": "auth.py",
+      "function": "refresh_token",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 226
+    },
+    {
+      "path": "/refresh/{query_name}",
+      "method": "POST",
+      "file": "wencai.py",
+      "function": "refresh_query",
+      "return_model": "WencaiRefreshResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 202
+    }
+  ]
+}

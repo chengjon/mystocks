@@ -218,7 +218,7 @@ export async function loginAndGetCsrfToken(
  */
 export async function setupAuthForPage(page: Page, tokens: AuthTokens): Promise<void> {
   // Navigate to base URL first (required for localStorage to be accessible)
-  await page.goto(AUTH_CONFIG.baseURL.replace('8000', '3001')); // Frontend URL
+  await page.goto(AUTH_CONFIG.baseURL.replace('8000', '3020')); // Frontend URL
   await page.waitForLoadState('domcontentloaded');
 
   // Store JWT token in localStorage

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/logs",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/logs",
+      "method": "GET",
+      "file": "system.py",
+      "function": "get_system_logs",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 594
+    },
+    {
+      "path": "/logs/summary",
+      "method": "GET",
+      "file": "system.py",
+      "function": "get_logs_summary",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 648
+    }
+  ]
+}

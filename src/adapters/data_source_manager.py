@@ -15,8 +15,11 @@ from datetime import datetime
 import pandas as pd
 
 from src.interfaces.data_source import IDataSource
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx import TdxDataSource
 from src.adapters.akshare_adapter import AkshareDataSource
+
+# V2 管理器导入（Phase 3: 手术式替换）
+from src.core.data_source_manager_v2 import DataSourceManagerV2
 
 
 class DataSourceManager:
@@ -41,19 +44,37 @@ class DataSourceManager:
         >>> df = manager.get_stock_daily('600519', '2024-01-01', '2024-12-31')
     """
 
-    def __init__(self):
-        """初始化数据源管理器"""
+    def __init__(self, use_v2: bool = True):
+        """
+        初始化数据源管理器
+
+        Args:
+            use_v2: 是否使用V2管理器（默认True）
+                   False表示使用旧的硬编码优先级方式（向后兼容）
+        """
         self.logger = logging.getLogger(__name__)
 
         # 数据源注册表 {name: IDataSource实例}
         self._sources: Dict[str, IDataSource] = {}
 
-        # 数据源优先级配置
+        # 数据源优先级配置（旧版，向后兼容）
         self._priority_config = {
             "real_time": ["tdx", "akshare"],  # 实时行情优先级
             "daily": ["tdx", "akshare"],  # 日线数据优先级
             "financial": ["akshare", "tdx"],  # 财务数据优先级
         }
+
+        # Phase 3: 初始化V2管理器（智能路由 + 中心化注册表）
+        self._use_v2 = use_v2
+        self._v2_manager = None
+
+        if use_v2:
+            try:
+                self._v2_manager = DataSourceManagerV2()
+                self.logger.info("✓ V2管理器初始化成功（智能路由已启用）")
+            except Exception as e:
+                self.logger.warning(f"V2管理器初始化失败，将使用旧版方式: {e}")
+                self._use_v2 = False
 
         self.logger.info("数据源管理器初始化完成")
 
@@ -143,6 +164,28 @@ class DataSourceManager:
         Returns:
             pd.DataFrame: 日线数据
         """
+        # Phase 3: 使用V2管理器的智能路由
+        if self._use_v2 and not source:
+            try:
+                self.logger.info("使用V2智能路由获取股票日线: %s", symbol)
+
+                # V2管理器会自动选择最佳数据源并记录监控指标
+                df = self._v2_manager.get_stock_daily(
+                    symbol=symbol,
+                    start_date=start_date,
+                    end_date=end_date
+                )
+
+                if not df.empty:
+                    self.logger.info("✓ V2智能路由成功获取%s条日线数据", len(df))
+                    return df
+                else:
+                    self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
+
+            except Exception as e:
+                self.logger.warning(f"V2智能路由失败，尝试旧版方式: {e}")
+
+        # 旧版方式：硬编码优先级（向后兼容）
         if source:
             # 使用指定数据源
             data_source = self._sources.get(source)
@@ -185,6 +228,28 @@ class DataSourceManager:
         Returns:
             pd.DataFrame: 指数日线数据
         """
+        # Phase 3: 使用V2管理器的智能路由
+        if self._use_v2 and not source:
+            try:
+                self.logger.info("使用V2智能路由获取指数日线: %s", symbol)
+
+                # V2管理器会自动选择最佳数据源
+                df = self._v2_manager.get_stock_daily(
+                    symbol=symbol,
+                    start_date=start_date,
+                    end_date=end_date
+                )
+
+                if not df.empty:
+                    self.logger.info("✓ V2智能路由成功获取%s条指数数据", len(df))
+                    return df
+                else:
+                    self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
+
+            except Exception as e:
+                self.logger.warning(f"V2智能路由失败，尝试旧版方式: {e}")
+
+        # 旧版方式：硬编码优先级（向后兼容）
         if source:
             # 使用指定数据源
             data_source = self._sources.get(source)
@@ -276,6 +341,134 @@ class DataSourceManager:
 
         self._priority_config[data_type] = priority_list
         self.logger.info("已更新%s优先级: %s", data_type, priority_list)
+
+    # ==================== Phase 3: V2管理器便捷访问方法 ====================
+
+    def find_endpoints(self, data_category: str = None, classification_level: int = None,
+                      source_type: str = None, only_healthy: bool = False,
+                      sort_by_priority: bool = True) -> List[Dict]:
+        """
+        查找数据源端点（V2功能）
+
+        Args:
+            data_category: 数据分类（如 'DAILY_KLINE', 'REALTIME_QUOTES'）
+            classification_level: 分类层级（1-5）
+            source_type: 数据源类型（如 'akshare', 'tdx', 'tushare'）
+            only_healthy: 仅返回健康的数据源
+            sort_by_priority: 按优先级排序
+
+        Returns:
+            端点信息列表
+
+        Example:
+            >>> manager = DataSourceManager()
+            >>> # 查找所有日线数据接口
+            >>> endpoints = manager.find_endpoints(data_category="DAILY_KLINE")
+            >>> for ep in endpoints:
+            ...     print(f"{ep['endpoint_name']}: 质量={ep['quality_score']}")
+        """
+        if not self._use_v2 or not self._v2_manager:
+            self.logger.warning("V2管理器未启用，无法使用find_endpoints()")
+            return []
+
+        return self._v2_manager.find_endpoints(
+            data_category=data_category,
+            classification_level=classification_level,
+            source_type=source_type,
+            only_healthy=only_healthy,
+            sort_by_priority=sort_by_priority
+        )
+
+    def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> Optional[Dict]:
+        """
+        获取最佳数据源端点（V2功能）
+
+        Args:
+            data_category: 数据分类
+            exclude_failed: 排除已失败的数据源
+
+        Returns:
+            最佳端点信息，不存在返回None
+
+        Example:
+            >>> manager = DataSourceManager()
+            >>> best = manager.get_best_endpoint("DAILY_KLINE")
+            >>> print(f"最佳端点: {best['endpoint_name']}")
+        """
+        if not self._use_v2 or not self._v2_manager:
+            self.logger.warning("V2管理器未启用，无法使用get_best_endpoint()")
+            return None
+
+        return self._v2_manager.get_best_endpoint(
+            data_category=data_category,
+            exclude_failed=exclude_failed
+        )
+
+    def health_check(self, endpoint_name: str = None) -> Dict:
+        """
+        健康检查（V2功能）
+
+        Args:
+            endpoint_name: 端点名称，None表示检查所有
+
+        Returns:
+            健康检查结果字典
+
+        Example:
+            >>> manager = DataSourceManager()
+            >>> # 检查所有数据源
+            >>> health = manager.health_check()
+            >>> print(f"总计: {health['total']}, 健康: {health['healthy']}")
+        """
+        if not self._use_v2 or not self._v2_manager:
+            self.logger.warning("V2管理器未启用，无法使用health_check()")
+            return {"total": 0, "healthy": 0, "unhealthy": 0, "details": {}}
+
+        return self._v2_manager.health_check(endpoint_name=endpoint_name)
+
+    def list_all_endpoints(self) -> pd.DataFrame:
+        """
+        列出所有已注册的数据源端点（V2功能）
+
+        Returns:
+            包含所有端点信息的DataFrame
+
+        Example:
+            >>> manager = DataSourceManager()
+            >>> df = manager.list_all_endpoints()
+            >>> print(df[['endpoint_name', 'source_name', 'data_category', 'health_status']])
+        """
+        if not self._use_v2 or not self._v2_manager:
+            self.logger.warning("V2管理器未启用，无法使用list_all_endpoints()")
+            return pd.DataFrame()
+
+        return self._v2_manager.list_all_endpoints()
+
+    def disable_v2(self):
+        """
+        禁用V2管理器（强制使用旧版方式）
+
+        Example:
+            >>> manager = DataSourceManager()
+            >>> manager.disable_v2()  # 禁用V2，使用旧版硬编码优先级
+        """
+        self._use_v2 = False
+        self.logger.info("已禁用V2管理器，将使用旧版方式")
+
+    def enable_v2(self):
+        """
+        启用V2管理器（使用智能路由）
+
+        Example:
+            >>> manager = DataSourceManager(use_v2=False)
+            >>> manager.enable_v2()  # 启用V2智能路由
+        """
+        if not self._v2_manager:
+            self.logger.error("V2管理器未初始化，无法启用")
+            return
+
+        self._use_v2 = True
+        self.logger.info("已启用V2管理器，将使用智能路由")
 
 
 def get_default_manager() -> DataSourceManager:

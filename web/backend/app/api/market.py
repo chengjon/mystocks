@@ -36,7 +36,7 @@ from app.schemas.market_schemas import (
 )
 from app.services.market_data_service import MarketDataService, get_market_data_service
 
-router = APIRouter(prefix="/api/market", tags=["市场数据"])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
@@ -680,13 +680,20 @@ async def get_kline_data(
 
         from app.services.stock_search_service import get_stock_search_service
 
-        # P0改进: 使用MarketDataQueryModel验证输入参数
-        validated_params = MarketDataQueryModel(
-            symbol=stock_code,
-            start_date=dt_convert.strptime(start_date, "%Y-%m-%d") if start_date else dt_convert.now(),
-            end_date=dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else dt_convert.now(),
-            interval=period,
-        )
+        # 参数验证：日期格式验证（但不转换为datetime对象，因为service层期望字符串）
+        if start_date:
+            try:
+                # 验证日期格式但不转换
+                dt_convert.strptime(start_date, "%Y-%m-%d")
+            except ValueError:
+                raise HTTPException(status_code=422, detail=f"开始日期格式错误: {start_date}，应为 YYYY-MM-DD")
+
+        if end_date:
+            try:
+                # 验证日期格式但不转换
+                dt_convert.strptime(end_date, "%Y-%m-%d")
+            except ValueError:
+                raise HTTPException(status_code=422, detail=f"结束日期格式错误: {end_date}，应为 YYYY-MM-DD")
 
         # P0改进 Task 3: 使用熔断器保护外部API调用
         circuit_breaker = get_circuit_breaker("market_data")
@@ -698,12 +705,13 @@ async def get_kline_data(
 
         service = get_stock_search_service()
         try:
+            # FIX: 直接传递字符串参数给service层
             result = service.get_a_stock_kline(
-                symbol=validated_params.symbol,
+                symbol=stock_code,
                 period=period,
                 adjust=adjust,
-                start_date=start_date,
-                end_date=end_date,
+                start_date=start_date,  # 字符串格式 YYYY-MM-DD
+                end_date=end_date,      # 字符串格式 YYYY-MM-DD
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()

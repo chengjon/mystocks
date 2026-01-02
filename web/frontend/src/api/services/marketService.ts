@@ -12,6 +12,9 @@ import type {
   MarketOverviewDetailedResponse as MarketOverviewResponse,
   FundFlowAPIResponse,
   KLineDataResponse,
+  ETFDataResponse,
+  ChipRaceResponse,
+  LongHuBangResponse,
 } from '../types/generated-types';
 
 export class MarketApiService {
@@ -21,8 +24,8 @@ export class MarketApiService {
    * Get market overview
    * GET /api/market/overview
    */
-  async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewData>> {
-    return apiGet<UnifiedResponse<MarketOverviewData>>(
+  async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewResponse>> {
+    return apiGet<UnifiedResponse<MarketOverviewResponse>>(
       `${this.baseUrl}/overview`
     );
   }
@@ -52,8 +55,8 @@ export class MarketApiService {
     start_date?: string;
     end_date?: string;
     limit?: number;
-  }): Promise<UnifiedResponse<KlineData>> {
-    return apiGet<UnifiedResponse<KlineData>>(
+  }): Promise<UnifiedResponse<KLineDataResponse>> {
+    return apiGet<UnifiedResponse<KLineDataResponse>>(
       `${this.baseUrl}/kline`,
       params
     );
@@ -71,13 +74,13 @@ export class MarketApiService {
     limit?: number;
     offset?: number;
   }): Promise<UnifiedResponse<{
-      etfs?: ETFData[];
+      etfs?: ETFDataResponse[];
       total?: number;
       page?: number;
       page_size?: number;
   }>> {
     return apiGet<UnifiedResponse<{
-      etfs?: ETFData[];
+      etfs?: ETFDataResponse[];
       total?: number;
       page?: number;
       page_size?: number;
@@ -94,8 +97,8 @@ export class MarketApiService {
   async getLongHuBang(params?: {
     date?: string;
     type?: "rise" | "fall" | "all";
-  }): Promise<UnifiedResponse<LongHuBangData>> {
-    return apiGet<UnifiedResponse<LongHuBangData>>(
+  }): Promise<UnifiedResponse<LongHuBangResponse[]>> {
+    return apiGet<UnifiedResponse<LongHuBangResponse[]>>(
       `${this.baseUrl}/lhb`,
       params
     );
@@ -108,8 +111,8 @@ export class MarketApiService {
   async getChipRace(params?: {
     date?: string;
     limit?: number;
-  }): Promise<UnifiedResponse<ChipRaceData>> {
-    return apiGet<UnifiedResponse<ChipRaceData>>(
+  }): Promise<UnifiedResponse<ChipRaceResponse[]>> {
+    return apiGet<UnifiedResponse<ChipRaceResponse[]>>(
       `${this.baseUrl}/chip-race`,
       params
     );

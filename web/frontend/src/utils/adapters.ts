@@ -10,6 +10,7 @@ import type {
   MarketOverviewResponse,
   FundFlowResponse,
   KlineResponse,
+  KLineDataResponse,
   FundFlowItem,
   StockSearchResult
 } from '@/api/types/generated-types'
@@ -85,8 +86,8 @@ export class DataAdapter {
       volume: this.formatVolume(item.volume || 0)
     }))
 
-    // Handle sectors - API uses 'hotSectors' with HotSector type
-    const sectors = (data.hotSectors || []).map((item: any) => ({
+    // Handle sectors - API uses 'hot_sectors' with HotSector type
+    const sectors = (data.hot_sectors || []).map((item: any) => ({
       name: item.sectorName || '',
       changePercent: this.formatPercent(item.changePercent || 0),
       stockCount: item.stockCount || 0,

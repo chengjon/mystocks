@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/ticker-tape",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/ticker-tape/config",
+      "method": "POST",
+      "file": "tradingview.py",
+      "function": "get_ticker_tape_config",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 138
+    }
+  ]
+}

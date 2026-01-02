@@ -285,6 +285,48 @@ class DatabaseService:
             logger.error(f"Failed to query daily kline: {e}")
             return pd.DataFrame()
 
+    @db_retry(max_retries=3, delay=1.0)
+    def query_concepts(self, limit: int = 10000) -> pd.DataFrame:
+        """查询概念列表"""
+        try:
+            if postgresql_access:
+                result = postgresql_access.query("concepts", limit=limit)
+                if result is None or (isinstance(result, pd.DataFrame) and result.empty):
+                    logger.warning("Empty result from PostgreSQL concepts query")
+                    return pd.DataFrame()
+                return result
+            else:
+                session = None
+                try:
+                    session = get_postgresql_session()
+                    query = text(
+                        """
+                        SELECT code, name, stock_count, updated_at
+                        FROM concepts
+                        ORDER BY id
+                        LIMIT :limit
+                    """
+                    )
+                    result = session.execute(query, {"limit": limit})
+                    df = pd.DataFrame(result.fetchall(), columns=result.keys())
+                    if df.empty:
+                        logger.warning(f"Empty concepts result from database, limit={limit}")
+                    else:
+                        logger.info(f"Successfully fetched {len(df)} concepts from database")
+                    return df
+                except Exception as e:
+                    logger.error(
+                        f"Database query error in query_concepts: {e}",
+                        exc_info=True,
+                    )
+                    raise
+                finally:
+                    if session:
+                        session.close()
+        except Exception as e:
+            logger.error(f"Failed to query concepts: {str(e)}", exc_info=True)
+            raise
+
 
 # 创建全局数据库服务实例（延迟初始化）
 db_service = DatabaseService()

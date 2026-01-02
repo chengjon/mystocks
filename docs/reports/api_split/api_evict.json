@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/evict",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/evict/manual",
+      "method": "POST",
+      "file": "cache.py",
+      "function": "manual_cache_eviction",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 466
+    }
+  ]
+}

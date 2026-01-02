@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/dashboard",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/dashboard",
+      "method": "GET",
+      "file": "sse_endpoints.py",
+      "function": "sse_dashboard_stream",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 197
+    },
+    {
+      "path": "/dashboard",
+      "method": "GET",
+      "file": "risk_management.py",
+      "function": "get_risk_dashboard",
+      "return_model": "RiskDashboardResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 385
+    }
+  ]
+}

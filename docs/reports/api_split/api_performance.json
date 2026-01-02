@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/performance",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/performance",
+      "method": "GET",
+      "file": "metrics.py",
+      "function": "performance_metrics",
+      "return_model": "APIResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 230
+    },
+    {
+      "path": "/performance",
+      "method": "GET",
+      "file": "gpu_monitoring.py",
+      "function": "get_gpu_performance",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 113
+    }
+  ]
+}

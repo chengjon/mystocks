@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/versions",
+  "total_endpoints": 7,
+  "endpoints": [
+    {
+      "path": "/versions",
+      "method": "POST",
+      "file": "contract/routes.py",
+      "function": "create_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 32
+    },
+    {
+      "path": "/versions/{version_id}",
+      "method": "GET",
+      "file": "contract/routes.py",
+      "function": "get_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 48
+    },
+    {
+      "path": "/versions/{name}/active",
+      "method": "GET",
+      "file": "contract/routes.py",
+      "function": "get_active_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 57
+    },
+    {
+      "path": "/versions",
+      "method": "GET",
+      "file": "contract/routes.py",
+      "function": "list_versions",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 66
+    },
+    {
+      "path": "/versions/{version_id}",
+      "method": "PUT",
+      "file": "contract/routes.py",
+      "function": "update_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 72
+    },
+    {
+      "path": "/versions/{version_id}/activate",
+      "method": "POST",
+      "file": "contract/routes.py",
+      "function": "activate_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 81
+    },
+    {
+      "path": "/versions/{version_id}",
+      "method": "DELETE",
+      "file": "contract/routes.py",
+      "function": "delete_version",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 90
+    }
+  ]
+}

@@ -68,7 +68,7 @@ class AdapterLoader:
         """获取 TDX 适配器实例（单例）"""
         if "tdx" not in cls._adapters:
             try:
-                from src.adapters.tdx_adapter import TdxDataSource
+                from src.adapters.tdx import TdxDataSource
 
                 cls._adapters["tdx"] = TdxDataSource()
                 cls._health_status["tdx"] = {"healthy": True, "status": "initialized"}

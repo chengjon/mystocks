@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/cache",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/cache/clear",
+      "method": "POST",
+      "file": "stock_search.py",
+      "function": "clear_search_cache",
+      "return_model": "APIResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 621
+    },
+    {
+      "path": "/cache/stats",
+      "method": "GET",
+      "file": "indicators.py",
+      "function": "get_cache_statistics",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 778
+    },
+    {
+      "path": "/cache/clear",
+      "method": "POST",
+      "file": "indicators.py",
+      "function": "clear_cache",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 796
+    }
+  ]
+}

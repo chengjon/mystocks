@@ -1,0 +1,562 @@
+/* ============================================
+   Element Plus ArtDeco Style Override
+   覆盖 Element Plus 默认样式以符合 ArtDeco 设计系统
+   ============================================ */
+
+@import './artdeco-tokens.scss';
+
+// ============================================
+// Card Override
+// ============================================
+.el-card {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+  border-radius: var(--artdeco-radius-none);
+  box-shadow: none;
+  transition: all var(--artdeco-duration-slow) var(--artdeco-ease-out);
+
+  &:hover {
+    border-color: var(--artdeco-border-gold);
+    box-shadow: var(--artdeco-glow-base);
+  }
+
+  .el-card__header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--artdeco-border-gold-muted);
+    padding: var(--artdeco-spacing-5);
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    letter-spacing: 0.1em;
+  }
+
+  .el-card__body {
+    padding: var(--artdeco-spacing-5);
+  }
+}
+
+// ============================================
+// Button Override
+// ============================================
+.el-button {
+  background: transparent;
+  border: 2px solid var(--artdeco-accent-gold);
+  border-radius: 0;
+  color: var(--artdeco-accent-gold);
+  font-family: var(--artdeco-font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
+
+  &:hover {
+    background: var(--artdeco-accent-gold);
+    color: var(--artdeco-bg-primary);
+    border-color: var(--artdeco-accent-gold);
+    box-shadow: var(--artdeco-glow-base);
+  }
+
+  &:active {
+    background: var(--artdeco-accent-gold);
+    color: var(--artdeco-bg-primary);
+  }
+
+  &--primary {
+    background: var(--artdeco-accent-gold);
+    border-color: var(--artdeco-accent-gold);
+    color: var(--artdeco-bg-primary);
+
+    &:hover {
+      background: transparent;
+      color: var(--artdeco-accent-gold);
+    }
+  }
+
+  &--success {
+    border-color: var(--artdeco-color-down);
+    color: var(--artdeco-color-down);
+
+    &:hover {
+      background: var(--artdeco-color-down);
+      color: var(--artdeco-bg-primary);
+    }
+  }
+
+  &--danger {
+    border-color: var(--artdeco-color-up);
+    color: var(--artdeco-color-up);
+
+    &:hover {
+      background: var(--artdeco-color-up);
+      color: var(--artdeco-bg-primary);
+    }
+  }
+
+  &--warning {
+    border-color: var(--artdeco-accent-gold);
+    color: var(--artdeco-accent-gold);
+
+    &:hover {
+      background: var(--artdeco-accent-gold);
+      color: var(--artdeco-bg-primary);
+    }
+  }
+
+  &--info {
+    border-color: var(--artdeco-fg-secondary);
+    color: var(--artdeco-fg-secondary);
+
+    &:hover {
+      background: var(--artdeco-fg-secondary);
+      color: var(--artdeco-bg-primary);
+    }
+  }
+
+  // Small size
+  &--small {
+    padding: 6px 12px;
+    font-size: var(--artdeco-text-xs);
+  }
+
+  // Large size
+  &--large {
+    padding: 12px 24px;
+    font-size: var(--artdeco-text-base);
+  }
+}
+
+// ============================================
+// Input Override
+// ============================================
+.el-input {
+  .el-input__wrapper {
+    background-color: var(--artdeco-bg-tertiary);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+    border-radius: 0;
+    box-shadow: none;
+    transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
+
+    &:hover {
+      border-color: var(--artdeco-border-gold);
+    }
+
+    &.is-focus {
+      border-color: var(--artdeco-accent-gold);
+      box-shadow: var(--artdeco-glow-base);
+    }
+  }
+
+  .el-input__inner {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &::placeholder {
+      color: var(--artdeco-fg-muted);
+    }
+  }
+}
+
+// ============================================
+// Select Override
+// ============================================
+.el-select {
+  .el-input__wrapper {
+    background-color: var(--artdeco-bg-tertiary);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+    border-radius: 0;
+  }
+
+  .el-input__inner {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+.el-select-dropdown {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+  border-radius: 0;
+
+  .el-select-dropdown__item {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      color: var(--artdeco-accent-gold);
+    }
+
+    &.is-selected {
+      background-color: rgba(212, 175, 55, 0.2);
+      color: var(--artdeco-accent-gold);
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================
+// Table Override
+// ============================================
+.el-table {
+  background-color: transparent;
+  color: var(--artdeco-fg-primary);
+
+  &::before {
+    background-color: var(--artdeco-border-gold-muted);
+  }
+
+  th.el-table__cell {
+    background-color: var(--artdeco-bg-secondary);
+    color: var(--artdeco-accent-gold);
+    font-family: var(--artdeco-font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    border-bottom: 2px solid var(--artdeco-border-gold);
+  }
+
+  td.el-table__cell {
+    border-bottom: 1px solid var(--artdeco-border-gold-muted);
+    color: var(--artdeco-fg-primary);
+  }
+
+  tr:hover > td {
+    background-color: rgba(212, 175, 55, 0.05) !important;
+  }
+
+  .el-table__body tr {
+    background-color: transparent;
+  }
+
+  // 涨跌颜色
+  .text-up {
+    color: var(--artdeco-color-up);
+    font-weight: 600;
+  }
+
+  .text-down {
+    color: var(--artdeco-color-down);
+    font-weight: 600;
+  }
+}
+
+// ============================================
+// Tabs Override
+// ============================================
+.el-tabs {
+  .el-tabs__nav-wrap::after {
+    background-color: var(--artdeco-border-gold-muted);
+  }
+
+  .el-tabs__item {
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-body);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
+
+    &:hover {
+      color: var(--artdeco-accent-gold);
+    }
+
+    &.is-active {
+      color: var(--artdeco-accent-gold);
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--artdeco-accent-gold);
+    height: 2px;
+  }
+
+  .el-tabs__content {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+// ============================================
+// Tag Override
+// ============================================
+.el-tag {
+  background-color: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--artdeco-border-gold-muted);
+  color: var(--artdeco-accent-gold);
+  border-radius: 0;
+  font-family: var(--artdeco-font-body);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+
+  &--success {
+    background-color: rgba(0, 230, 118, 0.1);
+    border-color: var(--artdeco-color-down);
+    color: var(--artdeco-color-down);
+  }
+
+  &--danger {
+    background-color: rgba(255, 82, 82, 0.1);
+    border-color: var(--artdeco-color-up);
+    color: var(--artdeco-color-up);
+  }
+
+  &--warning {
+    background-color: rgba(212, 175, 55, 0.1);
+    border-color: var(--artdeco-accent-gold);
+    color: var(--artdeco-accent-gold);
+  }
+
+  &--info {
+    background-color: rgba(136, 136, 136, 0.1);
+    border-color: var(--artdeco-color-flat);
+    color: var(--artdeco-fg-muted);
+  }
+}
+
+// ============================================
+// Dialog Override
+// ============================================
+.el-dialog {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold);
+  border-radius: 0;
+  box-shadow: var(--artdeco-glow-md);
+
+  .el-dialog__header {
+    border-bottom: 1px solid var(--artdeco-border-gold-muted);
+    padding: var(--artdeco-spacing-5);
+  }
+
+  .el-dialog__title {
+    color: var(--artdeco-accent-gold);
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-xl);
+    letter-spacing: 0.1em;
+  }
+
+  .el-dialog__body {
+    color: var(--artdeco-fg-primary);
+    padding: var(--artdeco-spacing-5);
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid var(--artdeco-border-gold-muted);
+    padding: var(--artdeco-spacing-5);
+  }
+
+  .el-dialog__headerbtn {
+    .el-dialog__close {
+      color: var(--artdeco-fg-muted);
+
+      &:hover {
+        color: var(--artdeco-accent-gold);
+      }
+    }
+  }
+}
+
+// ============================================
+// Message/Notification Override
+// ============================================
+.el-message {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+  border-radius: 0;
+  box-shadow: var(--artdeco-glow-base);
+
+  .el-message__content {
+    color: var(--artdeco-fg-primary);
+  }
+
+  &--success {
+    .el-message__content {
+      color: var(--artdeco-color-down);
+    }
+  }
+
+  &--error {
+    .el-message__content {
+      color: var(--artdeco-color-up);
+    }
+  }
+
+  &--warning {
+    .el-message__content {
+      color: var(--artdeco-accent-gold);
+    }
+  }
+}
+
+.el-notification {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+  border-radius: 0;
+  box-shadow: var(--artdeco-glow-md);
+
+  .el-notification__title {
+    color: var(--artdeco-accent-gold);
+    font-family: var(--artdeco-font-display);
+  }
+
+  .el-notification__content {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+// ============================================
+// Form Override
+// ============================================
+.el-form {
+  .el-form-item__label {
+    color: var(--artdeco-fg-secondary);
+    font-family: var(--artdeco-font-body);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .el-form-item__error {
+    color: var(--artdeco-color-up);
+  }
+}
+
+// ============================================
+// Checkbox & Radio Override
+// ============================================
+.el-checkbox {
+  .el-checkbox__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+
+  .el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: var(--artdeco-accent-gold);
+    border-color: var(--artdeco-accent-gold);
+  }
+
+  .el-checkbox__inner:hover {
+    border-color: var(--artdeco-accent-gold);
+  }
+}
+
+.el-radio {
+  .el-radio__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+
+  .el-radio__input.is-checked .el-radio__inner {
+    background-color: var(--artdeco-accent-gold);
+    border-color: var(--artdeco-accent-gold);
+  }
+
+  .el-radio__inner:hover {
+    border-color: var(--artdeco-accent-gold);
+  }
+}
+
+// ============================================
+// DatePicker Override
+// ============================================
+.el-date-picker {
+  .el-input__wrapper {
+    background-color: var(--artdeco-bg-tertiary);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+  }
+}
+
+.el-picker-panel {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+  border-radius: 0;
+
+  .el-picker-panel__body {
+    color: var(--artdeco-fg-primary);
+  }
+
+  .el-date-table th {
+    color: var(--artdeco-fg-secondary);
+    font-family: var(--artdeco-font-display);
+    border-bottom: 1px solid var(--artdeco-border-gold-muted);
+  }
+
+  .el-date-table td.today .el-date-table-cell__text {
+    color: var(--artdeco-accent-gold);
+    font-weight: 600;
+  }
+
+  .el-date-table td.available:hover .el-date-table-cell__text {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--artdeco-accent-gold);
+  }
+
+  .el-date-table td.in-range .el-date-table-cell__text {
+    background-color: rgba(212, 175, 55, 0.2);
+  }
+
+  .el-date-table td.start-date .el-date-table-cell__text,
+  .el-date-table td.end-date .el-date-table-cell__text {
+    background-color: var(--artdeco-accent-gold);
+    color: var(--artdeco-bg-primary);
+  }
+}
+
+// ============================================
+// Pagination Override
+// ============================================
+.el-pagination {
+  .el-pagination__total {
+    color: var(--artdeco-fg-secondary);
+  }
+
+  .el-pager li {
+    background-color: transparent;
+    color: var(--artdeco-fg-primary);
+    border-radius: 0;
+    min-width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border: 1px solid var(--artdeco-border-gold-muted);
+
+    &:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      color: var(--artdeco-accent-gold);
+    }
+
+    &.is-active {
+      background-color: var(--artdeco-accent-gold);
+      color: var(--artdeco-bg-primary);
+      border-color: var(--artdeco-accent-gold);
+    }
+  }
+
+  button {
+    background-color: transparent;
+    color: var(--artdeco-fg-primary);
+    border-radius: 0;
+    border: 1px solid var(--artdeco-border-gold-muted);
+
+    &:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      color: var(--artdeco-accent-gold);
+    }
+
+    &:disabled {
+      color: var(--artdeco-fg-muted);
+      background-color: transparent;
+    }
+  }
+}
+
+// ============================================
+// Loading Override
+// ============================================
+.el-loading-mask {
+  background-color: rgba(10, 10, 10, 0.8);
+
+  .el-loading-spinner {
+    .path {
+      stroke: var(--artdeco-accent-gold);
+    }
+
+    .el-loading-text {
+      color: var(--artdeco-fg-primary);
+      font-family: var(--artdeco-font-body);
+    }
+  }
+}

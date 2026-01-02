@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/stats",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/stats/today",
+      "method": "GET",
+      "file": "monitoring.py",
+      "function": "get_today_statistics",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 475
+    },
+    {
+      "path": "/stats",
+      "method": "GET",
+      "file": "announcement.py",
+      "function": "get_announcement_stats",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 283
+    },
+    {
+      "path": "/stats/summary",
+      "method": "GET",
+      "file": "strategy.py",
+      "function": "get_strategy_summary",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 446
+    },
+    {
+      "path": "/stats",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "get_announcement_stats",
+      "return_model": "dict",
+      "data_fields": [
+        "success",
+        "important_count",
+        "triggered_count",
+        "today_count",
+        "by_source",
+        "total_count",
+        "total"
+      ],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 223
+    }
+  ]
+}

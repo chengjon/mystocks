@@ -20,7 +20,7 @@ from app.models.announcement import (
 )
 from app.services.announcement_service import get_announcement_service
 
-router = APIRouter(prefix="/api/announcement", tags=["announcement"])
+router = APIRouter()
 
 
 # ============================================================================

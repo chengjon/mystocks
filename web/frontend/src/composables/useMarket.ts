@@ -96,7 +96,7 @@ export function useMarket(options?: {
           vm.topEtfs = etfRes.data.etfs.map(etf => ({
               symbol: etf.symbol || '',
               name: etf.name || '',
-              latestPrice: etf.price || 0,
+              latestPrice: etf.latest_price || 0,
               changePercent: etf.change_percent || 0,
               volume: etf.volume || 0
           }));
@@ -165,8 +165,15 @@ export function useMarket(options?: {
 
       console.log('[useMarket] 🔄 Fetching Fund Flow from API...');
 
+      // Transform parameters to match API service expectations
+      const apiParams = {
+        startDate: params.start_date,
+        endDate: params.end_date,
+        market: params.symbol // Map symbol to market parameter
+      };
+
       // Call API service
-      const response = await marketApiService.getFundFlow(params);
+      const response = await marketApiService.getFundFlow(apiParams);
 
       // Adapt data (includes automatic Mock fallback)
       const vm = MarketAdapter.adaptFundFlow(response);

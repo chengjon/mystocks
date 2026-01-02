@@ -25,6 +25,7 @@ from . import (
     sse_endpoints,
     stock_search,
     strategy,
+    strategy_list_mock,  # Task 2.3.3: Mock策略列表端点
     strategy_management,
     strategy_mgmt,
     system,
@@ -59,6 +60,7 @@ __all__ = [
     "sse_endpoints",
     "stock_search",
     "strategy",
+    "strategy_list_mock",  # Task 2.3.3: Mock策略列表端点
     "strategy_management",
     "strategy_mgmt",
     "system",

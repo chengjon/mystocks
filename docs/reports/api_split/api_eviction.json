@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/eviction",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/eviction/stats",
+      "method": "GET",
+      "file": "cache.py",
+      "function": "get_eviction_statistics",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 516
+    }
+  ]
+}

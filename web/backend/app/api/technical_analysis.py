@@ -326,7 +326,7 @@ async def get_all_indicators(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{symbol}/trend", summary="获取趋势指标")
+@router.get("/{symbol}/trend", response_model=Dict, summary="获取趋势指标")
 async def get_trend_indicators(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     period: str = Query("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$"),
@@ -347,6 +347,11 @@ async def get_trend_indicators(
     示例:
     - GET /api/technical/600519/trend
     """
+    import structlog
+
+    logger = structlog.get_logger()
+    logger.info("TREND_ENDPOINT_START", symbol=symbol, period=period)
+
     try:
         # P0改进: 使用StockSymbolModel验证股票代码
         try:
@@ -364,6 +369,7 @@ async def get_trend_indicators(
         params = {"symbol": validated_symbol.symbol, "period": period}
 
         result = await technical_analysis_adapter.get_data("trend", params)
+        logger.info("TREND_ADAPTER_RESULT", result_keys=list(result.keys()) if result else None)
 
         if "error" in result:
             raise HTTPException(
@@ -373,7 +379,7 @@ async def get_trend_indicators(
 
         data = result.get("data", {})
 
-        return create_success_response(
+        response = create_success_response(
             data={
                 "symbol": validated_symbol.symbol,
                 "indicators": data.get("indicators", {}),
@@ -382,10 +388,13 @@ async def get_trend_indicators(
             },
             message=f"获取{validated_symbol.symbol}趋势指标成功",
         )
+        logger.info("TREND_ENDPOINT_SUCCESS")
+        return response
 
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("TREND_ENDPOINT_ERROR", error=str(e), exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取趋势指标失败: {str(e)}").model_dump(),

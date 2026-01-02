@@ -1,0 +1,382 @@
+/* ============================================
+   ArtDeco Animations
+   ArtDeco 设计系统动画效果库
+   ============================================ */
+
+@import './artdeco-tokens.scss';
+
+// ============================================
+// Fade Animations
+// ============================================
+
+// Fade In
+@keyframes artdeco-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Fade In Up
+@keyframes artdeco-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Fade In Down
+@keyframes artdeco-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Fade In Scale
+@keyframes artdeco-fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================
+// Slide Animations
+// ============================================
+
+// Slide In Left
+@keyframes artdeco-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Slide In Right
+@keyframes artdeco-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// ============================================
+// Glow Animations
+// ============================================
+
+// Pulse Glow
+@keyframes artdeco-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  }
+}
+
+// Shimmer Effect
+@keyframes artdeco-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+// ============================================
+// Border Animations
+// ============================================
+
+// Border Reveal
+@keyframes artdeco-border-reveal {
+  from {
+    border-color: transparent;
+  }
+  to {
+    border-color: var(--artdeco-accent-gold);
+  }
+}
+
+// Corner Bracket Animation
+@keyframes artdeco-corner-bracket {
+  0%, 100% {
+    opacity: 0.5;
+    width: 12px;
+    height: 12px;
+  }
+  50% {
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ============================================
+// Animation Classes
+// ============================================
+
+// Fade animations
+.animate-fade-in {
+  animation: artdeco-fade-in var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.animate-fade-in-up {
+  animation: artdeco-fade-in-up var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.animate-fade-in-down {
+  animation: artdeco-fade-in-down var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.animate-fade-in-scale {
+  animation: artdeco-fade-in-scale var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+// Slide animations
+.animate-slide-in-left {
+  animation: artdeco-slide-in-left var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.animate-slide-in-right {
+  animation: artdeco-slide-in-right var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+// Glow animations
+.animate-pulse-glow {
+  animation: artdeco-pulse-glow 2s ease-in-out infinite;
+}
+
+// Border animations
+.animate-border-reveal {
+  animation: artdeco-border-reveal var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.animate-corner-bracket {
+  animation: artdeco-corner-bracket 3s ease-in-out infinite;
+}
+
+// ============================================
+// Staggered Animations
+// ============================================
+
+.stagger-fade-in {
+  animation: artdeco-fade-in-up var(--artdeco-duration-slow) var(--artdeco-ease-out) both;
+}
+
+@for $i from 1 through 10 {
+  .stagger-fade-in:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.1s};
+  }
+}
+
+// ============================================
+// Hover Effects
+// ============================================
+
+.hover-lift {
+  transition: transform var(--artdeco-duration-slow) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.hover-glow {
+  transition: box-shadow var(--artdeco-duration-slow) var(--artdeco-ease-out);
+
+  &:hover {
+    box-shadow: var(--artdeco-glow-md);
+  }
+}
+
+.hover-border-reveal {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 175, 55, 0.1),
+      transparent
+    );
+    transition: left var(--artdeco-duration-slow) var(--artdeco-ease-out);
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+// ============================================
+// Loading States
+// ============================================
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--artdeco-bg-tertiary) 0%,
+    rgba(212, 175, 55, 0.05) 50%,
+    var(--artdeco-bg-tertiary) 100%
+  );
+  background-size: 200% 100%;
+  animation: artdeco-shimmer 1.5s infinite;
+}
+
+// ============================================
+// Transitions
+// ============================================
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--artdeco-duration-base) var(--artdeco-ease-out);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all var(--artdeco-duration-slow) var(--artdeco-ease-out);
+}
+
+.slide-fade-leave-active {
+  transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+// ============================================
+// Page Load Animation
+// ============================================
+
+.page-load-animation {
+  animation: artdeco-fade-in-up 0.6s var(--artdeco-ease-out) both;
+}
+
+.card-load-animation {
+  animation: artdeco-fade-in-scale 0.5s var(--artdeco-ease-out) both;
+}
+
+// ============================================
+// Data Update Animation
+// ============================================
+
+@keyframes artdeco-data-update {
+  0% {
+    color: var(--artdeco-accent-gold);
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+.data-update {
+  animation: artdeco-data-update 0.5s var(--artdeco-ease-out);
+}
+
+// ============================================
+// Decorative Animations
+// ============================================
+
+// Shining border effect
+@keyframes artdeco-shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 175, 55, 0.3),
+      transparent
+    );
+    animation: artdeco-shine 3s infinite;
+  }
+}
+
+// Breathing glow
+@keyframes artdeco-breathe {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+  }
+}
+
+.breathe-glow {
+  animation: artdeco-breathe 4s ease-in-out infinite;
+}
+
+// ============================================
+// Performance Optimizations
+// ============================================
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

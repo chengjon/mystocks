@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/monitor-rules",
+  "total_endpoints": 8,
+  "endpoints": [
+    {
+      "path": "/monitor-rules",
+      "method": "GET",
+      "file": "announcement.py",
+      "function": "get_monitor_rules",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 347
+    },
+    {
+      "path": "/monitor-rules",
+      "method": "POST",
+      "file": "announcement.py",
+      "function": "create_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 369
+    },
+    {
+      "path": "/monitor-rules/{rule_id}",
+      "method": "PUT",
+      "file": "announcement.py",
+      "function": "update_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 420
+    },
+    {
+      "path": "/monitor-rules/{rule_id}",
+      "method": "DELETE",
+      "file": "announcement.py",
+      "function": "delete_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 459
+    },
+    {
+      "path": "/monitor-rules",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "get_monitor_rules",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 265
+    },
+    {
+      "path": "/monitor-rules",
+      "method": "POST",
+      "file": "announcement/routes.py",
+      "function": "create_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [
+        "rule_name",
+        "stock_codes",
+        "success",
+        "data",
+        "min_importance_level",
+        "is_active",
+        "keywords",
+        "id",
+        "notify_enabled"
+      ],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 297
+    },
+    {
+      "path": "/monitor-rules/{rule_id}",
+      "method": "PUT",
+      "file": "announcement/routes.py",
+      "function": "update_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [
+        "rule_name",
+        "stock_codes",
+        "success",
+        "data",
+        "min_importance_level",
+        "is_active",
+        "keywords",
+        "id",
+        "notify_enabled"
+      ],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 356
+    },
+    {
+      "path": "/monitor-rules/{rule_id}",
+      "method": "DELETE",
+      "file": "announcement/routes.py",
+      "function": "delete_monitor_rule",
+      "return_model": "dict",
+      "data_fields": [
+        "规则已删除",
+        "message",
+        "success"
+      ],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 405
+    }
+  ]
+}

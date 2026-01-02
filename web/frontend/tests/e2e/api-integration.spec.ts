@@ -62,7 +62,7 @@ test.describe('Composables Integration', () => {
 
   test('useTrading composable should be accessible', async ({ page }) => {
     await page.goto('/trade');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Trade page should load
     await expect(page.locator('body')).toBeVisible();

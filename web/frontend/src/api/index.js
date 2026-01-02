@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import cacheManager from '@/utils/cache'
+import router from '@/router'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -44,11 +45,13 @@ request.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // ElMessage.error('未授权,请重新登录')
-          // localStorage.removeItem('token')
-          // localStorage.removeItem('user')
-          // router.push('/login')
-          ElMessage.error('未授权,但已禁用登录要求')
+          // Token过期或无效，清除session并跳转登录页
+          ElMessage.error('登录已过期，请重新登录')
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          // 保存当前路径，登录后返回
+          sessionStorage.setItem('redirectPath', window.location.pathname)
+          router.push('/login')
           break
         case 403:
           ElMessage.error('权限不足')
@@ -69,7 +72,7 @@ request.interceptors.response.use(
   }
 )
 
-// 认证 API
+// 认证 API (v1)
 export const authApi = {
   login(username, password) {
     // 后端使用 OAuth2PasswordRequestForm，需要表单数据格式
@@ -93,11 +96,11 @@ export const authApi = {
   }
 }
 
-// 数据 API
+// 数据 API (v1)
 export const dataApi = {
   async getStocksBasic(params) {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/basic', { params }),
+      () => request.get('/v1/data/stocks/basic', { params }),
       'stocks_basic',
       params,
       300000 // 5分钟缓存
@@ -106,7 +109,7 @@ export const dataApi = {
 
   async getStocksIndustries() {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/industries'),
+      () => request.get('/v1/data/stocks/industries'),
       'stocks_industries',
       {},
       3600000 // 1小时缓存
@@ -115,7 +118,7 @@ export const dataApi = {
 
   async getStocksConcepts() {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/concepts'),
+      () => request.get('/v1/data/stocks/concepts'),
       'stocks_concepts',
       {},
       3600000 // 1小时缓存
@@ -123,7 +126,7 @@ export const dataApi = {
   },
   async getDailyKline(params) {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/daily', { params }),
+      () => request.get('/v1/data/stocks/daily', { params }),
       'daily_kline',
       params,
       300000 // 5分钟缓存
@@ -132,7 +135,7 @@ export const dataApi = {
 
   async getMarketOverview() {
     return cacheManager.withCache(
-      () => request.get('/data/markets/overview'),
+      () => request.get('/v1/data/markets/overview'),
       'market_overview',
       {},
       600000 // 10分钟缓存
@@ -141,7 +144,7 @@ export const dataApi = {
 
   async searchStocks(keyword) {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/search', { params: { keyword } }),
+      () => request.get('/v1/data/stocks/search', { params: { keyword } }),
       'search_stocks',
       { keyword },
       180000 // 3分钟缓存
@@ -151,7 +154,7 @@ export const dataApi = {
   async getKline(params) {
     // 使用不需要认证的market/kline端点
     return cacheManager.withCache(
-      () => request.get('/market/kline', {
+      () => request.get('/v1/market/kline', {
         params: {
           ...params,
           stock_code: params.symbol, // 将symbol转换为stock_code参数
@@ -168,7 +171,7 @@ export const dataApi = {
   // 股票详情相关API
   async getStockDetail(symbol) {
     return cacheManager.withCache(
-      () => request.get(`/data/stocks/${symbol}/detail`),
+      () => request.get(`/v1/data/stocks/${symbol}/detail`),
       'stock_detail',
       { symbol },
       900000 // 15分钟缓存
@@ -177,7 +180,7 @@ export const dataApi = {
 
   async getStockIntraday(symbol, date) {
     return cacheManager.withCache(
-      () => request.get('/data/stocks/intraday', {
+      () => request.get('/v1/data/stocks/intraday', {
         params: { symbol, date }
       }),
       'stock_intraday',
@@ -188,7 +191,7 @@ export const dataApi = {
 
   async getTradingSummary(symbol, period) {
     return cacheManager.withCache(
-      () => request.get(`/data/stocks/${symbol}/trading-summary`, {
+      () => request.get(`/v1/data/stocks/${symbol}/trading-summary`, {
         params: { period }
       }),
       'trading_summary',
@@ -198,9 +201,9 @@ export const dataApi = {
   }
 }
 
-// 监控 API
+// 监控 API (v1)
 export const monitoringApi = {
-  // 健康检查
+  // 健康检查 (root level)
   async getHealthStatus() {
     return request.get('/health')
   },
@@ -210,105 +213,105 @@ export const monitoringApi = {
 
   // 告警规则管理
   async getAlertRules() {
-    return request.get('/monitoring/alert-rules')
+    return request.get('/v1/monitoring/alert-rules')
   },
   async createAlertRule(data) {
-    return request.post('/monitoring/alert-rules', data)
+    return request.post('/v1/monitoring/alert-rules', data)
   },
   async updateAlertRule(ruleId, data) {
-    return request.put(`/monitoring/alert-rules/${ruleId}`, data)
+    return request.put(`/v1/monitoring/alert-rules/${ruleId}`, data)
   },
   async deleteAlertRule(ruleId) {
-    return request.delete(`/monitoring/alert-rules/${ruleId}`)
+    return request.delete(`/v1/monitoring/alert-rules/${ruleId}`)
   },
 
   // 告警记录
   async getAlerts(params) {
-    return request.get('/monitoring/alerts', { params })
+    return request.get('/v1/monitoring/alerts', { params })
   },
   async markAlertRead(alertId) {
-    return request.post(`/monitoring/alerts/${alertId}/mark-read`)
+    return request.post(`/v1/monitoring/alerts/${alertId}/mark-read`)
   },
   async markAllAlertsRead() {
-    return request.post('/monitoring/alerts/mark-all-read')
+    return request.post('/v1/monitoring/alerts/mark-all-read')
   },
 
   // 实时监控数据
   async getRealtimeData(params) {
-    return request.get('/monitoring/realtime', { params })
+    return request.get('/v1/monitoring/realtime', { params })
   },
   async getRealtimeBySymbol(symbol) {
-    return request.get(`/monitoring/realtime/${symbol}`)
+    return request.get(`/v1/monitoring/realtime/${symbol}`)
   },
   async refreshRealtimeData() {
-    return request.post('/monitoring/realtime/fetch')
+    return request.post('/v1/monitoring/realtime/fetch')
   },
 
   // 龙虎榜数据
   async getDragonTiger(params) {
-    return request.get('/monitoring/dragon-tiger', { params })
+    return request.get('/v1/monitoring/dragon-tiger', { params })
   },
   async refreshDragonTiger() {
-    return request.post('/monitoring/dragon-tiger/fetch')
+    return request.post('/v1/monitoring/dragon-tiger/fetch')
   },
 
   // 监控摘要和统计
   async getSummary() {
-    return request.get('/monitoring/summary')
+    return request.get('/v1/monitoring/summary')
   },
   async getTodayStats() {
-    return request.get('/monitoring/stats/today')
+    return request.get('/v1/monitoring/stats/today')
   },
 
   // 监控控制
   async startMonitoring() {
-    return request.post('/monitoring/control/start')
+    return request.post('/v1/monitoring/control/start')
   },
   async stopMonitoring() {
-    return request.post('/monitoring/control/stop')
+    return request.post('/v1/monitoring/control/stop')
   },
   async getMonitoringStatus() {
-    return request.get('/monitoring/control/status')
+    return request.get('/v1/monitoring/control/status')
   }
 }
 
-// 技术分析 API
+// 技术分析 API (v1)
 export const technicalApi = {
   // 获取所有技术指标
   async getIndicators(symbol, params) {
-    return request.get(`/technical/${symbol}/indicators`, { params })
+    return request.get(`/v1/technical/${symbol}/indicators`, { params })
   },
   // 趋势指标 (MA/EMA/MACD/DMI/SAR)
   async getTrendIndicators(symbol, params) {
-    return request.get(`/technical/${symbol}/trend`, { params })
+    return request.get(`/v1/technical/${symbol}/trend`, { params })
   },
   // 动量指标 (RSI/KDJ/CCI/WR/ROC)
   async getMomentumIndicators(symbol, params) {
-    return request.get(`/technical/${symbol}/momentum`, { params })
+    return request.get(`/v1/technical/${symbol}/momentum`, { params })
   },
   // 波动性指标 (BOLL/ATR/KC/STDDEV)
   async getVolatilityIndicators(symbol, params) {
-    return request.get(`/technical/${symbol}/volatility`, { params })
+    return request.get(`/v1/technical/${symbol}/volatility`, { params })
   },
   // 成交量指标 (OBV/VWAP/Volume MA)
   async getVolumeIndicators(symbol, params) {
-    return request.get(`/technical/${symbol}/volume`, { params })
+    return request.get(`/v1/technical/${symbol}/volume`, { params })
   },
   // 交易信号
   async getSignals(symbol, params) {
-    return request.get(`/technical/${symbol}/signals`, { params })
+    return request.get(`/v1/technical/${symbol}/signals`, { params })
   },
   // K线历史数据
   async getHistory(symbol, params) {
-    return request.get(`/technical/${symbol}/history`, { params })
+    return request.get(`/v1/technical/${symbol}/history`, { params })
   },
   // 批量获取技术指标
   async getBatchIndicators(symbols, params) {
-    return request.post('/technical/batch/indicators', { symbols, ...params })
+    return request.post('/v1/technical/batch/indicators', { symbols, ...params })
   },
   // 技术形态检测
   async getPatterns(symbol) {
-    return request.get(`/technical/patterns/${symbol}`)
+    return request.get(`/v1/technical/patterns/${symbol}`)
   },
   // 快捷方法 - 趋势分析
   async getTrend(symbol, params) {
@@ -328,7 +331,7 @@ export const technicalApi = {
   }
 }
 
-// 策略管理 API
+// 策略管理 API (v1)
 export const strategyApi = {
   // 策略 CRUD
   async getStrategies(params) {
@@ -374,81 +377,81 @@ export const strategyApi = {
 
   // InStock 策略系统
   async getDefinitions() {
-    return request.get('/api/strategy/definitions')
+    return request.get('/v1/strategy/definitions')
   },
   async runSingle(params) {
-    return request.post('/api/strategy/run/single', null, { params })
+    return request.post('/v1/strategy/run/single', null, { params })
   },
   async runBatch(params) {
-    return request.post('/api/strategy/run/batch', null, { params })
+    return request.post('/v1/strategy/run/batch', null, { params })
   },
   async getResults(params) {
-    return request.get('/api/strategy/results', { params })
+    return request.get('/v1/strategy/results', { params })
   },
   async getMatchedStocks(params) {
-    return request.get('/api/strategy/matched-stocks', { params })
+    return request.get('/v1/strategy/matched-stocks', { params })
   },
   async getStats(params) {
-    return request.get('/api/strategy/stats/summary', { params })
+    return request.get('/v1/strategy/stats/summary', { params })
   }
 }
 
-// 市场数据 API
+// 市场数据 API (v1)
 export const marketApi = {
   // 资金流向
   async getFundFlow(params) {
-    return request.get('/market/fund-flow', { params })
+    return request.get('/v1/market/fund-flow', { params })
   },
   async refreshFundFlow() {
-    return request.post('/market/fund-flow/refresh')
+    return request.post('/v1/market/fund-flow/refresh')
   },
 
   // ETF数据
   async getETFList(params) {
-    return request.get('/market/etf/list', { params })
+    return request.get('/v1/market/etf/list', { params })
   },
   async refreshETF() {
-    return request.post('/market/etf/refresh')
+    return request.post('/v1/market/etf/refresh')
   },
 
   // 竞价抢筹
   async getChipRace(params) {
-    return request.get('/market/chip-race', { params })
+    return request.get('/v1/market/chip-race', { params })
   },
   async refreshChipRace() {
-    return request.post('/market/chip-race/refresh')
+    return request.post('/v1/market/chip-race/refresh')
   },
 
   // 龙虎榜
   async getLHB(params) {
-    return request.get('/market/lhb', { params })
+    return request.get('/v1/market/lhb', { params })
   },
   async refreshLHB() {
-    return request.post('/market/lhb/refresh')
+    return request.post('/v1/market/lhb/refresh')
   },
 
   // 实时行情
   async getQuotes(symbols) {
-    return request.get('/market/quotes', { params: { symbols } })
+    return request.get('/v1/market/quotes', { params: { symbols } })
   },
 
   // 股票列表
   async getStocks(params) {
-    return request.get('/market/stocks', { params })
+    return request.get('/v1/market/stocks', { params })
   },
 
   // K线数据
   async getKline(params) {
-    return request.get('/market/kline', { params })
+    return request.get('/v1/market/kline', { params })
   },
 
   // 市场热力图
   async getHeatmap(params) {
-    return request.get('/market/heatmap', { params })
+    return request.get('/v1/market/heatmap', { params })
   }
 }
 
-// 风险管理 API
+// 风险管理 API (v1)
 export const riskApi = {
   async getVarCvar(params) {
     return request.get('/v1/risk/var-cvar', { params })
@@ -470,7 +473,7 @@ export const riskApi = {
   }
 }
 
-// 自选股 API
+// 自选股 API (Other)
 export const watchlistApi = {
   async getWatchlist() {
     return request.get('/watchlist/')

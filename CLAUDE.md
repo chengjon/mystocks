@@ -33,7 +33,8 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 6. [文件组织规范](#文件组织规范)
 7. [代码质量保证](#代码质量保证)
 8. [监控系统](#监控系统)
-9. [BUG登记](#bug登记)
+9. [数据源管理工具](#数据源管理工具)
+10. [BUG登记](#bug登记)
 
 ---
 
@@ -233,6 +234,12 @@ python system_demo.py
 
 详细规则: [`docs/guides/MOCK_DATA_USAGE_RULES.md`](./docs/guides/MOCK_DATA_USAGE_RULES.md)
 
+**Mock/Real数据切换**: [`docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./docs/guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md) 📘
+- 三层数据源架构设计
+- 环境变量驱动的数据源切换机制
+- 实战示例和最佳实践
+- 常见问题解答
+
 **快速参考**:
 ```python
 # ✅ 正确: 通过工厂函数获取Mock数据
@@ -379,6 +386,69 @@ python test_performance_comparison.py
 - `.mcp.json` - MCP服务器配置
 
 **所有其他文件必须组织到子目录中**
+
+### 临时文件使用规则 ⚠️
+
+**核心原则**: `/tmp` 目录仅用于**临时文件**，所有正式项目文件必须保存在项目目录内。
+
+#### 临时文件定义
+- **用途**: 测试、缓存、中间处理文件
+- **生命周期**: 短暂存在，可随时删除
+- **示例**:
+  - 测试截图: `/tmp/test-screenshot.png`
+  - 编译缓存: `/tmp/cache-XXXXXX`
+  - 下载的临时文件: `/tmp/download-XXXXXX`
+
+#### 正式文件放置规范
+
+**文档文件** → `docs/` 目录:
+- 报告: `docs/reports/FILENAME.md`
+- 指南: `docs/guides/FILENAME.md`
+- 设计: `docs/design/FILENAME.md`
+- API 文档: `docs/api/FILENAME.md`
+
+**脚本文件** → `scripts/` 目录:
+- 测试: `scripts/test_*.py`
+- 运行时: `scripts/run_*.py`
+- 数据库: `scripts/check_*.py`, `scripts/verify_*.py`
+- 开发工具: `scripts/dev/*.py`
+
+**配置文件** → `config/` 目录:
+- 所有配置文件: `config/*.yaml`, `config/*.toml`, `config/*.ini`
+
+**生成的报告** → `reports/` 或 `docs/reports/` 目录:
+- 分析报告: `docs/reports/REPORT_NAME.md`
+- JSON 报告: `docs/reports/report-data.json`
+
+#### 文件放置决策流程
+
+```
+是否为项目正式文件？
+├─ YES → 是否为文档？
+│         ├─ YES → docs/{guides,reports,api,design}/
+│         └─ NO → 是否为脚本？
+│                   ├─ YES → scripts/{tests,runtime,database,dev}/
+│                   └─ NO → 是否为配置？
+│                             ├─ YES → config/
+│                             └─ NO → 根据功能放置
+└─ NO（临时） → /tmp/（可随时删除）
+```
+
+#### 示例对比
+
+| 文件类型 | ❌ 错误位置 | ✅ 正确位置 |
+|---------|-----------|-----------|
+| 完成报告 | `/tmp/report.md` | `docs/reports/report.md` |
+| 截图验证 | `/tmp/screenshot.png` | `docs/reports/screenshot.png` |
+| 测试脚本 | `/tmp/test.py` | `scripts/tests/test_feature.py` |
+| 配置文件 | `/tmp/config.yaml` | `config/app_config.yaml` |
+| 临时测试 | `/tmp/quick-test.txt` | `/tmp/quick-test.txt` ✅ |
+
+**重要提醒**:
+1. ⚠️  **严禁**将正式文档、报告、脚本保存在 `/tmp`
+2. ⚠️  **严禁**使用 `/tmp` 作为长期存储位置
+3. ✅  **可以**使用 `/tmp` 作为中转（如：生成→复制到项目目录→删除临时文件）
+4. ✅  **必须**确保所有正式文件都有正确的项目目录位置
 
 ### 目录结构规则
 
@@ -635,6 +705,156 @@ docker logs mystocks-grafana -f
 标准化技术指标计算框架，支持注册、依赖管理、智能调度。
 
 **详细文档**: [指标管理系统设计文档](./docs/03-API与功能文档/指标管理系统设计文档.md)
+
+---
+
+## 数据源管理工具
+
+**状态**: ✅ 生产就绪 (2026-01-02) | **版本**: V2.0
+
+数据源管理工具提供统一的接口来管理、测试、监控所有外部数据源端点。
+
+### 管理范围
+
+数据源管理工具负责以下范围的管理：
+
+#### ✅ 属于管理范围
+
+**1. 数据源端点管理**
+- **配置管理**: 34个已注册数据源接口的配置信息
+- **参数定义**: 每个端点的输入参数、默认值、验证规则
+- **元数据管理**: 端点名称、描述、数据分类、源类型、优先级
+- **状态跟踪**: 健康状态、质量评分、最后测试时间
+- **配置文件**: `config/data_sources_registry.yaml`
+
+**2. 接口测试和验证**
+- **功能测试**: 验证端点是否可用、参数是否正确
+- **数据质量分析**: 完整性、范围、重复性、类型一致性检查
+- **性能测试**: 响应时间、成功率、错误率统计
+- **测试报告**: 自动生成详细测试报告和指标
+
+**3. 健康监控**
+- **实时健康检查**: 单个端点或批量健康状态检查
+- **健康指标**: 连接成功率、响应时间、数据质量
+- **状态管理**: active/maintenance/deprecated 状态维护
+- **告警机制**: 不健康端点自动标记和通知
+
+**4. 数据源搜索和发现**
+- **分类搜索**: 按5层数据分类筛选（DAILY_KLINE, MINUTE_KLINE等）
+- **源类型过滤**: 按数据源类型筛选（akshare, tushare等）
+- **健康状态过滤**: 仅显示健康或维护中的端点
+- **关键词搜索**: 按端点名称或描述搜索
+- **分类统计**: 获取各类别的端点数量统计
+
+**5. 生命周期管理**
+- **端点注册**: 新增数据源端点到注册表
+- **配置更新**: 动态更新端点参数和元数据
+- **状态变更**: 标记端点为维护中或已弃用
+- **优先级调整**: 根据健康状态和质量评分调整优先级
+
+#### ❌ 不属于管理范围
+
+以下功能**不**由数据源管理工具提供：
+
+**1. 数据获取和存储**
+- ❌ 实际数据拉取和缓存
+- ❌ 数据存储到数据库
+- ❌ 历史数据管理
+- **归属**: `src/adapters/` 和 `MyStocksUnifiedManager`
+
+**2. 业务逻辑**
+- ❌ 数据转换和处理逻辑
+- ❌ 技术指标计算
+- ❌ 策略回测
+- **归属**: `src/core/` 和业务服务层
+
+**3. 用户界面**
+- ❌ 前端页面和组件
+- ❌ 数据可视化
+- **归属**: `web/frontend/` 和前端服务
+
+**4. 数据源适配器实现**
+- ❌ Akshare、Tushare等适配器实现
+- ❌ API调用封装
+- **归属**: `src/adapters/`
+
+### 工具链
+
+数据源管理工具包含两个核心工具：
+
+**1. 手动测试工具** (`scripts/tools/manual_data_source_tester.py`)
+- 交互式测试模式
+- 命令行批量测试
+- 数据质量分析和报告生成
+
+**2. FastAPI管理接口** (`web/backend/app/api/data_source_registry.py`)
+- 7个RESTful API端点
+- 支持搜索、测试、配置、健康检查
+- 统一响应格式和错误处理
+
+### 集成方式
+
+**Vue.js前端**:
+```javascript
+import dataSourceService from '@/api/dataSourceService'
+const sources = await dataSourceService.searchDataSources({
+  dataCategory: 'DAILY_KLINE',
+  sourceType: 'akshare',
+  onlyHealthy: true
+})
+```
+
+**Python后端**:
+```python
+from scripts.tools.manual_data_source_tester import DataSourceTester
+tester = DataSourceTester()
+result = tester.test_data_source(
+    endpoint_name='akshare.stock_zh_a_hist',
+    test_params={'symbol': '000001', 'period': 'daily'}
+)
+```
+
+**命令行**:
+```bash
+python scripts/tools/manual_data_source_tester.py --interactive
+```
+
+### 相关文档
+
+- 📖 **[完整使用指南](./docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档
+- 📋 **[快速参考卡片](./docs/guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手
+- 🏗️ **[架构设计文档](./docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - V2.0架构说明
+- ✅ **[最终验证报告](./docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md)** - 验证结果
+- 🚀 **[功能增强提案](./docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)** - 增强计划
+
+### 架构定位
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│            数据源管理工具 (V2.0)                              │
+│      管理范围: 配置、测试、监控、搜索                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ 配置管理      │  │ 健康监控      │  │ 搜索发现      │     │
+│  │ YAML注册表   │  │ 状态检查      │  │ 分类筛选      │     │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘     │
+│         │                 │                  │             │
+│         └─────────────────┼──────────────────┘             │
+│                           │                                │
+├───────────────────────────┼────────────────────────────────┤
+│                           │                                │
+│  ┌────────────────────────▼──────────────────────────┐   │
+│  │        测试和验证工具链                             │   │
+│  │  手动测试工具  +  FastAPI接口  +  数据质量分析     │   │
+│  └────────────────────────────────────────────────────┘   │
+│                                                           │
+│  ❌ 不管理: 数据存储、业务逻辑、UI、适配器实现              │
+│  ✅ 提供: 配置、测试、监控、搜索、生命周期管理              │
+└───────────────────────────────────────────────────────────┘
+```
+
+**核心原则**: 数据源管理工具专注于**管理**而非**执行**，提供标准化的配置、测试、监控接口，与数据适配器、业务逻辑、存储层清晰分离。
 
 ---
 

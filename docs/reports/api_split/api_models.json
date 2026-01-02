@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/models",
+  "total_endpoints": 9,
+  "endpoints": [
+    {
+      "path": "/models/train",
+      "method": "POST",
+      "file": "strategy_management.py",
+      "function": "train_model",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 412
+    },
+    {
+      "path": "/models/training/{task_id}/status",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "get_training_status",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 527
+    },
+    {
+      "path": "/models",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "list_models",
+      "return_model": "List[Dict[str, Any]]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 574
+    },
+    {
+      "path": "/models/train",
+      "method": "POST",
+      "file": "ml.py",
+      "function": "train_model",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 135
+    },
+    {
+      "path": "/models/predict",
+      "method": "POST",
+      "file": "ml.py",
+      "function": "predict_with_model",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 183
+    },
+    {
+      "path": "/models",
+      "method": "GET",
+      "file": "ml.py",
+      "function": "list_models",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 249
+    },
+    {
+      "path": "/models/{model_name}",
+      "method": "GET",
+      "file": "ml.py",
+      "function": "get_model_detail",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 262
+    },
+    {
+      "path": "/models/hyperparameter-search",
+      "method": "POST",
+      "file": "ml.py",
+      "function": "hyperparameter_search",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 294
+    },
+    {
+      "path": "/models/evaluate",
+      "method": "POST",
+      "file": "ml.py",
+      "function": "evaluate_model",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 340
+    }
+  ]
+}

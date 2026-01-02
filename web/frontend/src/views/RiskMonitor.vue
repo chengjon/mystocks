@@ -290,7 +290,7 @@ import {
 } from '@element-plus/icons-vue'
 import { riskApi } from '@/api'
 import * as echarts from 'echarts'
-import type { ECharts } from 'echarts'
+import type { ECharts, EChartsOption } from 'echarts'
 import type { RiskMetricsSummary, RiskHistoryPoint as RiskHistoryPointType, ActiveAlert } from '@/api/types/generated-types'
 
 // Type definitions remain the same
@@ -446,8 +446,8 @@ const generateMockHistoryData = (): MetricsHistoryPoint[] => {
     date.setDate(date.getDate() - i)
     data.push({
       date: date.toISOString().split('T')[0],
-      var95Hist: 2.5 + Math.random() * 2,
-      cvar95: 3.5 + Math.random() * 2.5,
+      var_95_hist: 2.5 + Math.random() * 2,
+      cvar_95: 3.5 + Math.random() * 2.5,
       beta: 0.9 + Math.random() * 0.4
     })
   }
@@ -554,8 +554,8 @@ const renderChart = (): void => {
   }
 
   const dates = metricsHistory.value.map(item => item.date)
-  const varValues = metricsHistory.value.map(item => item.var95Hist || 0)
-  const cvarValues = metricsHistory.value.map(item => item.cvar95 || 0)
+  const varValues = metricsHistory.value.map(item => item.var_95_hist || 0)
+  const cvarValues = metricsHistory.value.map(item => item.cvar_95 || 0)
   const betaValues = metricsHistory.value.map(item => (item.beta || 0) * 10) // 放大10倍以便显示
 
   const option: EChartsOption = {

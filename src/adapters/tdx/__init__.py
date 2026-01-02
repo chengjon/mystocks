@@ -10,6 +10,14 @@ from .base_tdx_adapter import BaseTdxAdapter, tdx_retry
 from .kline_data_service import KlineDataService
 from .realtime_service import RealtimeService
 from .tdx_data_source import TdxDataSource
+from .config import TdxConfigManager, get_tdx_config, get_tdx_server_list, get_tdx_path
+
+# 板块数据支持
+try:
+    from .tdx_block_reader import TdxBlockReader, get_tdx_block_reader
+    BLOCK_READER_AVAILABLE = True
+except ImportError:
+    BLOCK_READER_AVAILABLE = False
 
 __all__ = [
     "BaseTdxAdapter",
@@ -17,7 +25,14 @@ __all__ = [
     "KlineDataService",
     "RealtimeService",
     "TdxDataSource",
+    "TdxConfigManager",
+    "get_tdx_config",
+    "get_tdx_server_list",
+    "get_tdx_path",
 ]
+
+if BLOCK_READER_AVAILABLE:
+    __all__.extend(["TdxBlockReader", "get_tdx_block_reader"])
 
 # 版本信息
 __version__ = "1.0.0"

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/etf",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/etf/list",
+      "method": "GET",
+      "file": "market_v2.py",
+      "function": "get_etf_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 70
+    },
+    {
+      "path": "/etf/refresh",
+      "method": "POST",
+      "file": "market_v2.py",
+      "function": "refresh_etf_spot",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 89
+    },
+    {
+      "path": "/etf/list",
+      "method": "GET",
+      "file": "market.py",
+      "function": "get_etf_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 323
+    },
+    {
+      "path": "/etf/refresh",
+      "method": "POST",
+      "file": "market.py",
+      "function": "refresh_etf_data",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 361
+    }
+  ]
+}

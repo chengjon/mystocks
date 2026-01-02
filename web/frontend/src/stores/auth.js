@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { authApi } from '@/api'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -7,6 +7,23 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
   const isAuthenticated = computed(() => !!token.value)
+
+  // Task 2.1.1: 使用watch API自动保存到localStorage
+  watch(token, (newToken) => {
+    if (newToken) {
+      localStorage.setItem('token', newToken)
+    } else {
+      localStorage.removeItem('token')
+    }
+  }, { immediate: true })
+
+  watch(user, (newUser) => {
+    if (newUser) {
+      localStorage.setItem('user', JSON.stringify(newUser))
+    } else {
+      localStorage.removeItem('user')
+    }
+  }, { immediate: true })
 
   async function login(username, password) {
     try {
@@ -18,9 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = response.data.token
         user.value = response.data.user
 
-        localStorage.setItem('token', token.value)
-        localStorage.setItem('user', JSON.stringify(user.value))
-
+        // localStorage自动保存由watch处理
         return { success: true }
       } else {
         return {
@@ -44,8 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       token.value = ''
       user.value = null
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
+      // localStorage自动清除由watch处理
     }
   }
 
@@ -66,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await authApi.refreshToken()
       token.value = response.access_token  // 响应拦截器已经返回了 data
-      localStorage.setItem('token', token.value)
+      // localStorage自动保存由watch处理
       return true
     } catch (error) {
       logout()

@@ -560,7 +560,7 @@ class TechnicalAnalysisService:
                         {
                             "type": "rsi_oversold",
                             "signal": "buy",
-                            "strength": (30 - rsi) / 30,
+                            "strength": float((30 - rsi) / 30),
                         }
                     )
                 elif rsi > 70:
@@ -568,7 +568,7 @@ class TechnicalAnalysisService:
                         {
                             "type": "rsi_overbought",
                             "signal": "sell",
-                            "strength": (rsi - 70) / 30,
+                            "strength": float((rsi - 70) / 30),
                         }
                     )
 
@@ -578,10 +578,14 @@ class TechnicalAnalysisService:
 
             if len(buy_signals) > len(sell_signals):
                 overall_signal = "buy"
-                signal_strength = sum(s["strength"] for s in buy_signals) / len(buy_signals) if buy_signals else 0
+                signal_strength = (
+                    float(sum(s["strength"] for s in buy_signals) / len(buy_signals)) if buy_signals else 0.0
+                )
             elif len(sell_signals) > len(buy_signals):
                 overall_signal = "sell"
-                signal_strength = sum(s["strength"] for s in sell_signals) / len(sell_signals) if sell_signals else 0
+                signal_strength = (
+                    float(sum(s["strength"] for s in sell_signals) / len(sell_signals)) if sell_signals else 0.0
+                )
             else:
                 overall_signal = "hold"
                 signal_strength = 0.5

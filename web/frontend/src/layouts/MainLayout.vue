@@ -22,8 +22,8 @@
         :collapse="isCollapsed"
         :unique-opened="true"
         background-color="transparent"
-        text-color="var(--web3-fg-secondary)"
-        active-text-color="var(--web3-accent-primary)"
+        text-color="var(--artdeco-fg-secondary)"
+        active-text-color="var(--artdeco-accent-primary)"
         class="sidebar-menu"
         @select="handleMenuSelect"
       >
@@ -340,21 +340,31 @@ watch(() => route.path, (newPath: string): void => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/web3-tokens.scss';
+@import '@/styles/artdeco-tokens.scss';
 
 // ============================================
-//   GRID PATTERN BACKGROUND
-//   Blockchain network effect
+//   ARTDECO PATTERN BACKGROUND
+//   Diagonal crosshatch pattern
 // ============================================
 
-@mixin web3-grid-bg {
-  background-color: var(--web3-bg-primary);
-  background-size: 50px 50px;
+@mixin artdeco-grid-bg {
+  background-color: var(--artdeco-bg-primary);
+  background-size: 40px 40px, 40px 40px;
   background-image:
-    linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(212, 175, 55, 0.03) 2px,
+      rgba(212, 175, 55, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 2px,
+      rgba(212, 175, 55, 0.03) 2px,
+      rgba(212, 175, 55, 0.03) 4px
+    );
 }
 
 // ============================================
@@ -368,7 +378,7 @@ watch(() => route.path, (newPath: string): void => {
   overflow: hidden;
 
   // MANDATORY: Grid pattern background
-  @include web3-grid-bg;
+  @include artdeco-grid-bg;
 }
 
 // ============================================
@@ -378,13 +388,13 @@ watch(() => route.path, (newPath: string): void => {
 
 .layout-sidebar {
   // MANDATORY: Dark matter background
-  background-color: var(--web3-bg-surface);
+  background-color: var(--artdeco-bg-surface);
 
   // MANDATORY: Ultra-thin border (white/10)
-  border-right: 1px solid var(--web3-border-subtle);
+  border-right: 1px solid var(--artdeco-border-subtle);
 
   // Smooth width transition
-  transition: width var(--web3-duration-base) var(--web3-ease-out);
+  transition: width var(--artdeco-duration-base) var(--artdeco-ease-out);
 
   // Position relative for decorations
   position: relative;
@@ -397,15 +407,15 @@ watch(() => route.path, (newPath: string): void => {
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--web3-bg-primary);
+    background: var(--artdeco-bg-primary);
   }
 
   &::-webkit-scrollbar-thumb {
     background: rgba(247, 147, 26, 0.3);
-    border-radius: var(--web3-radius-sm);
+    border-radius: var(--artdeco-radius-sm);
 
     &:hover {
-      background: var(--web3-accent-primary);
+      background: var(--artdeco-accent-primary);
     }
   }
 
@@ -438,71 +448,71 @@ watch(() => route.path, (newPath: string): void => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid var(--web3-border-subtle);
+  border-bottom: 1px solid var(--artdeco-border-subtle);
   background: linear-gradient(
     180deg,
-    var(--web3-bg-surface) 0%,
+    var(--artdeco-bg-surface) 0%,
     rgba(15, 17, 21, 0.5) 100%
   );
   position: relative;
-  padding: var(--web3-spacing-4);
+  padding: var(--artdeco-spacing-4);
   z-index: 1;
 }
 
 .logo-text {
   // MANDATORY: Space Grotesk font (heading)
-  font-family: var(--web3-font-heading);
+  font-family: var(--artdeco-font-heading);
 
   // MANDATORY: Uppercase
   text-transform: uppercase;
-  letter-spacing: var(--web3-tracking-wider);
+  letter-spacing: var(--artdeco-tracking-wider);
 
   // MANDATORY: Gradient text (orange to gold)
-  background: var(--web3-gradient-gold);
+  background: var(--artdeco-gradient-gold);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 
   // Size and weight
-  font-size: var(--web3-text-2xl);
-  font-weight: var(--web3-weight-bold);
+  font-size: var(--artdeco-text-2xl);
+  font-weight: var(--artdeco-weight-bold);
 
   margin: 0;
   display: block;
-  line-height: var(--web3-leading-tight);
+  line-height: var(--artdeco-leading-tight);
 }
 
 .logo-text-short {
-  font-family: var(--web3-font-heading);
+  font-family: var(--artdeco-font-heading);
   text-transform: uppercase;
-  letter-spacing: var(--web3-tracking-wider);
+  letter-spacing: var(--artdeco-tracking-wider);
 
   // Gradient text
-  background: var(--web3-gradient-gold);
+  background: var(--artdeco-gradient-gold);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 
-  font-size: var(--web3-text-xl);
-  font-weight: var(--web3-weight-bold);
+  font-size: var(--artdeco-text-xl);
+  font-weight: var(--artdeco-weight-bold);
   margin: 0;
   display: none;
-  line-height: var(--web3-leading-tight);
+  line-height: var(--artdeco-leading-tight);
 }
 
 // MANDATORY: Gradient line under logo
 .logo-divider {
   width: 60%;
   height: 2px;
-  background: var(--web3-gradient-orange);
-  margin-top: var(--web3-spacing-2);
-  border-radius: var(--web3-radius-full);
+  background: var(--artdeco-gradient-orange);
+  margin-top: var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-full);
 }
 
 // Logo transition
 .logo-fade-enter-active,
 .logo-fade-leave-active {
-  transition: opacity var(--web3-duration-base);
+  transition: opacity var(--artdeco-duration-base);
 }
 
 .logo-fade-enter-from,
@@ -517,38 +527,38 @@ watch(() => route.path, (newPath: string): void => {
 
 .sidebar-menu {
   border-right: none;
-  padding: var(--web3-spacing-4) 0;
+  padding: var(--artdeco-spacing-4) 0;
   position: relative;
   z-index: 1;
 
   // Menu item hover effect
   :deep(.el-menu-item),
   :deep(.el-sub-menu__title) {
-    margin: 0 var(--web3-spacing-3);
+    margin: 0 var(--artdeco-spacing-3);
 
     // MANDATORY: Rounded corners (8px)
-    border-radius: var(--web3-radius-sm);
+    border-radius: var(--artdeco-radius-sm);
 
     // Web3 typography
     text-transform: uppercase;
-    letter-spacing: var(--web3-tracking-wide);
-    font-size: var(--web3-text-sm);
+    letter-spacing: var(--artdeco-tracking-wide);
+    font-size: var(--artdeco-text-sm);
 
-    color: var(--web3-fg-secondary);
+    color: var(--artdeco-fg-secondary);
 
-    transition: all var(--web3-duration-base) var(--web3-ease-out);
+    transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
 
     &:hover {
       background-color: rgba(247, 147, 26, 0.1);
-      color: var(--web3-accent-primary);
+      color: var(--artdeco-accent-primary);
     }
   }
 
   // Active menu item (MANDATORY: Orange with glow)
   :deep(.el-menu-item.is-active) {
     background: linear-gradient(90deg, rgba(247, 147, 26, 0.15), transparent);
-    color: var(--web3-accent-primary);
-    font-weight: var(--web3-weight-semibold);
+    color: var(--artdeco-accent-primary);
+    font-weight: var(--artdeco-weight-semibold);
 
     // MANDATORY: Orange glow on active item
     box-shadow: 0 0 20px -5px rgba(247, 147, 26, 0.3);
@@ -561,16 +571,16 @@ watch(() => route.path, (newPath: string): void => {
       transform: translateY(-50%);
       width: 3px;
       height: 60%;
-      background: var(--web3-accent-primary);
-      border-radius: 0 var(--web3-radius-full) var(--web3-radius-full) 0;
+      background: var(--artdeco-accent-primary);
+      border-radius: 0 var(--artdeco-radius-full) var(--artdeco-radius-full) 0;
     }
   }
 
   // Submenu
   :deep(.el-sub-menu) {
     .el-sub-menu__title {
-      margin: 0 var(--web3-spacing-3);
-      border-radius: var(--web3-radius-sm);
+      margin: 0 var(--artdeco-spacing-3);
+      border-radius: var(--artdeco-radius-sm);
     }
 
     .el-menu {
@@ -578,11 +588,11 @@ watch(() => route.path, (newPath: string): void => {
 
       .el-menu-item {
         padding-left: 48px !important;
-        margin: 0 var(--web3-spacing-3);
+        margin: 0 var(--artdeco-spacing-3);
 
         // Nested item styling
-        font-size: var(--web3-text-xs);
-        letter-spacing: var(--web3-tracking-normal);
+        font-size: var(--artdeco-text-xs);
+        letter-spacing: var(--artdeco-tracking-normal);
       }
     }
   }
@@ -599,8 +609,8 @@ watch(() => route.path, (newPath: string): void => {
   right: 8px;
   width: 16px;
   height: 16px;
-  border-bottom: 2px solid var(--web3-accent-primary);
-  border-right: 2px solid var(--web3-accent-primary);
+  border-bottom: 2px solid var(--artdeco-accent-primary);
+  border-right: 2px solid var(--artdeco-accent-primary);
   border-bottom-right-radius: 4px;
   pointer-events: none;
   opacity: 0.6;
@@ -625,20 +635,20 @@ watch(() => route.path, (newPath: string): void => {
 
 .layout-header {
   height: 64px;
-  padding: 0 var(--web3-spacing-6);
+  padding: 0 var(--artdeco-spacing-6);
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   // MANDATORY: Glass morphism
-  background: var(--web3-bg-glass-light);
+  background: var(--artdeco-bg-glass-light);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
   // MANDATORY: Ultra-thin border (bottom)
-  border-bottom: 1px solid var(--web3-border-subtle);
+  border-bottom: 1px solid var(--artdeco-border-subtle);
 
-  z-index: var(--web3-z-sticky);
+  z-index: var(--artdeco-z-sticky);
 
   // Position relative for effects
   position: relative;
@@ -647,22 +657,22 @@ watch(() => route.path, (newPath: string): void => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--web3-spacing-6);
+  gap: var(--artdeco-spacing-6);
 }
 
 // Collapse toggle
 .collapse-toggle {
   font-size: 20px;
-  color: var(--web3-fg-secondary);
+  color: var(--artdeco-fg-secondary);
   cursor: pointer;
-  padding: var(--web3-spacing-2);
-  border-radius: var(--web3-radius-sm);
-  transition: all var(--web3-duration-base);
+  padding: var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-sm);
+  transition: all var(--artdeco-duration-base);
 
   &:hover {
-    color: var(--web3-accent-primary);
-    background: var(--web3-bg-glass-light);
-    box-shadow: var(--web3-glow-orange-sm);
+    color: var(--artdeco-accent-primary);
+    background: var(--artdeco-bg-glass-light);
+    box-shadow: var(--artdeco-glow-orange-sm);
   }
 }
 
@@ -670,27 +680,27 @@ watch(() => route.path, (newPath: string): void => {
 .breadcrumb {
   :deep(.el-breadcrumb__item) {
     .el-breadcrumb__inner {
-      color: var(--web3-fg-secondary);
-      font-weight: var(--web3-weight-normal);
+      color: var(--artdeco-fg-secondary);
+      font-weight: var(--artdeco-weight-normal);
       text-transform: uppercase;
-      letter-spacing: var(--web3-tracking-wide);
-      font-size: var(--web3-text-xs);
-      font-family: var(--web3-font-mono);
+      letter-spacing: var(--artdeco-tracking-wide);
+      font-size: var(--artdeco-text-xs);
+      font-family: var(--artdeco-font-mono);
 
       &:hover {
-        color: var(--web3-accent-primary);
+        color: var(--artdeco-accent-primary);
       }
     }
 
     &:last-child {
       .el-breadcrumb__inner {
-        color: var(--web3-accent-primary);
-        font-weight: var(--web3-weight-semibold);
+        color: var(--artdeco-accent-primary);
+        font-weight: var(--artdeco-weight-semibold);
       }
     }
 
     .el-breadcrumb__separator {
-      color: var(--web3-fg-muted);
+      color: var(--artdeco-fg-muted);
     }
   }
 }
@@ -698,20 +708,20 @@ watch(() => route.path, (newPath: string): void => {
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--web3-spacing-4);
+  gap: var(--artdeco-spacing-4);
 }
 
 .header-action {
   font-size: 20px;
-  color: var(--web3-fg-secondary);
+  color: var(--artdeco-fg-secondary);
   cursor: pointer;
-  padding: var(--web3-spacing-2);
-  border-radius: var(--web3-radius-sm);
-  transition: all var(--web3-duration-base);
+  padding: var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-sm);
+  transition: all var(--artdeco-duration-base);
 
   &:hover {
-    color: var(--web3-accent-primary);
-    background: var(--web3-bg-glass-light);
+    color: var(--artdeco-accent-primary);
+    background: var(--artdeco-bg-glass-light);
   }
 }
 
@@ -719,38 +729,38 @@ watch(() => route.path, (newPath: string): void => {
 .user-dropdown {
   display: flex;
   align-items: center;
-  gap: var(--web3-spacing-2);
-  padding: var(--web3-spacing-1) var(--web3-spacing-2);
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
 
   // MANDATORY: Rounded corners (pill)
-  border-radius: var(--web3-radius-full);
+  border-radius: var(--artdeco-radius-full);
 
   cursor: pointer;
-  transition: all var(--web3-duration-base);
+  transition: all var(--artdeco-duration-base);
   border: 1px solid transparent;
 
   &:hover {
-    background: var(--web3-bg-glass-light);
-    border-color: var(--web3-border-hover);
+    background: var(--artdeco-bg-glass-light);
+    border-color: var(--artdeco-border-hover);
   }
 
   .user-avatar {
-    background: var(--web3-accent-primary);
-    color: var(--web3-bg-primary);
+    background: var(--artdeco-accent-primary);
+    color: var(--artdeco-bg-primary);
   }
 
   .username {
-    color: var(--web3-fg-primary);
-    font-size: var(--web3-text-sm);
-    font-weight: var(--web3-weight-semibold);
+    color: var(--artdeco-fg-primary);
+    font-size: var(--artdeco-text-sm);
+    font-weight: var(--artdeco-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: var(--web3-tracking-wide);
-    font-family: var(--web3-font-heading);
+    letter-spacing: var(--artdeco-tracking-wide);
+    font-family: var(--artdeco-font-heading);
   }
 
   .dropdown-arrow {
     font-size: 12px;
-    color: var(--web3-fg-secondary);
+    color: var(--artdeco-fg-secondary);
   }
 }
 
@@ -763,10 +773,10 @@ watch(() => route.path, (newPath: string): void => {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--web3-spacing-6);
+  padding: var(--artdeco-spacing-6);
 
   // MANDATORY: Grid pattern background
-  @include web3-grid-bg;
+  @include artdeco-grid-bg;
 
   // Custom scrollbar (Web3 themed)
   &::-webkit-scrollbar {
@@ -775,16 +785,16 @@ watch(() => route.path, (newPath: string): void => {
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--web3-bg-primary);
+    background: var(--artdeco-bg-primary);
   }
 
   &::-webkit-scrollbar-thumb {
     background: rgba(247, 147, 26, 0.3);
-    border: 1px solid var(--web3-accent-primary);
-    border-radius: var(--web3-radius-sm);
+    border: 1px solid var(--artdeco-accent-primary);
+    border-radius: var(--artdeco-radius-sm);
 
     &:hover {
-      background: var(--web3-accent-primary);
+      background: var(--artdeco-accent-primary);
     }
   }
 }
@@ -796,7 +806,7 @@ watch(() => route.path, (newPath: string): void => {
 
 .fade-transform-enter-active,
 .fade-transform-leave-active {
-  transition: all var(--web3-duration-base) var(--web3-ease-out);
+  transition: all var(--artdeco-duration-base) var(--artdeco-ease-out);
 }
 
 .fade-transform-enter-from {
@@ -820,9 +830,9 @@ watch(() => route.path, (newPath: string): void => {
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: var(--web3-z-fixed);
+    z-index: var(--artdeco-z-fixed);
     transform: translateX(-100%);
-    transition: transform var(--web3-duration-base) var(--web3-ease-out);
+    transition: transform var(--artdeco-duration-base) var(--artdeco-ease-out);
 
     &.mobile-open {
       transform: translateX(0);
@@ -831,7 +841,7 @@ watch(() => route.path, (newPath: string): void => {
 
   .layout-header {
     height: 56px;
-    padding: 0 var(--web3-spacing-4);
+    padding: 0 var(--artdeco-spacing-4);
   }
 
   .header-right {
@@ -841,7 +851,7 @@ watch(() => route.path, (newPath: string): void => {
   }
 
   .layout-main {
-    padding: var(--web3-spacing-4);
+    padding: var(--artdeco-spacing-4);
   }
 
   .breadcrumb {
@@ -851,11 +861,11 @@ watch(() => route.path, (newPath: string): void => {
 
 @media (max-width: 576px) {
   .layout-header {
-    padding: 0 var(--web3-spacing-3);
+    padding: 0 var(--artdeco-spacing-3);
   }
 
   .logo-text {
-    font-size: var(--web3-text-xl);
+    font-size: var(--artdeco-text-xl);
   }
 }
 </style>

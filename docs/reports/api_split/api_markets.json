@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/markets",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/markets/overview",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_market_overview",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 280
+    },
+    {
+      "path": "/markets/price-distribution",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_price_distribution",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 592
+    },
+    {
+      "path": "/markets/hot-industries",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_hot_industries",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 655
+    },
+    {
+      "path": "/markets/hot-concepts",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_hot_concepts",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 762
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/refresh-health",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/refresh-health",
+      "method": "POST",
+      "file": "multi_source.py",
+      "function": "refresh_data_source_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 258
+    }
+  ]
+}
