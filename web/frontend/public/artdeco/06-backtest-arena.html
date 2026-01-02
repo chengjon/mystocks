@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回测竞技场 - MyStocks ArtDeco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+    .artdeco-sidebar { width: 240px; background: var(--artdeco-bg-header); border-right: 1px solid var(--artdeco-gold-dim); position: fixed; height: 100vh; overflow-y: auto; z-index: var(--artdeco-z-fixed); }
+    .artdeco-sidebar-header { padding: var(--artdeco-space-lg); border-bottom: 1px solid var(--artdeco-gold-dim); text-align: center; }
+    .artdeco-logo { font-family: var(--artdeco-font-display); font-size: 1.5rem; font-weight: 700; color: var(--artdeco-gold-primary); letter-spacing: 4px; text-decoration: none; }
+    .artdeco-nav { padding: var(--artdeco-space-md); }
+    .artdeco-nav-section { margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-nav-section-title { font-family: var(--artdeco-font-display); font-size: 0.75rem; font-weight: 600; color: var(--artdeco-silver-muted); text-transform: uppercase; letter-spacing: 2px; padding: var(--artdeco-space-sm) var(--artdeco-space-md); margin-bottom: var(--artdeco-space-sm); }
+    .artdeco-nav-item { display: flex; align-items: center; gap: var(--artdeco-space-md); padding: 12px var(--artdeco-space-md); color: var(--artdeco-silver-dim); text-decoration: none; border-left: 3px solid transparent; transition: all var(--artdeco-transition-fast); font-size: 0.875rem; }
+    .artdeco-nav-item:hover { background: var(--artdeco-bg-hover); color: var(--artdeco-silver-text); }
+    .artdeco-nav-item.active { background: var(--artdeco-gold-dim); border-left-color: var(--artdeco-gold-primary); color: var(--artdeco-gold-primary); }
+    .artdeco-main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+    .artdeco-topbar { height: 60px; background: var(--artdeco-bg-header); border-bottom: 1px solid var(--artdeco-gold-dim); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--artdeco-space-lg); position: sticky; top: 0; z-index: var(--artdeco-z-sticky); }
+    .artdeco-breadcrumb { font-family: var(--artdeco-font-display); font-size: 0.875rem; color: var(--artdeco-gold-primary); letter-spacing: 1px; }
+    .artdeco-content { flex: 1; padding: var(--artdeco-space-xl); overflow-y: auto; }
+    .artdeco-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-card { background: var(--artdeco-bg-card); border: 2px solid var(--artdeco-gold-primary); padding: var(--artdeco-space-lg); position: relative; }
+    .artdeco-card::before { content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px solid rgba(212, 175, 55, 0.3); pointer-events: none; }
+    .artdeco-card h3 { font-family: var(--artdeco-font-display); font-size: 1rem; font-weight: 600; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-md); text-transform: uppercase; letter-spacing: 1px; }
+    .artdeco-stat-value { font-size: 2.5rem; font-family: var(--artdeco-font-mono); font-weight: 700; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-xs); }
+    .artdeco-stat-label { font-size: 0.875rem; color: var(--artdeco-silver-dim); }
+    .artdeco-chart-container { width: 100%; height: 400px; }
+    .artdeco-table { width: 100%; border-collapse: collapse; font-family: var(--artdeco-font-mono); font-size: 0.875rem; }
+    .artdeco-table th { background: var(--artdeco-bg-header); color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-display); font-weight: 600; text-align: left; padding: 12px var(--artdeco-space-md); border-bottom: 2px solid var(--artdeco-gold-primary); }
+    .artdeco-table td { padding: 12px var(--artdeco-space-md); border-bottom: 1px solid var(--artdeco-gold-dim); color: var(--artdeco-silver-text); }
+    .artdeco-table tr:hover td { background: var(--artdeco-bg-hover); }
+    .artdeco-data-rise { color: var(--artdeco-rise); }
+    .artdeco-data-fall { color: var(--artdeco-fall); }
+    .artdeco-btn { padding: 10px 24px; font-family: var(--artdeco-font-display); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: none; cursor: pointer; transition: all var(--artdeco-transition-fast); }
+    .artdeco-btn-primary { background: var(--artdeco-gold-primary); color: var(--artdeco-bg-header); }
+    .artdeco-btn-primary:hover { background: var(--artdeco-gold-hover); box-shadow: var(--artdeco-glow-gold); }
+    @media (max-width: 1440px) {
+      .artdeco-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .artdeco-sidebar { transform: translateX(-100%); }
+      .artdeco-main { margin-left: 0; }
+      .artdeco-grid-2, .artdeco-grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-layout">
+    <nav class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="01-dashboard.html" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+      <div class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">市场数据</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item"><span>Ⅰ</span><span>主控仪表盘</span></a>
+          <a href="02-market-center.html" class="artdeco-nav-item"><span>Ⅱ</span><span>市场行情中心</span></a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item"><span>Ⅲ</span><span>智能选股池</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">分析工具</div>
+          <a href="04-data-analysis.html" class="artdeco-nav-item"><span>Ⅳ</span><span>数据分析</span></a>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item"><span>Ⅴ</span><span>策略实验室</span></a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item active"><span>Ⅵ</span><span>回测竞技场</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item"><span>Ⅶ</span><span>交易工作站</span></a>
+          <a href="08-risk-center.html" class="artdeco-nav-item"><span>Ⅷ</span><span>风控中心</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item"><span>Ⅸ</span><span>系统设置</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="artdeco-main">
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">回测竞技场 / BACKTEST ARENA</div>
+        <button class="artdeco-btn artdeco-btn-primary" onclick="runBacktest()">开始回测</button>
+      </header>
+
+      <div class="artdeco-content">
+        <!-- Key Metrics -->
+        <div class="artdeco-grid-4">
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value artdeco-data-rise">+23.5%</div>
+            <div class="artdeco-stat-label">累计收益率</div>
+          </div>
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value">1.85</div>
+            <div class="artdeco-stat-label">夏普比率</div>
+          </div>
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value artdeco-data-fall">-8.2%</div>
+            <div class="artdeco-stat-label">最大回撤</div>
+          </div>
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value">67.8%</div>
+            <div class="artdeco-stat-label">胜率</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3>净值曲线</h3>
+            <div id="equityChart" class="artdeco-chart-container"></div>
+          </div>
+          <div class="artdeco-card">
+            <h3>回撤分析</h3>
+            <div id="drawdownChart" class="artdeco-chart-container"></div>
+          </div>
+        </div>
+
+        <!-- Trade History -->
+        <div class="artdeco-card">
+          <h3>交易记录</h3>
+          <table class="artdeco-table">
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>股票代码</th>
+                <th>股票名称</th>
+                <th>操作</th>
+                <th>价格</th>
+                <th>数量</th>
+                <th>盈亏</th>
+                <th>盈亏比例</th>
+              </tr>
+            </thead>
+            <tbody id="tradeTableBody">
+              <!-- Dynamic content -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE_URL = '/api/v1';
+    let equityChart, drawdownChart;
+
+    const mockTrades = [
+      { date: '2024-01-15', code: '600519.SH', name: '贵州茅台', action: '买入', price: 1678.50, quantity: 100, profit: 12560, profitRatio: 7.5 },
+      { date: '2024-02-20', code: '000858.SZ', name: '五粮液', action: '买入', price: 156.78, quantity: 500, profit: -3240, profitRatio: -4.1 },
+      { date: '2024-03-10', code: '600036.SH', name: '招商银行', action: '买入', price: 32.45, quantity: 2000, profit: 8920, profitRatio: 13.7 },
+      { date: '2024-04-05', code: '600519.SH', name: '贵州茅台', action: '卖出', price: 1756.80, quantity: 100, profit: 7830, profitRatio: 4.7 },
+      { date: '2024-05-12', code: '000001.SZ', name: '平安银行', action: '买入', price: 12.34, quantity: 5000, profit: 2340, profitRatio: 3.8 },
+    ];
+
+    function initCharts() {
+      initEquityChart();
+      initDrawdownChart();
+    }
+
+    function initEquityChart() {
+      equityChart = echarts.init(document.getElementById('equityChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: ['1月', '2月', '3月', '4月', '5月', '6月'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4', formatter: '{value}%' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        series: [{
+          type: 'line',
+          data: [0, 5.6, 12.3, 18.9, 15.6, 23.5],
+          smooth: true,
+          lineStyle: { color: '#D4AF37', width: 3 },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
+              { offset: 1, color: 'rgba(212, 175, 55, 0.05)' }
+            ])
+          }
+        }]
+      };
+      equityChart.setOption(option);
+    }
+
+    function initDrawdownChart() {
+      drawdownChart = echarts.init(document.getElementById('drawdownChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: ['1月', '2月', '3月', '4月', '5月', '6月'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4', formatter: '{value}%' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        series: [{
+          type: 'line',
+          data: [0, -2.3, -5.6, -8.2, -6.4, -4.1],
+          smooth: true,
+          lineStyle: { color: '#C94042', width: 2 },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(201, 64, 66, 0.3)' },
+              { offset: 1, color: 'rgba(201, 64, 66, 0.05)' }
+            ])
+          }
+        }]
+      };
+      drawdownChart.setOption(option);
+    }
+
+    function populateTradeTable() {
+      const tbody = document.getElementById('tradeTableBody');
+      tbody.innerHTML = mockTrades.map(t => `
+        <tr>
+          <td>${t.date}</td>
+          <td style="font-family: var(--artdeco-font-mono);">${t.code}</td>
+          <td>${t.name}</td>
+          <td><span style="color: ${t.action === '买入' ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${t.action}</span></td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${t.price.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${t.quantity}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right; color: ${t.profit >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right; color: ${t.profitRatio >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${t.profitRatio >= 0 ? '+' : ''}${t.profitRatio.toFixed(2)}%</td>
+        </tr>
+      `).join('');
+    }
+
+    function runBacktest() {
+      alert('回测功能开发中：将调用 /api/v1/backtest/run 接口');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      populateTradeTable();
+
+      window.addEventListener('resize', () => {
+        equityChart?.resize();
+        drawdownChart?.resize();
+      });
+    });
+  </script>
+</body>
+</html>

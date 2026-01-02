@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>策略实验室 - MyStocks ArtDeco</title>
+
+  <!-- Google Fonts - ArtDeco Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+    .artdeco-sidebar { width: 240px; background: var(--artdeco-bg-header); border-right: 1px solid var(--artdeco-gold-dim); position: fixed; height: 100vh; overflow-y: auto; z-index: var(--artdeco-z-fixed); }
+    .artdeco-sidebar-header { padding: var(--artdeco-space-lg); border-bottom: 1px solid var(--artdeco-gold-dim); text-align: center; }
+    .artdeco-logo { font-family: var(--artdeco-font-display); font-size: 1.5rem; font-weight: 700; color: var(--artdeco-gold-primary); letter-spacing: 4px; text-decoration: none; }
+    .artdeco-nav { padding: var(--artdeco-space-md); }
+    .artdeco-nav-section { margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-nav-section-title { font-family: var(--artdeco-font-display); font-size: 0.75rem; font-weight: 600; color: var(--artdeco-silver-muted); text-transform: uppercase; letter-spacing: 2px; padding: var(--artdeco-space-sm) var(--artdeco-space-md); margin-bottom: var(--artdeco-space-sm); }
+    .artdeco-nav-item { display: flex; align-items: center; gap: var(--artdeco-space-md); padding: 12px var(--artdeco-space-md); color: var(--artdeco-silver-dim); text-decoration: none; border-left: 3px solid transparent; transition: all var(--artdeco-transition-fast); font-size: 0.875rem; }
+    .artdeco-nav-item:hover { background: var(--artdeco-bg-hover); color: var(--artdeco-silver-text); }
+    .artdeco-nav-item.active { background: var(--artdeco-gold-dim); border-left-color: var(--artdeco-gold-primary); color: var(--artdeco-gold-primary); }
+    .artdeco-main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+    .artdeco-topbar { height: 60px; background: var(--artdeco-bg-header); border-bottom: 1px solid var(--artdeco-gold-dim); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--artdeco-space-lg); position: sticky; top: 0; z-index: var(--artdeco-z-sticky); }
+    .artdeco-breadcrumb { font-family: var(--artdeco-font-display); font-size: 0.875rem; color: var(--artdeco-gold-primary); letter-spacing: 1px; }
+    .artdeco-content { flex: 1; padding: var(--artdeco-space-xl); overflow-y: auto; }
+    .artdeco-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-card { background: var(--artdeco-bg-card); border: 2px solid var(--artdeco-gold-primary); padding: var(--artdeco-space-lg); position: relative; }
+    .artdeco-card::before { content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px solid rgba(212, 175, 55, 0.3); pointer-events: none; }
+    .artdeco-card h3 { font-family: var(--artdeco-font-display); font-size: 1rem; font-weight: 600; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-md); text-transform: uppercase; letter-spacing: 1px; }
+    .artdeco-form-group { margin-bottom: var(--artdeco-space-md); }
+    .artdeco-form-label { display: block; font-family: var(--artdeco-font-display); font-size: 0.875rem; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-sm); }
+    .artdeco-form-input, .artdeco-form-select { width: 100%; padding: 10px 12px; font-family: var(--artdeco-font-body); font-size: 0.875rem; color: var(--artdeco-silver-text); background: var(--artdeco-bg-header); border: 1px solid var(--artdeco-gold-dim); }
+    .artdeco-form-input:focus, .artdeco-form-select:focus { outline: none; border-color: var(--artdeco-gold-primary); box-shadow: var(--artdeco-glow-subtle); }
+    .artdeco-form-textarea { width: 100%; min-height: 100px; padding: 10px 12px; font-family: var(--artdeco-font-body); font-size: 0.875rem; color: var(--artdeco-silver-text); background: var(--artdeco-bg-header); border: 1px solid var(--artdeco-gold-dim); resize: vertical; }
+    .artdeco-btn { padding: 10px 24px; font-family: var(--artdeco-font-display); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: none; cursor: pointer; transition: all var(--artdeco-transition-fast); }
+    .artdeco-btn-primary { background: var(--artdeco-gold-primary); color: var(--artdeco-bg-header); }
+    .artdeco-btn-primary:hover { background: var(--artdeco-gold-hover); box-shadow: var(--artdeco-glow-gold); }
+    .artdeco-btn-secondary { background: transparent; color: var(--artdeco-gold-primary); border: 1px solid var(--artdeco-gold-primary); }
+    .artdeco-btn-secondary:hover { background: var(--artdeco-gold-dim); }
+    .artdeco-table { width: 100%; border-collapse: collapse; font-family: var(--artdeco-font-mono); font-size: 0.875rem; }
+    .artdeco-table th { background: var(--artdeco-bg-header); color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-display); font-weight: 600; text-align: left; padding: 12px var(--artdeco-space-md); border-bottom: 2px solid var(--artdeco-gold-primary); }
+    .artdeco-table td { padding: 12px var(--artdeco-space-md); border-bottom: 1px solid var(--artdeco-gold-dim); color: var(--artdeco-silver-text); }
+    .artdeco-table tr:hover td { background: var(--artdeco-bg-hover); }
+    .artdeco-badge { display: inline-block; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; border-radius: 2px; }
+    .artdeco-badge-success { background: var(--artdeco-rise); color: white; }
+    .artdeco-badge-warning { background: var(--artdeco-warning); color: white; }
+    .artdeco-badge-danger { background: var(--artdeco-fall); color: white; }
+    @media (max-width: 768px) {
+      .artdeco-sidebar { transform: translateX(-100%); }
+      .artdeco-main { margin-left: 0; }
+      .artdeco-grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-layout">
+    <!-- Sidebar -->
+    <nav class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="01-dashboard.html" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+      <div class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">市场数据</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item"><span>Ⅰ</span><span>主控仪表盘</span></a>
+          <a href="02-market-center.html" class="artdeco-nav-item"><span>Ⅱ</span><span>市场行情中心</span></a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item"><span>Ⅲ</span><span>智能选股池</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">分析工具</div>
+          <a href="04-data-analysis.html" class="artdeco-nav-item"><span>Ⅳ</span><span>数据分析</span></a>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item active"><span>Ⅴ</span><span>策略实验室</span></a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item"><span>Ⅵ</span><span>回测竞技场</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item"><span>Ⅶ</span><span>交易工作站</span></a>
+          <a href="08-risk-center.html" class="artdeco-nav-item"><span>Ⅷ</span><span>风控中心</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item"><span>Ⅸ</span><span>系统设置</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="artdeco-main">
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">策略实验室 / STRATEGY LAB</div>
+        <div class="artdeco-topbar-actions">
+          <button class="artdeco-btn artdeco-btn-primary" onclick="showCreateModal()">+ 新建策略</button>
+        </div>
+      </header>
+
+      <div class="artdeco-content">
+        <!-- Strategy Statistics -->
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3>策略概览</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--artdeco-space-md); text-align: center;">
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-mono);">12</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">总策略数</div>
+              </div>
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-rise); font-family: var(--artdeco-font-mono);">8</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">运行中</div>
+              </div>
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-fall); font-family: var(--artdeco-font-mono);">4</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">已暂停</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>策略表现</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--artdeco-space-md); text-align: center;">
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-mono);">+23.5%</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">最佳收益</div>
+              </div>
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-silver-text); font-family: var(--artdeco-font-mono);">+8.7%</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">平均收益</div>
+              </div>
+              <div>
+                <div style="font-size: 2rem; color: var(--artdeco-fall); font-family: var(--artdeco-font-mono);">-5.2%</div>
+                <div style="font-size: 0.875rem; color: var(--artdeco-silver-dim);">最大回撤</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy List -->
+        <div class="artdeco-card">
+          <h3>策略列表</h3>
+          <table class="artdeco-table">
+            <thead>
+              <tr>
+                <th>策略名称</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>收益率</th>
+                <th>夏普比率</th>
+                <th>最大回撤</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="strategyTableBody">
+              <!-- Dynamic content -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE_URL = '/api/v1';
+
+    const mockStrategies = [
+      { name: '双均线突破策略', type: '趋势跟踪', status: 'running', return: 15.6, sharpe: 1.85, mdd: -8.2, created: '2024-01-15' },
+      { name: 'MACD金叉策略', type: '技术指标', status: 'running', return: 23.5, sharpe: 2.12, mdd: -5.2, created: '2024-02-20' },
+      { name: 'RSI超卖策略', type: '均值回归', status: 'paused', return: 8.9, sharpe: 1.45, mdd: -12.3, created: '2024-03-10' },
+      { name: '板块轮动策略', type: '行业轮动', status: 'running', return: 18.7, sharpe: 1.92, mdd: -7.8, created: '2024-04-05' },
+      { name: '低波动率策略', type: '风险控制', status: 'running', return: 12.3, sharpe: 2.05, mdd: -4.5, created: '2024-05-12' },
+    ];
+
+    function populateStrategyTable() {
+      const tbody = document.getElementById('strategyTableBody');
+      tbody.innerHTML = mockStrategies.map(s => `
+        <tr>
+          <td style="font-weight: 600;">${s.name}</td>
+          <td>${s.type}</td>
+          <td><span class="artdeco-badge ${s.status === 'running' ? 'artdeco-badge-success' : 'artdeco-badge-warning'}">${s.status === 'running' ? '运行中' : '已暂停'}</span></td>
+          <td style="font-family: var(--artdeco-font-mono); color: ${s.return >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${s.return >= 0 ? '+' : ''}${s.return}%</td>
+          <td style="font-family: var(--artdeco-font-mono);">${s.sharpe}</td>
+          <td style="font-family: var(--artdeco-font-mono); color: var(--artdeco-fall);">${s.mdd}%</td>
+          <td>${s.created}</td>
+          <td>
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" onclick="editStrategy('${s.name}')">编辑</button>
+            <button class="artdeco-btn artdeco-btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" onclick="backtestStrategy('${s.name}')">回测</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function showCreateModal() {
+      alert('创建策略弹窗开发中：将提供策略参数配置界面');
+    }
+
+    function editStrategy(name) {
+      alert(`编辑策略: ${name}\n功能开发中`);
+    }
+
+    function backtestStrategy(name) {
+      window.location.href = `06-backtest-arena.html?strategy=${encodeURIComponent(name)}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populateStrategyTable();
+    });
+  </script>
+</body>
+</html>

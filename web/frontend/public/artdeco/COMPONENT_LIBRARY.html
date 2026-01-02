@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArtDeco Component Library - MyStocks</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+    .artdeco-bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.03; background-image: repeating-linear-gradient(45deg, #D4AF37 0px, #D4AF37 1px, transparent 1px, transparent 10px), repeating-linear-gradient(-45deg, #D4AF37 0px, #D4AF37 1px, transparent 1px, transparent 10px); }
+    .artdeco-main { flex: 1; padding: var(--artdeco-space-xl); max-width: 1400px; margin: 0 auto; }
+    .artdeco-header { text-align: center; margin-bottom: var(--artdeco-space-2xl); }
+    .artdeco-section { margin-bottom: var(--artdeco-space-2xl); }
+    .artdeco-section-title { font-family: var(--artdeco-font-display); font-size: 2rem; font-weight: 700; color: var(--artdeco-gold-primary); text-transform: uppercase; letter-spacing: 3px; margin-bottom: var(--artdeco-space-lg); text-align: center; }
+    .artdeco-subsection-title { font-family: var(--artdeco-font-display); font-size: 1.25rem; font-weight: 600; color: var(--artdeco-silver-text); text-transform: uppercase; letter-spacing: 2px; margin-bottom: var(--artdeco-space-md); margin-top: var(--artdeco-space-lg); }
+    .artdeco-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--artdeco-space-lg); }
+    .artdeco-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--artdeco-space-lg); }
+    .artdeco-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--artdeco-space-lg); }
+    .artdeco-demo-box { background: var(--artdeco-bg-card); border: 1px solid var(--artdeco-gold-dim); padding: var(--artdeco-space-lg); min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    @media (max-width: 1080px) { .artdeco-grid-4, .artdeco-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .artdeco-grid-4, .artdeco-grid-3, .artdeco-grid-2 { grid-template-columns: 1fr; } .artdeco-main { padding: var(--artdeco-space-md); } }
+  </style>
+</head>
+<body>
+  <div class="artdeco-bg-pattern"></div>
+
+  <div class="artdeco-layout">
+    <main class="artdeco-main">
+      <!-- Header -->
+      <div class="artdeco-header">
+        <h1 style="font-size: 3rem; margin-bottom: var(--artdeco-space-sm);">ARTDEO COMPONENT LIBRARY</h1>
+        <p style="font-size: 1.25rem; color: var(--artdeco-silver-dim);">MyStocks A股量化交易管理系统 - 完整设计系统展示</p>
+        <div style="margin-top: var(--artdeco-space-lg);">
+          <span class="artdeco-badge artdeco-badge-gold">Version 1.0.0</span>
+          <span class="artdeco-badge artdeco-badge-rise" style="margin-left: var(--artdeco-space-sm);">Production Ready</span>
+        </div>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅰ. Color Palette / 色彩系统</h2>
+
+        <h3 class="artdeco-subsection-title">Background Colors</h3>
+        <div class="artdeco-grid-4">
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-bg-global); width: 100px; height: 100px; border: 1px solid var(--artdeco-gold-dim); margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Global BG</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#0F1215</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-bg-card); width: 100px; height: 100px; border: 1px solid var(--artdeco-gold-dim); margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Card BG</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#161B22</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-bg-header); width: 100px; height: 100px; border: 1px solid var(--artdeco-gold-dim); margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Header BG</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#0A0C0E</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-bg-hover); width: 100px; height: 100px; border: 1px solid var(--artdeco-gold-dim); margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Hover BG</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#1E252E</div>
+          </div>
+        </div>
+
+        <h3 class="artdeco-subsection-title">Gold Accents</h3>
+        <div class="artdeco-grid-3">
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-gold-primary); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md); box-shadow: var(--artdeco-glow-gold);"></div>
+            <div class="text-mono text-gold">Gold Primary</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#D4AF37</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-gold-hover); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Gold Hover</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#F4CF57</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-gold-muted); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono text-gold">Gold Muted</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#8A7120</div>
+          </div>
+        </div>
+
+        <h3 class="artdeco-subsection-title">A股 Trading Colors</h3>
+        <div class="artdeco-grid-3">
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-rise); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono" style="color: var(--artdeco-rise);">Rise / Buy</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#C94042 (红涨)</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-fall); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono" style="color: var(--artdeco-fall);">Fall / Sell</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#3D9970 (绿跌)</div>
+          </div>
+          <div class="artdeco-demo-box">
+            <div style="background: var(--artdeco-flat); width: 100px; height: 100px; margin-bottom: var(--artdeco-space-md);"></div>
+            <div class="text-mono" style="color: var(--artdeco-flat);">Flat / No Change</div>
+            <div class="text-mono text-dim" style="font-size: 0.875rem;">#B8B8B8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typography -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅱ. Typography / 排版系统</h2>
+
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Display Font (Headers)</h3>
+            <h1>CINZEL DISPLAY</h1>
+            <h2>ArtDeco Luxury</h2>
+            <h3>Geometric Elegance</h3>
+            <p style="font-family: var(--artdeco-font-display); text-transform: uppercase; letter-spacing: 2px; color: var(--artdeco-gold-primary);">
+              ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            </p>
+            <p style="font-family: var(--artdeco-font-display); text-transform: uppercase; letter-spacing: 2px; color: var(--artdeco-silver-dim);">
+              abcdefghijklmnopqrstuvwxyz
+            </p>
+            <p style="font-family: var(--artdeco-font-display); text-transform: uppercase; letter-spacing: 2px;">
+              Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ
+            </p>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Body Font (Content)</h3>
+            <p style="font-family: var(--artdeco-font-body); font-size: 1.125rem;">
+              <strong>Montserrat</strong> - Clean, modern sans-serif for body text and UI elements.
+            </p>
+            <p style="font-family: var(--artdeco-font-body); color: var(--artdeco-silver-dim);">
+              The quick brown fox jumps over the lazy dog. 快速的棕色狐狸跳过懒惰的狗。
+            </p>
+            <hr style="border-color: var(--artdeco-gold-dim); margin: var(--artdeco-space-md) 0;">
+            <p style="font-family: var(--artdeco-font-mono); font-size: 0.875rem;">
+              <strong>JetBrains Mono</strong> - Monospace for data and numbers.
+            </p>
+            <p class="text-mono" style="color: var(--artdeco-gold-primary);">
+              ¥1,234.56 | +2.35% | 3,245.67 | 1.23M
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅲ. Buttons / 按钮</h2>
+
+        <div class="artdeco-card">
+          <h3 style="margin-bottom: var(--artdeco-space-lg);">Button Variants</h3>
+
+          <div style="display: flex; flex-wrap: wrap; gap: var(--artdeco-space-md); margin-bottom: var(--artdeco-space-lg);">
+            <button class="artdeco-btn artdeco-btn-primary">Primary Action</button>
+            <button class="artdeco-btn artdeco-btn-secondary">Secondary Action</button>
+            <button class="artdeco-btn artdeco-btn-rise">买入 (Buy)</button>
+            <button class="artdeco-btn artdeco-btn-fall">卖出 (Sell)</button>
+          </div>
+
+          <h4 style="margin-bottom: var(--artdeco-space-md);">Button Sizes</h4>
+          <div style="display: flex; flex-wrap: wrap; gap: var(--artdeco-space-md); align-items: center;">
+            <button class="artdeco-btn artdeco-btn-primary" style="padding: 8px 16px; font-size: 0.75rem;">Small</button>
+            <button class="artdeco-btn artdeco-btn-primary">Default</button>
+            <button class="artdeco-btn artdeco-btn-primary" style="padding: 16px 48px; font-size: 1rem;">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅳ. Cards / 卡片</h2>
+
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card">
+            <h3>Basic Card</h3>
+            <p>Double border effect with corner decorations</p>
+            <p class="text-dim" style="font-size: 0.875rem;">Hover for glow effect</p>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-sm);">Stat Card</h3>
+            <div class="artdeco-stat-label">上证综指</div>
+            <div class="artdeco-stat-value">3,245.67</div>
+            <div class="artdeco-stat-change data-rise">
+              <span>▲</span><span>+1.23%</span>
+            </div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-sm);">Info Card</h3>
+            <div class="artdeco-info-label">LABEL</div>
+            <div class="artdeco-info-value">Value</div>
+            <p class="text-dim" style="font-size: 0.875rem;">Additional info</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅴ. Badges & Tags / 标签</h2>
+
+        <div class="artdeco-card">
+          <div style="display: flex; flex-wrap: wrap; gap: var(--artdeco-space-md); align-items: center;">
+            <span class="artdeco-badge artdeco-badge-gold">Gold Badge</span>
+            <span class="artdeco-badge artdeco-badge-rise">Rise (+2.35%)</span>
+            <span class="artdeco-badge artdeco-badge-fall">Fall (-1.23%)</span>
+            <span class="artdeco-badge" style="background: var(--artdeco-info-dim); color: var(--artdeco-info); border: 1px solid var(--artdeco-info);">Info</span>
+            <span class="artdeco-badge" style="background: rgba(230, 126, 34, 0.15); color: var(--artdeco-warning); border: 1px solid var(--artdeco-warning);">Warning</span>
+            <span class="artdeco-badge" style="background: rgba(39, 174, 96, 0.15); color: var(--artdeco-success); border: 1px solid var(--artdeco-success);">Success</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Indicators -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅵ. Status Indicators / 状态指示</h2>
+
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card">
+            <div style="display: flex; justify-content: center; align-items: center; gap: var(--artdeco-space-md);">
+              <div class="artdeco-status">
+                <span class="artdeco-status-dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="artdeco-card">
+            <div style="display: flex; justify-content: center; align-items: center; gap: var(--artdeco-space-md);">
+              <div class="artdeco-status">
+                <span class="artdeco-status-dot warning"></span>
+                <span>Warning</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="artdeco-card">
+            <div style="display: flex; justify-content: center; align-items: center; gap: var(--artdeco-space-md);">
+              <div class="artdeco-status">
+                <span class="artdeco-status-dot offline"></span>
+                <span>Offline</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Elements -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅶ. Form Elements / 表单元素</h2>
+
+        <div class="artdeco-card">
+          <div class="artdeco-grid-2">
+            <div>
+              <h4 style="margin-bottom: var(--artdeco-space-md);">Text Input</h4>
+              <input type="text" class="artdeco-input" placeholder="输入文本...">
+              <p class="text-dim" style="font-size: 0.875rem; margin-top: var(--artdeco-space-sm);">Underlined elegance style</p>
+            </div>
+
+            <div>
+              <h4 style="margin-bottom: var(--artdeco-space-md);">Search Input</h4>
+              <input type="text" class="artdeco-search-input" placeholder="搜索..." style="width: 100%; padding: 8px 16px; background: var(--artdeco-bg-card); border: 2px solid var(--artdeco-gold-dim); border-radius: var(--artdeco-radius-none); color: var(--artdeco-silver-text);">
+              <p class="text-dim" style="font-size: 0.875rem; margin-top: var(--artdeco-space-sm);">Bordered box style</p>
+            </div>
+
+            <div>
+              <h4 style="margin-bottom: var(--artdeco-space-md);">Select Dropdown</h4>
+              <div class="artdeco-select" style="width: 100%;">
+                <select>
+                  <option>选项 1</option>
+                  <option>选项 2</option>
+                  <option>选项 3</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="margin-bottom: var(--artdeco-space-md);">Filter Inputs</h4>
+              <div style="display: flex; gap: var(--artdeco-space-sm); align-items: center;">
+                <input type="number" class="artdeco-filter-input" placeholder="最小" style="flex: 1; padding: 8px 12px; background: var(--artdeco-bg-global); border: 1px solid var(--artdeco-gold-dim); color: var(--artdeco-silver-text);">
+                <span style="color: var(--artdeco-silver-muted);">~</span>
+                <input type="number" class="artdeco-filter-input" placeholder="最大" style="flex: 1; padding: 8px 12px; background: var(--artdeco-bg-global); border: 1px solid var(--artdeco-gold-dim); color: var(--artdeco-silver-text);">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tables -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅷ. Data Tables / 数据表格</h2>
+
+        <div class="artdeco-card">
+          <table class="artdeco-table">
+            <thead>
+              <tr>
+                <th>代码</th>
+                <th>名称</th>
+                <th>最新价</th>
+                <th>涨跌幅</th>
+                <th>成交量</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-mono">600519.SH</td>
+                <td>贵州茅台</td>
+                <td class="text-mono" style="font-weight: 600;">¥1,678.90</td>
+                <td class="text-mono data-rise">▲ +2.35%</td>
+                <td class="text-mono">2.35万手</td>
+              </tr>
+              <tr>
+                <td class="text-mono">000858.SZ</td>
+                <td>五粮液</td>
+                <td class="text-mono" style="font-weight: 600;">¥168.50</td>
+                <td class="text-mono data-fall">▼ -0.56%</td>
+                <td class="text-mono">15.6万手</td>
+              </tr>
+              <tr>
+                <td class="text-mono">600036.SH</td>
+                <td>招商银行</td>
+                <td class="text-mono" style="font-weight: 600;">¥32.45</td>
+                <td class="text-mono data-rise">▲ +1.23%</td>
+                <td class="text-mono">89.2万手</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Animations -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅸ. Animations / 动画效果</h2>
+
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card artdeco-fade-in">
+            <h3>Fade In Animation</h3>
+            <p>Staggered reveal effect on page load</p>
+          </div>
+
+          <div class="artdeco-card" style="animation: artdeco-fade-in 1s ease-out infinite alternate;">
+            <h3>Pulse Animation</h3>
+            <p>Subtle continuous movement</p>
+          </div>
+
+          <div class="artdeco-card">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: var(--artdeco-space-md);">
+              <h3>Live Indicator</h3>
+              <div class="artdeco-live-indicator">
+                <span class="artdeco-live-dot"></span>
+                <span>LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Examples -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅹ. Charts / 图表示例</h2>
+
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Line Chart (ECharts)</h3>
+            <div id="lineChart" style="height: 300px;"></div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Bar Chart (ECharts)</h3>
+            <div id="barChart" style="height: 300px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅺ. Navigation / 导航</h2>
+
+        <div class="artdeco-card">
+          <h3 style="margin-bottom: var(--artdeco-space-lg);">Sidebar Navigation Items</h3>
+          <div style="display: flex; flex-direction: column; gap: var(--artdeco-space-xs);">
+            <a href="#" class="artdeco-nav-item active" style="border-left: 3px solid var(--artdeco-gold-primary); background: var(--artdeco-gold-dim); color: var(--artdeco-gold-primary); padding: 12px var(--artdeco-space-md); text-decoration: none;">
+              <span>Ⅰ</span><span>主控仪表盘</span>
+            </a>
+            <a href="#" class="artdeco-nav-item" style="padding: 12px var(--artdeco-space-md); color: var(--artdeco-silver-dim); text-decoration: none;">
+              <span>Ⅱ</span><span>市场行情中心</span>
+            </a>
+            <a href="#" class="artdeco-nav-item" style="padding: 12px var(--artdeco-space-md); color: var(--artdeco-silver-dim); text-decoration: none;">
+              <span>Ⅲ</span><span>智能选股池</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="artdeco-section" style="text-align: center; margin-top: var(--artdeco-space-2xl);">
+        <div style="padding: var(--artdeco-space-xl); border-top: 1px solid var(--artdeco-gold-dim);">
+          <p style="font-family: var(--artdeco-font-display); font-size: 1.25rem; color: var(--artdeco-gold-primary); text-transform: uppercase; letter-spacing: 2px;">
+            MYSTOCKS ARTDECO SYSTEM
+          </p>
+          <p style="color: var(--artdeco-silver-dim); margin-top: var(--artdeco-space-sm);">
+            Version 1.0.0 | A股量化交易管理系统
+          </p>
+          <div style="margin-top: var(--artdeco-space-md); display: flex; justify-content: center; gap: var(--artdeco-space-md);">
+            <a href="01-dashboard.html" class="artdeco-btn artdeco-btn-secondary" style="font-size: 0.75rem; padding: 8px 16px;">Dashboard</a>
+            <a href="02-market-center.html" class="artdeco-btn artdeco-btn-secondary" style="font-size: 0.75rem; padding: 8px 16px;">Market Center</a>
+            <a href="03-stock-screener.html" class="artdeco-btn artdeco-btn-secondary" style="font-size: 0.75rem; padding: 8px 16px;">Stock Screener</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Initialize sample charts
+    document.addEventListener('DOMContentLoaded', () => {
+      // Line Chart
+      const lineChart = echarts.init(document.getElementById('lineChart'));
+      lineChart.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: ['9:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00'],
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: { color: '#8B9BB4', fontFamily: 'JetBrains Mono' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: { color: '#8B9BB4', fontFamily: 'JetBrains Mono' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)', type: 'dashed' } }
+        },
+        series: [{
+          data: [3220, 3235, 3240, 3238, 3242, 3245, 3248, 3246, 3244, 3245.67],
+          type: 'line',
+          smooth: true,
+          lineStyle: { color: '#D4AF37', width: 2 },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
+                { offset: 1, color: 'rgba(212, 175, 55, 0)' }
+              ]
+            }
+          }
+        }]
+      });
+
+      // Bar Chart
+      const barChart = echarts.init(document.getElementById('barChart'));
+      barChart.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: ['半导体', '新能源', '军工', '医药', '消费'],
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: { color: '#8B9BB4', fontFamily: 'Cinzel' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#5C6B7F' } },
+          axisLabel: { color: '#8B9BB4', fontFamily: 'JetBrains Mono' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)', type: 'dashed' } }
+        },
+        series: [{
+          data: [3.45, 2.78, 2.12, 1.89, -0.45],
+          type: 'bar',
+          itemStyle: {
+            color: (params) => params.value >= 0 ? '#C94042' : '#3D9970'
+          }
+        }]
+      });
+
+      // Resize handling
+      window.addEventListener('resize', () => {
+        lineChart.resize();
+        barChart.resize();
+      });
+    });
+  </script>
+</body>
+</html>

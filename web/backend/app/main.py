@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 # 导入缓存淘汰调度器
-from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
+# from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
 
 # 导入配置
 from .core.config import settings

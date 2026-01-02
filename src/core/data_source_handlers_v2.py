@@ -322,7 +322,7 @@ class BaostockHandler(BaseDataSourceHandler):
             try:
                 self.bs.logout()
                 self.is_logged_in = False
-            except:
+            except Exception:
                 pass
 
     def __del__(self):

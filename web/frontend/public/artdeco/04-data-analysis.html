@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据分析 - MyStocks ArtDeco</title>
+
+  <!-- Google Fonts - ArtDeco Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ArtDeco Theme -->
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+  <style>
+    .artdeco-layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .artdeco-sidebar {
+      width: 240px;
+      background: var(--artdeco-bg-header);
+      border-right: 1px solid var(--artdeco-gold-dim);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: var(--artdeco-z-fixed);
+      transition: transform var(--artdeco-transition-base);
+    }
+
+    .artdeco-sidebar-header {
+      padding: var(--artdeco-space-lg);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      text-align: center;
+    }
+
+    .artdeco-logo {
+      font-family: var(--artdeco-font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 4px;
+      text-decoration: none;
+    }
+
+    .artdeco-nav {
+      padding: var(--artdeco-space-md);
+    }
+
+    .artdeco-nav-section {
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-nav-section-title {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--artdeco-silver-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: var(--artdeco-space-sm) var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-sm);
+    }
+
+    .artdeco-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--artdeco-space-md);
+      padding: 12px var(--artdeco-space-md);
+      color: var(--artdeco-silver-dim);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all var(--artdeco-transition-fast);
+      font-size: 0.875rem;
+    }
+
+    .artdeco-nav-item:hover {
+      background: var(--artdeco-bg-hover);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-nav-item.active {
+      background: var(--artdeco-gold-dim);
+      border-left-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-gold-primary);
+    }
+
+    .artdeco-main {
+      flex: 1;
+      margin-left: 240px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .artdeco-topbar {
+      height: 60px;
+      background: var(--artdeco-bg-header);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--artdeco-space-lg);
+      position: sticky;
+      top: 0;
+      z-index: var(--artdeco-z-sticky);
+    }
+
+    .artdeco-breadcrumb {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      color: var(--artdeco-gold-primary);
+      letter-spacing: 1px;
+    }
+
+    .artdeco-search-box {
+      position: relative;
+      width: 400px;
+    }
+
+    .artdeco-search-input {
+      width: 100%;
+      padding: 8px 40px 8px 16px;
+      font-family: var(--artdeco-font-body);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-search-input:focus {
+      outline: none;
+      border-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle);
+    }
+
+    .artdeco-content {
+      flex: 1;
+      padding: var(--artdeco-space-xl);
+      overflow-y: auto;
+    }
+
+    .artdeco-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-card {
+      background: var(--artdeco-bg-card);
+      border: 2px solid var(--artdeco-gold-primary);
+      padding: var(--artdeco-space-lg);
+      position: relative;
+    }
+
+    .artdeco-card::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      pointer-events: none;
+    }
+
+    .artdeco-card h3 {
+      font-family: var(--artdeco-font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--artdeco-gold-primary);
+      margin-bottom: var(--artdeco-space-md);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .artdeco-chart-container {
+      width: 100%;
+      height: 350px;
+    }
+
+    .artdeco-table-wrapper {
+      overflow-x: auto;
+      margin-top: var(--artdeco-space-md);
+    }
+
+    .artdeco-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--artdeco-font-mono);
+      font-size: 0.875rem;
+    }
+
+    .artdeco-table th {
+      background: var(--artdeco-bg-header);
+      color: var(--artdeco-gold-primary);
+      font-family: var(--artdeco-font-display);
+      font-weight: 600;
+      text-align: left;
+      padding: 12px var(--artdeco-space-md);
+      border-bottom: 2px solid var(--artdeco-gold-primary);
+      white-space: nowrap;
+    }
+
+    .artdeco-table td {
+      padding: 12px var(--artdeco-space-md);
+      border-bottom: 1px solid var(--artdeco-gold-dim);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-table tr:hover td {
+      background: var(--artdeco-bg-hover);
+    }
+
+    .artdeco-data-rise {
+      color: var(--artdeco-rise);
+    }
+
+    .artdeco-data-fall {
+      color: var(--artdeco-fall);
+    }
+
+    .artdeco-filter-panel {
+      background: var(--artdeco-bg-card);
+      border: 1px solid var(--artdeco-gold-dim);
+      padding: var(--artdeco-space-lg);
+      margin-bottom: var(--artdeco-space-lg);
+    }
+
+    .artdeco-filter-row {
+      display: flex;
+      gap: var(--artdeco-space-md);
+      margin-bottom: var(--artdeco-space-md);
+      align-items: center;
+    }
+
+    .artdeco-filter-label {
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      color: var(--artdeco-gold-primary);
+      min-width: 100px;
+    }
+
+    .artdeco-filter-select {
+      flex: 1;
+      padding: 8px 12px;
+      font-family: var(--artdeco-font-body);
+      font-size: 0.875rem;
+      color: var(--artdeco-silver-text);
+      background: var(--artdeco-bg-header);
+      border: 1px solid var(--artdeco-gold-dim);
+      color: var(--artdeco-silver-text);
+    }
+
+    .artdeco-btn {
+      padding: 10px 24px;
+      font-family: var(--artdeco-font-display);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      cursor: pointer;
+      transition: all var(--artdeco-transition-fast);
+    }
+
+    .artdeco-btn-primary {
+      background: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-header);
+    }
+
+    .artdeco-btn-primary:hover {
+      background: var(--artdeco-gold-hover);
+      box-shadow: var(--artdeco-glow-gold);
+    }
+
+    .artdeco-btn-secondary {
+      background: transparent;
+      color: var(--artdeco-gold-primary);
+      border: 1px solid var(--artdeco-gold-primary);
+    }
+
+    .artdeco-btn-secondary:hover {
+      background: var(--artdeco-gold-dim);
+    }
+
+    @media (max-width: 1440px) {
+      .artdeco-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .artdeco-sidebar {
+        transform: translateX(-100%);
+      }
+
+      .artdeco-main {
+        margin-left: 0;
+      }
+
+      .artdeco-grid-2,
+      .artdeco-grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .artdeco-search-box {
+        width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-layout">
+    <!-- Sidebar -->
+    <nav class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="01-dashboard.html" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+
+      <div class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">市场数据</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item">
+            <span>Ⅰ</span>
+            <span>主控仪表盘</span>
+          </a>
+          <a href="02-market-center.html" class="artdeco-nav-item">
+            <span>Ⅱ</span>
+            <span>市场行情中心</span>
+          </a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item">
+            <span>Ⅲ</span>
+            <span>智能选股池</span>
+          </a>
+        </div>
+
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">分析工具</div>
+          <a href="04-data-analysis.html" class="artdeco-nav-item active">
+            <span>Ⅳ</span>
+            <span>数据分析</span>
+          </a>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item">
+            <span>Ⅴ</span>
+            <span>策略实验室</span>
+          </a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item">
+            <span>Ⅵ</span>
+            <span>回测竞技场</span>
+          </a>
+        </div>
+
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item">
+            <span>Ⅶ</span>
+            <span>交易工作站</span>
+          </a>
+          <a href="08-risk-center.html" class="artdeco-nav-item">
+            <span>Ⅷ</span>
+            <span>风控中心</span>
+          </a>
+        </div>
+
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item">
+            <span>Ⅸ</span>
+            <span>系统设置</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="artdeco-main">
+      <!-- Top Bar -->
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">数据分析 / DATA ANALYSIS</div>
+
+        <div class="artdeco-search-box">
+          <input
+            type="text"
+            class="artdeco-search-input"
+            placeholder="输入股票代码 / 名称快速分析..."
+          >
+        </div>
+
+        <div class="artdeco-topbar-actions">
+          <div class="artdeco-status">
+            <span class="artdeco-status-dot online"></span>
+            <span>数据源正常</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="artdeco-content">
+        <!-- Filter Panel -->
+        <div class="artdeco-filter-panel">
+          <div class="artdeco-filter-row">
+            <span class="artdeco-filter-label">分析类型</span>
+            <select class="artdeco-filter-select" id="analysisType">
+              <option value="market">市场整体分析</option>
+              <option value="sector">行业对比分析</option>
+              <option value="stock">个股深度分析</option>
+            </select>
+          </div>
+
+          <div class="artdeco-filter-row">
+            <span class="artdeco-filter-label">时间周期</span>
+            <select class="artdeco-filter-select" id="timePeriod">
+              <option value="1d">日级别</option>
+              <option value="1w">周级别</option>
+              <option value="1m">月级别</option>
+            </select>
+          </div>
+
+          <div class="artdeco-filter-row">
+            <span class="artdeco-filter-label">指标选择</span>
+            <select class="artdeco-filter-select" id="indicatorType">
+              <option value="trend">趋势指标 (MACD/MA)</option>
+              <option value="momentum">动量指标 (KDJ/RSI)</option>
+              <option value="volume">量价指标 (OBV/VOL)</option>
+            </select>
+          </div>
+
+          <div class="artdeco-filter-row">
+            <button class="artdeco-btn artdeco-btn-primary" onclick="runAnalysis()">执行分析</button>
+            <button class="artdeco-btn artdeco-btn-secondary" onclick="exportReport()">导出报告</button>
+          </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3>市场涨跌分布</h3>
+            <div id="riseFallChart" class="artdeco-chart-container"></div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>行业资金流向</h3>
+            <div id="sectorFlowChart" class="artdeco-chart-container"></div>
+          </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card">
+            <h3>技术指标分布 - RSI</h3>
+            <div id="rsiChart" class="artdeco-chart-container"></div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>估值水平分析 - PE</h3>
+            <div id="peChart" class="artdeco-chart-container"></div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>换手率统计</h3>
+            <div id="turnoverChart" class="artdeco-chart-container"></div>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="artdeco-card">
+          <h3>技术指标明细</h3>
+          <div class="artdeco-table-wrapper">
+            <table class="artdeco-table">
+              <thead>
+                <tr>
+                  <th>代码</th>
+                  <th>名称</th>
+                  <th>最新价</th>
+                  <th>涨跌幅</th>
+                  <th>成交量</th>
+                  <th>MACD</th>
+                  <th>KDJ</th>
+                  <th>RSI</th>
+                  <th>信号</th>
+                </tr>
+              </thead>
+              <tbody id="analysisTableBody">
+                <!-- Dynamic content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = '/api/v1';
+
+    // ==================== CHARTS ====================
+    let riseFallChart, sectorFlowChart, rsiChart, peChart, turnoverChart;
+
+    function initCharts() {
+      initRiseFallChart();
+      initSectorFlowChart();
+      initRSIChart();
+      initPEChart();
+      initTurnoverChart();
+    }
+
+    function initRiseFallChart() {
+      riseFallChart = echarts.init(document.getElementById('riseFallChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}只 ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          right: 10,
+          top: 'center',
+          textStyle: { color: '#E5E4E2' }
+        },
+        series: [{
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['35%', '50%'],
+          data: [
+            { value: 1245, name: '上涨', itemStyle: { color: '#C94042' } },
+            { value: 856, name: '下跌', itemStyle: { color: '#3D9970' } },
+            { value: 234, name: '平盘', itemStyle: { color: '#B8B8B8' } }
+          ],
+          label: {
+            color: '#E5E4E2',
+            formatter: '{b}\n{d}%'
+          },
+          labelLine: {
+            lineStyle: { color: '#D4AF37' }
+          }
+        }]
+      };
+      riseFallChart.setOption(option);
+    }
+
+    function initSectorFlowChart() {
+      sectorFlowChart = echarts.init(document.getElementById('sectorFlowChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        yAxis: {
+          type: 'category',
+          data: ['银行', '地产', '医药', '科技', '新能源', '消费'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        series: [{
+          type: 'bar',
+          data: [
+            { value: 12.5, itemStyle: { color: '#C94042' } },
+            { value: -8.3, itemStyle: { color: '#3D9970' } },
+            { value: 5.6, itemStyle: { color: '#C94042' } },
+            { value: 18.2, itemStyle: { color: '#C94042' } },
+            { value: 9.7, itemStyle: { color: '#C94042' } },
+            { value: -3.4, itemStyle: { color: '#3D9970' } }
+          ],
+          label: {
+            show: true,
+            position: 'right',
+            formatter: '{c}亿',
+            color: '#E5E4E2'
+          }
+        }]
+      };
+      sectorFlowChart.setOption(option);
+    }
+
+    function initRSIChart() {
+      rsiChart = echarts.init(document.getElementById('rsiChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['超卖', '弱势', '中性', '强势', '超买'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        series: [{
+          type: 'bar',
+          data: [45, 123, 256, 189, 67],
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#D4AF37' },
+              { offset: 1, color: 'rgba(212, 175, 55, 0.3)' }
+            ])
+          }
+        }]
+      };
+      rsiChart.setOption(option);
+    }
+
+    function initPEChart() {
+      peChart = echarts.init(document.getElementById('peChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['0-10', '10-20', '20-30', '30-50', '50+'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        series: [{
+          type: 'line',
+          data: [234, 567, 445, 312, 178],
+          smooth: true,
+          lineStyle: { color: '#D4AF37', width: 2 },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
+              { offset: 1, color: 'rgba(212, 175, 55, 0.05)' }
+            ])
+          }
+        }]
+      };
+      peChart.setOption(option);
+    }
+
+    function initTurnoverChart() {
+      turnoverChart = echarts.init(document.getElementById('turnoverChart'));
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['<2%', '2-5%', '5-10%', '10-15%', '>15%'],
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { lineStyle: { color: '#D4AF37' } },
+          axisLabel: { color: '#8B9BB4' },
+          splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+        },
+        series: [{
+          type: 'bar',
+          data: [345, 678, 456, 234, 123],
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#D4AF37' },
+              { offset: 1, color: 'rgba(212, 175, 55, 0.3)' }
+            ])
+          }
+        }]
+      };
+      turnoverChart.setOption(option);
+    }
+
+    // ==================== DATA LOADING ====================
+    function loadAnalysisData() {
+      fetchMockAnalysisData().then(data => {
+        populateAnalysisTable(data);
+      });
+    }
+
+    async function fetchMockAnalysisData() {
+      return [
+        { code: '600519.SH', name: '贵州茅台', price: 1678.50, change: 2.35, volume: '3.2万手', macd: '金叉', kdj: '80.5', rsi: '65.3', signal: '买入' },
+        { code: '000858.SZ', name: '五粮液', price: 156.78, change: -1.23, volume: '5.6万手', macd: '死叉', kdj: '45.2', rsi: '48.7', signal: '观望' },
+        { code: '600036.SH', name: '招商银行', price: 32.45, change: 1.56, volume: '8.9万手', macd: '金叉', kdj: '72.1', rsi: '58.4', signal: '买入' },
+        { code: '000001.SZ', name: '平安银行', price: 12.34, change: 0.89, volume: '12.3万手', macd: '金叉', kdj: '55.6', rsi: '52.1', signal: '持有' },
+        { code: '601318.SH', name: '中国平安', price: 45.67, change: -0.56, volume: '6.7万手', macd: '死叉', kdj: '38.9', rsi: '43.2', signal: '观望' },
+      ];
+    }
+
+    function populateAnalysisTable(data) {
+      const tbody = document.getElementById('analysisTableBody');
+      tbody.innerHTML = data.map(item => `
+        <tr>
+          <td style="font-family: var(--artdeco-font-mono);">${item.code}</td>
+          <td>${item.name}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${item.price.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;" class="${item.change >= 0 ? 'artdeco-data-rise' : 'artdeco-data-fall'}">
+            ${item.change >= 0 ? '+' : ''}${item.change.toFixed(2)}%
+          </td>
+          <td style="font-family: var(--artdeco-font-mono);">${item.volume}</td>
+          <td style="color: ${item.macd === '金叉' ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'}">${item.macd}</td>
+          <td style="font-family: var(--artdeco-font-mono);">${item.kdj}</td>
+          <td style="font-family: var(--artdeco-font-mono);">${item.rsi}</td>
+          <td>
+            <span style="padding: 4px 12px; background: ${item.signal === '买入' ? 'var(--artdeco-rise)' : item.signal === '观望' ? 'var(--artdeco-fall)' : 'var(--artdeco-gold-primary)'}; border-radius: 2px; font-size: 0.75rem;">
+              ${item.signal}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== ACTIONS ====================
+    function runAnalysis() {
+      alert('分析功能开发中：将调用 /api/v1/data/analysis 接口');
+    }
+
+    function exportReport() {
+      alert('报告导出功能开发中');
+    }
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      loadAnalysisData();
+
+      window.addEventListener('resize', () => {
+        riseFallChart?.resize();
+        sectorFlowChart?.resize();
+        rsiChart?.resize();
+        peChart?.resize();
+        turnoverChart?.resize();
+      });
+    });
+  </script>
+</body>
+</html>

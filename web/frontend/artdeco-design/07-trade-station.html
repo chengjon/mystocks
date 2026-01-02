@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>交易工作站 - MyStocks ArtDeco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/artdeco-theme.css">
+  <style>
+    .artdeco-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+    .artdeco-sidebar { width: 240px; background: var(--artdeco-bg-header); border-right: 1px solid var(--artdeco-gold-dim); position: fixed; height: 100vh; overflow-y: auto; z-index: var(--artdeco-z-fixed); }
+    .artdeco-sidebar-header { padding: var(--artdeco-space-lg); border-bottom: 1px solid var(--artdeco-gold-dim); text-align: center; }
+    .artdeco-logo { font-family: var(--artdeco-font-display); font-size: 1.5rem; font-weight: 700; color: var(--artdeco-gold-primary); letter-spacing: 4px; text-decoration: none; }
+    .artdeco-nav { padding: var(--artdeco-space-md); }
+    .artdeco-nav-section { margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-nav-section-title { font-family: var(--artdeco-font-display); font-size: 0.75rem; font-weight: 600; color: var(--artdeco-silver-muted); text-transform: uppercase; letter-spacing: 2px; padding: var(--artdeco-space-sm) var(--artdeco-space-md); margin-bottom: var(--artdeco-space-sm); }
+    .artdeco-nav-item { display: flex; align-items: center; gap: var(--artdeco-space-md); padding: 12px var(--artdeco-space-md); color: var(--artdeco-silver-dim); text-decoration: none; border-left: 3px solid transparent; transition: all var(--artdeco-transition-fast); font-size: 0.875rem; }
+    .artdeco-nav-item:hover { background: var(--artdeco-bg-hover); color: var(--artdeco-silver-text); }
+    .artdeco-nav-item.active { background: var(--artdeco-gold-dim); border-left-color: var(--artdeco-gold-primary); color: var(--artdeco-gold-primary); }
+    .artdeco-main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+    .artdeco-topbar { height: 60px; background: var(--artdeco-bg-header); border-bottom: 1px solid var(--artdeco-gold-dim); display: flex; align-items: center; justify-content: space-between; padding: 0 var(--artdeco-space-lg); position: sticky; top: 0; z-index: var(--artdeco-z-sticky); }
+    .artdeco-breadcrumb { font-family: var(--artdeco-font-display); font-size: 0.875rem; color: var(--artdeco-gold-primary); letter-spacing: 1px; }
+    .artdeco-content { flex: 1; padding: var(--artdeco-space-xl); overflow-y: auto; }
+    .artdeco-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--artdeco-space-lg); margin-bottom: var(--artdeco-space-lg); }
+    .artdeco-card { background: var(--artdeco-bg-card); border: 2px solid var(--artdeco-gold-primary); padding: var(--artdeco-space-lg); position: relative; }
+    .artdeco-card::before { content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px; border: 1px solid rgba(212, 175, 55, 0.3); pointer-events: none; }
+    .artdeco-card h3 { font-family: var(--artdeco-font-display); font-size: 1rem; font-weight: 600; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-md); text-transform: uppercase; letter-spacing: 1px; }
+    .artdeco-stat-value { font-size: 2rem; font-family: var(--artdeco-font-mono); font-weight: 700; color: var(--artdeco-gold-primary); margin-bottom: var(--artdeco-space-xs); }
+    .artdeco-stat-label { font-size: 0.875rem; color: var(--artdeco-silver-dim); }
+    .artdeco-table { width: 100%; border-collapse: collapse; font-family: var(--artdeco-font-mono); font-size: 0.875rem; }
+    .artdeco-table th { background: var(--artdeco-bg-header); color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-display); font-weight: 600; text-align: left; padding: 12px var(--artdeco-space-md); border-bottom: 2px solid var(--artdeco-gold-primary); }
+    .artdeco-table td { padding: 12px var(--artdeco-space-md); border-bottom: 1px solid var(--artdeco-gold-dim); color: var(--artdeco-silver-text); }
+    .artdeco-table tr:hover td { background: var(--artdeco-bg-hover); }
+    .artdeco-badge { display: inline-block; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; border-radius: 2px; }
+    .artdeco-badge-success { background: var(--artdeco-rise); color: white; }
+    .artdeco-badge-warning { background: var(--artdeco-warning); color: white; }
+    .artdeco-badge-info { background: var(--artdeco-info); color: white; }
+    .artdeco-btn { padding: 10px 24px; font-family: var(--artdeco-font-display); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: none; cursor: pointer; transition: all var(--artdeco-transition-fast); }
+    .artdeco-btn-primary { background: var(--artdeco-gold-primary); color: var(--artdeco-bg-header); }
+    .artdeco-btn-primary:hover { background: var(--artdeco-gold-hover); box-shadow: var(--artdeco-glow-gold); }
+    .artdeco-btn-secondary { background: transparent; color: var(--artdeco-gold-primary); border: 1px solid var(--artdeco-gold-primary); }
+    .artdeco-btn-secondary:hover { background: var(--artdeco-gold-dim); }
+    @media (max-width: 1440px) {
+      .artdeco-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .artdeco-sidebar { transform: translateX(-100%); }
+      .artdeco-main { margin-left: 0; }
+      .artdeco-grid-2, .artdeco-grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="artdeco-layout">
+    <nav class="artdeco-sidebar">
+      <div class="artdeco-sidebar-header">
+        <a href="01-dashboard.html" class="artdeco-logo">MYSTOCKS</a>
+      </div>
+      <div class="artdeco-nav">
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">市场数据</div>
+          <a href="01-dashboard.html" class="artdeco-nav-item"><span>Ⅰ</span><span>主控仪表盘</span></a>
+          <a href="02-market-center.html" class="artdeco-nav-item"><span>Ⅱ</span><span>市场行情中心</span></a>
+          <a href="03-stock-screener.html" class="artdeco-nav-item"><span>Ⅲ</span><span>智能选股池</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">分析工具</div>
+          <a href="04-data-analysis.html" class="artdeco-nav-item"><span>Ⅳ</span><span>数据分析</span></a>
+          <a href="05-strategy-lab.html" class="artdeco-nav-item"><span>Ⅴ</span><span>策略实验室</span></a>
+          <a href="06-backtest-arena.html" class="artdeco-nav-item"><span>Ⅵ</span><span>回测竞技场</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">交易管理</div>
+          <a href="07-trade-station.html" class="artdeco-nav-item active"><span>Ⅶ</span><span>交易工作站</span></a>
+          <a href="08-risk-center.html" class="artdeco-nav-item"><span>Ⅷ</span><span>风控中心</span></a>
+        </div>
+        <div class="artdeco-nav-section">
+          <div class="artdeco-nav-section-title">系统</div>
+          <a href="09-system-settings.html" class="artdeco-nav-item"><span>Ⅸ</span><span>系统设置</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="artdeco-main">
+      <header class="artdeco-topbar">
+        <div class="artdeco-breadcrumb">交易工作站 / TRADE STATION</div>
+        <button class="artdeco-btn artdeco-btn-primary" onclick="showNewOrderModal()">新建订单</button>
+      </header>
+
+      <div class="artdeco-content">
+        <!-- Account Overview -->
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value">¥1,234,567.89</div>
+            <div class="artdeco-stat-label">总资产</div>
+          </div>
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value">¥856,789.12</div>
+            <div class="artdeco-stat-label">持仓市值</div>
+          </div>
+          <div class="artdeco-card">
+            <div class="artdeco-stat-value">¥377,778.77</div>
+            <div class="artdeco-stat-label">可用资金</div>
+          </div>
+        </div>
+
+        <!-- Orders & Positions -->
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3>当前订单</h3>
+            <table class="artdeco-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>代码</th>
+                  <th>类型</th>
+                  <th>数量</th>
+                  <th>价格</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- Dynamic content -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>当前持仓</h3>
+            <table class="artdeco-table">
+              <thead>
+                <tr>
+                  <th>代码</th>
+                  <th>名称</th>
+                  <th>持仓</th>
+                  <th>成本</th>
+                  <th>现价</th>
+                  <th>盈亏</th>
+                </tr>
+              </thead>
+              <tbody id="positionsTableBody">
+                <!-- Dynamic content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Trade History -->
+        <div class="artdeco-card">
+          <h3>成交记录</h3>
+          <table class="artdeco-table">
+            <thead>
+              <tr>
+                <th>成交时间</th>
+                <th>代码</th>
+                <th>名称</th>
+                <th>操作</th>
+                <th>数量</th>
+                <th>价格</th>
+                <th>金额</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Dynamic content -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE_URL = '/api/v1';
+
+    const mockOrders = [
+      { id: 'ORD20240115001', code: '600519.SH', type: '买入', quantity: 100, price: 1678.50, status: 'pending' },
+      { id: 'ORD20240115002', code: '000858.SZ', type: '卖出', quantity: 500, price: 156.78, status: 'filled' },
+      { id: 'ORD20240115003', code: '600036.SH', type: '买入', quantity: 2000, price: 32.45, status: 'cancelled' },
+    ];
+
+    const mockPositions = [
+      { code: '600519.SH', name: '贵州茅台', quantity: 500, cost: 1650.00, current: 1678.50, profit: 14250.00 },
+      { code: '000858.SZ', name: '五粮液', quantity: 2000, cost: 158.00, current: 156.78, profit: -2440.00 },
+      { code: '600036.SH', name: '招商银行', quantity: 10000, cost: 31.50, current: 32.45, profit: 9500.00 },
+    ];
+
+    const mockHistory = [
+      { time: '2024-01-15 09:32:15', code: '600519.SH', name: '贵州茅台', action: '买入', quantity: 100, price: 1678.50, amount: 167850.00 },
+      { time: '2024-01-15 10:15:32', code: '000858.SZ', name: '五粮液', action: '卖出', quantity: 500, price: 156.78, amount: 78390.00 },
+      { time: '2024-01-15 13:45:08', code: '600036.SH', name: '招商银行', action: '买入', quantity: 2000, price: 32.45, amount: 64900.00 },
+      { time: '2024-01-15 14:20:45', code: '000001.SZ', name: '平安银行', action: '买入', quantity: 5000, price: 12.34, amount: 61700.00 },
+    ];
+
+    function populateOrdersTable() {
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = mockOrders.map(o => `
+        <tr>
+          <td style="font-family: var(--artdeco-font-mono);">${o.id}</td>
+          <td style="font-family: var(--artdeco-font-mono);">${o.code}</td>
+          <td style="color: ${o.type === '买入' ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${o.type}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${o.quantity}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${o.price.toFixed(2)}</td>
+          <td><span class="artdeco-badge ${o.status === 'filled' ? 'artdeco-badge-success' : o.status === 'pending' ? 'artdeco-badge-warning' : 'artdeco-badge-info'}">${o.status === 'filled' ? '已成交' : o.status === 'pending' ? '待成交' : '已撤销'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function populatePositionsTable() {
+      const tbody = document.getElementById('positionsTableBody');
+      tbody.innerHTML = mockPositions.map(p => `
+        <tr>
+          <td style="font-family: var(--artdeco-font-mono);">${p.code}</td>
+          <td>${p.name}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${p.quantity}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${p.cost.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${p.current.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right; color: ${p.profit >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${p.profit >= 0 ? '+' : ''}${p.profit.toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function populateHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = mockHistory.map(h => `
+        <tr>
+          <td style="font-family: var(--artdeco-font-mono);">${h.time}</td>
+          <td style="font-family: var(--artdeco-font-mono);">${h.code}</td>
+          <td>${h.name}</td>
+          <td style="color: ${h.action === '买入' ? 'var(--artdeco-rise)' : 'var(--artdeco-fall)'};">${h.action}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${h.quantity}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${h.price.toFixed(2)}</td>
+          <td style="font-family: var(--artdeco-font-mono); text-align: right;">${h.amount.toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function showNewOrderModal() {
+      alert('新建订单弹窗开发中：将调用 /api/v1/trade/create 接口');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populateOrdersTable();
+      populatePositionsTable();
+      populateHistoryTable();
+    });
+  </script>
+</body>
+</html>
