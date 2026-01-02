@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/configs",
+  "total_endpoints": 5,
+  "endpoints": [
+    {
+      "path": "/configs",
+      "method": "POST",
+      "file": "indicators.py",
+      "function": "create_indicator_config",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 836
+    },
+    {
+      "path": "/configs",
+      "method": "GET",
+      "file": "indicators.py",
+      "function": "list_indicator_configs",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 918
+    },
+    {
+      "path": "/configs/{config_id}",
+      "method": "GET",
+      "file": "indicators.py",
+      "function": "get_indicator_config",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 974
+    },
+    {
+      "path": "/configs/{config_id}",
+      "method": "PUT",
+      "file": "indicators.py",
+      "function": "update_indicator_config",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 1032
+    },
+    {
+      "path": "/configs/{config_id}",
+      "method": "DELETE",
+      "file": "indicators.py",
+      "function": "delete_indicator_config",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 1116
+    }
+  ]
+}

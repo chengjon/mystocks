@@ -330,6 +330,8 @@ class PostgreSQLDataAccess:
                 "monitoring_logs",
                 "alerts",
                 "system_metrics",
+                "concepts",
+                "industries",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
@@ -379,14 +381,23 @@ class PostgreSQLDataAccess:
             else:
                 cols = "*"
 
-            # SECURITY FIX: Build SQL with proper validation
-            sql = f"SELECT {cols} FROM {table_name}"
+            # SECURITY FIX: Build SQL with psycopg2.sql for best practice
+            # Note: table_name and cols are already validated by whitelists above
+            # Using sql.Identifier provides additional protection
+            if cols == "*":
+                sql_query = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table_name))
+            else:
+                # Split column names and wrap each in Identifier
+                col_identifiers = [sql.Identifier(col.strip()) for col in cols.split(",")]
+                sql_query = sql.SQL("SELECT {} FROM {}").format(
+                    sql.SQL(", ").join(col_identifiers), sql.Identifier(table_name)
+                )
 
-            # SECURITY FIX: For WHERE clause, check if it contains parameters
+            # SECURITY FIX: For WHERE clause, use sql.SQL for safety
             if where:
                 # If WHERE contains parameter placeholders, keep it as-is for parameterized execution
                 if "%s" in where or "%" in where:
-                    sql += f" WHERE {where}"
+                    sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
                 else:
                     # For literal WHERE clauses, do basic validation to prevent injection
                     dangerous_patterns = ["'", ";", "--", "/*", "*/", "xp_", "sp_"]
@@ -394,7 +405,7 @@ class PostgreSQLDataAccess:
                     for pattern in dangerous_patterns:
                         if pattern in where_lower:
                             raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
-                    sql += f" WHERE {where}"
+                    sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
 
             # SECURITY FIX: Validate ORDER BY to prevent injection
             if order_by:
@@ -417,15 +428,17 @@ class PostgreSQLDataAccess:
                 order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
                 if order_field not in allowed_order_fields:
                     raise ValueError(f"Invalid order field: {order_field}")
-                sql += f" ORDER BY {order_by}"
+                # Fix: Use sql.SQL instead of string concatenation
+                sql_query = sql.SQL("{} ORDER BY {}").format(sql_query, sql.SQL(order_by))
 
             # SECURITY FIX: Validate limit to prevent injection
             if limit:
                 if not isinstance(limit, int) or limit <= 0 or limit > 10000:
                     raise ValueError(f"Invalid limit value: {limit}")
-                sql += f" LIMIT {limit}"
+                # Fix: Use sql.Literal for limit value
+                sql_query = sql.SQL("{} LIMIT {}").format(sql_query, sql.Literal(limit))
 
-            df = pd.read_sql(sql, conn)
+            df = pd.read_sql(sql_query.as_string(conn), conn)
             return df
 
         except Exception as e:
@@ -546,6 +559,8 @@ class PostgreSQLDataAccess:
                 "monitoring_logs",
                 "alerts",
                 "system_metrics",
+                "concepts",
+                "industries",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
@@ -629,6 +644,8 @@ class PostgreSQLDataAccess:
                 "monitoring_logs",
                 "alerts",
                 "system_metrics",
+                "concepts",
+                "industries",
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
@@ -707,17 +724,11 @@ class PostgreSQLDataAccess:
                     filters["end_time"],
                 )
             elif "where" in filters:
-                # 自定义where条件
-                sql = f"SELECT * FROM {table_name} WHERE {filters['where']}"
-                if "limit" in filters:
-                    sql += f" LIMIT {filters['limit']}"
+                # 自定义where条件 - 使用已验证的query方法
                 return self.query(table_name, where=filters["where"], limit=filters.get("limit"))
             else:
-                # 查询全表（带limit）
-                sql = f"SELECT * FROM {table_name}"
-                if "limit" in filters:
-                    sql += f" LIMIT {filters['limit']}"
-                return self.execute_sql(sql)
+                # 查询全表（带limit）- 使用已验证的query方法
+                return self.query(table_name, limit=filters.get("limit"))
         except Exception as e:
             print(f"❌ 加载数据失败: {e}")
             return None

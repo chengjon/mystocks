@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/database",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/database/health",
+      "method": "GET",
+      "file": "system.py",
+      "function": "database_health",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 935
+    },
+    {
+      "path": "/database/stats",
+      "method": "GET",
+      "file": "system.py",
+      "function": "database_stats",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 1084
+    }
+  ]
+}

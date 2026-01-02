@@ -10,6 +10,8 @@ import type {
   MarketOverviewVM,
   FundFlowChartPoint,
   KLineChartData,
+  ChipRaceItem,
+  LongHuBangItem,
 } from '../types/market';
 
 // Import new API types
@@ -17,6 +19,8 @@ import type {
   MarketOverviewDetailedResponse as MarketOverviewResponse,
   FundFlowAPIResponse,
   KLineDataResponse,
+  ChipRaceResponse,
+  LongHuBangResponse,
 } from '../types/generated-types';
 
 // Import Mock data as fallback
@@ -32,7 +36,7 @@ export class MarketAdapter {
    * @returns Adapted MarketOverviewVM object (falls back to mock on error)
    */
   static adaptMarketOverview(
-    apiResponse: UnifiedResponse<ApiMarketOverviewData>
+    apiResponse: UnifiedResponse<MarketOverviewResponse>
   ): MarketOverviewVM {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[MarketAdapter] API failed, using mock data:', apiResponse.message);
@@ -41,9 +45,14 @@ export class MarketAdapter {
 
     try {
       const data = apiResponse.data;
-      const rise = data.rise_fall_count?.rise || 0;
-      const fall = data.rise_fall_count?.fall || 0;
-      const flat = data.rise_fall_count?.flat || 0;
+
+      // Handle missing fields gracefully - backend API may not have all fields yet
+      // Use type assertions to access fields that may not be in the type definition
+      const apiData = data as any;
+
+      const rise = apiData.rise_fall_count?.rise || 0;
+      const fall = apiData.rise_fall_count?.fall || 0;
+      const flat = apiData.rise_fall_count?.flat || 0;
       const total = rise + fall + flat;
 
       return {
@@ -53,7 +62,7 @@ export class MarketAdapter {
           fallingStocks: fall,
           avgChangePercent: 0, // Not available in new API response
         },
-        topEtfs: data.top_etfs?.map((etf) => ({
+        topEtfs: apiData.top_etfs?.map((etf: any) => ({
           symbol: etf.symbol || '',
           name: etf.name || '',
           latestPrice: 0, // Not available in new API response
@@ -62,8 +71,8 @@ export class MarketAdapter {
         })) || [],
         chipRaces: [], // Fetched separately in new API
         longHuBang: [], // Fetched separately in new API
-        lastUpdate: data.timestamp ? new Date(data.timestamp) : new Date(),
-        marketIndex: data.market_index,
+        lastUpdate: apiData.timestamp ? new Date(apiData.timestamp) : new Date(),
+        marketIndex: apiData.market_index,
       };
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt market overview:', error);
@@ -90,11 +99,11 @@ export class MarketAdapter {
       const fundFlowData = apiResponse.data?.fundFlow || [];
 
       return fundFlowData.map((item) => ({
-        date: item.tradeDate || '',
-        mainInflow: item.superLargeNetInflow || 0,
-        mainOutflow: item.largeNetInflow || 0,
-        netInflow: item.mainNetInflow || 0,
-        timestamp: item.tradeDate ? new Date(item.tradeDate).getTime() : Date.now(),
+        date: item.trade_date || '',
+        mainInflow: item.super_large_net_inflow || 0,
+        mainOutflow: item.large_net_inflow || 0,
+        netInflow: item.main_net_inflow || 0,
+        timestamp: item.trade_date ? new Date(item.trade_date).getTime() : Date.now(),
       }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
@@ -109,7 +118,7 @@ export class MarketAdapter {
    * @returns Adapted KLineChartData object (falls back to mock on error)
    */
   static adaptKLineData(
-    apiResponse: UnifiedResponse<ApiKlineData>
+    apiResponse: UnifiedResponse<KLineDataResponse>
   ): KLineChartData {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[MarketAdapter] K-line API failed, using mock data:', apiResponse.message);
@@ -120,7 +129,7 @@ export class MarketAdapter {
       const klineData = apiResponse.data;
       const points = klineData.data || [];
 
-      const categoryData = points.map((p) => p.timestamp || '');
+      const categoryData = points.map((p) => p.datetime || '');
       const values = points.map((p) => [
         p.open || 0,
         p.close || 0,
@@ -144,16 +153,18 @@ export class MarketAdapter {
    * Adapt Chip Race data
    */
   static adaptChipRace(
-    apiResponse: UnifiedResponse<ApiChipRaceData>
+    apiResponse: UnifiedResponse<ChipRaceResponse | ChipRaceResponse[]>
   ): ChipRaceItem[] {
-      if (!apiResponse.success || !apiResponse.data || !apiResponse.data.stocks) {
+      if (!apiResponse.success || !apiResponse.data) {
           return [];
       }
-      return apiResponse.data.stocks.map(stock => ({
+      // Handle both single item and array responses
+      const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
+      return items.map(stock => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
-          raceAmount: stock.main_buy_amount || 0, // Using main_buy_amount as raceAmount
-          changePercent: stock.race_ratio || 0 // Using race_ratio as changePercent for now, or 0
+          raceAmount: stock.race_amount || 0,
+          changePercent: stock.change_percent || 0
       }));
   }
 
@@ -161,15 +172,17 @@ export class MarketAdapter {
    * Adapt Long Hu Bang data
    */
   static adaptLongHuBang(
-    apiResponse: UnifiedResponse<ApiLongHuBangData>
+    apiResponse: UnifiedResponse<LongHuBangResponse | LongHuBangResponse[]>
   ): LongHuBangItem[] {
-      if (!apiResponse.success || !apiResponse.data || !apiResponse.data.stocks) {
+      if (!apiResponse.success || !apiResponse.data) {
           return [];
       }
-      return apiResponse.data.stocks.map(stock => ({
+      // Handle both single item and array responses
+      const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
+      return items.map(stock => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
-          netAmount: (stock.buy_amount || 0) - (stock.sell_amount || 0),
+          netAmount: stock.net_amount || 0,
           reason: stock.reason || ''
       }));
   }

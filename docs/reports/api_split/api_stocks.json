@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/stocks",
+  "total_endpoints": 10,
+  "endpoints": [
+    {
+      "path": "/stocks",
+      "method": "GET",
+      "file": "market.py",
+      "function": "get_stock_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 534
+    },
+    {
+      "path": "/stocks/basic",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_stocks_basic",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 33
+    },
+    {
+      "path": "/stocks/industries",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_stocks_industries",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 102
+    },
+    {
+      "path": "/stocks/concepts",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_stocks_concepts",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 157
+    },
+    {
+      "path": "/stocks/daily",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_daily_kline",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 221
+    },
+    {
+      "path": "/stocks/search",
+      "method": "GET",
+      "file": "data.py",
+      "function": "search_stocks",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 320
+    },
+    {
+      "path": "/stocks/kline",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_kline_data",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 381
+    },
+    {
+      "path": "/stocks/intraday",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_intraday_data",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 852
+    },
+    {
+      "path": "/stocks/{symbol}/detail",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_stock_detail",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 911
+    },
+    {
+      "path": "/stocks/{symbol}/trading-summary",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_trading_summary",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 1014
+    }
+  ]
+}

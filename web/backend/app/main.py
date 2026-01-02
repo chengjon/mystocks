@@ -6,6 +6,7 @@ MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 import os
 import secrets
 import time
+import logging
 from contextlib import asynccontextmanager
 
 import structlog
@@ -43,7 +44,8 @@ from .core.exception_handler import register_exception_handlers
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
-# 配置日志
+# 配置日志 - DEBUG级别
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = structlog.get_logger()
 
 
@@ -199,7 +201,8 @@ app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压
 
 # 配置统一响应格式中间件 (API标准化)
 app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
-app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
+# TEMP: Commenting out ResponseFormatMiddleware to debug 500 error
+# app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
 
 # Phase 5: 配置性能监控中间件
 performance_middleware = PerformanceMiddleware()
@@ -439,7 +442,7 @@ from .api import (
     dashboard,
     data,
     data_quality,
-    gpu_monitoring,  # CLI-5: GPU监控API (Phase 6 - T5.2)
+    data_source_registry,  # 数据源注册表管理API (V2.0)
     health,
     indicators,
     industry_concept_analysis,
@@ -454,14 +457,15 @@ from .api import (
     sse_endpoints,
     stock_search,
     strategy,
+    strategy_list_mock,  # Mock策略列表端点 (仅开发环境)
     strategy_management,
     strategy_mgmt,
     system,
     tasks,
     tdx,
     technical_analysis,
-    trade,
     tradingview,
+    watchlist,
     watchlist,
     wencai,
 )
@@ -482,7 +486,7 @@ app.include_router(
 )  # Phase 3 Task 19: Connection Pool Monitoring
 app.include_router(cache.router, prefix="/api", tags=["cache"])  # 缓存管理 (Task 2.2)
 app.include_router(tasks.router, tags=["tasks"])  # 任务管理
-app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理
+# app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理 - TODO: 模块不存在，待实现
 app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
 
 # OpenStock 迁移功能路由
@@ -498,17 +502,23 @@ app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预
 app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 
 #  实时监控系统路由
-app.include_router(monitoring.router, tags=["monitoring"])  # 实时监控和告警
+app.include_router(monitoring.router, prefix="/api/monitoring", tags=["monitoring"])
 
 # CLI-5: GPU监控路由 (Phase 6 - T5.2)
-app.include_router(gpu_monitoring.router, tags=["gpu-monitoring"])  # GPU监控仪表板
+# app.include_router(gpu_monitoring.router, tags=["gpu-monitoring"])  # GPU监控仪表板 - TODO: 模块不存在，待实现
 
-#  技术分析系统路由 (Phase 2)
+# 技术分析系统路由 (Phase 2)
 app.include_router(technical_analysis.router, tags=["technical-analysis"])  # 增强技术分析
 
-#  仪表盘系统路由 (Phase 4)
 app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
 app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理API
+
+# Mock API路由 (仅开发环境注册，生产环境禁用)
+if settings.use_mock_apis:
+    app.include_router(strategy_list_mock.router)  # Mock策略列表 (/api/mock/strategy)
+    logger.info("✅ Mock API routes registered (USE_MOCK_DATA=true)")
+else:
+    logger.info("ℹ️  Mock API routes disabled (USE_MOCK_DATA=false) - Using real APIs")
 
 #  多数据源系统路由 (Phase 3)
 app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
@@ -526,6 +536,9 @@ app.include_router(industry_concept_analysis.router)  # 行业概念分析
 
 # Phase 4: API契约管理
 app.include_router(contract.router)  # 契约版本管理、差异检测、验证
+
+# 数据源管理V2.0 API (数据源注册表管理)
+app.include_router(data_source_registry.router)  # 数据源搜索、测试、健康检查
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")

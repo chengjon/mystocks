@@ -20,7 +20,7 @@ PROJECT_ROOT="/opt/claude/mystocks_spec"
 BACKUP_DIR="/opt/mystocks/backups"
 LOG_DIR="/opt/mystocks/logs"
 DATA_DIR="/opt/mystocks/data"
-ENV_FILE="${PROJECT_ROOT}/.env.production"
+ENV_FILE="${PROJECT_ROOT}/.env"
 CONFIG_FILE="${PROJECT_ROOT}/ecosystem.production.config.js"
 DEPLOY_LOG="${LOG_DIR}/deploy.log"
 

@@ -1,0 +1,429 @@
+# ============================================================================
+# 数据源注册配置文件
+# ============================================================================
+# 用途：定义所有外部数据源接口的配置元数据
+# 说明：
+#   - 此文件用于版本控制和批量配置管理
+#   - 通过 sync_sources.py 同步到 PostgreSQL data_source_registry 表
+#   - YAML格式便于阅读、版本控制和批量修改
+#
+# 维护者：Main CLI
+# 版本：v2.0
+# 最后更新：2026-01-02
+# ============================================================================
+
+version: "2.0"
+last_updated: "2026-01-02T12:00:00"
+
+# ============================================================================
+# 配置说明
+# ============================================================================
+# 每个数据源包含以下字段：
+#   - source_name: 数据源名称（akshare, tushare, tdx等）
+#   - source_type: 数据源类型（api_library, database, crawler, file, mock）
+#   - endpoint_name: 唯一标识符（如 akshare.stock_zh_a_hist）
+#   - data_category: 数据分类（对应34个分类）
+#   - classification_level: 1-5层分类（1=市场数据, 2=参考数据等）
+#   - target_db: 目标数据库（postgresql/tdengine）
+#   - table_name: 目标表名
+#   - parameters: 参数定义（JSON Schema格式）
+#   - test_parameters: 测试参数（用于健康检查）
+#   - source_config: 数据源特定配置（token、连接信息等）
+#   - quality_rules: 数据质量验证规则
+#
+# 完整字段列表请参考数据库表结构
+# ============================================================================
+
+data_sources:
+  # ==========================================================================
+  # Mock数据源（用于测试）
+  # ==========================================================================
+  mock_daily_kline:
+    source_name: "system_mock"
+    source_type: "mock"
+    endpoint_name: "mock.daily_kline"
+    call_method: "function_call"
+
+    # 5层数据分类绑定
+    data_category: "DAILY_KLINE"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "daily_kline"
+
+    # 参数定义
+    parameters:
+      symbol:
+        type: "string"
+        required: true
+        description: "股票代码"
+        example: "000001"
+      period:
+        type: "string"
+        required: false
+        default: "daily"
+        options: ["daily", "weekly", "monthly"]
+      start_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+      end_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+
+    description: "Mock日线数据（用于测试和开发）"
+    update_frequency: "daily"
+    data_quality_score: 9.0
+    priority: 999  # Mock优先级最低，只在USE_MOCK_DATA=true时使用
+    status: "active"
+    tags: ["mock", "test", "development"]
+
+    # 测试参数
+    test_parameters:
+      symbol: "000001"
+      period: "daily"
+
+    # 数据源特定配置
+    source_config:
+      mock_data_path: "src/mock/stock_data.py"
+      mock_function: "get_mock_daily_kline"
+
+    # 数据质量规则
+    quality_rules:
+      min_record_count: 1
+      max_response_time: 0.1  # Mock应该很快
+      required_columns: ["trade_date", "open", "high", "low", "close", "volume"]
+
+  # ==========================================================================
+  # AKShare 数据源
+  # ==========================================================================
+  akshare_stock_daily:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_zh_a_hist"
+    call_method: "function_call"
+    endpoint_url: "akshare.stock_zh_a_hist"
+
+    # 5层数据分类绑定
+    data_category: "DAILY_KLINE"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "daily_kline"
+
+    # 参数定义
+    parameters:
+      symbol:
+        type: "string"
+        required: true
+        description: "股票代码"
+        example: "000001"
+        pattern: "^[0-9]{6}$"
+      period:
+        type: "string"
+        required: false
+        default: "daily"
+        options: ["daily", "weekly", "monthly"]
+        description: "数据周期"
+      adjust:
+        type: "string"
+        required: false
+        default: "qfq"
+        options: ["qfq", "hfq", ""]
+        description: "复权类型：qfq=前复权, hfq=后复权, 空字符串=不复权"
+      start_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+        description: "开始日期"
+        example: "20240101"
+      end_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+        description: "结束日期"
+        example: "20241231"
+
+    description: "AKShare A股日线历史行情数据"
+    update_frequency: "daily"
+    update_schedule: "16:00"  # 每天16:00更新
+    data_quality_score: 9.5
+    priority: 2  # 次优先级（tushare更好但需要付费）
+    status: "active"
+    tags: ["stock", "kline", "free", "akshare"]
+
+    # 测试参数
+    test_parameters:
+      symbol: "000001"
+      period: "daily"
+      adjust: "qfq"
+      start_date: "20240101"
+      end_date: "20240110"
+
+    # 数据源特定配置
+    source_config:
+      module_name: "akshare"
+      function_name: "stock_zh_a_hist"
+      param_mapping:
+        symbol: "symbol"
+        period: "period"
+        start_date: "start_date"
+        end_date: "end_date"
+        adjust: "adjust"
+      quota_limit: null  # 无限制
+      rate_limit: null   # 无官方限速
+
+    # 数据质量规则
+    quality_rules:
+      min_record_count: 1
+      max_response_time: 10.0  # 秒
+      required_columns: ["日期", "开盘", "最高", "最低", "收盘", "成交量"]
+      data_types:
+        "日期": "date"
+        "开盘": "float"
+        "最高": "float"
+        "最低": "float"
+        "收盘": "float"
+        "成交量": "int"
+
+  # ==========================================================================
+  # TuShare 数据源
+  # ==========================================================================
+  tushare_daily:
+    source_name: "tushare"
+    source_type: "api_library"
+    endpoint_name: "tushare.daily"
+    call_method: "function_call"
+    endpoint_url: "ts.pro_api.daily"
+
+    # 5层数据分类绑定
+    data_category: "DAILY_KLINE"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "daily_kline"
+
+    # 参数定义
+    parameters:
+      ts_code:
+        type: "string"
+        required: true
+        description: "股票代码（TS格式）"
+        example: "000001.SZ"
+        pattern: "^[0-9]{6}\\.(SH|SZ)$"
+      trade_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+        description: "交易日期"
+      start_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+        description: "开始日期"
+      end_date:
+        type: "string"
+        format: "YYYYMMDD"
+        required: false
+        description: "结束日期"
+
+    description: "TuShare A股日线行情数据（专业版）"
+    update_frequency: "daily"
+    update_schedule: "18:00"  # 每天18:00更新
+    data_quality_score: 9.8  # 质量最高
+    priority: 1  # 最高优先级
+    status: "active"
+    tags: ["stock", "kline", "premium", "high-quality", "tushare"]
+
+    # 测试参数
+    test_parameters:
+      ts_code: "000001.SZ"
+      start_date: "20240101"
+      end_date: "20240102"
+
+    # 数据源特定配置
+    source_config:
+      token_env_var: "TUSHARE_TOKEN"
+      module_name: "tushare"
+      api_name: "daily"
+      quota_limit: 5000  # 每日5000次
+      quota_type: "daily"
+      rate_limit: 500  # 每分钟500次
+
+    # 数据质量规则
+    quality_rules:
+      min_record_count: 1
+      max_response_time: 5.0
+      required_columns: ["ts_code", "trade_date", "open", "high", "low", "close", "vol", "amount"]
+      data_types:
+        "ts_code": "string"
+        "trade_date": "date"
+        "open": "float"
+        "high": "float"
+        "low": "float"
+        "close": "float"
+        "vol": "float"
+        "amount": "float"
+
+  # ==========================================================================
+  # 通达信数据源
+  # ==========================================================================
+  tdx_realtime:
+    source_name: "tdx"
+    source_type: "database"
+    endpoint_name: "tdx.get_security_quotes"
+    call_method: "tcp"
+    endpoint_url: "tcp://192.168.1.100:7709"
+
+    # 5层数据分类绑定
+    data_category: "REALTIME_QUOTE"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "tdengine"
+    table_name: "tick_data"
+
+    # 参数定义
+    parameters:
+      symbols:
+        type: "array"
+        required: true
+        description: "股票代码列表"
+        example: ["000001", "600000", "000002"]
+        items:
+          type: "string"
+
+    description: "通达信实时行情数据（低延迟）"
+    update_frequency: "realtime"
+    update_schedule: "*/5 * * * *"  # 每5分钟
+    data_quality_score: 9.0
+    priority: 1
+    status: "active"
+    tags: ["realtime", "tick", "low-latency", "tdx"]
+
+    # 测试参数
+    test_parameters:
+      symbols: ["000001"]
+
+    # 数据源特定配置
+    source_config:
+      connection_type: "tcp"
+      host: "192.168.1.100"
+      port: 7709
+      timeout: 5
+      retry_times: 3
+      retry_interval: 1
+
+    # 数据质量规则
+    quality_rules:
+      max_response_time: 1.0  # 1秒内响应（实时性要求）
+      min_record_count: 1
+      required_fields: ["symbol", "price", "volume", "timestamp"]
+
+  # ==========================================================================
+  # AKShare 股票基本信息
+  # ==========================================================================
+  akshare_stock_basic:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_info_a_code_name"
+    call_method: "function_call"
+    endpoint_url: "akshare.stock_info_a_code_name"
+
+    # 5层数据分类绑定
+    data_category: "SYMBOLS_INFO"
+    data_classification: "reference_data"
+    classification_level: 2
+    target_db: "postgresql"
+    table_name: "stock_symbols"
+
+    # 参数定义
+    parameters: {}
+
+    description: "AKShare A股股票代码和名称列表"
+    update_frequency: "weekly"
+    update_schedule: "0 2 * * 0"  # 每周日凌晨2点
+    data_quality_score: 9.0
+    priority: 2
+    status: "active"
+    tags: ["stock", "symbols", "free", "reference"]
+
+    # 测试参数
+    test_parameters: {}
+
+    # 数据源特定配置
+    source_config:
+      module_name: "akshare"
+      function_name: "stock_info_a_code_name"
+      quota_limit: null
+
+    # 数据质量规则
+    quality_rules:
+      min_record_count: 1000  # 至少1000只股票
+      max_response_time: 10.0
+      required_columns: ["code", "name"]
+
+  # ==========================================================================
+  # TuShare 财务数据
+  # ==========================================================================
+  tushare_financial:
+    source_name: "tushare"
+    source_type: "api_library"
+    endpoint_name: "tushare.income"
+    call_method: "function_call"
+    endpoint_url: "ts.pro_api.income"
+
+    # 5层数据分类绑定
+    data_category: "FINANCIAL_DATA"
+    data_classification: "reference_data"
+    classification_level: 2
+    target_db: "postgresql"
+    table_name: "financial_data"
+
+    # 参数定义
+    parameters:
+      ts_code:
+        type: "string"
+        required: true
+        description: "股票代码"
+        example: "000001.SZ"
+      period:
+        type: "string"
+        required: false
+        default: "20241231"
+        description: "报告期"
+        pattern: "^\\d{8}$"
+      report_type:
+        type: "string"
+        required: false
+        default: "1"
+        options: ["1", "4"]
+        description: "报告类型：1=合并报表, 4=单季合并"
+
+    description: "TuShare 利润表数据（专业版）"
+    update_frequency: "monthly"
+    update_schedule: "0 3 * * *"  # 每天凌晨3点
+    data_quality_score: 9.5
+    priority: 1
+    status: "active"
+    tags: ["financial", "premium", "tushare"]
+
+    # 测试参数
+    test_parameters:
+      ts_code: "000001.SZ"
+      period: "20241231"
+      report_type: "1"
+
+    # 数据源特定配置
+    source_config:
+      token_env_var: "TUSHARE_TOKEN"
+      module_name: "tushare"
+      api_name: "income"
+      quota_limit: 5000
+      quota_type: "daily"
+
+    # 数据质量规则
+    quality_rules:
+      min_record_count: 1
+      max_response_time: 10.0
+      required_columns: ["ts_code", "ann_date", "f_ann_date", "end_date", "report_type", "comp_type"]

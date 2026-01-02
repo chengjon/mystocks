@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/kline",
+  "total_endpoints": 3,
+  "endpoints": [
+    {
+      "path": "/kline",
+      "method": "GET",
+      "file": "market.py",
+      "function": "get_kline_data",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 649
+    },
+    {
+      "path": "/kline",
+      "method": "GET",
+      "file": "tdx.py",
+      "function": "get_stock_kline",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 85
+    },
+    {
+      "path": "/kline",
+      "method": "GET",
+      "file": "data.py",
+      "function": "get_kline",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 366
+    }
+  ]
+}

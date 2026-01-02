@@ -112,6 +112,7 @@ class DatabaseConnectionManager:
                     user=os.getenv("POSTGRESQL_USER", "postgres"),
                     password=os.getenv("POSTGRESQL_PASSWORD", ""),
                     database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+                    connect_timeout=10  # 10 second connection timeout
                 )
                 self._connections["postgresql"] = connection_pool
 

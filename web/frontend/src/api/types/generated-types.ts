@@ -1,32 +1,34 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2025-12-31T01:12:24.678787
+// Generated at: 2026-01-02T20:38:16.537397
+
+// Standard Unified Response Wrapper
+export interface UnifiedResponse<TData = any> {
+  code: string | number;
+  message: string;
+  data: TData;
+  request_id?: string;
+  timestamp?: number | string;
+}
 
 // API Response Types
 export interface APIResponse {
-
-  success: boolean; // Default: True
-  code: number; // Default: 0
-  message: string; // Default: '操作成功'
-  data: T | null; // Default: None
-  requestId?: string;
+  success?: boolean;
+  data?: Record<string, any> | null;
   timestamp?: string;
 }
 
 export interface AccountInfo {
-
-  accountId?: string;
-  accountType?: string;
-  totalAssets?: string;
-  cash?: string;
-  marketValue?: string;
-  frozenCash?: string | null;
-  totalProfitLoss?: string;
-  profitLossPercent?: number;
-  riskLevel: string; // Default: 'low'
-  lastUpdate?: string;
+  account_id?: string;
+  account_type?: string;
+  total_assets?: number;
+  cash?: number;
+  market_value?: number;
+  frozen_cash?: number | null;
+  total_profit_loss?: number;
+  profit_loss_percent?: number;
+  risk_level?: string;
+  last_update?: string;
 }
-
-export interface ActiveAlert {
 
 export interface ActiveAlert {
   id?: number;
@@ -58,8 +60,8 @@ export interface AlertRecordResponse {
   alert_level?: string;
   alert_title?: string | null;
   alert_message?: string | null;
-  alert_details?: Record<string, any> | null;
-  snapshot_data?: Record<string, any> | null;
+  alert_details?: Dict | null;
+  snapshot_data?: Dict | null;
   is_read?: boolean;
   is_handled?: boolean;
   created_at?: string;
@@ -79,9 +81,9 @@ export interface AlertRuleCreate {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Record<string, any>;
-  trigger_conditions?: Record<string, any>;
-  notification_config?: Record<string, any>;
+  parameters?: Dict;
+  trigger_conditions?: Dict;
+  notification_config?: Dict;
   priority?: number;
   is_active?: boolean;
 }
@@ -93,9 +95,9 @@ export interface AlertRuleResponse {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Record<string, any>;
-  trigger_conditions?: Record<string, any>;
-  notification_config?: Record<string, any>;
+  parameters?: Dict;
+  trigger_conditions?: Dict;
+  notification_config?: Dict;
   is_active?: boolean;
   priority?: number;
   created_at?: string;
@@ -107,9 +109,9 @@ export type AlertRuleType = 'price_change' | 'volume_surge' | 'technical_break' 
 export interface AlertRuleUpdate {
   rule_name?: string | null;
   description?: string | null;
-  parameters?: Record<string, any> | null;
-  trigger_conditions?: Record<string, any> | null;
-  notification_config?: Record<string, any> | null;
+  parameters?: Dict | null;
+  trigger_conditions?: Dict | null;
+  notification_config?: Dict | null;
   priority?: number | null;
   is_active?: boolean | null;
 }
@@ -120,10 +122,10 @@ export interface AllIndicatorsResponse {
   latest_date?: string;
   data_points?: number;
   total_indicators?: number;
-  trend?: Record<string, any>;
-  momentum?: Record<string, any>;
-  volatility?: Record<string, any>;
-  volume?: Record<string, any>;
+  trend?: Dict;
+  momentum?: Dict;
+  volatility?: Dict;
+  volume?: Dict;
 }
 
 export interface AnnouncementBase {
@@ -221,18 +223,6 @@ export interface BacktestListResponse {
   backtests?: BacktestResultSummary[];
   page?: number;
   page_size?: number;
-}
-
-export interface BOLLParams {
-
-  period: number; // Default: 20
-  stdDev: number; // Default: 2.0
-}
-
-export interface BOLLParams {
-
-  period: number; // Default: 20
-  stdDev: number; // Default: 2.0
 }
 
 export interface BacktestRequest {
@@ -390,36 +380,6 @@ export interface ChartConfigRequest {
   theme?: string;
   locale?: string;
   container_id?: string;
-}
-
-export interface CancelOrderRequest {
-
-  orderId?: string;
-}
-
-export interface CancelOrderResponse {
-
-  orderId?: string;
-  success?: boolean;
-  message?: string;
-  cancelledQuantity?: number;
-  remainingQuantity?: number;
-  cancelledAt?: string;
-}
-
-export interface CancelOrderRequest {
-
-  orderId?: string;
-}
-
-export interface CancelOrderResponse {
-
-  orderId?: string;
-  success?: boolean;
-  message?: string;
-  cancelledQuantity?: number;
-  remainingQuantity?: number;
-  cancelledAt?: string;
 }
 
 export interface ChipRaceItem {
@@ -604,22 +564,6 @@ export interface CreateGroupRequest {
   group_name?: string;
 }
 
-export interface CommonError {
-
-  code?: number;
-  message?: string;
-  data: Record<string, any> | null; // Default: None
-  detail: string | null; // Default: None
-}
-
-export interface CommonError {
-
-  code?: number;
-  message?: string;
-  data: dict | null; // Default: None
-  detail: string | null; // Default: None
-}
-
 export interface CurrencyField {
   amount?: number;
 }
@@ -673,13 +617,10 @@ export interface DateField {
   date?: string;
 }
 
-export interface EMAParams {
-
-  period: number; // Default: 20
-  priceType: string; // Default: 'close'
+export interface DateRangeModel {
+  start_date?: string;
+  end_date?: string;
 }
-
-export interface ETFDataRequest {
 
 export interface DiffResult {
   change_type?: string;
@@ -702,7 +643,7 @@ export interface DragonTigerListResponse {
   institution_buy_count?: number;
   institution_sell_count?: number;
   institution_net_amount?: number | null;
-  detail_data?: Record<string, any> | null;
+  detail_data?: Dict | null;
   impact_score?: number | null;
 }
 
@@ -760,7 +701,7 @@ export interface ErrorDetail {
 }
 
 export interface ErrorResponse {
-  success?: false;
+  success?: 'False';
   message?: string;
   error_code?: string;
   details?: Record<string, any> | null;
@@ -791,6 +732,9 @@ export interface FeatureGenerationResponse {
   step?: number;
   feature_columns?: string[];
   metadata?: Record<string, any>;
+}
+
+export interface FilterParams {
 }
 
 export interface FilterRequest {
@@ -900,22 +844,6 @@ export interface HotSector {
   stock_count?: number;
 }
 
-export interface HotSector {
-
-  sectorName?: string;
-  changePercent?: number;
-  leadingStock?: string | null;
-  stockCount?: number;
-}
-
-export interface HotSector {
-
-  sectorName?: string;
-  changePercent?: number;
-  leadingStock?: string | null;
-  stockCount?: number;
-}
-
 export interface HyperparameterSearchRequest {
   stock_code?: string;
   market?: string;
@@ -939,28 +867,6 @@ export interface IndexQuote {
   current_price?: number;
   change?: number;
   change_percent?: number;
-  volume?: number | null;
-  amount?: number | null;
-}
-
-export interface IndexQuote {
-
-  indexCode?: string;
-  indexName?: string;
-  currentPrice?: number;
-  change?: number;
-  changePercent?: number;
-  volume?: number | null;
-  amount?: number | null;
-}
-
-export interface IndexQuote {
-
-  indexCode?: string;
-  indexName?: string;
-  currentPrice?: number;
-  change?: number;
-  changePercent?: number;
   volume?: number | null;
   amount?: number | null;
 }
@@ -1029,20 +935,8 @@ export interface IndicatorConfigUpdateRequest {
 }
 
 export interface IndicatorInfo {
-
-  indicatorType?: string;
-  indicatorName?: string;
-  category?: string;
-  description?: string;
-  defaultParams?: Record<string, any>;
-  outputFields?: string[];
-}
-
-export interface IndicatorMetadata {
-
-  abbreviation?: string;
-  fullName?: string;
-  chineseName?: string;
+  indicator_type?: string;
+  indicator_name?: string;
   category?: string;
   description?: string;
   default_params?: Record<string, any>;
@@ -1078,15 +972,9 @@ export interface IndicatorRegistryResponse {
   last_updated?: string;
 }
 
-  indicators?: IndicatorInfo[];
-  totalCount?: number;
-  lastUpdated?: string;
-}
-
 export interface IndicatorResponseItem {
-
-  indicatorType?: string;
-  indicatorName?: string;
+  indicator_type?: string;
+  indicator_name?: string;
   data?: Record<string, any>[];
   params?: Record<string, any>;
 }
@@ -1180,78 +1068,6 @@ export interface KLineResponseV2 {
   interval?: string;
 }
 
-export interface KDJParams {
-
-  n: number; // Default: 9
-  m1: number; // Default: 3
-  m2: number; // Default: 3
-}
-
-export interface KLineCandleV2 {
-
-  timestamp?: number;
-  open?: number;
-  high?: number;
-  low?: number;
-  close?: number;
-  volume?: number;
-  amount?: number | null;
-}
-
-export interface KLineRequestV2 {
-
-  symbol?: string;
-  interval?: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  adjust: string; // Default: 'qfq'
-  limit: number; // Default: 500
-}
-
-export interface KLineResponseV2 {
-
-  klines?: KLineCandleV2[];
-  totalCount?: number;
-  symbol?: string;
-  interval?: string;
-}
-
-export interface KDJParams {
-
-  n: number; // Default: 9
-  m1: number; // Default: 3
-  m2: number; // Default: 3
-}
-
-export interface KLineCandleV2 {
-
-  timestamp?: number;
-  open?: number;
-  high?: number;
-  low?: number;
-  close?: number;
-  volume?: number;
-  amount?: number | null;
-}
-
-export interface KLineRequestV2 {
-
-  symbol?: string;
-  interval?: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  adjust: string; // Default: 'qfq'
-  limit: number; // Default: 500
-}
-
-export interface KLineResponseV2 {
-
-  klines?: KLineCandleV2[];
-  totalCount?: number;
-  symbol?: string;
-  interval?: string;
-}
-
 export interface KlineCandle {
   datetime?: string;
   open?: number;
@@ -1335,60 +1151,61 @@ export interface MAParams {
   price_type?: string;
 }
 
-export interface MACDParams {
-
-  fastPeriod: number; // Default: 12
-  slowPeriod: number; // Default: 26
-  signalPeriod: number; // Default: 9
-}
-
-export interface MAParams {
-
-  period: number; // Default: 20
-  priceType: string; // Default: 'close'
-}
-
-export interface MACDParams {
-
-  fastPeriod: number; // Default: 12
-  slowPeriod: number; // Default: 26
-  signalPeriod: number; // Default: 9
-}
-
-export interface MAParams {
-
-  period: number; // Default: 20
-  priceType: string; // Default: 'close'
-}
-
 export interface MLResponse {
   success?: boolean;
   message?: string;
   data?: any | null;
 }
 
-export interface MarketOverviewDetailedResponse {
+export interface MarketDataQueryModel {
+  symbol?: string;
+  start_date?: string;
+  end_date?: string;
+  interval?: string | null;
+}
 
-  date?: string;
-  indices?: IndexQuote[];
-  hotSectors?: HotSector[];
-  marketSentiment?: string;
+export interface MarketDataRequest {
+  symbol?: string;
+}
+
+export interface MarketFilterParams {
+  market?: string;
+  limit?: number | null;
+}
+
+export interface MarketIndexItem {
+  symbol?: string;
+  name?: string;
+  current_price?: number;
+  change_percent?: number;
+  volume?: number | null;
+  turnover?: number | null;
+  update_time?: string | null;
+}
+
+export interface MarketOverview {
+  indices?: MarketIndexItem[];
+  up_count?: number;
+  down_count?: number;
+  flat_count?: number;
+  total_volume?: number | null;
+  total_turnover?: number | null;
+  top_gainers?: Record<string, any>[];
+  top_losers?: Record<string, any>[];
+  most_active?: Record<string, any>[];
+}
+
+export interface MarketOverviewDetailedResponse {
+  market_stats?: MarketOverviewStats;
+  top_etfs?: TopETFItem[];
+  chip_races?: ChipRaceItem[];
+  long_hu_bang?: LongHuBangItem[];
+  timestamp?: string;
 }
 
 export interface MarketOverviewRequest {
-
   date?: string | null;
 }
-
-export interface MarketOverviewResponse {
-
-  date?: string;
-  indices?: IndexQuote[];
-  hotSectors?: HotSector[];
-  marketSentiment?: string;
-}
-
-export interface MarketOverviewStats {
 
 export interface MarketOverviewResponse {
   date?: string;
@@ -1407,7 +1224,7 @@ export interface MarketOverviewStats {
 export interface MessageResponse {
   success?: boolean;
   message?: string;
-  data: Record<string, any> | null; // Default: None
+  data?: Record<string, any> | null;
 }
 
 export type MessageStatus = 'pending' | 'in_progress' | 'success' | 'failed' | 'retry' | 'dead_letter';
@@ -1483,22 +1300,17 @@ export interface ModelTrainResponse {
   metrics?: Record<string, any>;
 }
 
-export interface MultiIndicatorRequest {
-
-  symbol?: string;
-  indicators?: IndicatorSpec[];
-  startDate?: string | null;
-  endDate?: string | null;
+export interface MomentumIndicatorsResponse {
+  rsi6?: number | null;
+  rsi12?: number | null;
+  rsi24?: number | null;
+  kdj_k?: number | null;
+  kdj_d?: number | null;
+  kdj_j?: number | null;
+  cci?: number | null;
+  willr?: number | null;
+  roc?: number | null;
 }
-
-export interface MultiIndicatorResponse {
-
-  symbol?: string;
-  indicators?: IndicatorResponseItem[];
-  calculatedAt?: string;
-}
-
-export interface NotificationTestRequest {
 
 export interface MonitoringControlRequest {
   symbols?: string[] | null;
@@ -1592,91 +1404,7 @@ export interface OHLCVData {
   turnover?: number[];
 }
 
-export interface OrderRequest {
-
-  symbol?: string;
-  direction?: string;
-  orderType: string; // Default: 'limit'
-  price?: string | null;
-  quantity?: number;
-}
-
-export interface OrderResponse {
-
-  orderId?: string;
-  symbol?: string;
-  direction?: string;
-  orderType?: string;
-  price?: string | null;
-  quantity?: number;
-  filledQuantity: number; // Default: 0
-  averagePrice?: string | null;
-  status?: string;
-  commission?: string | null;
-  createdAt?: string;
-  updatedAt?: string | null;
-}
-
-export interface OscillatorIndicatorRequest {
-
-  symbol?: string;
-  indicatorType?: string;
-  params?: Record<string, any> | null;
-  startDate?: string | null;
-  endDate?: string | null;
-}
-
-export interface OscillatorIndicatorResponse {
-
-  symbol?: string;
-  indicatorType?: string;
-  indicatorName?: string;
-  values?: OscillatorIndicatorValue[];
-  params?: Record<string, any>;
-  calculatedAt?: string;
-}
-
-export interface OscillatorIndicatorValue {
-
-  timestamp?: number;
-  dif?: number | null;
-  dea?: number | null;
-  macd?: number | null;
-  k?: number | null;
-  d?: number | null;
-  j?: number | null;
-  rsi?: number | null;
-}
-
-export interface OverlayIndicatorRequest {
-
-  symbol?: string;
-  indicatorType?: string;
-  params?: Record<string, any>;
-  startDate?: string | null;
-  endDate?: string | null;
-}
-
-export interface OverlayIndicatorResponse {
-
-  symbol?: string;
-  indicatorType?: string;
-  indicatorName?: string;
-  values?: OverlayIndicatorValue[];
-  params?: Record<string, any>;
-  calculatedAt?: string;
-}
-
-export interface OverlayIndicatorValue {
-
-  timestamp?: number;
-  value?: number;
-  upper?: number | null;
-  middle?: number | null;
-  lower?: number | null;
-}
-
-export interface PaginatedResponse {
+export type OperationType = 'insert' | 'update' | 'delete' | 'bulk_insert';
 
 export interface OrderRequest {
   symbol?: string;
@@ -1760,8 +1488,18 @@ export interface PagedResponse {
   data?: any[];
   total?: number;
   page?: number;
-  pageSize?: number;
-  data?: Record<string, any>[];
+  page_size?: number;
+  total_pages?: number;
+  has_next?: boolean;
+  has_prev?: boolean;
+  timestamp?: string;
+}
+
+export interface PaginatedResponse {
+  data?: any[];
+  total?: number;
+  page?: number;
+  page_size?: number;
 }
 
 export interface PaginationInfo {
@@ -1771,19 +1509,10 @@ export interface PaginationInfo {
   pages?: number | null;
 }
 
-export interface PaginationParams {
-
-  page: number; // Default: 1
-  pageSize: number; // Default: 20
+export interface PaginationModel {
+  page?: number;
+  page_size?: number;
 }
-
-export interface PaginationRequest {
-
-  page: number; // Default: 1
-  pageSize: number; // Default: 20
-}
-
-export interface PaginationRequest {
 
 export interface PaginationParams {
   page?: number;
@@ -1793,6 +1522,15 @@ export interface PaginationParams {
 export interface PaginationRequest {
   page?: number;
   page_size?: number;
+}
+
+export interface PasswordResetConfirm {
+  token?: string;
+  new_password?: string;
+}
+
+export interface PasswordResetRequest {
+  email?: EmailStr;
 }
 
 export interface PercentageField {
@@ -1857,52 +1595,6 @@ export interface PositionsResponse {
   total_profit_loss_percent?: number;
 }
 
-export interface Position {
-
-  symbol?: string;
-  symbolName?: string | null;
-  quantity?: number;
-  availableQuantity?: number;
-  costPrice?: string;
-  currentPrice?: string | null;
-  marketValue?: string;
-  profitLoss?: string;
-  profitLossPercent?: number;
-  lastUpdate?: string;
-}
-
-export interface PositionsResponse {
-
-  positions?: Position[];
-  totalCount?: number;
-  totalMarketValue?: string;
-  totalProfitLoss?: string;
-  totalProfitLossPercent?: number;
-}
-
-export interface Position {
-
-  symbol?: string;
-  symbolName?: string | null;
-  quantity?: number;
-  availableQuantity?: number;
-  costPrice?: string;
-  currentPrice?: string | null;
-  marketValue?: string;
-  profitLoss?: string;
-  profitLossPercent?: number;
-  lastUpdate?: string;
-}
-
-export interface PositionsResponse {
-
-  positions?: Position[];
-  totalCount?: number;
-  totalMarketValue?: string;
-  totalProfitLoss?: string;
-  totalProfitLossPercent?: number;
-}
-
 export interface PredictionResult {
   date?: string;
   predicted_price?: number;
@@ -1923,22 +1615,12 @@ export interface RealTimeNotification {
   type?: string;
   title?: string;
   message?: string;
-  data?: Record<string, any> | null;
+  data?: Dict | null;
   priority?: string;
   created_at?: string;
   expires_at?: string | null;
   action_required?: boolean;
   action_url?: string | null;
-}
-
-export interface RSIParams {
-
-  period: number; // Default: 14
-}
-
-export interface RSIParams {
-
-  period: number; // Default: 14
 }
 
 export interface RealTimeQuoteResponse {
@@ -1970,7 +1652,7 @@ export interface RealtimeMonitoringResponse {
   change_percent?: number | null;
   volume?: number | null;
   amount?: number | null;
-  indicators?: Record<string, any> | null;
+  indicators?: Dict | null;
   market_strength?: string | null;
   is_limit_up?: boolean;
   is_limit_down?: boolean;
@@ -2071,10 +1753,9 @@ export interface RiskDashboardResponse {
 }
 
 export interface RiskHistoryPoint {
-
   date?: string | Date;
-  var95Hist?: number | null;
-  cvar95?: number | null;
+  var_95_hist?: number | null;
+  cvar_95?: number | null;
   beta?: number | null;
 }
 
@@ -2110,7 +1791,7 @@ export interface SearchRequest {
 }
 
 export interface SendEmailRequest {
-  to_addresses?: string[];
+  to_addresses?: EmailStr[];
   subject?: string;
   content?: string;
   content_type?: string;
@@ -2119,15 +1800,15 @@ export interface SendEmailRequest {
 }
 
 export interface SendNewsletterRequest {
-  user_email?: string;
+  user_email?: EmailStr;
   user_name?: string;
   watchlist_symbols?: string[];
-  news_data?: Record<string, any>[];
+  news_data?: Dict[];
   newsletter_type?: string;
 }
 
 export interface SendPriceAlertRequest {
-  user_email?: string;
+  user_email?: EmailStr;
   user_name?: string;
   symbol?: string;
   stock_name?: string;
@@ -2138,10 +1819,15 @@ export interface SendPriceAlertRequest {
 }
 
 export interface SendWelcomeEmailRequest {
-  user_email?: string;
+  user_email?: EmailStr;
   user_name?: string;
   welcome_offer?: string | null;
   language?: string;
+}
+
+export interface SortParams {
+  sort_by?: string;
+  order?: string;
 }
 
 export interface SortRequest {
@@ -2451,7 +2137,30 @@ export interface TdxHealthResponse {
   status?: string;
   tdx_connected?: boolean;
   timestamp?: string;
-  serverInfo?: Record<string, any> | null;
+  server_info?: Record<string, any> | null;
+}
+
+export interface TechnicalAnalysisRequest {
+  symbol?: string;
+  period?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  limit?: number | null;
+}
+
+export interface TechnicalIndicatorQueryModel {
+  symbol?: string;
+  indicators?: string[];
+  period?: number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
+export interface TickerTapeConfigRequest {
+  symbols?: SymbolItem[];
+  theme?: string;
+  locale?: string;
+  container_id?: string;
 }
 
 export interface TimestampField {
@@ -2467,36 +2176,188 @@ export interface TopETFItem {
 }
 
 export interface TradeHistoryItem {
-
-  tradeId?: string;
-  orderId?: string;
+  trade_id?: string;
+  order_id?: string;
   symbol?: string;
   direction?: string;
-  price?: string;
+  price?: number;
   quantity?: number;
-  amount?: string;
-  commission?: string;
-  tradeTime?: string;
-  tradeType?: string;
+  amount?: number;
+  commission?: number;
+  trade_time?: string;
+  trade_type?: string;
 }
 
 export interface TradeHistoryRequest {
-
-  startDate?: string | null;
-  endDate?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
   symbol?: string | null;
-  page: number; // Default: 1
-  pageSize: number; // Default: 20
+  page?: number;
+  page_size?: number;
 }
 
 export interface TradeHistoryResponse {
-
   trades?: TradeHistoryItem[];
-  totalCount?: number;
-  totalAmount?: string;
-  totalCommission?: string;
+  total_count?: number;
+  total_amount?: number;
+  total_commission?: number;
   page?: number;
-  pageSize?: number;
+  page_size?: number;
+}
+
+export interface TradeOrderModel {
+  symbol?: string;
+  order_type?: string;
+  price?: number;
+  quantity?: number;
+  order_validity?: string | null;
+}
+
+export interface TradeRecord {
+  trade_id?: number;
+  symbol?: string;
+  trade_date?: string;
+  action?: string;
+  price?: number;
+  quantity?: number;
+  amount?: number;
+  commission?: number;
+  profit_loss?: number | null;
+}
+
+export interface TradeStatistics {
+  total_trades?: number;
+  buy_count?: number;
+  sell_count?: number;
+  position_count?: number;
+  total_buy_amount?: number;
+  total_sell_amount?: number;
+  total_commission?: number;
+  realized_profit?: number;
+}
+
+export interface TradingSignalItem {
+  type?: string;
+  signal?: string;
+  strength?: number;
+}
+
+export interface TradingSignalsResponse {
+  overall_signal?: string;
+  signal_strength?: number;
+  signals?: TradingSignalItem[];
+  signal_count?: Dict;
+}
+
+export interface TrendIndicatorsRequest {
+  symbol?: string;
+  period?: string;
+  ma_periods?: number[] | null;
+}
+
+export interface TrendIndicatorsResponse {
+  ma5?: number | null;
+  ma10?: number | null;
+  ma20?: number | null;
+  ma30?: number | null;
+  ma60?: number | null;
+  ma120?: number | null;
+  ma250?: number | null;
+  ema12?: number | null;
+  ema26?: number | null;
+  ema50?: number | null;
+  macd?: number | null;
+  macd_signal?: number | null;
+  macd_hist?: number | null;
+  adx?: number | null;
+  plus_di?: number | null;
+  minus_di?: number | null;
+  sar?: number | null;
+}
+
+export interface UpdateGroupRequest {
+  group_name?: string;
+}
+
+export interface UpdateWatchlistNotesRequest {
+  notes?: string;
+}
+
+export interface UserPermissions {
+  canTrade?: boolean;
+  canWithdraw?: boolean;
+  canUseStrategies?: boolean;
+  canAccessAdvancedFeatures?: boolean;
+  canViewMarketData?: boolean;
+  canExportData?: boolean;
+  canManageUsers?: boolean;
+  canViewAnalytics?: boolean;
+  maxStrategies?: number;
+  maxWatchlists?: number;
+  maxApiCalls?: number;
+}
+
+export interface UserPreferences {
+  theme?: string;
+  language?: string;
+  timezone?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  defaultDashboard?: string;
+  watchlistLayout?: string;
+  chartSettings?: Record<string, any>;
+  notifications?: Record<string, boolean>;
+  privacy?: Record<string, any>;
+}
+
+export interface UserProfileResponse {
+  userId?: string;
+  username?: string;
+  email?: string;
+  displayName?: string | null;
+  avatar?: string | null;
+  role?: string;
+  status?: string;
+  preferences?: UserPreferences;
+  permissions?: UserPermissions;
+  subscription?: SubscriptionInfo;
+  statistics?: UserStatistics;
+  createdAt?: string;
+  lastLoginAt?: string;
+  lastUpdateAt?: string;
+}
+
+export interface UserRegisterRequest {
+  username?: string;
+  email?: EmailStr;
+  password?: string;
+  role?: string;
+}
+
+export interface UserResponse {
+  id?: number;
+  username?: string;
+  email?: string;
+  role?: string;
+  is_active?: boolean;
+}
+
+export interface UserStatistics {
+  totalTrades?: number;
+  winningTrades?: number;
+  losingTrades?: number;
+  winRate?: number;
+  totalPnL?: number;
+  totalPnLPercent?: number;
+  averageReturn?: number;
+  sharpeRatio?: number;
+  maxDrawdown?: number;
+  totalCommission?: number;
+  joinDate?: string;
+  activeStrategies?: number;
+  activeWatchlists?: number;
+  followers?: number;
+  following?: number;
 }
 
 export interface VaRCVaRRequest {
@@ -2755,6 +2616,10 @@ export interface WencaiStatsResponse {
 // ============================================
 // Custom Type Aliases (appended by generator)
 // ============================================
+
+// Common type aliases for Python backend types
+export type Dict = Record<string, any>;
+export type EmailStr = string;
 
 // Type alias for backward compatibility
 export type KLineDataResponse = KlineResponse;

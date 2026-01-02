@@ -13,7 +13,7 @@ from datetime import datetime
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
 sys.path.insert(0, project_root)
 
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx import TdxDataSource
 
 logger = logging.getLogger(__name__)
 

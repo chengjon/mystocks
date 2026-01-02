@@ -1,0 +1,1585 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "total_endpoints": 356,
+  "split_files": [
+    {
+      "prefix": "/",
+      "filename": "api_.json",
+      "count": 2,
+      "file": "api_.json"
+    },
+    {
+      "prefix": "/adapters",
+      "filename": "api_adapters.json",
+      "count": 1,
+      "file": "api_adapters.json"
+    },
+    {
+      "prefix": "/add",
+      "filename": "api_add.json",
+      "count": 1,
+      "file": "api_add.json"
+    },
+    {
+      "prefix": "/alert-rules",
+      "filename": "api_alert-rules.json",
+      "count": 4,
+      "file": "api_alert-rules.json"
+    },
+    {
+      "prefix": "/alerts",
+      "filename": "api_alerts.json",
+      "count": 13,
+      "file": "api_alerts.json"
+    },
+    {
+      "prefix": "/analytics",
+      "filename": "api_analytics.json",
+      "count": 2,
+      "file": "api_analytics.json"
+    },
+    {
+      "prefix": "/analyze",
+      "filename": "api_analyze.json",
+      "count": 4,
+      "file": "api_analyze.json"
+    },
+    {
+      "prefix": "/architecture",
+      "filename": "api_architecture.json",
+      "count": 1,
+      "file": "api_architecture.json"
+    },
+    {
+      "prefix": "/audit",
+      "filename": "api_audit.json",
+      "count": 1,
+      "file": "api_audit.json"
+    },
+    {
+      "prefix": "/backtest",
+      "filename": "api_backtest.json",
+      "count": 9,
+      "file": "api_backtest.json"
+    },
+    {
+      "prefix": "/backup",
+      "filename": "api_backup.json",
+      "count": 6,
+      "file": "api_backup.json"
+    },
+    {
+      "prefix": "/backups",
+      "filename": "api_backups.json",
+      "count": 2,
+      "file": "api_backups.json"
+    },
+    {
+      "prefix": "/basic",
+      "filename": "api_basic.json",
+      "count": 1,
+      "file": "api_basic.json"
+    },
+    {
+      "prefix": "/batch",
+      "filename": "api_batch.json",
+      "count": 1,
+      "file": "api_batch.json"
+    },
+    {
+      "prefix": "/beta",
+      "filename": "api_beta.json",
+      "count": 1,
+      "file": "api_beta.json"
+    },
+    {
+      "prefix": "/blocktrade",
+      "filename": "api_blocktrade.json",
+      "count": 2,
+      "file": "api_blocktrade.json"
+    },
+    {
+      "prefix": "/cache",
+      "filename": "api_cache.json",
+      "count": 3,
+      "file": "api_cache.json"
+    },
+    {
+      "prefix": "/calculate",
+      "filename": "api_calculate.json",
+      "count": 2,
+      "file": "api_calculate.json"
+    },
+    {
+      "prefix": "/chart",
+      "filename": "api_chart.json",
+      "count": 1,
+      "file": "api_chart.json"
+    },
+    {
+      "prefix": "/check",
+      "filename": "api_check.json",
+      "count": 1,
+      "file": "api_check.json"
+    },
+    {
+      "prefix": "/chip-race",
+      "filename": "api_chip-race.json",
+      "count": 2,
+      "file": "api_chip-race.json"
+    },
+    {
+      "prefix": "/cleanup",
+      "filename": "api_cleanup.json",
+      "count": 3,
+      "file": "api_cleanup.json"
+    },
+    {
+      "prefix": "/clear",
+      "filename": "api_clear.json",
+      "count": 1,
+      "file": "api_clear.json"
+    },
+    {
+      "prefix": "/clear-cache",
+      "filename": "api_clear-cache.json",
+      "count": 1,
+      "file": "api_clear-cache.json"
+    },
+    {
+      "prefix": "/concept",
+      "filename": "api_concept.json",
+      "count": 2,
+      "file": "api_concept.json"
+    },
+    {
+      "prefix": "/config",
+      "filename": "api_config.json",
+      "count": 1,
+      "file": "api_config.json"
+    },
+    {
+      "prefix": "/configs",
+      "filename": "api_configs.json",
+      "count": 5,
+      "file": "api_configs.json"
+    },
+    {
+      "prefix": "/contracts",
+      "filename": "api_contracts.json",
+      "count": 1,
+      "file": "api_contracts.json"
+    },
+    {
+      "prefix": "/control",
+      "filename": "api_control.json",
+      "count": 3,
+      "file": "api_control.json"
+    },
+    {
+      "prefix": "/count",
+      "filename": "api_count.json",
+      "count": 1,
+      "file": "api_count.json"
+    },
+    {
+      "prefix": "/csrf",
+      "filename": "api_csrf.json",
+      "count": 1,
+      "file": "api_csrf.json"
+    },
+    {
+      "prefix": "/custom-query",
+      "filename": "api_custom-query.json",
+      "count": 1,
+      "file": "api_custom-query.json"
+    },
+    {
+      "prefix": "/dashboard",
+      "filename": "api_dashboard.json",
+      "count": 2,
+      "file": "api_dashboard.json"
+    },
+    {
+      "prefix": "/database",
+      "filename": "api_database.json",
+      "count": 2,
+      "file": "api_database.json"
+    },
+    {
+      "prefix": "/datasources",
+      "filename": "api_datasources.json",
+      "count": 1,
+      "file": "api_datasources.json"
+    },
+    {
+      "prefix": "/definitions",
+      "filename": "api_definitions.json",
+      "count": 1,
+      "file": "api_definitions.json"
+    },
+    {
+      "prefix": "/detailed",
+      "filename": "api_detailed.json",
+      "count": 1,
+      "file": "api_detailed.json"
+    },
+    {
+      "prefix": "/diff",
+      "filename": "api_diff.json",
+      "count": 1,
+      "file": "api_diff.json"
+    },
+    {
+      "prefix": "/dividend",
+      "filename": "api_dividend.json",
+      "count": 2,
+      "file": "api_dividend.json"
+    },
+    {
+      "prefix": "/dragon-tiger",
+      "filename": "api_dragon-tiger.json",
+      "count": 3,
+      "file": "api_dragon-tiger.json"
+    },
+    {
+      "prefix": "/email",
+      "filename": "api_email.json",
+      "count": 4,
+      "file": "api_email.json"
+    },
+    {
+      "prefix": "/etf",
+      "filename": "api_etf.json",
+      "count": 4,
+      "file": "api_etf.json"
+    },
+    {
+      "prefix": "/evict",
+      "filename": "api_evict.json",
+      "count": 1,
+      "file": "api_evict.json"
+    },
+    {
+      "prefix": "/eviction",
+      "filename": "api_eviction.json",
+      "count": 1,
+      "file": "api_eviction.json"
+    },
+    {
+      "prefix": "/execute",
+      "filename": "api_execute.json",
+      "count": 1,
+      "file": "api_execute.json"
+    },
+    {
+      "prefix": "/executions",
+      "filename": "api_executions.json",
+      "count": 3,
+      "file": "api_executions.json"
+    },
+    {
+      "prefix": "/export",
+      "filename": "api_export.json",
+      "count": 1,
+      "file": "api_export.json"
+    },
+    {
+      "prefix": "/features",
+      "filename": "api_features.json",
+      "count": 1,
+      "file": "api_features.json"
+    },
+    {
+      "prefix": "/fetch",
+      "filename": "api_fetch.json",
+      "count": 2,
+      "file": "api_fetch.json"
+    },
+    {
+      "prefix": "/financial",
+      "filename": "api_financial.json",
+      "count": 1,
+      "file": "api_financial.json"
+    },
+    {
+      "prefix": "/fund-flow",
+      "filename": "api_fund-flow.json",
+      "count": 5,
+      "file": "api_fund-flow.json"
+    },
+    {
+      "prefix": "/group",
+      "filename": "api_group.json",
+      "count": 1,
+      "file": "api_group.json"
+    },
+    {
+      "prefix": "/groups",
+      "filename": "api_groups.json",
+      "count": 4,
+      "file": "api_groups.json"
+    },
+    {
+      "prefix": "/health",
+      "filename": "api_health.json",
+      "count": 20,
+      "file": "api_health.json"
+    },
+    {
+      "prefix": "/heatmap",
+      "filename": "api_heatmap.json",
+      "count": 1,
+      "file": "api_heatmap.json"
+    },
+    {
+      "prefix": "/history",
+      "filename": "api_history.json",
+      "count": 2,
+      "file": "api_history.json"
+    },
+    {
+      "prefix": "/import",
+      "filename": "api_import.json",
+      "count": 1,
+      "file": "api_import.json"
+    },
+    {
+      "prefix": "/important",
+      "filename": "api_important.json",
+      "count": 2,
+      "file": "api_important.json"
+    },
+    {
+      "prefix": "/index",
+      "filename": "api_index.json",
+      "count": 2,
+      "file": "api_index.json"
+    },
+    {
+      "prefix": "/industry",
+      "filename": "api_industry.json",
+      "count": 3,
+      "file": "api_industry.json"
+    },
+    {
+      "prefix": "/integrity",
+      "filename": "api_integrity.json",
+      "count": 2,
+      "file": "api_integrity.json"
+    },
+    {
+      "prefix": "/kline",
+      "filename": "api_kline.json",
+      "count": 3,
+      "file": "api_kline.json"
+    },
+    {
+      "prefix": "/lhb",
+      "filename": "api_lhb.json",
+      "count": 4,
+      "file": "api_lhb.json"
+    },
+    {
+      "prefix": "/list",
+      "filename": "api_list.json",
+      "count": 2,
+      "file": "api_list.json"
+    },
+    {
+      "prefix": "/login",
+      "filename": "api_login.json",
+      "count": 1,
+      "file": "api_login.json"
+    },
+    {
+      "prefix": "/logout",
+      "filename": "api_logout.json",
+      "count": 1,
+      "file": "api_logout.json"
+    },
+    {
+      "prefix": "/logs",
+      "filename": "api_logs.json",
+      "count": 2,
+      "file": "api_logs.json"
+    },
+    {
+      "prefix": "/market-overview",
+      "filename": "api_market-overview.json",
+      "count": 2,
+      "file": "api_market-overview.json"
+    },
+    {
+      "prefix": "/markets",
+      "filename": "api_markets.json",
+      "count": 4,
+      "file": "api_markets.json"
+    },
+    {
+      "prefix": "/matched-stocks",
+      "filename": "api_matched-stocks.json",
+      "count": 1,
+      "file": "api_matched-stocks.json"
+    },
+    {
+      "prefix": "/me",
+      "filename": "api_me.json",
+      "count": 1,
+      "file": "api_me.json"
+    },
+    {
+      "prefix": "/metrics",
+      "filename": "api_metrics.json",
+      "count": 9,
+      "file": "api_metrics.json"
+    },
+    {
+      "prefix": "/mini-chart",
+      "filename": "api_mini-chart.json",
+      "count": 1,
+      "file": "api_mini-chart.json"
+    },
+    {
+      "prefix": "/models",
+      "filename": "api_models.json",
+      "count": 9,
+      "file": "api_models.json"
+    },
+    {
+      "prefix": "/monitor",
+      "filename": "api_monitor.json",
+      "count": 2,
+      "file": "api_monitor.json"
+    },
+    {
+      "prefix": "/monitor-rules",
+      "filename": "api_monitor-rules.json",
+      "count": 8,
+      "file": "api_monitor-rules.json"
+    },
+    {
+      "prefix": "/monitoring",
+      "filename": "api_monitoring.json",
+      "count": 2,
+      "file": "api_monitoring.json"
+    },
+    {
+      "prefix": "/move",
+      "filename": "api_move.json",
+      "count": 1,
+      "file": "api_move.json"
+    },
+    {
+      "prefix": "/news",
+      "filename": "api_news.json",
+      "count": 2,
+      "file": "api_news.json"
+    },
+    {
+      "prefix": "/notes",
+      "filename": "api_notes.json",
+      "count": 1,
+      "file": "api_notes.json"
+    },
+    {
+      "prefix": "/notifications",
+      "filename": "api_notifications.json",
+      "count": 1,
+      "file": "api_notifications.json"
+    },
+    {
+      "prefix": "/patterns",
+      "filename": "api_patterns.json",
+      "count": 1,
+      "file": "api_patterns.json"
+    },
+    {
+      "prefix": "/performance",
+      "filename": "api_performance.json",
+      "count": 2,
+      "file": "api_performance.json"
+    },
+    {
+      "prefix": "/portfolio",
+      "filename": "api_portfolio.json",
+      "count": 1,
+      "file": "api_portfolio.json"
+    },
+    {
+      "prefix": "/position",
+      "filename": "api_position.json",
+      "count": 1,
+      "file": "api_position.json"
+    },
+    {
+      "prefix": "/positions",
+      "filename": "api_positions.json",
+      "count": 1,
+      "file": "api_positions.json"
+    },
+    {
+      "prefix": "/postgresql",
+      "filename": "api_postgresql.json",
+      "count": 1,
+      "file": "api_postgresql.json"
+    },
+    {
+      "prefix": "/preferences",
+      "filename": "api_preferences.json",
+      "count": 2,
+      "file": "api_preferences.json"
+    },
+    {
+      "prefix": "/prewarming",
+      "filename": "api_prewarming.json",
+      "count": 2,
+      "file": "api_prewarming.json"
+    },
+    {
+      "prefix": "/profile",
+      "filename": "api_profile.json",
+      "count": 1,
+      "file": "api_profile.json"
+    },
+    {
+      "prefix": "/queries",
+      "filename": "api_queries.json",
+      "count": 2,
+      "file": "api_queries.json"
+    },
+    {
+      "prefix": "/query",
+      "filename": "api_query.json",
+      "count": 1,
+      "file": "api_query.json"
+    },
+    {
+      "prefix": "/quote",
+      "filename": "api_quote.json",
+      "count": 2,
+      "file": "api_quote.json"
+    },
+    {
+      "prefix": "/quotes",
+      "filename": "api_quotes.json",
+      "count": 1,
+      "file": "api_quotes.json"
+    },
+    {
+      "prefix": "/rate-limits",
+      "filename": "api_rate-limits.json",
+      "count": 1,
+      "file": "api_rate-limits.json"
+    },
+    {
+      "prefix": "/realtime",
+      "filename": "api_realtime.json",
+      "count": 3,
+      "file": "api_realtime.json"
+    },
+    {
+      "prefix": "/realtime-quote",
+      "filename": "api_realtime-quote.json",
+      "count": 1,
+      "file": "api_realtime-quote.json"
+    },
+    {
+      "prefix": "/recommendation",
+      "filename": "api_recommendation.json",
+      "count": 1,
+      "file": "api_recommendation.json"
+    },
+    {
+      "prefix": "/recovery",
+      "filename": "api_recovery.json",
+      "count": 8,
+      "file": "api_recovery.json"
+    },
+    {
+      "prefix": "/refresh",
+      "filename": "api_refresh.json",
+      "count": 2,
+      "file": "api_refresh.json"
+    },
+    {
+      "prefix": "/refresh-all",
+      "filename": "api_refresh-all.json",
+      "count": 1,
+      "file": "api_refresh-all.json"
+    },
+    {
+      "prefix": "/refresh-health",
+      "filename": "api_refresh-health.json",
+      "count": 1,
+      "file": "api_refresh-health.json"
+    },
+    {
+      "prefix": "/register",
+      "filename": "api_register.json",
+      "count": 2,
+      "file": "api_register.json"
+    },
+    {
+      "prefix": "/registry",
+      "filename": "api_registry.json",
+      "count": 2,
+      "file": "api_registry.json"
+    },
+    {
+      "prefix": "/remove",
+      "filename": "api_remove.json",
+      "count": 1,
+      "file": "api_remove.json"
+    },
+    {
+      "prefix": "/reports",
+      "filename": "api_reports.json",
+      "count": 1,
+      "file": "api_reports.json"
+    },
+    {
+      "prefix": "/reset",
+      "filename": "api_reset.json",
+      "count": 1,
+      "file": "api_reset.json"
+    },
+    {
+      "prefix": "/reset-password",
+      "filename": "api_reset-password.json",
+      "count": 2,
+      "file": "api_reset-password.json"
+    },
+    {
+      "prefix": "/results",
+      "filename": "api_results.json",
+      "count": 2,
+      "file": "api_results.json"
+    },
+    {
+      "prefix": "/run",
+      "filename": "api_run.json",
+      "count": 2,
+      "file": "api_run.json"
+    },
+    {
+      "prefix": "/scheduler",
+      "filename": "api_scheduler.json",
+      "count": 5,
+      "file": "api_scheduler.json"
+    },
+    {
+      "prefix": "/screener",
+      "filename": "api_screener.json",
+      "count": 1,
+      "file": "api_screener.json"
+    },
+    {
+      "prefix": "/search",
+      "filename": "api_search.json",
+      "count": 1,
+      "file": "api_search.json"
+    },
+    {
+      "prefix": "/sector",
+      "filename": "api_sector.json",
+      "count": 2,
+      "file": "api_sector.json"
+    },
+    {
+      "prefix": "/statistics",
+      "filename": "api_statistics.json",
+      "count": 2,
+      "file": "api_statistics.json"
+    },
+    {
+      "prefix": "/stats",
+      "filename": "api_stats.json",
+      "count": 4,
+      "file": "api_stats.json"
+    },
+    {
+      "prefix": "/status",
+      "filename": "api_status.json",
+      "count": 10,
+      "file": "api_status.json"
+    },
+    {
+      "prefix": "/stock",
+      "filename": "api_stock.json",
+      "count": 1,
+      "file": "api_stock.json"
+    },
+    {
+      "prefix": "/stocks",
+      "filename": "api_stocks.json",
+      "count": 10,
+      "file": "api_stocks.json"
+    },
+    {
+      "prefix": "/strategies",
+      "filename": "api_strategies.json",
+      "count": 11,
+      "file": "api_strategies.json"
+    },
+    {
+      "prefix": "/summary",
+      "filename": "api_summary.json",
+      "count": 2,
+      "file": "api_summary.json"
+    },
+    {
+      "prefix": "/supported-categories",
+      "filename": "api_supported-categories.json",
+      "count": 1,
+      "file": "api_supported-categories.json"
+    },
+    {
+      "prefix": "/symbol",
+      "filename": "api_symbol.json",
+      "count": 1,
+      "file": "api_symbol.json"
+    },
+    {
+      "prefix": "/symbols",
+      "filename": "api_symbols.json",
+      "count": 1,
+      "file": "api_symbols.json"
+    },
+    {
+      "prefix": "/sync",
+      "filename": "api_sync.json",
+      "count": 2,
+      "file": "api_sync.json"
+    },
+    {
+      "prefix": "/tdengine",
+      "filename": "api_tdengine.json",
+      "count": 1,
+      "file": "api_tdengine.json"
+    },
+    {
+      "prefix": "/tdx",
+      "filename": "api_tdx.json",
+      "count": 2,
+      "file": "api_tdx.json"
+    },
+    {
+      "prefix": "/test",
+      "filename": "api_test.json",
+      "count": 2,
+      "file": "api_test.json"
+    },
+    {
+      "prefix": "/test-connection",
+      "filename": "api_test-connection.json",
+      "count": 1,
+      "file": "api_test-connection.json"
+    },
+    {
+      "prefix": "/test-email",
+      "filename": "api_test-email.json",
+      "count": 1,
+      "file": "api_test-email.json"
+    },
+    {
+      "prefix": "/ticker-tape",
+      "filename": "api_ticker-tape.json",
+      "count": 1,
+      "file": "api_ticker-tape.json"
+    },
+    {
+      "prefix": "/today",
+      "filename": "api_today.json",
+      "count": 2,
+      "file": "api_today.json"
+    },
+    {
+      "prefix": "/trades",
+      "filename": "api_trades.json",
+      "count": 1,
+      "file": "api_trades.json"
+    },
+    {
+      "prefix": "/training",
+      "filename": "api_training.json",
+      "count": 1,
+      "file": "api_training.json"
+    },
+    {
+      "prefix": "/triggered-records",
+      "filename": "api_triggered-records.json",
+      "count": 2,
+      "file": "api_triggered-records.json"
+    },
+    {
+      "prefix": "/types",
+      "filename": "api_types.json",
+      "count": 1,
+      "file": "api_types.json"
+    },
+    {
+      "prefix": "/users",
+      "filename": "api_users.json",
+      "count": 1,
+      "file": "api_users.json"
+    },
+    {
+      "prefix": "/validate",
+      "filename": "api_validate.json",
+      "count": 1,
+      "file": "api_validate.json"
+    },
+    {
+      "prefix": "/var-cvar",
+      "filename": "api_var-cvar.json",
+      "count": 1,
+      "file": "api_var-cvar.json"
+    },
+    {
+      "prefix": "/versions",
+      "filename": "api_versions.json",
+      "count": 7,
+      "file": "api_versions.json"
+    },
+    {
+      "prefix": "/with-groups",
+      "filename": "api_with-groups.json",
+      "count": 1,
+      "file": "api_with-groups.json"
+    },
+    {
+      "prefix": "/{symbol}",
+      "filename": "api_symbol.json",
+      "count": 11,
+      "file": "api_symbol.json"
+    },
+    {
+      "prefix": "/{task_id}",
+      "filename": "api_task_id.json",
+      "count": 4,
+      "file": "api_task_id.json"
+    }
+  ],
+  "summary": {
+    "total_files": 143,
+    "endpoints_per_file_avg": 2,
+    "files": [
+      {
+        "prefix": "/",
+        "file": "api_.json",
+        "count": 2
+      },
+      {
+        "prefix": "/adapters",
+        "file": "api_adapters.json",
+        "count": 1
+      },
+      {
+        "prefix": "/add",
+        "file": "api_add.json",
+        "count": 1
+      },
+      {
+        "prefix": "/alert-rules",
+        "file": "api_alert-rules.json",
+        "count": 4
+      },
+      {
+        "prefix": "/alerts",
+        "file": "api_alerts.json",
+        "count": 13
+      },
+      {
+        "prefix": "/analytics",
+        "file": "api_analytics.json",
+        "count": 2
+      },
+      {
+        "prefix": "/analyze",
+        "file": "api_analyze.json",
+        "count": 4
+      },
+      {
+        "prefix": "/architecture",
+        "file": "api_architecture.json",
+        "count": 1
+      },
+      {
+        "prefix": "/audit",
+        "file": "api_audit.json",
+        "count": 1
+      },
+      {
+        "prefix": "/backtest",
+        "file": "api_backtest.json",
+        "count": 9
+      },
+      {
+        "prefix": "/backup",
+        "file": "api_backup.json",
+        "count": 6
+      },
+      {
+        "prefix": "/backups",
+        "file": "api_backups.json",
+        "count": 2
+      },
+      {
+        "prefix": "/basic",
+        "file": "api_basic.json",
+        "count": 1
+      },
+      {
+        "prefix": "/batch",
+        "file": "api_batch.json",
+        "count": 1
+      },
+      {
+        "prefix": "/beta",
+        "file": "api_beta.json",
+        "count": 1
+      },
+      {
+        "prefix": "/blocktrade",
+        "file": "api_blocktrade.json",
+        "count": 2
+      },
+      {
+        "prefix": "/cache",
+        "file": "api_cache.json",
+        "count": 3
+      },
+      {
+        "prefix": "/calculate",
+        "file": "api_calculate.json",
+        "count": 2
+      },
+      {
+        "prefix": "/chart",
+        "file": "api_chart.json",
+        "count": 1
+      },
+      {
+        "prefix": "/check",
+        "file": "api_check.json",
+        "count": 1
+      },
+      {
+        "prefix": "/chip-race",
+        "file": "api_chip-race.json",
+        "count": 2
+      },
+      {
+        "prefix": "/cleanup",
+        "file": "api_cleanup.json",
+        "count": 3
+      },
+      {
+        "prefix": "/clear",
+        "file": "api_clear.json",
+        "count": 1
+      },
+      {
+        "prefix": "/clear-cache",
+        "file": "api_clear-cache.json",
+        "count": 1
+      },
+      {
+        "prefix": "/concept",
+        "file": "api_concept.json",
+        "count": 2
+      },
+      {
+        "prefix": "/config",
+        "file": "api_config.json",
+        "count": 1
+      },
+      {
+        "prefix": "/configs",
+        "file": "api_configs.json",
+        "count": 5
+      },
+      {
+        "prefix": "/contracts",
+        "file": "api_contracts.json",
+        "count": 1
+      },
+      {
+        "prefix": "/control",
+        "file": "api_control.json",
+        "count": 3
+      },
+      {
+        "prefix": "/count",
+        "file": "api_count.json",
+        "count": 1
+      },
+      {
+        "prefix": "/csrf",
+        "file": "api_csrf.json",
+        "count": 1
+      },
+      {
+        "prefix": "/custom-query",
+        "file": "api_custom-query.json",
+        "count": 1
+      },
+      {
+        "prefix": "/dashboard",
+        "file": "api_dashboard.json",
+        "count": 2
+      },
+      {
+        "prefix": "/database",
+        "file": "api_database.json",
+        "count": 2
+      },
+      {
+        "prefix": "/datasources",
+        "file": "api_datasources.json",
+        "count": 1
+      },
+      {
+        "prefix": "/definitions",
+        "file": "api_definitions.json",
+        "count": 1
+      },
+      {
+        "prefix": "/detailed",
+        "file": "api_detailed.json",
+        "count": 1
+      },
+      {
+        "prefix": "/diff",
+        "file": "api_diff.json",
+        "count": 1
+      },
+      {
+        "prefix": "/dividend",
+        "file": "api_dividend.json",
+        "count": 2
+      },
+      {
+        "prefix": "/dragon-tiger",
+        "file": "api_dragon-tiger.json",
+        "count": 3
+      },
+      {
+        "prefix": "/email",
+        "file": "api_email.json",
+        "count": 4
+      },
+      {
+        "prefix": "/etf",
+        "file": "api_etf.json",
+        "count": 4
+      },
+      {
+        "prefix": "/evict",
+        "file": "api_evict.json",
+        "count": 1
+      },
+      {
+        "prefix": "/eviction",
+        "file": "api_eviction.json",
+        "count": 1
+      },
+      {
+        "prefix": "/execute",
+        "file": "api_execute.json",
+        "count": 1
+      },
+      {
+        "prefix": "/executions",
+        "file": "api_executions.json",
+        "count": 3
+      },
+      {
+        "prefix": "/export",
+        "file": "api_export.json",
+        "count": 1
+      },
+      {
+        "prefix": "/features",
+        "file": "api_features.json",
+        "count": 1
+      },
+      {
+        "prefix": "/fetch",
+        "file": "api_fetch.json",
+        "count": 2
+      },
+      {
+        "prefix": "/financial",
+        "file": "api_financial.json",
+        "count": 1
+      },
+      {
+        "prefix": "/fund-flow",
+        "file": "api_fund-flow.json",
+        "count": 5
+      },
+      {
+        "prefix": "/group",
+        "file": "api_group.json",
+        "count": 1
+      },
+      {
+        "prefix": "/groups",
+        "file": "api_groups.json",
+        "count": 4
+      },
+      {
+        "prefix": "/health",
+        "file": "api_health.json",
+        "count": 20
+      },
+      {
+        "prefix": "/heatmap",
+        "file": "api_heatmap.json",
+        "count": 1
+      },
+      {
+        "prefix": "/history",
+        "file": "api_history.json",
+        "count": 2
+      },
+      {
+        "prefix": "/import",
+        "file": "api_import.json",
+        "count": 1
+      },
+      {
+        "prefix": "/important",
+        "file": "api_important.json",
+        "count": 2
+      },
+      {
+        "prefix": "/index",
+        "file": "api_index.json",
+        "count": 2
+      },
+      {
+        "prefix": "/industry",
+        "file": "api_industry.json",
+        "count": 3
+      },
+      {
+        "prefix": "/integrity",
+        "file": "api_integrity.json",
+        "count": 2
+      },
+      {
+        "prefix": "/kline",
+        "file": "api_kline.json",
+        "count": 3
+      },
+      {
+        "prefix": "/lhb",
+        "file": "api_lhb.json",
+        "count": 4
+      },
+      {
+        "prefix": "/list",
+        "file": "api_list.json",
+        "count": 2
+      },
+      {
+        "prefix": "/login",
+        "file": "api_login.json",
+        "count": 1
+      },
+      {
+        "prefix": "/logout",
+        "file": "api_logout.json",
+        "count": 1
+      },
+      {
+        "prefix": "/logs",
+        "file": "api_logs.json",
+        "count": 2
+      },
+      {
+        "prefix": "/market-overview",
+        "file": "api_market-overview.json",
+        "count": 2
+      },
+      {
+        "prefix": "/markets",
+        "file": "api_markets.json",
+        "count": 4
+      },
+      {
+        "prefix": "/matched-stocks",
+        "file": "api_matched-stocks.json",
+        "count": 1
+      },
+      {
+        "prefix": "/me",
+        "file": "api_me.json",
+        "count": 1
+      },
+      {
+        "prefix": "/metrics",
+        "file": "api_metrics.json",
+        "count": 9
+      },
+      {
+        "prefix": "/mini-chart",
+        "file": "api_mini-chart.json",
+        "count": 1
+      },
+      {
+        "prefix": "/models",
+        "file": "api_models.json",
+        "count": 9
+      },
+      {
+        "prefix": "/monitor",
+        "file": "api_monitor.json",
+        "count": 2
+      },
+      {
+        "prefix": "/monitor-rules",
+        "file": "api_monitor-rules.json",
+        "count": 8
+      },
+      {
+        "prefix": "/monitoring",
+        "file": "api_monitoring.json",
+        "count": 2
+      },
+      {
+        "prefix": "/move",
+        "file": "api_move.json",
+        "count": 1
+      },
+      {
+        "prefix": "/news",
+        "file": "api_news.json",
+        "count": 2
+      },
+      {
+        "prefix": "/notes",
+        "file": "api_notes.json",
+        "count": 1
+      },
+      {
+        "prefix": "/notifications",
+        "file": "api_notifications.json",
+        "count": 1
+      },
+      {
+        "prefix": "/patterns",
+        "file": "api_patterns.json",
+        "count": 1
+      },
+      {
+        "prefix": "/performance",
+        "file": "api_performance.json",
+        "count": 2
+      },
+      {
+        "prefix": "/portfolio",
+        "file": "api_portfolio.json",
+        "count": 1
+      },
+      {
+        "prefix": "/position",
+        "file": "api_position.json",
+        "count": 1
+      },
+      {
+        "prefix": "/positions",
+        "file": "api_positions.json",
+        "count": 1
+      },
+      {
+        "prefix": "/postgresql",
+        "file": "api_postgresql.json",
+        "count": 1
+      },
+      {
+        "prefix": "/preferences",
+        "file": "api_preferences.json",
+        "count": 2
+      },
+      {
+        "prefix": "/prewarming",
+        "file": "api_prewarming.json",
+        "count": 2
+      },
+      {
+        "prefix": "/profile",
+        "file": "api_profile.json",
+        "count": 1
+      },
+      {
+        "prefix": "/queries",
+        "file": "api_queries.json",
+        "count": 2
+      },
+      {
+        "prefix": "/query",
+        "file": "api_query.json",
+        "count": 1
+      },
+      {
+        "prefix": "/quote",
+        "file": "api_quote.json",
+        "count": 2
+      },
+      {
+        "prefix": "/quotes",
+        "file": "api_quotes.json",
+        "count": 1
+      },
+      {
+        "prefix": "/rate-limits",
+        "file": "api_rate-limits.json",
+        "count": 1
+      },
+      {
+        "prefix": "/realtime",
+        "file": "api_realtime.json",
+        "count": 3
+      },
+      {
+        "prefix": "/realtime-quote",
+        "file": "api_realtime-quote.json",
+        "count": 1
+      },
+      {
+        "prefix": "/recommendation",
+        "file": "api_recommendation.json",
+        "count": 1
+      },
+      {
+        "prefix": "/recovery",
+        "file": "api_recovery.json",
+        "count": 8
+      },
+      {
+        "prefix": "/refresh",
+        "file": "api_refresh.json",
+        "count": 2
+      },
+      {
+        "prefix": "/refresh-all",
+        "file": "api_refresh-all.json",
+        "count": 1
+      },
+      {
+        "prefix": "/refresh-health",
+        "file": "api_refresh-health.json",
+        "count": 1
+      },
+      {
+        "prefix": "/register",
+        "file": "api_register.json",
+        "count": 2
+      },
+      {
+        "prefix": "/registry",
+        "file": "api_registry.json",
+        "count": 2
+      },
+      {
+        "prefix": "/remove",
+        "file": "api_remove.json",
+        "count": 1
+      },
+      {
+        "prefix": "/reports",
+        "file": "api_reports.json",
+        "count": 1
+      },
+      {
+        "prefix": "/reset",
+        "file": "api_reset.json",
+        "count": 1
+      },
+      {
+        "prefix": "/reset-password",
+        "file": "api_reset-password.json",
+        "count": 2
+      },
+      {
+        "prefix": "/results",
+        "file": "api_results.json",
+        "count": 2
+      },
+      {
+        "prefix": "/run",
+        "file": "api_run.json",
+        "count": 2
+      },
+      {
+        "prefix": "/scheduler",
+        "file": "api_scheduler.json",
+        "count": 5
+      },
+      {
+        "prefix": "/screener",
+        "file": "api_screener.json",
+        "count": 1
+      },
+      {
+        "prefix": "/search",
+        "file": "api_search.json",
+        "count": 1
+      },
+      {
+        "prefix": "/sector",
+        "file": "api_sector.json",
+        "count": 2
+      },
+      {
+        "prefix": "/statistics",
+        "file": "api_statistics.json",
+        "count": 2
+      },
+      {
+        "prefix": "/stats",
+        "file": "api_stats.json",
+        "count": 4
+      },
+      {
+        "prefix": "/status",
+        "file": "api_status.json",
+        "count": 10
+      },
+      {
+        "prefix": "/stock",
+        "file": "api_stock.json",
+        "count": 1
+      },
+      {
+        "prefix": "/stocks",
+        "file": "api_stocks.json",
+        "count": 10
+      },
+      {
+        "prefix": "/strategies",
+        "file": "api_strategies.json",
+        "count": 11
+      },
+      {
+        "prefix": "/summary",
+        "file": "api_summary.json",
+        "count": 2
+      },
+      {
+        "prefix": "/supported-categories",
+        "file": "api_supported-categories.json",
+        "count": 1
+      },
+      {
+        "prefix": "/symbol",
+        "file": "api_symbol.json",
+        "count": 1
+      },
+      {
+        "prefix": "/symbols",
+        "file": "api_symbols.json",
+        "count": 1
+      },
+      {
+        "prefix": "/sync",
+        "file": "api_sync.json",
+        "count": 2
+      },
+      {
+        "prefix": "/tdengine",
+        "file": "api_tdengine.json",
+        "count": 1
+      },
+      {
+        "prefix": "/tdx",
+        "file": "api_tdx.json",
+        "count": 2
+      },
+      {
+        "prefix": "/test",
+        "file": "api_test.json",
+        "count": 2
+      },
+      {
+        "prefix": "/test-connection",
+        "file": "api_test-connection.json",
+        "count": 1
+      },
+      {
+        "prefix": "/test-email",
+        "file": "api_test-email.json",
+        "count": 1
+      },
+      {
+        "prefix": "/ticker-tape",
+        "file": "api_ticker-tape.json",
+        "count": 1
+      },
+      {
+        "prefix": "/today",
+        "file": "api_today.json",
+        "count": 2
+      },
+      {
+        "prefix": "/trades",
+        "file": "api_trades.json",
+        "count": 1
+      },
+      {
+        "prefix": "/training",
+        "file": "api_training.json",
+        "count": 1
+      },
+      {
+        "prefix": "/triggered-records",
+        "file": "api_triggered-records.json",
+        "count": 2
+      },
+      {
+        "prefix": "/types",
+        "file": "api_types.json",
+        "count": 1
+      },
+      {
+        "prefix": "/users",
+        "file": "api_users.json",
+        "count": 1
+      },
+      {
+        "prefix": "/validate",
+        "file": "api_validate.json",
+        "count": 1
+      },
+      {
+        "prefix": "/var-cvar",
+        "file": "api_var-cvar.json",
+        "count": 1
+      },
+      {
+        "prefix": "/versions",
+        "file": "api_versions.json",
+        "count": 7
+      },
+      {
+        "prefix": "/with-groups",
+        "file": "api_with-groups.json",
+        "count": 1
+      },
+      {
+        "prefix": "/{symbol}",
+        "file": "api_symbol.json",
+        "count": 11
+      },
+      {
+        "prefix": "/{task_id}",
+        "file": "api_task_id.json",
+        "count": 4
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/alert-rules",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/alert-rules",
+      "method": "GET",
+      "file": "monitoring.py",
+      "function": "get_alert_rules",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 36
+    },
+    {
+      "path": "/alert-rules",
+      "method": "POST",
+      "file": "monitoring.py",
+      "function": "create_alert_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 58
+    },
+    {
+      "path": "/alert-rules/{rule_id}",
+      "method": "PUT",
+      "file": "monitoring.py",
+      "function": "update_alert_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 85
+    },
+    {
+      "path": "/alert-rules/{rule_id}",
+      "method": "DELETE",
+      "file": "monitoring.py",
+      "function": "delete_alert_rule",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 104
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Real数据对接 - 核心原则与最佳实践
 
+> **⚠️ 历史参考文档**
+>
+> 本文档已被更新的环境切换指南部分替代。建议优先阅读：
+> - **[Mock/Real数据切换指南](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)** - 完整的环境切换方案
+> - **[环境切换实现报告](../reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md)** - 技术实现细节
+>
+> 本文档保留作为架构原则的历史参考。
+
 **制定日期**: 2025-12-04
 **重要性**: 🔴 CRITICAL - 这些原则决定了整个Real数据对接项目的成败
 **核心理念**: 并行开发Real数据 + 保留Mock的完整隔离 + 零风险切换

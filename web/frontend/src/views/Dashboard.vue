@@ -1,20 +1,20 @@
 <template>
-  <div class="web3-dashboard">
-    <!-- Page header with gradient text -->
-    <div class="web3-page-header">
-      <h1 class="web3-page-title">
-        <span class="gradient-text">MARKET OVERVIEW</span>
-      </h1>
-      <p class="web3-page-subtitle">REAL-TIME MARKET INTELLIGENCE & PORTFOLIO MONITORING</p>
+  <div class="artdeco-dashboard">
+    <!-- Page header with ArtDeco styling -->
+    <div class="page-header">
+      <div class="section-divider"></div>
+      <h1 class="page-title">市场总览</h1>
+      <p class="page-subtitle">实时市场智能与投资组合监控</p>
+      <div class="section-divider"></div>
       <div class="header-actions">
         <SmartDataIndicator ref="dataIndicator" />
       </div>
     </div>
 
-    <!-- Stats cards with Web3 design -->
+    <!-- Stats cards with ArtDeco design -->
     <el-row :gutter="20" class="stats-row">
       <el-col :xs="24" :sm="12" :md="6" v-for="(stat, index) in stats" :key="stat.title">
-        <Web3Card class="stat-card" hoverable @click="onStatHover(stat)">
+        <ArtDecoCard class="stat-card" hoverable @click="onStatHover(stat)">
           <div class="stat-content">
             <div class="stat-icon-wrapper">
               <div class="stat-icon" :style="{ backgroundColor: stat.color }">
@@ -22,81 +22,81 @@
               </div>
             </div>
             <div class="stat-info">
-              <h3 class="stat-value gradient-text">{{ stat.value }}</h3>
+              <h3 class="stat-value text-gold">{{ stat.value }}</h3>
               <span class="stat-title">{{ stat.title }}</span>
               <span class="stat-trend" :class="stat.trendClass">
                 {{ stat.trend }}
               </span>
             </div>
           </div>
-        </Web3Card>
+        </ArtDecoCard>
       </el-col>
     </el-row>
 
     <el-row :gutter="20" class="charts-row">
       <el-col :xs="24" :md="16">
-        <Web3Card title="I. MARKET HEAT MAP" hoverable>
+        <ArtDecoCard title="I. 市场热度分析" hoverable>
           <template #header>
             <div class="flex-between">
-              <span class="web3-section-title">I. MARKET HEAT MAP</span>
-              <Web3Button variant="outline" size="sm" @click="handleRetry" :loading="loading">
-                RETRY
-              </Web3Button>
+              <span class="section-title">I. 市场热度分析</span>
+              <ArtDecoButton variant="outline" size="sm" @click="handleRetry" :loading="loading">
+                刷新
+              </ArtDecoButton>
             </div>
           </template>
-          <el-tabs v-model="activeMarketTab" class="web3-tabs market-tabs">
-            <el-tab-pane label="MARKET HEAT" name="heat">
-              <div ref="marketHeatChartRef" class="web3-chart-container"></div>
+          <el-tabs v-model="activeMarketTab" class="artdeco-tabs market-tabs">
+            <el-tab-pane label="市场热度" name="heat">
+              <div ref="marketHeatChartRef" class="chart-container"></div>
             </el-tab-pane>
-            <el-tab-pane label="LEADING SECTORS" name="leading">
-              <div ref="leadingSectorChartRef" class="web3-chart-container"></div>
+            <el-tab-pane label="领涨板块" name="leading">
+              <div ref="leadingSectorChartRef" class="chart-container"></div>
             </el-tab-pane>
-            <el-tab-pane label="PRICE DISTRIBUTION" name="distribution">
-              <div ref="priceDistributionChartRef" class="web3-chart-container"></div>
+            <el-tab-pane label="价格分布" name="distribution">
+              <div ref="priceDistributionChartRef" class="chart-container"></div>
             </el-tab-pane>
-            <el-tab-pane label="CAPITAL FLOW" name="capital">
-              <div ref="capitalFlowChartRef" class="web3-chart-container"></div>
+            <el-tab-pane label="资金流向" name="capital">
+              <div ref="capitalFlowChartRef" class="chart-container"></div>
             </el-tab-pane>
           </el-tabs>
-        </Web3Card>
+        </ArtDecoCard>
       </el-col>
 
       <el-col :xs="24" :md="8">
-        <Web3Card title="II. CAPITAL FLOW" hoverable>
+        <ArtDecoCard title="II. 行业资金流向" hoverable>
           <template #header>
             <div class="flex-between">
-              <span class="web3-section-title">II. CAPITAL FLOW</span>
+              <span class="section-title">II. 行业资金流向</span>
               <el-select v-model="industryStandard" size="small" style="width: 140px" @change="updateIndustryChart">
-                <el-option label="CSRC" value="csrc" />
-                <el-option label="SW L1" value="sw_l1" />
-                <el-option label="SW L2" value="sw_l2" />
+                <el-option label="证监会" value="csrc" />
+                <el-option label="申万一级" value="sw_l1" />
+                <el-option label="申万二级" value="sw_l2" />
               </el-select>
             </div>
           </template>
-          <div ref="industryChartRef" class="web3-chart-container"></div>
-        </Web3Card>
+          <div ref="industryChartRef" class="chart-container"></div>
+        </ArtDecoCard>
       </el-col>
     </el-row>
 
     <el-row :gutter="20" class="sectors-row">
       <el-col :span="24">
-        <Web3Card title="III. SECTOR PERFORMANCE" hoverable>
+        <ArtDecoCard title="III. 板块表现监控" hoverable>
           <template #header>
             <div class="flex-between">
-              <span class="web3-section-title">III. SECTOR PERFORMANCE</span>
+              <span class="section-title">III. 板块表现监控</span>
               <div class="card-actions">
-                <Web3Button variant="outline" size="sm" @click="handleRefresh">
-                  REFRESH
-                </Web3Button>
-                <Web3Button variant="outline" size="sm" @click="handleRetry" :loading="loading">
-                  RETRY
-                </Web3Button>
+                <ArtDecoButton variant="outline" size="sm" @click="handleRefresh">
+                  刷新数据
+                </ArtDecoButton>
+                <ArtDecoButton variant="outline" size="sm" @click="handleRetry" :loading="loading">
+                  重新加载
+                </ArtDecoButton>
               </div>
             </div>
           </template>
-          <el-tabs v-model="activeSectorTab" class="web3-tabs sector-tabs">
-            <el-tab-pane label="FAVORITES" name="favorites">
-              <el-table :data="favoriteStocks" v-loading="loading" max-height="400" class="web3-table">
+          <el-tabs v-model="activeSectorTab" class="artdeco-tabs sector-tabs">
+            <el-tab-pane label="自选股票" name="favorites">
+              <el-table :data="favoriteStocks" v-loading="loading" max-height="400" class="artdeco-table">
                 <el-table-column prop="symbol" label="CODE" width="100" />
                 <el-table-column prop="name" label="NAME" width="120" />
                 <el-table-column prop="price" label="PRICE" width="100" align="right">
@@ -121,7 +121,7 @@
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="STRATEGY" name="strategy">
-              <el-table :data="strategyStocks" v-loading="loading" max-height="400" class="web3-table">
+              <el-table :data="strategyStocks" v-loading="loading" max-height="400" class="artdeco-table">
                 <el-table-column prop="symbol" label="CODE" width="100" />
                 <el-table-column prop="name" label="NAME" width="120" />
                 <el-table-column prop="price" label="PRICE" width="100" align="right">
@@ -150,7 +150,7 @@
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="INDUSTRY" name="industry">
-              <el-table :data="industryStocks" v-loading="loading" max-height="400" class="web3-table">
+              <el-table :data="industryStocks" v-loading="loading" max-height="400" class="artdeco-table">
                 <el-table-column prop="symbol" label="CODE" width="100" />
                 <el-table-column prop="name" label="NAME" width="120" />
                 <el-table-column prop="price" label="PRICE" width="100" align="right">
@@ -173,7 +173,7 @@
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="CONCEPT" name="concept">
-              <el-table :data="conceptStocks" v-loading="loading" max-height="400" class="web3-table">
+              <el-table :data="conceptStocks" v-loading="loading" max-height="400" class="artdeco-table">
                 <el-table-column prop="symbol" label="CODE" width="100" />
                 <el-table-column prop="name" label="NAME" width="120" />
                 <el-table-column prop="price" label="PRICE" width="100" align="right">
@@ -201,7 +201,7 @@
               </el-table>
             </el-tab-pane>
           </el-tabs>
-        </Web3Card>
+        </ArtDecoCard>
       </el-col>
     </el-row>
   </div>
@@ -210,14 +210,15 @@
 <script setup lang="ts">
 // @ts-nocheck
 
-import { ref, onMounted, nextTick, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, nextTick, watch, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from 'echarts'
 import { ElMessage } from 'element-plus'
 import SmartDataIndicator from '@/components/common/SmartDataIndicator.vue'
 import type { MarketOverviewVM, MarketStats } from '@/api/types/market'
-import { Web3Card, Web3Button } from '@/components/web3'
+import { ArtDecoCard, ArtDecoButton } from '@/components/artdeco'
+import { useMarket } from '@/composables/useMarket'
 
 // ============================================
 //   TYPE DEFINITIONS - 类型定义
@@ -517,69 +518,86 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/web3-tokens.scss';
-@import '@/styles/web3-global.scss';
+@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-global.scss';
 
-.web3-dashboard {
-  @include web3-grid-bg;
+.artdeco-dashboard {
   min-height: 100vh;
-  padding: var(--web3-spacing-6);
+  padding: var(--artdeco-spacing-6);
 
-  .web3-page-header {
+  .page-header {
     text-align: center;
-    padding: var(--web3-spacing-10) 0;
-    margin-bottom: var(--web3-spacing-8);
+    padding: var(--artdeco-spacing-8) 0;
+    margin-bottom: var(--artdeco-spacing-8);
 
-    .web3-page-title {
-      font-family: var(--web3-font-heading);
-      font-size: var(--web3-text-4xl);
-      font-weight: var(--web3-weight-bold);
-      margin: 0 0 var(--web3-spacing-3) 0;
-      line-height: var(--web3-leading-tight);
-
-      .gradient-text {
-        background: var(--web3-gradient-orange);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
+    .section-divider {
+      height: 1px;
+      width: 120px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--artdeco-accent-gold),
+        transparent
+      );
+      margin: 0 auto;
     }
 
-    .web3-page-subtitle {
-      font-family: var(--web3-font-body);
-      font-size: var(--web3-text-sm);
-      color: var(--web3-fg-muted);
-      text-transform: uppercase;
-      letter-spacing: var(--web3-tracking-wide);
+    .page-title {
+      font-family: var(--artdeco-font-display);
+      color: var(--artdeco-accent-gold);
+      font-size: var(--artdeco-text-5xl);
+      font-weight: 600;
+      line-height: 1.3;
+      margin: var(--artdeco-spacing-4) 0;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .page-subtitle {
+      font-family: var(--artdeco-font-body);
+      color: var(--artdeco-fg-muted);
+      font-size: var(--artdeco-text-lg);
+      letter-spacing: 0.05em;
       margin: 0;
+      text-transform: uppercase;
     }
 
     .header-actions {
-      margin-top: var(--web3-spacing-4);
+      margin-top: var(--artdeco-spacing-4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--artdeco-spacing-3);
     }
   }
 
   .stats-row {
-    margin-bottom: var(--web3-spacing-6);
+    margin-bottom: var(--artdeco-spacing-6);
 
     .stat-card {
       cursor: pointer;
+      transition: all var(--artdeco-duration-slow) var(--artdeco-ease-out);
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--artdeco-glow-base);
+      }
 
       .stat-content {
         display: flex;
         align-items: center;
-        gap: var(--web3-spacing-4);
-        padding: var(--web3-spacing-4) 0;
+        gap: var(--artdeco-spacing-4);
+        padding: var(--artdeco-spacing-4) 0;
 
         .stat-icon-wrapper {
           .stat-icon {
             width: 56px;
             height: 56px;
-            border-radius: var(--web3-radius-lg);
+            border: 2px solid var(--artdeco-border-gold-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--artdeco-fg-primary);
           }
         }
 
@@ -587,42 +605,36 @@ onMounted(() => {
           flex: 1;
 
           .stat-value {
-            font-size: var(--web3-text-3xl);
-            font-weight: var(--web3-weight-bold);
-            margin: 0 0 var(--web3-spacing-1) 0;
-            font-family: var(--web3-font-mono);
-
-            &.gradient-text {
-              background: var(--web3-gradient-orange);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-            }
+            font-family: var(--artdeco-font-display);
+            font-size: var(--artdeco-text-4xl);
+            font-weight: 700;
+            margin: 0 0 var(--artdeco-spacing-2) 0;
+            line-height: 1.2;
           }
 
           .stat-title {
             display: block;
-            font-size: var(--web3-text-xs);
-            text-transform: uppercase;
-            letter-spacing: var(--web3-tracking-wide);
-            color: var(--web3-fg-muted);
-            margin-bottom: var(--web3-spacing-1);
+            font-size: var(--artdeco-text-sm);
+            color: var(--artdeco-fg-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: var(--artdeco-spacing-2);
           }
 
           .stat-trend {
-            font-size: var(--web3-text-xs);
-            font-family: var(--web3-font-mono);
+            font-size: var(--artdeco-text-sm);
+            font-weight: 600;
+            font-family: var(--artdeco-font-display);
 
-            &.up {
-              color: #F7931A;
+            &.trend-up {
+              color: var(--artdeco-color-up);
             }
 
-            &.down {
-              color: #00E676;
+            &.trend-down {
+              color: var(--artdeco-color-down);
             }
 
             &.neutral {
-              color: var(--web3-fg-muted);
+              color: var(--artdeco-fg-muted);
             }
           }
         }
@@ -632,60 +644,60 @@ onMounted(() => {
 
   .charts-row,
   .sectors-row {
-    margin-bottom: var(--web3-spacing-6);
+    margin-bottom: var(--artdeco-spacing-6);
   }
 
-  .web3-section-title {
-    font-family: var(--web3-font-heading);
-    font-size: var(--web3-text-lg);
-    font-weight: var(--web3-weight-semibold);
-    color: var(--web3-fg-primary);
-    text-transform: uppercase;
-    letter-spacing: var(--web3-tracking-wide);
+  .section-title {
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-text-xl);
+    font-weight: 600;
+    color: var(--artdeco-accent-gold);
+    letter-spacing: 0.1em;
   }
 
-  .web3-chart-container {
+  .chart-container {
     height: 350px;
     width: 100%;
   }
 
-  .web3-table {
+  .artdeco-table {
     :deep(.el-table__header) {
       th {
-        background: rgba(255, 255, 255, 0.02) !important;
-        color: var(--web3-fg-secondary) !important;
-        font-family: var(--web3-font-heading);
-        font-weight: var(--web3-weight-semibold);
+        background-color: var(--artdeco-bg-secondary) !important;
+        color: var(--artdeco-accent-gold) !important;
+        font-family: var(--artdeco-font-display);
         text-transform: uppercase;
-        border-bottom: 1px solid var(--web3-border-subtle) !important;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        border-bottom: 2px solid var(--artdeco-border-gold) !important;
       }
     }
 
     :deep(.el-table__body) {
       tr {
         background: transparent !important;
-        transition: background var(--web3-duration-fast);
+        transition: background var(--artdeco-duration-base);
 
         &:hover {
-          background: rgba(247, 147, 26, 0.05) !important;
+          background: rgba(212, 175, 55, 0.05) !important;
         }
 
         td {
-          border-bottom: 1px solid var(--web3-border-subtle) !important;
-          color: var(--web3-fg-primary);
+          border-bottom: 1px solid var(--artdeco-border-gold-muted) !important;
+          color: var(--artdeco-fg-primary);
         }
       }
     }
   }
 
   .text-up {
-    color: #F7931A !important;
-    font-weight: var(--web3-weight-semibold);
+    color: var(--artdeco-color-up) !important;
+    font-weight: 600;
   }
 
   .text-down {
-    color: #00E676 !important;
-    font-weight: var(--web3-weight-semibold);
+    color: var(--artdeco-color-down) !important;
+    font-weight: 600;
   }
 
   .flex-between {
@@ -696,7 +708,7 @@ onMounted(() => {
 
   .card-actions {
     display: flex;
-    gap: var(--web3-spacing-2);
+    gap: var(--artdeco-spacing-2);
   }
 }
 </style>

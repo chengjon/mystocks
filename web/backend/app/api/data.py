@@ -132,7 +132,7 @@ async def get_stocks_industries(
 
         # 构建响应数据
         industry_list = [
-            {"industry_name": industry, "industry_code": f"IND_{i+1:03d}"} for i, industry in enumerate(industries)
+            {"industry_name": industry, "industry_code": f"IND_{i + 1:03d}"} for i, industry in enumerate(industries)
         ]
 
         result = {
@@ -170,34 +170,19 @@ async def get_stocks_concepts(
         if cached_data:
             return cached_data
 
-        # 模拟概念列表数据（实际应该从概念分类表查询）
-        concepts = [
-            "人工智能",
-            "新能源车",
-            "光伏概念",
-            "半导体",
-            "医药生物",
-            "军工概念",
-            "5G概念",
-            "区块链",
-            "大数据",
-            "云计算",
-            "物联网",
-            "元宇宙",
-            "数字货币",
-            "新材料",
-            "环保概念",
-            "消费电子",
-            "食品饮料",
-            "房地产开发",
-            "银行",
-            "保险",
-        ]
+        # 查询数据库获取概念列表
+        df = db_service.query_concepts(limit=10000)
+
+        if df.empty:
+            return {
+                "success": True,
+                "data": [],
+                "total": 0,
+                "timestamp": datetime.now().isoformat(),
+            }
 
         # 构建响应数据
-        concept_list = [
-            {"concept_name": concept, "concept_code": f"CON_{i+1:03d}"} for i, concept in enumerate(concepts)
-        ]
+        concept_list = [{"concept_name": row["name"], "concept_code": row["code"]} for _, row in df.iterrows()]
 
         result = {
             "success": True,
@@ -1121,7 +1106,7 @@ async def get_trading_summary(
 
 @router.get("/test/factory")
 async def test_data_source_factory(
-    limit: int = Query(10, ge=1, le=100, description="测试数据返回数量限制")
+    limit: int = Query(10, ge=1, le=100, description="测试数据返回数量限制"),
 ) -> Dict[str, Any]:
     """
     测试数据源工厂集成 (无需认证)

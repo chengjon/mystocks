@@ -1,274 +1,144 @@
 /**
- * Linear Theme Manager
- * Manages Linear/Modern design system theme switching and CSS variable injection
+ * Theme Manager
+ *
+ * 主题管理器，提供亮色/暗色主题切换功能
  */
 
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed } from 'vue'
 
-export interface ThemeConfig {
-  name: string
-  mode: 'dark' | 'light'
-  version: string
-  colors: {
-    background: Record<string, string>
-    foreground: Record<string, string>
-    accent: Record<string, string>
-    border: Record<string, string>
-    gradient: Record<string, string>
+// 主题模式类型
+export type ThemeMode = 'light' | 'dark'
+
+// 当前主题状态（响应式）
+const currentMode = ref<ThemeMode>('dark')
+
+// 主题配置
+const themes = {
+  light: {
+    primary: '#3b82f6',
+    background: '#ffffff',
+    foreground: '#000000',
+    card: '#f3f4f6',
+    border: '#e5e7eb'
+  },
+  dark: {
+    primary: '#60a5fa',
+    background: '#0f172a',
+    foreground: '#f8fafc',
+    card: '#1e293b',
+    border: '#334155'
   }
-  backgroundLayers: {
-    baseGradient: string
-    noiseOpacity: number
-    gridOpacity: number
-    gridSize: number
-    blobs: Array<{
-      position: string
-      size: string
-      blur: number
-      color: string
-      animationDuration: number
-      pulse?: boolean
-    }>
-  }
-  shadows: Record<string, string>
-  typography: {
-    fontFamily: Record<string, string>
-    scale: Record<string, any>
-  }
-  spacing: Record<string, string>
-  radius: Record<string, string>
-  animation: {
-    duration: Record<string, string>
-    easing: Record<string, string>
-    float: { from: any; to: any }
-  }
-  spotlight: {
-    size: number
-    opacity: number
-    blur: number
-  }
-  components: Record<string, any>
-  metadata: Record<string, any>
 }
 
-const THEME_STORAGE_KEY = 'linear-theme-preference'
-
-// Import theme configs
-import linearDarkTheme from './themes/linear-dark.json'
-import linearLightTheme from './themes/linear-light.json'
-
-class ThemeManagerImpl {
-  private currentTheme = ref<ThemeConfig>(linearDarkTheme as ThemeConfig)
-  private isInitialized = false
-
-  constructor() {
-    this.loadSavedTheme()
-  }
-
+/**
+ * Theme Manager 类
+ */
+class ThemeManager {
   /**
-   * Load saved theme from localStorage
-   */
-  private loadSavedTheme() {
-    if (typeof window === 'undefined') return
-
-    try {
-      const savedMode = localStorage.getItem(THEME_STORAGE_KEY) as 'dark' | 'light' | null
-      if (savedMode === 'light') {
-        this.currentTheme.value = linearLightTheme as ThemeConfig
-      } else {
-        this.currentTheme.value = linearDarkTheme as ThemeConfig
-      }
-    } catch (error) {
-      console.warn('[Linear ThemeManager] Failed to load saved theme:', error)
-    }
-  }
-
-  /**
-   * Save theme to localStorage
-   */
-  private saveTheme(mode: 'dark' | 'light') {
-    if (typeof window === 'undefined') return
-
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, mode)
-    } catch (error) {
-      console.warn('[Linear ThemeManager] Failed to save theme:', error)
-    }
-  }
-
-  /**
-   * Apply Linear theme CSS variables to DOM
-   */
-  private applyTheme(theme: ThemeConfig) {
-    if (typeof document === 'undefined') return
-
-    const root = document.documentElement
-
-    // Apply background colors
-    Object.entries(theme.colors.background).forEach(([key, value]) => {
-      root.style.setProperty(`--bg-${key}`, value)
-    })
-
-    // Apply foreground colors
-    Object.entries(theme.colors.foreground).forEach(([key, value]) => {
-      root.style.setProperty(`--fg-${key}`, value)
-    })
-
-    // Apply accent colors
-    Object.entries(theme.colors.accent).forEach(([key, value]) => {
-      root.style.setProperty(`--accent-${key}`, value)
-    })
-
-    // Apply border colors
-    Object.entries(theme.colors.border).forEach(([key, value]) => {
-      root.style.setProperty(`--border-${key}`, value)
-    })
-
-    // Apply gradients
-    Object.entries(theme.colors.gradient).forEach(([key, value]) => {
-      root.style.setProperty(`--gradient-${key}`, value)
-    })
-
-    // Apply background layer settings
-    root.style.setProperty('--bg-base-gradient', theme.backgroundLayers.baseGradient)
-    root.style.setProperty('--bg-noise-opacity', theme.backgroundLayers.noiseOpacity.toString())
-    root.style.setProperty('--bg-grid-opacity', theme.backgroundLayers.gridOpacity.toString())
-    root.style.setProperty('--bg-grid-size', theme.backgroundLayers.gridSize + 'px')
-
-    // Apply shadows
-    Object.entries(theme.shadows).forEach(([key, value]) => {
-      root.style.setProperty(`--shadow-${key}`, value)
-    })
-
-    // Apply typography
-    root.style.setProperty('--font-sans', theme.typography.fontFamily.sans)
-    root.style.setProperty('--font-mono', theme.typography.fontFamily.mono)
-
-    // Apply spacing
-    Object.entries(theme.spacing).forEach(([key, value]) => {
-      root.style.setProperty(`--spacing-${key}`, value)
-    })
-
-    // Apply radius
-    Object.entries(theme.radius).forEach(([key, value]) => {
-      root.style.setProperty(`--radius-${key}`, value)
-    })
-
-    // Apply animation settings
-    root.style.setProperty('--duration-fast', theme.animation.duration.fast)
-    root.style.setProperty('--duration-normal', theme.animation.duration.normal)
-    root.style.setProperty('--duration-slow', theme.animation.duration.slow)
-    root.style.setProperty('--duration-blob', theme.animation.duration.blob)
-    root.style.setProperty('--easing-default', theme.animation.easing.default)
-    root.style.setProperty('--easing-out', theme.animation.easing.out)
-    root.style.setProperty('--easing-in-out', theme.animation.easing.inOut)
-
-    // Apply spotlight settings
-    root.style.setProperty('--spotlight-size', theme.spotlight.size + 'px')
-    root.style.setProperty('--spotlight-opacity', theme.spotlight.opacity.toString())
-    root.style.setProperty('--spotlight-blur', theme.spotlight.blur + 'px')
-
-    // Set data attribute for theme mode
-    root.setAttribute('data-theme', theme.mode)
-  }
-
-  /**
-   * Initialize theme system (call once on app mount)
+   * 初始化主题
    */
   init() {
-    if (this.isInitialized) return
+    // 从localStorage读取保存的主题
+    const savedTheme = localStorage.getItem('theme-mode') as ThemeMode | null
 
-    this.applyTheme(this.currentTheme.value)
-    this.isInitialized = true
-    console.log(`✅ Linear theme initialized: ${this.currentTheme.value.name}`)
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+      currentMode.value = savedTheme
+    } else {
+      // 检测系统主题偏好
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      currentMode.value = prefersDark ? 'dark' : 'light'
+    }
+
+    // 应用主题到DOM
+    this.applyTheme(currentMode.value)
   }
 
   /**
-   * Get current theme
-   */
-  getTheme() {
-    return this.currentTheme
-  }
-
-  /**
-   * Get current theme as computed
+   * 获取当前主题的计算属性
    */
   getThemeComputed() {
-    return computed(() => this.currentTheme.value)
+    return {
+      mode: computed(() => currentMode.value),
+      isDark: computed(() => currentMode.value === 'dark'),
+      isLight: computed(() => currentMode.value === 'light')
+    }
   }
 
   /**
-   * Check if current theme is dark
-   */
-  isDark() {
-    return computed(() => this.currentTheme.value.mode === 'dark')
-  }
-
-  /**
-   * Check if current theme is light
-   */
-  isLight() {
-    return computed(() => this.currentTheme.value.mode === 'light')
-  }
-
-  /**
-   * Switch to light theme
-   */
-  setLightTheme() {
-    this.currentTheme.value = linearLightTheme as ThemeConfig
-    this.applyTheme(this.currentTheme.value)
-    this.saveTheme('light')
-  }
-
-  /**
-   * Switch to dark theme
-   */
-  setDarkTheme() {
-    this.currentTheme.value = linearDarkTheme as ThemeConfig
-    this.applyTheme(this.currentTheme.value)
-    this.saveTheme('dark')
-  }
-
-  /**
-   * Toggle between light and dark themes
+   * 切换主题
    */
   toggleTheme() {
-    if (this.currentTheme.value.mode === 'light') {
-      this.setDarkTheme()
-    } else {
-      this.setLightTheme()
-    }
+    const newMode: ThemeMode = currentMode.value === 'dark' ? 'light' : 'dark'
+    this.setTheme(newMode)
   }
 
   /**
-   * Get theme value by path
+   * 设置主题
    */
-  get(path: string): any {
-    const keys = path.split('.')
-    let value: any = this.currentTheme.value
+  setTheme(mode: ThemeMode) {
+    currentMode.value = mode
+    localStorage.setItem('theme-mode', mode)
+    this.applyTheme(mode)
+  }
 
-    for (const key of keys) {
-      value = value?.[key]
-    }
+  /**
+   * 获取当前主题
+   */
+  getTheme(): ThemeMode {
+    return currentMode.value
+  }
 
-    return value
+  /**
+   * 应用主题到DOM
+   */
+  private applyTheme(mode: ThemeMode) {
+    const root = document.documentElement
+
+    // 移除旧的主题类
+    root.classList.remove('theme-light', 'theme-dark')
+
+    // 添加新的主题类
+    root.classList.add(`theme-${mode}`)
+
+    // 设置CSS变量
+    const theme = themes[mode]
+    root.style.setProperty('--theme-primary', theme.primary)
+    root.style.setProperty('--theme-background', theme.background)
+    root.style.setProperty('--theme-foreground', theme.foreground)
+    root.style.setProperty('--theme-card', theme.card)
+    root.style.setProperty('--theme-border', theme.border)
   }
 }
 
-// Singleton instance
-export const themeManager = new ThemeManagerImpl()
+// 创建单例实例
+const themeManager = new ThemeManager()
 
-// Composable for using theme in components
+/**
+ * Vue composable: useTheme
+ *
+ * 提供响应式的主题切换API
+ */
 export function useTheme() {
+  const isDark = computed(() => currentMode.value === 'dark')
+  const isLight = computed(() => currentMode.value === 'light')
+  const theme = computed(() => currentMode.value)
+
+  const toggleTheme = () => {
+    themeManager.toggleTheme()
+  }
+
+  const setTheme = (mode: ThemeMode) => {
+    themeManager.setTheme(mode)
+  }
+
   return {
-    theme: themeManager.getThemeComputed(),
-    isDark: themeManager.isDark(),
-    isLight: themeManager.isLight(),
-    setLightTheme: () => themeManager.setLightTheme(),
-    setDarkTheme: () => themeManager.setDarkTheme(),
-    toggleTheme: () => themeManager.toggleTheme(),
-    get: (path: string) => themeManager.get(path)
+    isDark,
+    isLight,
+    theme,
+    toggleTheme,
+    setTheme
   }
 }
 
+// 导出单例实例（默认导出）
 export default themeManager

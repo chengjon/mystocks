@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/trades",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/trades",
+      "method": "GET",
+      "file": "trade/routes.py",
+      "function": "get_trades",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 160
+    }
+  ]
+}

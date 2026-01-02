@@ -9,8 +9,10 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
-// LINEAR THEME: Import Linear design tokens
-import './styles/linear-tokens.scss'
+// ARTDECO THEME: Import ArtDeco design tokens and global styles
+import './styles/artdeco-tokens.scss'
+import './styles/artdeco-global.scss'
+import './styles/element-plus-artdeco-override.scss'
 
 // SECURITY FIX 1.2: 导入CSRF初始化函数
 import { initializeSecurity } from './services/httpClient.js'
@@ -37,5 +39,13 @@ initializeSecurity().then(() => {
   console.warn('⚠️ Security initialization failed:', err)
   // 继续挂载应用，即使CSRF初始化失败
 }).finally(() => {
+  // 初始化Pinia后挂载应用
   app.mount('#app')
+
+  // Task 2.1.2: 应用启动时验证并恢复session
+  import('./utils/sessionRestore.js').then(({ restoreSession }) => {
+    restoreSession().catch(err => {
+      console.warn('⚠️ Session restore failed:', err)
+    })
+  })
 })

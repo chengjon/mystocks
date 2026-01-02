@@ -47,7 +47,7 @@
         </el-form-item>
 
         <el-form-item>
-          <Web3Button variant="primary" @click="fetchTechnicalData" :loading="loading.search">
+          <Web3Button variant="solid" @click="fetchTechnicalData" :loading="loading.search">
             SEARCH
           </Web3Button>
           <Web3Button variant="outline" @click="resetSearch">
@@ -226,7 +226,7 @@
 
         <el-form-item>
           <Web3Button
-            variant="primary"
+            variant="solid"
             @click="calculateBatchIndicators"
             :loading="loading.batch"
             :disabled="!batchForm.symbols"
@@ -266,7 +266,7 @@ import {
 import { technicalApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
-import { Web3Card, Web3Button, Web3Input } from '@/components/web3'
+import { ArtDecoCard as Web3Card, ArtDecoButton as Web3Button, ArtDecoInput as Web3Input } from '@/components/artdeco'
 
 // Type definitions
 interface SearchForm {

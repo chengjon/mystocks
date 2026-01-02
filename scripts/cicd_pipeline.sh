@@ -280,8 +280,10 @@ deploy_to_test() {
     log_info "部署到测试环境..."
 
     # 创建测试环境配置
-    if [ -f "config/.env.simplified" ]; then
-        cp config/.env.simplified .env.test
+    if [ -f ".env" ]; then
+        cp .env .env.test
+    elif [ -f ".env.example" ]; then
+        cp .env.example .env.test
     else
         echo "# Test Environment Configuration" > .env.test
         echo "ENVIRONMENT=test" >> .env.test

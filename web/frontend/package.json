@@ -4,6 +4,8 @@
   "description": "MyStocks Web Management Frontend",
   "scripts": {
     "dev": "npm run generate-types && vite",
+    "dev:mock": "cp .env.mock .env && npm run generate-types && vite",
+    "dev:real": "cp .env.real .env && npm run generate-types && vite",
     "dev:no-types": "vite",
     "build": "npm run generate-types && vue-tsc --noEmit && vite build",
     "build:no-types": "vite build",

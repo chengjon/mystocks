@@ -17,7 +17,26 @@ import type {
 } from '../types/strategy';
 
 export class StrategyApiService {
-  private readonly baseUrl = '/api/strategy';
+  /**
+   * 根据 APP_MODE 环境变量决定使用哪个API端点
+   * - mock: 使用 /api/mock/strategy (Mock数据)
+   * - real/production: 使用 /api/v1/strategy (真实API)
+   */
+  private readonly baseUrl: string;
+
+  constructor() {
+    // 从环境变量读取模式，默认为real
+    const appMode = import.meta.env.VITE_APP_MODE || 'real';
+
+    // 根据模式选择API端点
+    if (appMode === 'mock') {
+      this.baseUrl = '/api/mock/strategy';
+      console.log('[Strategy API] Using Mock endpoint:', this.baseUrl);
+    } else {
+      this.baseUrl = '/api/v1/strategy';
+      console.log('[Strategy API] Using Real endpoint:', this.baseUrl);
+    }
+  }
 
   /**
    * Get strategy list
@@ -32,8 +51,7 @@ export class StrategyApiService {
     type?: string;
   }): Promise<UnifiedResponse<StrategyListResponse>> {
     return apiGet<UnifiedResponse<StrategyListResponse>>(
-      `${this.baseUrl}/list`,
-      params
+      `${this.baseUrl}/strategies`  // Task 2.3.3: 使用Mock端点
     );
   }
 
@@ -44,7 +62,7 @@ export class StrategyApiService {
    * @returns UnifiedResponse with strategy details
    */
   async getStrategy(id: string): Promise<UnifiedResponse<Strategy>> {
-    return apiGet<UnifiedResponse<Strategy>>(`${this.baseUrl}/${id}`);
+    return apiGet<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies/${id}`);
   }
 
   /**
@@ -66,7 +84,7 @@ export class StrategyApiService {
   async createStrategy(
     data: CreateStrategyRequest
   ): Promise<UnifiedResponse<Strategy>> {
-    return apiPost<UnifiedResponse<Strategy>>(this.baseUrl, data);
+    return apiPost<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies`, data);
   }
 
   /**
@@ -80,7 +98,7 @@ export class StrategyApiService {
     id: string,
     data: UpdateStrategyRequest
   ): Promise<UnifiedResponse<Strategy>> {
-    return apiPut<UnifiedResponse<Strategy>>(`${this.baseUrl}/${id}`, data);
+    return apiPut<UnifiedResponse<Strategy>>(`${this.baseUrl}/strategies/${id}`, data);
   }
 
   /**
@@ -90,7 +108,7 @@ export class StrategyApiService {
    * @returns UnifiedResponse (data is null for delete)
    */
   async deleteStrategy(id: string): Promise<UnifiedResponse<void>> {
-    return apiDelete<UnifiedResponse<void>>(`${this.baseUrl}/${id}`);
+    return apiDelete<UnifiedResponse<void>>(`${this.baseUrl}/strategies/${id}`);
   }
 
   /**

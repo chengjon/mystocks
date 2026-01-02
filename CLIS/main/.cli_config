@@ -1,0 +1,13 @@
+# CLI配置文件
+
+[cli]
+name = main
+type = coordinator
+
+[mailbox]
+watcher_enabled = true
+scan_interval = 60
+
+[coordination]
+auto_coordinate = true
+coordinate_interval = 300

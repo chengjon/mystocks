@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/clear-cache",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/clear-cache",
+      "method": "POST",
+      "file": "multi_source.py",
+      "function": "clear_cache",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 286
+    }
+  ]
+}

@@ -225,11 +225,15 @@ class FrontendPreparationValidator:
         vite_exists = self.vite_config.exists()
 
         # 检查环境配置文件
-        env_files = [".env.development", ".env.production"]
+        env_files = [".env.mock"]  # Mock数据配置文件
         env_status = {}
         for env_file in env_files:
             env_path = self.frontend_dir / env_file
             env_status[env_file] = env_path.exists()
+
+        # 检查根目录.env文件
+        root_env = self.project_root / ".env"
+        env_status["root/.env"] = root_env.exists()
 
         # 计算工具链评分
         toolkit_score = (
@@ -412,8 +416,8 @@ class FrontendPreparationValidator:
         }
 
         # 检查环境配置
-        env_development = (self.frontend_dir / ".env.development").exists()
-        env_production = (self.frontend_dir / ".env.production").exists()
+        env_mock = (self.frontend_dir / ".env.mock").exists()
+        root_env = (self.project_root / ".env").exists()
 
         # 检查Docker配置
         docker_compose_exists = (
@@ -425,9 +429,9 @@ class FrontendPreparationValidator:
 
         # 构建配置评分
         config_score = sum(config_checks.values()) * 20  # 每个配置项20分
-        if env_development:
+        if env_mock:
             config_score += 10
-        if env_production:
+        if root_env:
             config_score += 10
         if docker_compose_exists:
             config_score += 15

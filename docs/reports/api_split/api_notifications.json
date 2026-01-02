@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/notifications",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/notifications/test",
+      "method": "POST",
+      "file": "risk_management.py",
+      "function": "test_notification",
+      "return_model": "NotificationTestResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 629
+    }
+  ]
+}

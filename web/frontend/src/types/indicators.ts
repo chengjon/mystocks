@@ -293,7 +293,7 @@ export interface MACDConfig extends IndicatorConfig {
  * MACD 结果 (不继承 IndicatorResult，避免类型冲突)
  */
 export interface MACDResult {
-  data: IndicatorDataPoint & {
+  data: (IndicatorDataPoint & {
     extra: {
       dif: number; // 快线
       dea: number; // 慢线
@@ -327,7 +327,7 @@ export interface KDJConfig extends IndicatorConfig {
  * KDJ 结果 (不继承 IndicatorResult，避免类型冲突)
  */
 export interface KDJResult {
-  data: IndicatorDataPoint & {
+  data: (IndicatorDataPoint & {
     extra: {
       k: number; // K值
       d: number; // D值
@@ -357,7 +357,7 @@ export interface RSIConfig extends IndicatorConfig {
  * RSI 结果 (不继承 IndicatorResult，避免类型冲突)
  */
 export interface RSIResult {
-  data: IndicatorDataPoint & {
+  data: (IndicatorDataPoint & {
     extra: {
       rsi6: number; // 6日RSI
       rsi12: number; // 12日RSI
@@ -390,7 +390,7 @@ export interface BOLLConfig extends IndicatorConfig {
  * BOLL 结果 (不继承 IndicatorResult，避免类型冲突)
  */
 export interface BOLLResult {
-  data: IndicatorDataPoint & {
+  data: (IndicatorDataPoint & {
     extra: {
       upper: number; // 上轨
       middle: number; // 中轨

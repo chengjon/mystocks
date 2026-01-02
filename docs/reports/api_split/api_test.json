@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/test",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/test/quality",
+      "method": "POST",
+      "file": "data_quality.py",
+      "function": "test_data_quality",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 374
+    },
+    {
+      "path": "/test/factory",
+      "method": "GET",
+      "file": "data.py",
+      "function": "test_data_source_factory",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 1122
+    }
+  ]
+}

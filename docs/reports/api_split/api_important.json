@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/important",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/important",
+      "method": "GET",
+      "file": "announcement.py",
+      "function": "get_important_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 163
+    },
+    {
+      "path": "/important",
+      "method": "GET",
+      "file": "announcement/routes.py",
+      "function": "get_important_announcements",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 177
+    }
+  ]
+}

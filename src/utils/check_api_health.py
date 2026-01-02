@@ -12,13 +12,18 @@ from typing import Dict, Tuple, Optional
 BASE_URL = "http://localhost:8000"
 TIMEOUT = 5  # 秒
 
+# 测试凭据（从环境变量读取，默认为测试凭据）
+import os
+TEST_USERNAME = os.getenv("TEST_ADMIN_USERNAME", "admin")
+TEST_PASSWORD = os.getenv("TEST_ADMIN_PASSWORD", "admin123")
+
 # 10个关键API端点
 API_ENDPOINTS = [
     {
         "name": "登录认证",
         "method": "POST",
         "url": "/api/auth/login",
-        "data": {"username": "admin", "password": "admin123"},
+        "data": {"username": TEST_USERNAME, "password": TEST_PASSWORD},
         "auth_required": False,
         "priority": "P1",
         "page": "登录页面",
@@ -121,7 +126,7 @@ def get_auth_token() -> Optional[str]:
     try:
         resp = requests.post(
             f"{BASE_URL}/api/auth/login",
-            data={"username": "admin", "password": "admin123"},
+            data={"username": TEST_USERNAME, "password": TEST_PASSWORD},
             timeout=TIMEOUT,
         )
         if resp.status_code == 200:

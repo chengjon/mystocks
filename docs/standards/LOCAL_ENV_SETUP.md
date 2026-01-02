@@ -11,18 +11,17 @@
 
 - `.env.example` 包含占位符，已提交至 Git ✅
 - `.env` 包含真实凭证，已添加至 `.gitignore` ✅
-- `.env.production` 包含生产环境凭证，已添加至 `.gitignore` ✅
+- 所有环境配置统一使用根目录 `.env` 文件 ✅
 
 ---
 
-## 快速开始（3 步）
+## 快速开始（2 步）
 
 ### 步骤 1：复制示例文件
 
 ```bash
 cd /opt/claude/mystocks_spec
 cp .env.example .env
-cp config/.env.data_sources.example config/.env
 ```
 
 ### 步骤 2：编辑本地凭证
@@ -137,16 +136,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
    # 替换为新凭证
    ```
 
-### Q2：.env.production 是什么？
-
-**A**：`.env.production` 用于**生产环境部署**。
-
-- 同样包含真实凭证
-- 同样已在 `.gitignore` 中
-- **只在生产服务器上手动部署**（不在代码库中）
-- **本地开发不需要编辑它**
-
-### Q3：能否在 `.env.example` 中放实际凭证作为"通用"密码？
+### Q2：能否在 `.env.example` 中放实际凭证作为"通用"密码？
 
 **A**：**绝对不行**！
 
@@ -154,7 +144,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 - 任何查看代码的人都能看到这些凭证
 - 这是严重的安全漏洞 🔴
 
-### Q4：CI/CD 环境如何管理凭证？
+### Q3：CI/CD 环境如何管理凭证？
 
 **A**：CI/CD 环境（GitHub Actions / GitLab CI）使用**密钥管理系统**：
 
@@ -184,7 +174,7 @@ git status --porcelain | grep -E "^\s*\.env" | wc -l
 
 ```bash
 # 应输出 .env 的忽略规则
-git check-ignore -v .env .env.production
+git check-ignore -v .env
 ```
 
 ### 意外提交凭证的紧急恢复

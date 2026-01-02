@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/concept",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/concept/list",
+      "method": "GET",
+      "file": "industry_concept_analysis.py",
+      "function": "get_concept_list",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 76
+    },
+    {
+      "path": "/concept/stocks",
+      "method": "GET",
+      "file": "industry_concept_analysis.py",
+      "function": "get_concept_stocks",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 176
+    }
+  ]
+}

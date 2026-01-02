@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/queries",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/queries",
+      "method": "GET",
+      "file": "wencai.py",
+      "function": "get_all_queries",
+      "return_model": "WencaiQueryListResponse",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 45
+    },
+    {
+      "path": "/queries/{query_name}",
+      "method": "GET",
+      "file": "wencai.py",
+      "function": "get_query_by_name",
+      "return_model": "WencaiQueryInfo",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 81
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "task-1.1": {
+    "task_id": "task-1.1",
+    "title": "实现Web前端主页",
+    "description": "使用Vue 3实现响应式主页，包含顶部导航、侧边栏和主内容区域",
+    "priority": "HIGH",
+    "skills": [
+      "frontend",
+      "Vue",
+      "UI-design"
+    ],
+    "estimated_hours": 8,
+    "status": "claimed",
+    "claimed_by": "web",
+    "claimed_time": "2026-01-01T19:16:27.830263",
+    "published_time": "2026-01-01T19:16:11.055181",
+    "progress": 0
+  },
+  "task-1.2": {
+    "task_id": "task-1.2",
+    "title": "实现API数据集成",
+    "description": "前端调用FastAPI后端接口，获取股票数据和指标数据",
+    "priority": "HIGH",
+    "skills": [
+      "frontend",
+      "API-integration",
+      "async"
+    ],
+    "estimated_hours": 12,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T19:16:19.150602",
+    "progress": 0
+  },
+  "task-2.1": {
+    "task_id": "task-2.1",
+    "title": "优化数据库查询性能",
+    "description": "为PostgreSQL时序数据添加索引，优化查询响应时间",
+    "priority": "MEDIUM",
+    "skills": [
+      "database",
+      "PostgreSQL",
+      "SQL",
+      "optimization"
+    ],
+    "estimated_hours": 6,
+    "status": "completed",
+    "claimed_by": "db",
+    "claimed_time": "2026-01-01T19:16:39.147320",
+    "published_time": "2026-01-01T19:16:19.206512",
+    "progress": 100,
+    "completed_time": "2026-01-01T21:30:40.424280"
+  },
+  "task-3.1": {
+    "task_id": "task-3.1",
+    "title": "实现JWT认证系统",
+    "description": "在FastAPI后端实现JWT token认证，包括登录、注册、token刷新和密码重置功能。使用Pydantic进行请求验证，确保API安全性。",
+    "priority": "HIGH",
+    "skills": [
+      "backend",
+      "FastAPI",
+      "authentication",
+      "security"
+    ],
+    "estimated_hours": 16,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:40:42.605591",
+    "progress": 0
+  },
+  "task-3.2": {
+    "task_id": "task-3.2",
+    "title": "开发股票数据API端点",
+    "description": "实现RESTful API端点获取股票行情、K线数据、技术指标。支持分页、过滤、排序功能。集成TDengine和PostgreSQL数据源。",
+    "priority": "HIGH",
+    "skills": [
+      "backend",
+      "FastAPI",
+      "API-design",
+      "database",
+      "PostgreSQL",
+      "TDengine"
+    ],
+    "estimated_hours": 20,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:40:48.286214",
+    "progress": 0
+  },
+  "task-3.3": {
+    "task_id": "task-3.3",
+    "title": "实现用户权限管理",
+    "description": "基于角色的访问控制(RBAC)系统，定义用户角色（admin/user/guest），实现权限验证中间件，管理API访问权限。",
+    "priority": "MEDIUM",
+    "skills": [
+      "backend",
+      "FastAPI",
+      "authentication",
+      "security"
+    ],
+    "estimated_hours": 12,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:09.400229",
+    "progress": 0
+  },
+  "task-4.1": {
+    "task_id": "task-4.1",
+    "title": "设计并实现数据库迁移脚本",
+    "description": "创建数据库版本控制迁移系统，支持PostgreSQL和TDengine的schema变更管理。实现up/down迁移脚本，确保数据一致性。",
+    "priority": "HIGH",
+    "skills": [
+      "database",
+      "PostgreSQL",
+      "TDengine",
+      "migration"
+    ],
+    "estimated_hours": 14,
+    "status": "claimed",
+    "claimed_by": "db",
+    "claimed_time": "2026-01-01T21:31:08.869602",
+    "published_time": "2026-01-01T20:49:22.317981",
+    "progress": 0
+  },
+  "task-4.2": {
+    "task_id": "task-4.2",
+    "title": "优化时序数据查询性能",
+    "description": "为TDengine高频数据表创建超级表，优化时间分区策略。为PostgreSQL TimescaleDB配置压缩和保留策略。查询响应时间目标<100ms。",
+    "priority": "HIGH",
+    "skills": [
+      "database",
+      "TDengine",
+      "PostgreSQL",
+      "optimization",
+      "performance"
+    ],
+    "estimated_hours": 16,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:25.024353",
+    "progress": 0
+  },
+  "task-4.3": {
+    "task_id": "task-4.3",
+    "title": "实现数据库监控和告警",
+    "description": "配置数据库性能监控，追踪慢查询、连接池使用、磁盘IO。设置告警阈值，自动发送通知到main CLI。集成Prometheus exporter。",
+    "priority": "MEDIUM",
+    "skills": [
+      "database",
+      "monitoring",
+      "Prometheus",
+      "PostgreSQL",
+      "TDengine"
+    ],
+    "estimated_hours": 10,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:28.315910",
+    "progress": 0
+  },
+  "task-5.1": {
+    "task_id": "task-5.1",
+    "title": "实现响应式数据可视化组件",
+    "description": "使用ECharts或Chart.js实现K线图、分时图、技术指标图表。支持深色模式、实时数据更新、缩放和平移功能。优化移动端显示效果。",
+    "priority": "HIGH",
+    "skills": [
+      "frontend",
+      "Vue",
+      "charts",
+      "visualization",
+      "UI-design"
+    ],
+    "estimated_hours": 18,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:37.521030",
+    "progress": 0
+  },
+  "task-5.2": {
+    "task_id": "task-5.2",
+    "title": "实现用户认证UI界面",
+    "description": "设计并实现登录、注册、密码重置页面。使用Vue Router进行导航控制，Pinia管理认证状态。集成JWT token存储和自动刷新机制。",
+    "priority": "HIGH",
+    "skills": [
+      "frontend",
+      "Vue",
+      "UI-design",
+      "authentication"
+    ],
+    "estimated_hours": 12,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:38.928263",
+    "progress": 0
+  },
+  "task-5.3": {
+    "task_id": "task-5.3",
+    "title": "优化前端性能和用户体验",
+    "description": "实现路由懒加载、组件虚拟滚动、图片懒加载。使用Vite优化构建配置，配置code splitting。Lighthouse性能分数目标>90分。",
+    "priority": "MEDIUM",
+    "skills": [
+      "frontend",
+      "Vue",
+      "performance",
+      "optimization"
+    ],
+    "estimated_hours": 14,
+    "status": "open",
+    "claimed_by": null,
+    "claimed_time": null,
+    "published_time": "2026-01-01T20:49:40.565052",
+    "progress": 0
+  }
+}

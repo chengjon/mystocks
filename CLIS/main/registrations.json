@@ -1,0 +1,62 @@
+{
+  "web": {
+    "name": "web",
+    "type": "worker",
+    "capabilities": [
+      "frontend",
+      "Vue",
+      "API-integration",
+      "UI-design"
+    ],
+    "registration_time": "2026-01-01T19:02:37.994773",
+    "status": "confirmed",
+    "role": "\u524d\u7aef\u5f00\u53d1\u5de5\u7a0b\u5e08",
+    "assigned_tasks": [
+      "web-homepage",
+      "api-integration",
+      "ui-design"
+    ],
+    "confirmation_time": "2026-01-01T19:04:18.370945"
+  },
+  "api": {
+    "name": "api",
+    "type": "worker",
+    "capabilities": [
+      "backend",
+      "FastAPI",
+      "authentication",
+      "API-design",
+      "database",
+      "PostgreSQL",
+      "TDengine"
+    ],
+    "registration_time": "2026-01-01T20:24:39.247925",
+    "status": "confirmed",
+    "role": "\u540e\u7aef\u5f00\u53d1\u5de5\u7a0b\u5e08",
+    "assigned_tasks": [
+      "api-auth",
+      "api-endpoints",
+      "database-integration"
+    ],
+    "confirmation_time": "2026-01-01T20:39:24.231057"
+  },
+  "db": {
+    "name": "db",
+    "type": "worker",
+    "capabilities": [
+      "database",
+      "PostgreSQL",
+      "TDengine",
+      "optimization"
+    ],
+    "registration_time": "2026-01-01T20:26:21.853515",
+    "status": "confirmed",
+    "role": "\u6570\u636e\u5e93\u7ba1\u7406\u5de5\u7a0b\u5e08",
+    "assigned_tasks": [
+      "db-migration",
+      "query-optimization",
+      "performance-tuning"
+    ],
+    "confirmation_time": "2026-01-01T20:26:32.169705"
+  }
+}

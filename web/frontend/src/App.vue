@@ -1,11 +1,9 @@
 <template>
-  <LinearThemeProvider>
-    <router-view />
-  </LinearThemeProvider>
+  <router-view />
 </template>
 
 <script setup>
-import LinearThemeProvider from '@/components/LinearThemeProvider.vue'
+// ArtDeco theme applied globally via main.js imports
 </script>
 
 <style scoped>

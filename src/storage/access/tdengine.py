@@ -44,6 +44,41 @@ class TDengineDataAccess(IDataAccessLayer):
         self.db_manager = DatabaseTableManager()
         self.db_type = DatabaseType.TDENGINE
 
+    def _validate_symbol(self, symbol: str) -> str:
+        """
+        验证股票符号安全性 - 防止SQL注入
+
+        Args:
+            symbol: 股票符号
+
+        Returns:
+            验证后的符号
+
+        Raises:
+            ValueError: 如果符号包含危险字符
+        """
+        if not isinstance(symbol, str):
+            raise ValueError("Symbol must be a string")
+
+        if not symbol:
+            raise ValueError("Symbol cannot be empty")
+
+        if len(symbol) > 50:
+            raise ValueError(f"Symbol too long: {len(symbol)} > 50")
+
+        # 只允许字母、数字、下划线、斜杠、点号、连字符
+        # 这些是常见的股票代码格式（如 AAPL, 600519.SH, BTC/USDT）
+        dangerous_chars = ["'", ";", "--", "/*", "*/", "\\", "\x00"]
+        for char in dangerous_chars:
+            if char in symbol:
+                raise ValueError(f"Symbol contains dangerous character: {repr(char)}")
+
+        # 基本格式检查：至少包含字母或数字
+        if not any(c.isalnum() for c in symbol):
+            raise ValueError(f"Symbol must contain alphanumeric characters: {symbol}")
+
+        return symbol
+
     def save_data(
         self,
         data: pd.DataFrame,
@@ -515,11 +550,16 @@ class TDengineDataAccess(IDataAccessLayer):
         if filters:
             for key, value in filters.items():
                 if key == "symbol":
+                    # SECURITY: 验证所有符号防止SQL注入
                     if isinstance(value, list):
-                        symbols = "','".join(value)
+                        # 验证列表中的每个符号
+                        validated_symbols = [self._validate_symbol(s) for s in value]
+                        symbols = "','".join(validated_symbols)
                         conditions.append(f"symbol IN ('{symbols}')")
                     else:
-                        conditions.append(f"symbol = '{value}'")
+                        # 验证单个符号
+                        validated_symbol = self._validate_symbol(value)
+                        conditions.append(f"symbol = '{validated_symbol}'")
                 elif key == "start_time":
                     conditions.append(f"ts >= '{value}'")
                 elif key == "end_time":

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/dividend",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/dividend",
+      "method": "GET",
+      "file": "market_v2.py",
+      "function": "get_stock_dividend",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 182
+    },
+    {
+      "path": "/dividend/refresh",
+      "method": "POST",
+      "file": "market_v2.py",
+      "function": "refresh_stock_dividend",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 201
+    }
+  ]
+}

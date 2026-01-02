@@ -173,26 +173,39 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
 
             return {"items": items, "total": total, "page": page, "page_size": page_size}
         else:
-            # 使用真实数据库
+            # 使用真实数据库 - 通过UnifiedManager访问（符合项目架构）
             manager = MyStocksUnifiedManager()
 
             # 构建过滤条件
             filters = {}
             if status:
-                filters["status"] = status
+                # is_active字段映射：active/active策略，inactive/inactive策略
+                filters["is_active"] = (status == "active")
 
-            # 使用 UnifiedManager 加载数据
-            strategies = manager.load_data_by_classification(
-                classification=DataClassification.MODEL_OUTPUT,
-                table_name="strategies",
-                filters=filters,
-            )
+            try:
+                # 使用 UnifiedManager 加载数据（表已在table_config.yaml中注册）
+                strategies_df = manager.load_data_by_classification(
+                    classification=DataClassification.MODEL_OUTPUTS,
+                    table_name="strategy_definition",
+                    filters=filters,
+                )
 
-            # 分页处理
-            total = len(strategies) if strategies is not None else 0
-            start = (page - 1) * page_size
-            end = start + page_size
-            items = strategies.iloc[start:end].to_dict("records") if strategies is not None else []
+                # 分页处理
+                total = len(strategies_df) if strategies_df is not None else 0
+                start = (page - 1) * page_size
+                end = start + page_size
+
+                if strategies_df is not None and len(strategies_df) > 0:
+                    paginated_df = strategies_df.iloc[start:end]
+                    items = paginated_df.to_dict('records')
+                else:
+                    items = []
+
+            except Exception as db_error:
+                # 数据库查询失败，记录错误并返回空结果
+                logger.error(f"数据库查询失败: {str(db_error)}")
+                items = []
+                total = 0
 
             # 记录操作到监控数据库
             operation_time = (datetime.now() - operation_start).total_seconds() * 1000

@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/beta",
+  "total_endpoints": 1,
+  "endpoints": [
+    {
+      "path": "/beta",
+      "method": "POST",
+      "file": "risk_management.py",
+      "function": "calculate_beta",
+      "return_model": "BetaResult",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 287
+    }
+  ]
+}

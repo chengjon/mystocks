@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/register",
+  "total_endpoints": 2,
+  "endpoints": [
+    {
+      "path": "/register",
+      "method": "POST",
+      "file": "auth.py",
+      "function": "register_user",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 383
+    },
+    {
+      "path": "/register",
+      "method": "POST",
+      "file": "tasks.py",
+      "function": "register_task",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 295
+    }
+  ]
+}

@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     testing: bool = Field(default=False, env="TESTING")
     csrf_enabled: bool = Field(default=True)  # 默认启用CSRF，测试环境自动禁用
 
+    # Mock API配置
+    use_mock_apis: bool = Field(default=False, env="USE_MOCK_DATA")  # 控制是否注册Mock API路由
+
     # 服务器配置
     host: str = "0.0.0.0"  # nosec
     port: int = 8000

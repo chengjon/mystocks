@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/scheduler",
+  "total_endpoints": 5,
+  "endpoints": [
+    {
+      "path": "/scheduler/start",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "start_scheduler",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 497
+    },
+    {
+      "path": "/scheduler/stop",
+      "method": "POST",
+      "file": "backup_recovery.py",
+      "function": "stop_scheduler",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 507
+    },
+    {
+      "path": "/scheduler/jobs",
+      "method": "GET",
+      "file": "backup_recovery.py",
+      "function": "get_scheduled_jobs",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 517
+    },
+    {
+      "path": "/scheduler/control",
+      "method": "POST",
+      "file": "backup_recovery_secure.py",
+      "function": "scheduler_control",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 707
+    },
+    {
+      "path": "/scheduler/jobs",
+      "method": "GET",
+      "file": "backup_recovery_secure.py",
+      "function": "get_scheduled_jobs",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 768
+    }
+  ]
+}

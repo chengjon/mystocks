@@ -1,2040 +1,1370 @@
-# CLI-2 任务分配文档 - API契约优化与标准化
+# MyStocks 量化交易数据管理系统
 
-**Worker CLI**: CLI-2 (Backend API Architect)
-**Branch**: `cli2-api-contract`
-**Worktree**: `/opt/claude/mystocks_phase6_api_contract/`
-**Phase**: Round 1 (Day 1-14, 优先级: 最高)
-**预计工作量**: 12-14天
-**完成标准**: 100% API契约对齐, TypeScript类型自动生成, CI/CD校验集成
-
----
-
-## 🎯 核心职责
-
-完成 **API契约标准化**和**前后端对齐优化**，建立完整的API契约管理体系，包括：
-
-1. ✅ **OpenAPI 3.0 Schema标准化** (所有API端点统一格式)
-2. ✅ **Pydantic模型规范化** (请求/响应模型完整定义)
-3. ✅ **统一错误码体系** (200成功、4xx客户端错误、5xx服务端错误)
-4. ✅ **API契约管理平台** (api-contract-sync-manager)
-5. ✅ **契约同步与校验工具** (api-contract-sync)
-6. ✅ **TypeScript类型自动生成** (OpenAPI → TS types)
-7. ✅ **CI/CD集成和自动化校验**
-
-**架构原则**:
-- ✅ **Schema First** - Pydantic模型是单一数据源(SSOT)
-- ✅ **契约优先** - 先更新契约，再修改代码
-- ✅ **自动化校验** - 代码/响应与契约自动对比
-- ✅ **全流程管控** - 开发→提交→CI/CD→测试→监控
-
-**参考文档**:
-- `/opt/claude/mystocks_spec/docs/api/API契约同步组件实现方案.md`
-- `/opt/claude/mystocks_spec/docs/api/API与Web组件最终对齐方案.md`
+**创建人**: JohnC & Claude
+**版本**: 3.0.0
+**批准日期**: 2025-10-15
+**最后修订**: 2025-10-24
+**本次修订内容**: Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成
 
 ---
 
-## 📋 任务清单 (17个任务)
+## ⚡ Week 3 重大更新 (2025-10-19)
 
-### 阶段1: OpenAPI Schema标准化 (T2.1-T2.3, 3天)
+**数据库架构简化**: 4数据库 → 2数据库 (TDengine + PostgreSQL)
 
-#### T2.1: 定义统一响应格式和公共模型 (1天)
+**简化成果**:
+- ✅ MySQL数据迁移到PostgreSQL（18张表，299行数据）
+- ✅ **TDengine保留**: 专用于高频时序数据（tick/分钟线）
+- ✅ **PostgreSQL**: 处理所有其他数据类型（含TimescaleDB扩展）
+- ✅ Redis移除（配置的db1为空）
+- ✅ 系统复杂度降低50%
 
-**目标**: 建立完整的OpenAPI 3.0标准契约模板
+**核心原则**: **专库专用，简洁胜于过度复杂**
 
-**实施步骤**:
-1. 创建 `web/backend/app/schemas/common_schemas.py`:
-   ```python
-   from typing import Generic, TypeVar, Optional
-   from pydantic import BaseModel, Field
-   from datetime import datetime
-   from uuid import uuid4
-
-   T = TypeVar('T')
-
-   class APIResponse(BaseModel, Generic[T]):
-       """统一API响应格式"""
-       success: bool = True
-       code: int = 0
-       message: str = "操作成功"
-       data: Optional[T] = None
-       request_id: str = Field(default_factory=lambda: str(uuid4()))
-       timestamp: datetime = Field(default_factory=datetime.now)
-
-   class CommonError(BaseModel):
-       """统一错误响应模型"""
-       code: int
-       message: str
-       data: Optional[dict] = None
-       detail: Optional[str] = None
-   ```
-
-2. 创建OpenAPI 3.0契约模板 (`docs/api/openapi_template.yaml`):
-   ```yaml
-   openapi: 3.0.3
-   info:
-     title: MyStocks API Contract
-     version: 1.0.0
-     description: 量化交易系统API契约
-
-   components:
-     schemas:
-       APIResponse:
-         type: object
-         required: [success, code, message, request_id, timestamp]
-         properties:
-           success:
-             type: boolean
-             description: 请求是否成功
-           code:
-             type: integer
-             description: 业务错误码 (0=成功, 4xx=客户端错误, 5xx=服务端错误)
-           message:
-             type: string
-             description: 提示信息
-           data:
-             type: object
-             nullable: true
-             description: 实际数据载荷
-           request_id:
-             type: string
-             format: uuid
-             description: 请求唯一标识
-           timestamp:
-             type: string
-             format: date-time
-             description: 响应时间戳
-
-       CommonError:
-         type: object
-         required: [code, message]
-         properties:
-           code:
-             type: integer
-           message:
-             type: string
-           data:
-             type: object
-             nullable: true
-           detail:
-             type: string
-             nullable: true
-   ```
-
-3. 定义核心业务模块分类:
-   - Market (市场数据): `/api/market/**`
-   - Technical (技术指标): `/api/indicators/**`
-   - Trade (交易执行): `/api/trade/**`
-   - Strategy (策略管理): `/api/strategy/**`
-   - System (系统监控): `/api/system/**`
-
-**验收标准**:
-- [ ] 统一响应格式Pydantic模型定义完成
-- [ ] OpenAPI 3.0模板创建完成
-- [ ] 5个核心业务模块路由定义清晰
+详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
 
 ---
 
-#### T2.2: 梳理现有API端点,补全契约定义 (1.5天)
-
-**目标**: 完整梳理200+API端点,补全缺失的契约信息
-
-**实施步骤**:
-1. 扫描 `web/backend/app/api/` 目录下所有路由:
-   ```bash
-   # 统计所有API端点
-   grep -r "@router\." web/backend/app/api/ | wc -l
-   ```
-
-2. 为每个API端点补全契约信息 (按业务模块):
-
-   **Market API契约** (`docs/api/contracts/market_api.yaml`):
-   ```yaml
-   paths:
-     /api/market/kline:
-       get:
-         summary: 获取K线数据
-         operationId: getKlineData
-         parameters:
-           - name: symbol
-             in: query
-             required: true
-             schema:
-               type: string
-               example: "000001.SZ"
-           - name: interval
-             in: query
-             required: true
-             schema:
-               type: string
-               enum: [1m, 5m, 15m, 1h, 1d, 1w, 1M]
-           - name: start_date
-             in: query
-             required: false
-             schema:
-               type: string
-               format: date
-           - name: end_date
-             in: query
-             required: false
-             schema:
-               type: string
-               format: date
-           - name: adjust
-             in: query
-             required: false
-             schema:
-               type: string
-               enum: [qfq, hfq, none]
-               default: qfq
-         responses:
-           '200':
-             description: 成功获取K线数据
-             content:
-               application/json:
-                 schema:
-                   allOf:
-                     - $ref: '#/components/schemas/APIResponse'
-                     - type: object
-                       properties:
-                         data:
-                           type: object
-                           properties:
-                             klines:
-                               type: array
-                               items:
-                                 $ref: '#/components/schemas/KLineCandle'
-           '400':
-             description: 参数错误
-             content:
-               application/json:
-                 schema:
-                   $ref: '#/components/schemas/CommonError'
-
-   components:
-     schemas:
-       KLineCandle:
-         type: object
-         required: [timestamp, open, high, low, close, volume]
-         properties:
-           timestamp:
-             type: integer
-             description: Unix时间戳 (毫秒)
-           open:
-             type: number
-             format: float
-           high:
-             type: number
-             format: float
-           low:
-             type: number
-             format: float
-           close:
-             type: number
-             format: float
-           volume:
-             type: integer
-             description: 成交量
-   ```
-
-3. 创建契约清单表格 (`docs/api/API_INVENTORY.md`):
-   | API端点 | 业务模块 | 契约状态 | 缺失信息 | 责任人 |
-   |---------|---------|---------|---------|--------|
-   | `/api/market/kline` | Market | ✅ 完整 | - | Backend |
-   | `/api/indicators/overlay` | Technical | ⚠️ 缺少错误码定义 | 4xx/5xx错误码 | Backend |
-   | `/api/trade/order` | Trade | ❌ 未定义 | 完整契约 | Backend |
-
-**验收标准**:
-- [ ] 所有200+API端点已梳理
-- [ ] 核心API (Market/Technical/Trade) 契约定义完成
-- [ ] API清单表格创建完成,标记缺失信息
-
----
-
-#### T2.3: 创建Pydantic Schema自动生成脚本 (0.5天)
-
-**目标**: 自动从OpenAPI Schema生成Pydantic模型代码
-
-**实施步骤**:
-1. 安装依赖:
-   ```bash
-   pip install datamodel-code-generator
-   ```
-
-2. 创建自动生成脚本 (`scripts/dev/generate_pydantic_schemas.py`):
-   ```python
-   import subprocess
-   from pathlib import Path
-
-   def generate_schemas_from_openapi(
-       openapi_file: str,
-       output_file: str
-   ):
-       """从OpenAPI YAML生成Pydantic模型"""
-       cmd = [
-           "datamodel-codegen",
-           "--input", openapi_file,
-           "--output", output_file,
-           "--input-file-type", "openapi",
-           "--output-model-type", "pydantic_v2.BaseModel",
-           "--use-schema-description",
-           "--use-field-description",
-           "--field-constraints"
-       ]
-       subprocess.run(cmd, check=True)
-
-   if __name__ == "__main__":
-       # 生成Market API模型
-       generate_schemas_from_openapi(
-           "docs/api/contracts/market_api.yaml",
-           "web/backend/app/schemas/market_schemas.py"
-       )
-   ```
-
-3. 验证生成的模型正确性:
-   ```python
-   from web.backend.app.schemas.market_schemas import KLineCandle
-
-   # 测试模型验证
-   candle = KLineCandle(
-       timestamp=1640995200000,
-       open=10.5,
-       high=11.0,
-       low=10.3,
-       close=10.8,
-       volume=1000000
-   )
-   assert candle.open == 10.5
-   ```
-
-**验收标准**:
-- [ ] `datamodel-code-generator` 安装成功
-- [ ] 自动生成脚本创建完成
-- [ ] 从OpenAPI生成Pydantic模型测试通过
-
----
-
-### 阶段2: Pydantic模型规范化 (T2.4-T2.6, 3天)
-
-#### T2.4: 定义所有API的请求/响应Pydantic模型 (2天)
-
-**目标**: 确保所有API端点都有明确的Pydantic请求/响应模型
-
-**实施步骤**:
-1. **Market模块模型** (`web/backend/app/schemas/market_schemas.py`):
-   ```python
-   from pydantic import BaseModel, Field
-   from typing import Optional, List
-   from datetime import datetime
-
-   # 请求模型
-   class KLineRequest(BaseModel):
-       symbol: str = Field(..., description="股票代码", example="000001.SZ")
-       interval: str = Field(..., description="K线周期", pattern="^(1m|5m|15m|1h|1d|1w|1M)$")
-       start_date: Optional[datetime] = Field(None, description="开始日期")
-       end_date: Optional[datetime] = Field(None, description="结束日期")
-       adjust: str = Field("qfq", description="复权方式", pattern="^(qfq|hfq|none)$")
-
-   # 响应模型
-   class KLineCandle(BaseModel):
-       timestamp: int = Field(..., description="Unix时间戳(毫秒)")
-       open: float = Field(..., ge=0, description="开盘价")
-       high: float = Field(..., ge=0, description="最高价")
-       low: float = Field(..., ge=0, description="最低价")
-       close: float = Field(..., ge=0, description="收盘价")
-       volume: int = Field(..., ge=0, description="成交量")
-
-   class KLineResponse(BaseModel):
-       klines: List[KLineCandle]
-       total_count: int
-       symbol: str
-       interval: str
-   ```
-
-2. **Technical模块模型** (`web/backend/app/schemas/technical_schemas.py`):
-   ```python
-   # 技术指标请求
-   class IndicatorRequest(BaseModel):
-       symbol: str
-       interval: str
-       indicators: List[str] = Field(..., description="指标列表", example=["MA", "EMA", "BOLL"])
-       params: Optional[dict] = Field(None, description="指标参数", example={"MA_period": 20})
-
-   # 技术指标响应
-   class IndicatorValue(BaseModel):
-       timestamp: int
-       indicator_name: str
-       value: float
-       params: Optional[dict] = None
-
-   class IndicatorResponse(BaseModel):
-       symbol: str
-       interval: str
-       indicators: List[IndicatorValue]
-   ```
-
-3. **Trade模块模型** (`web/backend/app/schemas/trade_schemas.py`):
-   ```python
-   # 下单请求
-   class OrderRequest(BaseModel):
-       symbol: str
-       direction: str = Field(..., pattern="^(buy|sell)$")
-       price: float = Field(..., gt=0)
-       quantity: int = Field(..., gt=0)
-       order_type: str = Field("limit", pattern="^(limit|market)$")
-
-   # 委托响应
-   class OrderResponse(BaseModel):
-       order_id: str
-       status: str
-       filled_quantity: int
-       average_price: Optional[float] = None
-       commission: float
-       created_at: datetime
-   ```
-
-**验收标准**:
-- [ ] Market/Technical/Trade模块所有模型定义完成
-- [ ] 所有字段包含类型、描述、验证规则
-- [ ] 请求/响应模型分离清晰
-
----
-
-#### T2.5: 更新所有API路由,使用Pydantic模型 (1天)
-
-**目标**: 重构API路由,强制使用Pydantic模型
-
-**实施步骤**:
-1. 重构Market API (`web/backend/app/api/market.py`):
-   ```python
-   from fastapi import APIRouter, HTTPException
-   from app.schemas.market_schemas import KLineRequest, KLineResponse
-   from app.schemas.common_schemas import APIResponse
-
-   router = APIRouter(prefix="/api/market", tags=["market"])
-
-   @router.get("/kline", response_model=APIResponse[KLineResponse])
-   async def get_kline(request: KLineRequest):
-       """获取K线数据 (使用Pydantic模型验证)"""
-       try:
-           # 调用数据服务
-           klines = await fetch_kline_data(request)
-
-           return APIResponse(
-               success=True,
-               code=0,
-               message="成功获取K线数据",
-               data=klines
-           )
-       except ValueError as e:
-           raise HTTPException(status_code=400, detail=str(e))
-   ```
-
-2. 确保所有API都返回 `APIResponse[T]` 格式:
-   ```python
-   # ✅ 正确: 使用统一响应格式
-   @router.get("/indicators/overlay", response_model=APIResponse[IndicatorResponse])
-   async def get_overlay_indicators(request: IndicatorRequest):
-       ...
-
-   # ❌ 错误: 直接返回数据
-   @router.get("/indicators/overlay")
-   async def get_overlay_indicators(request: IndicatorRequest):
-       return {"data": indicators}  # 不符合统一格式
-   ```
-
-**验收标准**:
-- [ ] 所有API路由使用Pydantic请求模型
-- [ ] 所有API返回 `APIResponse[T]` 格式
-- [ ] FastAPI自动生成的OpenAPI文档正确
-
----
-
-#### T2.6: 添加字段验证规则和错误提示 (0.5天)
-
-**目标**: 增强Pydantic模型的数据验证能力
-
-**实施步骤**:
-1. 添加自定义验证器:
-   ```python
-   from pydantic import validator
-
-   class KLineRequest(BaseModel):
-       symbol: str
-       interval: str
-
-       @validator('symbol')
-       def validate_symbol(cls, v):
-           """验证股票代码格式"""
-           if not v or len(v) < 6:
-               raise ValueError("股票代码格式错误,至少6位")
-           return v.upper()
-
-       @validator('interval')
-       def validate_interval(cls, v):
-           """验证K线周期"""
-           valid_intervals = ['1m', '5m', '15m', '1h', '1d', '1w', '1M']
-           if v not in valid_intervals:
-               raise ValueError(f"无效的K线周期,支持: {valid_intervals}")
-           return v
-   ```
-
-2. 创建中文错误提示 (`web/backend/app/core/error_messages.py`):
-   ```python
-   ERROR_MESSAGES = {
-       "INVALID_SYMBOL": "股票代码格式错误",
-       "INVALID_INTERVAL": "K线周期格式错误",
-       "INVALID_DATE_RANGE": "日期范围无效",
-       "MISSING_REQUIRED_FIELD": "缺少必填字段: {field}",
-   }
-   ```
-
-**验收标准**:
-- [ ] 核心字段添加验证器
-- [ ] 错误提示本地化 (中文)
-- [ ] 验证失败返回清晰的错误信息
-
----
-
-### 阶段3: 错误码标准化 (T2.7-T2.8, 1.5天)
-
-#### T2.7: 定义统一错误码体系 (1天)
-
-**目标**: 建立完整的业务错误码规范
-
-**实施步骤**:
-1. 创建错误码枚举 (`web/backend/app/core/error_codes.py`):
-   ```python
-   from enum import Enum
-
-   class ErrorCode(Enum):
-       """统一错误码"""
-       # 成功 (0)
-       SUCCESS = (0, "操作成功")
-
-       # 客户端错误 (4xx)
-       INVALID_PARAMETER = (400, "参数错误")
-       UNAUTHORIZED = (401, "未授权,请先登录")
-       FORBIDDEN = (403, "无权限访问")
-       NOT_FOUND = (404, "资源不存在")
-       METHOD_NOT_ALLOWED = (405, "请求方法不支持")
-       REQUEST_TIMEOUT = (408, "请求超时")
-       CONFLICT = (409, "数据冲突")
-       UNPROCESSABLE_ENTITY = (422, "数据验证失败")
-       TOO_MANY_REQUESTS = (429, "请求过于频繁")
-
-       # 服务端错误 (5xx)
-       INTERNAL_SERVER_ERROR = (500, "服务器内部错误")
-       SERVICE_UNAVAILABLE = (503, "服务暂不可用")
-       GATEWAY_TIMEOUT = (504, "网关超时")
-
-       # 业务错误 (1xxx - 9xxx)
-       SYMBOL_NOT_FOUND = (1001, "股票代码不存在")
-       KLINE_DATA_NOT_AVAILABLE = (1002, "K线数据暂不可用")
-       INDICATOR_CALCULATION_FAILED = (1003, "技术指标计算失败")
-       ORDER_REJECTED = (2001, "订单被拒绝")
-       INSUFFICIENT_BALANCE = (2002, "账户余额不足")
-       POSITION_NOT_FOUND = (2003, "持仓不存在")
-       STRATEGY_BACKTEST_FAILED = (3001, "策略回测失败")
-
-       def __init__(self, code: int, message: str):
-           self.code = code
-           self.message = message
-   ```
-
-2. 创建异常类层次结构:
-   ```python
-   class APIException(Exception):
-       """API业务异常基类"""
-       def __init__(self, error_code: ErrorCode, detail: str = None):
-           self.error_code = error_code
-           self.detail = detail
-
-       def to_response(self) -> dict:
-           return {
-               "success": False,
-               "code": self.error_code.code,
-               "message": self.error_code.message,
-               "data": None,
-               "detail": self.detail
-           }
-
-   class SymbolNotFoundException(APIException):
-       def __init__(self, symbol: str):
-           super().__init__(
-               ErrorCode.SYMBOL_NOT_FOUND,
-               detail=f"股票代码 '{symbol}' 不存在"
-           )
-   ```
-
-**验收标准**:
-- [ ] 错误码枚举定义完成 (0, 4xx, 5xx, 业务错误)
-- [ ] 异常类层次结构创建完成
-- [ ] 所有错误包含code和message
-
----
-
-#### T2.8: 实现全局异常处理器 (0.5天)
-
-**目标**: 统一处理所有异常,返回标准化错误响应
-
-**实施步骤**:
-1. 创建全局异常处理器 (`web/backend/app/middleware/exception_handler.py`):
-   ```python
-   from fastapi import Request, status
-   from fastapi.responses import JSONResponse
-   from app.core.error_codes import ErrorCode, APIException
-   from pydantic import ValidationError
-
-   async def api_exception_handler(request: Request, exc: APIException):
-       """处理业务异常"""
-       return JSONResponse(
-           status_code=status.HTTP_200_OK,  # 业务异常HTTP状态码仍为200
-           content=exc.to_response()
-       )
-
-   async def validation_exception_handler(request: Request, exc: ValidationError):
-       """处理Pydantic验证异常"""
-       errors = exc.errors()
-       error_messages = [f"{err['loc'][-1]}: {err['msg']}" for err in errors]
-
-       return JSONResponse(
-           status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-           content={
-               "success": False,
-               "code": ErrorCode.UNPROCESSABLE_ENTITY.code,
-               "message": "数据验证失败",
-               "data": None,
-               "detail": "; ".join(error_messages)
-           }
-       )
-
-   async def generic_exception_handler(request: Request, exc: Exception):
-       """处理未捕获的异常"""
-       return JSONResponse(
-           status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-           content={
-               "success": False,
-               "code": ErrorCode.INTERNAL_SERVER_ERROR.code,
-               "message": "服务器内部错误",
-               "data": None,
-               "detail": str(exc) if settings.DEBUG else None
-           }
-       )
-   ```
-
-2. 在主应用注册异常处理器 (`web/backend/app/main.py`):
-   ```python
-   from app.middleware.exception_handler import (
-       api_exception_handler,
-       validation_exception_handler,
-       generic_exception_handler
-   )
-
-   app.add_exception_handler(APIException, api_exception_handler)
-   app.add_exception_handler(ValidationError, validation_exception_handler)
-   app.add_exception_handler(Exception, generic_exception_handler)
-   ```
-
-**验收标准**:
-- [ ] 全局异常处理器创建完成
-- [ ] 所有异常返回统一格式
-- [ ] 生产环境不暴露详细错误堆栈
-
----
-
-### 阶段4: API契约组件开发 (T2.9-T2.12, 4天)
-
-#### T2.9: 搭建api-contract-sync-manager平台 (最小可用版本, 2天)
-
-**目标**: 创建契约管理平台,实现契约仓库和可视化编辑
-
-**实施步骤**:
-1. 创建契约管理目录结构:
-   ```
-   tools/api-contract-manager/
-   ├── backend/
-   │   ├── main.py                    # FastAPI应用
-   │   ├── models/                    # 数据库模型
-   │   │   ├── contract.py           # 契约模型
-   │   │   └── version.py            # 版本模型
-   │   ├── api/
-   │   │   ├── contracts.py          # 契约CRUD
-   │   │   └── validation.py         # 校验规则
-   │   └── storage/
-   │       └── contract_storage.py   # 契约文件存储
-   ├── frontend/
-   │   ├── src/
-   │   │   ├── views/
-   │   │   │   ├── ContractList.vue  # 契约列表
-   │   │   │   ├── ContractEditor.vue # 可视化编辑器
-   │   │   │   └── ValidationRules.vue # 校验规则配置
-   │   │   └── components/
-   │   │       └── SwaggerPreview.vue # Swagger预览
-   │   └── package.json
-   └── README.md
-   ```
-
-2. 实现契约仓库后端 (`tools/api-contract-manager/backend/main.py`):
-   ```python
-   from fastapi import FastAPI, HTTPException
-   from pydantic import BaseModel
-   from typing import List, Optional
-   import yaml
-
-   app = FastAPI(title="API Contract Manager")
-
-   class Contract(BaseModel):
-       id: str
-       name: str
-       module: str                    # 业务模块 (market/technical/trade)
-       version: str                   # 语义化版本 (1.0.0)
-       status: str                    # 待审核/已发布/已废弃
-       openapi_spec: dict             # OpenAPI 3.0规范
-       created_by: str
-       created_at: str
-       updated_at: str
-
-   # 契约存储 (简化版,使用文件系统)
-   CONTRACTS_DIR = "contracts/"
-
-   @app.get("/api/contracts", response_model=List[Contract])
-   async def list_contracts(module: Optional[str] = None, status: Optional[str] = None):
-       """获取契约列表"""
-       # 从文件系统加载契约
-       ...
-
-   @app.post("/api/contracts", response_model=Contract)
-   async def create_contract(contract: Contract):
-       """创建新契约"""
-       # 保存契约到文件
-       contract_file = f"{CONTRACTS_DIR}/{contract.module}/{contract.id}.yaml"
-       with open(contract_file, 'w') as f:
-           yaml.dump(contract.openapi_spec, f)
-       return contract
-
-   @app.get("/api/contracts/{contract_id}", response_model=Contract)
-   async def get_contract(contract_id: str):
-       """获取单个契约"""
-       ...
-
-   @app.put("/api/contracts/{contract_id}", response_model=Contract)
-   async def update_contract(contract_id: str, contract: Contract):
-       """更新契约 (创建新版本)"""
-       ...
-
-   @app.post("/api/contracts/{contract_id}/publish")
-   async def publish_contract(contract_id: str):
-       """发布契约 (状态: 待审核 → 已发布)"""
-       ...
-   ```
-
-3. 实现可视化契约编辑器前端 (`tools/api-contract-manager/frontend/src/views/ContractEditor.vue`):
-   ```vue
-   <template>
-     <div class="contract-editor">
-       <el-form :model="contract" label-width="120px">
-         <el-form-item label="契约名称">
-           <el-input v-model="contract.name" />
-         </el-form-item>
-
-         <el-form-item label="业务模块">
-           <el-select v-model="contract.module">
-             <el-option label="Market" value="market" />
-             <el-option label="Technical" value="technical" />
-             <el-option label="Trade" value="trade" />
-           </el-select>
-         </el-form-item>
-
-         <el-form-item label="API路径">
-           <el-input v-model="contract.path" placeholder="/api/market/kline" />
-         </el-form-item>
-
-         <el-form-item label="请求方法">
-           <el-radio-group v-model="contract.method">
-             <el-radio label="GET" />
-             <el-radio label="POST" />
-             <el-radio label="PUT" />
-             <el-radio label="DELETE" />
-           </el-radio-group>
-         </el-form-item>
-
-         <!-- 参数配置 -->
-         <el-form-item label="请求参数">
-           <el-button @click="addParameter">添加参数</el-button>
-           <el-table :data="contract.parameters">
-             <el-table-column prop="name" label="参数名" />
-             <el-table-column prop="type" label="类型" />
-             <el-table-column prop="required" label="必填" />
-             <el-table-column label="操作">
-               <template #default="{ $index }">
-                 <el-button @click="removeParameter($index)">删除</el-button>
-               </template>
-             </el-table-column>
-           </el-table>
-         </el-form-item>
-
-         <!-- Swagger预览 -->
-         <el-form-item label="预览">
-           <swagger-preview :spec="generatedOpenAPISpec" />
-         </el-form-item>
-
-         <el-form-item>
-           <el-button type="primary" @click="saveContract">保存契约</el-button>
-           <el-button @click="publishContract">发布契约</el-button>
-         </el-form-item>
-       </el-form>
-     </div>
-   </template>
-
-   <script setup>
-   import { ref, computed } from 'vue'
-   import SwaggerPreview from '@/components/SwaggerPreview.vue'
-
-   const contract = ref({
-     name: '',
-     module: '',
-     path: '',
-     method: 'GET',
-     parameters: []
-   })
-
-   const generatedOpenAPISpec = computed(() => {
-     // 根据表单数据生成OpenAPI 3.0规范
-     return {
-       openapi: '3.0.3',
-       paths: {
-         [contract.value.path]: {
-           [contract.value.method.toLowerCase()]: {
-             summary: contract.value.name,
-             parameters: contract.value.parameters
-           }
-         }
-       }
-     }
-   })
-
-   function addParameter() {
-     contract.value.parameters.push({
-       name: '',
-       type: 'string',
-       required: false
-     })
-   }
-
-   function saveContract() {
-     // 保存契约到后端
-   }
-   </script>
-   ```
-
-**验收标准**:
-- [ ] 契约管理后端API创建完成 (CRUD)
-- [ ] 可视化编辑器前端实现
-- [ ] 契约按业务模块分类存储
-- [ ] 支持契约版本管理
-
----
-
-#### T2.10: 开发api-contract-sync CLI工具 (1.5天)
-
-**目标**: 创建命令行工具,实现契约拉取和本地同步
-
-**实施步骤**:
-1. 创建CLI工具目录结构:
-   ```
-   tools/api-contract-sync/
-   ├── cli/
-   │   ├── main.py                   # 主入口
-   │   ├── commands/
-   │   │   ├── pull.py               # 拉取契约
-   │   │   ├── validate.py           # 校验契约
-   │   │   └── generate.py           # 生成测试用例
-   │   └── utils/
-   │       ├── contract_client.py    # Manager API客户端
-   │       └── validator.py          # 契约校验器
-   ├── setup.py
-   └── README.md
-   ```
-
-2. 实现契约拉取命令 (`tools/api-contract-sync/cli/commands/pull.py`):
-   ```python
-   import click
-   import requests
-   import yaml
-   from pathlib import Path
-
-   @click.command()
-   @click.option('--module', help='业务模块名称 (如 market)')
-   @click.option('--all', is_flag=True, help='拉取所有契约')
-   @click.option('--manager-url', required=True, help='Manager平台地址')
-   @click.option('--token', required=True, help='认证Token')
-   @click.option('--output-dir', default='./contracts', help='契约保存目录')
-   def pull(module, all, manager_url, token, output_dir):
-       """从Manager拉取最新契约"""
-       headers = {'Authorization': f'Bearer {token}'}
-
-       if all:
-           # 拉取所有模块
-           url = f'{manager_url}/api/contracts?status=已发布'
-       else:
-           # 拉取指定模块
-           url = f'{manager_url}/api/contracts?module={module}&status=已发布'
-
-       response = requests.get(url, headers=headers)
-       contracts = response.json()
-
-       # 保存到本地
-       output_path = Path(output_dir)
-       output_path.mkdir(parents=True, exist_ok=True)
-
-       for contract in contracts:
-           module_dir = output_path / contract['module']
-           module_dir.mkdir(exist_ok=True)
-
-           contract_file = module_dir / f"{contract['id']}.yaml"
-           with open(contract_file, 'w') as f:
-               yaml.dump(contract['openapi_spec'], f)
-
-           click.echo(f"✅ 已拉取契约: {contract['name']} (v{contract['version']})")
-   ```
-
-3. 实现契约验证命令 (`tools/api-contract-sync/cli/commands/validate.py`):
-   ```python
-   @click.command()
-   @click.option('--contract-path', required=True, help='本地契约目录')
-   @click.option('--src-path', required=True, help='后端代码目录')
-   def validate_code(contract_path, src_path):
-       """校验后端代码与契约的一致性"""
-       # 1. 加载所有本地契约
-       contracts = load_contracts_from_path(contract_path)
-
-       # 2. 扫描后端代码,提取API定义
-       api_definitions = scan_fastapi_routes(src_path)
-
-       # 3. 对比契约与代码
-       mismatches = []
-       for contract in contracts:
-           api_path = contract['paths'].keys()[0]
-
-           if api_path not in api_definitions:
-               mismatches.append({
-                   'type': 'MISSING_ENDPOINT',
-                   'path': api_path,
-                   'message': f"契约中存在,但代码中未实现"
-               })
-           else:
-               # 对比参数、返回模型
-               code_api = api_definitions[api_path]
-
-               # 检查参数一致性
-               if not check_parameters_match(contract, code_api):
-                   mismatches.append({
-                       'type': 'PARAMETER_MISMATCH',
-                       'path': api_path
-                   })
-
-       # 4. 生成校验报告
-       if mismatches:
-           click.echo("❌ 契约校验失败:")
-           for mismatch in mismatches:
-               click.echo(f"  - {mismatch['type']}: {mismatch['path']}")
-           exit(1)
-       else:
-           click.echo("✅ 契约校验通过")
-   ```
-
-4. 实现测试用例生成命令 (`tools/api-contract-sync/cli/commands/generate.py`):
-   ```python
-   @click.command()
-   @click.option('--contract-path', required=True, help='契约文件路径')
-   @click.option('--output-path', required=True, help='测试用例输出路径')
-   @click.option('--type', default='pytest', help='测试类型 (pytest/postman)')
-   def generate_test(contract_path, output_path, type):
-       """根据契约生成测试用例"""
-       contract = load_contract(contract_path)
-
-       if type == 'pytest':
-           # 生成pytest脚本
-           test_code = generate_pytest_code(contract)
-
-           with open(output_path, 'w') as f:
-               f.write(test_code)
-
-           click.echo(f"✅ 已生成pytest测试用例: {output_path}")
-       elif type == 'postman':
-           # 生成Postman集合
-           postman_collection = generate_postman_collection(contract)
-
-           with open(output_path, 'w') as f:
-               json.dump(postman_collection, f, indent=2)
-
-           click.echo(f"✅ 已生成Postman集合: {output_path}")
-   ```
-
-5. 创建CLI入口 (`tools/api-contract-sync/cli/main.py`):
-   ```python
-   import click
-   from commands.pull import pull
-   from commands.validate import validate_code
-   from commands.generate import generate_test
-
-   @click.group()
-   def cli():
-       """API Contract Sync CLI"""
-       pass
-
-   cli.add_command(pull)
-   cli.add_command(validate_code)
-   cli.add_command(generate_test)
-
-   if __name__ == '__main__':
-       cli()
-   ```
-
-**验收标准**:
-- [ ] CLI工具创建完成 (pull/validate/generate命令)
-- [ ] 契约拉取和本地同步功能测试通过
-- [ ] 代码与契约校验功能测试通过
-- [ ] 测试用例生成功能测试通过
-
----
-
-#### T2.11: 实现契约校验规则引擎 (0.5天)
-
-**目标**: 实现基础和自定义校验规则
-
-**实施步骤**:
-1. 创建校验规则引擎 (`tools/api-contract-sync/cli/utils/validator.py`):
-   ```python
-   from typing import List, Dict, Any
-
-   class ValidationRule:
-       """校验规则基类"""
-       def validate(self, contract: dict, actual_response: dict) -> List[str]:
-           """返回错误列表,空列表表示通过"""
-           raise NotImplementedError
-
-   class FieldNameConsistencyRule(ValidationRule):
-       """字段名一致性校验"""
-       def validate(self, contract: dict, actual_response: dict) -> List[str]:
-           errors = []
-           expected_fields = set(contract['properties'].keys())
-           actual_fields = set(actual_response.keys())
-
-           # 检查缺失字段
-           missing_fields = expected_fields - actual_fields
-           if missing_fields:
-               errors.append(f"缺失字段: {missing_fields}")
-
-           # 检查多余字段
-           extra_fields = actual_fields - expected_fields
-           if extra_fields:
-               errors.append(f"多余字段: {extra_fields}")
-
-           return errors
-
-   class FieldTypeConsistencyRule(ValidationRule):
-       """字段类型一致性校验"""
-       def validate(self, contract: dict, actual_response: dict) -> List[str]:
-           errors = []
-           for field, schema in contract['properties'].items():
-               if field in actual_response:
-                   expected_type = schema['type']
-                   actual_value = actual_response[field]
-
-                   if expected_type == 'integer' and not isinstance(actual_value, int):
-                       errors.append(f"字段 '{field}' 类型错误: 期望 integer, 实际 {type(actual_value).__name__}")
-                   elif expected_type == 'string' and not isinstance(actual_value, str):
-                       errors.append(f"字段 '{field}' 类型错误: 期望 string, 实际 {type(actual_value).__name__}")
-
-           return errors
-
-   class RequiredFieldNonNullRule(ValidationRule):
-       """必填字段非空校验"""
-       def validate(self, contract: dict, actual_response: dict) -> List[str]:
-           errors = []
-           required_fields = contract.get('required', [])
-
-           for field in required_fields:
-               if field not in actual_response or actual_response[field] is None:
-                   errors.append(f"必填字段 '{field}' 缺失或为空")
-
-           return errors
-
-   class ContractValidator:
-       """契约校验器"""
-       def __init__(self):
-           self.rules = [
-               FieldNameConsistencyRule(),
-               FieldTypeConsistencyRule(),
-               RequiredFieldNonNullRule()
-           ]
-
-       def validate(self, contract: dict, actual_response: dict) -> Dict[str, Any]:
-           """执行所有校验规则"""
-           all_errors = []
-
-           for rule in self.rules:
-               errors = rule.validate(contract, actual_response)
-               all_errors.extend(errors)
-
-           return {
-               'passed': len(all_errors) == 0,
-               'errors': all_errors
-           }
-   ```
-
-2. 集成到validate命令:
-   ```python
-   from utils.validator import ContractValidator
-
-   def validate_response(contract_file: str, actual_response: dict):
-       """校验实际响应与契约的一致性"""
-       contract = load_contract(contract_file)
-       validator = ContractValidator()
-
-       result = validator.validate(contract, actual_response)
-
-       if result['passed']:
-           click.echo("✅ 响应校验通过")
-       else:
-           click.echo("❌ 响应校验失败:")
-           for error in result['errors']:
-               click.echo(f"  - {error}")
-   ```
-
-**验收标准**:
-- [ ] 基础校验规则实现完成 (字段名/类型/必填)
-- [ ] 校验器集成到CLI工具
-- [ ] 校验失败返回详细错误信息
-
----
-
-#### T2.12: 集成CI/CD和告警通知 (0.5天)
-
-**目标**: 在GitLab CI中集成契约校验,阻断不合格API上线
-
-**实施步骤**:
-1. 创建GitLab CI配置 (`.gitlab-ci.yml`):
-   ```yaml
-   stages:
-     - contract_validate
-     - build
-     - test
-     - deploy
-
-   # 契约校验阶段 (前置步骤)
-   contract_validate:
-     stage: contract_validate
-     image: python:3.12
-     script:
-       # 1. 安装api-contract-sync工具
-       - cd tools/api-contract-sync
-       - pip install -e .
-
-       # 2. 拉取Manager最新契约
-       - api-contract-sync pull --all --manager-url $CONTRACT_MANAGER_URL --token $CONTRACT_MANAGER_TOKEN
-
-       # 3. 校验后端代码与契约的一致性
-       - api-contract-sync validate code --contract-path ./contracts --src-path ./web/backend/app
-
-       # 4. 启动测试环境并校验实际响应
-       - cd ../../web/backend
-       - uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-       - sleep 5
-       - pytest tests/contract_validation/ --contract-dir ../../contracts
-
-     # 阻断规则: 校验失败则阻断后续流程
-     only:
-       - master
-       - develop
-
-     # 失败时发送告警
-     after_script:
-       - |
-         if [ $CI_JOB_STATUS == 'failed' ]; then
-           curl -X POST $DINGTALK_WEBHOOK \
-             -H 'Content-Type: application/json' \
-             -d "{
-               \"msgtype\": \"text\",
-               \"text\": {
-                 \"content\": \"❌ API契约校验失败\n项目: $CI_PROJECT_NAME\n分支: $CI_COMMIT_REF_NAME\n提交: $CI_COMMIT_SHORT_SHA\n详情: $CI_JOB_URL\"
-               }
-             }"
-         fi
-
-   build:
-     stage: build
-     script:
-       - echo "构建应用..."
-     needs:
-       - contract_validate  # 依赖契约校验通过
-   ```
-
-2. 创建契约校验测试用例 (`tests/contract_validation/test_market_api_contract.py`):
-   ```python
-   import pytest
-   import requests
-   from api_contract_sync.utils.validator import ContractValidator
-   import yaml
-
-   @pytest.fixture
-   def market_kline_contract():
-       """加载Market K线API契约"""
-       with open('contracts/market/kline.yaml', 'r') as f:
-           return yaml.safe_load(f)
-
-   def test_kline_api_contract_compliance(market_kline_contract):
-       """测试K线API是否符合契约"""
-       # 发送实际请求
-       response = requests.get(
-           'http://localhost:8000/api/market/kline',
-           params={
-               'symbol': '000001.SZ',
-               'interval': '1d',
-               'start_date': '2024-01-01',
-               'end_date': '2024-12-29'
-           }
-       )
-
-       assert response.status_code == 200
-       actual_response = response.json()
-
-       # 校验响应与契约的一致性
-       validator = ContractValidator()
-       result = validator.validate(market_kline_contract, actual_response['data'])
-
-       assert result['passed'], f"契约校验失败: {result['errors']}"
-   ```
-
-**验收标准**:
-- [ ] GitLab CI配置完成
-- [ ] 契约校验集成到CI流程
-- [ ] 校验失败阻断后续部署
-- [ ] 告警通知发送成功 (钉钉/企业微信)
-
----
-
-### 阶段5: TypeScript类型生成 (T2.13-T2.14, 2天)
-
-#### T2.13: 从OpenAPI自动生成TypeScript类型定义 (1.5天)
-
-**目标**: 实现前端TypeScript类型与后端契约完全同步
-
-**实施步骤**:
-1. 安装TypeScript类型生成工具:
-   ```bash
-   npm install --save-dev openapi-typescript
-   ```
-
-2. 创建类型生成脚本 (`scripts/dev/generate_typescript_types.sh`):
-   ```bash
-   #!/bin/bash
-
-   # 生成TypeScript类型定义
-
-   # 1. 从FastAPI自动生成OpenAPI Schema
-   cd web/backend
-   python -c "
-   from app.main import app
-   import json
-
-   openapi_schema = app.openapi()
-
-   with open('../../web/frontend/src/api/types/openapi.json', 'w') as f:
-       json.dump(openapi_schema, f, indent=2)
-   "
-
-   # 2. 从OpenAPI Schema生成TypeScript类型
-   cd ../../web/frontend
-   npx openapi-typescript src/api/types/openapi.json --output src/api/types/api-types.ts
-
-   echo "✅ TypeScript类型定义已生成: src/api/types/api-types.ts"
-   ```
-
-3. 生成的TypeScript类型示例 (`web/frontend/src/api/types/api-types.ts`):
-   ```typescript
-   // 自动生成的类型定义
-
-   export interface paths {
-     "/api/market/kline": {
-       get: operations["getKlineData"];
-     };
-     "/api/indicators/overlay": {
-       get: operations["getOverlayIndicators"];
-     };
-   }
-
-   export interface components {
-     schemas: {
-       APIResponse_KLineResponse_: {
-         success: boolean;
-         code: number;
-         message: string;
-         data?: components["schemas"]["KLineResponse"];
-         request_id: string;
-         timestamp: string;
-       };
-       KLineResponse: {
-         klines: components["schemas"]["KLineCandle"][];
-         total_count: number;
-         symbol: string;
-         interval: string;
-       };
-       KLineCandle: {
-         timestamp: number;
-         open: number;
-         high: number;
-         low: number;
-         close: number;
-         volume: number;
-       };
-     };
-   }
-
-   export interface operations {
-     getKlineData: {
-       parameters: {
-         query: {
-           symbol: string;
-           interval: string;
-           start_date?: string;
-           end_date?: string;
-           adjust?: string;
-         };
-       };
-       responses: {
-         200: {
-           content: {
-             "application/json": components["schemas"]["APIResponse_KLineResponse_"];
-           };
-         };
-       };
-     };
-   }
-   ```
-
-4. 配置自动生成流程 (添加到 `package.json`):
-   ```json
-   {
-     "scripts": {
-       "generate-types": "bash ../../scripts/dev/generate_typescript_types.sh",
-       "predev": "npm run generate-types"
-     }
-   }
-   ```
-
-**验收标准**:
-- [ ] TypeScript类型生成脚本创建完成
-- [ ] 前端可以正确导入和使用生成的类型
-- [ ] 类型定义与后端Pydantic模型完全一致
-
----
-
-#### T2.14: 创建前端Service适配器层 (0.5天)
-
-**目标**: 封装API调用,使用TypeScript类型约束
-
-**实施步骤**:
-1. 创建类型安全的API Service (`web/frontend/src/api/market.ts`):
-   ```typescript
-   import request from '@/utils/request'
-   import type { components, operations } from './types/api-types'
-
-   type KLineResponse = components['schemas']['APIResponse_KLineResponse_']
-   type KLineParams = operations['getKlineData']['parameters']['query']
-
-   /**
-    * 获取K线数据 (类型安全)
-    */
-   export async function getKlineData(params: KLineParams): Promise<KLineResponse> {
-     return request.get<KLineResponse>('/api/market/kline', { params })
-   }
-
-   /**
-    * 获取主图叠加指标
-    */
-   export async function getOverlayIndicators(
-     params: operations['getOverlayIndicators']['parameters']['query']
-   ): Promise<components['schemas']['APIResponse_IndicatorResponse_']> {
-     return request.get('/api/indicators/overlay', { params })
-   }
-   ```
-
-2. 创建数据适配器 (`web/frontend/src/utils/adapters.ts`):
-   ```typescript
-   import type { components } from '@/api/types/api-types'
-
-   type KLineCandle = components['schemas']['KLineCandle']
-
-   /**
-    * 将API返回的K线数据转换为ECharts格式
-    */
-   export function adaptKLineToECharts(klines: KLineCandle[]) {
-     return klines.map(candle => ({
-       time: candle.timestamp / 1000,  // 转换为秒
-       open: candle.open,
-       high: candle.high,
-       low: candle.low,
-       close: candle.close,
-       volume: candle.volume
-     }))
-   }
-   ```
-
-3. 在组件中使用 (`web/frontend/src/views/StockDetail.vue`):
-   ```typescript
-   <script setup lang="ts">
-   import { ref } from 'vue'
-   import { getKlineData } from '@/api/market'
-   import { adaptKLineToECharts } from '@/utils/adapters'
-   import type { components } from '@/api/types/api-types'
-
-   type KLineCandle = components['schemas']['KLineCandle']
-
-   const klineData = ref<KLineCandle[]>([])
-
-   async function fetchKlineData() {
-     try {
-       const response = await getKlineData({
-         symbol: '000001.SZ',
-         interval: '1d'
-       })
-
-       if (response.success) {
-         klineData.value = response.data?.klines || []
-
-         // 转换为ECharts格式
-         const chartData = adaptKLineToECharts(klineData.value)
-         renderChart(chartData)
-       }
-     } catch (error) {
-       console.error('获取K线数据失败:', error)
-     }
-   }
-   </script>
-   ```
-
-**验收标准**:
-- [ ] API Service层创建完成,所有调用类型安全
-- [ ] 数据适配器层实现完成
-- [ ] 组件中正确使用生成的TypeScript类型
-
----
-
-### 阶段6: 文档与测试 (T2.15-T2.17, 1.5天)
-
-#### T2.15: 集成Swagger UI和API文档 (0.5天)
-
-**目标**: 提供交互式API文档和在线调试
-
-**实施步骤**:
-1. 配置FastAPI Swagger UI (`web/backend/app/main.py`):
-   ```python
-   from fastapi import FastAPI
-   from fastapi.openapi.docs import get_swagger_ui_html
-   from fastapi.openapi.utils import get_openapi
-
-   app = FastAPI(
-       title="MyStocks API",
-       version="1.0.0",
-       docs_url="/api/docs",       # Swagger UI地址
-       redoc_url="/api/redoc",      # ReDoc文档地址
-       openapi_url="/api/openapi.json"
-   )
-
-   # 自定义Swagger UI主题
-   @app.get("/api/docs", include_in_schema=False)
-   async def custom_swagger_ui_html():
-       return get_swagger_ui_html(
-           openapi_url=app.openapi_url,
-           title=f"{app.title} - Swagger UI",
-           swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png"
-       )
-
-   # 自定义OpenAPI Schema
-   def custom_openapi():
-       if app.openapi_schema:
-           return app.openapi_schema
-
-       openapi_schema = get_openapi(
-           title=app.title,
-           version=app.version,
-           description="""
-           **MyStocks量化交易系统API文档**
-
-           - **Market**: 市场数据API
-           - **Technical**: 技术指标API
-           - **Trade**: 交易执行API
-           - **Strategy**: 策略管理API
-           - **System**: 系统监控API
-           """,
-           routes=app.routes
-       )
-
-       # 添加全局安全定义
-       openapi_schema["components"]["securitySchemes"] = {
-           "BearerAuth": {
-               "type": "http",
-               "scheme": "bearer",
-               "bearerFormat": "JWT"
-           }
-       }
-
-       app.openapi_schema = openapi_schema
-       return app.openapi_schema
-
-   app.openapi = custom_openapi
-   ```
-
-2. 添加API使用示例 (在Pydantic模型中):
-   ```python
-   class KLineRequest(BaseModel):
-       symbol: str = Field(..., description="股票代码", example="000001.SZ")
-       interval: str = Field(..., description="K线周期", example="1d")
-
-       class Config:
-           schema_extra = {
-               "example": {
-                   "symbol": "000001.SZ",
-                   "interval": "1d",
-                   "start_date": "2024-01-01",
-                   "end_date": "2024-12-29",
-                   "adjust": "qfq"
-               }
-           }
-   ```
-
-**验收标准**:
-- [ ] Swagger UI可访问 (http://localhost:8000/api/docs)
-- [ ] 所有API端点在文档中展示
-- [ ] 支持在线调试和参数测试
-
----
-
-#### T2.16: 创建API测试套件 (0.5天)
-
-**目标**: 批量生成API测试用例,验证契约合规性
-
-**实施步骤**:
-1. 使用api-contract-sync生成pytest测试用例:
-   ```bash
-   api-contract-sync generate test \
-     --contract-path contracts/ \
-     --output-path tests/api_contract/ \
-     --type pytest
-   ```
-
-2. 生成的测试用例示例 (`tests/api_contract/test_market_api.py`):
-   ```python
-   import pytest
-   import requests
-   from api_contract_sync.utils.validator import ContractValidator
-
-   BASE_URL = "http://localhost:8000"
-
-   class TestMarketAPIContract:
-       """Market API契约测试"""
-
-       def test_kline_api(self):
-           """测试K线API契约合规性"""
-           # 发送请求
-           response = requests.get(
-               f"{BASE_URL}/api/market/kline",
-               params={
-                   "symbol": "000001.SZ",
-                   "interval": "1d",
-                   "start_date": "2024-01-01",
-                   "end_date": "2024-12-29"
-               }
-           )
-
-           # 基本断言
-           assert response.status_code == 200
-           data = response.json()
-           assert data['success'] is True
-
-           # 契约校验
-           validator = ContractValidator()
-           result = validator.validate(
-               contract_file="contracts/market/kline.yaml",
-               actual_response=data
-           )
-
-           assert result['passed'], f"契约校验失败: {result['errors']}"
-
-       @pytest.mark.parametrize("symbol,interval", [
-           ("000001.SZ", "1d"),
-           ("600519.SH", "1h"),
-           ("300750.SZ", "15m")
-       ])
-       def test_kline_api_multiple_symbols(self, symbol, interval):
-           """测试多种股票代码和周期"""
-           response = requests.get(
-               f"{BASE_URL}/api/market/kline",
-               params={"symbol": symbol, "interval": interval}
-           )
-
-           assert response.status_code == 200
-           assert response.json()['success'] is True
-   ```
-
-3. 运行测试套件:
-   ```bash
-   pytest tests/api_contract/ -v --html=reports/api_contract_report.html
-   ```
-
-**验收标准**:
-- [ ] 所有核心API有对应的契约测试
-- [ ] 测试套件可正常运行
-- [ ] 生成HTML测试报告
-
----
-
-#### T2.17: 编写完成报告和交付文档 (0.5天)
-
-**目标**: 记录API契约优化的完整成果
-
-**实施步骤**:
-1. 创建完成报告 (`docs/guides/multi-cli-tasks/CLI-2_COMPLETION_REPORT.md`):
-   ```markdown
-   # CLI-2 完成报告 - API契约优化与标准化
-
-   **完成时间**: 2025-XX-XX
-   **分支**: cli2-api-contract
-   **验收状态**: ✅ 所有任务完成
-
-   ---
-
-   ## 1. 核心成果
-
-   ### 1.1 OpenAPI Schema标准化
-   - ✅ 统一响应格式 (APIResponse, CommonError)
-   - ✅ 完整的OpenAPI 3.0契约模板
-   - ✅ 200+API端点契约梳理完成
-   - ✅ Pydantic模型自动生成脚本
-
-   ### 1.2 Pydantic模型规范化
-   - ✅ 所有API使用Pydantic请求/响应模型
-   - ✅ 字段验证规则和错误提示本地化
-   - ✅ Market/Technical/Trade模块模型完整
-
-   ### 1.3 错误码标准化
-   - ✅ 统一错误码枚举 (0, 4xx, 5xx, 业务错误)
-   - ✅ 异常类层次结构
-   - ✅ 全局异常处理器
-
-   ### 1.4 API契约组件
-   - ✅ api-contract-sync-manager平台 (契约仓库/可视化编辑)
-   - ✅ api-contract-sync CLI工具 (拉取/校验/生成)
-   - ✅ 契约校验规则引擎 (基础+自定义规则)
-   - ✅ CI/CD集成 (GitLab CI)
-
-   ### 1.5 TypeScript类型生成
-   - ✅ OpenAPI → TypeScript自动生成
-   - ✅ 类型安全的API Service层
-   - ✅ 数据适配器层
-
-   ### 1.6 文档与测试
-   - ✅ Swagger UI集成
-   - ✅ API测试套件 (pytest)
-   - ✅ 契约合规性测试
-
-   ---
-
-   ## 2. 关键指标
-
-   | 指标 | 目标 | 实际 | 状态 |
-   |------|------|------|------|
-   | API契约覆盖率 | 100% | 100% | ✅ |
-   | Pydantic模型覆盖率 | 100% | 100% | ✅ |
-   | TypeScript类型同步 | 自动化 | 自动化 | ✅ |
-   | CI/CD集成 | 完成 | 完成 | ✅ |
-   | 契约校验通过率 | >95% | 98% | ✅ |
-
-   ---
-
-   ## 3. 关键文件清单
-
-   ### 后端 (FastAPI)
-   - `web/backend/app/schemas/common_schemas.py` - 统一响应格式
-   - `web/backend/app/schemas/market_schemas.py` - Market API模型
-   - `web/backend/app/schemas/technical_schemas.py` - Technical API模型
-   - `web/backend/app/schemas/trade_schemas.py` - Trade API模型
-   - `web/backend/app/core/error_codes.py` - 错误码枚举
-   - `web/backend/app/middleware/exception_handler.py` - 全局异常处理
-
-   ### 前端 (Vue 3 + TypeScript)
-   - `web/frontend/src/api/types/api-types.ts` - 自动生成的TypeScript类型
-   - `web/frontend/src/api/market.ts` - Market API Service
-   - `web/frontend/src/utils/adapters.ts` - 数据适配器
-
-   ### 工具 (API契约组件)
-   - `tools/api-contract-manager/` - 契约管理平台
-   - `tools/api-contract-sync/` - 契约同步工具
-
-   ### 文档
-   - `docs/api/openapi_template.yaml` - OpenAPI 3.0模板
-   - `docs/api/contracts/` - 所有API契约文件
-   - `docs/api/API_INVENTORY.md` - API清单
-
-   ### 测试
-   - `tests/api_contract/` - API契约测试套件
-   - `.gitlab-ci.yml` - CI/CD配置
-
-   ---
-
-   ## 4. 后续建议
-
-   1. **CLI-1依赖**: CLI-1前端K线组件可直接使用生成的TypeScript类型
-   2. **CLI-3依赖**: CLI-3后端指标计算API应遵循契约标准
-   3. **持续维护**: 所有新API必须先在Manager中定义契约
-   4. **团队培训**: 确保所有开发人员掌握契约工作流程
-
-   ---
-
-   **交付状态**: ✅ 已完成,可合并到main分支
-   ```
-
-**验收标准**:
-- [ ] 完成报告创建
-- [ ] 关键文件清单完整
-- [ ] 后续建议清晰
-
----
-
-## 📊 任务依赖关系
-
-```
-T2.1 (统一响应格式)
-  ↓
-T2.2 (梳理API端点)
-  ↓
-T2.3 (Pydantic自动生成)
-  ↓
-T2.4 (定义Pydantic模型) ─→ T2.13 (TypeScript类型生成)
-  ↓                         ↓
-T2.5 (更新API路由)         T2.14 (Service适配器层)
-  ↓
-T2.6 (字段验证规则)
-  ↓
-T2.7 (错误码体系)
-  ↓
-T2.8 (全局异常处理)
-  ↓
-T2.9 (Manager平台)
-  ↓
-T2.10 (Sync CLI工具)
-  ↓
-T2.11 (校验规则引擎)
-  ↓
-T2.12 (CI/CD集成)
-  ↓
-T2.15 (Swagger UI)
-  ↓
-T2.16 (测试套件)
-  ↓
-T2.17 (完成报告)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](./CHANGELOG.md)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)
+[![Vue](https://img.shields.io/badge/Vue-3.4%2B-brightgreen.svg)](https://vuejs.org)
+
+MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
+
+**最新特性 (ValueCell Migration)**:
+- ✅ **Phase 1**: 实时监控和告警系统（龙虎榜、资金流向、自定义规则）
+- ✅ **Phase 2**: 增强技术分析系统（26个技术指标、交易信号生成）
+- ✅ **Phase 3**: 多数据源集成系统（优先级路由、自动故障转移、公告监控）
+
+## 🎯 核心特点
+
+### 🌐 现代化 Web 管理平台
+基于 FastAPI + Vue 3 的全栈架构，提供直观的可视化管理界面：
+- **FastAPI 后端**: 高性能异步 API，支持 WebSocket 实时推送
+- **Vue 3 前端**: Element Plus UI 组件库，响应式设计
+- **RESTful API**: 完整的 API 文档（Swagger/OpenAPI）
+- **实时监控**: 龙虎榜、资金流向、告警通知实时展示
+- **技术分析**: 26个技术指标可视化，交易信号图表
+- **多数据源**: 数据源健康监控、优先级配置、故障转移管理
+
+### 🤖 ValueCell 多智能体系统迁移
+从 ValueCell 项目迁移的核心功能，实现专业的量化交易支持：
+- **实时监控系统** (Phase 1): 7种告警规则类型，龙虎榜跟踪，资金流向分析
+- **增强技术分析** (Phase 2): 26个专业技术指标，4大类别（趋势、动量、波动、成交量）
+- **多数据源集成** (Phase 3): 优先级路由、自动故障转移、官方公告监控（类似SEC Agent）
+
+### 📊 双数据库存储策略 (Week 3后)
+基于数据特性和访问频率的专业化存储方案：
+- **高频时序数据** (Tick/分钟线) → TDengine（极致压缩比20:1，超强写入性能）
+- **历史K线数据** (日线/周线/月线) → PostgreSQL + TimescaleDB扩展（复杂时序查询）
+- **参考数据** (股票信息、交易日历) → PostgreSQL标准表（从MySQL迁移299行）
+- **衍生数据** (技术指标、量化因子) → PostgreSQL标准表（AI/ML计算结果）
+- **交易数据** (订单、成交、持仓) → PostgreSQL标准表（ACID事务保证）
+- **监控数据** → PostgreSQL独立schema（系统运维监控）
+
+### 🔧 智能的数据调用与操作方法
+提供统一、简洁的数据访问接口，自动处理底层复杂性：
+- **统一接口规范**: 一套API访问所有数据库
+- **自动路由策略**: 根据数据类型智能选择存储引擎
+- **配置驱动管理**: YAML配置自动创建表结构
+- **实时数据缓存**: 热数据毫秒级访问
+- **批量操作优化**: 高效的数据读写策略
+
+### 🏗️ 先进的数据流与调用方案
+采用现代软件工程设计模式，实现高效的多源数据管理：
+- **适配器模式**: 统一不同数据源的访问接口
+- **工厂模式**: 动态创建和管理数据源实例
+- **策略模式**: 灵活的数据存储和查询策略
+- **观察者模式**: 实时监控和告警机制
+
+## 📊 一、数据分类与存储策略
+
+### 5大数据分类体系
+基于数据特性、访问频率和使用场景的科学分类，确保每类数据都能获得最优的存储和查询性能：
+
+#### 第1类：市场数据 (Market Data)
+**特点**: 高频时序数据，写入密集，时间范围查询
+- **Tick数据** → **TDengine** (超高频实时处理，毫秒级延迟)
+- **分钟K线** → **TDengine** (高频时序存储，20:1压缩比)
+- **日线数据** → **PostgreSQL + TimescaleDB** (历史分析，复杂查询)
+- **深度数据** → **TDengine** (实时订单簿，列式存储)
+
+#### 第2类：参考数据 (Reference Data)
+**特点**: 相对静态，关系型结构，频繁JOIN操作
+- **股票信息** → **PostgreSQL** (基础信息，从MySQL迁移)
+- **成分股信息** → **PostgreSQL** (指数成分股，支持JSON)
+- **交易日历** → **PostgreSQL** (交易日、节假日，ACID保证)
+
+#### 第3类：衍生数据 (Derived Data)
+**特点**: 计算密集，时序分析，复杂查询
+- **技术指标** → **PostgreSQL + TimescaleDB** (复杂计算结果，自动分区)
+- **量化因子** → **PostgreSQL + TimescaleDB** (因子计算，物化视图)
+- **模型输出** → **PostgreSQL + TimescaleDB** (AI/ML结果，JSON支持)
+- **交易信号** → **PostgreSQL + TimescaleDB** (策略信号，触发器支持)
+
+#### 第4类：交易数据 (Transaction Data)
+**特点**: 事务完整性要求高，需要ACID保证
+- **订单记录** → **PostgreSQL** (完整事务日志，持久化存储)
+- **成交记录** → **PostgreSQL** (历史交易数据，复杂关联查询)
+- **持仓记录** → **PostgreSQL** (持仓历史，审计追踪)
+- **账户状态** → **PostgreSQL** (账户管理，强一致性保证)
+
+#### 第5类：元数据 (Meta Data)
+**特点**: 配置管理，系统状态，结构化存储
+- **数据源状态** → **PostgreSQL** (数据源管理，从MySQL迁移)
+- **任务调度** → **PostgreSQL** (定时任务配置，JSON存储)
+- **策略参数** → **PostgreSQL** (策略配置，版本控制)
+- **系统配置** → **PostgreSQL** (系统设置，集中管理)
+
+### 数据库分工与存储方案 (Week 3简化后)
+
+| 数据库 | 专业定位 | 适用数据 | 核心优势 |
+|--------|----------|----------|----------|
+| **TDengine** | 高频时序数据专用库 | Tick数据、分钟K线、实时深度 | 极高压缩比(20:1)、超强写入性能、列式存储 |
+| **PostgreSQL + TimescaleDB** | 通用数据仓库+分析引擎 | 日线K线、技术指标、量化因子、参考数据、交易数据、元数据 | 自动分区、复杂查询、ACID事务、JSON支持 |
+
+**说明**:
+- ✅ **TDengine**: 专注高频市场数据（毫秒级Tick、分钟K线），极致压缩和写入性能
+- ✅ **PostgreSQL**: 处理所有其他数据类型，TimescaleDB扩展提供时序优化
+- ❌ **MySQL已移除**: 所有参考数据和元数据已迁移至PostgreSQL（299行数据）
+- ❌ **Redis已移除**: 配置的db1为空，未在生产环境使用
+
+## 🔧 二、数据调用与操作方法
+
+### 统一接口规范
+所有数据操作都通过统一的接口进行，隐藏底层数据库差异：
+
+```python
+from unified_manager import MyStocksUnifiedManager
+from core import DataClassification
+
+# 创建统一管理器
+manager = MyStocksUnifiedManager()
+
+# 自动路由保存 - 系统自动选择最优数据库
+manager.save_data_by_classification(data, DataClassification.TICK_DATA)     # → TDengine (高频时序)
+manager.save_data_by_classification(data, DataClassification.SYMBOLS_INFO)  # → PostgreSQL (参考数据)
+manager.save_data_by_classification(data, DataClassification.DAILY_KLINE)   # → PostgreSQL + TimescaleDB (日线数据)
+
+# 智能查询 - 统一语法，自动优化
+data = manager.load_data_by_classification(
+    DataClassification.DAILY_KLINE,
+    filters={'symbol': '600000', 'date': '>2024-01-01'},
+    order_by='date DESC',
+    limit=1000
+)
 ```
 
----
+### 数据更新策略
+支持多种数据更新模式，适应不同业务场景：
 
-## ⏱️ 时间分配
+- **增量更新**: 只同步新增和变更的数据
+- **批量更新**: 高效的大量数据批量处理
+- **实时更新**: 毫秒级的实时数据推送
+- **定时更新**: 自动化的定期数据同步
 
-| 阶段 | 任务编号 | 预计时间 | 说明 |
-|------|---------|---------|------|
-| 阶段1 | T2.1-T2.3 | 3天 | OpenAPI Schema标准化 |
-| 阶段2 | T2.4-T2.6 | 3天 | Pydantic模型规范化 |
-| 阶段3 | T2.7-T2.8 | 1.5天 | 错误码标准化 |
-| 阶段4 | T2.9-T2.12 | 4天 | API契约组件开发 |
-| 阶段5 | T2.13-T2.14 | 2天 | TypeScript类型生成 |
-| 阶段6 | T2.15-T2.17 | 1.5天 | 文档与测试 |
-| **总计** | **17任务** | **12-14天** | |
+### 数据流工作流程 (Week 3简化后)
 
----
+```mermaid
+graph TD
+    A[数据源] --> B[适配器层]
+    B --> C[统一管理器]
+    C --> D{数据分类识别}
+    D -->|高频市场数据<br/>Tick/分钟线| E[TDengine]
+    D -->|日线K线| F[PostgreSQL<br/>TimescaleDB]
+    D -->|参考数据| F
+    D -->|衍生数据<br/>技术指标/因子| F
+    D -->|交易数据<br/>订单/持仓| F
+    D -->|元数据<br/>系统配置| F
+    J[监控系统] --> K[PostgreSQL<br/>独立schema]
+    C --> J
 
-## ✅ 最终验收标准
-
-### 功能验收
-- [ ] 所有200+API端点有完整的OpenAPI 3.0契约定义
-- [ ] 所有API使用Pydantic请求/响应模型,类型验证完整
-- [ ] 统一错误码体系覆盖所有错误场景
-- [ ] api-contract-sync-manager平台功能正常 (契约CRUD/版本管理)
-- [ ] api-contract-sync CLI工具所有命令测试通过
-- [ ] TypeScript类型定义与后端Pydantic模型100%同步
-- [ ] CI/CD中契约校验集成,阻断不合格API上线
-- [ ] Swagger UI可访问,支持在线调试
-
-### 质量验收
-- [ ] 契约校验通过率 > 95%
-- [ ] API测试套件覆盖率 > 80%
-- [ ] 前端TypeScript类型检查无错误
-- [ ] 所有API返回统一响应格式 (APIResponse)
-- [ ] 错误信息本地化 (中文提示)
-
-### 文档验收
-- [ ] API清单 (API_INVENTORY.md) 完整
-- [ ] Swagger UI文档准确
-- [ ] 完成报告包含所有关键文件和成果
-- [ ] 操作手册 (如何使用Manager和Sync工具)
-
----
-
-## 📝 工作日志模板
-
-```markdown
-# CLI-2 工作日志
-
-## Day 1 (YYYY-MM-DD)
-**进度**: T2.1 统一响应格式定义
-
-### 完成工作
-- 创建 `common_schemas.py`,定义 `APIResponse` 和 `CommonError`
-- 创建OpenAPI 3.0契约模板 (`docs/api/openapi_template.yaml`)
-- 定义5个核心业务模块路由
-
-### 遇到问题
-- 无
-
-### 明日计划
-- 开始T2.2梳理现有API端点
-
----
-
-## Day 2 (YYYY-MM-DD)
-...
+    style E fill:#ff9999
+    style F fill:#99ccff
+    style K fill:#ccffcc
 ```
 
----
+### 数据缓存方法 (Week 3简化后)
 
-## 🎯 成功标准总结
+#### 两层缓存架构
+1. **L1缓存**: 应用层缓存 (微秒级访问，Python字典/LRU缓存)
+2. **L2缓存**: 数据库查询缓存 (毫秒级访问，PostgreSQL查询缓存/TDengine内存优化)
 
-**CLI-2完成的标志**:
-1. ✅ 所有API有明确的OpenAPI 3.0契约
-2. ✅ 前后端通过契约完全对齐 (TypeScript类型自动生成)
-3. ✅ CI/CD流程中集成契约校验,阻断不合格API
-4. ✅ CLI-1和CLI-3可以直接使用标准化的API契约
+**说明**: Redis缓存层已移除，应用层缓存通过Python内置cachetools和functools.lru_cache实现
 
-**对项目的价值**:
-- **零开发摩擦**: 前端组件与后端API无缝对接
-- **类型安全**: 端到端类型安全,减少90%类型错误
-- **自动化校验**: 契约与代码自动对比,避免"文档写的是A,代码实现的是B"
-- **CI/CD保障**: 不合格API无法上线,确保契约合规性
+#### 智能缓存策略
+- **热点数据预加载**: 自动识别并预加载热点数据到应用层缓存
+- **LRU自动淘汰**: 最近最少使用数据自动清理 (cachetools.LRUCache)
+- **分级缓存更新**: 根据数据重要性设置不同的更新频率和TTL
 
----
+## 🏗️ 三、数据流与调用方案
 
-**参考文档**:
-- `/opt/claude/mystocks_spec/docs/api/API契约同步组件实现方案.md`
-- `/opt/claude/mystocks_spec/docs/api/API与Web组件最终对齐方案.md`
-- `/opt/claude/mystocks_spec/openspec/changes/frontend-optimization-six-phase/proposal.md`
+### 数据源整合的核心设计模式
 
----
+#### 适配器模式 (Adapter Pattern)
+统一不同数据源的访问接口，屏蔽底层API差异：
 
-## 冲突预防与文件所有权
+```python
+# 所有数据源都实现统一接口
+class IDataSource:
+    def get_stock_daily(self, symbol, start_date, end_date): pass
+    def get_real_time_data(self, symbol): pass
 
-### 🔐 核心原则
+# 不同数据源的适配器实现
+class AkshareAdapter(IDataSource): ...
+class TushareAdapter(IDataSource): ...
+class FinancialAdapter(IDataSource): ...
+```
 
-**明确所有权 + 职责分离 = 零冲突协作**
+#### 工厂模式 (Factory Pattern)
+动态创建和管理数据源实例，支持运行时切换：
 
-- **文件所有权明确**: 每个文件有唯一的拥有者CLI
-- **职责范围清晰**: 通过目录结构物理隔离
-- **配置集中管理**: Pre-commit配置只由主CLI维护
-- **协调机制完善**: 跨CLI修改需要主CLI协调
+```python
+# 工厂类根据配置创建相应的数据源
+class DataSourceFactory:
+    @staticmethod
+    def create_data_source(source_type: str) -> IDataSource:
+        if source_type == 'akshare':
+            return AkshareAdapter()
+        elif source_type == 'tushare':
+            return TushareAdapter()
+        # 支持运行时动态扩展
+```
 
-### 📋 CLI-2文件所有权
+#### 策略模式 (Strategy Pattern)
+灵活的数据存储和查询策略，根据数据特性自动优化：
 
-**CLI-2拥有以下文件**:
-- `docs/api/contracts/` - API契约文档
-- `web/backend/app/schemas/` - Pydantic数据模型
-- `web/backend/openapi/` - OpenAPI规范文件
-- `tools/api-contract-manager/` - API契约管理平台
-- `tools/api-contract-sync/` - API契约同步工具
+```python
+class DataStorageStrategy:
+    # 数据分类到数据库的智能映射（Week 3简化后 - 仅2数据库）
+    CLASSIFICATION_TO_DATABASE = {
+        # 高频时序数据 → TDengine
+        DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
+        DataClassification.MINUTE_KLINE: DatabaseTarget.TDENGINE,
 
-**共享文件** (需协调修改):
-- `README.md` - 主CLI维护，CLI-2可建议
-- `web/backend/app/main.py` - 拥有者: main (CLI-2需要修改时需申请)
-- `CHANGELOG.md` - 主CLI维护
+        # 所有其他数据 → PostgreSQL
+        DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,
+        DataClassification.SYMBOLS_INFO: DatabaseTarget.POSTGRESQL,
+        DataClassification.FINANCIAL_DATA: DatabaseTarget.POSTGRESQL,
+        DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
+        DataClassification.TRADING_ORDERS: DatabaseTarget.POSTGRESQL,
+    }
+```
 
-### 🚫 文件修改限制
+#### 观察者模式 (Observer Pattern)
+实时监控和告警机制，自动响应系统状态变化：
 
-**CLI-2不允许修改**:
-1. ✅ `.pre-commit-config.yaml` - Pre-commit配置（由主CLI管理）
-2. ✅ `pyproject.toml` - Python项目配置（由主CLI管理）
-3. ✅ `src/` - 核心业务逻辑（由主CLI管理）
-4. ✅ `config/` - 配置文件（由主CLI管理）
-5. ✅ 其他CLI拥有的文件
+```python
+# 监控系统自动观察所有数据库操作
+class MonitoringDatabase:
+    def log_operation_start(self, operation_details): ...
+    def log_operation_result(self, success, metrics): ...
+    
+# 告警管理器响应异常情况
+class AlertManager:
+    def create_alert(self, level, title, message): ...
+```
 
-**如需修改其他CLI拥有的文件**:
-1. 向主CLI提交申请（包含修改原因和内容）
-2. 主CLI评估影响范围
-3. 主CLI协调相关CLI
-4. 主CLI执行修改或授权CLI-2修改
-5. 主CLI通知所有相关CLI
+### 高效管理多源数据
 
-**⚠️ 特别注意**: CLI-2需要修改`web/backend/app/main.py`来注册全局异常处理器。根据冲突检测结果，这是1个历史遗留冲突，需要通过主CLI协调。
+#### 数据源负载均衡
+- **主备切换**: 主数据源失败时自动切换到备用源
+- **并发控制**: 智能控制API调用频率，避免超限
+- **错误重试**: 指数退避重试机制，提高成功率
 
-### 🔍 如何查看文件所有权
+#### 数据质量保证
+- **实时验证**: 数据写入时进行格式和范围检查
+- **异常检测**: 基于统计学的异常值自动识别
+- **数据修复**: 自动修复常见的数据质量问题
+
+## 📋 四、系统架构概览
+
+### 🗂️ 项目目录结构 (2025-11-09重组后)
+
+**项目已完成全面重组**: 从42个杂乱的根目录精简到13个科学组织的目录，符合Python最佳实践。
+
+#### 📁 根目录 (仅核心文件)
+```
+mystocks_spec/
+├── README.md                 # 项目主文档 (本文件)
+├── CLAUDE.md                 # Claude Code集成指南
+├── CHANGELOG.md              # 版本变更日志
+├── LICENSE                   # MIT许可证
+├── requirements.txt          # Python依赖清单
+├── core.py                   # 核心模块入口点
+├── data_access.py           # 数据访问入口点
+├── monitoring.py            # 监控模块入口点
+├── unified_manager.py       # 统一管理器入口点
+└── __init__.py              # Python包标识
+```
+
+#### 📂 主要目录组织
+
+```
+mystocks_spec/
+├── src/                      # 📦 所有源代码
+│   ├── adapters/            # 数据源适配器 (7个核心适配器)
+│   ├── core/                # 核心管理类 (数据分类、路由策略)
+│   ├── data_access/         # 数据库访问层 (TDengine/PostgreSQL)
+│   ├── data_sources/        # 数据导入模块
+│   ├── db_manager/          # 数据库管理 (兼容层 → src.storage.database)
+│   ├── gpu/                 # GPU加速模块
+│   ├── interfaces/          # 接口定义 (IDataSource等)
+│   ├── ml_strategy/         # 机器学习策略
+│   ├── monitoring/          # 监控和告警
+│   ├── reporting/           # 报告生成
+│   ├── storage/             # 存储层 (database/connection_manager)
+│   ├── utils/               # 工具函数 (column_mapper/date_utils等)
+│   └── visualization/       # 可视化工具
+│
+├── docs/                     # 📚 所有文档
+│   ├── api/                 # API文档
+│   ├── archived/            # 历史文档归档
+│   ├── architecture/        # 架构设计文档
+│   └── guides/              # 用户指南
+│
+├── config/                   # ⚙️ 配置文件
+│   ├── table_config.yaml    # 表结构配置
+│   ├── docker-compose.*.yml # Docker部署配置
+│   └── *.yaml              # 其他配置文件
+│
+├── scripts/                  # 🔧 脚本工具
+│   ├── tests/               # 测试脚本 (test_*.py)
+│   ├── runtime/             # 运行时脚本 (run_*.py, save_*.py)
+│   ├── database/            # 数据库脚本 (check_*.py, verify_*.py)
+│   ├── dev/                 # 开发工具脚本
+│   └── project/             # 项目管理脚本
+│
+├── data/                     # 💾 数据文件
+│   ├── cache/               # 缓存数据
+│   └── models/              # 机器学习模型
+│
+├── web/                      # 🌐 Web应用
+│   ├── backend/             # FastAPI后端
+│   └── frontend/            # Vue 3前端
+│
+├── tests/                    # 🧪 测试代码
+├── examples/                 # 📖 示例代码
+├── logs/                     # 📝 日志目录
+├── temp/                     # 🗂️ 临时文件
+│
+├── .archive/                 # 📦 归档内容 (历史代码/文档)
+│   ├── old_code/            # 旧代码备份
+│   ├── old_docs/            # 旧文档备份
+│   └── ARCHIVE_INDEX.md     # 归档索引
+│
+└── [开发工具目录]            # 🛠️ 开发工具 (不移动)
+    ├── .claude/             # Claude Code配置
+    ├── .taskmaster/         # TaskMaster配置
+    ├── .specify/            # Specify配置
+    └── .benchmarks/         # 性能基准
+```
+
+#### 🔑 重要变更说明
+
+**1. 统一导入路径** (2025-11-09):
+```python
+# ✅ 新的标准导入路径 (重组后)
+from src.core import ConfigDrivenTableManager
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.data_access.tdengine_access import TDengineDataAccess
+from src.db_manager import DatabaseTableManager  # 兼容层
+
+# ❌ 旧的导入路径 (已废弃)
+from core import ConfigDrivenTableManager
+from adapters.akshare_adapter import AkshareDataSource
+```
+
+**2. 兼容层设计**:
+- `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
+- 保证平滑过渡,旧导入路径仍然有效
+
+**3. 入口点文件**:
+根目录的 `.py` 文件 (`core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`) 是入口点文件:
+- 提供向后兼容性
+- 可作为快速访问点
+- 内部导入自 `src.*`
+
+**4. Git历史完整保留**:
+- 所有文件移动使用 `git mv` 命令
+- 完整保留了文件的Git历史记录
+- 可追溯每个文件的完整演进历史
+
+**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./REORGANIZATION_COMPLETION_REPORT.md)
+
+### 核心模块组织 (src/ 目录详解)
+
+```
+src/
+├── adapters/                 # 🔌 数据源适配器
+│   ├── tdx_adapter.py       # 通达信直连 (无限流, 1058行)
+│   ├── byapi_adapter.py     # REST API (涨跌停股池, 625行)
+│   ├── financial_adapter.py # 财务数据全能 (1078行)
+│   ├── akshare_adapter.py   # 免费全面 (510行)
+│   ├── baostock_adapter.py  # 高质量历史 (257行)
+│   ├── customer_adapter.py  # 实时行情专用 (378行)
+│   └── tushare_adapter.py   # 专业级 (199行)
+│
+├── core/                     # 🎯 核心管理类
+│   ├── config_driven_table_manager.py  # 配置驱动表管理
+│   ├── data_classification.py          # 数据分类枚举
+│   └── data_storage_strategy.py        # 存储策略路由
+│
+├── data_access/              # 🗄️ 数据库访问层
+│   ├── tdengine_access.py   # TDengine高频时序数据访问
+│   └── postgresql_access.py # PostgreSQL通用数据访问
+│
+├── storage/                  # 💽 存储层
+│   └── database/
+│       ├── connection_manager.py  # 数据库连接管理
+│       ├── database_manager.py    # 数据库表管理
+│       └── db_utils.py           # 数据库工具函数
+│
+├── monitoring/               # 📊 监控和告警
+│   ├── monitoring_database.py    # 监控数据库
+│   ├── performance_monitor.py    # 性能监控
+│   ├── data_quality_monitor.py   # 数据质量监控
+│   └── alert_manager.py          # 告警管理器
+│
+└── interfaces/               # 📐 接口定义
+    └── data_source.py       # IDataSource统一接口
+```
+
+### 技术特性
+
+- **🎯 配置驱动**: YAML配置文件管理所有表结构，避免手工干预
+- **⚡ 高性能**: TDengine时序数据库实现极致写入性能
+- **🔍 智能监控**: 独立监控数据库，完整记录所有操作
+- **🛡️ 数据安全**: 完善的权限管理和数据验证机制
+- **🔄 自动维护**: 定时任务和自动化运维，减少人工成本
+
+## 🚀 快速开始
+
+### 1. 环境准备
+
+#### 数据库服务（Week 3简化后 - 双数据库架构）
+确保以下数据库服务正常运行：
+
+**必需数据库**:
+- **TDengine 3.3.x** (高频时序数据专用)
+  - 用途: Tick数据、分钟K线、实时深度
+  - 端口: 6030 (WebSocket), 6041 (REST API)
+  - 数据库: `market_data`
+
+- **PostgreSQL 17.x** (通用数据仓库)
+  - TimescaleDB 2.x 扩展：日线K线时序优化
+  - 标准表：参考数据、衍生数据、交易数据、元数据
+  - 端口: 5432 (默认) 或 5438
+  - 数据库: `mystocks`
+
+#### Python环境
+```bash
+# 基础依赖
+pip install pandas numpy pyyaml
+
+# 数据库驱动（Week 3简化后 - 双数据库）
+pip install psycopg2-binary taospy
+
+# 数据源适配器
+pip install akshare efinance schedule loguru
+
+# 可选：性能优化
+pip install ujson numba cachetools
+```
+
+#### 环境配置（Week 3简化版 - 双数据库）
+创建 `.env` 文件：
+```bash
+# TDengine高频时序数据库（必需）
+TDENGINE_HOST=localhost
+TDENGINE_PORT=6030
+TDENGINE_USER=root
+TDENGINE_PASSWORD=taosdata
+TDENGINE_DATABASE=market_data
+
+# PostgreSQL主数据库（必需）
+POSTGRESQL_HOST=localhost
+POSTGRESQL_PORT=5438
+POSTGRESQL_USER=postgres
+POSTGRESQL_PASSWORD=your_password
+POSTGRESQL_DATABASE=mystocks
+
+# 监控数据库（使用PostgreSQL同库独立schema）
+MONITOR_DB_URL=postgresql://postgres:password@localhost:5438/mystocks
+
+# 应用层缓存配置
+CACHE_EXPIRE_SECONDS=300
+LRU_CACHE_MAXSIZE=1000
+```
+
+### 2. 系统初始化
+
+```python
+from unified_manager import MyStocksUnifiedManager
+
+# 创建统一管理器
+manager = MyStocksUnifiedManager()
+
+# 自动初始化系统（创建表结构、配置监控）
+results = manager.initialize_system()
+
+if results['config_loaded']:
+    print("✅ 系统初始化成功!")
+    print(f"📊 创建表数量: {len(results['tables_created'])}")
+else:
+    print("❌ 系统初始化失败，请检查配置")
+```
+
+### 3. 数据操作示例
+
+```python
+import pandas as pd
+from datetime import datetime
+from core import DataClassification
+
+# 1. 保存股票基本信息 (自动路由到PostgreSQL)
+symbols_data = pd.DataFrame({
+    'symbol': ['600000', '000001', '000002'],
+    'name': ['浦发银行', '平安银行', '万科A'],
+    'exchange': ['SH', 'SZ', 'SZ'],
+    'sector': ['银行', '银行', '房地产']
+})
+manager.save_data_by_classification(symbols_data, DataClassification.SYMBOLS_INFO)
+
+# 2. 保存高频Tick数据 (自动路由到TDengine)
+tick_data = pd.DataFrame({
+    'ts': [datetime.now()],
+    'symbol': ['600000'],
+    'price': [10.50],
+    'volume': [1000],
+    'amount': [10500.0]
+})
+manager.save_data_by_classification(tick_data, DataClassification.TICK_DATA)
+
+# 3. 保存日线数据 (自动路由到PostgreSQL)
+daily_data = pd.DataFrame({
+    'symbol': ['600000'],
+    'trade_date': [datetime.now().date()],
+    'open': [10.45],
+    'high': [10.55],
+    'low': [10.40],
+    'close': [10.50],
+    'volume': [1000000]
+})
+manager.save_data_by_classification(daily_data, DataClassification.DAILY_KLINE)
+
+# 4. 智能查询数据
+# 查询股票信息
+symbols = manager.load_data_by_classification(
+    DataClassification.SYMBOLS_INFO,
+    filters={'exchange': 'SH'}
+)
+
+# 查询历史数据
+history = manager.load_data_by_classification(
+    DataClassification.DAILY_KLINE,
+    filters={'symbol': '600000', 'trade_date': '>2024-01-01'},
+    order_by='trade_date DESC',
+    limit=100
+)
+
+print(f"查询到 {len(symbols)} 只上海股票")
+print(f"查询到 {len(history)} 条历史数据")
+```
+
+### 4. 实时数据获取和保存
+
+#### 使用efinance获取沪深A股实时行情
+
+```python
+# 使用改进的customer_adapter和自动路由保存
+from adapters.customer_adapter import CustomerDataSource
+from unified_manager import MyStocksUnifiedManager
+from core import DataClassification
+
+# 1. 创建数据适配器（启用列名标准化）
+adapter = CustomerDataSource(use_column_mapping=True)
+
+# 2. 获取沪深市场A股最新状况
+realtime_data = adapter.get_market_realtime_quotes()
+print(f"获取到 {len(realtime_data)} 只股票的实时行情")
+
+# 3. 使用统一管理器和自动路由保存数据
+manager = MyStocksUnifiedManager()
+success = manager.save_data_by_classification(
+    data=realtime_data,
+    classification=DataClassification.DAILY_KLINE,  # 自动路由到PostgreSQL
+    table_name='realtime_market_quotes'
+)
+
+if success:
+    print("✅ 实时行情数据已保存到PostgreSQL数据库")
+```
+
+#### 命令行方式运行
 
 ```bash
-# 方法1: 查看所有权映射文件
-cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP | grep <文件路径>
+# 测试数据获取
+python run_realtime_market_saver.py --test-adapter
 
-# 方法2: 运行冲突检测脚本
-cd /opt/claude/mystocks_spec
-bash scripts/maintenance/check_file_conflicts.sh
+# 单次运行保存数据
+python run_realtime_market_saver.py
 
-# 方法3: 查看完整所有权映射
-cat /opt/claude/mystocks_spec/.FILE_OWNERSHIP
+# 持续运行（每5分钟获取一次）
+python run_realtime_market_saver.py --count -1 --interval 300
 ```
 
-### ⚙️ Pre-commit配置说明
+### 5. 监控系统使用
 
-**重要**: CLI-2 **继承**主CLI的pre-commit配置，**不应修改** `.pre-commit-config.yaml`。
+```python
+# 获取系统状态
+status = manager.get_system_status()
+print(f"总操作数: {status['monitoring']['operation_statistics']['total_operations']}")
+print(f"成功率: {status['performance']['summary']['success_rate']:.2%}")
 
-**如果pre-commit检查失败**（例如目录结构检查）:
+# 生成数据质量报告
+quality_report = manager.quality_monitor.generate_quality_report()
+print(f"数据质量评分: {quality_report['overall_score']:.2f}")
+```
+
+## 📁 文件与模块说明
+
+### 🎯 根目录入口点文件
+
+**说明**: 根目录的Python文件是系统入口点,提供向后兼容性和快速访问:
+
+- `core.py` - 核心模块入口 → 导入自 `src.core`
+- `unified_manager.py` - 统一管理器入口 → 导入自 `src.core`
+- `data_access.py` - 数据访问入口 → 导入自 `src.data_access`
+- `monitoring.py` - 监控模块入口 → 导入自 `src.monitoring`
+
+**使用建议**:
+- ✅ 推荐: 直接从 `src.*` 导入 (标准路径)
+- ✅ 可选: 从根目录文件导入 (兼容性)
+
+### 📦 src/ 源代码模块详解
+
+#### src/adapters/ - 数据源适配器 (7个核心适配器)
+
+**⭐ v2.1核心适配器 (推荐)**:
+- `src/adapters/tdx_adapter.py` (1058行) - 通达信直连,无限流,多周期K线
+- `src/adapters/byapi_adapter.py` (625行) - REST API,涨跌停股池,技术指标
+
+**稳定生产适配器**:
+- `src/adapters/financial_adapter.py` (1078行) - 双数据源(efinance+easyquotation),财务数据全能
+- `src/adapters/akshare_adapter.py` (510行) - 免费全面,历史数据研究首选
+- `src/adapters/baostock_adapter.py` (257行) - 高质量历史数据,复权数据
+- `src/adapters/customer_adapter.py` (378行) - 实时行情专用
+- `src/adapters/tushare_adapter.py` (199行) - 专业级,需token
+
+**导入示例**:
+```python
+from src.adapters.akshare_adapter import AkshareDataSource
+from src.adapters.tdx_adapter import TdxDataSource
+```
+
+详细特性对比: [`docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+
+#### src/core/ - 核心管理类
+
+- `src/core/config_driven_table_manager.py` - 配置驱动表管理,YAML自动建表
+- `src/core/data_classification.py` - 5大数据分类枚举定义
+- `src/core/data_storage_strategy.py` - 智能路由策略,自动选择数据库
+
+**导入示例**:
+```python
+from src.core import ConfigDrivenTableManager, DataClassification
+```
+
+#### src/data_access/ - 数据库访问层
+
+- `src/data_access/tdengine_access.py` - TDengine高频时序数据访问
+- `src/data_access/postgresql_access.py` - PostgreSQL通用数据访问
+
+**导入示例**:
+```python
+from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+```
+
+#### src/storage/ - 存储层
+
+- `src/storage/database/connection_manager.py` - 数据库连接池管理
+- `src/storage/database/database_manager.py` - 数据库表管理器
+- `src/storage/database/db_utils.py` - 数据库工具函数
+
+**导入示例**:
+```python
+from src.storage.database import DatabaseConnectionManager, DatabaseTableManager
+```
+
+#### src/db_manager/ - 兼容层 (重要!)
+
+**说明**: `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
+
+- `src/db_manager/__init__.py` - 重导出 src.storage.database 的所有类
+- `src/db_manager/connection_manager.py` - 兼容包装器
+- `src/db_manager/database_manager.py` - 兼容包装器
+
+**导入示例** (两种方式等价):
+```python
+# 方式1: 通过兼容层 (旧代码可继续使用)
+from src.db_manager import DatabaseTableManager
+
+# 方式2: 直接导入 (推荐)
+from src.storage.database import DatabaseTableManager
+```
+
+#### src/monitoring/ - 监控和告警
+
+- `src/monitoring/monitoring_database.py` - 独立监控数据库
+- `src/monitoring/performance_monitor.py` - 性能监控,慢查询检测
+- `src/monitoring/data_quality_monitor.py` - 数据质量监控
+- `src/monitoring/alert_manager.py` - 多渠道告警管理
+
+**导入示例**:
+```python
+from src.monitoring import MonitoringDatabase, PerformanceMonitor, AlertManager
+```
+
+#### src/interfaces/ - 接口定义
+
+- `src/interfaces/data_source.py` - IDataSource统一接口定义
+
+**导入示例**:
+```python
+from src.interfaces import IDataSource
+```
+
+#### src/utils/ - 工具函数
+
+- `src/utils/column_mapper.py` - 统一列名映射,中英文转换
+- `src/utils/date_utils.py` - 日期时间工具函数
+- `src/utils/symbol_utils.py` - 股票代码工具函数
+- `src/utils/tdx_server_config.py` - 通达信服务器配置
+
+**导入示例**:
+```python
+from src.utils import ColumnMapper
+```
+
+### 🔧 scripts/ 脚本工具
+
+#### scripts/runtime/ - 运行时脚本
+
+- `scripts/runtime/run_realtime_market_saver.py` - 实时行情保存系统
+- `scripts/runtime/save_realtime_data.py` - 实时数据保存工具
+- `scripts/runtime/system_demo.py` - 系统功能演示
+
+**运行示例**:
 ```bash
-# 使用环境变量绕过不适用的检查
-DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "commit message"
+python scripts/runtime/system_demo.py
+python scripts/runtime/run_realtime_market_saver.py
 ```
 
-**何时使用环境变量**:
-- ✅ Worktree环境与主仓库不同，导致目录结构检查失败
-- ✅ 文件组织形式不同，但仍符合项目规范
-- ❌ 不能用于绕过代码质量检查（Ruff, Black, Pylint等）
+#### scripts/tests/ - 测试脚本
 
-### 📖 相关文档
+- `scripts/tests/test_config_driven_table_manager.py` - 配置表管理器测试
+- `scripts/tests/test_financial_adapter.py` - 财务适配器测试
+- `scripts/tests/test_save_realtime_data.py` - 实时数据保存测试
 
-- **[冲突预防规范](../../mystocks_spec/docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南
-- **[文件所有权映射](../../mystocks_spec/.FILE_OWNERSHIP)** - 所有权定义
-- **[主CLI工作规范](../../mystocks_spec/docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准
+**运行示例**:
+```bash
+python scripts/tests/test_config_driven_table_manager.py
+pytest scripts/tests/ -v
+```
+
+#### scripts/database/ - 数据库脚本
+
+- `scripts/database/check_tdengine_tables.py` - TDengine表检查
+- `scripts/database/verify_tdengine_deployment.py` - TDengine部署验证
+
+**运行示例**:
+```bash
+python scripts/database/check_tdengine_tables.py
+```
+
+### ⚙️ config/ 配置文件
+
+- `config/table_config.yaml` - 完整表结构配置 (支持5大数据分类)
+- `config/docker-compose.tdengine.yml` - TDengine Docker配置
+- `config/docker-compose.postgresql.yml` - PostgreSQL Docker配置
+- `.env` - 环境变量配置 (数据库连接信息)
+
+**配置示例**:
+```yaml
+# config/table_config.yaml
+tables:
+  - name: stock_daily
+    database_type: postgresql
+    classification: daily_kline
+    schema:
+      - {name: symbol, type: VARCHAR(10)}
+      - {name: trade_date, type: DATE}
+```
+
+### 📚 docs/ 文档
+
+- `docs/guides/QUICKSTART.md` - 快速入门指南
+- `docs/guides/IFLOW.md` - 项目工作流程
+- `docs/architecture/` - 架构设计文档
+- `docs/api/` - API文档
+- `docs/archived/` - 历史文档归档
+
+### 🌐 web/ Web应用
+
+- `web/backend/` - FastAPI后端服务
+- `web/frontend/` - Vue 3 + Vite前端应用
+
+**启动示例**:
+```bash
+# 后端
+cd web/backend && uvicorn app.main:app --reload
+
+# 前端
+cd web/frontend && npm run dev
+```
+
+## 🔧 高级功能
+
+### 自动化维护
+- **定时任务**: 数据质量检查、性能监控、备份操作
+- **告警机制**: 多渠道告警，支持邮件、Webhook、日志
+- **自动优化**: 数据库优化、索引管理、日志清理
+
+### 监控体系
+- **操作监控**: 所有数据库操作自动记录到独立监控数据库
+- **性能监控**: 慢查询检测、响应时间统计、资源使用监控
+- **质量监控**: 数据完整性、准确性、新鲜度实时检查
+
+### 扩展性设计
+- **插件化架构**: 易于添加新的数据源和数据库支持
+- **配置驱动**: 通过YAML配置文件扩展表结构和存储策略
+- **标准接口**: 统一的数据访问接口，便于系统集成
+
+## 🌐 Web 平台使用
+
+### 启动 Web 服务
+
+#### 后端服务
+```bash
+cd web/backend
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### 前端服务
+```bash
+cd web/frontend
+npm install
+npm run dev
+```
+
+访问：
+- **API 文档**: http://localhost:8000/api/docs
+- **前端界面**: http://localhost:5173
+
+### Web API 端点总览
+
+#### 实时监控系统 (Phase 1)
+```
+GET  /api/monitoring/alert-rules          # 获取告警规则
+POST /api/monitoring/alert-rules          # 创建告警规则
+GET  /api/monitoring/realtime             # 获取实时行情
+POST /api/monitoring/realtime/fetch       # 获取最新实时数据
+GET  /api/monitoring/dragon-tiger         # 获取龙虎榜
+GET  /api/monitoring/summary              # 获取监控摘要
+```
+
+#### 技术分析系统 (Phase 2)
+```
+GET  /api/technical/{symbol}/indicators   # 获取所有技术指标
+GET  /api/technical/{symbol}/trend        # 获取趋势指标
+GET  /api/technical/{symbol}/momentum     # 获取动量指标
+GET  /api/technical/{symbol}/volatility   # 获取波动性指标
+GET  /api/technical/{symbol}/signals      # 获取交易信号
+POST /api/technical/batch/indicators      # 批量获取指标
+```
+
+#### 多数据源系统 (Phase 3)
+```
+GET  /api/multi-source/health             # 获取所有数据源健康状态
+GET  /api/multi-source/realtime-quote     # 获取实时行情（多数据源）
+GET  /api/multi-source/fund-flow          # 获取资金流向（多数据源）
+GET  /api/announcement/today              # 获取今日公告
+GET  /api/announcement/important          # 获取重要公告
+POST /api/announcement/monitor/evaluate   # 评估监控规则
+```
+
+## 📚 更多信息
+
+- **项目模块清单**: [PROJECT_MODULES.md](./PROJECT_MODULES.md) - 详细的模块来源和分类
+- **ValueCell Phase 1 完成报告**: [VALUECELL_PHASE1_COMPLETION.md](./VALUECELL_PHASE1_COMPLETION.md)
+- **ValueCell Phase 2 完成报告**: [VALUECELL_PHASE2_COMPLETION.md](./VALUECELL_PHASE2_COMPLETION.md)
+- **ValueCell Phase 3 完成报告**: [VALUECELL_PHASE3_COMPLETION.md](./VALUECELL_PHASE3_COMPLETION.md)
+- **详细使用指南**: [example.md](./example.md)
+- **适配器使用**: [adapters/example.md](./adapters/example.md)
+- **数据库管理**: [db_manager/example.md](./db_manager/example.md)
 
 ---
 
-## 工作流程与Git提交规范
+## 🔧 数据源管理工具 (V2.0 已完成)
 
-### 📚 完整工作流程指南
+**状态**: ✅ 生产就绪 (2026-01-02) | **版本**: V2.0
 
-详细的Worker CLI工作流程请参考:
-📖 **[CLI工作流程指南](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)**
+数据源管理工具提供统一的接口来管理、测试、监控所有外部数据源端点（34个已注册接口）。
 
-### ⚡ 快速参考
+### 核心功能
 
-#### 每日工作流程
+**1. 数据源搜索和筛选**
+- 按5层数据分类筛选（DAILY_KLINE, MINUTE_KLINE, TICK_DATA等）
+- 按源类型过滤（akshare, tushare, baostock, tdx, efinance）
+- 按健康状态过滤（仅显示健康的端点）
+- 关键词搜索和分类统计
 
+**2. 接口测试和数据质量分析**
+- 功能验证：端点可用性、参数正确性
+- 数据质量检查：完整性、范围、重复性、类型一致性
+- 性能测试：响应时间、成功率、错误率
+- 自动生成详细测试报告
+
+**3. 健康监控和状态管理**
+- 实时健康检查：单个端点或批量检查
+- 健康指标：连接成功率、响应时间、数据质量
+- 状态管理：active/maintenance/deprecated
+- 告警机制：不健康端点自动标记
+
+**4. 配置管理**
+- 34个数据源端点的配置信息
+- YAML注册表：`config/data_sources_registry.yaml`
+- 动态配置更新和参数验证
+- 优先级调整和质量评分
+
+### 工具链
+
+**手动测试工具** (`scripts/tools/manual_data_source_tester.py`)
 ```bash
-# 1. 拉取最新代码
-cd /opt/claude/mystocks_phase6_api_contract
-git pull
+# 交互式测试模式
+python scripts/tools/manual_data_source_tester.py --interactive
 
-# 2. 查看今日任务
-vim README.md  # 查看"进度跟踪"章节
-
-# 3. 开发实现
-vim docs/api/contracts/market_api.yaml
-
-# 4. 代码质量检查
-ruff check . --fix
-black .
-pylint src/
-
-# 5. Git提交
-git add .
-git commit -m "feat(api): add market data OpenAPI schema
-
-- Define GET /api/market/kline endpoint
-- Add request/response schemas with Pydantic
-- Include error codes and validation rules
-
-Task: T2.1
-Acceptance: [x] OpenAPI schema [x] Pydantic models [ ] TypeScript types"
-
-# 6. 更新README进度
-vim README.md
-git add README.md
-git commit -m "docs(readme): update progress to T+24h"
-
-# 7. 推送到远程
-git push
+# 快速测试特定端点
+python scripts/tools/manual_data_source_tester.py \
+    --endpoint akshare.stock_zh_a_hist \
+    --symbol 000001 \
+    --start-date 20240101 \
+    --end-date 20240131 \
+    --verbose
 ```
 
-#### Git提交消息规范
-
+**FastAPI管理接口** (`web/backend/app/api/data_source_registry.py`)
 ```bash
-# 格式: <type>(<scope>): <subject>
+# 搜索数据源
+curl -X GET "http://localhost:8000/api/v1/data-sources/?data_category=DAILY_KLINE" \
+  -H "Authorization: Bearer YOUR_TOKEN"
 
-# Type类型:
-feat:     新功能
-fix:      修复bug
-docs:     文档更新
-test:     测试相关
-refactor: 重构代码
-chore:    构建/工具链相关
-
-# 示例:
-git commit -m "feat(schemas): implement UnifiedResponse v2.0
-
-- Add UnifiedResponse base class
-- Implement ErrorCode enum with 20+ error codes
-- Add success() and error() factory methods
-- Include request_id tracking
-
-Task: T2.3
-Acceptance: [x] Base class [x] ErrorCode [x] Factory methods [x] Tests"
+# 测试数据源
+curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"test_params": {"symbol": "000001", "start_date": "20240101", "end_date": "20240131"}}'
 ```
 
-#### 完成标准检查清单
+### Vue.js前端集成
 
-每个任务完成前必须确认:
+```javascript
+import dataSourceService from '@/api/dataSourceService'
 
-- [ ] 所有验收标准通过
-- [ ] 代码已提交到Git（频繁提交，小步快跑）
-- [ ] 测试覆盖率达标（后端>80%）
-- [ ] 代码质量检查通过（Pylint>8.0）
-- [ ] README已更新（进度+任务状态）
-- [ ] API契约文档完整（OpenAPI + Pydantic + TypeScript）
+// 搜索健康的日线数据源
+const sources = await dataSourceService.searchDataSources({
+  dataCategory: 'DAILY_KLINE',
+  sourceType: 'akshare',
+  onlyHealthy: true
+})
 
-#### 提交频率建议
-
-✅ **好的实践**:
-- 每完成一个API端点定义就提交
-- 至少每天一次提交
-- 每次提交只包含一个API模块
-
-❌ **不好的实践**:
-- 积累多个API定义后才提交
-- 一次提交包含不相关的改动
-- 几天不提交代码
-
-#### 进度更新格式
-
-```markdown
-## 进度更新
-
-### T+0h (2025-12-29 15:00)
-- ✅ 任务启动
-- 📝 当前任务: T2.1 创建API契约目录结构
-- ⏳ 预计完成: 2025-12-29 18:00
-- 🚧 阻塞问题: 无
-
-### T+24h (2025-12-30 15:00)
-- ✅ T2.2 Market API契约定义完成
-  - Git提交: abc1234, def5678
-  - 验收标准: [x] OpenAPI schema [x] TypeScript types
-  - 测试覆盖: 90%
-- 📝 当前任务: T2.3 实现UnifiedResponse
-- 🚧 阻塞问题: 无
+// 测试数据源
+const result = await dataSourceService.testDataSource(
+  'akshare.stock_zh_a_hist',
+  {
+    symbol: '000001',
+    start_date: '20240101',
+    end_date: '20240131'
+  }
+)
 ```
 
-### 🎯 关键注意事项
+### 使用场景
 
-1. **API契约优先**: 先定义OpenAPI schema，再实现Pydantic模型
-2. **频繁提交**: 每完成一个API端点就提交
-3. **原子提交**: 每次提交只包含一个API模块
-4. **优先级最高**: CLI-3和CLI-4依赖你，请加快进度
-5. **及时更新README**: 每天至少更新一次进度
+**场景1: 开发调试** - 快速测试新增数据源接口
+```bash
+python scripts/tools/manual_data_source_tester.py --interactive
+# 选择新接口 → 输入参数 → 查看测试结果
+```
 
-### 📞 需要帮助？
+**场景2: 生产环境检查** - 批量健康检查
+```bash
+curl -X POST "http://localhost:8000/api/v1/data-sources/health-check/all" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+# 返回所有34个端点的健康状态
+```
 
-- 📖 [完整工作流程](../../mystocks_spec/docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
-- 📚 [API契约参考](../../mystocks_spec/docs/api/API契约同步组件实现方案.md)
-- 🚧 遇到阻塞: 在README中记录，主CLI会优先处理
+**场景3: Web集成** - 前端数据源管理页面
+- Vue组件调用7个RESTful API端点
+- 展示数据源列表、健康状态、测试结果
+- 提供搜索、筛选、测试、配置功能
+
+**场景4: 配置优化** - 根据健康状态调整优先级
+```python
+# 查看质量评分低的端点
+sources = search_data_sources(quality_score="<70")
+# 更新配置或标记为maintenance
+```
+
+### 技术指标
+
+| 指标 | 数值 |
+|------|------|
+| **已注册端点** | 34个 |
+| **数据分类** | 5层（DAILY_KLINE, MINUTE_KLINE, TICK_DATA, REALTIME_QUOTES, REFERENCE_DATA） |
+| **支持的数据源** | akshare, tushare, baostock, tdx, efinance |
+| **API端点数** | 7个（搜索、分类统计、详情、更新、测试、健康检查、批量健康检查） |
+| **数据质量检查** | 4项（完整性、范围、重复性、类型一致性） |
+
+### 文档链接
+
+📖 **[完整使用指南](./docs/guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
+
+📋 **[快速参考卡片](./docs/guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
+
+🏗️ **[数据源V2.0架构文档](./docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - 系统架构、设计模式、扩展指南
+
+✅ **[最终验证报告](./docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md)** - 功能验证、测试结果、性能指标
+
+🚀 **[功能增强提案](./docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)** - 未来规划、增强建议、改进方向
+
+### 与系统其他部分的关系
+
+数据源管理工具是 MyStocks 系统的基础设施组件，专注于**数据源端点的管理**而非**数据获取和存储**：
+
+- ❌ **不负责**: 实际数据拉取、数据存储到数据库、业务逻辑处理
+- ✅ **提供**: 配置管理、接口测试、健康监控、搜索发现、生命周期管理
+- 🔗 **协作**: 与 `src/adapters/`（数据适配器）、`MyStocksUnifiedManager`（统一管理器）协同工作
+
+**架构定位**: 数据源管理工具专注于**管理**而非**执行**，提供标准化的配置、测试、监控接口，与数据适配器、业务逻辑、存储层清晰分离。
+
+---
+
+## 🚀 GPU API System (Phase 4 Complete)
+
+### GPU加速回测与实时分析系统
+
+MyStocks项目包含一个完整的GPU加速量化交易API系统，位于 `gpu_api_system/` 目录。该系统使用RAPIDS框架（cuDF/cuML）实现高性能市场数据处理和机器学习加速。
+
+**系统状态**: ✅ **100%完成** (Phase 1-5 全部完成，包括WSL2 GPU支持)
+
+**关键成就**:
+- ✅ GPU回测加速比: **15-20倍**
+- ✅ 实时数据吞吐量: **10,000条/秒**
+- ✅ ML训练加速比: **44.76倍** (WSL2环境验证)
+- ✅ 测试覆盖率: **100%** (160+测试用例)
+- ✅ **WSL2 GPU完全支持**: 已解决WSL2环境下RAPIDS GPU访问问题
+- ✅ **智能三级缓存优化**: 命中率从80%提升至90%+ (新增6大优化策略)
+
+### 🆕 WSL2 GPU支持 (2025-11-04)
+
+**重大突破**: 完全解决了WSL2环境下RAPIDS（cuDF/cuML）GPU访问问题
+
+**原始问题**:
+```
+rmm._cuda.gpu.CUDARuntimeError: cudaErrorNoDevice: no CUDA-capable device is detected
+```
+虽然 `nvidia-smi` 显示GPU正常，但RAPIDS库无法访问GPU。
+
+**解决方案**:
+创建了自动化初始化脚本和完整测试套件：
+
+```python
+# WSL2环境自动初始化
+from wsl2_gpu_init import initialize_wsl2_gpu
+initialize_wsl2_gpu()
+
+# 现在可以使用RAPIDS
+import cudf
+import cuml
+```
+
+**验证成果** (4/4测试全部通过):
+- ✅ DataFrame操作: **1.50x加速**
+- ✅ ML训练(RandomForest): **44.76x加速** 🚀
+- ✅ GPU内存分配: 成功分配38.15MB
+- ✅ 回测性能测试: 通过
+
+**快速开始**:
+```bash
+# 1. 测试GPU环境
+cd gpu_api_system
+python wsl2_gpu_init.py
+
+# 2. 运行真实GPU测试
+python tests/test_real_gpu.py
+
+# 3. 查看详细配置
+cat WSL2_GPU_SETUP.md
+```
+
+**WSL2专用文档**:
+- [`gpu_api_system/WSL2_GPU_SETUP.md`](./gpu_api_system/WSL2_GPU_SETUP.md) - 完整配置指南
+- [`gpu_api_system/WSL2_GPU_COMPLETION.md`](./gpu_api_system/WSL2_GPU_COMPLETION.md) - 完工验收报告
+- [`gpu_api_system/WSL2_GPU_SUMMARY.md`](./gpu_api_system/WSL2_GPU_SUMMARY.md) - 工作总结
+
+### 核心功能
+
+#### 1. GPU加速回测引擎
+- **cuDF DataFrame**: GPU加速的数据处理，15-20倍性能提升
+- **并行策略执行**: 多策略同时回测
+- **智能三级缓存**: L1应用层 + L2 GPU内存 + L3 Redis，命中率90%+
+  - 🆕 **访问模式学习**: EWMA预测算法，预测未来访问
+  - 🆕 **查询结果缓存**: MD5指纹，避免重复计算
+  - 🆕 **负缓存**: 缓存不存在数据，减少无效查询
+  - 🆕 **自适应TTL**: 4级热度分区 (normal/warm/hot/ultra_hot)
+  - 🆕 **智能压缩**: 选择性压缩 (>10KB, <70%压缩率)
+  - 🆕 **预测性预加载**: 并发预加载相关数据
+
+#### 2. 实时市场数据处理
+- **高频数据流**: 10,000条/秒实时处理能力
+- **GPU流式计算**: 毫秒级技术指标计算
+- **WebSocket推送**: 实时信号分发
+
+#### 3. GPU机器学习服务
+- **cuML算法**: RandomForest、XGBoost、KMeans等
+- **训练加速**: 15-44倍加速比（数据规模依赖）
+- **在线预测**: <1ms预测延迟
+
+#### 4. 资源调度与监控
+- **智能GPU调度**: 多任务优先级管理
+- **资源监控**: Prometheus + Grafana
+- **自动告警**: GPU利用率、内存、性能指标
+
+#### 🆕 5. 缓存优化系统 (2025-11-04)
+
+**优化目标**: 将三级缓存命中率从80%提升至90%+
+
+**6大核心优化策略**:
+
+1. **访问模式学习** (`AccessPatternLearner`)
+   - EWMA指数加权移动平均算法
+   - 预测未来访问模式,自动预热高频数据
+   - 预期提升: 8-12%
+
+2. **查询结果缓存** (`QueryResultCache`)
+   - MD5指纹去重,避免重复计算
+   - 参数归一化,提高缓存命中
+   - 预期提升: 10-15%
+
+3. **负缓存机制** (`NegativeCache`)
+   - 缓存不存在的数据 (TTL 60秒)
+   - 减少无效数据库查询
+   - 预期提升: 2-5%
+
+4. **自适应TTL管理** (`AdaptiveTTLManager`)
+   - 4级热度分区: normal(1.0x) / warm(1.5x) / hot(2.0x) / ultra_hot(3.0x)
+   - 动态调整缓存过期时间
+   - 预期提升: 3-5%
+
+5. **智能压缩** (`SmartCompressor`)
+   - 选择性压缩: 仅处理 >10KB 且压缩率 <70% 的数据
+   - 平衡CPU开销与存储收益
+   - 预期提升: 3-5%
+
+6. **预测性预加载** (`PredictivePrefetcher`)
+   - ThreadPoolExecutor 并发预加载 (5个worker)
+   - 基于访问模式预测相关数据
+   - 预期提升: 6-10%
+
+**使用示例**:
+```python
+from utils.cache_optimization_enhanced import EnhancedCacheManager
+
+# 初始化增强缓存管理器
+cache_manager = EnhancedCacheManager(
+    redis_client=redis_client,
+    cache_stats=cache_stats
+)
+
+# 获取数据 (自动应用所有优化策略)
+data = await cache_manager.get_with_learning(
+    key="stock:600000:daily",
+    fetch_func=lambda: fetch_from_db("600000"),
+    ttl=3600
+)
+
+# 查看优化效果
+stats = cache_manager.get_optimization_stats()
+print(f"缓存命中率: {stats['hit_rate']:.2%}")
+print(f"预测准确率: {stats['prediction_accuracy']:.2%}")
+```
+
+**性能提升**: 缓存命中率从80%提升至**90%+**,显著减少GPU内存访问延迟
+
+**详细文档**: 参见 [`gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md`](gpu_api_system/CACHE_OPTIMIZATION_GUIDE.md)
+
+### 系统架构
+
+```
+gpu_api_system/
+├── services/               # 核心服务
+│   ├── gpu_api_server.py             # 主API服务器
+│   ├── integrated_backtest_service.py # GPU回测服务
+│   ├── integrated_realtime_service.py # 实时数据服务
+│   ├── integrated_ml_service.py       # GPU ML服务
+│   └── resource_scheduler.py          # GPU资源调度
+├── utils/                  # 工具模块
+│   ├── gpu_acceleration_engine.py     # GPU加速引擎
+│   ├── cache_optimization.py          # 基础缓存优化
+│   ├── cache_optimization_enhanced.py # 🆕 增强缓存优化 (6大策略)
+│   └── monitoring.py                  # 监控系统
+├── tests/                  # 完整测试套件
+│   ├── unit/                          # 单元测试 (95个)
+│   ├── integration/                   # 集成测试 (15个)
+│   ├── performance/                   # 性能测试 (25个)
+│   └── test_real_gpu.py              # 真实GPU测试 (4个)
+├── wsl2_gpu_init.py       # WSL2 GPU初始化脚本
+├── README.md              # 完整项目文档 (88页)
+└── deployment/            # Docker + K8s部署
+```
+
+### 性能指标
+
+| 指标 | 目标 | 实际表现 | 验证 |
+|------|------|----------|------|
+| 回测加速比 | ≥15x | 15-20x | ✅ |
+| 实时吞吐量 | ≥10,000条/秒 | 10,000条/秒 | ✅ |
+| ML训练加速比 | ≥15x | **44.76x** (WSL2) | ✅ |
+| 预测延迟 | <1ms | <1ms | ✅ |
+| 缓存命中率 | ≥80% | **>90%** (🆕 增强优化) | ✅ |
+| 测试覆盖率 | 100% | 100% | ✅ |
+
+### 快速启动
+
+#### 使用Docker (推荐)
+```bash
+cd gpu_api_system/deployment
+docker-compose up -d
+```
+
+#### 本地开发
+```bash
+cd gpu_api_system
+
+# 1. 安装依赖
+pip install -r requirements.txt
+
+# 2. WSL2环境需要初始化GPU
+python wsl2_gpu_init.py
+
+# 3. 启动主服务
+python main_server.py
+
+# 4. 运行测试
+./run_tests.sh all
+```
+
+#### API访问
+```bash
+# 健康检查
+curl http://localhost:8000/health
+
+# GPU状态
+curl http://localhost:8000/gpu/status
+
+# 提交回测任务
+curl -X POST http://localhost:8000/backtest \
+  -H "Content-Type: application/json" \
+  -d '{"strategy": "ma_cross", "symbols": ["600000"], "start_date": "2024-01-01"}'
+```
+
+### 技术栈
+
+- **GPU框架**: RAPIDS (cuDF 24.12, cuML 24.12, CuPy)
+- **API框架**: FastAPI + uvicorn
+- **消息队列**: Redis Streams
+- **监控**: Prometheus + Grafana
+- **部署**: Docker + Kubernetes
+- **测试**: pytest + pytest-cov (160+用例)
+
+### 硬件要求
+
+- **最低配置**:
+  - NVIDIA GPU (Compute Capability ≥ 7.0)
+  - 8GB GPU显存
+  - CUDA 11.8+
+  - 16GB 系统内存
+
+- **推荐配置**:
+  - NVIDIA RTX 2080 或更高
+  - 16GB+ GPU显存
+  - CUDA 12.0+
+  - 32GB 系统内存
+
+- **WSL2支持**: ✅ 完全支持（需要Windows 11或Win10 21H2+）
+
+### 📚 文档导航
+
+**快速开始**:
+- [`QUICKSTART.md`](./docs/guides/QUICKSTART.md) - 快速入门指南
+- [`IFLOW.md`](./docs/guides/IFLOW.md) - 项目工作流程
+- [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
+
+**架构设计文档** (`docs/architecture/`):
+- 核心架构评估与设计决策
+- 数据库架构方案对比
+- 适配器模式与路由策略
+- 高级架构评审报告
+
+**实现指南** (`docs/guides/`):
+- 系统部署和配置指南
+- 数据迁移方案
+- TDengine快速参考
+- 前后端数据流
+
+**开发规范** (`docs/standards/`):
+- 项目开发规范与指导文档
+- 代码修改规则
+- 数据工作流程
+- Web页面结构指南
+
+**特性实现** (`docs/features/`):
+- 股票热力图实现
+- 监控列表分组
+- TradingView集成修复
+- ValueCell各阶段完成报告
+
+**完成报告** (`docs/reports/`):
+- 任务和子任务完成报告
+- Web集成状态报告
+- 系统性能优化总结
+- 开发进展总结
+
+**旧文档归档** (`docs/archive/`):
+- 历史决策记录
+- 过期的规划文档
+- 前期讨论材料
+- 作为参考保留
+
+### 项目亮点
+
+1. ✅ **RAPIDS深度集成**: 完整的GPU加速生态，cuDF/cuML/CuPy一体化
+2. ✅ **WSL2生产就绪**: 全球首个解决WSL2下RAPIDS GPU访问的完整方案
+3. ✅ **智能三级缓存**: L1应用层 + L2 GPU内存 + L3 Redis，**>90%命中率** (🆕 增强优化)
+4. ✅ **高可用架构**: K8s自动伸缩、故障转移、健康检查
+5. ✅ **完善测试体系**: 160+用例，单元/集成/性能/真实GPU四层测试
+6. ✅ **优秀扩展性**: 插件化设计，易于添加新策略和算法
+
+---
+
+## 🤝 贡献
+
+欢迎提交Issue和Pull Request来改进这个项目。
+
+## 📄 许可证
+
+本项目采用 MIT 许可证。详情请参阅 [LICENSE](LICENSE) 文件。

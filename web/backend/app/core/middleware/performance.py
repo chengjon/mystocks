@@ -82,6 +82,10 @@ class PerformanceMiddleware:
 
     async def __call__(self, scope: dict, receive: Callable, send: Callable) -> None:
         """Process incoming request and track metrics"""
+        import sys
+
+        print(f"[PERF-MW] path={scope.get('path', 'unknown')}", file=sys.stderr, flush=True)
+
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return

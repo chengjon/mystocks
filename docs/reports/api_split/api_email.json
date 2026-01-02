@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/email",
+  "total_endpoints": 4,
+  "endpoints": [
+    {
+      "path": "/email/send",
+      "method": "POST",
+      "file": "notification.py",
+      "function": "send_email",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 347
+    },
+    {
+      "path": "/email/welcome",
+      "method": "POST",
+      "file": "notification.py",
+      "function": "send_welcome_email",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 534
+    },
+    {
+      "path": "/email/newsletter",
+      "method": "POST",
+      "file": "notification.py",
+      "function": "send_daily_newsletter",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 609
+    },
+    {
+      "path": "/email/price-alert",
+      "method": "POST",
+      "file": "notification.py",
+      "function": "send_price_alert",
+      "return_model": "Dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 646
+    }
+  ]
+}

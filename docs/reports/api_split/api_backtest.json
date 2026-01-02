@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/backtest",
+  "total_endpoints": 9,
+  "endpoints": [
+    {
+      "path": "/backtest/run",
+      "method": "POST",
+      "file": "strategy_management.py",
+      "function": "run_backtest",
+      "return_model": "Dict[str, int]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 603
+    },
+    {
+      "path": "/backtest/results",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "list_backtest_results",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 805
+    },
+    {
+      "path": "/backtest/results/{backtest_id}",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "get_backtest_result",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 834
+    },
+    {
+      "path": "/backtest/results/{backtest_id}/chart-data",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "get_backtest_chart_data",
+      "return_model": "Dict[str, List]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 857
+    },
+    {
+      "path": "/backtest",
+      "method": "GET",
+      "file": "sse_endpoints.py",
+      "function": "sse_backtest_stream",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 87
+    },
+    {
+      "path": "/backtest/execute",
+      "method": "POST",
+      "file": "strategy_mgmt.py",
+      "function": "execute_backtest",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 257
+    },
+    {
+      "path": "/backtest/results/{backtest_id}",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "get_backtest_result",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 355
+    },
+    {
+      "path": "/backtest/results",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "list_backtests",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 390
+    },
+    {
+      "path": "/backtest/status/{backtest_id}",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "get_backtest_status",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 492
+    }
+  ]
+}

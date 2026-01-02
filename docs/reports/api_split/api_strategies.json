@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-01-02T00:32:22.264253",
+  "prefix": "/strategies",
+  "total_endpoints": 11,
+  "endpoints": [
+    {
+      "path": "/strategies",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "list_strategies",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 131
+    },
+    {
+      "path": "/strategies",
+      "method": "POST",
+      "file": "strategy_management.py",
+      "function": "create_strategy",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 231
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "GET",
+      "file": "strategy_management.py",
+      "function": "get_strategy",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 316
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "PUT",
+      "file": "strategy_management.py",
+      "function": "update_strategy",
+      "return_model": "Dict[str, Any]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 339
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "DELETE",
+      "file": "strategy_management.py",
+      "function": "delete_strategy",
+      "return_model": "Dict[str, str]",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 381
+    },
+    {
+      "path": "/strategies",
+      "method": "POST",
+      "file": "strategy_mgmt.py",
+      "function": "create_strategy",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 70
+    },
+    {
+      "path": "/strategies",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "list_strategies",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 112
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "GET",
+      "file": "strategy_mgmt.py",
+      "function": "get_strategy",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 152
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "PUT",
+      "file": "strategy_mgmt.py",
+      "function": "update_strategy",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 187
+    },
+    {
+      "path": "/strategies/{strategy_id}",
+      "method": "DELETE",
+      "file": "strategy_mgmt.py",
+      "function": "delete_strategy",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "postgresql",
+      "line_number": 223
+    },
+    {
+      "path": "/strategies",
+      "method": "GET",
+      "file": "strategy_list_mock.py",
+      "function": "list_strategies_mock",
+      "return_model": "dict",
+      "data_fields": [],
+      "db_dependencies": [],
+      "source_type": "mock",
+      "line_number": 39
+    }
+  ]
+}

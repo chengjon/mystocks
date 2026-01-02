@@ -1105,12 +1105,13 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取技术分析数据"""
-        # In mock mode, we don't need the technical service
-        # if self._get_technical_service() is None:
-        #     raise RuntimeError("Technical analysis service not available")
-
         params = params or {}
         start_time = time.time()
+
+        # Ensure service is available
+        service = self._get_technical_service()
+        if not service:
+            raise RuntimeError("Technical analysis service not available")
 
         try:
             # 解析端点路径
@@ -1118,6 +1119,11 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
             # 获取symbol参数
             symbol = params.get("symbol", "000001")
+
+            # 使用 run_in_executor 执行同步计算任务，防止阻塞事件循环
+            import asyncio
+
+            loop = asyncio.get_running_loop()
 
             if endpoint == "indicators" or (len(path_parts) >= 2 and path_parts[1] == "indicators"):
                 # "indicators" or /{symbol}/indicators
@@ -1128,7 +1134,6 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 data = await self._get_all_indicators(symbol, period, start_date, end_date)
 
                 # For indicators endpoint, return data directly without wrapping
-                # The API expects the indicators data structure at the top level
                 self.metrics.record_success((time.time() - start_time) * 1000)
                 return {
                     "success": True,
@@ -1144,11 +1149,29 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
                 data = await self._get_trend_indicators(symbol, period)
 
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return {
+                    "success": True,
+                    "data": data,
+                    "source": self.source_type,
+                    "endpoint": endpoint,
+                    "timestamp": datetime.now().isoformat(),
+                }
+
             elif endpoint == "momentum" or (len(path_parts) >= 2 and path_parts[1] == "momentum"):
                 # "momentum" or /{symbol}/momentum
                 period = params.get("period", "daily")
 
                 data = await self._get_momentum_indicators(symbol, period)
+
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return {
+                    "success": True,
+                    "data": data,
+                    "source": self.source_type,
+                    "endpoint": endpoint,
+                    "timestamp": datetime.now().isoformat(),
+                }
 
             elif endpoint == "volatility" or (len(path_parts) >= 2 and path_parts[1] == "volatility"):
                 # "volatility" or /{symbol}/volatility
@@ -1156,11 +1179,29 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
                 data = await self._get_volatility_indicators(symbol, period)
 
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return {
+                    "success": True,
+                    "data": data,
+                    "source": self.source_type,
+                    "endpoint": endpoint,
+                    "timestamp": datetime.now().isoformat(),
+                }
+
             elif endpoint == "volume" or (len(path_parts) >= 2 and path_parts[1] == "volume"):
                 # "volume" or /{symbol}/volume
                 period = params.get("period", "daily")
 
                 data = await self._get_volume_indicators(symbol, period)
+
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return {
+                    "success": True,
+                    "data": data,
+                    "source": self.source_type,
+                    "endpoint": endpoint,
+                    "timestamp": datetime.now().isoformat(),
+                }
 
             elif endpoint == "signals" or (len(path_parts) >= 2 and path_parts[1] == "signals"):
                 # "signals" or /{symbol}/signals
@@ -1168,39 +1209,17 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
                 data = await self._get_trading_signals(symbol, period)
 
-            elif endpoint == "history" or (len(path_parts) >= 2 and path_parts[1] == "history"):
-                # "history" or /{symbol}/history
-                start_date = params.get("start_date")
-                end_date = params.get("end_date")
-                limit = params.get("limit", 500)
+                logger.info(f"🔍 _get_trading_signals returned data: {data}, type={type(data)}")
 
-                data = await self._get_stock_history(symbol, "daily", start_date, end_date, limit)
-
-            elif endpoint == "batch_indicators" or (
-                len(path_parts) >= 2 and path_parts[0] == "batch" and path_parts[1] == "indicators"
-            ):
-                # "batch_indicators" or /batch/indicators
-                symbols = params.get("symbols", ["000001", "600519"])
-                period = params.get("period", "daily")
-
-                data = await self._get_batch_indicators(symbols, period)
-
-            else:
-                raise ValueError(f"Unsupported technical analysis endpoint: {endpoint}")
-
-            # 记录成功请求
-            self.metrics.record_success((time.time() - start_time) * 1000)
-
-            return {
-                "success": True,
-                "data": {
-                    "indicators": data,
-                    "count": len(data) if isinstance(data, dict) else 1,
-                },
-                "source": self.source_type,
-                "endpoint": endpoint,
-                "timestamp": datetime.now().isoformat(),
-            }
+                # For signals endpoint, return data directly without wrapping
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return {
+                    "success": True,
+                    "data": data,
+                    "source": self.source_type,
+                    "endpoint": endpoint,
+                    "timestamp": datetime.now().isoformat(),
+                }
 
         except Exception as e:
             # 记录失败请求
@@ -1214,203 +1233,83 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """获取所有技术指标"""
-        # 使用Mock数据进行演示
-        mock_manager = self._get_mock_manager()
-        if mock_manager:
-            try:
-                mock_data = mock_manager.get_technical_indicators(symbol)
-                if mock_data:
-                    # 添加最新价格和日期信息
-                    from datetime import date
+        """获取所有技术指标 - 使用真实服务"""
+        import asyncio
 
-                    today = date.today()
-                    return {
-                        "symbol": symbol,
-                        "latest_price": mock_data.get("latest_price", 100.0),
-                        "latest_date": today.isoformat(),
-                        "data_points": mock_data.get("data_points", 252),
-                        "total_indicators": 19,
-                        "trend": {
-                            "ma5": mock_data.get("ma5"),
-                            "ma10": mock_data.get("ma10"),
-                            "ma20": mock_data.get("ma20"),
-                            "ma30": mock_data.get("ma30"),
-                            "ma60": mock_data.get("ma60"),
-                            "ma120": mock_data.get("ma120"),
-                            "ma250": mock_data.get("ma250"),
-                            "ema12": mock_data.get("ema12"),
-                            "ema26": mock_data.get("ema26"),
-                            "ema50": mock_data.get("ema50"),
-                            "macd": mock_data.get("macd"),
-                            "macd_signal": mock_data.get("macd_signal"),
-                            "macd_hist": mock_data.get("macd_hist"),
-                            "adx": mock_data.get("adx"),
-                            "plus_di": mock_data.get("plus_di"),
-                            "minus_di": mock_data.get("minus_di"),
-                            "sar": mock_data.get("sar"),
-                        },
-                        "momentum": {
-                            "rsi6": mock_data.get("rsi6"),
-                            "rsi12": mock_data.get("rsi12"),
-                            "rsi24": mock_data.get("rsi24"),
-                            "kdj_k": mock_data.get("kdj_k"),
-                            "kdj_d": mock_data.get("kdj_d"),
-                            "kdj_j": mock_data.get("kdj_j"),
-                            "cci": mock_data.get("cci"),
-                            "wr": mock_data.get("wr"),
-                            "roc": mock_data.get("roc"),
-                        },
-                        "volatility": {
-                            "bb_upper": mock_data.get("bb_upper"),
-                            "bb_middle": mock_data.get("bb_middle"),
-                            "bb_lower": mock_data.get("bb_lower"),
-                            "atr": mock_data.get("atr"),
-                            "kc_upper": mock_data.get("kc_upper"),
-                            "kc_middle": mock_data.get("kc_middle"),
-                            "kc_lower": mock_data.get("kc_lower"),
-                            "stddev": mock_data.get("stddev"),
-                        },
-                        "volume": {
-                            "obv": mock_data.get("obv"),
-                            "vwap": mock_data.get("vwap"),
-                            "volume_ma5": mock_data.get("volume_ma5"),
-                            "volume_ma10": mock_data.get("volume_ma10"),
-                            "volume_ratio": mock_data.get("volume_ratio"),
-                        },
-                    }
-            except Exception as e:
-                print(f"Mock data generation failed: {e}")
+        service = self._get_technical_service()
 
-        # 返回默认Mock数据
-        return {
-            "symbol": symbol,
-            "latest_price": 100.0,
-            "latest_date": date.today().isoformat(),
-            "data_points": 252,
-            "total_indicators": 19,
-            "trend": {
-                "ma5": 98.5,
-                "ma10": 97.2,
-                "ma20": 95.8,
-                "ma30": 94.5,
-                "ma60": 92.1,
-                "ma120": 88.7,
-                "ma250": 82.3,
-                "ema12": 99.1,
-                "ema26": 96.8,
-                "ema50": 93.4,
-                "macd": 0.15,
-                "macd_signal": 0.12,
-                "macd_hist": 0.03,
-                "adx": 25.8,
-                "plus_di": 18.2,
-                "minus_di": 12.6,
-                "sar": 97.8,
-            },
-            "momentum": {
-                "rsi6": 65.2,
-                "rsi12": 58.7,
-                "rsi24": 52.3,
-                "kdj_k": 68.5,
-                "kdj_d": 62.1,
-                "kdj_j": 74.8,
-                "cci": 45.3,
-                "wr": 32.7,
-                "roc": 2.8,
-            },
-            "volatility": {
-                "bb_upper": 108.5,
-                "bb_middle": 100.0,
-                "bb_lower": 91.5,
-                "atr": 2.8,
-                "kc_upper": 105.2,
-                "kc_middle": 100.0,
-                "kc_lower": 94.8,
-                "stddev": 3.2,
-            },
-            "volume": {
-                "obv": 1256800000,
-                "vwap": 99.5,
-                "volume_ma5": 15000000,
-                "volume_ma10": 14500000,
-                "volume_ratio": 1.15,
-            },
-        }
+        # 使用 run_in_executor 运行同步计算
+        return await asyncio.to_thread(
+            service.calculate_all_indicators, symbol=symbol, period=period, start_date=start_date, end_date=end_date
+        )
 
     async def _get_trend_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
-        """获取趋势指标"""
-        return {
-            "ma5": 98.5,
-            "ma10": 97.2,
-            "ma20": 95.8,
-            "ma30": 94.5,
-            "ma60": 92.1,
-            "ma120": 88.7,
-            "ma250": 82.3,
-            "ema12": 99.1,
-            "ema26": 96.8,
-            "ema50": 93.4,
-            "macd": 0.15,
-            "macd_signal": 0.12,
-            "macd_hist": 0.03,
-            "adx": 25.8,
-            "plus_di": 18.2,
-            "minus_di": 12.6,
-            "sar": 97.8,
-        }
+        """获取趋势指标 - 使用真实服务"""
+        import asyncio
+
+        service = self._get_technical_service()
+
+        # 获取历史数据
+        df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
+
+        # 计算指标
+        return await asyncio.to_thread(service.calculate_trend_indicators, df)
 
     async def _get_momentum_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
-        """获取动量指标"""
-        return {
-            "rsi6": 65.2,
-            "rsi12": 58.7,
-            "rsi24": 52.3,
-            "kdj_k": 68.5,
-            "kdj_d": 62.1,
-            "kdj_j": 74.8,
-            "cci": 45.3,
-            "wr": 32.7,
-            "roc": 2.8,
-        }
+        """获取动量指标 - 使用真实服务"""
+        import asyncio
+
+        service = self._get_technical_service()
+
+        # 获取历史数据
+        df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
+
+        # 计算指标
+        return await asyncio.to_thread(service.calculate_momentum_indicators, df)
 
     async def _get_volatility_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
-        """获取波动性指标"""
-        return {
-            "bb_upper": 108.5,
-            "bb_middle": 100.0,
-            "bb_lower": 91.5,
-            "atr": 2.8,
-            "kc_upper": 105.2,
-            "kc_middle": 100.0,
-            "kc_lower": 94.8,
-            "stddev": 3.2,
-        }
+        """获取波动性指标 - 使用真实服务"""
+        import asyncio
+
+        service = self._get_technical_service()
+
+        # 获取历史数据
+        df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
+
+        # 计算指标
+        return await asyncio.to_thread(service.calculate_volatility_indicators, df)
 
     async def _get_volume_indicators(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
-        """获取成交量指标"""
-        return {
-            "obv": 1256800000,
-            "vwap": 99.5,
-            "volume_ma5": 15000000,
-            "volume_ma10": 14500000,
-            "volume_ratio": 1.15,
-        }
+        """获取成交量指标 - 使用真实服务"""
+        import asyncio
 
-    async def _get_trading_signals(self, symbol: str, period: str = "1y") -> Dict[str, Any]:
-        """获取交易信号"""
-        return {
-            "trend_signal": "neutral",
-            "momentum_signal": "bullish",
-            "volume_signal": "bullish",
-            "overall_signal": "bullish",
-            "signal_strength": 0.65,
-            "signals": [
-                {"type": "RSI", "signal": "buy", "strength": 0.7},
-                {"type": "MACD", "signal": "buy", "strength": 0.6},
-                {"type": "Volume", "signal": "buy", "strength": 0.8},
-            ],
-        }
+        service = self._get_technical_service()
+
+        # 获取历史数据
+        df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
+
+        # 计算指标
+        return await asyncio.to_thread(service.calculate_volume_indicators, df)
+
+    async def _get_trading_signals(self, symbol: str, period: str = "daily") -> Dict[str, Any]:
+        """获取交易信号 - 使用真实服务"""
+        import asyncio
+
+        service = self._get_technical_service()
+
+        logger.info(f"🔍 _get_trading_signals called: symbol={symbol}, period={period}")
+
+        # 获取历史数据
+        df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
+
+        logger.info(f"🔍 _get_trading_signals: got df with shape={df.shape}")
+
+        # 生成信号
+        result = await asyncio.to_thread(service.generate_trading_signals, df)
+
+        logger.info(f"🔍 _get_trading_signals: result={result}, type={type(result)}")
+
+        return result
 
     async def _get_stock_history(
         self,
@@ -1420,51 +1319,38 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
         end_date: Optional[str] = None,
         limit: int = 500,
     ) -> List[Dict[str, Any]]:
-        """获取历史行情数据"""
-        mock_manager = self._get_mock_manager()
-        if mock_manager:
-            try:
-                mock_data = mock_manager.get_stock_history(symbol, period, limit)
-                if mock_data:
-                    return mock_data
-            except Exception as e:
-                print(f"Mock history data generation failed: {e}")
+        """获取历史行情数据 - 使用真实服务"""
+        import asyncio
 
-        # 生成模拟历史数据
-        import random
-        from datetime import datetime, timedelta
+        service = self._get_technical_service()
 
-        end = datetime.strptime(end_date, "%Y-%m-%d") if end_date else datetime.now()
-        data = []
-        current_price = 100.0
+        # 获取DataFrame
+        df = await asyncio.to_thread(
+            service.get_stock_history, symbol=symbol, period=period, start_date=start_date, end_date=end_date
+        )
 
-        for i in range(min(limit, 252)):  # 一年约252个交易日
-            date = end - timedelta(days=i)
-            change = random.uniform(-3, 3)
-            current_price = max(1, current_price + change)
+        if df.empty:
+            return []
 
-            data.append(
-                {
-                    "date": date.strftime("%Y-%m-%d"),
-                    "open": round(current_price + random.uniform(-1, 1), 2),
-                    "high": round(current_price + random.uniform(0, 2), 2),
-                    "low": round(current_price - random.uniform(0, 2), 2),
-                    "close": round(current_price, 2),
-                    "volume": random.randint(1000000, 20000000),
-                }
-            )
+        # 限制返回数量
+        if limit and len(df) > limit:
+            df = df.iloc[-limit:]
 
-        return data
+        # 转换日期格式字符串
+        df["date"] = df["date"].dt.strftime("%Y-%m-%d")
+
+        return df.to_dict("records")
 
     async def _get_batch_indicators(self, symbols: List[str], period: str = "1y") -> Dict[str, Any]:
-        """批量获取指标"""
+        """批量获取指标 - 使用真实服务"""
         results = {}
         for symbol in symbols:
             try:
+                # 复用 _get_all_indicators
                 indicators = await self._get_all_indicators(symbol, period)
                 results[symbol] = indicators
             except Exception as e:
-                print(f"Failed to get indicators for {symbol}: {e}")
+                logger.error(f"Failed to get indicators for {symbol}: {e}")
                 results[symbol] = {"error": str(e)}
 
         return results
@@ -1644,7 +1530,7 @@ class StrategyDataSourceAdapter(IDataSource):
                             "total_symbols": len(symbols),
                             "results": results,
                             "message": (
-                                f"批量策略执行完成: " f"{len([r for r in results if r['success']])}/{len(symbols)} 成功"
+                                f"批量策略执行完成: {len([r for r in results if r['success']])}/{len(symbols)} 成功"
                             ),
                         }
 
