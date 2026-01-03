@@ -265,6 +265,70 @@ const router = createRouter({
       ]
     },
 
+    // ========== ArtDeco Design Routes (装饰艺术风格界面) ==========
+    {
+      path: '/artdeco',
+      component: () => import('@/layouts/ArtDecoLayout.vue'),
+      redirect: '/artdeco/dashboard',
+      meta: { requiresAuth: false, title: 'ArtDeco', icon: 'Brush' },
+      children: [
+        {
+          path: 'dashboard',
+          name: 'artdeco-dashboard',
+          component: () => import('@/views/artdeco/ArtDecoDashboard.vue'),
+          meta: { title: '主控仪表盘', icon: 'Odometer' }
+        },
+        {
+          path: 'market-center',
+          name: 'artdeco-market-center',
+          component: () => import('@/views/artdeco/ArtDecoMarketCenter.vue'),
+          meta: { title: '市场行情中心', icon: 'TrendCharts' }
+        },
+        {
+          path: 'stock-screener',
+          name: 'artdeco-stock-screener',
+          component: () => import('@/views/artdeco/ArtDecoStockScreener.vue'),
+          meta: { title: '智能选股池', icon: 'Grid' }
+        },
+        {
+          path: 'data-analysis',
+          name: 'artdeco-data-analysis',
+          component: () => import('@/views/artdeco/ArtDecoDataAnalysis.vue'),
+          meta: { title: '数据分析', icon: 'DataAnalysis' }
+        },
+        {
+          path: 'strategy-lab',
+          name: 'artdeco-strategy-lab',
+          component: () => import('@/views/artdeco/ArtDecoStrategyLab.vue'),
+          meta: { title: '策略实验室', icon: 'Science' }
+        },
+        {
+          path: 'backtest-arena',
+          name: 'artdeco-backtest-arena',
+          component: () => import('@/views/artdeco/ArtDecoBacktestArena.vue'),
+          meta: { title: '回测竞技场', icon: 'Histogram' }
+        },
+        {
+          path: 'trade-station',
+          name: 'artdeco-trade-station',
+          component: () => import('@/views/artdeco/ArtDecoTradeStation.vue'),
+          meta: { title: '交易工作站', icon: 'Tickets' }
+        },
+        {
+          path: 'risk-center',
+          name: 'artdeco-risk-center',
+          component: () => import('@/views/artdeco/ArtDecoRiskCenter.vue'),
+          meta: { title: '风控中心', icon: 'Warning' }
+        },
+        {
+          path: 'system-settings',
+          name: 'artdeco-system-settings',
+          component: () => import('@/views/artdeco/ArtDecoSystemSettings.vue'),
+          meta: { title: '系统设置', icon: 'Setting' }
+        }
+      ]
+    },
+
     // 404 Not Found
     {
       path: '/:pathMatch(.*)*',

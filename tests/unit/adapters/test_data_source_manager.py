@@ -227,7 +227,7 @@ class TestDataSourceManager:
     def test_data_source_manager_initialization(self):
         """测试数据源管理器初始化"""
         # 导入并创建管理器
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -248,7 +248,7 @@ class TestDataSourceManager:
 
     def test_register_source_success(self):
         """测试数据源注册成功"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource()
@@ -267,7 +267,7 @@ class TestDataSourceManager:
 
     def test_register_source_invalid_type(self):
         """测试注册无效类型的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -286,7 +286,7 @@ class TestDataSourceManager:
 
     def test_get_source_exists(self):
         """测试获取存在的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         akshare_source = MockAkshareDataSource()
@@ -299,7 +299,7 @@ class TestDataSourceManager:
 
     def test_get_source_not_exists(self):
         """测试获取不存在的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -310,7 +310,7 @@ class TestDataSourceManager:
 
     def test_list_sources(self):
         """测试列出所有数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource()
@@ -331,7 +331,7 @@ class TestDataSourceManager:
 
     def test_get_real_time_data_with_specified_source(self):
         """测试使用指定数据源获取实时行情"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -348,7 +348,7 @@ class TestDataSourceManager:
 
     def test_get_real_time_data_with_nonexistent_source(self):
         """测试使用不存在的数据源获取实时行情"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -361,7 +361,7 @@ class TestDataSourceManager:
 
     def test_get_real_time_data_auto_priority_success(self):
         """测试按优先级自动选择数据源获取实时行情成功"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -384,7 +384,7 @@ class TestDataSourceManager:
 
     def test_get_real_time_data_auto_priority_fallback(self):
         """测试按优先级自动选择数据源故障转移"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=True)  # TDX会失败
@@ -407,7 +407,7 @@ class TestDataSourceManager:
 
     def test_get_real_time_data_auto_priority_all_fail(self):
         """测试按优先级自动选择数据源全部失败"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=True)  # TDX会失败
@@ -428,7 +428,7 @@ class TestDataSourceManager:
 
     def test_get_stock_daily_with_specified_source(self):
         """测试使用指定数据源获取日线数据"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -446,7 +446,7 @@ class TestDataSourceManager:
 
     def test_get_stock_daily_auto_priority_success(self):
         """测试按优先级自动选择数据源获取日线数据成功"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -470,7 +470,7 @@ class TestDataSourceManager:
 
     def test_get_stock_daily_auto_priority_fallback(self):
         """测试按优先级自动选择数据源获取日线数据故障转移"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=True)  # TDX会失败
@@ -494,7 +494,7 @@ class TestDataSourceManager:
 
     def test_get_stock_daily_auto_priority_all_fail(self):
         """测试按优先级自动选择数据源获取日线数据全部失败"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=True)  # TDX会失败
@@ -516,7 +516,7 @@ class TestDataSourceManager:
 
     def test_data_source_integration_workflow(self):
         """测试数据源集成工作流程"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -544,7 +544,7 @@ class TestDataSourceManager:
 
     def test_data_source_connectivity(self):
         """测试数据源连接性"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         success_source = MockTdxDataSource(should_fail=False)
@@ -560,7 +560,7 @@ class TestDataSourceManager:
 
     def test_data_source_arguments_tracking(self):
         """测试数据源调用参数跟踪"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = MockTdxDataSource(should_fail=False)
@@ -582,7 +582,7 @@ class TestDataSourceManagerEdgeCases:
 
     def test_empty_sources_list(self):
         """测试空数据源列表"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -593,7 +593,7 @@ class TestDataSourceManagerEdgeCases:
 
     def test_register_duplicate_source(self):
         """测试注册重复的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source1 = MockTdxDataSource(should_fail=False)
@@ -611,7 +611,7 @@ class TestDataSourceManagerEdgeCases:
 
     def test_priority_config_structure(self):
         """测试优先级配置结构"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 

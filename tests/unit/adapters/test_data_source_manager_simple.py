@@ -21,7 +21,7 @@ class TestDataSourceManagerSimple:
 
     def test_data_source_manager_initialization(self):
         """测试数据源管理器初始化"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -42,7 +42,7 @@ class TestDataSourceManagerSimple:
 
     def test_get_source_not_exists(self):
         """测试获取不存在的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -53,7 +53,7 @@ class TestDataSourceManagerSimple:
 
     def test_list_sources_empty(self):
         """测试列出空数据源列表"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -65,7 +65,7 @@ class TestDataSourceManagerSimple:
 
     def test_get_real_time_data_with_nonexistent_source(self):
         """测试使用不存在的数据源获取实时行情"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -78,7 +78,7 @@ class TestDataSourceManagerSimple:
 
     def test_priority_config_structure(self):
         """测试优先级配置结构"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -94,7 +94,7 @@ class TestDataSourceManagerSimple:
 
     def test_priority_config_values(self):
         """测试优先级配置值"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -108,7 +108,7 @@ class TestDataSourceManagerSimple:
 
     def test_logger_functionality(self):
         """测试日志器功能"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -120,7 +120,7 @@ class TestDataSourceManagerSimple:
 
     def test_manager_attributes(self):
         """测试管理器属性"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -131,7 +131,7 @@ class TestDataSourceManagerSimple:
 
     def test_sources_dict_type(self):
         """测试数据源字典类型"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -140,7 +140,7 @@ class TestDataSourceManagerSimple:
 
     def test_register_source_type_error(self):
         """测试注册错误类型数据源时的异常"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -150,7 +150,7 @@ class TestDataSourceManagerSimple:
 
     def test_priority_order(self):
         """测试优先级顺序"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
