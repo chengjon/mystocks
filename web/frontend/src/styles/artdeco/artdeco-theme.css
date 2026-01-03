@@ -1,34 +1,49 @@
 /**
  * ArtDeco Modern Theme - A股量化交易管理系统
  * Design System: Luxurious geometric aesthetics with sharp precision
- * Version: 1.0.0
+ * Version: 2.0.0 - Enhanced with Official Art Deco Design Tokens
  * Author: Claude Code Frontend Design Specialist
+ *
+ * Design Philosophy Based on /opt/mydoc/design/ArtDeco.md:
+ * - Obsidian Black background (#0A0A0A)
+ * - Metallic Gold accents (#D4AF37)
+ * - Champagne Cream text (#F2F0E4)
+ * - Sharp geometric precision
+ * - Theatrical maximalist restraint
  */
+
+/* ==================== GOOGLE FONTS IMPORT ==================== */
+/* Import first to ensure fonts are available */
+@import url('https://fonts.googleapis.com/css2?family=Italiana&family=Josefin+Sans:wght@300;400;500;600;700&family=Marcellus&display=swap');
 
 /* ==================== CSS VARIABLES ==================== */
 :root {
-  /* Backgrounds - Deep Luxury Dark */
-  --artdeco-bg-global: #0F1215;
-  --artdeco-bg-card: #161B22;
-  --artdeco-bg-header: #0A0C0E;
-  --artdeco-bg-hover: #1E252E;
-  --artdeco-bg-active: #252D38;
+  /* Backgrounds - Official Art Deco Palette */
+  --artdeco-bg-global: #0A0A0A;           /* Obsidian Black - The deep void */
+  --artdeco-bg-card: #141414;              /* Rich Charcoal - Depth against obsidian */
+  --artdeco-bg-header: #0A0A0A;           /* Same as global for seamless header */
+  --artdeco-bg-hover: #1A1A1A;            /* Subtle lift for hover states */
+  --artdeco-bg-active: #252525;           /* Active element background */
 
   /* Primary - Metallic Gold */
-  --artdeco-gold-primary: #D4AF37;
-  --artdeco-gold-hover: #F4CF57;
-  --artdeco-gold-muted: #8A7120;
-  --artdeco-gold-dim: rgba(212, 175, 55, 0.15);
+  --artdeco-gold-primary: #D4AF37;        /* Core luxury element */
+  --artdeco-gold-hover: #F2E8C4;          /* Lighter gold for brightness shift */
+  --artdeco-gold-muted: #8A7120;          /* Muted gold for subtle accents */
+  --artdeco-gold-dim: rgba(212, 175, 55, 0.3); /* 30% opacity for borders */
 
-  /* Secondary - Platinum Silver */
-  --artdeco-silver-text: #E5E4E2;
-  --artdeco-silver-dim: #8B9BB4;
-  --artdeco-silver-muted: #5C6B7F;
+  /* Secondary - Midnight Blue */
+  --artdeco-midnight: #1E3D59;            /* Secondary accent for depth */
+
+  /* Text - Official Art Deco Colors */
+  --artdeco-text-primary: #F2F0E4;        /* Champagne Cream - Primary text */
+  --artdeco-text-secondary: #E5E4E2;      /* Fallback silver for compatibility */
+  --artdeco-text-dim: #888888;            /* Pewter - Secondary text */
+  --artdeco-text-muted: #5C6B7F;          /* Muted text for inactive states */
 
   /* A股 Trading Colors */
-  --artdeco-rise: #C94042;      /* Red for rise (A股习惯) */
-  --artdeco-fall: #3D9970;      /* Green for fall */
-  --artdeco-flat: #B8B8B8;      /* Gray for unchanged */
+  --artdeco-rise: #C94042;                /* Red for rise (A股习惯) */
+  --artdeco-fall: #3D9970;                /* Green for fall */
+  --artdeco-flat: #B8B8B8;                /* Gray for unchanged */
 
   /* Semantic Colors */
   --artdeco-info: #4A90E2;
@@ -36,34 +51,42 @@
   --artdeco-success: #27AE60;
   --artdeco-danger: #E74C3C;
 
-  /* Typography */
-  --artdeco-font-display: 'Cinzel', 'Playfair Display', serif;
-  --artdeco-font-body: 'Montserrat', 'Helvetica Neue', sans-serif;
+  /* Typography - Official Art Deco Fonts */
+  --artdeco-font-display: 'Marcellus', 'Italiana', serif; /* Primary: Marcellus, Fallback: Italiana */
+  --artdeco-font-body: 'Josefin Sans', 'Helvetica Neue', sans-serif; /* Geometric vintage feel */
   --artdeco-font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
 
-  /* Spacing System */
-  --artdeco-space-xs: 4px;
-  --artdeco-space-sm: 8px;
-  --artdeco-space-md: 16px;
-  --artdeco-space-lg: 24px;
-  --artdeco-space-xl: 32px;
-  --artdeco-space-2xl: 48px;
+  /* Spacing System - Enhanced for Generous Breathing Room */
+  --artdeco-space-xs: 4px;                /* 0.25rem */
+  --artdeco-space-sm: 8px;                /* 0.5rem */
+  --artdeco-space-md: 16px;               /* 1rem */
+  --artdeco-space-lg: 32px;               /* 2rem - Increased from 24px */
+  --artdeco-space-xl: 48px;               /* 3rem - Increased from 32px */
+  --artdeco-space-2xl: 64px;              /* 4rem - Increased from 48px */
+  --artdeco-space-section: 128px;         /* 8rem - New for section padding */
 
-  /* Border Radius */
-  --artdeco-radius-none: 0;
-  --artdeco-radius-sm: 2px;
+  /* Border Radius - Strictly Sharp */
+  --artdeco-radius-none: 0;               /* No rounded corners */
+  --artdeco-radius-sm: 2px;               /* Minimal softness (rarely used) */
 
-  /* Shadows & Glows */
-  --artdeco-glow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
+  /* Shadows & Glows - Art Deco Neon/Backlit Effects */
+  --artdeco-glow-gold: 0 0 15px rgba(212, 175, 55, 0.2); /* Subtle gold halo */
+  --artdeco-glow-intense: 0 0 20px rgba(212, 175, 55, 0.4); /* Intense glow for hover */
   --artdeco-glow-subtle: 0 0 10px rgba(212, 175, 55, 0.15);
-  --artdeco-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --artdeco-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.8); /* Deeper shadow for more drama */
 
-  /* Transitions */
-  --artdeco-transition-fast: 150ms ease-out;
-  --artdeco-transition-base: 250ms ease-out;
-  --artdeco-transition-slow: 500ms ease-in-out;
+  /* Transitions - Theatrical Timing */
+  --artdeco-transition-fast: 300ms ease-out;    /* Standard: 300ms */
+  --artdeco-transition-base: 400ms ease-out;    /* Moderate: 400ms */
+  --artdeco-transition-slow: 500ms ease-in-out; /* Theatrical: 500ms */
+
+  /* Letter Spacing - Art Deco Wide Tracking */
+  --artdeco-tracking-display: 0.2em;       /* Extreme tracking for headings */
+  --artdeco-tracking-body: 0.05em;         /* Subtle tracking for body text */
+  --artdeco-tracking-tight: 0.02em;        /* Tight tracking for small text */
 
   /* Z-Index Scale */
+  --artdeco-z-bg-pattern: -1;              /* Background pattern */
   --artdeco-z-dropdown: 1000;
   --artdeco-z-sticky: 1020;
   --artdeco-z-fixed: 1030;
@@ -87,12 +110,29 @@ html {
 body {
   font-family: var(--artdeco-font-body);
   background-color: var(--artdeco-bg-global);
-  color: var(--artdeco-silver-text);
+  color: var(--artdeco-text-primary); /* Champagne Cream */
   line-height: 1.6;
   overflow-x: hidden;
+  /* Add subtle texture for vintage print quality */
+  position: relative;
+}
+
+/* Subtle noise overlay for vintage film quality */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: var(--artdeco-z-bg-pattern);
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
 /* ==================== ARTDECO BACKGROUND PATTERN ==================== */
+/* Diagonal crosshatch pattern at 3-5% opacity */
 .artdeco-bg-pattern {
   position: fixed;
   top: 0;
@@ -100,8 +140,8 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 0;
-  opacity: 0.03;
+  z-index: var(--artdeco-z-bg-pattern);
+  opacity: 0.04; /* Slightly more visible */
   background-image:
     repeating-linear-gradient(
       45deg,
@@ -124,68 +164,118 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--artdeco-font-display);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: var(--artdeco-tracking-display); /* 0.2em - Wide tracking */
   color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-space-md);
+  margin-bottom: var(--artdeco-space-lg);
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
+/* Art Deco Hierarchy - Imposing Scale */
+h1 {
+  font-size: 3.5rem; /* Increased from 2.5rem - More imposing */
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2.75rem; /* Increased from 2rem */
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 2rem; /* Increased from 1.5rem */
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 1.5rem; /* Increased from 1.25rem */
+  line-height: 1.4;
+}
 
 p {
-  margin-bottom: var(--artdeco-space-sm);
-  color: var(--artdeco-silver-dim);
+  margin-bottom: var(--artdeco-space-md);
+  color: var(--artdeco-text-primary); /* Champagne Cream */
+  font-size: 1.125rem; /* Slightly larger - text-lg equivalent */
+  line-height: 1.7; /* Comfortable leading */
+  letter-spacing: var(--artdeco-tracking-body);
 }
 
 /* ==================== ARTDECO CARD SYSTEM ==================== */
 .artdeco-card {
   position: relative;
-  background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
-  border-radius: var(--artdeco-radius-none);
-  padding: var(--artdeco-space-lg);
-  margin-bottom: var(--artdeco-space-lg);
-  transition: all var(--artdeco-transition-base);
+  background: var(--artdeco-bg-card); /* Rich Charcoal #141414 */
+  border: 1px solid var(--artdeco-gold-dim); /* 30% opacity gold */
+  border-radius: var(--artdeco-radius-none); /* Sharp corners */
+  padding: var(--artdeco-space-xl); /* Increased from lg to xl */
+  margin-bottom: var(--artdeco-space-xl);
+  transition: all var(--artdeco-transition-slow); /* Theatrical 500ms */
   overflow: hidden;
 }
 
-/* Double border effect */
+/* Double border effect - Frame within frame */
 .artdeco-card::before {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
   border: 1px solid var(--artdeco-gold-dim);
   pointer-events: none;
   opacity: 0.5;
+  transition: opacity var(--artdeco-transition-slow);
 }
 
-/* Corner decorations - L-shaped brackets */
+/* Top-left L-shaped corner bracket */
 .artdeco-card::after {
   content: '';
   position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 16px;
-  height: 16px;
+  top: 12px;
+  left: 12px;
+  width: 20px;
+  height: 20px;
   border-top: 2px solid var(--artdeco-gold-primary);
   border-left: 2px solid var(--artdeco-gold-primary);
-  opacity: 0.3;
-  transition: opacity var(--artdeco-transition-base);
+  opacity: 0.4;
+  transition: opacity var(--artdeco-transition-slow);
+}
+
+/* Bottom-right L-shaped corner bracket (opposite corner) */
+.artdeco-card-corner-bracket {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-bottom: 2px solid var(--artdeco-gold-primary);
+  border-right: 2px solid var(--artdeco-gold-primary);
+  opacity: 0.4;
+  pointer-events: none;
+  transition: opacity var(--artdeco-transition-slow);
 }
 
 .artdeco-card:hover {
-  border-color: var(--artdeco-gold-primary);
-  box-shadow: var(--artdeco-glow-gold);
-  transform: translateY(-2px);
+  border-color: var(--artdeco-gold-primary); /* 100% opacity on hover */
+  box-shadow: var(--artdeco-glow-intense); /* Intense gold glow */
+  transform: translateY(-4px); /* More dramatic lift */
+}
+
+.artdeco-card:hover::before {
+  opacity: 1; /* Double frame becomes fully visible */
 }
 
 .artdeco-card:hover::after {
-  opacity: 0.8;
+  opacity: 1; /* Corner bracket glows */
+}
+
+/* Optional: Stepped corners using clip-path (advanced variant) */
+.artdeco-card-stepped {
+  clip-path: polygon(
+    0 8px,
+    8px 0,
+    100% 0,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0 100%
+  );
 }
 
 /* ==================== ARTDECO BUTTONS ==================== */
@@ -463,6 +553,206 @@ p {
 .artdeco-stagger > *:nth-child(3) { animation-delay: 0.3s; }
 .artdeco-stagger > *:nth-child(4) { animation-delay: 0.4s; }
 .artdeco-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ==================== ART DECO DECORATIVE ELEMENTS ==================== */
+
+/* Rotated Diamond Container - 45-degree rotation */
+.artdeco-diamond-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  transform: rotate(45deg);
+  border: 2px solid var(--artdeco-gold-primary);
+  background: var(--artdeco-bg-card);
+  box-shadow: var(--artdeco-glow-subtle);
+  transition: all var(--artdeco-transition-slow);
+}
+
+.artdeco-diamond-container:hover {
+  transform: rotate(0deg);
+  box-shadow: var(--artdeco-glow-gold);
+}
+
+/* Content inside diamond must counter-rotate to stay upright */
+.artdeco-diamond-content {
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sunburst Radial Gradient - Iconic Art Deco effect */
+.artdeco-sunburst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(212, 175, 55, 0.05) 20%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Decorative Divider Lines with Text */
+.artdeco-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-space-md);
+  margin: var(--artdeco-space-xl) 0;
+  color: var(--artdeco-gold-primary);
+}
+
+.artdeco-divider::before,
+.artdeco-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--artdeco-gold-primary),
+    transparent
+  );
+  opacity: 0.5;
+}
+
+.artdeco-divider-text {
+  font-family: var(--artdeco-font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-display);
+  color: var(--artdeco-gold-primary);
+  padding: 0 var(--artdeco-space-md);
+}
+
+/* Vertical Divider Line */
+.artdeco-vertical-divider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--artdeco-gold-primary) 20%,
+    var(--artdeco-gold-primary) 80%,
+    transparent
+  );
+  opacity: 0.3;
+}
+
+/* Geometric Border Frame - Multiple borders */
+.artdeco-geometric-frame {
+  position: relative;
+  padding: var(--artdeco-space-xl);
+  border: 2px solid var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle), inset 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+.artdeco-geometric-frame::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid var(--artdeco-gold-dim);
+  pointer-events: none;
+}
+
+/* Corner Ornament - Decorative corner embellishments */
+.artdeco-corner-ornament {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+}
+
+/* Top-left corner */
+.artdeco-corner-tl {
+  top: 0;
+  left: 0;
+  border-top: 3px solid var(--artdeco-gold-primary);
+  border-left: 3px solid var(--artdeco-gold-primary);
+}
+
+/* Top-right corner */
+.artdeco-corner-tr {
+  top: 0;
+  right: 0;
+  border-top: 3px solid var(--artdeco-gold-primary);
+  border-right: 3px solid var(--artdeco-gold-primary);
+}
+
+/* Bottom-left corner */
+.artdeco-corner-bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 3px solid var(--artdeco-gold-primary);
+  border-left: 3px solid var(--artdeco-gold-primary);
+}
+
+/* Bottom-right corner */
+.artdeco-corner-br {
+  bottom: 0;
+  right: 0;
+  border-bottom: 3px solid var(--artdeco-gold-primary);
+  border-right: 3px solid var(--artdeco-gold-primary);
+}
+
+/* Roman Numeral Styling */
+.artdeco-roman {
+  font-family: var(--artdeco-font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-display);
+}
+
+/* Section Header with Decorative Lines */
+.artdeco-section-header {
+  text-align: center;
+  margin: var(--artdeco-space-section) 0;
+  position: relative;
+}
+
+.artdeco-section-header h2 {
+  position: relative;
+  display: inline-block;
+  padding: 0 var(--artdeco-space-xl);
+  background: var(--artdeco-bg-global);
+  z-index: 1;
+}
+
+.artdeco-section-header::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--artdeco-gold-primary) 50%,
+    transparent
+  );
+  opacity: 0.5;
+  z-index: 0;
+}
 
 /* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 1440px) {

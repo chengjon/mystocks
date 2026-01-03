@@ -21,7 +21,7 @@ try:
     print(f"可用服务器数量: {config.get_server_count()}")
 
     print("\n=== 测试TDX适配器 ===")
-    from src.adapters.tdx_adapter import TdxDataSource
+    from src.adapters.tdx.tdx_adapter import TdxDataSource
 
     tdx = TdxDataSource()
     print("TDX适配器初始化成功")

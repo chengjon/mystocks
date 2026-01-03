@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 
 class TestTDXAdapter:

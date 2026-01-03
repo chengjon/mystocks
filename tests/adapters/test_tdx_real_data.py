@@ -12,7 +12,7 @@ print(f"当前工作目录: {os.getcwd()}")
 print(f"项目根目录: {project_root}")
 
 try:
-    from src.adapters.tdx_adapter import TdxDataSource
+    from src.adapters.tdx.tdx_adapter import TdxDataSource
     from src.utils.tdx_server_config import TdxServerConfig
 
     print("\n=== 初始化TDX数据源 ===")

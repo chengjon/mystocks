@@ -193,7 +193,7 @@ class TestUS2ConfigDriven:
 
         # 使用ConfigDrivenTableManager创建表
         manager = ConfigDrivenTableManager(config_path=test_config_path)
-        result = manager.initialize_all_tables()
+        result = manager.initialize_tables()
 
         print(f"  ✓ 表创建结果: {result}")
 
@@ -326,7 +326,7 @@ tables:
         try:
             manager = ConfigDrivenTableManager(config_path=test_config_path2)
             # 尝试创建表会失败
-            result = manager.initialize_all_tables()
+            result = manager.initialize_tables()
             print("  ⚠️  不完整配置可能未被完全验证")
         except Exception as e:
             print(f"  ✓ 不完整配置被拒绝: {str(e)[:100]}")
@@ -377,7 +377,7 @@ tables:
 
         try:
             manager = ConfigDrivenTableManager(config_path=test_config_path)
-            result = manager.initialize_all_tables()
+            result = manager.initialize_tables()
 
             # 检查是否有错误
             if result.get("errors") and len(result["errors"]) > 0:

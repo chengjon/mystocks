@@ -3,6 +3,14 @@
 测试数据库连接池的功能和性能
 """
 
+
+import sys
+import os
+
+# 添加项目根目录到路径
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import asyncio
 import time
 import structlog

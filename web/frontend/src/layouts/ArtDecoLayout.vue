@@ -1,5 +1,8 @@
 <template>
   <div class="artdeco-layout">
+    <!-- Background pattern overlay -->
+    <div class="artdeco-bg-pattern"></div>
+
     <ArtDecoSidebar />
     <main class="artdeco-main">
       <ArtDecoTopBar />
@@ -23,6 +26,8 @@ import ArtDecoTopBar from '@/components/artdeco/ArtDecoTopBar.vue'
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  /* Add subtle noise texture */
+  background-color: var(--artdeco-bg-global);
 }
 
 .artdeco-main {
@@ -31,17 +36,30 @@ import ArtDecoTopBar from '@/components/artdeco/ArtDecoTopBar.vue'
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
+  z-index: 2; /* Above background pattern */
 }
 
 .artdeco-content {
   flex: 1;
-  padding: var(--artdeco-space-xl);
+  padding: var(--artdeco-space-section); /* 128px - Generous section padding */
+  padding-top: var(--artdeco-space-2xl); /* 64px - Slightly less top padding */
+  padding-bottom: var(--artdeco-space-section); /* 128px - Generous bottom padding */
   overflow-y: auto;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .artdeco-main {
     margin-left: 0;
+  }
+
+  .artdeco-content {
+    padding: var(--artdeco-space-xl); /* 48px on mobile */
+    padding-top: var(--artdeco-space-lg); /* 32px */
+    padding-bottom: var(--artdeco-space-xl);
   }
 }
 </style>

@@ -125,7 +125,7 @@ class TestMonitoringDatabase:
 
     def test_monitoring_database_initialization_with_url(self):
         """测试使用URL初始化监控数据库"""
-        test_url = "mysql+pymysql://user:pass@host:3306/db_monitor"
+        test_url = "mysql+pymysql://user:pass@host:3306/db_monitor"  # pragma: allowlist secret
 
         with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
             with patch("monitoring.monitoring_service.load_dotenv"):
@@ -140,11 +140,13 @@ class TestMonitoringDatabase:
             with patch("monitoring.monitoring_service.load_dotenv"):
                 with patch.dict(
                     os.environ,
-                    {"MONITOR_DB_URL": "mysql+pymysql://test:test@localhost:3306/monitor"},
+                    {"MONITOR_DB_URL": "mysql+pymysql://test:test@localhost:3306/monitor"},  # pragma: allowlist secret
                 ):
                     db = MonitoringDatabase()
 
-                    assert db.monitor_db_url == "mysql+pymysql://test:test@localhost:3306/monitor"
+                    assert (
+                        db.monitor_db_url == "mysql+pymysql://test:test@localhost:3306/monitor"
+                    )  # pragma: allowlist secret
                     mock_db_manager.assert_called_once()
 
     @patch("monitoring.monitoring_service.pymysql.connect")
@@ -846,7 +848,7 @@ class TestAlertChannels:
             "smtp_server": "smtp.example.com",
             "smtp_port": 587,
             "username": "user@example.com",
-            "password": "password123",
+            "password": "password123",  # pragma: allowlist secret
         }
         channel = EmailAlertChannel(config)
 
@@ -854,7 +856,7 @@ class TestAlertChannels:
         assert channel.smtp_server == "smtp.example.com"
         assert channel.smtp_port == 587
         assert channel.username == "user@example.com"
-        assert channel.password == "password123"
+        assert channel.password == "password123"  # pragma: allowlist secret
 
     def test_email_alert_channel_default_values(self):
         """测试邮件告警渠道默认值"""
