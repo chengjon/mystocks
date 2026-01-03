@@ -16,7 +16,7 @@ project_root = os.path.dirname(
 )
 sys.path.insert(0, project_root)
 
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 
 class TestTdxDataSource(unittest.TestCase):

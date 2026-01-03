@@ -5,6 +5,14 @@
 用于了解stock.get_realtime_quotes()返回的数据结构
 """
 
+
+import sys
+import os
+
+# 添加项目根目录到路径
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 from src.adapters.customer_adapter import CustomerDataSource
 import pandas as pd
 

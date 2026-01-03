@@ -20,7 +20,7 @@ class TestTdxConnectionManager:
     def test_init_connection_manager(self):
         """测试：初始化TDX连接管理器"""
         # TODO: 这个测试在重构前应该失败，因为没有拆分的模块
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -31,7 +31,7 @@ class TestTdxConnectionManager:
 
     def test_create_tdx_connection(self):
         """测试：创建TDX连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -46,7 +46,7 @@ class TestTdxConnectionManager:
 
     def test_get_market_code(self):
         """测试：获取市场代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -60,7 +60,7 @@ class TestTdxConnectionManager:
 
     def test_retry_api_call_success(self):
         """测试：API调用重试成功"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -74,7 +74,7 @@ class TestTdxConnectionManager:
 
     def test_retry_api_call_failure_then_success(self):
         """测试：API调用重试失败后成功"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -94,7 +94,7 @@ class TestTdxConnectionManager:
 
     def test_connection_health_check(self):
         """测试：连接健康检查"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 

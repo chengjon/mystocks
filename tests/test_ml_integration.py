@@ -21,7 +21,7 @@ import sys
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 from src.ml_strategy.feature_engineering import RollingFeatureGenerator
 from src.ml_strategy.price_predictor import PricePredictorStrategy
 

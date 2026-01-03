@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 测试目标模块
 try:
-    from src.adapters.tdx_adapter import TDXDataSource
+    from src.adapters.tdx.tdx_adapter import TDXDataSource
 except ImportError as e:
     pytest.skip(f"无法导入TDXDataSource: {e}", allow_module_level=True)
 
@@ -194,7 +194,7 @@ class TestTDXDataSourceBasic:
     def test_class_import_compatibility(self):
         """测试类导入兼容性"""
         try:
-            from src.adapters.tdx_adapter import TDXDataSource
+            from src.adapters.tdx.tdx_adapter import TDXDataSource
 
             adapter = TDXDataSource()
             assert adapter is not None

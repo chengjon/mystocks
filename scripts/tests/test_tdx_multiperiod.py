@@ -10,9 +10,17 @@ TDX多周期K线功能测试
 日期: 2025-10-15
 """
 
+
+import sys
+import os
+
+# 添加项目根目录到路径
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import logging
 from datetime import datetime, timedelta
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

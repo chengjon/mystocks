@@ -205,21 +205,23 @@ function initMainChart() {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(15, 18, 21, 0.95)',
+      backgroundColor: 'rgba(20, 20, 20, 0.95)', /* Rich Charcoal */
       borderColor: '#D4AF37',
-      borderWidth: 1,
+      borderWidth: 2, /* Thicker border */
       textStyle: {
-        color: '#E5E4E2',
+        color: '#F2F0E4', /* Champagne Cream */
         fontFamily: 'JetBrains Mono'
       }
     },
     legend: {
       data: ['上证综指', '深证成指', '创业板指'],
       textStyle: {
-        color: '#8B9BB4',
-        fontFamily: 'Cinzel'
+        color: '#888888', /* Pewter */
+        fontFamily: 'Marcellus', /* Art Deco display font */
+        fontSize: 14
       },
-      top: 10
+      top: 10,
+      itemGap: 20
     },
     grid: {
       left: '3%',
@@ -232,26 +234,29 @@ function initMainChart() {
       boundaryGap: false,
       data: ['9:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00'],
       axisLine: {
-        lineStyle: { color: '#5C6B7F' }
+        lineStyle: { color: '#5C6B7F', width: 2 }
       },
       axisLabel: {
-        color: '#8B9BB4',
-        fontFamily: 'JetBrains Mono'
+        color: '#888888', /* Pewter */
+        fontFamily: 'JetBrains Mono',
+        fontSize: 12
       }
     },
     yAxis: {
       type: 'value',
       axisLine: {
-        lineStyle: { color: '#5C6B7F' }
+        lineStyle: { color: '#5C6B7F', width: 2 }
       },
       axisLabel: {
-        color: '#8B9BB4',
-        fontFamily: 'JetBrains Mono'
+        color: '#888888', /* Pewter */
+        fontFamily: 'JetBrains Mono',
+        fontSize: 12
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(212, 175, 55, 0.1)',
-          type: 'dashed'
+          color: 'rgba(212, 175, 55, 0.15)', /* More visible gold */
+          type: 'dashed',
+          width: 1
         }
       }
     },
@@ -316,11 +321,11 @@ function initHeatmapChart() {
     backgroundColor: 'transparent',
     tooltip: {
       position: 'top',
-      backgroundColor: 'rgba(15, 18, 21, 0.95)',
+      backgroundColor: 'rgba(20, 20, 20, 0.95)', /* Rich Charcoal */
       borderColor: '#D4AF37',
-      borderWidth: 1,
+      borderWidth: 2,
       textStyle: {
-        color: '#E5E4E2',
+        color: '#F2F0E4', /* Champagne Cream */
         fontFamily: 'JetBrains Mono'
       }
     },
@@ -332,20 +337,22 @@ function initHeatmapChart() {
       type: 'category',
       data: ['科技', '消费', '金融', '周期'],
       splitArea: { show: true },
-      axisLine: { lineStyle: { color: '#5C6B7F' } },
+      axisLine: { lineStyle: { color: '#5C6B7F', width: 2 } },
       axisLabel: {
-        color: '#8B9BB4',
-        fontFamily: 'Cinzel'
+        color: '#888888', /* Pewter */
+        fontFamily: 'Marcellus', /* Art Deco font */
+        fontSize: 14
       }
     },
     yAxis: {
       type: 'category',
       data: ['强势', '弱势'],
       splitArea: { show: true },
-      axisLine: { lineStyle: { color: '#5C6B7F' } },
+      axisLine: { lineStyle: { color: '#5C6B7F', width: 2 } },
       axisLabel: {
-        color: '#8B9BB4',
-        fontFamily: 'Cinzel'
+        color: '#888888', /* Pewter */
+        fontFamily: 'Marcellus', /* Art Deco font */
+        fontSize: 14
       }
     },
     visualMap: {
@@ -356,8 +363,9 @@ function initHeatmapChart() {
       left: 'center',
       bottom: '0%',
       textStyle: {
-        color: '#8B9BB4',
-        fontFamily: 'Cinzel'
+        color: '#888888', /* Pewter */
+        fontFamily: 'Marcellus', /* Art Deco font */
+        fontSize: 12
       },
       inRange: {
         color: ['#3D9970', '#B8B8B8', '#C94042']
@@ -419,67 +427,76 @@ onUnmounted(() => {
 .artdeco-dashboard {
   display: flex;
   flex-direction: column;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-section); /* 128px - Generous section spacing */
 }
 
 /* Stats Grid */
 .artdeco-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-xl); /* 48px - Increased gap */
 }
 
 .artdeco-stat-card {
   background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
-  padding: var(--artdeco-space-lg);
+  border: 2px solid var(--artdeco-gold-dim); /* Thicker border */
+  padding: var(--artdeco-space-xl); /* 48px - Generous padding */
   position: relative;
   overflow: hidden;
+  transition: all var(--artdeco-transition-slow); /* 500ms theatrical */
 }
 
+/* Double-frame effect */
 .artdeco-stat-card::before {
   content: '';
   position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  border: 1px solid var(--artdeco-gold-dim);
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border: 1px solid var(--artdeco-gold-primary);
+  opacity: 0.2;
   pointer-events: none;
-  opacity: 0.3;
+}
+
+/* Hover effect - Theatrical */
+.artdeco-stat-card:hover {
+  border-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle);
+  transform: translateY(-2px);
 }
 
 .artdeco-stat-label {
-  font-family: var(--artdeco-font-display);
-  font-size: 0.75rem;
+  font-family: var(--artdeco-font-display); /* Marcellus */
+  font-size: 0.875rem; /* Increased from 0.75rem */
   font-weight: 600;
-  color: var(--artdeco-silver-muted);
+  color: var(--artdeco-text-dim); /* Pewter */
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: var(--artdeco-space-sm);
+  letter-spacing: var(--artdeco-tracking-display); /* 0.2em - Wide tracking */
+  margin-bottom: var(--artdeco-space-md); /* 16px */
 }
 
 .artdeco-stat-value {
-  font-family: var(--artdeco-font-mono);
-  font-size: 2rem;
+  font-family: var(--artdeco-font-mono); /* JetBrains Mono */
+  font-size: 2.5rem; /* Increased from 2rem */
   font-weight: 600;
   color: var(--artdeco-gold-primary);
   line-height: 1;
-  margin-bottom: var(--artdeco-space-xs);
+  margin-bottom: var(--artdeco-space-sm);
 }
 
 .artdeco-stat-change {
   font-family: var(--artdeco-font-mono);
-  font-size: 0.875rem;
+  font-size: 1rem; /* Increased from 0.875rem */
   display: flex;
   align-items: center;
-  gap: var(--artdeco-space-xs);
+  gap: var(--artdeco-space-sm);
 }
 
 .artdeco-stats-triple {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--artdeco-space-md);
+  gap: var(--artdeco-space-lg); /* 32px */
   text-align: center;
 }
 
@@ -487,43 +504,85 @@ onUnmounted(() => {
 .artdeco-two-column {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-xl); /* 48px */
 }
 
 .artdeco-bottom-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-xl); /* 48px */
 }
 
 /* Card */
 .artdeco-card {
   background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
-  padding: var(--artdeco-space-lg);
+  border: 2px solid var(--artdeco-gold-dim); /* Thicker border */
+  padding: var(--artdeco-space-xl); /* 48px - Generous padding */
+  position: relative;
+  transition: all var(--artdeco-transition-slow);
+}
+
+/* Double-frame effect for cards */
+.artdeco-card::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border: 1px solid var(--artdeco-gold-primary);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.artdeco-card:hover {
+  border-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle);
 }
 
 .artdeco-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--artdeco-space-md);
+  margin-bottom: var(--artdeco-space-xl); /* 48px - More breathing room */
+  position: relative;
+  z-index: 1;
+}
+
+/* Decorative divider after header */
+.artdeco-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--artdeco-gold-primary) 30%,
+    var(--artdeco-gold-primary) 70%,
+    transparent
+  );
+  opacity: 0.3;
 }
 
 .artdeco-card-header h3 {
   margin: 0;
-  font-family: var(--artdeco-font-display);
-  font-size: 1rem;
+  font-family: var(--artdeco-font-display); /* Marcellus */
+  font-size: 1.25rem; /* Increased from 1rem */
   color: var(--artdeco-gold-primary);
+  letter-spacing: var(--artdeco-tracking-display); /* 0.2em */
+  text-transform: uppercase;
 }
 
 .artdeco-btn-group {
   display: flex;
-  gap: var(--artdeco-space-sm);
+  gap: var(--artdeco-space-md); /* 16px */
 }
 
 .artdeco-chart {
-  height: 320px;
+  height: 400px; /* Increased from 320px */
 }
 
 /* Responsive */
@@ -541,11 +600,19 @@ onUnmounted(() => {
   .artdeco-bottom-row {
     grid-template-columns: 1fr;
   }
+
+  .artdeco-dashboard {
+    gap: var(--artdeco-space-2xl); /* 64px on smaller screens */
+  }
 }
 
 @media (max-width: 768px) {
   .artdeco-stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .artdeco-chart {
+    height: 320px;
   }
 }
 </style>

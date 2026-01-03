@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-from src.adapters.tdx_adapter import TdxDataSource
+from src.adapters.tdx.tdx_adapter import TdxDataSource
 
 
 def test_extended_kline_periods():

@@ -75,7 +75,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_connection_manager_initialization(self):
         """测试连接管理器初始化"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -96,7 +96,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_market_codes_completeness(self):
         """测试市场代码完整性"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -110,7 +110,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_retry_config_values(self):
         """测试重试配置值"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -125,7 +125,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_create_connection_success(self):
         """测试创建连接成功"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         mock_connection = MockTdxConnection(should_fail_connect=False, should_fail_operation=False)
@@ -138,7 +138,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_create_connection_with_retry_failure(self):
         """测试创建连接失败重试机制"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.retry_config["max_retries"] = 2  # 降低重试次数以加快测试
@@ -158,7 +158,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_create_connection_success_after_retry(self):
         """测试重试后创建连接成功"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -183,7 +183,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_close_connection_success(self):
         """测试成功关闭连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         mock_connection = MockTdxConnection()
@@ -195,7 +195,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_close_connection_no_connection(self):
         """测试关闭不存在的连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.connection = None
@@ -207,7 +207,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_check_connection_health_true(self):
         """测试连接健康检查 - 健康"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         healthy_connection = {
@@ -222,7 +222,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_check_connection_health_false_no_connection(self):
         """测试连接健康检查 - 无连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.connection = None
@@ -233,7 +233,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_check_connection_health_false_stale(self):
         """测试连接健康检查 - 连接过期"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         stale_connection = {
@@ -248,7 +248,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_check_connection_health_false_wrong_status(self):
         """测试连接健康检查 - 错误状态"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         wrong_status_connection = {"status": "disconnected", "created_at": time.time()}
@@ -260,7 +260,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_market_code_sh(self):
         """测试获取上交所代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -270,7 +270,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_market_code_sz(self):
         """测试获取深交所代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -280,7 +280,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_market_code_invalid(self):
         """测试获取无效市场代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -289,7 +289,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_market_code_empty(self):
         """测试获取空股票代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -298,7 +298,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_market_code_short(self):
         """测试获取过短股票代码"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -307,7 +307,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_connection_status_with_connection(self):
         """测试获取连接状态 - 有连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         test_connection = {
@@ -327,7 +327,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_get_connection_status_without_connection(self):
         """测试获取连接状态 - 无连接"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.connection = None
@@ -342,7 +342,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_retry_decorator_success(self):
         """测试重试装饰器 - 函数成功"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -356,7 +356,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_retry_decorator_failure(self):
         """测试重试装饰器 - 函数失败"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.retry_config["max_retries"] = 2  # 降低重试次数
@@ -378,7 +378,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_retry_decorator_max_retries(self):
         """测试重试装饰器 - 达到最大重试次数"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.retry_config["max_retries"] = 1  # 降低重试次数
@@ -392,7 +392,7 @@ class TestTdxConnectionManagerFixed:
 
     def test_connection_manager_str_representation(self):
         """测试管理器字符串表示"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -407,7 +407,7 @@ class TestTdxConnectionManagerIntegrationFixed:
 
     def test_complete_connection_lifecycle(self):
         """测试完整的连接生命周期"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         mock_connection = {
@@ -434,7 +434,7 @@ class TestTdxConnectionManagerIntegrationFixed:
 
     def test_connection_health_and_recovery(self):
         """测试连接健康检查和恢复"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
 
@@ -461,7 +461,7 @@ class TestTdxConnectionManagerIntegrationFixed:
 
     def test_retry_decorator_timing(self):
         """测试重试装饰器时间控制"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         manager.retry_config["max_retries"] = 2
@@ -492,7 +492,7 @@ class TestTdxConnectionManagerIntegrationFixed:
 
     def test_backoff_factor_configuration(self):
         """测试退避因子配置"""
-        from src.adapters.tdx_connection_manager import TdxConnectionManager
+        from src.adapters.tdx.tdx_connection_manager import TdxConnectionManager
 
         manager = TdxConnectionManager()
         assert manager.retry_config["backoff_factor"] == 2.0
