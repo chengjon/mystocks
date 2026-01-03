@@ -1,8 +1,7 @@
 <template>
   <div class="artdeco-system-settings">
     <!-- Data Source Configuration -->
-    <div class="artdeco-card">
-      <h3>数据源配置</h3>
+    <ArtDecoCard title="数据源配置" :hoverable="false">
       <table class="artdeco-table">
         <thead>
           <tr>
@@ -35,11 +34,10 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </ArtDecoCard>
 
     <!-- User Settings -->
-    <div class="artdeco-card">
-      <h3>用户设置</h3>
+    <ArtDecoCard title="用户设置" :hoverable="false">
       <div class="artdeco-form-grid">
         <div class="artdeco-form-group">
           <label class="artdeco-form-label">用户名</label>
@@ -65,11 +63,10 @@
           </select>
         </div>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- System Configuration -->
-    <div class="artdeco-card">
-      <h3>系统配置</h3>
+    <ArtDecoCard title="系统配置" :hoverable="false">
       <div class="artdeco-form-grid">
         <div class="artdeco-form-group">
           <label class="artdeco-form-label">数据刷新频率 (秒)</label>
@@ -107,11 +104,10 @@
           </label>
         </div>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- Risk Control Settings -->
-    <div class="artdeco-card">
-      <h3>风控设置</h3>
+    <ArtDecoCard title="风控设置" :hoverable="false">
       <div class="artdeco-form-grid-3">
         <div class="artdeco-form-group">
           <label class="artdeco-form-label">最大持仓比例 (%)</label>
@@ -144,11 +140,10 @@
           >
         </div>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- Log Settings -->
-    <div class="artdeco-card">
-      <h3>日志设置</h3>
+    <ArtDecoCard title="日志设置" :hoverable="false">
       <div class="artdeco-form-grid">
         <div class="artdeco-form-group">
           <label class="artdeco-form-label">日志级别</label>
@@ -184,16 +179,16 @@
           </label>
         </div>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- Actions -->
     <div class="artdeco-actions">
-      <button class="artdeco-btn artdeco-btn-secondary" @click="resetSettings">
+      <ArtDecoButton variant="outline" @click="resetSettings">
         重置默认
-      </button>
-      <button class="artdeco-btn artdeco-btn-primary" @click="saveAllSettings">
+      </ArtDecoButton>
+      <ArtDecoButton variant="solid" @click="saveAllSettings">
         保存设置
-      </button>
+      </ArtDecoButton>
     </div>
   </div>
 </template>
@@ -201,6 +196,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+import ArtDecoCard from '@/components/artdeco/ArtDecoCard.vue'
+import ArtDecoButton from '@/components/artdeco/ArtDecoButton.vue'
 
 // Types
 interface DataSource {
@@ -349,47 +346,19 @@ loadSettings()
 .artdeco-system-settings {
   display: flex;
   flex-direction: column;
-  gap: var(--artdeco-space-lg);
-}
-
-.artdeco-card {
-  background: var(--artdeco-bg-card);
-  border: 2px solid var(--artdeco-gold-primary);
-  padding: var(--artdeco-space-lg);
-  position: relative;
-}
-
-.artdeco-card::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  pointer-events: none;
-}
-
-.artdeco-card h3 {
-  font-family: var(--artdeco-font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-space-md);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  gap: var(--artdeco-space-section); /* 128px - Generous section spacing */
 }
 
 .artdeco-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-xl);
 }
 
 .artdeco-form-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-xl);
 }
 
 .artdeco-form-group {
@@ -402,6 +371,8 @@ loadSettings()
   font-family: var(--artdeco-font-display);
   font-size: 0.875rem;
   color: var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
 }
 
 .artdeco-form-input,
@@ -413,6 +384,8 @@ loadSettings()
   color: var(--artdeco-silver-text);
   background: var(--artdeco-bg-header);
   border: 1px solid var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
+  transition: all var(--artdeco-transition-base);
 }
 
 .artdeco-form-input:focus,
@@ -429,23 +402,28 @@ loadSettings()
   font-size: 0.875rem;
 }
 
-.artdeco-table th {
+.artdeco-table thead th {
+  position: sticky;
+  top: 0;
   background: var(--artdeco-bg-header);
   color: var(--artdeco-gold-primary);
   font-family: var(--artdeco-font-display);
   font-weight: 600;
   text-align: left;
-  padding: 12px var(--artdeco-space-md);
+  padding: var(--artdeco-space-md);
   border-bottom: 2px solid var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
+  white-space: nowrap;
 }
 
-.artdeco-table td {
-  padding: 12px var(--artdeco-space-md);
+.artdeco-table tbody td {
+  padding: var(--artdeco-space-md);
   border-bottom: 1px solid var(--artdeco-gold-dim);
   color: var(--artdeco-silver-text);
 }
 
-.artdeco-table tr:hover td {
+.artdeco-table tbody tr:hover td {
   background: var(--artdeco-bg-hover);
 }
 
@@ -454,7 +432,7 @@ loadSettings()
   padding: 4px 12px;
   font-size: 0.75rem;
   font-weight: 600;
-  border-radius: 2px;
+  border-radius: var(--artdeco-radius-none);
 }
 
 .artdeco-badge-success {
@@ -495,6 +473,7 @@ loadSettings()
   background-color: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-gold-dim);
   transition: 0.4s;
+  border-radius: var(--artdeco-radius-none);
 }
 
 .artdeco-slider:before {
@@ -506,6 +485,7 @@ loadSettings()
   bottom: 3px;
   background-color: var(--artdeco-silver-dim);
   transition: 0.4s;
+  border-radius: var(--artdeco-radius-none);
 }
 
 input:checked + .artdeco-slider {
@@ -523,36 +503,17 @@ input:checked + .artdeco-slider:before {
   justify-content: flex-end;
 }
 
-.artdeco-btn {
-  padding: 10px 24px;
-  font-family: var(--artdeco-font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: none;
-  cursor: pointer;
-  transition: all var(--artdeco-transition-fast);
+/* Responsive */
+@media (max-width: 1440px) {
+  .artdeco-system-settings {
+    gap: var(--artdeco-space-2xl); /* 64px on smaller screens */
+  }
 }
 
-.artdeco-btn-primary {
-  background: var(--artdeco-gold-primary);
-  color: var(--artdeco-bg-header);
-}
-
-.artdeco-btn-primary:hover {
-  background: var(--artdeco-gold-hover);
-  box-shadow: var(--artdeco-glow-gold);
-}
-
-.artdeco-btn-secondary {
-  background: transparent;
-  color: var(--artdeco-gold-primary);
-  border: 1px solid var(--artdeco-gold-primary);
-}
-
-.artdeco-btn-secondary:hover {
-  background: var(--artdeco-gold-dim);
+@media (max-width: 1080px) {
+  .artdeco-system-settings {
+    gap: var(--artdeco-space-2xl); /* 64px */
+  }
 }
 
 @media (max-width: 768px) {

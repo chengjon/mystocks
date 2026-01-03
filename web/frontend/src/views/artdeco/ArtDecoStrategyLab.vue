@@ -2,46 +2,43 @@
   <div class="artdeco-strategy-lab">
     <!-- Strategy Statistics -->
     <div class="artdeco-grid-2">
-      <div class="artdeco-card">
-        <h3>策略概览</h3>
+      <ArtDecoCard title="策略概览" :hoverable="false">
         <div class="artdeco-stats-triple">
           <div>
             <div class="artdeco-stat-value">{{ strategyStats.total }}</div>
             <div class="artdeco-stat-label">总策略数</div>
           </div>
           <div>
-            <div class="artdeco-stat-value artdeco-data-rise">{{ strategyStats.running }}</div>
+            <div class="artdeco-stat-value data-rise">{{ strategyStats.running }}</div>
             <div class="artdeco-stat-label">运行中</div>
           </div>
           <div>
-            <div class="artdeco-stat-value artdeco-data-fall">{{ strategyStats.paused }}</div>
+            <div class="artdeco-stat-value data-fall">{{ strategyStats.paused }}</div>
             <div class="artdeco-stat-label">已暂停</div>
           </div>
         </div>
-      </div>
+      </ArtDecoCard>
 
-      <div class="artdeco-card">
-        <h3>策略表现</h3>
+      <ArtDecoCard title="策略表现" :hoverable="false">
         <div class="artdeco-stats-triple">
           <div>
-            <div class="artdeco-stat-value artdeco-data-rise">+{{ strategyStats.bestReturn }}%</div>
+            <div class="artdeco-stat-value data-rise">+{{ strategyStats.bestReturn }}%</div>
             <div class="artdeco-stat-label">最佳收益</div>
           </div>
           <div>
-            <div class="artdeco-stat-value artdeco-data-rise">+{{ strategyStats.avgReturn }}%</div>
+            <div class="artdeco-stat-value data-rise">+{{ strategyStats.avgReturn }}%</div>
             <div class="artdeco-stat-label">平均收益</div>
           </div>
           <div>
-            <div class="artdeco-stat-value artdeco-data-fall">{{ strategyStats.maxDrawdown }}%</div>
+            <div class="artdeco-stat-value data-fall">{{ strategyStats.maxDrawdown }}%</div>
             <div class="artdeco-stat-label">最大回撤</div>
           </div>
         </div>
-      </div>
+      </ArtDecoCard>
     </div>
 
     <!-- Strategy List -->
-    <div class="artdeco-card">
-      <h3>策略列表</h3>
+    <ArtDecoCard title="策略列表" :hoverable="false">
       <table class="artdeco-table">
         <thead>
           <tr>
@@ -68,41 +65,43 @@
               </span>
             </td>
             <td
-              style="font-family: var(--artdeco-font-mono);"
-              :class="strategy.return >= 0 ? 'artdeco-data-rise' : 'artdeco-data-fall'"
+              class="text-mono"
+              :class="strategy.return >= 0 ? 'data-rise' : 'data-fall'"
             >
               {{ strategy.return >= 0 ? '+' : '' }}{{ strategy.return }}%
             </td>
-            <td style="font-family: var(--artdeco-font-mono);">{{ strategy.sharpe }}</td>
-            <td style="font-family: var(--artdeco-font-mono);" class="artdeco-data-fall">
+            <td class="text-mono">{{ strategy.sharpe }}</td>
+            <td class="text-mono data-fall">
               {{ strategy.drawdown }}%
             </td>
             <td>{{ strategy.created }}</td>
             <td>
-              <button
-                class="artdeco-btn artdeco-btn-secondary"
-                style="padding: 6px 12px; font-size: 0.75rem; margin-right: var(--artdeco-space-xs);"
+              <ArtDecoButton
+                variant="outline"
+                size="sm"
                 @click="editStrategy(strategy.name)"
               >
                 编辑
-              </button>
-              <button
-                class="artdeco-btn artdeco-btn-secondary"
-                style="padding: 6px 12px; font-size: 0.75rem;"
+              </ArtDecoButton>
+              <ArtDecoButton
+                variant="outline"
+                size="sm"
                 @click="backtestStrategy(strategy.name)"
               >
                 回测
-              </button>
+              </ArtDecoButton>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
+    </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import ArtDecoCard from '@/components/artdeco/ArtDecoCard.vue'
+import ArtDecoButton from '@/components/artdeco/ArtDecoButton.vue'
 
 // Types
 interface Strategy {
@@ -151,41 +150,13 @@ function backtestStrategy(name: string) {
 .artdeco-strategy-lab {
   display: flex;
   flex-direction: column;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-section); /* 128px - Generous section spacing */
 }
 
 .artdeco-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--artdeco-space-lg);
-}
-
-.artdeco-card {
-  background: var(--artdeco-bg-card);
-  border: 2px solid var(--artdeco-gold-primary);
-  padding: var(--artdeco-space-lg);
-  position: relative;
-}
-
-.artdeco-card::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  pointer-events: none;
-}
-
-.artdeco-card h3 {
-  font-family: var(--artdeco-font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-space-md);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  gap: var(--artdeco-space-xl);
 }
 
 .artdeco-stats-triple {
@@ -196,15 +167,20 @@ function backtestStrategy(name: string) {
 }
 
 .artdeco-stat-value {
-  font-size: 2rem;
-  color: var(--artdeco-gold-primary);
   font-family: var(--artdeco-font-mono);
-  margin-bottom: var(--artdeco-space-xs);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--artdeco-gold-primary);
+  line-height: 1;
+  margin-bottom: var(--artdeco-space-sm);
 }
 
 .artdeco-stat-label {
+  font-family: var(--artdeco-font-body);
   font-size: 0.875rem;
-  color: var(--artdeco-silver-dim);
+  color: var(--artdeco-silver-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
 }
 
 .artdeco-table {
@@ -214,24 +190,39 @@ function backtestStrategy(name: string) {
   font-size: 0.875rem;
 }
 
-.artdeco-table th {
+.artdeco-table thead th {
+  position: sticky;
+  top: 0;
   background: var(--artdeco-bg-header);
   color: var(--artdeco-gold-primary);
   font-family: var(--artdeco-font-display);
   font-weight: 600;
   text-align: left;
-  padding: 12px var(--artdeco-space-md);
+  padding: var(--artdeco-space-md);
   border-bottom: 2px solid var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
+  white-space: nowrap;
 }
 
-.artdeco-table td {
-  padding: 12px var(--artdeco-space-md);
+.artdeco-table tbody td {
+  padding: var(--artdeco-space-md);
   border-bottom: 1px solid var(--artdeco-gold-dim);
   color: var(--artdeco-silver-text);
 }
 
-.artdeco-table tr:hover td {
+.artdeco-table tbody tr:hover td {
   background: var(--artdeco-bg-hover);
+}
+
+.artdeco-table tbody td:last-child {
+  display: flex;
+  gap: var(--artdeco-space-sm);
+  align-items: center;
+}
+
+.text-mono {
+  font-family: var(--artdeco-font-mono);
 }
 
 .artdeco-badge {
@@ -239,7 +230,7 @@ function backtestStrategy(name: string) {
   padding: 4px 12px;
   font-size: 0.75rem;
   font-weight: 600;
-  border-radius: 2px;
+  border-radius: var(--artdeco-radius-none);
 }
 
 .artdeco-badge-success {
@@ -252,17 +243,39 @@ function backtestStrategy(name: string) {
   color: white;
 }
 
-.artdeco-data-rise {
+.data-rise {
   color: var(--artdeco-rise);
 }
 
-.artdeco-data-fall {
+.data-fall {
   color: var(--artdeco-fall);
 }
 
-@media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 1440px) {
+  .artdeco-strategy-lab {
+    gap: var(--artdeco-space-2xl); /* 64px on smaller screens */
+  }
+}
+
+@media (max-width: 1080px) {
+  .artdeco-strategy-lab {
+    gap: var(--artdeco-space-2xl); /* 64px */
+  }
+
   .artdeco-grid-2 {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .artdeco-stats-triple {
+    grid-template-columns: 1fr;
+  }
+
+  .artdeco-table tbody td:last-child {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

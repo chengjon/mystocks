@@ -2,78 +2,79 @@
   <div class="artdeco-stock-screener">
     <!-- Stock Pool Tabs -->
     <div class="artdeco-tabs">
-      <button
+      <ArtDecoButton
         v-for="tab in stockPools"
         :key="tab.key"
-        class="artdeco-tab"
-        :class="{ active: activePool === tab.key }"
+        :variant="activePool === tab.key ? 'solid' : 'outline'"
         @click="activePool = tab.key"
       >
         {{ tab.label }}
-      </button>
+      </ArtDecoButton>
     </div>
 
     <!-- Filter Panel -->
-    <div class="artdeco-filter-panel">
+    <ArtDecoCard title="筛选条件" class="artdeco-filter-panel">
       <div class="artdeco-filter-grid">
         <div v-for="filter in filters" :key="filter.key" class="artdeco-filter-group">
-          <label class="artdeco-filter-label">{{ filter.label }}</label>
-          <input
+          <ArtDecoInput
             v-if="filter.type === 'input'"
             v-model="filterValues[filter.key]"
-            type="text"
-            class="artdeco-filter-input"
+            :label="filter.label"
             :placeholder="filter.placeholder"
-          >
-          <select
-            v-else-if="filter.type === 'select'"
-            v-model="filterValues[filter.key]"
-            class="artdeco-filter-input"
-          >
-            <option value="">全部</option>
-            <option v-for="opt in filter.options" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </option>
-          </select>
+          />
+          <div v-else-if="filter.type === 'select'" class="artdeco-select-wrapper">
+            <label class="artdeco-select-label">{{ filter.label }}</label>
+            <select
+              v-model="filterValues[filter.key]"
+              class="artdeco-filter-select"
+            >
+              <option value="">全部</option>
+              <option v-for="opt in filter.options" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </div>
           <div v-else-if="filter.type === 'range'" class="artdeco-range-inputs">
-            <input
+            <ArtDecoInput
               v-model="filterValues[`${filter.key}_min`]"
               type="number"
-              class="artdeco-filter-input"
-              placeholder="最小值"
-            >
-            <span>-</span>
-            <input
+              label="最小值"
+              placeholder="0"
+            />
+            <span class="artdeco-range-separator">-</span>
+            <ArtDecoInput
               v-model="filterValues[`${filter.key}_max`]"
               type="number"
-              class="artdeco-filter-input"
-              placeholder="最大值"
-            >
+              label="最大值"
+              placeholder="999"
+            />
           </div>
         </div>
       </div>
 
       <div class="artdeco-filter-actions">
-        <button class="artdeco-btn artdeco-btn-primary" @click="applyFilters">
+        <ArtDecoButton variant="solid" @click="applyFilters">
           筛选
-        </button>
-        <button class="artdeco-btn artdeco-btn-secondary" @click="resetFilters">
+        </ArtDecoButton>
+        <ArtDecoButton variant="outline" @click="resetFilters">
           重置
-        </button>
-        <button class="artdeco-btn artdeco-btn-secondary" @click="exportResults">
+        </ArtDecoButton>
+        <ArtDecoButton variant="outline" @click="exportResults">
           导出CSV
-        </button>
+        </ArtDecoButton>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- Results Table -->
-    <div class="artdeco-results-table">
-      <div class="artdeco-results-header">
-        <h3>筛选结果</h3>
-        <div class="artdeco-results-count">
-          共 {{ filteredStocks.length }} 只股票
+    <ArtDecoCard title="筛选结果" class="artdeco-results-wrapper">
+      <template #header>
+        <div class="artdeco-results-header">
+          <h3>筛选结果</h3>
+          <div class="artdeco-results-count">
+            共 {{ filteredStocks.length }} 只股票
+          </div>
         </div>
-      </div>
+      </template>
 
       <div class="artdeco-table-container">
         <table class="artdeco-table">
@@ -90,25 +91,26 @@
           </thead>
           <tbody>
             <tr v-for="stock in paginatedStocks" :key="stock.code">
-              <td>{{ stock.code }}</td>
+              <td class="text-mono">{{ stock.code }}</td>
               <td>{{ stock.name }}</td>
-              <td :class="getChangeClass(stock.change)">
+              <td class="text-mono" :class="getChangeClass(stock.change)">
                 {{ stock.price }}
               </td>
-              <td :class="getChangeClass(stock.change)">
+              <td class="text-mono" :class="getChangeClass(stock.change)">
                 {{ stock.change >= 0 ? '+' : '' }}{{ stock.change }}%
               </td>
-              <td>{{ stock.pe }}</td>
-              <td>{{ stock.pb }}</td>
+              <td class="text-mono">{{ stock.pe }}</td>
+              <td class="text-mono">{{ stock.pb }}</td>
               <td>{{ stock.marketCap }}</td>
-              <td>{{ stock.turnoverRate }}%</td>
+              <td class="text-mono">{{ stock.turnoverRate }}%</td>
               <td>
-                <button
-                  class="artdeco-btn artdeco-btn-small"
+                <ArtDecoButton
+                  variant="outline"
+                  size="sm"
                   @click="viewStock(stock)"
                 >
                   详情
-                </button>
+                </ArtDecoButton>
               </td>
             </tr>
           </tbody>
@@ -117,30 +119,35 @@
 
       <!-- Pagination -->
       <div class="artdeco-pagination">
-        <button
-          class="artdeco-pagination-btn"
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
           :disabled="currentPage === 1"
           @click="currentPage--"
         >
           上一页
-        </button>
+        </ArtDecoButton>
         <span class="artdeco-pagination-info">
           第 {{ currentPage }} / {{ totalPages }} 页
         </span>
-        <button
-          class="artdeco-pagination-btn"
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
           :disabled="currentPage === totalPages"
           @click="currentPage++"
         >
           下一页
-        </button>
+        </ArtDecoButton>
       </div>
-    </div>
+    </ArtDecoCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import ArtDecoCard from '@/components/artdeco/ArtDecoCard.vue'
+import ArtDecoButton from '@/components/artdeco/ArtDecoButton.vue'
+import ArtDecoInput from '@/components/artdeco/ArtDecoInput.vue'
 
 // Types
 interface StockPool {
@@ -371,98 +378,80 @@ function exportResults() {
 .artdeco-stock-screener {
   display: flex;
   flex-direction: column;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-section); /* 128px - Generous section spacing */
 }
 
 /* Tabs */
 .artdeco-tabs {
   display: flex;
-  gap: var(--artdeco-space-sm);
-  border-bottom: 1px solid var(--artdeco-gold-dim);
-  padding-bottom: var(--artdeco-space-sm);
-}
-
-.artdeco-tab {
-  padding: 12px 24px;
-  font-family: var(--artdeco-font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--artdeco-silver-dim);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all var(--artdeco-transition-fast);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.artdeco-tab:hover {
-  color: var(--artdeco-gold-primary);
-}
-
-.artdeco-tab.active {
-  color: var(--artdeco-gold-primary);
-  border-bottom-color: var(--artdeco-gold-primary);
+  gap: var(--artdeco-space-md);
+  margin-bottom: var(--artdeco-space-lg);
 }
 
 /* Filter Panel */
 .artdeco-filter-panel {
-  background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
-  padding: var(--artdeco-space-lg);
+  padding: var(--artdeco-space-xl);
 }
 
 .artdeco-filter-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--artdeco-space-md);
-  margin-bottom: var(--artdeco-space-md);
+  gap: var(--artdeco-space-lg);
+  margin-bottom: var(--artdeco-space-xl);
 }
 
 .artdeco-filter-group {
   display: flex;
   flex-direction: column;
+  gap: var(--artdeco-space-sm);
+}
+
+/* Select styling (still using native select for dropdown functionality) */
+.artdeco-select-wrapper {
+  display: flex;
+  flex-direction: column;
   gap: var(--artdeco-space-xs);
 }
 
-.artdeco-filter-label {
+.artdeco-select-label {
   font-family: var(--artdeco-font-display);
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--artdeco-silver-muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--artdeco-tracking-tight);
 }
 
-.artdeco-filter-input {
+.artdeco-filter-select {
+  width: 100%;
   padding: 8px 12px;
-  font-family: var(--artdeco-font-mono);
+  font-family: var(--artdeco-font-body);
   font-size: 0.875rem;
-  color: var(--artdeco-silver-text);
-  background: var(--artdeco-bg-global);
-  border: 1px solid var(--artdeco-gold-dim);
+  color: var(--artdeco-text-primary);
+  background: var(--artdeco-bg-card);
+  border: 2px solid var(--artdeco-gold-dim);
   border-radius: var(--artdeco-radius-none);
+  transition: all var(--artdeco-transition-base);
 }
 
-.artdeco-filter-input:focus {
+.artdeco-filter-select:focus {
   outline: none;
   border-color: var(--artdeco-gold-primary);
   box-shadow: var(--artdeco-glow-subtle);
 }
 
+/* Range inputs */
 .artdeco-range-inputs {
-  display: flex;
-  align-items: center;
-  gap: var(--artdeco-space-xs);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--artdeco-space-sm);
+  align-items: end;
 }
 
-.artdeco-range-inputs input {
-  flex: 1;
-}
-
-.artdeco-range-inputs span {
-  color: var(--artdeco-silver-muted);
+.artdeco-range-separator {
+  color: var(--artdeco-gold-primary);
+  font-weight: 600;
+  padding-bottom: var(--artdeco-space-md);
 }
 
 .artdeco-filter-actions {
@@ -470,10 +459,9 @@ function exportResults() {
   gap: var(--artdeco-space-md);
 }
 
-/* Results Table */
-.artdeco-results-table {
-  background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
+/* Results Wrapper */
+.artdeco-results-wrapper {
+  padding: 0;
   overflow: hidden;
 }
 
@@ -481,23 +469,26 @@ function exportResults() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--artdeco-space-md);
-  border-bottom: 1px solid var(--artdeco-gold-dim);
+  padding: var(--artdeco-space-xl) var(--artdeco-space-xl) var(--artdeco-space-md) var(--artdeco-space-xl);
 }
 
 .artdeco-results-header h3 {
   margin: 0;
   font-family: var(--artdeco-font-display);
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-display);
 }
 
 .artdeco-results-count {
   font-family: var(--artdeco-font-mono);
   font-size: 0.875rem;
-  color: var(--artdeco-silver-dim);
+  color: var(--artdeco-gold-primary);
+  font-weight: 600;
 }
 
+/* Table */
 .artdeco-table-container {
   overflow-x: auto;
 }
@@ -511,17 +502,18 @@ function exportResults() {
   position: sticky;
   top: 0;
   background: var(--artdeco-bg-header);
-  padding: 12px;
+  padding: var(--artdeco-space-md);
   text-align: left;
   font-family: var(--artdeco-font-display);
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--artdeco-gold-primary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: var(--artdeco-tracking-tight);
   border-bottom: 2px solid var(--artdeco-gold-primary);
   cursor: pointer;
   user-select: none;
+  transition: background var(--artdeco-transition-base);
 }
 
 .artdeco-table thead th:hover {
@@ -529,7 +521,7 @@ function exportResults() {
 }
 
 .artdeco-table tbody td {
-  padding: 12px;
+  padding: var(--artdeco-space-md);
   font-family: var(--artdeco-font-mono);
   font-size: 0.875rem;
   color: var(--artdeco-silver-text);
@@ -540,13 +532,13 @@ function exportResults() {
   background: var(--artdeco-bg-hover);
 }
 
+.text-mono {
+  font-family: var(--artdeco-font-mono);
+}
+
 .sort-indicator {
   margin-left: var(--artdeco-space-xs);
   color: var(--artdeco-gold-primary);
-}
-
-.artdeco-btn-small {
-  padding: 4px 12px;
   font-size: 0.75rem;
 }
 
@@ -556,36 +548,14 @@ function exportResults() {
   justify-content: center;
   align-items: center;
   gap: var(--artdeco-space-md);
-  padding: var(--artdeco-space-md);
+  padding: var(--artdeco-space-xl);
   border-top: 1px solid var(--artdeco-gold-dim);
-}
-
-.artdeco-pagination-btn {
-  padding: 8px 16px;
-  font-family: var(--artdeco-font-display);
-  font-size: 0.875rem;
-  color: var(--artdeco-silver-dim);
-  background: transparent;
-  border: 1px solid var(--artdeco-gold-dim);
-  border-radius: var(--artdeco-radius-none);
-  cursor: pointer;
-  transition: all var(--artdeco-transition-fast);
-}
-
-.artdeco-pagination-btn:hover:not(:disabled) {
-  border-color: var(--artdeco-gold-primary);
-  color: var(--artdeco-gold-primary);
-}
-
-.artdeco-pagination-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 .artdeco-pagination-info {
   font-family: var(--artdeco-font-mono);
   font-size: 0.875rem;
-  color: var(--artdeco-silver-dim);
+  color: var(--artdeco-silver-text);
 }
 
 /* Responsive */
@@ -604,11 +574,19 @@ function exportResults() {
     overflow-x: auto;
     white-space: nowrap;
   }
+
+  .artdeco-stock-screener {
+    gap: var(--artdeco-space-2xl); /* 64px on smaller screens */
+  }
 }
 
 @media (max-width: 768px) {
   .artdeco-filter-actions {
     flex-direction: column;
+  }
+
+  .artdeco-range-inputs {
+    grid-template-columns: 1fr;
   }
 }
 </style>

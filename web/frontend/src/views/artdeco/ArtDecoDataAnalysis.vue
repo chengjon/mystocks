@@ -1,7 +1,7 @@
 <template>
   <div class="artdeco-data-analysis">
     <!-- Filter Panel -->
-    <div class="artdeco-filter-panel">
+    <ArtDecoCard title="筛选条件" class="artdeco-filter-panel">
       <div class="artdeco-filter-row">
         <span class="artdeco-filter-label">分析维度:</span>
         <select v-model="selectedDimension" class="artdeco-filter-select">
@@ -20,33 +20,29 @@
           <option value="3m">近3月</option>
         </select>
 
-        <button class="artdeco-btn artdeco-btn-primary" @click="applyFilters">
+        <ArtDecoButton variant="solid" @click="applyFilters">
           分析
-        </button>
+        </ArtDecoButton>
       </div>
-    </div>
+    </ArtDecoCard>
 
     <!-- Charts Grid -->
     <div class="artdeco-grid-3">
-      <div class="artdeco-card">
-        <h3>涨跌分布</h3>
+      <ArtDecoCard title="涨跌分布" :hoverable="false">
         <div ref="riseFallChartRef" class="artdeco-chart-container"></div>
-      </div>
+      </ArtDecoCard>
 
-      <div class="artdeco-card">
-        <h3>行业资金流向</h3>
+      <ArtDecoCard title="行业资金流向" :hoverable="false">
         <div ref="sectorFlowChartRef" class="artdeco-chart-container"></div>
-      </div>
+      </ArtDecoCard>
 
-      <div class="artdeco-card">
-        <h3>技术指标分布</h3>
+      <ArtDecoCard title="技术指标分布" :hoverable="false">
         <div ref="indicatorChartRef" class="artdeco-chart-container"></div>
-      </div>
+      </ArtDecoCard>
     </div>
 
     <!-- Indicator Details Table -->
-    <div class="artdeco-card">
-      <h3>技术指标明细</h3>
+    <ArtDecoCard title="技术指标明细" :hoverable="false">
       <div class="artdeco-table-wrapper">
         <table class="artdeco-table">
           <thead>
@@ -63,11 +59,11 @@
             <tr v-for="indicator in indicatorDetails" :key="indicator.name">
               <td>{{ indicator.name }}</td>
               <td class="text-mono">{{ indicator.overboughtCount }}</td>
-              <td :class="indicator.overboughtRatio > 30 ? 'artdeco-data-rise' : ''">
+              <td :class="indicator.overboughtRatio > 30 ? 'data-rise' : ''">
                 {{ indicator.overboughtRatio }}%
               </td>
               <td class="text-mono">{{ indicator.oversoldCount }}</td>
-              <td :class="indicator.oversoldRatio > 30 ? 'artdeco-data-fall' : ''">
+              <td :class="indicator.oversoldRatio > 30 ? 'data-fall' : ''">
                 {{ indicator.oversoldRatio }}%
               </td>
               <td class="text-mono">{{ indicator.neutralRatio }}%</td>
@@ -75,7 +71,7 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </ArtDecoCard>
   </div>
 </template>
 
@@ -83,6 +79,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import type { EChartsOption } from 'echarts'
+import ArtDecoCard from '@/components/artdeco/ArtDecoCard.vue'
+import ArtDecoButton from '@/components/artdeco/ArtDecoButton.vue'
 
 // Types
 interface IndicatorDetail {
@@ -302,13 +300,12 @@ onUnmounted(() => {
 .artdeco-data-analysis {
   display: flex;
   flex-direction: column;
-  gap: var(--artdeco-space-lg);
+  gap: var(--artdeco-space-section); /* 128px - Generous section spacing */
 }
 
+/* Filter Panel */
 .artdeco-filter-panel {
-  background: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-gold-dim);
-  padding: var(--artdeco-space-lg);
+  padding: var(--artdeco-space-xl);
 }
 
 .artdeco-filter-row {
@@ -318,11 +315,18 @@ onUnmounted(() => {
   align-items: center;
 }
 
+.artdeco-filter-row:last-child {
+  margin-bottom: 0;
+}
+
 .artdeco-filter-label {
   font-family: var(--artdeco-font-display);
   font-size: 0.875rem;
+  font-weight: 600;
   color: var(--artdeco-gold-primary);
   min-width: 100px;
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
 }
 
 .artdeco-filter-select {
@@ -330,43 +334,24 @@ onUnmounted(() => {
   padding: 8px 12px;
   font-family: var(--artdeco-font-body);
   font-size: 0.875rem;
-  color: var(--artdeco-silver-text);
-  background: var(--artdeco-bg-header);
+  color: var(--artdeco-text-primary);
+  background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
+  transition: all var(--artdeco-transition-base);
 }
 
+.artdeco-filter-select:focus {
+  outline: none;
+  border-color: var(--artdeco-gold-primary);
+  box-shadow: var(--artdeco-glow-subtle);
+}
+
+/* Charts Grid */
 .artdeco-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--artdeco-space-lg);
-}
-
-.artdeco-card {
-  background: var(--artdeco-bg-card);
-  border: 2px solid var(--artdeco-gold-primary);
-  padding: var(--artdeco-space-lg);
-  position: relative;
-}
-
-.artdeco-card::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  pointer-events: none;
-}
-
-.artdeco-card h3 {
-  font-family: var(--artdeco-font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-space-md);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  gap: var(--artdeco-space-xl);
 }
 
 .artdeco-chart-container {
@@ -374,9 +359,9 @@ onUnmounted(() => {
   height: 350px;
 }
 
+/* Table */
 .artdeco-table-wrapper {
   overflow-x: auto;
-  margin-top: var(--artdeco-space-md);
 }
 
 .artdeco-table {
@@ -386,44 +371,76 @@ onUnmounted(() => {
   font-size: 0.875rem;
 }
 
-.artdeco-table th {
+.artdeco-table thead th {
+  position: sticky;
+  top: 0;
   background: var(--artdeco-bg-header);
   color: var(--artdeco-gold-primary);
   font-family: var(--artdeco-font-display);
   font-weight: 600;
   text-align: left;
-  padding: 12px var(--artdeco-space-md);
+  padding: var(--artdeco-space-md);
   border-bottom: 2px solid var(--artdeco-gold-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-tight);
   white-space: nowrap;
 }
 
-.artdeco-table td {
-  padding: 12px var(--artdeco-space-md);
+.artdeco-table tbody td {
+  padding: var(--artdeco-space-md);
   border-bottom: 1px solid var(--artdeco-gold-dim);
   color: var(--artdeco-silver-text);
 }
 
-.artdeco-table tr:hover td {
+.artdeco-table tbody tr:hover td {
   background: var(--artdeco-bg-hover);
 }
 
-.artdeco-data-rise {
+.text-mono {
+  font-family: var(--artdeco-font-mono);
+}
+
+.data-rise {
   color: var(--artdeco-rise);
 }
 
-.artdeco-data-fall {
+.data-fall {
   color: var(--artdeco-fall);
 }
 
+/* Responsive */
 @media (max-width: 1440px) {
   .artdeco-grid-3 {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .artdeco-data-analysis {
+    gap: var(--artdeco-space-2xl); /* 64px on smaller screens */
+  }
+}
+
+@media (max-width: 1080px) {
+  .artdeco-data-analysis {
+    gap: var(--artdeco-space-2xl); /* 64px */
   }
 }
 
 @media (max-width: 768px) {
   .artdeco-grid-3 {
     grid-template-columns: 1fr;
+  }
+
+  .artdeco-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .artdeco-filter-label {
+    min-width: auto;
+  }
+
+  .artdeco-chart-container {
+    height: 280px;
   }
 }
 </style>
