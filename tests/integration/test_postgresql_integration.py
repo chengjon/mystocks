@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 from src.data_access.postgresql_access import PostgreSQLDataAccess
 from src.core.data_classification import DataClassification
-from unified_manager import MyStocksUnifiedManager
+from src.core.unified_manager import MyStocksUnifiedManager
 
 print("\n" + "=" * 80)
 print("PostgreSQL集成测试")

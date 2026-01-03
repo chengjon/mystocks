@@ -22,7 +22,7 @@ import pandas as pd
 import numpy as np
 import time
 from datetime import datetime
-from unified_manager import MyStocksUnifiedManager
+from src.core.unified_manager import MyStocksUnifiedManager
 from src.core.data_classification import DataClassification
 from src.core.batch_failure_strategy import BatchFailureStrategy
 

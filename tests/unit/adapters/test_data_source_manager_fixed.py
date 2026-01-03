@@ -140,7 +140,7 @@ class TestDataSourceManagerFixed:
 
     def test_data_source_manager_initialization(self):
         """测试数据源管理器初始化"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -161,7 +161,7 @@ class TestDataSourceManagerFixed:
 
     def test_register_source_success(self, mock_interface_check):
         """测试数据源注册成功"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx")
@@ -176,7 +176,7 @@ class TestDataSourceManagerFixed:
 
     def test_register_source_invalid_type(self):
         """测试注册无效类型的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -195,7 +195,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_source_exists(self, mock_interface_check):
         """测试获取存在的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         akshare_source = SimpleMockDataSource("akshare")
@@ -210,7 +210,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_source_not_exists(self):
         """测试获取不存在的数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -221,7 +221,7 @@ class TestDataSourceManagerFixed:
 
     def test_list_sources(self, mock_interface_check):
         """测试列出所有数据源"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx")
@@ -242,7 +242,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_real_time_data_with_specified_source(self, mock_interface_check):
         """测试使用指定数据源获取实时行情"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx", should_fail=False)
@@ -259,7 +259,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_real_time_data_with_nonexistent_source(self):
         """测试使用不存在的数据源获取实时行情"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
 
@@ -272,7 +272,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_real_time_data_auto_priority_success(self, mock_interface_check):
         """测试按优先级自动选择数据源获取实时行情成功"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx", should_fail=False)
@@ -295,7 +295,7 @@ class TestDataSourceManagerFixed:
 
     def test_get_stock_daily_with_specified_source(self, mock_interface_check):
         """测试使用指定数据源获取日线数据"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx", should_fail=False)
@@ -313,7 +313,7 @@ class TestDataSourceManagerFixed:
 
     def test_data_source_manager_simple_workflow(self, mock_interface_check):
         """测试数据源管理器简单工作流程"""
-        from adapters.data_source_manager import DataSourceManager
+        from src.adapters.data_source_manager import DataSourceManager
 
         manager = DataSourceManager()
         tdx_source = SimpleMockDataSource("tdx")

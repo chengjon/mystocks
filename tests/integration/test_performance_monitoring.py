@@ -22,7 +22,7 @@ from datetime import datetime
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from unified_manager import MyStocksUnifiedManager
+from src.core.unified_manager import MyStocksUnifiedManager
 from src.core.data_classification import DataClassification
 from src.monitoring.performance_monitor import get_performance_monitor
 

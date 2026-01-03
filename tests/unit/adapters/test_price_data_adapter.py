@@ -16,7 +16,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
-from adapters.price_data_adapter import PriceDataAdapter
+from src.adapters.price_data_adapter import PriceDataAdapter
 
 
 class TestPriceDataAdapter:

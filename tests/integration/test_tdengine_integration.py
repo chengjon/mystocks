@@ -19,7 +19,7 @@ import numpy as np
 from datetime import datetime
 from src.data_access.tdengine_access import TDengineDataAccess
 from src.core.data_classification import DataClassification
-from unified_manager import MyStocksUnifiedManager
+from src.core.unified_manager import MyStocksUnifiedManager
 
 
 # 全局变量存储连接状态

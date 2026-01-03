@@ -467,7 +467,7 @@ class DataSourceManagerV2:
             数据DataFrame
         """
         endpoint_name = endpoint_info["endpoint_name"]
-        source_type = endpoint_info["source_type"]
+        endpoint_info["source_type"]
 
         # 获取或创建handler
         source = self.registry.get(endpoint_name)
