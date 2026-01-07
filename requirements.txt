@@ -63,3 +63,4 @@ datamodel-codegen==0.0.1
 # API契约测试
 schemathesis>=3.18.0
 jsonschema>=4.20.0
+asyncpg>=0.29.0

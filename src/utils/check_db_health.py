@@ -61,6 +61,11 @@ def check_postgresql_connection():
     print("【2/4】PostgreSQL 连接测试")
     print("=" * 60)
 
+    conn = None
+    conn_monitor = None
+    cursor = None
+    cursor_monitor = None
+
     try:
         import psycopg2
         from web.backend.app.core.config import settings
@@ -95,9 +100,6 @@ def check_postgresql_connection():
         if tables:
             print(f"   示例表: {', '.join(tables[:5])}")
 
-        cursor.close()
-        conn.close()
-
         # 测试mystocks_monitoring数据库
         try:
             conn_monitor = psycopg2.connect(
@@ -120,8 +122,6 @@ def check_postgresql_connection():
             print("✅ PostgreSQL监控数据库连接成功")
             print("   数据库: mystocks_monitoring")
             print(f"   表数量: {len(monitor_tables)}")
-            cursor_monitor.close()
-            conn_monitor.close()
         except Exception as e:
             print(f"⚠️  PostgreSQL监控数据库连接失败: {str(e)}")
 
@@ -131,6 +131,27 @@ def check_postgresql_connection():
         print("❌ PostgreSQL连接失败")
         print(f"   错误: {str(e)}")
         return False, str(e)
+    finally:
+        if cursor is not None:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        if cursor_monitor is not None:
+            try:
+                cursor_monitor.close()
+            except Exception:
+                pass
+        if conn_monitor is not None:
+            try:
+                conn_monitor.close()
+            except Exception:
+                pass
 
 
 def check_tdengine_connection():
@@ -202,6 +223,7 @@ def check_redis_connection():
     print("【4/4】Redis 连接测试")
     print("=" * 60)
 
+    r = None
     try:
         import redis
         from web.backend.app.core.config import settings
@@ -229,6 +251,12 @@ def check_redis_connection():
         print("❌ Redis连接失败")
         print(f"   错误: {str(e)}")
         return False, str(e)
+    finally:
+        if r is not None:
+            try:
+                r.close()
+            except Exception:
+                pass
 
 
 def main():

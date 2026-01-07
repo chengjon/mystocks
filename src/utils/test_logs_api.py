@@ -10,6 +10,16 @@ from datetime import datetime
 # Backend API基础URL
 BASE_URL = "http://localhost:8000"
 
+# 创建全局session
+session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(
+    pool_connections=10,
+    pool_maxsize=100,
+    max_retries=3,
+)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
+
 
 def print_separator():
     """打印分隔线"""
@@ -24,7 +34,7 @@ def test_get_all_logs():
     url = f"{BASE_URL}/api/system/logs"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -58,7 +68,7 @@ def test_filter_errors_only():
     url = f"{BASE_URL}/api/system/logs?filter_errors=true"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -98,7 +108,7 @@ def test_filter_by_level():
     url = f"{BASE_URL}/api/system/logs?level=ERROR"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -134,7 +144,7 @@ def test_filter_by_category():
     url = f"{BASE_URL}/api/system/logs?category=database"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -170,7 +180,7 @@ def test_pagination():
     url = f"{BASE_URL}/api/system/logs?limit=5&offset=0"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
@@ -202,7 +212,7 @@ def test_logs_summary():
     url = f"{BASE_URL}/api/system/logs/summary"
 
     try:
-        response = requests.get(url, timeout=10)
+        response = session.get(url, timeout=10)
 
         if response.status_code == 200:
             result = response.json()
@@ -241,57 +251,61 @@ def main():
     print(f"测试时间: {datetime.now().isoformat()}")
     print("=" * 80)
 
-    # 运行所有测试
-    tests = [
-        ("获取所有日志", test_get_all_logs),
-        ("筛选问题日志", test_filter_errors_only),
-        ("按级别筛选", test_filter_by_level),
-        ("按分类筛选", test_filter_by_category),
-        ("分页功能", test_pagination),
-        ("日志统计摘要", test_logs_summary),
-    ]
+    try:
+        # 运行所有测试
+        tests = [
+            ("获取所有日志", test_get_all_logs),
+            ("筛选问题日志", test_filter_errors_only),
+            ("按级别筛选", test_filter_by_level),
+            ("按分类筛选", test_filter_by_category),
+            ("分页功能", test_pagination),
+            ("日志统计摘要", test_logs_summary),
+        ]
 
-    results = []
-    for test_name, test_func in tests:
-        print_separator()
-        result = test_func()
-        results.append((test_name, result))
-        print_separator()
+        results = []
+        for test_name, test_func in tests:
+            print_separator()
+            result = test_func()
+            results.append((test_name, result))
+            print_separator()
 
-    # 打印测试总结
-    print("\n" + "=" * 80)
-    print("测试总结")
-    print("=" * 80)
+        # 打印测试总结
+        print("\n" + "=" * 80)
+        print("测试总结")
+        print("=" * 80)
 
-    passed = sum(1 for _, result in results if result)
-    total = len(results)
+        passed = sum(1 for _, result in results if result)
+        total = len(results)
 
-    for test_name, result in results:
-        status = "✅ 通过" if result else "❌ 失败"
-        print(f"{status} - {test_name}")
+        for test_name, result in results:
+            status = "✅ 通过" if result else "❌ 失败"
+            print(f"{status} - {test_name}")
 
-    print("-" * 80)
-    print(f"总计: {passed}/{total} 通过 ({passed / total * 100:.1f}%)")
-    print("=" * 80)
+        print("-" * 80)
+        print(f"总计: {passed}/{total} 通过 ({passed / total * 100:.1f}%)")
+        print("=" * 80)
 
-    # API使用示例
-    print("\nAPI使用示例:")
-    print("-" * 80)
-    print("1. 获取所有日志:")
-    print(f"   GET {BASE_URL}/api/system/logs")
-    print("\n2. 只获取有问题的日志:")
-    print(f"   GET {BASE_URL}/api/system/logs?filter_errors=true")
-    print("\n3. 按级别筛选:")
-    print(f"   GET {BASE_URL}/api/system/logs?level=ERROR")
-    print("\n4. 按分类筛选:")
-    print(f"   GET {BASE_URL}/api/system/logs?category=database")
-    print("\n5. 分页查询:")
-    print(f"   GET {BASE_URL}/api/system/logs?limit=10&offset=0")
-    print("\n6. 日志统计:")
-    print(f"   GET {BASE_URL}/api/system/logs/summary")
-    print("=" * 80)
+        # API使用示例
+        print("\nAPI使用示例:")
+        print("-" * 80)
+        print("1. 获取所有日志:")
+        print(f"   GET {BASE_URL}/api/system/logs")
+        print("\n2. 只获取有问题的日志:")
+        print(f"   GET {BASE_URL}/api/system/logs?filter_errors=true")
+        print("\n3. 按级别筛选:")
+        print(f"   GET {BASE_URL}/api/system/logs?level=ERROR")
+        print("\n4. 按分类筛选:")
+        print(f"   GET {BASE_URL}/api/system/logs?category=database")
+        print("\n5. 分页查询:")
+        print(f"   GET {BASE_URL}/api/system/logs?limit=10&offset=0")
+        print("\n6. 日志统计:")
+        print(f"   GET {BASE_URL}/api/system/logs/summary")
+        print("=" * 80)
 
-    return passed == total
+        return passed == total
+    finally:
+        # 清理session
+        session.close()
 
 
 if __name__ == "__main__":

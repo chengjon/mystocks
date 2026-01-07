@@ -5,15 +5,11 @@ Financial DataSource基类
 """
 
 import logging
-import traceback
 from datetime import datetime
-from typing import Dict, Optional
 
-import pandas as pd
 
 # 导入数据源接口
 from src.interfaces import IDataSource
-from src.utils import symbol_utils, date_utils
 
 logger = logging.getLogger("FinancialDataSource")
 

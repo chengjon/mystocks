@@ -53,7 +53,7 @@ class DatabaseConnectionManager:
                 f"请参考 .env.example 文件配置环境变量\n"
                 f"注意: MySQL和Redis已从US3架构中移除，不再需要这些环境变量"
             )
-            raise ValueError("Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n" "请使用1-15号数据库 (建议REDIS_DB=1)")
+            raise ValueError("Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n请使用1-15号数据库 (建议REDIS_DB=1)")
 
     def get_tdengine_connection(self):
         """
@@ -88,7 +88,7 @@ class DatabaseConnectionManager:
             raise ImportError("TDengine驱动未安装: pip install taospy>=2.7.0")
         except Exception as e:
             port_str = os.getenv("TDENGINE_REST_PORT") or os.getenv("TDENGINE_PORT") or "6030"
-            raise ConnectionError(f"TDengine连接失败: {e}\n" f"请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}")
+            raise ConnectionError(f"TDengine连接失败: {e}\n请检查配置: {os.getenv('TDENGINE_HOST')}:{port_str}")
 
     def get_postgresql_connection(self):
         """
@@ -122,8 +122,7 @@ class DatabaseConnectionManager:
             raise ImportError("PostgreSQL驱动未安装: pip install psycopg2-binary>=2.9.5")
         except Exception as e:
             raise ConnectionError(
-                f"PostgreSQL连接失败: {e}\n"
-                f"请检查配置: {os.getenv('POSTGRESQL_HOST')}:{os.getenv('POSTGRESQL_PORT')}"
+                f"PostgreSQL连接失败: {e}\n请检查配置: {os.getenv('POSTGRESQL_HOST')}:{os.getenv('POSTGRESQL_PORT')}"
             )
 
     def _return_postgresql_connection(self, conn) -> None:
@@ -168,7 +167,7 @@ class DatabaseConnectionManager:
             raise ImportError("MySQL驱动未安装: pip install pymysql>=1.0.2")
         except Exception as e:
             raise ConnectionError(
-                f"MySQL连接失败: {e}\n" f"请检查配置: {os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}"
+                f"MySQL连接失败: {e}\n请检查配置: {os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}"
             )
 
     def get_redis_connection(self):
@@ -189,7 +188,8 @@ class DatabaseConnectionManager:
             if "redis" not in self._connections:
                 redis_db = int(os.getenv("REDIS_DB", "1"))
 
-                conn = redis.Redis(
+                # 使用连接池
+                redis_pool = redis.ConnectionPool(
                     host=os.getenv("REDIS_HOST"),
                     port=int(os.getenv("REDIS_PORT", "6379")),
                     db=redis_db,
@@ -197,14 +197,16 @@ class DatabaseConnectionManager:
                     decode_responses=True,
                     socket_connect_timeout=5,
                     socket_timeout=5,
+                    max_connections=10,
                 )
+                conn = redis.Redis(connection_pool=redis_pool)
 
                 # 测试连接
                 conn.ping()
 
-                self._connections["redis"] = conn
+                self._connections["redis"] = (conn, redis_pool)
 
-            return self._connections["redis"]
+            return self._connections["redis"][0]
 
         except ImportError:
             raise ImportError("Redis驱动未安装: pip install redis>=4.5.0")
@@ -225,7 +227,12 @@ class DatabaseConnectionManager:
                 elif db_type == "mysql":
                     conn.close()
                 elif db_type == "redis":
-                    conn.close()
+                    # Redis连接是元组 (conn, pool)
+                    if isinstance(conn, tuple):
+                        conn[0].close()
+                        conn[1].disconnect()
+                    else:
+                        conn.close()
             except Exception as e:
                 print(f"警告: 关闭{db_type}连接失败: {e}")
 
