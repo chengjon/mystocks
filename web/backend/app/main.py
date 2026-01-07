@@ -485,6 +485,7 @@ from .api import (
     data,
     data_quality,
     data_source_registry,  # 数据源注册表管理API (V2.0)
+    indicator_registry,    # 指标注册表管理API (V2.1)
     health,
     indicators,
     industry_concept_analysis,
@@ -580,6 +581,9 @@ app.include_router(contract.router)  # 契约版本管理、差异检测、验�
 
 # 数据源管理V2.0 API (数据源注册表管理)
 app.include_router(data_source_registry.router)  # 数据源搜索、测试、健康检查
+
+# 指标管理V2.1 API (指标注册表管理)
+app.include_router(indicator_registry.router)    # 指标搜索、计算、详情
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")

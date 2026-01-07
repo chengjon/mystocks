@@ -18,6 +18,7 @@ from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
 
+
 class PostgreSQLAsyncAccess:
     """
     异步PostgreSQL访问层
@@ -36,20 +37,15 @@ class PostgreSQLAsyncAccess:
 
         try:
             # 构建DSN
-            user = os.getenv('POSTGRESQL_USER', 'postgres')
-            password = os.getenv('POSTGRESQL_PASSWORD', 'postgres')
-            host = os.getenv('POSTGRESQL_HOST', 'localhost')
-            port = os.getenv('POSTGRESQL_PORT', '5432')
-            database = os.getenv('POSTGRESQL_DATABASE', 'mystocks')
+            user = os.getenv("POSTGRESQL_USER", "postgres")
+            password = os.getenv("POSTGRESQL_PASSWORD", "postgres")
+            host = os.getenv("POSTGRESQL_HOST", "localhost")
+            port = os.getenv("POSTGRESQL_PORT", "5432")
+            database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
 
             self._dsn = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
-            self.pool = await asyncpg.create_pool(
-                dsn=self._dsn,
-                min_size=5,
-                max_size=20,
-                command_timeout=60
-            )
+            self.pool = await asyncpg.create_pool(dsn=self._dsn, min_size=5, max_size=20, command_timeout=60)
             logger.info("✅ 异步PostgreSQL连接池已初始化")
         except Exception as e:
             logger.error(f"❌ 初始化异步PostgreSQL连接池失败: {e}")
@@ -74,18 +70,13 @@ class PostgreSQLAsyncAccess:
 
     # ========== 1. 监控清单 (Watchlist) 操作 ==========
 
-    async def create_watchlist(
-        self,
-        user_id: int,
-        name: str,
-        type: str = 'manual',
-        risk_profile: Dict = None
-    ) -> int:
+    async def create_watchlist(self, user_id: int, name: str, type: str = "manual", risk_profile: Dict = None) -> int:
         """创建监控清单"""
         if not self.pool:
             await self.initialize()
 
         import json
+
         risk_profile_json = json.dumps(risk_profile) if risk_profile else None
 
         async with self.pool.acquire() as conn:
@@ -96,7 +87,10 @@ class PostgreSQLAsyncAccess:
                 VALUES ($1, $2, $3, $4)
                 RETURNING id
                 """,
-                user_id, name, type, risk_profile_json
+                user_id,
+                name,
+                type,
+                risk_profile_json,
             )
         return watchlist_id
 
@@ -112,7 +106,7 @@ class PostgreSQLAsyncAccess:
                 WHERE user_id = $1 AND is_active = true
                 ORDER BY created_at DESC
                 """,
-                user_id
+                user_id,
             )
         return [dict(row) for row in rows]
 
@@ -124,7 +118,7 @@ class PostgreSQLAsyncAccess:
         entry_reason: Optional[str] = None,
         stop_loss_price: Optional[float] = None,
         target_price: Optional[float] = None,
-        weight: float = 0.0
+        weight: float = 0.0,
     ) -> int:
         """添加股票到清单 (带入库上下文)"""
         if not self.pool:
@@ -134,19 +128,24 @@ class PostgreSQLAsyncAccess:
             stock_id = await conn.fetchval(
                 """
                 INSERT INTO monitoring_watchlist_stocks
-                (watchlist_id, stock_code, entry_price, entry_reason, 
+                (watchlist_id, stock_code, entry_price, entry_reason,
                  stop_loss_price, target_price, weight)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                 ON CONFLICT (watchlist_id, stock_code)
-                DO UPDATE SET 
+                DO UPDATE SET
                     weight = EXCLUDED.weight,
                     stop_loss_price = EXCLUDED.stop_loss_price,
                     target_price = EXCLUDED.target_price,
                     is_active = true
                 RETURNING id
                 """,
-                watchlist_id, stock_code, entry_price, entry_reason,
-                stop_loss_price, target_price, weight
+                watchlist_id,
+                stock_code,
+                entry_price,
+                entry_reason,
+                stop_loss_price,
+                target_price,
+                weight,
             )
         return stock_id
 
@@ -162,19 +161,16 @@ class PostgreSQLAsyncAccess:
                 WHERE watchlist_id = $1 AND is_active = true
                 ORDER BY entry_at DESC
                 """,
-                watchlist_id
+                watchlist_id,
             )
         return [dict(row) for row in rows]
 
     # ========== 2. 健康度评分 (Analysis Results) 操作 ==========
 
-    async def batch_save_health_scores(
-        self,
-        scores: List[Dict[str, Any]]
-    ) -> None:
+    async def batch_save_health_scores(self, scores: List[Dict[str, Any]]) -> None:
         """
         批量保存健康度评分
-        
+
         Args:
             scores: [
                 {
@@ -194,13 +190,15 @@ class PostgreSQLAsyncAccess:
         # 预处理数据
         data_tuples = []
         for s in scores:
-            data_tuples.append((
-                s['stock_code'],
-                s['score_date'],
-                s['total_score'],
-                json.dumps(s.get('radar_scores', {})),
-                s.get('market_regime')
-            ))
+            data_tuples.append(
+                (
+                    s["stock_code"],
+                    s["score_date"],
+                    s["total_score"],
+                    json.dumps(s.get("radar_scores", {})),
+                    s.get("market_regime"),
+                )
+            )
 
         async with self.pool.acquire() as conn:
             await conn.executemany(
@@ -214,7 +212,7 @@ class PostgreSQLAsyncAccess:
                     radar_scores = EXCLUDED.radar_scores,
                     market_regime = EXCLUDED.market_regime
                 """,
-                data_tuples
+                data_tuples,
             )
 
     async def get_latest_health_score(self, stock_code: str) -> Optional[Dict]:
@@ -230,7 +228,7 @@ class PostgreSQLAsyncAccess:
                 ORDER BY score_date DESC
                 LIMIT 1
                 """,
-                stock_code
+                stock_code,
             )
         return dict(row) if row else None
 
@@ -241,6 +239,7 @@ class PostgreSQLAsyncAccess:
         # 如果表存在，逻辑类似 batch_save_health_scores
         # 暂时预留
         pass
+
 
 # 全局单例
 postgres_async = PostgreSQLAsyncAccess()

@@ -9,6 +9,13 @@ import logging
 from typing import Dict, Any
 from datetime import datetime
 
+# V2 Indicator Factory
+try:
+    from src.indicators.indicator_factory import IndicatorFactory
+    HAS_V2_FACTORY = True
+except ImportError:
+    HAS_V2_FACTORY = False
+
 # 设置日志
 logger = logging.getLogger(__name__)
 
@@ -19,6 +26,14 @@ class TechnicalIndicatorCalculator:
     def __init__(self):
         """初始化技术指标计算器"""
         self.indicator_cache = {}
+        self.factory = None
+        
+        if HAS_V2_FACTORY:
+            try:
+                self.factory = IndicatorFactory()
+                logger.info("Initialized V2 IndicatorFactory in Legacy Calculator")
+            except Exception as e:
+                logger.warning(f"Failed to initialize V2 IndicatorFactory: {e}")
 
     def calculate_technical_indicators(self, data: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -191,6 +206,23 @@ class TechnicalIndicatorCalculator:
         Returns:
             pd.Series: SMA序列
         """
+        # Phase 3: Try V2 Factory first
+        if self.factory:
+            try:
+                # Convert Series to DataFrame for Factory
+                # The factory implementation expects 'close' column usually
+                df = prices.to_frame(name='close')
+                
+                # Use 'sma.5' as template, override period
+                # If period=20, it matches our 'sma.20' template too
+                template_id = "sma.20" if period == 20 else "sma.5"
+                
+                result = self.factory.calculate(template_id, df, period=period)
+                return result
+            except Exception as e:
+                logger.debug(f"V2 Factory SMA failed, falling back: {e}")
+
+        # Legacy Implementation
         return prices.rolling(window=period, min_periods=1).mean()
 
     def _calculate_rsi(self, prices: pd.Series, period: int = 14) -> pd.Series:
@@ -204,6 +236,20 @@ class TechnicalIndicatorCalculator:
         Returns:
             pd.Series: RSI序列
         """
+        # Phase 3: Try V2 Factory first
+        if self.factory:
+            try:
+                df = prices.to_frame(name='close')
+                template_id = "rsi.14" 
+                
+                result = self.factory.calculate(template_id, df, period=period)
+                
+                # Legacy compatibility: fill NaN with 50 (V2 returns NaN)
+                return result.fillna(50)
+            except Exception as e:
+                logger.debug(f"V2 Factory RSI failed, falling back: {e}")
+
+        # Legacy Implementation
         delta = prices.diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=period, min_periods=1).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=period, min_periods=1).mean()

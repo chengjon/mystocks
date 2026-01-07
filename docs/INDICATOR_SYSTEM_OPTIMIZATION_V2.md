@@ -136,7 +136,7 @@ indicators:
     supports_streaming: true    # 支持流式计算
     is_lagging: true           # 滞后指标
     lookahead_bias: false      # 无未来函数
-    
+
     description: "简单移动平均线（5日）"
     formula: "SMA = (P1 + P2 + ... + Pn) / n"
     parameters:
@@ -163,11 +163,11 @@ indicators:
     supports_streaming: true
     is_lagging: false
     lookahead_bias: false
-    
+
     # 依赖声明
-    dependencies: 
+    dependencies:
       - "rsv.9"
-      
+
     parameters:
       period: 9
       k_period: 3
@@ -202,17 +202,17 @@ class IndicatorFactory:
     ) -> Union['BatchIndicator', 'StreamingIndicator']:
         """
         获取计算器实例（核心入口）
-        
+
         Args:
             indicator_id: 指标ID
             backend: 指定后端 (gpu/numba/cpu)，若不指定则自动选择
             streaming: 是否请求流式计算器
-            
+
         Returns:
             计算器实例
         """
         config = self._get_config(indicator_id)
-        
+
         # 1. 流式模式检查
         if streaming:
             if not config.get('supports_streaming'):
@@ -222,7 +222,7 @@ class IndicatorFactory:
 
         # 2. 批处理模式 - 自动降级逻辑
         preferred_backends = config.get('supported_backends', ['cpu'])
-        
+
         # 如果用户指定了后端，则只尝试该后端
         if backend:
             if backend not in preferred_backends:
@@ -243,7 +243,7 @@ class IndicatorFactory:
             except Exception as e:
                 logger.error(f"后端 {be} 初始化错误: {e}")
                 continue
-                
+
         raise RuntimeError(f"无法为指标 {indicator_id} 创建任何可用的计算后端")
 
     def calculate(self, indicator_id: str, data: pd.DataFrame, **kwargs) -> pd.Series:
@@ -253,25 +253,25 @@ class IndicatorFactory:
         """
         # 1. 参数校验
         self._validate_parameters(indicator_id, kwargs)
-        
+
         # 2. 获取计算器
         calculator = self.get_calculator(indicator_id)
-        
+
         # 3. 计算
         result = calculator.calculate(data, **kwargs)
-        
+
         # 4. 强制对齐检查 (Professional Practice)
         if len(result) != len(data) or not result.index.equals(data.index):
              # 尝试自动修复对齐（针对 TA-Lib 常见行为）
              result = result.reindex(data.index)
-             
+
         return result
 
     def _validate_parameters(self, indicator_id: str, params: Dict):
         """基于YAML配置进行参数边界检查"""
         config = self.registry[indicator_id]['config']
         param_defs = config.get('parameters', {})
-        
+
         for k, v in params.items():
             if k in param_defs:
                 p_def = param_defs[k]
@@ -311,12 +311,12 @@ class StreamingIndicator(BaseIndicator):
         返回当前 Tick 的指标值
         """
         pass
-        
+
     @abstractmethod
     def snapshot(self) -> Dict:
         """获取当前状态快照（用于系统重启恢复）"""
         pass
-        
+
     @abstractmethod
     def load_snapshot(self, state: Dict):
         """从快照恢复状态"""

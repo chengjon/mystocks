@@ -4,7 +4,7 @@
 **创建日期**: 2026-01-07
 **版本**: v3.0 (集成落地版)
 **状态**: 待实施
-**基于**: 
+**基于**:
 - `STOCK_MONITORING_PORTFOLIO_OPTIMIZED_PROPOSAL.md` (v2.0)
 - 现有代码: `src/monitoring/async_monitoring.py`
 - 现有代码: `src/monitoring/gpu_integration_manager.py`
@@ -32,7 +32,7 @@
 ```mermaid
 graph TD
     User[用户/前端] --> API[FastAPI Layer]
-    
+
     subgraph "应用层 (Application)"
         API --> WatchlistSvc[清单管理服务]
         API --> AnalysisSvc[智能分析服务]
@@ -41,10 +41,10 @@ graph TD
     subgraph "领域层 (Domain) - 核心引擎"
         AnalysisSvc --> RegimeIdent[市场体制识别]
         AnalysisSvc --> CalcFactory[计算引擎工厂]
-        
+
         CalcFactory -->|CPU模式| VectorCalc[Pandas向量化引擎]
         CalcFactory -->|GPU模式| GPUCalc[GPU加速引擎]
-        
+
         GPUCalc -.->|调用| ExistingGPU[src.gpu.accelerated]
     end
 
@@ -93,7 +93,7 @@ class HealthCalculatorFactory:
         # 检查现有 GPU 模块状态
         gpu_optimizer = await get_gpu_performance_optimizer()
         health_status = await gpu_optimizer.get_gpu_health_status()
-        
+
         # 判定是否启用 GPU 模式 (健康且显存充足)
         if health_status['available'] and health_status['healthy']:
             return GPUHealthCalculator()  # 使用 CuPy / RAPIDS
@@ -112,7 +112,7 @@ class HealthCalculatorFactory:
 
 def _flush_events(self):
     # ... 现有代码 ...
-    
+
     for event in events:
         if event.event_type == "metric_update":
             # 新增处理逻辑：批量写入指标
@@ -120,7 +120,7 @@ def _flush_events(self):
         elif event.event_type == "portfolio_snapshot":
             # 新增处理逻辑：保存组合快照
             monitoring_db.save_portfolio_snapshot(event.data)
-            
+
     # ... 现有代码 ...
 ```
 
@@ -150,20 +150,20 @@ CREATE TABLE monitoring_watchlist_stocks (
     id SERIAL PRIMARY KEY,
     watchlist_id INTEGER REFERENCES monitoring_watchlists(id) ON DELETE CASCADE,
     stock_code VARCHAR(20) NOT NULL,
-    
+
     -- 入库上下文 (关键新增)
     entry_price DECIMAL(10,2),           -- 入库价格
     entry_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 入库时间
     entry_reason VARCHAR(50),            -- 入库理由: 'macd_gold_cross', 'manual_pick'
     entry_strategy_id VARCHAR(50),       -- 关联的策略ID (如果有)
-    
+
     -- 风控设置
     stop_loss_price DECIMAL(10,2),       -- 止损价格
     target_price DECIMAL(10,2),          -- 止盈价格
-    
+
     weight DECIMAL(5,4) DEFAULT 0.0,     -- 目标权重
     is_active BOOLEAN DEFAULT TRUE,
-    
+
     UNIQUE(watchlist_id, stock_code)
 );
 ```
@@ -176,17 +176,17 @@ CREATE TABLE monitoring_health_scores (
     id SERIAL PRIMARY KEY,
     stock_code VARCHAR(20) NOT NULL,
     score_date DATE NOT NULL,
-    
+
     -- 综合评分
     total_score DECIMAL(5,2),
-    
+
     -- 五维雷达分 (JSONB存储，便于扩展)
     -- {trend: 80, technical: 70, funding: 60, emotion: 50, risk: 90}
-    radar_scores JSONB, 
-    
+    radar_scores JSONB,
+
     -- 市场环境快照
     market_regime VARCHAR(20), -- 'bull', 'bear', 'shock'
-    
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(stock_code, score_date)
 );

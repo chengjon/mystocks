@@ -281,12 +281,14 @@ class MonitoringEventWorker:
 
         # 在Worker线程中创建一个新的事件循环
         import asyncio
+
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
         # 初始化异步DB连接
         try:
             from src.monitoring.infrastructure.postgresql_async import postgres_async
+
             loop.run_until_complete(postgres_async.initialize())
         except Exception as e:
             logger.error(f"❌ 初始化异步DB失败: {e}")
@@ -316,6 +318,7 @@ class MonitoringEventWorker:
         # 清理资源
         try:
             from src.monitoring.infrastructure.postgresql_async import postgres_async
+
             loop.run_until_complete(postgres_async.close())
             loop.close()
         except Exception as e:

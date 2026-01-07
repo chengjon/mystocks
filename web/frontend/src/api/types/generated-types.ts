@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2026-01-07T17:21:36.420473
+// Generated at: 2026-01-07T17:55:53.133435
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {
@@ -358,6 +358,18 @@ export interface BetaResult {
   entity_type?: string | null;
   entity_id?: number | null;
   market_index?: string | null;
+}
+
+export interface CalculationRequest {
+  indicator_id?: string;
+  data?: Record<string, any>[];
+  parameters?: Record<string, any> | null;
+}
+
+export interface CalculationResponse {
+  indicator_id?: string;
+  result?: number | null[];
+  length?: number;
 }
 
 export interface CancelOrderRequest {
@@ -957,12 +969,12 @@ export interface IndicatorConfigUpdateRequest {
 }
 
 export interface IndicatorInfo {
-  indicator_type?: string;
+  indicator_id?: string;
   indicator_name?: string;
-  category?: string;
-  description?: string;
-  default_params?: Record<string, any>;
-  output_fields?: string[];
+  indicator_category?: string;
+  use_case?: string;
+  description?: string | null;
+  status?: string;
 }
 
 export interface IndicatorMetadata {

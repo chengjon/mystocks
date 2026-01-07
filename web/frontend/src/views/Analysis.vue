@@ -515,12 +515,14 @@ const runAnalysis = async (): Promise<void> => {
 
 <style scoped lang="scss">
 
+.analysis {
   padding: 24px;
   background: var(--bg-primary);
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
   min-height: 100vh;
+}
 
-  .config-card {
+.config-card {
     margin-bottom: 24px;
 
     .analysis-form {

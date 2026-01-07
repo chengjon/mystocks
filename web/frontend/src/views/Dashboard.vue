@@ -315,6 +315,7 @@ onMounted(() => {
   min-height: 100vh;
 }
 
+.background-pattern {
   position: fixed;
   top: 0;
   left: 0;
