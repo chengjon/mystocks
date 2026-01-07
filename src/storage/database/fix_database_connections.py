@@ -48,6 +48,8 @@ def fix_postgresql_hypertable():
     """修复PostgreSQL中的hypertable问题"""
     logger.info("🔧 修复PostgreSQL hypertable问题...")
 
+    conn = None
+    cur = None
     try:
         # 直接使用psycopg2连接PostgreSQL
         conn = psycopg2.connect(
@@ -71,14 +73,23 @@ def fix_postgresql_hypertable():
         else:
             logger.info("✓ TimescaleDB扩展已安装")
 
-        cur.close()
-        conn.close()
         logger.info("✓ PostgreSQL hypertable问题修复成功")
         return True
 
     except Exception as e:
         logger.error("✗ PostgreSQL hypertable修复失败: %s", e)
         return False
+    finally:
+        if cur is not None:
+            try:
+                cur.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 def fix_tdengine_database():
@@ -105,6 +116,11 @@ def create_databases():
     """创建所需的数据库"""
     logger.info("🏗️  创建数据库...")
     print("正在创建所需的数据库...")
+
+    conn = None
+    cursor = None
+    mariadb_conn = None
+    mariadb_cursor = None
 
     try:
         # 从环境变量获取MySQL连接参数
@@ -152,8 +168,6 @@ def create_databases():
                 print(f"  ✓ 数据库 {db_name} 已确保存在")
 
         conn.commit()
-        cursor.close()
-        conn.close()
 
         # 为MariaDB也创建数据库
         mariadb_host = os.getenv("MARIADB_HOST")
@@ -163,7 +177,7 @@ def create_databases():
 
         if mariadb_host and mariadb_user and mariadb_password:
             print(f"连接到MariaDB服务器: {mariadb_user}@{mariadb_host}:{mariadb_port}")
-            conn = pymysql.connect(
+            mariadb_conn = pymysql.connect(
                 host=mariadb_host,
                 user=mariadb_user,
                 password=mariadb_password,
@@ -171,12 +185,10 @@ def create_databases():
                 connect_timeout=10,
             )
 
-            cursor = conn.cursor()
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('MARIADB_DATABASE', 'quant_research')}")
+            mariadb_cursor = mariadb_conn.cursor()
+            mariadb_cursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('MARIADB_DATABASE', 'quant_research')}")
             print(f"  ✓ MariaDB数据库 {os.getenv('MARIADB_DATABASE', 'quant_research')} 已确保存在")
-            conn.commit()
-            cursor.close()
-            conn.close()
+            mariadb_conn.commit()
 
         logger.info("✓ 数据库创建成功")
         return True
@@ -184,6 +196,27 @@ def create_databases():
     except Exception as e:
         logger.error("✗ 数据库创建失败: %s", e)
         return False
+    finally:
+        if cursor is not None:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        if mariadb_cursor is not None:
+            try:
+                mariadb_cursor.close()
+            except Exception:
+                pass
+        if mariadb_conn is not None:
+            try:
+                mariadb_conn.close()
+            except Exception:
+                pass
 
 
 def validate_connections():

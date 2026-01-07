@@ -405,7 +405,17 @@ class WebCrawlerHandler(BaseDataSourceHandler):
         super().__init__(endpoint_info)
         import requests
 
-        self.requests = requests
+        # 创建session对象
+        self.session = requests.Session()
+        # 配置连接池
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=10,
+            pool_maxsize=100,
+            max_retries=3,
+        )
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+
         self.endpoint_url = endpoint_info.get("endpoint_url")
         self.method = endpoint_info.get("source_config", {}).get("method", "GET")
         self.headers = endpoint_info.get("source_config", {}).get("headers", {})
@@ -421,9 +431,9 @@ class WebCrawlerHandler(BaseDataSourceHandler):
 
         # 发送请求
         if self.method.upper() == "GET":
-            response = self.requests.get(url, params=params, headers=self.headers, timeout=30)
+            response = self.session.get(url, params=params, headers=self.headers, timeout=30)
         else:
-            response = self.requests.post(url, json=params, headers=self.headers, timeout=30)
+            response = self.session.post(url, json=params, headers=self.headers, timeout=30)
 
         response.raise_for_status()
 
@@ -454,3 +464,12 @@ class WebCrawlerHandler(BaseDataSourceHandler):
                     raise ValueError(f"无法解析JSON路径: {path}")
             return data
         return data
+
+    def close(self):
+        """关闭HTTP session"""
+        if self.session is not None:
+            self.session.close()
+
+    def __del__(self):
+        """析构函数"""
+        self.close()

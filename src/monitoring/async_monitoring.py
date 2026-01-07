@@ -84,14 +84,18 @@ class MonitoringEventPublisher:
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
                 redis_db = int(os.getenv("REDIS_DB", 0))
 
-                self._redis_client = redis.Redis(
+                # 使用连接池
+                self._redis_pool = redis.ConnectionPool(
                     host=redis_host,
                     port=redis_port,
                     db=redis_db,
                     decode_responses=False,  # 保持二进制模式
                     socket_timeout=2,
                     socket_connect_timeout=2,
+                    max_connections=10,
                 )
+                self._redis_client = redis.Redis(connection_pool=self._redis_pool)
+
                 # 测试连接
                 self._redis_client.ping()
                 logger.info("✅ Redis连接成功: %s:%d", redis_host, redis_port)
@@ -157,6 +161,17 @@ class MonitoringEventPublisher:
         self._enabled = False
         logger.info("⚠️ MonitoringEventPublisher 已禁用")
 
+    def close(self):
+        """关闭Redis连接"""
+        if self._redis_client is not None and self._redis_client is not False:
+            try:
+                self._redis_client.close()
+                if hasattr(self, "_redis_pool") and self._redis_pool is not None:
+                    self._redis_pool.disconnect()
+                logger.info("✅ MonitoringEventPublisher Redis连接已关闭")
+            except Exception as e:
+                logger.warning("⚠️ 关闭Redis连接失败: %s", e)
+
 
 class MonitoringEventWorker:
     """
@@ -200,14 +215,18 @@ class MonitoringEventWorker:
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
                 redis_db = int(os.getenv("REDIS_DB", 0))
 
-                self._redis_client = redis.Redis(
+                # 使用连接池
+                self._redis_pool = redis.ConnectionPool(
                     host=redis_host,
                     port=redis_port,
                     db=redis_db,
                     decode_responses=False,
                     socket_timeout=2,
                     socket_connect_timeout=2,
+                    max_connections=10,
                 )
+                self._redis_client = redis.Redis(connection_pool=self._redis_pool)
+
                 self._redis_client.ping()
             except Exception as e:
                 logger.warning("⚠️ Worker Redis连接失败: %s", e)
@@ -246,9 +265,31 @@ class MonitoringEventWorker:
 
         logger.info("✅ 监控事件Worker已停止")
 
+        # 关闭Redis连接
+        if self._redis_client is not None and self._redis_client is not False:
+            try:
+                self._redis_client.close()
+                if hasattr(self, "_redis_pool") and self._redis_pool is not None:
+                    self._redis_pool.disconnect()
+                logger.info("✅ Worker Redis连接已关闭")
+            except Exception as e:
+                logger.warning("⚠️ 关闭Worker Redis连接失败: %s", e)
+
     def _worker_loop(self):
         """Worker主循环"""
         logger.info("🔄 Worker循环已启动")
+
+        # 在Worker线程中创建一个新的事件循环
+        import asyncio
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        # 初始化异步DB连接
+        try:
+            from src.monitoring.infrastructure.postgresql_async import postgres_async
+            loop.run_until_complete(postgres_async.initialize())
+        except Exception as e:
+            logger.error(f"❌ 初始化异步DB失败: {e}")
 
         while self._running:
             try:
@@ -262,7 +303,8 @@ class MonitoringEventWorker:
 
                 # 检查是否需要刷新
                 if len(self._event_buffer) >= self.batch_size:
-                    self._flush_events()
+                    # 使用loop运行异步刷新
+                    loop.run_until_complete(self._flush_events_async())
 
                 # 短暂休眠
                 time.sleep(self.poll_interval)
@@ -271,41 +313,23 @@ class MonitoringEventWorker:
                 logger.error("❌ Worker循环错误: %s", e)
                 time.sleep(1)  # 出错后等待1秒
 
-    def _fetch_events(self) -> List[MonitoringEvent]:
-        """从Redis获取事件"""
+        # 清理资源
         try:
-            redis_client = self._get_redis_client()
-            if not redis_client:
-                return []
-
-            # 批量获取事件（使用RPOP）
-            events = []
-            for _ in range(self.batch_size):
-                event_data = redis_client.rpop(self.redis_channel)
-                if not event_data:
-                    break
-
-                try:
-                    event_dict = json.loads(event_data)
-                    event = MonitoringEvent.from_dict(event_dict)
-                    events.append(event)
-                except Exception as e:
-                    logger.warning("⚠️ 解析事件失败: %s", e)
-
-            return events
-
+            from src.monitoring.infrastructure.postgresql_async import postgres_async
+            loop.run_until_complete(postgres_async.close())
+            loop.close()
         except Exception as e:
-            logger.warning("⚠️ 获取事件失败: %s", e)
-            return []
+            logger.error(f"❌ 关闭循环失败: {e}")
 
-    def _flush_events(self):
-        """批量刷新事件到监控数据库"""
+    async def _flush_events_async(self):
+        """异步批量刷新事件"""
         if not self._event_buffer:
             return
 
         try:
             # 导入监控数据库（延迟导入避免循环依赖）
             from src.monitoring.monitoring_database import get_monitoring_database
+            from src.monitoring.infrastructure.postgresql_async import postgres_async
 
             monitoring_db = get_monitoring_database()
 
@@ -317,6 +341,18 @@ class MonitoringEventWorker:
             failed_count = 0
 
             for event_type, events in grouped_events.items():
+                # 特殊处理 metric_update 事件 (v3.0 新增)
+                if event_type == "metric_update":
+                    try:
+                        scores_data = [e.data for e in events]
+                        await postgres_async.batch_save_health_scores(scores_data)
+                        success_count += len(events)
+                    except Exception as e:
+                        logger.warning(f"⚠️ 批量写入健康度评分失败: {e}")
+                        failed_count += len(events)
+                    continue
+
+                # 处理传统同步事件
                 for event in events:
                     try:
                         if event_type == "operation":
@@ -348,6 +384,10 @@ class MonitoringEventWorker:
 
         except Exception as e:
             logger.error("❌ 刷新事件失败: %s", e)
+
+    def _flush_events(self):
+        """保留同步接口以兼容（实际逻辑已移至 _flush_events_async）"""
+        pass
 
     def _group_events_by_type(self) -> Dict[str, List[MonitoringEvent]]:
         """按事件类型分组"""

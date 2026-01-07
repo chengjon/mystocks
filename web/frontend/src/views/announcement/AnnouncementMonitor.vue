@@ -762,33 +762,35 @@ onMounted(() => {
   min-height: 100vh;
   background: var(--bg-primary);
   position: relative;
+}
 
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.04;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      );
-  }
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
 
-  .page-header {
+.page-header {
     margin-bottom: var(--spacing-6);
     position: relative;
     z-index: 1;
@@ -885,7 +887,6 @@ onMounted(() => {
     margin-bottom: var(--spacing-6);
     position: relative;
     z-index: 1;
-  }
 
     .search-form {
       .el-form-item {

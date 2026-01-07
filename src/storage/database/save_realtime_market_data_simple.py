@@ -111,13 +111,20 @@ class SimpleRealtimeDataSaver:
         self.logger.info("初始化Redis连接...")
 
         try:
-            # 创建Redis连接
+            # 创建Redis连接（使用连接池）
             self.redis_client = redis.Redis(
                 host=self.config["redis_host"],
                 port=self.config["redis_port"],
                 password=self.config["redis_password"],
                 db=self.config["redis_db"],
                 decode_responses=True,
+                connection_pool=redis.ConnectionPool(
+                    host=self.config["redis_host"],
+                    port=self.config["redis_port"],
+                    password=self.config["redis_password"],
+                    db=self.config["redis_db"],
+                    max_connections=10,
+                ),
             )
 
             # 测试连接
@@ -129,6 +136,15 @@ class SimpleRealtimeDataSaver:
             self.logger.error("❌ Redis连接失败: %s", e)
             self.logger.info("💡 请检查Redis服务是否启动，或使用CSV备份模式")
             return False
+
+    def close(self):
+        """关闭所有连接"""
+        if self.redis_client is not None:
+            try:
+                self.redis_client.close()
+                self.logger.info("Redis连接已关闭")
+            except Exception as e:
+                self.logger.error("关闭Redis连接失败: %s", e)
 
     def get_realtime_market_data(self) -> Optional[pd.DataFrame]:
         """获取实时市场数据"""

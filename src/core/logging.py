@@ -191,6 +191,8 @@ def db_sink(message):
     Args:
         message: loguru的日志消息记录
     """
+    conn = None
+    cursor = None
     try:
         import psycopg2
         import json
@@ -239,12 +241,21 @@ def db_sink(message):
         )
 
         conn.commit()
-        cursor.close()
-        conn.close()
 
     except Exception:
         # 数据库日志失败不应影响主程序，静默处理
         pass
+    finally:
+        if cursor is not None:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 # 5. 数据库sink (WARNING及以上)

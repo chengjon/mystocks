@@ -128,6 +128,20 @@ class NotificationManager:
 
         self.config = config or NotificationConfig(channels=[NotificationChannel.LOG])
 
+        # 创建session对象用于webhook
+        if REQUESTS_AVAILABLE:
+            self.session = requests.Session()
+            # 配置连接池
+            adapter = requests.adapters.HTTPAdapter(
+                pool_connections=5,
+                pool_maxsize=50,
+                max_retries=3,
+            )
+            self.session.mount("http://", adapter)
+            self.session.mount("https://", adapter)
+        else:
+            self.session = None
+
         # 通知历史
         self.notifications: List[Notification] = []
 
@@ -348,7 +362,7 @@ class NotificationManager:
         }
 
         # 发送POST请求
-        response = requests.post(
+        response = self.session.post(
             self.config.webhook_url,
             json=payload,
             headers=self.config.webhook_headers,
@@ -357,6 +371,15 @@ class NotificationManager:
 
         response.raise_for_status()
         self.logger.self.logger.info("info")
+
+    def close(self):
+        """关闭session"""
+        if self.session is not None:
+            self.session.close()
+
+    def __del__(self):
+        """析构函数"""
+        self.close()
 
     def _send_log(self, notification: Notification):
         """发送日志通知"""

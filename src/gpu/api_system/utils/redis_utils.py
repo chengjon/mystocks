@@ -21,6 +21,7 @@ class RedisQueue:
         self.port = port
         self.db = db
         self.redis_client = None
+        self.redis_pool = None
         self.task_queues = {
             "backtest": "gpu:backtest:queue",
             "realtime": "gpu:realtime:queue",
@@ -49,7 +50,8 @@ class RedisQueue:
     def connect(self) -> bool:
         """连接到Redis服务器"""
         try:
-            self.redis_client = redis.Redis(
+            # 使用连接池
+            self.redis_pool = redis.ConnectionPool(
                 host=self.host,
                 port=self.port,
                 db=self.db,
@@ -57,7 +59,10 @@ class RedisQueue:
                 socket_timeout=5,
                 socket_connect_timeout=5,
                 retry_on_timeout=True,
+                max_connections=10,
             )
+            self.redis_client = redis.Redis(connection_pool=self.redis_pool)
+
             # 测试连接
             self.redis_client.ping()
             logger.info("Redis连接成功: %s:%s", self.host, self.port)
@@ -70,6 +75,8 @@ class RedisQueue:
         """断开Redis连接"""
         if self.redis_client:
             self.redis_client.close()
+        if self.redis_pool:
+            self.redis_pool.disconnect()
             logger.info("Redis连接已断开")
 
     def enqueue_task(self, queue_type: str, task_data: Dict[str, Any]) -> str:

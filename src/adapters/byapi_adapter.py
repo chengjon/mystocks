@@ -16,7 +16,7 @@ import time
 import requests
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from datetime import datetime
 
 
@@ -88,6 +88,17 @@ class ByapiAdapter(IDataSource):
         self.base_url = base_url
         self.min_interval = min_interval
         self.last_request_time = 0.0
+
+        # 创建session对象
+        self.session = requests.Session()
+        # 配置连接池
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=5,
+            pool_maxsize=50,
+            max_retries=3,
+        )
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
 
         # 频率映射: IDataSource标准 -> byapi参数
         self.frequency_map = {
@@ -166,7 +177,7 @@ class ByapiAdapter(IDataSource):
         self._rate_limit()
 
         try:
-            response = requests.get(url, timeout=timeout)
+            response = self.session.get(url, timeout=timeout)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -495,64 +506,14 @@ class ByapiAdapter(IDataSource):
         except Exception as e:
             raise DataSourceError(f"获取跌停股池失败 [{trade_date}]: {e}")
 
-    def get_technical_indicator(
-        self,
-        symbol: str,
-        indicator: str,
-        frequency: str = "daily",
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        limit: int = 100,
-    ) -> pd.DataFrame:
-        """
-        获取技术指标 (byapi特有功能)
+    def close(self):
+        """关闭session"""
+        if self.session is not None:
+            self.session.close()
 
-        API: http://api.biyingapi.com/hsstock/history/{indicator}/{symbol}/{level}/n/{licence}?st={start}&et={end}&lt={limit}
-
-        Args:
-            symbol: 股票代码
-            indicator: 指标类型 (macd/ma/boll/kdj)
-            frequency: 频率
-            start_date: 开始日期 (可选)
-            end_date: 结束日期 (可选)
-            limit: 最大返回条数
-
-        Returns:
-            DataFrame包含技术指标数据
-        """
-        std_symbol = self._standardize_symbol(symbol)
-        level = self.frequency_map.get(frequency, "d")
-
-        params = []
-        if start_date:
-            params.append(f"st={start_date.replace('-', '')}")
-        if end_date:
-            params.append(f"et={end_date.replace('-', '')}")
-        params.append(f"lt={limit}")
-
-        query_string = "&".join(params)
-
-        url = (
-            f"http://api.biyingapi.com/hsstock/history/{indicator}/"
-            f"{std_symbol}/{level}/n/{self.licence}?{query_string}"
-        )
-
-        try:
-            data = self._request(url)
-
-            if not isinstance(data, list) or len(data) == 0:
-                return pd.DataFrame()
-
-            df = pd.DataFrame(data)
-            df["symbol"] = std_symbol
-
-            if "t" in df.columns:
-                df["timestamp"] = pd.to_datetime(df["t"], utc=True)
-
-            return df
-
-        except Exception as e:
-            raise DataSourceError(f"获取技术指标失败 [{symbol}, {indicator}]: {e}")
+    def __del__(self):
+        """析构函数"""
+        self.close()
 
 
 # 向后兼容: 别名

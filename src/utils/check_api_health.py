@@ -18,6 +18,34 @@ import os
 TEST_USERNAME = os.getenv("TEST_ADMIN_USERNAME", "admin")
 TEST_PASSWORD = os.getenv("TEST_ADMIN_PASSWORD", "admin123")
 
+# 创建全局session对象
+_session = None
+
+
+def get_session() -> requests.Session:
+    """获取或创建全局session"""
+    global _session
+    if _session is None:
+        _session = requests.Session()
+        # 配置连接池
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=10,
+            pool_maxsize=100,
+            max_retries=3,
+        )
+        _session.mount("http://", adapter)
+        _session.mount("https://", adapter)
+    return _session
+
+
+def cleanup():
+    """清理session"""
+    global _session
+    if _session is not None:
+        _session.close()
+        _session = None
+
+
 # 10个关键API端点
 API_ENDPOINTS = [
     {
@@ -116,7 +144,8 @@ API_ENDPOINTS = [
 def check_backend_running() -> bool:
     """检查Backend服务是否运行"""
     try:
-        resp = requests.get(f"{BASE_URL}/api/docs", timeout=2)
+        session = get_session()
+        resp = session.get(f"{BASE_URL}/api/docs", timeout=2)
         return resp.status_code == 200
     except Exception:
         return False
@@ -125,7 +154,8 @@ def check_backend_running() -> bool:
 def get_auth_token() -> Optional[str]:
     """获取认证Token"""
     try:
-        resp = requests.post(
+        session = get_session()
+        resp = session.post(
             f"{BASE_URL}/api/auth/login",
             data={"username": TEST_USERNAME, "password": TEST_PASSWORD},
             timeout=TIMEOUT,
@@ -152,12 +182,13 @@ def test_api_endpoint(endpoint: Dict, token: Optional[str]) -> Tuple[bool, str, 
         headers["Authorization"] = f"Bearer {token}"
 
     try:
+        session = get_session()
         # 发送请求
         if endpoint["method"] == "GET":
-            resp = requests.get(url, headers=headers, timeout=TIMEOUT)
+            resp = session.get(url, headers=headers, timeout=TIMEOUT)
         elif endpoint["method"] == "POST":
             headers["Content-Type"] = "application/json"
-            resp = requests.post(url, json=endpoint["data"], headers=headers, timeout=TIMEOUT)
+            resp = session.post(url, json=endpoint["data"], headers=headers, timeout=TIMEOUT)
         else:
             return False, f"不支持的方法: {endpoint['method']}", None
 
@@ -318,8 +349,15 @@ def main():
 
     # 返回退出码
     # SC-010-NEW: 10个关键API中至少8个(≥80%)返回200
+
+    # 清理session
+    cleanup()
+
     return 0 if pass_rate >= 80 else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    finally:
+        cleanup()

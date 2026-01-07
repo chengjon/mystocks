@@ -166,6 +166,7 @@ class PostgreSQLConnectionPool:
 
     def _create_connection(self) -> Optional[PooledConnection]:
         """创建新连接"""
+        raw_conn = None
         try:
             # 基础连接配置
             raw_conn = psycopg2.connect(
@@ -188,6 +189,12 @@ class PostgreSQLConnectionPool:
             with self._lock:
                 self.metrics.failed_requests += 1
             return None
+        finally:
+            if raw_conn is not None:
+                try:
+                    raw_conn.close()
+                except Exception:
+                    pass
 
     def _get_connection_kwargs(self) -> Dict[str, Any]:
         """获取连接参数"""
