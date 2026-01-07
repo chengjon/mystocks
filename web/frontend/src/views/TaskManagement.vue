@@ -1,99 +1,120 @@
 <template>
-  <div class="task-management">
-    <el-row :gutter="20" class="stats-row">
-      <el-col :xs="24" :sm="12" :md="6" v-for="stat in stats" :key="stat.title">
-        <el-card class="stat-card">
+    <div class="page-header">
+      <div class="page-title">任务管理</div>
+      <div class="page-subtitle">TASK MANAGEMENT</div>
+      <div class="page-decorative-line"></div>
+    </div>
+
+    <div class="stats-section">
+      <div class="card stat-card" v-for="stat in stats" :key="stat.title">
+        <div class="card-body">
           <div class="stat-content">
-            <div class="stat-icon" :style="{ backgroundColor: stat.color }">
-              <el-icon :size="24"><component :is="stat.icon" /></el-icon>
+            <div class="stat-icon" :style="{ borderColor: stat.color }">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
             </div>
             <div class="stat-info">
-              <p class="stat-title">{{ stat.title }}</p>
-              <h3 class="stat-value">{{ stat.value }}</h3>
+              <div class="stat-title">{{ stat.title }}</div>
+              <div class="stat-value">{{ stat.value }}</div>
             </div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </div>
+    </div>
 
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>任务列表</span>
-              <div class="header-actions">
-                <el-button type="primary" :icon="Plus" @click="showAddTaskDialog">新建任务</el-button>
-                <el-button type="success" :icon="Upload" @click="showImportDialog">导入配置</el-button>
-                <el-button type="info" :icon="Download" @click="exportConfig">导出配置</el-button>
-                <el-button :icon="Refresh" @click="loadTasks">刷新</el-button>
-              </div>
-            </div>
-          </template>
+    <div class="card tasks-card">
+      <div class="card-header">
+        <div class="header-title">
+          <div class="title-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+          </div>
+          <span class="title-text">任务列表</span>
+          <span class="title-sub">TASK LIST</span>
+        </div>
+        <div class="header-actions">
+          <button class="button button-primary" @click="showAddTaskDialog">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            新建任务
+          </button>
+          <button class="button button-success" @click="showImportDialog">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            导入配置
+          </button>
+          <button class="button button-info" @click="exportConfig">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            导出配置
+          </button>
+          <button class="button" @click="loadTasks" :class="{ loading: loading }">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6"></path>
+              <path d="M1 20v-6h6"></path>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            刷新
+          </button>
+        </div>
+      </div>
 
-          <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-            <el-tab-pane label="全部任务" name="all">
-              <TaskTable
-                :tasks="filteredTasks"
-                :loading="loading"
-                @start="handleStartTask"
-                @stop="handleStopTask"
-                @edit="handleEditTask"
-                @delete="handleDeleteTask"
-                @view-executions="handleViewExecutions"
-              />
-            </el-tab-pane>
-            <el-tab-pane label="定时任务" name="cron">
-              <TaskTable
-                :tasks="cronTasks"
-                :loading="loading"
-                @start="handleStartTask"
-                @stop="handleStopTask"
-                @edit="handleEditTask"
-                @delete="handleDeleteTask"
-                @view-executions="handleViewExecutions"
-              />
-            </el-tab-pane>
-            <el-tab-pane label="数据同步" name="data_sync">
-              <TaskTable
-                :tasks="dataSyncTasks"
-                :loading="loading"
-                @start="handleStartTask"
-                @stop="handleStopTask"
-                @edit="handleEditTask"
-                @delete="handleDeleteTask"
-                @view-executions="handleViewExecutions"
-              />
-            </el-tab-pane>
-            <el-tab-pane label="指标计算" name="indicator_calc">
-              <TaskTable
-                :tasks="indicatorTasks"
-                :loading="loading"
-                @start="handleStartTask"
-                @stop="handleStopTask"
-                @edit="handleEditTask"
-                @delete="handleDeleteTask"
-                @view-executions="handleViewExecutions"
-              />
-            </el-tab-pane>
-            <el-tab-pane label="执行历史" name="history">
-              <ExecutionHistory
-                :executions="executions"
-                :loading="executionLoading"
-                @refresh="loadExecutions"
-              />
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-    </el-row>
+      <div class="card-body">
+        <div class="tabs">
+          <button
+            v-for="tab in tabs"
+            :key="tab.name"
+            :class="['tab-button', { active: activeTab === tab.name }]"
+            @click="handleTabChange(tab.name)"
+          >
+            <span class="tab-icon">{{ tab.icon }}</span>
+            <span class="tab-text">{{ tab.label }}</span>
+          </button>
+        </div>
 
-    <!-- 新建/编辑任务对话框 -->
+        <div class="tab-content">
+          <TaskTable
+            v-if="activeTab !== 'history'"
+            :tasks="filteredTasks"
+            :loading="loading"
+            @start="handleStartTask"
+            @stop="handleStopTask"
+            @edit="handleEditTask"
+            @delete="handleDeleteTask"
+            @view-executions="handleViewExecutions"
+          />
+          <ExecutionHistory
+            v-else
+            :executions="executions"
+            :loading="executionLoading"
+            @refresh="loadExecutions"
+          />
+        </div>
+      </div>
+    </div>
+
     <el-dialog
       v-model="taskDialogVisible"
       :title="editingTask ? '编辑任务' : '新建任务'"
       width="800px"
       @close="resetTaskForm"
+      class="dialog"
     >
       <TaskForm
         :task="currentTask"
@@ -102,34 +123,29 @@
       />
     </el-dialog>
 
-    <!-- 导入配置对话框 -->
-    <el-dialog v-model="importDialogVisible" title="导入配置" width="500px">
-      <el-form :model="importForm" label-width="100px">
-        <el-form-item label="配置文件">
-          <el-input v-model="importForm.path" placeholder="请输入配置文件路径" />
-        </el-form-item>
-      </el-form>
+    <el-dialog v-model="importDialogVisible" title="导入配置" width="500px" class="dialog">
+      <div class="import-form">
+        <label class="form-label">配置文件</label>
+        <input v-model="importForm.path" placeholder="请输入配置文件路径" class="input" />
+      </div>
       <template #footer>
-        <el-button @click="importDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleImport">确定</el-button>
+        <button class="button" @click="importDialogVisible = false">取消</button>
+        <button class="button button-primary" @click="handleImport">确定</button>
       </template>
     </el-dialog>
 
-    <!-- 执行历史对话框 -->
-    <el-dialog v-model="executionDialogVisible" title="执行历史" width="1000px">
+    <el-dialog v-model="executionDialogVisible" title="执行历史" width="1000px" class="dialog">
       <ExecutionHistory
         :executions="taskExecutions"
         :loading="executionLoading"
         show-details
       />
     </el-dialog>
-  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Upload, Download, Refresh } from '@element-plus/icons-vue'
 import TaskTable from '@/components/task/TaskTable.vue'
 import TaskForm from '@/components/task/TaskForm.vue'
 import ExecutionHistory from '@/components/task/ExecutionHistory.vue'
@@ -137,7 +153,6 @@ import axios from 'axios'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
-// 状态
 const loading = ref(false)
 const executionLoading = ref(false)
 const activeTab = ref('all')
@@ -145,55 +160,50 @@ const tasks = ref([])
 const executions = ref([])
 const taskExecutions = ref([])
 
-// 对话框状态
 const taskDialogVisible = ref(false)
 const importDialogVisible = ref(false)
 const executionDialogVisible = ref(false)
 
-// 表单
 const currentTask = ref(null)
 const editingTask = ref(null)
 const importForm = ref({ path: '' })
 
-// 统计数据
+const tabs = [
+  { name: 'all', label: '全部任务', icon: '📋' },
+  { name: 'cron', label: '定时任务', icon: '⏰' },
+  { name: 'data_sync', label: '数据同步', icon: '🔄' },
+  { name: 'indicator_calc', label: '指标计算', icon: '📊' },
+  { name: 'history', label: '执行历史', icon: '📜' }
+]
+
 const stats = computed(() => [
   {
     title: '总任务数',
     value: tasks.value.length,
-    icon: 'List',
     color: '#409eff'
   },
   {
     title: '运行中',
     value: tasks.value.filter(t => t.status === 'running').length,
-    icon: 'VideoPlay',
     color: '#67c23a'
   },
   {
     title: '今日执行',
     value: executions.value.length,
-    icon: 'Clock',
     color: '#e6a23c'
   },
   {
     title: '成功率',
     value: calculateSuccessRate() + '%',
-    icon: 'CircleCheck',
     color: '#67c23a'
   }
 ])
 
-// 过滤任务
 const filteredTasks = computed(() => {
   if (activeTab.value === 'all') return tasks.value
   return tasks.value.filter(t => t.task_type === activeTab.value)
 })
 
-const cronTasks = computed(() => tasks.value.filter(t => t.task_type === 'cron'))
-const dataSyncTasks = computed(() => tasks.value.filter(t => t.task_type === 'data_sync'))
-const indicatorTasks = computed(() => tasks.value.filter(t => t.task_type === 'indicator_calc'))
-
-// 方法
 const calculateSuccessRate = () => {
   if (executions.value.length === 0) return 0
   const successCount = executions.value.filter(e => e.status === 'success').length
@@ -260,7 +270,6 @@ const handleEditTask = (task) => {
 const handleSubmitTask = async (taskData) => {
   try {
     if (editingTask.value) {
-      // 更新任务（需要先删除再创建）
       await axios.delete(`${API_BASE}/api/tasks/${taskData.task_id}`)
     }
 
@@ -356,54 +365,429 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.task-management {
-  .stats-row {
-    margin-bottom: 20px;
+
+  padding: 24px;
+  background: var(--bg-primary);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  min-height: 100vh;
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--gold-dim);
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--gold-muted);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+
+    .page-decorative-line {
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+      margin: 16px auto;
+    }
+  }
+
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
 
     .stat-card {
       .stat-content {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
 
         .stat-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 8px;
+          width: 64px;
+          height: 64px;
+          border: 2px solid currentColor;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: var(--gold-primary);
+
+          svg {
+            width: 32px;
+            height: 32px;
+          }
         }
 
         .stat-info {
           flex: 1;
 
           .stat-title {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: #909399;
+            font-family: var(--font-body);
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
           }
 
           .stat-value {
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-            color: #303133;
+            font-family: var(--font-mono);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gold-primary);
           }
         }
       }
     }
   }
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    position: relative;
 
-    .header-actions {
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gold-primary);
+      z-index: 1;
+    }
+
+    &::before {
+      top: 12px;
+      left: 12px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    &::after {
+      bottom: 12px;
+      right: 12px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .card-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gold-dim);
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .title-icon {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--gold-primary);
+          flex-shrink: 0;
+
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
+
+        .title-text {
+          font-family: var(--font-body);
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--gold-primary);
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
+
+        .title-sub {
+          font-family: var(--font-body);
+          font-size: 10px;
+          color: var(--gold-muted);
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          display: block;
+          margin-top: 2px;
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 12px;
+      }
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--gold-dim);
+
+    .tab-button {
+      padding: 12px 24px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
       display: flex;
+      align-items: center;
       gap: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      border-bottom: 2px solid transparent;
+
+      .tab-icon {
+        font-size: 16px;
+      }
+
+      &:hover {
+        color: var(--gold-primary);
+      }
+
+      &.active {
+        color: var(--gold-primary);
+        border-bottom-color: var(--gold-primary);
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100% - 24px);
+          height: 2px;
+          background: var(--gold-primary);
+          box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    min-height: 400px;
+  }
+
+  .import-form {
+    margin-bottom: 20px;
+
+    .form-label {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--gold-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .input {
+      width: 100%;
+    }
+  }
+
+  .input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--gold-dim);
+    padding: 10px 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-bottom-color: var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+
+  .button {
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid var(--gold-primary);
+    background: transparent;
+    color: var(--gold-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover:not(.loading) {
+      background: var(--gold-primary);
+      color: var(--bg-primary);
+    }
+
+    &.loading {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 6px;
+      height: 6px;
+      border-left: 1px solid currentColor;
+      border-top: 1px solid currentColor;
+    }
+
+    &.button-primary {
+      border-color: var(--rise);
+      color: var(--rise);
+
+      &.loading {
+        opacity: 0.6;
+      }
+
+      &:hover:not(.loading) {
+        background: var(--rise);
+        color: var(--bg-primary);
+      }
+    }
+
+    &.button-success {
+      border-color: var(--fall);
+      color: var(--fall);
+
+      &:hover:not(.loading) {
+        background: var(--fall);
+        color: var(--bg-primary);
+      }
+    }
+
+    &.button-info {
+      border-color: #409eff;
+      color: #409eff;
+
+      &:hover:not(.loading) {
+        background: #409eff;
+        color: var(--bg-primary);
+      }
+    }
+  }
+
+  :deep(.el-dialog) {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+    .el-dialog__header {
+      border-bottom: 1px solid var(--gold-dim);
+      padding: 20px 24px;
+
+      .el-dialog__title {
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--gold-primary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 24px;
+    }
+
+    .el-dialog__footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--gold-dim);
+    }
+  }
+
+  @media (max-width: 768px) {
+      padding: 16px;
+
+      .page-header {
+        padding: 24px 0;
+
+        .page-title {
+          font-size: 24px;
+          letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+          font-size: 9px;
+          letter-spacing: 3px;
+        }
+      }
+
+      .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card {
+        .card-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+
+          .header-actions {
+            width: 100%;
+            flex-wrap: wrap;
+
+            .button {
+              flex: 1;
+              min-width: 120px;
+            }
+          }
+        }
+      }
+
+      .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 8px;
+
+        .tab-button {
+          padding: 10px 16px;
+          font-size: 12px;
+        }
+      }
     }
   }
 }

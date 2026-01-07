@@ -16,7 +16,7 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 导入被测试的模块
-from utils.column_mapper import ColumnMapper
+from src.utils.column_mapper import ColumnMapper
 
 
 class TestColumnMapper:

@@ -1,213 +1,201 @@
 <template>
-  <div class="alert-rules-management">
-    <div class="page-header">
-      <h1>🔔 告警规则管理</h1>
-      <p class="subtitle">设置和管理股票监控告警规则</p>
-    </div>
+    <PageHeader
+      title="告警规则管理"
+      subtitle="ALERT RULES MANAGEMENT"
+    >
+      <template #description>
+        设置和管理股票监控告警规则
+      </template>
+      <template #actions>
+        <button class="button button-primary" @click="showCreateDialog = true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          新建规则
+        </button>
+        <button class="button" @click="fetchAlertRules" :class="{ loading: loading }">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          刷新
+        </button>
+      </template>
+    </PageHeader>
 
-    <!-- 操作按钮 -->
-    <div class="actions">
-      <el-button type="primary" @click="showCreateDialog = true">
-        <el-icon><Plus /></el-icon>
-        新建规则
-      </el-button>
-      <el-button @click="fetchAlertRules">
-        <el-icon><Refresh /></el-icon>
-        刷新
-      </el-button>
-    </div>
-
-    <!-- 规则列表 -->
-    <el-card class="rules-card" shadow="hover">
-      <el-table
-        :data="alertRules"
-        style="width: 100%"
-        v-loading="loading"
-      >
-        <el-table-column prop="rule_name" label="规则名称" width="200" />
-        <el-table-column prop="symbol" label="股票代码" width="120" />
-        <el-table-column prop="stock_name" label="股票名称" width="150" />
-        <el-table-column prop="rule_type" label="规则类型" width="120">
-          <template #default="{ row }">
-            <el-tag size="small" :type="getRuleTypeTag(row.rule_type)">
+    <div class="card rules-card">
+      <div class="card-body">
+        <StockListTable
+          :columns="tableColumns"
+          :data="paginatedRules"
+          :loading="loading"
+          :row-clickable="false"
+        >
+          <template #cell-rule_type="{ row }">
+            <el-tag :type="getRuleTypeTag(row.rule_type)">
               {{ formatRuleType(row.rule_type) }}
             </el-tag>
           </template>
-        </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="80" sortable />
-        <el-table-column prop="parameters" label="参数" width="200">
-          <template #default="{ row }">
-            <el-popover
-              placement="top-start"
-              title="参数详情"
-              :width="300"
-              trigger="hover"
-            >
-              <template #default>
-                <div v-for="(value, key) in row.parameters" :key="key" class="param-item">
-                  <span class="param-key">{{ key }}:</span>
-                  <span class="param-value">{{ value }}</span>
-                </div>
-              </template>
-              <template #reference>
-                <el-tag size="small">查看参数</el-tag>
-              </template>
-            </el-popover>
+          <template #cell-parameters="{ row }">
+            <div class="param-display">
+              <span v-for="(value, key) in row.parameters" :key="key" class="param-item">
+                <span class="param-key">{{ key }}:</span>
+                <span class="param-value">{{ value }}</span>
+              </span>
+            </div>
           </template>
-        </el-table-column>
-        <el-table-column prop="notification_config.level" label="通知级别" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getNotificationLevelTag(row.notification_config?.level)" size="small">
+          <template #cell-notification_config="{ row }">
+            <el-tag :type="getNotificationLevelType(row.notification_config?.level)">
               {{ row.notification_config?.level }}
             </el-tag>
           </template>
-        </el-table-column>
-        <el-table-column prop="is_active" label="状态" width="80">
-          <template #default="{ row }">
-            <el-switch
-              v-model="row.is_active"
-              @change="toggleRuleStatus(row)"
-              :active-value="true"
-              :inactive-value="false"
-            />
+          <template #cell-is_active="{ row }">
+            <span :class="['status-badge', row.is_active ? 'active' : 'inactive']">
+              {{ row.is_active ? '启用' : '停用' }}
+            </span>
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="{ row }">
-            <el-button size="small" @click="editRule(row)">编辑</el-button>
-            <el-button size="small" type="danger" @click="deleteRule(row.id)">删除</el-button>
+          <template #cell-actions="{ row }">
+            <button class="action-button" @click="editRule(row)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4L21.5 5.5z"></path>
+              </svg>
+              编辑
+            </button>
+            <button class="action-button action-button-danger" @click="deleteRule(row.id)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              删除
+            </button>
           </template>
-        </el-table-column>
-      </el-table>
+        </StockListTable>
 
-      <!-- 分页 -->
-      <div class="pagination">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="pagination.total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <div v-if="alertRules.length === 0 && !loading" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 2c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <p>暂无告警规则</p>
+        </div>
       </div>
-    </el-card>
 
-    <!-- 新建/编辑规则对话框 -->
-    <el-dialog
-      v-model="showCreateDialog"
+      <PaginationBar
+        v-model:page="pagination.page"
+        v-model:page-size="pagination.size"
+        :total="alertRules.length"
+        :page-sizes="[10, 20, 50, 100]"
+        @page-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
+    </div>
+
+    <DetailDialog
+      v-model:visible="showCreateDialog"
       :title="editingRule ? '编辑规则' : '新建规则'"
-      width="600px"
-      :before-close="handleCloseDialog"
+      @confirm="saveRule"
+      @cancel="handleCloseDialog"
     >
-      <el-form
-        :model="ruleForm"
-        :rules="ruleFormRules"
-        ref="ruleFormRef"
-        label-width="120px"
-      >
-        <el-form-item label="规则名称" prop="rule_name">
-          <el-input v-model="ruleForm.rule_name" placeholder="请输入规则名称" />
-        </el-form-item>
+      <div class="rule-form">
+        <div class="form-row">
+          <label class="form-label">规则名称</label>
+          <input v-model="ruleForm.rule_name" placeholder="请输入规则名称" class="input" />
+        </div>
 
-        <el-form-item label="股票代码" prop="symbol">
-          <el-input v-model="ruleForm.symbol" placeholder="请输入股票代码" />
-        </el-form-item>
+        <div class="form-row">
+          <label class="form-label">股票代码</label>
+          <input v-model="ruleForm.symbol" placeholder="请输入股票代码" class="input" />
+        </div>
 
-        <el-form-item label="股票名称">
-          <el-input v-model="ruleForm.stock_name" placeholder="请输入股票名称" />
-        </el-form-item>
+        <div class="form-row">
+          <label class="form-label">股票名称</label>
+          <input v-model="ruleForm.stock_name" placeholder="请输入股票名称" class="input" />
+        </div>
 
-        <el-form-item label="规则类型" prop="rule_type">
-          <el-select v-model="ruleForm.rule_type" placeholder="请选择规则类型" style="width: 100%">
-            <el-option
-              v-for="type in ruleTypes"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value"
-            />
-          </el-select>
-        </el-form-item>
+        <div class="form-row">
+          <label class="form-label">规则类型</label>
+          <select v-model="ruleForm.rule_type" class="select">
+            <option v-for="type in ruleTypes" :key="type.value" :value="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
 
-        <el-form-item label="参数配置">
-          <el-form
-            :model="ruleForm.parameters"
-            inline
-            label-width="80px"
-          >
-            <el-form-item label="包含ST">
-              <el-switch v-model="ruleForm.parameters.include_st" />
-            </el-form-item>
-            <el-form-item label="涨跌幅%">
-              <el-input v-model="ruleForm.parameters.change_percent_threshold" type="number" placeholder="如: 5" />
-            </el-form-item>
-            <el-form-item label="成交量倍数">
-              <el-input v-model="ruleForm.parameters.volume_ratio_threshold" type="number" placeholder="如: 2" />
-            </el-form-item>
-          </el-form>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">参数配置</div>
+          <div class="form-row">
+            <label class="form-label">包含ST</label>
+            <input type="checkbox" v-model="ruleForm.parameters.include_st" class="checkbox" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">涨跌幅%</label>
+            <input v-model="ruleForm.parameters.change_percent_threshold" type="number" placeholder="如: 5" class="input" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">成交量倍数</label>
+            <input v-model="ruleForm.parameters.volume_ratio_threshold" type="number" placeholder="如: 2" class="input" />
+          </div>
+        </div>
 
-        <el-form-item label="通知配置">
-          <el-form
-            :model="ruleForm.notification_config"
-            inline
-            label-width="80px"
-          >
-            <el-form-item label="通知级别">
-              <el-select v-model="ruleForm.notification_config.level" style="width: 100px">
-                <el-option label="Info" value="info" />
-                <el-option label="Warning" value="warning" />
-                <el-option label="Error" value="error" />
-                <el-option label="Critical" value="critical" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="通知渠道">
-              <el-checkbox-group v-model="ruleForm.notification_config.channels">
-                <el-checkbox label="ui">UI通知</el-checkbox>
-                <el-checkbox label="sound">声音</el-checkbox>
-                <el-checkbox label="email">邮件</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-form>
-        </el-form-item>
+        <div class="form-section">
+          <div class="form-section-title">通知配置</div>
+          <div class="form-row">
+            <label class="form-label">通知级别</label>
+            <select v-model="ruleForm.notification_config.level" class="select-sm">
+              <option value="info">Info</option>
+              <option value="warning">Warning</option>
+              <option value="error">Error</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">通知渠道</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" v-model="ruleForm.notification_config.channels" value="ui" />
+                <span>UI通知</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" v-model="ruleForm.notification_config.channels" value="sound" />
+                <span>声音</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" v-model="ruleForm.notification_config.channels" value="email" />
+                <span>邮件</span>
+              </label>
+            </div>
+          </div>
+        </div>
 
-        <el-form-item label="优先级" prop="priority">
-          <el-input-number v-model="ruleForm.priority" :min="1" :max="10" />
-        </el-form-item>
+        <div class="form-row">
+          <label class="form-label">优先级</label>
+          <input v-model="ruleForm.priority" type="number" min="1" max="10" class="input" />
+        </div>
 
-        <el-form-item label="是否启用" prop="is_active">
-          <el-switch v-model="ruleForm.is_active" />
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="handleCloseDialog">取消</el-button>
-          <el-button type="primary" @click="saveRule">保存</el-button>
-        </span>
-      </template>
-    </el-dialog>
+        <div class="form-row">
+          <label class="form-label">是否启用</label>
+          <input type="checkbox" v-model="ruleForm.is_active" class="checkbox" />
+        </div>
+      </div>
+    </DetailDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Refresh } from '@element-plus/icons-vue'
 import { monitoringApi } from '@/api'
-import type { FormInstance, FormRules } from 'element-plus'
+import {
+  PageHeader,
+  StockListTable,
+  PaginationBar,
+  DetailDialog
+} from '@/components/shared'
 
-interface AlertRuleParameters {
-  include_st: boolean
-  change_percent_threshold: number | null
-  volume_ratio_threshold: number | null
-}
-
-interface AlertRuleNotificationConfig {
-  level: 'info' | 'warning' | 'error' | 'critical'
-  channels: string[]
-}
+import type { TableColumn } from '@/components/shared'
 
 interface AlertRule {
   id: string
@@ -215,38 +203,46 @@ interface AlertRule {
   symbol: string
   stock_name: string
   rule_type: string
-  parameters: AlertRuleParameters
-  notification_config: AlertRuleNotificationConfig
+  priority: number
+  parameters: Record<string, any>
+  notification_config: {
+    level: string
+    channels: string[]
+  }
+  is_active: boolean
+}
+
+interface RuleForm {
+  id: string
+  rule_name: string
+  symbol: string
+  stock_name: string
+  rule_type: string
+  parameters: {
+    include_st: boolean
+    change_percent_threshold: number | null
+    volume_ratio_threshold: number | null
+  }
+  notification_config: {
+    level: string
+    channels: string[]
+  }
   priority: number
   is_active: boolean
 }
 
-interface Pagination {
-  page: number
-  size: number
-  total: number
-}
-
-interface RuleType {
-  value: string
-  label: string
-}
-
-// 响应式数据
 const alertRules = ref<AlertRule[]>([])
-const loading = ref<boolean>(false)
-const showCreateDialog = ref<boolean>(false)
+const loading = ref(false)
+const showCreateDialog = ref(false)
 const editingRule = ref<AlertRule | null>(null)
 
-// 分页数据
-const pagination = reactive<Pagination>({
+const pagination = reactive({
   page: 1,
   size: 10,
   total: 0
 })
 
-// 规则类型
-const ruleTypes: RuleType[] = [
+const ruleTypes = [
   { value: 'limit_up', label: '涨停监控' },
   { value: 'limit_down', label: '跌停监控' },
   { value: 'volume_spike', label: '成交量激增' },
@@ -256,8 +252,7 @@ const ruleTypes: RuleType[] = [
   { value: 'fund_flow', label: '资金流向' }
 ]
 
-// 表单数据
-const ruleForm = reactive<AlertRule>({
+const ruleForm = reactive<RuleForm>({
   id: '',
   rule_name: '',
   symbol: '',
@@ -276,41 +271,66 @@ const ruleForm = reactive<AlertRule>({
   is_active: true
 })
 
-// 表单验证规则
-const ruleFormRules: FormRules = {
-  rule_name: [
-    { required: true, message: '请输入规则名称', trigger: 'blur' }
-  ],
-  symbol: [
-    { required: true, message: '请输入股票代码', trigger: 'blur' }
-  ],
-  rule_type: [
-    { required: true, message: '请选择规则类型', trigger: 'change' }
-  ],
-  priority: [
-    { required: true, message: '请输入优先级', trigger: 'blur' }
-  ]
-}
-
-const ruleFormRef = ref<FormInstance>()
-
-// 获取告警规则列表
-const fetchAlertRules = async (): Promise<void> => {
-  loading.value = true
-  try {
-    const response = await monitoringApi.getAlertRules()
-    alertRules.value = (response as unknown) as AlertRule[]
-    pagination.total = alertRules.value.length
-  } catch (error) {
-    console.error('获取告警规则失败:', error)
-    ElMessage.error('获取告警规则失败')
-  } finally {
-    loading.value = false
+const tableColumns = computed((): TableColumn[] => [
+  {
+    prop: 'rule_name',
+    label: '规则名称',
+    width: 150
+  },
+  {
+    prop: 'symbol',
+    label: '股票代码',
+    width: 120,
+    className: 'mono'
+  },
+  {
+    prop: 'stock_name',
+    label: '股票名称',
+    width: 120
+  },
+  {
+    prop: 'rule_type',
+    label: '规则类型',
+    width: 120
+  },
+  {
+    prop: 'priority',
+    label: '优先级',
+    width: 100,
+    align: 'right',
+    className: 'mono'
+  },
+  {
+    prop: 'parameters',
+    label: '参数',
+    minWidth: 200
+  },
+  {
+    prop: 'notification_config',
+    label: '通知级别',
+    width: 120
+  },
+  {
+    prop: 'is_active',
+    label: '状态',
+    width: 100,
+    align: 'center'
+  },
+  {
+    prop: 'actions',
+    label: '操作',
+    width: 150,
+    align: 'center'
   }
-}
+])
 
-// 获取规则类型标签
-const getRuleTypeTag = (type: string): 'primary' | 'success' | 'warning' | 'danger' | 'info' => {
+const paginatedRules = computed(() => {
+  const start = (pagination.page - 1) * pagination.size
+  const end = start + pagination.size
+  return alertRules.value.slice(start, end)
+})
+
+const getRuleTypeClass = (type: string): string => {
   switch (type) {
     case 'limit_up':
     case 'limit_down':
@@ -321,16 +341,27 @@ const getRuleTypeTag = (type: string): 'primary' | 'success' | 'warning' | 'dang
       return 'primary'
     case 'technical_signal':
       return 'success'
-    case 'news_alert':
-      return 'info'
-    case 'fund_flow':
-      return 'warning'
     default:
       return 'info'
   }
 }
 
-// 格式化规则类型显示
+const getRuleTypeTag = (type: string): 'success' | 'warning' | 'danger' | 'info' => {
+  switch (type) {
+    case 'limit_up':
+    case 'limit_down':
+      return 'danger'
+    case 'volume_spike':
+      return 'warning'
+    case 'price_breakthrough':
+      return 'info'
+    case 'technical_signal':
+      return 'success'
+    default:
+      return 'info'
+  }
+}
+
 const formatRuleType = (type: string): string => {
   const typeMap: Record<string, string> = {
     'limit_up': '涨停监控',
@@ -344,15 +375,13 @@ const formatRuleType = (type: string): string => {
   return typeMap[type] || type
 }
 
-// 获取通知级别标签
-const getNotificationLevelTag = (level: string): 'primary' | 'success' | 'warning' | 'danger' | 'info' => {
+const getNotificationLevelClass = (level: string): string => {
   switch (level) {
     case 'info':
       return 'info'
     case 'warning':
       return 'warning'
     case 'error':
-      return 'danger'
     case 'critical':
       return 'danger'
     default:
@@ -360,7 +389,34 @@ const getNotificationLevelTag = (level: string): 'primary' | 'success' | 'warnin
   }
 }
 
-// 编辑规则
+const getNotificationLevelType = (level: string): 'success' | 'warning' | 'danger' | 'info' => {
+  switch (level) {
+    case 'info':
+      return 'info'
+    case 'warning':
+      return 'warning'
+    case 'error':
+    case 'critical':
+      return 'danger'
+    default:
+      return 'info'
+  }
+}
+
+const fetchAlertRules = async (): Promise<void> => {
+  loading.value = true
+  try {
+    const response = await monitoringApi.getAlertRules()
+    alertRules.value = response.data || []
+    pagination.total = alertRules.value.length
+  } catch (error) {
+    console.error('获取告警规则失败:', error)
+    ElMessage.error('获取告警规则失败')
+  } finally {
+    loading.value = false
+  }
+}
+
 const editRule = (rule: AlertRule): void => {
   editingRule.value = rule
   Object.assign(ruleForm, {
@@ -371,13 +427,8 @@ const editRule = (rule: AlertRule): void => {
   showCreateDialog.value = true
 }
 
-// 保存规则
 const saveRule = async (): Promise<void> => {
-  if (!ruleFormRef.value) return
-
   try {
-    await ruleFormRef.value.validate()
-
     if (editingRule.value) {
       await monitoringApi.updateAlertRule(editingRule.value.id, ruleForm)
       ElMessage.success('规则更新成功')
@@ -395,7 +446,6 @@ const saveRule = async (): Promise<void> => {
   }
 }
 
-// 删除规则
 const deleteRule = async (id: string): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定要删除此告警规则吗？', '删除确认', {
@@ -415,19 +465,6 @@ const deleteRule = async (id: string): Promise<void> => {
   }
 }
 
-// 切换规则状态
-const toggleRuleStatus = async (rule: AlertRule): Promise<void> => {
-  try {
-    await monitoringApi.updateAlertRule(rule.id, { is_active: rule.is_active })
-    ElMessage.success(`规则已${rule.is_active ? '启用' : '停用'}`)
-  } catch (error) {
-    console.error('更新规则状态失败:', error)
-    rule.is_active = !rule.is_active
-    ElMessage.error('更新规则状态失败')
-  }
-}
-
-// 重置表单
 const resetForm = (): void => {
   Object.assign(ruleForm, {
     id: '',
@@ -450,87 +487,308 @@ const resetForm = (): void => {
   editingRule.value = null
 }
 
-// 关闭对话框
 const handleCloseDialog = (): void => {
   showCreateDialog.value = false
   resetForm()
 }
 
-// 处理分页大小变化
 const handleSizeChange = (size: number): void => {
   pagination.size = size
-  fetchAlertRules()
+  pagination.page = 1
 }
 
-// 处理当前页变化
 const handleCurrentChange = (page: number): void => {
   pagination.page = page
-  fetchAlertRules()
 }
 
-// 页面加载时获取数据
 onMounted(() => {
   fetchAlertRules()
 })
 </script>
 
 <style scoped lang="scss">
-.alert-rules-management {
-  padding: 20px;
 
-  .page-header {
-    margin-bottom: 20px;
+  padding: 24px;
+  background: var(--bg-primary);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  min-height: 100vh;
+}
 
-    h1 {
-      font-size: 28px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
-    }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  position: relative;
 
-    .subtitle {
-      font-size: 14px;
-      color: #909399;
-      margin: 0;
-    }
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--gold-primary);
+    z-index: 1;
   }
 
-  .actions {
-    margin-bottom: 20px;
-
-    .el-button {
-      margin-right: 10px;
-    }
+  &::before {
+    top: 12px;
+    left: 12px;
+    border-right: none;
+    border-bottom: none;
   }
 
-  .rules-card {
-    margin-bottom: 20px;
+  &::after {
+    bottom: 12px;
+    right: 12px;
+    border-left: none;
+    border-top: none;
   }
+}
+
+.card-body {
+  padding: 24px;
+}
+
+.param-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 
   .param-item {
-    margin: 4px 0;
-    display: flex;
+    font-size: 12px;
+    color: var(--text-secondary);
 
     .param-key {
-      font-weight: bold;
-      margin-right: 8px;
-      min-width: 80px;
+      font-weight: 600;
+      color: var(--gold-primary);
+    }
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &.active {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--fall);
+    border: 1px solid var(--fall);
+  }
+
+  &.inactive {
+    background: rgba(156, 163, 175, 0.1);
+    color: var(--text-muted);
+    border: 1px solid var(--gold-dim);
+  }
+}
+
+.action-button {
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid var(--gold-primary);
+  background: transparent;
+  color: var(--gold-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: var(--gold-primary);
+    color: var(--bg-primary);
+  }
+
+  &.action-button-danger {
+    border-color: #f56c6c;
+    color: #f56c6c;
+
+    &:hover {
+      background: #f56c6c;
+      color: var(--bg-primary);
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  svg {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    color: var(--gold-muted);
+  }
+
+  p {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+}
+
+.button {
+  padding: 12px 24px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 2px solid var(--gold-primary);
+  background: transparent;
+  color: var(--gold-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover:not(.loading) {
+    background: var(--gold-primary);
+    color: var(--bg-primary);
+  }
+
+  &.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-left: 1px solid currentColor;
+    border-top: 1px solid currentColor;
+  }
+
+  &.button-primary {
+    border-color: var(--rise);
+    color: var(--rise);
+
+    &::before {
+      border-color: var(--rise);
     }
 
-    .param-value {
-      flex: 1;
+    &:hover:not(.loading) {
+      background: var(--rise);
+      color: var(--bg-primary);
+    }
+  }
+}
+
+.input,
+.select,
+.select-sm {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--gold-dim);
+  padding: 10px 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  width: 100%;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-bottom-color: var(--gold-primary);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+}
+
+  width: 20px;
+  height: 20px;
+  accent-color: var(--gold-primary);
+}
+
+.rule-form {
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+
+    .form-label {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--gold-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
     }
   }
 
-  .pagination {
-    margin-top: 20px;
-    text-align: right;
+  .form-section {
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid var(--gold-dim);
+
+    .form-section-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
   }
 
-  .dialog-footer {
-    .el-button {
-      margin-left: 10px;
+  .checkbox-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-primary);
     }
+  }
+}
+
+@media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 15px;
   }
 }
 </style>

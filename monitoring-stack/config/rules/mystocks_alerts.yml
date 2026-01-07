@@ -1,0 +1,114 @@
+groups:
+  - name: mystocks_backend_alerts
+    interval: 30s
+    rules:
+      # Alert for high memory usage
+      - alert: BackendHighMemoryUsage
+        expr: |
+          process_resident_memory_bytes{job="mystocks-backend"} > 1000000000
+        for: 5m
+        labels:
+          severity: warning
+          service: mystocks-backend
+        annotations:
+          summary: "Backend high memory usage"
+          description: "Backend service is using more than 1GB of memory for 5 minutes (current: {{ $value }} bytes)"
+
+      # Alert for very high memory usage
+      - alert: BackendCriticalMemoryUsage
+        expr: |
+          process_resident_memory_bytes{job="mystocks-backend"} > 2000000000
+        for: 2m
+        labels:
+          severity: critical
+          service: mystocks-backend
+        annotations:
+          summary: "Backend critical memory usage"
+          description: "Backend service is using more than 2GB of memory for 2 minutes (current: {{ $value }} bytes)"
+
+      # Alert for high CPU usage
+      - alert: BackendHighCPUUsage
+        expr: |
+          rate(process_cpu_seconds_total{job="mystocks-backend"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: mystocks-backend
+        annotations:
+          summary: "Backend high CPU usage"
+          description: "Backend service CPU usage is above 80% for 5 minutes (current: {{ $value | humanizePercentage }})"
+
+      # Alert for service down
+      - alert: BackendServiceDown
+        expr: |
+          up{job="mystocks-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: mystocks-backend
+        annotations:
+          summary: "Backend service is down"
+          description: "Backend service has been down for 1 minute"
+
+      # Alert for excessive GC
+      - alert: BackendExcessiveGarbageCollection
+        expr: |
+          rate(python_gc_collections_total{job="mystocks-backend", generation="0"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: mystocks-backend
+        annotations:
+          summary: "Backend excessive garbage collection"
+          description: "Backend service Gen 0 GC rate is above 10 collections/sec for 5 minutes (current: {{ $value }}/sec)"
+
+      # Alert for memory leaks (uncollectable objects)
+      - alert: BackendMemoryLeakDetected
+        expr: |
+          rate(python_gc_objects_uncollectable_total{job="mystocks-backend"}[5m]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: mystocks-backend
+        annotations:
+          summary: "Backend memory leak detected"
+          description: "Backend service has uncollectable objects for 10 minutes (current: {{ $value }}/sec)"
+
+      # Alert for virtual memory growing too large
+      - alert: BackendVirtualMemoryHigh
+        expr: |
+          process_virtual_memory_bytes{job="mystocks-backend"} > 3000000000
+        for: 5m
+        labels:
+          severity: warning
+          service: mystocks-backend
+        annotations:
+          summary: "Backend virtual memory high"
+          description: "Backend service virtual memory is above 3GB for 5 minutes (current: {{ $value }} bytes)"
+
+  - name: mystocks_system_alerts
+    interval: 30s
+    rules:
+      # Alert for high system memory usage
+      - alert: NodeMemoryHigh
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "Node memory usage high"
+          description: "System memory usage is above 90% for 5 minutes"
+
+      # Alert for high disk usage
+      - alert: NodeDiskHigh
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Node disk space low"
+          description: "Root filesystem has less than 10% free space for 5 minutes"

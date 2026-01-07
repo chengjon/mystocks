@@ -1,0 +1,5 @@
+export { default as PortfolioOverview } from './PortfolioOverview.vue'
+export { default as PositionsTab } from './PositionsTab.vue'
+export { default as TradeHistoryTab } from './TradeHistoryTab.vue'
+export { default as StatisticsTab } from './StatisticsTab.vue'
+export { default as TradeDialog } from './TradeDialog.vue'

@@ -744,7 +744,7 @@
           "id": "20",
           "title": "配置敏感信息加密存储",
           "description": "实现SecretManager模块，加密存储数据库密码和API密钥，支持密钥轮换",
-          "status": "pending",
+          "status": "cancelled",
           "priority": "critical",
           "category": "P3-安全",
           "dependencies": [],
@@ -756,7 +756,7 @@
           "id": "21",
           "title": "Prometheus + Grafana监控系统",
           "description": "部署Prometheus metrics端点，配置Grafana仪表板，实现告警规则",
-          "status": "pending",
+          "status": "done",
           "priority": "critical",
           "category": "P3-监控",
           "dependencies": [
@@ -765,7 +765,8 @@
           ],
           "details": "Prometheus metrics端点（cache_hits_total，cache_misses_total，request_latency_seconds，active_connections，socketio_rooms_active，api_requests_total），Grafana仪表板（缓存命中率趋势图，API响应时间分布P50/P95/P99，数据库连接池使用率，Socket.IO房间活跃度，错误率监控），告警规则（缓存命中率<70%，API P95延迟>500ms，数据库连接使用率>80%，错误率>1%）。\n\n验收标准：\n- Prometheus metrics端点实现\n- Grafana仪表板配置完成\n- 告警规则配置并验证\n- 告警通知渠道接入（邮件/Webhook）\n- 监控系统7x24运行验证\n\n预期收益：实时问题发现，性能瓶颈可视化，告警响应时间缩短90%",
           "testStrategy": "功能测试：metrics端点验证；集成测试：Grafana仪表板数据展示；告警测试：触发告警规则验证通知；压力测试：高负载下监控系统稳定性",
-          "subtasks": []
+          "subtasks": [],
+          "completedAt": "2026-01-03T18:23:27.653235Z"
         },
         {
           "id": "22",
@@ -855,7 +856,7 @@
           "id": "28",
           "title": "输入验证增强",
           "description": "实现股票代码验证，API参数验证，文件上传验证，防止SQL注入和XSS攻击",
-          "status": "pending",
+          "status": "cancelled",
           "priority": "high",
           "category": "P3-安全",
           "dependencies": [],
@@ -867,7 +868,7 @@
           "id": "29",
           "title": "API认证扩展（多用户支持）",
           "description": "实现JWT认证，用户管理功能，权限控制升级",
-          "status": "pending",
+          "status": "cancelled",
           "priority": "high",
           "category": "P3-安全",
           "dependencies": [],
@@ -917,5 +918,13 @@
       ]
     }
   },
-  "currentTag": "master"
+  "currentTag": "master",
+  "ui-ux-optimization": {
+    "tasks": [],
+    "metadata": {
+      "created": "2026-01-03T18:47:35.105Z",
+      "updated": "2026-01-03T18:47:35.105Z",
+      "description": "UI/UX 优化任务 - ArtDeco 组件开发和页面优化"
+    }
+  }
 }

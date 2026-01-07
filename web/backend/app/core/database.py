@@ -5,6 +5,7 @@
 """
 
 import functools
+from typing import Optional
 
 # 添加重试逻辑
 import time
@@ -198,7 +199,7 @@ class DatabaseService:
         pass
 
     @db_retry(max_retries=3, delay=1.0)
-    def query_stocks_basic(self, limit: int = 100) -> pd.DataFrame:
+    def query_stocks_basic(self, limit: int = 100, search: Optional[str] = None) -> pd.DataFrame:
         """查询股票基本信息"""
         try:
             # 参数验证
@@ -208,9 +209,18 @@ class DatabaseService:
 
             if postgresql_access:
                 # 使用 PostgreSQLDataAccess
-                result = postgresql_access.query("symbols_info", limit=limit)
+                where_clause = None
+                params = None
+
+                if search:
+                    # 简单的模糊搜索
+                    where_clause = "symbol LIKE %s OR name LIKE %s"
+                    search_pattern = f"%{search}%"
+                    params = [search_pattern, search_pattern]
+
+                result = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
                 if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-                    logger.warning("Empty result from PostgreSQL access, symbol count=0")
+                    logger.warning(f"Empty result from PostgreSQL access, search={search}")
                     return pd.DataFrame()
                 return result
             else:
@@ -218,17 +228,25 @@ class DatabaseService:
                 session = None
                 try:
                     session = get_postgresql_session()
-                    query = text(
-                        """
+
+                    sql = """
                         SELECT symbol, name, industry, area, market, list_date
                         FROM symbols_info
-                        LIMIT :limit
                     """
-                    )
-                    result = session.execute(query, {"limit": limit})
+
+                    query_params = {"limit": limit}
+
+                    if search:
+                        sql += " WHERE symbol LIKE :search OR name LIKE :search"
+                        query_params["search"] = f"%{search}%"
+
+                    sql += " LIMIT :limit"
+
+                    query = text(sql)
+                    result = session.execute(query, query_params)
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning(f"Empty stocks_basic result from database, limit={limit}")
+                        logger.warning(f"Empty stocks_basic result from database, limit={limit}, search={search}")
                     else:
                         logger.info(f"Successfully fetched {len(df)} stocks from database")
                     return df

@@ -9,10 +9,8 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 
-// ARTDECO THEME: Import ArtDeco design tokens and global styles
-import './styles/artdeco-tokens.scss'
-import './styles/artdeco-global.scss'
-import './styles/element-plus-artdeco-override.scss'
+// ELEMENT PLUS COMPACT THEME: 紧凑主题（数据密集型量化系统）
+import './styles/element-plus-compact.scss'
 
 // SECURITY FIX 1.2: 导入CSRF初始化函数
 import { initializeSecurity } from './services/httpClient.js'

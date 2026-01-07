@@ -1,18 +1,22 @@
 <template>
-  <div class="breadcrumb-container">
-    <el-breadcrumb :separator-icon="separatorIcon">
+  <div class="artdeco-breadcrumb-container">
+    <div class="breadcrumb-decoration-line"></div>
+    <el-breadcrumb :separator-icon="separatorIcon" class="artdeco-breadcrumb">
       <transition-group name="breadcrumb">
         <el-breadcrumb-item
           v-for="(item, index) in breadcrumbs"
           :key="item.path"
           :to="index < breadcrumbs.length - 1 ? { path: item.path } : null"
+          class="breadcrumb-item"
         >
-          <el-icon v-if="item.icon && showIcon">
-            <component :is="item.icon" />
-          </el-icon>
-          <span :class="{ 'breadcrumb-active': index === breadcrumbs.length - 1 }">
-            {{ item.title }}
-          </span>
+          <div class="breadcrumb-item-content">
+            <el-icon v-if="item.icon && showIcon" class="breadcrumb-icon">
+              <component :is="item.icon" />
+            </el-icon>
+            <span :class="{ 'breadcrumb-active': index === breadcrumbs.length - 1 }">
+              {{ item.title }}
+            </span>
+          </div>
         </el-breadcrumb-item>
       </transition-group>
     </el-breadcrumb>
@@ -25,29 +29,31 @@ import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
 
 /**
- * 自动面包屑导航组件
+ * ArtDeco 风格面包屑导航组件
  *
  * 功能:
  * - 根据当前路由自动生成面包屑路径
+ * - ArtDeco 装饰艺术风格（金色 + 黑色 + 锐利边角）
  * - 支持2级路由层级显示
  * - 自动识别路由的meta.title作为显示标题
  * - 支持路由图标显示
  * - 支持面包屑点击导航
  * - 支持自定义分隔符
+ * - L形角落装饰 + 悬停发光效果
  *
  * @example
  * <Breadcrumb
  *   :show-icon="true"
- *   :home-title="首页"
+ *   home-title="DASHBOARD"
  * />
  */
 
 // Props
 const props = defineProps({
-  // 首页标题
+  // 首页标题（大写）
   homeTitle: {
     type: String,
-    default: '首页'
+    default: 'DASHBOARD'
   },
   // 首页路径
   homePath: {
@@ -86,7 +92,7 @@ const breadcrumbs = computed(() => {
   if (route.path !== props.homePath) {
     breadcrumbList.push({
       path: props.homePath,
-      title: props.homeTitle,
+      title: props.homeTitle.toUpperCase(),
       icon: 'HomeFilled'
     })
   }
@@ -103,10 +109,10 @@ const breadcrumbs = computed(() => {
     // 检查是否有自定义配置
     const customConfig = props.customBreadcrumb[path] || {}
 
-    // 构建面包屑项
+    // 构建面包屑项（确保大写）
     const breadcrumbItem = {
       path: path,
-      title: customConfig.title || meta.title || item.name || '未命名',
+      title: (customConfig.title || meta.title || item.name || 'UNNAMED').toUpperCase(),
       icon: customConfig.icon || meta.icon || null
     }
 
@@ -137,7 +143,7 @@ watch(
  *   path: '/market',
  *   name: 'Market',
  *   meta: {
- *     title: '市场数据',
+ *     title: 'MARKET DATA',  // 将自动大写显示
  *     icon: 'TrendCharts'
  *   },
  *   children: [
@@ -145,88 +151,150 @@ watch(
  *       path: 'realtime',
  *       name: 'MarketRealtime',
  *       meta: {
- *         title: '实时行情',
+ *         title: 'REALTIME',
  *         icon: 'DataLine'
  *       }
  *     }
  *   ]
  * }
  *
- * 面包屑将显示为: 首页 > 市场数据 > 实时行情
+ * 面包屑将显示为: DASHBOARD > MARKET DATA > REALTIME
  */
 export default {
   name: 'Breadcrumb'
 }
 </script>
 
-<style scoped>
-.breadcrumb-container {
+<style scoped lang="scss">
+
+.artdeco-breadcrumb-container {
+  position: relative;
   display: flex;
   align-items: center;
-  height: 50px;
-  padding: 0 20px;
-  background-color: #fff;
-  border-bottom: 1px solid #e4e7ed;
+  height: 60px;
+  padding: 0 var(--artdeco-spacing-6);
+  background: var(--artdeco-bg-primary);
+  border-bottom: 2px solid var(--artdeco-accent-gold);
+  overflow: hidden;
+
+  // L形角落装饰
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background: var(--artdeco-accent-gold);
+    opacity: 0.6;
+  }
+
+  // 左上角装饰
+  &::before {
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 2px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+
+  // 右上角装饰
+  &::after {
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 20px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
 }
 
-/* 面包屑基础样式 */
-.breadcrumb-container :deep(.el-breadcrumb) {
-  font-size: 14px;
-  line-height: 50px;
+.breadcrumb-decoration-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--artdeco-accent-gold) 50%,
+    transparent 100%
+  );
+  opacity: 0.3;
 }
 
-/* 面包屑项样式 */
-.breadcrumb-container :deep(.el-breadcrumb__item) {
+/* ArtDeco 面包屑基础样式 */
+.artdeco-breadcrumb {
+  position: relative;
+  z-index: 1;
+
+  :deep(.el-breadcrumb__item) {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--artdeco-font-display);
+    font-size: var(--artdeco-font-size-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+    color: var(--artdeco-fg-muted);
+
+    .el-breadcrumb__inner {
+      display: inline-flex;
+      align-items: center;
+      color: rgba(212, 175, 55, 0.7);
+      transition: all var(--artdeco-transition-base);
+
+      &:hover {
+        color: var(--artdeco-accent-gold);
+        text-shadow: var(--artdeco-glow-subtle);
+      }
+    }
+
+    // 最后一个激活项
+    &:last-child {
+      .el-breadcrumb__inner {
+        color: var(--artdeco-accent-gold);
+        font-weight: 700;
+        text-shadow: var(--artdeco-glow-medium);
+        cursor: default;
+      }
+    }
+  }
+
+  // 分隔符样式
+  :deep(.el-breadcrumb__separator) {
+    color: var(--artdeco-accent-gold);
+    opacity: 0.4;
+    margin: 0 var(--artdeco-spacing-3);
+    font-size: 12px;
+  }
+}
+
+.breadcrumb-item-content {
   display: inline-flex;
   align-items: center;
+  gap: var(--artdeco-spacing-1);
 }
 
-.breadcrumb-container :deep(.el-breadcrumb__inner) {
-  display: inline-flex;
-  align-items: center;
-  color: #606266;
-  font-weight: normal;
-  transition: color 0.3s;
-}
-
-/* 面包屑链接悬停效果 */
-.breadcrumb-container :deep(.el-breadcrumb__inner:hover) {
-  color: #409eff;
-  cursor: pointer;
-}
-
-/* 当前页面（最后一项）样式 */
-.breadcrumb-active {
-  color: #303133;
-  font-weight: 500;
-}
-
-.breadcrumb-container :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-  color: #303133;
-  font-weight: 500;
-}
-
-.breadcrumb-container :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner:hover) {
-  color: #303133;
-  cursor: text;
-}
-
-/* 图标样式 */
-.breadcrumb-container :deep(.el-icon) {
-  margin-right: 5px;
+.breadcrumb-icon {
   font-size: 16px;
+  color: var(--artdeco-accent-gold);
+  opacity: 0.8;
+  transition: all var(--artdeco-transition-base);
+
+  &:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+  }
 }
 
-/* 分隔符样式 */
-.breadcrumb-container :deep(.el-breadcrumb__separator) {
-  margin: 0 8px;
-  color: #c0c4cc;
+.breadcrumb-active {
+  color: var(--artdeco-accent-gold);
+  font-weight: 700;
+  text-shadow: var(--artdeco-glow-subtle);
 }
 
 /* 面包屑过渡动画 */
 .breadcrumb-enter-active,
 .breadcrumb-leave-active {
-  transition: all 0.3s;
+  transition: all var(--artdeco-transition-base);
 }
 
 .breadcrumb-enter-from {
@@ -241,38 +309,75 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .breadcrumb-container {
-    padding: 0 10px;
+  .artdeco-breadcrumb-container {
+    height: 50px;
+    padding: 0 var(--artdeco-spacing-3);
+
+    &::before {
+      width: 15px;
+    }
+
+    &::after {
+      height: 15px;
+    }
   }
 
-  .breadcrumb-container :deep(.el-breadcrumb) {
-    font-size: 12px;
+  .artdeco-breadcrumb {
+    :deep(.el-breadcrumb__item) {
+      font-size: var(--artdeco-font-size-xs);
+      letter-spacing: var(--artdeco-tracking-wide);
+
+      .el-breadcrumb__inner {
+        padding: var(--artdeco-spacing-1) 0;
+      }
+    }
+
+    :deep(.el-breadcrumb__separator) {
+      margin: 0 var(--artdeco-spacing-1);
+      font-size: 10px;
+    }
   }
 
-  .breadcrumb-container :deep(.el-icon) {
+  .breadcrumb-icon {
     font-size: 14px;
-    margin-right: 3px;
-  }
-
-  .breadcrumb-container :deep(.el-breadcrumb__separator) {
-    margin: 0 5px;
   }
 }
 
-/* 暗黑模式支持 */
-@media (prefers-color-scheme: dark) {
-  .breadcrumb-container {
-    background-color: #1f1f1f;
-    border-bottom-color: #333;
+/* 大屏幕优化 */
+@media (min-width: 1440px) {
+  .artdeco-breadcrumb-container {
+    padding: 0 var(--artdeco-spacing-8);
+
+    &::before {
+      width: 30px;
+    }
+
+    &::after {
+      height: 30px;
+    }
   }
 
-  .breadcrumb-container :deep(.el-breadcrumb__inner) {
-    color: #b0b0b0;
+  .artdeco-breadcrumb {
+    :deep(.el-breadcrumb__item) {
+      font-size: var(--artdeco-font-size-body);
+    }
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .artdeco-breadcrumb-container {
+    background: white;
+    border-bottom: 1px solid #000;
+
+    &::before,
+    &::after {
+      display: none;
+    }
   }
 
-  .breadcrumb-active,
-  .breadcrumb-container :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-    color: #e0e0e0;
+  .artdeco-breadcrumb :deep(.el-breadcrumb__item .el-breadcrumb__inner) {
+    color: #000;
   }
 }
 </style>

@@ -1,174 +1,211 @@
 <template>
-  <div class="web3-market">
-    <!-- Page Header with Gradient Text -->
-    <div class="page-header">
-      <h1 class="text-4xl font-heading font-semibold">
-        <span class="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
-          MARKET OVERVIEW
-        </span>
-      </h1>
-      <p class="subtitle">PORTFOLIO TRACKING | TRADING HISTORY | ASSET DISTRIBUTION</p>
+  <div class="market-container">
+
+    <div class="market-header">
+      <h1 class="market-title">MARKET OVERVIEW</h1>
+      <p class="market-subtitle">PORTFOLIO TRACKING | TRADING HISTORY | ASSET DISTRIBUTION</p>
     </div>
 
-    <!-- Portfolio Overview Cards -->
-    <el-row :gutter="16" class="overview-section" v-loading="loading">
-      <el-col :span="6">
-        <Web3Card class="stat-card hover-lift corner-border">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper total-assets">
-              <el-icon class="stat-icon"><Wallet /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-label">TOTAL ASSETS</div>
-              <div class="stat-value orange-glow">¥{{ formatNumber(portfolio.total_assets) }}</div>
-            </div>
+    <div class="stats-grid">
+      <el-card :hoverable="true" class="stat-card">
+        <div class="corner-tl"></div>
+        <div class="stat-content">
+          <div class="stat-icon total-assets">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
           </div>
-        </Web3Card>
-      </el-col>
-      <el-col :span="6">
-        <Web3Card class="stat-card hover-lift corner-border">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper available-cash">
-              <el-icon class="stat-icon"><Coin /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-label">AVAILABLE CASH</div>
-              <div class="stat-value green-glow">¥{{ formatNumber(portfolio.available_cash) }}</div>
-            </div>
+          <div class="stat-info">
+            <span class="stat-label">TOTAL ASSETS</span>
+            <span class="stat-value gold">¥{{ formatNumber(portfolio.total_assets) }}</span>
           </div>
-        </Web3Card>
-      </el-col>
-      <el-col :span="6">
-        <Web3Card class="stat-card hover-lift corner-border">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper position-value">
-              <el-icon class="stat-icon"><TrendCharts /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-label">POSITION VALUE</div>
-              <div class="stat-value blue-glow">¥{{ formatNumber(portfolio.position_value) }}</div>
-            </div>
-          </div>
-        </Web3Card>
-      </el-col>
-      <el-col :span="6">
-        <Web3Card class="stat-card hover-lift corner-border">
-          <div class="stat-content">
-            <div class="stat-icon-wrapper total-profit" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
-              <el-icon class="stat-icon"><DataLine /></el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-label">TOTAL PROFIT</div>
-              <div class="stat-value" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
-                ¥{{ formatNumber(portfolio.total_profit) }}
-                <span class="stat-percent">({{ portfolio.profit_rate }}%)</span>
-              </div>
-            </div>
-          </div>
-        </Web3Card>
-      </el-col>
-    </el-row>
-
-    <!-- Main Content Card -->
-    <Web3Card class="main-card grid-bg">
-      <template #header>
-        <div class="card-header">
-          <span class="section-title">I. MARKET DATA</span>
-          <Web3Button variant="outline" size="sm" @click="handleRefresh" :loading="loading">
-            <el-icon><Refresh /></el-icon> REFRESH
-          </Web3Button>
         </div>
+      </el-card>
+
+      <el-card :hoverable="true" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon available-cash">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--fall)" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">AVAILABLE CASH</span>
+            <span class="stat-value green">¥{{ formatNumber(portfolio.available_cash) }}</span>
+          </div>
+        </div>
+      </el-card>
+
+      <el-card :hoverable="true" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon position-value">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2">
+              <path d="M3 3v18h18"></path>
+              <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">POSITION VALUE</span>
+            <span class="stat-value blue">¥{{ formatNumber(portfolio.position_value) }}</span>
+          </div>
+        </div>
+      </el-card>
+
+      <el-card :hoverable="true" class="stat-card">
+        <div class="corner-br"></div>
+        <div class="stat-content">
+          <div class="stat-icon total-profit" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" :stroke="portfolio.total_profit >= 0 ? 'var(--gold-primary)' : 'var(--fall)'" stroke-width="2">
+              <polyline v-if="portfolio.total_profit >= 0" points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline v-else points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">TOTAL PROFIT</span>
+            <span class="stat-value" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
+              ¥{{ formatNumber(portfolio.total_profit) }}
+              <span class="stat-percent">({{ portfolio.profit_rate }}%)</span>
+            </span>
+          </div>
+        </div>
+      </el-card>
+    </div>
+
+    <el-card title="I. MARKET DATA" :hoverable="false">
+      <template #header-actions>
+        <el-button type="info" size="small" @click="handleRefresh" :loading="loading">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          REFRESH
+        </el-button>
       </template>
 
-      <el-tabs v-model="activeTab" class="web3-tabs">
-        <!-- Market Statistics -->
-        <el-tab-pane label="MARKET STATS" name="stats">
-          <el-row :gutter="16">
-            <el-col :span="12">
-              <div class="stats-subcard">
-                <h4 class="stats-subtitle">TRADING STATISTICS</h4>
-                <el-descriptions :column="2" border class="web3-descriptions">
-                  <el-descriptions-item label="TOTAL TRADES">{{ stats.total_trades || '-' }}</el-descriptions-item>
-                  <el-descriptions-item label="BUY COUNT">{{ stats.buy_count || '-' }}</el-descriptions-item>
-                  <el-descriptions-item label="SELL COUNT">{{ stats.sell_count || '-' }}</el-descriptions-item>
-                  <el-descriptions-item label="REALIZED PROFIT">¥{{ stats.realized_profit || '-' }}</el-descriptions-item>
-                </el-descriptions>
-              </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="stats-subcard">
-                <h4 class="stats-subtitle">ASSET DISTRIBUTION</h4>
-                <el-descriptions :column="2" border class="web3-descriptions">
-                  <el-descriptions-item label="TOTAL ASSETS">¥{{ portfolio.total_assets || '-' }}</el-descriptions-item>
-                  <el-descriptions-item label="CASH RATIO">{{ ((portfolio.available_cash / portfolio.total_assets) * 100).toFixed(2) }}%</el-descriptions-item>
-                  <el-descriptions-item label="POSITION RATIO">{{ ((portfolio.position_value / portfolio.total_assets) * 100).toFixed(2) }}%</el-descriptions-item>
-                  <el-descriptions-item label="YIELD RATE">{{ portfolio.profit_rate || '-' }}%</el-descriptions-item>
-                </el-descriptions>
-              </div>
-            </el-col>
-          </el-row>
-        </el-tab-pane>
+      <div class="tabs">
+        <button
+          v-for="tab in tabs"
+          :key="tab.name"
+          :class="['tab', { active: activeTab === tab.name }]"
+          @click="activeTab = tab.name"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
 
-        <!-- Positions List -->
-        <el-tab-pane label="POSITIONS" name="positions">
-          <el-table :data="positions" v-loading="loading" class="web3-table" stripe border>
-            <el-table-column prop="symbol" label="CODE" width="100" />
-            <el-table-column prop="stock_name" label="NAME" width="120" />
-            <el-table-column prop="quantity" label="QUANTITY" width="100" align="right" />
-            <el-table-column label="COST PRICE" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.cost_price?.toFixed(2) || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column label="CURRENT PRICE" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.current_price?.toFixed(2) || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column label="MARKET VALUE" width="120" align="right">
-              <template #default="scope">
-                ¥{{ (scope.row.quantity * scope.row.current_price)?.toFixed(2) || '-' }}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
+      <div class="tab-content">
+        <div v-if="activeTab === 'stats'" class="stats-content">
+          <div class="subcard">
+            <h4 class="subcard-title">TRADING STATISTICS</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-item-label">TOTAL TRADES</span>
+                <span class="stat-item-value">{{ stats.total_trades }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">BUY COUNT</span>
+                <span class="stat-item-value">{{ stats.buy_count }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">SELL COUNT</span>
+                <span class="stat-item-value">{{ stats.sell_count }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">REALIZED PROFIT</span>
+                <span class="stat-item-value">¥{{ stats.realized_profit?.toFixed(2) || '-' }}</span>
+              </div>
+            </div>
+          </div>
 
-        <!-- Trade History -->
-        <el-tab-pane label="TRADE HISTORY" name="history">
-          <el-table :data="trades" v-loading="loading" class="web3-table" stripe border>
-            <el-table-column prop="symbol" label="CODE" width="100" />
-            <el-table-column prop="type" label="TYPE" width="80" align="center">
-              <template #default="scope">
-                <el-tag :type="scope.row.type === 'buy' ? 'success' : 'danger'" size="small" class="web3-tag">
-                  {{ scope.row.type === 'buy' ? 'BUY' : 'SELL' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="quantity" label="QUANTITY" width="100" align="right" />
-            <el-table-column label="PRICE" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.price?.toFixed(2) || '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="date" label="DATE" width="150" />
-            <el-table-column label="AMOUNT" width="120" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.trade_amount?.toFixed(2) || '-' }}
-              </template>
-            </el-table-column>
+          <div class="subcard">
+            <h4 class="subcard-title">ASSET DISTRIBUTION</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-item-label">TOTAL ASSETS</span>
+                <span class="stat-item-value">¥{{ formatNumber(portfolio.total_assets) }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">CASH RATIO</span>
+                <span class="stat-item-value">{{ ((portfolio.available_cash / portfolio.total_assets) * 100).toFixed(2) }}%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">POSITION RATIO</span>
+                <span class="stat-item-value">{{ ((portfolio.position_value / portfolio.total_assets) * 100).toFixed(2) }}%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item-label">YIELD RATE</span>
+                <span class="stat-item-value">{{ portfolio.profit_rate }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="activeTab === 'positions'">
+          <el-table
+            :columns="positionColumns"
+            :data="positions"
+            :loading="loading"
+          >
+            <template #cell-symbol="{ value }">
+              <span class="text-mono">{{ value }}</span>
+            </template>
+            <template #cell-quantity="{ value }">
+              <span class="text-mono">{{ value }}</span>
+            </template>
+            <template #cell-cost_price="{ value }">
+              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
+            </template>
+            <template #cell-current_price="{ value }">
+              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
+            </template>
+            <template #cell-market_value="{ row }">
+              <span class="text-mono">¥{{ (row.quantity * row.current_price)?.toFixed(2) || '-' }}</span>
+            </template>
           </el-table>
-        </el-tab-pane>
-      </el-tabs>
-    </Web3Card>
+        </div>
+
+        <div v-else-if="activeTab === 'history'">
+          <el-table
+            :columns="tradeColumns"
+            :data="trades"
+            :loading="loading"
+          >
+            <template #cell-symbol="{ value }">
+              <span class="text-mono">{{ value }}</span>
+            </template>
+            <template #cell-type="{ row }">
+              <el-tag
+                :text="row.type === 'buy' ? 'BUY' : 'SELL'"
+                :type="row.type === 'buy' ? 'danger' : 'success'"
+                size="small"
+              />
+            </template>
+            <template #cell-quantity="{ value }">
+              <span class="text-mono">{{ value }}</span>
+            </template>
+            <template #cell-price="{ value }">
+              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
+            </template>
+            <template #cell-trade_amount="{ value }">
+              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
+            </template>
+          </el-table>
+        </div>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, type Ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { marketApi } from '@/api/market'
+import { ref, onMounted } from 'vue'
+import { ElCard } from 'element-plus'
+import { ElButton } from 'element-plus'
+import { ElTable, ElTableColumn } from 'element-plus'
 
-// Type definitions
 interface Portfolio {
   total_assets: number
   available_cash: number
@@ -201,111 +238,71 @@ interface Trade {
   trade_amount: number
 }
 
-// ============================================
-// 响应式数据
-// ============================================
+const loading = ref(false)
+const activeTab = ref('stats')
 
-const loading: Ref<boolean> = ref(false)
-const activeTab: Ref<string> = ref('stats')
+const tabs = [
+  { name: 'stats', label: 'MARKET STATS' },
+  { name: 'positions', label: 'POSITIONS' },
+  { name: 'history', label: 'TRADE HISTORY' }
+]
 
-const portfolio: Ref<Portfolio> = ref({
-  total_assets: 0,
-  available_cash: 0,
-  position_value: 0,
-  total_profit: 0,
-  profit_rate: 0
+const portfolio = ref<Portfolio>({
+  total_assets: 1000000,
+  available_cash: 500000,
+  position_value: 500000,
+  total_profit: 50000,
+  profit_rate: 5.0
 })
 
-const stats: Ref<Stats> = ref({
-  total_trades: 0,
-  buy_count: 0,
+const stats = ref<Stats>({
+  total_trades: 2,
+  buy_count: 2,
   sell_count: 0,
   realized_profit: 0
 })
 
-const positions: Ref<Position[]> = ref([])
-const trades: Ref<Trade[]> = ref([])
+const positions = ref<Position[]>([
+  { symbol: '000001', stock_name: '平安银行', quantity: 1000, cost_price: 12.50, current_price: 13.20 },
+  { symbol: '000002', stock_name: '万科A', quantity: 500, cost_price: 25.80, current_price: 26.50 }
+])
 
-// Methods
-const loadData = async (): Promise<void> => {
-  loading.value = true
-  try {
-    // 获取市场概览数据
-    const marketOverview = await marketApi.getMarketOverview()
+const trades = ref<Trade[]>([
+  { symbol: '000001', type: 'buy', quantity: 1000, price: 12.50, date: '2025-12-30', trade_amount: 12500 },
+  { symbol: '000002', type: 'buy', quantity: 500, price: 25.80, date: '2025-12-29', trade_amount: 12900 }
+])
 
-    // 设置默认的资产组合数据
-    // TODO: 当后端提供真实API时替换为实际数据
-    portfolio.value = {
-      total_assets: 1000000,
-      available_cash: 500000,
-      position_value: 500000,
-      total_profit: 50000,
-      profit_rate: 5.0
-    }
+const positionColumns = [
+  { key: 'symbol', label: 'CODE' },
+  { key: 'stock_name', label: 'NAME' },
+  { key: 'quantity', label: 'QUANTITY' },
+  { key: 'cost_price', label: 'COST PRICE' },
+  { key: 'current_price', label: 'CURRENT PRICE' },
+  { key: 'market_value', label: 'MARKET VALUE' }
+]
 
-    // 设置默认持仓数据
-    positions.value = [
-      {
-        symbol: '000001',
-        stock_name: '平安银行',
-        quantity: 1000,
-        cost_price: 12.50,
-        current_price: 13.20
-      },
-      {
-        symbol: '000002',
-        stock_name: '万科A',
-        quantity: 500,
-        cost_price: 25.80,
-        current_price: 26.50
-      }
-    ]
-
-    // 设置默认交易记录
-    trades.value = [
-      {
-        symbol: '000001',
-        type: 'buy',
-        quantity: 1000,
-        price: 12.50,
-        date: '2025-12-30',
-        trade_amount: 12500
-      },
-      {
-        symbol: '000002',
-        type: 'buy',
-        quantity: 500,
-        price: 25.80,
-        date: '2025-12-29',
-        trade_amount: 12900
-      }
-    ]
-
-    // 设置默认统计数据
-    stats.value = {
-      total_trades: 2,
-      buy_count: 2,
-      sell_count: 0,
-      realized_profit: 0
-    }
-
-    ElMessage.success('市场数据加载成功')
-  } catch (error) {
-    console.error('Failed to load market data:', error)
-    ElMessage.error('DATA LOADING FAILED, PLEASE RETRY')
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleRefresh = async (): Promise<void> => {
-  await loadData()
-  ElMessage.success('DATA REFRESHED')
-}
+const tradeColumns = [
+  { key: 'symbol', label: 'CODE' },
+  { key: 'type', label: 'TYPE' },
+  { key: 'quantity', label: 'QUANTITY' },
+  { key: 'price', label: 'PRICE' },
+  { key: 'date', label: 'DATE' },
+  { key: 'trade_amount', label: 'AMOUNT' }
+]
 
 const formatNumber = (value: number): string => {
   if (!value) return '0.00'
   return value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const loadData = async (): Promise<void> => {
+  loading.value = true
+  await new Promise(resolve => setTimeout(resolve, 500))
+  loading.value = false
+}
+
+const handleRefresh = async (): Promise<void> => {
+  await loadData()
 }
 
 onMounted(() => {
@@ -314,259 +311,244 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.web3-market {
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  background: var(--bg-primary);
   min-height: 100vh;
-  padding: 24px;
-  background: #030304;
+}
 
-  .grid-bg {
-    position: relative;
-    background-image:
-      linear-gradient(rgba(247, 147, 26, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(247, 147, 26, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
+}
 
-  .page-header {
-    margin-bottom: 32px;
-    text-align: center;
+  position: relative;
+  z-index: 1;
+}
 
-    .subtitle {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #94A3B8;
-      font-family: 'JetBrains Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-  }
+.market-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
 
-  .overview-section {
-    margin-bottom: 24px;
-
-    .stat-card {
-      position: relative;
-      transition: all 0.3s ease;
-
-      &.hover-lift:hover {
-        transform: translateY(-4px);
-        border-color: rgba(247, 147, 26, 0.5);
-        box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
-      }
-
-      &.corner-border {
-        position: relative;
-
-        &::before,
-        &::after {
-          content: '';
-          position: absolute;
-          width: 12px;
-          height: 12px;
-          border-color: #F7931A;
-          border-style: solid;
-          transition: all 0.3s ease;
-        }
-
-        &::before {
-          top: -1px;
-          left: -1px;
-          border-width: 2px 0 0 2px;
-          border-radius: 6px 0 0 0;
-        }
-
-        &::after {
-          bottom: -1px;
-          right: -1px;
-          border-width: 0 2px 2px 0;
-          border-radius: 0 0 6px 0;
-        }
-      }
-
-      .stat-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 20px;
-
-        .stat-icon-wrapper {
-          width: 56px;
-          height: 56px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 12px;
-          background: rgba(247, 147, 26, 0.1);
-
-          .stat-icon {
-            font-size: 28px;
-            color: #F7931A;
-          }
-
-          &.available-cash .stat-icon { color: #22C55E; }
-          &.position-value .stat-icon { color: #3B82F6; }
-          &.total-profit.profit-up .stat-icon { color: #F7931A; }
-          &.total-profit.profit-down .stat-icon { color: #22C55E; }
-        }
-
-        .stat-info {
-          flex: 1;
-
-          .stat-label {
-            font-size: 11px;
-            color: #94A3B8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-          }
-
-          .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 2px;
-
-            &.orange-glow { color: #F7931A; }
-            &.green-glow { color: #22C55E; }
-            &.blue-glow { color: #3B82F6; }
-            &.profit-up { color: #F7931A; }
-            &.profit-down { color: #22C55E; }
-
-            .stat-percent {
-              font-size: 14px;
-              margin-left: 4px;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .main-card {
-    margin-top: 20px;
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .section-title {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        font-weight: 600;
-        color: #F7931A;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
-    }
-
-    .stats-subcard {
-      padding: 20px;
-      border: 1px solid rgba(30, 41, 59, 0.5);
-      border-radius: 8px;
-      background: rgba(15, 17, 21, 0.5);
-
-      .stats-subtitle {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        font-weight: 600;
-        color: #F7931A;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin: 0 0 16px 0;
-      }
-    }
-
-    .web3-descriptions {
-      :deep(.el-descriptions__label) {
-        background: rgba(30, 41, 59, 0.3) !important;
-        color: #94A3B8 !important;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        text-transform: uppercase;
-        border-color: rgba(30, 41, 59, 0.5) !important;
-      }
-
-      :deep(.el-descriptions__content) {
-        background: transparent !important;
-        color: #E5E7EB !important;
-        font-family: 'JetBrains Mono', monospace;
-        border-color: rgba(30, 41, 59, 0.5) !important;
-      }
-    }
-  }
-
-  .web3-tabs {
-    :deep(.el-tabs__nav-wrap) {
-      &::after {
-        background: rgba(30, 41, 59, 0.5);
-      }
-    }
-
-    :deep(.el-tabs__item) {
-      color: #94A3B8;
-      font-family: 'JetBrains Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-
-      &:hover {
-        color: #F7931A;
-      }
-
-      &.is-active {
-        color: #F7931A;
-        border-bottom: 2px solid #F7931A !important;
-      }
-    }
-
-    :deep(.el-tabs__active-bar) {
-      background: #F7931A;
-    }
-  }
-
-  .web3-table {
-    background: transparent;
-
-    :deep(.el-table__header) {
-      th {
-        background: rgba(30, 41, 59, 0.5) !important;
-        color: #F7931A !important;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-        text-transform: uppercase;
-        border-bottom: 1px solid rgba(247, 147, 26, 0.3) !important;
-      }
-    }
-
-    :deep(.el-table__body) {
-      tr {
-        background: transparent !important;
-        transition: background 0.2s ease;
-
-        &:hover {
-          background: rgba(247, 147, 26, 0.05) !important;
-        }
-
-        td {
-          border-bottom: 1px solid rgba(30, 41, 59, 0.5) !important;
-          color: #E5E7EB;
-        }
-      }
-    }
-  }
-
-  .web3-tag {
-    font-family: 'JetBrains Mono', monospace;
+  .market-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 11px;
-    border: 1px solid rgba(247, 147, 26, 0.3);
-    background: rgba(247, 147, 26, 0.1);
+    letter-spacing: 0.2em;
+    color: var(--gold-primary);
+    margin: 0 0 var(--space-sm) 0;
   }
 
-  .flex-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .market-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--silver-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+}
+
+.stat-card {
+  position: relative;
+  padding: var(--space-lg) !important;
+
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    border: 2px solid var(--gold-primary);
+  }
+
+    top: 8px;
+    left: 8px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+    bottom: 8px;
+    right: 8px;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--gold-dim);
+}
+
+.stat-info {
+  flex: 1;
+
+  .stat-label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--silver-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .stat-value {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    &.gold { color: var(--gold-primary); }
+    &.green { color: var(--fall); }
+    &.blue { color: #4A90E2; }
+    &.profit-up { color: var(--gold-primary); }
+    &.profit-down { color: var(--fall); }
+
+    .stat-percent {
+      font-size: 0.875rem;
+      margin-left: var(--space-xs);
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--gold-dim);
+  margin-bottom: var(--space-xl);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--silver-muted);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.05);
+  }
+
+  &.active {
+    color: var(--gold-primary);
+    border-bottom-color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.08);
+  }
+}
+
+.tab-content {
+  min-height: 300px;
+}
+
+.stats-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+  background: var(--bg-secondary);
+  border: 1px solid var(--gold-dim);
+  padding: var(--space-lg);
+
+  .subcard-title {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--gold-primary);
+    margin: 0 0 var(--space-lg) 0;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+
+  .stat-item-label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--silver-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .stat-item-value {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--silver-text);
+  }
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 1440px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+    padding: var(--space-md);
+    gap: var(--space-md);
   }
 }
 </style>

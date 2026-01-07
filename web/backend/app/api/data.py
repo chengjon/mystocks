@@ -433,6 +433,9 @@ async def get_kline_data(
             }
 
         # 确保数据格式正确
+        if "trade_date" in df.columns and "date" not in df.columns:
+            df = df.rename(columns={"trade_date": "date"})
+
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date")
 
@@ -470,6 +473,9 @@ async def get_kline_data(
                     .dropna()
                 )
 
+            # 重置索引，使date变成列
+            df = df.reset_index()
+
         # 标准化数据格式
         df = normalize_stock_data_format(df)
 
@@ -493,7 +499,7 @@ async def get_kline_data(
             "timestamp": datetime.now().isoformat(),
         }
 
-        # 标准化API响应格式
+        # 标准化API响应格式 - 现已加固 volume 的整数类型保护
         result = normalize_api_response_format(result)
 
         # 缓存结果（K线数据缓存10分钟）

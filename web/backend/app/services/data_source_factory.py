@@ -985,7 +985,7 @@ __all__ = [
     "DataSourceMode",
     "DataSourceConfig",
     "DataSourceMetrics",
-    "IDateSource",
+    "IDataSource",  # 修复拼写错误: IDateSource → IDataSource
     "MockDataSource",
     "RealDataSource",
     "HybridDataSource",

@@ -76,6 +76,41 @@ MyStocks 是专业量化交易数据管理系统，采用**双数据库架构**�
    - 独立监控数据库追踪所有操作
    - 数据质量自动检查和告警
 
+### 🎯 平台支持策略
+
+**重要原则**: 本项目 **仅支持 Web 桌面端**，**不考虑移动端/平板端适配**。
+
+**支持平台**:
+- ✅ **桌面浏览器** (Chrome, Firefox, Safari, Edge)
+  - 最小分辨率: 1280x720
+  - 推荐分辨率: 1920x1080 或更高
+
+**不支持平台**:
+- ❌ **移动设备** (手机、平板)
+- ❌ **响应式设计** (@media queries for mobile)
+- ❌ **触摸优化** (touch target size > 44px)
+
+**开发规范**:
+1. **禁止编写移动端响应式代码**
+   - 不使用 `@media (max-width: 768px)` 或类似查询
+   - 不编写移动端特定的样式
+   - 不进行移动端测试
+
+2. **仅优化桌面端体验**
+   - 专注于桌面浏览器性能
+   - 优化鼠标交互（而非触摸）
+   - 利用桌面端大屏幕优势
+
+3. **设计系统基于桌面端**
+   - ArtDeco 设计系统针对桌面端优化
+   - 组件尺寸、间距、字体大小均按桌面端标准设计
+
+**代码审查检查点**:
+- ❌ 发现 `@media` 查询 → 删除
+- ❌ 发现 `max-width: 768px` → 删除
+- ❌ 发现移动端特定样式 → 删除
+- ❌ 发现响应式布局代码 → 删除
+
 ---
 
 ## 开发状态
@@ -271,6 +306,116 @@ pip install pandas numpy pyyaml psycopg2-binary taospy akshare
 # 认证: JWT_SECRET_KEY (API认证必需)
 ```
 
+### 端口分配规范
+
+#### 端口范围定义
+
+| 分类 | 端口范围 | 服务 | 说明 |
+|------|----------|------|------|
+| **前端** | 3000-3009 | Vue/React 应用 | 前端开发服务器 |
+| **后端** | 8000-8009 | FastAPI/Flask 应用 | 后端API服务 |
+| **监控** | 9000-9099 | Prometheus/Grafana | 监控系统 |
+
+#### 前端端口详细
+
+| 端口 | 服务 | 用途 | CORS状态 |
+|------|------|------|----------|
+| 3000 | Grafana | 监控仪表板 | ✅ 已授权 |
+| 3001 | Vue Frontend | 前端开发服务器 #1 | ✅ 已授权 |
+| 3002 | Vue Frontend | 前端开发服务器 #2 | ✅ 已授权 |
+| ... | ... | ... | ✅ 已授权 |
+| 3009 | Vue Frontend | 前端开发服务器 #9 | ✅ 已授权 |
+
+#### 后端端口详细
+
+| 端口 | 服务 | 用途 | CORS状态 |
+|------|------|------|----------|
+| 8000 | FastAPI | 后端API主服务 | ✅ 已授权 |
+| 8001 | FastAPI | 后端API服务 #1 | ✅ 已授权 |
+| 8002 | FastAPI | 后端API服务 #2 | ✅ 已授权 |
+| ... | ... | ... | ✅ 已授权 |
+| 8009 | FastAPI | 后端API服务 #9 | ✅ 已授权 |
+
+#### 监控端口
+
+| 端口 | 服务 | 用途 |
+|------|------|------|
+| 9090 | Prometheus | 指标查询和告警配置 |
+| 3000 | Grafana | 可视化仪表板 |
+| 3100 | Loki | 日志查询API |
+| 3200 | Tempo | 追踪数据API |
+
+### 前端运行命令
+
+```bash
+# 进入前端目录
+cd /opt/claude/mystocks_spec/web/frontend
+
+# 安装依赖
+npm install
+
+# 开发模式运行 (默认端口 5173，需手动指定前端端口)
+npm run dev -- --port 3001
+
+# 指定端口运行
+npm run dev -- --port 3001  # 前端服务1
+npm run dev -- --port 3002  # 前端服务2
+# ...
+
+# 构建生产版本
+npm run build
+```
+
+### 后端运行命令
+
+```bash
+# 进入后端目录
+cd /opt/claude/mystocks_spec/web/backend
+
+# 开发模式运行 (默认端口 8000)
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 指定端口运行
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload  # 后端服务1
+uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload  # 后端服务2
+# ...
+```
+
+### CORS 配置
+
+**配置文件**: `/opt/claude/mystocks_spec/web/backend/app/core/config.py`
+
+```python
+# CORS 配置 (前端端口范围: 3000-3009，后端端口范围: 8000-8009)
+cors_origins_str: str = (
+    "http://localhost:3000,http://localhost:3001,http://localhost:3002,"
+    "http://localhost:3003,http://localhost:3004,http://localhost:3005,"
+    "http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,"
+    "http://localhost:8000,http://localhost:8001,http://localhost:8002,"
+    "http://localhost:8003,http://localhost:8004,http://localhost:8005,"
+    "http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009"
+)
+```
+
+### CORS 问题排查
+
+**症状**: 浏览器控制台显示 CORS 错误
+```
+Access to XMLHttpRequest at 'http://localhost:8000/api/...'
+from origin 'http://localhost:3001' has been blocked by CORS policy
+```
+
+**解决方案**:
+1. 确认前端端口在 CORS 白名单中 (3000-3009)
+2. 检查 `/opt/claude/mystocks_spec/web/backend/app/core/config.py` 中的 `cors_origins_str`
+3. 重启后端服务使配置生效
+
+**添加新端口到 CORS 白名单**:
+```python
+# 编辑后端配置，添加到 cors_origins_str
+cors_origins_str: str = "http://localhost:3000,...,http://localhost:YOUR_NEW_PORT,..."
+```
+
 ### JWT 密钥配置
 
 **自动化脚本** (推荐):
@@ -387,9 +532,64 @@ python test_performance_comparison.py
 
 **所有其他文件必须组织到子目录中**
 
+### 🚨 重要：禁止使用 /tmp 保存正式文档
+
+**⚠️ 严格规则**: `/tmp` 目录**仅用于临时文件**，所有正式项目文件必须保存在项目目录内。
+
+**❌ 严禁以下行为**:
+- 将正式报告、分析文档保存到 `/tmp`
+- 将测试脚本、配置文件保存到 `/tmp`
+- 使用 `/tmp` 作为长期存储位置
+- 在 `/tmp` 保存需要保留的分析结果
+
+**✅ 正确做法**:
+- **报告文档** → `docs/reports/` 目录
+- **脚本文件** → `scripts/` 目录（按功能分类）
+- **配置文件** → `config/` 目录
+- **测试结果** → `docs/reports/test-results/` 目录
+
+**✅ /tmp 仅用于**:
+- 测试过程中的临时缓存（可随时删除）
+- 编译和构建的中间文件
+- 下载文件的临时中转位置
+- 快速验证和原型测试
+
+**示例对比**:
+```
+❌ 错误: /tmp/ARTDECO_COMPLETION_REPORT.md
+✅ 正确: docs/reports/ARTDECO_COMPLETION_REPORT.md
+
+❌ 错误: /tmp/test_feature.py
+✅ 正确: scripts/tests/test_feature.py
+
+❌ 错误: /tmp/app-config.yaml
+✅ 正确: config/app-config.yaml
+```
+
+**详细规则**: 参见下方"临时文件使用规则"和[`docs/standards/FILE_ORGANIZATION_RULES.md`](./docs/standards/FILE_ORGANIZATION_RULES.md)
+
 ### 临时文件使用规则 ⚠️
 
-**核心原则**: `/tmp` 目录仅用于**临时文件**，所有正式项目文件必须保存在项目目录内。
+**核心原则**: `/tmp` 目录**仅用于临时文件**，所有正式项目文件必须保存在项目目录内。
+
+**🚨 严格禁止**:
+- ❌ 将正式报告、文档保存到 `/tmp`
+- ❌ 将测试脚本保存到 `/tmp`
+- ❌ 将配置文件保存到 `/tmp`
+- ❌ 使用 `/tmp` 作为长期存储位置
+- ❌ 在 `/tmp` 保存需要保留的分析结果
+
+**✅ 允许使用场景**:
+- ✅ 测试过程中的临时缓存
+- ✅ 编译和构建的中间文件
+- ✅ 下载文件的临时位置
+- ✅ 快速验证和原型测试（可随时删除）
+
+**✅ 正式文件必须保存到项目目录**:
+- 📄 报告 → `docs/reports/`
+- 🔧 脚本 → `scripts/` (按功能分类)
+- ⚙️ 配置 → `config/`
+- 📊 测试结果 → `docs/reports/test-results/`
 
 #### 临时文件定义
 - **用途**: 测试、缓存、中间处理文件
@@ -398,6 +598,7 @@ python test_performance_comparison.py
   - 测试截图: `/tmp/test-screenshot.png`
   - 编译缓存: `/tmp/cache-XXXXXX`
   - 下载的临时文件: `/tmp/download-XXXXXX`
+  - 快速原型验证: `/tmp/quick-test.mjs`
 
 #### 正式文件放置规范
 
@@ -406,19 +607,22 @@ python test_performance_comparison.py
 - 指南: `docs/guides/FILENAME.md`
 - 设计: `docs/design/FILENAME.md`
 - API 文档: `docs/api/FILENAME.md`
+- 测试报告: `docs/reports/test-results/FILENAME.md`
 
 **脚本文件** → `scripts/` 目录:
 - 测试: `scripts/test_*.py`
 - 运行时: `scripts/run_*.py`
 - 数据库: `scripts/check_*.py`, `scripts/verify_*.py`
 - 开发工具: `scripts/dev/*.py`
+- Web测试: `scripts/dev/test_*.mjs`
 
 **配置文件** → `config/` 目录:
 - 所有配置文件: `config/*.yaml`, `config/*.toml`, `config/*.ini`
 
-**生成的报告** → `reports/` 或 `docs/reports/` 目录:
+**生成的报告** → `docs/reports/` 目录:
 - 分析报告: `docs/reports/REPORT_NAME.md`
 - JSON 报告: `docs/reports/report-data.json`
+- 截图证据: `docs/reports/screenshots/`
 
 #### 文件放置决策流程
 

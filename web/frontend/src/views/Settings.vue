@@ -1,274 +1,215 @@
 <template>
   <div class="settings">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card>
-          <template #header>
-            <span>系统设置</span>
-          </template>
 
-          <el-tabs v-model="activeTab">
-            <el-tab-pane label="基本设置" name="basic">
-              <el-form label-width="120px">
-                <el-form-item label="系统名称">
-                  <el-input value="MyStocks" disabled />
-                </el-form-item>
-                <el-form-item label="系统版本">
-                  <el-input value="1.0.0" disabled />
-                </el-form-item>
-                <el-form-item label="API地址">
-                  <el-input value="http://localhost:8000" disabled />
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
+    <div class="page-header">
+      <h1 class="page-title">SYSTEM SETTINGS</h1>
+      <p class="page-subtitle">CONFIGURATION | DISPLAY | DATABASE | LOGS</p>
+    </div>
 
-            <el-tab-pane label="显示设置" name="display">
-              <el-form :model="displaySettings" label-width="120px">
-                <el-form-item label="字体">
-                  <el-select v-model="displaySettings.fontFamily" placeholder="请选择字体" style="width: 300px" @change="applyDisplaySettings">
-                    <el-option label="系统默认" value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" />
-                    <el-option label="微软雅黑" value="'Microsoft YaHei', sans-serif" />
-                    <el-option label="苹方" value="'PingFang SC', sans-serif" />
-                    <el-option label="思源黑体" value="'Source Han Sans CN', sans-serif" />
-                    <el-option label="宋体" value="SimSun, serif" />
-                    <el-option label="黑体" value="SimHei, sans-serif" />
-                    <el-option label="Arial" value="Arial, sans-serif" />
-                    <el-option label="Helvetica" value="Helvetica, sans-serif" />
-                  </el-select>
-                  <span style="margin-left: 10px; color: #909399; font-size: 12px">设置全局字体样式</span>
-                </el-form-item>
-                <el-form-item label="字体大小">
-                  <el-radio-group v-model="displaySettings.fontSize" @change="applyDisplaySettings">
-                    <el-radio label="small">小 (12px)</el-radio>
-                    <el-radio label="default">默认 (14px)</el-radio>
-                    <el-radio label="large">大 (16px)</el-radio>
-                    <el-radio label="extra-large">特大 (18px)</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-                <el-form-item label="预览效果">
-                  <div class="font-preview" :style="previewStyle">
-                    <p>这是字体预览效果文本 - This is a font preview text</p>
-                    <p>数字：0123456789</p>
-                    <p>股票代码：600519 / 000858 / 300750</p>
-                  </div>
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" @click="saveDisplaySettings">保存设置</el-button>
-                  <el-button @click="resetDisplaySettings">恢复默认</el-button>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
+    <div class="main-card">
+      <el-tabs v-model="activeTab" class="tabs">
+        <el-tab-pane label="BASIC" name="basic">
+          <div class="form">
+            <div class="form-group">
+              <label class="label">SYSTEM NAME</label>
+              <input class="input" value="MyStocks" readonly>
+            </div>
+            <div class="form-group">
+              <label class="label">VERSION</label>
+              <input class="input" value="1.0.0" readonly>
+            </div>
+            <div class="form-group">
+              <label class="label">API URL</label>
+              <input class="input" value="http://localhost:8000" readonly>
+            </div>
+          </div>
+        </el-tab-pane>
 
-            <el-tab-pane label="数据库配置" name="database">
-              <el-table :data="databases" stripe border style="width: 100%">
-                <el-table-column prop="name" label="数据库类型" width="150" />
-                <el-table-column prop="host" label="连接地址" width="200" />
-                <el-table-column prop="port" label="端口" width="100" />
-                <el-table-column prop="status" label="状态" width="120">
-                  <template #default="{ row }">
-                    <el-tag v-if="row.status === 'success'" type="success" size="small">
-                      <el-icon><CircleCheck /></el-icon> 连接成功
-                    </el-tag>
-                    <el-tag v-else-if="row.status === 'error'" type="danger" size="small">
-                      <el-icon><CircleClose /></el-icon> 连接失败
-                    </el-tag>
-                    <el-tag v-else-if="row.status === 'testing'" type="warning" size="small">
-                      <el-icon class="is-loading"><Loading /></el-icon> 测试中...
-                    </el-tag>
-                    <el-tag v-else type="info" size="small">未测试</el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" width="150">
-                  <template #default="{ row }">
-                    <el-button
-                      type="primary"
-                      size="small"
-                      :loading="row.status === 'testing'"
-                      @click="testConnection(row)"
-                    >
-                      {{ row.status === 'testing' ? '测试中' : '测试连接' }}
-                    </el-button>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="message" label="详细信息" min-width="200">
-                  <template #default="{ row }">
-                    <span v-if="row.message" :style="{ color: row.status === 'error' ? '#f56c6c' : '#67c23a' }">
-                      {{ row.message }}
-                    </span>
-                    <span v-else style="color: #909399">-</span>
-                  </template>
-                </el-table-column>
-              </el-table>
-              <div style="margin-top: 16px">
-                <el-button type="primary" @click="testAllConnections">测试所有连接</el-button>
+        <el-tab-pane label="DISPLAY" name="display">
+          <div class="form">
+            <div class="form-group">
+              <label class="label">FONT FAMILY</label>
+              <el-select v-model="displaySettings.fontFamily" @change="applyDisplaySettings">
+                <el-option label="SYSTEM DEFAULT" value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto" />
+                <el-option label="MICROSOFT YAHEI" value="'Microsoft YaHei', sans-serif" />
+                <el-option label="PINGFANG SC" value="'PingFang SC', sans-serif" />
+                <el-option label="SOURCE HAN SANS" value="'Source Han Sans CN', sans-serif" />
+                <el-option label="SIMSUN" value="SimSun, serif" />
+                <el-option label="SIMHEI" value="SimHei, sans-serif" />
+                <el-option label="ARIAL" value="Arial, sans-serif" />
+                <el-option label="HELVETICA" value="Helvetica, sans-serif" />
+              </el-select>
+            </div>
+            <div class="form-group">
+              <label class="label">FONT SIZE</label>
+              <el-radio-group v-model="displaySettings.fontSize" @change="applyDisplaySettings">
+                <el-radio label="small">SMALL (12px)</el-radio>
+                <el-radio label="default">DEFAULT (14px)</el-radio>
+                <el-radio label="large">LARGE (16px)</el-radio>
+                <el-radio label="extra-large">EXTRA LARGE (18px)</el-radio>
+              </el-radio-group>
+            </div>
+            <div class="form-group">
+              <label class="label">PREVIEW</label>
+              <div class="font-preview" :style="previewStyle">
+                <p>THIS IS A FONT PREVIEW TEXT - 这是字体预览效果</p>
+                <p>NUMBERS: 0123456789</p>
+                <p>STOCK CODE: 600519 / 000858 / 300750</p>
               </div>
-            </el-tab-pane>
+            </div>
+            <div class="form-actions">
+            </div>
+          </div>
+        </el-tab-pane>
 
-            <el-tab-pane label="用户管理" name="users">
-              <el-button type="primary" size="small" style="margin-bottom: 16px">添加用户</el-button>
-              <el-table :data="[]" stripe>
-                <el-table-column prop="username" label="用户名" />
-                <el-table-column prop="email" label="邮箱" />
-                <el-table-column prop="role" label="角色" />
-                <el-table-column label="操作" width="200">
-                  <template #default>
-                    <el-button type="primary" size="small">编辑</el-button>
-                    <el-button type="danger" size="small">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-tab-pane>
-
-            <el-tab-pane label="运行日志" name="logs">
-              <!-- 工具栏 -->
-              <div class="logs-toolbar" style="margin-bottom: 16px">
-                <el-button
-                  :type="filterErrors ? 'danger' : 'default'"
-                  @click="toggleFilter"
-                  :icon="filterErrors ? 'el-icon-warning' : 'el-icon-document'"
-                >
-                  {{ filterErrors ? '显示全部日志' : '只看问题日志' }}
+        <el-tab-pane label="DATABASE" name="database">
+          <el-table :data="databases" stripe border class="table">
+            <el-table-column prop="name" label="TYPE" width="150" />
+            <el-table-column prop="host" label="HOST" width="200" />
+            <el-table-column prop="port" label="PORT" width="100" />
+            <el-table-column prop="status" label="STATUS" width="120">
+              <template #default="{ row }">
+                <span class="badge" :class="getStatusBadgeClass(row.status)">
+                  {{ getStatusText(row.status) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="ACTIONS" width="150">
+              <template #default="{ row }">
+                <el-button size="small" type="primary" @click="testConnection(row)">
+                  TEST
                 </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column prop="message" label="MESSAGE" min-width="200" />
+          </el-table>
+          <div class="table-actions">
+          </div>
+        </el-tab-pane>
 
-                <el-select v-model="selectedLevel" placeholder="日志级别" clearable style="width: 120px; margin-left: 8px" @change="fetchLogs">
-                  <el-option label="INFO" value="INFO"></el-option>
-                  <el-option label="WARNING" value="WARNING"></el-option>
-                  <el-option label="ERROR" value="ERROR"></el-option>
-                  <el-option label="CRITICAL" value="CRITICAL"></el-option>
-                </el-select>
+        <el-tab-pane label="USERS" name="users">
+          <div class="table-actions">
+          </div>
+          <el-table :data="[]" stripe border class="table">
+            <el-table-column prop="username" label="USERNAME" />
+            <el-table-column prop="email" label="EMAIL" />
+            <el-table-column prop="role" label="ROLE" />
+            <el-table-column label="ACTIONS" width="200">
+              <template #default>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
 
-                <el-select v-model="selectedCategory" placeholder="日志分类" clearable style="width: 120px; margin-left: 8px" @change="fetchLogs">
-                  <el-option label="数据库" value="database"></el-option>
-                  <el-option label="API" value="api"></el-option>
-                  <el-option label="适配器" value="adapter"></el-option>
-                  <el-option label="系统" value="system"></el-option>
-                </el-select>
+        <el-tab-pane label="LOGS" name="logs">
+          <div class="logs-toolbar">
+            <el-button @click="filterErrors = !filterErrors" size="small">
+              {{ filterErrors ? 'SHOW ALL' : 'ERRORS ONLY' }}
+            </el-button>
+            <el-select v-model="selectedLevel" placeholder="LEVEL" clearable @change="fetchLogs">
+              <el-option label="INFO" value="INFO"></el-option>
+              <el-option label="WARNING" value="WARNING"></el-option>
+              <el-option label="ERROR" value="ERROR"></el-option>
+              <el-option label="CRITICAL" value="CRITICAL"></el-option>
+            </el-select>
+            <el-select v-model="selectedCategory" placeholder="CATEGORY" clearable @change="fetchLogs">
+              <el-option label="DATABASE" value="database"></el-option>
+              <el-option label="API" value="api"></el-option>
+              <el-option label="ADAPTER" value="adapter"></el-option>
+              <el-option label="SYSTEM" value="system"></el-option>
+            </el-select>
+            <el-button @click="fetchLogs" size="small" :loading="logsLoading">
+              REFRESH
+            </el-button>
+          </div>
 
-                <el-button @click="refreshLogs" style="margin-left: 8px" :icon="'el-icon-refresh'">刷新</el-button>
-              </div>
+          <div class="subcard" v-if="logSummary.total_logs">
+            <el-row :gutter="24">
+              <el-col :span="6">
+                <div class="stat-item">
+                  <span class="stat-label">TOTAL LOGS</span>
+                  <span class="stat-value gold">{{ logSummary.total_logs }}</span>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="stat-item">
+                  <span class="stat-label">RECENT ERRORS</span>
+                  <span class="stat-value profit-up">{{ logSummary.recent_errors_1h }}</span>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="stat-item">
+                  <span class="stat-label">INFO</span>
+                  <span class="stat-value">{{ logSummary.level_counts?.INFO || 0 }}</span>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="stat-item">
+                  <span class="stat-label">WARNING</span>
+                  <span class="stat-value">{{ logSummary.level_counts?.WARNING || 0 }}</span>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
 
-              <!-- 日志统计 -->
-              <el-card shadow="never" style="margin-bottom: 16px" v-if="logSummary.total_logs">
-                <el-row :gutter="20">
-                  <el-col :span="6">
-                    <el-statistic title="总日志数" :value="logSummary.total_logs">
-                      <template #prefix>
-                        <el-icon><Document /></el-icon>
-                      </template>
-                    </el-statistic>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-statistic title="最近错误" :value="logSummary.recent_errors_1h">
-                      <template #prefix>
-                        <el-icon style="color: #f56c6c"><Warning /></el-icon>
-                      </template>
-                    </el-statistic>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-statistic title="INFO" :value="logSummary.level_counts?.INFO || 0">
-                      <template #prefix>
-                        <el-icon style="color: #909399"><InfoFilled /></el-icon>
-                      </template>
-                    </el-statistic>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-statistic title="WARNING" :value="logSummary.level_counts?.WARNING || 0">
-                      <template #prefix>
-                        <el-icon style="color: #e6a23c"><Warning /></el-icon>
-                      </template>
-                    </el-statistic>
-                  </el-col>
-                </el-row>
-              </el-card>
+          <el-table :data="logs" stripe border class="table" v-loading="logsLoading">
+            <el-table-column prop="timestamp" label="TIME" width="180">
+              <template #default="{ row }">
+                {{ formatTime(row.timestamp) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="level" label="LEVEL" width="100">
+              <template #default="{ row }">
+                <span class="badge" :class="getLevelBadgeClass(row.level)">
+                  {{ row.level }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="category" label="CATEGORY" width="100" />
+            <el-table-column prop="operation" label="OPERATION" width="150" />
+            <el-table-column prop="message" label="MESSAGE" min-width="200" />
+            <el-table-column label="ACTIONS" width="100">
+              <template #default="{ row }">
+                <el-button size="small" type="info" @click="viewLogDetails(row)">
+                  DETAILS
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
 
-              <!-- 日志列表 -->
-              <el-table :data="logs" stripe border style="width: 100%" v-loading="logsLoading">
-                <el-table-column prop="timestamp" label="时间" width="180">
-                  <template #default="{ row }">
-                    {{ formatTime(row.timestamp) }}
-                  </template>
-                </el-table-column>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[20, 50, 100, 200]"
+            :page-size="pageSize"
+            :total="totalLogs"
+            layout="total, sizes, prev, pager, next, jumper"
+            class="pagination"
+          />
+        </el-tab-pane>
 
-                <el-table-column prop="level" label="级别" width="100">
-                  <template #default="{ row }">
-                    <el-tag :type="getLevelType(row.level) as any" size="small">
-                      {{ row.level }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-
-                <el-table-column prop="category" label="分类" width="100">
-                  <template #default="{ row }">
-                    <el-tag size="small" effect="plain">{{ getCategoryLabel(row.category) }}</el-tag>
-                  </template>
-                </el-table-column>
-
-                <el-table-column prop="operation" label="操作" width="150"></el-table-column>
-                <el-table-column prop="message" label="消息" min-width="200"></el-table-column>
-
-                <el-table-column prop="duration_ms" label="耗时" width="100">
-                  <template #default="{ row }">
-                    <span v-if="row.duration_ms !== null && row.duration_ms !== undefined">
-                      {{ row.duration_ms }}ms
-                    </span>
-                    <span v-else style="color: #909399">-</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column label="操作" width="100">
-                  <template #default="{ row }">
-                    <el-button :type="'text' as any" size="small" @click="showLogDetails(row)">
-                      详情
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-
-              <!-- 分页 -->
-              <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                :current-page="currentPage"
-                :page-sizes="[20, 50, 100, 200]"
-                :page-size="pageSize"
-                :total="totalLogs"
-                layout="total, sizes, prev, pager, next, jumper"
-                style="margin-top: 16px; display: flex; justify-content: flex-end"
-              >
-              </el-pagination>
-            </el-tab-pane>
-
-            <el-tab-pane label="关于" name="about">
-              <el-descriptions :column="1" border>
-                <el-descriptions-item label="项目名称">MyStocks 量化交易数据管理系统</el-descriptions-item>
-                <el-descriptions-item label="版本">v2.2.0</el-descriptions-item>
-                <el-descriptions-item label="技术栈">FastAPI + Vue3 + Element Plus</el-descriptions-item>
-                <el-descriptions-item label="数据库">MySQL + PostgreSQL + TDengine + Redis</el-descriptions-item>
-                <el-descriptions-item label="描述">
-                  专业的量化交易数据管理系统,支持多数据源接入、智能分类存储、实时监控和分析
-                </el-descriptions-item>
-              </el-descriptions>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-    </el-row>
+        <el-tab-pane label="ABOUT" name="about">
+          <el-descriptions :column="1" border class="descriptions">
+            <el-descriptions-item label="PROJECT NAME">MyStocks QUANTITATIVE TRADING SYSTEM</el-descriptions-item>
+            <el-descriptions-item label="VERSION">v2.2.0</el-descriptions-item>
+            <el-descriptions-item label="TECH STACK">FastAPI + Vue3 + Element Plus</el-descriptions-item>
+            <el-descriptions-item label="DATABASE">MySQL + PostgreSQL + TDengine + Redis</el-descriptions-item>
+            <el-descriptions-item label="DESCRIPTION">
+              PROFESSIONAL QUANTITATIVE TRADING DATA MANAGEMENT SYSTEM, SUPPORTS MULTIPLE DATA SOURCES, INTELLIGENT CLASSIFICATION STORAGE, REAL-TIME MONITORING AND ANALYSIS
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { CircleCheck, CircleClose, Loading, Document, Warning, InfoFilled } from '@element-plus/icons-vue'
 import api from '@/api'
 
-// ============================================
-// 类型定义
-// ============================================
-
-/**
- * 数据库信息
- */
 interface DatabaseInfo {
   id: string
   name: string
@@ -278,17 +219,11 @@ interface DatabaseInfo {
   message: string
 }
 
-/**
- * 显示设置
- */
 interface DisplaySettings {
   fontFamily: string
   fontSize: 'small' | 'default' | 'large' | 'extra-large'
 }
 
-/**
- * 日志条目
- */
 interface LogEntry {
   id?: number
   timestamp: string
@@ -300,9 +235,6 @@ interface LogEntry {
   details?: Record<string, any>
 }
 
-/**
- * 日志摘要
- */
 interface LogSummary {
   total_logs: number
   recent_errors_1h: number
@@ -311,16 +243,13 @@ interface LogSummary {
 
 const activeTab: Ref<string> = ref('basic')
 
-// 监听标签页切换
 watch(activeTab, (newTab: string) => {
   if (newTab === 'logs') {
-    // 切换到日志标签页时加载数据
     fetchLogs()
     fetchLogSummary()
   }
 })
 
-// 显示设置
 const displaySettings: Ref<DisplaySettings> = ref({
   fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto",
   fontSize: 'default'
@@ -337,9 +266,9 @@ const previewStyle = computed(() => ({
   fontFamily: displaySettings.value.fontFamily,
   fontSize: fontSizeMap[displaySettings.value.fontSize],
   padding: '20px',
-  border: '1px solid #dcdfe6',
-  borderRadius: '4px',
-  backgroundColor: '#f5f7fa'
+  border: '1px solid rgba(212, 175, 55, 0.3)',
+  borderRadius: '0',
+  backgroundColor: 'rgba(212, 175, 55, 0.05)'
 }))
 
 const applyDisplaySettings = (): void => {
@@ -347,7 +276,6 @@ const applyDisplaySettings = (): void => {
   root.style.setProperty('--font-family', displaySettings.value.fontFamily)
   root.style.setProperty('--font-size', fontSizeMap[displaySettings.value.fontSize])
 
-  // 应用到 body
   document.body.style.fontFamily = displaySettings.value.fontFamily
   document.body.style.fontSize = fontSizeMap[displaySettings.value.fontSize]
 }
@@ -355,7 +283,7 @@ const applyDisplaySettings = (): void => {
 const saveDisplaySettings = (): void => {
   localStorage.setItem('displaySettings', JSON.stringify(displaySettings.value))
   applyDisplaySettings()
-  ElMessage.success('显示设置已保存')
+  ElMessage.success('DISPLAY SETTINGS SAVED')
 }
 
 const resetDisplaySettings = (): void => {
@@ -365,10 +293,9 @@ const resetDisplaySettings = (): void => {
   }
   localStorage.removeItem('displaySettings')
   applyDisplaySettings()
-  ElMessage.success('已恢复默认设置')
+  ElMessage.success('SETTINGS RESET TO DEFAULT')
 }
 
-// 加载保存的设置
 const loadDisplaySettings = (): void => {
   const saved = localStorage.getItem('displaySettings')
   if (saved) {
@@ -381,7 +308,6 @@ const loadDisplaySettings = (): void => {
   }
 }
 
-// 数据库配置
 const databases: Ref<DatabaseInfo[]> = ref([
   {
     id: 'mysql',
@@ -428,34 +354,31 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
       port: parseInt(database.port)
     })
 
-    // 访问 .data 获取实际数据
     const result = (response as any)?.data || response
-    // API直接返回结果
     if (result && result.success !== false) {
       database.status = 'success'
-      database.message = result.message || '连接成功'
-      ElMessage.success(`${database.name} 连接测试成功`)
+      database.message = result.message || 'CONNECTION SUCCESSFUL'
+      ElMessage.success(`${database.name} CONNECTED`)
     } else {
       database.status = 'error'
-      database.message = result.error || '连接失败'
-      ElMessage.error(`${database.name} 连接测试失败`)
+      database.message = result.error || 'CONNECTION FAILED'
+      ElMessage.error(`${database.name} CONNECTION FAILED`)
     }
   } catch (error: any) {
     database.status = 'error'
-    database.message = error.response?.data?.detail || error.message || '网络错误，请检查后端服务是否运行'
-    ElMessage.error(`${database.name} 连接测试失败: ${database.message}`)
+    database.message = error.response?.data?.detail || error.message || 'NETWORK ERROR'
+    ElMessage.error(`${database.name} CONNECTION FAILED`)
   }
 }
 
 const testAllConnections = async (): Promise<void> => {
-  ElMessage.info('开始测试所有数据库连接...')
+  ElMessage.info('TESTING ALL DATABASE CONNECTIONS...')
   for (const db of databases.value) {
     await testConnection(db)
   }
-  ElMessage.success('所有数据库连接测试完成')
+  ElMessage.success('ALL DATABASE CONNECTIONS TESTED')
 }
 
-// ==================== 运行日志相关 ====================
 const logs: Ref<LogEntry[]> = ref([])
 const logSummary: Ref<LogSummary> = ref({
   total_logs: 0,
@@ -471,7 +394,6 @@ const pageSize: Ref<number> = ref(20)
 const totalLogs: Ref<number> = ref(0)
 let autoRefreshTimer: NodeJS.Timeout | null = null
 
-// 获取日志
 const fetchLogs = async (): Promise<void> => {
   logsLoading.value = true
   try {
@@ -485,11 +407,8 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedCategory.value) params.category = selectedCategory.value
 
     const response = await api.get('/api/system/logs', { params })
-
-    // 访问 .data 获取实际数据
     const data = (response as any)?.data || response
 
-    // API直接返回数据
     if (Array.isArray(data)) {
       logs.value = data
       totalLogs.value = data.length
@@ -499,8 +418,7 @@ const fetchLogs = async (): Promise<void> => {
     }
   } catch (error: any) {
     console.error('Error fetching logs:', error)
-    ElMessage.error('获取日志失败: ' + (error.response?.data?.detail || error.message))
-    // 使用模拟数据
+    ElMessage.error('FAILED TO FETCH LOGS')
     logs.value = generateMockLogs()
     totalLogs.value = logs.value.length
   } finally {
@@ -508,7 +426,6 @@ const fetchLogs = async (): Promise<void> => {
   }
 }
 
-// 生成模拟日志数据
 const generateMockLogs = (): LogEntry[] => {
   const logs: LogEntry[] = []
   const levels = ['INFO', 'WARNING', 'ERROR']
@@ -522,21 +439,18 @@ const generateMockLogs = (): LogEntry[] => {
       level: levels[i % levels.length],
       category: categories[i % categories.length],
       operation: operations[i % operations.length],
-      message: `模拟日志条目 ${i + 1}`,
+      message: `MOCK LOG ENTRY ${i + 1}`,
       duration_ms: Math.floor(Math.random() * 100)
     })
   }
   return logs
 }
 
-// 获取日志统计
 const fetchLogSummary = async (): Promise<void> => {
   try {
     const response = await api.get('/api/system/logs/summary')
-    // 访问 .data 获取实际数据
     const data = (response as any)?.data || response
 
-    // API直接返回数据
     if (typeof data === 'object' && data !== null) {
       logSummary.value = {
         total_logs: data.total_logs || data.total || 0,
@@ -546,26 +460,22 @@ const fetchLogSummary = async (): Promise<void> => {
     }
   } catch (error: any) {
     console.error('Error fetching log summary:', error)
-    // 使用默认统计
     logSummary.value = { total_logs: 156, recent_errors_1h: 3, level_counts: { INFO: 120, WARNING: 25, ERROR: 11 } }
   }
 }
 
-// 切换错误筛选
 const toggleFilter = (): void => {
   filterErrors.value = !filterErrors.value
   currentPage.value = 1
   fetchLogs()
 }
 
-// 刷新日志
 const refreshLogs = (): void => {
   fetchLogs()
   fetchLogSummary()
-  ElMessage.success('日志已刷新')
+  ElMessage.success('LOGS REFRESHED')
 }
 
-// 分页处理
 const handleSizeChange = (val: number): void => {
   pageSize.value = val
   currentPage.value = 1
@@ -577,29 +487,62 @@ const handleCurrentChange = (val: number): void => {
   fetchLogs()
 }
 
-// 获取日志级别类型
-const getLevelType = (level: string): '' | 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
-  const types: Record<string, '' | 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
-    'INFO': 'info',
-    'WARNING': 'warning',
-    'ERROR': 'danger',
-    'CRITICAL': 'danger'
-  }
-  return types[level] || 'info'
+const viewLogDetails = (log: LogEntry): void => {
+  const details = log.details
+    ? JSON.stringify(log.details, null, 2)
+    : 'NO ADDITIONAL DETAILS'
+
+  ElMessageBox.alert(
+    `
+    <div style="text-align: left;">
+      <p><strong>TIMESTAMP:</strong> ${log.timestamp}</p>
+      <p><strong>LEVEL:</strong> ${log.level}</p>
+      <p><strong>CATEGORY:</strong> ${log.category}</p>
+      <p><strong>OPERATION:</strong> ${log.operation}</p>
+      <p><strong>MESSAGE:</strong> ${log.message}</p>
+      ${log.duration_ms ? `<p><strong>DURATION:</strong> ${log.duration_ms}ms</p>` : ''}
+      <p><strong>DETAILS:</strong></p>
+      <pre style="max-height: 300px; overflow: auto; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 4px;">${details}</pre>
+    </div>
+    `,
+    'LOG DETAILS',
+    {
+      dangerouslyUseHTMLString: true,
+      customClass: 'log-details-dialog'
+    }
+  )
 }
 
-// 获取分类标签
-const getCategoryLabel = (category: string): string => {
-  const labels: Record<string, string> = {
-    'database': '数据库',
-    'api': 'API',
-    'adapter': '适配器',
-    'system': '系统'
+const getStatusBadgeClass = (status: string) => {
+  const classes = {
+    success: 'badge-success',
+    error: 'badge-danger',
+    testing: 'badge-warning',
+    unknown: 'badge-info'
   }
-  return labels[category] || category
+  return classes[status] || 'badge-info'
 }
 
-// 格式化时间
+const getStatusText = (status: string) => {
+  const texts = {
+    success: 'CONNECTED',
+    error: 'FAILED',
+    testing: 'TESTING...',
+    unknown: 'NOT TESTED'
+  }
+  return texts[status] || status
+}
+
+const getLevelBadgeClass = (level: string) => {
+  const classes = {
+    'INFO': 'badge-info',
+    'WARNING': 'badge-warning',
+    'ERROR': 'badge-danger',
+    'CRITICAL': 'badge-danger'
+  }
+  return classes[level] || 'badge-info'
+}
+
 const formatTime = (timestamp: string): string => {
   if (!timestamp) return '-'
   return new Date(timestamp).toLocaleString('zh-CN', {
@@ -612,38 +555,33 @@ const formatTime = (timestamp: string): string => {
   })
 }
 
-// 显示日志详情
 const showLogDetails = (row: LogEntry): void => {
   const detailsHtml = `
     <div style="text-align: left;">
       <p><strong>ID:</strong> ${row.id}</p>
-      <p><strong>时间:</strong> ${formatTime(row.timestamp)}</p>
-      <p><strong>级别:</strong> ${row.level}</p>
-      <p><strong>分类:</strong> ${getCategoryLabel(row.category)}</p>
-      <p><strong>操作:</strong> ${row.operation}</p>
-      <p><strong>消息:</strong> ${row.message}</p>
-      ${row.duration_ms ? `<p><strong>耗时:</strong> ${row.duration_ms}ms</p>` : ''}
-      ${row.details ? `<p><strong>详情:</strong></p><pre style="background: #f5f7fa; padding: 10px; border-radius: 4px; overflow: auto;">${JSON.stringify(row.details, null, 2)}</pre>` : ''}
+      <p><strong>TIME:</strong> ${formatTime(row.timestamp)}</p>
+      <p><strong>LEVEL:</strong> ${row.level}</p>
+      <p><strong>CATEGORY:</strong> ${row.category}</p>
+      <p><strong>OPERATION:</strong> ${row.operation}</p>
+      <p><strong>MESSAGE:</strong> ${row.message}</p>
+      ${row.duration_ms ? `<p><strong>DURATION:</strong> ${row.duration_ms}ms</p>` : ''}
     </div>
   `
 
-  ElMessageBox.alert(detailsHtml, '日志详情', {
+  ElMessageBox.alert(detailsHtml, 'LOG DETAILS', {
     dangerouslyUseHTMLString: true,
-    confirmButtonText: '确定',
-    customClass: 'log-details-dialog'
+    confirmButtonText: 'OK'
   })
 }
 
 onMounted((): void => {
   loadDisplaySettings()
 
-  // 如果在日志标签页，加载日志
   if (activeTab.value === 'logs') {
     fetchLogs()
     fetchLogSummary()
   }
 
-  // 设置自动刷新（每30秒）
   autoRefreshTimer = setInterval(() => {
     if (activeTab.value === 'logs') {
       fetchLogs()
@@ -660,27 +598,383 @@ onUnmounted((): void => {
 </script>
 
 <style scoped lang="scss">
-.settings {
-  .font-preview {
-    p {
-      margin: 8px 0;
-      line-height: 1.8;
+
+  min-height: 100vh;
+  padding: var(--spacing-6);
+  position: relative;
+  background: var(--bg-primary);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+    position: relative;
+    z-index: 1;
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: var(--font-size-h2);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      color: var(--accent-gold);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .page-subtitle {
+      font-family: var(--font-body);
+      font-size: var(--font-size-small);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin: 0;
     }
   }
 
-  :deep(.el-table) {
-    .is-loading {
-      animation: rotating 2s linear infinite;
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: var(--radius-none);
+    padding: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+
+      max-width: 600px;
+      margin: 0 auto;
+
+      .form-group {
+        margin-bottom: var(--spacing-5);
+
+          display: block;
+          font-family: var(--font-display);
+          font-size: var(--font-size-xs);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--accent-gold);
+          margin-bottom: var(--spacing-2);
+        }
+
+        .input {
+          width: 100%;
+          padding: var(--spacing-2) var(--spacing-3);
+          font-family: var(--font-body);
+          font-size: var(--font-size-body);
+          color: var(--fg-primary);
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid var(--accent-gold);
+          border-radius: var(--radius-none);
+          transition: all var(--transition-base);
+
+          &[readonly] {
+            color: var(--fg-muted);
+            background: rgba(212, 175, 55, 0.05);
+            border-bottom-color: rgba(212, 175, 55, 0.2);
+          }
+
+          &:focus {
+            outline: none;
+            border-bottom-color: var(--accent-gold-light);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+          }
+        }
+
+        .font-preview {
+          padding: var(--spacing-5);
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: var(--radius-none);
+          background: rgba(212, 175, 55, 0.05);
+
+          p {
+            margin: var(--spacing-2) 0;
+            line-height: 1.8;
+          }
+        }
+
+        .form-actions {
+          display: flex;
+          gap: var(--spacing-3);
+          margin-top: var(--spacing-5);
+        }
+      }
+    }
+
+    .table-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--spacing-3);
+      margin-bottom: var(--spacing-4);
+    }
+
+      background: rgba(212, 175, 55, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: var(--radius-none);
+      padding: var(--spacing-5);
+      margin-bottom: var(--spacing-4);
+
+      .stat-item {
+        text-align: center;
+
+        .stat-label {
+          display: block;
+          font-family: var(--font-display);
+          font-size: var(--font-size-xs);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--fg-muted);
+          margin-bottom: var(--spacing-2);
+        }
+
+        .stat-value {
+          display: block;
+          font-family: var(--font-mono);
+          font-size: var(--font-size-h4);
+          font-weight: 700;
+          color: var(--fg-primary);
+        }
+      }
+    }
+
+    .logs-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing-3);
+      margin-bottom: var(--spacing-4);
+      flex-wrap: wrap;
     }
   }
 
-  @keyframes rotating {
-    from {
-      transform: rotate(0deg);
+  .tabs {
+    :deep(.el-tabs__nav-wrap) {
+      &::after {
+        background: rgba(212, 175, 55, 0.3);
+      }
     }
-    to {
-      transform: rotate(360deg);
+
+    :deep(.el-tabs__item) {
+      color: var(--fg-muted);
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      font-weight: 600;
+
+      &:hover {
+        color: var(--accent-gold);
+      }
+
+      &.is-active {
+        color: var(--accent-gold);
+        border-bottom: 2px solid var(--accent-gold) !important;
+      }
     }
+
+    :deep(.el-tabs__active-bar) {
+      background: var(--accent-gold);
+    }
+  }
+
+  .table {
+    background: transparent;
+
+    :deep(.el-table__header) {
+      th {
+        background: rgba(212, 175, 55, 0.1) !important;
+        color: var(--accent-gold) !important;
+        font-family: var(--font-display);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wider);
+        border-bottom: 2px solid var(--accent-gold) !important;
+      }
+    }
+
+    :deep(.el-table__body) {
+      tr {
+        background: transparent !important;
+        transition: background var(--transition-base);
+
+        &:hover {
+          background: rgba(212, 175, 55, 0.05) !important;
+        }
+
+        td {
+          border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+          color: var(--fg-primary);
+        }
+      }
+    }
+  }
+
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-6);
+
+    :deep(.el-pagination) {
+      .btn-prev,
+      .btn-next,
+      .el-pager li {
+        background: transparent !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-radius: var(--radius-none) !important;
+        color: var(--fg-primary) !important;
+        font-family: var(--font-display) !important;
+        text-transform: uppercase !important;
+        font-weight: 600 !important;
+
+        &:hover {
+          background: rgba(212, 175, 55, 0.1) !important;
+          border-color: var(--accent-gold) !important;
+        }
+
+        &.active {
+          background: var(--accent-gold) !important;
+          border-color: var(--accent-gold) !important;
+          color: var(--bg-primary) !important;
+        }
+      }
+
+      .el-pagination__total,
+      .el-pagination__sizes,
+      .el-pagination__jump {
+        color: var(--fg-primary) !important;
+        font-family: var(--font-body) !important;
+      }
+    }
+  }
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-display);
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    border: 2px solid var(--accent-gold);
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--accent-gold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+    background: var(--accent-gold);
+    color: var(--bg-primary);
+
+    &:hover {
+      background: var(--accent-gold-light);
+      box-shadow: var(--glow-medium);
+    }
+  }
+
+    &:hover {
+      background: var(--bg-secondary);
+      box-shadow: var(--glow-subtle);
+    }
+  }
+
+    background: var(--color-up);
+    border-color: var(--color-up);
+    color: white;
+
+    &:hover {
+      background: #D94F51;
+      box-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
+    }
+  }
+
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-small);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border-radius: var(--radius-none);
+  }
+
+  .badge-success {
+    background: rgba(39, 174, 96, 0.15);
+    color: #27AE60;
+    border: 1px solid #27AE60;
+  }
+
+  .badge-danger {
+    background: rgba(231, 76, 60, 0.15);
+    color: #E74C3C;
+    border: 1px solid #E74C3C;
+  }
+
+  .badge-warning {
+    background: rgba(230, 126, 34, 0.15);
+    color: #E67E22;
+    border: 1px solid #E67E22;
+  }
+
+  .badge-info {
+    background: rgba(74, 144, 226, 0.15);
+    color: #4A90E2;
+    border: 1px solid #4A90E2;
+  }
+
+    :deep(.el-descriptions__label) {
+      background: rgba(212, 175, 55, 0.1) !important;
+      color: var(--fg-muted) !important;
+      font-family: var(--font-display);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      border-color: rgba(212, 175, 55, 0.3) !important;
+    }
+
+    :deep(.el-descriptions__content) {
+      background: transparent !important;
+      color: var(--fg-primary) !important;
+      font-family: var(--font-body);
+      border-color: rgba(212, 175, 55, 0.3) !important;
+    }
+  }
+
+  .gold {
+    color: var(--accent-gold) !important;
+  }
+
+  .profit-up {
+    color: var(--color-up) !important;
   }
 }
 </style>

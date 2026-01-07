@@ -969,7 +969,749 @@ async def test_data_source(endpoint_name: str, test_params: dict):
 
 ---
 
-**报告版本**: v1.0
+## 问题3: 数据清洗与验证功能实现分析
+
+### 当前实现状态
+
+| 功能 | 实现状态 | 具体文件 | 差距 |
+|------|---------|---------|------|
+| **行业数据清洗** | ✅ 已实现 | `scripts/data_cleaning/clean_industry_data.py` | 功能完整 |
+| **数据库验证脚本** | ✅ 已实现 | `scripts/data_cleaning/verify_db_data.py` | 功能完整 |
+| **K线数据验证** | ✅ 已实现 | verify_db_data.py --check-structure | 功能完整 |
+| **adj_factor验证** | ✅ 已实现 | verify_db_data.py --check-adj-factor | 功能完整 |
+| **自动化清洗任务** | ❌ 未实现 | - | 需要定时任务 |
+| **入库前验证** | ⚠️ 部分实现 | DataManager中有基础验证 | 需要增强 |
+| **数据治理规则** | ❌ 未实现 | - | 需要规则引擎 |
+
+### 短期建议（立即可实施）
+
+#### 3.1 完善现有验证脚本
+
+**现状**: ✅ 两个脚本已完整实现
+- `scripts/data_cleaning/clean_industry_data.py` (437行)
+- `scripts/data_cleaning/verify_db_data.py` (544行)
+
+**增强点**:
+1. 添加TDengine数据验证支持
+2. 增加更多验证规则（数据类型、范围、重复）
+3. 支持批量表验证
+4. 增加性能优化（并行验证）
+
+#### 3.2 创建自动化清洗任务
+
+**建议**: 创建定时任务脚本
+
+```python
+# scripts/data_cleaning/auto_clean_scheduler.py
+"""
+自动化数据清洗调度器
+
+功能:
+1. 每日收盘后自动验证K线数据
+2. 每周检查行业数据质量
+3. 自动修复adj_factor缺失值
+4. 生成清洗报告并告警
+"""
+
+import schedule
+import time
+from pathlib import Path
+from datetime import datetime
+from scripts.data_cleaning.verify_db_data import DatabaseVerifier
+from scripts.data_cleaning.clean_industry_data import DataCleaner
+
+
+class AutoCleanScheduler:
+    """自动化数据清洗调度器"""
+
+    def __init__(self):
+        self.verifier = DatabaseVerifier()
+
+    def daily_kline_check(self):
+        """每日检查K线数据"""
+        print(f"\n[{datetime.now()}] 执行每日K线数据检查...")
+
+        # 检查adj_factor
+        result = self.verifier.check_adj_factor("stocks_daily")
+
+        # 如果无效率超过5%，自动修复
+        if result['valid_percent'] < 95:
+            print(f"⚠️ adj_factor有效率为{result['valid_percent']:.2f}%，自动修复...")
+            fix_result = self.verifier.fix_adj_factor(
+                "stocks_daily",
+                default_value=1.0,
+                dry_run=False
+            )
+            print(f"✅ 已修复{fix_result['fixed_count']}条记录")
+
+    def weekly_industry_check(self):
+        """每周检查行业数据"""
+        print(f"\n[{datetime.now()}] 执行每周行业数据检查...")
+
+        result = self.verifier.check_industry_data("stocks_basic")
+
+        # 如果脏数据超过10%，告警
+        if result['dirty_percent'] > 10:
+            print(f"⚠️ 脏数据率为{result['dirty_percent']:.2f}%，需要人工审核")
+            # 这里可以集成邮件/钉钉告警
+
+    def run(self):
+        """启动调度器"""
+        print("✅ 自动化清洗调度器已启动")
+
+        # 每日检查K线数据（收盘后）
+        schedule.every().day.at("16:00").do(self.daily_kline_check)
+
+        # 每周一检查行业数据
+        schedule.every().monday.at("09:00").do(self.weekly_industry_check)
+
+        while True:
+            schedule.run_pending()
+            time.sleep(60)
+
+
+if __name__ == "__main__":
+    scheduler = AutoCleanScheduler()
+    scheduler.run()
+```
+
+#### 3.3 增强入库前验证
+
+**建议**: 在DataManager中增加验证钩子
+
+```python
+# src/core/data_validator.py
+"""
+数据验证器 - 入库前验证
+
+验证规则:
+1. 数据完整性检查
+2. 数据类型验证
+3. 数据范围验证
+4. 重复数据检测
+5. 业务逻辑验证（如OHLC价格合理性）
+"""
+
+from typing import Dict, Any, List, Optional
+import pandas as pd
+import numpy as np
+
+
+class DataValidator:
+    """数据验证器"""
+
+    def __init__(self):
+        self.rules = {}
+
+    def register_rule(self, table_name: str, rule: Dict):
+        """注册验证规则"""
+        if table_name not in self.rules:
+            self.rules[table_name] = []
+        self.rules[table_name].append(rule)
+
+    def validate(self, table_name: str, data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        验证数据
+
+        返回:
+            {
+                "is_valid": bool,
+                "errors": List[str],
+                "warnings": List[str]
+            }
+        """
+        result = {
+            "is_valid": True,
+            "errors": [],
+            "warnings": []
+        }
+
+        if table_name not in self.rules:
+            # 没有规则，跳过验证
+            return result
+
+        for rule in self.rules[table_name]:
+            rule_result = self._apply_rule(data, rule)
+
+            if not rule_result["is_valid"]:
+                result["is_valid"] = False
+                result["errors"].extend(rule_result["errors"])
+
+            if rule_result["warnings"]:
+                result["warnings"].extend(rule_result["warnings"])
+
+        return result
+
+    def _apply_rule(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """应用单个验证规则"""
+        rule_type = rule.get("type")
+
+        if rule_type == "required_columns":
+            return self._check_required_columns(data, rule)
+        elif rule_type == "column_types":
+            return self._check_column_types(data, rule)
+        elif rule_type == "ohlc_logic":
+            return self._check_ohlc_logic(data, rule)
+        elif rule_type == "no_duplicates":
+            return self._check_no_duplicates(data, rule)
+        elif rule_type == "value_range":
+            return self._check_value_range(data, rule)
+        else:
+            return {"is_valid": True, "errors": [], "warnings": []}
+
+    def _check_required_columns(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """检查必需列"""
+        required = rule.get("columns", [])
+        missing = [col for col in required if col not in data.columns]
+
+        if missing:
+            return {
+                "is_valid": False,
+                "errors": [f"缺少必需列: {', '.join(missing)}"],
+                "warnings": []
+            }
+
+        return {"is_valid": True, "errors": [], "warnings": []}
+
+    def _check_column_types(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """检查列类型"""
+        type_mappings = rule.get("mappings", {})
+        errors = []
+
+        for col, expected_type in type_mappings.items():
+            if col not in data.columns:
+                continue
+
+            actual_type = str(data[col].dtype)
+
+            if expected_type == "numeric" and not pd.api.types.is_numeric_dtype(data[col]):
+                errors.append(f"列 '{col}' 应为数值类型，实际为 {actual_type}")
+            elif expected_type == "datetime" and not pd.api.types.is_datetime64_any_dtype(data[col]):
+                errors.append(f"列 '{col}' 应为日期时间类型，实际为 {actual_type}")
+
+        return {
+            "is_valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": []
+        }
+
+    def _check_ohlc_logic(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """检查OHLC价格逻辑"""
+        errors = []
+
+        required_cols = ["open", "high", "low", "close"]
+        if not all(col in data.columns for col in required_cols):
+            return {"is_valid": True, "errors": [], "warnings": []}
+
+        # high >= max(open, close)
+        invalid_high = data["high"] < data[["open", "close"]].max(axis=1)
+        if invalid_high.any():
+            errors.append(f"发现 {invalid_high.sum()} 条记录的high < max(open, close)")
+
+        # low <= min(open, close)
+        invalid_low = data["low"] > data[["open", "close"]].min(axis=1)
+        if invalid_low.any():
+            errors.append(f"发现 {invalid_low.sum()} 条记录的low > min(open, close)")
+
+        # open, high, low, close > 0
+        negative_prices = (data[["open", "high", "low", "close"]] <= 0).any(axis=1)
+        if negative_prices.any():
+            errors.append(f"发现 {negative_prices.sum()} 条记录的价格 <= 0")
+
+        return {
+            "is_valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": []
+        }
+
+    def _check_no_duplicates(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """检查重复数据"""
+        key_columns = rule.get("keys", [])
+
+        if not key_columns or not all(col in data.columns for col in key_columns):
+            return {"is_valid": True, "errors": [], "warnings": []}
+
+        duplicates = data.duplicated(subset=key_columns)
+        dup_count = duplicates.sum()
+
+        if dup_count > 0:
+            return {
+                "is_valid": False,
+                "errors": [f"发现 {dup_count} 条重复数据（基于列: {', '.join(key_columns)}）"],
+                "warnings": []
+            }
+
+        return {"is_valid": True, "errors": [], "warnings": []}
+
+    def _check_value_range(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """检查数值范围"""
+        column = rule.get("column")
+        min_val = rule.get("min")
+        max_val = rule.get("max")
+
+        if column not in data.columns:
+            return {"is_valid": True, "errors": [], "warnings": []}
+
+        out_of_range = pd.Series([False] * len(data))
+
+        if min_val is not None:
+            out_of_range |= (data[column] < min_val)
+
+        if max_val is not None:
+            out_of_range |= (data[column] > max_val)
+
+        count = out_of_range.sum()
+
+        if count > 0:
+            return {
+                "is_valid": False,
+                "errors": [f"列 '{column}' 有 {count} 条数据超出范围 [{min_val}, {max_val}]"],
+                "warnings": []
+            }
+
+        return {"is_valid": True, "errors": [], "warnings": []}
+
+
+# 全局验证器实例
+_validator = DataValidator()
+
+
+# 注册常用验证规则
+def setup_default_rules():
+    """设置默认验证规则"""
+
+    # K线数据规则
+    _validator.register_rule("stocks_daily", {
+        "type": "required_columns",
+        "columns": ["symbol", "trade_date", "open", "high", "low", "close", "volume"]
+    })
+
+    _validator.register_rule("stocks_daily", {
+        "type": "ohlc_logic"
+    })
+
+    _validator.register_rule("stocks_daily", {
+        "type": "no_duplicates",
+        "keys": ["symbol", "trade_date"]
+    })
+
+    # 行业数据规则
+    _validator.register_rule("stocks_basic", {
+        "type": "no_duplicates",
+        "keys": ["symbol"]
+    })
+
+    # 剔除行业脏数据
+    _validator.register_rule("stocks_basic", {
+        "type": "custom",
+        "description": "行业数据不应等于股票名称",
+        "validator": lambda df: {
+            "is_valid": not (df["industry"] == df["name"]).any(),
+            "errors": [],
+            "warnings": []
+        }
+    })
+
+
+def get_validator() -> DataValidator:
+    """获取验证器实例"""
+    return _validator
+```
+
+### 中期建议（1-2周实施）
+
+#### 3.4 数据治理规则引擎
+
+**建议**: 创建灵活的规则引擎
+
+```python
+# src/core/data_governance_engine.py
+"""
+数据治理规则引擎
+
+功能:
+1. 可配置的验证规则
+2. 规则优先级管理
+3. 规则执行历史记录
+4. 规则热更新
+"""
+
+from typing import Dict, Any, List, Optional
+from datetime import datetime
+import json
+from pathlib import Path
+
+
+class DataGovernanceEngine:
+    """数据治理引擎"""
+
+    def __init__(self, config_path: str = "config/data_governance_rules.json"):
+        self.config_path = config_path
+        self.rules = {}
+        self.load_rules()
+
+    def load_rules(self):
+        """加载规则配置"""
+        if Path(self.config_path).exists():
+            with open(self.config_path, 'r') as f:
+                self.rules = json.load(f)
+        else:
+            # 默认规则
+            self.rules = self._get_default_rules()
+
+    def save_rules(self):
+        """保存规则配置"""
+        Path(self.config_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.config_path, 'w') as f:
+            json.dump(self.rules, f, indent=2)
+
+    def _get_default_rules(self) -> Dict:
+        """获取默认规则"""
+        return {
+            "rules": [
+                {
+                    "id": "KLINE_001",
+                    "name": "K线数据完整性检查",
+                    "table": "stocks_daily",
+                    "enabled": True,
+                    "priority": "HIGH",
+                    "actions": [
+                        {
+                            "type": "required_columns",
+                            "columns": ["symbol", "trade_date", "open", "high", "low", "close", "volume"]
+                        },
+                        {
+                            "type": "ohlc_logic"
+                        }
+                    ],
+                    "on_failure": "REJECT"
+                },
+                {
+                    "id": "INDUSTRY_001",
+                    "name": "行业数据清洗",
+                    "table": "stocks_basic",
+                    "enabled": True,
+                    "priority": "MEDIUM",
+                    "actions": [
+                        {
+                            "type": "custom",
+                            "description": "剔除 industry = name 的脏数据",
+                            "operation": "SET_NULL"
+                        }
+                    ],
+                    "on_failure": "FIX"
+                },
+                {
+                    "id": "ADJFACTOR_001",
+                    "name": "复权因子填充",
+                    "table": "stocks_daily",
+                    "enabled": True,
+                    "priority": "LOW",
+                    "actions": [
+                        {
+                            "type": "fill_null",
+                            "column": "adj_factor",
+                            "default_value": 1.0
+                        }
+                    ],
+                    "on_failure": "FIX"
+                }
+            ]
+        }
+
+    def apply_rules(self, table_name: str, data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        应用规则
+
+        返回:
+            {
+                "is_valid": bool,
+                "data": pd.DataFrame,
+                "errors": List[str],
+                "warnings": List[str]
+            }
+        """
+        result = {
+            "is_valid": True,
+            "data": data,
+            "errors": [],
+            "warnings": []
+        }
+
+        table_rules = [r for r in self.rules.get("rules", [])
+                      if r.get("table") == table_name and r.get("enabled", True)]
+
+        for rule in sorted(table_rules, key=lambda x: self._get_priority_score(x.get("priority"))):
+            rule_result = self._apply_rule(data, rule)
+
+            if not rule_result["is_valid"]:
+                on_failure = rule.get("on_failure", "REJECT")
+
+                if on_failure == "REJECT":
+                    result["is_valid"] = False
+                    result["errors"].append(f"规则 {rule['id']} 失败: {rule['name']}")
+                    break
+                elif on_failure == "FIX":
+                    # 尝试自动修复
+                    data = rule_result.get("fixed_data", data)
+                    result["data"] = data
+                    result["warnings"].append(f"规则 {rule['id']} 已自动修复: {rule['name']}")
+                elif on_failure == "WARN":
+                    result["warnings"].append(f"规则 {rule['id']} 触发警告: {rule['name']}")
+
+        return result
+
+    def _apply_rule(self, data: pd.DataFrame, rule: Dict) -> Dict:
+        """应用单个规则"""
+        # 具体实现...
+        pass
+
+    def _get_priority_score(self, priority: str) -> int:
+        """获取优先级分数"""
+        scores = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
+        return scores.get(priority, 0)
+
+
+# 配置文件示例: config/data_governance_rules.json
+"""
+{
+  "rules": [
+    {
+      "id": "KLINE_001",
+      "name": "K线数据完整性检查",
+      "table": "stocks_daily",
+      "enabled": true,
+      "priority": "HIGH",
+      "actions": [...],
+      "on_failure": "REJECT"
+    }
+  ]
+}
+"""
+```
+
+### 长期建议（2-4周实施）
+
+#### 3.5 接入权威行业数据源
+
+**建议**: 集成第三方权威数据源进行交叉验证
+
+```python
+# src/industry_data_validator.py
+"""
+行业数据权威验证器
+
+功能:
+1. 从权威数据源获取行业分类
+2. 交叉验证本地数据
+3. 修正不一致的行业信息
+4. 记录数据来源和置信度
+"""
+
+import requests
+import pandas as pd
+from typing import Dict, List, Optional
+
+
+class IndustryDataValidator:
+    """行业数据权威验证器"""
+
+    def __init__(self):
+        self.authoritative_sources = {
+            "eastmoney": self._fetch_eastmoney_industry,
+            "tushare": self._fetch_tushare_industry,
+            # 可以添加更多数据源
+        }
+
+    def validate_industry(self, symbol: str, current_industry: str) -> Dict:
+        """
+        验证行业数据
+
+        返回:
+            {
+                "is_valid": bool,
+                "suggested_industry": Optional[str],
+                "confidence": float,
+                "sources": List[Dict]
+            }
+        """
+        suggestions = []
+
+        for source_name, fetch_func in self.authoritative_sources.items():
+            try:
+                industry = fetch_func(symbol)
+                if industry:
+                    suggestions.append({
+                        "source": source_name,
+                        "industry": industry,
+                        "matches": industry == current_industry
+                    })
+            except Exception as e:
+                print(f"数据源 {source_name} 查询失败: {e}")
+
+        if not suggestions:
+            return {
+                "is_valid": True,
+                "suggested_industry": None,
+                "confidence": 0.0,
+                "sources": []
+            }
+
+        # 统计最一致的行业分类
+        industry_votes = {}
+        for s in suggestions:
+            industry = s["industry"]
+            industry_votes[industry] = industry_votes.get(industry, 0) + 1
+
+        best_industry = max(industry_votes, key=industry_votes.get)
+        best_count = industry_votes[best_industry]
+
+        is_valid = best_industry == current_industry
+        confidence = best_count / len(suggestions)
+
+        return {
+            "is_valid": is_valid,
+            "suggested_industry": best_industry if not is_valid else None,
+            "confidence": confidence,
+            "sources": suggestions
+        }
+
+    def _fetch_eastmoney_industry(self, symbol: str) -> Optional[str]:
+        """从东方财富获取行业信息"""
+        # 实现细节...
+        pass
+
+    def _fetch_tushare_industry(self, symbol: str) -> Optional[str]:
+        """从Tushare获取行业信息"""
+        # 实现细节...
+        pass
+
+    def batch_validate(self, symbols: List[str]) -> pd.DataFrame:
+        """批量验证"""
+        results = []
+
+        for symbol in symbols:
+            # 从数据库获取当前行业
+            # current_industry = ...
+
+            # 验证
+            result = self.validate_industry(symbol, "")
+            result["symbol"] = symbol
+            results.append(result)
+
+        return pd.DataFrame(results)
+```
+
+#### 3.6 K线数据治理完整方案
+
+| 方面 | 短期（1周） | 中期（2周） | 长期（4周） |
+|------|-----------|-----------|-----------|
+| **数据完整性** | ✅ 验证脚本<br>✅ 修复adj_factor | ✅ 入库前验证<br>✅ 自动化清洗 | ✅ 权威数据源交叉验证 |
+| **复权因子** | ✅ 验证完整性<br>✅ 填充默认值 | ✅ 每日自动计算<br>✅ 历史数据回填 | ✅ 多源数据融合 |
+| **数据验证** | ✅ OHLC逻辑检查<br>✅ 重复数据检测 | ✅ 规则引擎<br>✅ 可配置规则 | ✅ 机器学习异常检测 |
+| **异常处理** | ✅ 记录日志<br>✅ 拒绝入库 | ✅ 自动修复<br>✅ 告警通知 | ✅ 智能修正 |
+
+---
+
+## 完整实施路线图（更新版）
+
+### Phase 1: 数据质量基础设施（1周）
+
+**目标**: 完善验证脚本和基础验证
+
+**任务**:
+1. ✅ 增强现有验证脚本
+   - 添加TDengine支持
+   - 增加并行验证
+   - 性能优化
+
+2. ✅ 创建数据验证器模块
+   - `src/core/data_validator.py`
+   - 注册默认验证规则
+
+3. ✅ 集成到DataManager
+   - 保存前自动验证
+   - 验证失败处理策略
+
+**交付物**:
+- 增强的验证脚本
+- DataValidator模块
+- 验证规则配置文件
+
+### Phase 2: 自动化清洗系统（1-2周）
+
+**目标**: 建立自动化清洗和调度系统
+
+**任务**:
+1. 创建自动化清洗调度器
+   - `scripts/data_cleaning/auto_clean_scheduler.py`
+   - 每日K线检查
+   - 每周行业检查
+
+2. 创建数据治理引擎
+   - `src/core/data_governance_engine.py`
+   - 可配置规则
+   - 规则优先级管理
+
+3. 集成告警系统
+   - 邮件通知
+   - 钉钉通知
+   - Prometheus指标
+
+**交付物**:
+- 自动化调度器
+- 数据治理引擎
+- 规则配置文件
+- 告警集成
+
+### Phase 3: 权威数据源集成（2-4周）
+
+**目标**: 接入权威数据源进行交叉验证
+
+**任务**:
+1. 行业数据验证器
+   - 东方财富API集成
+   - Tushare API集成
+   - 交叉验证逻辑
+
+2. K线数据融合
+   - 多源数据对比
+   - 数据质量评分
+   - 智能选择
+
+3. 历史数据回填
+   - 批量验证历史数据
+   - 自动修复
+   - 报告生成
+
+**交付物**:
+- IndustryDataValidator模块
+- 多源数据融合系统
+- 历史数据回填脚本
+
+### Phase 4: 高级特性（4周+）
+
+**目标**: 机器学习异常检测和智能修正
+
+**任务**:
+1. 异常检测模型
+   - 基于统计的异常检测
+   - 基于机器学习的异常检测
+
+2. 智能修正
+   - 自动识别异常模式
+   - 智能填充缺失值
+   - 自动修正错误
+
+3. 数据血缘追踪
+   - 记录数据来源
+   - 追踪数据变更
+   - 数据质量影响分析
+
+---
+
+**报告版本**: v2.0
 **创建日期**: 2026-01-02
+**更新日期**: 2026-01-07
 **作者**: Claude Code
-**状态**: 待用户确认实施优先级
+**状态**: ✅ 已更新，包含数据治理规划

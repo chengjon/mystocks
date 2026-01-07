@@ -994,7 +994,7 @@ const panChart = (direction) => {
   if (!chart.value) return
 
   try {
-    let distance = 0
+    const distance = 0
     let xAxisDistance = 0
     let yAxisDistance = 0
 

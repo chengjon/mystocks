@@ -1,63 +1,66 @@
 <template>
   <div class="login-container">
-    <el-card class="login-card">
-      <template #header>
-        <div class="card-header">
-          <h1 data-testid="login-heading">MyStocks 登录</h1>
-          <p data-testid="login-subtitle">量化交易数据管理系统</p>
+
+    <div class="login-card">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+
+      <div class="login-header">
+        <div class="divider">
+          <span class="divider-text">MYSTOCKS</span>
         </div>
-      </template>
+        <h1 class="title">LOGIN</h1>
+        <p class="subtitle">QUANTITATIVE TRADING MANAGEMENT SYSTEM</p>
+      </div>
 
-      <el-form
-        ref="loginFormRef"
-        :model="loginForm"
-        :rules="rules"
-        label-position="top"
-      >
-        <el-form-item label="用户名" prop="username">
-          <el-input
-            data-testid="username-input"
+      <form @submit.prevent="handleLogin" class="login-form">
+        <div class="form-group">
+          <label class="label">USERNAME</label>
+          <input
             v-model="loginForm.username"
-            placeholder="请输入用户名"
-            size="large"
-            prefix-icon="User"
-          />
-        </el-form-item>
+            type="text"
+            class="input"
+            placeholder="ENTER USERNAME"
+            data-testid="username-input"
+          >
+        </div>
 
-        <el-form-item label="密码" prop="password">
-          <el-input
-            data-testid="password-input"
+        <div class="form-group">
+          <label class="label">PASSWORD</label>
+          <input
             v-model="loginForm.password"
             type="password"
-            placeholder="请输入密码"
-            size="large"
-            prefix-icon="Lock"
-            show-password
+            class="input"
+            placeholder="ENTER PASSWORD"
+            data-testid="password-input"
             @keyup.enter="handleLogin"
-          />
-        </el-form-item>
-
-        <el-form-item>
-          <el-button
-            data-testid="login-button"
-            type="primary"
-            size="large"
-            style="width: 100%"
-            :loading="loading"
-            :disabled="loading"
-            @click="handleLogin"
           >
-            登录
-          </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
 
-      <div class="tips" data-testid="test-account-tips">
-        <el-divider>测试账号</el-divider>
-        <p data-testid="admin-account-hint">管理员: admin / admin123</p>
-        <p data-testid="user-account-hint">普通用户: user / user123</p>
+        <button
+          type="submit"
+          :disabled="loading"
+          data-testid="login-button"
+        >
+          <span v-if="loading" class="spinner"></span>
+          <span v-else>SIGN IN</span>
+        </button>
+      </form>
+
+      <div class="test-accounts">
+        <div class="divider">
+          <span class="divider-text">TEST ACCOUNTS</span>
+        </div>
+        <div class="account-row" data-testid="admin-account-hint">
+          <span class="account-label">ADMIN</span>
+          <span class="account-value">admin / admin123</span>
+        </div>
+        <div class="account-row" data-testid="user-account-hint">
+          <span class="account-label">USER</span>
+          <span class="account-value">user / user123</span>
+        </div>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -66,13 +69,11 @@ import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const loginFormRef = ref<FormInstance>()
 const loading = ref<boolean>(false)
 
 interface LoginForm {
@@ -85,81 +86,296 @@ const loginForm = reactive<LoginForm>({
   password: ''
 })
 
-const rules: FormRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
-  ]
-}
-
 interface LoginResult {
   success: boolean
   message?: string
 }
 
 const handleLogin = async (): Promise<void> => {
-  if (!loginFormRef.value) return
+  if (!loginForm.username || !loginForm.password) {
+    ElMessage.error('PLEASE ENTER USERNAME AND PASSWORD')
+    return
+  }
 
-  await loginFormRef.value.validate(async (valid: boolean) => {
-    if (!valid) return
+  if (loginForm.password.length < 6) {
+    ElMessage.error('PASSWORD MUST BE AT LEAST 6 CHARACTERS')
+    return
+  }
 
-    loading.value = true
-    try {
-      const result: LoginResult = await authStore.login(loginForm.username, loginForm.password)
+  loading.value = true
+  try {
+    const result: LoginResult = await authStore.login(loginForm.username, loginForm.password)
 
-      if (result.success) {
-        ElMessage.success('登录成功')
-        const redirect = (route.query.redirect as string) || '/'
-        router.push(redirect)
-      } else {
-        ElMessage.error(result.message || '登录失败')
-      }
-    } catch (error) {
-      ElMessage.error('登录失败')
-    } finally {
-      loading.value = false
+    if (result.success) {
+      ElMessage.success('LOGIN SUCCESSFUL')
+      const redirect = (route.query.redirect as string) || '/'
+      router.push(redirect)
+    } else {
+      ElMessage.error(result.message || 'LOGIN FAILED')
     }
-  })
+  } catch (error) {
+    ElMessage.error('LOGIN FAILED')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.login-container {
+
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  background: var(--bg-primary);
+  overflow: hidden;
 
-  .login-card {
-    width: 400px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+  }
 
-    .card-header {
+    position: relative;
+    width: 480px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-gold);
+    border-radius: var(--radius-none);
+    padding: var(--spacing-8);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.1);
+    z-index: 1;
+    transition: all var(--transition-base);
+
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+      top: 12px;
+      left: 12px;
+      border-top: 3px solid var(--accent-gold);
+      border-left: 3px solid var(--accent-gold);
+    }
+
+      bottom: 12px;
+      right: 12px;
+      border-bottom: 3px solid var(--accent-gold);
+      border-right: 3px solid var(--accent-gold);
+    }
+
+    .login-header {
       text-align: center;
+      margin-bottom: var(--spacing-6);
 
-      h1 {
-        margin: 0 0 8px;
-        color: #303133;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-4);
+
+        &::before,
+        &::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(
+            to right,
+            transparent,
+            var(--accent-gold),
+            transparent
+          );
+          opacity: 0.5;
+        }
+
+          font-family: var(--font-display);
+          font-size: var(--font-size-small);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-widest);
+          color: var(--accent-gold);
+          padding: 0 var(--spacing-4);
+        }
       }
 
-      p {
+        font-family: var(--font-display);
+        font-size: var(--font-size-h2);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-widest);
+        color: var(--accent-gold);
+        margin: var(--spacing-3) 0 var(--spacing-2) 0;
+      }
+
+        font-family: var(--font-body);
+        font-size: var(--font-size-small);
+        color: var(--fg-muted);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wider);
         margin: 0;
-        color: #909399;
-        font-size: 14px;
       }
     }
 
-    .tips {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 14px;
-      color: #909399;
+    .login-form {
+      margin-bottom: var(--spacing-6);
 
-      p {
-        margin: 8px 0;
+      .form-group {
+        margin-bottom: var(--spacing-4);
+
+          display: block;
+          font-family: var(--font-display);
+          font-size: var(--font-size-xs);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--accent-gold);
+          margin-bottom: var(--spacing-1);
+        }
+
+        .input {
+          width: 100%;
+          padding: var(--spacing-2) var(--spacing-3);
+          font-family: var(--font-body);
+          font-size: var(--font-size-body);
+          color: var(--fg-primary);
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid var(--accent-gold);
+          border-radius: var(--radius-none);
+          transition: all var(--transition-base);
+
+          &::placeholder {
+            color: var(--fg-muted);
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-normal);
+          }
+
+          &:focus {
+            outline: none;
+            border-bottom-color: var(--accent-gold-light);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+          }
+        }
+      }
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: var(--spacing-3) var(--spacing-6);
+        font-family: var(--font-display);
+        font-size: var(--font-size-body);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-widest);
+        border: 2px solid var(--accent-gold);
+        border-radius: var(--radius-none);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        margin-top: var(--spacing-4);
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(0, 0, 0, 0.1);
+          border-top-color: currentColor;
+          border-radius: 50%;
+        }
+
+          to { transform: rotate(360deg); }
+        }
+      }
+
+        background: var(--accent-gold);
+        color: var(--bg-primary);
+
+        &:hover:not(:disabled) {
+          background: var(--accent-gold-light);
+          box-shadow: var(--glow-medium);
+        }
+      }
+    }
+
+    .test-accounts {
+      text-align: center;
+      padding-top: var(--spacing-4);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-3);
+
+        &::before,
+        &::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(
+            to right,
+            transparent,
+            var(--accent-gold),
+            transparent
+          );
+          opacity: 0.3;
+        }
+
+          font-family: var(--font-display);
+          font-size: var(--font-size-xs);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-widest);
+          color: var(--fg-muted);
+          padding: 0 var(--spacing-2);
+        }
+      }
+
+      .account-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-2) 0;
+        font-family: var(--font-body);
+
+        .account-label {
+          font-size: var(--font-size-small);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--fg-muted);
+        }
+
+        .account-value {
+          font-size: var(--font-size-small);
+          font-family: var(--font-body);
+          color: var(--fg-secondary);
+          letter-spacing: var(--tracking-normal);
+        }
       }
     }
   }

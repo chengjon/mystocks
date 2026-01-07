@@ -211,26 +211,16 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
 
     Process:
         1. 尝试从PostgreSQL数据库根据ID查询用户
-        2. 如果数据库查询失败，回退到模拟用户数据
+        2. 如果数据库查询失败，返回None
         3. 返回用户信息或None
     """
-    from src.core.exceptions import (
-        DatabaseConnectionError,
-        DatabaseOperationError,
-        DataValidationError,
-    )
-
     try:
         # 从数据库查询用户
         return get_user_from_database_by_id(user_id)
-    except (DatabaseConnectionError, DatabaseOperationError, DataValidationError) as e:
-        # 数据库查询失败时记录错误但不抛出异常
-        # 系统将回退到模拟用户数据
-        print(
-            f"Database user lookup failed for ID {user_id} "
-            f"(will use fallback): {type(e).__name__}: {e.message if hasattr(e, 'message') else str(e)}"
-        )
-        # 回退到模拟数据
+    except Exception as e:
+        # 数据库查询失败时记录错误
+        print(f"Database user lookup failed for ID {user_id} " f"(will return None): {type(e).__name__}: {str(e)}")
+        return None
         mock_users = {
             1: {
                 "id": 1,
@@ -276,7 +266,6 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
     """
     from app.core.database import get_postgresql_session
     from app.db import UserRepository
-    from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
 
     session = None
     try:
@@ -284,20 +273,10 @@ def get_user_from_database(username: str) -> Optional[UserInDB]:
         repository = UserRepository(session)
         return repository.get_user_by_username(username)
 
-    except DatabaseConnectionError:
-        # 重新抛出连接错误让调用者处理
-        raise
-    except DatabaseOperationError:
-        # 重新抛出操作错误让调用者处理
-        raise
     except Exception as e:
-        # 捕获其他异常并转换为DatabaseOperationError
-        raise DatabaseOperationError(
-            message=f"Failed to retrieve user from database: {str(e)}",
-            code="DB_OPERATION_FAILED",
-            severity="HIGH",
-            original_exception=e,
-        )
+        # 捕获所有异常并记录
+        print(f"[get_user_from_database] Error: {e}")
+        return None
     finally:
         # 确保会话被关闭
         if session:
@@ -442,8 +421,7 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
     from app.core.config import settings
 
     # 获取管理员初始密码
-    admin_initial_password = getattr(settings, "admin_initial_password", "admin123")
-    user_initial_password = "user123"  # 默认用户密码
+    getattr(settings, "admin_initial_password", "admin123")
 
     # 生成固定的哈希值（避免每次调用get_password_hash都生成新哈希）
     users_db = {

@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2026-01-02T20:38:16.537397
+// Generated at: 2026-01-07T14:28:35.704710
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {
@@ -373,6 +373,16 @@ export interface CancelOrderResponse {
   cancelled_at?: string;
 }
 
+export interface CategoryStatsResponse {
+  category?: string;
+  display_name?: string;
+  total?: number;
+  healthy?: number;
+  unhealthy?: number;
+  avg_quality_score?: number;
+  avg_response_time?: number;
+}
+
 export interface ChartConfigRequest {
   symbol?: string;
   market?: string;
@@ -611,6 +621,18 @@ export interface DataSourceHealthResponse {
   supported_categories?: string[];
   total_requests?: number;
   success_count?: number;
+}
+
+export interface DataSourceSearchResponse {
+  total?: number;
+  data_sources?: Record<string, any>[];
+}
+
+export interface DataSourceUpdate {
+  priority?: number | null;
+  data_quality_score?: number | null;
+  status?: string | null;
+  description?: string | null;
 }
 
 export interface DateField {
@@ -2154,6 +2176,21 @@ export interface TechnicalIndicatorQueryModel {
   period?: number | null;
   start_date?: string | null;
   end_date?: string | null;
+}
+
+export interface TestRequest {
+  test_params?: Record<string, any>;
+}
+
+export interface TestResponse {
+  success?: boolean;
+  endpoint_name?: string;
+  test_params?: Record<string, any>;
+  duration?: number | null;
+  row_count?: number | null;
+  data_preview?: Dict[] | null;
+  quality_checks?: Record<string, any> | null;
+  error?: string | null;
 }
 
 export interface TickerTapeConfigRequest {

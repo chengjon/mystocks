@@ -1,0 +1,85 @@
+# Data Source Management Configuration
+# Copy this file to datasource.yaml and modify values as needed
+
+# Redis configuration for DataSourceRegistry
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+
+# Health monitoring configuration
+health_monitoring:
+  # Health check interval in seconds
+  check_interval: 30
+  # Request timeout for health checks in seconds
+  timeout: 5
+  # Number of consecutive failures before marking as unhealthy
+  failure_threshold: 3
+
+# Load balancing configuration
+load_balancing:
+  # Enable automatic failover
+  failover_enabled: true
+  # Maximum retries per request
+  max_retries: 3
+  # Delay between retries in seconds
+  retry_delay: 0.5
+  # Default weight for new data sources
+  default_weight: 100
+
+# Prometheus metrics configuration
+metrics:
+  enabled: true
+  # Metrics endpoint path
+  path: "/metrics"
+  # Histogram buckets for latency (in seconds)
+  latency_buckets:
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.25
+    - 0.5
+    - 1.0
+    - 2.5
+    - 5.0
+    - 10.0
+
+# Predefined data sources
+# These will be automatically registered on startup
+datasources:
+  akshare:
+    source_id: "akshare"
+    name: "AkShare"
+    source_type: "akshare"
+    enabled: true
+    weight: 100
+    timeout: 30
+    max_retries: 3
+
+  tushare:
+    source_id: "tushare"
+    name: "TuShare"
+    source_type: "tushare"
+    enabled: true
+    weight: 80
+    timeout: 30
+    max_retries: 3
+
+  tdx:
+    source_id: "tdx"
+    name: "TDX"
+    source_type: "tdx"
+    enabled: true
+    weight: 60
+    timeout: 30
+    max_retries: 3
+
+  baostock:
+    source_id: "baostock"
+    name: "BaoStock"
+    source_type: "baostock"
+    enabled: true
+    weight: 50
+    timeout: 30
+    max_retries: 3

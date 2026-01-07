@@ -22,7 +22,7 @@ class TestDataProcessorFactorySimple:
 
     def test_factory_class_exists(self):
         """测试工厂类存在"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证类存在
         assert DataProcessorFactory is not None
@@ -33,7 +33,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_method_signature(self):
         """测试get_processor方法签名"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
 
         # 获取方法签名
@@ -45,7 +45,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_method_signature(self):
         """测试get_processor_type方法签名"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
 
         # 获取方法签名
@@ -56,7 +56,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_returns_something(self):
         """测试get_processor返回值类型"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法（不关心具体类型）
         processor = DataProcessorFactory.get_processor()
@@ -67,7 +67,7 @@ class TestDataProcessorFactorySimple:
     @patch.dict(os.environ, {"ENABLE_GPU_ACCELERATION": "true"})
     def test_get_processor_with_gpu_env(self):
         """测试有GPU环境变量时的行为"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor = DataProcessorFactory.get_processor()
@@ -77,7 +77,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_explicit_false(self):
         """测试显式指定gpu_enabled=False"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor = DataProcessorFactory.get_processor(gpu_enabled=False)
@@ -87,7 +87,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_explicit_true(self):
         """测试显式指定gpu_enabled=True"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor = DataProcessorFactory.get_processor(gpu_enabled=True)
@@ -97,7 +97,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_cpu_string(self):
         """测试通过'cpu'字符串获取处理器类型"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor_type = DataProcessorFactory.get_processor_type("cpu")
@@ -108,7 +108,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_gpu_string(self):
         """测试通过'gpu'字符串获取处理器类型"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor_type = DataProcessorFactory.get_processor_type("gpu")
@@ -119,7 +119,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_uppercase_cpu(self):
         """测试大写'CPU'字符串"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor_type = DataProcessorFactory.get_processor_type("CPU")
@@ -130,7 +130,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_uppercase_gpu(self):
         """测试大写'GPU'字符串"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 调用方法
         processor_type = DataProcessorFactory.get_processor_type("GPU")
@@ -141,7 +141,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_invalid_string(self):
         """测试无效处理器类型异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证抛出异常
         with pytest.raises(ValueError):
@@ -149,7 +149,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_empty_string(self):
         """测试空字符串异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证抛出异常
         with pytest.raises(ValueError):
@@ -157,7 +157,7 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_none_value(self):
         """测试None值异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证抛出异常
         with pytest.raises((ValueError, AttributeError)):
@@ -165,7 +165,7 @@ class TestDataProcessorFactorySimple:
 
     def test_factory_static_methods(self):
         """测试工厂方法是静态方法"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
 
         # 验证是静态方法
@@ -177,7 +177,6 @@ class TestDataProcessorFactorySimple:
 
     def test_factory_module_import(self):
         """测试工厂模块可以正常导入"""
-        import gpu.data_processor_factory
 
         # 验证模块导入成功
         assert gpu.data_processor_factory is not None
@@ -187,7 +186,7 @@ class TestDataProcessorFactorySimple:
 
     def test_processor_types_are_different(self):
         """测试CPU和GPU处理器类型不同"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 获取两种处理器类型
         cpu_type = DataProcessorFactory.get_processor_type("cpu")
@@ -198,7 +197,7 @@ class TestDataProcessorFactorySimple:
 
     def test_processor_types_same_string(self):
         """测试相同字符串返回相同类型"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 获取两次相同类型
         cpu_type1 = DataProcessorFactory.get_processor_type("cpu")
@@ -209,7 +208,7 @@ class TestDataProcessorFactorySimple:
 
     def test_case_insensitive_processor_type(self):
         """测试处理器类型大小写不敏感"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 获取不同大小写的相同类型
         cpu_lower = DataProcessorFactory.get_processor_type("cpu")
@@ -220,7 +219,7 @@ class TestDataProcessorFactorySimple:
 
     def test_processor_creation_flow(self):
         """测试处理器创建流程"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 1. 获取处理器类型
         cpu_type = DataProcessorFactory.get_processor_type("cpu")
@@ -235,7 +234,7 @@ class TestDataProcessorFactorySimple:
 
     def test_factory_consistency(self):
         """测试工厂方法的一致性"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 通过不同方式获取CPU处理器
         processor1 = DataProcessorFactory.get_processor(gpu_enabled=False)
@@ -253,7 +252,7 @@ class TestDataProcessorFactoryIntegrationSimple:
 
     def test_full_workflow_simulation(self):
         """模拟完整工作流程"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 1. 检查可用的处理器类型
         cpu_type = DataProcessorFactory.get_processor_type("cpu")
@@ -272,7 +271,7 @@ class TestDataProcessorFactoryIntegrationSimple:
     def test_environment_variable_handling(self):
         """测试环境变量处理"""
         import os
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 备份原始环境变量
         original_value = os.environ.get("ENABLE_GPU_ACCELERATION")
@@ -297,7 +296,7 @@ class TestDataProcessorFactoryIntegrationSimple:
 
     def test_error_handling_robustness(self):
         """测试错误处理的健壮性"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 测试各种无效输入不会导致崩溃
         invalid_types = ["invalid", "123", "cpu_gpu", "GPU_CPU", None, ""]
@@ -316,7 +315,7 @@ class TestDataProcessorFactoryIntegrationSimple:
 
     def test_factory_design_patterns(self):
         """测试工厂设计模式"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证工厂模式特征
         assert hasattr(DataProcessorFactory, "get_processor")  # 工厂方法
@@ -328,7 +327,7 @@ class TestDataProcessorFactoryIntegrationSimple:
 
     def test_method_call_count(self):
         """测试方法调用计数"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 多次调用相同方法，确保行为一致
         processors = [DataProcessorFactory.get_processor() for _ in range(5)]
@@ -339,7 +338,7 @@ class TestDataProcessorFactoryIntegrationSimple:
 
     def test_type_return_consistency(self):
         """测试类型返回的一致性"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 多次获取相同类型
         cpu_types = [DataProcessorFactory.get_processor_type("cpu") for _ in range(3)]

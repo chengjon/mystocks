@@ -15,7 +15,7 @@ export const isTradeDay = (date: Date): boolean => {
 };
 
 export const addTradeDays = (startDate: Date, days: number): Date => {
-  let current = new Date(startDate);
+  const current = new Date(startDate);
   let added = 0;
 
   while (added < days) {

@@ -1,0 +1,262 @@
+# P0优先级质量门禁 - 阻止低质量代码合并
+# 执行严格的代码质量检查，失败则阻止PR合并
+# 触发条件：所有PR和main分支的push
+
+name: P0 Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # P0-1: Pylint Error级别检查（必须通过）
+  pylint-errors:
+    name: Pylint Errors (Critical)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install Pylint
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+
+    - name: Run Pylint (Error级别 only)
+      run: |
+        echo "🔍 检查Pylint Error级别问题..."
+        pylint src/ \
+          --rcfile=.pylintrc \
+          --errors-only \
+          --disable=import-error,no-member \
+          --output-format=colorized \
+          --fail-on=I \
+          || {
+            echo "❌ P0质量门禁失败：存在Error级别问题"
+            echo "💡 修复建议："
+            echo "   1. 运行: pylint src/ --errors-only --disable=import-error,no-member"
+            echo "   2. 修复所有Error级别问题后重新提交"
+            exit 1
+          }
+
+        echo "✅ Pylint Error检查通过"
+
+  # P0-2: 代码格式化检查（必须通过）
+  formatting-check:
+    name: Code Formatting Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install formatting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort
+
+    - name: Check Black formatting
+      run: |
+        echo "🔍 检查代码格式（Black）..."
+        black --check --diff --line-length=120 src/ || {
+          echo "❌ P0质量门禁失败：代码格式不符合规范"
+          echo "💡 修复建议："
+          echo "   运行: black src/ --line-length=120"
+          exit 1
+        }
+        echo "✅ Black格式检查通过"
+
+    - name: Check import sorting
+      run: |
+        echo "🔍 检查导入排序（isort）..."
+        isort --check-only --diff src/ || {
+          echo "❌ P0质量门禁失败：导入排序不符合规范"
+          echo "💡 修复建议："
+          echo "   运行: isort src/"
+          exit 1
+        }
+        echo "✅ isort检查通过"
+
+  # P0-3: 安全检查（必须通过）
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install Bandit
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit[toml]
+
+    - name: Run Bandit security scan
+      run: |
+        echo "🔍 执行安全扫描..."
+        bandit -r src/ \
+          -c config/.security.yml \
+          -ll \
+          -f screen \
+          || {
+            echo "❌ P0质量门禁失败：发现安全问题"
+            echo "💡 修复建议："
+            echo "   1. 检查报告中的安全问题"
+            echo "   2. 运行: bandit -r src/ -c config/.security.yml"
+            echo "   3. 修复所有High和Medium级别问题"
+            exit 1
+          }
+        echo "✅ 安全扫描通过"
+
+  # P0-4: 依赖安全检查
+  dependency-check:
+    name: Dependency Safety Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install Safety
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety
+
+    - name: Check dependencies for vulnerabilities
+      run: |
+        echo "🔍 检查依赖安全性..."
+        safety check --json > safety-report.json || {
+          echo "❌ P0质量门禁失败：发现依赖漏洞"
+          echo "💡 修复建议："
+          echo "   1. 查看safety-report.json了解漏洞详情"
+          echo "   2. 更新有漏洞的依赖包"
+          echo "   3. 运行: pip install --upgrade <package>"
+          exit 1
+        }
+        echo "✅ 依赖安全检查通过"
+
+  # P0-5: Python语法检查
+  syntax-check:
+    name: Python Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Check Python syntax
+      run: |
+        echo "🔍 检查Python语法..."
+        find src/ -name "*.py" -type f -exec python -m py_compile {} \; || {
+          echo "❌ P0质量门禁失败：存在Python语法错误"
+          echo "💡 修复建议："
+          echo "   运行: python -m py_compile src/**/*.py"
+          echo "   修复所有语法错误"
+          exit 1
+        }
+        echo "✅ Python语法检查通过"
+
+  # P0-6: 敏感信息检测
+  secrets-check:
+    name: Secrets Detection
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Detect secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+      continue-on-error: false
+
+  # P0-7: 生成质量报告
+  quality-report:
+    name: Generate Quality Report
+    runs-on: ubuntu-latest
+    needs: [pylint-errors, formatting-check, security-scan, dependency-check, syntax-check]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Generate summary
+      run: |
+        echo "# P0质量门禁报告" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**检查时间**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 检查结果" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| 检查项 | 状态 |" >> $GITHUB_STEP_SUMMARY
+        echo "|--------|------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Pylint Errors | ${{ needs.pylint-errors.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 代码格式化 | ${{ needs.formatting-check.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 安全扫描 | ${{ needs.security-scan.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 依赖安全 | ${{ needs.dependency-check.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Python语法 | ${{ needs.syntax-check.result == 'success' && '✅ 通过' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📊 总体评估" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # 计算通过率
+        if [ "${{ needs.pylint-errors.result }}" == "success" ] && \
+           [ "${{ needs.formatting-check.result }}" == "success" ] && \
+           [ "${{ needs.security-scan.result }}" == "success" ] && \
+           [ "${{ needs.dependency-check.result }}" == "success" ] && \
+           [ "${{ needs.syntax-check.result }}" == "success" ]; then
+          echo "✅ **所有检查通过，代码质量符合P0标准**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **部分检查失败，请修复后重新提交**" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Final gate
+      run: |
+        # 如果任何检查失败，整个工作流失败
+        if [ "${{ needs.pylint-errors.result }}" != "success" ] || \
+           [ "${{ needs.formatting-check.result }}" != "success" ] || \
+           [ "${{ needs.security-scan.result }}" != "success" ] || \
+           [ "${{ needs.dependency-check.result }}" != "success" ] || \
+           [ "${{ needs.syntax-check.result }}" != "success" ]; then
+          echo "❌ P0质量门禁：代码质量不达标"
+          exit 1
+        fi
+
+        echo "✅ P0质量门禁：所有检查通过"

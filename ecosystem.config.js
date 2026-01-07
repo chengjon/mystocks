@@ -4,8 +4,8 @@ module.exports = {
   apps: [{
     // 核心服务: 后端 API 服务
     name: 'mystocks-backend',
-    script: 'python3',
-    args: '-m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload',
+    script: './start_backend.sh',
+    interpreter: 'bash',
     cwd: '/opt/claude/mystocks_spec/web/backend',
     instances: 1,
     exec_mode: 'fork',
@@ -19,7 +19,8 @@ module.exports = {
       DB_USER: 'dev_user',
       DB_PASS: 'dev_pass',
       LOG_LEVEL: 'debug',
-      TESTING: 'true'
+      TESTING: 'true',
+      PYTHONPATH: '/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec'
     },
     env_production: {
       NODE_ENV: 'prod',

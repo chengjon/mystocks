@@ -15,8 +15,7 @@ Phase: 2 - Task 2.1.3
 """
 
 import unittest
-from unittest.mock import Mock, MagicMock, patch, call
-from datetime import datetime
+from unittest.mock import Mock, patch
 import os
 
 from src.storage.database.connection_manager import DatabaseConnectionManager, get_connection_manager

@@ -45,7 +45,6 @@ class SSEEvent:
         result = {
             "event": self.event,
             "data": self.data,
-            "timestamp": datetime.now().isoformat(),
         }
         if self.id:
             result["id"] = self.id
@@ -416,8 +415,21 @@ async def sse_event_generator(
                 # Wait for event with timeout
                 event = await asyncio.wait_for(queue.get(), timeout=30.0)
 
-                # Yield event data
-                yield event.to_dict()
+                # Add timestamp to event data
+                event_data = event.data.copy() if event.data else {}
+                event_data["timestamp"] = datetime.now().isoformat()
+
+                # Yield event data with timestamp included (filter None values)
+                event_dict = {
+                    "event": event.event,
+                    "data": event_data,
+                }
+                if event.id:
+                    event_dict["id"] = event.id
+                if event.retry:
+                    event_dict["retry"] = event.retry
+
+                yield event_dict
 
             except asyncio.TimeoutError:
                 # Send keepalive ping every 30 seconds

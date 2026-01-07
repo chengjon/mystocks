@@ -6,6 +6,7 @@
  */
 
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { API_BASE_URL } from '@/config/api.js'
 
 /**
  * Base SSE composable for generic SSE connections
@@ -45,9 +46,12 @@ export function useSSE(url, options = {}) {
    * Build SSE URL with optional client_id parameter
    */
   const buildUrl = () => {
-    if (!clientId) return url
-    const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}client_id=${clientId}`
+    // Prepend API_BASE_URL if url is relative (doesn't start with http)
+    let fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
+
+    if (!clientId) return fullUrl
+    const separator = fullUrl.includes('?') ? '&' : '?'
+    return `${fullUrl}${separator}client_id=${clientId}`
   }
 
   /**
@@ -61,7 +65,7 @@ export function useSSE(url, options = {}) {
 
     try {
       const sseUrl = buildUrl()
-      console.log('[SSE] Connecting to:', sseUrl)
+      console.log('[SSE] Connecting to SSE endpoint:', sseUrl)
 
       eventSource = new EventSource(sseUrl)
 

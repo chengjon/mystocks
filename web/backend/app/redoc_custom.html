@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}} - ReDoc</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1e1e1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #d4af37;
+            z-index: 9999;
+        }
+        #loading.hidden {
+            display: none;
+        }
+        .spinner {
+            border: 4px solid rgba(212, 175, 55, 0.3);
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+        .error-message h2 {
+            margin-top: 0;
+        }
+        .error-message a {
+            color: #4dabf7;
+            text-decoration: none;
+        }
+        .error-message a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div id="loading-text">Loading ReDoc...</div>
+    </div>
+
+    <div id="error-container" style="display: none;">
+        <div class="error-message">
+            <h2>❌ Failed to Load ReDoc</h2>
+            <p><strong>Problem:</strong> Cannot connect to CDN servers (jsDelivr/unpkg).</p>
+            <p><strong>Solution:</strong> Please use one of these alternatives:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>📘 <strong>Swagger UI</strong>: <a href="/docs">http://localhost:8000/docs</a> (Recommended, fully functional)</li>
+                <li>📄 <strong>OpenAPI JSON</strong>: <a href="/openapi.json">http://localhost:8000/openapi.json</a></li>
+                <li>🌐 <strong>Online ReDoc</strong>: <a href="https://redocly.github.io/redoc/?url=http://localhost:8000/openapi.json" target="_blank">View with Online ReDoc</a></li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">
+                <em>If you have local redoc.standalone.js, please place it in <code>backend/static/</code> directory.</em>
+            </p>
+        </div>
+    </div>
+
+    <redoc spec-url='{{openapi_url}}'></redoc>
+
+    <script>
+        // Multiple CDN sources with fallback mechanism
+        const cdnSources = [
+            'https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js',
+            'https://unpkg.com/redoc@latest/bundles/redoc.standalone.js',
+            'https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js',
+            '/static/redoc.standalone.js'  // Local fallback
+        ];
+
+        let currentSourceIndex = 0;
+        const loadingElement = document.getElementById('loading');
+        const errorContainer = document.getElementById('error-container');
+        const loadingText = document.getElementById('loading-text');
+
+        function loadScript(source) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = source;
+
+                script.onload = () => {
+                    console.log(`✅ Successfully loaded ReDoc from: ${source}`);
+                    loadingElement.classList.add('hidden');
+                    resolve();
+                };
+
+                script.onerror = () => {
+                    console.warn(`❌ Failed to load from: ${source}`);
+                    reject(new Error(`Failed to load ${source}`));
+                };
+
+                // Set timeout for each source (10 seconds)
+                const timeout = setTimeout(() => {
+                    script.onerror();
+                    reject(new Error(`Timeout loading ${source}`));
+                }, 10000);
+
+                script.addEventListener('load', () => clearTimeout(timeout));
+                script.addEventListener('error', () => clearTimeout(timeout));
+
+                document.head.appendChild(script);
+            });
+        }
+
+        async function loadRedocWithFallback() {
+            for (let i = 0; i < cdnSources.length; i++) {
+                currentSourceIndex = i;
+                const source = cdnSources[i];
+                loadingText.textContent = `Loading ReDoc from CDN ${i + 1}/${cdnSources.length}...`;
+
+                try {
+                    await loadScript(source);
+                    return; // Success, exit
+                } catch (error) {
+                    console.warn(`CDN source ${i + 1} failed:`, error.message);
+                    // Continue to next source
+                }
+            }
+
+            // All sources failed
+            console.error('❌ All CDN sources failed to load ReDoc');
+            loadingElement.style.display = 'none';
+            errorContainer.style.display = 'block';
+        }
+
+        // Start loading
+        loadRedocWithFallback();
+    </script>
+</body>
+</html>

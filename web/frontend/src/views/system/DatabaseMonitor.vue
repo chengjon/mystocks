@@ -1,200 +1,180 @@
 <template>
   <div class="database-monitor">
-    <el-page-header @back="() => $router.back()" content="数据库监控">
-      <template #extra>
-        <el-button :icon="RefreshIcon as any" @click="refreshData" :loading="loading">
-          刷新
-        </el-button>
-      </template>
-    </el-page-header>
+
+    <div class="page-header">
+      <h1 class="page-title">数据库监控</h1>
+      <p class="page-subtitle">DATABASE MONITORING | HEALTH CHECK | ROUTING INFO</p>
+      <div class="decorative-line"></div>
+    </div>
 
     <div class="monitor-content">
-      <!-- Summary Cards -->
-      <el-row :gutter="20" style="margin: 20px 0">
-        <el-col :span="12">
-          <el-card shadow="hover">
-            <div class="stat-card">
-              <div class="stat-icon tdengine">
-                <span style="font-size: 32px; font-weight: bold;">🔲</span>
-              </div>
-              <div class="stat-info">
-                <div class="stat-value">{{ healthData.summary?.healthy || 0 }}/{{ healthData.summary?.total_databases || 2 }}</div>
-                <div class="stat-label">健康数据库</div>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="12">
-          <el-card shadow="hover">
-            <div class="stat-card">
-              <div class="stat-icon postgresql">
-                <el-icon :size="40"><ConnectionIcon as any /></el-icon>
-              </div>
-              <div class="stat-info">
-                <div class="stat-value">{{ statsData.total_classifications || 34 }}</div>
-                <div class="stat-label">数据分类总数</div>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-
-      <!-- Database Health Status -->
-      <el-card shadow="hover" style="margin: 20px 0">
-        <template #header>
-          <div class="card-header">
-            <span>数据库健康状态</span>
-            <el-tag :type="healthData.summary?.healthy === 2 ? 'success' : 'danger'" size="small">
-              {{ healthData.summary?.healthy === 2 ? '全部正常' : '存在异常' }}
-            </el-tag>
+      <div class="stats-grid">
+        <div class="artde-card stat-card">
+          <div class="stat-icon tdengine">
+            <span>🔲</span>
           </div>
-        </template>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div class="database-status">
-              <div class="db-header">
-                <h3>TDengine</h3>
-                <el-tag :type="healthData.tdengine?.status === 'healthy' ? 'success' : 'danger'" size="small">
-                  {{ healthData.tdengine?.status === 'healthy' ? '正常' : '异常' }}
-                </el-tag>
-              </div>
-              <div class="db-details" v-if="healthData.tdengine">
-                <div class="detail-item">
-                  <span class="label">主机:</span>
-                  <span class="value">{{ healthData.tdengine.host }}:{{ healthData.tdengine.port }}</span>
-                </div>
-                <div class="detail-item" v-if="healthData.tdengine.database">
-                  <span class="label">数据库:</span>
-                  <span class="value">{{ healthData.tdengine.database }}</span>
-                </div>
-                <div class="detail-item" v-if="healthData.tdengine.version">
-                  <span class="label">版本:</span>
-                  <span class="value">{{ healthData.tdengine.version }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">状态:</span>
-                  <span class="value">{{ healthData.tdengine.message }}</span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-
-          <el-col :span="12">
-            <div class="database-status">
-              <div class="db-header">
-                <h3>PostgreSQL</h3>
-                <el-tag :type="healthData.postgresql?.status === 'healthy' ? 'success' : 'danger'" size="small">
-                  {{ healthData.postgresql?.status === 'healthy' ? '正常' : '异常' }}
-                </el-tag>
-              </div>
-              <div class="db-details" v-if="healthData.postgresql">
-                <div class="detail-item">
-                  <span class="label">主机:</span>
-                  <span class="value">{{ healthData.postgresql.host }}:{{ healthData.postgresql.port }}</span>
-                </div>
-                <div class="detail-item" v-if="healthData.postgresql.database">
-                  <span class="label">数据库:</span>
-                  <span class="value">{{ healthData.postgresql.database }}</span>
-                </div>
-                <div class="detail-item" v-if="healthData.postgresql.version">
-                  <span class="label">版本:</span>
-                  <span class="value">{{ healthData.postgresql.version }}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">状态:</span>
-                  <span class="value">{{ healthData.postgresql.message }}</span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
-
-      <!-- Database Routing -->
-      <el-card shadow="hover" style="margin: 20px 0">
-        <template #header>
-          <div class="card-header">
-            <span>数据路由分布</span>
+          <div class="stat-info">
+            <div class="stat-value">{{ healthData.summary?.healthy || 0 }}/{{ healthData.summary?.total_databases || 2 }}</div>
+            <div class="stat-label">健康数据库</div>
           </div>
-        </template>
+        </div>
 
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div class="routing-section">
-              <h4 class="routing-title">
-                <el-icon color="#FF6B6B"><Database /></el-icon>
-                TDengine ({{ statsData.routing?.tdengine?.count || 5 }}项)
-              </h4>
-              <p class="routing-purpose">{{ statsData.routing?.tdengine?.purpose }}</p>
-              <el-tag
+        <div class="artde-card stat-card">
+          <div class="stat-icon postgresql">
+            <span>🐘</span>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ statsData.total_classifications || 34 }}</div>
+            <div class="stat-label">数据分类总数</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="artde-card health-card">
+        <div class="card-header">
+          <span class="section-title">数据库健康状态</span>
+          <span class="status-badge" :class="healthData.summary?.healthy === 2 ? 'success' : 'danger'">
+            {{ healthData.summary?.healthy === 2 ? '全部正常' : '存在异常' }}
+          </span>
+        </div>
+
+        <div class="databases-section">
+          <div class="database-status" v-if="healthData.tdengine">
+            <div class="db-header">
+              <h3 class="db-title">TDengine</h3>
+              <span class="status-badge small" :class="healthData.tdengine?.status === 'healthy' ? 'success' : 'danger'">
+                {{ healthData.tdengine?.status === 'healthy' ? '正常' : '异常' }}
+              </span>
+            </div>
+            <div class="db-details" v-if="healthData.tdengine">
+              <div class="detail-item">
+                <span class="label">主机:</span>
+                <span class="value">{{ healthData.tdengine.host }}:{{ healthData.tdengine.port }}</span>
+              </div>
+              <div class="detail-item" v-if="healthData.tdengine.database">
+                <span class="label">数据库:</span>
+                <span class="value">{{ healthData.tdengine.database }}</span>
+              </div>
+              <div class="detail-item" v-if="healthData.tdengine.version">
+                <span class="label">版本:</span>
+                <span class="value">{{ healthData.tdengine.version }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">状态:</span>
+                <span class="value">{{ healthData.tdengine.message }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="database-status" v-if="healthData.postgresql">
+            <div class="db-header">
+              <h3 class="db-title">PostgreSQL</h3>
+              <span class="status-badge small" :class="healthData.postgresql?.status === 'healthy' ? 'success' : 'danger'">
+                {{ healthData.postgresql?.status === 'healthy' ? '正常' : '异常' }}
+              </span>
+            </div>
+            <div class="db-details" v-if="healthData.postgresql">
+              <div class="detail-item">
+                <span class="label">主机:</span>
+                <span class="value">{{ healthData.postgresql.host }}:{{ healthData.postgresql.port }}</span>
+              </div>
+              <div class="detail-item" v-if="healthData.postgresql.database">
+                <span class="label">数据库:</span>
+                <span class="value">{{ healthData.postgresql.database }}</span>
+              </div>
+              <div class="detail-item" v-if="healthData.postgresql.version">
+                <span class="label">版本:</span>
+                <span class="value">{{ healthData.postgresql.version }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">状态:</span>
+                <span class="value">{{ healthData.postgresql.message }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="artde-card routing-card">
+        <div class="card-header">
+          <span class="section-title">数据路由分布</span>
+        </div>
+
+        <div class="routing-grid">
+          <div class="routing-box tdengine">
+            <h4 class="routing-title">
+              <span>🗃️</span>
+              TDengine ({{ statsData.routing?.tdengine?.count || 5 }}项)
+            </h4>
+            <p class="routing-purpose">{{ statsData.routing?.tdengine?.purpose }}</p>
+            <div class="routing-tags">
+              <span
                 v-for="item in statsData.routing?.tdengine?.classifications"
                 :key="item"
-                style="margin: 5px"
-                type="danger"
-                effect="plain"
+                class="tag danger"
               >
                 {{ item }}
-              </el-tag>
-              <div class="routing-features" v-if="statsData.routing?.tdengine?.features">
-                <p><strong>特性:</strong></p>
-                <ul>
-                  <li v-for="feature in statsData.routing.tdengine.features" :key="feature">{{ feature }}</li>
-                </ul>
-              </div>
+              </span>
             </div>
-          </el-col>
+          </div>
 
-          <el-col :span="12">
-            <div class="routing-section">
-              <h4 class="routing-title">
-                <el-icon color="#4E89AE"><ConnectionIcon as any /></el-icon>
-                PostgreSQL ({{ statsData.routing?.postgresql?.count || 29 }}项)
-              </h4>
-              <p class="routing-purpose">{{ statsData.routing?.postgresql?.purpose }}</p>
-              <el-tag
+          <div class="routing-box postgresql">
+            <h4 class="routing-title">
+              <span>🐘</span>
+              PostgreSQL ({{ statsData.routing?.postgresql?.count || 29 }}项)
+            </h4>
+            <p class="routing-purpose">{{ statsData.routing?.postgresql?.purpose }}</p>
+            <div class="routing-tags">
+              <span
                 v-for="category in statsData.routing?.postgresql?.categories"
                 :key="category"
-                style="margin: 5px"
-                type="primary"
-                effect="plain"
+                class="tag primary"
               >
                 {{ category }}
-              </el-tag>
-              <div class="routing-features" v-if="statsData.routing?.postgresql?.features">
-                <p><strong>特性:</strong></p>
-                <ul>
-                  <li v-for="feature in statsData.routing.postgresql.features" :key="feature">{{ feature }}</li>
-                </ul>
-              </div>
+              </span>
             </div>
-          </el-col>
-        </el-row>
-      </el-card>
-
-      <!-- Architecture Info -->
-      <el-card shadow="hover" style="margin: 20px 0">
-        <template #header>
-          <div class="card-header">
-            <span>架构简化历史</span>
           </div>
-        </template>
+        </div>
+      </div>
 
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="架构类型">{{ statsData.architecture }}</el-descriptions-item>
-          <el-descriptions-item label="简化日期">{{ statsData.simplification_date }}</el-descriptions-item>
-          <el-descriptions-item label="简化前">{{ statsData.simplified_from }}</el-descriptions-item>
-          <el-descriptions-item label="简化后">{{ statsData.simplified_to }}</el-descriptions-item>
-          <el-descriptions-item label="MySQL状态" :span="2">
-            <el-tag type="info" size="small">{{ statsData.removed_databases?.mysql?.status }}</el-tag>
-            已迁移至{{ statsData.removed_databases?.mysql?.migrated_to }} ({{ statsData.removed_databases?.mysql?.rows_migrated }}行)
-          </el-descriptions-item>
-          <el-descriptions-item label="Redis状态" :span="2">
-            <el-tag type="info" size="small">{{ statsData.removed_databases?.redis?.status }}</el-tag>
-            {{ statsData.removed_databases?.redis?.reason }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-card>
+      <div class="artde-card info-card">
+        <div class="card-header">
+          <span class="section-title">架构简化历史</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <label>架构类型</label>
+            <span>{{ statsData.architecture }}</span>
+          </div>
+          <div class="info-item">
+            <label>简化日期</label>
+            <span>{{ statsData.simplification_date }}</span>
+          </div>
+          <div class="info-item">
+            <label>简化前</label>
+            <span>{{ statsData.simplified_from }}</span>
+          </div>
+          <div class="info-item">
+            <label>简化后</label>
+            <span>{{ statsData.simplified_to }}</span>
+          </div>
+          <div class="info-item">
+            <label>MySQL状态</label>
+            <span>
+              <span class="tag">{{ statsData.removed_databases?.mysql?.status }}</span>
+              已迁移至{{ statsData.removed_databases?.mysql?.migrated_to }} ({{ statsData.removed_databases?.mysql?.rows_migrated }}行)
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Redis状态</label>
+            <span>
+              <span class="tag">{{ statsData.removed_databases?.redis?.status }}</span>
+              {{ statsData.removed_databases?.redis?.reason }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -202,13 +182,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Refresh, Connection } from '@element-plus/icons-vue'
-import { request } from '@/utils/request'
-import type { Component } from 'vue'
-
-// Type for icon components
-const RefreshIcon = Refresh as Component
-const ConnectionIcon = Connection as Component
 
 interface DatabaseHealth {
   status: 'healthy' | 'unhealthy' | 'unknown'
@@ -269,8 +242,8 @@ const statsData = ref<StatsData>({})
 
 const fetchHealthData = async (): Promise<void> => {
   try {
-    const response = await request.get<HealthData>('/api/system/database/health')
-    healthData.value = response
+    const response = await fetch('/api/system/database/health')
+    healthData.value = await response.json()
   } catch (error) {
     console.error('获取数据库健康状态失败:', error)
     ElMessage.error('获取数据库健康状态失败')
@@ -279,106 +252,250 @@ const fetchHealthData = async (): Promise<void> => {
 
 const fetchStatsData = async (): Promise<void> => {
   try {
-    const response = await request.get<StatsData>('/api/system/database/stats')
-    statsData.value = response
+    const response = await fetch('/api/system/database/stats')
+    statsData.value = await response.json()
   } catch (error) {
     console.error('获取数据库统计信息失败:', error)
     ElMessage.error('获取数据库统计信息失败')
   }
 }
 
-const refreshData = async (): Promise<void> => {
-  loading.value = true
-  try {
-    await Promise.all([fetchHealthData(), fetchStatsData()])
-    ElMessage.success('刷新成功')
-  } finally {
-    loading.value = false
-  }
-}
-
 onMounted(() => {
-  refreshData()
+  fetchHealthData()
+  fetchStatsData()
 })
 </script>
 
 <style scoped lang="scss">
+
 .database-monitor {
   padding: 20px;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+}
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px 0;
+  position: relative;
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0 0 8px 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--gold-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .decorative-line {
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+    margin: 20px auto 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
+    }
+  }
+}
+
+.artde-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--gold-dim);
+  padding: 20px;
+  position: relative;
+  border-radius: 0;
+  margin-bottom: 20px;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--gold-primary);
+  }
+
+  &::before {
+    top: 12px;
+    left: 12px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  &::after {
+    bottom: 12px;
+    right: 12px;
+    border-left: none;
+    border-top: none;
+  }
+
+  &:hover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+  }
 }
 
 .monitor-content {
   margin-top: 20px;
 }
 
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 
   .stat-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &.tdengine {
-      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-      color: white;
-    }
-
-    &.postgresql {
-      background: linear-gradient(135deg, #4E89AE 0%, #5AB9EA 100%);
-      color: white;
-    }
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--gold-dim);
+    font-size: 32px;
   }
 
   .stat-info {
     flex: 1;
 
     .stat-value {
+      font-family: var(--font-display);
       font-size: 32px;
-      font-weight: bold;
-      color: #303133;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
     }
 
     .stat-label {
-      font-size: 14px;
-      color: #909399;
-      margin-top: 5px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
   }
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 15px 0;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--gold-dim);
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold-primary);
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &.success {
+    background: rgba(0, 230, 118, 0.15);
+    border-color: var(--fall);
+    color: var(--fall);
+  }
+
+  &.danger {
+    background: rgba(255, 82, 82, 0.15);
+    border-color: var(--rise);
+    color: var(--rise);
+  }
+
+  &.small {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+}
+
+.databases-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
 }
 
 .database-status {
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+
   .db-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #EBEEF5;
+    padding: 15px 20px;
+    background: rgba(212, 175, 55, 0.05);
+    border-bottom: 1px solid var(--gold-dim);
 
-    h3 {
+    .db-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin: 0;
-      font-size: 18px;
-      color: #303133;
     }
   }
 
   .db-details {
     .detail-item {
       display: flex;
-      padding: 8px 0;
-      border-bottom: 1px solid #F2F6FC;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--gold-dim);
 
       &:last-child {
         border-bottom: none;
@@ -386,13 +503,15 @@ onMounted(() => {
 
       .label {
         width: 80px;
-        color: #909399;
+        color: var(--text-muted);
+        font-family: var(--font-body);
         font-size: 14px;
       }
 
       .value {
         flex: 1;
-        color: #606266;
+        color: var(--text-primary);
+        font-family: var(--font-body);
         font-size: 14px;
         word-break: break-all;
       }
@@ -400,48 +519,140 @@ onMounted(() => {
   }
 }
 
-.routing-section {
-  padding: 15px;
-  background: #F8F9FA;
-  border-radius: 8px;
-  min-height: 300px;
+.routing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.routing-box {
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+  padding: 20px;
 
   .routing-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 0 10px 0;
-    font-size: 16px;
-    color: #303133;
+    gap: 12px;
+    margin-bottom: 10px;
+
+    span {
+      font-size: 20px;
+    }
+
+    h4 {
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+    }
   }
 
   .routing-purpose {
-    color: #606266;
-    margin: 10px 0;
-    font-size: 14px;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 13px;
+    margin: 0 0 15px 0;
   }
+}
 
-  .routing-features {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #E4E7ED;
+.routing-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 
-    p {
-      margin: 0 0 10px 0;
-      color: #303133;
-      font-size: 14px;
+  .tag {
+    padding: 4px 10px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    &.danger {
+      background: rgba(255, 82, 82, 0.15);
+      border-color: var(--rise);
+      color: var(--rise);
     }
 
-    ul {
-      margin: 0;
-      padding-left: 20px;
+    &.primary {
+      background: rgba(64, 158, 255, 0.15);
+      border-color: #409EFF;
+      color: #409EFF;
+    }
+  }
+}
 
-      li {
-        color: #606266;
-        font-size: 13px;
-        line-height: 1.8;
+.info-card {
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      label {
+        font-family: var(--font-display);
+        font-size: 11px;
+        color: var(--gold-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      span {
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 14px;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 4px 10px;
+        font-family: var(--font-display);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(212, 175, 55, 0.15);
+        border: 1px solid var(--gold-dim);
+        color: var(--gold-primary);
+        margin-right: 5px;
       }
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .database-monitor {
+    padding: 10px;
+  }
+
+  .page-header {
+    padding: 20px 0;
+
+    .page-title {
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .databases-section {
+    grid-template-columns: 1fr;
+  }
+
+  .routing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

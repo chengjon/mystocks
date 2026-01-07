@@ -1,196 +1,185 @@
 <template>
-  <div class="freqtrade-demo">
-    <div class="demo-header">
-      <h1>🤖 Freqtrade 功能演示</h1>
-      <p class="subtitle">加密货币交易机器人 - 支持回测、策略优化、机器学习和实盘交易</p>
+
+    <div class="page-header">
+      <h1 class="page-title">FREQTRADE</h1>
+      <p class="page-subtitle">CRYPTO TRADING BOT | BACKTEST | ML | LIVE TRADING</p>
+      <div class="decorative-line"></div>
     </div>
 
-    <!-- 功能导航 -->
-    <div class="function-nav">
-      <el-button
+    <div class="function-nav tabs-nav">
+      <button
         v-for="tab in tabs"
         :key="tab.key"
-        :type="activeTab === tab.key ? 'primary' : ''"
+        class="btn"
         @click="activeTab = tab.key"
       >
-        {{ tab.icon }} {{ tab.label }}
-      </el-button>
+        <span class="tab-icon">{{ tab.icon }}</span>
+        <span class="tab-label">{{ tab.label }}</span>
+      </button>
     </div>
 
-    <!-- 1. 项目概览 -->
-    <el-card v-show="activeTab === 'overview'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>📋 项目概览</span>
-          <el-tag type="success">已迁移</el-tag>
-        </div>
-      </template>
-
-      <div class="content-section">
-        <h3>🎯 Freqtrade 简介</h3>
-        <p>Freqtrade 是一个用 Python 编写的免费开源加密货币交易机器人,专为加密货币市场设计。它具有高度可定制的策略引擎、完整的回测框架和先进的机器学习支持。</p>
-
-        <h3 style="margin-top: 30px;">✨ 核心功能</h3>
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>💹 交易功能</h4>
-              <ul>
-                <li>支持多个交易所 (Binance, OKX, Bybit, Kraken 等)</li>
-                <li>自定义交易策略 (基于技术指标)</li>
-                <li>多种订单类型 (限价单、市价单、止损单)</li>
-                <li>仓位管理和风险控制</li>
-                <li>实时行情监控和交易执行</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>📊 回测与分析</h4>
-              <ul>
-                <li>历史数据回测 (支持任意时间范围)</li>
-                <li>策略性能指标分析 (Sharpe, Sortino, Calmar)</li>
-                <li>交易日志和图表可视化</li>
-                <li>多市场和多币对同时回测</li>
-                <li>HTML 回测报告生成</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🤖 策略优化</h4>
-              <ul>
-                <li>Hyperopt 超参数优化</li>
-                <li>机器学习策略 (集成 scikit-learn)</li>
-                <li>FreqAI 框架 (强化学习支持)</li>
-                <li>参数空间搜索和交叉验证</li>
-                <li>GPU 加速训练支持</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🎛️ 管理和监控</h4>
-              <ul>
-                <li>Web UI 管理界面</li>
-                <li>Telegram 机器人控制</li>
-                <li>REST API 接口</li>
-                <li>实时日志查看</li>
-                <li>性能监控和告警</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
-
-        <h3 style="margin-top: 30px;">🔗 支持的交易所</h3>
-        <div class="exchange-list">
-          <el-tag v-for="exchange in exchanges" :key="exchange" size="large" style="margin: 5px;">
-            {{ exchange }}
-          </el-tag>
-        </div>
-
-        <el-alert
-          type="info"
-          :closable="false"
-          style="margin-top: 20px;"
-        >
-          <template #title>
-            <div style="font-weight: bold;">📚 官方资源</div>
-          </template>
-          <ul style="margin-top: 10px; line-height: 1.8;">
-            <li>官网: <el-link href="https://www.freqtrade.io" target="_blank" type="primary">https://www.freqtrade.io</el-link></li>
-            <li>文档: <el-link href="https://www.freqtrade.io/en/stable/" target="_blank" type="primary">https://www.freqtrade.io/en/stable/</el-link></li>
-            <li>GitHub: <el-link href="https://github.com/freqtrade/freqtrade" target="_blank" type="primary">https://github.com/freqtrade/freqtrade</el-link></li>
-            <li>Discord 社区: 活跃的技术支持和策略讨论</li>
-          </ul>
-        </el-alert>
+    <div class="card main-card" v-show="activeTab === 'overview'">
+      <div class="card-header">
+        <h3 class="card-title">📋 PROJECT OVERVIEW</h3>
+        <span class="badge badge-success">MIGRATED</span>
       </div>
-    </el-card>
-
-    <!-- 2. 策略开发 -->
-    <el-card v-show="activeTab === 'strategy'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>📝 策略开发</span>
-          <el-tag type="warning">文档</el-tag>
-        </div>
-      </template>
 
       <div class="content-section">
-        <h3>🎯 策略结构</h3>
-        <p>Freqtrade 策略基于 IStrategy 接口,主要包含以下核心方法:</p>
+        <h3>🎯 FREQTRADE INTRODUCTION</h3>
+        <p>Freqtrade is a free open-source cryptocurrency trading bot written in Python, designed for the crypto market. It features a highly customizable strategy engine, complete backtesting framework, and advanced machine learning support.</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础策略示例">
+        <h3 style="margin-top: 30px;">✨ CORE FEATURES</h3>
+        <div class="features-grid" style="margin-top: 20px;">
+          <div class="card feature-card">
+            <h4>💹 TRADING FEATURES</h4>
+            <ul>
+              <li>Multiple exchange support (Binance, OKX, Bybit, Kraken, etc.)</li>
+              <li>Custom trading strategies (technical indicators)</li>
+              <li>Multiple order types (limit, market, stop-loss)</li>
+              <li>Position management and risk control</li>
+              <li>Real-time market monitoring and trading</li>
+            </ul>
+          </div>
+          <div class="card feature-card">
+            <h4>📊 BACKTEST & ANALYSIS</h4>
+            <ul>
+              <li>Historical data backtesting (any time range)</li>
+              <li>Strategy performance metrics (Sharpe, Sortino, Calmar)</li>
+              <li>Trading logs and chart visualization</li>
+              <li>Multi-market and multi-pair backtesting</li>
+              <li>HTML backtest report generation</li>
+            </ul>
+          </div>
+          <div class="card feature-card">
+            <h4>🤖 STRATEGY OPTIMIZATION</h4>
+            <ul>
+              <li>Hyperopt parameter optimization</li>
+              <li>Machine learning strategies (scikit-learn)</li>
+              <li>FreqAI framework (reinforcement learning)</li>
+              <li>Parameter space search and cross-validation</li>
+              <li>GPU-accelerated training support</li>
+            </ul>
+          </div>
+          <div class="card feature-card">
+            <h4>🎛️ MANAGEMENT & MONITORING</h4>
+            <ul>
+              <li>Web UI management interface</li>
+              <li>Telegram bot control</li>
+              <li>REST API endpoints</li>
+              <li>Real-time log viewing</li>
+              <li>Performance monitoring and alerts</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 30px;">🔗 SUPPORTED EXCHANGES</h3>
+        <div class="exchange-list">
+          <span class="badge badge-info" v-for="exchange in exchanges" :key="exchange">
+            {{ exchange }}
+          </span>
+        </div>
+
+          <div class="alert-title">📚 OFFICIAL RESOURCES</div>
+          <ul style="margin-top: 10px; line-height: 1.8;">
+            <li>Website: <a href="https://www.freqtrade.io" target="_blank" class="link">https://www.freqtrade.io</a></li>
+            <li>Docs: <a href="https://www.freqtrade.io/en/stable/" target="_blank" class="link">https://www.freqtrade.io/en/stable/</a></li>
+            <li>GitHub: <a href="https://github.com/freqtrade/freqtrade" target="_blank" class="link">https://github.com/freqtrade/freqtrade</a></li>
+            <li>Discord Community: Active technical support and strategy discussions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card main-card" v-show="activeTab === 'strategy'">
+      <div class="card-header">
+        <h3 class="card-title">📝 STRATEGY DEVELOPMENT</h3>
+        <span class="badge badge-warning">DOCUMENTATION</span>
+      </div>
+
+      <div class="content-section">
+        <h3>🎯 STRATEGY STRUCTURE</h3>
+        <p>Freqtrade strategies are based on the IStrategy interface and include the following core methods:</p>
+
+        <div class="tabs">
+          <div class="tabs-header">
+            <button
+              v-for="tab in strategyTabs"
+              :key="tab.key"
+              class="tab-btn"
+              :class="{ active: strategyTab === tab.key }"
+              @click="strategyTab = tab.key"
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <div class="tab-content" v-show="strategyTab === 'basic'">
             <pre v-pre class="code-block">from freqtrade.strategy import IStrategy
 from pandas import DataFrame
 import talib.abstract as ta
 
 class SampleStrategy(IStrategy):
-    # 策略参数
+    # Strategy parameters
     minimal_roi = {
         "0": 0.10,   # 10% ROI
-        "30": 0.05,  # 30分钟后5% ROI
-        "60": 0.01   # 60分钟后1% ROI
+        "30": 0.05,  # 5% ROI after 30 minutes
+        "60": 0.01   # 1% ROI after 60 minutes
     }
 
-    stoploss = -0.10  # 止损 10%
+    stoploss = -0.10  # 10% stop loss
 
-    timeframe = '5m'  # 5分钟K线
+    timeframe = '5m'  # 5-minute K-line
 
-    # 买入信号
+    # Buy signal
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                (dataframe['rsi'] < 30) &  # RSI 超卖
-                (dataframe['close'] < dataframe['bb_lowerband'])  # 价格低于布林带下轨
+                (dataframe['rsi'] < 30) &  # RSI oversold
+                (dataframe['close'] < dataframe['bb_lowerband'])  # Price below BB lower band
             ),
             'buy'] = 1
         return dataframe
 
-    # 卖出信号
+    # Sell signal
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                (dataframe['rsi'] > 70) |  # RSI 超买
-                (dataframe['close'] > dataframe['bb_upperband'])  # 价格高于布林带上轨
+                (dataframe['rsi'] > 70) |  # RSI overbought
+                (dataframe['close'] > dataframe['bb_upperband'])  # Price above BB upper band
             ),
             'sell'] = 1
         return dataframe
 
-    # 指标计算
+    # Indicator calculation
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         # RSI
         dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
 
-        # 布林带
+        # Bollinger Bands
         bollinger = ta.BBANDS(dataframe, timeperiod=20)
         dataframe['bb_upperband'] = bollinger['upperband']
         dataframe['bb_lowerband'] = bollinger['lowerband']
 
         return dataframe</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="机器学习策略">
+          <div class="tab-content" v-show="strategyTab === 'ml'">
             <pre v-pre class="code-block">from freqtrade.strategy import IStrategy
 from freqai.base_model import BaseRegressionModel
 import pandas as pd
 
 class FreqAIStrategy(IStrategy):
-    # FreqAI 配置
+    # FreqAI configuration
     def populate_indicators(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-        # 定义特征
+        # Define features
         dataframe['%-rsi'] = ta.RSI(dataframe)
         dataframe['%-mfi'] = ta.MFI(dataframe)
         dataframe['%-adx'] = ta.ADX(dataframe)
 
-        # 定义标签 (预测目标)
+        # Define labels (prediction targets)
         dataframe['&-s_close'] = (
             dataframe['close']
-            .shift(-5)  # 预测5根K线后的价格
+            .shift(-5)  # Predict 5 K-lines ahead
             .rolling(5)
             .mean()
         )
@@ -198,131 +187,162 @@ class FreqAIStrategy(IStrategy):
         return dataframe
 
     def populate_buy_trend(self, dataframe: pd.DataFrame, metadata: dict) -> pd.DataFrame:
-        # 使用模型预测
+        # Use model predictions
         dataframe.loc[
-            (dataframe['&-s_close'] > dataframe['close'] * 1.01),  # 预测上涨1%
+            (dataframe['&-s_close'] > dataframe['close'] * 1.01),  # Predict 1% increase
             'buy'] = 1
         return dataframe</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="常用技术指标">
+          <div class="tab-content" v-show="strategyTab === 'indicators'">
             <div style="padding: 15px;">
-              <h4>📊 Freqtrade 支持的技术指标</h4>
-              <el-row :gutter="15" style="margin-top: 15px;">
-                <el-col :span="8">
-                  <h5>趋势指标</h5>
+              <h4>📊 SUPPORTED TECHNICAL INDICATORS</h4>
+              <div class="indicators-grid" style="margin-top: 15px;">
+                <div class="indicator-group">
+                  <h5>TREND INDICATORS</h5>
                   <ul>
-                    <li>SMA / EMA (移动平均线)</li>
+                    <li>SMA / EMA (Moving Average)</li>
                     <li>MACD</li>
-                    <li>ADX (趋势强度)</li>
+                    <li>ADX (Trend Strength)</li>
                     <li>Parabolic SAR</li>
                   </ul>
-                </el-col>
-                <el-col :span="8">
-                  <h5>震荡指标</h5>
+                </div>
+                <div class="indicator-group">
+                  <h5>OSCILLATORS</h5>
                   <ul>
-                    <li>RSI (相对强弱)</li>
+                    <li>RSI (Relative Strength)</li>
                     <li>Stochastic</li>
-                    <li>CCI (商品通道)</li>
-                    <li>MFI (资金流量)</li>
+                    <li>CCI (Commodity Channel)</li>
+                    <li>MFI (Money Flow)</li>
                   </ul>
-                </el-col>
-                <el-col :span="8">
-                  <h5>其他指标</h5>
+                </div>
+                <div class="indicator-group">
+                  <h5>OTHER INDICATORS</h5>
                   <ul>
                     <li>Bollinger Bands</li>
-                    <li>ATR (波动率)</li>
-                    <li>Volume (成交量)</li>
+                    <li>ATR (Volatility)</li>
+                    <li>Volume</li>
                     <li>Fibonacci</li>
                   </ul>
-                </el-col>
-              </el-row>
+                </div>
+              </div>
             </div>
-          </el-tab-pane>
-        </el-tabs>
-
-        <el-alert
-          type="warning"
-          title="⚠️ 策略开发注意事项"
-          :closable="false"
-          style="margin-top: 20px;"
-        >
-          <ul style="margin-top: 10px;">
-            <li><strong>过拟合风险</strong>: 避免策略过度优化历史数据,导致实盘表现不佳</li>
-            <li><strong>滑点和手续费</strong>: 回测时务必考虑交易成本</li>
-            <li><strong>样本外测试</strong>: 使用未参与优化的数据进行验证</li>
-            <li><strong>风险管理</strong>: 设置合理的止损和仓位管理规则</li>
-            <li><strong>市场适应性</strong>: 不同市场环境可能需要调整策略参数</li>
-          </ul>
-        </el-alert>
-      </div>
-    </el-card>
-
-    <!-- 3. 回测分析 -->
-    <el-card v-show="activeTab === 'backtest'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>📈 回测分析</span>
-          <el-tag type="warning">文档</el-tag>
+          </div>
         </div>
-      </template>
+
+          <div class="alert-title">⚠️ STRATEGY DEVELOPMENT NOTES</div>
+          <ul style="margin-top: 10px;">
+            <li><strong>Overfitting Risk</strong>: Avoid over-optimizing strategies on historical data</li>
+            <li><strong>Slippage & Fees</strong>: Always consider trading costs in backtesting</li>
+            <li><strong>Out-of-Sample Testing</strong>: Use unseen data for validation</li>
+            <li><strong>Risk Management</strong>: Set reasonable stop-loss and position rules</li>
+            <li><strong>Market Adaptability</strong>: Different markets may require parameter adjustments</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card main-card" v-show="activeTab === 'backtest'">
+      <div class="card-header">
+        <h3 class="card-title">📈 BACKTEST ANALYSIS</h3>
+        <span class="badge badge-warning">DOCUMENTATION</span>
+      </div>
 
       <div class="content-section">
-        <h3>🔍 回测流程</h3>
-        <p>Freqtrade 提供强大的回测功能,可以在历史数据上测试策略表现:</p>
+        <h3>🔍 BACKTEST PROCESS</h3>
+        <p>Freqtrade provides powerful backtesting capabilities to test strategy performance on historical data:</p>
 
-        <el-steps :active="3" align-center style="margin: 30px 0;">
-          <el-step title="下载数据" description="freqtrade download-data" />
-          <el-step title="编写策略" description="实现 IStrategy 接口" />
-          <el-step title="运行回测" description="freqtrade backtesting" />
-          <el-step title="分析结果" description="查看报告和图表" />
-        </el-steps>
+        <div class="steps">
+          <div class="step-item">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <div class="step-title">DOWNLOAD DATA</div>
+              <div class="step-desc">freqtrade download-data</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <div class="step-title">WRITE STRATEGY</div>
+              <div class="step-desc">Implement IStrategy interface</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <div class="step-title">RUN BACKTEST</div>
+              <div class="step-desc">freqtrade backtesting</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <div class="step-title">ANALYZE RESULTS</div>
+              <div class="step-desc">View reports and charts</div>
+            </div>
+          </div>
+        </div>
 
-        <h3 style="margin-top: 30px;">⚙️ 回测命令示例</h3>
-        <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础回测">
-            <pre v-pre class="code-block"># 回测单个策略
+        <h3 style="margin-top: 30px;">⚙️ BACKTEST COMMAND EXAMPLES</h3>
+        <div class="tabs">
+          <div class="tabs-header">
+            <button
+              v-for="tab in backtestTabs"
+              :key="tab.key"
+              class="tab-btn"
+              :class="{ active: backtestTab === tab.key }"
+              @click="backtestTab = tab.key"
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <div class="tab-content" v-show="backtestTab === 'basic'">
+            <pre v-pre class="code-block"># Backtest single strategy
 freqtrade backtesting \
   --strategy SampleStrategy \
   --timerange 20210101-20211231 \
   --timeframe 5m
 
-# 回测多个币对
+# Backtest multiple pairs
 freqtrade backtesting \
   --strategy SampleStrategy \
   --pairs BTC/USDT ETH/USDT BNB/USDT \
   --timerange 20210101-20211231
 
-# 启用详细日志
+# Enable verbose logging
 freqtrade backtesting \
   --strategy SampleStrategy \
   --timerange 20210101-20211231 \
   --verbose</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="超参数优化">
-            <pre v-pre class="code-block"># Hyperopt 参数优化
+          <div class="tab-content" v-show="backtestTab === 'hyperopt'">
+            <pre v-pre class="code-block"># Hyperopt parameter optimization
 freqtrade hyperopt \
   --hyperopt-loss SharpeHyperOptLoss \
   --strategy SampleStrategy \
   --timerange 20210101-20211231 \
   --epochs 500
 
-# 只优化买入参数
+# Optimize buy parameters only
 freqtrade hyperopt \
   --spaces buy \
   --strategy SampleStrategy \
   --timerange 20210101-20211231
 
-# 并行优化 (使用多核CPU)
+# Parallel optimization (multi-core CPU)
 freqtrade hyperopt \
   --strategy SampleStrategy \
   --timerange 20210101-20211231 \
   --jobs 4</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="生成报告">
-            <pre v-pre class="code-block"># 生成 HTML 回测报告
+          <div class="tab-content" v-show="backtestTab === 'report'">
+            <pre v-pre class="code-block"># Generate HTML backtest report
 freqtrade backtesting \
   --strategy SampleStrategy \
   --timerange 20210101-20211231 \
@@ -335,52 +355,67 @@ freqtrade plot-dataframe \
   --indicators1 sma ema \
   --indicators2 rsi
 
-# 生成利润图表
+# Generate profit chart
 freqtrade plot-profit \
   --strategy SampleStrategy \
   --timerange 20210101-20211231</pre>
-          </el-tab-pane>
-        </el-tabs>
-
-        <h3 style="margin-top: 30px;">📊 回测性能指标</h3>
-        <el-table :data="metricsData" stripe style="margin-top: 15px;">
-          <el-table-column prop="metric" label="指标" width="200" />
-          <el-table-column prop="description" label="说明" />
-          <el-table-column prop="target" label="目标值" width="150" />
-        </el-table>
-
-        <el-alert
-          type="info"
-          title="💡 回测结果解读"
-          :closable="false"
-          style="margin-top: 20px;"
-        >
-          <ul style="margin-top: 10px;">
-            <li><strong>总收益率</strong>: 策略在回测期间的总收益,需考虑复利效应</li>
-            <li><strong>胜率</strong>: 盈利交易占总交易的比例,≥ 50% 较好</li>
-            <li><strong>盈亏比</strong>: 平均盈利 / 平均亏损,≥ 1.5 较好</li>
-            <li><strong>最大回撤</strong>: 从峰值到谷底的最大跌幅,越小越好</li>
-            <li><strong>夏普比率</strong>: 风险调整后收益,≥ 1.0 较好</li>
-          </ul>
-        </el-alert>
-      </div>
-    </el-card>
-
-    <!-- 4. 配置说明 -->
-    <el-card v-show="activeTab === 'config'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>⚙️ 配置说明</span>
-          <el-tag type="warning">文档</el-tag>
+          </div>
         </div>
-      </template>
+
+        <h3 style="margin-top: 30px;">📊 BACKTEST PERFORMANCE METRICS</h3>
+        <table class="table" style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>METRIC</th>
+              <th>DESCRIPTION</th>
+              <th>TARGET</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="metric in metricsData" :key="metric.metric">
+              <td class="metric-name">{{ metric.metric }}</td>
+              <td>{{ metric.description }}</td>
+              <td class="metric-target">{{ metric.target }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+          <div class="alert-title">💡 BACKTEST RESULTS INTERPRETATION</div>
+          <ul style="margin-top: 10px;">
+            <li><strong>Total Return</strong>: Strategy's total return during backtest period</li>
+            <li><strong>Win Rate</strong>: Profitable trades / Total trades, ≥ 50% is good</li>
+            <li><strong>Profit Factor</strong>: Avg profit / Avg loss, ≥ 1.5 is good</li>
+            <li><strong>Max Drawdown</strong>: Peak to valley decline, smaller is better</li>
+            <li><strong>Sharpe Ratio</strong>: Risk-adjusted return, ≥ 1.0 is good</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card main-card" v-show="activeTab === 'config'">
+      <div class="card-header">
+        <h3 class="card-title">⚙️ CONFIGURATION</h3>
+        <span class="badge badge-warning">DOCUMENTATION</span>
+      </div>
 
       <div class="content-section">
-        <h3>📝 配置文件结构</h3>
-        <p>Freqtrade 使用 JSON 格式配置文件 (config.json):</p>
+        <h3>📝 CONFIG FILE STRUCTURE</h3>
+        <p>Freqtrade uses JSON format configuration files (config.json):</p>
 
-        <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="基础配置">
+        <div class="tabs">
+          <div class="tabs-header">
+            <button
+              v-for="tab in configTabs"
+              :key="tab.key"
+              class="tab-btn"
+              :class="{ active: configTab === tab.key }"
+              @click="configTab = tab.key"
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <div class="tab-content" v-show="configTab === 'basic'">
             <pre v-pre class="code-block">{
   "max_open_trades": 3,
   "stake_currency": "USDT",
@@ -406,9 +441,9 @@ freqtrade plot-profit \
     "pair_blacklist": []
   }
 }</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="策略配置">
+          <div class="tab-content" v-show="configTab === 'strategy'">
             <pre v-pre class="code-block">{
   "strategy": "SampleStrategy",
   "strategy_path": "user_data/strategies/",
@@ -431,9 +466,9 @@ freqtrade plot-profit \
     "unit": "minutes"
   }
 }</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="Telegram 机器人">
+          <div class="tab-content" v-show="configTab === 'telegram'">
             <pre v-pre class="code-block">{
   "telegram": {
     "enabled": true,
@@ -450,9 +485,9 @@ freqtrade plot-profit \
     }
   }
 }</pre>
-          </el-tab-pane>
+          </div>
 
-          <el-tab-pane label="API 配置">
+          <div class="tab-content" v-show="configTab === 'api'">
             <pre v-pre class="code-block">{
   "api_server": {
     "enabled": true,
@@ -466,179 +501,202 @@ freqtrade plot-profit \
     "password": "your-password"
   }
 }</pre>
-          </el-tab-pane>
-        </el-tabs>
-
-        <h3 style="margin-top: 30px;">🔑 关键配置参数说明</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px;">
-          <el-descriptions-item label="max_open_trades">
-            最大同时持仓数量,控制风险分散
-          </el-descriptions-item>
-          <el-descriptions-item label="stake_amount">
-            每笔交易金额 ("unlimited" 表示自动计算)
-          </el-descriptions-item>
-          <el-descriptions-item label="dry_run">
-            模拟交易模式 (true=模拟, false=实盘)
-          </el-descriptions-item>
-          <el-descriptions-item label="timeframe">
-            K线周期 (1m, 5m, 15m, 1h, 4h, 1d 等)
-          </el-descriptions-item>
-          <el-descriptions-item label="stoploss">
-            止损百分比 (负值,如 -0.10 表示 -10%)
-          </el-descriptions-item>
-          <el-descriptions-item label="trailing_stop">
-            移动止损,跟随价格上涨自动调整止损点
-          </el-descriptions-item>
-        </el-descriptions>
-      </div>
-    </el-card>
-
-    <!-- 5. Web UI -->
-    <el-card v-show="activeTab === 'webui'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>🖥️ Web UI 管理界面</span>
-          <el-tag type="info">计划集成</el-tag>
+          </div>
         </div>
-      </template>
+
+        <h3 style="margin-top: 30px;">🔑 KEY CONFIGURATION PARAMETERS</h3>
+        <table class="table" style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>PARAMETER</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="param-name">max_open_trades</td>
+              <td>Maximum concurrent trades, controls risk diversification</td>
+            </tr>
+            <tr>
+              <td class="param-name">stake_amount</td>
+              <td>Trade amount per transaction ("unlimited" for auto-calculation)</td>
+            </tr>
+            <tr>
+              <td class="param-name">dry_run</td>
+              <td>Simulation mode (true=simulated, false=live trading)</td>
+            </tr>
+            <tr>
+              <td class="param-name">timeframe</td>
+              <td>K-line period (1m, 5m, 15m, 1h, 4h, 1d, etc.)</td>
+            </tr>
+            <tr>
+              <td class="param-name">stoploss</td>
+              <td>Stop-loss percentage (negative value, e.g., -0.10 = -10%)</td>
+            </tr>
+            <tr>
+              <td class="param-name">trailing_stop</td>
+              <td>Trailing stop-loss, automatically adjusts stop point with price increase</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card main-card" v-show="activeTab === 'webui'">
+      <div class="card-header">
+        <h3 class="card-title">🖥️ WEB UI MANAGEMENT</h3>
+        <span class="badge badge-info">PLANNED</span>
+      </div>
 
       <div class="content-section">
-        <h3>🎨 FreqUI 功能</h3>
-        <p>FreqUI 是 Freqtrade 的官方 Web 管理界面,提供直观的可视化管理功能:</p>
+        <h3>🎨 FREQUI FEATURES</h3>
+        <p>FreqUI is the official Freqtrade web management interface, providing intuitive visual management:</p>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>📊 实时监控</h4>
-              <ul>
-                <li>实时查看持仓和订单</li>
-                <li>查看策略运行状态</li>
-                <li>监控账户余额变化</li>
-                <li>查看交易历史记录</li>
-                <li>实时日志输出</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🎛️ 交易控制</h4>
-              <ul>
-                <li>启动/停止交易机器人</li>
-                <li>强制买入/卖出</li>
-                <li>修改配置参数</li>
-                <li>紧急停止所有交易</li>
-                <li>切换策略</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
+        <div class="features-grid" style="margin-top: 20px;">
+          <div class="card feature-card">
+            <h4>📊 REAL-TIME MONITORING</h4>
+            <ul>
+              <li>View positions and orders in real-time</li>
+              <li>Check strategy running status</li>
+              <li>Monitor account balance changes</li>
+              <li>View trading history</li>
+              <li>Real-time log output</li>
+            </ul>
+          </div>
+          <div class="card feature-card">
+            <h4>🎛️ TRADING CONTROL</h4>
+            <ul>
+              <li>Start/stop trading bot</li>
+              <li>Force buy/sell</li>
+              <li>Modify configuration parameters</li>
+              <li>Emergency stop all trades</li>
+              <li>Switch strategies</li>
+            </ul>
+          </div>
+        </div>
 
-        <h3 style="margin-top: 30px;">🚀 启动 Web UI</h3>
-        <pre v-pre class="code-block"># 启动 Freqtrade 并开启 API
+        <h3 style="margin-top: 30px;">🚀 STARTING WEB UI</h3>
+        <pre v-pre class="code-block"># Start Freqtrade with API enabled
 freqtrade trade --config config.json --strategy SampleStrategy
 
-# 在另一个终端启动 FreqUI (需要单独安装)
-# 或者访问: http://localhost:8080 (如果配置了 api_server)</pre>
+# Start FreqUI in another terminal (requires separate installation)
+# Or visit: http://localhost:8080 (if api_server configured)</pre>
 
-        <el-alert
-          type="info"
-          title="💡 Web UI 访问"
-          :closable="false"
-          style="margin-top: 20px;"
-        >
-          <p style="margin-top: 10px;">默认访问地址: <code>http://127.0.0.1:8080</code></p>
-          <p>默认账号: 在 config.json 的 api_server 部分配置</p>
+          <div class="alert-title">💡 WEB UI ACCESS</div>
+          <p style="margin-top: 10px;">Default access: <code>http://127.0.0.1:8080</code></p>
+          <p>Default credentials: Configured in config.json api_server section</p>
           <p style="margin-top: 10px;">
-            <el-link href="https://github.com/freqtrade/frequi" target="_blank" type="primary">
-              FreqUI GitHub 仓库
-            </el-link>
+            <a href="https://github.com/freqtrade/frequi" target="_blank" class="link">
+              FreqUI GitHub Repository
+            </a>
           </p>
-        </el-alert>
-
-        <h3 style="margin-top: 30px;">🔌 REST API 端点</h3>
-        <el-table :data="apiEndpoints" stripe style="margin-top: 15px;">
-          <el-table-column prop="method" label="方法" width="100" />
-          <el-table-column prop="endpoint" label="端点" width="250" />
-          <el-table-column prop="description" label="说明" />
-        </el-table>
-      </div>
-    </el-card>
-
-    <!-- 6. 集成状态 -->
-    <el-card v-show="activeTab === 'status'" class="demo-card">
-      <template #header>
-        <div class="card-header">
-          <span>✅ 集成状态</span>
         </div>
-      </template>
+
+        <h3 style="margin-top: 30px;">🔌 REST API ENDPOINTS</h3>
+        <table class="table" style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>METHOD</th>
+              <th>ENDPOINT</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="endpoint in apiEndpoints" :key="endpoint.endpoint">
+              <td class="method-badge">{{ endpoint.method }}</td>
+              <td class="endpoint-path">{{ endpoint.endpoint }}</td>
+              <td>{{ endpoint.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card main-card" v-show="activeTab === 'status'">
+      <div class="card-header">
+        <h3 class="card-title">✅ INTEGRATION STATUS</h3>
+      </div>
 
       <div class="content-section">
-        <h3>📦 已集成功能</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px;">
-          <el-descriptions-item label="项目文档">
-            <el-tag type="success">✅ 已整理</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="策略示例">
-            <el-tag type="success">✅ 已收集</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="配置模板">
-            <el-tag type="success">✅ 已文档化</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="后端 API">
-            <el-tag type="info">⏳ 待开发</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="数据接口">
-            <el-tag type="info">⏳ 待开发</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="Web UI 集成">
-            <el-tag type="info">⏳ 计划中</el-tag>
-          </el-descriptions-item>
-        </el-descriptions>
+        <h3>📦 INTEGRATED FEATURES</h3>
+        <table class="table" style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>FEATURE</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Project Documentation</td>
+              <td><span class="badge badge-success">✅ COMPLETED</span></td>
+            </tr>
+            <tr>
+              <td>Strategy Examples</td>
+              <td><span class="badge badge-success">✅ COLLECTED</span></td>
+            </tr>
+            <tr>
+              <td>Configuration Templates</td>
+              <td><span class="badge badge-success">✅ DOCUMENTED</span></td>
+            </tr>
+            <tr>
+              <td>Backend API</td>
+              <td><span class="badge badge-warning">⏳ PENDING</span></td>
+            </tr>
+            <tr>
+              <td>Data Interface</td>
+              <td><span class="badge badge-warning">⏳ PENDING</span></td>
+            </tr>
+            <tr>
+              <td>Web UI Integration</td>
+              <td><span class="badge badge-info">📅 PLANNED</span></td>
+            </tr>
+          </tbody>
+        </table>
 
-        <h3 style="margin-top: 30px;">🎯 后续集成计划</h3>
-        <el-timeline style="margin-top: 20px;">
-          <el-timeline-item timestamp="Phase 1" placement="top">
-            <el-card>
-              <h4>数据接口集成</h4>
-              <p>整合 Freqtrade 的数据下载和存储功能到 MyStocks 数据管理系统</p>
-            </el-card>
-          </el-timeline-item>
-          <el-timeline-item timestamp="Phase 2" placement="top">
-            <el-card>
-              <h4>策略管理</h4>
-              <p>在 Web 界面中实现策略的创建、编辑和管理功能</p>
-            </el-card>
-          </el-timeline-item>
-          <el-timeline-item timestamp="Phase 3" placement="top">
-            <el-card>
-              <h4>回测系统</h4>
-              <p>集成 Freqtrade 回测引擎,在 Web 界面中运行回测并查看结果</p>
-            </el-card>
-          </el-timeline-item>
-          <el-timeline-item timestamp="Phase 4" placement="top">
-            <el-card>
-              <h4>实盘交易</h4>
-              <p>支持在 Web 界面中启动和监控实盘交易机器人</p>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
+        <h3 style="margin-top: 30px;">🎯 FUTURE INTEGRATION PLAN</h3>
+        <div class="timeline" style="margin-top: 20px;">
+          <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <div class="timeline-title">PHASE 1: DATA INTERFACE</div>
+              <div class="timeline-desc">Integrate Freqtrade data download and storage into MyStocks data management system</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <div class="timeline-title">PHASE 2: STRATEGY MANAGEMENT</div>
+              <div class="timeline-desc">Implement strategy creation, editing and management in web interface</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <div class="timeline-title">PHASE 3: BACKTEST SYSTEM</div>
+              <div class="timeline-desc">Integrate Freqtrade backtesting engine, run backtests and view results in web</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <div class="timeline-title">PHASE 4: LIVE TRADING</div>
+              <div class="timeline-desc">Support starting and monitoring live trading bots in web interface</div>
+            </div>
+          </div>
+        </div>
 
-        <el-alert
-          type="warning"
-          title="⚠️ 重要提醒"
-          :closable="false"
-          style="margin-top: 20px;"
-        >
+          <div class="alert-title">⚠️ IMPORTANT DISCLAIMER</div>
           <ul style="margin-top: 10px;">
-            <li><strong>风险警示</strong>: 加密货币交易存在高风险,请务必充分了解风险后再使用</li>
-            <li><strong>模拟交易</strong>: 建议先在模拟模式下充分测试策略</li>
-            <li><strong>资金管理</strong>: 只投入您能承受损失的资金</li>
-            <li><strong>持续监控</strong>: 实盘交易时需要持续监控机器人运行状态</li>
-            <li><strong>法律合规</strong>: 确保您所在地区允许加密货币交易</li>
+            <li><strong>Risk Warning</strong>: Cryptocurrency trading has high risks, ensure you understand risks before use</li>
+            <li><strong>Paper Trading</strong>: Recommend testing strategies fully in simulation mode first</li>
+            <li><strong>Fund Management</strong>: Only invest funds you can afford to lose</li>
+            <li><strong>Continuous Monitoring</strong>: Live trading requires continuous monitoring of bot status</li>
+            <li><strong>Legal Compliance</strong>: Ensure cryptocurrency trading is allowed in your region</li>
           </ul>
-        </el-alert>
+        </div>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -646,14 +704,36 @@ freqtrade trade --config config.json --strategy SampleStrategy
 import { ref } from 'vue'
 
 const activeTab = ref('overview')
+const strategyTab = ref('basic')
+const backtestTab = ref('basic')
+const configTab = ref('basic')
 
 const tabs = [
-  { key: 'overview', label: '项目概览', icon: '📋' },
-  { key: 'strategy', label: '策略开发', icon: '📝' },
-  { key: 'backtest', label: '回测分析', icon: '📈' },
-  { key: 'config', label: '配置说明', icon: '⚙️' },
+  { key: 'overview', label: 'Overview', icon: '📋' },
+  { key: 'strategy', label: 'Strategy', icon: '📝' },
+  { key: 'backtest', label: 'Backtest', icon: '📈' },
+  { key: 'config', label: 'Config', icon: '⚙️' },
   { key: 'webui', label: 'Web UI', icon: '🖥️' },
-  { key: 'status', label: '集成状态', icon: '✅' }
+  { key: 'status', label: 'Status', icon: '✅' }
+]
+
+const strategyTabs = [
+  { key: 'basic', label: 'Basic Strategy' },
+  { key: 'ml', label: 'Machine Learning' },
+  { key: 'indicators', label: 'Indicators' }
+]
+
+const backtestTabs = [
+  { key: 'basic', label: 'Basic Backtest' },
+  { key: 'hyperopt', label: 'Hyperopt' },
+  { key: 'report', label: 'Generate Report' }
+]
+
+const configTabs = [
+  { key: 'basic', label: 'Basic' },
+  { key: 'strategy', label: 'Strategy' },
+  { key: 'telegram', label: 'Telegram' },
+  { key: 'api', label: 'API' }
 ]
 
 const exchanges = [
@@ -662,147 +742,576 @@ const exchanges = [
 ]
 
 const metricsData = [
-  { metric: 'Total Profit', description: '总收益率', target: '> 0%' },
-  { metric: 'Win Rate', description: '胜率(盈利交易占比)', target: '≥ 50%' },
-  { metric: 'Profit Factor', description: '盈亏比(总盈利/总亏损)', target: '≥ 1.5' },
-  { metric: 'Max Drawdown', description: '最大回撤', target: '< 30%' },
-  { metric: 'Sharpe Ratio', description: '夏普比率(风险调整收益)', target: '≥ 1.0' },
-  { metric: 'Sortino Ratio', description: '索提诺比率(下行风险调整收益)', target: '≥ 1.5' },
-  { metric: 'Calmar Ratio', description: '卡玛比率(收益/最大回撤)', target: '≥ 3.0' },
-  { metric: 'Total Trades', description: '总交易次数', target: '≥ 100' }
+  { metric: 'Total Profit', description: 'Total return rate', target: '> 0%' },
+  { metric: 'Win Rate', description: 'Profitable trades ratio', target: '≥ 50%' },
+  { metric: 'Profit Factor', description: 'Total profit / Total loss', target: '≥ 1.5' },
+  { metric: 'Max Drawdown', description: 'Maximum drawdown', target: '< 30%' },
+  { metric: 'Sharpe Ratio', description: 'Risk-adjusted return', target: '≥ 1.0' },
+  { metric: 'Sortino Ratio', description: 'Downside risk-adjusted return', target: '≥ 1.5' },
+  { metric: 'Calmar Ratio', description: 'Return / Max drawdown', target: '≥ 3.0' },
+  { metric: 'Total Trades', description: 'Total number of trades', target: '≥ 100' }
 ]
 
 const apiEndpoints = [
-  { method: 'GET', endpoint: '/api/v1/balance', description: '获取账户余额' },
-  { method: 'GET', endpoint: '/api/v1/status', description: '获取机器人状态' },
-  { method: 'GET', endpoint: '/api/v1/trades', description: '获取交易历史' },
-  { method: 'GET', endpoint: '/api/v1/performance', description: '获取性能指标' },
-  { method: 'POST', endpoint: '/api/v1/start', description: '启动交易' },
-  { method: 'POST', endpoint: '/api/v1/stop', description: '停止交易' },
-  { method: 'POST', endpoint: '/api/v1/forcebuy', description: '强制买入' },
-  { method: 'POST', endpoint: '/api/v1/forcesell', description: '强制卖出' },
-  { method: 'GET', endpoint: '/api/v1/logs', description: '获取日志' }
+  { method: 'GET', endpoint: '/api/v1/balance', description: 'Get account balance' },
+  { method: 'GET', endpoint: '/api/v1/status', description: 'Get bot status' },
+  { method: 'GET', endpoint: '/api/v1/trades', description: 'Get trade history' },
+  { method: 'GET', endpoint: '/api/v1/performance', description: 'Get performance metrics' },
+  { method: 'POST', endpoint: '/api/v1/start', description: 'Start trading' },
+  { method: 'POST', endpoint: '/api/v1/stop', description: 'Stop trading' },
+  { method: 'POST', endpoint: '/api/v1/forcebuy', description: 'Force buy' },
+  { method: 'POST', endpoint: '/api/v1/forcesell', description: 'Force sell' },
+  { method: 'GET', endpoint: '/api/v1/logs', description: 'Get logs' }
 ]
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
 .freqtrade-demo {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+  min-height: 100vh;
+  padding: var(--spacing-6);
+  background: var(--bg-primary);
+  position: relative;
 }
 
-.demo-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px);
+}
+
+.page-header {
   text-align: center;
-  margin-bottom: 30px;
-}
+  margin-bottom: var(--spacing-8);
+  position: relative;
+  z-index: 1;
 
-.demo-header h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-  color: #409eff;
-}
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
+  }
 
-.subtitle {
-  color: #666;
-  font-size: 14px;
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+
+  .decorative-line {
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    margin: var(--spacing-5) auto 0;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+    }
+  }
 }
 
 .function-nav {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-6);
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
-.demo-card {
-  margin-bottom: 20px;
+.main-card {
+  position: relative;
+  z-index: 1;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  font-weight: bold;
+  margin-bottom: var(--spacing-5);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h4);
+    color: var(--fg-primary);
+    margin: 0;
+  }
 }
 
 .content-section {
-  padding: 10px 0;
+  padding: var(--spacing-2) 0;
   line-height: 1.8;
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h5);
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin-bottom: var(--spacing-4);
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-body);
+    color: var(--fg-primary);
+    margin-bottom: var(--spacing-3);
+  }
+
+  h5 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    margin-bottom: var(--spacing-2);
+  }
+
+  p {
+    color: var(--fg-secondary);
+    margin: var(--spacing-3) 0;
+  }
+
+  ul {
+    padding-left: var(--spacing-6);
+    margin: var(--spacing-3) 0;
+
+    li {
+      margin: var(--spacing-2) 0;
+      color: var(--fg-secondary);
+    }
+  }
 }
 
-.content-section h3 {
-  color: #409eff;
-  margin-bottom: 15px;
-  font-size: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
 }
 
-.content-section h4 {
-  color: #606266;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
+.feature-card {
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: var(--spacing-5);
+  border-radius: 0;
 
-.content-section h5 {
-  color: #909399;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
+  h4 {
+    font-family: var(--font-display);
+    color: var(--accent-gold);
+    margin-bottom: var(--spacing-4);
+  }
 
-.content-section ul {
-  padding-left: 25px;
-  margin: 10px 0;
-}
+  ul {
+    margin: 0;
 
-.content-section ul li {
-  margin: 5px 0;
-}
-
-.content-section p {
-  margin: 10px 0;
-  color: #606266;
-}
-
-.code-block {
-  background: #f5f7fa;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  padding: 15px;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-x: auto;
-  white-space: pre;
-  color: #303133;
+    li {
+      font-size: var(--font-size-small);
+    }
+  }
 }
 
 .exchange-list {
-  margin-top: 15px;
-  padding: 15px;
-  background: #f5f7fa;
-  border-radius: 4px;
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-5);
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
 }
 
-.el-card {
-  margin-bottom: 15px;
+.tabs {
+  margin-top: var(--spacing-5);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.02);
 }
 
-:deep(.el-card__body) {
-  padding: 15px;
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.05);
 }
 
-:deep(.el-steps) {
-  padding: 0;
+.tab-btn {
+  padding: var(--spacing-3) var(--spacing-5);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--fg-muted);
+  font-family: var(--font-display);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.05);
+  }
+
+  &.active {
+    color: var(--bg-primary);
+    background: var(--accent-gold);
+  }
 }
 
-:deep(.el-alert__title) {
+.tab-content {
+  padding: var(--spacing-5);
+}
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--spacing-8) 0;
+  flex-wrap: wrap;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--accent-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h5);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-3);
+  background: transparent;
+}
+
+.step-content {
+  max-width: 140px;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-small);
+  color: var(--fg-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-1);
+}
+
+.step-desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  color: var(--fg-muted);
+}
+
+.step-connector {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-gold), transparent);
+  margin: 0 var(--spacing-4);
+  margin-bottom: 40px;
+}
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-5);
+}
+
+.indicator-group {
+  h5 {
+    color: var(--accent-gold);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--spacing-5);
+
+    li {
+      font-size: var(--font-size-small);
+    }
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--accent-gold);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 2px solid var(--accent-gold);
+    text-align: left;
+  }
+
+  td {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--fg-secondary);
+  }
+
+  tr:hover td {
+    background: rgba(212, 175, 55, 0.03);
+  }
+
+  .metric-name {
+    font-family: var(--font-mono);
+    color: var(--accent-gold);
+  }
+
+  .metric-target {
+    font-family: var(--font-mono);
+    color: var(--color-up);
+  }
+
+  .param-name {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    color: var(--accent-gold);
+  }
+
+  .method-badge {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 4px 8px;
+    text-align: center;
+  }
+
+  .endpoint-path {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    color: var(--fg-primary);
+  }
+}
+
+  border-left: 2px solid rgba(212, 175, 55, 0.3);
+  padding-left: var(--spacing-6);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: var(--spacing-6);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timeline-marker {
+  position: absolute;
+  left: calc(var(--spacing-6) * -1 - 11px);
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.timeline-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  color: var(--fg-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-2);
+}
+
+.timeline-desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+  padding: var(--spacing-4);
+  border: 1px solid;
+
+  .alert-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin-bottom: var(--spacing-2);
+  }
+}
+
+  background: rgba(74, 144, 226, 0.1);
+  border-color: rgba(74, 144, 226, 0.4);
+
+  .alert-title {
+    color: #4A90E2;
+  }
+}
+
+  background: rgba(230, 126, 34, 0.1);
+  border-color: rgba(230, 126, 34, 0.4);
+
+  .alert-title {
+    color: #E67E22;
+  }
+}
+
+  color: var(--accent-gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-gold);
+
+  &:hover {
+    color: var(--accent-gold-light);
+  }
+}
+
+.code-block {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 0;
+  padding: var(--spacing-4);
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: var(--font-size-small);
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--fg-primary);
+}
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-5);
+  font-family: var(--font-display);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  border: 2px solid var(--accent-gold);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+
+  &:hover {
+    background: var(--accent-gold-light);
+    box-shadow: var(--glow-medium);
+  }
+}
+
+  background: transparent;
+  color: var(--accent-gold);
+
+  &:hover {
+    background: rgba(212, 175, 55, 0.1);
+    box-shadow: var(--glow-subtle);
+  }
+}
+
+.tab-icon {
   font-size: 14px;
-  font-weight: bold;
 }
 
-:deep(.el-timeline-item__timestamp) {
-  font-weight: bold;
-  color: #409eff;
+.tab-label {
+  font-size: var(--font-size-small);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  border-radius: 0;
+}
+
+.badge-success {
+  background: rgba(39, 174, 96, 0.15);
+  color: #27AE60;
+  border: 1px solid #27AE60;
+}
+
+.badge-warning {
+  background: rgba(230, 126, 34, 0.15);
+  color: #E67E22;
+  border: 1px solid #E67E22;
+}
+
+.badge-info {
+  background: rgba(74, 144, 226, 0.15);
+  color: #4A90E2;
+  border: 1px solid #4A90E2;
+}
+
+@media (max-width: 768px) {
+  .freqtrade-demo {
+    padding: var(--spacing-4);
+  }
+
+    grid-template-columns: 1fr;
+  }
+
+    grid-template-columns: 1fr;
+  }
+
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .step-connector {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(180deg, var(--accent-gold), transparent);
+    margin: 0;
+  }
+
+  .function-nav {
+    flex-direction: column;
+
+      width: 100%;
+    }
+  }
 }
 </style>

@@ -1,23 +1,40 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MyStocks 沪深市场A股实时数据保存系统 - 使用efinance和自动路由
-通过customer_adapter统一管理efinance数据获取，按自动路由保存到PostgreSQL
+MyStocks 沪深市场A股实时数据保存系统 - Saga事务版
+通过customer_adapter统一管理efinance数据获取，按自动路由保存到PostgreSQL + TDengine
+支持跨库分布式事务保证数据一致性
 
 执行说明：
+# 使用Saga事务（默认）
 python run_realtime_market_saver.py [--interval 60] [--count 1]
+
+# 禁用Saga，使用传统模式
+python run_realtime_market_saver.py --no-saga
+
+# 仅测试适配器
+python run_realtime_market_saver.py --test-adapter
 
 作者: MyStocks项目组
 日期: 2025-09-24
+更新: 2026-01-03 (Saga事务集成)
 """
 
 import time
 import argparse
 import logging
+import sys
+import os
+from datetime import datetime
+
+# 添加项目根目录到 Python 路径
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 # 导入MyStocks核心模块
-from src.core import DataClassification, DataManager
-from unified_manager import MyStocksUnifiedManager
+from src.core.data_classification import DataClassification
+from src.core.data_manager import DataManager
+from src.unified_manager import MyStocksUnifiedManager
 
 # 导入改进的customer适配器
 from src.adapters.customer_adapter import CustomerDataSource
@@ -34,6 +51,39 @@ def setup_logging():
         ],
     )
     return logging.getLogger(__name__)
+
+
+def create_metadata_callback(timestamp: str):
+    """
+    创建元数据更新回调函数（用于Saga事务）
+
+    Args:
+        timestamp: 时间戳字符串
+
+    Returns:
+        Callable: 元数据更新回调函数
+    """
+    def metadata_update_func(pg_session):
+        """
+        更新PostgreSQL中的实时行情元数据表
+
+        Args:
+            pg_session: PostgreSQL session对象
+        """
+        try:
+            # 这里可以更新实时行情的元数据
+            logger.debug(f"更新实时行情元数据: timestamp={timestamp}")
+            # 实际SQL示例:
+            # pg_session.execute(
+            #     "UPDATE realtime_quotes_metadata SET last_update_time = NOW() "
+            #     "WHERE snapshot_time = :timestamp",
+            #     {"timestamp": timestamp}
+            # )
+        except Exception as e:
+            logger.error(f"更新元数据失败: {e}")
+            raise
+
+    return metadata_update_func
 
 
 def get_realtime_market_data_via_adapter():
@@ -65,8 +115,17 @@ def get_realtime_market_data_via_adapter():
         return None
 
 
-def save_to_auto_routing(data, manager):
-    """使用自动路由保存数据到合适的数据库"""
+def save_to_auto_routing(data, manager, use_saga=True):
+    """使用自动路由保存数据到合适的数据库（支持Saga事务）
+
+    Args:
+        data: 实时行情数据
+        manager: MyStocks统一管理器
+        use_saga: 是否使用Saga分布式事务（默认True）
+
+    Returns:
+        bool: 保存是否成功
+    """
     logger = logging.getLogger(__name__)
 
     try:
@@ -78,18 +137,40 @@ def save_to_auto_routing(data, manager):
         logger.info("🎯 使用自动路由保存数据")
         logger.info(f"📊 数据分类: {classification.value}")
         logger.info(f"📍 目标数据库: {target_db.value}")
+        logger.info(f"🔄 事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
 
-        # 使用统一管理器保存数据
-        success = manager.save_data_by_classification(
-            data=data,
-            classification=classification,
-            table_name="realtime_market_quotes",
-        )
+        # 获取当前时间戳作为元数据
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        if success:
-            logger.info(f"✅ 成功保存 {len(data)} 条实时行情数据到 {target_db.value}")
+        if use_saga:
+            # 创建元数据回调函数
+            metadata_callback = create_metadata_callback(timestamp)
+
+            # 使用Saga事务保存数据
+            success = manager.save_data_by_classification(
+                data=data,
+                classification=classification,
+                table_name="realtime_market_quotes",
+                use_saga=True,
+                metadata_callback=metadata_callback
+            )
+
+            if success:
+                logger.info(f"✅ Saga事务成功: {len(data)} 条实时行情数据到 {target_db.value}")
+            else:
+                logger.warning("⚠️ Saga事务失败，已触发补偿机制")
         else:
-            logger.error("❌ 保存实时行情数据失败")
+            # 传统模式（不使用Saga）
+            success = manager.save_data_by_classification(
+                data=data,
+                classification=classification,
+                table_name="realtime_market_quotes",
+            )
+
+            if success:
+                logger.info(f"✅ 成功保存 {len(data)} 条实时行情数据到 {target_db.value}")
+            else:
+                logger.error("❌ 保存实时行情数据失败")
 
         return success
 
@@ -98,8 +179,15 @@ def save_to_auto_routing(data, manager):
         return False
 
 
-def run_single_fetch_and_save():
-    """执行单次数据获取和保存"""
+def run_single_fetch_and_save(use_saga=True):
+    """执行单次数据获取和保存（支持Saga事务）
+
+    Args:
+        use_saga: 是否使用Saga分布式事务（默认True）
+
+    Returns:
+        bool: 执行是否成功
+    """
     logger = logging.getLogger(__name__)
 
     try:
@@ -112,7 +200,7 @@ def run_single_fetch_and_save():
 
         if data is not None:
             # 保存数据
-            success = save_to_auto_routing(data, manager)
+            success = save_to_auto_routing(data, manager, use_saga=use_saga)
             return success
         else:
             logger.error("❌ 未能获取到数据，跳过保存")
@@ -159,6 +247,10 @@ def main():
         "--test-adapter", action="store_true", help="仅测试customer_adapter是否正常工作"
     )
 
+    parser.add_argument(
+        "--no-saga", action="store_true", help="禁用Saga事务，使用传统模式"
+    )
+
     args = parser.parse_args()
 
     # 设置日志
@@ -168,6 +260,7 @@ def main():
     print(f"  - 获取间隔: {args.interval}秒")
     print(f"  - 运行次数: {'持续运行' if args.count == -1 else f'{args.count}次'}")
     print(f"  - 测试模式: {'是' if args.test_adapter else '否'}")
+    print(f"  - 事务模式: {'传统事务' if args.no_saga else 'Saga分布式事务'}")
     print("=" * 70)
 
     # 如果是测试模式
@@ -185,14 +278,16 @@ def main():
     # 正常运行模式
     run_count = 0
     success_count = 0
+    use_saga = not args.no_saga  # 根据 --no-saga 参数决定是否使用 Saga
 
     try:
         while args.count == -1 or run_count < args.count:
             run_count += 1
 
             logger.info(f"🚀 开始第 {run_count} 次数据获取和保存...")
+            logger.info(f"🔄 事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
 
-            success = run_single_fetch_and_save()
+            success = run_single_fetch_and_save(use_saga=use_saga)
 
             if success:
                 success_count += 1
@@ -221,6 +316,7 @@ def main():
             if run_count > 0
             else "  - 成功率: N/A"
         )
+        print(f"  - 事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
         print("=" * 70)
         logger.info("🏁 程序执行完毕")
 

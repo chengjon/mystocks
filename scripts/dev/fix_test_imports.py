@@ -13,7 +13,6 @@
 用途: Task 1.3 - 批量修复测试导入路径
 """
 
-import os
 import re
 from pathlib import Path
 from typing import List, Tuple
@@ -102,7 +101,7 @@ def fix_imports_in_file(file_path: Path, dry_run: bool = False) -> Tuple[int, in
 
         return replacements_count, 0
 
-    except Exception as e:
+    except Exception:
         return 0, 1
 
 

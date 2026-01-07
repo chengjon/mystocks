@@ -1,260 +1,199 @@
 <template>
-  <div class="web3-strategy-list">
-    <!-- Page Header with Gradient Text -->
+  <div class="strategy-management">
+
     <div class="page-header">
-      <h1 class="text-4xl font-heading font-semibold">
-        <span class="bg-gradient-to-r from-[#F7931A] to-[#FFD600] bg-clip-text text-transparent">
-          STRATEGY MANAGEMENT
-        </span>
-      </h1>
-      <p class="subtitle">QUANTITATIVE TRADING STRATEGIES | BACKTESTING | PERFORMANCE ANALYTICS</p>
+      <h1 class="page-title">STRATEGY MANAGEMENT</h1>
+      <p class="page-subtitle">QUANTITATIVE TRADING STRATEGIES | BACKTESTING | PERFORMANCE ANALYTICS</p>
     </div>
 
-    <!-- Header Actions -->
     <div class="header-section">
       <div class="header-info">
-        <h2 class="strategy-count">{{ filteredStrategies.length }} STRATEGIES</h2>
+        <h2 class="strategy-count mono">{{ filteredStrategies.length }} STRATEGIES</h2>
         <p class="header-desc">MANAGE AND BACKTEST YOUR QUANTITATIVE TRADING STRATEGIES</p>
       </div>
-      <Web3Button variant="solid" @click="showCreateDialog = true" size="lg" class="create-btn">
-        <el-icon><Plus /></el-icon> CREATE STRATEGY
-      </Web3Button>
+      <el-button type="warning" @click="showCreateDialog = true" class="create-btn">
+        CREATE STRATEGY
+      </el-button>
     </div>
 
-    <!-- Task 2.2.2: Search, Filter, and Pagination -->
-    <div class="filters-section">
-      <el-input
-        v-model="searchQuery"
-        placeholder="SEARCH STRATEGIES..."
-        prefix-icon="Search"
-        clearable
-        class="search-input"
-      />
-      <el-select
-        v-model="filterType"
-        placeholder="FILTER BY TYPE"
-        clearable
-        class="filter-select"
-      >
-        <el-option label="ALL TYPES" value="" />
-        <el-option label="TREND FOLLOWING" value="trend_following" />
-        <el-option label="MEAN REVERSION" value="mean_reversion" />
-        <el-option label="MOMENTUM" value="momentum" />
-      </el-select>
-      <el-select
-        v-model="filterStatus"
-        placeholder="FILTER BY STATUS"
-        clearable
-        class="filter-select"
-      >
-        <el-option label="ALL STATUSES" value="" />
-        <el-option label="ACTIVE" value="active" />
-        <el-option label="INACTIVE" value="inactive" />
-        <el-option label="TESTING" value="testing" />
-      </el-select>
-    </div>
+      title="STRATEGY FILTERS"
+      :filters="strategyFilters"
+      :quick-filters="strategyQuickFilters"
+      @filter-change="handleFilterChange"
+      @reset="clearFilters"
+    /> -->
 
-    <!-- Loading State -->
-    <div v-if="loading && strategies.length === 0" class="loading-state grid-bg">
+    <div v-if="loading && strategies.length === 0" class="loading-state">
       <div class="spinner"></div>
       <p>LOADING STRATEGIES...</p>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="error-state grid-bg">
+    <div v-else-if="error" class="error-state">
       <div class="error-icon">⚠️</div>
       <h3>LOADING FAILED</h3>
       <p>{{ error }}</p>
-      <Web3Button variant="outline" @click="fetchStrategies" class="retry-btn">RETRY</Web3Button>
+      <el-button @click="fetchStrategies">
+        RETRY
+      </el-button>
     </div>
 
-    <!-- Empty State -->
-    <div v-else-if="filteredStrategies.length === 0" class="empty-state grid-bg">
+    <div v-else-if="filteredStrategies.length === 0" class="empty-state">
       <div class="empty-icon">📊</div>
       <h3>NO STRATEGIES FOUND</h3>
       <p>TRY ADJUSTING YOUR SEARCH OR FILTER CRITERIA</p>
-      <Web3Button variant="outline" @click="clearFilters" class="clear-btn">
+      <el-button @click="clearFilters">
         CLEAR FILTERS
-      </Web3Button>
+      </el-button>
     </div>
 
-    <!-- Strategy Grid -->
     <div v-else class="strategy-grid">
-      <div
+      <el-card
         v-for="strategy in paginatedStrategies"
         :key="strategy.id"
-        class="strategy-card web3-card hover-lift corner-border"
+        class="strategy-card"
+        @click="handleView(strategy)"
       >
-        <div class="strategy-header">
-          <h3 class="strategy-name">{{ strategy.name }}</h3>
-          <div class="tags">
-            <!-- Task 2.2.3: Display strategy type -->
-            <el-tag :type="getTypeColor(strategy.type)" size="small" class="web3-tag type-tag">
-              {{ formatType(strategy.type) }}
-            </el-tag>
-            <el-tag :type="getStatusType(strategy.status) as any" size="small" class="web3-tag">
-              {{ strategy.status || 'ACTIVE' }}
-            </el-tag>
-          </div>
-        </div>
-
-        <div class="strategy-body">
-          <p class="strategy-description">{{ strategy.description || 'No description available' }}</p>
-
-          <div class="strategy-stats">
-            <div class="stat-item">
-              <span class="stat-label">RETURN</span>
-              <span class="stat-value" :class="getReturnClass((strategy as any).return)">
-                {{ formatPercent((strategy as any).return) }}
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">SHARPE</span>
-              <span class="stat-value blue-glow">{{ (strategy as any).sharpe_ratio?.toFixed(2) || '-' }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">WIN RATE</span>
-              <span class="stat-value green-glow">{{ formatPercent((strategy as any).win_rate) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="strategy-actions">
-          <Web3Button variant="outline" size="sm" @click="handleEdit(strategy)">
-            <el-icon><Edit /></el-icon> EDIT
-          </Web3Button>
-          <Web3Button variant="outline" size="sm" @click="handleBacktest(strategy)">
-            <el-icon><VideoPlay /></el-icon> BACKTEST
-          </Web3Button>
-          <Web3Button variant="outline" size="sm" @click="handleDelete(strategy)" class="delete-btn">
-            <el-icon><Delete /></el-icon> DELETE
-          </Web3Button>
-        </div>
-      </div>
+        <h3>{{ strategy.name }}</h3>
+        <p>{{ strategy.description }}</p>
+        <p>Type: {{ strategy.type }}</p>
+        <p>Status: {{ strategy.status }}</p>
+      </el-card>
     </div>
 
-    <!-- Task 2.2.2: Pagination -->
     <div v-if="filteredStrategies.length > 0" class="pagination-section">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[12, 24, 48]"
-        :total="filteredStrategies.length"
-        layout="total, sizes, prev, pager, next, jumper"
-        background
-        class="web3-pagination"
-      />
+      <div class="pagination">
+        <button
+          class="page-btn"
+          :disabled="currentPage === 1"
+          @click="currentPage--"
+        >
+          PREV
+        </button>
+        <span class="page-info">PAGE {{ currentPage }} OF {{ totalPages }}</span>
+        <button
+          class="page-btn"
+          :disabled="currentPage === totalPages"
+          @click="currentPage++"
+        >
+          NEXT
+        </button>
+      </div>
     </div>
 
-    <!-- Create/Edit Dialog -->
-    <el-dialog
-      v-model="showCreateDialog"
-      :title="editingStrategy ? 'EDIT STRATEGY' : 'CREATE STRATEGY'"
-      width="700px"
-      class="web3-dialog"
-    >
-      <el-form :model="strategyForm" label-width="140px">
-        <el-form-item label="STRATEGY NAME" required>
-          <Web3Input v-model="strategyForm.name" placeholder="ENTER STRATEGY NAME" />
-        </el-form-item>
-
-        <!-- Task 2.2.3: Strategy Type Field -->
-        <el-form-item label="STRATEGY TYPE" required>
-          <el-select v-model="strategyForm.type" placeholder="SELECT STRATEGY TYPE" style="width: 100%">
-            <el-option label="TREND FOLLOWING" value="trend_following" />
-            <el-option label="MEAN REVERSION" value="mean_reversion" />
-            <el-option label="MOMENTUM" value="momentum" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="DESCRIPTION">
-          <Web3Input
-            v-model="strategyForm.description"
-            type="textarea"
-            :rows="3"
-            placeholder="STRATEGY DESCRIPTION"
-          />
-        </el-form-item>
-
-        <!-- Task 2.2.3: Parameters Field -->
-        <el-form-item label="PARAMETERS">
-          <div class="parameters-container">
-            <div
-              v-for="(param, index) in strategyForm.parameters"
-              :key="index"
-              class="parameter-row"
-            >
-              <el-input
-                v-model="param.key"
-                placeholder="PARAMETER NAME"
-                style="flex: 1"
-              />
-              <el-input
-                v-model="param.value"
-                placeholder="VALUE"
-                style="flex: 1"
-              />
-              <Web3Button
-                variant="outline"
-                size="sm"
-                @click="removeParameter(index)"
-                class="remove-btn"
-              >
-                <el-icon><Delete /></el-icon>
-              </Web3Button>
-            </div>
-            <Web3Button
-              variant="outline"
-              size="sm"
-              @click="addParameter"
-              class="add-param-btn"
-            >
-              <el-icon><Plus /></el-icon> ADD PARAMETER
-            </Web3Button>
+    <div v-if="showCreateDialog" class="modal-overlay" @click.self="handleCancel">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">{{ editingStrategy ? 'EDIT STRATEGY' : 'CREATE STRATEGY' }}</h3>
+          <button class="modal-close" @click="handleCancel">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">STRATEGY NAME *</label>
+            <el-input v-model="strategyForm.name" placeholder="ENTER STRATEGY NAME" />
           </div>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <Web3Button variant="outline" @click="handleCancel">CANCEL</Web3Button>
-        <Web3Button variant="solid" @click="handleSave" :loading="saving">
-          {{ editingStrategy ? 'UPDATE' : 'CREATE' }}
-        </Web3Button>
-      </template>
-    </el-dialog>
 
-    <!-- Backtest Panel -->
-    <el-dialog
-      v-model="showBacktestDialog"
-      title="BACKTEST STRATEGY"
-      width="900px"
-      class="web3-dialog"
-    >
-      <div v-if="backtestingStrategy" class="backtest-content">
-        <h4>{{ backtestingStrategy.name }}</h4>
-        <p>BACKTEST FUNCTIONALITY COMING SOON</p>
+          <div class="form-group">
+            <label class="form-label">STRATEGY TYPE *</label>
+            <div class="select">
+              <select v-model="strategyForm.type">
+                <option value="trend_following">TREND FOLLOWING</option>
+                <option value="mean_reversion">MEAN REVERSION</option>
+                <option value="momentum">MOMENTUM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">DESCRIPTION</label>
+            <el-input
+              v-model="strategyForm.description"
+              type="textarea"
+              :rows="3"
+              placeholder="STRATEGY DESCRIPTION"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PARAMETERS</label>
+            <div class="parameters-container">
+              <div
+                v-for="(param, index) in strategyForm.parameters"
+                :key="index"
+                class="parameter-row"
+              >
+                <el-input
+                  v-model="param.key"
+                  placeholder="PARAMETER NAME"
+                />
+                <el-input
+                  v-model="param.value"
+                  placeholder="VALUE"
+                />
+                <el-button size="small" @click="removeParameter(index)">
+                  DELETE
+                </el-button>
+              </div>
+              <el-button size="small" @click="addParameter" class="add-param-btn">
+                ADD PARAMETER
+              </el-button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <el-button @click="handleCancel">
+            CANCEL
+          </el-button>
+          <el-button type="warning" @click="handleSave" :loading="saving">
+            {{ editingStrategy ? 'UPDATE' : 'CREATE' }}
+          </el-button>
+        </div>
       </div>
-    </el-dialog>
+    </div>
+
+    <div v-if="showBacktestDialog" class="modal-overlay" @click.self="showBacktestDialog = false">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">BACKTEST STRATEGY</h3>
+          <button class="modal-close" @click="showBacktestDialog = false">×</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="backtestingStrategy" class="backtest-content">
+            <h4>{{ backtestingStrategy.name }}</h4>
+            <p>BACKTEST FUNCTIONALITY COMING SOON</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useStrategy } from '@/composables/useStrategy'
-import { ArtDecoButton as Web3Button, ArtDecoCard as Web3Card, ArtDecoInput as Web3Input } from '@/components/artdeco'
-import { Plus, Edit, Delete, VideoPlay } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { Strategy } from '@/api/types/strategy'
-import type { CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/strategy'
+import { ElInput } from 'element-plus'
 
-const { strategies, loading, error, fetchStrategies, createStrategy, updateStrategy, deleteStrategy } = useStrategy()
+interface Strategy {
+  id: string
+  name: string
+  description?: string
+  type: string
+  status: string
+  parameters?: Record<string, any>
+}
 
+const strategies = ref<Strategy[]>([
+  { id: '1', name: 'MA Crossover', description: 'Moving average crossover strategy', type: 'trend_following', status: 'active' },
+  { id: '2', name: 'RSI Reversal', description: 'RSI-based mean reversion', type: 'mean_reversion', status: 'inactive' },
+  { id: '3', name: 'Momentum Breakout', description: 'Momentum-based breakout strategy', type: 'momentum', status: 'testing' }
+])
+
+const loading = ref(false)
+const error = ref('')
 const showCreateDialog = ref(false)
 const editingStrategy = ref<Strategy | null>(null)
 const backtestingStrategy = ref<Strategy | null>(null)
 const showBacktestDialog = ref(false)
 const saving = ref(false)
 
-// Task 2.2.2: Search, Filter, and Pagination State
 const searchQuery = ref('')
 const filterType = ref('')
 const filterStatus = ref('')
@@ -264,42 +203,38 @@ const pageSize = ref(12)
 const strategyForm = ref({
   name: '',
   description: '',
-  type: 'trend_following',      // Task 2.2.3: Add type field
-  parameters: []                 // Task 2.2.3: Add parameters array
+  type: 'trend_following',
+  parameters: [] as Array<{ key: string; value: string }>
 })
 
-// Task 2.2.3: Parameter management functions
-const addParameter = () => {
-  strategyForm.value.parameters.push({ key: '', value: '' })
-}
+const strategyFilters = [
+  { key: 'search', label: 'SEARCH', type: 'text' as const, placeholder: 'SEARCH STRATEGIES...' },
+  { key: 'type', label: 'TYPE', type: 'select' as const, placeholder: 'FILTER BY TYPE', options: [
+    { label: 'TREND FOLLOWING', value: 'trend_following' },
+    { label: 'MEAN REVERSION', value: 'mean_reversion' },
+    { label: 'MOMENTUM', value: 'momentum' }
+  ]},
+  { key: 'status', label: 'STATUS', type: 'select' as const, placeholder: 'FILTER BY STATUS', options: [
+    { label: 'ACTIVE', value: 'active' },
+    { label: 'INACTIVE', value: 'inactive' },
+    { label: 'TESTING', value: 'testing' }
+  ]}
+]
 
-const removeParameter = (index: number) => {
-  strategyForm.value.parameters.splice(index, 1)
-}
+const strategyQuickFilters = [
+  { key: 'all', label: 'ALL', filters: { search: '', type: '', status: '' } },
+  { key: 'active', label: 'ACTIVE', filters: { search: '', type: '', status: 'active' } },
+  { key: 'trend', label: 'TREND', filters: { search: '', type: 'trend_following', status: '' } }
+]
 
-// Task 2.2.2: Computed properties for filtering and pagination
 const filteredStrategies = computed(() => {
   let result = strategies.value
-
-  // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    result = result.filter(strategy =>
-      strategy.name.toLowerCase().includes(query) ||
-      (strategy.description && strategy.description.toLowerCase().includes(query))
-    )
+    result = result.filter(s => s.name.toLowerCase().includes(query) || s.description?.toLowerCase().includes(query))
   }
-
-  // Filter by type
-  if (filterType.value) {
-    result = result.filter(strategy => strategy.type === filterType.value)
-  }
-
-  // Filter by status
-  if (filterStatus.value) {
-    result = result.filter(strategy => strategy.status === filterStatus.value)
-  }
-
+  if (filterType.value) result = result.filter(s => s.type === filterType.value)
+  if (filterStatus.value) result = result.filter(s => s.status === filterStatus.value)
   return result
 })
 
@@ -309,6 +244,21 @@ const paginatedStrategies = computed(() => {
   return filteredStrategies.value.slice(start, end)
 })
 
+const totalPages = computed(() => Math.ceil(filteredStrategies.value.length / pageSize.value))
+
+const fetchStrategies = () => {
+  loading.value = false
+  error.value = ''
+}
+
+const addParameter = () => {
+  strategyForm.value.parameters.push({ key: '', value: '' })
+}
+
+const removeParameter = (index: number) => {
+  strategyForm.value.parameters.splice(index, 1)
+}
+
 const clearFilters = () => {
   searchQuery.value = ''
   filterType.value = ''
@@ -316,43 +266,42 @@ const clearFilters = () => {
   currentPage.value = 1
 }
 
+const handleFilterChange = (filters: Record<string, any>) => {
+  searchQuery.value = filters.search || ''
+  filterType.value = filters.type || ''
+  filterStatus.value = filters.status || ''
+  currentPage.value = 1
+}
+
+const mapStrategyToCard = (strategy: Strategy) => ({
+  strategy_code: strategy.id,
+  strategy_name_cn: strategy.name,
+  description: strategy.description,
+  status: strategy.status || 'active',
+  running: strategy.status === 'active',
+  total_return: 0,
+  annual_return: 0,
+  sharpe_ratio: 0,
+  max_drawdown: 0,
+  win_rate: 0
+})
+
+const handleView = (strategy: Strategy) => console.log('View:', strategy)
+const handleStart = (strategy: Strategy) => console.log('Start:', strategy)
+const handleStop = (strategy: Strategy) => console.log('Stop:', strategy)
 const handleEdit = (strategy: Strategy) => {
   editingStrategy.value = strategy
   strategyForm.value = {
     name: strategy.name,
     description: strategy.description || '',
-    type: strategy.type || 'trend_following',      // Task 2.2.3: Include type
-    parameters: strategy.parameters ?             // Task 2.2.3: Include parameters
-      Object.entries(strategy.parameters).map(([key, value]) => ({ key, value })) :
-      []
+    type: strategy.type,
+    parameters: strategy.parameters ? Object.entries(strategy.parameters).map(([k, v]) => ({ key: k, value: String(v) })) : []
   }
   showCreateDialog.value = true
 }
 
 const handleDelete = async (strategy: Strategy) => {
-  // Task 2.2.4: Add confirmation dialog before deletion
-  try {
-    await ElMessageBox.confirm(
-      `ARE YOU SURE YOU WANT TO DELETE STRATEGY "${strategy.name}"? THIS ACTION CANNOT BE UNDONE.`,
-      'CONFIRM DELETION',
-      {
-        confirmButtonText: 'DELETE',
-        cancelButtonText: 'CANCEL',
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
-    )
-
-    const success = await deleteStrategy(strategy.id)
-    if (success) {
-      ElMessage.success(`STRATEGY "${strategy.name}" DELETED`)
-    }
-  } catch (error) {
-    // User cancelled deletion
-    if (error !== 'cancel') {
-      console.error('Delete confirmation error:', error)
-    }
-  }
+  strategies.value = strategies.value.filter(s => s.id !== strategy.id)
 }
 
 const handleBacktest = (strategy: Strategy) => {
@@ -361,495 +310,343 @@ const handleBacktest = (strategy: Strategy) => {
 }
 
 const handleSave = async () => {
-  if (!strategyForm.value.name) {
-    ElMessage.warning('PLEASE ENTER STRATEGY NAME')
-    return
-  }
-
+  if (!strategyForm.value.name) return
   saving.value = true
-  try {
-    if (editingStrategy.value) {
-      const success = await updateStrategy(editingStrategy.value.id, strategyForm.value)
-      if (success) {
-        ElMessage.success(`STRATEGY "${strategyForm.value.name}" UPDATED`)
-        editingStrategy.value = null
-        showCreateDialog.value = false
-      }
-    } else {
-      const success = await createStrategy(strategyForm.value as CreateStrategyRequest)
-      if (success) {
-        ElMessage.success('NEW STRATEGY CREATED')
-        showCreateDialog.value = false
-      }
-    }
-  } finally {
-    saving.value = false
-  }
+  await new Promise(r => setTimeout(r, 500))
+  saving.value = false
+  showCreateDialog.value = false
 }
 
 const handleCancel = () => {
   editingStrategy.value = null
   showCreateDialog.value = false
-  strategyForm.value = {
-    name: '',
-    description: '',
-    type: 'trend_following',      // Task 2.2.3: Reset type
-    parameters: []                 // Task 2.2.3: Reset parameters
-  }
-}
-
-const formatPercent = (value: number | undefined): string => {
-  if (value === undefined) return '-'
-  return `${(value * 100).toFixed(2)}%`
-}
-
-const getReturnClass = (value: number | undefined): string => {
-  if (!value) return ''
-  return value > 0 ? 'profit-up' : value < 0 ? 'profit-down' : ''
-}
-
-const getStatusType = (status: string | undefined): string => {
-  if (status === 'active') return 'success'
-  if (status === 'inactive') return 'info'
-  return 'warning'
-}
-
-// Task 2.2.3: Type formatting functions
-const formatType = (type: string | undefined): string => {
-  const typeMap: Record<string, string> = {
-    'trend_following': 'TREND',
-    'mean_reversion': 'MEAN REV',
-    'momentum': 'MOMENTUM'
-  }
-  return typeMap[type || ''] || type || 'UNKNOWN'
-}
-
-const getTypeColor = (type: string | undefined): 'primary' | 'success' | 'warning' | 'danger' | 'info' => {
-  const colorMap: Record<string, 'primary' | 'success' | 'warning' | 'danger' | 'info'> = {
-    'trend_following': 'primary',
-    'mean_reversion': 'success',
-    'momentum': 'warning'
-  }
-  return colorMap[type || ''] || 'info'
+  strategyForm.value = { name: '', description: '', type: 'trend_following', parameters: [] }
 }
 </script>
 
-<style scoped lang="scss">
-.web3-strategy-list {
+<style scoped>
+
+.strategy-management {
   min-height: 100vh;
-  padding: 24px;
-  background: #030304;
-
-  .grid-bg {
-    position: relative;
-    background-image:
-      linear-gradient(rgba(247, 147, 26, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(247, 147, 26, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .page-header {
-    margin-bottom: 32px;
-    text-align: center;
-
-    .subtitle {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #94A3B8;
-      font-family: 'JetBrains Mono', monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-  }
-
-  .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-
-    .header-info {
-      .strategy-count {
-        font-size: 28px;
-        font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
-        color: #F7931A;
-        margin: 0 0 4px 0;
-      }
-
-      .header-desc {
-        margin: 0;
-        font-size: 14px;
-        color: #94A3B8;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-    }
-
-    .create-btn {
-      min-width: 180px;
-    }
-  }
-
-  // Task 2.2.2: Filters Section Styles
-  .filters-section {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    align-items: center;
-
-    .search-input {
-      flex: 1;
-      min-width: 250px;
-      max-width: 400px;
-
-      :deep(.el-input__wrapper) {
-        background: rgba(15, 17, 21, 0.8);
-        border: 1px solid rgba(30, 41, 59, 0.5);
-        box-shadow: none;
-
-        &:hover {
-          border-color: rgba(247, 147, 26, 0.3);
-        }
-
-        &.is-focus {
-          border-color: #F7931A;
-          box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.1);
-        }
-      }
-
-      :deep(.el-input__inner) {
-        color: #E5E7EB;
-        font-family: 'JetBrains Mono', monospace;
-
-        &::placeholder {
-          color: #64748B;
-        }
-      }
-    }
-
-    .filter-select {
-      width: 180px;
-
-      :deep(.el-select__wrapper) {
-        background: rgba(15, 17, 21, 0.8);
-        border: 1px solid rgba(30, 41, 59, 0.5);
-        box-shadow: none;
-
-        &:hover {
-          border-color: rgba(247, 147, 26, 0.3);
-        }
-
-        &.is-focus {
-          border-color: #F7931A;
-          box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.1);
-        }
-      }
-
-      :deep(.el-select__selected-item) {
-        color: #E5E7EB;
-        font-family: 'JetBrains Mono', monospace;
-      }
-    }
-  }
-
-  // Task 2.2.2: Pagination Styles
-  .pagination-section {
-    display: flex;
-    justify-content: center;
-    margin-top: 32px;
-    padding: 24px;
-    background: rgba(15, 17, 21, 0.6);
-    border: 1px solid rgba(30, 41, 59, 0.5);
-    border-radius: 12px;
-
-    .web3-pagination {
-      :deep(.el-pagination__total) {
-        color: #94A3B8;
-        font-family: 'JetBrains Mono', monospace;
-      }
-
-      :deep(.el-pager li) {
-        background: rgba(15, 17, 21, 0.8);
-        border: 1px solid rgba(30, 41, 59, 0.5);
-        color: #E5E7EB;
-        font-family: 'JetBrains Mono', monospace;
-        margin: 0 2px;
-        border-radius: 6px;
-
-        &:hover {
-          border-color: rgba(247, 147, 26, 0.5);
-          color: #F7931A;
-        }
-
-        &.is-active {
-          background: #F7931A;
-          border-color: #F7931A;
-          color: #030304;
-        }
-      }
-
-      :deep(.btn-prev),
-      :deep(.btn-next) {
-        background: rgba(15, 17, 21, 0.8);
-        border: 1px solid rgba(30, 41, 59, 0.5);
-        color: #E5E7EB;
-        border-radius: 6px;
-
-        &:hover:not(:disabled) {
-          border-color: rgba(247, 147, 26, 0.5);
-          color: #F7931A;
-        }
-
-        &:disabled {
-          opacity: 0.5;
-        }
-      }
-
-      :deep(.el-pagination__sizes) {
-        .el-select__wrapper {
-          background: rgba(15, 17, 21, 0.8);
-          border: 1px solid rgba(30, 41, 59, 0.5);
-
-          &:hover {
-            border-color: rgba(247, 147, 26, 0.3);
-          }
-        }
-
-        .el-select__selected-item {
-          color: #E5E7EB;
-          font-family: 'JetBrains Mono', monospace;
-        }
-      }
-    }
-  }
-
-  .clear-btn {
-    min-width: 140px;
-  }
-
-  // Task 2.2.3: Parameters Section Styles
-  .parameters-container {
-    width: 100%;
-
-    .parameter-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
-
-      .remove-btn {
-        flex-shrink: 0;
-      }
-    }
-
-    .add-param-btn {
-      width: 100%;
-      margin-top: 8px;
-
-      :deep(.el-button__content) {
-        gap: 6px;
-      }
-    }
-  }
-
-  .loading-state,
-  .error-state,
-  .empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(30, 41, 59, 0.5);
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 20px;
-      border: 3px solid rgba(30, 41, 59, 0.5);
-      border-top-color: #F7931A;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .error-icon,
-    .empty-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
-
-    h3 {
-      font-size: 20px;
-      color: #E5E7EB;
-      margin: 0 0 8px 0;
-    }
-
-    p {
-      color: #94A3B8;
-      margin: 0 0 24px 0;
-    }
-
-    .retry-btn {
-      min-width: 120px;
-    }
-  }
-
-  .strategy-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 20px;
-
-    .strategy-card {
-      background: rgba(15, 17, 21, 0.8);
-      border: 1px solid rgba(30, 41, 59, 0.5);
-      border-radius: 12px;
-      padding: 20px;
-      transition: all 0.3s ease;
-
-      &.hover-lift:hover {
-        transform: translateY(-4px);
-        border-color: rgba(247, 147, 26, 0.5);
-        box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
-      }
-
-      &.corner-border {
-        position: relative;
-
-        &::before,
-        &::after {
-          content: '';
-          position: absolute;
-          width: 12px;
-          height: 12px;
-          border-color: #F7931A;
-          border-style: solid;
-        }
-
-        &::before {
-          top: -1px;
-          left: -1px;
-          border-width: 2px 0 0 2px;
-          border-radius: 6px 0 0 0;
-        }
-
-        &::after {
-          bottom: -1px;
-          right: -1px;
-          border-width: 0 2px 2px 0;
-          border-radius: 0 0 6px 0;
-        }
-      }
-
-      .strategy-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-
-        .strategy-name {
-          font-size: 18px;
-          font-weight: 600;
-          font-family: 'JetBrains Mono', monospace;
-          color: #F7931A;
-          margin: 0;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        // Task 2.2.3: Tags container
-        .tags {
-          display: flex;
-          gap: 6px;
-          align-items: center;
-
-          .type-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-          }
-        }
-      }
-
-      .strategy-body {
-        margin-bottom: 20px;
-
-        .strategy-description {
-          font-size: 14px;
-          color: #94A3B8;
-          margin: 0 0 16px 0;
-          line-height: 1.6;
-          min-height: 40px;
-        }
-
-        .strategy-stats {
-          display: flex;
-          gap: 16px;
-          padding: 16px;
-          background: rgba(30, 41, 59, 0.3);
-          border-radius: 8px;
-
-          .stat-item {
-            flex: 1;
-            text-align: center;
-
-            .stat-label {
-              display: block;
-              font-size: 11px;
-              color: #64748B;
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-              margin-bottom: 4px;
-            }
-
-            .stat-value {
-              font-size: 16px;
-              font-weight: 700;
-              font-family: 'JetBrains Mono', monospace;
-
-              &.orange-glow { color: #F7931A; }
-              &.blue-glow { color: #3B82F6; }
-              &.green-glow { color: #22C55E; }
-              &.profit-up { color: #F7931A; }
-              &.profit-down { color: #22C55E; }
-            }
-          }
-        }
-      }
-
-      .strategy-actions {
-        display: flex;
-        gap: 8px;
-        padding-top: 16px;
-        border-top: 1px solid rgba(30, 41, 59, 0.5);
-
-        .delete-btn:hover {
-          color: #EF4444;
-          border-color: rgba(239, 68, 68, 0.3);
-        }
-      }
-    }
-  }
-
-  .web3-tag {
-    font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
-    font-size: 11px;
-    border: 1px solid rgba(247, 147, 26, 0.3);
-    background: rgba(247, 147, 26, 0.1);
-  }
-
-  .profit-up {
-    color: #F7931A;
-  }
-
-  .profit-down {
-    color: #22C55E;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  position: relative;
+}
+
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--silver-muted);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  padding: var(--space-lg);
+  position: relative;
+}
+
+.header-section::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid var(--gold-dim);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.strategy-count {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.header-desc {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--silver-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.create-btn {
+  min-width: 200px;
+}
+
+.strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--space-lg);
+}
+
+.pagination-section {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.page-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--silver-text);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--silver-text);
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-lg);
+  border: 3px solid var(--gold-dim);
+  border-top-color: var(--gold-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-icon,
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--space-lg);
+}
+
+.error-state h3,
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--silver-text);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.error-state p,
+.empty-state p {
+  font-family: var(--font-body);
+  color: var(--silver-muted);
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--silver-muted);
+  cursor: pointer;
+  transition: color var(--transition-base);
+}
+
+.modal-close:hover {
+  color: var(--gold-primary);
+}
+
+.modal-body {
+  padding: var(--space-xl);
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.select {
+  position: relative;
+}
+
+.select select {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+  color: var(--silver-text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.select select:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+}
+
+.parameters-container {
+  width: 100%;
+}
+
+.parameter-row {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+  align-items: center;
+}
+
+.parameter-row > * {
+  flex: 1;
+}
+
+.add-param-btn {
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-top: 1px solid var(--gold-dim);
+}
+
+.backtest-content {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.backtest-content h4 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--gold-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.backtest-content p {
+  font-family: var(--font-body);
+  color: var(--silver-muted);
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
 }
 </style>

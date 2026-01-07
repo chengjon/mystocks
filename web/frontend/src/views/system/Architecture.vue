@@ -1,240 +1,289 @@
 <template>
   <div class="architecture-container">
-    <!-- 页面标题 -->
+
     <div class="page-header">
-      <h1>系统架构概览</h1>
-      <el-tag type="success" size="large">Week 3 简化后 - 双数据库架构</el-tag>
+      <h1 class="page-title">系统架构概览</h1>
+      <div class="version-badge">WEEK 3 SIMPLIFICATION</div>
+      <div class="decorative-line"></div>
     </div>
 
-    <!-- 架构摘要卡片 -->
-    <el-card class="summary-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><Grid /></el-icon>
-          <span>架构简化成果</span>
-        </div>
-      </template>
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="6">
-          <div class="stat-box">
-            <div class="stat-value">4 → 2</div>
-            <div class="stat-label">数据库数量</div>
-            <el-tag type="success" size="small">简化 50%</el-tag>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6">
-          <div class="stat-box">
-            <div class="stat-value">299</div>
-            <div class="stat-label">MySQL迁移数据（行）</div>
-            <el-tag type="info" size="small">已完成</el-tag>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6">
-          <div class="stat-box">
-            <div class="stat-value">18</div>
-            <div class="stat-label">迁移表数量</div>
-            <el-tag type="info" size="small">已验证</el-tag>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6">
-          <div class="stat-box">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Redis清理完成</div>
-            <el-tag type="warning" size="small">已移除</el-tag>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
+    <div class="artde-card summary-card">
+      <div class="card-header">
+        <h2 class="section-title">架构简化成果</h2>
+      </div>
 
-    <!-- 数据库架构图 -->
-    <el-card class="architecture-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><DataBoard /></el-icon>
-          <span>双数据库架构</span>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-value">4 → 2</div>
+          <div class="stat-label">数据库数量</div>
+          <div class="stat-badge">简化50%</div>
         </div>
-      </template>
-      <el-row :gutter="30">
-        <!-- TDengine -->
-        <el-col :xs="24" :md="12">
-          <div class="database-box tdengine-box">
-            <div class="db-icon">
-              <el-icon :size="40"><DataLine /></el-icon>
-            </div>
+        <div class="stat-box">
+          <div class="stat-value">299</div>
+          <div class="stat-label">MySQL迁移数据（行）</div>
+          <div class="stat-badge info">已完成</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">18</div>
+          <div class="stat-label">迁移表数量</div>
+          <div class="stat-badge info">已验证</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Redis清理完成</div>
+          <div class="stat-badge warning">已移除</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="artde-card architecture-card">
+      <div class="card-header">
+        <h2 class="section-title">双数据库架构</h2>
+      </div>
+
+      <div class="databases-section">
+        <div class="database-box tdengine-box">
+          <div class="db-header">
             <h3>TDengine 3.3.x</h3>
             <div class="db-subtitle">高频时序数据专用库</div>
-            <el-divider />
-            <div class="db-details">
-              <div class="detail-item">
-                <el-icon><Timer /></el-icon>
-                <span>用途: Tick数据、分钟K线、实时深度</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><TrendCharts /></el-icon>
-                <span>压缩比: 20:1 极致压缩</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><DArrowRight /></el-icon>
-                <span>端口: 6030 (WebSocket), 6041 (REST)</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><Database /></el-icon>
-                <span>数据库: market_data</span>
-              </div>
-            </div>
-            <el-tag type="danger" effect="dark" class="db-tag">高频专用</el-tag>
+            <div class="db-tag danger">高频专用</div>
           </div>
-        </el-col>
-
-        <!-- PostgreSQL -->
-        <el-col :xs="24" :md="12">
-          <div class="database-box postgresql-box">
-            <div class="db-icon">
-              <el-icon :size="40"><Coin /></el-icon>
+          <div class="db-details">
+            <div class="detail-item">
+              <span class="detail-icon">⏱</span>
+              <span class="detail-text">用途: Tick数据、分钟K线、实时深度</span>
             </div>
+            <div class="detail-item">
+              <span class="detail-icon">📈</span>
+              <span class="detail-text">压缩比: 20:1 一致压缩</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">🔌</span>
+              <span class="detail-text">端口: 6030 (WebSocket), 6041 (REST)</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📊</span>
+              <span class="detail-text">数据库: market_data</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="database-box postgresql-box">
+          <div class="db-header">
             <h3>PostgreSQL 17.x</h3>
             <div class="db-subtitle">通用数据仓库 + TimescaleDB扩展</div>
-            <el-divider />
-            <div class="db-details">
-              <div class="detail-item">
-                <el-icon><Files /></el-icon>
-                <span>日线K线、参考数据、衍生数据</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><Document /></el-icon>
-                <span>交易数据、元数据、系统配置</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><DArrowRight /></el-icon>
-                <span>端口: 5432 (默认) / 5438</span>
-              </div>
-              <div class="detail-item">
-                <el-icon><Database /></el-icon>
-                <span>数据库: mystocks</span>
-              </div>
-            </div>
-            <el-tag type="primary" effect="dark" class="db-tag">通用仓库</el-tag>
+            <div class="db-tag primary">通用仓库</div>
           </div>
-        </el-col>
-      </el-row>
-    </el-card>
-
-    <!-- 数据分类路由 -->
-    <el-card class="routing-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><Share /></el-icon>
-          <span>5大数据分类路由策略</span>
+          <div class="db-details">
+            <div class="detail-item">
+              <span class="detail-icon">📋</span>
+              <span class="detail-text">日线K线、参考数据、衍生数据</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📄</span>
+              <span class="detail-text">交易数据、元数据、系统配置</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">🔌</span>
+              <span class="detail-text">端口: 5432 (默认) / 5438</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">📊</span>
+              <span class="detail-text">数据库: mystocks</span>
+            </div>
+          </div>
         </div>
-      </template>
-      <el-table :data="dataClassifications" stripe>
-        <el-table-column prop="category" label="数据分类" width="150">
-          <template #default="{ row }">
-            <el-tag :type="row.tagType">{{ row.category }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="特点" min-width="200" />
-        <el-table-column prop="database" label="目标数据库" width="150">
-          <template #default="{ row }">
-            <el-tag :type="row.dbType" effect="dark">{{ row.database }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="examples" label="数据示例" min-width="250" />
-      </el-table>
-    </el-card>
+      </div>
+    </div>
 
-    <!-- 移除的数据库 -->
-    <el-card class="removed-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><DeleteFilled /></el-icon>
-          <span>已移除的数据库</span>
-        </div>
-      </template>
-      <el-alert
-        title="MySQL 已完全移除"
-        type="success"
-        description="所有参考数据和元数据（18张表，299行数据）已成功迁移至PostgreSQL。MySQL连接和依赖已从代码库中移除。"
-        :closable="false"
-        show-icon
-      />
-      <el-alert
-        title="Redis 已完全移除"
-        type="warning"
-        description="配置的db1为空，未在生产环境使用。应用层缓存现通过Python内置cachetools和functools.lru_cache实现。"
-        :closable="false"
-        show-icon
-        style="margin-top: 16px"
-      />
-    </el-card>
+    <div class="artde-card routing-card">
+      <div class="card-header">
+        <h2 class="section-title">5大数据分类路由策略</h2>
+      </div>
 
-    <!-- 技术栈信息 -->
-    <el-card class="tech-stack-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <el-icon><Setting /></el-icon>
-          <span>核心技术栈</span>
-        </div>
-      </template>
-      <el-row :gutter="20">
-        <el-col :xs="24" :md="12">
-          <h4><el-icon><DataLine /></el-icon> 时序数据库</h4>
+      <table class="routing-table">
+        <thead>
+          <tr>
+            <th>数据分类</th>
+            <th>特点</th>
+            <th>目标数据库</th>
+            <th>数据示例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="category-tag danger">第1类</span></td>
+            <td>高频时序数据，写入密集，时间范围查询</td>
+            <td><span class="db-tag danger">TDengine</span></td>
+            <td>Tick数据、分钟K线、实时深度</td>
+          </tr>
+          <tr>
+            <td><span class="category-tag">第1类</span></td>
+            <td>历史K线数据，复杂分析查询</td>
+            <td><span class="db-tag primary">PostgreSQL</span></td>
+            <td>日线、周线、月线数据</td>
+          </tr>
+          <tr>
+            <td><span class="category-tag success">第2类</span></td>
+            <td>相对静态，关系型结构，频繁JOIN操作</td>
+            <td><span class="db-tag primary">PostgreSQL</span></td>
+            <td>股票信息、成分股信息、交易日历</td>
+          </tr>
+          <tr>
+            <td><span class="category-tag warning">第3类</span></td>
+            <td>计算密集，时序分析，复杂查询</td>
+            <td><span class="db-tag primary">PostgreSQL</span></td>
+            <td>技术指标、量化因子、模型输出、交易信号</td>
+          </tr>
+          <tr>
+            <td><span class="category-tag info">第4类</span></td>
+            <td>事务完整性要求高，需要ACID保证</td>
+            <td><span class="db-tag primary">PostgreSQL</span></td>
+            <td>订单记录、成交记录、持仓记录、账户状态</td>
+          </tr>
+          <tr>
+            <td><span class="category-tag">第5类</span></td>
+            <td>配置管理，系统状态，结构化存储</td>
+            <td><span class="db-tag primary">PostgreSQL</span></td>
+            <td>数据源状态、任务调度、策略参数、系统配置</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert-box success">
+      <svg class="alert-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--fall)'" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22,4 12,14.01 9,11.01"></polyline>
+      </svg>
+      <div class="alert-content">
+        <div class="alert-title">MySQL 已完全移除</div>
+        <div class="alert-desc">所有参考数据和元数据（18张表，299行数据）已成功迁移至PostgreSQL。MySQL连接和依赖已从代码库中移除。</div>
+      </div>
+    </div>
+
+    <div class="alert-box warning">
+      <svg class="alert-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--gold-primary)'" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+      </svg>
+      <div class="alert-content">
+        <div class="alert-title">Redis 已完全移除</div>
+        <div class="alert-desc">配置的db1为空，未在生产环境使用。应用层缓存现通过Python内置cachetools和functools.lru_cache实现。</div>
+      </div>
+    </div>
+
+    <div class="artde-card tech-stack-card">
+      <div class="card-header">
+        <h2 class="section-title">核心技术栈</h2>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>⏱</span>
+            时序数据库
+          </h4>
           <ul class="tech-list">
             <li>TDengine 3.3.6.13 - 高频时序数据专用</li>
-            <li>TimescaleDB 2.22.0 - PostgreSQL时序扩展</li>
+            <li>TimescaleDB 2.2.0 - PostgreSQL时序扩展</li>
           </ul>
-        </el-col>
-        <el-col :xs="24" :md="12">
-          <h4><el-icon><Coin /></el-icon> 关系数据库</h4>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>🐘</span>
+            关系数据库
+          </h4>
           <ul class="tech-list">
             <li>PostgreSQL 17.6 - 主数据仓库</li>
             <li>psycopg2-binary - Python数据库驱动</li>
           </ul>
-        </el-col>
-      </el-row>
-      <el-divider />
-      <el-row :gutter="20">
-        <el-col :xs="24" :md="12">
-          <h4><el-icon><Platform /></el-icon> 后端框架</h4>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>🚀</span>
+            后端框架
+          </h4>
           <ul class="tech-list">
             <li>FastAPI 0.109+ - 高性能异步API</li>
             <li>Pydantic v2 - 数据验证</li>
             <li>Loguru 0.7.3 - 日志管理</li>
           </ul>
-        </el-col>
-        <el-col :xs="24" :md="12">
-          <h4><el-icon><Monitor /></el-icon> 前端框架</h4>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>🖥️</span>
+            前端框架
+          </h4>
           <ul class="tech-list">
             <li>Vue.js 3.4.0 - 前端框架</li>
             <li>Element Plus 2.8.0 - UI组件库</li>
             <li>ECharts 5.5.0 - 数据可视化</li>
           </ul>
-        </el-col>
-      </el-row>
-    </el-card>
+        </div>
+      </div>
+
+      <div class="tech-divider"></div>
+
+      <div class="tech-grid">
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>📡</span>
+            WebSocket实时通信
+          </h4>
+          <ul class="tech-list">
+            <li>TickWebSocket - Tick数据推送</li>
+            <li>市场数据实时推送</li>
+            <li>K线图实时更新</li>
+          </ul>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>🔄</span>
+            任务调度
+          </h4>
+          <ul class="tech-list">
+            <li>Celery Beat - 分布式任务队列</li>
+            <li>定时数据采集任务</li>
+            <li>策略定时评估任务</li>
+          </ul>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>📊</span>
+            数据分析
+          </h4>
+          <ul class="tech-list">
+            <li>Pandas - 数据处理</li>
+            <li>NumPy - 数值计算</li>
+            <li>Ta-Lib - 技术指标库</li>
+          </ul>
+        </div>
+
+        <div class="tech-section">
+          <h4 class="tech-title">
+            <span>⚡</span>
+            量化框架
+          </h4>
+          <ul class="tech-list">
+            <li>Backtrader - 回测框架</li>
+            <li>TA-Lib - 技术分析</li>
+            <li>自定义策略框架</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import {
-  Grid,
-  DataBoard,
-  DataLine,
-  Timer,
-  TrendCharts,
-  DArrowRight,
-  Coin,
-  Files,
-  Document,
-  Share,
-  DeleteFilled,
-  Setting,
-  Platform,
-  Monitor
-} from '@element-plus/icons-vue'
 
-// 数据分类路由配置
 const dataClassifications = ref([
   {
     category: '第1类：市场数据',
@@ -281,250 +330,502 @@ const dataClassifications = ref([
     description: '配置管理，系统状态，结构化存储',
     database: 'PostgreSQL',
     dbType: 'primary',
-    tagType: '',
     examples: '数据源状态、任务调度、策略参数、系统配置'
   }
 ])
 </script>
 
 <style scoped lang="scss">
+
 .architecture-container {
   padding: 20px;
-  background-color: #f5f7fa;
   min-height: 100vh;
+  background: var(--bg-primary);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+}
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px 0;
+  position: relative;
 
-  h1 {
-    margin: 0;
-    font-size: 28px;
-    color: #303133;
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0 0 8px 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .version-badge {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 20px;
+    padding: 8px 16px;
+    background: rgba(0, 230, 118, 0.15);
+    border: 1px solid var(--fall);
+    color: var(--fall);
+    font-family: var(--font-display);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .decorative-line {
+    display: block;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+    margin: 20px auto 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
+    }
   }
 }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 16px;
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--gold-dim);
+  padding: 20px;
+  position: relative;
+  border-radius: 0;
+  margin-bottom: 20px;
 
-  .el-icon {
-    font-size: 20px;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--gold-primary);
+  }
+
+  &::before {
+    top: 12px;
+    left: 12px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  &::after {
+    bottom: 12px;
+    right: 12px;
+    border-left: none;
+    border-top: none;
+  }
+
+  &:hover {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
   }
 }
 
-/* 摘要卡片样式 */
-.summary-card {
-  margin-bottom: 20px;
+.section-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 20px 0;
+}
 
-  .stat-box {
-    text-align: center;
-    padding: 20px 10px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+.summary-card .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
 
-    .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 8px;
+.stat-box {
+  text-align: center;
+  padding: 25px 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .stat-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 12px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold-primary);
+    font-family: var(--font-display);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    &.info {
+      background: rgba(64, 158, 255, 0.15);
+      border-color: #409EFF;
+      color: #409EFF;
     }
 
-    .stat-label {
-      font-size: 14px;
-      margin-bottom: 10px;
-      opacity: 0.9;
+    &.warning {
+      background: rgba(255, 82, 82, 0.15);
+      border-color: #F56C6C;
+      color: #F56C6C;
     }
-
-    .el-tag {
-      background-color: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-    }
-  }
-
-  .stat-box:nth-child(1) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  .stat-box:nth-child(2) {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-
-  .stat-box:nth-child(3) {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  .stat-box:nth-child(4) {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
   }
 }
 
-/* 数据库架构卡片 */
-.architecture-card {
-  margin-bottom: 20px;
+.databases-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
 
-  .database-box {
-    padding: 30px;
-    border-radius: 12px;
-    background: white;
-    border: 2px solid #e4e7ed;
-    transition: all 0.3s;
-    height: 100%;
+.database-box {
+  background: var(--bg-primary);
+  border: 1px solid var(--artde-co-gold-dim);
+  padding: 20px;
+  position: relative;
 
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--gold-primary);
+  }
 
-    .db-icon {
-      text-align: center;
-      margin-bottom: 15px;
-      color: #409eff;
-    }
+  &::before {
+    top: 8px;
+    left: 8px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  &::after {
+    bottom: 8px;
+    right: 8px;
+    border-left: none;
+    border-top: none;
+  }
+
+  .db-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
 
     h3 {
-      text-align: center;
-      margin: 0 0 5px 0;
-      font-size: 22px;
-      color: #303133;
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0 0 8px 0;
     }
 
     .db-subtitle {
-      text-align: center;
-      color: #909399;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-
-    .db-details {
-      margin-top: 15px;
-
-      .detail-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        font-size: 14px;
-        color: #606266;
-
-        .el-icon {
-          color: #409eff;
-          flex-shrink: 0;
-        }
-      }
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     .db-tag {
-      width: 100%;
-      margin-top: 15px;
-      text-align: center;
+      padding: 4px 12px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+
+      &.danger {
+        background: rgba(255, 82, 82, 0.15);
+        border: 1px solid var(--rise);
+        color: var(--rise);
+      }
+
+      &.primary {
+        background: rgba(64, 158, 255, 0.15);
+        border: 1px solid #409EFF;
+        color: #409EFF;
+      }
+    }
+  }
+
+  .db-details {
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: var(--text-primary);
+      font-family: var(--font-body);
       font-size: 14px;
-      padding: 8px;
-    }
-  }
 
-  .tdengine-box {
-    border-color: #f56c6c;
+      .detail-icon {
+        font-size: 16px;
+      }
 
-    .db-icon {
-      color: #f56c6c;
-    }
-
-    .detail-item .el-icon {
-      color: #f56c6c;
-    }
-  }
-
-  .postgresql-box {
-    border-color: #409eff;
-
-    .db-icon {
-      color: #409eff;
-    }
-  }
-}
-
-/* 路由卡片样式 */
-.routing-card {
-  margin-bottom: 20px;
-}
-
-/* 移除数据库卡片 */
-.removed-card {
-  margin-bottom: 20px;
-
-  .el-alert {
-    border-radius: 8px;
-  }
-}
-
-/* 技术栈卡片 */
-.tech-stack-card {
-  margin-bottom: 20px;
-
-  h4 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #303133;
-    margin-bottom: 12px;
-
-    .el-icon {
-      color: #409eff;
-    }
-  }
-
-  .tech-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      padding: 8px 0 8px 20px;
-      color: #606266;
-      position: relative;
-
-      &::before {
-        content: '•';
-        position: absolute;
-        left: 0;
-        color: #409eff;
-        font-weight: bold;
+      .detail-text {
+        flex: 1;
       }
     }
   }
 }
 
-/* 响应式设计 */
+.routing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+
+  thead {
+    tr {
+      background: rgba(212, 175, 55, 0.08);
+
+      th {
+        padding: 16px 12px;
+        text-align: left;
+        font-family: var(--font-display);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gold-primary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border-bottom: 2px solid var(--gold-primary);
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--gold-dim);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(212, 175, 55, 0.05);
+      }
+
+      td {
+        padding: 14px 12px;
+        color: var(--text-primary);
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &.danger {
+    background: rgba(255, 82, 82, 0.15);
+    border: 1px solid var(--rise);
+    color: var(--rise);
+  }
+
+  &.success {
+    background: rgba(0, 230, 118, 0.15);
+    border: 1px solid var(--fall);
+    color: var(--fall);
+  }
+
+  &.warning {
+    background: rgba(244, 179, 67, 0.15);
+    border: 1px solid #F4A738;
+    color: #F4A738;
+  }
+
+  &.info {
+    background: rgba(64, 158, 255, 0.15);
+    border: 1px solid #409EFF;
+    color: #409EFF;
+  }
+}
+
+.db-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &.danger {
+    background: rgba(255, 82, 82, 0.15);
+    border: 1px solid var(--rise);
+    color: var(--rise);
+  }
+
+  &.primary {
+    background: rgba(64, 158, 255, 0.15);
+    border: 1px solid #409EFF;
+    color: #409EFF;
+  }
+}
+
+.alert-box {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+
+  .alert-icon {
+    flex-shrink: 0;
+  }
+
+  .alert-content {
+    flex: 1;
+
+    .alert-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .alert-desc {
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  }
+
+  &.success {
+    border-color: var(--fall);
+    background: rgba(0, 230, 118, 0.05);
+  }
+
+  &.warning {
+    border-color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.05);
+  }
+}
+
+.tech-stack-card .tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.tech-section {
+  h4.tech-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 12px 0;
+  }
+}
+
+.tech-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    padding: 8px 0 8px 20px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 20px;
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #409EFF;
+      font-weight: bold;
+    }
+  }
+}
+
+.tech-divider {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--gold-dim);
+  margin: 20px 0;
+}
+
 @media (max-width: 768px) {
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 20px 0;
 
-    h1 {
-      font-size: 22px;
+    .page-title {
+      font-size: 24px;
+      letter-spacing: 2px;
     }
   }
 
-  .stat-box {
-    margin-bottom: 15px;
+  .summary-card .stats-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .stat-value {
-      font-size: 24px !important;
+  .databases-section {
+    grid-template-columns: 1fr;
+  }
+
+  .routing-table {
+    font-size: 12px;
+
+    thead th, tbody td {
+      padding: 12px 8px;
     }
   }
 
-  .database-box {
-    margin-bottom: 20px;
+  .tech-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

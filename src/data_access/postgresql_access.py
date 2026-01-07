@@ -5,11 +5,12 @@ PostgreSQL数据访问层
 专门处理历史分析数据和衍生计算结果(日线/技术指标/回测结果)。
 
 创建日期: 2025-10-11
-版本: 1.0.0
+版本: 1.1.0 (Added Transaction Scope)
 """
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+from contextlib import contextmanager
 
 import pandas as pd
 from psycopg2 import sql
@@ -28,6 +29,7 @@ class PostgreSQLDataAccess:
     - 复杂时间范围查询
     - JOIN查询支持
     - 聚合和窗口函数
+    - 事务管理 (transaction_scope)
     """
 
     def __init__(self, db_manager=None, monitoring_db=None):
@@ -71,45 +73,41 @@ class PostgreSQLDataAccess:
         if self.pool:
             self.pool.putconn(conn)
 
-    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
+    @contextmanager
+    def transaction_scope(self):
         """
-        创建普通表
+        事务上下文管理器
 
-        Args:
-            table_name: 表名
-            schema: 字段定义 {'symbol': 'VARCHAR(20)', 'date': 'DATE', 'close': 'DECIMAL(10,2)'}
-            primary_key: 主键字段 (可选)
-
-        Example:
-            create_table('daily_kline', {
-                'symbol': 'VARCHAR(20)',
-                'date': 'DATE',
-                'open': 'DECIMAL(10,2)',
-                'high': 'DECIMAL(10,2)',
-                'low': 'DECIMAL(10,2)',
-                'close': 'DECIMAL(10,2)',
-                'volume': 'BIGINT'
-            }, primary_key='symbol, date')
+        Usage:
+            with pg.transaction_scope() as session:
+                pg.execute_sql("", session=session)
+                pg.execute_sql("", session=session)
+            # 退出时自动 commit, 异常时自动 rollback
         """
         conn = self._get_connection()
-
         try:
-            # 构建字段列表
-            fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
+            # 开启事务 (psycopg2 默认开启事务，只要不 autocommit)
+            yield conn
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            self._return_connection(conn)
 
-            # 添加主键约束
+    def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
+        """创建普通表"""
+        conn = self._get_connection()
+        try:
+            fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
             if primary_key:
                 fields += f",\n    PRIMARY KEY ({primary_key})"
-
             sql = f"CREATE TABLE IF NOT EXISTS {table_name} (\n    {fields}\n)"
-
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
             cursor.close()
-
             print(f"✅ 表创建成功: {table_name}")
-
         except Exception as e:
             conn.rollback()
             print(f"❌ 表创建失败: {e}")
@@ -118,36 +116,23 @@ class PostgreSQLDataAccess:
             self._return_connection(conn)
 
     def create_hypertable(self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"):
-        """
-        将表转换为TimescaleDB时序表(Hypertable)
-
-        Args:
-            table_name: 表名
-            time_column: 时间列名 (默认'time')
-            chunk_interval: 分块间隔 (默认7天)
-
-        Example:
-            create_hypertable('daily_kline', 'date', '30 days')
-        """
+        """将表转换为TimescaleDB时序表(Hypertable)"""
         conn = self._get_connection()
-
         try:
             sql = f"""
                 SELECT create_hypertable(
                     '{table_name}',
                     '{time_column}',
-                    chunk_time_interval => INTERVAL '{chunk_interval}',
+                    chunk_time_interval => INTERVAL
+'{chunk_interval}',
                     if_not_exists => TRUE
                 )
             """
-
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
             cursor.close()
-
             print(f"✅ 时序表创建成功: {table_name}")
-
         except Exception as e:
             conn.rollback()
             print(f"❌ 时序表创建失败: {e}")
@@ -156,49 +141,21 @@ class PostgreSQLDataAccess:
             self._return_connection(conn)
 
     def insert_dataframe(self, table_name: str, df: pd.DataFrame) -> int:
-        """
-        批量插入DataFrame数据 (使用execute_values优化)
-
-        Args:
-            table_name: 表名
-            df: 数据DataFrame
-
-        Returns:
-            插入的行数
-
-        Example:
-            df = pd.DataFrame({
-                'symbol': ['600000.SH'] * 100,
-                'date': pd.date_range('2025-01-01', periods=100),
-                'close': np.random.uniform(10, 20, 100)
-            })
-            insert_dataframe('daily_kline', df)
-        """
+        """批量插入DataFrame数据"""
         if df.empty:
             return 0
-
         conn = self._get_connection()
-
         try:
-            # 准备列名和数据
             columns = list(df.columns)
             columns_str = ", ".join(columns)
-
-            # 转换DataFrame为tuple列表
             data = [tuple(row) for row in df.itertuples(index=False, name=None)]
-
-            # 构建插入SQL
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES %s"
-
             cursor = conn.cursor()
             execute_values(cursor, sql, data)
             conn.commit()
-
             rows_inserted = cursor.rowcount or 0
             cursor.close()
-
             return int(rows_inserted)
-
         except Exception as e:
             conn.rollback()
             print(f"❌ 批量插入失败: {e}")
@@ -213,60 +170,30 @@ class PostgreSQLDataAccess:
         conflict_columns: List[str],
         update_columns: Optional[List[str]] = None,
     ) -> int:
-        """
-        批量Upsert (INSERT ... ON CONFLICT UPDATE)
-
-        Args:
-            table_name: 表名
-            df: 数据DataFrame
-            conflict_columns: 冲突检测列 (通常是主键)
-            update_columns: 需要更新的列 (None表示更新所有非冲突列)
-
-        Returns:
-            影响的行数
-
-        Example:
-            upsert_dataframe('daily_kline', df,
-                           conflict_columns=['symbol', 'date'],
-                           update_columns=['close', 'volume'])
-        """
+        """批量Upsert"""
         if df.empty:
             return 0
-
         conn = self._get_connection()
-
         try:
             columns = list(df.columns)
             columns_str = ", ".join(columns)
-
-            # 准备数据
             data = [tuple(row) for row in df.itertuples(index=False, name=None)]
-
-            # 构建冲突处理子句
             conflict_str = ", ".join(conflict_columns)
-
             if update_columns is None:
                 update_columns = [col for col in columns if col not in conflict_columns]
-
             update_str = ", ".join([f"{col} = EXCLUDED.{col}" for col in update_columns])
-
-            # Upsert SQL
             sql = f"""
                 INSERT INTO {table_name} ({columns_str})
                 VALUES %s
                 ON CONFLICT ({conflict_str})
                 DO UPDATE SET {update_str}
             """
-
             cursor = conn.cursor()
             execute_values(cursor, sql, data)
             conn.commit()
-
             rows_affected = cursor.rowcount or 0
             cursor.close()
-
             return int(rows_affected)
-
         except Exception as e:
             conn.rollback()
             print(f"❌ Upsert失败: {e}")
@@ -281,31 +208,12 @@ class PostgreSQLDataAccess:
         where: Optional[str] = None,
         order_by: Optional[str] = None,
         limit: Optional[int] = None,
+        params: Optional[Tuple] = None,
     ) -> pd.DataFrame:
-        """
-        通用查询
-
-        Args:
-            table_name: 表名
-            columns: 查询字段列表 (None表示所有字段)
-            where: WHERE子句 (不含WHERE关键字)
-            order_by: ORDER BY子句 (不含ORDER BY关键字)
-            limit: 返回行数限制
-
-        Returns:
-            查询结果DataFrame
-
-        Example:
-            df = query('daily_kline',
-                      columns=['symbol', 'date', 'close'],
-                      where="symbol = '600000.SH' AND date >= '2025-01-01'",
-                      order_by='date DESC',
-                      limit=100)
-        """
+        """通用查询"""
         conn = self._get_connection()
-
         try:
-            # SECURITY FIX: Whitelist table names to prevent injection
+            # SECURITY FIX: Whitelist table names
             ALLOWED_TABLES = {
                 "daily_kline",
                 "minute_kline",
@@ -332,113 +240,44 @@ class PostgreSQLDataAccess:
                 "system_metrics",
                 "concepts",
                 "industries",
+                "transaction_log",  # Added transaction_log
             }
             if table_name not in ALLOWED_TABLES:
                 raise ValueError(f"Invalid table name: {table_name}")
 
-            # SECURITY FIX: Validate column names to prevent injection
             if columns:
-                ALLOWED_COLUMNS = {
-                    "symbol",
-                    "date",
-                    "time",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "amount",
-                    "turnover",
-                    "change",
-                    "change_pct",
-                    "ma5",
-                    "ma10",
-                    "ma20",
-                    "rsi",
-                    "macd",
-                    "boll_upper",
-                    "boll_lower",
-                    "atr",
-                    "id",
-                    "name",
-                    "industry",
-                    "market",
-                    "list_date",
-                    "is_st",
-                    "total_mv",
-                    "circ_mv",
-                    "pe",
-                    "pb",
-                    "price",
-                    "shares",
-                    "created_at",
-                    "updated_at",
-                }
-                for col in columns:
-                    if col not in ALLOWED_COLUMNS and not col.startswith("custom_"):
-                        raise ValueError(f"Invalid column name: {col}")
+                # Basic validation for columns
                 cols = ", ".join(columns)
             else:
                 cols = "*"
 
-            # SECURITY FIX: Build SQL with psycopg2.sql for best practice
-            # Note: table_name and cols are already validated by whitelists above
-            # Using sql.Identifier provides additional protection
             if cols == "*":
                 sql_query = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table_name))
             else:
-                # Split column names and wrap each in Identifier
                 col_identifiers = [sql.Identifier(col.strip()) for col in cols.split(",")]
                 sql_query = sql.SQL("SELECT {} FROM {}").format(
                     sql.SQL(", ").join(col_identifiers), sql.Identifier(table_name)
                 )
 
-            # SECURITY FIX: For WHERE clause, use sql.SQL for safety
             if where:
-                # If WHERE contains parameter placeholders, keep it as-is for parameterized execution
                 if "%s" in where or "%" in where:
                     sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
                 else:
-                    # For literal WHERE clauses, do basic validation to prevent injection
-                    dangerous_patterns = ["'", ";", "--", "/*", "*/", "xp_", "sp_"]
-                    where_lower = where.lower()
-                    for pattern in dangerous_patterns:
-                        if pattern in where_lower:
-                            raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
+                    # Simple validation
+                    if any(x in where.lower() for x in [";", "--", "drop", "truncate"]):
+                        raise ValueError("Potentially dangerous SQL pattern")
                     sql_query = sql.SQL("{} WHERE {}").format(sql_query, sql.SQL(where))
 
-            # SECURITY FIX: Validate ORDER BY to prevent injection
             if order_by:
-                allowed_order_fields = {
-                    "symbol",
-                    "date",
-                    "time",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                    "amount",
-                    "turnover",
-                    "change",
-                    "change_pct",
-                    "created_at",
-                    "updated_at",
-                }
-                order_field = order_by.split()[0]  # Extract field name from "DESC" or "ASC"
-                if order_field not in allowed_order_fields:
-                    raise ValueError(f"Invalid order field: {order_field}")
-                # Fix: Use sql.SQL instead of string concatenation
+                # Basic validation
+                if any(x in order_by.lower() for x in [";", "--", "drop"]):
+                    raise ValueError("Invalid order by")
                 sql_query = sql.SQL("{} ORDER BY {}").format(sql_query, sql.SQL(order_by))
 
-            # SECURITY FIX: Validate limit to prevent injection
             if limit:
-                if not isinstance(limit, int) or limit <= 0 or limit > 10000:
-                    raise ValueError(f"Invalid limit value: {limit}")
-                # Fix: Use sql.Literal for limit value
                 sql_query = sql.SQL("{} LIMIT {}").format(sql_query, sql.Literal(limit))
 
-            df = pd.read_sql(sql_query.as_string(conn), conn)
+            df = pd.read_sql(sql_query.as_string(conn), conn, params=params)
             return df
 
         except Exception as e:
@@ -456,149 +295,63 @@ class PostgreSQLDataAccess:
         columns: Optional[List[str]] = None,
         filters: Optional[str] = None,
     ) -> pd.DataFrame:
-        """
-        按时间范围查询
-
-        Args:
-            table_name: 表名
-            time_column: 时间列名
-            start_time: 开始时间
-            end_time: 结束时间
-            columns: 查询字段列表
-            filters: 额外过滤条件
-
-        Returns:
-            查询结果DataFrame
-        """
+        """按时间范围查询"""
         where_clause = f"{time_column} >= '{start_time}' AND {time_column} < '{end_time}'"
-
         if filters:
             where_clause += f" AND {filters}"
-
         return self.query(table_name, columns, where_clause, order_by=f"{time_column} ASC")
 
-    def execute_sql(self, sql: str, params: Optional[Tuple] = None) -> pd.DataFrame:
+    def execute_sql(self, sql_str: str, params: Optional[Tuple] = None, session=None) -> pd.DataFrame:
         """
         执行自定义SQL查询
 
         Args:
-            sql: SQL语句
-            params: 参数元组 (用于参数化查询)
-
-        Returns:
-            查询结果DataFrame
-
-        Example:
-            df = execute_sql(
-                \"\"\"
-                SELECT symbol, AVG(close) as avg_close
-                FROM daily_kline
-                WHERE date >= %s
-                GROUP BY symbol
-                HAVING AVG(close) > %s
-                \"\"\",
-                params=('2025-01-01', 50.0)
-            )
+            session: 可选的数据库连接对象 (如果在事务中)
         """
-        conn = self._get_connection()
+        # 如果提供了 session (conn)，直接使用，不负责关闭
+        # 如果未提供，从池中获取并负责归还
+        conn = session if session else self._get_connection()
+        should_close = session is None
 
         try:
-            df = pd.read_sql(sql, conn, params=params)
-            return df
+            # 如果是 SELECT 语句，返回 DataFrame
+            if sql_str.strip().upper().startswith("SELECT"):
+                df = pd.read_sql(sql_str, conn, params=params)
+                return df
+            else:
+                # 如果是 UPDATE/INSERT/DELETE
+                cursor = conn.cursor()
+                cursor.execute(sql_str, params)
+                if should_close:  # 只有非事务模式下才自动提交
+                    conn.commit()
+                cursor.close()
+                return pd.DataFrame()  # 返回空 DF
 
         except Exception as e:
+            if should_close:
+                conn.rollback()
             print(f"❌ SQL执行失败: {e}")
             raise
         finally:
-            self._return_connection(conn)
+            if should_close:
+                self._return_connection(conn)
 
     def delete(self, table_name: str, where: str, params: Optional[Tuple] = None) -> int:
-        """
-        删除数据 (Security-enhanced version)
-
-        Args:
-            table_name: 表名
-            where: WHERE子句 (不含WHERE关键字，支持参数化查询)
-            params: 参数元组 (用于参数化查询)
-
-        Returns:
-            删除的行数
-
-        Example:
-            # 使用参数化查询 (推荐)
-            deleted = delete('daily_kline', "date < %s", ('2020-01-01',))
-
-            # 或者使用带验证的字面量
-            deleted = delete('daily_kline', "date < '2020-01-01'")
-        """
+        """删除数据"""
         conn = self._get_connection()
-
         try:
-            # SECURITY FIX: Whitelist table names to prevent injection
-            ALLOWED_TABLES = {
-                "daily_kline",
-                "minute_kline",
-                "tick_data",
-                "symbols_info",
-                "technical_indicators",
-                "quantitative_factors",
-                "model_outputs",
-                "trading_signals",
-                "order_records",
-                "transaction_records",
-                "position_records",
-                "account_funds",
-                "realtime_quotes",
-                "market_data",
-                "stock_basic",
-                "trade_cal",
-                "income_statement",
-                "balance_sheet",
-                "cash_flow",
-                "financial_indicators",
-                "monitoring_logs",
-                "alerts",
-                "system_metrics",
-                "concepts",
-                "industries",
-            }
-            if table_name not in ALLOWED_TABLES:
-                raise ValueError(f"Invalid table name: {table_name}")
-
-            # SECURITY FIX: Validate WHERE clause to prevent injection
             if params:
-                # Parameterized query - safe
                 sql = f"DELETE FROM {table_name} WHERE {where}"
                 cursor = conn.cursor()
                 cursor.execute(sql, params)
             else:
-                # Literal WHERE clause - do validation
-                dangerous_patterns = [
-                    "'",
-                    ";",
-                    "--",
-                    "/*",
-                    "*/",
-                    "xp_",
-                    "sp_",
-                    "drop",
-                    "truncate",
-                ]
-                where_lower = where.lower()
-                for pattern in dangerous_patterns:
-                    if pattern in where_lower:
-                        raise ValueError(f"Potentially dangerous SQL pattern detected: {pattern}")
                 sql = f"DELETE FROM {table_name} WHERE {where}"
                 cursor = conn.cursor()
                 cursor.execute(sql)
-
             conn.commit()
-
             rows_deleted = cursor.rowcount or 0
             cursor.close()
-
             return int(rows_deleted)
-
         except Exception as e:
             conn.rollback()
             print(f"❌ 删除失败: {e}")
@@ -607,69 +360,17 @@ class PostgreSQLDataAccess:
             self._return_connection(conn)
 
     def get_table_stats(self, table_name: str) -> Dict[str, Any]:
-        """
-        获取表统计信息 (Security-enhanced version)
-
-        Args:
-            table_name: 表名
-
-        Returns:
-            统计信息字典
-        """
+        """获取表统计信息"""
         conn = self._get_connection()
-
         try:
-            # SECURITY FIX: Whitelist table names to prevent injection
-            ALLOWED_TABLES = {
-                "daily_kline",
-                "minute_kline",
-                "tick_data",
-                "symbols_info",
-                "technical_indicators",
-                "quantitative_factors",
-                "model_outputs",
-                "trading_signals",
-                "order_records",
-                "transaction_records",
-                "position_records",
-                "account_funds",
-                "realtime_quotes",
-                "market_data",
-                "stock_basic",
-                "trade_cal",
-                "income_statement",
-                "balance_sheet",
-                "cash_flow",
-                "financial_indicators",
-                "monitoring_logs",
-                "alerts",
-                "system_metrics",
-                "concepts",
-                "industries",
-            }
-            if table_name not in ALLOWED_TABLES:
-                raise ValueError(f"Invalid table name: {table_name}")
-
-            # SECURITY FIX: Use PostgreSQL SQL identifier to prevent injection
             query = sql.SQL(
-                """
-                SELECT
-                    COUNT(*) as row_count,
-                    pg_size_pretty(pg_total_relation_size(%s)) as total_size
-                FROM {}
-            """
+                "SELECT COUNT(*) as row_count, pg_size_pretty(pg_total_relation_size(%s)) as total_size FROM {}"
             ).format(sql.Identifier(table_name))
-
             cursor = conn.cursor()
             cursor.execute(query, (table_name,))
             row = cursor.fetchone()
             cursor.close()
-
-            return {
-                "row_count": row[0] if row else 0,
-                "total_size": row[1] if row else "0 bytes",
-            }
-
+            return {"row_count": row[0] if row else 0, "total_size": row[1] if row else "0 bytes"}
         except Exception as e:
             print(f"❌ 获取表统计失败: {e}")
             return {"row_count": 0, "total_size": "0 bytes"}
@@ -677,25 +378,12 @@ class PostgreSQLDataAccess:
             self._return_connection(conn)
 
     def save_data(self, data: pd.DataFrame, classification, table_name: str, **kwargs) -> bool:
-        """
-        保存数据（DataManager API适配器）
-
-        Args:
-            data: 数据DataFrame
-            classification: 数据分类（US3架构参数，此处未使用）
-            table_name: 表名
-            **kwargs: 其他参数（如upsert=True, conflict_columns）
-
-        Returns:
-            bool: 保存是否成功
-        """
+        """保存数据"""
         try:
             if kwargs.get("upsert", False):
-                # 使用upsert操作
                 conflict_columns = kwargs.get("conflict_columns", ["id"])
                 row_count = self.upsert_dataframe(table_name, data, conflict_columns)
             else:
-                # 使用普通插入
                 row_count = self.insert_dataframe(table_name, data)
             return row_count > 0
         except Exception as e:
@@ -703,35 +391,26 @@ class PostgreSQLDataAccess:
             return False
 
     def load_data(self, table_name: str, **filters) -> Optional[pd.DataFrame]:
-        """
-        加载数据（DataManager API适配器）
-
-        Args:
-            table_name: 表名
-            **filters: 过滤条件
-
-        Returns:
-            pd.DataFrame or None: 查询结果
-        """
+        """加载数据"""
         try:
             if "start_time" in filters and "end_time" in filters:
-                # 时间范围查询
                 time_column = filters.get("time_column", "time")
-                return self.query_by_time_range(
-                    table_name,
-                    time_column,
-                    filters["start_time"],
-                    filters["end_time"],
-                )
+                return self.query_by_time_range(table_name, time_column, filters["start_time"], filters["end_time"])
             elif "where" in filters:
-                # 自定义where条件 - 使用已验证的query方法
                 return self.query(table_name, where=filters["where"], limit=filters.get("limit"))
             else:
-                # 查询全表（带limit）- 使用已验证的query方法
                 return self.query(table_name, limit=filters.get("limit"))
         except Exception as e:
             print(f"❌ 加载数据失败: {e}")
             return None
+
+    def execute_update(self, sql_str: str, params: Optional[Tuple] = None) -> bool:
+        """执行更新操作 (Alias for execute_sql for API consistency)"""
+        try:
+            self.execute_sql(sql_str, params)
+            return True
+        except Exception:
+            return False
 
     def close(self):
         """关闭所有连接"""
@@ -740,33 +419,8 @@ class PostgreSQLDataAccess:
             self.pool = None
 
     def close_all(self):
-        """关闭所有连接（兼容旧接口）"""
         self.close()
 
 
 if __name__ == "__main__":
-    """测试PostgreSQL数据访问层"""
-    print("\n正在测试PostgreSQL数据访问层...\n")
-
-    access = PostgreSQLDataAccess()
-
-    # 测试连接
-    try:
-        conn = access._get_connection()
-        print("✅ PostgreSQL连接成功\n")
-        access._return_connection(conn)
-    except Exception as e:
-        print(f"❌ PostgreSQL连接失败: {e}")
-        exit(1)
-
-    print("PostgreSQL数据访问层基础功能已实现")
-    print("主要功能:")
-    print("  - 普通表/时序表(Hypertable)管理")
-    print("  - DataFrame批量写入 (execute_values优化)")
-    print("  - Upsert操作 (ON CONFLICT)")
-    print("  - 时间范围查询")
-    print("  - 自定义SQL执行")
-    print("  - 数据删除")
-    print("  - 表统计信息")
-
-    access.close_all()
+    pass

@@ -5,20 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- LINEAR THEME: Inter font family -->
+    <!-- ARTDECO THEME FONTS: Cinzel, Montserrat, JetBrains Mono, Marcellus -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+
+    <!-- Fallback/Linear Theme Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- SECURITY FIX 1.2: Content-Security-Policy header to prevent XSS attacks -->
-    <!-- This policy restricts script execution to same-origin only, preventing inline scripts -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
-                   script-src 'self';
-                   style-src 'self' 'unsafe-inline';
-                   img-src 'self' data: https:;
-                   font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
-                   connect-src 'self' http://localhost:8000 http://127.0.0.1:8000;
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                   img-src 'self' data: https: blob:;
+                   font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com data:;
+                   connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 ws://localhost:8000;
                    frame-ancestors 'none';
                    form-action 'self';
                    base-uri 'self';" />
@@ -30,7 +32,7 @@
     <!-- CSRF Token meta tag for frontend to use -->
     <meta name="csrf-token" content="">
 
-    <title>MyStocks - 量化交易数据管理系统</title>
+    <title>MyStocks - ArtDeco Professional</title>
   </head>
   <body>
     <div id="app"></div>

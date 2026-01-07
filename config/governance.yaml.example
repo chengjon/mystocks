@@ -1,0 +1,81 @@
+# Data Governance Configuration
+# Copy this file to governance.yaml and modify values as needed
+
+# Database configuration for lineage and asset storage
+database:
+  host: "localhost"
+  port: 5432
+  database: "mystocks"
+  user: "postgres"
+  password: null
+  pool_size: 10
+  max_overflow: 20
+
+# Data Quality Configuration
+data_quality:
+  enabled: true
+  # Check intervals in seconds
+  check_interval: 3600  # 1 hour
+  # Quality score weights
+  weights:
+    completeness: 0.30
+    accuracy: 0.30
+    timeliness: 0.20
+    consistency: 0.20
+  # Alert thresholds
+  alerts:
+    critical_score: 40
+    warning_score: 60
+    critical_dimensions: 50
+
+# Data Lineage Configuration
+lineage:
+  enabled: true
+  # Retention period in days
+  retention_days: 30
+  # Maximum levels for impact analysis
+  max_impact_levels: 3
+  # Batch size for lineage queries
+  batch_size: 1000
+
+# Data Asset Registry Configuration
+asset_registry:
+  enabled: true
+  # Enable automatic asset discovery
+  auto_discover: true
+  # Discovery interval in seconds
+  discovery_interval: 86400  # 24 hours
+  # Retention period for asset metadata in days
+  retention_days: 365
+
+# Prometheus metrics configuration
+metrics:
+  enabled: true
+  # Prefix for all metrics
+  prefix: "data_governance"
+  # Histogram buckets for quality scores
+  score_buckets:
+    - 10
+    - 20
+    - 30
+    - 40
+    - 50
+    - 60
+    - 70
+    - 80
+    - 90
+    - 100
+
+# Alert configuration
+alerts:
+  enabled: true
+  # Notification channels
+  channels:
+    webhook:
+      enabled: true
+      url: "http://localhost:8080/webhook"
+    email:
+      enabled: false
+      smtp_host: "localhost"
+      smtp_port: 587
+      from_address: "alerts@mystocks.local"

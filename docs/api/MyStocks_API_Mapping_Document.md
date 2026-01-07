@@ -22,7 +22,7 @@
 | 页面 | 组件 | 控件/操作 | 对应 API | 请求方式 | 依赖参数 | 源文件 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 股票详情页 | `/src/views/StockDetail.vue` | 股票信息头部 | `/api/data/stocks/{symbol}/detail` | `GET` | (Path) `symbol` | `web/backend/app/api/data.py` |
-| 股票详情页 | `/src/views/StockDetail.vue` | K线图容器 | `/api/market/kline` | `GET` | (Query) `stock_code`, `period`, `adjust`, `start_date`, `end_date` | `web/backend/app/api/market.py` |
+| 股票详情页 | `/src/views/StockDetail.vue` | K线图容器 | `/api/data/stocks/kline` | `GET` | (Query) `symbol`, `period`, `start_date`, `end_date` | `web/backend/app/api/data.py` |
 | 股票详情页 | `/src/views/StockDetail.vue` | 分时图 | `/api/data/stocks/intraday` | `GET` | (Query) `symbol`, `date` | `web/backend/app/api/data.py` |
 | 股票详情页 | `/src/views/StockDetail.vue` | 交易摘要 | `/api/data/stocks/{symbol}/trading-summary` | `GET` | (Path) `symbol`, (Query) `period` | `web/backend/app/api/data.py` |
 | 技术分析页 | `/src/views/TechnicalAnalysis.vue` | 指标面板 | `/api/technical/{symbol}/indicators` | `GET` | (Path) `symbol`, (Query) `period`, `start_date`, `end_date`, `limit` | `web/backend/app/api/technical_analysis.py` |

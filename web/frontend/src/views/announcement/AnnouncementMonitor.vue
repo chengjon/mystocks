@@ -1,8 +1,8 @@
 <template>
   <div class="announcement-monitor">
     <div class="page-header">
-      <h1>📢 公告监控系统</h1>
-      <p class="subtitle">实时监控上市公司公告，设置监控规则，获取重要信息</p>
+      <h1 class="page-title">ANNOUNCEMENT MONITOR</h1>
+      <p class="page-subtitle">REAL-TIME ANNOUNCEMENTS | INTELLIGENT ANALYSIS | CUSTOM RULES</p>
     </div>
 
     <!-- 功能说明 -->
@@ -27,10 +27,9 @@
       </template>
     </el-alert>
 
-    <!-- 统计摘要 -->
-    <el-row :gutter="20" class="stats-cards">
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="stat-card" shadow="hover">
+    <div class="stats-grid">
+      <el-col :span="6">
+        <el-card :hoverable="true" class="stat-card">
           <div class="stat-content">
             <div class="stat-icon">
               <el-icon><Document /></el-icon>
@@ -43,51 +42,47 @@
         </el-card>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="stat-card" shadow="hover">
+      <el-col :span="6">
+        <el-card :hoverable="true" class="stat-card">
           <div class="stat-content">
             <div class="stat-icon">
               <el-icon><Calendar /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-number" style="color: #409eff;">{{ stats.today_count || 0 }}</div>
-              <div class="stat-label">今日公告</div>
+              <div class="stat-label">TODAY</div>
             </div>
           </div>
         </el-card>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="stat-card" shadow="hover">
+      <el-col :span="6">
+        <el-card :hoverable="true" class="stat-card">
           <div class="stat-content">
             <div class="stat-icon">
               <el-icon><Warning /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-number" style="color: #e6a23c;">{{ stats.important_count || 0 }}</div>
-              <div class="stat-label">重要公告</div>
+              <div class="stat-label">IMPORTANT</div>
             </div>
           </div>
         </el-card>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :md="6">
-        <el-card class="stat-card" shadow="hover">
+      <el-col :span="6">
+        <el-card :hoverable="true" class="stat-card">
           <div class="stat-content">
             <div class="stat-icon">
               <el-icon><Bell /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-number" style="color: #f56c6c;">{{ stats.triggered_count || 0 }}</div>
-              <div class="stat-label">已触发</div>
+              <div class="stat-label">TRIGGERED</div>
             </div>
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </div>
 
-    <!-- 搜索和筛选 -->
-    <el-card class="search-card" shadow="hover">
+    <el-card :hoverable="true" class="search-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="股票代码">
           <el-input
@@ -763,83 +758,134 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .announcement-monitor {
-  padding: 20px;
+  padding: var(--spacing-6);
+  min-height: 100vh;
+  background: var(--bg-primary);
+  position: relative;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+  }
 
   .page-header {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
 
-    h1 {
-      font-size: 28px;
+    .page-title {
+      font-family: var(--font-display);
+      font-size: var(--font-size-h2);
       font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      color: var(--accent-gold);
+      margin: 0 0 var(--spacing-2) 0;
     }
 
-    .subtitle {
-      font-size: 14px;
-      color: #909399;
+    .page-subtitle {
+      font-family: var(--font-body);
+      font-size: var(--font-size-small);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
       margin: 0;
     }
   }
 
   .info-banner {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
 
     p {
-      margin: 0 0 12px 0;
+      margin: 0 0 var(--spacing-3) 0;
       line-height: 1.6;
     }
   }
 
-  .stats-cards {
-    margin-bottom: 20px;
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+  }
 
-    .stat-card {
-      border-radius: 12px;
-      overflow: hidden;
+  .stat-card {
+    .stat-content {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4);
 
-      .stat-content {
+      .stat-icon {
+        width: 56px;
+        height: 56px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: var(--radius-none);
 
-        .stat-icon {
-          width: 50px;
-          height: 50px;
-          background: linear-gradient(45deg, #667eea, #764ba2);
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 16px;
+        .el-icon {
+          font-size: 28px;
+          color: var(--accent-gold);
+        }
+      }
 
-          .el-icon {
-            font-size: 20px;
-            color: white;
-          }
+      .stat-info {
+        flex: 1;
+
+        .stat-number {
+          font-family: var(--font-mono);
+          font-size: var(--font-size-h4);
+          font-weight: 700;
+          color: var(--fg-primary);
+          line-height: 1;
+
         }
 
-        .stat-info {
-          flex: 1;
-
-          .stat-number {
-            font-size: 20px;
-            font-weight: 600;
-            color: #303133;
-            line-height: 1;
-          }
-
-          .stat-label {
-            font-size: 12px;
-            color: #909399;
-            margin-top: 4px;
-          }
+        .stat-label {
+          font-family: var(--font-display);
+          font-size: var(--font-size-xs);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--fg-muted);
+          margin-top: var(--spacing-2);
         }
       }
     }
   }
 
   .search-card {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+  }
 
     .search-form {
       .el-form-item {

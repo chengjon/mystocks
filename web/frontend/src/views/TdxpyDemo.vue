@@ -1,112 +1,97 @@
 <template>
   <div class="tdxpy-demo">
-    <div class="demo-header">
-      <h1>📡 pytdx 功能演示</h1>
-      <p class="subtitle">纯 Python 实现的通达信数据接口 - 支持标准和扩展行情 API</p>
+
+    <div class="page-header">
+      <h1 class="page-title">TDPXY DEMO</h1>
+      <p class="page-subtitle">PYTONGDAXIN | REAL-TIME DATA | HISTORICAL DATA</p>
     </div>
 
-    <!-- 功能导航 -->
     <div class="function-nav">
       <el-button
         v-for="tab in tabs"
         :key="tab.key"
-        :type="activeTab === tab.key ? 'primary' : ''"
+        type="activeTab === tab.key ? 'solid' : 'outline'"
         @click="activeTab = tab.key"
       >
         {{ tab.icon }} {{ tab.label }}
       </el-button>
     </div>
 
-    <!-- 1. 项目概览 -->
     <el-card v-show="activeTab === 'overview'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>📋 项目概览</span>
-          <el-tag type="success">已迁移</el-tag>
+          <span>PROJECT OVERVIEW</span>
+          <el-tag type="success">MIGRATED</el-tag>
         </div>
       </template>
 
       <div class="content-section">
-        <h3>🎯 pytdx 简介</h3>
-        <p>pytdx 是一个纯 Python 实现的通达信网络协议接口库。它通过逆向工程通达信的网络协议,提供了一套完整的 Python API 来获取实时和历史行情数据,无需安装通达信客户端。</p>
+        <h3>INTRODUCTION</h3>
+        <p>pytdx is a pure Python implementation of Tongdaxin network protocol interface library. It provides a complete Python API for obtaining real-time and historical market data by reverse engineering Tongdaxin's network protocol, without requiring Tongdaxin client installation.</p>
 
-        <h3 style="margin-top: 30px;">✨ 核心特性</h3>
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>📊 行情数据接口</h4>
-              <ul>
-                <li>实时行情查询 (Level-1)</li>
-                <li>历史K线数据 (日/周/月/分钟)</li>
-                <li>分时图数据 (Tick 级别)</li>
-                <li>盘口数据 (五档委买委卖)</li>
-                <li>分笔成交数据</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🗂️ 基础数据接口</h4>
-              <ul>
-                <li>股票列表查询 (A股/指数/板块)</li>
-                <li>财务数据查询</li>
-                <li>公司信息查询</li>
-                <li>除权除息数据</li>
-                <li>板块成分股</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
+        <h3 style="margin-top: 30px;">CORE FEATURES</h3>
+        <div class="features-grid">
+          <el-card :hoverable="true">
+            <h4>MARKET DATA API</h4>
+            <ul>
+              <li>Real-time Quotes (Level-1)</li>
+              <li>Historical K-line Data (Daily/Weekly/Monthly/Minute)</li>
+              <li>Intraday Data (Tick Level)</li>
+              <li>Order Book Data (5-level Bid/Ask)</li>
+              <li>Transaction History</li>
+            </ul>
+          </el-card>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🔌 扩展行情 API</h4>
-              <ul>
-                <li>Level-2 十档行情 (需权限)</li>
-                <li>逐笔委托数据</li>
-                <li>主力资金流向</li>
-                <li>龙虎榜数据</li>
-                <li>大单追踪</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🛠️ 工具功能</h4>
-              <ul>
-                <li>多平台支持 (Windows/Mac/Linux)</li>
-                <li>自动服务器选择和负载均衡</li>
-                <li>数据缓存机制</li>
-                <li>并发请求支持</li>
-                <li>错误重试机制</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
+          <el-card :hoverable="true">
+            <h4>BASIC DATA API</h4>
+            <ul>
+              <li>Stock List Query (A-Shares/Indices/Sectors)</li>
+              <li>Financial Data Query</li>
+              <li>Company Information</li>
+              <li>Ex-dividend Data</li>
+              <li>Sector Components</li>
+            </ul>
+          </el-card>
 
-        <h3 style="margin-top: 30px;">🌟 项目优势</h3>
-        <el-descriptions :column="2" border style="margin-top: 15px;">
-          <el-descriptions-item label="纯 Python 实现">
-            无需安装通达信客户端,跨平台支持
+          <el-card :hoverable="true">
+            <h4>EXTENDED API</h4>
+            <ul>
+              <li>Level-2 10-level Quotes (requires permission)</li>
+              <li>Tick-by-tick Order Data</li>
+              <li>Main Force Capital Flow</li>
+              <li>Dragon Tiger List Data</li>
+              <li>Large Order Tracking</li>
+            </ul>
+          </el-card>
+
+          <el-card :hoverable="true">
+            <h4>TOOLS</h4>
+            <ul>
+              <li>Cross-platform (Windows/Mac/Linux)</li>
+              <li>Auto Server Selection & Load Balancing</li>
+              <li>Data Caching Mechanism</li>
+              <li>Concurrent Request Support</li>
+              <li>Error Retry Mechanism</li>
+            </ul>
+          </el-card>
+        </div>
+
+        <h3 style="margin-top: 30px;">PROJECT ADVANTAGES</h3>
+        <el-descriptions :column="2" border style="margin-top: 15px;" class="descriptions">
+          <el-descriptions-item label="PURE PYTHON">
+            No Tongdaxin client required, cross-platform support
           </el-descriptions-item>
-          <el-descriptions-item label="免费使用">
-            完全免费,无需购买数据接口
+          <el-descriptions-item label="FREE">
+            Completely free, no data interface purchase required
           </el-descriptions-item>
-          <el-descriptions-item label="实时数据">
-            直接连接通达信服务器获取实时行情
+          <el-descriptions-item label="REAL-TIME DATA">
+            Direct connection to Tongdaxin servers
           </el-descriptions-item>
-          <el-descriptions-item label="历史数据">
-            支持获取完整的历史K线数据
-          </el-descriptions-item>
-          <el-descriptions-item label="易于集成">
-            简洁的 API 设计,易于集成到项目中
-          </el-descriptions-item>
-          <el-descriptions-item label="活跃维护">
-            GitHub 上活跃维护,社区支持良好
-          </el-descriptions-item>
+          <el-descriptions-item label="HISTORICAL DATA">
+            Complete historical K-line data support</el-descriptions-item>
         </el-descriptions>
 
+        <h3 style="margin-top: 30px;">LIBRARY REPOSITORY</h3>
         <el-alert
           type="info"
           :closable="false"
@@ -117,6 +102,8 @@
           </template>
           <ul style="margin-top: 10px;">
             <li>GitHub: <el-link href="https://github.com/rainx/pytdx" target="_blank" type="primary">https://github.com/rainx/pytdx</el-link></li>
+            <li>PyPI: <el-link href="https://pypi.org/project/pytdx/" target="_blank" type="primary">https://pypi.org/project/pytdx/</el-link></li>
+            <li>Documentation: <el-link href="https://pytdx.readthedocs.io/" target="_blank" type="primary">https://pytdx.readthedocs.io/</el-link></li>
             <li>文档: 完整的 API 文档和使用示例</li>
             <li>社区: 活跃的 Issue 讨论和问题解答</li>
             <li>更新: 持续更新以支持最新的通达信协议</li>
@@ -768,66 +755,165 @@ const klineTypes = [
 </script>
 
 <style scoped>
+
 .tdxpy-demo {
-  padding: 20px;
+  padding: var(--spacing-6);
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg-primary);
 }
 
-.demo-header {
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.page-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-8);
+  position: relative;
+  z-index: 1;
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
 }
 
-.demo-header h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-  color: #409eff;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 14px;
-}
-
-.function-nav {
+.demo-grid {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .demo-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  z-index: 1;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
 }
 
 .content-section {
-  padding: 10px 0;
+  padding: var(--spacing-4) 0;
   line-height: 1.8;
 }
 
 .content-section h3 {
-  color: #409eff;
-  margin-bottom: 15px;
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-4);
 }
 
 .content-section h4 {
-  color: #606266;
-  margin-bottom: 10px;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--fg-primary);
+  margin-bottom: var(--spacing-3);
 }
 
 .content-section p {
-  margin: 10px 0;
+  margin: var(--spacing-3) 0;
+  color: var(--fg-primary);
+}
+
+.content-section ul {
+  padding-left: var(--spacing-6);
+  margin: var(--spacing-3) 0;
+}
+
+.content-section ul li {
+  margin: var(--spacing-2) 0;
+  color: var(--fg-primary);
+}
+
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.model-list ul {
+  padding-left: var(--spacing-5);
+  margin: var(--spacing-3) 0;
+  list-style: disc;
+}
+
+.profiling-section :deep(.el-descriptions__label) {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--fg-muted) !important;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-section :deep(.el-descriptions__content) {
+  background: transparent !important;
+  color: var(--fg-primary) !important;
+  font-family: var(--font-body);
+}
+
+.content-section p {
   color: #606266;
 }
 

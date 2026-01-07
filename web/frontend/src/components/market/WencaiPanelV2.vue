@@ -539,7 +539,7 @@ const formatNumber = (value, decimals = 3) => {
 const formatPercent = (value) => {
   if (value === null || value === undefined || value === '') return '-'
 
-  let num = typeof value === 'string' ? parseFloat(value.replace('%', '')) : value
+  const num = typeof value === 'string' ? parseFloat(value.replace('%', '')) : value
   if (isNaN(num)) return value
 
   return `${num.toFixed(2)}%`

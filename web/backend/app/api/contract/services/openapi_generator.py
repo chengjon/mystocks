@@ -148,7 +148,7 @@ class OpenAPIGenerator:
                         return model
 
         # Check for body parameter in signature
-        sig_params = getattr(endpoint, "__signature__", {}).parameters if hasattr(endpoint, "__signature__") else {}
+        getattr(endpoint, "__signature__", {}).parameters if hasattr(endpoint, "__signature__") else {}
 
         return None
 
@@ -234,17 +234,17 @@ class OpenAPIGenerator:
         """Convert Pydantic model to OpenAPI schema"""
         schema = {"type": "object", "properties": {}, "required": []}
 
-        for name, field in model.model_fields.items():
-            field_info = field.annotation
+        for name, model_field in model.model_fields.items():
+            field_info = model_field.annotation
 
             # Determine type
             type_str = self._python_type_to_openapi(field_info)
 
-            prop_schema = {"type": type_str, "description": field.description or ""}
+            prop_schema = {"type": type_str, "description": model_field.description or ""}
 
-            if field.default is not None:
-                prop_schema["default"] = field.default
-            elif not field.is_required():
+            if model_field.default is not None:
+                prop_schema["default"] = model_field.default
+            elif not model_field.is_required():
                 pass  # Optional, no default
 
             schema["properties"][name] = prop_schema
