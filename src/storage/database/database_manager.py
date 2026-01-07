@@ -1042,3 +1042,7 @@ if __name__ == "__main__":
     print(f"Drop table {'成功' if success else '失败'}")
 
     manager.close_all_connections()
+
+    def get_tdx_connection(self, db_name: str = "market_data", **kwargs):
+        """获取TDengine连接（兼容测试）"""
+        return self.get_connection(DatabaseType.TDENGINE, db_name, **kwargs)
