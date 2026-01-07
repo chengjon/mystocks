@@ -31,10 +31,13 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 4. [开发环境配置](#开发环境配置)
 5. [多CLI协作指引](#多cli协作指引)
 6. [文件组织规范](#文件组织规范)
-7. [代码质量保证](#代码质量保证)
-8. [监控系统](#监控系统)
-9. [数据源管理工具](#数据源管理工具)
-10. [BUG登记](#bug登记)
+7. **[文档工作指引](#文档工作指引)** ⭐
+8. [代码质量保证](#代码质量保证)
+9. [监控系统](#监控系统)
+10. [技术指标管理](#技术指标管理)
+11. [数据源管理工具](#数据源管理工具)
+12. [Task Master AI集成](#task-master-ai集成)
+13. [BUG登记](#bug登记)
 
 ---
 
@@ -514,6 +517,80 @@ python test_performance_comparison.py
 
 - **[File Organization Rules](./docs/standards/FILE_ORGANIZATION_RULES.md)** - 文件组织规范
 - **[Python Quality Assurance Workflow](./docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)** - 代码质量保证流程
+
+---
+
+## 文档工作指引 ⭐
+
+**目的**: 规范项目文档的创建、维护和组织流程，确保文档结构清晰、易于查找和维护。
+
+**完整指南**: 📖 **[文档工作指引](./docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md)**
+
+### 快速参考
+
+**新增文档时，请遵循3步流程**:
+1. **确定分类** - 选择8大分类之一
+2. **正确命名** - 使用kebab-case（小写+连字符）
+3. **更新索引** - 运行 `python scripts/tools/docs_indexer.py --categories`
+
+### 🗂️ 8大文档分类
+
+| 分类 | 路径 | 用途 | 示例 |
+|------|------|------|------|
+| **Overview** | `docs/overview/` | 项目概述、核心规范 | agents.md, changelog.md |
+| **Guides** | `docs/guides/` | 开发指南、工作流程 | quick-start.md, implementation-guide.md |
+| **API** | `docs/api/` | API文档、接口规范 | api-documentation.md, web-access-guide.md |
+| **Architecture** | `docs/architecture/` | 架构设计、系统组件 | ml-integration-report.md, mock-data-guide.md |
+| **Operations** | `docs/operations/` | 部署、监控、运维 | deployment-guide.md, log-monitoring.md |
+| **Testing** | `docs/testing/` | 测试策略、质量保障 | testing-strategy.md, quality-reports.md |
+| **Reports** | `docs/reports/` | 阶段报告、分析总结 | comprehensive-cleanup.md, project-status.md |
+| **Archive** | `docs/archive/` | 归档文档、历史版本 | old-phase-reports/, deprecated-docs/ |
+
+### 📝 文档命名规范
+
+**✅ 推荐格式**:
+- 英文：`kebab-case.md` （小写+连字符）
+- 示例：`quick-start.md`, `api-authentication-jwt.md`, `wencai-integration.md`
+
+**❌ 避免使用**:
+- ❌ 中文文件名：`API文档.md` → `api-documentation.md`
+- ❌ 空格：`My Document.md` → `my-document.md`
+- ❌ 大写：`README.md` → `guide-name.md`
+- ❌ 下划线：`my_document.md` → `my-document.md`
+
+### 🚨 文档位置检查（Pre-commit Hook）
+
+**自动检查机制**:
+- ✅ 检测根目录下的.md文件（应移到分类目录）
+- ✅ 检测中文文件名（建议使用英文或拼音）
+- ✅ 检测临时文档位置（不应在根目录）
+- ✅ 提供正确的移动建议
+
+**触发时机**: 每次 `git commit` 时自动运行
+
+**查看详情**: `docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md`
+
+### 🔧 常用文档命令
+
+```bash
+# 检查文档规范
+python scripts/tools/docs_check.py
+
+# 生成文档索引
+python scripts/tools/docs_indexer.py --categories
+
+# 查找文档位置
+find docs/ -name "*.md" -type f
+
+# 统计文档数量
+find docs/ -name "*.md" | wc -l
+```
+
+### 📚 相关文档
+
+- **[文档工作指引详细版](./docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md)** - 完整的工作流程和最佳实践
+- **[文件组织规范](./docs/standards/FILE_ORGANIZATION_RULES.md)** - 代码和脚本的组织规范
+- **[文档整理完成报告](./docs/reports/DOC_CLEANUP_COMPLETION_REPORT.md)** - 2026-01-07文档整理项目总结
 
 ---
 
