@@ -1,0 +1,5954 @@
+# 文档规范检查报告
+
+**检查时间**: docs-check-report
+
+⚠️  总共发现 2026 个问题
+
+## Naming
+
+- ❌ `文件目录管理方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `INITIALIZATION_PROMPT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `COMPREHENSIVE_CLEANUP_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PHASE3_CI_CD_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WENCAI_INTEGRATION_QUICKREF.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WEB_PAGES_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `数据流转机制总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `AGENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ROOT_FILES_CLEANUP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `FILE_CLEANUP_TASK.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ENHANCED_UI_UX_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WEB_AUTOMATION_TEST_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `FILE_CLEANUP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ML_INTEGRATION_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ML_INTEGRATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ROOT_FILES_CLEANUP_TASK.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `CHANGELOG.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `FILE_ORGANIZATION_RULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `DOCUMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `TMUX_LNAV_INTEGRATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `HOW_TO_ADD_NEW_DATA_CLASSIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WEB_ACCESS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `SYSTEM_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `IFLOW_1.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `TEST_ENVIRONMENT_REQUIREMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WENCAI_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `技术负债修复报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `DOCUMENTATION_STRUCTURE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `CLAUDE_1.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `ARCHIVED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `US3_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `DATA_SOURCE_ARCHITECTURE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PROJECT_FULL_DOC.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `AGENTS_1.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `目录管理解决方案总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `MD_PY_CLEANUP_TASK.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `MD_PY_CLEANUP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `CURRENT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `CLAUDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PORT_CONFIGURATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WENCAI_INTEGRATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WENCAI_PHASE1_COMPLETED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `WENCAI_IMPLEMENTATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `API_INTERFACE_ALIGNMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `IFLOW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PRODUCTION_INFO.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `DATA_SYNC_TROUBLESHOOT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PERFORMANCE_BASELINE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `CODE_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `PYPROF_INTEGRATION_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `DOCUMENT_ORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `LNAV_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `US2_DATABASE_ARCHITECTURE_CLARIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reviews/PHASE_2_PLAN_REVIEW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `operations/OPS_MANUAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `project_management/目录管理解决方案总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/FIGMA_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/AUTOMATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/COMPONENT_LIBRARY_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/PIXSO_IMPORT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/MYSTOCKS_DESIGN_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/20251121-spec优化建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/SKETCH_MANUAL_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `06-项目管理与报告/项目进度追踪与风险管控.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/代码优化执行报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/AI3_FRONTEND_COMPONENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档结构说明.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档验证报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/项目状态报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档迁移计划.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档优化计划.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/MULTI_CLI_V2_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档清理完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档管理指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `06-项目管理与报告/文档优化完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+- ❌ `architecture/DATASOURCE_ARCHITECTURE_FIRST_PRINCIPLES_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_GPU_DATA_PROCESSOR_FACTORY_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_OPTIMIZATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase_6_2_5_测试验证和性能基准_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_COLUMN_MAPPER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_STORAGE_BASE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/FIRST_PRINCIPLES_ARCHITECTURE_REVIEW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_ERROR_HANDLER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase4_Day1_Dashboard_API完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase4_Day4-5_Database_Persistence完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE_6_TESTING_COVERAGE_SUCCESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase3_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_ADD_DOC_METADATA_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_FUNCTION_SURVEY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/QLIB_ARCHITECTURE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase4_Day2_Strategy_Management_API完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_REVIEW_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DATA_SOURCE_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_UTILS_MODULES_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/数据源架构优化-执行摘要.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `architecture/PHASE6_DATA_ACCESS_FACTORY_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_COMPARISON.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_EXTENSION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DATA_SOURCE_LOGGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_TDX_CONNECTION_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/DATASOURCE_AND_DATABASE_ARCHITECTURE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DATA_VALIDATOR_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PostgreSQL_Schema_Design.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_SIMPLIFICATION_PRESENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DB_CONNECTION_RETRY_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase1_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/README_审批指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase3_Day1_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Strategy_Templates_Completion.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_SIMPLIFICATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/WEBSOCKET_ARCHITECTURE_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase4_Day3_Frontend_Integration完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DATA_SOURCE_INTERFACE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_PERFORMANCE_MONITOR_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase4_Day6-7_BacktestEngine_Completion.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/DATABASE_ARCHITECTURE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_LOGGING_CONFIG_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_SIMPLIFICATION_COMPLETE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_PRICE_DATA_ADAPTER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Strategy_Templates_Expansion.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_VOLUME_DATA_PROCESSOR_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_DATA_ACCESS_INTERFACE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/DATA_SOURCE_MANAGEMENT_V2.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase2_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_REVIEW_FIRST_PRINCIPLES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/数据源架构优化实施方案_v1.0.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `architecture/PHASE6_FAILURE_RECOVERY_QUEUE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ADAPTER_ROUTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE3_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_GPU_DATA_PROCESSING_INTERFACES_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase2_Day1_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_EVALUATION_REPORT_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_MONITORING_SERVICE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/ARCHITECTURE_REVIEW_REPORT_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/PHASE6_ALERT_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/Phase3_验证总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `architecture/TDengine_Schema_Design.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `tasks/PHASE_2_SAGA_ROLLOUT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `technical_debt/技术负债修复报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/SWAGGER_UI_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CLAUDE_AGENTS_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECH_DEBT_TEST_COVERAGE_UPDATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/INSTOCK_MIGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/STOCKS_SPEC_COMMAND_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEEK1_IMPLEMENTATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/README_UPDATED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DEV_TOOLCHAIN_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/OPENSTOCK_MIGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE_9_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CLI_REGISTRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECHNICAL_DEBT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TOOLCHAIN_TROUBLESHOOT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_TASK3_COMPLETION_REPORT_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MYSTOCKS_WORKTREE_MANAGEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CONFIG_SYSTEM_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/FRONTEND_BACKEND_DATA_FLOW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/UNIFIED_INTERFACE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/OPENSTOCK_MIGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/HOOKS_CONFIGURATION_DETAILED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/E2E_TEST_DEBUG_METHODS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE_10_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SPLIT_DATA_ACCESS_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_AI_Strategy_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TROUBLESHOOTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PYTHON_QUALITY_TOOLS_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AI_TEST_OPTIMIZER_TRAINING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/REAL_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TEST_COVERAGE_IMPROVEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE1_3_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/APIFOX_INTEGRATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE10_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MOCK_REAL_DATA_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/VUE_IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CLI_ROLES_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AGENTS_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/系统状态报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/APIFOX_MCP_SETUP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/告警规则设置方法.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/TECH_DEBT_ACTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE4_MILESTONE1_WEBSOCKET_TESTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_TASK2_VALIDATION_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DATABASE_SERVICE_TDD_REFACTORING_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/API_STANDARDIZATION_MASTER_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SECURITY_CI_CD_INTEGRATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_USABILITY_TESTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEEK1_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_DEV_HOOKS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SECURITY_TESTING_GUIDELINES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_Monitoring_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PROJECT_DIRECTORY_STANDARD.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_Implementation_Master_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TEAM_CONFIGURATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DOCUMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE4_ADVANCED_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/LEGACY_CODE_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PIXSO_MCP_NEXT_STEPS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/VALIDATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_HTML_SAMPLES_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE2_E2E_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MODULAR_CODE_USAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_COLLABORATION_METHOD.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PIXSO_MCP_TROUBLESHOOTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE2_FRAMEWORK_SETUP_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DEV_ENVIRONMENT_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AGENTS_CLEANUP_FINAL_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/ASYNC_MONITORING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE3_MILESTONE5_COVERAGE_REPORTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEBSOCKET_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/HOOKS_MIGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/OPENSTOCK_DEMO_PAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TDD_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_IMPLEMENTATION_STATUS_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/API对齐核心流程.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_Code_Reference_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PLAYWRIGHT_EXPANSION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/README_MOCK_DATA.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SECURE_CODING_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE_6_METHODOLOGY_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE1_EXCEPTION_HIERARCHY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE0_CREDENTIAL_ROTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_ROUTER_MIGRATION_RECORD.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DATA_CLEANING_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SECURITY_CODING_STANDARDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE_2_REAL_DATA_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/端口配置更新报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/ERROR_CODE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MOCK_REAL_DATA_SWITCHING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/INTEGRATION_TESTS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/API_CONTRACT_VERIFICATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SECURITY_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/REAL_DATA_INTEGRATION_PRINCIPLES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/目录管理解决方案总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/API_VERIFICATION_EXECUTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CLAUDE_CODE_TOOLS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/A_STOCK_DASHBOARD_USER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/HOOKS_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECHSTYLE_THEME_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AI_TEST_OPTIMIZER_USER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MONITORING_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/EXCEPTION_HANDLER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SWAGGER_UI_FINAL_SOLUTION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE1_COMPLETION_REPORT_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/OPENSTOCK_UPGRADE_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/API对齐方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/根目录混乱问题分析与解决方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/MOCK_DATA_USAGE_RULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DB_LEAK_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TDENGINE_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PORT_ALLOCATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/REAL_DATA_INTEGRATION_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECH_DEBT_ANALYSIS_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_IMPLEMENTATION_PLAN_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/QUICK_START_目录管理.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/UI_UX_OPTIMIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/关键经验和成功做法.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `guides/TECH_DEBT_METRICS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_OPTIMIZATION_PROPOSAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/OPENSTOCK_QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECHNICAL_DEBT_PHASE_3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/USER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_PROMPT_STRATEGIES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P2_API_INTEGRATION_TEMPLATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE3_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/SWAGGER_UI_CDN_SOLUTION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TASK_POOL_USAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DAY_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECHNICAL_DEBT_FIX_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_Deployment_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/WEB_FRAMEWORK_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/IFLOW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECH_DEBT_REMEDIATION_PLAN_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DOCUMENT_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECH_DEBT_COVERAGE_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/P0_TASK2_COMPLETION_REPORT_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/MODULAR_CODE_SPLIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE1_SECURITY_BRIEFING_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/Vue_FastAPI_GPU_System_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/CONTRACT_TESTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TOOLCHAIN_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PHASE3_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PIXSO_MCP_9tootls.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/PLAYWRIGHT_QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DATA_SOURCE_MONITORING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/LINEAR_THEME_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/AGENTS_CLEANUP_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DEPLOYMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/DEV_ENVIRONMENT_SETUP_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `performance/API_PERFORMANCE_BENCHMARK.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `features/STOCK_HEATMAP_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `features/TRADINGVIEW_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `features/WATCHLIST_GROUP_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `features/WENCAI_MENU_FIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `features/TRADINGVIEW_TROUBLESHOOTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `monitoring/MONITORING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `e2e/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `testing/E2E_TEST_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `02-架构与设计文档/数据源架构设计.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/备份策略架构优化.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/如何添加数据分类.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/数据源管理.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/Mock数据系统指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `02-架构与设计文档/ML集成完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 02-架构与设计文档
+  - 目录名有数字前缀: 02-架构与设计文档
+- ❌ `archive/WORK_SESSION_SUMMARY_2025-10-16.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DIRECTORY_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DISCUSSION_FAQ.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DISCUSSION_AGENDA.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/FEATURE_ENHANCEMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/REVIEW_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DISCUSSION_MATERIALS_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/QUICK_ACTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/MYSTOCKS_PROJECT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/T037_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/SESSION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/SIMPLIFICATION_DECISION_MATRIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DISCUSSION_MATERIALS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DIRECTORY_CLEANUP_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/DECISION_WORKSHEET.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/REVIEW_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/mongodb建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `archive/QLIB_INSPIRED_IMPROVEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/PYPROFILING_INTEGRATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `buger/B项目接入指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `buger/CLIENT_CONNECTION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `buger/CLIENT_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `function-classification-manual/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `frontend/SERVICE_ADAPTER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `04-测试与质量保障文档/技术债务分析报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `04-测试与质量保障文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `04-测试与质量保障文档/测试价值分析报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `04-测试与质量保障文档/BUGFIX-signals-500-error-retrospective.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `04-测试与质量保障文档/测试策略与规范.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `04-测试与质量保障文档/常见测试问题与解决方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 04-测试与质量保障文档
+  - 目录名有数字前缀: 04-测试与质量保障文档
+- ❌ `security/SECURITY_BEST_PRACTICES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/PHASE6_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/TEST_COVERAGE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/CODE_COMPLETENESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/CODE_SIZE_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `completion_reports/DOCUMENTATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `03-API与功能文档/API契约同步组件实现方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/指标管理系统设计文档.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/web契约开发方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/Web访问指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/web路由+契约开发.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/API接口对齐报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `03-API与功能文档/WENCAI实施完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 03-API与功能文档
+  - 目录名包含大写字母: 03-API与功能文档
+  - 目录名有数字前缀: 03-API与功能文档
+- ❌ `归档文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+- ❌ `归档文档/ARCHIVED.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+- ❌ `01-项目总览与核心规范/开发与安全规范.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 01-项目总览与核心规范
+  - 目录名有数字前缀: 01-项目总览与核心规范
+- ❌ `01-项目总览与核心规范/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 01-项目总览与核心规范
+  - 目录名有数字前缀: 01-项目总览与核心规范
+- ❌ `01-项目总览与核心规范/项目总览.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 01-项目总览与核心规范
+  - 目录名有数字前缀: 01-项目总览与核心规范
+- ❌ `01-项目总览与核心规范/开发工具链指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 01-项目总览与核心规范
+  - 目录名有数字前缀: 01-项目总览与核心规范
+- ❌ `web-dev/GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `cli_reports/CLI_2_WORK_GUIDANCE_UPDATED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `cli_reports/CLI_2_URGENT_FIX_PRIORITY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `cli_reports/CLI_2_WORK_GUIDANCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `cli_reports/CLI_3_FRONTEND_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `monitoring_reports/CLAUDE_MONITORING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `monitoring_reports/MONITORING_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `deployment/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `deployment/SETUP_GRAFANA.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `phase_reports/Phase_5_Frontend_Technical_Research_Report.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `phase_reports/Phase_6_3_GPU加速引擎核心功能重构_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `phase_reports/Phase_5_Technical_Research_Report.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/SECURITY_FOLLOWUP_PLAN_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/CODE_SIZE_OPTIMIZATION_SAVED_20251125.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/TEST_COVERAGE_EXPANSION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/API_RESPONSE_STANDARDIZATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/SECURITY_REMEDIATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/WEB_USABILITY_STANDARDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/SECURITY_AUDIT_REPORT_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/PROJECT_MODULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/TEST_COVERAGE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/TEST_COVERAGE_EXPANSION_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/FILE_ORGANIZATION_RULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/CODE_COMPLETENESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/LOCAL_ENV_SETUP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/项目开发规范与指导文档.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `standards/代码修改规则-合并.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `standards/SECURITY_AUDIT_REPORT_2025-12-23.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/UI_DESIGN_SYSTEM.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/代码修改规则.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `standards/IMPORT_STYLE_GUIDELINES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/PYLINT_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/00-DESIGN_OVERVIEW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/项目数据工作流程.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `standards/RESOURCE_LEAK_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/NEXT_STEPS_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/WEB_PAGE_STRUCTURE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/CODE_SIZE_OPTIMIZATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/MODULE_REGISTRY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/代码修改规则-new.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `standards/SECURITY_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `standards/PYLINT_BUGS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T2.5H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_HARDcoded_PASSWORD_SCAN_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_8_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T5H4H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE4_EXCEPTIONS_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/HOOK_EXCLUSION_RULES_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MENU_CONFIGURATION_MERGE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_7_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_COMPLETE_CLEANUP_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_ADAPTER_TDD_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_BATCH_FAILURE_STRATEGY_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_CLI_FINAL_SUMMARY_2025-12-31.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_EXECUTION_READINESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TECHNICAL_DEBT_REMEDIATION_SESSION_SUMMARY_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DOC_CLEANUP_EXECUTION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_SOURCE_V2_TEST_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SUBTASK_2_2_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE5_INTEGRATION_STRATEGY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_MERGE_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BREADCRUMB_ARTDECO_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_2_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DOCUMENTATION_STANDARDIZATION_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SAGA_TRANSACTION_VALIDATION_REPORT_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_E2E_TESTING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MARKET_CENTER_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_SOURCE_V2_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TYPESCRIPT_FIX_ARTDECO.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_TEST_INFRASTRUCTURE_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.2.2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_FRONTEND_INTEGRATION_TEST_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_CLEANING_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_V2_COMPONENTS_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/POSTGRESQL_CONNECTION_POOL_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_TEST_FIX_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_V2_CONTINUATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_3A_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/OPTIMIZATION_REPORT_20260107.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_VERIFICATION_QUICK_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/POSTGRESQL_DATA_MAPPER_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CLI_2_EXECUTION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_3C_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SQL_INJECTION_VULNERABILITY_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TMP_TO_PROJECT_MIGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P0_DATA_COMPONENTS_MIGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE3_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_DATA_POPULATION_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_MEMORY_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_REPORT_T1.5_CLI3_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CODE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/REALTIME_MARKET_SAGA_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/功能提取报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `reports/PHASE3_SOURCE_COVERAGE_ACHIEVEMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_1.2_TEST_INVESTIGATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_TEST_REPORT_2025-11-26.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SUBTASK_2_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_MIGRATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO迁移完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_WEEK1_PERFORMANCE_BASELINE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P1_INTEGRATION_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_2_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_ROUTE_PREFIX_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ANALYSIS_TOOL_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DEVELOPMENT_SUMMARY_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/RISK_CONTROL_API_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_ENHANCEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BACKTEST_API_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_2_1_DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE3_VERIFICATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_ERROR_HANDLING_MODULE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/STRATEGY_LAB_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_ROUND3_TEST_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/STOCK_MONITORING_PORTFOLIO_PROPOSAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ELEMENT_PLUS_GRADUAL_MIGRATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_FRONTEND_DESIGN_REVIEW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P0_TASK1_ASYNC_MONITORING_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/INTELLIGENT_THRESHOLD_MANAGER_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_6_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_FIX_SIMPLIFIED_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE3_TASK_CREATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_REPORT_CURRENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_FIX_PHASE2_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CLI_2_EXECUTION_REPORT_PART2.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE5_UNEXPECTED_BREAKTHROUGH.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SYSTEM_STATUS_20251020_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE10_BUG_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_UI_UX_PHASE1_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDENGINE_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_VISUAL_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/FINAL_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_COMPLETE_STATUS_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_CONFIG_SYSTEM_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SESSION_CONTINUATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_9_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_5_5_DATA_MAPPER_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_PAGE_DEVELOPMENT_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_ERRORS_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_MONITORING_MODULE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_4_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_DASHBOARD_FINAL_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_3_SAGA_FULLSTACK_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T6H5_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_REVIEW_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_REPORT_T0.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_AUTOMATION_TEST_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_DASHBOARD_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PRE_VERIFICATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_STANDARDIZATION_E2E_VERIFICATION_REPORT_2026-01-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_V2_IMPLEMENTATION_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.2.1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_WEB_DATA_USAGE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TYPESCRIPT修复完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE10_BUG_REPORTING_INTEGRATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_MODULES_VERIFICATION_REPORT_2025-12-31.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CLI_2_GIT_SUBMISSION_GUIDANCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_OPTIMIZATION_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T5H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SESSION_WORK_SUMMARY_20251111.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_VISUAL_OPTIMIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_WEEK1_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEEK_1_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MAIN_PROJECT_INTEGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MOCK_REAL_DOCS_CLEANUP_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ESLint_CONFIG_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/POSTGRESQL_QUERY_BUILDER_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_UNIFIED_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_ADAPTER_DEPENDENCY_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE5_DELIVERABLES_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MONITORING_SYSTEM_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_6_2_GPU_HAL_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_ROLE_COMPREHENSIVE_ASSESSMENT_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/A_STOCK_PROTOTYPE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_TEST_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/OPTIMIZATION_REPORT_20260107_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_WEEK1_TASK1_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DOCUMENTATION_ORGANIZATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_BAR_T4H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CLI_2_PRICE_PREDICTOR_FIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_RALPH_WIGGUM_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE7_WEEK2_PROGRESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_3B_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_1.3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/VICTORY_LAP_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_FIX_REPORT_20260102.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_VERIFICATION_PHASE21_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_AC_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DOCUMENT_ORGANIZATION_PLAN_REVIEW.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BACKUP_RECOVERY_SECURITY_DEPLOYMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DAY1_API_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE5_MERGE_COMPLETION_AND_NEXT_STEPS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_3_2_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/A_STOCK_DASHBOARD_TEST_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/VUE_DEMO_FILE_SPLIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T3H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_FIXES_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_INTEGRATION_TASKS_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE1_FINAL_COMPLETION_SUMMARY_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T6H_MILESTONE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_COVERAGE_REPORT_2025-11-13.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T3H5H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P2_INTEGRATION_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_6_2_3_KERNEL_LAYER_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/README_API_CONTRACT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_COVERAGE_IMPROVEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_DATA_VERIFICATION_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CLI_2_FINAL_SUBMISSION_GUIDANCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CHART_LIBRARY_COMPARISON_KLINECHARTS_VS_LIGHTWEIGHT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_TO_ELEMENT_PLUS_CLEANUP_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/FINAL_PROJECT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/REORGANIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_REORGANIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_CLEANING_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_COMPARISON_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_V2_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_CLI_DAILY_LOG_2025-12-31.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BACKEND_API_FIX_REAL_DATA_INTEGRATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_FINAL_STATUS_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ELEMENT_PLUS_GRID_LAYOUT_MIGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_PROGRESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_VALIDATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE10_FINAL_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_FUNCTIONALITY_AUDIT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_DOCS_ORGANIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.2.4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SIGNALS_DEBUG_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE10_DAY1_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TECHNICAL_DEBT_STATUS_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CONFIG_DRIVEN_TABLE_MANAGER_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_LAYOUT_OPTIMIZATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_STANDARDIZATION_NEXT_STEPS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDENGINE_FIX_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_FIX_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_QUICK_REFERENCE_CARD.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TRACK_A_T2_BUGER_INTEGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ESLint_ANY_TYPE_FIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_PAGES_INVENTORY_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_PLANNING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SESSION_COMPLETION_2025_11_06.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_CLI_COMPLETION_REPORT_2025-12-31.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MONITORING_EXPLORATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.2.5_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_FIX_OPTION_B_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_2_1_FILES_NAVIGATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_LAYOUT_OPTIMIZATION_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_CLEANING_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_TEST_FIXES_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ANALYSIS_TOOL_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/artdeco_优化方案对比说明.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `reports/API_DEPLOYMENT_VERIFICATION_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_COVERAGE_IMPROVEMENT_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_CLI_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_FIX_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_HTML_SAMPLE_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_FUNCTION_TEST_REPORT_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BACKUP_RECOVERY_SECURITY_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE10_PHASE11_TRANSITION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P2_PRIORITY_PAGES_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MONITORING_SYSTEM_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T4H5H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARCHITECTURE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_3_SAGA_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_STYLE_ANALYSIS_AND_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARCHITECTURE_REFACTOR_SUMMARY_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SESSION_COMPLETION_REPORT_20251111.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DAY1_SMOKE_TEST_RESULTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_DATABASE_MODULE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_WEEK1_PARALLEL_EXECUTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/CODE_REVIEW_FINDINGS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PROJECT_STATUS_QUICK_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/INTELLIGENT_THRESHOLD_MANAGER_TDD_REFACTORING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CONNECTION_POOL_CONFIG_PERFECT_COVERAGE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_VERIFICATION_QUICK_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_V2_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_5_6_UNIFIED_INTERFACE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_7_COMPLETION_CERTIFICATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_8_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_MULTI_CLI_COORDINATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_9_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_3_2_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P0_STRATEGY_API_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_ANALYSIS_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/E2E_FAILURE_CLASSIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_V2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_8_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_LAYOUT_OPTIMIZED_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/OPENSPROPOSAL_SUMMARY_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_INTEGRATION_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_UI_UX_OPTIMIZATION_REPORT_2026-01-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TEST_COVERAGE_ACHIEVEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SECURITY_FIX_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ARTDECO_UX_QUALITY_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SUBTASK_2_2_PHASE3_4_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE3_SQURGICAL_REPLACEMENT_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P0_TASKS_COMPLETION_REPORT_2026-01-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/ELEMENT_PLUS_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SAGA_TESTING_STRATEGY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/BRANCH_MERGE_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/API_STANDARDIZATION_VERIFICATION_REPORT_2026-01-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SUBTASK_2_2_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MOCK_REAL_DOCS_CLEANUP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE2_TASK2.2.3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_10_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/WEB_PERFORMANCE_FIXES_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_DATA_INVENTORY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_2_INTEGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/HOOKS_REPAIR_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDENGINE_SAGA_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SSE_SERVICE_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_BAR_T5H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_DATABASE_POOL_MODULE_COVERAGE_ACHIEVEMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TDX_ANALYSIS_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/SAGA_COORDINATOR_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE11_WEEK1_RUN2_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/TASK_2_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE_5_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_PROGRESS_REPORT_T1.5.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/PHASE6_CLI_STATUS_T4H.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/P1_DEEP_INTEGRATION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/MULTI_CLI_V2_ARCHITECTURE_COMPARISON.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/DATABASE_PREPARATION_STATUS_CONFIRMATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK-REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TYPESCRIPT_GENERATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_DOT_1_PROGRESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DEVELOPMENT_GUIDELINES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE7_DAY2_AUTH_BLOCKER_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_WEB_INTEGRATION_STRATEGY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API契约同步组件实现方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_ENDPOINT_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/IMPLEMENTATION_COMPLETE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/SWAGGER_EXTRACTION_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/NEXT_DEVELOPMENT_PHASES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_15_ALERT_NOTIFICATION_SYSTEM.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/FINAL_AGENTS_CLEANUP_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DEPLOYMENT_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_FRONTEND_MAPPING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DECISION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_CONTRACT_PLATFORM_DEPLOYMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_Interface_Document_Draft.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/APIFOX_BEGINNER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/SWAGGER_UI_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_COMMANDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DATABASE_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE11_VERIFICATION_REPORT_2025-12-02.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_REMAINING_FILES_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/AGENTS_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/MONITORING_METRICS_DEFINITION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API与Web组件最终对齐方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/apifox_mcp_playwright使用.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `api/REAL_DATA_BACKTEST_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_EXAMPLES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/ERROR_CODES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API与Web组件丝滑结合指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_CONTRACT_PLATFORM_NEXT_STEPS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_DOT_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_ARCHITECTURE_ANALYSIS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/README_COMPLIANCE_TESTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WEBSOCKET_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/NEXT_PHASES_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_13_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_ACCEPTANCE_STANDARDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_RESULTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API与web组件对齐方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_12_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/P0_INTEGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DEEP_FIXES_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_15_ALERT_ESCALATION_DESIGN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/IMPROVEMENT_PLAN_EXECUTOR.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DOCUMENTATION_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/ALERTING_CONFIGURATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API优化建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CODEBASE_EXPLORATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WEB_READINESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WORK_COMPLETION_REPORT_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_8_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE11_FINAL_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/APIFOX_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE1-2_ACCEPTANCE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_QUICK_START_TEMPLATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DATABASE_INDEX_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/Phase_6_4_GPU加速引擎集成与测试_完成报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API列表文档.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE7_CSRF_RESOLUTION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DOC_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_EXECUTION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/STOCK_CODES_FETCH_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/APIFOX_IMPORT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_CSRF_PROTECTION_GUIDE_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_QUICK_FIX_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_PHASE3_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WEB_PAGES_API_MAPPING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_COMPLIANCE_IMPROVEMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_EXECUTION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_15_ALERT_HISTORY_ANALYTICS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/AGENTS_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WEBSOCKET_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/MyStocks_API_Mapping_Document.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_Integration_Optimization_Plan.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_PHASE4_COMPLETION_REPORT_2025-12-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_EXECUTION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/BACKUP_RECOVERY_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE11_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_OPTIMIZATION_REPORT_2025-12-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/SWAGGER_DOCUMENTATION_STATUS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_DOT_1_PROGRESS_REPORT_CONTINUED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/LLMS_API_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_ENHANCEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4_2_INTEGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DECISION_FLOWCHART.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/IMPLEMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_COMPLIANCE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_COMPLIANCE_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_INTERFACE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CONTRACT_MANAGEMENT_API.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_COMPLIANCE_TESTING_FRAMEWORK.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TDX_DATA_CAPABILITIES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TEST_CLI_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE11_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_DEVELOPMENT_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/WEEK3_PRODUCTION_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_INTEGRATION_IMPLEMENTATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_INVENTORY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_11_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CLI_TOOL_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CONTRACT_TESTING_API.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CURRENT_STATUS_AND_DEVELOPMENT_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_FIXES_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE7_E2E_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE2_STRATEGY_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_EXTENSION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/APIFOX_IMPORT_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/AKSHARE_INTERFACE_MAPPING.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DEPLOYMENT_ACCEPTANCE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/FastAPI应用开发指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_14_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/E2E_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_15_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE2_DATA_ACCESS_TEST_COVERAGE_ACHIEVEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/TASK_15_ALERT_AGGREGATION_SUPPRESSION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_WEB_ALIGNMENT_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API开发.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/GPU开发经验总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/MYSTOCKS_E2E_USABILITY_TEST_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API_SECURITY_FIXES_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/CI_CD_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/DATA_MODELS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/API契约同步基础.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/PHASE4C_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `05-部署与运维监控文档/数据同步故障排除.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 05-部署与运维监控文档
+  - 目录名有数字前缀: 05-部署与运维监控文档
+- ❌ `05-部署与运维监控文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 05-部署与运维监控文档
+  - 目录名有数字前缀: 05-部署与运维监控文档
+- ❌ `05-部署与运维监控文档/运维效果分析报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 05-部署与运维监控文档
+  - 目录名有数字前缀: 05-部署与运维监控文档
+- ❌ `05-部署与运维监控文档/日志查看工具集成.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 05-部署与运维监控文档
+  - 目录名有数字前缀: 05-部署与运维监控文档
+- ❌ `web/TECHSTYLE_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/FRONTEND_ARCHITECTURE_EVALUATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/WEB3_DESIGN_COMPLETE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/FRONTEND_STARTUP_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/FRONTEND_IMPROVEMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/FRONTEND_ACCESS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/ART_DECO_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/TECHSTYLE_THEME_IMPROVEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/web页面结构详细描述.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `web/WEB3_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/FRONTEND_EVALUATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/ART_DECO_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/TECHSTYLE_VISUAL_COMPARISON.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/ART_DECO_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/ART_DECO_COMPONENT_SHOWCASE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/LINEAR_THEME_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/WEB3_DESIGN_SYSTEM.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `web/WEB3_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/REALTIME_MARKET_SAVER.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/WEEK1_PROGRESS_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/改进意见1.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `archived/改进意见0.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `archived/CODE_RULES_UPDATE_LOG.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DAY5_FINAL_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/US4_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/WEEK5_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/QUICK_COMPARISON.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/COMPLIANCE_AUDIT_AND_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/TASKMASTER_START_HERE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/MVP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/WEEK1_COMPLETE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DATABASE_MANAGER_ISSUES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/PHASE4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/README_realtime_stock_saver.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/PHASE1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/SAVE_REALTIME_DATA_USAGE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/US4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/START_HERE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/MVP_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/US2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/QUANT_DATA_MANAGEMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/AKSHARE_FULL_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DAY5_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/PLAN_A0_IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/WEEK2_DAY1_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/REORGANIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/PHASE5_US3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DATABASE_MANAGER_FIX_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/FILE_CLEANUP_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/MULTI_CLI_MIGRATION_NOTICE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/ANALYSIS_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DB_FIX_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/THS_INDUSTRY_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/GRAFANA_DEPLOYMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/PROJECT_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/DATA_ROUTING_EXPLANATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/WEEK2_DAY2_E2E_TESTING_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archived/IMPLEMENTATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `tdx_integration/INTEGRATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `tdx_integration/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/update/执行摘要_四阶段优化方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/update/技术实施指南_第一阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/update/技术实施指南_第二阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/update/技术实施指南_第四阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/update/Web功能优化四阶段实施计划.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/update/技术实施指南_第三阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+- ❌ `design/html_sample/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `design/html_sample/ArtDeco.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `06-项目管理与报告/历史指南/SWAGGER_UI_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_TEST_COVERAGE_UPDATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/INSTOCK_MIGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/WEEK1_IMPLEMENTATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/README_UPDATED.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DEV_TOOLCHAIN_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE_9_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECHNICAL_DEBT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TOOLCHAIN_TROUBLESHOOT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_TASK3_COMPLETION_REPORT_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/FRONTEND_BACKEND_DATA_FLOW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/HOOKS_CONFIGURATION_DETAILED.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE_10_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_AI_Strategy_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TEST_COVERAGE_IMPROVEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE1_3_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/APIFOX_INTEGRATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE10_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/VUE_IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/系统状态报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/APIFOX_MCP_SETUP.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_ACTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE4_MILESTONE1_WEBSOCKET_TESTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_TASK2_VALIDATION_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/WEB_USABILITY_TESTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/WEEK1_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_Monitoring_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PROJECT_DIRECTORY_STANDARD.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_Implementation_Master_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TEAM_CONFIGURATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DOCUMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE4_ADVANCED_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/LEGACY_CODE_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PIXSO_MCP_NEXT_STEPS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE2_E2E_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/MODULAR_CODE_USAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PIXSO_MCP_TROUBLESHOOTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE2_FRAMEWORK_SETUP_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DEV_ENVIRONMENT_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE3_MILESTONE5_COVERAGE_REPORTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/WEBSOCKET_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/HOOKS_MIGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/OPENSTOCK_DEMO_PAGE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_IMPLEMENTATION_STATUS_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_Code_Reference_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PLAYWRIGHT_EXPANSION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE1_EXCEPTION_HIERARCHY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE0_CREDENTIAL_ROTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/端口配置更新报告.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/INTEGRATION_TESTS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/SECURITY_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/目录管理解决方案总结.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/CLAUDE_CODE_TOOLS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/HOOKS_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/MONITORING_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/SWAGGER_UI_FINAL_SOLUTION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE1_COMPLETION_REPORT_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/OPENSTOCK_UPGRADE_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/根目录混乱问题分析与解决方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DB_LEAK_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TDENGINE_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PORT_ALLOCATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_ANALYSIS_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_IMPLEMENTATION_PLAN_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/QUICK_START_目录管理.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/UI_UX_OPTIMIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/关键经验和成功做法.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_METRICS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/OPENSTOCK_QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P2_API_INTEGRATION_TEMPLATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE3_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/SWAGGER_UI_CDN_SOLUTION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DAY_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECHNICAL_DEBT_FIX_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_Deployment_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/IFLOW.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_REMEDIATION_PLAN_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DOCUMENT_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECH_DEBT_COVERAGE_FINAL_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/P0_TASK2_COMPLETION_REPORT_2025-12-04.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/MODULAR_CODE_SPLIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE1_SECURITY_BRIEFING_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/Vue_FastAPI_GPU_System_Implementation_Guide.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/CONTRACT_TESTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TOOLCHAIN_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PHASE3_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PIXSO_MCP_9tootls.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/PLAYWRIGHT_QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `06-项目管理与报告/历史指南/DEV_ENVIRONMENT_SETUP_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 06-项目管理与报告
+  - 目录名有数字前缀: 06-项目管理与报告
+  - 目录名包含中文: 历史指南
+- ❌ `guides/multi-cli-tasks/TASK_TEMPLATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `archive/2025/Q4/PYPROF_INTEGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/US3_CORE_REFACTORING_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/CODE_OPTIMIZATION_EXECUTION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/TEST_COVERAGE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/US3_PHASE1_2_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/CODE_COMPLETENESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/DOCUMENTATION_VALIDATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/TMUX_TOOLCHAIN_DEBUG_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/US3_ARCHITECTURE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/PYPROF_INTEGRATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/US2_SIMPLIFIED_DATABASE_ARCHITECTURE_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/2025_Q4_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/TECHNICAL_DEBT_ANALYSIS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/PHASE_3_CODE_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/CODE_SIZE_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/US1_DOCUMENTATION_ALIGNMENT_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/WENCAI_INTEGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/HOOKS_STANDARDIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/DIALOGUE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `archive/2025/Q4/PROJECT_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: Q4
+- ❌ `归档文档/旧标准文档/SECURITY_FOLLOWUP_PLAN_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/CODE_SIZE_OPTIMIZATION_SAVED_20251125.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/TEST_COVERAGE_EXPANSION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/API_RESPONSE_STANDARDIZATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/WEB_USABILITY_STANDARDS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/SECURITY_AUDIT_REPORT_20251130.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/PROJECT_MODULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/TEST_COVERAGE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/TEST_COVERAGE_EXPANSION_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/FILE_ORGANIZATION_RULES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/CODE_COMPLETENESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/LOCAL_ENV_SETUP.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/项目开发规范与指导文档.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/代码修改规则-合并.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/代码修改规则.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/PYLINT_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/项目数据工作流程.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/RESOURCE_LEAK_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/WEB_PAGE_STRUCTURE_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/CODE_SIZE_OPTIMIZATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/MODULE_REGISTRY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/代码修改规则-new.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/SECURITY_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧标准文档/PYLINT_BUGS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧标准文档
+- ❌ `归档文档/旧功能文档/STOCK_HEATMAP_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧功能文档
+- ❌ `归档文档/旧功能文档/TRADINGVIEW_FIX_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧功能文档
+- ❌ `归档文档/旧功能文档/WATCHLIST_GROUP_IMPLEMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧功能文档
+- ❌ `归档文档/旧功能文档/WENCAI_MENU_FIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧功能文档
+- ❌ `归档文档/旧功能文档/TRADINGVIEW_TROUBLESHOOTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧功能文档
+- ❌ `归档文档/临时文档/PHASE3_CI_CD_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/WENCAI_INTEGRATION_QUICKREF.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PYPROF_INTEGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/technical_debt_assessment_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US3_CORE_REFACTORING_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/ENHANCED_UI_UX_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/ML_INTEGRATION_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/websocket_optimization_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US3_PHASE1_2_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/WENCAI_INTEGRATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/TMUX_TOOLCHAIN_DEBUG_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US3_ARCHITECTURE_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PYPROF_INTEGRATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US2_SIMPLIFIED_DATABASE_ARCHITECTURE_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US3_QUICK_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PROJECT_FULL_DOC.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PHASE_3_CODE_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/technical_debt_remediation_plan.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/CURRENT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/WENCAI_INTEGRATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/WENCAI_PHASE1_COMPLETED.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/technical_debt_analysis_summary.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US1_DOCUMENTATION_ALIGNMENT_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PRODUCTION_INFO.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/e2e-testing-ci-cd-architecture.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/WENCAI_INTEGRATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/HOOKS_STANDARDIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/project_status_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/DIALOGUE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PERFORMANCE_BASELINE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/CODE_OPTIMIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/PYPROF_INTEGRATION_ROADMAP.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/US2_DATABASE_ARCHITECTURE_CLARIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/旧架构文档/archive/WORK_SESSION_SUMMARY_2025-10-16.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DIRECTORY_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DISCUSSION_FAQ.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DISCUSSION_AGENDA.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/FEATURE_ENHANCEMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/REVIEW_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DISCUSSION_MATERIALS_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/QUICK_ACTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/MYSTOCKS_PROJECT_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/T037_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/SESSION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/SIMPLIFICATION_DECISION_MATRIX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DISCUSSION_MATERIALS_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DIRECTORY_CLEANUP_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/DECISION_WORKSHEET.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/REVIEW_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/mongodb建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/QLIB_INSPIRED_IMPROVEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/PYPROFILING_INTEGRATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archive/webpage_advice.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_implementation_summary.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/REALTIME_MARKET_SAVER.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/WEEK1_PROGRESS_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/改进意见1.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/改进意见0.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_integration_audit_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_integration_fixes_summary.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/CODE_RULES_UPDATE_LOG.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DAY5_FINAL_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/US4_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/WEEK5_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/QUICK_COMPARISON.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/COMPLIANCE_AUDIT_AND_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_menu_integration_plan.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/TASKMASTER_START_HERE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/MVP_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/WEEK1_COMPLETE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DATABASE_MANAGER_ISSUES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/PHASE4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/README_realtime_stock_saver.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_integration_day34_completion.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_integration_audit_summary.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/PHASE1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/SAVE_REALTIME_DATA_USAGE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/US4_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/START_HERE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/MVP_IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/US2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/QUANT_DATA_MANAGEMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/AKSHARE_FULL_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DAY5_TESTING_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/PLAN_A0_IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/WEEK2_DAY1_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/REORGANIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/web_integration_comparison.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/PHASE5_US3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DATABASE_MANAGER_FIX_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/FILE_CLEANUP_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/architecture_analysis_20251108.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/ANALYSIS_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DB_FIX_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/THS_INDUSTRY_README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/GRAFANA_DEPLOYMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/PROJECT_REORGANIZATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/DATA_ROUTING_EXPLANATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/WEEK2_DAY2_E2E_TESTING_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/IMPLEMENTATION_STATUS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧架构文档/archived/architecture_analysis_revised_20251108.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧架构文档
+- ❌ `归档文档/旧设计文档/design/FIGMA_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/AUTOMATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/COMPONENT_LIBRARY_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/PIXSO_IMPORT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/MYSTOCKS_DESIGN_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/20251121-spec优化建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/SKETCH_MANUAL_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/执行摘要_四阶段优化方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/技术实施指南_第一阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/技术实施指南_第二阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/技术实施指南_第四阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/Web功能优化四阶段实施计划.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/update/技术实施指南_第三阶段.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/web_design_index.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/6.风险管理页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/1.仪表盘页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/3.市场数据页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/2.市场行情页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/5.数据分析页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/开发规范与接口契约_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/开发分工与里程碑_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/8.交易管理页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/IFLOW.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/4.股票管理页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/9.其他页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧设计文档/design/web_design/7.策略回测管理页面_优化版.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧设计文档
+- ❌ `归档文档/旧部署文档/security/SECURITY_BEST_PRACTICES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧部署文档
+- ❌ `归档文档/旧部署文档/deployment/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧部署文档
+- ❌ `归档文档/旧API文档/api/API_DEVELOPMENT_GUIDELINES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_ENDPOINT_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/IMPLEMENTATION_COMPLETE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/SWAGGER_EXTRACTION_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_15_ALERT_NOTIFICATION_SYSTEM.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_FRONTEND_MAPPING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DECISION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/APIFOX_BEGINNER_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/SWAGGER_UI_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_SPECIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/DATABASE_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE11_VERIFICATION_REPORT_2025-12-02.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE4_REMAINING_FILES_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/MONITORING_METRICS_DEFINITION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API与Web组件最终对齐方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/apifox_mcp_playwright使用.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_EXAMPLES.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API与Web组件丝滑结合指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_ARCHITECTURE_ANALYSIS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/README_COMPLIANCE_TESTING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/WEBSOCKET_DOCUMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_13_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API与web组件对齐方案.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_12_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/P0_INTEGRATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/DEEP_FIXES_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_15_ALERT_ESCALATION_DESIGN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DOCUMENTATION_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/ALERTING_CONFIGURATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API优化建议.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/CODEBASE_EXPLORATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/WEB_READINESS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/WORK_COMPLETION_REPORT_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_8_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE11_FINAL_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/APIFOX_QUICK_START.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_QUICK_START_TEMPLATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/DATABASE_INDEX_OPTIMIZATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API列表文档.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DOC_REFERENCE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/E2E_TEST_EXECUTION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/APIFOX_IMPORT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_CSRF_PROTECTION_GUIDE_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_COMPLIANCE_IMPROVEMENTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_15_ALERT_HISTORY_ANALYTICS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/WEBSOCKET_OPTIMIZATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_PHASE4_COMPLETION_REPORT_2025-12-03.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/BACKUP_RECOVERY_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE11_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_OPTIMIZATION_REPORT_2025-12-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_STATUS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/LLMS_API_DOCUMENTATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_ENHANCEMENT_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DECISION_FLOWCHART.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/IMPLEMENTATION_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_COMPLIANCE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_COMPLIANCE_TEST_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_INTERFACE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_COMPLIANCE_TESTING_FRAMEWORK.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE11_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/IMPLEMENTATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_DEVELOPMENT_CHECKLIST.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/WEEK3_PRODUCTION_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_11_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/CONTRACT_TESTING_API.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_FIXES_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE3_IMPLEMENTATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/APIFOX_IMPORT_SUCCESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/FastAPI应用开发指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_14_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_15_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/TASK_15_ALERT_AGGREGATION_SUPPRESSION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_WEB_ALIGNMENT_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API开发.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/MYSTOCKS_E2E_USABILITY_TEST_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/API_SECURITY_FIXES_SUMMARY_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧API文档/api/PHASE4C_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧API文档
+  - 目录名包含大写字母: 旧API文档
+- ❌ `归档文档/旧测试文档/e2e/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧测试文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_8_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_7_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/MOCK_DATA_USAGE_REPORT_2025-11-30.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_EXECUTION_READINESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TECHNICAL_DEBT_REMEDIATION_SESSION_SUMMARY_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SUBTASK_2_2_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE1_2_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE2_E2E_TESTING_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_FRONTEND_INTEGRATION_TEST_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_TEST_FIX_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE1_3A_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE1_3C_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SQL_INJECTION_VULNERABILITY_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_DATA_POPULATION_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/CODE_REVIEW_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/E2E_TEST_REPORT_2025-11-26.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SUBTASK_2_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_WEEK1_PERFORMANCE_BASELINE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/P1_INTEGRATION_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_2_1_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/DEVELOPMENT_SUMMARY_2025.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_2_1_DEPLOYMENT_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_6_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE3_TASK_CREATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SYSTEM_STATUS_20251020_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE10_BUG_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TDENGINE_FIX_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_COMPLETE_STATUS_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SESSION_CONTINUATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_9_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_4_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE10_BUG_REPORTING_INTEGRATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SESSION_WORK_SUMMARY_20251111.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_WEEK1_STATUS_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEEK_1_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_ADAPTER_DEPENDENCY_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_3_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/first_phase_technical_debt_completion_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_WEEK1_TASK1_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/DOCUMENTATION_ORGANIZATION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TEST_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE1_3B_COMPLETION_REPORT_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/type_annotations_analysis_report.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_DEPLOYMENT_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/DAY1_API_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_FIXES_SUMMARY_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_INTEGRATION_TASKS_AUDIT_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE1_FINAL_COMPLETION_SUMMARY_2025-12-05.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TEST_COVERAGE_REPORT_2025-11-13.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/P2_INTEGRATION_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/REORGANIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_FINAL_STATUS_20251020.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TEST_VALIDATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE10_FINAL_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_FUNCTIONALITY_AUDIT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE10_DAY1_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TDENGINE_FIX_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TRACK_A_T2_BUGER_INTEGRATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_PLANNING.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SESSION_COMPLETION_2025_11_06.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/MONITORING_EXPLORATION_COMPLETE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_2_1_FILES_NAVIGATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/E2E_TEST_FIXES_COMPLETION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_FUNCTION_TEST_REPORT_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_FINAL_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE10_PHASE11_TRANSITION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/P2_PRIORITY_PAGES_ASSESSMENT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/MONITORING_SYSTEM_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SESSION_COMPLETION_REPORT_20251111.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/DAY1_SMOKE_TEST_RESULTS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE2_FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_WEEK1_PARALLEL_EXECUTION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PROJECT_STATUS_QUICK_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_7_COMPLETION_CERTIFICATE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_8_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_9_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/E2E_FAILURE_CLASSIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE_8_COMPLETION_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_INTEGRATION_EXECUTIVE_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SUBTASK_2_2_PHASE3_4_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/SUBTASK_2_2_PROGRESS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_10_COMPLETION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/WEB_PERFORMANCE_FIXES_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/PHASE11_WEEK1_RUN2_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/TASK_2_IMPLEMENTATION_PLAN.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/旧报告文档/reports/P1_DEEP_INTEGRATION_VERIFICATION.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 旧报告文档
+- ❌ `归档文档/临时文档/buger/B项目接入指南.md`
+  - 包含中文字符
+  - 包含特殊字符
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/buger/CLIENT_CONNECTION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/buger/CLIENT_INTEGRATION_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/01-core-functions.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/08-consolidation-guide.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/02-auxiliary-functions.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/04-monitoring-functions.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/duplication-summary.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/07-optimization-roadmap.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/03-infrastructure-functions.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/05-utility-functions.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/06-duplication-analysis.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/function-classification-manual/09-data-flow-maps.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/data_visualization.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/data_capture.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/INTEGRATION_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/complete_example.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `归档文档/临时文档/tdx_integration/data_analysis.md`
+  - 目录名包含中文: 归档文档
+  - 目录名包含中文: 临时文档
+- ❌ `standards/03-PAGE_DESIGNS/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: 03-PAGE_DESIGNS
+  - 目录名有数字前缀: 03-PAGE_DESIGNS
+- ❌ `standards/04-INTERACTION_FLOWS/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: 04-INTERACTION_FLOWS
+  - 目录名有数字前缀: 04-INTERACTION_FLOWS
+- ❌ `standards/01-DESIGN_SYSTEM/color-system.md`
+  - 目录名包含大写字母: 01-DESIGN_SYSTEM
+  - 目录名有数字前缀: 01-DESIGN_SYSTEM
+- ❌ `standards/01-DESIGN_SYSTEM/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: 01-DESIGN_SYSTEM
+  - 目录名有数字前缀: 01-DESIGN_SYSTEM
+- ❌ `standards/01-DESIGN_SYSTEM/typography.md`
+  - 目录名包含大写字母: 01-DESIGN_SYSTEM
+  - 目录名有数字前缀: 01-DESIGN_SYSTEM
+- ❌ `standards/02-COMPONENT_LIBRARY/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+  - 目录名包含大写字母: 02-COMPONENT_LIBRARY
+  - 目录名有数字前缀: 02-COMPONENT_LIBRARY
+- ❌ `reports/design/ARTDECO_PHASE2_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_split/QUICKSTART.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_split/API_SPLIT_INDEX.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_split/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_split/SPLIT_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/API_VERIFICATION_COMPREHENSIVE_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.2_TEST_CASES.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.7_2.8_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/BUG_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.2_BUG_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.7_2.8_VERIFICATION_REPORT_FINAL.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.3_2.4_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.7_2.8_VERIFICATION_REPORT_FIXED.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/api_verification/PHASE_2.2_KLINE_API_VERIFICATION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/bugs/MANUAL_BUG_REPORTING_GUIDE.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/phase4_6/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/TEST_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/PORT_STANDARDIZATION_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/README.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/API_AUTOMATION_TEST_SUMMARY.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/DETAILED_ANALYSIS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/FINAL_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/CORS_FIX_COMPLETION_REPORT.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `reports/test-results/FIX_RECOMMENDATIONS.md`
+  - 包含大写字母（推荐使用kebab-case）
+- ❌ `api/openapi/CONTRACT_REGISTRY.md`
+  - 包含大写字母（推荐使用kebab-case）
+
+## Empty Dirs
+
+- reports/nicegui_web_design
+- archive/2025/Q1
+- archive/2025/Q3
+- archive/2025/Q2
+- 归档文档/旧架构文档/architecture
+
+## Duplicates
+
+- 📋 2 个文件内容相同:
+  - `PHASE3_CI_CD_INTEGRATION_PLAN.md`
+  - `归档文档/临时文档/PHASE3_CI_CD_INTEGRATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `WENCAI_INTEGRATION_QUICKREF.md`
+  - `归档文档/临时文档/WENCAI_INTEGRATION_QUICKREF.md`
+- 📋 2 个文件内容相同:
+  - `technical_debt_assessment_report.md`
+  - `归档文档/临时文档/technical_debt_assessment_report.md`
+- 📋 2 个文件内容相同:
+  - `technical_debt_analysis_report.md`
+  - `04-测试与质量保障文档/技术债务分析报告.md`
+- 📋 2 个文件内容相同:
+  - `US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
+  - `归档文档/临时文档/US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `IMPLEMENTATION_GUIDE.md`
+  - `completion_reports/IMPLEMENTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `QUICK_START.md`
+  - `归档文档/临时文档/QUICK_START.md`
+- 📋 2 个文件内容相同:
+  - `ENHANCED_UI_UX_GUIDE.md`
+  - `归档文档/临时文档/ENHANCED_UI_UX_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `ML_INTEGRATION_PROGRESS.md`
+  - `归档文档/临时文档/ML_INTEGRATION_PROGRESS.md`
+- 📋 2 个文件内容相同:
+  - `websocket_optimization_report.md`
+  - `归档文档/临时文档/websocket_optimization_report.md`
+- 📋 2 个文件内容相同:
+  - `ML_INTEGRATION_COMPLETE.md`
+  - `02-架构与设计文档/ML集成完成报告.md`
+- 📋 2 个文件内容相同:
+  - `DEPLOYMENT_GUIDE.md`
+  - `归档文档/临时文档/DEPLOYMENT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `DOCUMENTATION_GUIDE.md`
+  - `06-项目管理与报告/文档管理指南.md`
+- 📋 2 个文件内容相同:
+  - `TMUX_LNAV_INTEGRATION.md`
+  - `05-部署与运维监控文档/日志查看工具集成.md`
+- 📋 2 个文件内容相同:
+  - `HOW_TO_ADD_NEW_DATA_CLASSIFICATION.md`
+  - `02-架构与设计文档/如何添加数据分类.md`
+- 📋 2 个文件内容相同:
+  - `WEB_ACCESS_GUIDE.md`
+  - `03-API与功能文档/Web访问指南.md`
+- 📋 2 个文件内容相同:
+  - `WENCAI_INTEGRATION_PLAN.md`
+  - `归档文档/临时文档/WENCAI_INTEGRATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `技术负债修复报告.md`
+  - `technical_debt/技术负债修复报告.md`
+- 📋 2 个文件内容相同:
+  - `DOCUMENTATION_STRUCTURE.md`
+  - `06-项目管理与报告/文档结构说明.md`
+- 📋 2 个文件内容相同:
+  - `backup_strategy_arch_optimization.md`
+  - `02-架构与设计文档/备份策略架构优化.md`
+- 📋 2 个文件内容相同:
+  - `testing_strategy.md`
+  - `04-测试与质量保障文档/测试策略与规范.md`
+- 📋 2 个文件内容相同:
+  - `ARCHIVED.md`
+  - `归档文档/ARCHIVED.md`
+- 📋 2 个文件内容相同:
+  - `US3_QUICK_REFERENCE.md`
+  - `归档文档/临时文档/US3_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `DATA_SOURCE_ARCHITECTURE.md`
+  - `02-架构与设计文档/数据源架构设计.md`
+- 📋 2 个文件内容相同:
+  - `PROJECT_FULL_DOC.md`
+  - `归档文档/临时文档/PROJECT_FULL_DOC.md`
+- 📋 2 个文件内容相同:
+  - `目录管理解决方案总结.md`
+  - `project_management/目录管理解决方案总结.md`
+- 📋 2 个文件内容相同:
+  - `technical_debt_remediation_plan.md`
+  - `归档文档/临时文档/technical_debt_remediation_plan.md`
+- 📋 2 个文件内容相同:
+  - `CURRENT_STATUS.md`
+  - `归档文档/临时文档/CURRENT_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `WENCAI_INTEGRATION_INDEX.md`
+  - `归档文档/临时文档/WENCAI_INTEGRATION_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `WENCAI_PHASE1_COMPLETED.md`
+  - `归档文档/临时文档/WENCAI_PHASE1_COMPLETED.md`
+- 📋 2 个文件内容相同:
+  - `technical_debt_analysis_summary.md`
+  - `归档文档/临时文档/technical_debt_analysis_summary.md`
+- 📋 2 个文件内容相同:
+  - `WENCAI_IMPLEMENTATION_COMPLETE.md`
+  - `03-API与功能文档/WENCAI实施完成报告.md`
+- 📋 2 个文件内容相同:
+  - `API_INTERFACE_ALIGNMENT.md`
+  - `03-API与功能文档/API接口对齐报告.md`
+- 📋 2 个文件内容相同:
+  - `PRODUCTION_INFO.md`
+  - `归档文档/临时文档/PRODUCTION_INFO.md`
+- 📋 2 个文件内容相同:
+  - `e2e-testing-ci-cd-architecture.md`
+  - `归档文档/临时文档/e2e-testing-ci-cd-architecture.md`
+- 📋 2 个文件内容相同:
+  - `DATA_SYNC_TROUBLESHOOT.md`
+  - `05-部署与运维监控文档/数据同步故障排除.md`
+- 📋 2 个文件内容相同:
+  - `PERFORMANCE_BASELINE.md`
+  - `归档文档/临时文档/PERFORMANCE_BASELINE.md`
+- 📋 2 个文件内容相同:
+  - `CODE_OPTIMIZATION_PLAN.md`
+  - `归档文档/临时文档/CODE_OPTIMIZATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `PYPROF_INTEGRATION_ROADMAP.md`
+  - `归档文档/临时文档/PYPROF_INTEGRATION_ROADMAP.md`
+- 📋 2 个文件内容相同:
+  - `US2_DATABASE_ARCHITECTURE_CLARIFICATION.md`
+  - `归档文档/临时文档/US2_DATABASE_ARCHITECTURE_CLARIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `design/FIGMA_QUICK_START.md`
+  - `归档文档/旧设计文档/design/FIGMA_QUICK_START.md`
+- 📋 2 个文件内容相同:
+  - `design/AUTOMATION_GUIDE.md`
+  - `归档文档/旧设计文档/design/AUTOMATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `design/COMPONENT_LIBRARY_SPECIFICATION.md`
+  - `归档文档/旧设计文档/design/COMPONENT_LIBRARY_SPECIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `design/PIXSO_IMPORT_GUIDE.md`
+  - `归档文档/旧设计文档/design/PIXSO_IMPORT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `design/MYSTOCKS_DESIGN_SPECIFICATION.md`
+  - `归档文档/旧设计文档/design/MYSTOCKS_DESIGN_SPECIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `design/20251121-spec优化建议.md`
+  - `归档文档/旧设计文档/design/20251121-spec优化建议.md`
+- 📋 2 个文件内容相同:
+  - `design/SKETCH_MANUAL_GUIDE.md`
+  - `归档文档/旧设计文档/design/SKETCH_MANUAL_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `06-项目管理与报告/代码优化执行报告.md`
+  - `archive/2025/Q4/CODE_OPTIMIZATION_EXECUTION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `06-项目管理与报告/文档验证报告.md`
+  - `archive/2025/Q4/DOCUMENTATION_VALIDATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `06-项目管理与报告/项目状态报告.md`
+  - `archive/2025/Q4/PROJECT_STATUS_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `06-项目管理与报告/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md`
+  - `reports/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `06-项目管理与报告/MULTI_CLI_V2_FIX_SUMMARY.md`
+  - `reports/MULTI_CLI_V2_FIX_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
+  - `guides/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `guides/SWAGGER_UI_QUICK_REFERENCE.md`
+  - `06-项目管理与报告/历史指南/SWAGGER_UI_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_TEST_COVERAGE_UPDATE.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_TEST_COVERAGE_UPDATE.md`
+- 📋 2 个文件内容相同:
+  - `guides/INSTOCK_MIGRATION_REPORT.md`
+  - `06-项目管理与报告/历史指南/INSTOCK_MIGRATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/WEEK1_IMPLEMENTATION_STATUS.md`
+  - `06-项目管理与报告/历史指南/WEEK1_IMPLEMENTATION_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `guides/README_UPDATED.md`
+  - `06-项目管理与报告/历史指南/README_UPDATED.md`
+- 📋 2 个文件内容相同:
+  - `guides/DEV_TOOLCHAIN_GUIDE.md`
+  - `06-项目管理与报告/历史指南/DEV_TOOLCHAIN_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/OPENSTOCK_MIGRATION_SUMMARY.md`
+  - `06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE_9_COMPLETION.md`
+  - `06-项目管理与报告/历史指南/PHASE_9_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `guides/QUICKSTART.md`
+  - `06-项目管理与报告/历史指南/QUICKSTART.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECHNICAL_DEBT_STATUS.md`
+  - `06-项目管理与报告/历史指南/TECHNICAL_DEBT_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `guides/TOOLCHAIN_TROUBLESHOOT.md`
+  - `06-项目管理与报告/历史指南/TOOLCHAIN_TROUBLESHOOT.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_TASK3_COMPLETION_REPORT_2025-12-04.md`
+  - `06-项目管理与报告/历史指南/P0_TASK3_COMPLETION_REPORT_2025-12-04.md`
+- 📋 2 个文件内容相同:
+  - `guides/SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md`
+  - `06-项目管理与报告/历史指南/SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md`
+- 📋 2 个文件内容相同:
+  - `guides/FRONTEND_BACKEND_DATA_FLOW_REPORT.md`
+  - `06-项目管理与报告/历史指南/FRONTEND_BACKEND_DATA_FLOW_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/OPENSTOCK_MIGRATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/OPENSTOCK_MIGRATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_QUICK_REFERENCE.md`
+  - `06-项目管理与报告/历史指南/P0_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `guides/IMPLEMENTATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/IMPLEMENTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/HOOKS_CONFIGURATION_DETAILED.md`
+  - `06-项目管理与报告/历史指南/HOOKS_CONFIGURATION_DETAILED.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE_10_ROADMAP.md`
+  - `06-项目管理与报告/历史指南/PHASE_10_ROADMAP.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_AI_Strategy_Implementation_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_AI_Strategy_Implementation_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/QUICK_START.md`
+  - `06-项目管理与报告/历史指南/QUICK_START.md`
+- 📋 2 个文件内容相同:
+  - `guides/TEST_COVERAGE_IMPROVEMENT_REPORT.md`
+  - `06-项目管理与报告/历史指南/TEST_COVERAGE_IMPROVEMENT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE1_3_IMPLEMENTATION_PLAN.md`
+  - `06-项目管理与报告/历史指南/PHASE1_3_IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `guides/APIFOX_INTEGRATION_COMPLETE.md`
+  - `06-项目管理与报告/历史指南/APIFOX_INTEGRATION_COMPLETE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE10_FINAL_REPORT.md`
+  - `06-项目管理与报告/历史指南/PHASE10_FINAL_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/VUE_IMPLEMENTATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/VUE_IMPLEMENTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/DEPLOYMENT_GUIDE.md`
+  - `06-项目管理与报告/历史指南/DEPLOYMENT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/系统状态报告.md`
+  - `06-项目管理与报告/历史指南/系统状态报告.md`
+- 📋 2 个文件内容相同:
+  - `guides/APIFOX_MCP_SETUP.md`
+  - `06-项目管理与报告/历史指南/APIFOX_MCP_SETUP.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_ACTION_PLAN.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_ACTION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE4_MILESTONE1_WEBSOCKET_TESTING.md`
+  - `06-项目管理与报告/历史指南/PHASE4_MILESTONE1_WEBSOCKET_TESTING.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_TASK2_VALIDATION_IMPLEMENTATION.md`
+  - `06-项目管理与报告/历史指南/P0_TASK2_VALIDATION_IMPLEMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `guides/WEB_USABILITY_TESTING_GUIDE.md`
+  - `06-项目管理与报告/历史指南/WEB_USABILITY_TESTING_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/WEEK1_OPTIMIZATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/WEEK1_OPTIMIZATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_Monitoring_Implementation_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_Monitoring_Implementation_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/PROJECT_DIRECTORY_STANDARD.md`
+  - `06-项目管理与报告/历史指南/PROJECT_DIRECTORY_STANDARD.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_Implementation_Master_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_Implementation_Master_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/TEAM_CONFIGURATION_SUMMARY.md`
+  - `06-项目管理与报告/历史指南/TEAM_CONFIGURATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `guides/DOCUMENTATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/DOCUMENTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE4_ADVANCED_TESTING_PLAN.md`
+  - `06-项目管理与报告/历史指南/PHASE4_ADVANCED_TESTING_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `guides/LEGACY_CODE_ANALYSIS.md`
+  - `06-项目管理与报告/历史指南/LEGACY_CODE_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `guides/PIXSO_MCP_NEXT_STEPS.md`
+  - `06-项目管理与报告/历史指南/PIXSO_MCP_NEXT_STEPS.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE2_E2E_TESTING_PLAN.md`
+  - `06-项目管理与报告/历史指南/PHASE2_E2E_TESTING_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `guides/MODULAR_CODE_USAGE_GUIDE.md`
+  - `06-项目管理与报告/历史指南/MODULAR_CODE_USAGE_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PIXSO_MCP_TROUBLESHOOTING.md`
+  - `06-项目管理与报告/历史指南/PIXSO_MCP_TROUBLESHOOTING.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE2_FRAMEWORK_SETUP_REPORT.md`
+  - `06-项目管理与报告/历史指南/PHASE2_FRAMEWORK_SETUP_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/DEV_ENVIRONMENT_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/DEV_ENVIRONMENT_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/PHASE_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE3_MILESTONE5_COVERAGE_REPORTING.md`
+  - `06-项目管理与报告/历史指南/PHASE3_MILESTONE5_COVERAGE_REPORTING.md`
+- 📋 2 个文件内容相同:
+  - `guides/WEBSOCKET_QUICK_REFERENCE.md`
+  - `06-项目管理与报告/历史指南/WEBSOCKET_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `guides/HOOKS_MIGRATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/HOOKS_MIGRATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/OPENSTOCK_DEMO_PAGE_GUIDE.md`
+  - `06-项目管理与报告/历史指南/OPENSTOCK_DEMO_PAGE_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md`
+  - `06-项目管理与报告/历史指南/ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_IMPLEMENTATION_STATUS_2025-12-04.md`
+  - `06-项目管理与报告/历史指南/P0_IMPLEMENTATION_STATUS_2025-12-04.md`
+- 📋 2 个文件内容相同:
+  - `guides/INDEX.md`
+  - `06-项目管理与报告/历史指南/INDEX.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_Code_Reference_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_Code_Reference_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/PLAYWRIGHT_EXPANSION_REPORT.md`
+  - `06-项目管理与报告/历史指南/PLAYWRIGHT_EXPANSION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE1_EXCEPTION_HIERARCHY.md`
+  - `06-项目管理与报告/历史指南/PHASE1_EXCEPTION_HIERARCHY.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE0_CREDENTIAL_ROTATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/PHASE0_CREDENTIAL_ROTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/端口配置更新报告.md`
+  - `06-项目管理与报告/历史指南/端口配置更新报告.md`
+- 📋 2 个文件内容相同:
+  - `guides/INTEGRATION_TESTS_GUIDE.md`
+  - `06-项目管理与报告/历史指南/INTEGRATION_TESTS_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/SECURITY_DOCUMENTATION_INDEX.md`
+  - `06-项目管理与报告/历史指南/SECURITY_DOCUMENTATION_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `guides/目录管理解决方案总结.md`
+  - `06-项目管理与报告/历史指南/目录管理解决方案总结.md`
+- 📋 2 个文件内容相同:
+  - `guides/CLAUDE_CODE_TOOLS_GUIDE.md`
+  - `06-项目管理与报告/历史指南/CLAUDE_CODE_TOOLS_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/HOOKS_QUICK_REFERENCE.md`
+  - `06-项目管理与报告/历史指南/HOOKS_QUICK_REFERENCE.md`
+- 📋 4 个文件内容相同:
+  - `guides/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - `archive/2025/Q4/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+  - `归档文档/临时文档/P2_MODULE_MIGRATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/MONITORING_DOCUMENTATION_INDEX.md`
+  - `06-项目管理与报告/历史指南/MONITORING_DOCUMENTATION_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `guides/SWAGGER_UI_FINAL_SOLUTION.md`
+  - `06-项目管理与报告/历史指南/SWAGGER_UI_FINAL_SOLUTION.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE1_COMPLETION_REPORT_20251130.md`
+  - `06-项目管理与报告/历史指南/PHASE1_COMPLETION_REPORT_20251130.md`
+- 📋 2 个文件内容相同:
+  - `guides/OPENSTOCK_UPGRADE_STATUS.md`
+  - `06-项目管理与报告/历史指南/OPENSTOCK_UPGRADE_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md`
+  - `06-项目管理与报告/历史指南/PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `guides/根目录混乱问题分析与解决方案.md`
+  - `06-项目管理与报告/历史指南/根目录混乱问题分析与解决方案.md`
+- 📋 2 个文件内容相同:
+  - `guides/DB_LEAK_FIX_REPORT.md`
+  - `06-项目管理与报告/历史指南/DB_LEAK_FIX_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/TDENGINE_QUICK_REFERENCE.md`
+  - `06-项目管理与报告/历史指南/TDENGINE_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PORT_ALLOCATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/PORT_ALLOCATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md`
+  - `06-项目管理与报告/历史指南/PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_ANALYSIS_2025.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_ANALYSIS_2025.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_IMPLEMENTATION_PLAN_2025-12-04.md`
+  - `06-项目管理与报告/历史指南/P0_IMPLEMENTATION_PLAN_2025-12-04.md`
+- 📋 2 个文件内容相同:
+  - `guides/QUICK_START_目录管理.md`
+  - `06-项目管理与报告/历史指南/QUICK_START_目录管理.md`
+- 📋 2 个文件内容相同:
+  - `guides/UI_UX_OPTIMIZATION_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/UI_UX_OPTIMIZATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/关键经验和成功做法.md`
+  - `06-项目管理与报告/历史指南/关键经验和成功做法.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_METRICS.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_METRICS.md`
+- 📋 2 个文件内容相同:
+  - `guides/OPENSTOCK_QUICKSTART.md`
+  - `06-项目管理与报告/历史指南/OPENSTOCK_QUICKSTART.md`
+- 📋 2 个文件内容相同:
+  - `guides/P2_API_INTEGRATION_TEMPLATE.md`
+  - `06-项目管理与报告/历史指南/P2_API_INTEGRATION_TEMPLATE.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE3_COMPLETION_SUMMARY.md`
+  - `06-项目管理与报告/历史指南/PHASE3_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `guides/SWAGGER_UI_CDN_SOLUTION.md`
+  - `06-项目管理与报告/历史指南/SWAGGER_UI_CDN_SOLUTION.md`
+- 📋 2 个文件内容相同:
+  - `guides/DAY_1_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/DAY_1_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECHNICAL_DEBT_FIX_PROGRESS.md`
+  - `06-项目管理与报告/历史指南/TECHNICAL_DEBT_FIX_PROGRESS.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_Deployment_Implementation_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_Deployment_Implementation_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/IFLOW.md`
+  - `06-项目管理与报告/历史指南/IFLOW.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_REMEDIATION_PLAN_2025.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_REMEDIATION_PLAN_2025.md`
+- 📋 2 个文件内容相同:
+  - `guides/DOCUMENT_REORGANIZATION_PLAN.md`
+  - `06-项目管理与报告/历史指南/DOCUMENT_REORGANIZATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECH_DEBT_COVERAGE_FINAL_REPORT.md`
+  - `06-项目管理与报告/历史指南/TECH_DEBT_COVERAGE_FINAL_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/P0_TASK2_COMPLETION_REPORT_2025-12-04.md`
+  - `06-项目管理与报告/历史指南/P0_TASK2_COMPLETION_REPORT_2025-12-04.md`
+- 📋 2 个文件内容相同:
+  - `guides/MODULAR_CODE_SPLIT_REPORT.md`
+  - `06-项目管理与报告/历史指南/MODULAR_CODE_SPLIT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE1_SECURITY_BRIEFING_20251130.md`
+  - `06-项目管理与报告/历史指南/PHASE1_SECURITY_BRIEFING_20251130.md`
+- 📋 2 个文件内容相同:
+  - `guides/Vue_FastAPI_GPU_System_Implementation_Guide.md`
+  - `06-项目管理与报告/历史指南/Vue_FastAPI_GPU_System_Implementation_Guide.md`
+- 📋 2 个文件内容相同:
+  - `guides/CONTRACT_TESTING_GUIDE.md`
+  - `06-项目管理与报告/历史指南/CONTRACT_TESTING_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `guides/TOOLCHAIN_IMPLEMENTATION_SUMMARY.md`
+  - `06-项目管理与报告/历史指南/TOOLCHAIN_IMPLEMENTATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `guides/PHASE3_FINAL_COMPLETION_REPORT.md`
+  - `06-项目管理与报告/历史指南/PHASE3_FINAL_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `guides/PIXSO_MCP_9tootls.md`
+  - `06-项目管理与报告/历史指南/PIXSO_MCP_9tootls.md`
+- 📋 2 个文件内容相同:
+  - `guides/PLAYWRIGHT_QUICKSTART.md`
+  - `06-项目管理与报告/历史指南/PLAYWRIGHT_QUICKSTART.md`
+- 📋 2 个文件内容相同:
+  - `guides/TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md`
+  - `06-项目管理与报告/历史指南/TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `guides/DEV_ENVIRONMENT_SETUP_COMPLETION.md`
+  - `06-项目管理与报告/历史指南/DEV_ENVIRONMENT_SETUP_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `features/STOCK_HEATMAP_IMPLEMENTATION.md`
+  - `归档文档/旧功能文档/STOCK_HEATMAP_IMPLEMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `features/TRADINGVIEW_FIX_SUMMARY.md`
+  - `归档文档/旧功能文档/TRADINGVIEW_FIX_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `features/WATCHLIST_GROUP_IMPLEMENTATION.md`
+  - `归档文档/旧功能文档/WATCHLIST_GROUP_IMPLEMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `features/WENCAI_MENU_FIX.md`
+  - `归档文档/旧功能文档/WENCAI_MENU_FIX.md`
+- 📋 2 个文件内容相同:
+  - `features/TRADINGVIEW_TROUBLESHOOTING.md`
+  - `归档文档/旧功能文档/TRADINGVIEW_TROUBLESHOOTING.md`
+- 📋 2 个文件内容相同:
+  - `e2e/README.md`
+  - `归档文档/旧测试文档/e2e/README.md`
+- 📋 2 个文件内容相同:
+  - `archive/WORK_SESSION_SUMMARY_2025-10-16.md`
+  - `归档文档/旧架构文档/archive/WORK_SESSION_SUMMARY_2025-10-16.md`
+- 📋 2 个文件内容相同:
+  - `archive/DIRECTORY_REORGANIZATION_PLAN.md`
+  - `归档文档/旧架构文档/archive/DIRECTORY_REORGANIZATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archive/DISCUSSION_FAQ.md`
+  - `归档文档/旧架构文档/archive/DISCUSSION_FAQ.md`
+- 📋 2 个文件内容相同:
+  - `archive/DISCUSSION_AGENDA.md`
+  - `归档文档/旧架构文档/archive/DISCUSSION_AGENDA.md`
+- 📋 2 个文件内容相同:
+  - `archive/FEATURE_ENHANCEMENTS.md`
+  - `归档文档/旧架构文档/archive/FEATURE_ENHANCEMENTS.md`
+- 📋 2 个文件内容相同:
+  - `archive/CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md`
+  - `归档文档/旧架构文档/archive/CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archive/REVIEW_CHECKLIST.md`
+  - `归档文档/旧架构文档/archive/REVIEW_CHECKLIST.md`
+- 📋 2 个文件内容相同:
+  - `archive/DISCUSSION_MATERIALS_README.md`
+  - `归档文档/旧架构文档/archive/DISCUSSION_MATERIALS_README.md`
+- 📋 2 个文件内容相同:
+  - `archive/QUICK_ACTION_PLAN.md`
+  - `归档文档/旧架构文档/archive/QUICK_ACTION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archive/MYSTOCKS_PROJECT_STATUS.md`
+  - `归档文档/旧架构文档/archive/MYSTOCKS_PROJECT_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `archive/T037_COMPLETION_SUMMARY.md`
+  - `归档文档/旧架构文档/archive/T037_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archive/SESSION_SUMMARY.md`
+  - `归档文档/旧架构文档/archive/SESSION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archive/SIMPLIFICATION_DECISION_MATRIX.md`
+  - `归档文档/旧架构文档/archive/SIMPLIFICATION_DECISION_MATRIX.md`
+- 📋 2 个文件内容相同:
+  - `archive/DISCUSSION_MATERIALS_GUIDE.md`
+  - `归档文档/旧架构文档/archive/DISCUSSION_MATERIALS_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archive/DIRECTORY_CLEANUP_PLAN.md`
+  - `归档文档/旧架构文档/archive/DIRECTORY_CLEANUP_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archive/DECISION_WORKSHEET.md`
+  - `归档文档/旧架构文档/archive/DECISION_WORKSHEET.md`
+- 📋 2 个文件内容相同:
+  - `archive/REVIEW_GUIDE.md`
+  - `归档文档/旧架构文档/archive/REVIEW_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archive/mongodb建议.md`
+  - `归档文档/旧架构文档/archive/mongodb建议.md`
+- 📋 2 个文件内容相同:
+  - `archive/QLIB_INSPIRED_IMPROVEMENT_PLAN.md`
+  - `归档文档/旧架构文档/archive/QLIB_INSPIRED_IMPROVEMENT_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archive/PYPROFILING_INTEGRATION_COMPLETE.md`
+  - `归档文档/旧架构文档/archive/PYPROFILING_INTEGRATION_COMPLETE.md`
+- 📋 2 个文件内容相同:
+  - `archive/webpage_advice.md`
+  - `归档文档/旧架构文档/archive/webpage_advice.md`
+- 📋 2 个文件内容相同:
+  - `buger/B项目接入指南.md`
+  - `归档文档/临时文档/buger/B项目接入指南.md`
+- 📋 2 个文件内容相同:
+  - `buger/CLIENT_CONNECTION_GUIDE.md`
+  - `归档文档/临时文档/buger/CLIENT_CONNECTION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `buger/CLIENT_INTEGRATION_GUIDE.md`
+  - `归档文档/临时文档/buger/CLIENT_INTEGRATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/01-core-functions.md`
+  - `归档文档/临时文档/function-classification-manual/01-core-functions.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/08-consolidation-guide.md`
+  - `归档文档/临时文档/function-classification-manual/08-consolidation-guide.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/02-auxiliary-functions.md`
+  - `归档文档/临时文档/function-classification-manual/02-auxiliary-functions.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/README.md`
+  - `归档文档/临时文档/function-classification-manual/README.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/04-monitoring-functions.md`
+  - `归档文档/临时文档/function-classification-manual/04-monitoring-functions.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/duplication-summary.md`
+  - `归档文档/临时文档/function-classification-manual/duplication-summary.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/07-optimization-roadmap.md`
+  - `归档文档/临时文档/function-classification-manual/07-optimization-roadmap.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/03-infrastructure-functions.md`
+  - `归档文档/临时文档/function-classification-manual/03-infrastructure-functions.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/05-utility-functions.md`
+  - `归档文档/临时文档/function-classification-manual/05-utility-functions.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/06-duplication-analysis.md`
+  - `归档文档/临时文档/function-classification-manual/06-duplication-analysis.md`
+- 📋 2 个文件内容相同:
+  - `function-classification-manual/09-data-flow-maps.md`
+  - `归档文档/临时文档/function-classification-manual/09-data-flow-maps.md`
+- 📋 2 个文件内容相同:
+  - `security/SECURITY_BEST_PRACTICES.md`
+  - `归档文档/旧部署文档/security/SECURITY_BEST_PRACTICES.md`
+- 📋 4 个文件内容相同:
+  - `completion_reports/TEST_COVERAGE_SUMMARY.md`
+  - `standards/TEST_COVERAGE_SUMMARY.md`
+  - `archive/2025/Q4/TEST_COVERAGE_SUMMARY.md`
+  - `归档文档/旧标准文档/TEST_COVERAGE_SUMMARY.md`
+- 📋 4 个文件内容相同:
+  - `completion_reports/CODE_COMPLETENESS_REPORT.md`
+  - `standards/CODE_COMPLETENESS_REPORT.md`
+  - `archive/2025/Q4/CODE_COMPLETENESS_REPORT.md`
+  - `归档文档/旧标准文档/CODE_COMPLETENESS_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `completion_reports/CODE_SIZE_OPTIMIZATION_REPORT.md`
+  - `archive/2025/Q4/CODE_SIZE_OPTIMIZATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `deployment/README.md`
+  - `归档文档/旧部署文档/deployment/README.md`
+- 📋 2 个文件内容相同:
+  - `standards/SECURITY_FOLLOWUP_PLAN_20251130.md`
+  - `归档文档/旧标准文档/SECURITY_FOLLOWUP_PLAN_20251130.md`
+- 📋 4 个文件内容相同:
+  - `standards/CODE_SIZE_OPTIMIZATION_SAVED_20251125.md`
+  - `standards/CODE_SIZE_OPTIMIZATION.md`
+  - `归档文档/旧标准文档/CODE_SIZE_OPTIMIZATION_SAVED_20251125.md`
+  - `归档文档/旧标准文档/CODE_SIZE_OPTIMIZATION.md`
+- 📋 2 个文件内容相同:
+  - `standards/TEST_COVERAGE_EXPANSION_PLAN.md`
+  - `归档文档/旧标准文档/TEST_COVERAGE_EXPANSION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `standards/API_RESPONSE_STANDARDIZATION.md`
+  - `归档文档/旧标准文档/API_RESPONSE_STANDARDIZATION.md`
+- 📋 2 个文件内容相同:
+  - `standards/WEB_USABILITY_STANDARDS.md`
+  - `归档文档/旧标准文档/WEB_USABILITY_STANDARDS.md`
+- 📋 2 个文件内容相同:
+  - `standards/SECURITY_AUDIT_REPORT_20251130.md`
+  - `归档文档/旧标准文档/SECURITY_AUDIT_REPORT_20251130.md`
+- 📋 2 个文件内容相同:
+  - `standards/PROJECT_MODULES.md`
+  - `归档文档/旧标准文档/PROJECT_MODULES.md`
+- 📋 2 个文件内容相同:
+  - `standards/TEST_COVERAGE_EXPANSION_PROGRESS.md`
+  - `归档文档/旧标准文档/TEST_COVERAGE_EXPANSION_PROGRESS.md`
+- 📋 2 个文件内容相同:
+  - `standards/项目开发规范与指导文档.md`
+  - `归档文档/旧标准文档/项目开发规范与指导文档.md`
+- 📋 2 个文件内容相同:
+  - `standards/代码修改规则-合并.md`
+  - `归档文档/旧标准文档/代码修改规则-合并.md`
+- 📋 2 个文件内容相同:
+  - `standards/代码修改规则.md`
+  - `归档文档/旧标准文档/代码修改规则.md`
+- 📋 2 个文件内容相同:
+  - `standards/PYLINT_FIX_SUMMARY.md`
+  - `归档文档/旧标准文档/PYLINT_FIX_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `standards/项目数据工作流程.md`
+  - `归档文档/旧标准文档/项目数据工作流程.md`
+- 📋 2 个文件内容相同:
+  - `standards/RESOURCE_LEAK_AUDIT_REPORT.md`
+  - `归档文档/旧标准文档/RESOURCE_LEAK_AUDIT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `standards/WEB_PAGE_STRUCTURE_GUIDE.md`
+  - `归档文档/旧标准文档/WEB_PAGE_STRUCTURE_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `standards/MODULE_REGISTRY.md`
+  - `归档文档/旧标准文档/MODULE_REGISTRY.md`
+- 📋 2 个文件内容相同:
+  - `standards/代码修改规则-new.md`
+  - `归档文档/旧标准文档/代码修改规则-new.md`
+- 📋 2 个文件内容相同:
+  - `standards/SECURITY_QUICK_REFERENCE.md`
+  - `归档文档/旧标准文档/SECURITY_QUICK_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `standards/PYLINT_BUGS_REPORT.md`
+  - `归档文档/旧标准文档/PYLINT_BUGS_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_8_FINAL_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE_8_FINAL_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_7_COMPLETION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE_7_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_EXECUTION_READINESS.md`
+  - `归档文档/旧报告文档/reports/PHASE11_EXECUTION_READINESS.md`
+- 📋 2 个文件内容相同:
+  - `reports/TECHNICAL_DEBT_REMEDIATION_SESSION_SUMMARY_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/TECHNICAL_DEBT_REMEDIATION_SESSION_SUMMARY_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/SUBTASK_2_2_IMPLEMENTATION_PLAN.md`
+  - `归档文档/旧报告文档/reports/SUBTASK_2_2_IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE1_2_COMPLETION_REPORT_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/PHASE1_2_COMPLETION_REPORT_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE2_E2E_TESTING_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/PHASE2_E2E_TESTING_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md`
+  - `归档文档/旧报告文档/reports/TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_FRONTEND_INTEGRATION_TEST_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_FRONTEND_INTEGRATION_TEST_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_TEST_FIX_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_TEST_FIX_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE1_3A_COMPLETION_REPORT_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/PHASE1_3A_COMPLETION_REPORT_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE1_3C_COMPLETION_REPORT_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/PHASE1_3C_COMPLETION_REPORT_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/SQL_INJECTION_VULNERABILITY_REPORT.md`
+  - `归档文档/旧报告文档/reports/SQL_INJECTION_VULNERABILITY_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_DATA_POPULATION_SUMMARY_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_DATA_POPULATION_SUMMARY_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/CODE_REVIEW_REPORT.md`
+  - `归档文档/旧报告文档/reports/CODE_REVIEW_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/E2E_TEST_REPORT_2025-11-26.md`
+  - `归档文档/旧报告文档/reports/E2E_TEST_REPORT_2025-11-26.md`
+- 📋 2 个文件内容相同:
+  - `reports/SUBTASK_2_2_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/SUBTASK_2_2_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_WEEK1_PERFORMANCE_BASELINE.md`
+  - `归档文档/旧报告文档/reports/PHASE11_WEEK1_PERFORMANCE_BASELINE.md`
+- 📋 2 个文件内容相同:
+  - `reports/P1_INTEGRATION_ASSESSMENT.md`
+  - `归档文档/旧报告文档/reports/P1_INTEGRATION_ASSESSMENT.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_2_1_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TASK_2_1_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/DEVELOPMENT_SUMMARY_2025.md`
+  - `归档文档/旧报告文档/reports/DEVELOPMENT_SUMMARY_2025.md`
+- 📋 2 个文件内容相同:
+  - `reports/README.md`
+  - `归档文档/旧报告文档/reports/README.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_2_1_DEPLOYMENT_GUIDE.md`
+  - `归档文档/旧报告文档/reports/TASK_2_1_DEPLOYMENT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_6_COMPLETION_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/TASK_6_COMPLETION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE3_TASK_CREATION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE3_TASK_CREATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/SYSTEM_STATUS_20251020_FINAL.md`
+  - `归档文档/旧报告文档/reports/SYSTEM_STATUS_20251020_FINAL.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE10_BUG_REPORT.md`
+  - `归档文档/旧报告文档/reports/PHASE10_BUG_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/TDENGINE_FIX_REPORT.md`
+  - `归档文档/旧报告文档/reports/TDENGINE_FIX_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_COMPLETE_STATUS_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_COMPLETE_STATUS_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/SESSION_CONTINUATION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/SESSION_CONTINUATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_9_COMPLETION_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/TASK_9_COMPLETION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_2_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TASK_2_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_4_COMPLETION_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/TASK_4_COMPLETION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE10_BUG_REPORTING_INTEGRATION.md`
+  - `归档文档/旧报告文档/reports/PHASE10_BUG_REPORTING_INTEGRATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/SESSION_WORK_SUMMARY_20251111.md`
+  - `归档文档/旧报告文档/reports/SESSION_WORK_SUMMARY_20251111.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_WEEK1_STATUS_REPORT.md`
+  - `归档文档/旧报告文档/reports/PHASE11_WEEK1_STATUS_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEEK_1_COMPLETION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/WEEK_1_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_ADAPTER_DEPENDENCY_ANALYSIS.md`
+  - `归档文档/旧报告文档/reports/WEB_ADAPTER_DEPENDENCY_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_3_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TASK_3_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/first_phase_technical_debt_completion_report.md`
+  - `归档文档/旧报告文档/reports/first_phase_technical_debt_completion_report.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_WEEK1_TASK1_COMPLETION.md`
+  - `归档文档/旧报告文档/reports/PHASE11_WEEK1_TASK1_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `reports/DOCUMENTATION_ORGANIZATION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/DOCUMENTATION_ORGANIZATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/TEST_SUMMARY_20251020.md`
+  - `归档文档/旧报告文档/reports/TEST_SUMMARY_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE1_3B_COMPLETION_REPORT_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/PHASE1_3B_COMPLETION_REPORT_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/type_annotations_analysis_report.md`
+  - `归档文档/旧报告文档/reports/type_annotations_analysis_report.md`
+- 📋 2 个文件内容相同:
+  - `reports/BACKUP_RECOVERY_SECURITY_DEPLOYMENT_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_DEPLOYMENT_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/DAY1_API_VERIFICATION_REPORT.md`
+  - `归档文档/旧报告文档/reports/DAY1_API_VERIFICATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md`
+  - `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_FIXES_SUMMARY_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_FIXES_SUMMARY_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_INTEGRATION_TASKS_AUDIT_REPORT.md`
+  - `归档文档/旧报告文档/reports/WEB_INTEGRATION_TASKS_AUDIT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE1_FINAL_COMPLETION_SUMMARY_2025-12-05.md`
+  - `归档文档/旧报告文档/reports/PHASE1_FINAL_COMPLETION_SUMMARY_2025-12-05.md`
+- 📋 2 个文件内容相同:
+  - `reports/TEST_COVERAGE_REPORT_2025-11-13.md`
+  - `归档文档/旧报告文档/reports/TEST_COVERAGE_REPORT_2025-11-13.md`
+- 📋 2 个文件内容相同:
+  - `reports/P2_INTEGRATION_ASSESSMENT.md`
+  - `归档文档/旧报告文档/reports/P2_INTEGRATION_ASSESSMENT.md`
+- 📋 2 个文件内容相同:
+  - `reports/REORGANIZATION_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/REORGANIZATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_FINAL_STATUS_20251020.md`
+  - `归档文档/旧报告文档/reports/WEB_FINAL_STATUS_20251020.md`
+- 📋 2 个文件内容相同:
+  - `reports/TEST_VALIDATION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TEST_VALIDATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE10_FINAL_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/PHASE10_FINAL_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_FUNCTIONALITY_AUDIT.md`
+  - `归档文档/旧报告文档/reports/WEB_FUNCTIONALITY_AUDIT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE10_DAY1_EXECUTIVE_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE10_DAY1_EXECUTIVE_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/TDENGINE_FIX_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TDENGINE_FIX_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/TRACK_A_T2_BUGER_INTEGRATION_REPORT.md`
+  - `归档文档/旧报告文档/reports/TRACK_A_T2_BUGER_INTEGRATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_PLANNING.md`
+  - `归档文档/旧报告文档/reports/PHASE11_PLANNING.md`
+- 📋 2 个文件内容相同:
+  - `reports/SESSION_COMPLETION_2025_11_06.md`
+  - `归档文档/旧报告文档/reports/SESSION_COMPLETION_2025_11_06.md`
+- 📋 2 个文件内容相同:
+  - `reports/MONITORING_EXPLORATION_COMPLETE.md`
+  - `归档文档/旧报告文档/reports/MONITORING_EXPLORATION_COMPLETE.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_2_1_FILES_NAVIGATION.md`
+  - `归档文档/旧报告文档/reports/TASK_2_1_FILES_NAVIGATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/E2E_TEST_FIXES_COMPLETION.md`
+  - `归档文档/旧报告文档/reports/E2E_TEST_FIXES_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_FUNCTION_TEST_REPORT_FINAL.md`
+  - `归档文档/旧报告文档/reports/WEB_FUNCTION_TEST_REPORT_FINAL.md`
+- 📋 2 个文件内容相同:
+  - `reports/BACKUP_RECOVERY_SECURITY_FINAL_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/BACKUP_RECOVERY_SECURITY_FINAL_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE10_PHASE11_TRANSITION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE10_PHASE11_TRANSITION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/P2_PRIORITY_PAGES_ASSESSMENT.md`
+  - `归档文档/旧报告文档/reports/P2_PRIORITY_PAGES_ASSESSMENT.md`
+- 📋 2 个文件内容相同:
+  - `reports/MONITORING_SYSTEM_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/MONITORING_SYSTEM_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/SESSION_COMPLETION_REPORT_20251111.md`
+  - `归档文档/旧报告文档/reports/SESSION_COMPLETION_REPORT_20251111.md`
+- 📋 2 个文件内容相同:
+  - `reports/DAY1_SMOKE_TEST_RESULTS.md`
+  - `归档文档/旧报告文档/reports/DAY1_SMOKE_TEST_RESULTS.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_2_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/PHASE_2_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE2_FINAL_COMPLETION_REPORT.md`
+  - `归档文档/旧报告文档/reports/PHASE2_FINAL_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_WEEK1_PARALLEL_EXECUTION_PLAN.md`
+  - `归档文档/旧报告文档/reports/PHASE11_WEEK1_PARALLEL_EXECUTION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/PROJECT_STATUS_QUICK_INDEX.md`
+  - `归档文档/旧报告文档/reports/PROJECT_STATUS_QUICK_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_7_COMPLETION_CERTIFICATE.md`
+  - `归档文档/旧报告文档/reports/PHASE_7_COMPLETION_CERTIFICATE.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_8_IMPLEMENTATION_PLAN.md`
+  - `归档文档/旧报告文档/reports/PHASE_8_IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_9_IMPLEMENTATION_PLAN.md`
+  - `归档文档/旧报告文档/reports/PHASE_9_IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/E2E_FAILURE_CLASSIFICATION.md`
+  - `归档文档/旧报告文档/reports/E2E_FAILURE_CLASSIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE_8_COMPLETION_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/PHASE_8_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_INTEGRATION_EXECUTIVE_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/WEB_INTEGRATION_EXECUTIVE_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/SUBTASK_2_2_PHASE3_4_PLAN.md`
+  - `归档文档/旧报告文档/reports/SUBTASK_2_2_PHASE3_4_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/SUBTASK_2_2_PROGRESS.md`
+  - `归档文档/旧报告文档/reports/SUBTASK_2_2_PROGRESS.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_10_COMPLETION_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/TASK_10_COMPLETION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `reports/WEB_PERFORMANCE_FIXES_SUMMARY.md`
+  - `归档文档/旧报告文档/reports/WEB_PERFORMANCE_FIXES_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `reports/PHASE11_WEEK1_RUN2_ANALYSIS.md`
+  - `归档文档/旧报告文档/reports/PHASE11_WEEK1_RUN2_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `reports/TASK_2_IMPLEMENTATION_PLAN.md`
+  - `归档文档/旧报告文档/reports/TASK_2_IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `reports/P1_DEEP_INTEGRATION_VERIFICATION.md`
+  - `归档文档/旧报告文档/reports/P1_DEEP_INTEGRATION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DEVELOPMENT_GUIDELINES.md`
+  - `归档文档/旧API文档/api/API_DEVELOPMENT_GUIDELINES.md`
+- 📋 2 个文件内容相同:
+  - `api/API_ENDPOINT_DOCUMENTATION.md`
+  - `归档文档/旧API文档/api/API_ENDPOINT_DOCUMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `api/IMPLEMENTATION_COMPLETE_REPORT.md`
+  - `归档文档/旧API文档/api/IMPLEMENTATION_COMPLETE_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/SWAGGER_EXTRACTION_SUMMARY_2025-11-30.md`
+  - `归档文档/旧API文档/api/SWAGGER_EXTRACTION_SUMMARY_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_15_ALERT_NOTIFICATION_SYSTEM.md`
+  - `归档文档/旧API文档/api/TASK_15_ALERT_NOTIFICATION_SYSTEM.md`
+- 📋 2 个文件内容相同:
+  - `api/API_FRONTEND_MAPPING.md`
+  - `归档文档/旧API文档/api/API_FRONTEND_MAPPING.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DECISION_SUMMARY.md`
+  - `归档文档/旧API文档/api/API_DECISION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/APIFOX_BEGINNER_GUIDE.md`
+  - `归档文档/旧API文档/api/APIFOX_BEGINNER_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/SWAGGER_UI_GUIDE.md`
+  - `归档文档/旧API文档/api/SWAGGER_UI_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/API_SPECIFICATION.md`
+  - `归档文档/旧API文档/api/API_SPECIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `api/DATABASE_OPTIMIZATION_GUIDE.md`
+  - `归档文档/旧API文档/api/DATABASE_OPTIMIZATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE11_VERIFICATION_REPORT_2025-12-02.md`
+  - `归档文档/旧API文档/api/PHASE11_VERIFICATION_REPORT_2025-12-02.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE4_REMAINING_FILES_ANALYSIS.md`
+  - `归档文档/旧API文档/api/PHASE4_REMAINING_FILES_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `api/MONITORING_METRICS_DEFINITION.md`
+  - `归档文档/旧API文档/api/MONITORING_METRICS_DEFINITION.md`
+- 📋 2 个文件内容相同:
+  - `api/API与Web组件最终对齐方案.md`
+  - `归档文档/旧API文档/api/API与Web组件最终对齐方案.md`
+- 📋 2 个文件内容相同:
+  - `api/apifox_mcp_playwright使用.md`
+  - `归档文档/旧API文档/api/apifox_mcp_playwright使用.md`
+- 📋 2 个文件内容相同:
+  - `api/API_EXAMPLES.md`
+  - `归档文档/旧API文档/api/API_EXAMPLES.md`
+- 📋 2 个文件内容相同:
+  - `api/API与Web组件丝滑结合指南.md`
+  - `归档文档/旧API文档/api/API与Web组件丝滑结合指南.md`
+- 📋 2 个文件内容相同:
+  - `api/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md`
+  - `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/API_ARCHITECTURE_ANALYSIS_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_ARCHITECTURE_ANALYSIS_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/README_COMPLIANCE_TESTING.md`
+  - `归档文档/旧API文档/api/README_COMPLIANCE_TESTING.md`
+- 📋 2 个文件内容相同:
+  - `api/WEBSOCKET_DOCUMENTATION_INDEX.md`
+  - `归档文档/旧API文档/api/WEBSOCKET_DOCUMENTATION_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_13_COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/TASK_13_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/API与web组件对齐方案.md`
+  - `归档文档/旧API文档/api/API与web组件对齐方案.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_12_COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/TASK_12_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/P0_INTEGRATION_COMPLETION_REPORT.md`
+  - `归档文档/旧API文档/api/P0_INTEGRATION_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/DEEP_FIXES_REPORT.md`
+  - `归档文档/旧API文档/api/DEEP_FIXES_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md`
+  - `归档文档/旧API文档/api/PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_15_ALERT_ESCALATION_DESIGN.md`
+  - `归档文档/旧API文档/api/TASK_15_ALERT_ESCALATION_DESIGN.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DOCUMENTATION_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_DOCUMENTATION_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/ALERTING_CONFIGURATION_GUIDE.md`
+  - `归档文档/旧API文档/api/ALERTING_CONFIGURATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/API优化建议.md`
+  - `归档文档/旧API文档/api/API优化建议.md`
+- 📋 2 个文件内容相同:
+  - `api/CODEBASE_EXPLORATION_REPORT.md`
+  - `归档文档/旧API文档/api/CODEBASE_EXPLORATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md`
+  - `归档文档/旧API文档/api/API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md`
+- 📋 2 个文件内容相同:
+  - `api/WEB_READINESS_REPORT.md`
+  - `归档文档/旧API文档/api/WEB_READINESS_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/WORK_COMPLETION_REPORT_2025-11-30.md`
+  - `归档文档/旧API文档/api/WORK_COMPLETION_REPORT_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_8_COMPLETION_VERIFICATION.md`
+  - `归档文档/旧API文档/api/TASK_8_COMPLETION_VERIFICATION.md`
+- 📋 2 个文件内容相同:
+  - `api/SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md`
+  - `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE11_FINAL_VERIFICATION_REPORT.md`
+  - `归档文档/旧API文档/api/PHASE11_FINAL_VERIFICATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/APIFOX_QUICK_START.md`
+  - `归档文档/旧API文档/api/APIFOX_QUICK_START.md`
+- 📋 2 个文件内容相同:
+  - `api/API_QUICK_START_TEMPLATE.md`
+  - `归档文档/旧API文档/api/API_QUICK_START_TEMPLATE.md`
+- 📋 2 个文件内容相同:
+  - `api/DATABASE_INDEX_OPTIMIZATION_REPORT.md`
+  - `归档文档/旧API文档/api/DATABASE_INDEX_OPTIMIZATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API列表文档.md`
+  - `归档文档/旧API文档/api/API列表文档.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DOC_REFERENCE.md`
+  - `归档文档/旧API文档/api/API_DOC_REFERENCE.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md`
+  - `归档文档/旧API文档/api/PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/E2E_TEST_EXECUTION_SUMMARY.md`
+  - `归档文档/旧API文档/api/E2E_TEST_EXECUTION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md`
+  - `归档文档/旧API文档/api/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/APIFOX_IMPORT_GUIDE.md`
+  - `归档文档/旧API文档/api/APIFOX_IMPORT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/API_CSRF_PROTECTION_GUIDE_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_CSRF_PROTECTION_GUIDE_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/API_COMPLIANCE_IMPROVEMENTS.md`
+  - `归档文档/旧API文档/api/API_COMPLIANCE_IMPROVEMENTS.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_15_ALERT_HISTORY_ANALYTICS.md`
+  - `归档文档/旧API文档/api/TASK_15_ALERT_HISTORY_ANALYTICS.md`
+- 📋 2 个文件内容相同:
+  - `api/WEBSOCKET_OPTIMIZATION_GUIDE.md`
+  - `归档文档/旧API文档/api/WEBSOCKET_OPTIMIZATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/API_PHASE4_COMPLETION_REPORT_2025-12-03.md`
+  - `归档文档/旧API文档/api/API_PHASE4_COMPLETION_REPORT_2025-12-03.md`
+- 📋 2 个文件内容相同:
+  - `api/BACKUP_RECOVERY_GUIDE.md`
+  - `归档文档/旧API文档/api/BACKUP_RECOVERY_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE11_COMPLETION.md`
+  - `归档文档/旧API文档/api/PHASE11_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `api/API_OPTIMIZATION_REPORT_2025-12-01.md`
+  - `归档文档/旧API文档/api/API_OPTIMIZATION_REPORT_2025-12-01.md`
+- 📋 2 个文件内容相同:
+  - `api/SWAGGER_DOCUMENTATION_STATUS_2025-11-30.md`
+  - `归档文档/旧API文档/api/SWAGGER_DOCUMENTATION_STATUS_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/LLMS_API_DOCUMENTATION.md`
+  - `归档文档/旧API文档/api/LLMS_API_DOCUMENTATION.md`
+- 📋 2 个文件内容相同:
+  - `api/API_ENHANCEMENT_PLAN.md`
+  - `归档文档/旧API文档/api/API_ENHANCEMENT_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DECISION_FLOWCHART.md`
+  - `归档文档/旧API文档/api/API_DECISION_FLOWCHART.md`
+- 📋 2 个文件内容相同:
+  - `api/IMPLEMENTATION_INDEX.md`
+  - `归档文档/旧API文档/api/IMPLEMENTATION_INDEX.md`
+- 📋 2 个文件内容相同:
+  - `api/API_COMPLIANCE_REPORT.md`
+  - `归档文档/旧API文档/api/API_COMPLIANCE_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_COMPLIANCE_TEST_COMPLETION_REPORT.md`
+  - `归档文档/旧API文档/api/API_COMPLIANCE_TEST_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_INTERFACE_REVIEW_REPORT.md`
+  - `归档文档/旧API文档/api/API_INTERFACE_REVIEW_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_COMPLIANCE_TESTING_FRAMEWORK.md`
+  - `归档文档/旧API文档/api/API_COMPLIANCE_TESTING_FRAMEWORK.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE11_1_COMPLETION_REPORT.md`
+  - `归档文档/旧API文档/api/PHASE11_1_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/IMPLEMENTATION_SUMMARY.md`
+  - `归档文档/旧API文档/api/IMPLEMENTATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/API_DEVELOPMENT_CHECKLIST.md`
+  - `归档文档/旧API文档/api/API_DEVELOPMENT_CHECKLIST.md`
+- 📋 2 个文件内容相同:
+  - `api/WEEK3_PRODUCTION_VERIFICATION_REPORT.md`
+  - `归档文档/旧API文档/api/WEEK3_PRODUCTION_VERIFICATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md`
+  - `归档文档/旧API文档/api/TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_11_COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/TASK_11_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/CONTRACT_TESTING_API.md`
+  - `归档文档/旧API文档/api/CONTRACT_TESTING_API.md`
+- 📋 2 个文件内容相同:
+  - `api/API_FIXES_SUMMARY.md`
+  - `归档文档/旧API文档/api/API_FIXES_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md`
+  - `归档文档/旧API文档/api/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md`
+- 📋 2 个文件内容相同:
+  - `api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/APIFOX_IMPORT_SUCCESS.md`
+  - `归档文档/旧API文档/api/APIFOX_IMPORT_SUCCESS.md`
+- 📋 2 个文件内容相同:
+  - `api/FastAPI应用开发指南.md`
+  - `归档文档/旧API文档/api/FastAPI应用开发指南.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_14_COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/TASK_14_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_15_COMPLETION_SUMMARY.md`
+  - `归档文档/旧API文档/api/TASK_15_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `api/TASK_15_ALERT_AGGREGATION_SUPPRESSION.md`
+  - `归档文档/旧API文档/api/TASK_15_ALERT_AGGREGATION_SUPPRESSION.md`
+- 📋 2 个文件内容相同:
+  - `api/API_WEB_ALIGNMENT_ANALYSIS.md`
+  - `归档文档/旧API文档/api/API_WEB_ALIGNMENT_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `api/API开发.md`
+  - `归档文档/旧API文档/api/API开发.md`
+- 📋 2 个文件内容相同:
+  - `api/POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md`
+  - `归档文档/旧API文档/api/POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/API_GUIDE.md`
+  - `归档文档/旧API文档/api/API_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `api/MYSTOCKS_E2E_USABILITY_TEST_REPORT.md`
+  - `归档文档/旧API文档/api/MYSTOCKS_E2E_USABILITY_TEST_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `api/API_SECURITY_FIXES_SUMMARY_2025-11-30.md`
+  - `归档文档/旧API文档/api/API_SECURITY_FIXES_SUMMARY_2025-11-30.md`
+- 📋 2 个文件内容相同:
+  - `api/PHASE4C_COMPLETION_REPORT.md`
+  - `归档文档/旧API文档/api/PHASE4C_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_implementation_summary.md`
+  - `归档文档/旧架构文档/archived/web_implementation_summary.md`
+- 📋 2 个文件内容相同:
+  - `archived/REALTIME_MARKET_SAVER.md`
+  - `归档文档/旧架构文档/archived/REALTIME_MARKET_SAVER.md`
+- 📋 2 个文件内容相同:
+  - `archived/WEEK1_PROGRESS_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/WEEK1_PROGRESS_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/改进意见1.md`
+  - `归档文档/旧架构文档/archived/改进意见1.md`
+- 📋 2 个文件内容相同:
+  - `archived/改进意见0.md`
+  - `归档文档/旧架构文档/archived/改进意见0.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_integration_audit_report.md`
+  - `归档文档/旧架构文档/archived/web_integration_audit_report.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_integration_fixes_summary.md`
+  - `归档文档/旧架构文档/archived/web_integration_fixes_summary.md`
+- 📋 2 个文件内容相同:
+  - `archived/CODE_RULES_UPDATE_LOG.md`
+  - `归档文档/旧架构文档/archived/CODE_RULES_UPDATE_LOG.md`
+- 📋 2 个文件内容相同:
+  - `archived/README.md`
+  - `归档文档/旧架构文档/archived/README.md`
+- 📋 2 个文件内容相同:
+  - `archived/DAY5_FINAL_AUDIT_REPORT.md`
+  - `归档文档/旧架构文档/archived/DAY5_FINAL_AUDIT_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/US4_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/US4_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/WEEK5_COMPLETION_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/WEEK5_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/QUICK_COMPARISON.md`
+  - `归档文档/旧架构文档/archived/QUICK_COMPARISON.md`
+- 📋 2 个文件内容相同:
+  - `archived/COMPLIANCE_AUDIT_AND_OPTIMIZATION_REPORT.md`
+  - `归档文档/旧架构文档/archived/COMPLIANCE_AUDIT_AND_OPTIMIZATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/IMPLEMENTATION_PLAN.md`
+  - `归档文档/旧架构文档/archived/IMPLEMENTATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_menu_integration_plan.md`
+  - `归档文档/旧架构文档/archived/web_menu_integration_plan.md`
+- 📋 2 个文件内容相同:
+  - `archived/TASKMASTER_START_HERE.md`
+  - `归档文档/旧架构文档/archived/TASKMASTER_START_HERE.md`
+- 📋 2 个文件内容相同:
+  - `archived/MVP_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/MVP_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/WEEK1_COMPLETE_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/WEEK1_COMPLETE_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/DATABASE_MANAGER_ISSUES.md`
+  - `归档文档/旧架构文档/archived/DATABASE_MANAGER_ISSUES.md`
+- 📋 2 个文件内容相同:
+  - `archived/PHASE4_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/PHASE4_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/README_realtime_stock_saver.md`
+  - `归档文档/旧架构文档/archived/README_realtime_stock_saver.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_integration_day34_completion.md`
+  - `归档文档/旧架构文档/archived/web_integration_day34_completion.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_integration_audit_summary.md`
+  - `归档文档/旧架构文档/archived/web_integration_audit_summary.md`
+- 📋 2 个文件内容相同:
+  - `archived/PHASE1_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/PHASE1_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/SAVE_REALTIME_DATA_USAGE.md`
+  - `归档文档/旧架构文档/archived/SAVE_REALTIME_DATA_USAGE.md`
+- 📋 2 个文件内容相同:
+  - `archived/US4_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/US4_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/START_HERE.md`
+  - `归档文档/旧架构文档/archived/START_HERE.md`
+- 📋 2 个文件内容相同:
+  - `archived/MVP_IMPLEMENTATION_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/MVP_IMPLEMENTATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/US2_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/US2_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/QUANT_DATA_MANAGEMENT_GUIDE.md`
+  - `归档文档/旧架构文档/archived/QUANT_DATA_MANAGEMENT_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archived/AKSHARE_FULL_INTEGRATION_GUIDE.md`
+  - `归档文档/旧架构文档/archived/AKSHARE_FULL_INTEGRATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archived/DAY5_TESTING_PLAN.md`
+  - `归档文档/旧架构文档/archived/DAY5_TESTING_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archived/PLAN_A0_IMPLEMENTATION_GUIDE.md`
+  - `归档文档/旧架构文档/archived/PLAN_A0_IMPLEMENTATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archived/WEEK2_DAY1_COMPLETION_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/WEEK2_DAY1_COMPLETION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/REORGANIZATION_GUIDE.md`
+  - `归档文档/旧架构文档/archived/REORGANIZATION_GUIDE.md`
+- 📋 2 个文件内容相同:
+  - `archived/web_integration_comparison.md`
+  - `归档文档/旧架构文档/archived/web_integration_comparison.md`
+- 📋 2 个文件内容相同:
+  - `archived/PHASE5_US3_COMPLETION_REPORT.md`
+  - `归档文档/旧架构文档/archived/PHASE5_US3_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archived/DATABASE_MANAGER_FIX_SUCCESS.md`
+  - `归档文档/旧架构文档/archived/DATABASE_MANAGER_FIX_SUCCESS.md`
+- 📋 2 个文件内容相同:
+  - `archived/FILE_CLEANUP_PLAN.md`
+  - `归档文档/旧架构文档/archived/FILE_CLEANUP_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archived/architecture_analysis_20251108.md`
+  - `归档文档/旧架构文档/archived/architecture_analysis_20251108.md`
+- 📋 2 个文件内容相同:
+  - `archived/ANALYSIS_COMPLETE.md`
+  - `归档文档/旧架构文档/archived/ANALYSIS_COMPLETE.md`
+- 📋 2 个文件内容相同:
+  - `archived/DB_FIX_README.md`
+  - `归档文档/旧架构文档/archived/DB_FIX_README.md`
+- 📋 2 个文件内容相同:
+  - `archived/THS_INDUSTRY_README.md`
+  - `归档文档/旧架构文档/archived/THS_INDUSTRY_README.md`
+- 📋 2 个文件内容相同:
+  - `archived/GRAFANA_DEPLOYMENT_SUMMARY.md`
+  - `归档文档/旧架构文档/archived/GRAFANA_DEPLOYMENT_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archived/PROJECT_REORGANIZATION_PLAN.md`
+  - `归档文档/旧架构文档/archived/PROJECT_REORGANIZATION_PLAN.md`
+- 📋 2 个文件内容相同:
+  - `archived/DATA_ROUTING_EXPLANATION.md`
+  - `归档文档/旧架构文档/archived/DATA_ROUTING_EXPLANATION.md`
+- 📋 2 个文件内容相同:
+  - `archived/WEEK2_DAY2_E2E_TESTING_COMPLETION.md`
+  - `归档文档/旧架构文档/archived/WEEK2_DAY2_E2E_TESTING_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `archived/IMPLEMENTATION_STATUS.md`
+  - `归档文档/旧架构文档/archived/IMPLEMENTATION_STATUS.md`
+- 📋 2 个文件内容相同:
+  - `archived/architecture_analysis_revised_20251108.md`
+  - `归档文档/旧架构文档/archived/architecture_analysis_revised_20251108.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/data_visualization.md`
+  - `归档文档/临时文档/tdx_integration/data_visualization.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/data_capture.md`
+  - `归档文档/临时文档/tdx_integration/data_capture.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/INTEGRATION_ANALYSIS.md`
+  - `归档文档/临时文档/tdx_integration/INTEGRATION_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/README.md`
+  - `归档文档/临时文档/tdx_integration/README.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/complete_example.md`
+  - `归档文档/临时文档/tdx_integration/complete_example.md`
+- 📋 2 个文件内容相同:
+  - `tdx_integration/data_analysis.md`
+  - `归档文档/临时文档/tdx_integration/data_analysis.md`
+- 📋 2 个文件内容相同:
+  - `design/update/执行摘要_四阶段优化方案.md`
+  - `归档文档/旧设计文档/design/update/执行摘要_四阶段优化方案.md`
+- 📋 2 个文件内容相同:
+  - `design/update/技术实施指南_第一阶段.md`
+  - `归档文档/旧设计文档/design/update/技术实施指南_第一阶段.md`
+- 📋 2 个文件内容相同:
+  - `design/update/技术实施指南_第二阶段.md`
+  - `归档文档/旧设计文档/design/update/技术实施指南_第二阶段.md`
+- 📋 2 个文件内容相同:
+  - `design/update/技术实施指南_第四阶段.md`
+  - `归档文档/旧设计文档/design/update/技术实施指南_第四阶段.md`
+- 📋 2 个文件内容相同:
+  - `design/update/Web功能优化四阶段实施计划.md`
+  - `归档文档/旧设计文档/design/update/Web功能优化四阶段实施计划.md`
+- 📋 2 个文件内容相同:
+  - `design/update/技术实施指南_第三阶段.md`
+  - `归档文档/旧设计文档/design/update/技术实施指南_第三阶段.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/PYPROF_INTEGRATION_SUMMARY.md`
+  - `归档文档/临时文档/PYPROF_INTEGRATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/US3_CORE_REFACTORING_COMPLETION.md`
+  - `归档文档/临时文档/US3_CORE_REFACTORING_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/US3_PHASE1_2_COMPLETION.md`
+  - `归档文档/临时文档/US3_PHASE1_2_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/TMUX_TOOLCHAIN_DEBUG_REPORT.md`
+  - `归档文档/临时文档/TMUX_TOOLCHAIN_DEBUG_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/US3_ARCHITECTURE_COMPLETION_REPORT.md`
+  - `归档文档/临时文档/US3_ARCHITECTURE_COMPLETION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/PYPROF_INTEGRATION_ANALYSIS.md`
+  - `归档文档/临时文档/PYPROF_INTEGRATION_ANALYSIS.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/US2_SIMPLIFIED_DATABASE_ARCHITECTURE_COMPLETION.md`
+  - `归档文档/临时文档/US2_SIMPLIFIED_DATABASE_ARCHITECTURE_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/PHASE_3_CODE_OPTIMIZATION_REPORT.md`
+  - `归档文档/临时文档/PHASE_3_CODE_OPTIMIZATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/US1_DOCUMENTATION_ALIGNMENT_COMPLETION.md`
+  - `归档文档/临时文档/US1_DOCUMENTATION_ALIGNMENT_COMPLETION.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/WENCAI_INTEGRATION_SUMMARY.md`
+  - `归档文档/临时文档/WENCAI_INTEGRATION_SUMMARY.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/HOOKS_STANDARDIZATION_REPORT.md`
+  - `归档文档/临时文档/HOOKS_STANDARDIZATION_REPORT.md`
+- 📋 2 个文件内容相同:
+  - `archive/2025/Q4/DIALOGUE_SUMMARY.md`
+  - `归档文档/临时文档/DIALOGUE_SUMMARY.md`
+
+## Deep Nesting
+
+- {'file': '归档文档/旧设计文档/design/update/执行摘要_四阶段优化方案.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/update/技术实施指南_第一阶段.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/update/技术实施指南_第二阶段.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/update/技术实施指南_第四阶段.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/update/Web功能优化四阶段实施计划.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/update/技术实施指南_第三阶段.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/web_design_index.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/6.风险管理页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/1.仪表盘页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/3.市场数据页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/2.市场行情页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/5.数据分析页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/开发规范与接口契约_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/开发分工与里程碑_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/8.交易管理页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/IFLOW.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/4.股票管理页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/9.其他页面_优化版.md', 'depth': 4}
+- {'file': '归档文档/旧设计文档/design/web_design/7.策略回测管理页面_优化版.md', 'depth': 4}
+
+## Missing Index
+
+- {'dir': 'archive', 'item_count': 22}
+- {'dir': 'buger', 'item_count': 6}
+- {'dir': 'completion_reports', 'item_count': 7}
+- {'dir': 'web', 'item_count': 18}
+- {'dir': 'design/update', 'item_count': 6}
+- {'dir': 'design/new', 'item_count': 10}
+- {'dir': 'guides/multi-cli-tasks', 'item_count': 12}
+- {'dir': '归档文档/临时文档', 'item_count': 40}
+- {'dir': 'reports/api_verification', 'item_count': 9}
+- {'dir': 'reports/analysis', 'item_count': 8}
+- {'dir': 'reports/screenshots', 'item_count': 17}
+- {'dir': 'reports/code_quality', 'item_count': 13}
+- {'dir': 'api/openapi', 'item_count': 6}
+- {'dir': 'archive/2025/Q4', 'item_count': 21}
+- {'dir': '归档文档/旧架构文档/archive', 'item_count': 21}
+- {'dir': '归档文档/旧设计文档/design', 'item_count': 11}
+- {'dir': '归档文档/旧设计文档/design/update', 'item_count': 6}
+- {'dir': '归档文档/旧设计文档/design/web_design', 'item_count': 13}

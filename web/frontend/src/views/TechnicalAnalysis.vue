@@ -734,9 +734,11 @@ window.deleteConfig = deleteConfig
   align-items: center;
 }
 
+.stock-selector {
   width: 300px;
 }
 
+.date-selector {
   width: 320px;
 }
 

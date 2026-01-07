@@ -824,6 +824,7 @@ onUnmounted(() => {
     }
   }
 
+  .radio-input {
     width: 16px;
     height: 16px;
     accent-color: var(--gold-primary);
@@ -871,6 +872,7 @@ onUnmounted(() => {
   }
 }
 
+.radio-input {
   width: 18px;
   height: 18px;
   accent-color: var(--gold-primary);

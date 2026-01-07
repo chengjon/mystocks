@@ -50,6 +50,7 @@ const goHome = () => {
   padding: 20px;
 }
 
+.background-pattern {
   position: fixed;
   top: 0;
   left: 0;
