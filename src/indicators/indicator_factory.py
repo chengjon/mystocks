@@ -2,14 +2,20 @@ import yaml
 import importlib
 import logging
 import pandas as pd
+import time
 from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 
 from src.indicators.base import BatchIndicator, StreamingIndicator
+from src.indicators.wrappers import MonitoredStreamingIndicator
+from src.monitoring.indicator_metrics import (
+    CALCULATION_LATENCY, CALCULATION_REQUESTS, ALIGNMENT_ERRORS
+)
 
 # Configure Logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class IndicatorFactory:
     """
@@ -21,6 +27,7 @@ class IndicatorFactory:
     - Automatic Backend Fallback (GPU -> Numba -> CPU)
     - Strict Data Alignment
     - Parameter Validation
+    - Prometheus Monitoring (New)
     """
     
     def __init__(self, config_path: str = "config/indicators_registry.yaml"):
@@ -78,8 +85,12 @@ class IndicatorFactory:
         if streaming:
             if not config.get('supports_streaming', False):
                 raise ValueError(f"Indicator {indicator_id} does not support streaming mode.")
-            # For streaming, we typically use the Python/CPU implementation unless specified otherwise
-            return self._create_implementation(config, mode='streaming')
+            
+            # Create implementation
+            impl = self._create_implementation(config, mode='streaming')
+            
+            # Wrap with Monitoring Proxy
+            return MonitoredStreamingIndicator(impl, indicator_id)
 
         # 2. Batch Mode - Backend Selection & Fallback
         preferred_backends = config.get('supported_backends', ['cpu'])
@@ -119,16 +130,7 @@ class IndicatorFactory:
             cls = getattr(module, class_name)
             
             # Pass full config to constructor
-            # Implementations should handle specific logic based on 'backend' if they support multiple
             instance = cls(config=config)
-            
-            # Verify interface
-            if mode == 'streaming':
-                if not isinstance(instance, StreamingIndicator):
-                    # Some implementations might implement both, or we might need a wrapper
-                    # For V1 compatibility, we assume the class implements the interface if configured so.
-                    # Here we strictly check inheritance.
-                    pass 
             
             return instance
             
@@ -142,46 +144,65 @@ class IndicatorFactory:
         High-level Batch Calculation.
         Enforces Strict Data Alignment.
         """
-        # 1. Parameter Validation
-        self._validate_parameters(indicator_id, kwargs)
+        start_time = time.perf_counter()
+        status = 'success'
         
-        # 2. Get Calculator
-        calculator = self.get_calculator(indicator_id, streaming=False)
-        
-        # 3. Calculate
-        if not isinstance(calculator, BatchIndicator):
-             raise TypeError(f"Calculator for {indicator_id} is not a BatchIndicator")
-
-        result = calculator.calculate(data, **kwargs)
-        
-        # 4. Strict Alignment Enforcement
-        # Ensure the result index matches the input index exactly
-        if not result.index.equals(data.index):
-            logger.warning(f"Indicator {indicator_id} result index mismatch. Reindexing to align with input.")
-            result = result.reindex(data.index)
+        try:
+            # 1. Parameter Validation
+            self._validate_parameters(indicator_id, kwargs)
             
-        return result
+            # 2. Get Calculator
+            # We assume CPU for generic calls unless configured otherwise, 
+            # tracking 'unknown' backend in metrics if not explicit
+            calculator = self.get_calculator(indicator_id, streaming=False)
+            
+            # 3. Calculate
+            if not isinstance(calculator, BatchIndicator):
+                 raise TypeError(f"Calculator for {indicator_id} is not a BatchIndicator")
+    
+            result = calculator.calculate(data, **kwargs)
+            
+            # 4. Strict Alignment Enforcement
+            if not result.index.equals(data.index):
+                logger.warning(f"Indicator {indicator_id} result index mismatch. Reindexing to align with input.")
+                ALIGNMENT_ERRORS.labels(indicator_id=indicator_id).inc()
+                result = result.reindex(data.index)
+                
+            return result
+            
+        except Exception as e:
+            status = 'error'
+            raise e
+        finally:
+            duration = time.perf_counter() - start_time
+            # Determine backend for label (heuristic)
+            backend = 'cpu' # Default
+            if hasattr(calculator, 'backend'): # If implementation exposes it
+                backend = calculator.backend
+                
+            CALCULATION_LATENCY.labels(indicator_id=indicator_id, backend=backend).observe(duration)
+            CALCULATION_REQUESTS.labels(indicator_id=indicator_id, mode='batch', status=status).inc()
 
     def _validate_parameters(self, indicator_id: str, params: Dict):
         """Validate parameters against YAML constraints."""
         config = self.registry[indicator_id]
-        param_defs = config.get('parameters', {})
-        
+        param_defs = config.get("parameters", {})
+
         for k, v in params.items():
             if k in param_defs:
                 p_def = param_defs[k]
-                p_type = p_def.get('type')
-                
+                p_type = p_def.get("type")
+
                 # Type Check
-                if p_type == 'int' and not isinstance(v, int):
+                if p_type == "int" and not isinstance(v, int):
                     # Try converting if it's a number
                     try:
                         v = int(v)
                     except:
                         raise TypeError(f"Parameter {k} must be int")
-                        
+
                 # Range Check
-                if 'min' in p_def and v < p_def['min']:
+                if "min" in p_def and v < p_def["min"]:
                     raise ValueError(f"Parameter {k}={v} is below minimum {p_def['min']}")
-                if 'max' in p_def and v > p_def['max']:
+                if "max" in p_def and v > p_def["max"]:
                     raise ValueError(f"Parameter {k}={v} is above maximum {p_def['max']}")

@@ -942,5 +942,4 @@ onMounted(() => {
   .text-normal {
     color: #606266;
   }
-}
 </style>

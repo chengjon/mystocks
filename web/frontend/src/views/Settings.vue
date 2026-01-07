@@ -599,19 +599,22 @@ onUnmounted((): void => {
 
 <style scoped lang="scss">
 
+.settings {
   min-height: 100vh;
   padding: var(--spacing-6);
   position: relative;
   background: var(--bg-primary);
+}
 
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.04;
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
     background-image:
       repeating-linear-gradient(
         45deg,

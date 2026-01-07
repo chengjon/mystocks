@@ -471,13 +471,16 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 
+.stock-detail {
   min-height: 100vh;
   padding: var(--spacing-6);
   position: relative;
   background: var(--bg-primary);
+}
 
-    position: fixed;
-    top: 0;
+.background-pattern {
+  position: fixed;
+  top: 0;
     left: 0;
     width: 100%;
     height: 100%;
