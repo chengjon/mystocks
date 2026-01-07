@@ -1038,7 +1038,7 @@ class DatabaseService:
             # 动态导入适配器
             adapter_module = None
             if adapter_type == "akshare":
-                from src.adapters.akshare_adapter import AkshareDataSource
+                from src.adapters.akshare import AkshareDataSource
 
                 adapter_module = AkshareDataSource()
             elif adapter_type == "tdx":
@@ -1054,7 +1054,7 @@ class DatabaseService:
 
                 adapter_module = TushareDataSource()
             elif adapter_type == "financial":
-                from src.adapters.financial_adapter import FinancialDataSource
+                from src.adapters.financial import FinancialDataSource
 
                 adapter_module = FinancialDataSource()
             elif adapter_type == "customer":

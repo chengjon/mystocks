@@ -95,7 +95,7 @@ def get_db_connection():
 
 def get_manager():
     """获取数据源管理器实例"""
-    from src.core.data_source_manager_v2 import DataSourceManagerV2
+    from src.core.data_source import DataSourceManagerV2
 
     return DataSourceManagerV2()
 

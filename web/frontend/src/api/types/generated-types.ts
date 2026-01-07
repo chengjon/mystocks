@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2026-01-07T14:28:35.704710
+// Generated at: 2026-01-07T15:31:57.318885
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {

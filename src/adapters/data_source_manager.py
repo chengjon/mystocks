@@ -16,10 +16,10 @@ import pandas as pd
 
 from src.interfaces.data_source import IDataSource
 from src.adapters.tdx import TdxDataSource
-from src.adapters.akshare_adapter import AkshareDataSource
+from src.adapters.akshare import AkshareDataSource
 
 # V2 管理器导入（Phase 3: 手术式替换）
-from src.core.data_source_manager_v2 import DataSourceManagerV2
+from src.core.data_source import DataSourceManagerV2
 
 
 class DataSourceManager:
