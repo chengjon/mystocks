@@ -1,79 +1,78 @@
 {
   "version": "1.0",
-  "data_sources": {
-    "market": {
-      "name": "Market Data Source",
-      "type": "market",
-      "enabled": true,
-      "mode": "mock",
-      "base_url": null,
-      "timeout": 30.0,
-      "retry_count": 3,
-      "retry_delay": 1.0,
-      "health_check_interval": 60.0,
-      "fallback_enabled": true,
-      "cache_enabled": true,
-      "cache_ttl": 300,
-      "custom_headers": {
-        "User-Agent": "MyStocks-Web-API/1.0",
-        "Accept": "application/json"
-      }
-    },
-    "data": {
-      "name": "Data Source",
-      "type": "data",
-      "enabled": true,
-      "mode": "mock",
-      "base_url": null,
-      "timeout": 30.0,
-      "retry_count": 3,
-      "retry_delay": 1.0,
-      "health_check_interval": 60.0,
-      "fallback_enabled": true,
-      "cache_enabled": true,
-      "cache_ttl": 300,
-      "custom_headers": {
-        "User-Agent": "MyStocks-Web-API/1.0",
-        "Accept": "application/json"
-      }
-    },
-    "dashboard": {
-      "name": "Dashboard Data Source",
-      "type": "dashboard",
-      "enabled": true,
-      "mode": "mock",
-      "base_url": null,
-      "timeout": 15.0,
-      "retry_count": 2,
-      "retry_delay": 0.5,
-      "health_check_interval": 30.0,
-      "fallback_enabled": false,
-      "cache_enabled": true,
-      "cache_ttl": 120,
-      "custom_headers": {
-        "User-Agent": "MyStocks-Web-API/1.0",
-        "Accept": "application/json"
-      }
-    },
-    "technical_analysis": {
-      "name": "Technical Analysis Data Source",
-      "type": "technical_analysis",
-      "enabled": true,
-      "mode": "mock",
-      "base_url": null,
-      "timeout": 20.0,
-      "retry_count": 3,
-      "retry_delay": 1.0,
-      "health_check_interval": 60.0,
-      "fallback_enabled": true,
-      "cache_enabled": true,
-      "cache_ttl": 600,
-      "custom_headers": {
-        "User-Agent": "MyStocks-Web-API/1.0",
-        "Accept": "application/json"
-      }
-    },
-    "watchlist": {
+      "data_sources": {
+        "market": {
+          "name": "Market Data Source",
+          "type": "market",
+          "enabled": true,
+          "mode": "real",
+          "base_url": null,
+          "timeout": 30.0,
+          "retry_count": 3,
+          "retry_delay": 1.0,
+          "health_check_interval": 60.0,
+          "fallback_enabled": true,
+          "cache_enabled": true,
+          "cache_ttl": 300,
+          "custom_headers": {
+            "User-Agent": "MyStocks-Web-API/1.0",
+            "Accept": "application/json"
+          }
+        },
+        "data": {
+          "name": "Data Source",
+          "type": "data",
+          "enabled": true,
+          "mode": "real",
+          "base_url": null,
+          "timeout": 30.0,
+          "retry_count": 3,
+          "retry_delay": 1.0,
+          "health_check_interval": 60.0,
+          "fallback_enabled": true,
+          "cache_enabled": true,
+          "cache_ttl": 300,
+          "custom_headers": {
+            "User-Agent": "MyStocks-Web-API/1.0",
+            "Accept": "application/json"
+          }
+        },
+        "dashboard": {
+          "name": "Dashboard Data Source",
+          "type": "dashboard",
+          "enabled": true,
+          "mode": "mock",
+          "base_url": null,
+          "timeout": 15.0,
+          "retry_count": 2,
+          "retry_delay": 0.5,
+          "health_check_interval": 30.0,
+          "fallback_enabled": false,
+          "cache_enabled": true,
+          "cache_ttl": 120,
+          "custom_headers": {
+            "User-Agent": "MyStocks-Web-API/1.0",
+            "Accept": "application/json"
+          }
+        },
+        "technical_analysis": {
+          "name": "Technical Analysis Data Source",
+          "type": "technical_analysis",
+          "enabled": true,
+          "mode": "real",
+          "base_url": null,
+          "timeout": 20.0,
+          "retry_count": 3,
+          "retry_delay": 1.0,
+          "health_check_interval": 60.0,
+          "fallback_enabled": true,
+          "cache_enabled": true,
+          "cache_ttl": 600,
+          "custom_headers": {
+            "User-Agent": "MyStocks-Web-API/1.0",
+            "Accept": "application/json"
+          }
+        },    "watchlist": {
       "name": "Watchlist Data Source",
       "type": "watchlist",
       "enabled": true,

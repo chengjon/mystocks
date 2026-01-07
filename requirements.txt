@@ -53,6 +53,9 @@ botocore>=1.40.71
 # 任务队列
 celery>=5.5.3
 
+# 异步监控 (P0优先级 - ROI 9/10)
+redis>=5.0.0
+
 # 压测工具
 locust>=2.20.0
 datamodel-codegen==0.0.1

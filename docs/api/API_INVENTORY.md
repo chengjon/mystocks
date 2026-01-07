@@ -33,7 +33,7 @@
 
 | API端点 | 方法 | 业务模块 | 契约状态 | 缺失信息 | 责任人 |
 |---------|-----|---------|---------|---------|--------|
-| `/api/market/kline` | GET | Market | ⚠️ 部分定义 | 需完整错误码定义 | Backend |
+| `/api/data/stocks/kline` | GET | Data | ✅ 已标准化 | 标准化K线接口(替代`/api/market/kline`) | Backend |
 | `/api/market/overview` | GET | Market | ❌ 未定义 | 完整契约 | Backend |
 | `/api/market/fund-flow` | GET | Market | ⚠️ 部分定义 | 响应单位说明 | Backend |
 | `/api/indicators/overlay` | GET | Technical | ⚠️ 部分定义 | 错误码定义 | Backend |

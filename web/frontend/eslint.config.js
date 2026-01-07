@@ -36,12 +36,16 @@ export default [
         extraFileExtensions: ['.vue']
       },
       globals: {
+        // Browser globals
         browser: true,
         es2021: true,
         node: true,
         console: true,
         window: true,
         document: true,
+        navigator: true,
+        history: true,
+        location: true,
         localStorage: true,
         sessionStorage: true,
         setTimeout: true,
@@ -53,7 +57,31 @@ export default [
         globalThis: true,
         Blob: true,
         FormData: true,
-        XMLHttpRequest: true
+        XMLHttpRequest: true,
+        fetch: true,
+        URL: true,
+        Headers: true,
+        Request: true,
+        Response: true,
+
+        // Browser APIs (missing TypeScript globals)
+        MouseEvent: true,
+        HTMLElement: true,
+        HTMLInputElement: true,
+        HTMLDivElement: true,
+        HTMLButtonElement: true,
+        HTMLCanvasElement: true,
+        HTMLImageElement: true,
+        Event: true,
+        EventTarget: true,
+        Node: true,
+        Element: true,
+        CSSStyleDeclaration: true,
+
+        // Window methods
+        alert: true,
+        confirm: true,
+        prompt: true
       }
     },
     plugins: {
@@ -61,6 +89,9 @@ export default [
       vue
     },
     rules: {
+      // Disable no-undef for TypeScript (TypeScript handles this)
+      'no-undef': 'off',
+
       // TypeScript specific rules
       '@typescript-eslint/no-unused-vars': [
         'error',

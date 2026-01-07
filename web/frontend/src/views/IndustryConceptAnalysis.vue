@@ -1,219 +1,172 @@
 <template>
-  <div class="industry-concept-analysis">
-    <el-card class="main-card">
-      <template #header>
-        <div class="card-header">
-          <span>行业/概念分析</span>
-          <el-button type="primary" @click="refreshData" :loading="loading">
-            刷新数据
-          </el-button>
+    <!-- 页面头部 -->
+    <PageHeader
+      title="行业概念分析"
+      subtitle="INDUSTRY CONCEPT ANALYSIS"
+    />
+
+    <!-- 主卡片 -->
+    <div class="card main-card">
+      <div class="card-header">
+        <div class="header-title">
+          <div class="title-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </div>
+          <span class="title-text">分析面板</span>
+          <span class="title-sub">ANALYSIS PANEL</span>
         </div>
-      </template>
-
-      <!-- 顶部筛选区 -->
-      <div class="filter-section">
-        <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-          <el-tab-pane label="行业分析" name="industry"></el-tab-pane>
-          <el-tab-pane label="概念分析" name="concept"></el-tab-pane>
-        </el-tabs>
-
-        <div class="filter-controls">
-          <el-select
-            v-if="activeTab === 'industry'"
-            v-model="selectedIndustry"
-            placeholder="请选择行业"
-            filterable
-            clearable
-            @change="handleIndustryChange"
-            class="filter-select"
-          >
-            <el-option
-              v-for="item in industryList"
-              :key="item.industry_code"
-              :label="item.industry_name"
-              :value="item.industry_code"
-            />
-          </el-select>
-
-          <el-select
-            v-if="activeTab === 'concept'"
-            v-model="selectedConcept"
-            placeholder="请选择概念"
-            filterable
-            clearable
-            @change="handleConceptChange"
-            class="filter-select"
-          >
-            <el-option
-              v-for="item in conceptList"
-              :key="item.concept_code"
-              :label="item.concept_name"
-              :value="item.concept_code"
-            />
-          </el-select>
-
-          <el-button @click="resetFilters" type="info" plain>
-            重置筛选
-          </el-button>
-        </div>
+        <button class="button button-primary" @click="refreshData" :class="{ loading: loading }">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          刷新数据
+        </button>
       </div>
 
-      <!-- 中间统计区 -->
-      <div class="stats-section" v-if="currentCategory">
-        <el-row :gutter="20">
-          <el-col :span="6">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-label">名称</div>
-                <div class="stat-value">{{ currentCategory.category_name }}</div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-label">涨跌幅</div>
-                <div
-                  class="stat-value"
-                  :class="{
-                    'positive': currentCategory.change_percent > 0,
-                    'negative': currentCategory.change_percent < 0
-                  }"
-                >
-                  {{ formatPercent(currentCategory.change_percent) }}
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-label">成分股</div>
-                <div class="stat-value">{{ currentCategory.stock_count }}</div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="6">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-label">领涨股</div>
-                <div class="stat-value">{{ currentCategory.leader_stock }}</div>
-              </div>
-            </el-card>
-          </el-col>
-        </el-row>
+      <div class="card-body">
+        <!-- 筛选区域 -->
+        <div class="filter-section">
+          <div class="tabs">
+            <button
+              :class="['tab-button', { active: activeTab === 'industry' }]"
+              @click="handleTabChange('industry')"
+            >
+              <span class="tab-icon">🏭</span>
+              <span class="tab-text">行业分析</span>
+            </button>
+            <button
+              :class="['tab-button', { active: activeTab === 'concept' }]"
+              @click="handleTabChange('concept')"
+            >
+              <span class="tab-icon">💡</span>
+              <span class="tab-text">概念分析</span>
+            </button>
+          </div>
 
-        <!-- 图表区域 -->
-        <div class="chart-section">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-card class="chart-card">
-                <template #header>
-                  <div class="chart-header">
-                    <span>涨跌分布</span>
-                  </div>
-                </template>
-                <div ref="pieChartRef" class="chart-container"></div>
-              </el-card>
-            </el-col>
-            <el-col :span="12">
-              <el-card class="chart-card">
-                <template #header>
-                  <div class="chart-header">
-                    <span>平均涨跌幅</span>
-                  </div>
-                </template>
-                <div ref="barChartRef" class="chart-container"></div>
-              </el-card>
-            </el-col>
-          </el-row>
+          <div class="filter-controls">
+            <select v-if="activeTab === 'industry'" v-model="selectedIndustry" class="select" @change="(e: Event) => handleIndustryChange((e.target as HTMLSelectElement).value)">
+              <option value="">请选择行业</option>
+              <option v-for="item in industryList" :key="item.industry_code" :value="item.industry_code">
+                {{ item.industry_name }}
+              </option>
+            </select>
+
+            <select v-if="activeTab === 'concept'" v-model="selectedConcept" class="select" @change="(e: Event) => handleConceptChange((e.target as HTMLSelectElement).value)">
+              <option value="">请选择概念</option>
+              <option v-for="item in conceptList" :key="item.concept_code" :value="item.concept_code">
+                {{ item.concept_name }}
+              </option>
+            </select>
+
+            <button class="button button-info" @click="resetFilters">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-9.75 9 9 9 0 0 0 9.75-9.75 0 0 0-9.75-9 9 0 0 0-9.75z"></path>
+              </svg>
+              重置筛选
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- 底部成分股列表 -->
-      <div class="stocks-section">
-        <el-card class="stocks-card">
-          <template #header>
-            <div class="stocks-header">
-              <span>成分股列表</span>
-              <div class="stocks-header-actions">
-                <el-input
-                  v-model="searchKeyword"
-                  placeholder="搜索股票代码或名称"
-                  clearable
-                  style="width: 200px; margin-right: 10px;"
-                />
-                <el-button @click="exportStocks" type="primary" plain>
-                  导出数据
-                </el-button>
-              </div>
+        <!-- 统计卡片 -->
+        <div class="stats-section" v-if="currentCategory">
+          <div class="stats-grid">
+            <!-- TEMP: ArtDecoStatCard removed - awaiting UI/UX migration -->
+            <div class="stat-item">
+              <div class="stat-label">{{ stats[0]?.title || 'N/A' }}</div>
+              <div class="stat-value" :style="{ color: stats[0]?.color || '#D4AF37' }">{{ stats[0]?.value || '-' }}</div>
             </div>
-          </template>
+            <div class="stat-item">
+              <div class="stat-label">{{ stats[1]?.title || 'N/A' }}</div>
+              <div class="stat-value" :style="{ color: stats[1]?.color || '#D4AF37' }">{{ stats[1]?.value || '-' }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">{{ stats[2]?.title || 'N/A' }}</div>
+              <div class="stat-value" :style="{ color: stats[2]?.color || '#D4AF37' }">{{ stats[2]?.value || '-' }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">{{ stats[3]?.title || 'N/A' }}</div>
+              <div class="stat-value" :style="{ color: stats[3]?.color || '#D4AF37' }">{{ stats[3]?.value || '-' }}</div>
+            </div>
+          </div>
 
-          <el-table
-            :data="filteredStocks"
-            style="width: 100%"
-            :loading="stocksLoading"
-            stripe
-            @row-click="handleStockClick"
-          >
-            <el-table-column prop="symbol" label="股票代码" width="120">
-              <template #default="{ row }">
-                <el-link @click.stop="handleStockClick(row)">{{ row.symbol }}</el-link>
-              </template>
-            </el-table-column>
-            <el-table-column prop="name" label="股票名称" width="120" />
-            <el-table-column prop="latest_price" label="最新价" width="100" align="right">
-              <template #default="{ row }">
-                {{ formatPrice(row.latest_price) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="change_percent" label="涨跌幅" width="100" align="right">
-              <template #default="{ row }">
-                <span
-                  :class="{
-                    'positive': row.change_percent > 0,
-                    'negative': row.change_percent < 0
-                  }"
-                >
-                  {{ formatPercent(row.change_percent) }}
-                </span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="volume" label="成交量" width="120" align="right">
-              <template #default="{ row }">
-                {{ formatVolume(row.volume) }}
-              </template>
-            </el-table-column>
-            <el-table-column prop="amount" label="成交额" align="right">
-              <template #default="{ row }">
-                {{ formatAmount(row.amount) }}
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              :total="stocks.length"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
+          <!-- 图表区域 -->
+          <div class="chart-section">
+            <ChartContainer
+              chart-type="pie"
+              :data="pieChartData"
+              :options="pieChartOptions"
+              height="280px"
+              :loading="stocksLoading"
+            />
+            <ChartContainer
+              chart-type="bar"
+              :data="barChartData"
+              :options="barChartOptions"
+              height="280px"
+              :loading="stocksLoading"
             />
           </div>
-        </el-card>
+        </div>
+
+        <!-- 成分股列表 -->
+        <div class="stocks-section" v-if="stocks.length > 0">
+          <div class="card stocks-card">
+            <div class="card-header">
+              <div class="header-title">
+                <span class="title-text">成分股列表</span>
+              </div>
+              <div class="stocks-header-actions">
+                <input
+                  v-model="searchKeyword"
+                  placeholder="搜索股票代码或名称"
+                  class="input"
+                />
+                <button class="button button-primary" @click="exportStocks">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                  </svg>
+                  导出数据
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <StockListTable
+                :columns="tableColumns"
+                :data="paginatedStocks"
+                :loading="stocksLoading"
+                :row-clickable="false"
+              />
+
+              <!-- 分页 -->
+              <PaginationBar
+                v-model:page="currentPage"
+                v-model:page-size="pageSize"
+                :total="stocks.length"
+                :page-sizes="[10, 20, 50, 100]"
+                @page-change="handleCurrentChange"
+                @size-change="handleSizeChange"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </el-card>
-  </div>
+    </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import * as echarts from 'echarts'
-import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue'
+import { ElMessage } from 'element-plus'
+import type { TableColumn } from '@/components/shared'
 import {
   getIndustryList,
   getConceptList,
@@ -222,84 +175,200 @@ import {
   getIndustryPerformance
 } from '@/api/industryConcept.js'
 
-// 路由
-const router = useRouter()
-
-// 响应式数据
-const activeTab = ref('industry')
+const activeTab = ref<'industry' | 'concept'>('industry')
 const loading = ref(false)
 const stocksLoading = ref(false)
 
-// 行业/概念数据
-const industryList = ref([])
-const conceptList = ref([])
+const industryList = ref<any[]>([])
+const conceptList = ref<any[]>([])
 const selectedIndustry = ref('')
 const selectedConcept = ref('')
 
-// 当前选中的分类数据
-const currentCategory = ref(null)
+const currentCategory = ref<any>(null)
+const stocks = ref<any[]>([])
 
-// 成分股数据
-const stocks = ref([])
 const searchKeyword = ref('')
 const currentPage = ref(1)
 const pageSize = ref(20)
 
-// 图表引用
-const pieChartRef = ref(null)
-const barChartRef = ref(null)
-let pieChart = null
-let barChart = null
+// 统计卡片数据
+const stats = computed(() => [
+  {
+    title: '名称',
+    value: currentCategory.value?.category_name || '--',
+    color: 'gold' as const
+  },
+  {
+    title: '涨跌幅',
+    value: formatPercent(currentCategory.value?.change_percent),
+    color: getChangeColor(currentCategory.value?.change_percent)
+  },
+  {
+    title: '成分股',
+    value: currentCategory.value?.stock_count?.toString() || '--',
+    color: 'blue' as const
+  },
+  {
+    title: '领涨股',
+    value: currentCategory.value?.leader_stock || '--',
+    color: 'green' as const
+  }
+])
 
-// 计算属性
-const filteredStocks = computed(() => {
-  let result = stocks.value
+// 饼图数据
+const pieChartData = computed(() => {
+  if (!currentCategory.value) return []
+
+  const data = currentCategory.value
+  return [
+    {
+      name: '上涨',
+      value: data.up_count || 0
+    },
+    {
+      name: '下跌',
+      value: data.down_count || 0
+    },
+    {
+      name: '平盘',
+      value: data.flat_count || 0
+    }
+  ]
+})
+
+const pieChartOptions = computed(() => ({
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b}: {c}只 ({d}%)'
+  },
+  legend: {
+    bottom: '5%',
+    left: 'center'
+  }
+}))
+
+// 柱状图数据
+const barChartData = computed(() => {
+  if (!currentCategory.value) return []
+
+  return [
+    {
+      name: '涨跌幅',
+      data: [{ name: '当前', value: currentCategory.value.change_percent || 0 }]
+    }
+  ]
+})
+
+const barChartOptions = computed(() => ({
+  xAxis: {
+    type: 'category',
+    data: ['当前']
+  },
+  yAxis: {
+    type: 'value'
+  }
+}))
+
+// 表格列配置
+const tableColumns = computed((): TableColumn[] => [
+  {
+    prop: 'symbol',
+    label: '股票代码',
+    width: 120,
+    className: 'mono'
+  },
+  {
+    prop: 'name',
+    label: '股票名称',
+    width: 120
+  },
+  {
+    prop: 'latest_price',
+    label: '最新价',
+    width: 100,
+    align: 'right',
+    formatter: (value: number) => formatPrice(value)
+  },
+  {
+    prop: 'change_percent',
+    label: '涨跌幅',
+    width: 120,
+    align: 'right',
+    colorClass: (_value: any, row: any) => getChangeColorClass(row.change_percent),
+    formatter: (value: number) => formatPercent(value)
+  },
+  {
+    prop: 'volume',
+    label: '成交量',
+    width: 120,
+    align: 'right',
+    formatter: (value: number) => formatVolume(value)
+  },
+  {
+    prop: 'amount',
+    label: '成交额',
+    width: 120,
+    align: 'right',
+    formatter: (value: number) => formatAmount(value)
+  }
+])
+
+const paginatedStocks = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  let result = stocks.value.slice(start, end)
+
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    result = result.filter(stock =>
+    result = stocks.value.filter((stock: any) =>
       stock.symbol.toLowerCase().includes(keyword) ||
       (stock.name && stock.name.toLowerCase().includes(keyword))
     )
   }
 
-  // 分页
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return result.slice(start, end)
+  return result
 })
 
-// 格式化函数
-const formatPercent = (value) => {
+const formatPercent = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '--'
   return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
 }
 
-const formatPrice = (value) => {
+const formatPrice = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '--'
   return value.toFixed(2)
 }
 
-const formatVolume = (value) => {
+const formatVolume = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '--'
   if (value >= 100000000) {
     return `${(value / 100000000).toFixed(2)}亿`
   } else if (value >= 10000) {
     return `${(value / 10000).toFixed(2)}万`
   }
-  return value.toLocaleString()
+  return value.toString()
 }
 
-const formatAmount = (value) => {
+const formatAmount = (value: number | null | undefined): string => {
   if (value === null || value === undefined) return '--'
   if (value >= 100000000) {
     return `${(value / 100000000).toFixed(2)}亿`
   } else if (value >= 10000) {
     return `${(value / 10000).toFixed(2)}万`
   }
-  return value.toLocaleString()
+  return value.toString()
 }
 
-// 方法
+const getChangeColor = (value: number | null | undefined): 'red' | 'green' | 'gold' => {
+  if (value === null || value === undefined) return 'gold'
+  return value > 0 ? 'red' : value < 0 ? 'green' : 'gold'
+}
+
+const getChangeColorClass = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return ''
+  return value > 0 ? 'positive' : value < 0 ? 'negative' : ''
+}
+
 const refreshData = async () => {
   loading.value = true
   try {
@@ -315,7 +384,8 @@ const refreshData = async () => {
       }
     }
     ElMessage.success('数据刷新成功')
-  } catch (error) {
+  } catch (error: any) {
+    console.error('数据刷新失败:', error)
     ElMessage.error('数据刷新失败: ' + error.message)
   } finally {
     loading.value = false
@@ -325,60 +395,60 @@ const refreshData = async () => {
 const loadIndustryList = async () => {
   try {
     const response = await getIndustryList()
-    if (response.success) {
-      industryList.value = response.data.industries || []
+    if (response.data?.success) {
+      industryList.value = response.data.data.industries || []
     }
   } catch (error) {
-    ElMessage.error('加载行业列表失败: ' + error.message)
+    console.error('加载行业列表失败:', error)
   }
 }
 
 const loadConceptList = async () => {
   try {
     const response = await getConceptList()
-    if (response.success) {
-      conceptList.value = response.data.concepts || []
+    if (response.data?.success) {
+      conceptList.value = response.data.data.concepts || []
     }
   } catch (error) {
-    ElMessage.error('加载概念列表失败: ' + error.message)
+    console.error('加载概念列表失败:', error)
   }
 }
 
-const loadIndustryStocks = async (industryCode) => {
+const loadIndustryStocks = async (industryCode: string) => {
   stocksLoading.value = true
   try {
-    const response = await getIndustryStocks(industryCode)
-    if (response.success) {
-      stocks.value = response.data.stocks || []
+    const [stocksRes, perfRes] = await Promise.all([
+      getIndustryStocks(industryCode),
+      getIndustryPerformance(industryCode)
+    ])
 
-      // 获取行业表现数据
-      const perfResponse = await getIndustryPerformance(industryCode)
-      if (perfResponse.success) {
+    if (stocksRes.data?.success) {
+      stocks.value = stocksRes.data.data.stocks || []
+
+      if (perfRes.data?.success) {
         currentCategory.value = {
           category_code: industryCode,
-          category_name: perfResponse.data.industry.industry_name,
-          ...perfResponse.data.industry
+          category_name: perfRes.data.data.industry.industry_name,
+          ...perfRes.data.data.industry
         }
-        // 更新图表
-        await nextTick()
-        updateCharts(perfResponse.data)
       }
     }
   } catch (error) {
-    ElMessage.error('加载行业成分股失败: ' + error.message)
+    console.error('加载行业成分股失败:', error)
+    ElMessage.error('加载行业成分股失败')
   } finally {
     stocksLoading.value = false
   }
 }
 
-const loadConceptStocks = async (conceptCode) => {
+const loadConceptStocks = async (conceptCode: string) => {
   stocksLoading.value = true
   try {
     const response = await getConceptStocks(conceptCode)
-    if (response.success) {
-      stocks.value = response.data.stocks || []
 
-      // 概念数据简化处理
+    if (response.data?.success) {
+      stocks.value = response.data.data.stocks || []
+
       const concept = conceptList.value.find(c => c.concept_code === conceptCode)
       if (concept) {
         currentCategory.value = {
@@ -389,36 +459,27 @@ const loadConceptStocks = async (conceptCode) => {
       }
     }
   } catch (error) {
-    ElMessage.error('加载概念成分股失败: ' + error.message)
+    console.error('加载概念成分股失败:', error)
+    ElMessage.error('加载概念成分股失败')
   } finally {
     stocksLoading.value = false
   }
 }
 
-const handleTabChange = (tabName) => {
+const handleTabChange = (tabName: 'industry' | 'concept') => {
+  activeTab.value = tabName
   resetFilters()
-  if (tabName === 'industry') {
-    loadIndustryList()
-  } else {
-    loadConceptList()
-  }
 }
 
-const handleIndustryChange = (industryCode) => {
+const handleIndustryChange = (industryCode: string) => {
   if (industryCode) {
     loadIndustryStocks(industryCode)
-  } else {
-    stocks.value = []
-    currentCategory.value = null
   }
 }
 
-const handleConceptChange = (conceptCode) => {
+const handleConceptChange = (conceptCode: string) => {
   if (conceptCode) {
     loadConceptStocks(conceptCode)
-  } else {
-    stocks.value = []
-    currentCategory.value = null
   }
 }
 
@@ -427,221 +488,376 @@ const resetFilters = () => {
   selectedConcept.value = ''
   stocks.value = []
   currentCategory.value = null
+  currentPage.value = 1
   searchKeyword.value = ''
+}
+
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
   currentPage.value = 1
 }
 
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  currentPage.value = 1
-}
-
-const handleCurrentChange = (val) => {
-  currentPage.value = val
-}
-
-const handleStockClick = (row) => {
-  router.push(`/stock-detail/${row.symbol}`)
+const handleCurrentChange = (page: number) => {
+  currentPage.value = page
 }
 
 const exportStocks = () => {
-  ElMessageBox.alert('导出功能待实现', '提示', {
-    type: 'info'
-  })
+  ElMessage.info('导出功能待实现')
 }
 
-const updateCharts = (performanceData) => {
-  // 更新饼图
-  if (pieChartRef.value) {
-    if (!pieChart) {
-      pieChart = echarts.init(pieChartRef.value)
-    }
-
-    const option = {
-      title: {
-        text: '涨跌分布',
-        left: 'center'
-      },
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        orient: 'vertical',
-        left: 'left'
-      },
-      series: [
-        {
-          name: '涨跌分布',
-          type: 'pie',
-          radius: '50%',
-          data: [
-            { value: performanceData.up_count, name: '上涨' },
-            { value: performanceData.down_count, name: '下跌' },
-            { value: performanceData.stock_count - performanceData.up_count - performanceData.down_count, name: '平盘' }
-          ],
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-        }
-      ]
-    }
-
-    pieChart.setOption(option, true)
-  }
-
-  // 更新柱状图
-  if (barChartRef.value) {
-    if (!barChart) {
-      barChart = echarts.init(barChartRef.value)
-    }
-
-    const option = {
-      title: {
-        text: '行业表现对比',
-        left: 'center'
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      xAxis: {
-        type: 'category',
-        data: ['当前行业']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: '涨跌幅',
-          type: 'bar',
-          data: [performanceData.industry.change_percent],
-          itemStyle: {
-            color: performanceData.industry.change_percent > 0 ? '#e74c3c' : '#3498db'
-          }
-        }
-      ]
-    }
-
-    barChart.setOption(option, true)
-  }
-}
-
-// 监听窗口大小变化，重置图表
-const handleResize = () => {
-  if (pieChart) {
-    pieChart.resize()
-  }
-  if (barChart) {
-    barChart.resize()
-  }
-}
-
-// 生命周期
 onMounted(() => {
   loadIndustryList()
-  window.addEventListener('resize', handleResize)
-})
-
-// 组件卸载时清理
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-  if (pieChart) {
-    pieChart.dispose()
-  }
-  if (barChart) {
-    barChart.dispose()
-  }
+  loadConceptList()
 })
 </script>
 
-<style scoped>
-.industry-concept-analysis {
-  padding: 20px;
-}
+<style scoped lang="scss">
 
-.main-card {
-  height: calc(100vh - 40px);
-  display: flex;
-  flex-direction: column;
-}
+  padding: 24px;
+  background: var(--bg-primary);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  min-height: 100vh;
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    position: relative;
 
-.filter-section {
-  margin-bottom: 20px;
-}
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gold-primary);
+      z-index: 1;
+    }
 
-.filter-controls {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-  align-items: center;
-}
+    &::before {
+      top: 12px;
+      left: 12px;
+      border-right: none;
+      border-bottom: none;
+    }
 
-.filter-select {
-  width: 200px;
-}
+    &::after {
+      bottom: 12px;
+      right: 12px;
+      border-left: none;
+      border-top: none;
+    }
 
-.stats-section {
-  margin-bottom: 20px;
-}
+    .card-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--gold-dim);
 
-.stat-card {
-  height: 100px;
-}
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
 
-.stat-item {
-  text-align: center;
-}
+        .title-icon {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--gold-primary);
+          flex-shrink: 0;
 
-.stat-label {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
-}
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
 
-.stat-value {
-  font-size: 18px;
-  font-weight: bold;
-}
+        .title-text {
+          font-family: var(--font-body);
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--gold-primary);
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
 
-.stat-value.positive {
-  color: #e74c3c;
-}
+        .title-sub {
+          font-family: var(--font-body);
+          font-size: 10px;
+          color: var(--gold-muted);
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          display: block;
+          margin-top: 2px;
+        }
+      }
+    }
 
-.stat-value.negative {
-  color: #3498db;
-}
+    .card-body {
+      padding: 24px;
+    }
+  }
 
-.chart-section {
-  margin-top: 20px;
-}
+  .filter-section {
+    margin-bottom: 32px;
 
-.chart-card {
-  height: 300px;
-}
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--gold-dim);
 
-.chart-container {
-  height: 250px;
-}
+      .tab-button {
+        padding: 12px 24px;
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+        border-bottom: 2px solid transparent;
 
-.stocks-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+        .tab-icon {
+          font-size: 16px;
+        }
 
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
+        &:hover {
+          color: var(--gold-primary);
+        }
+
+        &.active {
+          color: var(--gold-primary);
+          border-bottom-color: var(--gold-primary);
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            height: 2px;
+            background: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+          }
+        }
+      }
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+  }
+
+  .select,
+  .select-sm {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--gold-dim);
+    padding: 10px 0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-bottom-color: var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+
+    option {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+  }
+
+  .button {
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid var(--gold-primary);
+    background: transparent;
+    color: var(--gold-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover:not(.loading) {
+      background: var(--gold-primary);
+      color: var(--bg-primary);
+    }
+
+    &.loading {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 6px;
+      height: 6px;
+      border-left: 1px solid currentColor;
+      border-top: 1px solid currentColor;
+    }
+
+    &.button-primary {
+      border-color: var(--rise);
+      color: var(--rise);
+
+      &::before {
+        border-color: var(--rise);
+      }
+
+      &:hover:not(.loading) {
+        background: var(--rise);
+        color: var(--bg-primary);
+      }
+    }
+
+    &.button-info {
+      border-color: #409eff;
+      color: #409eff;
+
+      &::before {
+        border-color: #409eff;
+      }
+
+      &:hover:not(.loading) {
+        background: #409eff;
+        color: var(--bg-primary);
+      }
+    }
+  }
+
+  .input {
+    flex: 1;
+    padding: 10px 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    }
+  }
+
+  .stats-section {
+    margin-bottom: 32px;
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .chart-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+  }
+
+  .stocks-section {
+    .stocks-card {
+      .card-header {
+        .header-title {
+          .title-text {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+        }
+
+        .stocks-header-actions {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .filter-section {
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+
+        .select,
+        .button {
+          width: 100%;
+        }
+      }
+
+      .stats-section {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .chart-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .stocks-card {
+        .card-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+
+          .stocks-header-actions {
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            .input {
+              flex: 1;
+            }
+
+            .button {
+              flex: 1;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>

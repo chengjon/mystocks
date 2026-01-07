@@ -83,7 +83,10 @@ class Settings(BaseSettings):
     )  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
-    cors_origins_str: str = "http://localhost:3000,http://localhost:8080,http://localhost:5173"
+    # 前端端口范围: 3000-3009，后端端口范围: 8000-8009
+    cors_origins_str: str = (
+        "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009"
+    )
 
     @property
     def cors_origins(self) -> List[str]:

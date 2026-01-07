@@ -92,7 +92,7 @@ class IndicatorRegistry:
 
         if abbr in self._registry:
             logger.warning(f"指标 {abbr} 已存在，将被覆盖")
-            old_version = self._registry[abbr].version
+            self._registry[abbr].version
 
         self._registry[abbr] = metadata
         logger.info(f"指标 {abbr} v{metadata.version} 注册成功")

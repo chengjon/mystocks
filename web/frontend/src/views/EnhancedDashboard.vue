@@ -1,42 +1,44 @@
 <template>
-  <div class="dashboard">
-    <!-- 统计卡片行 -->
-    <el-row :gutter="20" class="stats-row">
-      <el-col :xs="24" :sm="12" :md="6" v-for="stat in stats" :key="stat.title">
-        <el-card class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon" :style="{ backgroundColor: stat.color }">
-              <el-icon :size="24"><component :is="stat.icon" /></el-icon>
-            </div>
-            <div class="stat-info">
-              <p class="stat-title">{{ stat.title }}</p>
-              <h3 class="stat-value">{{ stat.value }}</h3>
-              <span class="stat-trend" :class="stat.trendClass">
-                {{ stat.trend }}
-              </span>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div class="enhanced-dashboard">
 
-    <!-- 市场概览模块 -->
-    <el-row :gutter="20" class="market-overview-section">
-      <el-col :xs="24" :lg="12">
-        <el-card class="chart-card">
+    <div class="page-header">
+      <h1 class="page-title">ENHANCED DASHBOARD</h1>
+      <p class="page-subtitle">MARKET OVERVIEW | WATCHLIST | SECTOR PERFORMANCE</p>
+    </div>
+
+    <div class="stats-grid">
+      <el-col :xs="24" :sm="12" :md="6" v-for="stat in stats" :key="stat.title">
+          :title="stat.title"
+          :value="stat.value"
+          :icon="getIconComponent(stat.icon)"
+          :color="getColorType(stat.color)"
+          :trend="stat.trend"
+          :trend-up="stat.trendClass === 'up'"
+          hoverable
+        />
+    </div>
+
+    <div class="market-grid">
+      <el-card class="chart-card">
           <template #header>
-            <div class="flex-between">
-              <span>市场概览</span>
-              <el-button type="primary" size="small" @click="loadMarketOverview" :loading="loading.overview">
-                刷新
-              </el-button>
-            </div>
+            <PageHeader
+              title="市场概览"
+              :actions="[{ text: '刷新', variant: 'primary', handler: loadMarketOverview }]"
+              :show-divider="false"
+            />
           </template>
           <div class="market-overview-content">
             <!-- 全市场涨跌分布 -->
             <div class="overview-item">
               <h4>涨跌分布</h4>
-              <div ref="priceDistributionChartRef" class="mini-chart"></div>
+              <ChartContainer
+                ref="priceDistributionChartRef"
+                chart-type="pie"
+                :data="priceDistributionData"
+                :options="priceDistributionOptions"
+                height="150px"
+                :loading="loading.overview"
+              />
             </div>
 
             <!-- 热门行业TOP5 -->
@@ -77,17 +79,15 @@
       <el-col :xs="24" :lg="12">
         <el-card class="chart-card">
           <template #header>
-            <div class="flex-between">
-              <span>个人关注股票</span>
-              <div>
-                <el-button type="success" size="small" @click="handleAddToWatchlist" :loading="loading.addWatchlist">
-                  添加关注
-                </el-button>
-                <el-button type="primary" size="small" @click="loadWatchlist" :loading="loading.watchlist" style="margin-left: 8px">
-                  刷新
-                </el-button>
-              </div>
-            </div>
+            <PageHeader
+              title="个人关注股票"
+              subtitle="自选股管理"
+              :actions="[
+                { text: '添加关注', variant: 'success', handler: handleAddToWatchlist },
+                { text: '刷新', variant: 'primary', handler: loadWatchlist }
+              ]"
+              :show-divider="false"
+            />
           </template>
 
           <!-- 个人关注股票列表 -->
@@ -135,8 +135,13 @@
             </el-table>
           </div>
 
-          <!-- 添加关注对话框 -->
-          <el-dialog v-model="showAddDialog" title="添加关注股票" width="400px">
+          <!-- 添加关注对话框 - 使用 DetailDialog -->
+          <DetailDialog
+            v-model:visible="showAddDialog"
+            title="添加关注股票"
+            :confirming="loading.addWatchlist"
+            @confirm="confirmAddToWatchlist"
+          >
             <el-form :model="addForm" label-width="80px">
               <el-form-item label="股票代码">
                 <el-input v-model="addForm.symbol" placeholder="请输入股票代码，如：600000"></el-input>
@@ -145,147 +150,229 @@
                 <el-input v-model="addForm.display_name" placeholder="可选，默认使用股票代码"></el-input>
               </el-form-item>
             </el-form>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="showAddDialog = false">取消</el-button>
-                <el-button type="primary" @click="confirmAddToWatchlist" :loading="loading.addWatchlist">
-                  确认添加
-                </el-button>
-              </span>
+          </DetailDialog>
+        </el-card>
+      </div>
+
+      <el-card class="chart-card">
+          <template #header>
+            <PageHeader
+              title="个人关注股票"
+              subtitle="自选股管理"
+              :actions="[
+                { text: '添加关注', variant: 'success', handler: handleAddToWatchlist },
+                { text: '刷新', variant: 'primary', handler: loadWatchlist }
+              ]"
+              :show-divider="false"
+            />
+          </template>
+
+          <div class="watchlist-content">
+            <el-table
+              :data="watchlistStocks"
+              v-loading="loading.watchlist"
+              empty-text="暂无关注股票，点击添加按钮开始关注"
+            >
+              <el-table-column prop="symbol" label="代码" width="100" />
+              <el-table-column prop="display_name" label="名称" width="120" />
+              <el-table-column prop="price" label="现价" width="80" align="right">
+                <template #default="{ row }">
+                  <span :class="getPriceChangeClass(row.change)">
+                    {{ row.price || '--' }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="change" label="涨跌幅" width="100" align="right">
+                <template #default="{ row }">
+                  <span :class="getPriceChangeClass(row.change)">
+                    {{ formatPriceChange(row.change) }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="volume" label="成交量" width="100" align="right">
+                <template #default="{ row }">
+                  {{ formatVolume(row.volume) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100" align="center">
+                <template #default="{ row }">
+                  <el-button type="danger" size="small" @click="removeFromWatchlist(row.symbol)" :loading="loading.removeWatchlist">
+                    移除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+
+          <DetailDialog
+            v-model:visible="showAddDialog"
+            title="添加关注股票"
+            :confirming="loading.addWatchlist"
+            @confirm="confirmAddToWatchlist"
+          >
+            <el-form :model="addForm" label-width="80px">
+              <el-form-item label="股票代码">
+                <el-input v-model="addForm.symbol" placeholder="请输入股票代码，如：600000" />
+              </el-form-item>
+              <el-form-item label="显示名称">
+                <el-input v-model="addForm.display_name" placeholder="可选，默认使用股票代码" />
+              </el-form-item>
+            </el-form>
+          </DetailDialog>
+        </el-card>
+      </div>
+    </div>
+
+    <div class="content-grid-16-8">
+      <el-card class="chart-card">
+            <template #header>
+              <PageHeader
+                title="市场热度中心"
+                :actions="[{ text: '重试', variant: 'warning', handler: handleRetry }]"
+                :show-divider="false"
+              />
             </template>
-          </el-dialog>
-        </el-card>
-      </el-col>
-    </el-row>
+            <el-tabs v-model="activeMarketTab" class="tabs">
+              <el-tab-pane label="市场热度" name="heat">
+                <ChartContainer
+                  ref="marketHeatChartRef"
+                  chart-type="bar"
+                  :data="marketHeatData"
+                  :options="marketHeatOptions"
+                  height="350px"
+                />
+              </el-tab-pane>
+              <el-tab-pane label="领涨板块" name="leading">
+                <ChartContainer
+                  ref="leadingSectorChartRef"
+                  chart-type="bar"
+                  :data="leadingSectorData"
+                  :options="leadingSectorOptions"
+                  height="350px"
+                />
+              </el-tab-pane>
+              <el-tab-pane label="涨跌分布" name="distribution">
+                <ChartContainer
+                  ref="capitalFlowChartRef"
+                  chart-type="bar"
+                  :data="capitalFlowData"
+                  :options="capitalFlowOptions"
+                  height="350px"
+                />
+              </el-tab-pane>
+              <el-tab-pane label="资金流向" name="capital">
+                <ChartContainer
+                  ref="capitalFlowChartRef2"
+                  chart-type="bar"
+                  :data="capitalFlowData2"
+                  :options="capitalFlowOptions2"
+                  height="350px"
+                />
+              </el-tab-pane>
+            </el-tabs>
+          </el-card>
 
-    <!-- 市场热度中心 -->
-    <el-row :gutter="20">
-      <el-col :xs="24" :md="16">
-        <el-card class="chart-card">
-          <template #header>
-            <div class="flex-between">
-              <span>市场热度中心</span>
-              <el-button type="warning" size="small" @click="handleRetry" :loading="loading.main">
-                重试
-              </el-button>
-            </div>
-          </template>
-          <el-tabs v-model="activeMarketTab" class="market-tabs">
-            <el-tab-pane label="市场热度" name="heat">
-              <div ref="marketHeatChartRef" style="height: 350px"></div>
-            </el-tab-pane>
-            <el-tab-pane label="领涨板块" name="leading">
-              <div ref="leadingSectorChartRef" style="height: 350px"></div>
-            </el-tab-pane>
-            <el-tab-pane label="涨跌分布" name="distribution">
-              <div ref="capitalFlowChartRef" style="height: 350px"></div>
-            </el-tab-pane>
-            <el-tab-pane label="资金流向" name="capital">
-              <div ref="capitalFlowChartRef2" style="height: 350px"></div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :md="8">
-        <el-card class="chart-card">
-          <template #header>
-            <div class="flex-between">
-              <span>资金流向</span>
-              <el-select v-model="industryStandard" size="small" style="width: 120px" @change="updateIndustryChart">
-                <el-option label="证监会" value="csrc" />
-                <el-option label="申万一级" value="sw_l1" />
-                <el-option label="申万二级" value="sw_l2" />
-              </el-select>
-            </div>
-          </template>
-          <div ref="industryChartRef" style="height: 400px"></div>
-        </el-card>
-      </el-col>
-    </el-row>
+      <el-card class="chart-card">
+        <template #header>
+          <div class="flex-between">
+            <PageHeader
+              title="资金流向"
+              subtitle="行业分析"
+              :show-divider="false"
+            />
+            <el-select v-model="industryStandard" size="small" class="select-sm">
+              <el-option label="证监会" value="csrc" />
+              <el-option label="申万一级" value="sw_l1" />
+              <el-option label="申万二级" value="sw_l2" />
+            </el-select>
+          </div>
+        </template>
+        <ChartContainer
+          ref="industryChartRef"
+          chart-type="bar"
+          :data="industryData"
+          :options="industryOptions"
+          height="400px"
+        />
+      </el-card>
+    </div>
 
-    <!-- 板块表现 -->
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card>
-          <template #header>
-            <div class="flex-between">
-              <span>板块表现</span>
-              <div>
-                <el-button type="primary" size="small" @click="handleRefresh">刷新</el-button>
-                <el-button type="warning" size="small" @click="handleRetry" :loading="loading.main" style="margin-left: 10px">
-                  重试
-                </el-button>
-              </div>
-            </div>
-          </template>
-          <el-tabs v-model="activeSectorTab" class="sector-tabs">
-            <el-tab-pane label="自选股" name="favorites">
-              <el-table :data="favoriteStocks" stripe v-loading="loading.main" max-height="400">
-                <el-table-column prop="symbol" label="代码" width="100" />
-                <el-table-column prop="name" label="名称" width="120" />
-                <el-table-column prop="price" label="现价" width="100" align="right">
-                  <template #default="{ row }">
-                    <span :class="getPriceChangeClass(row.change)">
-                      {{ row.price }}
-                    </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="change" label="涨跌幅" width="100" align="right">
-                  <template #default="{ row }">
-                    <span :class="getPriceChangeClass(row.change)">
-                      {{ formatPriceChange(row.change) }}
-                    </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="volume" label="成交量" width="120" align="right" />
-                <el-table-column prop="turnover" label="换手率" width="100" align="right">
-                  <template #default="{ row }">{{ row.turnover }}%</template>
-                </el-table-column>
-                <el-table-column prop="industry" label="所属行业" />
-              </el-table>
-            </el-tab-pane>
-            <el-tab-pane label="策略选股" name="strategy">
-              <el-table :data="strategyStocks" stripe v-loading="loading.main" max-height="400">
-                <el-table-column prop="symbol" label="代码" width="100" />
-                <el-table-column prop="name" label="名称" width="120" />
-                <el-table-column prop="price" label="现价" width="100" align="right">
-                  <template #default="{ row }">
-                    <span :class="getPriceChangeClass(row.change)">
-                      {{ row.price }}
-                    </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="change" label="涨跌幅" width="100" align="right">
-                  <template #default="{ row }">
-                    <span :class="getPriceChangeClass(row.change)">
-                      {{ formatPriceChange(row.change) }}
-                    </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="strategy" label="策略名称" width="120" />
-                <el-table-column prop="score" label="评分" width="80" align="right" />
-                <el-table-column prop="signal" label="信号" width="100">
-                  <template #default="{ row }">
-                    <el-tag :type="getSignalTagType(row.signal)" size="small">
-                      {{ row.signal }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-    </el-row>
+    <el-card class="chart-card">
+      <template #header>
+        <PageHeader
+          title="板块表现"
+          :actions="[
+            { text: '刷新', variant: 'primary', handler: handleRefresh },
+            { text: '重试', variant: 'warning', handler: handleRetry }
+          ]"
+          :show-divider="false"
+        />
+      </template>
+      <el-tabs v-model="activeSectorTab" class="tabs">
+        <el-tab-pane label="自选股" name="favorites">
+          <el-table :data="favoriteStocks" v-loading="loading.main" empty-text="暂无数据">
+            <el-table-column prop="symbol" label="代码" width="100" />
+            <el-table-column prop="name" label="名称" width="120" />
+            <el-table-column prop="price" label="现价" width="100" align="right">
+              <template #default="{ row }">
+                <span :class="getPriceChangeClass(row.change)">
+                  {{ row.price }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="change" label="涨跌幅" width="100" align="right">
+              <template #default="{ row }">
+                <span :class="getPriceChangeClass(row.change)">
+                  {{ formatPriceChange(row.change) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="volume" label="成交量" width="120" align="right" />
+            <el-table-column prop="turnover" label="换手率" width="100" align="right">
+              <template #default="{ row }">{{ row.turnover }}%</template>
+            </el-table-column>
+            <el-table-column prop="industry" label="所属行业" />
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="策略选股" name="strategy">
+          <el-table :data="strategyStocks" v-loading="loading.main" empty-text="暂无数据">
+            <el-table-column prop="symbol" label="代码" width="100" />
+            <el-table-column prop="name" label="名称" width="120" />
+            <el-table-column prop="price" label="现价" width="100" align="right">
+              <template #default="{ row }">
+                <span :class="getPriceChangeClass(row.change)">
+                  {{ row.price }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="change" label="涨跌幅" width="100" align="right">
+              <template #default="{ row }">
+                <span :class="getPriceChangeClass(row.change)">
+                  {{ formatPriceChange(row.change) }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="strategy" label="策略名称" width="120" />
+            <el-table-column prop="score" label="评分" width="80" align="right" />
+            <el-table-column prop="signal" label="信号" width="100">
+              <template #default="{ row }">
+                <el-tag :type="getSignalTagType(row.signal)">
+                  {{ row.signal }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, nextTick, reactive } from 'vue'
-import { dataApi, dashboardApi } from '@/api'
-import cacheManager from '@/utils/cache'
-import * as echarts from 'echarts'
+<script setup lang="ts">
+import { ref, onMounted, nextTick, reactive, watch } from 'vue'
+import { dataApi, watchlistApi } from '@/api'
 import { ElMessage } from 'element-plus'
+import { Document, Money, PieChart, Grid } from '@element-plus/icons-vue'
 
 // 响应式数据
 const loading = reactive({
@@ -300,13 +387,19 @@ const activeMarketTab = ref('heat')
 const activeSectorTab = ref('favorites')
 const industryStandard = ref('csrc')
 
-// 图表引用
-const marketHeatChartRef = ref(null)
-const leadingSectorChartRef = ref(null)
-const priceDistributionChartRef = ref(null)
-const capitalFlowChartRef = ref(null)
-const capitalFlowChartRef2 = ref(null)
-const industryChartRef = ref(null)
+// 图表数据（为ChartContainer准备）
+const priceDistributionData = ref([])
+const priceDistributionOptions = ref({})
+const marketHeatData = ref([])
+const marketHeatOptions = ref({})
+const leadingSectorData = ref([])
+const leadingSectorOptions = ref({})
+const capitalFlowData = ref([])
+const capitalFlowOptions = ref({})
+const capitalFlowData2 = ref([])
+const capitalFlowOptions2 = ref({})
+const industryData = ref([])
+const industryOptions = ref({})
 
 // 页面数据
 const stats = ref([
@@ -329,13 +422,25 @@ const addForm = ref({
   display_name: ''
 })
 
-// 图表实例
-let marketHeatChart = null
-let leadingSectorChart = null
-let priceDistributionChart = null
-let capitalFlowChart = null
-let capitalFlowChart2 = null
-let industryChart = null
+// 工具函数 - 图标组件映射
+const getIconComponent = (iconName: string) => {
+  const iconMap = {
+    'Document': Document,
+    'Money': Money,
+    'PieChart': PieChart,
+    'Grid': Grid
+  }
+  return iconMap[iconName] || Document
+}
+
+// 工具函数 - 颜色类型映射
+const getColorType = (color: string) => {
+  if (color === '#67C23A') return 'green'
+  if (color === '#F56C6C') return 'red'
+  if (color === '#E6A23C') return 'orange'
+  if (color === '#409EFF') return 'blue'
+  return 'gold'
+}
 
 // 工具函数
 const getPriceChangeClass = (change) => {
@@ -363,26 +468,14 @@ const getSignalTagType = (signal) => {
   return 'info'
 }
 
-// 缓存相关函数
-const getCachedData = (funcName, params = {}) => {
-  return cacheManager.get(funcName, params)
-}
-
-const setCachedData = (funcName, data, params = {}, ttl) => {
-  cacheManager.set(funcName, data, params, ttl)
-}
-
-// API加载函数（使用缓存）
+// API加载函数
 const loadMarketOverview = async () => {
-  loading.overview.value = true
+  loading.overview = true
   try {
-    const data = await cacheManager.withCache(
-      async () => dashboardApi.getMarketOverview(),
-      'marketOverview'
-    )
+    const response = await dataApi.getMarketOverview()
 
-    if (data.success && data.data) {
-      const marketData = data.data
+    if (response && response.data) {
+      const marketData = response.data
 
       // 更新统计卡片数据
       stats.value[0].value = marketData.total_stocks?.toString() || '0'
@@ -418,22 +511,15 @@ const loadMarketOverview = async () => {
     console.error('加载市场概览失败:', error)
     ElMessage.error('加载市场概览失败')
   } finally {
-    loading.overview.value = false
+    loading.overview = false
   }
 }
 
 const loadPriceDistribution = async () => {
   try {
-    const data = await cacheManager.withCache(
-      async () => dashboardApi.getPriceDistribution(),
-      'priceDistribution',
-      {},
-      1800000 // 30分钟缓存
-    )
-
-    if (data.success && data.data) {
-      updatePriceDistributionChart(data.data)
-    }
+    // 涨跌分布数据暂时模拟
+    const mockData = { '上涨': 120, '下跌': 80, '平盘': 50 }
+    updatePriceDistributionChart(mockData)
   } catch (error) {
     console.error('加载涨跌分布失败:', error)
   }
@@ -441,16 +527,14 @@ const loadPriceDistribution = async () => {
 
 const loadHotIndustries = async () => {
   try {
-    const data = await cacheManager.withCache(
-      async () => dashboardApi.getHotIndustries(5),
-      'hotIndustries',
-      {},
-      1800000 // 30分钟缓存
-    )
-
-    if (data.success && data.data) {
-      hotIndustries.value = data.data
-    }
+    // 模拟热门行业数据
+    hotIndustries.value = [
+      { industry_name: '半导体', avg_change: 5.2, stock_count: 45 },
+      { industry_name: '新能源车', avg_change: 4.8, stock_count: 38 },
+      { industry_name: '光伏', avg_change: 4.5, stock_count: 32 },
+      { industry_name: '医药', avg_change: 3.9, stock_count: 56 },
+      { industry_name: '白酒', avg_change: 3.6, stock_count: 18 }
+    ]
   } catch (error) {
     console.error('加载热门行业失败:', error)
   }
@@ -458,26 +542,25 @@ const loadHotIndustries = async () => {
 
 const loadHotConcepts = async () => {
   try {
-    const data = await cacheManager.withCache(
-      async () => dashboardApi.getHotConcepts(5),
-      'hotConcepts',
-      {},
-      1800000 // 30分钟缓存
-    )
-
-    if (data.success && data.data) {
-      hotConcepts.value = data.data
-    }
+    // 模拟热门概念数据
+    hotConcepts.value = [
+      { concept_name: '人工智能', avg_change: 6.2, stock_count: 62 },
+      { concept_name: '芯片', avg_change: 5.8, stock_count: 48 },
+      { concept_name: '锂电池', avg_change: 5.1, stock_count: 35 },
+      { concept_name: '碳中和', avg_change: 4.3, stock_count: 89 },
+      { concept_name: '元宇宙', avg_change: 3.9, stock_count: 27 }
+    ]
   } catch (error) {
     console.error('加载热门概念失败:', error)
   }
 }
 
 const loadWatchlist = async () => {
-  loading.watchlist.value = true
+  loading.watchlist = true
   try {
-    const data = await dashboardApi.getWatchlist()
-    if (data && data.length > 0) {
+    const response = await watchlistApi.getWatchlist()
+    const data = response.data || []
+    if (data.length > 0) {
       watchlistStocks.value = data.map(item => ({
         symbol: item.symbol,
         display_name: item.display_name || item.symbol,
@@ -492,7 +575,7 @@ const loadWatchlist = async () => {
     console.error('加载自选股失败:', error)
     watchlistStocks.value = []
   } finally {
-    loading.watchlist.value = false
+    loading.watchlist = false
   }
 }
 
@@ -569,9 +652,9 @@ const confirmAddToWatchlist = async () => {
     return
   }
 
-  loading.addWatchlist.value = true
+  loading.addWatchlist = true
   try {
-    await dashboardApi.addToWatchlist({
+    await watchlistApi.addToWatchlist({
       symbol: addForm.value.symbol.toUpperCase(),
       display_name: addForm.value.display_name
     })
@@ -583,37 +666,29 @@ const confirmAddToWatchlist = async () => {
     console.error('添加自选股失败:', error)
     ElMessage.error('添加自选股失败')
   } finally {
-    loading.addWatchlist.value = false
+    loading.addWatchlist = false
   }
 }
 
 const removeFromWatchlist = async (symbol) => {
-  loading.removeWatchlist.value = true
+  loading.removeWatchlist = true
   try {
-    await dashboardApi.removeFromWatchlist(symbol)
+    await watchlistApi.removeFromWatchlist(symbol)
     ElMessage.success('移除自选股成功')
     await loadWatchlist()
   } catch (error) {
     console.error('移除自选股失败:', error)
     ElMessage.error('移除自选股失败')
   } finally {
-    loading.removeWatchlist.value = false
+    loading.removeWatchlist = false
   }
 }
 
-// 图表初始化函数
+// 图表初始化函数（更新数据给ChartContainer）
 const updatePriceDistributionChart = (distributionData) => {
-  if (!priceDistributionChartRef.value) return
-
-  if (priceDistributionChart) {
-    priceDistributionChart.dispose()
-  }
-
-  priceDistributionChart = echarts.init(priceDistributionChartRef.value)
-
   const data = Object.entries(distributionData).map(([name, value]) => ({ name, value }))
-
-  const option = {
+  priceDistributionData.value = data
+  priceDistributionOptions.value = {
     tooltip: {
       trigger: 'item',
       formatter: '{b}: {c}只 ({d}%)'
@@ -649,291 +724,240 @@ const updatePriceDistributionChart = (distributionData) => {
       }
     ]
   }
-
-  priceDistributionChart.setOption(option)
 }
 
 const initMarketHeatChart = async () => {
-  if (!marketHeatChartRef.value) return
+  const heatData = [
+    { name: '上证指数', value: 95 },
+    { name: '深证成指', value: 88 },
+    { name: '创业板指', value: 82 },
+    { name: '沪深300', value: 91 },
+    { name: '中证500', value: 78 },
+    { name: '中证1000', value: 72 },
+    { name: '科创板', value: 85 },
+    { name: '新三板', value: 65 }
+  ]
 
-  marketHeatChart = echarts.init(marketHeatChartRef.value)
-
-  try {
-    const heatData = [
-      { name: '上证指数', value: 95 },
-      { name: '深证成指', value: 88 },
-      { name: '创业板指', value: 82 },
-      { name: '沪深300', value: 91 },
-      { name: '中证500', value: 78 },
-      { name: '中证1000', value: 72 },
-      { name: '科创板', value: 85 },
-      { name: '新三板', value: 65 }
+  marketHeatData.value = heatData
+  marketHeatOptions.value = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'value',
+      name: '热度指数'
+    },
+    yAxis: {
+      type: 'category',
+      data: heatData.map(item => item.name)
+    },
+    series: [
+      {
+        name: '市场热度',
+        type: 'bar',
+        data: heatData.map(item => item.value)
+      }
     ]
-
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'value',
-        name: '热度指数'
-      },
-      yAxis: {
-        type: 'category',
-        data: heatData.map(item => item.name)
-      },
-      series: [
-        {
-          name: '市场热度',
-          type: 'bar',
-          data: heatData.map(item => item.value),
-          itemStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-              { offset: 0, color: '#83bff6' },
-              { offset: 0.5, color: '#188df0' },
-              { offset: 1, color: '#188df0' }
-            ])
-          },
-          emphasis: {
-            focus: 'series'
-          }
-        }
-      ]
-    }
-    marketHeatChart.setOption(option)
-  } catch (error) {
-    console.error('加载市场热度数据失败:', error)
   }
 }
 
 const initLeadingSectorChart = async () => {
-  if (!leadingSectorChartRef.value) return
+  const sectorData = [
+    { name: '半导体', change: 5.2 },
+    { name: '新能源车', change: 4.8 },
+    { name: '光伏', change: 4.5 },
+    { name: '医药', change: 3.9 },
+    { name: '白酒', change: 3.6 },
+    { name: '银行', change: 2.8 },
+    { name: '保险', change: 2.5 },
+    { name: '证券', change: 2.1 }
+  ]
 
-  leadingSectorChart = echarts.init(leadingSectorChartRef.value)
-
-  try {
-    const sectorData = [
-      { name: '半导体', change: 5.2 },
-      { name: '新能源车', change: 4.8 },
-      { name: '光伏', change: 4.5 },
-      { name: '医药', change: 3.9 },
-      { name: '白酒', change: 3.6 },
-      { name: '银行', change: 2.8 },
-      { name: '保险', change: 2.5 },
-      { name: '证券', change: 2.1 }
+  leadingSectorData.value = sectorData
+  leadingSectorOptions.value = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      formatter: '{b}: {c}%'
+    },
+    xAxis: {
+      type: 'value',
+      name: '涨幅(%)',
+      axisLabel: {
+        formatter: '{value}%'
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: sectorData.map(item => item.name)
+    },
+    series: [
+      {
+        name: '涨幅',
+        type: 'bar',
+        data: sectorData.map(item => item.change)
+      }
     ]
-
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        },
-        formatter: '{b}: {c}%'
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'value',
-        name: '涨幅(%)',
-        axisLabel: {
-          formatter: '{value}%'
-        }
-      },
-      yAxis: {
-        type: 'category',
-        data: sectorData.map(item => item.name)
-      },
-      series: [
-        {
-          name: '涨幅',
-          type: 'bar',
-          data: sectorData.map(item => item.change),
-          itemStyle: {
-            color: (params) => {
-              return params.value > 0 ? '#f56c6c' : '#67c23a'
-            }
-          }
-        }
-      ]
-    }
-    leadingSectorChart.setOption(option)
-  } catch (error) {
-    console.error('加载领涨板块数据失败:', error)
   }
 }
 
 const initCapitalFlowChart = async () => {
-  if (!capitalFlowChartRef.value) return
+  const flowData = [
+    { name: '主力资金', value: 120 },
+    { name: '散户资金', value: -80 },
+    { name: '机构资金', value: 90 },
+    { name: '北向资金', value: 60 },
+    { name: '南向资金', value: -30 },
+    { name: '融资融券', value: 40 }
+  ]
 
-  capitalFlowChart = echarts.init(capitalFlowChartRef.value)
-
-  try {
-    const flowData = [
-      { name: '主力资金', value: 120 },
-      { name: '散户资金', value: -80 },
-      { name: '机构资金', value: 90 },
-      { name: '北向资金', value: 60 },
-      { name: '南向资金', value: -30 },
-      { name: '融资融券', value: 40 }
+  capitalFlowData.value = flowData
+  capitalFlowOptions.value = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      formatter: (params) => {
+        const value = params[0].value
+        const absValue = Math.abs(value)
+        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
+      }
+    },
+    xAxis: {
+      type: 'value',
+      name: '资金流向(亿元)',
+      axisLabel: {
+        formatter: (value) => value > 0 ? `+${value}` : value
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: flowData.map(item => item.name)
+    },
+    series: [
+      {
+        name: '资金流向',
+        type: 'bar',
+        data: flowData.map(item => item.value)
+      }
     ]
+  }
+}
 
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        },
-        formatter: (params) => {
-          const value = params[0].value
-          const absValue = Math.abs(value)
-          return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
-        }
+const initCapitalFlowChart2 = async () => {
+  const flowData = [
+    { name: '主力资金', value: 150 },
+    { name: '散户资金', value: -90 },
+    { name: '机构资金', value: 110 }
+  ]
+
+  capitalFlowData2.value = flowData
+  capitalFlowOptions2.value = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
       },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'value',
-        name: '资金流向(亿元)',
-        axisLabel: {
-          formatter: (value) => value > 0 ? `+${value}` : value
-        }
-      },
-      yAxis: {
-        type: 'category',
-        data: flowData.map(item => item.name)
-      },
-      series: [
-        {
-          name: '资金流向',
-          type: 'bar',
-          data: flowData.map(item => item.value),
-          itemStyle: {
-            color: (params) => {
-              return params.value > 0 ? '#f56c6c' : '#67c23a'
-            }
-          }
-        }
-      ]
-    }
-    capitalFlowChart.setOption(option)
-  } catch (error) {
-    console.error('加载资金流向数据失败:', error)
+      formatter: (params) => {
+        const value = params[0].value
+        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
+      }
+    },
+    xAxis: {
+      type: 'value',
+      name: '资金流向(亿元)'
+    },
+    yAxis: {
+      type: 'category',
+      data: flowData.map(item => item.name)
+    },
+    series: [
+      {
+        name: '资金流向',
+        type: 'bar',
+        data: flowData.map(item => item.value)
+      }
+    ]
   }
 }
 
 const initIndustryChart = async () => {
-  if (!industryChartRef.value) return
+  const mockData = {
+    categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
+    values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
+  }
 
-  industryChart = echarts.init(industryChartRef.value)
+  industryData.value = mockData.categories.map((name, index) => ({
+    name,
+    value: mockData.values[index]
+  }))
 
-  try {
-    const mockData = {
-      categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
-      values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
-    }
-
-    const option = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        },
-        formatter: (params) => {
-          const value = params[0].value
-          return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
-        }
+  industryOptions.value = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
       },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        top: '10%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'value',
-        name: '资金流向(亿元)',
-        axisLabel: {
-          formatter: (value) => value > 0 ? `+${value}` : value
-        }
-      },
-      yAxis: {
-        type: 'category',
-        data: mockData.categories,
-        axisLabel: {
-          interval: 0,
-          fontSize: 11
-        }
-      },
-      series: [
-        {
-          name: '资金流向',
-          type: 'bar',
-          data: mockData.values,
-          itemStyle: {
-            color: (params) => {
-              return params.value > 0 ? '#f56c6c' : '#67c23a'
-            }
+      formatter: (params) => {
+        const value = params[0].value
+        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
+      }
+    },
+    xAxis: {
+      type: 'value',
+      name: '资金流向(亿元)',
+      axisLabel: {
+        formatter: (value) => value > 0 ? `+${value}` : value
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: mockData.categories,
+      axisLabel: {
+        interval: 0,
+        fontSize: 11
+      }
+    },
+    series: [
+      {
+        name: '资金流向',
+        type: 'bar',
+        data: mockData.values,
+        label: {
+          show: true,
+          position: 'right',
+          formatter: (params) => {
+            const value = params.value
+            return value > 0 ? `+${value}亿` : `${value}亿`
           },
-          label: {
-            show: true,
-            position: 'right',
-            formatter: (params) => {
-              const value = params.value
-              return value > 0 ? `+${value}亿` : `${value}亿`
-            },
-            fontSize: 10
-          }
+          fontSize: 10
         }
-      ]
-    }
-    industryChart.setOption(option)
-  } catch (error) {
-    console.error('加载行业资金流向数据失败:', error)
+      }
+    ]
   }
 }
 
 const initCharts = async () => {
   await nextTick()
 
-  // 初始化图表
+  // 初始化图表数据
   await initMarketHeatChart()
   await initLeadingSectorChart()
   await initCapitalFlowChart()
+  await initCapitalFlowChart2()
   await initIndustryChart()
-
-  // 监听窗口大小变化
-  window.addEventListener('resize', () => {
-    marketHeatChart?.resize()
-    leadingSectorChart?.resize()
-    priceDistributionChart?.resize()
-    capitalFlowChart?.resize()
-    industryChart?.resize()
-  })
 }
 
 // 事件处理函数
 const handleRetry = async () => {
   try {
-    cacheManager.clearAll()
+    // Clear cache and reload data
     await loadData()
     ElMessage.success('数据已刷新')
   } catch (error) {
@@ -947,7 +971,7 @@ const handleRefresh = () => {
 }
 
 const loadData = async () => {
-  loading.main.value = true
+  loading.main = true
   try {
     await Promise.all([
       loadMarketOverview(),
@@ -958,29 +982,18 @@ const loadData = async () => {
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
-    loading.main.value = false
+    loading.main = false
   }
 }
 
-// 监听tab切换
-import { watch } from 'vue'
+const updateIndustryChart = async () => {
+  await initIndustryChart()
+}
 
+// 监听tab切换
 watch(activeMarketTab, async () => {
   await nextTick()
-  switch (activeMarketTab.value) {
-    case 'heat':
-      marketHeatChart?.resize()
-      break
-    case 'leading':
-      leadingSectorChart?.resize()
-      break
-    case 'distribution':
-      priceDistributionChart?.resize()
-      break
-    case 'capital':
-      capitalFlowChart?.resize()
-      break
-  }
+  // ChartContainer 会自动处理 resize
 })
 
 watch(industryStandard, async () => {
@@ -995,131 +1008,136 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.dashboard {
-  .stats-row {
-    margin-bottom: 20px;
 
-    .stat-card {
-      cursor: pointer;
-      transition: all 0.3s;
+  min-height: 100vh;
+  padding: var(--spacing-6);
+  position: relative;
+  background: var(--bg-primary);
 
-      &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+  }
 
-      .stat-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
+  .page-header {
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
 
-        .stat-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-        }
+    .page-title {
+      font-family: var(--font-display);
+      font-size: var(--font-size-h2);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      color: var(--accent-gold);
+      margin: 0 0 var(--spacing-2) 0;
+    }
 
-        .stat-info {
-          flex: 1;
-
-          .stat-title {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: #909399;
-          }
-
-          .stat-value {
-            margin: 0 0 8px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #303133;
-          }
-
-          .stat-trend {
-            font-size: 12px;
-
-            &.up {
-              color: #67c23a;
-            }
-
-            &.down {
-              color: #f56c6c;
-            }
-
-            &.neutral {
-              color: #909399;
-            }
-          }
-        }
-      }
+    .page-subtitle {
+      font-family: var(--font-body);
+      font-size: var(--font-size-small);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin: 0;
     }
   }
 
-  .market-overview-section {
-    margin-bottom: 20px;
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+  }
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+  }
+
+  .content-grid-16-8 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    position: relative;
+    z-index: 1;
   }
 
   .market-overview-content {
     .overview-item {
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-6);
 
       &:last-child {
         margin-bottom: 0;
       }
 
       h4 {
-        margin: 0 0 10px;
-        font-size: 16px;
-        color: #303133;
+        margin: 0 0 var(--spacing-3);
+        font-family: var(--font-display);
+        font-size: var(--font-size-body);
         font-weight: 600;
-      }
-
-      .mini-chart {
-        height: 150px;
-        border: 1px solid #ebeef5;
-        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wider);
+        color: var(--accent-gold);
       }
     }
   }
 
   .watchlist-content {
-    .el-table {
+    :deep(.el-table) {
       .text-red {
-        color: #f56c6c;
+        color: var(--color-up);
       }
 
       .text-green {
-        color: #67c23a;
+        color: var(--color-down);
       }
     }
   }
 
   .chart-card {
-    margin-bottom: 20px;
-
-    .market-tabs {
-      :deep(.el-tabs__content) {
-        padding-top: 10px;
-      }
-    }
+    margin-bottom: var(--spacing-6);
   }
 
-  .sector-tabs {
+  .tabs {
     :deep(.el-tabs__content) {
-      padding-top: 10px;
+      padding-top: var(--spacing-4);
     }
   }
 
   .text-red {
-    color: #f56c6c;
+    color: var(--color-up);
   }
 
   .text-green {
-    color: #67c23a;
+    color: var(--color-down);
   }
 
   .flex-between {
@@ -1127,11 +1145,19 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
   }
-}
 
-.dialog-footer {
-  .el-button {
-    margin-left: 8px;
+  .select-sm {
+    width: 120px;
+  }
+
+    background: var(--color-up);
+    border-color: var(--color-up);
+    color: white;
+
+    &:hover {
+      background: #D94F51;
+      border-color: #D94F51;
+    }
   }
 }
 </style>

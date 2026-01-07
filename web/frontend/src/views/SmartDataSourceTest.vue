@@ -1,102 +1,108 @@
 <template>
   <div class="smart-data-test">
-    <div class="test-header">
-      <h1>🧠 智能数据源测试页面</h1>
+
+    <div class="page-header">
+      <h1 class="page-title">SMART DATA SOURCE TEST</h1>
+      <p class="page-subtitle">DATA SOURCE TESTING | HEALTH CHECK | FALLBACK MODE</p>
       <SmartDataIndicator ref="indicator" />
     </div>
 
     <div class="test-content">
-      <!-- 控制面板 -->
-      <div class="control-panel">
-        <h3>🎛️ 控制面板</h3>
+      <el-card class="control-panel">
+        <template #header>
+          <h3>CONTROL PANEL</h3>
+        </template>
 
         <div class="control-buttons">
-          <button @click="refreshStatus" class="btn btn-primary">
-            🔄 刷新状态
-          </button>
-          <button @click="clearCache" class="btn btn-secondary">
-            🗑️ 清理缓存
-          </button>
-          <button @click="forceMode('mock')" class="btn btn-warning">
-            🎭️ 强制Mock
-          </button>
-          <button @click="testHealthCheck" class="btn btn-info">
-            ❤️ 健康检查
-          </button>
+          <el-button type="primary" @click="refreshStatus">
+            🔄 REFRESH STATUS
+          </el-button>
+          <el-button type="info" @click="clearCache">
+            🗑️ CLEAR CACHE
+          </el-button>
+          <el-button type="warning" @click="forceMode('mock')">
+            🎭️ FORCE MOCK
+          </el-button>
+          <el-button type="info" @click="testHealthCheck">
+            ❤️ HEALTH CHECK
+          </el-button>
         </div>
-      </div>
+      </el-card>
 
-      <!-- 状态信息 -->
-      <div class="status-panel">
-        <h3>📊 状态信息</h3>
+      <el-card class="status-panel">
+        <template #header>
+          <h3>STATUS INFORMATION</h3>
+        </template>
         <div class="status-grid">
           <div class="status-item">
-            <label>服务状态:</label>
+            <label>SERVICE STATUS:</label>
             <span :class="serviceStatusClass">{{ serviceStatus }}</span>
           </div>
           <div class="status-item">
-            <label>数据源模式:</label>
+            <label>DATA SOURCE MODE:</label>
             <span class="mode-badge mode-{{ currentMode }}">{{ modeText }}</span>
           </div>
           <div class="status-item">
-            <label>降级启用:</label>
-            <span>{{ fallbackEnabled ? '是' : '否' }}</span>
+            <label>FALLBACK ENABLED:</label>
+            <span>{{ fallbackEnabled ? 'YES' : 'NO' }}</span>
           </div>
           <div class="status-item">
-            <label>最后更新:</label>
+            <label>LAST UPDATE:</label>
             <span>{{ formatTime(lastUpdate) }}</span>
           </div>
         </div>
-      </div>
+      </el-card>
 
-      <!-- 测试面板 -->
       <div class="test-panels">
-        <!-- Dashboard测试 -->
-        <div class="test-panel">
-          <h3>📊 Dashboard 测试</h3>
+        <el-card class="test-panel">
+          <template #header>
+            <h3>DASHBOARD TEST</h3>
+          </template>
           <div class="test-controls">
-            <input v-model="dashboardUserId" type="number" placeholder="用户ID" min="1" />
-            <button @click="testDashboard" class="btn btn-primary" :disabled="loading.dashboard">
-              {{ loading.dashboard ? '测试中...' : '测试Dashboard' }}
-            </button>
+            <el-input v-model="dashboardUserId" type="number" placeholder="USER ID" min="1" />
+            <el-button type="primary" @click="testDashboard" :disabled="loading.dashboard">
+              {{ loading.dashboard ? 'TESTING...' : 'TEST DASHBOARD' }}
+            </el-button>
           </div>
           <div v-if="dashboardResult" class="test-result">
-            <h4>测试结果:</h4>
+            <h4>TEST RESULT:</h4>
             <pre>{{ JSON.stringify(dashboardResult, null, 2) }}</pre>
           </div>
-        </div>
+        </el-card>
 
-        <!-- Market测试 -->
-        <div class="test-panel">
-          <h3>📈 Market 测试</h3>
+        <el-card class="test-panel">
+          <template #header>
+            <h3>MARKET TEST</h3>
+          </template>
           <div class="test-controls">
-            <input v-model="marketSymbols" type="text" placeholder="股票代码，逗号分隔" />
-            <button @click="testMarketQuotes" class="btn btn-primary" :disabled="loading.market">
-              {{ loading.market ? '测试中...' : '测试行情' }}
-            </button>
+            <el-input v-model="marketSymbols" type="text" placeholder="STOCK CODES (COMMA SEPARATED)" />
+            <el-button type="primary" @click="testMarketQuotes" :disabled="loading.market">
+              {{ loading.market ? 'TESTING...' : 'TEST QUOTES' }}
+            </el-button>
           </div>
           <div v-if="marketResult" class="test-result">
-            <h4>测试结果:</h4>
+            <h4>TEST RESULT:</h4>
             <pre>{{ JSON.stringify(marketResult, null, 2) }}</pre>
           </div>
-        </div>
+        </el-card>
 
-        <!-- Data Quality测试 -->
-        <div class="test-panel">
-          <h3>🔍 Data Quality 测试</h3>
+        <el-card class="test-panel">
+          <template #header>
+            <h3>DATA QUALITY TEST</h3>
+          </template>
           <div class="test-controls">
-            <button @click="testDataQualityHealth" class="btn btn-primary" :disabled="loading.quality">
-              {{ loading.quality ? '检查中...' : '检查健康状态' }}
-            </button>
-            <button @click="testDataQualityMetrics" class="btn btn-secondary" :disabled="loading.metrics">
-              {{ loading.metrics ? '获取中...' : '获取指标' }}
-            </button>
+            <el-button type="primary" @click="testDataQualityHealth" :disabled="loading.quality">
+              {{ loading.quality ? 'CHECKING...' : 'CHECK HEALTH' }}
+            </el-button>
+            <el-button type="info" @click="testDataQualityMetrics" :disabled="loading.metrics">
+              {{ loading.metrics ? 'FETCHING...' : 'GET METRICS' }}
+            </el-button>
           </div>
           <div v-if="qualityResult" class="test-result">
-            <h4>测试结果:</h4>
+            <h4>TEST RESULT:</h4>
             <pre>{{ JSON.stringify(qualityResult, null, 2) }}</pre>
           </div>
-        </div>
+        </el-card>
 
         <!-- 批量测试 -->
         <div class="test-panel">
@@ -393,106 +399,234 @@ export default {
 </script>
 
 <style scoped>
-.smart-data-test {
+
+.smart-data-source-test {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: var(--spacing-6);
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg-primary);
 }
 
-.test-header {
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e5e7eb;
-}
+  margin-bottom: var(--spacing-8);
+  padding-bottom: var(--spacing-5);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  z-index: 1;
 
-.test-header h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #111827;
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
 }
 
 .test-content {
   display: grid;
-  gap: 30px;
+  gap: var(--spacing-6);
+  position: relative;
+  z-index: 1;
 }
 
 .control-panel,
 .status-panel {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-none);
+  padding: var(--spacing-6);
 }
 
 .control-panel h3,
 .status-panel h3 {
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  color: #374151;
+  margin: 0 0 var(--spacing-4) 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
 }
 
 .control-buttons {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-3);
   flex-wrap: wrap;
-}
-
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-}
-
-.btn-secondary {
-  background: #6b7280;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #4b5563;
-}
-
-.btn-warning {
-  background: #f59e0b;
-  color: white;
-}
-
-.btn-warning:hover {
-  background: #d97706;
-}
-
-.btn-info {
-  background: #8b5cf6;
-  color: white;
-}
-
-.btn-info:hover {
-  background: #6d28d9;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .status-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  gap: var(--spacing-3);
+
+  .status-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    label {
+      font-family: var(--font-display);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      color: var(--fg-muted);
+    }
+
+    span {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-body);
+      color: var(--fg-primary);
+    }
+  }
+}
+
+.test-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-6);
+}
+
+.test-panel {
+  background: var(--bg-card);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-none);
+  padding: var(--spacing-6);
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h4);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-4) 0;
+  }
+}
+
+.test-controls {
+  display: flex;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.test-result {
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-none);
+  padding: var(--spacing-4);
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-3) 0;
+  }
+
+  pre {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    color: var(--fg-primary);
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+}
+
+input {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-body);
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-none);
+  color: var(--fg-primary);
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: var(--glow-subtle);
+  }
+
+  &::placeholder {
+    color: var(--fg-muted);
+  }
+}
+
+@media (max-width: 768px) {
+  .smart-data-source-test {
+    padding: var(--spacing-4);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+
+  .test-content {
+    grid-template-columns: 1fr;
+  }
+
+  .control-buttons {
+    justify-content: flex-start;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .test-panels {
+    grid-template-columns: 1fr;
+  }
 }
 
 .status-item {

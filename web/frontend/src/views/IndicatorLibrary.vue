@@ -1,217 +1,222 @@
 <template>
-  <div class="web3-indicator-library">
-    <!-- Page header with gradient text -->
-    <div class="web3-page-header">
-      <h1 class="web3-page-title">
-        <span class="gradient-text">TECHNICAL INDICATOR LIBRARY</span>
-      </h1>
-      <p class="web3-page-subtitle">161 TA-LIB TECHNICAL INDICATORS ACROSS 5 CATEGORIES</p>
+  <div class="indicator-library">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">INDICATOR LIBRARY</h1>
+      <p class="page-subtitle">{{ registry?.total_count || 0 }} TECHNICAL INDICATORS ACROSS 5 CATEGORIES</p>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="stats-cards">
-      <Web3Card class="stat-card" hoverable>
-        <div class="stat-content">
-          <div class="stat-icon-wrapper">
-            <el-icon :size="48" color="#F7931A"><DataLine /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value gradient-text">{{ registry?.total_count || 0 }}</div>
-            <div class="stat-label">TOTAL INDICATORS</div>
-          </div>
-        </div>
-      </Web3Card>
+    <div class="stats-section">
+        :label="'TOTAL'"
+        :value="registry?.total_count || 0"
+        type="warning"
+      />
 
-      <Web3Card
         v-for="(count, category) in (registry as any)?.categories"
         :key="category"
-        class="stat-card"
-        hoverable
-      >
-        <div class="stat-content">
-          <div class="stat-icon-wrapper">
-            <el-icon :size="48" :color="getCategoryColor(String(category))">
-              <component :is="getCategoryIcon(String(category))" />
-            </el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value gradient-text">{{ count }}</div>
-            <div class="stat-label">{{ getCategoryLabel(String(category)) }}</div>
-          </div>
-        </div>
-      </Web3Card>
+        :label="getCategoryLabel(String(category))"
+        :value="count"
+        type="getStatVariant(String(category))"
+      /> -->
+      <p>TOTAL: {{ registry?.total_count || 0 }} indicators</p>
+      <div v-for="(count, category) in (registry as any)?.categories" :key="category">
+        {{ getCategoryLabel(String(category)) }}: {{ count }}
+      </div>
     </div>
 
     <!-- Search and Filter -->
-    <Web3Card class="search-card" hoverable>
-      <el-row :gutter="16">
-        <el-col :span="12">
-          <el-input
-            v-model="searchQuery"
-            placeholder="SEARCH INDICATOR NAME, ABBREVIATION OR DESCRIPTION..."
-            :prefix-icon="Search"
-            clearable
-            size="large"
-          />
-        </el-col>
-        <el-col :span="12">
-          <el-select
-            v-model="selectedCategory"
-            placeholder="SELECT CATEGORY"
-            clearable
-            size="large"
-            style="width: 100%"
-          >
-            <el-option label="ALL CATEGORIES" value="" />
-            <el-option label="TREND" value="trend" />
-            <el-option label="MOMENTUM" value="momentum" />
-            <el-option label="VOLATILITY" value="volatility" />
-            <el-option label="VOLUME" value="volume" />
-            <el-option label="CANDLESTICK" value="candlestick" />
-          </el-select>
-        </el-col>
-      </el-row>
-    </Web3Card>
+    <div class="filter-section">
+        title="INDICATOR FILTERS"
+        :filters="indicatorFilters"
+        :quick-filters="quickFilters"
+        @filter-change="handleFilterChange"
+      /> -->
+    </div>
 
     <!-- Indicators List -->
     <div v-loading="loading" class="indicators-container">
-      <Web3Card
+      <el-card
         v-for="indicator in filteredIndicators"
         :key="indicator.abbreviation"
-        class="indicator-detail-card"
-        hoverable
+        class="indicator-card"
+        :hoverable="true"
       >
         <template #header>
           <div class="indicator-header">
-            <div class="indicator-title-group">
-              <span class="indicator-abbr gradient-text">{{ indicator.abbreviation }}</span>
-              <el-tag :type="getCategoryTagType(indicator.category)" size="small" class="web3-tag">
-                {{ getCategoryLabel(indicator.category) }}
-              </el-tag>
-              <el-tag :type="getPanelTagType(indicator.panel_type as any)" size="small" class="web3-tag">
-                {{ getPanelLabel(indicator.panel_type as any) }}
-              </el-tag>
+            <span class="indicator-abbr gold">{{ indicator.abbreviation }}</span>
+            <div class="indicator-badges">
+              <!-- <el-tag :text="getCategoryLabel(indicator.category)" type="getBadgeVariant(indicator.category)" />
+              <el-tag :text="getPanelLabel(indicator.panel_type)" type="info" /> -->
+              <el-tag>{{ getCategoryLabel(indicator.category) }}</el-tag>
+              <el-tag type="info">{{ getPanelLabel(indicator.panel_type) }}</el-tag>
             </div>
           </div>
         </template>
 
         <div class="indicator-content">
-          <!-- Basic Information -->
           <div class="info-section">
             <h3>{{ indicator.full_name }}</h3>
             <h4>{{ indicator.chinese_name }}</h4>
             <p class="description">{{ indicator.description }}</p>
           </div>
 
-          <!-- Parameters -->
           <div v-if="indicator.parameters && indicator.parameters.length > 0" class="params-section">
             <h4 class="section-title">
-              <el-icon><Setting /></el-icon>
+              <span class="section-icon">⚙</span>
               PARAMETERS
             </h4>
-            <el-table :data="indicator.parameters" size="small" border class="web3-table">
-              <el-table-column prop="display_name" label="NAME" width="120" />
-              <el-table-column prop="type" label="TYPE" width="80" />
-              <el-table-column prop="default" label="DEFAULT" width="80" />
-              <el-table-column label="RANGE" width="100">
-                <template #default="{ row }">
-                  {{ row.min !== undefined ? `[${row.min}, ${row.max}]` : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="description" label="DESCRIPTION" />
-            </el-table>
+            <div class="params-grid">
+              <div v-for="param in indicator.parameters" :key="param.name" class="param-item">
+                <span class="param-label mono">{{ param.display_name }}</span>
+                <span class="param-type mono">{{ param.type }}</span>
+                <span class="param-default mono">{{ param.default }}</span>
+                <span class="param-range mono">
+                  {{ param.min !== undefined ? `[${param.min}, ${param.max}]` : '-' }}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <!-- Outputs -->
           <div class="outputs-section">
             <h4 class="section-title">
-              <el-icon><TrendCharts /></el-icon>
+              <span class="section-icon">📊</span>
               OUTPUT FIELDS
             </h4>
-            <el-descriptions :column="2" size="small" border class="web3-descriptions">
-              <el-descriptions-item
+            <div class="outputs-grid">
+              <div
                 v-for="(output, idx) in indicator.outputs"
                 :key="idx"
-                :label="output.name"
+                class="output-item"
               >
-                {{ output.description }}
-              </el-descriptions-item>
-            </el-descriptions>
+                <span class="output-label">{{ output.name }}</span>
+                <span class="output-desc">{{ output.description }}</span>
+              </div>
+            </div>
           </div>
 
-          <!-- Reference Lines -->
           <div v-if="indicator.reference_lines && indicator.reference_lines.length > 0" class="reference-section">
             <h4 class="section-title">
-              <el-icon><Position /></el-icon>
+              <span class="section-icon">📍</span>
               REFERENCE LINES
             </h4>
-            <el-space wrap>
+            <div class="reference-tags">
+              <!-- <el-tag
+                v-for="(line, idx) in indicator.reference_lines"
+                :key="idx"
+                :text="String(line)"
+                type="warning"
+              /> -->
               <el-tag
                 v-for="(line, idx) in indicator.reference_lines"
                 :key="idx"
-                type="info"
-                effect="plain"
-                class="web3-tag"
+                type="warning"
               >
                 {{ line }}
               </el-tag>
-            </el-space>
+            </div>
           </div>
 
-          <!-- Minimum Data Points -->
           <div class="min-data-section">
-            <el-text size="small" type="info">
-              <el-icon><InfoFilled /></el-icon>
-              MINIMUM DATA POINTS: {{ indicator.min_data_points_formula }}
-            </el-text>
+            <span class="min-data-icon">ℹ</span>
+            <span class="min-data-text mono">MINIMUM DATA POINTS: {{ indicator.min_data_points_formula }}</span>
           </div>
         </div>
-      </Web3Card>
+      </el-card>
 
-      <!-- No Results Message -->
-      <el-empty v-if="filteredIndicators.length === 0 && !loading" description="NO MATCHING INDICATORS FOUND" />
+      <!-- Empty State -->
+      <div v-if="filteredIndicators.length === 0 && !loading" class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>NO MATCHING INDICATORS FOUND</h3>
+        <p>Try adjusting your search or filter criteria</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
-
 import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
-import {
-  Search,
-  DataLine,
-  TrendCharts,
-  Setting,
-  Position,
-  InfoFilled,
-  Histogram,
-  Connection,
-  Timer,
-  PieChart
-} from '@element-plus/icons-vue'
+import { ElCard } from 'element-plus'
 import { indicatorService } from '@/services/indicatorService'
 import type { IndicatorMetadata, IndicatorRegistryResponse } from '@/api/types/generated-types'
-import { Web3Card } from '@/components/web3'
 
-// Type definitions
-type CategoryType = 'trend' | 'momentum' | 'volatility' | 'volume' | 'candlestick'
-type PanelType = 'overlay' | 'separate'
-type TagType = 'primary' | 'success' | 'warning' | 'info' | 'danger'
+interface IndicatorParameters {
+  name: string
+  display_name: string
+  type: string
+  default: any
+  min?: number
+  max?: number
+  description?: string
+}
 
-// State
+interface IndicatorOutput {
+  name: string
+  description: string
+}
+
+interface IndicatorData extends Omit<IndicatorMetadata, 'parameters' | 'outputs'> {
+  parameters: IndicatorParameters[]
+  outputs: IndicatorOutput[]
+}
+
 const loading: Ref<boolean> = ref(false)
 const registry: Ref<IndicatorRegistryResponse | null> = ref(null)
 const searchQuery: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
 
-// Lifecycle
+const indicatorFilters = [
+  {
+    key: 'search',
+    label: 'SEARCH',
+    type: 'text' as const,
+    placeholder: 'SEARCH INDICATOR NAME, ABBREVIATION OR DESCRIPTION...'
+  },
+  {
+    key: 'category',
+    label: 'CATEGORY',
+    type: 'select' as const,
+    placeholder: 'SELECT CATEGORY',
+    options: [
+      { label: 'ALL CATEGORIES', value: '' },
+      { label: 'TREND', value: 'trend' },
+      { label: 'MOMENTUM', value: 'momentum' },
+      { label: 'VOLATILITY', value: 'volatility' },
+      { label: 'VOLUME', value: 'volume' },
+      { label: 'CANDLESTICK', value: 'candlestick' }
+    ]
+  }
+]
+
+const quickFilters = [
+  {
+    key: 'all',
+    label: 'ALL',
+    filters: { search: '', category: '' }
+  },
+  {
+    key: 'trend',
+    label: 'TREND',
+    filters: { search: '', category: 'trend' }
+  },
+  {
+    key: 'momentum',
+    label: 'MOMENTUM',
+    filters: { search: '', category: 'momentum' }
+  },
+  {
+    key: 'volatility',
+    label: 'VOLATILITY',
+    filters: { search: '', category: 'volatility' }
+  }
+]
+
 onMounted(async (): Promise<void> => {
   await fetchIndicatorRegistry()
 })
 
-// Methods
 const fetchIndicatorRegistry = async (): Promise<void> => {
   loading.value = true
   try {
@@ -224,49 +229,33 @@ const fetchIndicatorRegistry = async (): Promise<void> => {
   }
 }
 
-const filteredIndicators: ComputedRef<IndicatorMetadata[]> = computed(() => {
+const filteredIndicators: ComputedRef<IndicatorData[]> = computed(() => {
   if (!registry.value?.indicators) return []
 
-  let indicators = registry.value.indicators
+  let indicators = registry.value.indicators as IndicatorData[]
 
-  // Category filter
-  if (selectedCategory.value) {
-    indicators = indicators.filter(ind => ind.category === selectedCategory.value)
-  }
-
-  // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    indicators = indicators.filter(ind => {
+    indicators = indicators.filter((ind: any) => {
       return (
-        (ind as any).abbreviation.toLowerCase().includes(query) ||
-        (ind as any).full_name.toLowerCase().includes(query) ||
-        (ind as any).chinese_name.includes(query) ||
+        ind.abbreviation.toLowerCase().includes(query) ||
+        ind.full_name.toLowerCase().includes(query) ||
+        ind.chinese_name.includes(query) ||
         ind.description.toLowerCase().includes(query)
       )
     })
   }
 
-  return indicators
+  if (selectedCategory.value) {
+    indicators = indicators.filter((ind: any) => ind.category === selectedCategory.value)
+  }
+
+  return indicators as IndicatorData[]
 })
 
-const getCategoryTagType = (category: string): TagType => {
-  const typeMap: Record<string, TagType> = {
-    trend: 'primary',
-    momentum: 'success',
-    volatility: 'warning',
-    volume: 'info',
-    candlestick: 'danger'
-  }
-  return typeMap[category] || 'info'
-}
-
-const getPanelTagType = (panelType: string): TagType => {
-  return panelType === 'overlay' ? 'info' : 'warning'
-}
-
-const getPanelLabel = (panelType: PanelType): string => {
-  return panelType === 'overlay' ? 'MAIN OVERLAY' : 'SEPARATE PANEL'
+const handleFilterChange = (filters: Record<string, any>) => {
+  searchQuery.value = filters.search || ''
+  selectedCategory.value = filters.category || ''
 }
 
 const getCategoryLabel = (category: string): string => {
@@ -280,275 +269,337 @@ const getCategoryLabel = (category: string): string => {
   return labelMap[category] || category
 }
 
-const getCategoryColor = (category: string): string => {
-  const colorMap: Record<string, string> = {
-    trend: '#F7931A',
-    momentum: '#00E676',
-    volatility: '#FFD700',
-    volume: '#6B7280',
-    candlestick: '#EF4444'
+const getStatVariant = (category: string): 'default' | 'gold' | 'rise' | 'fall' => {
+  const variantMap: Record<string, 'default' | 'gold' | 'rise' | 'fall'> = {
+    trend: 'gold',
+    momentum: 'rise',
+    volatility: 'fall',
+    volume: 'gold',
+    candlestick: 'fall'
   }
-  return colorMap[category] || '#6B7280'
+  return variantMap[category] || 'gold'
 }
 
-const getCategoryIcon = (category: string): Component => {
-  const iconMap: Record<string, Component> = {
-    trend: TrendCharts,
-    momentum: Connection,
-    volatility: Histogram,
-    volume: PieChart,
-    candlestick: Timer
+const getBadgeVariant = (category: string): 'gold' | 'rise' | 'fall' | 'info' | 'warning' | 'success' | 'danger' => {
+  const variantMap: Record<string, 'gold' | 'rise' | 'fall' | 'info' | 'warning' | 'success' | 'danger'> = {
+    trend: 'gold',
+    momentum: 'rise',
+    volatility: 'fall',
+    volume: 'info',
+    candlestick: 'warning'
   }
-  return iconMap[category] || DataLine
+  return variantMap[category] || 'info'
+}
+
+const getPanelLabel = (panelType: string): string => {
+  return panelType === 'overlay' ? 'MAIN OVERLAY' : 'SEPARATE PANEL'
 }
 </script>
 
-<style scoped lang="scss">
-@import '@/styles/web3-tokens.scss';
-@import '@/styles/web3-global.scss';
+<style scoped>
 
-.web3-indicator-library {
-  @include web3-grid-bg;
+.indicator-library {
   min-height: 100vh;
-  padding: var(--web3-spacing-6);
-
-  .web3-page-header {
-    text-align: center;
-    padding: var(--web3-spacing-10) 0;
-    margin-bottom: var(--web3-spacing-8);
-
-    .web3-page-title {
-      font-family: var(--web3-font-heading);
-      font-size: var(--web3-text-4xl);
-      font-weight: var(--web3-weight-bold);
-      margin: 0 0 var(--web3-spacing-3) 0;
-      line-height: var(--web3-leading-tight);
-
-      .gradient-text {
-        background: var(--web3-gradient-orange);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-    }
-
-    .web3-page-subtitle {
-      font-family: var(--web3-font-body);
-      font-size: var(--web3-text-sm);
-      color: var(--web3-fg-muted);
-      text-transform: uppercase;
-      letter-spacing: var(--web3-tracking-wide);
-      margin: 0;
-    }
-  }
-
-  .stats-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--web3-spacing-4);
-    margin-bottom: var(--web3-spacing-6);
-
-    .stat-card {
-      .stat-content {
-        display: flex;
-        align-items: center;
-        gap: var(--web3-spacing-4);
-
-        .stat-icon-wrapper {
-          .el-icon {
-            font-size: 48px;
-          }
-        }
-
-        .stat-info {
-          flex: 1;
-
-          .stat-value {
-            font-size: var(--web3-text-3xl);
-            font-weight: var(--web3-weight-bold);
-            color: var(--web3-fg-primary);
-            line-height: 1.2;
-            font-family: var(--web3-font-mono);
-
-            &.gradient-text {
-              background: var(--web3-gradient-orange);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-            }
-          }
-
-          .stat-label {
-            margin-top: var(--web3-spacing-1);
-            font-size: var(--web3-text-xs);
-            text-transform: uppercase;
-            letter-spacing: var(--web3-tracking-wide);
-            color: var(--web3-fg-muted);
-          }
-        }
-      }
-    }
-  }
-
-  .search-card {
-    margin-bottom: var(--web3-spacing-6);
-  }
-
-  .indicators-container {
-    display: grid;
-    gap: var(--web3-spacing-5);
-
-    .indicator-detail-card {
-      .indicator-header {
-        .indicator-title-group {
-          display: flex;
-          align-items: center;
-          gap: var(--web3-spacing-3);
-
-          .indicator-abbr {
-            font-size: var(--web3-text-xl);
-            font-weight: var(--web3-weight-bold);
-            font-family: var(--web3-font-heading);
-
-            &.gradient-text {
-              background: var(--web3-gradient-orange);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-            }
-          }
-        }
-      }
-
-      .indicator-content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--web3-spacing-5);
-
-        .info-section {
-          h3 {
-            margin: 0 0 var(--web3-spacing-1) 0;
-            font-size: var(--web3-text-lg);
-            font-weight: var(--web3-weight-semibold);
-            color: var(--web3-fg-primary);
-          }
-
-          h4 {
-            margin: 0 0 var(--web3-spacing-3) 0;
-            font-size: var(--web3-text-base);
-            font-weight: var(--web3-weight-normal);
-            color: var(--web3-fg-secondary);
-          }
-
-          .description {
-            margin: 0;
-            font-size: var(--web3-text-sm);
-            color: var(--web3-fg-muted);
-            line-height: 1.8;
-          }
-        }
-
-        .section-title {
-          display: flex;
-          align-items: center;
-          gap: var(--web3-spacing-2);
-          margin: 0 0 var(--web3-spacing-3) 0;
-          font-size: var(--web3-text-base);
-          font-weight: var(--web3-weight-semibold);
-          color: var(--web3-fg-primary);
-
-          .el-icon {
-            color: #F7931A;
-          }
-        }
-
-        .min-data-section {
-          padding: var(--web3-spacing-3);
-          background: rgba(255, 255, 255, 0.02);
-          border-radius: var(--web3-radius-md);
-          border: 1px solid var(--web3-border-subtle);
-
-          .el-text {
-            display: flex;
-            align-items: center;
-            gap: var(--web3-spacing-1);
-          }
-        }
-      }
-    }
-  }
-
-  .web3-table {
-    :deep(.el-table__header) {
-      th {
-        background: rgba(255, 255, 255, 0.02) !important;
-        color: var(--web3-fg-secondary) !important;
-        font-family: var(--web3-font-heading);
-        font-weight: var(--web3-weight-semibold);
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--web3-border-subtle) !important;
-      }
-    }
-
-    :deep(.el-table__body) {
-      tr {
-        background: transparent !important;
-        transition: background var(--web3-duration-fast);
-
-        &:hover {
-          background: rgba(247, 147, 26, 0.05) !important;
-        }
-
-        td {
-          border-bottom: 1px solid var(--web3-border-subtle) !important;
-          color: var(--web3-fg-primary);
-        }
-      }
-    }
-  }
-
-  .web3-descriptions {
-    :deep(.el-descriptions__label) {
-      font-family: var(--web3-font-body);
-      text-transform: uppercase;
-      letter-spacing: var(--web3-tracking-wide);
-      color: var(--web3-fg-muted);
-    }
-
-    :deep(.el-descriptions__content) {
-      font-family: var(--web3-font-body);
-      color: var(--web3-fg-primary);
-    }
-  }
-
-  .gradient-text {
-    background: var(--web3-gradient-orange);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .web3-tag {
-    font-family: var(--web3-font-body);
-    text-transform: uppercase;
-    letter-spacing: var(--web3-tracking-wide);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  position: relative;
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .web3-indicator-library {
-    padding: var(--web3-spacing-4);
+/* Background pattern */
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(212, 175, 55, 0.02) 10px,
+      rgba(212, 175, 55, 0.02) 11px
+    );
+  pointer-events: none;
+  z-index: -1;
+}
 
-    .web3-page-header {
-      .web3-page-title {
-        font-size: var(--web3-text-2xl);
-      }
-    }
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
 
-    .stats-cards {
-      grid-template-columns: 1fr;
-    }
-  }
+.page-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0 0 var(--space-md) 0;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--silver-muted);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+/* Stats Section */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+/* Filter Section */
+.filter-section {
+  margin-bottom: var(--space-lg);
+}
+
+/* Indicators Container */
+.indicators-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* Indicator Card */
+.indicator-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.indicator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.indicator-abbr {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.indicator-badges {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.indicator-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  flex: 1;
+}
+
+/* Info Section */
+.info-section {
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  padding-bottom: var(--space-md);
+}
+
+.info-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--silver-text);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.info-section h4 {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--silver-muted);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.info-section .description {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--silver-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Parameters Section */
+.params-section,
+.outputs-section,
+.reference-section {
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  padding-bottom: var(--space-md);
+}
+
+.section-title {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-md) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.section-icon {
+  font-size: 1rem;
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.param-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.param-label,
+.param-type,
+.param-default,
+.param-range {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.param-label {
+  color: var(--gold-primary);
+  font-weight: 600;
+}
+
+.param-type,
+.param-default,
+.param-range {
+  color: var(--silver-muted);
+}
+
+/* Outputs Grid */
+.outputs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.output-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.output-label {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.output-desc {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--silver-muted);
+  line-height: 1.4;
+}
+
+/* Reference Tags */
+.reference-tags {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Min Data Section */
+.min-data-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+  margin-top: var(--space-md);
+}
+
+.min-data-icon {
+  font-size: 1.25rem;
+}
+
+.min-data-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--silver-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-2xl);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--space-lg);
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--silver-text);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.empty-state p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--silver-muted);
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.gold {
+  color: var(--gold-primary);
+}
+
+/* Loading Override */
+:deep(.el-loading-mask) {
+  background-color: var(--bg-card) !important;
+}
+
+:deep(.el-loading-spinner .path) {
+  stroke: var(--gold-primary);
+}
+
+:deep(.el-loading-text) {
+  color: var(--gold-primary);
 }
 </style>

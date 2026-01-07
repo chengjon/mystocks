@@ -17,7 +17,7 @@ import sys
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
-from utils.add_doc_metadata import add_metadata, batch_add_metadata, METADATA_TEMPLATE
+from src.utils.add_doc_metadata import add_metadata, batch_add_metadata, METADATA_TEMPLATE
 
 
 class TestAddMetadata:

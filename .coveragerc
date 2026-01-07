@@ -1,0 +1,96 @@
+# Coverage.py 配置文件
+# 用于详细控制代码覆盖率测量
+
+[run]
+# 源代码目录（同时测量src/和web/backend/app/）
+source = src web/backend/app
+
+# 测试套件分支
+branch = True
+
+# 并行模式（支持多进程）
+parallel = True
+
+# 数据文件位置
+data_file = .coverage
+
+# 排除的文件模式
+omit =
+    */tests/*
+    */test_*.py
+    */__pycache__/*
+    */site-packages/*
+    */dist-packages/*
+    */venv/*
+    */env/*
+    */.venv/*
+    */virtualenv/*
+    # 排除生成的文件
+    */generated_*.py
+    */*.pb2.py
+    # 排除 migrations
+    */migrations/*
+
+# 包含的文件模式（空表示包含所有）
+include =
+
+# 动态分析上下文
+dynamic_context = test_function
+
+[report]
+# 精度
+precision = 2
+
+# 显示缺失的行号
+show_missing = True
+
+# 跳过已覆盖的文件
+skip_covered = False
+
+# 忽略无源代码的错误
+ignore_errors = True
+
+# 排除列表
+exclude_lines =
+    # 排除 pragma: no cover 标记的行
+    pragma: no cover
+
+    # 排除防御性代码
+    def __repr__
+    def __str__
+    raise AssertionError
+    raise NotImplementedError
+
+    # 排除类型检查代码
+    if TYPE_CHECKING:
+    if typing.TYPE_CHECKING:
+
+    # 排除抽象方法
+    @abstractmethod
+
+    # 排除调试代码
+    if __name__ == .__main__.:
+    if DEBUG:
+
+    # 排除日志和异常处理样板代码
+    logger.debug
+    logger.info
+    except ImportError:
+    except ModuleNotFoundError:
+
+[html]
+# HTML 报告输出目录
+directory = htmlcov
+
+# 报告标题
+title = MyStocks Test Coverage Report
+
+[xml]
+# XML 报告输出（用于 CI/CD）
+output = coverage.xml
+
+[json]
+# JSON 报告输出
+output = coverage.json
+
+pretty_print = True

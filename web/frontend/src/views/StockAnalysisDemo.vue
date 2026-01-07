@@ -1,104 +1,98 @@
 <template>
   <div class="stock-analysis-demo">
-    <div class="demo-header">
-      <h1>📊 Stock-Analysis 功能演示</h1>
-      <p class="subtitle">基于通达信的 A 股股票筛选和回测分析系统</p>
-    </div>
 
-    <!-- 功能导航 -->
+    <PageHeader
+      title="STOCK ANALYSIS DEMO"
+      subtitle="A-SHARE STOCK SCREENING | BACKTESTING | TECHNICAL ANALYSIS"
+    />
+
     <div class="function-nav">
       <el-button
         v-for="tab in tabs"
         :key="tab.key"
-        :type="activeTab === tab.key ? 'primary' : ''"
+        :type="activeTab === tab.key ? 'primary' : 'default'"
         @click="activeTab = tab.key"
       >
         {{ tab.icon }} {{ tab.label }}
       </el-button>
     </div>
 
-    <!-- 1. 项目概览 -->
     <el-card v-show="activeTab === 'overview'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>📋 项目概览</span>
-          <el-tag type="success">已迁移</el-tag>
+          <span>PROJECT OVERVIEW</span>
+          <el-tag type="success">MIGRATED</el-tag>
         </div>
       </template>
 
       <div class="content-section">
-        <h3>🎯 Stock-Analysis 简介</h3>
-        <p>Stock-Analysis 是一个基于通达信数据的中国 A 股股票筛选和回测分析系统。它利用通达信强大的本地数据优势,结合 Python 的灵活性,提供高效的股票筛选策略和完整的回测框架。</p>
+        <h3>INTRODUCTION</h3>
+        <p>Stock-Analysis is a Chinese A-share stock screening and backtesting system based on Tongdaxin data. It leverages Tongdaxin's powerful local data advantages combined with Python flexibility to provide efficient stock screening strategies and complete backtesting framework.</p>
 
-        <h3 style="margin-top: 30px;">✨ 核心功能</h3>
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>📂 通达信数据解析</h4>
-              <ul>
-                <li>解析通达信 .day/.lc1/.lc5 等二进制文件</li>
-                <li>支持日线、分钟线、5分钟线数据</li>
-                <li>自动识别股票代码和市场</li>
-                <li>高效的数据缓存机制</li>
-                <li>支持历史数据和实时数据</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>🔍 股票筛选策略</h4>
-              <ul>
-                <li>技术指标筛选 (MA, MACD, RSI, KDJ等)</li>
-                <li>形态识别 (突破、金叉、底部等)</li>
-                <li>量价分析 (放量、缩量、量比等)</li>
-                <li>基本面筛选 (PE, PB, 净利润等)</li>
-                <li>自定义组合条件筛选</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
+        <h3 style="margin-top: 30px;">CORE FEATURES</h3>
+        <div class="features-grid">
+          <el-card :hoverable="true">
+            <h4>TONGDAXIN DATA PARSING</h4>
+            <ul>
+              <li>Parse Tongdaxin .day/.lc1/.lc5 binary files</li>
+              <li>Support daily, minute, 5-minute data</li>
+              <li>Auto-identify stock codes and markets</li>
+              <li>Efficient data caching mechanism</li>
+              <li>Historical and real-time data support</li>
+            </ul>
+          </el-card>
 
-        <el-row :gutter="20" style="margin-top: 20px;">
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>📈 回测分析</h4>
-              <ul>
-                <li>集成 rqalpha 回测引擎</li>
-                <li>支持多策略并行回测</li>
-                <li>完整的交易记录和分析</li>
-                <li>资金曲线和回撤分析</li>
-                <li>夏普比率等性能指标</li>
-              </ul>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover">
-              <h4>⏰ 实时和盘后筛选</h4>
-              <ul>
-                <li>盘中实时数据更新</li>
-                <li>盘后自动筛选</li>
-                <li>邮件/微信通知推送</li>
-                <li>自定义筛选时间</li>
-                <li>历史筛选结果保存</li>
-              </ul>
-            </el-card>
-          </el-col>
-        </el-row>
+          <el-card :hoverable="true">
+            <h4>STOCK SCREENING STRATEGIES</h4>
+            <ul>
+              <li>Technical Indicator Screening (MA, MACD, RSI, KDJ)</li>
+              <li>Pattern Recognition (Breakthrough, Golden Cross, Bottom)</li>
+              <li>Volume-Price Analysis (Volume, Volume Ratio)</li>
+              <li>Fundamental Screening (PE, PB, Net Profit)</li>
+              <li>Custom Combined Conditions</li>
+            </ul>
+          </el-card>
 
-        <h3 style="margin-top: 30px;">🔧 技术架构</h3>
-        <el-descriptions :column="2" border style="margin-top: 15px;">
-          <el-descriptions-item label="数据源">通达信本地数据 (.day/.lc1/.lc5)</el-descriptions-item>
-          <el-descriptions-item label="数据解析">struct 二进制解析</el-descriptions-item>
-          <el-descriptions-item label="策略语言">Python 3.x</el-descriptions-item>
-          <el-descriptions-item label="回测引擎">rqalpha</el-descriptions-item>
-          <el-descriptions-item label="技术指标">TA-Lib</el-descriptions-item>
-          <el-descriptions-item label="数据存储">SQLite / PostgreSQL</el-descriptions-item>
+          <el-card :hoverable="true">
+            <h4>BACKTESTING</h4>
+            <ul>
+              <li>Integrated rqalpha backtesting engine</li>
+              <li>Multi-strategy parallel backtesting</li>
+              <li>Complete trading records and analysis</li>
+              <li>Capital curve and drawdown analysis</li>
+              <li>Sharpe ratio and performance metrics</li>
+            </ul>
+          </el-card>
+
+          <el-card :hoverable="true">
+            <h4>REAL-TIME & AFTER-HOURS</h4>
+            <ul>
+              <li>Intraday real-time data updates</li>
+              <li>After-hours automatic screening</li>
+              <li>Email/WeChat notification push</li>
+              <li>Custom screening time</li>
+              <li>Historical screening results save</li>
+            </ul>
+          </el-card>
+        </div>
+
+        <h3 style="margin-top: 30px;">TECHNICAL ARCHITECTURE</h3>
+        <el-descriptions :column="2" border style="margin-top: 15px;" class="descriptions">
+          <el-descriptions-item label="DATA SOURCE">Tongdaxin Local Data (.day/.lc1/.lc5)</el-descriptions-item>
+          <el-descriptions-item label="DATA PARSING">struct Binary Parsing</el-descriptions-item>
+          <el-descriptions-item label="STRATEGY LANGUAGE">Python 3.x</el-descriptions-item>
+          <el-descriptions-item label="BACKTEST ENGINE">rqalpha</el-descriptions-item>
+          <el-descriptions-item label="TECHNICAL INDICATORS">TA-Lib</el-descriptions-item>
+          <el-descriptions-item label="DATA STORAGE">SQLite / PostgreSQL</el-descriptions-item>
         </el-descriptions>
 
+        <h3 style="margin-top: 30px;">REPOSITORY</h3>
+        <p>This project is a functional demonstration. The complete source code is available in the <code>stock-analysis/</code> directory.</p>
+
         <el-alert
-          type="info"
-          :closable="false"
+          type="success"
           style="margin-top: 20px;"
+          :closable="false"
         >
           <template #title>
             <div style="font-weight: bold;">💡 项目优势</div>
@@ -147,11 +141,11 @@
 
         <h3 style="margin-top: 30px;">💻 数据解析代码示例</h3>
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="日线数据解析">
+          <el-tab-pane label="日线数据解析" name="daily">
             <textarea readonly class="code-block" v-text="dayParserCode"></textarea>
           </el-tab-pane>
 
-          <el-tab-pane label="分钟线数据解析">
+          <el-tab-pane label="分钟线数据解析" name="minute">
             <textarea readonly class="code-block">
 
 import struct
@@ -206,7 +200,7 @@ def parse_tdx_minute_file(file_path):
     return df</textarea>
           </el-tab-pane>
 
-          <el-tab-pane label="批量读取">
+          <el-tab-pane label="批量读取" name="batch">
             <textarea readonly class="code-block">
 
 import os
@@ -514,7 +508,7 @@ for r in results[:10]:  # 显示前10只
 
         <h3 style="margin-top: 30px;">💻 回测代码示例</h3>
         <el-tabs type="border-card" style="margin-top: 20px;">
-          <el-tab-pane label="简单策略">
+          <el-tab-pane label="简单策略" name="simple">
             <textarea readonly class="code-block">
 from rqalpha.api import *
 
@@ -551,7 +545,7 @@ def handle_bar(context, bar_dict):
         logger.info(f"卖出信号: MA{context.ma_short} < MA{context.ma_long}")</textarea>
           </el-tab-pane>
 
-          <el-tab-pane label="多股票策略">
+          <el-tab-pane label="多股票策略" name="multi">
             <textarea readonly class="code-block">
 from rqalpha.api import *
 
@@ -599,7 +593,7 @@ def handle_bar(context, bar_dict):
         logger.info(f"买入 {stock}, 目标仓位 {target_weight*100}%")</textarea>
           </el-tab-pane>
 
-          <el-tab-pane label="运行回测">
+          <el-tab-pane label="运行回测" name="run">
             <textarea readonly class="code-block">
 # 运行回测的命令
 rqalpha run \
@@ -877,12 +871,39 @@ schedule.every().day.at("15:15").do(after_market_screen)</textarea>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import { PageHeader } from '@/components/shared'
 
-const activeTab = ref('overview')
+interface TabItem {
+  key: string
+  label: string
+  icon: string
+}
 
-const tabs = [
+interface FileFormatItem {
+  type: string
+  extension: string
+  recordSize: string
+  description: string
+}
+
+interface DayStructureItem {
+  offset: string
+  size: string
+  type: string
+  field: string
+  description: string
+}
+
+interface BacktestMetricItem {
+  metric: string
+  description: string
+}
+
+const activeTab = ref<string>('overview')
+
+const tabs: TabItem[] = [
   { key: 'overview', label: '项目概览', icon: '📋' },
   { key: 'data', label: '数据解析', icon: '📂' },
   { key: 'strategy', label: '筛选策略', icon: '🔍' },
@@ -946,14 +967,14 @@ df = parse_tdx_day_file('D:/tdx/vipdoc/sh/lday/sh600000.day')
 print(df.head())
 print(f"总共 {len(df)} 条记录")`
 
-const fileFormatData = [
+const fileFormatData: FileFormatItem[] = [
   { type: '日线', extension: '.day', recordSize: '32字节', description: '每条记录包含日期、OHLC、成交量和成交额' },
   { type: '分钟线', extension: '.lc1', recordSize: '32字节', description: '1分钟K线数据' },
   { type: '5分钟线', extension: '.lc5', recordSize: '32字节', description: '5分钟K线数据' },
   { type: '财务数据', extension: '.gbbq', recordSize: '变长', description: '股本变迁、除权除息数据' }
 ]
 
-const dayStructureData = [
+const dayStructureData: DayStructureItem[] = [
   { offset: '0-3', size: '4', type: 'uint32', field: 'date', description: '日期 (YYYYMMDD 格式)' },
   { offset: '4-7', size: '4', type: 'uint32', field: 'open', description: '开盘价 (需除以100)' },
   { offset: '8-11', size: '4', type: 'uint32', field: 'high', description: '最高价 (需除以100)' },
@@ -964,7 +985,7 @@ const dayStructureData = [
   { offset: '28-31', size: '4', type: 'uint32', field: 'reserved', description: '保留字段' }
 ]
 
-const backtestMetrics = [
+const backtestMetrics: BacktestMetricItem[] = [
   { metric: 'Total Returns', description: '总收益率' },
   { metric: 'Annual Returns', description: '年化收益率' },
   { metric: 'Max Drawdown', description: '最大回撤' },
@@ -978,86 +999,178 @@ const backtestMetrics = [
 </script>
 
 <style scoped>
+
 .stock-analysis-demo {
-  padding: 20px;
+  padding: var(--spacing-6);
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg-primary);
 }
 
-.demo-header {
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.page-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-8);
+  position: relative;
+  z-index: 1;
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
 }
 
-.demo-header h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-  color: #409eff;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 14px;
-}
-
-.function-nav {
+.demo-grid {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .demo-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  z-index: 1;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
 }
 
 .content-section {
-  padding: 10px 0;
+  padding: var(--spacing-4) 0;
   line-height: 1.8;
 }
 
 .content-section h3 {
-  color: #409eff;
-  margin-bottom: 15px;
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-4);
 }
 
 .content-section h4 {
-  color: #606266;
-  margin-bottom: 10px;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--fg-primary);
+  margin-bottom: var(--spacing-3);
 }
 
 .content-section p {
-  margin: 10px 0;
-  color: #606266;
+  margin: var(--spacing-3) 0;
+  color: var(--fg-primary);
 }
 
 .content-section ul {
-  padding-left: 25px;
-  margin: 10px 0;
+  padding-left: var(--spacing-6);
+  margin: var(--spacing-3) 0;
 }
 
 .content-section ul li {
-  margin: 5px 0;
+  margin: var(--spacing-2) 0;
+  color: var(--fg-primary);
 }
 
 .code-block {
-  background: #f5f7fa;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  padding: 15px;
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-none);
+  padding: var(--spacing-4);
   font-family: 'Courier New', monospace;
-  font-size: 13px;
+  font-size: var(--font-size-small);
   line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--fg-primary);
+}
+
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.model-list ul {
+  padding-left: var(--spacing-5);
+  margin: var(--spacing-3) 0;
+  list-style: disc;
+}
+
+.profiling-section :deep(.el-descriptions__label) {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--fg-muted) !important;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-section :deep(.el-descriptions__content) {
+  background: transparent !important;
+  color: var(--fg-primary) !important;
+  font-family: var(--font-body);
+}
+
+.code-block {
   overflow-x: auto;
   white-space: pre;
   color: #303133;

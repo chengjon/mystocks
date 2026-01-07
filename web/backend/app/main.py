@@ -131,9 +131,10 @@ async def lifespan(app: FastAPI):
         signal.alarm(5)
 
         try:
-            scheduler = get_eviction_scheduler()
-            scheduler.start_daily_cleanup(hour=2, minute=0)
-            logger.info("✅ Cache eviction scheduler started")
+            # scheduler = get_eviction_scheduler()  # 临时禁用 - 导入已注释
+            # scheduler.start_daily_cleanup(hour=2, minute=0)
+            # logger.info("✅ Cache eviction scheduler started")
+            logger.info("⚠️ Cache eviction scheduler disabled (import commented out)")
         finally:
             signal.alarm(0)  # 取消超时
 
@@ -149,8 +150,9 @@ async def lifespan(app: FastAPI):
 
     # 停止缓存淘汰调度器
     try:
-        reset_eviction_scheduler()
-        logger.info("✅ Cache eviction scheduler stopped")
+        # reset_eviction_scheduler()  # 临时禁用 - 导入已注释
+        # logger.info("✅ Cache eviction scheduler stopped")
+        logger.info("⚠️ Cache eviction scheduler reset disabled (import commented out)")
     except Exception as e:
         logger.warning("⚠️ Error stopping cache eviction scheduler", error=str(e))
 
@@ -171,7 +173,7 @@ app = FastAPI(
     license_info=openapi_config.get("license_info"),
     openapi_tags=openapi_config["openapi_tags"],
     docs_url=None,  # 禁用默认 Swagger UI（将手动配置本地版本）
-    redoc_url="/api/redoc",
+    redoc_url=None,  # 禁用默认 ReDoc（使用自定义多CDN回退版本）
     swagger_ui_parameters=openapi_config.get("swagger_ui_parameters"),
     swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
     lifespan=lifespan,  # 添加生命周期管理
@@ -186,6 +188,23 @@ app.mount(
     StaticFiles(directory=swagger_ui_path),
     name="swagger-ui-static",
 )
+
+# 挂载自定义静态文件目录（用于本地 ReDoc 等静态资源）
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount(
+        "/static",
+        StaticFiles(directory=static_dir),
+        name="static",
+    )
+else:
+    # 如果目录不存在，创建它
+    os.makedirs(static_dir, exist_ok=True)
+    app.mount(
+        "/static",
+        StaticFiles(directory=static_dir),
+        name="static",
+    )
 
 # 配置 CORS
 app.add_middleware(
@@ -433,6 +452,29 @@ async def custom_swagger_ui_html():
     )
 
 
+# 自定义 ReDoc 端点（多 CDN 回退 + 本地支持）
+@app.get("/api/redoc", include_in_schema=False)
+async def custom_redoc_html():
+    """
+    自定义 ReDoc 页面 - 支持多 CDN 回退机制
+    CDN 源顺序：jsDelivr → unpkg → Redocly → 本地
+    如果所有 CDN 失败，提供替代方案指引
+    """
+    from pathlib import Path
+    from fastapi.responses import HTMLResponse
+
+    # 读取自定义 ReDoc HTML 模板
+    template_path = Path(__file__).parent / "redoc_custom.html"
+    template_content = template_path.read_text(encoding="utf-8")
+
+    # 渲染模板变量
+    html_content = template_content.replace("{{title}}", openapi_config["title"]).replace(
+        "{{openapi_url}}", "/openapi.json"
+    )
+
+    return HTMLResponse(content=html_content)
+
+
 # 导入 API 路由 - 优化结构: 先导入，后统一挂载
 from .api import (
     announcement,
@@ -471,12 +513,12 @@ from .api import (
 from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
 # 包含路由
-app.include_router(data.router, prefix="/api/data", tags=["data"])
+app.include_router(data.router, prefix="/api/v1/data", tags=["data"])
 app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
-app.include_router(market.router, tags=["market"])  # market路由已包含prefix
+app.include_router(market.router, prefix="/api/v1/market", tags=["market"])
 app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
 app.include_router(metrics.router, prefix="/api", tags=["metrics"])  # Prometheus metrics

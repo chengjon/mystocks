@@ -1,7 +1,6 @@
 """
 User Database Repository
 Handles all user-related database operations with proper error handling
-Uses custom exception types for specific error scenarios
 """
 
 from typing import List, Optional
@@ -11,11 +10,25 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.security import UserInDB
-from src.core.exceptions import (
-    DatabaseConnectionError,
-    DatabaseOperationError,
-    DataValidationError,
-)
+
+
+# 简化的异常类（如果需要更详细的异常处理）
+class DatabaseConnectionError(Exception):
+    """数据库连接错误"""
+
+    pass
+
+
+class DatabaseOperationError(Exception):
+    """数据库操作错误"""
+
+    pass
+
+
+class DataValidationError(Exception):
+    """数据验证错误"""
+
+    pass
 
 
 class UserRepository:

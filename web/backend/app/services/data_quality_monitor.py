@@ -175,8 +175,7 @@ class DataSourceQualityMetrics:
                 metric_name=metric_name,
                 severity=new_severity,
                 message=(
-                    f"{metric.description}: {value}{metric.unit} "
-                    f"(threshold: {metric.threshold_critical}{metric.unit})"
+                    f"{metric.description}: {value}{metric.unit} (threshold: {metric.threshold_critical}{metric.unit})"
                 ),
                 source=self.source_name,
                 metadata={
@@ -289,12 +288,12 @@ class SchemaValidationRule(IDataQualityRule):
         total_fields = len(self.required_fields)
 
         # 检查必需字段
-        for field in self.required_fields:
-            if field not in data:
-                issues.append(f"Missing required field: {field}")
+        for field_name in self.required_fields:
+            if field_name not in data:
+                issues.append(f"Missing required field: {field_name}")
             else:
-                value = data[field]
-                expected_type = self.field_types.get(field, str)
+                value = data[field_name]
+                expected_type = self.field_types.get(field_name, str)
 
                 if not isinstance(value, expected_type):
                     issues.append(

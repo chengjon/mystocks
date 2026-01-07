@@ -5,11 +5,11 @@ server:
   grpc_listen_port: 9096
 
 common:
-  path_prefix: /tmp/loki
+  path_prefix: /home/docker/loki
   storage:
     filesystem:
-      chunks_directory: /tmp/loki/chunks
-      rules_directory: /tmp/loki/rules
+      chunks_directory: /home/docker/loki/chunks
+      rules_directory: /home/docker/loki/rules
   ring:
     kvstore:
       store: inmemory
@@ -24,11 +24,11 @@ ingester:
 
 storage_config:
   tsdb_shipper:
-    active_index_directory: /tmp/loki/tsdb-index
-    cache_location: /tmp/loki/tsdb-cache
+    active_index_directory: /home/docker/loki/tsdb-index
+    cache_location: /home/docker/loki/tsdb-cache
 
   filesystem:
-    directory: /tmp/loki/chunks
+    directory: /home/docker/loki/chunks
 
 schema_config:
   configs:
@@ -46,5 +46,5 @@ limits_config:
 ruler:
   storage:
     local:
-      directory: /tmp/loki/rules
-  rule_path: /tmp/loki/rules
+      directory: /home/docker/loki/rules
+  rule_path: /home/docker/loki/rules

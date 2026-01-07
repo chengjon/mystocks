@@ -1,148 +1,124 @@
 <template>
   <div class="pyprofiling-demo">
-    <div class="demo-header">
-      <h1>📊 PyProfiling 迁移功能演示</h1>
-      <p class="subtitle">展示从 PyProfiling 项目迁移的股票预测和性能分析功能</p>
+
+    <div class="page-header">
+      <h1 class="page-title">PYPROFILING DEMO</h1>
+      <p class="page-subtitle">STOCK PREDICTION | FEATURE ENGINEERING | PERFORMANCE ANALYSIS</p>
     </div>
 
-    <!-- 功能导航 -->
     <div class="function-nav">
       <el-button
         v-for="tab in tabs"
         :key="tab.key"
-        :type="activeTab === tab.key ? 'primary' : ''"
+        type="activeTab === tab.key ? 'solid' : 'outline'"
         @click="activeTab = tab.key"
       >
         {{ tab.icon }} {{ tab.label }}
       </el-button>
     </div>
 
-    <!-- 1. 项目概览 -->
     <el-card v-show="activeTab === 'overview'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>📋 项目概览</span>
-          <el-tag type="success">已迁移</el-tag>
+          <span>PROJECT OVERVIEW</span>
+          <el-tag type="success">MIGRATED</el-tag>
         </div>
       </template>
 
       <div class="overview-section">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="项目名称">
-            PyProfiling - 股票预测与性能分析工具包
+        <el-descriptions :column="2" border class="descriptions">
+          <el-descriptions-item label="PROJECT NAME">
+            PyProfiling - Stock Prediction & Performance Analysis Toolkit
           </el-descriptions-item>
-          <el-descriptions-item label="主要用途">
-            使用 LightGBM 预测股票价格 + Python 性能分析
+          <el-descriptions-item label="PURPOSE">
+            LightGBM Stock Price Prediction + Python Performance Analysis
           </el-descriptions-item>
-          <el-descriptions-item label="数据源">
-            通达信（Tongdaxin）二进制 .day 文件
+          <el-descriptions-item label="DATA SOURCE">
+            Tongdaxin Binary .day Files
           </el-descriptions-item>
-          <el-descriptions-item label="核心模型">
-            LightGBM Regressor（GBDT 回归）
+          <el-descriptions-item label="CORE MODEL">
+            LightGBM Regressor (GBDT Regression)
           </el-descriptions-item>
-          <el-descriptions-item label="特征工程">
-            滚动窗口特征（10步 × 6特征 = 60列）
+          <el-descriptions-item label="FEATURE ENGINEERING">
+            Rolling Window Features (10 steps × 6 features = 60 columns)
           </el-descriptions-item>
-          <el-descriptions-item label="评估指标">
-            RMSE（均方根误差）
+          <el-descriptions-item label="EVALUATION METRIC">
+            RMSE (Root Mean Square Error)
           </el-descriptions-item>
         </el-descriptions>
 
         <div style="margin-top: 20px">
-          <h3>🔧 核心功能模块</h3>
-          <el-row :gutter="20" style="margin-top: 15px">
-            <el-col :span="8">
-              <el-card class="feature-card">
-                <h4>📈 股票价格预测</h4>
-                <ul>
-                  <li>通达信数据解析</li>
-                  <li>滚动窗口特征工程</li>
-                  <li>LightGBM 模型训练</li>
-                  <li>预测结果可视化</li>
-                </ul>
-              </el-card>
-            </el-col>
-            <el-col :span="8">
-              <el-card class="feature-card">
-                <h4>🎯 特征选择</h4>
-                <ul>
-                  <li>RFE（递归特征消除）</li>
-                  <li>Mutual Information</li>
-                  <li>LinearSVC 特征选择</li>
-                  <li>ExtraTreesClassifier</li>
-                </ul>
-              </el-card>
-            </el-col>
-            <el-col :span="8">
-              <el-card class="feature-card">
-                <h4>⚡ 性能分析</h4>
-                <ul>
-                  <li>cProfile 函数分析</li>
-                  <li>line_profiler 逐行分析</li>
-                  <li>memory_profiler 内存分析</li>
-                  <li>timeit 执行时间测量</li>
-                </ul>
-              </el-card>
-            </el-col>
-          </el-row>
-        </div>
+          <h3>CORE FEATURES</h3>
+          <div class="features-grid">
+            <el-card :hoverable="true">
+              <h4>STOCK PRICE PREDICTION</h4>
+              <ul>
+                <li>Tongdaxin Data Parsing</li>
+                <li>Rolling Window Feature Engineering</li>
+                <li>LightGBM Model Training</li>
+                <li>Prediction Visualization</li>
+              </ul>
+            </el-card>
 
-        <el-alert
-          title="数据流程"
-          type="info"
-          :closable="false"
-          style="margin-top: 20px"
-        >
-          <div style="line-height: 2">
-            <strong>完整数据流程：</strong><br>
-            通达信 .day 文件 → 二进制解析（32字节结构）→ OHLCV DataFrame →
-            滚动窗口特征工程 → CSV 数据集 → LightGBM 训练 → 预测结果
+            <el-card :hoverable="true">
+              <h4>FEATURE SELECTION</h4>
+              <ul>
+                <li>RFE (Recursive Feature Elimination)</li>
+                <li>Mutual Information</li>
+                <li>LinearSVC Feature Selection</li>
+                <li>ExtraTreesClassifier</li>
+              </ul>
+            </el-card>
+
+            <el-card :hoverable="true">
+              <h4>PERFORMANCE ANALYSIS</h4>
+              <ul>
+                <li>cProfile Function Analysis</li>
+                <li>line_profiler Line-by-line Analysis</li>
+                <li>memory_profiler Memory Analysis</li>
+                <li>timeit Execution Time Measurement</li>
+              </ul>
+            </el-card>
           </div>
-        </el-alert>
+        </div>
       </div>
-    </el-card>
+      </el-card>
 
     <!-- 2. 模型预测演示 -->
     <el-card v-show="activeTab === 'prediction'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>🤖 股票价格预测模型</span>
-          <el-tag type="warning">功能展示</el-tag>
+          <span>STOCK PRICE PREDICTION MODEL</span>
+          <el-tag type="warning">FEATURE DEMO</el-tag>
         </div>
       </template>
 
       <div class="prediction-section">
-        <el-alert
-          title="模型配置"
-          type="info"
-          :closable="false"
-          style="margin-bottom: 20px"
-        >
-          <div>
-            <strong>LightGBM 超参数：</strong>
-            <ul style="margin-top: 10px; line-height: 1.8">
-              <li>num_leaves=25, learning_rate=0.2, n_estimators=70</li>
-              <li>max_depth=15, bagging_fraction=0.8, feature_fraction=0.8</li>
-              <li>reg_lambda=0.9（L2 正则化）</li>
-            </ul>
-          </div>
-        </el-alert>
+        <h3>MODEL CONFIGURATION</h3>
+        <div class="config-box" style="background: var(--bg-secondary); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+          <strong>LightGBM Hyperparameters:</strong>
+          <ul style="margin-top: 10px; line-height: 1.8">
+            <li>num_leaves=25, learning_rate=0.2, n_estimators=70</li>
+            <li>max_depth=15, bagging_fraction=0.8, feature_fraction=0.8</li>
+            <li>reg_lambda=0.9 (L2 Regularization)</li>
+          </ul>
+        </div>
 
-        <h3>模型训练流程</h3>
-        <el-steps :active="modelStep" finish-status="success" style="margin: 20px 0">
-          <el-step title="数据加载" description="读取通达信 .day 文件" />
-          <el-step title="特征工程" description="生成滚动窗口特征（10步×6列）" />
-          <el-step title="数据分割" description="80% 训练集 / 20% 测试集" />
-          <el-step title="模型训练" description="LightGBM GBDT 回归训练" />
-          <el-step title="预测评估" description="计算 RMSE 并绘制预测曲线" />
+        <h3>MODEL TRAINING PIPELINE</h3>
+        <el-steps :active="modelStep" finish-status="success" style="margin: 20px 0" class="steps">
+          <el-step title="DATA LOADING" description="Read Tongdaxin .day files" />
+          <el-step title="FEATURE ENGINEERING" description="Generate rolling window features (10 steps × 6 columns)" />
+          <el-step title="DATA SPLIT" description="80% Train / 20% Test" />
+          <el-step title="MODEL TRAINING" description="LightGBM GBDT Regression" />
+          <el-step title="PREDICTION" description="Calculate RMSE & Plot Curves" />
         </el-steps>
 
         <div class="model-actions" style="margin-top: 20px">
           <el-button type="primary" @click="runModelDemo" :loading="modelLoading">
-            运行模型演示
+            RUN MODEL DEMO
           </el-button>
-          <el-button @click="viewModelCode">
-            查看代码
+          <el-button type="info" @click="viewModelCode">
+            VIEW CODE
           </el-button>
         </div>
 
@@ -170,7 +146,6 @@
             :closable="false"
             style="margin-top: 15px"
           >
-            模型使用历史 OHLCV 数据的滚动窗口特征，预测下一个交易日的收盘价。
             预测结果已保存为 predict.png 和 predict2.png 图片。
           </el-alert>
         </div>
@@ -181,48 +156,43 @@
     <el-card v-show="activeTab === 'features'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>🔬 特征工程与特征选择</span>
-          <el-tag type="info">技术说明</el-tag>
+          <span>FEATURE ENGINEERING & SELECTION</span>
+          <el-tag type="info">TECHNICAL</el-tag>
         </div>
       </template>
 
       <div class="features-section">
-        <h3>滚动窗口特征生成</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px">
-          <el-descriptions-item label="窗口大小（step）">
-            10 个交易日
+        <h3>ROLLING WINDOW FEATURE GENERATION</h3>
+        <el-descriptions :column="1" border style="margin-top: 15px" class="descriptions">
+          <el-descriptions-item label="WINDOW SIZE (step)">
+            10 Trading Days
           </el-descriptions-item>
-          <el-descriptions-item label="原始特征数">
-            6 列（code, tradeDate, open, high, low, close, amount, vol）
+          <el-descriptions-item label="ORIGINAL FEATURES">
+            6 Columns (code, tradeDate, open, high, low, close, amount, vol)
           </el-descriptions-item>
-          <el-descriptions-item label="生成特征数">
-            10步 × 6特征 = 60 列特征向量
+          <el-descriptions-item label="GENERATED FEATURES">
+            10 steps × 6 features = 60 Column Feature Vector
           </el-descriptions-item>
-          <el-descriptions-item label="目标变量">
-            nextClose（下一日收盘价，使用 shift(-1) 生成）
+          <el-descriptions-item label="TARGET VARIABLE">
+            nextClose (Next Day Close Price, generated with shift(-1))
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px">特征选择算法</h3>
-        <el-table :data="featureSelectionMethods" stripe style="margin-top: 15px">
-          <el-table-column prop="method" label="方法" width="200" />
-          <el-table-column prop="module" label="模块路径" width="300" />
-          <el-table-column prop="description" label="说明" />
-          <el-table-column label="状态" width="120">
+        <h3 style="margin-top: 30px">FEATURE SELECTION ALGORITHMS</h3>
+        <el-table :data="featureSelectionMethods" style="margin-top: 15px">
+          <el-table-column prop="method" label="METHOD" width="200" />
+          <el-table-column prop="module" label="MODULE PATH" width="300" />
+          <el-table-column prop="description" label="DESCRIPTION" />
+          <el-table-column label="STATUS" width="120">
             <template #default>
-              <el-tag type="warning">独立示例</el-tag>
+              <el-tag type="warning">INDEPENDENT</el-tag>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-alert
-          title="集成说明"
-          type="warning"
-          :closable="false"
-          style="margin-top: 20px"
-        >
-          特征选择模块目前为独立示例，未与主预测管道集成。
-          如需使用，需从 featselection/ 目录导入并手动集成到 model.py 中。
+        <el-alert type="warning" :closable="false" style="margin-top: 15px">
+          <template #title>INTEGRATION NOTE</template>
+          Feature selection modules are currently standalone examples and not integrated with the main prediction pipeline. To use them, import from featselection/ directory and manually integrate into model.py.
         </el-alert>
       </div>
     </el-card>
@@ -231,23 +201,23 @@
     <el-card v-show="activeTab === 'profiling'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>⚡ Python 性能分析工具</span>
-          <el-tag type="info">工具集</el-tag>
+          <span>PYTHON PERFORMANCE ANALYSIS TOOLS</span>
+          <el-tag type="info">TOOLKIT</el-tag>
         </div>
       </template>
 
       <div class="profiling-section">
-        <h3>性能分析工具对比</h3>
-        <el-table :data="profilingTools" stripe style="margin-top: 15px">
-          <el-table-column prop="tool" label="工具" width="180" />
-          <el-table-column prop="level" label="分析粒度" width="120" />
-          <el-table-column prop="usage" label="使用方法" />
-          <el-table-column prop="output" label="输出内容" />
+        <h3>PERFORMANCE ANALYSIS TOOLS COMPARISON</h3>
+        <el-table :data="profilingTools" style="margin-top: 15px">
+          <el-table-column prop="tool" label="TOOL" width="180" />
+          <el-table-column prop="level" label="GRANULARITY" width="120" />
+          <el-table-column prop="usage" label="USAGE" />
+          <el-table-column prop="output" label="OUTPUT" />
         </el-table>
 
-        <h3 style="margin-top: 30px">性能分析示例命令</h3>
+        <h3 style="margin-top: 30px">PERFORMANCE ANALYSIS EXAMPLE COMMANDS</h3>
         <div class="command-examples">
-          <el-card v-for="cmd in profilingCommands" :key="cmd.tool" class="command-card">
+          <el-card v-for="cmd in profilingCommands" :key="cmd.tool" :hoverable="true" class="command-card">
             <h4>{{ cmd.tool }}</h4>
             <el-input
               v-model="cmd.command"
@@ -255,20 +225,18 @@
               :rows="3"
               readonly
             >
-              <template #prepend>命令</template>
+              <template #prepend>COMMAND</template>
             </el-input>
-            <p style="margin-top: 10px; color: #666; font-size: 13px">
+            <p style="margin-top: 10px; color: var(--fg-muted); font-size: 13px">
               {{ cmd.description }}
             </p>
           </el-card>
         </div>
 
-        <el-alert
-          title="性能优化流程"
-          type="success"
-          :closable="false"
-          style="margin-top: 20px"
-        >
+        <el-alert type="info" :closable="false" style="margin-top: 20px">
+          <template #title>
+            <strong>PERFORMANCE OPTIMIZATION WORKFLOW</strong>
+          </template>
           <div style="line-height: 2">
             <strong>推荐工作流：</strong><br>
             1. 使用 <code>cProfile</code> 快速定位性能瓶颈函数<br>
@@ -335,62 +303,52 @@
     <el-card v-show="activeTab === 'api'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>🌐 Flask API 服务</span>
-          <el-tag type="warning">最小实现</el-tag>
+          <span>FLASK API SERVICE</span>
+          <el-tag type="warning">MINIMAL</el-tag>
         </div>
       </template>
 
       <div class="api-section">
-        <el-alert
-          title="API 状态说明"
-          type="warning"
-          :closable="false"
-        >
-          <div>
-            当前 <code>server.py</code> 仅实现了欢迎页面，未暴露 ML 预测端点。
-            模型预测逻辑仅存在于 <code>model.py</code> 作为独立脚本。
-          </div>
+        <h3>API STATUS</h3>
+        <el-alert type="warning" :closable="false" style="margin-bottom: 20px">
+          Current <code>server.py</code> only implements welcome page, no ML prediction endpoints exposed. Model prediction logic only exists in <code>model.py</code> as standalone script.
         </el-alert>
 
-        <h3 style="margin-top: 20px">现有端点</h3>
-        <el-descriptions :column="1" border style="margin-top: 15px">
-          <el-descriptions-item label="服务地址">
+        <h3 style="margin-top: 20px">EXISTING ENDPOINTS</h3>
+        <el-descriptions :column="1" border style="margin-top: 15px" class="descriptions">
+          <el-descriptions-item label="SERVICE ADDRESS">
             http://localhost:5000
           </el-descriptions-item>
-          <el-descriptions-item label="端点">
+          <el-descriptions-item label="ENDPOINT">
             GET /
           </el-descriptions-item>
-          <el-descriptions-item label="返回">
-            "欢迎来到通达信数据分析的世界"
+          <el-descriptions-item label="RESPONSE">
+            "Welcome to Tongdaxin Data Analysis"
           </el-descriptions-item>
         </el-descriptions>
 
-        <h3 style="margin-top: 30px">建议增强的 API 端点</h3>
-        <el-table :data="suggestedAPIs" stripe style="margin-top: 15px">
-          <el-table-column prop="method" label="方法" width="100" />
-          <el-table-column prop="endpoint" label="端点" width="250" />
-          <el-table-column prop="description" label="功能说明" />
-          <el-table-column label="优先级" width="100">
+        <h3 style="margin-top: 30px">SUGGESTED API ENDPOINTS</h3>
+        <el-table :data="suggestedAPIs" style="margin-top: 15px">
+          <el-table-column prop="method" label="METHOD" width="100" />
+          <el-table-column prop="endpoint" label="ENDPOINT" width="250" />
+          <el-table-column prop="description" label="DESCRIPTION" />
+          <el-table-column label="PRIORITY" width="100">
             <template #default="scope">
-              <el-tag :type="scope.row.priority === '高' ? 'danger' : 'info'">
+              <el-tag type="scope.row.priority === '高' ? 'danger' : 'info'">
                 {{ scope.row.priority }}
               </el-tag>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-alert
-          title="集成建议"
-          type="success"
-          :closable="false"
-          style="margin-top: 20px"
-        >
+        <h3>INTEGRATION RECOMMENDATIONS</h3>
+        <el-alert type="info" :closable="false" style="margin-top: 20px">
           <div style="line-height: 2">
-            <strong>推荐将 PyProfiling 功能集成到本项目：</strong><br>
-            1. 在后端 API 中创建 <code>/api/ml/predict</code> 端点<br>
-            2. 集成 LightGBM 模型训练和预测逻辑<br>
-            3. 支持通达信数据自动解析和特征工程<br>
-            4. 提供性能分析 API 用于模型优化监控
+            <strong>Recommended PyProfiling Integration:</strong><br>
+            1. Create <code>/api/ml/predict</code> endpoint in backend API<br>
+            2. Integrate LightGBM model training and prediction logic<br>
+            3. Support Tongdaxin data auto-parsing and feature engineering<br>
+            4. Provide performance analysis API for model optimization monitoring
           </div>
         </el-alert>
       </div>
@@ -400,47 +358,46 @@
     <el-card v-show="activeTab === 'tech'" class="demo-card">
       <template #header>
         <div class="card-header">
-          <span>🔧 技术栈与依赖</span>
+          <span>TECH STACK & DEPENDENCIES</span>
         </div>
       </template>
 
       <div class="tech-section">
-        <h3>核心依赖包</h3>
-        <el-table :data="dependencies" stripe style="margin-top: 15px">
-          <el-table-column prop="package" label="包名" width="200" />
-          <el-table-column prop="version" label="版本" width="150" />
-          <el-table-column prop="purpose" label="用途" />
+        <h3>CORE DEPENDENCIES</h3>
+        <el-table :data="dependencies" style="margin-top: 15px">
+          <el-table-column prop="package" label="PACKAGE" width="200" />
+          <el-table-column prop="version" label="VERSION" width="150" />
+          <el-table-column prop="purpose" label="PURPOSE" />
         </el-table>
 
-        <h3 style="margin-top: 30px">安装说明</h3>
-        <el-card class="install-card">
-          <h4>环境要求</h4>
+        <h3 style="margin-top: 30px">INSTALLATION GUIDE</h3>
+        <el-card :hoverable="true" class="install-card">
+          <h4>ENVIRONMENT REQUIREMENTS</h4>
           <ul>
             <li>Python 3.6+</li>
-            <li>pip（建议升级到最新版本）</li>
+            <li>pip (recommend upgrading to latest)</li>
           </ul>
-          <h4 style="margin-top: 15px">安装命令</h4>
+          <h4 style="margin-top: 15px">INSTALL COMMAND</h4>
           <el-input
             value="pip install -r requirements.txt"
             readonly
             style="margin-top: 10px"
           >
-            <template #prepend>命令</template>
+            <template #prepend>COMMAND</template>
           </el-input>
-          <p style="margin-top: 10px; color: #666; font-size: 13px">
-            如遇到安装问题，可先执行：<br>
-            <code>python -m pip install --force-reinstall pip setuptools</code>
+          <p style="margin-top: 10px; color: var(--fg-muted); font-size: 13px">
+            If you encounter installation issues, try:<br>
+            <code style="display: block; margin-top: 10px">
+              python -m pip install --force-reinstall pip setuptools
+            </code>
           </p>
         </el-card>
 
-        <h3 style="margin-top: 30px">中文字体配置</h3>
-        <el-alert
-          title="Matplotlib 中文显示"
-          type="info"
-          :closable="false"
-        >
+        <h3 style="margin-top: 30px">CHINESE FONT CONFIGURATION</h3>
+        <el-alert type="info" :closable="false" style="margin-top: 15px">
+          <template #title>MATPLOTLIB CHINESE DISPLAY</template>
           <div>
-            项目使用 SimHei 字体显示中文标签。如遇到乱码：<br>
+            Project uses SimHei font for Chinese labels. If you encounter garbled text:<br>
             <code style="display: block; margin-top: 10px">
               plt.rcParams['font.sans-serif'] = ['SimHei']<br>
               plt.rcParams['axes.unicode_minus'] = False
@@ -459,13 +416,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 // Tab 切换
 const activeTab = ref('overview')
 const tabs = [
-  { key: 'overview', label: '项目概览', icon: '📋' },
-  { key: 'prediction', label: '模型预测', icon: '🤖' },
-  { key: 'features', label: '特征工程', icon: '🔬' },
-  { key: 'profiling', label: '性能分析', icon: '⚡' },
-  { key: 'data', label: '数据文件', icon: '📂' },
-  { key: 'api', label: 'API 服务', icon: '🌐' },
-  { key: 'tech', label: '技术栈', icon: '🔧' }
+  { key: 'overview', label: 'OVERVIEW', icon: '📋' },
+  { key: 'prediction', label: 'PREDICTION', icon: '🤖' },
+  { key: 'features', label: 'FEATURES', icon: '🔬' },
+  { key: 'profiling', label: 'PROFILING', icon: '⚡' },
+  { key: 'data', label: 'DATA FILES', icon: '📂' },
+  { key: 'api', label: 'API SERVICE', icon: '🌐' },
+  { key: 'tech', label: 'TECH STACK', icon: '🔧' }
 ]
 
 // 模型预测
@@ -690,44 +647,91 @@ const dependencies = [
 
 <style scoped>
 .pyprofiling-demo {
-  padding: 20px;
+  padding: var(--spacing-6);
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg-primary);
 }
 
-.demo-header {
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.page-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-8);
+  position: relative;
+  z-index: 1;
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
 }
 
-.demo-header h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-  color: #409eff;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 14px;
-}
-
-.function-nav {
+.demo-grid {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .demo-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  z-index: 1;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
 }
 
 .overview-section,
@@ -737,69 +741,124 @@ const dependencies = [
 .data-section,
 .api-section,
 .tech-section {
-  padding: 10px 0;
+  padding: var(--spacing-4) 0;
 }
 
-.feature-card {
-  height: 100%;
-  background: #f8f9fa;
+.overview-section h3,
+.prediction-section h3,
+.features-section h3,
+.profiling-section h3,
+.data-section h3,
+.api-section h3,
+.tech-section h3 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-4);
 }
 
-.feature-card h4 {
+.overview-section h4,
+.prediction-section h4,
+.features-section h4,
+.profiling-section h4,
+.data-section h4,
+.api-section h4,
+.tech-section h4 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--fg-primary);
   margin-top: 0;
-  color: #409eff;
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-3);
 }
 
-.feature-card ul {
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.model-list ul {
   margin: 0;
-  padding-left: 20px;
+  padding-left: var(--spacing-5);
   line-height: 2;
+  list-style: disc;
 }
 
 .model-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-3);
 }
 
 .command-examples {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.command-card {
-  background: #f8f9fa;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
 }
 
 .command-card h4 {
   margin-top: 0;
-  margin-bottom: 10px;
-  color: #409eff;
+  margin-bottom: var(--spacing-3);
+  color: var(--accent-gold);
 }
 
 .install-card {
-  background: #f8f9fa;
-  margin-top: 15px;
+  margin-top: var(--spacing-4);
 }
 
 .install-card h4 {
   margin-top: 0;
-  margin-bottom: 10px;
-  color: #409eff;
+  margin-bottom: var(--spacing-3);
+  color: var(--accent-gold);
 }
 
 .install-card ul {
   margin: 0;
-  padding-left: 20px;
+  padding-left: var(--spacing-5);
   line-height: 1.8;
 }
 
-code {
-  background: #f0f0f0;
+.profiling-section code {
+  background: rgba(212, 175, 55, 0.1);
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: var(--radius-none);
   font-family: 'Courier New', monospace;
+  color: var(--accent-gold);
+  display: block;
+  margin-top: var(--spacing-2);
+}
+
+.profiling-section :deep(.el-descriptions__label) {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: var(--fg-muted) !important;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-section :deep(.el-descriptions__content) {
+  background: transparent !important;
+  color: var(--fg-primary) !important;
+  font-family: var(--font-body);
+}
+
+.profiling-steps :deep(.el-step__title) {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-steps :deep(.el-step__description) {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
 }
 </style>

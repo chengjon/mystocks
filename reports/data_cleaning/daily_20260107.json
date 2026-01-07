@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-01-07T10:47:52.327243",
+  "check_type": "daily_kline",
+  "tables_checked": [
+    {
+      "table": "stocks_daily",
+      "adj_factor": {
+        "table": "stocks_daily",
+        "total_rows": 0,
+        "null_count": 0,
+        "zero_count": 0,
+        "valid_count": 0,
+        "valid_percent": 0,
+        "statistics": {}
+      },
+      "structure": {
+        "table": "stocks_daily",
+        "columns": {},
+        "required_columns": [
+          "symbol",
+          "trade_date",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ],
+        "missing_columns": [],
+        "has_all_required": true
+      }
+    },
+    {
+      "table": "stocks_weekly",
+      "adj_factor": {
+        "table": "stocks_weekly",
+        "total_rows": 0,
+        "null_count": 0,
+        "zero_count": 0,
+        "valid_count": 0,
+        "valid_percent": 0,
+        "statistics": {}
+      },
+      "structure": {
+        "table": "stocks_weekly",
+        "columns": {},
+        "required_columns": [
+          "symbol",
+          "trade_date",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ],
+        "missing_columns": [],
+        "has_all_required": true
+      }
+    },
+    {
+      "table": "stocks_monthly",
+      "adj_factor": {
+        "table": "stocks_monthly",
+        "total_rows": 0,
+        "null_count": 0,
+        "zero_count": 0,
+        "valid_count": 0,
+        "valid_percent": 0,
+        "statistics": {}
+      },
+      "structure": {
+        "table": "stocks_monthly",
+        "columns": {},
+        "required_columns": [
+          "symbol",
+          "trade_date",
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume"
+        ],
+        "missing_columns": [],
+        "has_all_required": true
+      }
+    }
+  ],
+  "issues_found": [
+    {
+      "table": "stocks_daily",
+      "issue": "adj_factor_incomplete",
+      "severity": "WARNING",
+      "fixed": 0
+    },
+    {
+      "table": "stocks_weekly",
+      "issue": "adj_factor_incomplete",
+      "severity": "WARNING",
+      "fixed": 0
+    },
+    {
+      "table": "stocks_monthly",
+      "issue": "adj_factor_incomplete",
+      "severity": "WARNING",
+      "fixed": 0
+    }
+  ],
+  "auto_fixes": 0
+}

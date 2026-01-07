@@ -52,7 +52,7 @@ function calculateEMA(data: number[], period: number): number[] {
   for (let i = 0; i < period && i < data.length; i++) {
     sum += data[i];
   }
-  let initialSMA = sum / period;
+  const initialSMA = sum / period;
 
   for (let i = 0; i < data.length; i++) {
     if (i < period - 1) {

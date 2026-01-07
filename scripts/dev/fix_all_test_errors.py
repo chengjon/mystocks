@@ -11,11 +11,10 @@
 用途: 修复剩余83个测试错误
 """
 
-import os
 import re
 import subprocess
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 # 项目根目录
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -296,7 +295,7 @@ def main():
 
     # 步骤2: 分类错误
     categories = categorize_errors(errors)
-    print(f"✅ 错误分类完成:")
+    print("✅ 错误分类完成:")
     print(f"   - 导入错误: {len(categories['import_error'])}")
     print(f"   - 属性错误: {len(categories['attribute_error'])}")
     print(f"   - 文件不存在: {len(categories['file_not_found'])}")

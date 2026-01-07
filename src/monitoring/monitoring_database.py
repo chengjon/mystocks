@@ -10,6 +10,7 @@
 """
 
 import uuid
+import json
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
@@ -127,7 +128,7 @@ class MonitoringDatabase:
                         execution_time_ms,
                         user_agent,
                         client_ip,
-                        additional_info,
+                        json.dumps(additional_info) if additional_info else None,
                     ),
                 )
 
@@ -211,7 +212,7 @@ class MonitoringDatabase:
                         is_slow_query,
                         query_sql,
                         execution_plan,
-                        tags,
+                        json.dumps(tags) if tags else None,
                     ),
                 )
 
@@ -300,7 +301,7 @@ class MonitoringDatabase:
                         invalid_records,
                         validation_rules,
                         check_message,
-                        threshold_config,
+                        json.dumps(threshold_config) if threshold_config else None,
                         check_duration_ms,
                     ),
                 )
@@ -378,7 +379,7 @@ class MonitoringDatabase:
                         now,
                         now,
                         notification_channels,
-                        additional_data,
+                        json.dumps(additional_data) if additional_data else None,
                     ),
                 )
 

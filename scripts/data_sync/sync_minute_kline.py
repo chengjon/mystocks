@@ -1,7 +1,7 @@
 """
-分时线数据同步脚本 (并行优化版)
+分时线数据同步脚本 (并行优化版 + Saga事务)
 从TDX适配器获取分时线数据并同步到数据库
-使用并行处理提升同步性能
+使用并行处理提升同步性能，支持Saga分布式事务
 """
 
 import sys
@@ -36,6 +36,41 @@ logger = logging.getLogger(__name__)
 stats_lock = threading.Lock()
 
 
+def create_metadata_callback(symbol: str, period: str, trade_date: str):
+    """
+    创建元数据更新回调函数（用于Saga事务）
+
+    Args:
+        symbol: 股票代码
+        period: K线周期
+        trade_date: 交易日期
+
+    Returns:
+        Callable: 元数据更新回调函数
+    """
+    def metadata_update_func(pg_session):
+        """
+        更新PostgreSQL中的元数据表
+
+        Args:
+            pg_session: PostgreSQL session对象
+        """
+        try:
+            # 这里可以更新分钟K线的元数据
+            logger.debug(f"更新元数据: symbol={symbol}, period={period}, date={trade_date}")
+            # 实际SQL示例:
+            # pg_session.execute(
+            #     "UPDATE minute_kline_metadata SET last_sync_time = NOW() "
+            #     "WHERE symbol = :symbol AND period = :period",
+            #     {"symbol": symbol, "period": period}
+            # )
+        except Exception as e:
+            logger.error(f"更新元数据失败: {e}")
+            raise
+
+    return metadata_update_func
+
+
 def get_latest_trade_date() -> str:
     """
     获取最新交易日期
@@ -58,24 +93,27 @@ def get_latest_trade_date() -> str:
 
 def sync_single_stock_data(args):
     """
-    同步单只股票的分时线数据
+    同步单只股票的分时线数据（支持Saga事务）
 
     Args:
-        args: (symbol, periods, trade_date, data_source, manager)
+        args: (symbol, periods, trade_date, data_source, manager, use_saga)
 
     Returns:
         dict: 同步结果统计
     """
-    symbol, periods, trade_date, data_source, manager = args
+    symbol, periods, trade_date, data_source, manager, use_saga = args
 
     # 提取纯股票代码（去除市场后缀）
     pure_symbol = symbol.split(".")[0] if "." in symbol else symbol
 
     logger.info(f"正在同步股票 {symbol} ({pure_symbol}) 的分时线数据...")
+    logger.info(f"事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
 
     total_records = 0
     successful_periods = 0
     failed_periods = 0
+    saga_success_count = 0
+    saga_rollback_count = 0
 
     for period in periods:
         try:
@@ -116,14 +154,35 @@ def sync_single_stock_data(args):
             table_name = (
                 f"minute_kline_{period.replace('m', 'min').replace('h', 'hour')}"
             )
-            success = manager.save_data_by_classification(
-                DataClassification.TICK_DATA, kline_df, table_name
-            )
+
+            if use_saga:
+                # 创建元数据回调
+                metadata_callback = create_metadata_callback(symbol, period, trade_date)
+
+                # 使用Saga事务保存
+                success = manager.save_data_by_classification(
+                    DataClassification.TICK_DATA,
+                    kline_df,
+                    table_name,
+                    use_saga=True,
+                    metadata_callback=metadata_callback
+                )
+
+                if success:
+                    logger.info(
+                        f"    ✅ Saga事务成功: {len(kline_df)} 条 {period} 数据到 {table_name}"
+                    )
+                    saga_success_count += 1
+                else:
+                    logger.warning(f"    ⚠️ Saga事务失败: {period}")
+                    saga_rollback_count += 1
+            else:
+                # 传统模式
+                success = manager.save_data_by_classification(
+                    DataClassification.TICK_DATA, kline_df, table_name
+                )
 
             if success:
-                logger.info(
-                    f"    成功保存 {len(kline_df)} 条 {period} 数据到 {table_name}"
-                )
                 total_records += len(kline_df)
                 successful_periods += 1
             else:
@@ -141,22 +200,26 @@ def sync_single_stock_data(args):
         "total_records": total_records,
         "successful_periods": successful_periods,
         "failed_periods": failed_periods,
+        "saga_success_count": saga_success_count if use_saga else 0,
+        "saga_rollback_count": saga_rollback_count if use_saga else 0,
         "status": "success" if failed_periods == 0 else "partial",
     }
 
 
 def sync_minute_kline_data(
-    periods: List[str], stock_limit: int = None, max_workers: int = 10
+    periods: List[str], stock_limit: int = None, max_workers: int = 10, use_saga: bool = True
 ):
     """
-    同步分时线数据（并行优化版）
+    同步分时线数据（并行优化版 + Saga事务）
 
     Args:
         periods: List[str] - 要同步的周期列表 (1m/5m/15m/30m/60m)
         stock_limit: int - 限制同步的股票数量（用于测试）
         max_workers: int - 最大并行线程数（默认10）
+        use_saga: bool - 是否使用Saga分布式事务（默认启用）
     """
     logger.info(f"开始同步分时线数据，周期: {periods}，最大并行数: {max_workers}")
+    logger.info(f"事务模式: {'Saga分布式事务' if use_saga else '传统事务'}")
 
     try:
         # 初始化数据源和统一管理器
@@ -191,10 +254,12 @@ def sync_minute_kline_data(
         total_periods = 0
         successful_periods = 0
         failed_periods = 0
+        saga_success_count = 0
+        saga_rollback_count = 0
 
-        # 创建每只股票的处理参数
+        # 创建每只股票的处理参数（添加use_saga参数）
         stock_args = [
-            (symbol, periods, trade_date, data_source, manager) for symbol in symbols
+            (symbol, periods, trade_date, data_source, manager, use_saga) for symbol in symbols
         ]
 
         # 使用线程池进行并行处理
@@ -217,6 +282,11 @@ def sync_minute_kline_data(
                         total_records += result["total_records"]
                         successful_periods += result["successful_periods"]
                         failed_periods += result["failed_periods"]
+
+                        # Saga统计
+                        if use_saga:
+                            saga_success_count += result.get("saga_success_count", 0)
+                            saga_rollback_count += result.get("saga_rollback_count", 0)
 
                         if result["status"] == "success":
                             successful_stocks += 1
@@ -247,12 +317,19 @@ def sync_minute_kline_data(
             "successful_periods": successful_periods,
             "failed_periods": failed_periods,
             "total_records": total_records,
-            "sync_time": datetime.now().isoformat(),
-            "periods": periods,
-            "max_workers": max_workers,
+            "saga_success_count": saga_success_count if use_saga else 0,
+            "saga_rollback_count": saga_rollback_count if use_saga else 0,
+            "sync_date": trade_date,
+            "transaction_mode": "saga" if use_saga else "traditional",
         }
 
         logger.info(f"分时线数据同步完成: {stats}")
+
+        # 如果使用Saga，输出额外的统计
+        if use_saga and saga_success_count > 0:
+            saga_success_rate = (saga_success_count / (saga_success_count + saga_rollback_count)) * 100
+            logger.info(f"Saga事务成功率: {saga_success_rate:.2f}% ({saga_success_count}/{saga_success_count + saga_rollback_count})")
+
         return stats
 
     except Exception as e:
@@ -262,7 +339,7 @@ def sync_minute_kline_data(
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description="分时线数据同步脚本 (并行优化版)")
+    parser = argparse.ArgumentParser(description="分时线数据同步脚本 (并行优化版 + Saga事务)")
     parser.add_argument(
         "--periods",
         nargs="+",
@@ -273,6 +350,9 @@ def main():
     parser.add_argument(
         "--max-workers", type=int, default=10, help="最大并行线程数 (默认: 10)"
     )
+    parser.add_argument(
+        "--no-saga", action="store_true", help="禁用Saga事务，使用传统模式"
+    )
 
     args = parser.parse_args()
 
@@ -280,14 +360,20 @@ def main():
     os.makedirs("logs/data_sync", exist_ok=True)
 
     try:
-        stats = sync_minute_kline_data(args.periods, args.limit, args.max_workers)
-        logger.info(f"分时线数据同步完成: {stats}")
-        print(f"分时线数据同步完成: {stats}")
+        stats = sync_minute_kline_data(
+            periods=args.periods,
+            stock_limit=args.limit,
+            max_workers=args.max_workers,
+            use_saga=not args.no_saga
+        )
+        logger.info(f"✅ 分时线数据同步完成: {stats}")
+        print(f"✅ 分时线数据同步完成: {stats}")
+        return 0
     except Exception as e:
-        logger.error(f"分时线数据同步失败: {e}")
-        print(f"分时线数据同步失败: {e}")
-        sys.exit(1)
+        logger.error(f"❌ 分时线数据同步失败: {e}")
+        print(f"❌ 分时线数据同步失败: {e}")
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

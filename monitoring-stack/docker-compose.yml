@@ -97,7 +97,7 @@ services:
       - "${LOKI_GRPC_PORT:-9096}:9096"
     volumes:
       - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
-      - ${LOKI_DATA_VOLUME:-/data/docker/loki}:/tmp/loki
+      - ${LOKI_DATA_VOLUME:-/home/docker/loki}:/home/docker/loki
     command:
       - '-config.file=/etc/loki/local-config.yaml'
       - '-config.expand-env=true'
@@ -115,7 +115,7 @@ services:
       - "${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
     volumes:
       - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
-      - ${TEMPO_DATA_VOLUME:-/data/docker/tempo}:/tmp/tempo
+      - ${TEMPO_DATA_VOLUME:-/home/docker/tempo}:/home/docker/tempo
     command:
       - '-config.file=/etc/tempo-config.yaml'
       - '-config.expand-env=true'

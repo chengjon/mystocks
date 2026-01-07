@@ -15,13 +15,12 @@ Phase: 2 - Task 2.1.1
 """
 
 import unittest
-from unittest.mock import Mock, MagicMock, patch, call
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
+from datetime import datetime
 import pandas as pd
 import numpy as np
 
 from src.data_access.tdengine_access import TDengineDataAccess
-from src.storage.database.connection_manager import DatabaseConnectionManager
 
 
 class TestTDengineDataAccessInit(unittest.TestCase):

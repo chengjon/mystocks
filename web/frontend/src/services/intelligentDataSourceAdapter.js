@@ -245,7 +245,7 @@ class IntelligentDataSourceAdapter {
       }),
 
       // Market相关
-      '/api/market/quotes': () => ({
+      '/api/data/markets/overview': () => ({
         quotes: options.params?.symbols?.split(',').map(symbol => ({
           symbol: symbol.trim(),
           name: this.getStockName(symbol.trim()),
@@ -409,7 +409,7 @@ class IntelligentDataSourceAdapter {
 
   // Market数据
   async getMarketQuotes(symbols, options = {}) {
-    return this.fetchData(`/api/market/quotes?symbols=${symbols}`, options)
+    return this.fetchData(`/api/data/markets/overview?symbols=${symbols}`, options)
   }
 
   async getFundFlow(options = {}) {

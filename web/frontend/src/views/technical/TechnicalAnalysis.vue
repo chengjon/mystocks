@@ -47,10 +47,10 @@
         </el-form-item>
 
         <el-form-item>
-          <Web3Button variant="solid" @click="fetchTechnicalData" :loading="loading.search">
+          <Web3Button type="primary" @click="fetchTechnicalData" :loading="loading.search">
             SEARCH
           </Web3Button>
-          <Web3Button variant="outline" @click="resetSearch">
+          <Web3Button variant="secondary" @click="resetSearch">
             RESET
           </Web3Button>
         </el-form-item>
@@ -125,7 +125,7 @@
             I. {{ selectedStock ? selectedStock.symbol.toUpperCase() + ' ' + selectedStock.name.toUpperCase() : 'TECHNICAL INDICATORS CHART' }}
           </span>
           <div class="card-actions">
-            <Web3Button variant="outline" size="sm" @click="exportChart">
+            <Web3Button variant="secondary" size="small" @click="exportChart">
               EXPORT CHART
             </Web3Button>
           </div>
@@ -226,7 +226,7 @@
 
         <el-form-item>
           <Web3Button
-            variant="solid"
+            type="primary"
             @click="calculateBatchIndicators"
             :loading="loading.batch"
             :disabled="!batchForm.symbols"
@@ -266,7 +266,6 @@ import {
 import { technicalApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
-import { ArtDecoCard as Web3Card, ArtDecoButton as Web3Button, ArtDecoInput as Web3Input } from '@/components/artdeco'
 
 // Type definitions
 interface SearchForm {

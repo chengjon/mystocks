@@ -63,7 +63,7 @@ print(f"已扫描到 {len(route_list)} 个API路由，导出至 api_route_list.c
 字段名	类型	说明（贴合量化业务）	示例
 api_id	字符串	唯一标识（模块_功能_版本）	market_kline_v1、strategy_backtest_v1
 module	字符串	业务模块（与路由梳理一致）	market、strategy、trade
-path	字符串	接口路由路径	/api/market/kline
+path	字符串	接口路由路径	/api/data/stocks/kline
 method	字符串	请求方式（GET/POST/PUT/DELETE）	GET
 request_params	数组	请求参数（含量化专属参数：标的、周期、时间范围）	[{name: "symbol", type: "string", required: true, desc: "股票代码/BTC"}]
 response_code	字典	响应码（关联你的指标错误码体系）	{200: "成功", 20101: "标的不存在", 10001: "系统异常"}
@@ -125,7 +125,7 @@ def test_market_kline_api():
 
         # 发起GET请求（量化K线接口）
         response = api_context.get(
-            "/api/market/kline",
+            "/api/data/stocks/kline",
             params={
                 "symbol": symbol,
                 "period": period,
@@ -164,7 +164,7 @@ def test_market_kline_batch_api(symbol, period):
     with sync_playwright() as p:
         api_context = p.request.new_context(base_url="http://localhost:8000")
         response = api_context.get(
-            "/api/market/kline",
+            "/api/data/stocks/kline",
             params={"symbol": symbol, "period": period, "start_ts": 1735689600000, "end_ts": 1736294400000}
         )
         assert response.ok, f"[{symbol}-{period}] K线API请求失败"
@@ -186,7 +186,7 @@ playwright test tests/test_api_* > playwright_api_test.log 2>&1
 1. 局部试点：优先打通核心业务模块（最小可用）
 选择 1-2 个核心模块（如行情展示模块），先替换该模块的 MOCK 数据为真实 API 请求，验证可行性，降低风险。
 （1） 实操步骤
-前端修改：在行情页的代码中，注释 MOCK 数据导入，新增真实 API 请求逻辑（使用fetch/axios调用对应的 API 接口，如/api/market/kline）；
+前端修改：在行情页的代码中，注释 MOCK 数据导入，新增真实 API 请求逻辑（使用fetch/axios调用对应的 API 接口，如/api/data/stocks/kline）；
 数据映射：因 MOCK 数据与真实 API 响应格式可能不一致，需编写数据适配函数，将 API 返回数据转换为前端组件所需格式（与你的StandardKLine标准结构对齐）；
 本地验证：启动 Web 服务（如npm run dev）和 API 服务（PM2 管理），在 Chrome 中访问行情页，验证：
 K 线是否正常渲染（时间轴、价格区间是否正确）；
@@ -226,7 +226,7 @@ typescript
 // 前端 src/api/marketApi.ts
 export async function getKlineData(symbol: string, period: string) {
   try {
-    const response = await fetch(`/api/market/kline?symbol=${symbol}&period=${period}`);
+    const response = await fetch(`/api/data/stocks/kline?symbol=${symbol}&period=${period}`);
     const data = await response.json();
     // 业务错误码处理（关联你的错误码体系）
     if (data.code !== 10000) {

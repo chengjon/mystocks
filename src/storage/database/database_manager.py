@@ -44,23 +44,23 @@ logger = logging.getLogger("DatabaseTableManager")
 
 # 尝试导入TDengine，如果失败则设置为None
 try:
-    # 优先尝试WebSocket方式
+    # 优先尝试原生连接方式 (native)
     try:
-        import taosws as taos
+        import taos
 
-        TAOS_MODULE_TYPE = "taosws"
+        TAOS_MODULE_TYPE = "taos"
         TAOS_AVAILABLE = True
     except ImportError:
         try:
-            import taosrest as taos
+            import taosws as taos
 
-            TAOS_MODULE_TYPE = "taosrest"
+            TAOS_MODULE_TYPE = "taosws"
             TAOS_AVAILABLE = True
         except ImportError:
             try:
-                import taos
+                import taosrest as taos
 
-                TAOS_MODULE_TYPE = "taos"
+                TAOS_MODULE_TYPE = "taosrest"
                 TAOS_AVAILABLE = True
             except ImportError:
                 taos = None

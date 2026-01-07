@@ -63,7 +63,7 @@ test.describe('实际API端点验证测试', () => {
       console.log('🔐 测试认证API端点...');
 
       // 测试登录端点
-      const loginResponse = await fetch(`${BASE_URL}/api/auth/login`, {
+      const loginResponse = await fetch(`${BASE_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

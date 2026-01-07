@@ -1,104 +1,125 @@
 <template>
-  <div class="wencai-container">
+
+    <div class="page-header">
+      <h1 class="page-title">WENCAI</h1>
+      <p class="page-subtitle">NATURAL LANGUAGE STOCK SCREENING | AI-POWERED QUERIES | SMART FILTERS</p>
+      <div class="decorative-line"></div>
+    </div>
+
     <!-- 页面头部 -->
-    <el-card class="header-card">
-      <template #header>
-        <div class="card-header">
-          <div>
-            <h1>问财股票筛选系统</h1>
-            <p class="subtitle">基于自然语言处理的智能股票筛选工具</p>
+    <div class="card header-card">
+      <div class="card-header">
+        <div class="header-content">
+          <h2 class="header-title">WENCAI STOCK SCREENING SYSTEM</h2>
+          <p class="header-subtitle">Intelligent stock screening based on natural language processing</p>
+        </div>
+        <div class="status-grid">
+          <div class="stat-item">
+            <div class="stat-value">9</div>
+            <div class="stat-label">TEMPLATES</div>
           </div>
-          <div class="status">
-            <el-statistic title="预定义查询" :value="9" />
-            <el-statistic title="总筛选数" :value="totalRecords" />
-            <el-statistic title="API状态" value="正常" />
+          <div class="stat-item">
+            <div class="stat-value">{{ totalRecords }}</div>
+            <div class="stat-label">TOTAL SCREENED</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value status-ok">ONLINE</div>
+            <div class="stat-label">API STATUS</div>
           </div>
         </div>
-      </template>
+      </div>
 
-      <!-- 简介 -->
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="24" :md="12">
-          <div class="info-box">
-            <h3>📊 功能介绍</h3>
-            <ul>
-              <li>9个精选问财查询模板</li>
-              <li>支持实时数据刷新</li>
-              <li>CSV数据导出</li>
-              <li>查询历史记录</li>
-              <li>自定义查询模板</li>
-            </ul>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :md="12">
-          <div class="info-box">
-            <h3>🚀 快速开始</h3>
-            <ul>
-              <li>选择下方的查询模板</li>
-              <li>点击"执行查询"获取数据</li>
-              <li>点击"查看结果"查看完整数据</li>
-              <li>使用"导出CSV"保存数据</li>
-              <li>查看"历史"了解查询记录</li>
-            </ul>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
+      <div class="intro-grid">
+        <div class="intro-box">
+          <h3>📊 FEATURES</h3>
+          <ul>
+            <li>9 curated Wencai query templates</li>
+            <li>Real-time data refresh support</li>
+            <li>CSV data export</li>
+            <li>Query history tracking</li>
+            <li>Custom query templates</li>
+          </ul>
+        </div>
+        <div class="intro-box">
+          <h3>🚀 QUICK START</h3>
+          <ul>
+            <li>Select a query template below</li>
+            <li>Click "Execute Query" to get data</li>
+            <li>Click "View Results" for details</li>
+            <li>Use "Export CSV" to save data</li>
+            <li>Check "History" for records</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <!-- 标签页 -->
-    <el-tabs v-model="activeTab" type="border-card">
-      <!-- 问财查询标签页 -->
-      <el-tab-pane label="问财查询" name="wencai">
-        <WencaiPanel />
-      </el-tab-pane>
-
-      <!-- 我的查询标签页 -->
-      <el-tab-pane label="我的查询" name="my-queries">
-        <div class="my-queries">
-          <el-empty description="还没有保存的查询，执行查询后可以保存" />
-          <!-- TODO: 实现我的查询功能 -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <div class="tabs-header">
+          <button
+            v-for="tab in tabs"
+            :key="tab.key"
+            class="tab-btn"
+            :class="{ active: activeTab === tab.key }"
+            @click="activeTab = tab.key"
+          >
+            {{ tab.label }}
+          </button>
         </div>
-      </el-tab-pane>
 
-      <!-- 查询统计标签页 -->
-      <el-tab-pane label="统计分析" name="statistics">
-        <div class="statistics">
-          <el-row :gutter="20">
-            <el-col :xs="24" :sm="12" :md="6">
-              <el-statistic title="今日查询次数" :value="0" />
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <el-statistic title="本周查询次数" :value="0" />
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <el-statistic title="本月查询次数" :value="0" />
-            </el-col>
-            <el-col :xs="24" :sm="12" :md="6">
-              <el-statistic title="总筛选数" :value="totalRecords" />
-            </el-col>
-          </el-row>
-          <!-- TODO: 实现统计图表 -->
-        </div>
-      </el-tab-pane>
+        <div class="tab-content-area">
+          <!-- 问财查询标签页 -->
+          <div v-show="activeTab === 'wencai'" class="tab-pane">
+            <WencaiPanel />
+          </div>
 
-      <!-- 文档标签页 -->
-      <el-tab-pane label="使用指南" name="guide">
-        <div class="guide">
-          <el-timeline>
-            <el-timeline-item
-              v-for="(item, index) in guide"
-              :key="index"
-              :timestamp="item.step"
-              placement="top"
-              :type="item.type"
-            >
-              <p><strong>{{ item.title }}</strong></p>
-              <p>{{ item.description }}</p>
-            </el-timeline-item>
-          </el-timeline>
+          <!-- 我的查询标签页 -->
+          <div v-show="activeTab === 'my-queries'" class="tab-pane">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">NO SAVED QUERIES</div>
+              <div class="empty-desc">Execute queries and save them for future use</div>
+            </div>
+          </div>
+
+          <!-- 查询统计标签页 -->
+          <div v-show="activeTab === 'statistics'" class="tab-pane">
+            <div class="stats-grid">
+              <div class="card stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-name">TODAY'S QUERIES</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-name">THIS WEEK</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-name">THIS MONTH</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-number">{{ totalRecords }}</div>
+                <div class="stat-name">TOTAL SCREENED</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 文档标签页 -->
+          <div v-show="activeTab === 'guide'" class="tab-pane">
+            <div class="timeline">
+              <div class="timeline-item" v-for="(item, index) in guide" :key="index">
+                <div class="timeline-marker">{{ index + 1 }}</div>
+                <div class="timeline-content">
+                  <div class="timeline-title">{{ item.title }}</div>
+                  <div class="timeline-desc">{{ item.description }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </el-tab-pane>
-    </el-tabs>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -109,40 +130,46 @@ import WencaiPanel from '@/components/market/WencaiPanel.vue'
 const activeTab = ref('wencai')
 const totalRecords = ref(0)
 
+const tabs = [
+  { key: 'wencai', label: 'WENCAI QUERY' },
+  { key: 'my-queries', label: 'MY QUERIES' },
+  { key: 'statistics', label: 'STATISTICS' },
+  { key: 'guide', label: 'USER GUIDE' }
+]
+
 const guide = [
   {
-    step: '步骤 1',
+    step: 'STEP 1',
     type: 'primary',
-    title: '选择查询模板',
-    description: '从问财查询标签页选择您感兴趣的查询模板。系统内置了9个常用的筛选模板。'
+    title: 'SELECT QUERY TEMPLATE',
+    description: 'Choose a query template from the Wencai Query tab. The system includes 9 commonly used screening templates.'
   },
   {
-    step: '步骤 2',
+    step: 'STEP 2',
     type: 'primary',
-    title: '执行查询',
-    description: '点击查询卡片上的"执行查询"按钮，系统会调用问财API获取最新数据。'
+    title: 'EXECUTE QUERY',
+    description: 'Click "Execute Query" on the query card to fetch the latest data via the Wencai API.'
   },
   {
-    step: '步骤 3',
+    step: 'STEP 3',
     type: 'primary',
-    title: '查看结果',
-    description: '执行完成后，点击"查看结果"按钮可以看到详细的筛选结果，支持排序和搜索。'
+    title: 'VIEW RESULTS',
+    description: 'After execution, click "View Results" to see detailed screening results with sorting and search support.'
   },
   {
-    step: '步骤 4',
+    step: 'STEP 4',
     type: 'primary',
-    title: '导出数据',
-    description: '在结果页面点击"导出CSV"按钮，可以将数据下载到本地进行进一步分析。'
+    title: 'EXPORT DATA',
+    description: 'Click "Export CSV" on the results page to download data for further analysis.'
   },
   {
-    step: '步骤 5',
+    step: 'STEP 5',
     type: 'success',
-    title: '查看历史',
-    description: '点击"历史"按钮可以查看该查询的历史执行记录和数据量变化趋势。'
+    title: 'VIEW HISTORY',
+    description: 'Click "History" to view historical execution records and data volume trends.'
   }
 ]
 
-// 加载统计信息
 const loadStatistics = async () => {
   try {
     const response = await fetch('/api/market/wencai/queries')
@@ -151,7 +178,7 @@ const loadStatistics = async () => {
       totalRecords.value = data.total || 0
     }
   } catch (error) {
-    console.error('加载统计信息失败:', error)
+    console.error('Failed to load statistics:', error)
   }
 }
 
@@ -161,129 +188,369 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+
 .wencai-container {
-  padding: 20px;
+  min-height: 100vh;
+  padding: var(--spacing-6);
+  background: var(--bg-primary);
+  position: relative;
+}
 
-  .header-card {
-    margin-bottom: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px);
+}
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  z-index: 1;
 
-      h1 {
-        margin: 0 0 8px 0;
-        font-size: 28px;
-        color: #333;
-      }
-
-      .subtitle {
-        margin: 0;
-        color: #666;
-        font-size: 14px;
-      }
-
-      .status {
-        display: flex;
-        gap: 30px;
-        min-width: 300px;
-
-        :deep(.el-statistic) {
-          flex: 1;
-
-          .el-statistic__title {
-            font-size: 12px;
-          }
-
-          .el-statistic__content {
-            font-size: 24px;
-            color: #409eff;
-          }
-        }
-      }
-    }
-
-    :deep(.el-card__body) {
-      padding: 20px;
-    }
-
-    .info-box {
-      h3 {
-        margin: 0 0 15px 0;
-        font-size: 16px;
-        color: #333;
-      }
-
-      ul {
-        margin: 0;
-        padding-left: 20px;
-        list-style: disc;
-
-        li {
-          margin-bottom: 8px;
-          color: #666;
-          font-size: 14px;
-          line-height: 1.5;
-        }
-      }
-    }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
   }
 
-  :deep(.el-tabs) {
-    .el-tabs__nav-wrap {
-      border-bottom: 1px solid #e0e6f6;
-    }
-
-    .el-tabs__content {
-      padding: 20px;
-    }
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
   }
 
-  .my-queries,
-  .statistics,
-  .guide {
-    min-height: 400px;
+  .decorative-line {
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    margin: var(--spacing-5) auto 0;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+    }
+  }
+}
+
+.header-card {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-6);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-5);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  color: var(--fg-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider;
+}
+
+.header-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+.status-grid {
+  display: flex;
+  gap: var(--spacing-5);
+  min-width: 400px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  min-width: 100px;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-h4);
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-1);
+}
+
+.stat-value.status-ok {
+  color: #27AE60;
+  font-size: var(--font-size-body);
+}
+
+.stat-label {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-6);
+}
+
+.intro-box {
+  padding: var(--spacing-5);
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: var(--font-size-body);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-4) 0;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
   }
 
-  .guide {
-    padding: 20px;
+  ul {
+    margin: 0;
+    padding-left: var(--spacing-5);
 
-    :deep(.el-timeline) {
-      padding: 0;
-
-      .el-timeline-item__wrapper {
-        padding-left: 30px;
-      }
-
-      .el-timeline-item__content {
-        p {
-          margin: 5px 0;
-          color: #666;
-          font-size: 14px;
-
-          strong {
-            color: #333;
-          }
-        }
-      }
+    li {
+      margin: var(--spacing-2) 0;
+      color: var(--fg-secondary);
+      font-size: var(--font-size-small);
+      line-height: 1.6;
     }
+  }
+}
+
+.tabs-container {
+  position: relative;
+  z-index: 1;
+}
+
+.tabs {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.02);
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: var(--spacing-4) var(--spacing-5);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--fg-muted);
+  font-family: var(--font-display);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.05);
+  }
+
+  &.active {
+    color: var(--bg-primary);
+    background: var(--accent-gold);
+  }
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.tab-content-area {
+  padding: var(--spacing-6);
+  min-height: 400px;
+}
+
+.tab-pane {
+  width: 100%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-10);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-4);
+}
+
+.empty-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h5);
+  color: var(--fg-primary);
+  margin-bottom: var(--spacing-2);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.empty-desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  color: var(--fg-muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-4);
+}
+
+.stat-card {
+  text-align: center;
+  padding: var(--spacing-6);
+}
+
+.stat-number {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-2);
+}
+
+.stat-name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-small);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+  border-left: 2px solid rgba(212, 175, 55, 0.3);
+  padding-left: var(--spacing-6);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: var(--spacing-6);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.timeline-marker {
+  position: absolute;
+  left: calc(var(--spacing-6) * -1 - 11px);
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.timeline-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  color: var(--fg-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: var(--spacing-2);
+}
+
+.timeline-desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .wencai-container {
-    .header-card {
-      .card-header {
-        flex-direction: column;
+    padding: var(--spacing-4);
+  }
 
-        .status {
-          width: 100%;
-          margin-top: 15px;
-        }
-      }
-    }
+  .card-header {
+    flex-direction: column;
+  }
+
+  .status-grid {
+    width: 100%;
+    margin-top: var(--spacing-4);
+  }
+
+  .intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs-header {
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: none;
+    width: 50%;
   }
 }
 </style>

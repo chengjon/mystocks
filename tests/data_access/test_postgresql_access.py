@@ -14,8 +14,8 @@ Phase: 2 - Task 2.1.2
 """
 
 import unittest
-from unittest.mock import Mock, MagicMock, patch, call
-from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
+from datetime import datetime
 import pandas as pd
 import numpy as np
 

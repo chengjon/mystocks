@@ -1,94 +1,92 @@
 <template>
   <div class="technical-analysis">
-    <!-- 头部工具栏 -->
-    <div class="toolbar">
-      <StockSearchBar
-        v-model="selectedSymbol"
-        @search="handleStockSearch"
-      />
 
-      <el-date-picker
-        v-model="dateRange"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :shortcuts="dateRangeShortcuts"
-        format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD"
-        class="date-picker"
-        @change="handleDateRangeChange"
-      />
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">TECHNICAL ANALYSIS</h1>
+      <p class="page-subtitle">STOCK CHARTS | INDICATORS | PATTERNS</p>
+    </div>
 
-      <!-- 周期切换 -->
-      <el-radio-group v-model="selectedPeriod" size="default" @change="fetchKlineData" class="period-selector">
-        <el-radio-button label="day">日线</el-radio-button>
-        <el-radio-button label="week">周线</el-radio-button>
-        <el-radio-button label="month">月线</el-radio-button>
-      </el-radio-group>
+    <!-- Toolbar -->
+    <div class="toolbar-section">
+      <div class="toolbar-actions">
+        <div class="search-section">
+          <StockSearchBar
+            v-model="selectedSymbol"
+            @search="handleStockSearch"
+            class="search"
+          />
+        </div>
 
-      <el-button
-        type="primary"
-        :icon="Refresh"
-        :loading="loading"
-        @click="refreshData"
-      >
-        刷新数据
-      </el-button>
+        <div class="date-section">
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="TO"
+            start-placeholder="START DATE"
+            end-placeholder="END DATE"
+            :shortcuts="dateRangeShortcuts"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            class="date-picker"
+            @change="handleDateRangeChange"
+          />
+        </div>
 
-      <el-button
-        type="warning"
-        :icon="Refresh"
-        :loading="loading"
-        @click="handleRetry"
-      >
-        重试
-      </el-button>
+        <div class="period-section">
+          <el-radio-group v-model="selectedPeriod" size="default" @change="fetchKlineData" class="period-selector">
+            <el-radio-button label="day">DAY</el-radio-button>
+            <el-radio-button label="week">WEEK</el-radio-button>
+            <el-radio-button label="month">MONTH</el-radio-button>
+          </el-radio-group>
+        </div>
 
-      <el-button
-        :icon="Setting"
-        @click="showIndicatorPanel = true"
-      >
-        指标设置
-      </el-button>
+        <div class="button-group">
+          <el-button type="info" :loading="loading" @click="refreshData">
+            REFRESH
+          </el-button>
+          <el-button type="info" :loading="loading" @click="handleRetry">
+            RETRY
+          </el-button>
+          <el-button type="info" @click="showIndicatorPanel = true">
+            INDICATORS
+          </el-button>
+        </div>
 
-      <el-dropdown @command="handleConfigCommand">
-        <el-button :icon="FolderOpened">
-          配置管理 <el-icon class="el-icon--right"><arrow-down /></el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="save">
-              <el-icon><DocumentAdd /></el-icon>
-              保存当前配置
-            </el-dropdown-item>
-            <el-dropdown-item command="load">
-              <el-icon><FolderOpened /></el-icon>
-              加载已保存配置
-            </el-dropdown-item>
-            <el-dropdown-item command="manage" divided>
-              <el-icon><Files /></el-icon>
-              管理我的配置
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+        <el-dropdown @command="handleConfigCommand">
+          <el-button type="info">
+            CONFIGURATION
+            <el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="save">
+                <el-icon><DocumentAdd /></el-icon>
+                SAVE CURRENT CONFIG
+              </el-dropdown-item>
+              <el-dropdown-item command="load">
+                <el-icon><FolderOpened /></el-icon>
+                LOAD SAVED CONFIG
+              </el-dropdown-item>
+              <el-dropdown-item command="manage" divided>
+                <el-icon><Files /></el-icon>
+                MANAGE CONFIGS
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </div>
 
     <!-- K线图表区域 -->
-    <div class="chart-container">
-      <KLineChart
-        v-if="chartData.ohlcv"
-        :ohlcv-data="chartData.ohlcv"
+    <div class="chart-section">
+        title="K-LINE CHART"
+        :symbol="chartData.symbol"
+        :data="chartData.ohlcv"
         :indicators="chartData.indicators"
         :loading="loading"
+        :last-update="lastUpdateTime"
         @indicator-remove="handleIndicatorRemove"
-      />
-
-      <el-empty
-        v-else
-        description="请选择股票代码和日期范围开始分析"
-        :image-size="200"
       />
     </div>
 
@@ -101,25 +99,25 @@
     />
 
     <!-- 数据统计信息 -->
-    <div v-if="chartData.ohlcv" class="stats-bar">
-      <el-space :size="20">
-        <span>
-          <el-text tag="b">股票代码:</el-text>
-          {{ chartData.symbol }} ({{ chartData.symbolName }})
-        </span>
-        <span>
-          <el-text tag="b">数据点数:</el-text>
-          {{ chartData.ohlcv.dates.length }}
-        </span>
-        <span>
-          <el-text tag="b">计算耗时:</el-text>
-          {{ chartData.calculationTime }}ms
-        </span>
-        <span>
-          <el-text tag="b">已添加指标:</el-text>
-          {{ selectedIndicators.length }}
-        </span>
-      </el-space>
+    <div v-if="chartData.ohlcv" class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">SYMBOL</span>
+          <span class="stat-value mono">{{ chartData.symbol }} ({{ chartData.symbolName }})</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">DATA POINTS</span>
+          <span class="stat-value mono gold">{{ chartData.ohlcv.dates.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">CALC TIME</span>
+          <span class="stat-value mono">{{ chartData.calculationTime }}ms</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">INDICATORS</span>
+          <span class="stat-value mono gold">{{ selectedIndicators.length }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -127,12 +125,13 @@
 <script setup lang="ts">
 // @ts-nocheck
 
-import { ref, reactive, onMounted, watch, type Ref } from 'vue'
+import { ref, reactive, onMounted, watch, type Ref, computed } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
-import { Refresh, Setting, FolderOpened, DocumentAdd, Files, ArrowDown } from '@element-plus/icons-vue'
+import { FolderOpened, DocumentAdd, Files, ArrowDown } from '@element-plus/icons-vue'
 import StockSearchBar from '@/components/technical/StockSearchBar.vue'
 import KLineChart from '@/components/technical/KLineChart.vue'
 import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
+import { ElButton } from 'element-plus'
 import { indicatorService, handleIndicatorError } from '@/services/indicatorService.ts'
 import { dataApi } from '@/api/index.js'
 import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
@@ -141,25 +140,16 @@ import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
 // 类型定义
 // ============================================
 
-/**
- * 指标参数配置
- */
 interface IndicatorParameters {
   [key: string]: number | string | boolean
   timeperiod?: number
 }
 
-/**
- * 选中的指标
- */
 interface SelectedIndicator {
   abbreviation: string
   parameters: IndicatorParameters
 }
 
-/**
- * OHLCV数据
- */
 interface OHLCVData {
   dates: string[]
   open: number[]
@@ -169,18 +159,12 @@ interface OHLCVData {
   volume: number[]
 }
 
-/**
- * 指标输出
- */
 interface IndicatorOutput {
   output_name: string
   values: (number | null)[]
   display_name: string
 }
 
-/**
- * 图表指标数据
- */
 interface ChartIndicator {
   abbreviation: string
   parameters: IndicatorParameters
@@ -188,9 +172,6 @@ interface ChartIndicator {
   panel_type: 'overlay' | 'separate'
 }
 
-/**
- * 图表数据
- */
 interface ChartData {
   symbol: string
   symbolName: string
@@ -199,17 +180,11 @@ interface ChartData {
   calculationTime: number
 }
 
-/**
- * 日期范围快捷选项
- */
 interface DateRangeShortcut {
   text: string
   value: () => Date[]
 }
 
-/**
- * K线数据项
- */
 interface KlineDataItem {
   date: string
   open: number
@@ -219,9 +194,6 @@ interface KlineDataItem {
   volume: number
 }
 
-/**
- * K线API响应
- */
 interface KlineApiResponse {
   success: boolean
   data: KlineDataItem[]
@@ -230,26 +202,17 @@ interface KlineApiResponse {
   total?: number
 }
 
-/**
- * 指标配置
- */
 interface IndicatorConfig {
   id: number
   name: string
   indicators: SelectedIndicator[]
 }
 
-/**
- * 配置列表响应
- */
 interface ConfigListResponse {
   total_count: number
   configs: IndicatorConfig[]
 }
 
-/**
- * 配置选项
- */
 interface ConfigOption {
   label: string
   value: number
@@ -263,16 +226,13 @@ const loading: Ref<boolean> = ref(false)
 const selectedSymbol: Ref<string> = ref('')
 const dateRange: Ref<string[]> = ref([])
 const showIndicatorPanel: Ref<boolean> = ref(false)
-const selectedPeriod: Ref<string> = ref('day') // 新增周期选择
+const selectedPeriod: Ref<string> = ref('day')
 
-// 选中的指标列表
 const selectedIndicators: Ref<SelectedIndicator[]> = ref([
-  // 默认添加MA5和MA10
   { abbreviation: 'SMA', parameters: { timeperiod: 5 } },
   { abbreviation: 'SMA', parameters: { timeperiod: 10 } }
 ])
 
-// 图表数据
 const chartData: ChartData = reactive({
   symbol: '',
   symbolName: '',
@@ -281,27 +241,25 @@ const chartData: ChartData = reactive({
   calculationTime: 0
 })
 
+const lastUpdateTime = computed(() => {
+  return chartData.ohlcv ? new Date() : undefined
+})
+
 // ============================================
 // 方法定义
 // ============================================
 
-/**
- * 添加重试机制
- */
 const handleRetry = async (): Promise<void> => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     await fetchKlineData()
   } else {
-    ElMessage.warning('请先选择股票代码和日期范围')
+    ElMessage.warning('Please select stock code and date range first')
   }
 }
 
-/**
- * 日期范围快捷选项
- */
 const dateRangeShortcuts: DateRangeShortcut[] = [
   {
-    text: '最近1个月',
+    text: 'LAST 1 MONTH',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -310,7 +268,7 @@ const dateRangeShortcuts: DateRangeShortcut[] = [
     }
   },
   {
-    text: '最近3个月',
+    text: 'LAST 3 MONTHS',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -319,7 +277,7 @@ const dateRangeShortcuts: DateRangeShortcut[] = [
     }
   },
   {
-    text: '最近6个月',
+    text: 'LAST 6 MONTHS',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -328,7 +286,7 @@ const dateRangeShortcuts: DateRangeShortcut[] = [
     }
   },
   {
-    text: '最近1年',
+    text: 'LAST 1 YEAR',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -338,13 +296,9 @@ const dateRangeShortcuts: DateRangeShortcut[] = [
   }
 ]
 
-/**
- * 处理股票搜索
- */
 const handleStockSearch = async (symbol: string): Promise<void> => {
   selectedSymbol.value = symbol
 
-  // 如果没有选择日期范围，默认最近3个月
   if (!dateRange.value || dateRange.value.length === 0) {
     const end = new Date()
     const start = new Date()
@@ -358,54 +312,43 @@ const handleStockSearch = async (symbol: string): Promise<void> => {
   await fetchKlineData()
 }
 
-/**
- * 处理日期范围变化
- */
 const handleDateRangeChange = (): void => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     fetchKlineData()
   }
 }
 
-/**
- * 刷新数据
- */
 const refreshData = (): void => {
   if (selectedSymbol.value && dateRange.value && dateRange.value.length === 2) {
     fetchKlineData()
   } else {
-    ElMessage.warning('请先选择股票代码和日期范围')
+    ElMessage.warning('Please select stock code and date range first')
   }
 }
 
-/**
- * 获取K线数据并计算技术指标
- */
 const fetchKlineData = async (): Promise<void> => {
   if (!selectedSymbol.value) {
-    ElMessage.warning('请输入股票代码')
+    ElMessage.warning('Please enter stock code')
     return
   }
 
   if (!dateRange.value || dateRange.value.length !== 2) {
-    ElMessage.warning('请选择日期范围')
+    ElMessage.warning('Please select date range')
     return
   }
 
   loading.value = true
 
   try {
-    // 调用K线API (使用market/kline端点)
     const response: KlineApiResponse = await dataApi.getKline({
       symbol: selectedSymbol.value,
       start_date: dateRange.value[0],
       end_date: dateRange.value[1],
       period: selectedPeriod.value,
-      adjust: 'qfq' // 使用前复权
+      adjust: 'qfq'
     })
 
     if (response.success && response.data && response.data.length > 0) {
-      // 转换数据格式以匹配现有图表组件 (处理market/kline返回的数据格式)
       const dates = response.data.map(item => item.date)
       const opens = response.data.map(item => item.open)
       const highs = response.data.map(item => item.high)
@@ -413,7 +356,6 @@ const fetchKlineData = async (): Promise<void> => {
       const closes = response.data.map(item => item.close)
       const volumes = response.data.map(item => item.volume)
 
-      // 更新图表数据
       chartData.symbol = response.stock_code || selectedSymbol.value
       chartData.symbolName = response.stock_name || selectedSymbol.value
       chartData.ohlcv = {
@@ -425,7 +367,6 @@ const fetchKlineData = async (): Promise<void> => {
         volume: volumes
       }
 
-      // 计算技术指标
       const startTime = performance.now()
       const calculatedIndicators = calculateTechnicalIndicators(
         chartData.ohlcv,
@@ -433,7 +374,6 @@ const fetchKlineData = async (): Promise<void> => {
       )
       const endTime = performance.now()
 
-      // 将计算结果转换为图表组件需要的格式
       const indicatorsResult = Object.keys(calculatedIndicators).map(key => {
         const values = calculatedIndicators[key]
         return {
@@ -452,63 +392,50 @@ const fetchKlineData = async (): Promise<void> => {
       chartData.calculationTime = Math.round(endTime - startTime)
 
       ElNotification({
-        title: '数据加载成功',
-        message: `成功加载 ${response.total} 个数据点，计算 ${selectedIndicators.value.length} 个指标`,
+        title: 'DATA LOADED SUCCESSFULLY',
+        message: `${response.total} data points loaded, ${selectedIndicators.value.length} indicators calculated`,
         type: 'success',
         duration: 2000
       })
     } else {
-      ElMessage.info('未找到该股票的历史数据')
-      // 清空图表数据
+      ElMessage.info('No historical data found for this stock')
       chartData.ohlcv = null
     }
   } catch (error: any) {
     console.error('Failed to fetch kline data:', error)
-    const errorMessage = error.response?.data?.msg || error.message || '获取K线数据失败'
+    const errorMessage = error.response?.data?.msg || error.message || 'Failed to fetch K-line data'
 
     ElNotification({
-      title: '数据加载失败',
+      title: 'DATA LOAD FAILED',
       message: errorMessage,
       type: 'error',
       duration: 3000
     })
 
-    // 如果是404错误(数据未找到)，提供友好提示
     if (error.response?.status === 404) {
-      ElMessage.info('数据库中暂无该股票的历史数据')
+      ElMessage.info('No historical data available in database')
     }
   } finally {
     loading.value = false
   }
 }
 
-/**
- * 添加指标
- */
 const handleAddIndicator = (indicator: SelectedIndicator): void => {
   selectedIndicators.value.push(indicator)
 
-  // 如果已经有数据，重新加载
   if (chartData.ohlcv) {
     fetchKlineData()
   }
 }
 
-/**
- * 移除指标
- */
 const handleRemoveIndicator = (index: number): void => {
   selectedIndicators.value.splice(index, 1)
 
-  // 如果已经有数据，重新加载
   if (chartData.ohlcv) {
     fetchKlineData()
   }
 }
 
-/**
- * 从图表移除指标
- */
 const handleIndicatorRemove = (indicatorIndex: number): void => {
   handleRemoveIndicator(indicatorIndex)
 }
@@ -517,11 +444,7 @@ const handleIndicatorRemove = (indicatorIndex: number): void => {
 // 生命周期与监听器
 // ============================================
 
-/**
- * 组件挂载时初始化
- */
 onMounted((): void => {
-  // 可以从URL参数或localStorage恢复上次的选择
   const cachedSymbol = localStorage.getItem('lastSelectedSymbol')
   const cachedDateRange = localStorage.getItem('lastDateRange')
 
@@ -538,9 +461,6 @@ onMounted((): void => {
   }
 })
 
-/**
- * 保存用户选择到localStorage
- */
 const saveToLocalStorage = (): void => {
   if (selectedSymbol.value) {
     localStorage.setItem('lastSelectedSymbol', selectedSymbol.value)
@@ -550,16 +470,12 @@ const saveToLocalStorage = (): void => {
   }
 }
 
-// 监听变化并保存
 watch([selectedSymbol, dateRange], saveToLocalStorage)
 
 // ============================================
 // 配置管理功能
 // ============================================
 
-/**
- * 配置管理功能
- */
 const handleConfigCommand = async (command: string): Promise<void> => {
   switch (command) {
     case 'save':
@@ -574,20 +490,17 @@ const handleConfigCommand = async (command: string): Promise<void> => {
   }
 }
 
-/**
- * 保存当前配置
- */
 const handleSaveConfig = async (): Promise<void> => {
   if (selectedIndicators.value.length === 0) {
-    ElMessage.warning('当前没有选择任何指标')
+    ElMessage.warning('No indicators selected')
     return
   }
 
-  ElMessageBox.prompt('请输入配置名称', '保存指标配置', {
-    confirmButtonText: '保存',
-    cancelButtonText: '取消',
+  ElMessageBox.prompt('Please enter config name', 'Save Indicator Config', {
+    confirmButtonText: 'SAVE',
+    cancelButtonText: 'CANCEL',
     inputPattern: /\S+/,
-    inputErrorMessage: '配置名称不能为空'
+    inputErrorMessage: 'Config name cannot be empty'
   }).then(async ({ value }: { value: string }) => {
     try {
       await indicatorService.createConfig({
@@ -595,55 +508,50 @@ const handleSaveConfig = async (): Promise<void> => {
         indicators: selectedIndicators.value
       })
 
-      ElMessage.success(`配置"${value}"已保存`)
+      ElMessage.success(`Config "${value}" saved`)
     } catch (error: any) {
       console.error('Failed to save config:', error)
       const errorMessage = handleIndicatorError(error)
-      ElMessage.error(`保存失败: ${errorMessage}`)
+      ElMessage.error(`Save failed: ${errorMessage}`)
     }
   }).catch(() => {
-    // 用户取消
+    // User cancelled
   })
 }
 
-/**
- * 加载已保存配置
- */
 const handleLoadConfig = async (): Promise<void> => {
   try {
     const response: ConfigListResponse = await indicatorService.listConfigs()
 
     if (response.total_count === 0) {
-      ElMessage.info('暂无已保存的配置')
+      ElMessage.info('No saved configs available')
       return
     }
 
-    // 创建配置选择列表
     const configOptions: ConfigOption[] = response.configs.map(config => ({
-      label: `${config.name} (${config.indicators.length}个指标)`,
+      label: `${config.name} (${config.indicators.length} indicators)`,
       value: config.id
     }))
 
     ElMessageBox({
-      title: '加载配置',
-      message: '选择要加载的配置',
+      title: 'LOAD CONFIG',
+      message: 'Select a config to load',
       showCancelButton: true,
-      confirmButtonText: '加载',
-      cancelButtonText: '取消',
+      confirmButtonText: 'LOAD',
+      cancelButtonText: 'CANCEL',
       beforeClose: (action, instance, done) => {
         if (action === 'confirm') {
           const selectedConfigId = instance.inputValue
           if (!selectedConfigId) {
-            ElMessage.warning('请选择一个配置')
+            ElMessage.warning('Please select a config')
             return
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
             .then((config: IndicatorConfig) => {
               selectedIndicators.value = config.indicators
-              ElMessage.success(`已加载配置"${config.name}"`)
+              ElMessage.success(`Config "${config.name}" loaded`)
 
-              // 如果已有数据，重新加载
               if (chartData.ohlcv) {
                 fetchKlineData()
               }
@@ -652,56 +560,52 @@ const handleLoadConfig = async (): Promise<void> => {
             })
             .catch((error: any) => {
               console.error('Failed to load config:', error)
-              ElMessage.error('加载失败')
+              ElMessage.error('Load failed')
             })
         } else {
           done()
         }
       }
     }).catch(() => {
-      // 用户取消
+      // User cancelled
     })
   } catch (error: any) {
     console.error('Failed to list configs:', error)
-    ElMessage.error('获取配置列表失败')
+    ElMessage.error('Failed to fetch config list')
   }
 }
 
-/**
- * 管理配置
- */
 const handleManageConfigs = async (): Promise<void> => {
   try {
     const response: ConfigListResponse = await indicatorService.listConfigs()
 
     if (response.total_count === 0) {
-      ElMessage.info('暂无已保存的配置')
+      ElMessage.info('No saved configs available')
       return
     }
 
-    // 显示配置列表
     const configListHtml = response.configs.map(config => `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #ebeef5;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
         <div>
-          <strong>${config.name}</strong>
-          <small style="color: #909399; margin-left: 8px;">${config.indicators.length}个指标</small>
+          <strong style="color: #D4AF37;">${config.name}</strong>
+          <small style="color: #888; margin-left: 8px;">${config.indicators.length} indicators</small>
         </div>
         <div>
-          <button class="el-button el-button--text el-button--small" onclick="deleteConfig(${config.id})">删除</button>
+          <button class="el-button el-button--text el-button--small" style="color: #D4AF37;" onclick="deleteConfig(${config.id})">DELETE</button>
         </div>
       </div>
     `).join('')
 
     ElMessageBox({
-      title: '配置管理',
-      message: `<div>${configListHtml}</div>`,
+      title: 'MANAGE CONFIGS',
+      message: `<div style="background: #141414; padding: 16px; border: 1px solid #D4AF37;">${configListHtml}</div>`,
       dangerouslyUseHTMLString: true,
       showCancelButton: true,
-      confirmButtonText: '关闭',
-      cancelButtonText: '刷新',
+      confirmButtonText: 'CLOSE',
+      cancelButtonText: 'REFRESH',
       beforeClose: (action, instance, done) => {
         if (action === 'cancel') {
-          handleManageConfigs() // 刷新列表
+          handleManageConfigs()
         } else {
           done()
         }
@@ -709,33 +613,28 @@ const handleManageConfigs = async (): Promise<void> => {
     })
   } catch (error: any) {
     console.error('Failed to manage configs:', error)
-    ElMessage.error('获取配置列表失败')
+    ElMessage.error('Failed to fetch config list')
   }
 }
 
-/**
- * 删除配置（需要在全局暴露）
- */
 const deleteConfig = async (configId: number): Promise<void> => {
   try {
-    await ElMessageBox.confirm('确认删除该配置吗？', '提示', {
+    await ElMessageBox.confirm('Confirm delete this config?', 'Confirm', {
       type: 'warning'
     })
 
     await indicatorService.deleteConfig(configId)
-    ElMessage.success('配置已删除')
+    ElMessage.success('Config deleted')
 
-    // 重新打开管理面板
     setTimeout(() => handleManageConfigs(), 300)
   } catch (error: any) {
     if (error !== 'cancel') {
       console.error('Failed to delete config:', error)
-      ElMessage.error('删除失败')
+      ElMessage.error('Delete failed')
     }
   }
 }
 
-// 暴露到全局窗口对象
 declare global {
   interface Window {
     deleteConfig: (configId: number) => Promise<void>
@@ -745,74 +644,230 @@ declare global {
 window.deleteConfig = deleteConfig
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+
 .technical-analysis {
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background: #f5f7fa;
-
-  .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-    .date-picker {
-      width: 320px;
-    }
-
-    .period-selector {
-      margin-left: 12px;
-    }
-  }
-
-  .chart-container {
-    flex: 1;
-    min-height: 500px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding: 20px;
-    overflow: hidden;
-  }
-
-  .stats-bar {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-    .el-text {
-      margin-right: 8px;
-      color: #606266;
-    }
-  }
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  position: relative;
 }
 
-// 响应式设计
-@media (max-width: 768px) {
-  .technical-analysis {
-    padding: 10px;
+/* Background pattern */
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(212, 175, 55, 0.02) 10px,
+      rgba(212, 175, 55, 0.02) 11px
+    );
+  pointer-events: none;
+  z-index: -1;
+}
 
-    .toolbar {
-      flex-wrap: wrap;
-      gap: 8px;
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
 
-      .date-picker {
-        width: 100%;
-      }
-    }
+.page-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin: 0 0 var(--space-md) 0;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
 
-    .chart-container {
-      min-height: 400px;
-    }
-  }
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--silver-muted);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+/* Toolbar Section */
+.toolbar-section {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.toolbar-section::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid var(--gold-dim);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.search-section,
+.date-section,
+.period-section {
+  display: flex;
+  align-items: center;
+}
+
+  width: 300px;
+}
+
+  width: 320px;
+}
+
+.period-selector {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+}
+
+.button-group {
+  display: flex;
+  gap: var(--space-md);
+  margin-left: auto;
+}
+
+/* Chart Section */
+.chart-section {
+  flex: 1;
+  min-height: 600px;
+}
+
+/* Stats Section */
+.stats-section {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+  padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid var(--gold-dim);
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--silver-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--silver-text);
+}
+
+.stat-value.mono {
+  font-family: var(--font-mono);
+}
+
+.stat-value.gold {
+  color: var(--gold-primary);
+}
+
+/* Element Plus overrides */
+:deep(.el-date-editor) {
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+  color: var(--silver-text);
+}
+
+:deep(.el-date-editor__inner) {
+  background: transparent;
+  color: var(--silver-text);
+  font-family: var(--font-mono);
+}
+
+:deep(.el-date-editor:hover) {
+  border-color: var(--gold-primary);
+}
+
+:deep(.el-radio-button__inner) {
+  background: var(--bg-primary);
+  border: 1px solid var(--gold-dim);
+  color: var(--silver-text);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  color: var(--bg-primary);
+}
+
+:deep(.el-dropdown-menu) {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-dim);
+}
+
+:deep(.el-dropdown-menu__item) {
+  color: var(--silver-text);
+  font-family: var(--font-body);
+}
+
+:deep(.el-dropdown-menu__item:hover) {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold-primary);
+}
+
+:deep(.el-empty) {
+  --el-empty-description-color: var(--silver-muted);
+}
+
+:deep(.el-empty__description) {
+  color: var(--silver-muted);
+  font-family: var(--font-body);
 }
 </style>

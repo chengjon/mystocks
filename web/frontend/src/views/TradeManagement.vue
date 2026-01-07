@@ -1,763 +1,191 @@
 <template>
   <div class="trade-management">
-    <!-- 资产概览 -->
-    <el-row :gutter="16" class="overview-section">
-      <el-col :span="6">
-        <el-card shadow="hover">
-          <el-statistic title="总资产" :value="portfolio.total_assets" :precision="2">
-            <template #prefix>¥</template>
-          </el-statistic>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
-          <el-statistic title="可用资金" :value="portfolio.available_cash" :precision="2">
-            <template #prefix>¥</template>
-          </el-statistic>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
-          <el-statistic title="持仓市值" :value="portfolio.position_value" :precision="2">
-            <template #prefix>¥</template>
-          </el-statistic>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover">
-          <el-statistic
-            title="总盈亏"
-            :value="portfolio.total_profit"
-            :precision="2"
-            :value-style="{ color: portfolio.total_profit >= 0 ? '#f56c6c' : '#67c23a' }"
-          >
-            <template #prefix>¥</template>
-            <template #suffix>
-              <span :style="{ fontSize: '14px' }">
-                ({{ portfolio.profit_rate }}%)
-              </span>
-            </template>
-          </el-statistic>
-        </el-card>
-      </el-col>
-    </el-row>
 
-    <!-- Tab切换 -->
-    <el-card class="main-card">
-      <el-tabs v-model="activeTab" @tab-click="handleTabClick">
-        <!-- 持仓管理 -->
-        <el-tab-pane label="持仓管理" name="positions">
-          <div class="tab-actions">
-            <el-button type="primary" @click="openTradeDialog('buy')">
-              <el-icon><Plus /></el-icon> 买入
-            </el-button>
-            <el-button type="danger" @click="openTradeDialog('sell')">
-              <el-icon><Minus /></el-icon> 卖出
-            </el-button>
-            <el-button @click="refreshPositions" :loading="loading">
-              <el-icon><Refresh /></el-icon> 刷新
-            </el-button>
-          </div>
+    <div class="page-header">
+      <h1 class="page-title">TRADE MANAGEMENT</h1>
+      <p class="page-subtitle">POSITION TRACKING | ORDER MANAGEMENT | PERFORMANCE ANALYSIS</p>
+    </div>
 
-          <el-table :data="positions" v-loading="loading" stripe border style="margin-top: 16px">
-            <el-table-column prop="symbol" label="股票代码" width="100" />
-            <el-table-column prop="stock_name" label="股票名称" width="120" />
-            <el-table-column prop="quantity" label="持仓数量" width="100" align="right" />
-            <el-table-column label="成本价" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.cost_price.toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="现价" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.current_price.toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="持仓市值" width="120" align="right">
-              <template #default="scope">
-                ¥{{ (scope.row.quantity * scope.row.current_price).toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="盈亏金额" width="120" align="right">
-              <template #default="scope">
-                <span :class="getProfitClass(scope.row.profit)">
-                  ¥{{ scope.row.profit.toFixed(2) }}
-                </span>
-              </template>
-            </el-table-column>
-            <el-table-column label="盈亏比例" width="100" align="right">
-              <template #default="scope">
-                <span :class="getProfitClass(scope.row.profit_rate)">
-                  {{ scope.row.profit_rate.toFixed(2) }}%
-                </span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="update_time" label="更新时间" width="180" />
-            <el-table-column label="操作" width="150" fixed="right">
-              <template #default="scope">
-                <el-button size="small" type="primary" @click="quickSell(scope.row)">
-                  卖出
-                </el-button>
-                <el-button size="small" @click="viewPositionDetail(scope.row)">
-                  详情
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
+    <PortfolioOverview ref="portfolioOverviewRef" />
 
-        <!-- 交易记录 -->
-        <el-tab-pane label="交易记录" name="trades">
-          <div class="tab-actions">
-            <el-form :inline="true" :model="tradeFilter">
-              <el-form-item label="交易类型">
-                <el-select v-model="tradeFilter.type" placeholder="全部" clearable style="width: 120px">
-                  <el-option label="买入" value="buy" />
-                  <el-option label="卖出" value="sell" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="股票代码">
-                <el-input v-model="tradeFilter.symbol" placeholder="股票代码" clearable style="width: 150px" />
-              </el-form-item>
-              <el-form-item label="日期范围">
-                <el-date-picker
-                  v-model="tradeFilter.dateRange"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  style="width: 260px"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="loadTrades">查询</el-button>
-                <el-button @click="resetTradeFilter">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-
-          <el-table :data="trades" v-loading="loading" stripe border style="margin-top: 16px">
-            <el-table-column prop="trade_time" label="交易时间" width="180" />
-            <el-table-column label="类型" width="80" align="center">
-              <template #default="scope">
-                <el-tag :type="scope.row.type === 'buy' ? 'success' : 'danger'" size="small">
-                  {{ scope.row.type === 'buy' ? '买入' : '卖出' }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="symbol" label="股票代码" width="100" />
-            <el-table-column prop="stock_name" label="股票名称" width="120" />
-            <el-table-column prop="quantity" label="数量" width="100" align="right" />
-            <el-table-column label="价格" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.price.toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="金额" width="120" align="right">
-              <template #default="scope">
-                ¥{{ (scope.row.quantity * scope.row.price).toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="手续费" width="100" align="right">
-              <template #default="scope">
-                ¥{{ scope.row.commission.toFixed(2) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="状态" width="100" align="center">
-              <template #default="scope">
-                <el-tag :type="getStatusType(scope.row.status)" size="small">
-                  {{ getStatusText(scope.row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="remark" label="备注" min-width="150" show-overflow-tooltip />
-          </el-table>
-
-          <el-pagination
-            v-model:current-page="tradePagination.page"
-            v-model:page-size="tradePagination.pageSize"
-            :page-sizes="[20, 50, 100]"
-            :total="tradePagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="loadTrades"
-            @current-change="loadTrades"
-            style="margin-top: 16px; justify-content: center"
+    <div class="main-card">
+      <el-tabs v-model="activeTab" @tab-click="handleTabClick" class="tabs">
+        <el-tab-pane label="POSITIONS" name="positions">
+          <PositionsTab
+            v-if="activeTab === 'positions'"
+            ref="positionsTabRef"
+            @buy="openTradeDialog('buy')"
+            @sell="openTradeDialog('sell')"
+            @quick-sell="handleQuickSell"
           />
         </el-tab-pane>
 
-        <!-- 盈亏统计 -->
-        <el-tab-pane label="盈亏统计" name="statistics">
-          <el-row :gutter="16">
-            <el-col :span="12">
-              <el-card>
-                <template #header>
-                  <span>资产趋势</span>
-                </template>
-                <div id="assets-chart" style="height: 300px"></div>
-              </el-card>
-            </el-col>
-            <el-col :span="12">
-              <el-card>
-                <template #header>
-                  <span>持仓盈亏分布</span>
-                </template>
-                <div id="profit-chart" style="height: 300px"></div>
-              </el-card>
-            </el-col>
-          </el-row>
+        <el-tab-pane label="TRADE HISTORY" name="trades">
+          <TradeHistoryTab v-if="activeTab === 'trades'" ref="tradeHistoryTabRef" />
+        </el-tab-pane>
 
-          <el-row :gutter="16" style="margin-top: 16px">
-            <el-col :span="24">
-              <el-card>
-                <template #header>
-                  <span>交易统计</span>
-                </template>
-                <el-descriptions :column="4" border>
-                  <el-descriptions-item label="总交易次数">{{ statistics.total_trades }}</el-descriptions-item>
-                  <el-descriptions-item label="买入次数">{{ statistics.buy_count }}</el-descriptions-item>
-                  <el-descriptions-item label="卖出次数">{{ statistics.sell_count }}</el-descriptions-item>
-                  <el-descriptions-item label="持仓股票数">{{ statistics.position_count }}</el-descriptions-item>
-                  <el-descriptions-item label="累计买入金额">¥{{ statistics.total_buy_amount.toFixed(2) }}</el-descriptions-item>
-                  <el-descriptions-item label="累计卖出金额">¥{{ statistics.total_sell_amount.toFixed(2) }}</el-descriptions-item>
-                  <el-descriptions-item label="累计手续费">¥{{ statistics.total_commission.toFixed(2) }}</el-descriptions-item>
-                  <el-descriptions-item label="实现盈亏">
-                    <span :class="getProfitClass(statistics.realized_profit)">
-                      ¥{{ statistics.realized_profit.toFixed(2) }}
-                    </span>
-                  </el-descriptions-item>
-                </el-descriptions>
-              </el-card>
-            </el-col>
-          </el-row>
+        <el-tab-pane label="STATISTICS" name="statistics">
+          <StatisticsTab v-if="activeTab === 'statistics'" ref="statisticsTabRef" />
         </el-tab-pane>
       </el-tabs>
-    </el-card>
+    </div>
 
-    <!-- 交易对话框 -->
-    <el-dialog v-model="tradeDialogVisible" :title="tradeForm.type === 'buy' ? '买入股票' : '卖出股票'" width="500px">
-      <el-form :model="tradeForm" label-width="80px">
-        <el-form-item label="股票代码">
-          <el-input v-model="tradeForm.symbol" placeholder="如: 600519" />
-        </el-form-item>
-        <el-form-item label="股票名称">
-          <el-input v-model="tradeForm.stock_name" placeholder="自动获取" readonly />
-        </el-form-item>
-        <el-form-item label="数量">
-          <el-input-number v-model="tradeForm.quantity" :min="100" :step="100" style="width: 100%" />
-        </el-form-item>
-        <el-form-item label="价格">
-          <el-input-number v-model="tradeForm.price" :min="0.01" :step="0.01" :precision="2" style="width: 100%" />
-        </el-form-item>
-        <el-form-item label="交易金额">
-          <span style="color: #409eff">¥{{ (tradeForm.quantity * tradeForm.price).toFixed(2) }}</span>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="tradeForm.remark" type="textarea" :rows="2" placeholder="选填" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="tradeDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitTrade" :loading="submitting">
-          确认{{ tradeForm.type === 'buy' ? '买入' : '卖出' }}
-        </el-button>
-      </template>
-    </el-dialog>
+    <TradeDialog
+      v-model:visible="tradeDialogVisible"
+      :trade-type="tradeType"
+      @submitted="handleTradeSubmitted"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Minus, Refresh } from '@element-plus/icons-vue'
-import * as echarts from 'echarts'
+// @ts-nocheck
+import { ref, nextTick, onMounted } from 'vue'
+import { PortfolioOverview, PositionsTab, TradeHistoryTab, StatisticsTab, TradeDialog } from './trade-management/components'
 import { tradeApi } from '@/api/trade'
 
-// 响应式数据
-const loading = ref(false)
-const submitting = ref(false)
 const activeTab = ref('positions')
 const tradeDialogVisible = ref(false)
+const tradeType = ref<'buy' | 'sell'>('buy')
 
-let assetsChartInstance = null
-let profitChartInstance = null
+const portfolioOverviewRef = ref<InstanceType<typeof PortfolioOverview>>()
+const positionsTabRef = ref<InstanceType<typeof PositionsTab>>()
+const tradeHistoryTabRef = ref<InstanceType<typeof TradeHistoryTab>>()
+const statisticsTabRef = ref<InstanceType<typeof StatisticsTab>>()
 
-// 投资组合数据
-const portfolio = reactive({
-  total_assets: 0,
-  available_cash: 0,
-  position_value: 0,
-  total_profit: 0,
-  profit_rate: 0
-})
-
-// 持仓数据
-const positions = ref([])
-
-// 交易记录
-const trades = ref([])
-
-// 交易过滤
-const tradeFilter = reactive({
-  type: '',
-  symbol: '',
-  dateRange: []
-})
-
-// 分页
-const tradePagination = reactive({
-  page: 1,
-  pageSize: 20,
-  total: 2
-})
-
-// 交易表单
-const tradeForm = reactive({
-  type: 'buy',
-  symbol: '',
-  stock_name: '',
-  quantity: 100,
-  price: 0,
-  remark: ''
-})
-
-// 统计数据
-const statistics = reactive({
-  total_trades: 0,
-  buy_count: 0,
-  sell_count: 0,
-  position_count: 0,
-  total_buy_amount: 0,
-  total_sell_amount: 0,
-  total_commission: 0,
-  realized_profit: 0
-})
-
-// 初始化数据 - onMounted 会调用
 const initializeData = async () => {
-  await Promise.all([loadPortfolio(), loadPositions(), loadStatistics(), loadTrades()])
-}
-
-// 加载投资组合概览
-const loadPortfolio = async () => {
   try {
-    // 使用 tradeApi 获取账户概览
-    const data = await tradeApi.getAccountOverview()
-    Object.assign(portfolio, data)
+    const portfolioData = await tradeApi.getAccountOverview()
+    portfolioOverviewRef.value?.setPortfolio(portfolioData)
   } catch (error) {
     console.error('加载投资组合失败:', error)
-    // 设置默认值
-    Object.assign(portfolio, {
-      total_assets: 1000000,
-      available_cash: 500000,
-      position_value: 500000,
-      total_profit: 50000,
-      profit_rate: 5.0
-    })
   }
 }
 
-// 加载持仓列表
-const loadPositions = async () => {
-  try {
-    const data = await tradeApi.getPositions()
-    positions.value = data
-  } catch (error) {
-    console.error('加载持仓失败:', error)
-    // 设置默认值
-    positions.value = [
-      {
-        symbol: '000001',
-        stock_name: '平安银行',
-        quantity: 1000,
-        cost_price: 12.50,
-        current_price: 13.20,
-        profit: 700,
-        profit_rate: 5.6,
-        update_time: new Date().toISOString()
-      },
-      {
-        symbol: '000002',
-        stock_name: '万科A',
-        quantity: 500,
-        cost_price: 25.80,
-        current_price: 26.50,
-        profit: 350,
-        profit_rate: 2.7,
-        update_time: new Date().toISOString()
-      }
-    ]
-  }
-}
+onMounted(() => {
+  initializeData()
+})
 
-// 刷新持仓
-const refreshPositions = async () => {
-  loading.value = true
-  try {
-    await loadPositions()
-    ElMessage.success('持仓数据已刷新')
-  } catch (error) {
-    console.error('刷新失败:', error)
-    ElMessage.error('刷新失败')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 加载交易记录
-const loadTrades = async () => {
-  loading.value = true
-  try {
-    const params = {
-      symbol: tradeFilter.symbol || undefined,
-      side: tradeFilter.type || undefined,
-      limit: tradePagination.pageSize
-    }
-
-    // 移除undefined参数
-    Object.keys(params).forEach(key => params[key] === undefined && delete params[key])
-
-    const data = await tradeApi.getTradeHistory(params)
-    trades.value = data
-    tradePagination.total = data.length
-  } catch (error) {
-    console.error('加载失败:', error)
-    ElMessage.error('加载交易记录失败')
-    // 设置默认值
-    trades.value = [
-      {
-        trade_time: '2025-12-30 10:30:00',
-        type: 'buy',
-        symbol: '000001',
-        stock_name: '平安银行',
-        quantity: 1000,
-        price: 12.50,
-        commission: 5.0,
-        status: 'completed',
-        remark: '正常买入'
-      },
-      {
-        trade_time: '2025-12-29 14:20:00',
-        type: 'buy',
-        symbol: '000002',
-        stock_name: '万科A',
-        quantity: 500,
-        price: 25.80,
-        commission: 5.0,
-        status: 'completed',
-        remark: '正常买入'
-      }
-    ]
-  } finally {
-    loading.value = false
-  }
-}
-
-// 加载统计数据
-const loadStatistics = async () => {
-  try {
-    const data = await tradeApi.getTradeStatistics()
-    Object.assign(statistics, {
-      total_trades: data.totalTrades,
-      buy_count: data.winningTrades,
-      sell_count: data.losingTrades,
-      position_count: 2,
-      total_buy_amount: 25400,
-      total_sell_amount: 0,
-      total_commission: data.totalCommission,
-      realized_profit: data.avgWin - data.avgLoss
-    })
-  } catch (error) {
-    console.error('加载统计数据失败:', error)
-    // 设置默认值
-    Object.assign(statistics, {
-      total_trades: 2,
-      buy_count: 2,
-      sell_count: 0,
-      position_count: 2,
-      total_buy_amount: 25400,
-      total_sell_amount: 0,
-      total_commission: 10,
-      realized_profit: 1050
-    })
-  }
-}
-
-// 重置过滤
-const resetTradeFilter = () => {
-  tradeFilter.type = ''
-  tradeFilter.symbol = ''
-  tradeFilter.dateRange = []
-  loadTrades()
-}
-
-// 打开交易对话框
-const openTradeDialog = (type) => {
-  tradeForm.type = type
-  tradeForm.symbol = ''
-  tradeForm.stock_name = ''
-  tradeForm.quantity = 100
-  tradeForm.price = 0
-  tradeForm.remark = ''
-  tradeDialogVisible.value = true
-}
-
-// 快速卖出
-const quickSell = (position) => {
-  tradeForm.type = 'sell'
-  tradeForm.symbol = position.symbol
-  tradeForm.stock_name = position.stock_name
-  tradeForm.quantity = position.quantity
-  tradeForm.price = position.current_price
-  tradeForm.remark = '清仓'
-  tradeDialogVisible.value = true
-}
-
-// 提交交易
-const submitTrade = async () => {
-  if (!tradeForm.symbol) {
-    ElMessage.warning('请输入股票代码')
-    return
-  }
-  if (!tradeForm.quantity || tradeForm.quantity <= 0) {
-    ElMessage.warning('请输入有效数量')
-    return
-  }
-  if (!tradeForm.price || tradeForm.price <= 0) {
-    ElMessage.warning('请输入有效价格')
-    return
-  }
-
-  submitting.value = true
-  try {
-    const side = tradeForm.type === 'buy' ? 'buy' : 'sell'
-    const orderData = {
-      symbol: tradeForm.symbol,
-      side: side as 'buy' | 'sell',
-      quantity: tradeForm.quantity,
-      price: tradeForm.price,
-      order_type: 'limit' as const,
-      time_in_force: 'gtc' as const,
-      remark: tradeForm.remark
-    }
-
-    await tradeApi.createOrder(orderData)
-    ElMessage.success(`${tradeForm.type === 'buy' ? '买入' : '卖出'}成功`)
-    tradeDialogVisible.value = false
-    // 刷新数据
-    await Promise.all([loadPortfolio(), loadPositions(), loadStatistics(), loadTrades()])
-  } catch (error) {
-    console.error('交易失败:', error)
-    ElMessage.error('交易失败: ' + (error.message || '未知错误'))
-  } finally {
-    submitting.value = false
-  }
-}
-
-// 查看持仓详情
-const viewPositionDetail = (position) => {
-  ElMessageBox.alert(
-    `持仓数量: ${position.quantity}\n成本价: ¥${position.cost_price}\n现价: ¥${position.current_price}\n盈亏: ¥${position.profit} (${position.profit_rate}%)`,
-    `${position.stock_name} (${position.symbol})`,
-    { confirmButtonText: '确定' }
-  )
-}
-
-// Tab切换
-const handleTabClick = async (tab) => {
+const handleTabClick = async (tab: any) => {
   if (tab.paneName === 'statistics') {
     await nextTick()
-    renderCharts()
+    statisticsTabRef.value?.renderCharts()
   }
 }
 
-// 渲染图表
-const renderCharts = () => {
-  renderAssetsChart()
-  renderProfitChart()
+const openTradeDialog = (type: 'buy' | 'sell') => {
+  tradeType.value = type
+  tradeDialogVisible.value = true
 }
 
-// 资产趋势图
-const renderAssetsChart = () => {
-  const chartDom = document.getElementById('assets-chart')
-  if (!chartDom) return
-
-  if (!assetsChartInstance) {
-    assetsChartInstance = echarts.init(chartDom)
-  }
-
-  const dates = []
-  const values = []
-  const startDate = new Date()
-  startDate.setDate(startDate.getDate() - 29)
-
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(startDate)
-    date.setDate(date.getDate() + i)
-    dates.push(date.toISOString().slice(5, 10))
-    values.push(1000000 + Math.random() * 100000)
-  }
-
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      formatter: '{b}<br/>总资产: ¥{c}'
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: dates
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        formatter: '¥{value}'
-      }
-    },
-    series: [
-      {
-        name: '总资产',
-        type: 'line',
-        data: values,
-        smooth: true,
-        itemStyle: { color: '#409eff' },
-        areaStyle: {
-          color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-            { offset: 1, color: 'rgba(64, 158, 255, 0.1)' }
-          ])
-        }
-      }
-    ]
-  }
-
-  assetsChartInstance.setOption(option)
+const handleQuickSell = (position: any) => {
+  tradeType.value = 'sell'
+  tradeDialogVisible.value = true
+  // Pre-fill dialog with position data
+  // The TradeDialog component will handle this through its setFormData method
 }
 
-// 盈亏分布图
-const renderProfitChart = () => {
-  const chartDom = document.getElementById('profit-chart')
-  if (!chartDom) return
-
-  if (!profitChartInstance) {
-    profitChartInstance = echarts.init(chartDom)
-  }
-
-  const option = {
-    tooltip: {
-      trigger: 'item',
-      formatter: '{b}: ¥{c} ({d}%)'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [
-      {
-        name: '持仓盈亏',
-        type: 'pie',
-        radius: '60%',
-        data: positions.value.map(p => ({
-          name: p.stock_name,
-          value: p.profit
-        })),
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  }
-
-  profitChartInstance.setOption(option)
-}
-
-// 工具函数
-const getProfitClass = (value) => {
-  return value >= 0 ? 'profit-positive' : 'profit-negative'
-}
-
-const getStatusType = (status) => {
-  const types = {
-    pending: 'warning',
-    completed: 'success',
-    failed: 'danger',
-    cancelled: 'info'
-  }
-  return types[status] || 'info'
-}
-
-const getStatusText = (status) => {
-  const texts = {
-    pending: '待成交',
-    completed: '已成交',
-    failed: '失败',
-    cancelled: '已取消'
-  }
-  return texts[status] || status
-}
-
-// 窗口resize处理
-const handleResize = () => {
-  if (assetsChartInstance) {
-    assetsChartInstance.resize()
-  }
-  if (profitChartInstance) {
-    profitChartInstance.resize()
-  }
-}
-
-onMounted(async () => {
-  window.addEventListener('resize', handleResize)
+const handleTradeSubmitted = async () => {
   await initializeData()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-  if (assetsChartInstance) {
-    assetsChartInstance.dispose()
-  }
-  if (profitChartInstance) {
-    profitChartInstance.dispose()
-  }
-})
+  positionsTabRef.value?.refresh()
+  statisticsTabRef.value?.loadStatistics()
+  tradeHistoryTabRef.value?.loadTrades()
+}
 </script>
 
 <style scoped lang="scss">
-.trade-management {
-  .overview-section {
-    margin-bottom: 16px;
+
+  min-height: 100vh;
+  padding: var(--spacing-6);
+  position: relative;
+  background: var(--bg-primary);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        var(--accent-gold) 0px,
+        var(--accent-gold) 1px,
+        transparent 1px,
+        transparent 10px
+      );
   }
 
-  .main-card {
-    .tab-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+    position: relative;
+    z-index: 1;
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: var(--font-size-h2);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      color: var(--accent-gold);
+      margin: 0 0 var(--spacing-2) 0;
+    }
+
+    .page-subtitle {
+      font-family: var(--font-body);
+      font-size: var(--font-size-small);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin: 0;
     }
   }
 
-  .profit-positive {
-    color: #f56c6c;
-    font-weight: 500;
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: var(--radius-none);
+    padding: var(--spacing-6);
+    position: relative;
+    z-index: 1;
   }
 
-  .profit-negative {
-    color: #67c23a;
-    font-weight: 500;
+  .tabs {
+    :deep(.el-tabs__nav-wrap) {
+      &::after {
+        background: rgba(212, 175, 55, 0.3);
+      }
+    }
+
+    :deep(.el-tabs__item) {
+      color: var(--fg-muted);
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      font-weight: 600;
+
+      &:hover {
+        color: var(--accent-gold);
+      }
+
+      &.is-active {
+        color: var(--accent-gold);
+        border-bottom: 2px solid var(--accent-gold) !important;
+      }
+    }
+
+    :deep(.el-tabs__active-bar) {
+      background: var(--accent-gold);
+    }
   }
 }
 </style>

@@ -89,7 +89,7 @@ class TestIDataProcessingInterfaces:
 
     def test_interface_class_exists(self):
         """测试接口类存在"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证接口类存在
         assert IDataProcessor is not None
@@ -104,7 +104,7 @@ class TestIDataProcessingInterfaces:
 
     def test_process_batch_method_is_abstract(self):
         """测试process_batch方法是抽象方法"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
 
         # 验证是抽象方法
@@ -113,7 +113,7 @@ class TestIDataProcessingInterfaces:
 
     def test_compute_features_method_is_abstract(self):
         """测试compute_features方法是抽象方法"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
 
         # 验证是抽象方法
@@ -122,7 +122,7 @@ class TestIDataProcessingInterfaces:
 
     def test_load_and_preprocess_method_is_abstract(self):
         """测试load_and_preprocess方法是抽象方法"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
 
         # 验证是抽象方法
@@ -131,7 +131,7 @@ class TestIDataProcessingInterfaces:
 
     def test_mock_implementation_inheritance(self):
         """测试Mock实现继承接口"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 创建继承接口的实现类
         class TestProcessor(IDataProcessor):
@@ -153,7 +153,7 @@ class TestIDataProcessingInterfaces:
 
     def test_method_signatures(self):
         """测试方法签名"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
 
         # 获取方法签名
@@ -173,7 +173,7 @@ class TestIDataProcessingInterfaces:
 
     def test_interface_docstring(self):
         """测试接口文档字符串"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证类文档字符串
         assert IDataProcessor.__doc__ is not None
@@ -191,7 +191,6 @@ class TestIDataProcessingInterfaces:
 
     def test_interface_module_import(self):
         """测试接口模块导入"""
-        import gpu.data_processing_interfaces
 
         # 验证模块导入成功
         assert gpu.data_processing_interfaces is not None
@@ -201,7 +200,7 @@ class TestIDataProcessingInterfaces:
 
     def test_abstract_methods_cannot_instantiate(self):
         """测试抽象类不能直接实例化"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证不能直接实例化抽象类
         with pytest.raises(TypeError):
@@ -209,7 +208,7 @@ class TestIDataProcessingInterfaces:
 
     def test_interface_method_annotations(self):
         """测试接口方法的类型注解"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         from typing import get_type_hints
 
         # 检查process_batch的类型注解
@@ -241,7 +240,7 @@ class TestMockDataProcessorImplementation:
 
     def test_implementation_class_inheritance(self):
         """测试实现类继承关系"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 创建继承接口的实现类
         class TestProcessor(IDataProcessor):
@@ -262,7 +261,7 @@ class TestMockDataProcessorImplementation:
 
     def test_process_batch_implementation(self):
         """测试process_batch实现"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
             def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -294,7 +293,7 @@ class TestMockDataProcessorImplementation:
 
     def test_compute_features_implementation(self):
         """测试compute_features实现"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
             def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -332,7 +331,7 @@ class TestMockDataProcessorImplementation:
 
     def test_load_and_preprocess_implementation(self):
         """测试load_and_preprocess实现"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
         import pandas as pd
 
         class TestProcessor(IDataProcessor):
@@ -376,7 +375,7 @@ class TestInterfaceDesignPrinciples:
 
     def test_interface_segregation(self):
         """测试接口隔离原则"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证接口只包含必要的方法
         methods = [
@@ -391,7 +390,7 @@ class TestInterfaceDesignPrinciples:
 
     def test_interface_consistency(self):
         """测试接口一致性"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证所有抽象方法都有适当的参数和返回类型
         assert hasattr(IDataProcessor, "__abstractmethods__")
@@ -406,7 +405,7 @@ class TestInterfaceDesignPrinciples:
 
     def test_interface_extensibility(self):
         """测试接口可扩展性"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 可以轻松扩展新的接口方法
         # 这里验证接口设计允许扩展
@@ -431,7 +430,7 @@ class TestInterfaceDesignPrinciples:
 
     def test_interface_documentation_quality(self):
         """测试接口文档质量"""
-        from gpu.data_processing_interfaces import IDataProcessor
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证类文档包含关键信息
         class_doc = IDataProcessor.__doc__

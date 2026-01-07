@@ -1,6 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+⚠️ DEPRECATED - 此脚本已弃用
+
+此脚本使用旧的 DatabaseTableManager 和 MySQL 配置，已被新的架构替代。
+请使用 run_realtime_market_saver.py 作为实时行情数据保存工具。
+
+新脚本特性：
+- ✅ 使用 MyStocksUnifiedManager 统一管理器
+- ✅ 使用 DataClassification 自动数据路由
+- ✅ 支持 Saga 分布式事务（跨库一致性）
+- ✅ 支持 PostgreSQL + TDengine 双数据库架构
+- ✅ 使用 customer_adapter 列名标准化
+
+迁移指南：
+1. 旧命令: python save_realtime_data.py --market hs
+2. 新命令: python run_realtime_market_saver.py [--interval 60] [--count 1]
+
+保留原因：用于向后兼容，某些旧测试可能依赖此脚本。
+"""
+
+# 以下是原始实现（保持不变，仅供向后兼容）
+"""
 将通过customer接口获取的股票实时行情数据保存到本地数据库中
 完整的数据库保存工作流程，遵循db_manager的工作原理
 """

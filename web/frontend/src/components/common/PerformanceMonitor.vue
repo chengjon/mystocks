@@ -157,10 +157,10 @@ const calculationHistoryRef = ref(null)
 const apiHistoryRef = ref(null)
 
 // 性能监控API
-let performanceObserver = null
+const performanceObserver = null
 let lastFrameTime = performance.now()
 let frameCount = 0
-let fpsUpdateInterval = null
+const fpsUpdateInterval = null
 
 // 计算属性
 const overallStatus = computed(() => {

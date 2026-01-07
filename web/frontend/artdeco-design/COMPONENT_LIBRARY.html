@@ -29,6 +29,43 @@
     .artdeco-demo-box { background: var(--artdeco-bg-card); border: 1px solid var(--artdeco-gold-dim); padding: var(--artdeco-space-lg); min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     @media (max-width: 1080px) { .artdeco-grid-4, .artdeco-grid-3 { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .artdeco-grid-4, .artdeco-grid-3, .artdeco-grid-2 { grid-template-columns: 1fr; } .artdeco-main { padding: var(--artdeco-space-md); } }
+
+    /* New Components CSS */
+    /* Switch */
+    .artdeco-switch { display: inline-block; width: 48px; height: 24px; position: relative; cursor: pointer; }
+    .artdeco-switch-track { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #2C3E50; border: 1px solid var(--artdeco-gold-dim); transition: all 0.3s; }
+    .artdeco-switch-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: var(--artdeco-silver-dim); border: 1px solid #000; transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+    .artdeco-switch.active .artdeco-switch-track { background: rgba(212, 175, 55, 0.2); border-color: var(--artdeco-gold-primary); }
+    .artdeco-switch.active .artdeco-switch-thumb { left: 26px; background: var(--artdeco-gold-primary); box-shadow: 0 0 8px var(--artdeco-gold-primary); }
+
+    /* Slider */
+    .artdeco-slider { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+    .artdeco-slider-track { flex: 1; height: 2px; background: var(--artdeco-gold-dim); position: relative; }
+    .artdeco-slider-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--artdeco-gold-primary); width: 40%; box-shadow: 0 0 8px rgba(212, 175, 55, 0.4); }
+    .artdeco-slider-thumb { position: absolute; left: 40%; top: 50%; transform: translate(-50%, -50%) rotate(45deg); width: 12px; height: 12px; background: var(--artdeco-gold-primary); border: 2px solid #000; box-shadow: 0 0 10px var(--artdeco-gold-primary); transition: transform 0.1s; }
+    .artdeco-slider:hover .artdeco-slider-thumb { transform: translate(-50%, -50%) rotate(45deg) scale(1.2); }
+
+    /* Loader */
+    .artdeco-loader { width: 40px; height: 40px; border: 2px solid var(--artdeco-gold-dim); position: relative; animation: artdeco-spin 2s linear infinite; }
+    .artdeco-loader::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: var(--artdeco-gold-primary); animation: artdeco-pulse 1s ease-in-out infinite alternate; }
+    @keyframes artdeco-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes artdeco-pulse { 0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 15px var(--artdeco-gold-primary); } }
+
+    /* Order Book */
+    .artdeco-orderbook-row { display: flex; justify-content: space-between; padding: 4px 8px; font-family: var(--artdeco-font-mono); font-size: 0.8rem; position: relative; z-index: 1; }
+    .artdeco-orderbook-row:hover { background: rgba(255,255,255,0.05); }
+    .artdeco-depth-bar { position: absolute; top: 1px; bottom: 1px; right: 0; opacity: 0.15; z-index: -1; transition: width 0.3s; }
+    .depth-ask { background: var(--artdeco-fall); }
+    .depth-bid { background: var(--artdeco-rise); }
+    .text-ask { color: var(--artdeco-fall); }
+    .text-bid { color: var(--artdeco-rise); }
+
+    /* Code Editor */
+    .artdeco-code-editor { background: #0A0C0E; border: 1px solid var(--artdeco-gold-dim); padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #E0E0E0; border-left: 3px solid var(--artdeco-gold-primary); }
+    .code-keyword { color: var(--artdeco-gold-primary); }
+    .code-string { color: var(--artdeco-fall); }
+    .code-comment { color: var(--artdeco-silver-muted); font-style: italic; }
+    .code-func { color: #4A90E2; }
   </style>
 </head>
 <body>
@@ -382,9 +419,134 @@
         </div>
       </div>
 
+      <!-- Trading Controls -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅺ. Trading Controls / 交易控制</h2>
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Mechanical Switch</h3>
+            <div style="display: flex; align-items: center; gap: 20px;">
+              <div style="text-align: center;">
+                <div class="artdeco-switch">
+                  <div class="artdeco-switch-track"></div>
+                  <div class="artdeco-switch-thumb"></div>
+                </div>
+                <div class="text-dim" style="margin-top: 8px; font-size: 0.8rem;">OFF</div>
+              </div>
+              <div style="text-align: center;">
+                <div class="artdeco-switch active">
+                  <div class="artdeco-switch-track"></div>
+                  <div class="artdeco-switch-thumb"></div>
+                </div>
+                <div class="text-gold" style="margin-top: 8px; font-size: 0.8rem;">ON</div>
+              </div>
+            </div>
+            <p class="text-dim" style="margin-top: 16px;">Square mechanical toggle with metallic feel.</p>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Precision Slider</h3>
+            <div style="padding: 20px 0;">
+              <div class="artdeco-slider">
+                <div class="artdeco-slider-track">
+                  <div class="artdeco-slider-fill"></div>
+                </div>
+                <div class="artdeco-slider-thumb"></div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--artdeco-font-mono); font-size: 0.8rem; color: var(--artdeco-silver-dim);">
+              <span>0%</span>
+              <span class="text-gold">40%</span>
+              <span>100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time & Dimension -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">Ⅻ. Time & Dimension / 时间维度</h2>
+        <div class="artdeco-card">
+          <h3 style="margin-bottom: var(--artdeco-space-md);">Date Range Picker</h3>
+          <div style="display: flex; gap: 10px; align-items: center; background: #0A0C0E; padding: 10px; border: 1px solid var(--artdeco-gold-dim); width: fit-content;">
+            <span style="color: var(--artdeco-gold-primary); font-family: var(--artdeco-font-mono);">📅</span>
+            <span style="color: var(--artdeco-silver-text); font-family: var(--artdeco-font-mono);">2023-01-01</span>
+            <span style="color: var(--artdeco-silver-muted);">→</span>
+            <span style="color: var(--artdeco-silver-text); font-family: var(--artdeco-font-mono);">2023-12-31</span>
+          </div>
+          <p class="text-dim" style="margin-top: 10px; font-size: 0.8rem;">Custom styled input trigger.</p>
+        </div>
+      </div>
+
+      <!-- Feedback & Loading -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">XIII. Feedback / 反馈交互</h2>
+        <div class="artdeco-grid-3">
+          <div class="artdeco-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="artdeco-loader"></div>
+            <p class="text-gold" style="margin-top: 20px; font-family: var(--artdeco-font-display); letter-spacing: 2px; font-size: 0.8rem;">COMPUTING...</p>
+          </div>
+
+          <div class="artdeco-card">
+            <h3 style="margin-bottom: var(--artdeco-space-md);">Progress Bar</h3>
+            <div style="height: 4px; background: #2C3E50; width: 100%; margin-top: 20px;">
+              <div style="height: 100%; width: 75%; background: var(--artdeco-gold-primary); box-shadow: 0 0 10px var(--artdeco-gold-primary);"></div>
+            </div>
+            <div style="text-align: right; margin-top: 5px; font-family: var(--artdeco-font-mono); color: var(--artdeco-gold-primary);">75%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deep Data Viz -->
+      <div class="artdeco-section">
+        <h2 class="artdeco-section-title">XIV. Deep Data / 深度数据</h2>
+        <div class="artdeco-grid-2">
+          <div class="artdeco-card" style="padding: 0;">
+            <div style="padding: 16px; border-bottom: 1px solid var(--artdeco-gold-dim);"><h3 style="margin:0;">Order Book</h3></div>
+            <div style="padding: 10px;">
+              <div class="artdeco-orderbook-row">
+                <span class="text-ask">Ask 5</span>
+                <span>3246.00</span>
+                <span>120</span>
+                <div class="artdeco-depth-bar depth-ask" style="width: 20%;"></div>
+              </div>
+              <div class="artdeco-orderbook-row">
+                <span class="text-ask">Ask 1</span>
+                <span>3245.80</span>
+                <span>540</span>
+                <div class="artdeco-depth-bar depth-ask" style="width: 60%;"></div>
+              </div>
+              <div style="height: 1px; background: var(--artdeco-gold-dim); margin: 5px 0; opacity: 0.3;"></div>
+              <div class="artdeco-orderbook-row">
+                <span class="text-bid">Bid 1</span>
+                <span>3245.75</span>
+                <span>890</span>
+                <div class="artdeco-depth-bar depth-bid" style="width: 80%;"></div>
+              </div>
+              <div class="artdeco-orderbook-row">
+                <span class="text-bid">Bid 5</span>
+                <span>3245.50</span>
+                <span>230</span>
+                <div class="artdeco-depth-bar depth-bid" style="width: 30%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="artdeco-card">
+            <h3>Code Strategy</h3>
+            <div class="artdeco-code-editor">
+              <div><span class="code-keyword">def</span> <span class="code-func">initialize</span>(context):</div>
+              <div style="padding-left: 20px;"><span class="code-comment"># Set commission and slippage</span></div>
+              <div style="padding-left: 20px;">set_commission(Commission(<span class="code-string">0.0003</span>))</div>
+              <div style="padding-left: 20px;">context.stock = <span class="code-string">'600519.SH'</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Navigation -->
       <div class="artdeco-section">
-        <h2 class="artdeco-section-title">Ⅺ. Navigation / 导航</h2>
+        <h2 class="artdeco-section-title">XV. Navigation / 导航</h2>
 
         <div class="artdeco-card">
           <h3 style="margin-bottom: var(--artdeco-space-lg);">Sidebar Navigation Items</h3>

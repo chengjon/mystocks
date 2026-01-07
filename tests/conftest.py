@@ -6,6 +6,7 @@
 
 import asyncio
 import os
+import sys
 import pytest
 import tempfile
 import time
@@ -15,6 +16,22 @@ from typing import Dict, Generator, Any, Optional
 
 import pytest_asyncio
 from dotenv import load_dotenv
+
+# ========== 重要: PYTHONPATH 配置 ==========
+# 添加项目根目录和src目录到Python路径
+# 这样测试文件可以正确导入 from src.xxx 模块
+
+# 项目根目录 (tests 的父目录)
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# src 目录
+src_dir = project_root / "src"
+if str(src_dir) not in sys.path:
+    sys.path.insert(0, str(src_dir))
+
+# ==========================================
 
 # 加载环境变量
 load_dotenv()

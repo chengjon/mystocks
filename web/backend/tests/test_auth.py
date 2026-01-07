@@ -151,7 +151,7 @@ class TestUserRegistration:
     def test_register_user_success(self, client):
         """Test successful user registration"""
         response = client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -175,7 +175,7 @@ class TestUserRegistration:
         """Test registration with duplicate username"""
         # First registration
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test1@example.com",
@@ -185,7 +185,7 @@ class TestUserRegistration:
 
         # Second registration with same username
         response = client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test2@example.com",
@@ -200,7 +200,7 @@ class TestUserRegistration:
         """Test registration with duplicate email"""
         # First registration
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser1",
                 "email": "test@example.com",
@@ -210,7 +210,7 @@ class TestUserRegistration:
 
         # Second registration with same email
         response = client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser2",
                 "email": "test@example.com",
@@ -224,7 +224,7 @@ class TestUserRegistration:
     def test_register_weak_password(self, client):
         """Test registration with weak password"""
         response = client.post(
-            " /api/auth/register",
+            " /api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -237,7 +237,7 @@ class TestUserRegistration:
     def test_register_invalid_email(self, client):
         """Test registration with invalid email"""
         response = client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "invalid-email",  # Invalid email format
@@ -250,7 +250,7 @@ class TestUserRegistration:
     def test_register_short_username(self, client):
         """Test registration with short username"""
         response = client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "ab",  # Less than 3 characters
                 "email": "test@example.com",
@@ -268,7 +268,7 @@ class TestUserLogin:
         """Test successful user login"""
         # First register a user
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -278,7 +278,7 @@ class TestUserLogin:
 
         # Then login
         response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "TestPass123",
@@ -297,7 +297,7 @@ class TestUserLogin:
         """Test login with wrong password"""
         # Register a user
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -307,7 +307,7 @@ class TestUserLogin:
 
         # Login with wrong password
         response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "WrongPassword123",
@@ -319,7 +319,7 @@ class TestUserLogin:
     def test_login_nonexistent_user(self, client):
         """Test login with non-existent user"""
         response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "nonexistent",
                 "password": "TestPass123",
@@ -336,7 +336,7 @@ class TestTokenRefresh:
         """Test successful token refresh"""
         # Register and login
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -345,7 +345,7 @@ class TestTokenRefresh:
         )
 
         login_response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "TestPass123",
@@ -355,7 +355,7 @@ class TestTokenRefresh:
 
         # Refresh token
         response = client.post(
-            "/api/auth/refresh",
+            "/api/v1/auth/refresh",
             headers={"Authorization": f"Bearer {token}"},
         )
 
@@ -367,7 +367,7 @@ class TestTokenRefresh:
     def test_refresh_token_invalid_auth(self, client):
         """Test token refresh with invalid authorization"""
         response = client.post(
-            "/api/auth/refresh",
+            "/api/v1/auth/refresh",
             headers={"Authorization": "Bearer invalid_token"},
         )
 
@@ -380,7 +380,7 @@ class TestPasswordReset:
     def test_request_password_reset(self, client):
         """Test password reset request"""
         response = client.post(
-            "/api/auth/reset-password/request",
+            "/api/v1/auth/reset-password/request",
             json={"email": "test@example.com"},
         )
 
@@ -392,7 +392,7 @@ class TestPasswordReset:
         """Test successful password reset confirmation"""
         # Register a user
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -412,7 +412,7 @@ class TestPasswordReset:
 
         # Confirm reset
         response = client.post(
-            "/api/auth/reset-password/confirm",
+            "/api/v1/auth/reset-password/confirm",
             json={
                 "token": reset_token,
                 "new_password": "NewPassword123",
@@ -424,7 +424,7 @@ class TestPasswordReset:
 
         # Verify old password no longer works
         login_response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "OldPassword123",
@@ -434,7 +434,7 @@ class TestPasswordReset:
 
         # Verify new password works
         login_response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "NewPassword123",
@@ -445,7 +445,7 @@ class TestPasswordReset:
     def test_confirm_password_reset_invalid_token(self, client):
         """Test password reset with invalid token"""
         response = client.post(
-            "/api/auth/reset-password/confirm",
+            "/api/v1/auth/reset-password/confirm",
             json={
                 "token": "invalid_token",
                 "new_password": "NewPassword123",
@@ -462,7 +462,7 @@ class TestGetCurrentUser:
         """Test getting current user info"""
         # Register and login
         client.post(
-            "/api/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -471,7 +471,7 @@ class TestGetCurrentUser:
         )
 
         login_response = client.post(
-            "/api/auth/login",
+            "/api/v1/auth/login",
             data={
                 "username": "testuser",
                 "password": "TestPass123",
@@ -481,7 +481,7 @@ class TestGetCurrentUser:
 
         # Get current user
         response = client.get(
-            "/api/auth/me",
+            "/api/v1/auth/me",
             headers={"Authorization": f"Bearer {token}"},
         )
 
@@ -493,7 +493,7 @@ class TestGetCurrentUser:
 
     def test_get_current_user_no_auth(self, client):
         """Test getting current user without authentication"""
-        response = client.get("/api/auth/me")
+        response = client.get("/api/v1/auth/me")
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -503,7 +503,7 @@ class TestCSRFToken:
 
     def test_get_csrf_token(self, client):
         """Test getting CSRF token"""
-        response = client.get("/api/auth/csrf/token")
+        response = client.get("/api/v1/auth/csrf/token")
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()

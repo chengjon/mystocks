@@ -1,0 +1,114 @@
+name: API Automation & Discovery Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight
+  workflow_dispatch:
+
+env:
+  BASE_URL: http://localhost:8000
+  USE_MOCK_DATA: "false"
+  TIMESERIES_DATA_SOURCE: "tdengine"
+  RELATIONAL_DATA_SOURCE: "postgresql"
+  BUSINESS_DATA_SOURCE: "composite"
+
+jobs:
+  api-discovery-test:
+    runs-on: ubuntu-latest
+
+    # 启用 PostgreSQL 容器 (如果需要 REAL 数据库连接)
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: mystocks
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+        ports:
+          - 5438:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: web/frontend/package-lock.json
+
+    - name: Install Backend Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install uvicorn
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd web/frontend
+        npm ci
+        npx playwright install chromium --with-deps
+
+    - name: Start Backend Service
+      run: |
+        echo "Starting backend with REAL data configuration"
+        # 注入必需的数据库配置环境变量
+        export POSTGRESQL_PASSWORD=password
+        export JWT_SECRET_KEY=$(openssl rand -hex 32)
+        export ADMIN_INITIAL_PASSWORD=admin_pass
+        export POSTGRESQL_HOST=localhost
+        export POSTGRESQL_PORT=5438
+
+        python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+
+        # Wait for service to be ready
+        for i in {1..30}; do
+          if curl -s http://localhost:8000/health > /dev/null; then
+            echo "Backend is ready!"
+            break
+          fi
+          echo "Waiting for backend... ($i/30)"
+          sleep 2
+        done
+
+    - name: Run API Automation Tests
+      run: |
+        chmod +x run-api-tests.sh
+        ./run-api-tests.sh -u http://localhost:8000
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-automation-report
+        path: |
+          docs/reports/test-results/
+          web/frontend/playwright-report/
+
+    - name: Check API Coverage Quality Gate
+      run: |
+        SUMMARY_FILE="docs/reports/test-results/api-test-summary.json"
+        if [ ! -f "$SUMMARY_FILE" ]; then
+          echo "Error: Summary file not found!"
+          exit 1
+        fi
+
+        PASS_RATE=$(python3 -c "import json; print(json.load(open('$SUMMARY_FILE'))['summary']['passRate'].replace('%', ''))")
+        echo "API Pass Rate: $PASS_RATE%"
+
+        python3 -c "import sys; sys.exit(0 if float('$PASS_RATE') >= 30 else 1)" || (echo "Error: API Pass Rate is too low ($PASS_RATE%)" && exit 1)

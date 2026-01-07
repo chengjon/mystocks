@@ -9,7 +9,8 @@ services:
       - "9090:9090"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./data/prometheus:/prometheus
+      - ./config/rules:/etc/prometheus/rules:ro
+      - /home/docker/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -33,7 +34,7 @@ services:
       - GF_SERVER_DOMAIN=localhost
       - GF_INSTALL_PLUGINS=grafana-piechart-panel
     volumes:
-      - ./data/grafana:/var/lib/grafana
+      - /home/docker/grafana:/var/lib/grafana
       - ./provisioning:/etc/grafana/provisioning:ro
     networks:
       - mystocks-monitoring
@@ -49,7 +50,7 @@ services:
       - "9096:9096"
     volumes:
       - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
-      - ./data/loki:/tmp/loki
+      - /home/docker/loki:/home/docker/loki
     command: -config.file=/etc/loki/local-config.yaml -validation.allow-structured-metadata=false
     networks:
       - mystocks-monitoring
@@ -64,7 +65,7 @@ services:
       - "4318:4318"
     volumes:
       - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
-      - ./data/tempo:/tmp/tempo
+      - /home/docker/tempo:/tmp/tempo
     command: -config.file=/etc/tempo-config.yaml
     networks:
       - mystocks-monitoring

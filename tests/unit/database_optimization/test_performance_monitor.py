@@ -15,7 +15,7 @@ import os
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
-from database_optimization.performance_monitor import IndexPerformanceMonitor
+from src.database_optimization.performance_monitor import IndexPerformanceMonitor
 
 
 class TestIndexPerformanceMonitor:

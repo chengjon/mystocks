@@ -1,0 +1,252 @@
+{
+  "rules": [
+    {
+      "id": "KLINE_DAILY_001",
+      "name": "日线K线数据完整性检查",
+      "table": "stocks_daily",
+      "enabled": true,
+      "priority": "HIGH",
+      "description": "验证日线K线数据的必需列和数据逻辑",
+      "actions": [
+        {
+          "type": "required_columns",
+          "columns": [
+            "symbol",
+            "trade_date",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume"
+          ]
+        },
+        {
+          "type": "column_types",
+          "mappings": {
+            "open": "numeric",
+            "high": "numeric",
+            "low": "numeric",
+            "close": "numeric",
+            "volume": "numeric",
+            "trade_date": "datetime"
+          }
+        },
+        {
+          "type": "ohlc_logic"
+        },
+        {
+          "type": "no_duplicates",
+          "keys": [
+            "symbol",
+            "trade_date"
+          ]
+        },
+        {
+          "type": "value_range",
+          "column": "volume",
+          "min": 0
+        }
+      ],
+      "on_failure": "REJECT",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "KLINE_DAILY_002",
+      "name": "日线K线复权因子填充",
+      "table": "stocks_daily",
+      "enabled": true,
+      "priority": "LOW",
+      "description": "自动填充缺失的复权因子为默认值1.0",
+      "actions": [
+        {
+          "type": "fill_null",
+          "column": "adj_factor",
+          "default_value": 1.0,
+          "condition": "adj_factor IS NULL OR adj_factor = 0"
+        }
+      ],
+      "on_failure": "FIX",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "INDUSTRY_001",
+      "name": "行业数据清洗",
+      "table": "stocks_basic",
+      "enabled": true,
+      "priority": "MEDIUM",
+      "description": "剔除行业名称等于股票名称的脏数据",
+      "actions": [
+        {
+          "type": "custom",
+          "description": "剔除 industry = name 的脏数据",
+          "operation": "SET_NULL",
+          "condition": "industry = name"
+        }
+      ],
+      "on_failure": "FIX",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "INDUSTRY_002",
+      "name": "行业数据唯一性检查",
+      "table": "stocks_basic",
+      "enabled": true,
+      "priority": "HIGH",
+      "description": "确保股票代码唯一",
+      "actions": [
+        {
+          "type": "required_columns",
+          "columns": [
+            "symbol",
+            "name"
+          ]
+        },
+        {
+          "type": "no_duplicates",
+          "keys": [
+            "symbol"
+          ]
+        }
+      ],
+      "on_failure": "REJECT",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "KLINE_WEEKLY_001",
+      "name": "周线K线数据完整性检查",
+      "table": "stocks_weekly",
+      "enabled": true,
+      "priority": "HIGH",
+      "description": "验证周线K线数据的必需列和数据逻辑",
+      "actions": [
+        {
+          "type": "required_columns",
+          "columns": [
+            "symbol",
+            "trade_date",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume"
+          ]
+        },
+        {
+          "type": "ohlc_logic"
+        },
+        {
+          "type": "no_duplicates",
+          "keys": [
+            "symbol",
+            "trade_date"
+          ]
+        }
+      ],
+      "on_failure": "REJECT",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "KLINE_MONTHLY_001",
+      "name": "月线K线数据完整性检查",
+      "table": "stocks_monthly",
+      "enabled": true,
+      "priority": "HIGH",
+      "description": "验证月线K线数据的必需列和数据逻辑",
+      "actions": [
+        {
+          "type": "required_columns",
+          "columns": [
+            "symbol",
+            "trade_date",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume"
+          ]
+        },
+        {
+          "type": "ohlc_logic"
+        },
+        {
+          "type": "no_duplicates",
+          "keys": [
+            "symbol",
+            "trade_date"
+          ]
+        }
+      ],
+      "on_failure": "REJECT",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "TICK_001",
+      "name": "Tick数据完整性检查",
+      "table": "stock_tick",
+      "enabled": true,
+      "priority": "HIGH",
+      "description": "验证Tick数据的必需列和数值范围",
+      "actions": [
+        {
+          "type": "required_columns",
+          "columns": [
+            "symbol",
+            "trade_time",
+            "price",
+            "volume"
+          ]
+        },
+        {
+          "type": "column_types",
+          "mappings": {
+            "price": "numeric",
+            "volume": "numeric",
+            "trade_time": "datetime"
+          }
+        },
+        {
+          "type": "value_range",
+          "column": "price",
+          "min": 0
+        },
+        {
+          "type": "value_range",
+          "column": "volume",
+          "min": 0
+        }
+      ],
+      "on_failure": "REJECT",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    },
+    {
+      "id": "TICK_002",
+      "name": "Tick数据频率检查",
+      "table": "stock_tick",
+      "enabled": false,
+      "priority": "LOW",
+      "description": "检查Tick数据频率是否异常（过快或过慢）",
+      "actions": [
+        {
+          "type": "custom",
+          "description": "检查同一秒内Tick数量是否在合理范围内",
+          "validator": "check_tick_frequency"
+        }
+      ],
+      "on_failure": "WARN",
+      "created_at": "2026-01-07",
+      "updated_at": "2026-01-07"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "description": "数据治理规则配置文件",
+    "last_updated": "2026-01-07"
+  }
+}

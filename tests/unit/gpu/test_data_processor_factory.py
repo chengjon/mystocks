@@ -45,7 +45,7 @@ class TestDataProcessorFactory:
         """测试默认获取CPU处理器"""
         # 模拟依赖
         with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
 
@@ -71,7 +71,7 @@ class TestDataProcessorFactory:
 
             mock_import.side_effect = mock_import_func
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
 
@@ -94,7 +94,7 @@ class TestDataProcessorFactory:
 
             mock_import.side_effect = mock_import_func
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
 
@@ -104,7 +104,7 @@ class TestDataProcessorFactory:
     def test_get_processor_explicit_cpu(self):
         """测试显式指定CPU处理器"""
         with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor(gpu_enabled=False)
 
@@ -128,7 +128,7 @@ class TestDataProcessorFactory:
 
             mock_import.side_effect = mock_import_func
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor(gpu_enabled=True)
 
@@ -150,7 +150,7 @@ class TestDataProcessorFactory:
 
             mock_import.side_effect = mock_import_func
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor(gpu_enabled=True)
 
@@ -166,7 +166,7 @@ class TestDataProcessorFactory:
                 MockGPUDataProcessorFixed,
             ),
         ):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor_type = DataProcessorFactory.get_processor_type("cpu")
 
@@ -181,7 +181,7 @@ class TestDataProcessorFactory:
                 MockGPUDataProcessorFixed,
             ),
         ):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor_type = DataProcessorFactory.get_processor_type("gpu")
 
@@ -196,7 +196,7 @@ class TestDataProcessorFactory:
                 MockGPUDataProcessorFixed,
             ),
         ):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor_type = DataProcessorFactory.get_processor_type("CPU")
 
@@ -211,7 +211,7 @@ class TestDataProcessorFactory:
                 MockGPUDataProcessorFixed,
             ),
         ):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor_type = DataProcessorFactory.get_processor_type("GPU")
 
@@ -219,21 +219,21 @@ class TestDataProcessorFactory:
 
     def test_get_processor_type_invalid(self):
         """测试无效处理器类型异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         with pytest.raises(ValueError, match="Unsupported processor type"):
             DataProcessorFactory.get_processor_type("invalid")
 
     def test_get_processor_type_empty_string(self):
         """测试空字符串处理器类型异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         with pytest.raises(ValueError, match="Unsupported processor type"):
             DataProcessorFactory.get_processor_type("")
 
     def test_get_processor_type_none(self):
         """测试None处理器类型异常"""
-        from gpu.data_processor_factory import DataProcessorFactory
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         with pytest.raises(ValueError, match="Unsupported processor type"):
             DataProcessorFactory.get_processor_type(None)
@@ -242,7 +242,7 @@ class TestDataProcessorFactory:
     def test_get_processor_invalid_env_value(self):
         """测试无效环境变量值"""
         with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
 
@@ -253,7 +253,7 @@ class TestDataProcessorFactory:
     def test_get_processor_no_env_variable(self):
         """测试没有环境变量时的默认行为"""
         with patch("src.gpu.data_processor_factory.CPUDataProcessor", MockCPUDataProcessor):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             processor = DataProcessorFactory.get_processor()
 
@@ -278,7 +278,7 @@ class TestDataProcessorFactoryIntegration:
             # 模拟GPU库存在
             mock_import.return_value = Mock()
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             # 测试从环境变量检测
             processor = DataProcessorFactory.get_processor()
@@ -308,7 +308,7 @@ class TestDataProcessorFactoryIntegration:
 
             mock_import.side_effect = mock_import_func
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             # 应该自动回退到CPU
             processor = DataProcessorFactory.get_processor()
@@ -326,7 +326,7 @@ class TestDataProcessorFactoryIntegration:
                 MockGPUDataProcessorFixed,
             ),
         ):
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             # 获取处理器类型
             cpu_type = DataProcessorFactory.get_processor_type("cpu")
@@ -352,7 +352,7 @@ class TestDataProcessorFactoryIntegration:
         ):
             mock_import.return_value = Mock()
 
-            from gpu.data_processor_factory import DataProcessorFactory
+            from src.gpu.data_processor_factory import DataProcessorFactory
 
             # 通过工厂方法获取
             factory_cpu = DataProcessorFactory.get_processor(gpu_enabled=False)

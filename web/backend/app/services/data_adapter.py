@@ -208,8 +208,19 @@ class DataDataSourceAdapter(IDataSource):
         sort_order = params.get("sort_order")
 
         try:
-            # 使用现有的db_service查询逻辑
-            df = db_service.query_stocks_basic(limit=1000)
+            # 使用现有的db_service查询逻辑 - 支持数据库级搜索
+            # 如果有搜索参数，limit可能需要由分页控制，这里先获取足够数量，或者直接传limit
+            # 但db_service.query_stocks_basic的limit是总limit。
+            # 为了支持分页，我们可能需要获取更多数据，或者让db_service支持offset
+            # 目前db_service.query_stocks_basic不支持offset。
+            # 简单起见，我们请求 limit + offset (如果不太大)，或者最大1000
+
+            fetch_limit = 1000
+            if limit + offset > fetch_limit:
+                fetch_limit = limit + offset
+
+            # 传递search参数到数据库查询
+            df = db_service.query_stocks_basic(limit=fetch_limit, search=search)
 
             if df.empty:
                 return {
@@ -222,12 +233,8 @@ class DataDataSourceAdapter(IDataSource):
                     "endpoint": "stocks/basic",
                 }
 
-            # 应用筛选条件 (复制原有逻辑)
-            if search:
-                search_mask = df["symbol"].str.contains(search, case=False, na=False) | df["name"].str.contains(
-                    search, case=False, na=False
-                )
-                df = df[search_mask]
+            # 应用筛选条件 (industry, concept, market 仍在内存中过滤)
+            # search已经由数据库处理，不需要再过滤
 
             if industry:
                 df = df[df["industry"] == industry]
@@ -464,7 +471,7 @@ class DataDataSourceAdapter(IDataSource):
 
     async def _fetch_stocks_search(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """股票搜索"""
-        query = params.get("query", "")
+        query = params.get("query") or params.get("keyword", "")
         limit = params.get("limit", 20)
 
         try:
@@ -1123,7 +1130,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
             # 使用 run_in_executor 执行同步计算任务，防止阻塞事件循环
             import asyncio
 
-            loop = asyncio.get_running_loop()
+            asyncio.get_running_loop()
 
             if endpoint == "indicators" or (len(path_parts) >= 2 and path_parts[1] == "indicators"):
                 # "indicators" or /{symbol}/indicators

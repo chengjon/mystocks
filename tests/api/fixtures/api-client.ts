@@ -27,10 +27,12 @@ export const ERROR_CODES = {
  * API 响应结构
  */
 export interface APIResponse<T = any> {
-  code: number;
-  message: string;
+  success?: boolean;
+  code?: number;
+  message?: string;
   data: T;
-  timestamp?: number;
+  timestamp?: string;
+  request_id?: string;
 }
 
 /**
@@ -121,16 +123,28 @@ export class APITestClient {
   }
 
   async login(username: string, password: string) {
-    const response = await this.post('/api/auth/login', {
-      username,
-      password,
+    // Login endpoint uses OAuth2PasswordRequestForm - send as form data
+    const response = await fetch(new URL('/api/v1/auth/login', this.baseURL).toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
     });
 
-    if (response.code === 200 && response.data?.token) {
-      this.setToken(response.data.token);
+    const data = await response.json();
+
+    if (data.code === 200 && data.data?.token) {
+      this.setToken(data.data.token);
+    } else if (data.code === 200 && data.data?.access_token) {
+      this.setToken(data.data.access_token);
+    } else if (data.success === true && data.data?.token) {
+      this.setToken(data.data.token);
+    } else if (data.success === true && data.data?.access_token) {
+      this.setToken(data.data.access_token);
     }
 
-    return response;
+    return data;
   }
 }
 
@@ -142,9 +156,14 @@ export function validateAPIResponse<T>(
   response: APIResponse<T>,
   expectedCode: number = 200
 ): T {
-  if (response.code !== expectedCode) {
+  // Handle both formats: {code: 200} and {success: true}
+  const isSuccess = response.success === true || response.code === expectedCode;
+
+  if (!isSuccess) {
+    const actualCode = response.code;
+    const actualSuccess = response.success;
     throw new Error(
-      `Expected code ${expectedCode}, got ${response.code}: ${response.message}`
+      `Expected code ${expectedCode}, got code=${actualCode}, success=${actualSuccess}: ${response.message || 'No message'}`
     );
   }
 

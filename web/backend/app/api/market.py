@@ -27,7 +27,6 @@ from app.core.responses import ErrorCodes, create_error_response, create_success
 from app.schemas.market_schemas import (
     ChipRaceResponse,
     ETFDataResponse,
-    FundFlowRequest,
     LongHuBangResponse,
     MessageResponse,
 )
@@ -481,7 +480,7 @@ async def refresh_lhb_detail(
 @router.get("/quotes", summary="查询实时行情")
 @cache_response("real_time_quotes", ttl=10)  # 🚀 添加10秒缓存（平衡实时性）
 async def get_market_quotes(
-    symbols: Optional[str] = Query(None, description="股票代码列表，逗号分隔，如: 000001,600519")
+    symbols: Optional[str] = Query(None, description="股票代码列表，逗号分隔，如: 000001,600519"),
 ):
     """
     获取实时市场行情数据（使用数据源工厂）

@@ -119,13 +119,21 @@ def normalize_stock_data_format(df: pd.DataFrame) -> pd.DataFrame:
             "pe",
             "pb",
             "turnover",
+            "amount",
         ]:
             if not pd.api.types.is_numeric_dtype(normalized_df[col]):
                 try:
                     normalized_df[col] = pd.to_numeric(normalized_df[col], errors="coerce")
                 except Exception:
-                    # 如果转换失败，保持原值
                     pass
+
+        # 强制处理成交量为整数类型 (长期方案)
+        elif col == "volume":
+            try:
+                # 先转为数值（处理字符串等），NaN转为0，最后强制转为int64
+                normalized_df[col] = pd.to_numeric(normalized_df[col], errors="coerce").fillna(0).astype("int64")
+            except Exception:
+                logger.warning("成交量类型转换失败", field=col)
 
     return normalized_df
 
@@ -145,23 +153,39 @@ def normalize_api_response_format(data: Dict[str, Any]) -> Dict[str, Any]:
 
     normalized_data = data.copy()
 
-    # 如果有data字段，对其中的DataFrame进行标准化
-    if "data" in normalized_data and isinstance(normalized_data["data"], pd.DataFrame):
-        normalized_data["data"] = normalize_stock_data_format(normalized_data["data"])
-    elif "data" in normalized_data and isinstance(normalized_data["data"], list):
-        # 如果是列表，尝试转换为DataFrame再标准化
-        try:
-            df = pd.DataFrame(normalized_data["data"])
-            normalized_df = normalize_stock_data_format(df)
-            normalized_data["data"] = normalized_df.to_dict("records")
-        except Exception as e:
-            logger.warning("列表数据标准化失败: %s", e)
+    # 如果有data字段，对其中的内容进行标准化
+    if "data" in normalized_data:
+        if isinstance(normalized_data["data"], pd.DataFrame):
+            normalized_data["data"] = normalize_stock_data_format(normalized_data["data"])
+        elif isinstance(normalized_data["data"], list):
+            # 长期方案：对列表使用非Pandas的标准化方法，避免类型隐式提升
+            try:
+                # 使用专门处理列表的方法
+                normalized_data["data"] = normalize_stock_list_format(normalized_data["data"])
+
+                # 双重保障：如果是K线数据，确保 volume 是 int
+                if len(normalized_data["data"]) > 0 and "volume" in normalized_data["data"][0]:
+                    for item in normalized_data["data"]:
+                        if "volume" in item and item["volume"] is not None:
+                            try:
+                                # 处理可能的 float 或 string
+                                item["volume"] = int(float(item["volume"]))
+                            except (ValueError, TypeError):
+                                item["volume"] = 0
+            except Exception as e:
+                logger.warning("列表数据标准化失败: %s", e)
 
     # 添加缺失的必要字段
     if "success" not in normalized_data:
         normalized_data["success"] = True
 
-    if "total" not in normalized_data and "data" in normalized_data:
+    # 确保 total 是整数
+    if "total" in normalized_data:
+        try:
+            normalized_data["total"] = int(float(normalized_data["total"]))
+        except (ValueError, TypeError):
+            pass
+    elif "data" in normalized_data:
         if isinstance(normalized_data["data"], list):
             normalized_data["total"] = len(normalized_data["data"])
         elif isinstance(normalized_data["data"], pd.DataFrame):
