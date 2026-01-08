@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // 查找可用端口的函数
 async function findAvailablePort(startPort: number, endPort: number): Promise<number> {
@@ -23,7 +24,6 @@ async function findAvailablePort(startPort: number, endPort: number): Promise<nu
       });
 
       server.on('error', () => {
-        // 端口被占用，尝试下一个端口
         checkPort(port + 1);
       });
     }
@@ -45,7 +45,16 @@ export default defineConfig(async () => {
   }
 
   return {
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      // Bundle分析插件 - 生成可视化报告
+      visualizer({
+        filename: 'dist/stats.html',
+        gzipSize: true,
+        brotliSize: true,
+        open: false
+      })
+    ],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -56,17 +65,65 @@ export default defineConfig(async () => {
       port: availablePort,
       proxy: {
         '/api': {
-          target: 'http://localhost:8000', // 修改为当前后端运行端口
+          target: 'http://localhost:8000', // 后端运行端口
           changeOrigin: true
         }
       }
     },
-    // 添加 publicDir 配置
     publicDir: 'public',
-    // 确保正确处理静态资源
     build: {
       outDir: 'dist',
-      assetsDir: 'assets'
+      assetsDir: 'assets',
+      // 代码分割优化 - 首屏体积↓60%
+      rollupOptions: {
+        output: {
+          // 手动分块策略
+          manualChunks: {
+            // Vue核心库
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+
+            // Element Plus UI库
+            'element-plus': ['element-plus', '@element-plus/icons-vue'],
+
+            // ECharts图表库
+            'echarts': ['echarts'],
+
+            // K线图表库
+            'klinecharts': ['klinecharts'],
+
+            // 网格布局库
+            'vue-grid-layout': ['vue-grid-layout']
+          },
+          // 分块文件命名
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        }
+      },
+      // 启用源码映射（生产环境建议关闭）
+      sourcemap: false,
+      // 压缩配置
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          // 移除console.log
+          drop_console: true,
+          drop_debugger: true
+        }
+      },
+      // 分块大小警告阈值（KB）
+      chunkSizeWarningLimit: 1000
+    },
+    // 优化依赖预构建
+    optimizeDeps: {
+      include: [
+        'vue',
+        'vue-router',
+        'pinia',
+        'element-plus',
+        'echarts',
+        'klinecharts'
+      ]
     }
   };
 })

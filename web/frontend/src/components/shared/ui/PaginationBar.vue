@@ -1,5 +1,5 @@
 <template>
-  <div class="artdeco-pagination">
+  <div class="pagination">
     <el-pagination
       :current-page="currentPage"
       :page-size="currentPageSize"
@@ -62,19 +62,18 @@ const handleCurrentChange = (val: number) => {
 </script>
 
 <style scoped lang="scss">
-
-.artdeco-pagination {
+.pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--artdeco-spacing-4) 0;
-  margin-top: var(--artdeco-spacing-6);
+  padding: 16px 0;
+  margin-top: 24px;
 
   :deep(.el-pagination) {
     .el-pagination__total {
-      font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-small);
-      color: var(--artdeco-fg-muted);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 13px;
+      color: #909399;
       font-weight: 500;
     }
 
@@ -82,18 +81,18 @@ const handleCurrentChange = (val: number) => {
       .el-select .el-input__wrapper {
         background: transparent;
         border: 1px solid rgba(212, 175, 55, 0.3);
-        border-radius: var(--artdeco-radius-none);
+        border-radius: 0;
         box-shadow: none;
-        transition: all var(--artdeco-transition-base);
+        transition: all 0.3s;
 
         &:hover {
-          border-color: var(--artdeco-accent-gold);
-          box-shadow: var(--artdeco-glow-subtle);
+          border-color: #409eff;
+          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
         }
 
         .el-input__inner {
-          font-family: var(--artdeco-font-display);
-          color: var(--artdeco-accent-gold);
+          font-family: 'Inter', system-ui, sans-serif;
+          color: #409eff;
           font-weight: 600;
           text-transform: uppercase;
         }
@@ -104,16 +103,16 @@ const handleCurrentChange = (val: number) => {
     .btn-next {
       background: transparent;
       border: 2px solid rgba(212, 175, 55, 0.3);
-      border-radius: var(--artdeco-radius-none);
-      color: var(--artdeco-accent-gold);
+      border-radius: 0;
+      color: #409eff;
       font-weight: 600;
-      font-family: var(--artdeco-font-display);
-      transition: all var(--artdeco-transition-base);
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: all 0.3s;
 
       &:hover {
         background: rgba(212, 175, 55, 0.1);
-        border-color: var(--artdeco-accent-gold);
-        box-shadow: var(--artdeco-glow-subtle);
+        border-color: #409eff;
+        box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
       }
 
       &:disabled {
@@ -133,61 +132,61 @@ const handleCurrentChange = (val: number) => {
       .number {
         background: transparent;
         border: 2px solid rgba(212, 175, 55, 0.3);
-        border-radius: var(--artdeco-radius-none);
-        color: var(--artdeco-accent-gold);
+        border-radius: 0;
+        color: #409eff;
         font-weight: 600;
-        font-family: var(--artdeco-font-display);
-        transition: all var(--artdeco-transition-base);
+        font-family: 'Inter', system-ui, sans-serif;
+        transition: all 0.3s;
 
         &:hover {
           background: rgba(212, 175, 55, 0.1);
-          border-color: var(--artdeco-accent-gold);
-          box-shadow: var(--artdeco-glow-subtle);
+          border-color: #409eff;
+          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
         }
 
         &.is-active {
-          background: var(--artdeco-accent-gold);
-          border-color: var(--artdeco-accent-gold);
-          color: var(--artdeco-bg-primary);
-          box-shadow: var(--artdeco-glow-medium);
+          background: #409eff;
+          border-color: #409eff;
+          color: #ffffff;
+          box-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
         }
       }
 
       .more {
         background: transparent;
-        color: var(--artdeco-fg-muted);
+        color: #909399;
         font-weight: 600;
 
         &:hover {
           background: transparent;
-          color: var(--artdeco-accent-gold);
+          color: #409eff;
         }
       }
     }
 
     .el-pagination__jump {
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-small);
-      color: var(--artdeco-fg-muted);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      color: #909399;
       font-weight: 600;
       text-transform: uppercase;
 
       .el-input__wrapper {
         background: transparent;
         border: 1px solid rgba(212, 175, 55, 0.3);
-        border-radius: var(--artdeco-radius-none);
+        border-radius: 0;
         box-shadow: none;
-        transition: all var(--artdeco-transition-base);
-        margin: 0 var(--artdeco-spacing-2);
+        transition: all 0.3s;
+        margin: 0 8px;
 
         &:hover {
-          border-color: var(--artdeco-accent-gold);
-          box-shadow: var(--artdeco-glow-subtle);
+          border-color: #409eff;
+          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
         }
 
         .el-input__inner {
-          font-family: var(--artdeco-font-display);
-          color: var(--artdeco-accent-gold);
+          font-family: 'Inter', system-ui, sans-serif;
+          color: #409eff;
           font-weight: 600;
           text-align: center;
         }
@@ -197,7 +196,7 @@ const handleCurrentChange = (val: number) => {
 }
 
 @media (max-width: 768px) {
-  .artdeco-pagination {
+  .pagination {
     :deep(.el-pagination) {
       .el-pagination__sizes,
       .el-pagination__jump {
