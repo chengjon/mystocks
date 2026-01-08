@@ -121,7 +121,8 @@ export default defineConfig(async () => {
         'vue-router',
         'pinia',
         'element-plus',
-        'echarts',
+        // ⚠️ 不预构建echarts，使用按需引入版本
+        // 'echarts',
         'klinecharts'
       ]
     }
