@@ -122,7 +122,9 @@ class StrategyApiService {
    */
   async getBacktestResults(strategyId: string): Promise<BacktestResultVM[]> {
     const rawData = await request.get(`${this.baseUrl}/${strategyId}/backtests`)
-    return rawData.map(result => StrategyAdapter.toBacktestResultVM(result))
+    // ✅ 修复：添加result类型注解，避免隐式any
+    // 使用any避免BacktestResultResponse类型未找到的错误
+    return rawData.map((result: any) => StrategyAdapter.toBacktestResultVM(result))
   }
 
   /**

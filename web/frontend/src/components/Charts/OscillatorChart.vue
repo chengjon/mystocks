@@ -173,21 +173,24 @@ const initChart = () => {
     updateChart();
   }
 
-  try {
-    chartInstance.subscribeAction('onCrosshairChange' as any, (data: unknown) => {
-      const crosshair = data as { data?: Record<string, unknown> };
-      if (crosshair.data) {
-        const indicatorNames = getIndicatorNames(props.type);
-        const colors = displayColors.value;
-        currentValues.value = indicatorNames.map((name, idx) => ({
-          label: name,
-          value: formatOscillatorValue(crosshair.data?.[name] as number ?? NaN, props.type),
-          color: (colors as string[])[idx % colors.length]
-        }));
-      }
-    });
-  } catch (e) {
-    console.warn('Failed to subscribe to crosshair change:', e);
+  // ✅ 修复：在使用chartInstance之前检查null
+  if (chartInstance) {
+    try {
+      chartInstance.subscribeAction('onCrosshairChange' as any, (data: unknown) => {
+        const crosshair = data as { data?: Record<string, unknown> };
+        if (crosshair.data) {
+          const indicatorNames = getIndicatorNames(props.type);
+          const colors = displayColors.value;
+          currentValues.value = indicatorNames.map((name, idx) => ({
+            label: name,
+            value: formatOscillatorValue(crosshair.data?.[name] as number ?? NaN, props.type),
+            color: (colors as string[])[idx % colors.length]
+          }));
+        }
+      });
+    } catch (e) {
+      console.warn('Failed to subscribe to crosshair change:', e);
+    }
   }
 };
 

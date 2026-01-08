@@ -257,7 +257,7 @@ const updateIndustryChart = async () => {
     grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
     xAxis: { type: 'value', axisLine: { lineStyle: { color: '#5C6B7F' } }, axisLabel: { color: '#8B9BB4' } },
     yAxis: { type: 'category', data: categories, axisLine: { lineStyle: { color: '#5C6B7F' } }, axisLabel: { color: '#8B9BB4' } },
-    series: [{ type: 'bar', data: values, itemStyle: { color: (p) => p.value > 0 ? '#C94042' : '#3D9970' } }]
+    series: [{ type: 'bar', data: values, itemStyle: { color: (p: { value: number }) => p.value > 0 ? '#C94042' : '#3D9970' } }]
   }
   industryChart.setOption(option)
 }
