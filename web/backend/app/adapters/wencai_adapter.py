@@ -52,7 +52,7 @@ class WencaiDataSource:
         self.retry_count = retry_count
         self.session = self._create_session()
 
-        logger.info(f"WencaiDataSource initialized: timeout={timeout}s, " f"retry_count={retry_count}")
+        logger.info(f"WencaiDataSource initialized: timeout={timeout}s, retry_count={retry_count}")
 
     def _create_session(self) -> requests.Session:
         """
@@ -266,7 +266,7 @@ class WencaiDataSource:
         """
         from collections import defaultdict
 
-        col_counts = defaultdict(int)
+        col_counts: defaultdict[str, int] = defaultdict(int)
         new_columns = []
 
         for col in df.columns:
@@ -313,7 +313,7 @@ WENCAI_QUERIES = {
     "qs_2": "请列出近2周内资金流入持续5天为正，且涨幅不超过5%的股票",
     "qs_3": "请列出近3个月内出现过5日平均换手率大于30%的股票",
     "qs_4": "20日涨跌幅小于10%，换手率小于10%，市值小于100亿元，周成交量环比增长率大于100%前20名，当日涨幅＜4%，排除ST",
-    "qs_5": "请列出2024年1月1日以来上市满10个月的股票里，平均换手率大于40%或者换手率标准差大于15%的股票",
+    "qs_5": "请列出上市满1年，平均换手率大于40%或者换手率标准差大于15%的股票",
     "qs_6": "请列出现近1周内板块资金流入持续为正的板块名称",
     "qs_7": "请列出现价小于30元、平均换手率大于20%、交易天数不少于250天的股票",
     "qs_8": "今日热度前300",
