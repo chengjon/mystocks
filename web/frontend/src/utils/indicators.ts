@@ -113,10 +113,11 @@ export function calculateMACD(data: KLineDataPoint[]): {
   try {
     const macdData = MACD.calculate(macdInput as any)
 
+    // ✅ 修复：使用类型断言确保返回number[]类型
     // 替换无效值而非过滤，保持长度一致
-    const macd = macdData.map(d => isFinite(d.MACD) ? d.MACD : 0)
-    const signal = macdData.map(d => isFinite(d.signal) ? d.signal : 0)
-    const histogram = macdData.map(d => isFinite(d.histogram) ? d.histogram : 0)
+    const macd = macdData.map(d => isFinite(d.MACD) ? d.MACD : 0) as number[]
+    const signal = macdData.map(d => isFinite(d.signal) ? d.signal : 0) as number[]
+    const histogram = macdData.map(d => isFinite(d.histogram) ? d.histogram : 0) as number[]
 
     return { macd, signal, histogram }
   } catch (error) {

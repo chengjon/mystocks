@@ -411,7 +411,8 @@ export function cached<T extends (...args: any[]) => Promise<any>>(
     const cacheName = options.cache || propertyName
     const cache = getCache(cacheName, options)
 
-    descriptor.value = async function (...args: Parameters<T>): Promise<ReturnType<T>> {
+    // ✅ 修复：添加this类型注解，避免隐式any
+    descriptor.value = async function (this: any, ...args: Parameters<T>): Promise<ReturnType<T>> {
       const key = options.keyGenerator
         ? options.keyGenerator(...args)
         : JSON.stringify(args)
@@ -434,18 +435,19 @@ export function cached<T extends (...args: any[]) => Promise<any>>(
     } as T
 
     // Add cache control methods
-    descriptor.value.clearCache = function () {
+    // ✅ 修复：添加this类型注解
+    descriptor.value.clearCache = function (this: any) {
       cache.clear()
     }
 
-    descriptor.value.invalidate = function (...args: Parameters<T>) {
+    descriptor.value.invalidate = function (this: any, ...args: Parameters<T>) {
       const key = options.keyGenerator
         ? options.keyGenerator(...args)
         : JSON.stringify(args)
       return cache.delete(key)
     }
 
-    descriptor.value.getStats = function () {
+    descriptor.value.getStats = function (this: any) {
       return cache.getStats()
     }
 

@@ -206,7 +206,8 @@ export const mockStopLimit = {
 
 export const loadMockStopLimit = async (symbol: string, prevClose: number) => {
   await new Promise(resolve => setTimeout(resolve, 100));
-  const limit = mockStopLimit[symbol] || mockStopLimit['default'];
+  // ✅ 修复：使用keyof typeof确保索引访问类型安全
+  const limit = mockStopLimit[symbol as keyof typeof mockStopLimit] || mockStopLimit.default;
   if (limit.limit_up === 0) {
     return {
       limit_up: Number((prevClose * 1.10).toFixed(2)),
