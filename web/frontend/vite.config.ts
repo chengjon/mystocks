@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
+import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // 查找可用端口的函数
 async function findAvailablePort(startPort: number, endPort: number): Promise<number> {
@@ -47,6 +50,13 @@ export default defineConfig(async () => {
   return {
     plugins: [
       vue(),
+      // ⚡ Element Plus 自动导入（按需引入，减少Bundle）
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
       // Bundle分析插件 - 生成可视化报告
       visualizer({
         filename: 'dist/stats.html',
@@ -82,10 +92,10 @@ export default defineConfig(async () => {
             // Vue核心库
             'vue-vendor': ['vue', 'vue-router', 'pinia'],
 
-            // Element Plus UI库
-            'element-plus': ['element-plus', '@element-plus/icons-vue'],
+            // Element Plus UI库（自动导入，不再手动分块）
+            // 'element-plus': ['element-plus', '@element-plus/icons-vue'],
 
-            // ECharts图表库
+            // ECharts图表库（按需引入）
             'echarts': ['echarts'],
 
             // K线图表库
@@ -120,7 +130,8 @@ export default defineConfig(async () => {
         'vue',
         'vue-router',
         'pinia',
-        'element-plus',
+        // ⚠️ Element Plus按需引入，不再预构建
+        // 'element-plus',
         // ⚠️ 不预构建echarts，使用按需引入版本
         // 'echarts',
         'klinecharts'
