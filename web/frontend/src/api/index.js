@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+// ElMessage auto-imported by unplugin-vue-components
 import cacheManager from '@/utils/cache'
 import router from '@/router'
 

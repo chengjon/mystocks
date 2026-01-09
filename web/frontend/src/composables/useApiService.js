@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { request, monitoringApi } from '@/api/index'
-import { ElMessage } from 'element-plus'
+// ElMessage auto-imported by unplugin-vue-components
 
 /**
  * API服务组合函数

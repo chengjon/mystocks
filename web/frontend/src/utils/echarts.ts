@@ -74,5 +74,5 @@ use([
   CanvasRenderer
 ])
 
-// 注意：不要使用 export * from 'echarts/core'，这会导致全量导入
-// 组件中应该使用：import * as echarts from 'echarts'（自动使用按需引入的版本）
+// 注意：组件中应该使用 import * as echarts from 'echarts'
+// Vite 会自动使用我们已注册的按需引入版本
