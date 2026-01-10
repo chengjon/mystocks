@@ -473,11 +473,12 @@ export const riskApi = {
   }
 }
 
-// 自选股 API (Other)
+// 自选股 API (v1)
 export const watchlistApi = {
   async getWatchlist() {
     return request.get('/watchlist/')
   },
+  // 简化版本 - 只需要股票代码
   async addStock(symbol) {
     return request.post('/watchlist/add', { symbol })
   },
@@ -486,6 +487,13 @@ export const watchlistApi = {
   },
   async checkStock(symbol) {
     return request.get(`/watchlist/check/${symbol}`)
+  },
+  // 完整版本 - 支持所有参数（可选）
+  async addToWatchlist(data) {
+    return request.post('/watchlist/', data)
+  },
+  async removeFromWatchlist(symbol) {
+    return request.delete(`/watchlist/${symbol}`)
   }
 }
 

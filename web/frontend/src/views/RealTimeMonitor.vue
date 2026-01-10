@@ -319,6 +319,7 @@ onMounted((): void => {
 
 <style scoped lang="scss">
 
+.realtime-monitor {
   padding: 24px;
   background: var(--bg-primary);
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
@@ -364,6 +365,7 @@ onMounted((): void => {
     }
   }
 
+  .info-banner {
     background: var(--bg-card);
     border: 1px solid var(--gold-dim);
     padding: 20px;
@@ -632,6 +634,7 @@ onMounted((): void => {
       }
     }
   }
+}
 
   .test-tools-card {
     .test-notice {
@@ -778,9 +781,9 @@ onMounted((): void => {
       transform: rotate(360deg);
     }
   }
-}
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
+  .realtime-monitor {
     padding: 16px;
 
     .page-header {
@@ -798,6 +801,7 @@ onMounted((): void => {
       }
     }
 
+    .info-banner {
       flex-direction: column;
       text-align: center;
 

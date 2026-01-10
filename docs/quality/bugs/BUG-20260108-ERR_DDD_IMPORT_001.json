@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "mystocks-bug-report",
+    "reportedAt": "2026-01-08T11:12:53Z",
+    "reporter": "Claude Code",
+    "contact": "claude@example.com",
+    "description": "Phase 6验证测试发现的DDD架构问题"
+  },
+  "bugs": [
+    {
+      "errorCode": "ERR_DDD_IMPORT_001",
+      "title": "DDD模块导入路径错误",
+      "message": "在Phase 6验证测试时，发现Market Data Context的仓储接口导入路径错误。src/domain/market_data/repository/__init__.py 中使用了错误的文件名 market_data_repository 而非 imarket_data_repository。导致2个测试失败：1) IMarketDataRepository interface导入失败，2) 仓储接口测试失败。",
+      "stackTrace": "ModuleNotFoundError: No module named 'src.domain.market_data.repository.market_data_repository'\n    at test_market_data_context_imports (tests/ddd/test_phase_6_validation.py:31)",
+      "severity": "high",
+      "context": {
+        "projectName": "MyStocks",
+        "projectRoot": "/opt/claude/mystocks_spec",
+        "component": "domain-layer",
+        "environment": "development",
+        "phase": "Phase 6 - Market Data Context",
+        "affectedFiles": [
+          "src/domain/market_data/repository/__init__.py",
+          "tests/ddd/test_phase_6_validation.py"
+        ],
+        "rootCause": "__init__.py文件导入路径与实际文件名不一致。实际文件名是 imarket_data_repository.py，但导入时使用了 market_data_repository",
+        "fixApplied": "修改 src/domain/market_data/repository/__init__.py，将导入路径从 'from .market_data_repository import IMarketDataRepository' 改为 'from .imarket_data_repository import IMarketDataRepository'",
+        "fixVerification": "修复后重新运行测试，40个测试全部通过（100%成功率）"
+      }
+    },
+    {
+      "errorCode": "ERR_FLOAT_PRECISION_001",
+      "title": "浮点数精度比较导致测试失败",
+      "message": "Phase 6验证测试中，2个测试因浮点数精度问题失败：1) Bar实体大小测试期望0.20但实际值0.2000000000，2) Quote买卖价差测试期望0.02但实际值0.0200000000。虽然数值正确，但使用精确的==比较导致测试失败。",
+      "stackTrace": "AssertionError: assert body_size == 0.20\n    at test_bar_value_object (tests/ddd/test_phase_6_validation.py:102)\nAssertionError: assert spread == 0.02\n    at test_quote_value_object (tests/ddd/test_phase_6_validation.py:360)",
+      "severity": "medium",
+      "context": {
+        "projectName": "MyStocks",
+        "projectRoot": "/opt/claude/mystocks_spec",
+        "component": "testing",
+        "environment": "development",
+        "phase": "Phase 6 - Market Data Context",
+        "affectedFiles": [
+          "tests/ddd/test_phase_6_validation.py"
+        ],
+        "rootCause": "浮点数在计算机中用二进制表示，可能存在精度误差。使用精确的==比较可能失败",
+        "fixApplied": "将精确比较改为近似比较：\n# 修复前：assert body_size == 0.20\n# 修复后：assert abs(body_size - 0.20) < 0.001\n同时添加调试输出显示实际值和期望值",
+        "fixVerification": "修复后重新运行测试，40个测试全部通过",
+        "prevention": "浮点数比较始终使用近似判断（abs(a-b) < epsilon），设置合理的误差容限（如0.001）"
+      }
+    }
+  ]
+}

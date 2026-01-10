@@ -8,7 +8,6 @@
     <!-- 筛选栏 -->
     <FilterBar
       :filters="filterConfig"
-      v-model="filters"
       @search="handleSearch"
       @reset="handleReset"
       @change="handleFilterChange"
@@ -95,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed } from 'vue'
+import { ref, onMounted, reactive, computed, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -104,7 +103,7 @@ import type { FilterItem, TableColumn, TableAction } from '@/components/shared'
 
 const router = useRouter()
 const loading = ref(false)
-const currentRow = ref(null)
+const currentRow: Ref<string | null> = ref(null)
 
 const filters = reactive({
   search: '',
@@ -113,8 +112,8 @@ const filters = reactive({
   market: ''
 })
 
-const industries = ref([])
-const concepts = ref([])
+const industries = ref<Array<{ industry_name: string }>>([])
+const concepts = ref<Array<{ concept_name: string }>>([])
 
 const pagination = reactive({
   currentPage: 1,
@@ -140,8 +139,8 @@ const filterConfig = computed((): FilterItem[] => [
     options: [
       { value: '', label: '全部' },
       ...industries.value.map(item => ({
-        value: item.industry_name,
-        label: item.industry_name
+        value: item.industry_name || '',
+        label: item.industry_name || '未命名行业'
       }))
     ]
   },
@@ -153,8 +152,8 @@ const filterConfig = computed((): FilterItem[] => [
     options: [
       { value: '', label: '全部' },
       ...concepts.value.map(item => ({
-        value: item.concept_name,
-        label: item.concept_name
+        value: item.concept_name || '',
+        label: item.concept_name || '未命名概念'
       }))
     ]
   },
@@ -305,14 +304,19 @@ const loadData = async () => {
     } else {
       throw new Error(response.msg || 'API返回数据格式错误')
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('加载数据失败:', error)
-    if (error.response) {
-      ElMessage.error(`加载数据失败: ${error.response.data?.msg || error.response.data?.detail || '服务器错误'}`)
-    } else if (error.request) {
-      ElMessage.error('网络连接失败，请检查服务是否正常运行')
-    } else {
+
+    if (error && typeof error === 'object' && 'response' in error) {
+      // Axios错误
+      const axiosError = error as any
+      ElMessage.error(`加载数据失败: ${axiosError.response.data?.msg || axiosError.response.data?.detail || '服务器错误'}`)
+    } else if (error instanceof Error) {
+      // 标准Error
       ElMessage.error(`加载数据失败: ${error.message}`)
+    } else {
+      // 未知错误
+      ElMessage.error('加载数据失败: 未知错误')
     }
   } finally {
     loading.value = false
@@ -342,40 +346,41 @@ const handleRefresh = () => {
   loadData()
 }
 
-const handlePageChange = (page) => {
+const handlePageChange = (page: number) => {
   pagination.currentPage = page
   loadData()
 }
 
-const handleSizeChange = (size) => {
+const handleSizeChange = (size: number) => {
   pagination.pageSize = size
   pagination.currentPage = 1
   loadData()
 }
 
-const handleView = (row) => {
+const handleView = (row: { symbol: string; name: string }) => {
   router.push({ name: 'stock-detail', params: { symbol: row.symbol }, query: { name: row.name } })
 }
 
-const handleAnalyze = (row) => {
+const handleAnalyze = (row: { symbol: string; name: string }) => {
   ElMessage.info(`分析股票: ${row.name} (${row.symbol})`)
 }
 
-const handleRowClick = (row) => {
+const handleRowClick = (row: { symbol: string; name: string }) => {
   currentRow.value = row.symbol
   handleView(row)
 }
 
-const handleSelectionChange = (selection) => {
+const handleSelectionChange = (selection: any[]) => {
   console.log('Selection changed:', selection)
 }
 
-const getChangeClass = (value) => {
+const getChangeClass = (value: number | string | null | undefined) => {
   if (value === null || value === undefined || value === '--') return ''
-  return value > 0 ? 'positive' : value < 0 ? 'negative' : ''
+  const numValue = typeof value === 'string' ? parseFloat(value) : value
+  return numValue > 0 ? 'positive' : numValue < 0 ? 'negative' : ''
 }
 
-const formatVolume = (volume) => {
+const formatVolume = (volume: number | null | undefined) => {
   if (!volume) return '--'
   if (volume >= 100000000) {
     return (volume / 100000000).toFixed(1) + '亿'
@@ -392,19 +397,23 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.3: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
 
-  padding: 24px;
-  background: var(--bg-primary);
+.stocks {
+  padding: var(--spacing-lg);
+  background: var(--color-bg-primary);
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
   min-height: 100vh;
 
   .table-card {
-    margin-top: 24px;
+    margin-top: var(--spacing-lg);
   }
 
   .table-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--gold-dim);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
 
     .table-options {
       display: flex;
@@ -414,10 +423,10 @@ onMounted(async () => {
       .total-info {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-family: var(--font-body);
-        font-size: 14px;
-        color: var(--gold-muted);
+        gap: var(--spacing-sm);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-tertiary);
 
         .info-icon {
           width: 16px;
@@ -425,9 +434,9 @@ onMounted(async () => {
         }
 
         .total-number {
-          font-family: var(--font-mono);
+          font-family: var(--font-family-mono);
           font-weight: 600;
-          color: var(--gold-primary);
+          color: var(--color-accent);
         }
       }
     }
@@ -437,59 +446,59 @@ onMounted(async () => {
     min-height: 400px;
 
     .mono {
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
     }
 
     .price {
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-weight: 600;
     }
 
     .positive {
-      color: var(--color-up);
+      color: var(--color-stock-down);
     }
 
     .negative {
-      color: var(--color-down);
+      color: var(--color-stock-up);
     }
 
     .market-badge {
       display: inline-block;
-      padding: 2px 8px;
-      font-size: 12px;
-      border-radius: 2px;
+      padding: 2px var(--spacing-sm);
+      font-size: var(--font-size-xs);
+      border-radius: var(--border-radius-sm);
       font-weight: 500;
 
       &.sh {
-        background: rgba(231, 76, 60, 0.1);
-        color: #E74C3C;
+        background: var(--color-stock-down-alpha-90);
+        color: var(--color-stock-down);
       }
 
       &.sz {
-        background: rgba(52, 152, 219, 0.1);
-        color: #3498DB;
+        background: var(--color-accent-alpha-90);
+        color: var(--color-accent);
       }
     }
   }
 
   .table-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--gold-dim);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
   }
 
   .button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    font-family: var(--font-body);
-    font-size: 14px;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-sm);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
     background: transparent;
-    border: 2px solid var(--gold-dim);
-    color: var(--gold-primary);
+    border: 2px solid var(--color-border);
+    color: var(--color-accent);
     cursor: pointer;
     transition: all 0.3s ease;
     border-radius: 0;
@@ -500,9 +509,9 @@ onMounted(async () => {
     }
 
     &:hover:not(:disabled) {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--gold-primary);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+      background: var(--color-accent-alpha-90);
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 12px var(--color-accent-alpha-80);
     }
 
     &:disabled {
@@ -511,23 +520,23 @@ onMounted(async () => {
     }
 
     &.button-primary {
-      background: var(--gold-primary);
-      color: var(--bg-primary);
-      border-color: var(--gold-primary);
+      background: var(--color-accent);
+      color: var(--color-bg-primary);
+      border-color: var(--color-accent);
 
       &:hover:not(:disabled) {
-        background: var(--gold-light);
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        background: var(--color-accent-hover);
+        box-shadow: 0 4px 12px var(--color-accent-alpha-70);
       }
     }
 
     &.button-success {
-      border-color: var(--color-up);
-      color: var(--color-up);
+      border-color: var(--color-stock-up);
+      color: var(--color-stock-up);
 
       &:hover:not(:disabled) {
-        background: rgba(103, 194, 58, 0.1);
-        border-color: #67C23A;
+        background: var(--color-stock-up-alpha-90);
+        border-color: var(--color-stock-up);
       }
     }
 
@@ -559,15 +568,16 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-    padding: 16px;
+  .stocks {
+    padding: var(--spacing-md);
+  }
 
-    .table-header {
-      padding: 12px 16px;
+  .table-header {
+      padding: var(--spacing-md) var(--spacing-md);
     }
 
     .table-footer {
-      padding: 12px 16px;
+      padding: var(--spacing-md) var(--spacing-md);
     }
   }
-}
 </style>

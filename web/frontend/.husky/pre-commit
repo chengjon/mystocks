@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# 运行lint-staged
+npx lint-staged
+
+# 检查TypeScript类型（可选，速度快）
+if [ "$SKIP_TYPE_CHECK" != "true" ]; then
+  echo "📝 Running TypeScript type check..."
+  npm run type-check || {
+    echo "⚠️  Type check failed. Commit aborted."
+    echo "💡 To skip type check, run: SKIP_TYPE_CHECK=true git commit"
+    exit 1
+  }
+fi
+
+echo "✅ Pre-commit checks passed!"

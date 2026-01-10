@@ -15,16 +15,22 @@ from concurrent import futures
 from prometheus_client import Counter, Histogram, Gauge
 
 # 导入gRPC服务
-from api_proto import realtime_pb2_grpc
-from api_proto import backtest_pb2_grpc
+try:
+    from src.gpu.api_system.api_proto import realtime_pb2_grpc
+    from src.gpu.api_system.api_proto import backtest_pb2_grpc
+except ImportError:
+    import sys
+    sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
+    import realtime_pb2_grpc
+    import backtest_pb2_grpc
 
 # 导入自定义模块
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.redis_utils import RedisQueue
-from src.utils.monitoring import MetricsCollector
-from services.realtime_service import RealTimeService
-from services.backtest_service import BacktestService
-from services.resource_scheduler import ResourceScheduler
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.services.realtime_service import RealTimeService
+from src.gpu.api_system.services.backtest_service import BacktestService
+from src.gpu.api_system.services.resource_scheduler import ResourceScheduler
 
 # 配置日志
 logging.basicConfig(

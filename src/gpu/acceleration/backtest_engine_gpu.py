@@ -23,7 +23,7 @@ except ImportError:
     cp = None
     cudf = None
 
-from src.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 
 logger = logging.getLogger(__name__)
 

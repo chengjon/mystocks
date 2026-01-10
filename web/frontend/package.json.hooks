@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --max-warnings 0",
+    "lint:fix": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{vue,js,ts,jsx,tsx,scss,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{vue,js,ts,jsx,tsx,scss,css,json}\"",
+    "stylelint": "stylelint \"src/**/*.{vue,scss,css}\" --max-warnings 0",
+    "stylelint:fix": "stylelint \"src/**/*.{vue,scss,css}\" --fix",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "lint-staged": {
+    "*.{vue,js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{scss,css}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -60,6 +60,10 @@ const handleClick = (event: MouseEvent) => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.4: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
+
 // ============================================
 //   DATA-DENSE CARD - 数据密集型卡片
 //   设计原则: 紧凑、高性能、信息密度优先
@@ -67,10 +71,9 @@ const handleClick = (event: MouseEvent) => {
 
 .data-card {
   // 紧凑设计：最小化 padding
-  padding: 16px; // 从 ArtDeco 的 32px 减少到 16px
-  background: #0A0A0A; // Deep dark background
-  border: 1px solid #1A1A1A; // 极细边框
-  border-radius: 4px; // 最小圆角
+  background: var(--color-bg-elevated); // Deep dark background
+  border: 1px solid var(--color-border); // 极细边框
+  border-radius: var(--border-radius-sm); // 最小圆角
   position: relative;
   overflow: hidden;
   transition: background 150ms ease, border-color 150ms ease;
@@ -79,8 +82,8 @@ const handleClick = (event: MouseEvent) => {
 
 /* Hoverable variant - 极微妙变化 */
 .data-card-hoverable:hover {
-  background: #0F0F0F; // 极微妙的背景变化
-  border-color: #252525;
+  background: var(--color-bg-elevated-hover); // 极微妙的背景变化
+  border-color: var(--color-border-hover);
 }
 
 /* Clickable variant */
@@ -94,43 +97,42 @@ const handleClick = (event: MouseEvent) => {
 
 /* Card header */
 .data-card-header {
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #1A1A1A;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .data-card-header h3 {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px; // 紧凑字体
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm); // 紧凑字体
   font-weight: 600;
-  color: #E5E5E5; // 高对比度白
-  text-transform: none; // 移除 ArtDeco 的大写
+  color: var(--color-text-primary); // 高对比度白
   letter-spacing: 0;
-  margin: 0 0 4px 0; // 紧凑间距
+  margin: 0 0 var(--spacing-xs) 0; // 紧凑间距
 }
 
 .data-card-subtitle {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 12px; // 小字体
-  color: #A0A0A0; // 次要文字
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs); // 小字体
+  color: var(--color-text-secondary); // 次要文字
   margin: 0;
 }
 
 /* Card body */
 .data-card-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #E5E5E5;
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary);
   line-height: 1.5;
-  font-size: 13px; // 紧凑字体
+  font-size: var(--font-size-sm); // 紧凑字体
 }
 
 /* Card footer */
 .data-card-footer {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #1A1A1A;
-  color: #A0A0A0;
-  font-size: 12px;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
 }
 
 // ============================================
@@ -139,7 +141,7 @@ const handleClick = (event: MouseEvent) => {
 
 /* Stat variant - 数据统计卡片 */
 .data-card-stat {
-  padding: 16px;
+  padding: var(--spacing-lg);
   text-align: center;
 }
 
@@ -150,20 +152,20 @@ const handleClick = (event: MouseEvent) => {
 
 /* Chart variant - 图表卡片（更紧凑） */
 .data-card-chart {
-  padding: 12px;
+  padding: var(--spacing-md);
 
   .data-card-header {
-    margin-bottom: 8px;
-    padding-bottom: 8px;
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
   }
 }
 
 /* Form variant - 表单卡片（稍大padding便于操作） */
 .data-card-form {
-  padding: 20px;
+  padding: var(--spacing-xl);
 
   .data-card-header {
-    margin-bottom: 12px;
+    margin-bottom: var(--spacing-md);
   }
 }
 

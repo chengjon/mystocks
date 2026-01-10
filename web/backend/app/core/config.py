@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # 应用基础配置
     app_name: str = "MyStocks Web"
-    app_version: str = "2.0.0"  # Week 3 简化版本
+    app_version: str = "2.1.0"  # Week 4: 三数据库架构 (PostgreSQL + TDengine + Redis)
     debug: bool = False
 
     # 测试环境配置
@@ -83,17 +83,55 @@ class Settings(BaseSettings):
     )  # 必须从环境变量设置，生产环境不得为空
 
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
-    # 前端端口范围: 3000-3009，后端端口范围: 8000-8009
+    # 前端端口范围: 3000-3029，后端端口范围: 8000-8009
     cors_origins_str: str = (
-        "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009"
+        "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,"
+        "http://localhost:3020,http://localhost:3021,http://localhost:3022,http://localhost:3023,http://localhost:3024,http://localhost:3025,http://localhost:3026,http://localhost:3027,http://localhost:3028,http://localhost:3029,"
+        "http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009"
     )
 
     @property
     def cors_origins(self) -> List[str]:
         return self.cors_origins_str.split(",")
 
-    # 缓存配置 (Week 3 简化: 暂时禁用Redis缓存)
-    enable_cache: bool = False  # Week 3简化: Redis已移除
+    # ===================================
+    # Redis Configuration (三数据库架构)
+    # ===================================
+    # Redis功能:
+    # 1. L2分布式缓存 - 指标计算结果、API响应缓存
+    # 2. 消息总线 (Pub/Sub) - 实时事件通知
+    # 3. 分布式锁 - 防止重复计算
+    # 4. 会话存储 - JWT黑名单、用户会话
+
+    # Redis连接配置
+    redis_host: str = "192.168.123.104"
+    redis_port: int = 6379
+    redis_password: str = ""  # 可选，无密码则为空
+    redis_db: int = 1  # 使用DB1避免与其他应用冲突
+
+    # Redis连接池配置
+    redis_max_connections: int = 50
+    redis_socket_timeout: int = 5
+    redis_socket_connect_timeout: int = 5
+    redis_decode_responses: bool = True
+
+    # 缓存配置
+    redis_cache_ttl: int = 3600  # 默认缓存过期时间 (秒)
+    redis_cache_prefix: str = "mystocks:"
+    enable_cache: bool = True  # 启用Redis缓存 (Week 4: 三数据库架构)
+
+    # 消息总线配置
+    redis_pubsub_channel_prefix: str = "mystocks:"
+    enable_pubsub: bool = True  # 启用消息总线
+
+    # 分布式锁配置
+    redis_lock_prefix: str = "mystocks:lock:"
+    redis_lock_default_timeout: int = 30  # 默认锁超时 (秒)
+    enable_lock: bool = True  # 启用分布式锁
+
+    # 会话配置
+    redis_session_prefix: str = "mystocks:session:"
+    redis_session_ttl: int = 86400  # 会话过期时间 (24小时)
 
     # Celery 异步任务配置
     celery_broker_url: str = "redis://localhost:6379/0"

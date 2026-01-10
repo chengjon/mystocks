@@ -16,8 +16,9 @@ from cuml.preprocessing import StandardScaler as GPUStandardScaler
 import cudf
 from concurrent.futures import ThreadPoolExecutor
 
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.cache_optimization import CacheManager
 
 logger = logging.getLogger(__name__)
 

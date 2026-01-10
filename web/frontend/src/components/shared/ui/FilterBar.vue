@@ -1,5 +1,5 @@
 <template>
-  <div class="artdeco-filter-bar">
+  <div class="filter-bar">
     <el-form :inline="true" :model="formData" class="filter-form">
       <el-form-item
         v-for="filter in filters"
@@ -168,14 +168,17 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+// Phase 3.4: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
 
-.artdeco-filter-bar {
-  margin-bottom: var(--artdeco-spacing-6);
+.filter-bar {
+  margin-bottom: var(--spacing-xl);
 
   .filter-form {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--artdeco-spacing-3);
+    gap: var(--spacing-md);
     align-items: flex-end;
 
     :deep(.el-form-item) {
@@ -183,49 +186,54 @@ defineExpose({
     }
 
     :deep(.el-form-item__label) {
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-xs);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-xs);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: var(--artdeco-tracking-wider);
-      color: var(--artdeco-accent-gold);
+      letter-spacing: 0.06em;
+      color: var(--color-accent);
     }
   }
 
   .filter-actions {
     display: flex;
-    gap: var(--artdeco-spacing-2);
+    gap: var(--spacing-sm);
 
     .el-button {
-      font-family: var(--artdeco-font-display);
+      font-family: var(--font-family-sans);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: var(--artdeco-tracking-wider);
-      border: 2px solid var(--artdeco-accent-gold);
-      border-radius: var(--artdeco-radius-none);
+      letter-spacing: 0.06em;
+      border: 2px solid var(--color-accent);
+      border-radius: 0;
 
       &.el-button--primary {
-        background: var(--artdeco-accent-gold);
-        border-color: var(--artdeco-accent-gold);
-        color: var(--artdeco-bg-primary);
+        background: var(--color-accent);
+        border-color: var(--color-accent);
+        color: var(--color-bg-primary);
 
         &:hover {
-          background: var(--artdeco-accent-gold-light);
-          border-color: var(--artdeco-accent-gold-light);
+          background: var(--color-accent-hover);
+          border-color: var(--color-accent-hover);
         }
       }
 
       &:not(.el-button--primary) {
         background: transparent;
-        border-color: rgba(212, 175, 55, 0.3);
-        color: var(--artdeco-accent-gold);
+        border-color: var(--color-accent-alpha-70);
+        color: var(--color-accent);
 
         &:hover {
-          background: rgba(212, 175, 55, 0.05);
-          border-color: var(--artdeco-accent-gold);
+          background: var(--color-accent-alpha-90);
+          border-color: var(--color-accent);
         }
       }
     }
   }
 }
+
+// ============================================
+//   DESIGN NOTE - 设计说明
+//   本项目仅支持桌面端，不包含移动端响应式代码
+// ============================================
 </style>

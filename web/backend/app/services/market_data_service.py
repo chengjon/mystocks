@@ -20,7 +20,7 @@ import pandas as pd
 import logging
 import os
 
-from app.models.market_data import FundFlow, ETFData, ChipRaceData, LongHuBangData
+from app.models.market_data import FundFlow, ETFData, ChipRaceOpenData, ChipRaceEndData, LongHuBangData
 from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
 from app.core.cache_integration import get_cache_integration
@@ -509,11 +509,10 @@ class MarketDataService:
         """
         获取并保存竞价抢筹数据 - 带缓存支持
 
-        先检查缓存，如果缓存有效则返回缓存数据；
-        否则从TQLEX获取数据，保存到数据库和缓存。
+        参考instock实现: /opt/iflow/instock/instock/core/stockfetch.py
 
         Args:
-            race_type: 抢筹类型 (open/end)
+            race_type: 抢筹类型 (open=早盘, end=尾盘)
             trade_date: 交易日期
 
         Returns:
@@ -535,7 +534,6 @@ class MarketDataService:
             return df.to_dict("records")
 
         try:
-            # 使用缓存读取模式
             result = self.cache.fetch_with_cache(
                 symbol="chip_race",
                 data_type="chip_race",
@@ -547,37 +545,36 @@ class MarketDataService:
 
             chip_records = result.get("data") or []
 
-            # 保存到数据库（如果来自源）
             if result.get("source") == "source" and chip_records:
                 db = self.SessionLocal()
                 try:
                     today = datetime.now().date()
                     saved_count = 0
 
+                    ChipRaceModel = ChipRaceOpenData if race_type == "open" else ChipRaceEndData
+
                     for row in chip_records:
-                        chip_data = ChipRaceData(
-                            symbol=row.get("symbol"),
+                        chip_data = ChipRaceModel(
+                            date=today,
+                            code=row.get("code"),
                             name=row.get("name"),
-                            trade_date=today,
-                            race_type=race_type,
-                            latest_price=row.get("latest_price", 0),
-                            change_percent=row.get("change_percent", 0),
-                            prev_close=row.get("prev_close", 0),
+                            new_price=row.get("new_price", 0),
+                            change_rate=row.get("change_rate", 0),
+                            pre_close_price=row.get("pre_close_price", 0),
                             open_price=row.get("open_price", 0),
-                            race_amount=row.get("race_amount", 0),
-                            race_amplitude=row.get("race_amplitude", 0),
-                            race_commission=row.get("race_commission", 0),
-                            race_transaction=row.get("race_transaction", 0),
-                            race_ratio=row.get("race_ratio", 0),
+                            deal_amount=row.get("deal_amount", 0),
+                            bid_rate=row.get("bid_rate", 0),
+                            bid_trust_amount=row.get("bid_trust_amount", 0),
+                            bid_deal_amount=row.get("bid_deal_amount", 0),
+                            bid_ratio=row.get("bid_ratio", 0),
                         )
 
                         existing = (
-                            db.query(ChipRaceData)
+                            db.query(ChipRaceModel)
                             .filter(
                                 and_(
-                                    ChipRaceData.symbol == chip_data.symbol,
-                                    ChipRaceData.trade_date == today,
-                                    ChipRaceData.race_type == race_type,
+                                    ChipRaceModel.code == chip_data.code,
+                                    ChipRaceModel.date == today,
                                 )
                             )
                             .first()
@@ -610,14 +607,13 @@ class MarketDataService:
         获取并保存竞价抢筹数据
 
         Args:
-            race_type: 抢筹类型 (open/end)
+            race_type: 抢筹类型 (open=早盘, end=尾盘)
             trade_date: 交易日期
 
         Returns:
             保存结果字典
         """
         try:
-            # 1. 从TQLEX获取数据
             if race_type == "open":
                 df = self.tqlex.get_chip_race_open(trade_date)
             else:
@@ -626,36 +622,35 @@ class MarketDataService:
             if df.empty:
                 return {"success": False, "message": "未获取到抢筹数据"}
 
-            # 2. 批量保存
             db = self.SessionLocal()
             try:
                 today = datetime.now().date()
                 saved_count = 0
 
+                ChipRaceModel = ChipRaceOpenData if race_type == "open" else ChipRaceEndData
+
                 for _, row in df.iterrows():
-                    chip_data = ChipRaceData(
-                        symbol=row["symbol"],
-                        name=row["name"],
-                        trade_date=today,
-                        race_type=race_type,
-                        latest_price=row.get("latest_price", 0),
-                        change_percent=row.get("change_percent", 0),
-                        prev_close=row.get("prev_close", 0),
+                    chip_data = ChipRaceModel(
+                        date=today,
+                        code=row.get("code"),
+                        name=row.get("name"),
+                        new_price=row.get("new_price", 0),
+                        change_rate=row.get("change_rate", 0),
+                        pre_close_price=row.get("pre_close_price", 0),
                         open_price=row.get("open_price", 0),
-                        race_amount=row.get("race_amount", 0),
-                        race_amplitude=row.get("race_amplitude", 0),
-                        race_commission=row.get("race_commission", 0),
-                        race_transaction=row.get("race_transaction", 0),
-                        race_ratio=row.get("race_ratio", 0),
+                        deal_amount=row.get("deal_amount", 0),
+                        bid_rate=row.get("bid_rate", 0),
+                        bid_trust_amount=row.get("bid_trust_amount", 0),
+                        bid_deal_amount=row.get("bid_deal_amount", 0),
+                        bid_ratio=row.get("bid_ratio", 0),
                     )
 
                     existing = (
-                        db.query(ChipRaceData)
+                        db.query(ChipRaceModel)
                         .filter(
                             and_(
-                                ChipRaceData.symbol == chip_data.symbol,
-                                ChipRaceData.trade_date == today,
-                                ChipRaceData.race_type == race_type,
+                                ChipRaceModel.code == chip_data.code,
+                                ChipRaceModel.date == today,
                             )
                         )
                         .first()
@@ -683,7 +678,7 @@ class MarketDataService:
         trade_date: Optional[date] = None,
         min_race_amount: Optional[float] = None,
         limit: int = 100,
-    ) -> List[ChipRaceData]:
+    ) -> List:
         """
         查询竞价抢筹数据（查询最新可用数据）
 
@@ -694,28 +689,27 @@ class MarketDataService:
             limit: 返回数量限制
 
         Returns:
-            ChipRaceData对象列表
+            ChipRaceOpenData/ChipRaceEndData对象列表
         """
         db = self.SessionLocal()
         try:
-            query = db.query(ChipRaceData).filter(ChipRaceData.race_type == race_type)
+            ChipRaceModel = ChipRaceOpenData if race_type == "open" else ChipRaceEndData
+
+            query = db.query(ChipRaceModel)
 
             if trade_date:
-                query = query.filter(ChipRaceData.trade_date == trade_date)
+                query = query.filter(ChipRaceModel.date == trade_date)
             else:
-                # 查询最新日期的数据
                 from sqlalchemy import func
 
-                latest_date = (
-                    db.query(func.max(ChipRaceData.trade_date)).filter(ChipRaceData.race_type == race_type).scalar()
-                )
+                latest_date = db.query(func.max(ChipRaceModel.date)).scalar()
                 if latest_date:
-                    query = query.filter(ChipRaceData.trade_date == latest_date)
+                    query = query.filter(ChipRaceModel.date == latest_date)
 
             if min_race_amount:
-                query = query.filter(ChipRaceData.race_amount >= min_race_amount)
+                query = query.filter(ChipRaceModel.deal_amount >= min_race_amount)
 
-            return query.order_by(ChipRaceData.race_amount.desc()).limit(limit).all()
+            return query.order_by(ChipRaceModel.deal_amount.desc()).limit(limit).all()
 
         finally:
             db.close()

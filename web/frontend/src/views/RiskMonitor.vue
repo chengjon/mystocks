@@ -652,7 +652,7 @@ const getBetaDescription = (beta: number | null): string => {
   return 'VERY LOW'
 }
 
-const formatTime = (time: string | Date): string => {
+const formatTime = (time: string | Date | undefined): string => {
   if (!time) return '-'
   const date = new Date(time)
   return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
@@ -668,12 +668,17 @@ onMounted((): void => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.3: Design Token Migration
+@import '@/styles/theme-tokens.scss';
 
+
+.risk-monitor {
   min-height: 100vh;
   padding: var(--space-section);
   position: relative;
   background: var(--bg-global);
 
+  .background-pattern {
     position: fixed;
     top: 0;
     left: 0;
@@ -687,18 +692,19 @@ onMounted((): void => {
         45deg,
         var(--gold-primary) 0px,
         var(--gold-primary) 1px,
-        transparent 1px,
-        transparent 10px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        var(--gold-primary) 0px,
-        var(--gold-primary) 1px,
-        transparent 1px,
-        transparent 10px
-      );
+          transparent 1px,
+          transparent 10px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          var(--gold-primary) 0px,
+          var(--gold-primary) 1px,
+          transparent 1px,
+          transparent 10px
+        );
   }
 
+  .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--space-4);
@@ -837,24 +843,26 @@ onMounted((): void => {
 }
 
 @media (max-width: 768px) {
+  .risk-monitor {
     padding: var(--space-3);
+  }
 
-      grid-template-columns: 1fr;
-    }
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .content-grid,
-    .content-grid-half {
-      grid-template-columns: 1fr;
-    }
+  .content-grid,
+  .content-grid-half {
+    grid-template-columns: 1fr;
+  }
 
-    .card-header {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .header-actions {
+      width: 100%;
       flex-direction: column;
-      align-items: flex-start;
-
-      .header-actions {
-        width: 100%;
-        flex-direction: column;
-      }
     }
   }
 }

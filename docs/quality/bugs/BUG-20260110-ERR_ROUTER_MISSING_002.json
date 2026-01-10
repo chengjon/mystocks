@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "mystocks-bug-report",
+    "reportedAt": "2026-01-10T03:00:00Z",
+    "reporter": "Claude Code",
+    "description": "数据源路由器文件缺少必需函数实现"
+  },
+  "bug": {
+    "errorCode": "ERR_ROUTER_MISSING_002",
+    "title": "数据源路由器文件缺少必需函数实现",
+    "message": "src/core/data_source/router.py文件几乎为空，只有一行import语句。DataSourceManagerV2依赖的3个核心函数（find_endpoints, get_best_endpoint, list_all_endpoints）未实现，导致ImportError和智能路由功能完全失效。",
+    "stackTrace": "ImportError: cannot import name 'get_best_endpoint' from 'src.core.data_source.router'\n  at DataSourceManagerV2.get_best_endpoint (src/core/data_source/base.py:117, in get_best_endpoint)",
+    "severity": "high",
+    "context": {
+      "projectName": "MyStocks",
+      "projectRoot": "/opt/claude/mystocks_spec",
+      "component": "data-source-router",
+      "environment": "development",
+      "affectedFiles": [
+        "src/core/data_source/router.py",
+        "src/core/data_source/base.py"
+      ],
+      "rootCause": "router.py文件未实现必需的函数，可能是重构过程中遗漏了实现",
+      "symptoms": [
+        "DataSourceManagerV2初始化后ImportError",
+        "无法调用get_best_endpoint()进行智能路由",
+        "无法调用find_endpoints()筛选端点",
+        "无法调用list_all_endpoints()查看端点列表"
+      ],
+      "businessImpact": "智能路由核心功能完全失效，数据源管理器V2无法自动选择最佳数据源，系统无法根据数据分类、优先级、健康状态等条件路由数据请求",
+      "fixApplied": {
+        "file": "src/core/data_source/router.py",
+        "description": "实现3个核心函数",
+        "functions": [
+          {
+            "name": "find_endpoints",
+            "purpose": "根据多种条件筛选数据端点（data_category, source_name, target_db, only_healthy）",
+            "logic": "遍历registry，按条件过滤，按优先级和质量评分排序"
+          },
+          {
+            "name": "get_best_endpoint",
+            "purpose": "获取指定数据分类的最佳端点（智能路由核心）",
+            "logic": "调用find_endpoints并返回第一个结果"
+          },
+          {
+            "name": "list_all_endpoints",
+            "purpose": "列出所有已注册端点（便于查看和管理）",
+            "logic": "遍历registry，生成包含所有端点信息的DataFrame"
+          }
+        ]
+      },
+      "verification": {
+        "testMethod": "测试智能路由功能",
+        "testCases": [
+          {
+            "test": "manager.get_best_endpoint('DAILY_KLINE')",
+            "expected": "返回优先级最高的DAILY_KLINE端点",
+            "actual": "tushare.daily (优先级1) ✅"
+          },
+          {
+            "test": "manager.get_best_endpoint('REALTIME_QUOTE')",
+            "expected": "返回优先级最高的REALTIME_QUOTE端点",
+            "actual": "tdx.get_security_quotes ✅"
+          }
+        ]
+      },
+      "prevention": [
+        "模块重构后确保所有依赖的函数都已实现",
+        "使用接口定义或抽象基类明确定义必需方法",
+        "添加单元测试验证所有必需函数是否可导入",
+        "CI/CD流程中添加import检查"
+      ],
+      "relatedIssues": [
+        "ERR_REGISTRY_JSONB_001（两个BUG相关联）",
+        "数据源管理器V2架构设计",
+        "智能路由系统完整实现"
+      ]
+    }
+  }
+}

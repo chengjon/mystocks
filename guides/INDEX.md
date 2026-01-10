@@ -1,8 +1,8 @@
 # Guides
 
-**最后更新**: 2026-01-07 15:28:45
+**最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 93
+**文档数量**: 109
 
 
 ---
@@ -46,6 +46,12 @@
 - [A_STOCK_DASHBOARD_USER_GUIDE](guides/A_STOCK_DASHBOARD_USER_GUIDE.md)
   - *A股Dashboard原型系统 - 用户使用指南*
 
+- [BLOOMBERG_TERMINAL_COMPONENT_GUIDE](guides/BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md)
+  - *Bloomberg Terminal 组件使用指南*
+
+- [BUG_LESSONS_LEARNED](guides/BUG_LESSONS_LEARNED.md)
+  - *BUG经验教训索引文档*
+
 - [CLAUDE_AGENTS_SUMMARY](guides/CLAUDE_AGENTS_SUMMARY.md)
   - *Claude Code Agents 清理完成总结*
 
@@ -88,17 +94,35 @@
 - [DATA_CLEANING_QUICK_START](guides/DATA_CLEANING_QUICK_START.md)
   - *数据清洗与验证功能 - 快速开始*
 
+- [DATA_INTERFACE_SCANNER_GUIDE](guides/DATA_INTERFACE_SCANNER_GUIDE.md)
+  - *数据接口扫描工具使用指南*
+
+- [DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE](guides/DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md)
+  - *数据源端点注册方案*
+
+- [DATA_SOURCE_EXPANSION_STRATEGY](guides/DATA_SOURCE_EXPANSION_STRATEGY.md)
+  - *MyStocks 数据源扩展计划 - 基于量化交易价值原则*
+
 - [DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE](guides/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)
   - *数据源管理工具使用指南*
 
 - [DATA_SOURCE_MONITORING_GUIDE](guides/DATA_SOURCE_MONITORING_GUIDE.md)
   - *数据源监控系统集成指南*
 
+- [DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST](guides/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md)
+  - *数据源优化 V2 - 部署检查清单*
+
+- [DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE](guides/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
+  - *数据源优化 V2 - 快速参考指南*
+
 - [DATA_SOURCE_TOOLS_QUICK_REFERENCE](guides/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
   - *数据源管理工具 - 快速参考卡片*
 
 - [DEPLOYMENT](guides/DEPLOYMENT.md)
   - *MyStocks 部署指南*
+
+- [DOCUMENTATION_WORKFLOW_GUIDE](guides/DOCUMENTATION_WORKFLOW_GUIDE.md)
+  - *文档整理工作指引*
 
 - [E2E_TEST_DEBUG_METHODS](guides/E2E_TEST_DEBUG_METHODS.md)
   - *E2E测试调试方法与实战指南*
@@ -151,6 +175,12 @@
 - [MYSTOCKS_WORKTREE_MANAGEMENT](guides/MYSTOCKS_WORKTREE_MANAGEMENT.md)
   - *MyStocks项目 Worktree 管理方法*
 
+- [NEW_API_SOURCE_INTEGRATION_GUIDE](guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+  - *新增数据源/API 接口开发指引*
+
+- [PHASE12_3_REALTIME_INTEGRATION](guides/PHASE12_3_REALTIME_INTEGRATION.md)
+  - *Phase 12.3: Real-time Data Stream Integration*
+
 - [PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT](guides/PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md)
   - *Phase 1: UI/UX Foundation - Completion Report*
 
@@ -196,6 +226,9 @@
 - [SECURITY_TESTING_GUIDELINES](guides/SECURITY_TESTING_GUIDELINES.md)
   - *MyStocks 项目安全测试指南*
 
+- [SIGNAL_MONITORING_METRICS_DESIGN](guides/SIGNAL_MONITORING_METRICS_DESIGN.md)
+  - *交易信号监控指标系统设计方案*
+
 - [SPLIT_DATA_ACCESS_PLAN](guides/SPLIT_DATA_ACCESS_PLAN.md)
   - *Data Access文件拆分计划*
 
@@ -220,6 +253,9 @@
 - [TROUBLESHOOTING](guides/TROUBLESHOOTING.md)
   - *MyStocks 故障排查手册*
 
+- [TYPESCRIPT_ERROR_FIXING_GUIDE](guides/TYPESCRIPT_ERROR_FIXING_GUIDE.md)
+  - *TypeScript错误快速修复指南*
+
 - [UNIFIED_INTERFACE_GUIDE](guides/UNIFIED_INTERFACE_GUIDE.md)
   - *统一接口抽象层使用指南*
 
@@ -243,6 +279,12 @@
 
 - [WEB_ROUTER_MIGRATION_RECORD](guides/WEB_ROUTER_MIGRATION_RECORD.md)
   - *Router Migration Record*
+
+- [advanced_algorithms_usage_guide](guides/advanced_algorithms_usage_guide.md)
+  - *MyStocks 量化交易算法系统 - Phase 4 完成报告*
+
+- [algorithm_system_usage_guide](guides/algorithm_system_usage_guide.md)
+  - *MyStocks 量化交易算法系统 - 开发完成报告*
 
 - [claude_code_lsp_guide](guides/claude_code_lsp_guide.md)
   - *Claude Code CLI - Python LSP 功能指南*
@@ -271,11 +313,17 @@
 - [implementation-guide](guides/implementation-guide.md)
   - *MyStocks API 修复实施指南*
 
+- [neural_algorithms_usage_guide](guides/neural_algorithms_usage_guide.md)
+  - *MyStocks 量化交易算法系统 - Phase 5 完成报告*
+
 - [post_tool_use_hook_error_diagnosis](guides/post_tool_use_hook_error_diagnosis.md)
   - *PostToolUse:Edit Hook Error - 诊断与修复报告*
 
 - [quick-start](guides/quick-start.md)
   - *MyStocks 快速启动指南*
+
+- [risk_management_system_plan](guides/risk_management_system_plan.md)
+  - *MyStocks 轻量化风险管理系统架构方案 (V3.1)*
 
 - [tdx_adapter_refactoring_analysis](guides/tdx_adapter_refactoring_analysis.md)
   - *TDX适配器重构分析*

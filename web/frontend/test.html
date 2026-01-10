@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Test</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>{{ message }}</h1>
+        <p>Current time: {{ currentTime }}</p>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!',
+                    currentTime: new Date().toLocaleString()
+                }
+            },
+            mounted() {
+                console.log('Vue app mounted!');
+                setInterval(() => {
+                    this.currentTime = new Date().toLocaleString();
+                }, 1000);
+            }
+        });
+
+        app.mount('#app');
+        console.log('Vue app created and mounted');
+    </script>
+</body>
+</html>

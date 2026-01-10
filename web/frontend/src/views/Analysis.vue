@@ -520,9 +520,8 @@ const runAnalysis = async (): Promise<void> => {
   background: var(--bg-primary);
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
   min-height: 100vh;
-}
 
-.config-card {
+  .config-card {
     margin-bottom: 24px;
 
     .analysis-form {
@@ -769,14 +768,14 @@ const runAnalysis = async (): Promise<void> => {
       }
     }
   }
-}
+  }
 
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-  position: relative;
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    position: relative;
 
-  &::before,
+    &::before,
   &::after {
     content: '';
     position: absolute;
@@ -973,6 +972,7 @@ const runAnalysis = async (): Promise<void> => {
 }
 
 @media (max-width: 768px) {
+  .analysis {
     padding: 16px;
 
     .config-card {

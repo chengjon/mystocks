@@ -1,12 +1,20 @@
-"""
-缓存优化系统单元测试
-测试三级缓存系统的功能
-"""
-
 import pytest
 import time
+import sys
+import os
 from unittest.mock import patch
 
+# Add project root to path
+# File is at: src/gpu/api_system/tests/unit/test_cache/test_cache_optimization.py
+current_dir = os.path.dirname(os.path.abspath(__file__)) # test_cache
+unit_dir = os.path.dirname(current_dir) # unit
+tests_dir = os.path.dirname(unit_dir) # tests
+api_system_dir = os.path.dirname(tests_dir) # api_system
+gpu_dir = os.path.dirname(api_system_dir) # gpu
+src_dir = os.path.dirname(gpu_dir) # src
+project_root = os.path.dirname(src_dir) # mystocks_spec
+
+sys.path.insert(0, project_root)
 
 class TestCacheManager:
     """缓存管理器测试"""
@@ -14,7 +22,7 @@ class TestCacheManager:
     @pytest.fixture
     def cache_manager(self):
         """创建缓存管理器实例"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             manager = MockCache()
             manager.l1_cache = {}
             manager.l2_cache = {}
@@ -101,7 +109,7 @@ class TestL1Cache:
     @pytest.fixture
     def l1_cache(self):
         """创建L1缓存实例"""
-        with patch("utils.cache_optimization.L1Cache") as MockL1:
+        with patch("src.gpu.api_system.utils.cache_optimization.L1Cache") as MockL1:
             cache = MockL1(max_size=100, ttl=60)
             cache.cache = {}
             yield cache
@@ -155,7 +163,7 @@ class TestL2Cache:
     @pytest.fixture
     def l2_cache(self):
         """创建L2缓存实例"""
-        with patch("utils.cache_optimization.L2Cache") as MockL2:
+        with patch("src.gpu.api_system.utils.cache_optimization.L2Cache") as MockL2:
             cache = MockL2(cache_dir="/tmp/gpu_api_cache", ttl=300)
             yield cache
 
@@ -193,7 +201,7 @@ class TestRedisCache:
         if not redis_available:
             pytest.skip("Redis not available")
 
-        with patch("utils.cache_optimization.RedisCache") as MockRedis:
+        with patch("src.gpu.api_system.utils.cache_optimization.RedisCache") as MockRedis:
             cache = MockRedis(host="localhost", port=6379, db=0, ttl=600)
             yield cache
 
@@ -253,7 +261,7 @@ class TestCacheStrategies:
 
     def test_read_through_strategy(self):
         """测试read-through策略"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             # 缓存未命中，从数据源加载
@@ -270,7 +278,7 @@ class TestCacheStrategies:
 
     def test_write_through_strategy(self):
         """测试write-through策略"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             key = "write_key"
@@ -285,7 +293,7 @@ class TestCacheStrategies:
 
     def test_write_behind_strategy(self):
         """测试write-behind策略"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             key = "async_key"
@@ -304,7 +312,7 @@ class TestCachePerformance:
 
     def test_cache_hit_rate(self):
         """测试缓存命中率"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             # 模拟100次访问
@@ -318,7 +326,7 @@ class TestCachePerformance:
 
     def test_cache_latency(self):
         """测试缓存延迟"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             # L1缓存延迟
@@ -332,7 +340,7 @@ class TestCachePerformance:
 
     def test_cache_throughput(self):
         """测试缓存吞吐量"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             n_operations = 10000
@@ -353,7 +361,7 @@ class TestCacheMonitoring:
 
     def test_cache_metrics_collection(self):
         """测试缓存指标收集"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             metrics = {
@@ -373,7 +381,7 @@ class TestCacheMonitoring:
 
     def test_cache_alert_triggers(self):
         """测试缓存告警触发"""
-        with patch("utils.cache_optimization.CacheManager") as MockCache:
+        with patch("src.gpu.api_system.utils.cache_optimization.CacheManager") as MockCache:
             cache = MockCache()
 
             # 模拟命中率过低

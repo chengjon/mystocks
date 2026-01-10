@@ -149,20 +149,43 @@ python test_config_driven_table_manager.py
 
 ---
 
-## ⚡ Week 3 Update (2025-10-19): Database Simplification
+## ⚡ Week 4 Update (2026-01-10): Three-Database Architecture (Redis Reintroduction)
 
-**Major Change**: System simplified from 4 databases to 2 (TDengine + PostgreSQL)
+**Major Change**: System upgraded from 2 databases to 3 (PostgreSQL + TDengine + **Redis**)
 
 **Migration Completed**:
-- ✅ MySQL data migrated to PostgreSQL (18 tables, 299 rows)
-- ✅ Redis removed (configured db1 was empty)
-- ✅ Architecture complexity reduced by 50%
-- ✅ **TDengine retained**: Specialized for high-frequency time-series market data
-- ✅ **PostgreSQL**: Handles all other data types with TimescaleDB extension
+- ✅ **Redis added back**: L2 distributed cache + Pub/Sub + Distributed Lock
+- ✅ **Three-database architecture finalized**:
+  - **PostgreSQL**: Primary database for all structured data (daily bars, reference, derived, transaction, metadata)
+  - **TDengine**: High-frequency time-series data (tick, minute bars)
+  - **Redis**: Distributed cache, message bus, and distributed locks
+- ✅ **Production-ready**: Optimized for high concurrency and performance
 
-**New Configuration**: See `.env` for 2-database setup (TDengine + PostgreSQL).
+**New Configuration**: See `.env` for 3-database setup (PostgreSQL + TDengine + Redis).
 
-**Philosophy**: Right Tool for Right Job, Simplicity > Unnecessary Complexity
+**Philosophy**: Right Tool for Right Job - Each database optimized for its workload
+
+### Redis Use Cases
+
+1. **L2 Distributed Cache**:
+   - Indicator calculation results (avoid redundant computation)
+   - API response caching (reduce database load)
+   - Market data caching (real-time quotes)
+
+2. **Real-time Message Bus (Pub/Sub)**:
+   - Indicator calculation completion events
+   - Real-time price updates
+   - Task status notifications
+   - Configuration reload broadcasts
+
+3. **Distributed Locks**:
+   - Prevent duplicate indicator calculations
+   - Resource competition control
+   - Critical section mutual exclusion
+
+4. **Session Storage**:
+   - JWT token blacklist
+   - User session management
 
 ---
 
@@ -179,18 +202,18 @@ MyStocks is a professional quantitative trading data management system that uses
 
 ### Environment Setup
 ```bash
-# Install dependencies (dual-database setup)
-pip install pandas numpy pyyaml psycopg2-binary taospy akshare
+# Install dependencies (three-database setup)
+pip install pandas numpy pyyaml psycopg2-binary taospy akshare redis
 
 # Create .env file with database configuration
-# Required environment variables for 2-database architecture:
+# Required environment variables for 3-database architecture:
 # TDengine (high-frequency time-series data):
 # - TDENGINE_HOST, TDENGINE_PORT, TDENGINE_USER, TDENGINE_PASSWORD, TDENGINE_DATABASE
 # PostgreSQL (all other data):
 # - POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT, POSTGRESQL_DATABASE
 # - MONITOR_DB_URL (uses PostgreSQL for monitoring database)
-
-# Note: MySQL (pymysql) and Redis removed after Week 3 simplification
+# Redis (distributed cache, message bus, locks):
+# - REDIS_HOST, REDIS_PORT, REDIS_PASSWORD (optional), REDIS_DB
 ```
 
 ### System Initialization and Management
@@ -277,17 +300,21 @@ historical_data = [
 
 ### Core Design Principles
 
-1. **Dual-Database Data Storage** (Week 3+): Right database for right workload
-   - **High-Frequency Market Data** (高频时序数据): Tick/minute data → **TDengine** (extreme compression, ultra-high write performance)
+1. **Three-Database Data Storage** (Week 4+): Right database for right workload
+   - **High-Frequency Market Data** (高频时序数据): Tick/minute data → **TDengine** (20:1 compression, ultra-high write performance)
    - **Daily Market Data** (日线数据): Daily bars, historical data → **PostgreSQL TimescaleDB** hypertables
    - **Reference Data** (参考数据): Relatively static descriptive data → **PostgreSQL** standard tables
-   - **Derived Data** (衍生数据): Computed analytical results → **PostgreSQL** standard tables
+   - **Derived Data** (衍生数据): Computed analytical results → **PostgreSQL** standard tables + **Redis** cache
    - **Transaction Data** (交易数据): Orders, positions, portfolios → **PostgreSQL** standard tables
    - **Meta Data** (元数据): System configuration and metadata → **PostgreSQL** standard tables
+   - **Real-time Cache** (实时缓存): Indicator results, API responses → **Redis** (distributed L2 cache)
+   - **Message Bus** (消息总线): Events, notifications → **Redis** Pub/Sub
+   - **Distributed Locks** (分布式锁): Resource coordination → **Redis**
 
-2. **Optimized Architecture** (Post-Week 3): 2-database strategy balances performance and simplicity
+2. **Optimized Architecture** (Week 4+): 3-database strategy maximizes performance
    - **TDengine database**: `market_data` (超表: tick_data, minute_data)
    - **PostgreSQL database**: `mystocks` (所有其他表 + TimescaleDB混合表)
+   - **Redis database**: `db=1` (L2缓存, Pub/Sub消息, 分布式锁)
    - Unified access layer abstracts database differences
    - Monitoring database in PostgreSQL tracks all operations
 
@@ -299,6 +326,12 @@ historical_data = [
    - `MonitoringDatabase` logs all operations independent of business databases
    - `PerformanceMonitor` tracks query performance and alerts on slow operations
    - `DataQualityMonitor` ensures data completeness, freshness, and accuracy
+
+5. **Redis Integration Features** (New in Week 4):
+   - **L2 Distributed Cache** (`redis_cache`): Indicator results, API responses, market data
+   - **Real-time Message Bus** (`redis_pubsub`): Event notifications, price updates, task status
+   - **Distributed Locks** (`redis_lock`): Prevent duplicate calculations, resource coordination
+   - **Connection Management** (`redis_manager`): Connection pooling, auto-reconnection, health checks
 
 ### Key Components (重组后的模块路径)
 
@@ -326,6 +359,30 @@ from src.core.data_storage_strategy import DataStorageStrategy
 from unified_manager import MyStocksUnifiedManager  # 通过根目录入口点
 # 或
 from src.core.unified_manager import MyStocksUnifiedManager  # 直接导入
+```
+
+#### Redis Services (`web/backend/app/services/redis/`)
+**位置**: `web/backend/app/services/redis/` 目录
+- `RedisManager`: Redis连接管理器 (单例模式, 连接池, 自动重连)
+- `RedisCacheService`: L2分布式缓存 (指标结果, API响应, 数据查询)
+- `RedisPubSubService`: 实时消息总线 (事件通知, 价格更新, 任务状态)
+- `RedisLockService`: 分布式锁 (防止重复计算, 资源竞争控制)
+
+**导入**:
+```python
+from app.services.redis import redis_cache, redis_pubsub, redis_lock
+from app.core.redis_client import redis_manager
+
+# L2缓存使用
+redis_cache.set("key", {"data": "value"}, ttl=3600)
+cached_data = redis_cache.get("key")
+
+# 消息发布
+redis_pubsub.publish_indicator_calculated("000001", "MACD", {}, success=True)
+
+# 分布式锁
+with redis_lock.indicator_calculation_lock("000001", "MACD", {}):
+    calculate_indicator()
 ```
 
 #### Database Access Layer (`src/data_access/`)
@@ -386,6 +443,51 @@ from src.storage.database import DatabaseTableManager, DatabaseConnectionManager
 from src.monitoring import MonitoringDatabase, DataQualityMonitor
 from src.monitoring import PerformanceMonitor, AlertManager
 ```
+
+## Redis Services (`web/backend/app/services/redis/`)
+**位置**: `web/backend/app/services/redis/` 目录
+- **RedisManager**: 连接管理 (连接池、自动重连、健康检查)
+- **RedisCacheService**: L2分布式缓存
+  - 指标计算结果缓存 (`cache_indicator_result`)
+  - API响应缓存 (`cache_api_response`)
+  - 批量操作 (`mget`, `mset`)
+- **RedisPubSubService**: 实时消息总线
+  - 发布消息 (`publish`, `async_publish`)
+  - 订阅频道 (`subscribe`, `start_listening`)
+  - 预定义事件 (`publish_indicator_calculated`, `publish_price_update`)
+- **RedisLockService**: 分布式锁
+  - 基础锁操作 (`acquire`, `release`, `extend`)
+  - 上下文管理器 (`lock`, `indicator_calculation_lock`)
+  - 锁信息查询 (`is_locked`, `get_lock_info`)
+
+**使用示例**:
+```python
+from app.services.redis import redis_cache, redis_pubsub, redis_lock
+
+# L2缓存
+redis_cache.set("key", {"data": "value"}, ttl=3600)
+data = redis_cache.get("key")
+
+# 指标缓存
+redis_cache.cache_indicator_result("000001", "MACD", params, result, ttl=3600)
+cached = redis_cache.get_cached_indicator_result("000001", "MACD", params)
+
+# 消息发布
+redis_pubsub.publish_indicator_calculated("000001", "MACD", params, success=True)
+
+# 消息订阅
+def handler(message):
+    print(f"Received: {message}")
+redis_pubsub.subscribe("indicator:calculated", handler)
+redis_pubsub.start_listening()
+
+# 分布式锁
+with redis_lock.indicator_calculation_lock("000001", "MACD", params):
+    result = calculate_indicator()
+    # 自动释放锁
+```
+
+**详细示例**: 见 `docs/examples/REDIS_SERVICES_USAGE_EXAMPLES.py`
 
 ### Data Flow Architecture
 

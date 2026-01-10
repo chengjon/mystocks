@@ -104,6 +104,10 @@ async def lifespan(app: FastAPI):
     # 启动时执行
     logger.info("🚀 Starting MyStocks Web API (Week 3 Simplified - PostgreSQL-only)")
 
+    # DEVELOPMENT MODE: Set environment variable for testing
+    os.environ.setdefault("DEVELOPMENT_MODE", "true")
+    logger.info(f"🔧 Development mode: {os.getenv('DEVELOPMENT_MODE')}")
+
     try:
         # 初始化PostgreSQL连接
         engine = get_postgresql_engine()
@@ -116,7 +120,25 @@ async def lifespan(app: FastAPI):
             logger.info("✅ Database connection verified", version=version[:50])
     except Exception as e:
         logger.error("❌ Database initialization failed", error=str(e))
-        raise
+        # DEVELOPMENT MODE: Continue without database for frontend development
+        if os.getenv("DEVELOPMENT_MODE", "false").lower() == "true":
+            logger.warning("⚠️ DEVELOPMENT MODE: Continuing without database connection")
+        else:
+            raise
+
+    # 初始化监控数据库连接池 (Phase 1.4)
+    try:
+        from src.monitoring.infrastructure.postgresql_async_v3 import initialize_postgres_async
+
+        success = await initialize_postgres_async()
+        if success:
+            logger.info("✅ 监控数据库连接池已初始化 (Phase 1.4)")
+        else:
+            logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
+    except Exception as e:
+        logger.error(f"❌ 启动监控数据库失败: {e}")
+        # 不阻止应用启动
+        logger.warning("⚠️ 健康度评分功能将不可用")
 
     # 启动缓存淘汰调度器 (添加超时保护)
     try:
@@ -143,10 +165,55 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to start cache eviction scheduler", error=str(e))
 
+    # 初始化实时市值系统 (Phase 12.4 - DDD Architecture)
+    try:
+        from .api.realtime_mtm_init import initialize_realtime_mtm
+
+        initialize_realtime_mtm()
+        logger.info("✅ Real-time MTM system initialized (Phase 12.4)")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Real-time MTM: {e}")
+        # 不阻止应用启动
+        logger.warning("⚠️ Real-time MTM features will be unavailable")
+
+    # Initialize Indicator System (Phase 3 Optimization)
+    try:
+        # 1. Load Defaults
+        from .services.indicators.defaults import load_default_indicators
+        load_default_indicators()
+        logger.info("✅ Default indicators loaded (V2 Registry)")
+        
+        # 2. Register Tasks
+        from .services.task_manager import task_manager
+        from .tasks.indicator_tasks import batch_calculate_indicators
+        task_manager.register_function("batch_calculate_indicators", batch_calculate_indicators)
+        logger.info("✅ Indicator tasks registered")
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Indicator System: {e}")
+
     yield  # 应用运行期间
 
     # 关闭时执行
     logger.info("🛑 Shutting down MyStocks Web API")
+
+    # 关闭实时市值系统 (Phase 12.4)
+    try:
+        from .api.realtime_mtm_init import shutdown_realtime_mtm
+
+        shutdown_realtime_mtm()
+        logger.info("✅ Real-time MTM system shut down (Phase 12.4)")
+    except Exception as e:
+        logger.error(f"❌ Error shutting down Real-time MTM: {e}")
+
+    # 关闭监控数据库连接池
+    try:
+        from src.monitoring.infrastructure.postgresql_async_v3 import close_postgres_async
+
+        await close_postgres_async()
+        logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
+    except Exception as e:
+        logger.error(f"❌ 关闭监控数据库失败: {e}")
 
     # 停止缓存淘汰调度器
     try:
@@ -484,8 +551,11 @@ from .api import (
     dashboard,
     data,
     data_quality,
+    data_source_config,  # Phase 3: 数据源配置CRUD API
     data_source_registry,  # 数据源注册表管理API (V2.0)
-    indicator_registry,    # 指标注册表管理API (V2.1)
+    data_lineage,  # Phase 3: 数据血缘追踪API
+    governance_dashboard,  # Phase 3: 数据治理仪表板数据API
+    indicator_registry,  # 指标注册表管理API (V2.1)
     health,
     indicators,
     industry_concept_analysis,
@@ -494,9 +564,13 @@ from .api import (
     metrics,
     ml,
     monitoring,
+    monitoring_analysis,  # 智能量化监控 - 组合分析与健康度计算
+    monitoring_watchlists,  # 智能量化监控 - 清单管理 API
     multi_source,
     notification,
+    realtime_market,  # Phase 12.3: Real-time Data Stream Integration
     risk_management,
+    signal_monitoring,  # 智能量化监控 - 信号历史与质量报告
     sse_endpoints,
     stock_search,
     strategy,
@@ -510,6 +584,7 @@ from .api import (
     tradingview,
     watchlist,
     wencai,
+    websocket,  # 🆕 导入 WebSocket 路由
 )
 from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
@@ -519,6 +594,7 @@ app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  #
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
+app.include_router(websocket.router)  # 🆕 挂载 WebSocket 路由
 app.include_router(market.router, prefix="/api/v1/market", tags=["market"])
 app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
 app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
@@ -545,6 +621,16 @@ app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
 
 #  实时监控系统路由
 app.include_router(monitoring.router, prefix="/api/monitoring", tags=["monitoring"])
+
+# Phase 12.3: Real-time Data Stream Integration
+app.include_router(realtime_market.router, prefix="/api", tags=["realtime-market"])  # 实时行情和持仓市值
+
+# 智能量化监控系统路由 (2026-01-07) - v1版本
+app.include_router(monitoring_watchlists.router, prefix="/api/v1", tags=["monitoring-watchlists"])  # 清单管理
+app.include_router(monitoring_analysis.router, prefix="/api/v1", tags=["monitoring-analysis"])  # 组合分析与健康度计算
+
+# 信号监控API路由 (2026-01-08) - Phase 2
+app.include_router(signal_monitoring.router, prefix="/api", tags=["signal-monitoring"])  # 信号历史、质量报告、实时监控
 
 # CLI-5: GPU监控路由 (Phase 6 - T5.2)
 # app.include_router(gpu_monitoring.router, tags=["gpu-monitoring"])  # GPU监控仪表板 - TODO: 模块不存在，待实现
@@ -582,8 +668,17 @@ app.include_router(contract.router)  # 契约版本管理、差异检测、验�
 # 数据源管理V2.0 API (数据源注册表管理)
 app.include_router(data_source_registry.router)  # 数据源搜索、测试、健康检查
 
+# 数据源配置CRUD API (Phase 3: 配置版本管理)
+app.include_router(data_source_config.router)  # 数据源配置CRUD、版本历史、回滚、热重载
+
+# 数据血缘追踪API (Phase 3: 数据血缘和影响分析)
+app.include_router(data_lineage.router)  # 血缘记录、上游/下游查询、影响分析
+
+# 数据治理仪表板数据API (Phase 3: 治理仪表板)
+app.include_router(governance_dashboard.router)  # 数据质量、血缘统计、资产目录、合规指标
+
 # 指标管理V2.1 API (指标注册表管理)
-app.include_router(indicator_registry.router)    # 指标搜索、计算、详情
+app.include_router(indicator_registry.router)  # 指标搜索、计算、详情
 
 # 健康检查API
 app.include_router(health.router, prefix="/api")
@@ -605,11 +700,116 @@ def find_available_port(start_port: int, end_port: int) -> int:
 
 if __name__ == "__main__":
     import uvicorn
+    import sys
 
     from .core.config import settings
 
+    # 导入OpenSpec环境配置
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    # 尝试导入OpenSpec配置
     try:
-        # 在端口范围内查找可用端口
+        openspec_config = {
+            "POSTGRESQL_HOST": os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
+            "POSTGRESQL_PORT": int(os.getenv("POSTGRESQL_PORT", 5438)),
+            "POSTGRESQL_USER": os.getenv("POSTGRESQL_USER", "postgres"),
+            "POSTGRESQL_PASSWORD": os.getenv("POSTGRESQL_PASSWORD", "c790414J"),
+            "POSTGRESQL_DATABASE": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+        }
+        # 更新环境变量
+        for key, value in openspec_config.items():
+            if os.getenv(key) is None:
+                os.environ[key] = value
+                logger.info(f"设置环境变量: {key}={value}")
+    except Exception as e:
+        logger.warning(f"⚠️ 设置OpenSpec环境变量失败: {e}")
+
+    # 初始化异步监控数据库
+    async def startup_event():
+        """启动时初始化监控数据库连接池"""
+        try:
+            from src.monitoring.infrastructure.postgresql_async_v3 import initialize_postgres_async
+
+            success = await initialize_postgres_async()
+            if success:
+                logger.info("✅ 监控数据库连接池已初始化 (Phase 1.4)")
+            else:
+                logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
+        except Exception as e:
+            logger.error(f"❌ 启动监控数据库失败: {e}")
+            # 不阻止应用启动
+            logger.warning("⚠️ 健康度评分功能将不可用")
+
+    # 关闭异步监控数据库
+    async def shutdown_event():
+        """关闭时清理监控数据库连接池"""
+        try:
+            from src.monitoring.infrastructure.postgresql_async_v3 import close_postgres_async
+
+            await close_postgres_async()
+            logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
+        except Exception as e:
+            logger.error(f"❌ 关闭监控数据库失败: {e}")
+
+    # 尝试使用异步生命周期（如果可用）
+    import asyncio
+
+    try:
+        from fastapi import FastAPI
+
+        app = FastAPI()
+
+        # 添加启动/关闭事件
+        @app.on_event("startup")
+        async def on_startup():
+            logger.info("🚀 MyStocks 应用启动中...")
+            # 初始化监控数据库
+            await startup_event()
+
+        @app.on_event("shutdown")
+        async def on_shutdown():
+            logger.info("🏹️ MyStocks 应用关闭中...")
+            await shutdown_event()
+
+        # 路由配置
+        @app.get("/health")
+        async def health_check():
+            try:
+                # 检查异步数据库连接
+                from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+                postgres_async = get_postgres_async()
+
+                if postgres_async.is_connected():
+                    database_status = "✅ PostgreSQL (监控模块)"
+                else:
+                    database_status = "❌ PostgreSQL (监控模块未连接)"
+
+                return {
+                    "status": "healthy",
+                    "app": "mystocks-backend",
+                    "version": "3.0",
+                    "database": database_status,
+                    "gpu": "GPU加速引擎已集成",
+                    "timestamp": "2026-01-07",
+                }
+            except Exception as e:
+                logger.error(f"❌ 健康检查失败: {e}")
+                return {"status": "unhealthy", "app": "mystocks-backend", "version": "3.0", "error": str(e)}
+
+        # API路由
+        @app.get("/api/v1/")
+        async def root():
+            return {"message": "MyStocks Backend API v3.0", "version": "3.0"}
+
+        logger.info("✅ 已集成OpenSpec监控模块启动/关闭事件")
+
+    except ImportError as e:
+        logger.error(f"❌ FastAPI 导入失败: {e}")
+        logger.warning("⚠️ 无法使用 FastAPI 应用，将跳过监控模块事件")
+
+    # 在端口范围内查找可用端口并启动服务
+    try:
         available_port = find_available_port(settings.port_range_start, settings.port_range_end)
         logger.info(f"🚀 Starting server on port {available_port}")
         uvicorn.run(

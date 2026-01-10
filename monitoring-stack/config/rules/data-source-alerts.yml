@@ -1,0 +1,59 @@
+groups:
+- name: datasource_alerts
+  rules:
+  # 1. High Failure Rate Alert
+  - alert: DataSourceHighFailureRate
+    expr: |
+      sum(rate(datasource_api_calls_total{status="failure"}[5m])) by (endpoint)
+      /
+      sum(rate(datasource_api_calls_total[5m])) by (endpoint) > 0.05
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High failure rate for data source {{ $labels.endpoint }}"
+      description: "Data source {{ $labels.endpoint }} has a failure rate > 5% for more than 2 minutes."
+
+  # 2. High Latency Alert (P95 > 500ms)
+  - alert: DataSourceHighLatency
+    expr: |
+      histogram_quantile(0.95, sum(rate(datasource_api_latency_seconds_bucket[5m])) by (le, endpoint)) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High latency for data source {{ $labels.endpoint }}"
+      description: "Data source {{ $labels.endpoint }} P95 latency is above 500ms for more than 5 minutes."
+
+  # 3. Circuit Breaker Open Alert
+  - alert: DataSourceCircuitBreakerOpen
+    expr: datasource_circuit_breaker_state == 1
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Circuit breaker OPEN for {{ $labels.endpoint }}"
+      description: "Circuit breaker for {{ $labels.endpoint }} is in OPEN state, rejecting all requests."
+
+  # 4. Low Cache Hit Rate Alert
+  - alert: DataSourceLowCacheHitRate
+    expr: |
+      sum(rate(datasource_cache_hits_total[10m])) by (endpoint)
+      /
+      (sum(rate(datasource_cache_hits_total[10m])) by (endpoint) + sum(rate(datasource_cache_misses_total[10m])) by (endpoint)) < 0.2
+    for: 15m
+    labels:
+      severity: info
+    annotations:
+      summary: "Low cache hit rate for {{ $labels.endpoint }}"
+      description: "Cache hit rate for {{ $labels.endpoint }} is below 20% for 15 minutes."
+
+  # 5. Data Quality Drop Alert
+  - alert: DataSourceDataQualityDrop
+    expr: datasource_data_quality < 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Data quality drop for {{ $labels.endpoint }}"
+      description: "Data quality score for {{ $labels.endpoint }} dropped below 80."

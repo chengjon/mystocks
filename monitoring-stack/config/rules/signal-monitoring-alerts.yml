@@ -1,0 +1,162 @@
+groups:
+  - name: mystocks_signal_monitoring_alerts
+    interval: 30s
+    rules:
+      # Alert for low signal accuracy
+      - alert: SignalAccuracyLow
+        expr: |
+          mystocks_signal_accuracy_percentage < 70
+        for: 10m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号准确率过低"
+          description: "策略 {{ $labels.strategy_id }} 的 {{ $labels.signal_type }} 信号准确率低于70%持续10分钟 (当前: {{ $value }}%)"
+
+      # Alert for critically low signal accuracy
+      - alert: SignalAccuracyCritical
+        expr: |
+          mystocks_signal_accuracy_percentage < 50
+        for: 5m
+        labels:
+          severity: critical
+          service: signal-monitoring
+        annotations:
+          summary: "信号准确率严重过低"
+          description: "策略 {{ $labels.strategy_id }} 的 {{ $labels.signal_type }} 信号准确率低于50%持续5分钟 (当前: {{ $value }}%)"
+
+      # Alert for low signal success rate
+      - alert: SignalSuccessRateLow
+        expr: |
+          mystocks_signal_success_rate < 60
+        for: 10m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号成功率过低"
+          description: "策略 {{ $labels.strategy_id }} 的信号成功率低于60%持续10分钟 (当前: {{ $value }}%)"
+
+      # Alert for high signal latency
+      - alert: SignalLatencyHigh
+        expr: |
+          histogram_quantile(0.95, mystocks_signal_latency_seconds_bucket) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号生成延迟过高"
+          description: "策略 {{ $labels.strategy_id }} 的P95延迟超过1秒持续5分钟 (当前: {{ $value }}秒)"
+
+      # Alert for critically high signal latency
+      - alert: SignalLatencyCritical
+        expr: |
+          histogram_quantile(0.95, mystocks_signal_latency_seconds_bucket) > 2.0
+        for: 2m
+        labels:
+          severity: critical
+          service: signal-monitoring
+        annotations:
+          summary: "信号生成延迟严重过高"
+          description: "策略 {{ $labels.strategy_id }} 的P95延迟超过2秒持续2分钟 (当前: {{ $value }}秒)"
+
+      # Alert for strategy unhealthy
+      - alert: StrategyUnhealthy
+        expr: |
+          mystocks_strategy_health_status < 0
+        for: 2m
+        labels:
+          severity: critical
+          service: signal-monitoring
+        annotations:
+          summary: "策略状态不健康"
+          description: "策略 {{ $labels.strategy_id }} 处于不健康状态持续2分钟，需要立即检查"
+
+      # Alert for strategy degraded
+      - alert: StrategyDegraded
+        expr: |
+          mystocks_strategy_health_status == 0
+        for: 10m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "策略状态降级"
+          description: "策略 {{ $labels.strategy_id }} 处于降级状态持续10分钟 (当前: {{ $value }})"
+
+      # Alert for too many active signals
+      - alert: ActiveSignalsTooMany
+        expr: |
+          sum(mystocks_active_signals_count) by (strategy_id) > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "活跃信号数量过多"
+          description: "策略 {{ $labels.strategy_id }} 有超过100个活跃信号持续5分钟 (当前: {{ $value }})"
+
+      # Alert for signal push failure rate high
+      - alert: SignalPushFailureRateHigh
+        expr: |
+          rate(mystocks_signal_push_total{status="failed"}[5m]) / rate(mystocks_signal_push_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号推送失败率过高"
+          description: "渠道 {{ $labels.channel }} 的信号推送失败率超过10%持续5分钟 (当前: {{ $value | humanizePercentage }})"
+
+      # Alert for signal push latency high
+      - alert: SignalPushLatencyHigh
+        expr: |
+          histogram_quantile(0.95, mystocks_signal_push_latency_seconds_bucket) > 5.0
+        for: 5m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号推送延迟过高"
+          description: "渠道 {{ $labels.channel }} 的P95推送延迟超过5秒持续5分钟 (当前: {{ $value }}秒)"
+
+      # Alert for no signal generation
+      - alert: NoSignalGeneration
+        expr: |
+          increase(mystocks_signal_generation_total[30m]) == 0
+        for: 30m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "30分钟内无信号生成"
+          description: "策略 {{ $labels.strategy_id }} 在过去30分钟内未生成任何信号"
+
+  - name: mystocks_signal_quality_alerts
+    interval: 1m
+    rules:
+      # Alert for negative profit ratio
+      - alert: SignalProfitRatioNegative
+        expr: |
+          mystocks_signal_profit_ratio < 40
+        for: 15m
+        labels:
+          severity: warning
+          service: signal-monitoring
+        annotations:
+          summary: "信号盈利比率低"
+          description: "策略 {{ $labels.strategy_id }} 的{{ $labels.time_window }}盈利比率低于40%持续15分钟 (当前: {{ $value }}%)"
+
+      # Alert for signal generation rate drop
+      - alert: SignalGenerationRateDrop
+        expr: |
+          rate(mystocks_signal_generation_total[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: info
+          service: signal-monitoring
+        annotations:
+          summary: "信号生成速率下降"
+          description: "策略 {{ $labels.strategy_id }} 的信号生成速率低于0.1信号/秒持续10分钟"

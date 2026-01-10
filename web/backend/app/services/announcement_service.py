@@ -36,13 +36,29 @@ class AnnouncementService:
 
     def __init__(self, db_url: str = None):
         """
-        初始化服务
+        初始化服务（使用环境变量配置数据库连接）
 
         Args:
-            db_url: 数据库连接URL
+            db_url: 数据库连接URL（如果为None，从环境变量读取）
+
+        环境变量:
+            POSTGRESQL_HOST: PostgreSQL主机地址
+            POSTGRESQL_PORT: PostgreSQL端口
+            POSTGRESQL_USER: PostgreSQL用户名
+            POSTGRESQL_PASSWORD: PostgreSQL密码
+            POSTGRESQL_DATABASE: PostgreSQL数据库名
         """
         if db_url is None:
-            db_url = "postgresql://postgres:c790414J@192.168.123.104:5438/mystocks"
+            # 从环境变量读取数据库配置
+            from app.core.config import settings
+
+            db_url = (
+                f"postgresql://{settings.postgresql_user}:"
+                f"{settings.postgresql_password}@"
+                f"{settings.postgresql_host}:"
+                f"{settings.postgresql_port}/"
+                f"{settings.postgresql_database}"
+            )
 
         self.engine = create_engine(db_url)
         self.SessionLocal = sessionmaker(bind=self.engine)

@@ -1,0 +1,87 @@
+{
+  "market_overview": {
+    "total_stocks": 5000,
+    "up_count": 2800,
+    "down_count": 2100,
+    "flat_count": 100,
+    "total_volume": 1500000000,
+    "total_amount": 2500000000000.00
+  },
+  "fund_flow": {
+    "north_flow": 1250000000.50,
+    "south_flow": -980000000.25,
+    "total_flow": 270000000.25,
+    "major_flow": 450000000.00,
+    "retail_flow": -180000000.00
+  },
+  "kline_data": [
+    {
+      "symbol": "000001.SZ",
+      "timestamp": "2024-01-10T09:30:00Z",
+      "open": 10.50,
+      "high": 10.65,
+      "low": 10.45,
+      "close": 10.58,
+      "volume": 1500000,
+      "amount": 15800000.00
+    },
+    {
+      "symbol": "000001.SZ",
+      "timestamp": "2024-01-10T09:31:00Z",
+      "open": 10.58,
+      "high": 10.62,
+      "low": 10.55,
+      "close": 10.60,
+      "volume": 1200000,
+      "amount": 12700000.00
+    }
+  ],
+  "etf_data": [
+    {
+      "code": "159919.SZ",
+      "name": "沪深300ETF",
+      "price": 3.85,
+      "change": 0.025,
+      "change_pct": 0.65,
+      "volume": 25000000,
+      "amount": 96000000.00
+    },
+    {
+      "code": "512880.SH",
+      "name": "证券ETF",
+      "price": 0.95,
+      "change": -0.005,
+      "change_pct": -0.52,
+      "volume": 15000000,
+      "amount": 14200000.00
+    }
+  ],
+  "lhb_data": [
+    {
+      "symbol": "600519.SH",
+      "name": "贵州茅台",
+      "buyer_count": 1250,
+      "seller_count": 980,
+      "net_amount": 450000000.00,
+      "turnover_rate": 2.85
+    },
+    {
+      "symbol": "000002.SZ",
+      "name": "万科A",
+      "buyer_count": 890,
+      "seller_count": 1200,
+      "net_amount": -180000000.00,
+      "turnover_rate": 1.65
+    }
+  ],
+  "chip_race_data": [
+    {
+      "symbol": "600036.SH",
+      "name": "招商银行",
+      "winner_amount": 250000000.00,
+      "loser_amount": 180000000.00,
+      "neutral_amount": 120000000.00,
+      "total_amount": 550000000.00
+    }
+  ]
+}

@@ -132,21 +132,24 @@
             <component :is="isCollapse ? 'Expand' : 'Fold'" />
           </el-icon>
         </div>
-        <div class="right">
-          <el-dropdown @command="handleCommand">
-            <span class="user-info">
-              <el-icon><User /></el-icon>
-              <span class="username">{{ user?.username }}</span>
-              <el-icon><ArrowDown /></el-icon>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
-                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
+         <div class="right">
+           <!-- API版本管理组件 -->
+           <ApiVersionManager />
+
+           <el-dropdown @command="handleCommand">
+             <span class="user-info">
+               <el-icon><User /></el-icon>
+               <span class="username">{{ user?.username }}</span>
+               <el-icon><ArrowDown /></el-icon>
+             </span>
+             <template #dropdown>
+               <el-dropdown-menu>
+                 <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+                 <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+               </el-dropdown-menu>
+             </template>
+           </el-dropdown>
+         </div>
       </el-header>
 
       <!-- 内容区域 -->
@@ -162,6 +165,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import ApiVersionManager from '@/components/common/ApiVersionManager.vue'
 
 const route = useRoute()
 const router = useRouter()

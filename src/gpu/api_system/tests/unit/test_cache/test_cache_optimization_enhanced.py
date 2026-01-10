@@ -12,12 +12,19 @@ import sys
 import os
 
 # 添加项目根目录到路径
-sys.path.insert(
-    0,
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
-)
+# File is at: src/gpu/api_system/tests/unit/test_cache/test_cache_optimization_enhanced.py
+# We need to go up 7 levels to get to /opt/claude/mystocks_spec/
+current_dir = os.path.dirname(os.path.abspath(__file__)) # test_cache
+unit_dir = os.path.dirname(current_dir) # unit
+tests_dir = os.path.dirname(unit_dir) # tests
+api_system_dir = os.path.dirname(tests_dir) # api_system
+gpu_dir = os.path.dirname(api_system_dir) # gpu
+src_dir = os.path.dirname(gpu_dir) # src
+project_root = os.path.dirname(src_dir) # mystocks_spec
 
-from src.utils.cache_optimization_enhanced import (
+sys.path.insert(0, project_root)
+
+from src.gpu.api_system.utils.cache_optimization_enhanced import (
     EnhancedCacheManager,
     AccessPatternLearner,
     QueryResultCache,
@@ -104,7 +111,7 @@ class TestQueryResultCache(unittest.TestCase):
     """测试查询结果缓存"""
 
     def setUp(self):
-        from src.utils.cache_optimization import MultiLevelCache
+        from src.gpu.api_system.utils.cache_optimization import MultiLevelCache
 
         self.cache = MultiLevelCache()
         self.query_cache = QueryResultCache(self.cache)
@@ -157,7 +164,7 @@ class TestNegativeCache(unittest.TestCase):
     """测试负缓存"""
 
     def setUp(self):
-        from src.utils.cache_optimization import MultiLevelCache
+        from src.gpu.api_system.utils.cache_optimization import MultiLevelCache
 
         self.cache = MultiLevelCache()
         self.negative_cache = NegativeCache(self.cache)

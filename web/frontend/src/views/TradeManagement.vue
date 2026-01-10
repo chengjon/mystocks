@@ -1,35 +1,55 @@
 <template>
-  <div class="trade-management">
+  <div class="trade-management-container">
 
-    <div class="page-header">
-      <h1 class="page-title">TRADE MANAGEMENT</h1>
-      <p class="page-subtitle">POSITION TRACKING | ORDER MANAGEMENT | PERFORMANCE ANALYSIS</p>
+    <!-- Bloomberg-style Header -->
+    <div class="trade-header">
+      <div class="header-title-section">
+        <h1 class="page-title">TRADE MANAGEMENT</h1>
+        <p class="page-subtitle">POSITION TRACKING | ORDER MANAGEMENT | PERFORMANCE ANALYSIS</p>
+      </div>
+      <div class="header-actions">
+        <el-button type="primary" @click="openTradeDialog('buy')">
+          NEW TRADE
+        </el-button>
+      </div>
     </div>
 
-    <PortfolioOverview ref="portfolioOverviewRef" />
+    <!-- Portfolio Overview Section -->
+    <div class="portfolio-section">
+      <PortfolioOverview ref="portfolioOverviewRef" />
+    </div>
 
+    <!-- Main Card with Tabs -->
     <div class="main-card">
-      <el-tabs v-model="activeTab" @tab-click="handleTabClick" class="tabs">
-        <el-tab-pane label="POSITIONS" name="positions">
-          <PositionsTab
-            v-if="activeTab === 'positions'"
-            ref="positionsTabRef"
-            @buy="openTradeDialog('buy')"
-            @sell="openTradeDialog('sell')"
-            @quick-sell="handleQuickSell"
-          />
-        </el-tab-pane>
+      <!-- Bloomberg-style Custom Tabs -->
+      <div class="bloomberg-tabs-wrapper">
+        <button
+          v-for="tab in tabs"
+          :key="tab.name"
+          :class="['bloomberg-tab', { active: activeTab === tab.name }]"
+          @click="activeTab = tab.name"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
 
-        <el-tab-pane label="TRADE HISTORY" name="trades">
-          <TradeHistoryTab v-if="activeTab === 'trades'" ref="tradeHistoryTabRef" />
-        </el-tab-pane>
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <PositionsTab
+          v-if="activeTab === 'positions'"
+          ref="positionsTabRef"
+          @buy="openTradeDialog('buy')"
+          @sell="openTradeDialog('sell')"
+          @quick-sell="handleQuickSell"
+        />
 
-        <el-tab-pane label="STATISTICS" name="statistics">
-          <StatisticsTab v-if="activeTab === 'statistics'" ref="statisticsTabRef" />
-        </el-tab-pane>
-      </el-tabs>
+        <TradeHistoryTab v-if="activeTab === 'trades'" ref="tradeHistoryTabRef" />
+
+        <StatisticsTab v-if="activeTab === 'statistics'" ref="statisticsTabRef" />
+      </div>
     </div>
 
+    <!-- Trade Dialog -->
     <TradeDialog
       v-model:visible="tradeDialogVisible"
       :trade-type="tradeType"
@@ -39,26 +59,43 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick, onMounted, watch } from 'vue'
+import { ElButton } from 'element-plus'
 import { PortfolioOverview, PositionsTab, TradeHistoryTab, StatisticsTab, TradeDialog } from './trade-management/components'
 import { tradeApi } from '@/api/trade'
+import type { AccountOverviewVM } from '@/utils/trade-adapters'
 
 const activeTab = ref('positions')
 const tradeDialogVisible = ref(false)
 const tradeType = ref<'buy' | 'sell'>('buy')
+
+const tabs = [
+  { name: 'positions', label: 'POSITIONS' },
+  { name: 'trades', label: 'TRADE HISTORY' },
+  { name: 'statistics', label: 'STATISTICS' }
+]
 
 const portfolioOverviewRef = ref<InstanceType<typeof PortfolioOverview>>()
 const positionsTabRef = ref<InstanceType<typeof PositionsTab>>()
 const tradeHistoryTabRef = ref<InstanceType<typeof TradeHistoryTab>>()
 const statisticsTabRef = ref<InstanceType<typeof StatisticsTab>>()
 
+// Type adapter: Convert AccountOverviewVM to Portfolio format
+const adaptToPortfolio = (accountOverview: AccountOverviewVM) => ({
+  total_assets: accountOverview.totalAssets,
+  available_cash: accountOverview.availableCash,
+  position_value: accountOverview.totalPositionValue,
+  total_profit: accountOverview.totalPnL,
+  profit_rate: parseFloat(accountOverview.totalPnLPercent)
+})
+
 const initializeData = async () => {
   try {
-    const portfolioData = await tradeApi.getAccountOverview()
+    const accountOverview = await tradeApi.getAccountOverview()
+    const portfolioData = adaptToPortfolio(accountOverview)
     portfolioOverviewRef.value?.setPortfolio(portfolioData)
   } catch (error) {
-    console.error('加载投资组合失败:', error)
+    console.error('Failed to load portfolio:', error)
   }
 }
 
@@ -66,12 +103,17 @@ onMounted(() => {
   initializeData()
 })
 
-const handleTabClick = async (tab: any) => {
-  if (tab.paneName === 'statistics') {
+const handleTabClick = async (tabName: string) => {
+  if (tabName === 'statistics') {
     await nextTick()
     statisticsTabRef.value?.renderCharts()
   }
 }
+
+// Watch for tab changes
+watch(activeTab, async (newTab) => {
+  await handleTabClick(newTab)
+})
 
 const openTradeDialog = (type: 'buy' | 'sell') => {
   tradeType.value = type
@@ -81,8 +123,6 @@ const openTradeDialog = (type: 'buy' | 'sell') => {
 const handleQuickSell = (position: any) => {
   tradeType.value = 'sell'
   tradeDialogVisible.value = true
-  // Pre-fill dialog with position data
-  // The TradeDialog component will handle this through its setFormData method
 }
 
 const handleTradeSubmitted = async () => {
@@ -94,100 +134,161 @@ const handleTradeSubmitted = async () => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.3: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
 
-.trade-management {
+// ============================================
+//   Bloomberg Terminal Style Trade Management
+// ============================================
+
+.trade-management-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-primary);
   min-height: 100vh;
-  padding: var(--spacing-6);
-  position: relative;
-  background: var(--bg-primary);
 }
 
-.background-pattern {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-    opacity: 0.04;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        var(--accent-gold) 0px,
-        var(--accent-gold) 1px,
-        transparent 1px,
-        transparent 10px
-      );
+// Bloomberg-style Header
+.trade-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+
+  .header-title-section {
+    flex: 1;
   }
 
-  .page-header {
-    text-align: center;
-    margin-bottom: var(--spacing-8);
-    position: relative;
-    z-index: 1;
+  .page-title {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    margin: 0 0 var(--spacing-sm) 0;
+    line-height: 1.2;
+  }
 
+  .page-subtitle {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--spacing-md);
+  }
+}
+
+// Portfolio Section
+.portfolio-section {
+  margin-bottom: var(--spacing-sm);
+}
+
+// Main Card
+.main-card {
+  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-elevated) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+
+  // Bloomberg-style Tabs Wrapper
+  .bloomberg-tabs-wrapper {
+    display: flex;
+    gap: 2px;
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .bloomberg-tab {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--color-accent);
+      background: var(--color-accent-alpha-90);
+    }
+
+    &.active {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+      background: var(--color-accent-alpha-90);
+    }
+  }
+
+  // Tab Content
+  .tab-content {
+    min-height: 500px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1440px) {
+  .trade-management-container {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .trade-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .trade-management-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .trade-header {
     .page-title {
-      font-family: var(--font-display);
-      font-size: var(--font-size-h2);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-widest);
-      color: var(--accent-gold);
-      margin: 0 0 var(--spacing-2) 0;
+      font-size: var(--font-size-xl);
     }
 
     .page-subtitle {
-      font-family: var(--font-body);
-      font-size: var(--font-size-small);
-      color: var(--fg-muted);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin: 0;
+      font-size: var(--font-size-xs);
     }
   }
 
-    background: var(--bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: var(--radius-none);
-    padding: var(--spacing-6);
-    position: relative;
-    z-index: 1;
-  }
+  .main-card {
+    padding: var(--spacing-md);
 
-  .tabs {
-    :deep(.el-tabs__nav-wrap) {
-      &::after {
-        background: rgba(212, 175, 55, 0.3);
+    .bloomberg-tabs-wrapper {
+      flex-wrap: wrap;
+
+      .bloomberg-tab {
+        padding: 10px var(--spacing-md);
+        font-size: var(--font-size-xs);
       }
-    }
-
-    :deep(.el-tabs__item) {
-      color: var(--fg-muted);
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      font-weight: 600;
-
-      &:hover {
-        color: var(--accent-gold);
-      }
-
-      &.is-active {
-        color: var(--accent-gold);
-        border-bottom: 2px solid var(--accent-gold) !important;
-      }
-    }
-
-    :deep(.el-tabs__active-bar) {
-      background: var(--accent-gold);
     }
   }
 }

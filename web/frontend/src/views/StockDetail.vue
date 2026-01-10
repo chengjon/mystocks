@@ -43,25 +43,25 @@
 
     <div class="content-grid">
       <div class="main-content">
-        <el-card :hoverable="false">
-          <template #header>
-            <div class="chart-controls">
-              <div class="segmented">
-                <button v-for="opt in chartOptions" :key="opt.value" :class="['segmented-btn', { active: chartType === opt.value }]" @click="() => { const val = opt.value as ChartType; chartType = val; handleChartTypeChange(val) }">
-                  {{ opt.label }}
-                </button>
-              </div>
-              <div v-if="chartType === 'intraday'" class="select-sm">
-                <select v-model="timeRange" @change="(e) => handleTimeRangeChange((e.target as HTMLSelectElement).value as TimeRange)">
-                  <option value="1w">1 WEEK</option>
-                  <option value="1m">1 MONTH</option>
-                  <option value="3m">3 MONTHS</option>
-                  <option value="6m">6 MONTHS</option>
-                  <option value="1y">1 YEAR</option>
-                </select>
-              </div>
-            </div>
-          </template>
+         <el-card :hoverable="false">
+           <template #header>
+             <div class="chart-controls">
+               <div class="segmented">
+                 <button v-for="opt in chartOptions" :key="opt.value" :class="['segmented-btn', { active: chartType === opt.value }]" @click="() => { const val = opt.value as ChartType; chartType = val; handleChartTypeChange(val) }">
+                   {{ opt.label }}
+                 </button>
+               </div>
+               <div v-if="chartType === 'intraday'" class="select-sm">
+                 <select v-model="timeRange" @change="(e) => handleTimeRangeChange((e.target as HTMLSelectElement).value as TimeRange)">
+                   <option value="1w">1 WEEK</option>
+                   <option value="1m">1 MONTH</option>
+                   <option value="3m">3 MONTHS</option>
+                   <option value="6m">6 MONTHS</option>
+                   <option value="1y">1 YEAR</option>
+                 </select>
+               </div>
+             </div>
+           </template>
 
           <div class="kline-chart-wrapper">
             <ProKLineChart
@@ -79,12 +79,12 @@
         </el-card>
       </div>
 
-      <div class="sidebar">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="section-title">I. BASIC INFORMATION</h3>
-          </div>
-          <el-descriptions :column="1" border class="descriptions">
+       <div class="sidebar">
+         <div class="card">
+           <div class="card-header">
+             <h3 class="section-title">I. BASIC INFORMATION</h3>
+           </div>
+           <el-descriptions :column="1" border class="descriptions">
             <el-descriptions-item label="SYMBOL">{{ stockDetail.symbol }}</el-descriptions-item>
             <el-descriptions-item label="NAME">{{ stockDetail.name }}</el-descriptions-item>
             <el-descriptions-item label="INDUSTRY">{{ stockDetail.industry }}</el-descriptions-item>
@@ -94,10 +94,12 @@
           </el-descriptions>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <h3 class="section-title">II. TECHNICAL ANALYSIS</h3>
-          </div>
+         <el-card>
+           <template #header>
+             <div class="card-header">
+               <span class="card-title">II. TECHNICAL ANALYSIS</span>
+             </div>
+           </template>
           <div class="analysis-content">
             <div class="indicator-item" v-for="(indicator, key) in technicalIndicators" :key="key">
               <span class="indicator-label">{{ key.toUpperCase() }}</span>
@@ -106,19 +108,21 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <div class="header-with-select">
-              <h3 class="section-title">III. TRADING SUMMARY</h3>
-              <el-select v-model="summaryPeriod" @change="loadTradingSummary">
-                <el-option label="1 WEEK" value="1w" />
-                <el-option label="1 MONTH" value="1m" />
-                <el-option label="3 MONTHS" value="3m" />
-                <el-option label="6 MONTHS" value="6m" />
-                <el-option label="1 YEAR" value="1y" />
-              </el-select>
-            </div>
-          </div>
+         <el-card>
+           <template #header>
+             <div class="card-header">
+               <div class="header-with-select">
+                 <span class="card-title">III. TRADING SUMMARY</span>
+                 <select v-model="summaryPeriod" @change="loadTradingSummary" class="period-select">
+                   <option value="1w">1 WEEK</option>
+                   <option value="1m">1 MONTH</option>
+                   <option value="3m">3 MONTHS</option>
+                   <option value="6m">6 MONTHS</option>
+                   <option value="1y">1 YEAR</option>
+                 </select>
+               </div>
+             </div>
+           </template>
           <div class="summary-content" v-loading="summaryLoading">
             <div class="summary-row">
               <div class="summary-item">
@@ -169,34 +173,39 @@
         </div>
       </div>
 
-      <div class="trading-card">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="section-title">IV. TRADING OPERATIONS</h3>
-          </div>
-          <div class="trading-content">
-            <el-form :model="tradeForm" inline>
-              <el-form-item label="TYPE">
-                <el-select v-model="tradeForm.type">
-                  <el-option label="BUY" value="buy" />
-                  <el-option label="SELL" value="sell" />
-                </el-select>
-              </el-form-item>
-              <el-form-item label="PRICE">
-                <el-input v-model="tradeForm.price" placeholder="MARKET PRICE" />
-              </el-form-item>
-              <el-form-item label="QUANTITY">
-                <el-input v-model="tradeForm.quantity" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleTrade">
-                  EXECUTE TRADE
-                </el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-        </div>
-      </div>
+       <div class="trading-card">
+         <el-card>
+           <template #header>
+             <div class="card-header">
+               <span class="card-title">IV. TRADING OPERATIONS</span>
+             </div>
+           </template>
+           <div class="trading-content">
+             <div class="trade-form">
+               <div class="form-row">
+                 <label class="form-label">TYPE</label>
+                 <select v-model="tradeForm.type" class="form-select">
+                   <option value="buy">BUY</option>
+                   <option value="sell">SELL</option>
+                 </select>
+               </div>
+               <div class="form-row">
+                 <label class="form-label">PRICE</label>
+                 <el-input v-model="tradeForm.price" placeholder="MARKET PRICE" class="form-input" />
+               </div>
+               <div class="form-row">
+                 <label class="form-label">QUANTITY</label>
+                 <el-input v-model="tradeForm.quantity" class="form-input" />
+               </div>
+               <div class="form-row">
+                 <el-button variant="primary" @click="handleTrade" class="trade-btn">
+                   EXECUTE TRADE
+                 </el-button>
+               </div>
+             </div>
+           </div>
+         </el-card>
+       </div>
     </div>
   </div>
 </template>
@@ -207,7 +216,7 @@ import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElCard, ElButton, ElInput } from 'element-plus'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
 
 interface StockDetail {
@@ -268,7 +277,8 @@ type TimeRange = '1w' | '1m' | '3m' | '6m' | '1y'
 
 const route = useRoute()
 const chartRef: Ref<HTMLDivElement | null> = ref(null)
-const chart: ECharts | null = null
+// TODO: Implement direct chart access if needed for advanced features
+// const chart = ref<ECharts | null>(null)
 
 const chartType: Ref<ChartType> = ref('kline')
 const chartOptions: Array<{ label: string; value: ChartType }> = [
@@ -463,9 +473,10 @@ onMounted(async () => {
   await loadTradingSummary()
   await nextTick()
 
-  window.addEventListener('resize', () => {
-    chart?.resize()
-  })
+  // TODO: Implement chart resize when chart ref is available
+  // window.addEventListener('resize', () => {
+  //   chart.value?.resize()
+  // })
 })
 </script>
 
@@ -476,11 +487,10 @@ onMounted(async () => {
   padding: var(--spacing-6);
   position: relative;
   background: var(--bg-primary);
-}
 
-.background-pattern {
-  position: fixed;
-  top: 0;
+  .background-pattern {
+    position: fixed;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -504,6 +514,7 @@ onMounted(async () => {
       );
   }
 
+  .info-card {
     position: relative;
     background: var(--bg-card);
     border: 1px solid rgba(212, 175, 55, 0.3);
@@ -512,86 +523,89 @@ onMounted(async () => {
     margin-bottom: var(--spacing-6);
     box-shadow: var(--glow-subtle);
     z-index: 1;
+  }
 
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      pointer-events: none;
-      opacity: 0.6;
-    }
+  .corner-decoration {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    opacity: 0.6;
+  }
 
-      top: 12px;
-      left: 12px;
-      border-top: 2px solid var(--accent-gold);
-      border-left: 2px solid var(--accent-gold);
-    }
+  .corner-tl {
+    top: 12px;
+    left: 12px;
+    border-top: 2px solid var(--accent-gold);
+    border-left: 2px solid var(--accent-gold);
+  }
 
-      bottom: 12px;
-      right: 12px;
-      border-bottom: 2px solid var(--accent-gold);
-      border-right: 2px solid var(--accent-gold);
-    }
+  .corner-br {
+    bottom: 12px;
+    right: 12px;
+    border-bottom: 2px solid var(--accent-gold);
+    border-right: 2px solid var(--accent-gold);
+  }
 
-    .stock-header-content {
-      .stock-info-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--spacing-6);
+  .stock-header-content {
+    .stock-info-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing-6);
 
-        .stock-title-section {
-          flex: 1;
+      .stock-title-section {
+        flex: 1;
 
-          .stock-symbol {
-            font-family: var(--font-display);
-            font-size: var(--font-size-h1);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: var(--tracking-widest);
-            color: var(--accent-gold);
-            margin: 0 0 var(--spacing-2) 0;
-            line-height: 1.2;
-          }
-
-          .stock-name-display {
-            font-family: var(--font-display);
-            font-size: var(--font-size-h3);
-            font-weight: 600;
-            color: var(--fg-primary);
-            margin: 0 0 var(--spacing-3) 0;
-            line-height: 1.4;
-          }
-
-          .stock-tags {
-            display: flex;
-            gap: var(--spacing-2);
-            flex-wrap: wrap;
-          }
+        .stock-symbol {
+          font-family: var(--font-display);
+          font-size: var(--font-size-h1);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-widest);
+          color: var(--accent-gold);
+          margin: 0 0 var(--spacing-2) 0;
+          line-height: 1.2;
         }
 
-        .stock-price-section {
-          text-align: right;
+        .stock-name-display {
+          font-family: var(--font-display);
+          font-size: var(--font-size-h3);
+          font-weight: 600;
+          color: var(--fg-primary);
+          margin: 0 0 var(--spacing-3) 0;
+          line-height: 1.4;
+        }
 
-          .price-display {
-            .price-value {
-              display: block;
-              font-family: var(--font-mono);
-              font-size: var(--font-size-h2);
-              font-weight: 700;
-              line-height: 1.2;
-              margin-bottom: var(--spacing-2);
+        .stock-tags {
+          display: flex;
+          gap: var(--spacing-2);
+          flex-wrap: wrap;
+        }
+      }
 
-              &.gold {
-                color: var(--accent-gold);
-              }
+      .stock-price-section {
+        text-align: right;
+
+        .price-display {
+          .price-value {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: var(--font-size-h2);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-2);
+
+            &.gold {
+              color: var(--accent-gold);
             }
+          }
 
-            .price-change {
-              display: block;
-              font-family: var(--font-mono);
-              font-size: var(--font-size-body);
-              font-weight: 600;
-            }
+          .price-change {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: var(--font-size-body);
+            font-weight: 600;
           }
         }
       }
@@ -619,23 +633,32 @@ onMounted(async () => {
       transform: translateY(-2px);
     }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--spacing-6);
-      padding-bottom: var(--spacing-4);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(247, 147, 26, 0.3);
 
-      .section-title {
-        font-family: var(--font-display);
-        font-size: var(--font-size-h4);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: var(--tracking-widest);
-        color: var(--accent-gold);
-        margin: 0;
-      }
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #F7931A;
+    }
+
+    .section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #F7931A;
+      margin: 0;
+    }
 
       .header-with-select {
         display: flex;
@@ -784,6 +807,7 @@ onMounted(async () => {
     color: var(--accent-gold) !important;
   }
 
+  .btn-gold {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -800,10 +824,6 @@ onMounted(async () => {
     color: var(--accent-gold);
     cursor: pointer;
     transition: all var(--transition-base);
-  }
-
-    background: var(--accent-gold);
-    color: var(--bg-primary);
 
     &:hover:not(:disabled) {
       background: var(--accent-gold-light);
@@ -811,6 +831,7 @@ onMounted(async () => {
     }
   }
 
+  .info-section {
     :deep(.el-descriptions__label) {
       background: rgba(212, 175, 55, 0.1) !important;
       color: var(--fg-muted) !important;
@@ -839,14 +860,17 @@ onMounted(async () => {
     margin-bottom: var(--spacing-6);
   }
 
+  .grid-item {
     min-width: 0;
   }
 
+  .content-section {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-6);
   }
 
+  .card-wrapper {
     position: relative;
     z-index: 1;
 
@@ -885,65 +909,99 @@ onMounted(async () => {
   }
 
     display: inline-flex;
-    background: rgba(212, 175, 55, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: var(--radius-none);
+    background: rgba(247, 147, 26, 0.05);
+    border: 1px solid rgba(247, 147, 26, 0.3);
+    border-radius: 6px;
     padding: 2px;
 
-    .segmented-btn {
-      padding: var(--spacing-2) var(--spacing-4);
-      font-family: var(--font-display);
-      font-size: var(--font-size-small);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      color: var(--fg-muted);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: all var(--transition-base);
-
-      &:hover {
-        color: var(--accent-gold);
-      }
-
-      &.active {
-        background: var(--accent-gold);
-        color: var(--bg-primary);
-      }
+    .chart-btn {
+      min-width: 80px;
     }
   }
 
-  .select-sm {
+  .select-sm,
+  .period-select {
     select {
-      padding: var(--spacing-2) var(--spacing-3);
-      font-family: var(--font-display);
-      font-size: var(--font-size-small);
+      padding: 6px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      color: var(--accent-gold);
-      background: rgba(212, 175, 55, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: var(--radius-none);
+      letter-spacing: 0.05em;
+      color: #E5E7EB;
+      background: rgba(15, 17, 21, 0.8);
+      border: 1px solid rgba(247, 147, 26, 0.3);
+      border-radius: 4px;
       cursor: pointer;
-      transition: all var(--transition-base);
+      transition: all 0.2s ease;
 
       &:hover {
-        border-color: var(--accent-gold);
+        border-color: #F7931A;
       }
 
       &:focus {
         outline: none;
-        border-color: var(--accent-gold);
-        box-shadow: var(--glow-subtle);
+        border-color: #F7931A;
+        box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
       }
 
       option {
-        background: var(--bg-card);
-        color: var(--fg-primary);
+        background: rgba(15, 17, 21, 0.8);
+        color: #E5E7EB;
       }
     }
   }
-}
+
+  .trade-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .form-label {
+    min-width: 80px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94A3B8;
+  }
+
+  .form-select {
+    padding: 8px 12px;
+    background: rgba(15, 17, 21, 0.8);
+    border: 1px solid rgba(247, 147, 26, 0.3);
+    border-radius: 6px;
+    color: #E5E7EB;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &:focus {
+      outline: none;
+      border-color: #F7931A;
+      box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
+    }
+
+    option {
+      background: rgba(15, 17, 21, 0.8);
+      color: #E5E7EB;
+    }
+  }
+
+  .form-input {
+    flex: 1;
+  }
+
+  .trade-btn {
+    margin-left: auto;
+  }
 </style>

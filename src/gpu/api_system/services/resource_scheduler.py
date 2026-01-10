@@ -11,9 +11,9 @@ from datetime import datetime, timedelta
 import queue
 from enum import Enum
 
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.redis_utils import RedisQueue
-from src.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.utils.monitoring import MetricsCollector
 
 logger = logging.getLogger(__name__)
 

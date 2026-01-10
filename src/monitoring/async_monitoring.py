@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class MonitoringEvent:
     """监控事件数据类"""
 
-    event_type: str  # 'operation', 'performance', 'quality_check', 'alert'
+    event_type: str  # 'operation', 'performance', 'quality_check', 'alert', 'metric_update'
     data: Dict[str, Any]
     timestamp: datetime
     retry_count: int = 0
@@ -348,32 +348,39 @@ class MonitoringEventWorker:
                 if event_type == "metric_update":
                     try:
                         scores_data = [e.data for e in events]
+                        # 导入监控数据库访问层（v3.0）
+                        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+                        postgres_async = get_postgres_async()
                         await postgres_async.batch_save_health_scores(scores_data)
                         success_count += len(events)
+                        logger.info(f"✅ 批量写入健康度评分: {len(events)} 条 (含高级风险指标)")
+                    except ImportError:
+                        logger.warning("⚠️ postgres_async_v3 不可用，跳过 metric_update 处理")
+                        failed_count += len(events)
                     except Exception as e:
                         logger.warning(f"⚠️ 批量写入健康度评分失败: {e}")
                         failed_count += len(events)
-                    continue
+                else:
+                    # 处理传统同步事件
+                    for event in events:
+                        try:
+                            if event_type == "operation":
+                                monitoring_db.log_operation(**event.data)
+                            elif event_type == "performance":
+                                monitoring_db.record_performance_metric(**event.data)
+                            elif event_type == "quality_check":
+                                monitoring_db.log_quality_check(**event.data)
+                            elif event_type == "alert":
+                                monitoring_db.create_alert(**event.data)
+                            else:
+                                logger.warning("⚠️ 未知事件类型: %s", event_type)
+                                continue
 
-                # 处理传统同步事件
-                for event in events:
-                    try:
-                        if event_type == "operation":
-                            monitoring_db.log_operation(**event.data)
-                        elif event_type == "performance":
-                            monitoring_db.record_performance_metric(**event.data)
-                        elif event_type == "quality_check":
-                            monitoring_db.log_quality_check(**event.data)
-                        elif event_type == "alert":
-                            monitoring_db.create_alert(**event.data)
-                        else:
-                            logger.warning("⚠️ 未知事件类型: %s", event_type)
-                            continue
-
-                        success_count += 1
-                    except Exception as e:
-                        logger.warning("⚠️ 写入事件失败: %s", e)
-                        failed_count += 1
+                            success_count += 1
+                        except Exception as e:
+                            logger.warning("⚠️ 写入事件失败: %s", e)
+                            failed_count += 1
 
             # 清空缓冲区
             self._event_buffer.clear()

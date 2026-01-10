@@ -7,8 +7,9 @@ Smart Scheduler System
 - 并行计算优化
 - 智能缓存
 - 性能监控
+- 分布式锁 (防止重复计算)
 
-Version: 1.0.0
+Version: 2.0.0 - Phase 2: Redis Distributed Lock Integration
 Author: MyStocks Project
 """
 
@@ -19,6 +20,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, Future
 import time
 import threading
 import logging
+import hashlib
+import json
 
 
 from .dependency_graph import (
@@ -29,6 +32,15 @@ from .indicator_interface import OHLCVData, IndicatorResult, CalculationStatus
 
 
 logger = logging.getLogger(__name__)
+
+# Optional: Import Redis lock if available
+try:
+    from app.services.redis import redis_lock
+    REDIS_LOCK_AVAILABLE = True
+    logger.info("Redis distributed lock enabled for SmartScheduler")
+except ImportError:
+    REDIS_LOCK_AVAILABLE = False
+    logger.warning("Redis lock not available, SmartScheduler running without distributed locking")
 
 
 class CalculationMode(Enum):
@@ -153,11 +165,13 @@ class SmartScheduler:
         mode: CalculationMode = CalculationMode.ASYNC_PARALLEL,
         enable_cache: bool = True,
         cache_ttl_seconds: int = 3600,
+        enable_distributed_lock: bool = True,
     ):
         self.max_workers = max_workers
         self.mode = mode
         self.enable_cache = enable_cache
         self.cache_ttl = cache_ttl_seconds
+        self.enable_distributed_lock = enable_distributed_lock and REDIS_LOCK_AVAILABLE
 
         self._dependency_graph = IndicatorDependencyGraph()
         self._incremental_calculator = IncrementalCalculator(self._dependency_graph)
@@ -167,6 +181,11 @@ class SmartScheduler:
         self._calculation_func: Optional[Callable] = None
 
         self._lock = threading.Lock()
+
+        if self.enable_distributed_lock:
+            logger.info("SmartScheduler initialized with distributed locking")
+        else:
+            logger.info("SmartScheduler initialized without distributed locking")
 
     def set_calculation_function(self, func: Callable):
         """
@@ -234,7 +253,11 @@ class SmartScheduler:
         results = []
         for ind in ordered:
             start = time.time()
-            result = self._calculate_single(ind, ohlcv, use_cache)
+            # 使用带锁的计算方法 (如果启用)
+            if self.enable_distributed_lock:
+                result = self._calculate_single_with_lock(ind, ohlcv, use_cache)
+            else:
+                result = self._calculate_single(ind, ohlcv, use_cache)
             duration = (time.time() - start) * 1000
 
             results.append(
@@ -295,7 +318,11 @@ class SmartScheduler:
                             completed_nodes.add(node_id)
                             continue
 
-                    future = executor.submit(self._calculate_single, ind, ohlcv, use_cache)
+                    # 使用带锁的计算方法 (如果启用)
+                    if self.enable_distributed_lock:
+                        future = executor.submit(self._calculate_single_with_lock, ind, ohlcv, use_cache)
+                    else:
+                        future = executor.submit(self._calculate_single, ind, ohlcv, use_cache)
                     futures[future] = ind
 
                 # 收集结果
@@ -397,6 +424,205 @@ class SmartScheduler:
 
         return result
 
+    def _calculate_single_with_lock(self, ind: Dict, ohlcv: OHLCVData, use_cache: bool) -> IndicatorResult:
+        """
+        使用分布式锁计算单个指标 (CLCC模式: Check-Lock-Check-Compute)
+
+        Args:
+            ind: 指标配置
+            ohlcv: OHLCV数据
+            use_cache: 是否使用缓存
+
+        Returns:
+            IndicatorResult
+        """
+        abbr = ind["abbreviation"]
+        params = ind.get("params", {})
+        node_id = ind.get("node_id", abbr)
+
+        # 生成唯一的计算键 (用于缓存和锁)
+        cache_key = self._generate_cache_key(node_id, params)
+        lock_resource = self._generate_lock_resource(node_id, params)
+
+        # 第一次检查: 查本地缓存
+        cached_result = self._check_local_cache(node_id, use_cache)
+        if cached_result is not None:
+            return cached_result
+
+        # 第二次检查: 查Redis L2缓存 (如果可用)
+        if REDIS_LOCK_AVAILABLE:
+            from app.services.redis import redis_cache
+            redis_cached = redis_cache.get_cached_indicator_result(
+                stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
+                indicator_code=abbr,
+                params=params
+            )
+            if redis_cached is not None:
+                # 回填本地缓存
+                self._update_local_cache(node_id, redis_cached)
+                return redis_cached
+
+        # 尝试获取分布式锁
+        lock_acquired = False
+        try:
+            if self.enable_distributed_lock and REDIS_LOCK_AVAILABLE:
+                # 尝试获取锁，非阻塞模式
+                lock_token = redis_lock.acquire(
+                    resource=lock_resource,
+                    timeout=300,  # 5分钟超时
+                    blocking=False  # 非阻塞
+                )
+                lock_acquired = lock_token is not None
+
+                if lock_acquired:
+                    logger.debug(f"Acquired distributed lock for {node_id}")
+
+                    # 第三次检查: 获取锁后再次检查缓存 (防止等待期间其他实例已计算)
+                    cached_result = self._check_local_cache(node_id, use_cache)
+                    if cached_result is not None:
+                        return cached_result
+
+                    if REDIS_LOCK_AVAILABLE:
+                        from app.services.redis import redis_cache
+                        redis_cached = redis_cache.get_cached_indicator_result(
+                            stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
+                            indicator_code=abbr,
+                            params=params
+                        )
+                        if redis_cached is not None:
+                            self._update_local_cache(node_id, redis_cached)
+                            return redis_cached
+
+                    # 执行计算
+                    result = self._perform_calculation(ind, ohlcv, use_cache)
+
+                    # 写入Redis L2缓存
+                    if REDIS_LOCK_AVAILABLE and result.success:
+                        from app.services.redis import redis_cache
+                        redis_cache.cache_indicator_result(
+                            stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
+                            indicator_code=abbr,
+                            params=params,
+                            result=result,
+                            ttl=self.cache_ttl
+                        )
+
+                    # 释放锁
+                    redis_lock.release(lock_resource, lock_token)
+                    return result
+                else:
+                    # 获取锁失败: 等待并尝试读取缓存
+                    logger.debug(f"Lock busy for {node_id}, waiting for calculation result...")
+                    time.sleep(0.5)  # 短暂等待
+
+                    # 重试读取缓存 (最多3次)
+                    for attempt in range(3):
+                        cached_result = self._check_local_cache(node_id, use_cache)
+                        if cached_result is not None:
+                            logger.debug(f"Found cached result for {node_id} after lock wait (attempt {attempt + 1})")
+                            return cached_result
+
+                        if REDIS_LOCK_AVAILABLE:
+                            from app.services.redis import redis_cache
+                            redis_cached = redis_cache.get_cached_indicator_result(
+                                stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
+                                indicator_code=abbr,
+                                params=params
+                            )
+                            if redis_cached is not None:
+                                self._update_local_cache(node_id, redis_cached)
+                                logger.debug(f"Found Redis cached result for {node_id} after lock wait (attempt {attempt + 1})")
+                                return redis_cached
+
+                        time.sleep(0.5)
+
+                    # 仍未找到缓存，回退到直接计算
+                    logger.warning(f"Lock wait timeout for {node_id}, falling back to direct calculation")
+                    return self._perform_calculation(ind, ohlcv, use_cache)
+            else:
+                # 分布式锁未启用，直接计算
+                return self._perform_calculation(ind, ohlcv, use_cache)
+
+        except Exception as e:
+            logger.error(f"Error in _calculate_single_with_lock for {node_id}: {e}")
+            # 异常时回退到普通计算
+            return self._perform_calculation(ind, ohlcv, use_cache)
+        finally:
+            # 确保锁被释放
+            if lock_acquired and REDIS_LOCK_AVAILABLE:
+                try:
+                    # 这里token可能已经在上面的try块中被释放，所以是幂等的
+                    pass
+                except Exception as e:
+                    logger.warning(f"Failed to release lock for {node_id}: {e}")
+
+    def _generate_cache_key(self, node_id: str, params: Dict) -> str:
+        """生成缓存键"""
+        params_str = json.dumps(params or {}, sort_keys=True)
+        params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
+        return f"{node_id}:{params_hash}"
+
+    def _generate_lock_resource(self, node_id: str, params: Dict) -> str:
+        """生成锁资源标识"""
+        params_str = json.dumps(params or {}, sort_keys=True)
+        params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
+        return f"indicator:calc:{node_id}:{params_hash}"
+
+    def _check_local_cache(self, node_id: str, use_cache: bool) -> Optional[IndicatorResult]:
+        """检查本地缓存"""
+        if use_cache and node_id in self._cache:
+            timestamp = self._cache_timestamps.get(node_id, 0)
+            if time.time() - timestamp < self.cache_ttl:
+                cached = self._cache[node_id]
+                if hasattr(cached, "from_cache"):
+                    cached.from_cache = True
+                return cached
+        return None
+
+    def _update_local_cache(self, node_id: str, result: IndicatorResult):
+        """更新本地缓存"""
+        with self._lock:
+            self._cache[node_id] = result
+            self._cache_timestamps[node_id] = time.time()
+
+    def _perform_calculation(self, ind: Dict, ohlcv: OHLCVData, use_cache: bool) -> IndicatorResult:
+        """
+        执行实际的指标计算 (原有 _calculate_single 逻辑)
+
+        Args:
+            ind: 指标配置
+            ohlcv: OHLCV数据
+            use_cache: 是否使用缓存
+
+        Returns:
+            IndicatorResult
+        """
+        abbr = ind["abbreviation"]
+        params = ind.get("params", {})
+        node_id = ind.get("node_id", abbr)
+
+        # 调用计算函数
+        start = time.time()
+        try:
+            result = self._calculation_func(abbr, ohlcv, params)
+            result.calculation_time_ms = (time.time() - start) * 1000
+            result.from_cache = False
+        except Exception as e:
+            result = IndicatorResult(
+                status=CalculationStatus.ERROR,
+                abbreviation=abbr,
+                parameters=params,
+                values={},
+                error_message=str(e),
+                calculation_time_ms=(time.time() - start) * 1000,
+            )
+
+        # 更新本地缓存
+        if use_cache and result.success:
+            self._update_local_cache(node_id, result)
+
+        return result
+
     def _group_by_dependency_level(self, ordered: List[Dict]) -> List[List[Dict]]:
         """将指标按依赖层级分组"""
         levels = []
@@ -464,7 +690,10 @@ class SmartScheduler:
 
 
 def create_scheduler(
-    max_workers: int = 4, mode: CalculationMode = CalculationMode.ASYNC_PARALLEL, enable_cache: bool = True
+    max_workers: int = 4,
+    mode: CalculationMode = CalculationMode.ASYNC_PARALLEL,
+    enable_cache: bool = True,
+    enable_distributed_lock: bool = True
 ) -> SmartScheduler:
     """
     创建调度器
@@ -473,9 +702,15 @@ def create_scheduler(
         max_workers: 最大并行数
         mode: 计算模式
         enable_cache: 是否启用缓存
+        enable_distributed_lock: 是否启用分布式锁 (需要Redis)
 
     Returns:
         SmartScheduler实例
     """
-    scheduler = SmartScheduler(max_workers=max_workers, mode=mode, enable_cache=enable_cache)
+    scheduler = SmartScheduler(
+        max_workers=max_workers,
+        mode=mode,
+        enable_cache=enable_cache,
+        enable_distributed_lock=enable_distributed_lock
+    )
     return scheduler

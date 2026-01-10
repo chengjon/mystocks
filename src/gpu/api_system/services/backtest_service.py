@@ -13,22 +13,41 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import queue
 
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.redis_utils import RedisQueue
-from src.utils.monitoring import MetricsCollector
-from api_proto.backtest_pb2 import (
-    BacktestRequest,
-    TaskResponse,
-    QueryRequest,
-    QueryResponse,
-    HistoryResponse,
-    BatchRequest,
-    BatchResponse,
-    PerformanceMetrics,
-    ParameterOptimizationRequest,
-    OptimizationResult,
-)
-from api_proto.backtest_pb2_grpc import BacktestServiceServicer
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+
+try:
+    from src.gpu.api_system.api_proto.backtest_pb2 import (
+        BacktestRequest,
+        TaskResponse,
+        QueryRequest,
+        QueryResponse,
+        HistoryResponse,
+        BatchRequest,
+        BatchResponse,
+        PerformanceMetrics,
+        ParameterOptimizationRequest,
+        OptimizationResult,
+    )
+    from src.gpu.api_system.api_proto.backtest_pb2_grpc import BacktestServiceServicer
+except ImportError:
+    import sys
+    sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
+    from backtest_pb2 import (
+        BacktestRequest,
+        TaskResponse,
+        QueryRequest,
+        QueryResponse,
+        HistoryResponse,
+        BatchRequest,
+        BatchResponse,
+        PerformanceMetrics,
+        ParameterOptimizationRequest,
+        OptimizationResult,
+    )
+    from backtest_pb2_grpc import BacktestServiceServicer
+
 import grpc
 
 logger = logging.getLogger(__name__)

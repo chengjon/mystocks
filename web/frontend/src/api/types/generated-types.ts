@@ -1,5 +1,5 @@
 // Auto-generated TypeScript types from backend Pydantic models
-// Generated at: 2026-01-07T17:55:53.133435
+// Generated at: 2026-01-10T18:22:30.192591
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {
@@ -35,6 +35,32 @@ export interface ActiveAlert {
   name?: string;
   metric_type?: string;
   threshold_value?: number;
+}
+
+export interface ActiveSignalItem {
+  id?: number;
+  strategy_id?: string;
+  symbol?: string;
+  signal_type?: string;
+  generated_at?: string;
+  status?: string;
+  execution_time_ms?: number | null;
+  gpu_used?: boolean;
+}
+
+export interface ActiveSignalsResponse {
+  strategy_id?: string | null;
+  total_count?: number;
+  signals?: ActiveSignalItem[];
+}
+
+export interface AddStockRequest {
+  stock_code?: string;
+  entry_price?: number | null;
+  entry_reason?: string | null;
+  stop_loss_price?: number | null;
+  target_price?: number | null;
+  weight?: number | null;
 }
 
 export interface AddWatchlistRequest {
@@ -73,6 +99,14 @@ export interface AlertRecordsResponse {
   total?: number;
   limit?: number;
   offset?: number;
+}
+
+export interface AlertResponse {
+  level?: string;
+  type?: string;
+  stock_code?: string;
+  message?: string;
+  details?: Record<string, any>;
 }
 
 export interface AlertRuleCreate {
@@ -201,6 +235,25 @@ export interface AnnouncementStatsResponse {
   by_sentiment?: Record<string, any>;
 }
 
+export interface AssetCatalogItem {
+  asset_id?: string;
+  name?: string;
+  asset_type?: string;
+  source?: string;
+  quality_score?: number | null;
+  access_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AssetCatalogResponse {
+  total_assets?: number;
+  assets?: AssetCatalogItem[];
+  page?: number;
+  page_size?: number;
+  total_pages?: number;
+}
+
 export interface BOLLParams {
   period?: number;
   std_dev?: number;
@@ -321,6 +374,12 @@ export interface BackupMetadata {
 export interface BackupRequestBase {
 }
 
+export interface BaseEvent {
+  event_type?: EventType;
+  timestamp?: string;
+  version?: string;
+}
+
 export interface BaseResponse {
   success?: boolean;
   message?: string;
@@ -329,14 +388,38 @@ export interface BaseResponse {
   request_id?: string | null;
 }
 
+export interface BatchAddStocksRequest {
+  stocks?: AddStockRequest[];
+}
+
+export interface BatchCalculateHealthRequest {
+  stocks?: CalculateHealthRequest[];
+  include_risk_metrics?: boolean;
+}
+
 export interface BatchOperation {
   operation?: string;
   data?: Record<string, any>;
   id?: string | null;
 }
 
+export interface BatchOperationItem {
+  action?: string;
+  endpoint_name?: string | null;
+  config?: DataSourceCreate | null;
+  updates?: DataSourceUpdate | null;
+}
+
 export interface BatchOperationRequest {
-  operations?: BatchOperation[];
+  operations?: BatchOperationItem[];
+}
+
+export interface BatchOperationResponse {
+  total?: number;
+  succeeded?: number;
+  failed?: number;
+  results?: Record<string, any>[];
+  errors?: string[];
 }
 
 export interface BatchOperationResult {
@@ -358,6 +441,20 @@ export interface BetaResult {
   entity_type?: string | null;
   entity_id?: number | null;
   market_index?: string | null;
+}
+
+export interface BondKlineRequest {
+  bond_code?: string;
+}
+
+export interface CalculateHealthRequest {
+  stock_code?: string;
+  close?: number;
+  high?: number | null;
+  low?: number | null;
+  open?: number | null;
+  volume?: number | null;
+  market_regime?: string | null;
 }
 
 export interface CalculationRequest {
@@ -461,6 +558,15 @@ export interface CommonError {
   detail?: string | null;
 }
 
+export interface ComplianceMetricsResponse {
+  total_data_sources?: number;
+  total_config_versions?: number;
+  total_audit_logs?: number;
+  active_users?: number;
+  recent_changes?: Record<string, any>[];
+  operation_stats?: Record<string, number>;
+}
+
 export interface ConceptInfo {
   concept_code?: string;
   concept_name?: string;
@@ -482,6 +588,14 @@ export interface ConceptListResponse {
   success?: boolean;
   data?: Record<string, any>;
   timestamp?: string;
+}
+
+export interface ConfigChangeResponse {
+  success?: boolean;
+  endpoint_name?: string;
+  version?: number | null;
+  message?: string;
+  error?: string | null;
 }
 
 export interface ConnectionTestRequest {
@@ -586,6 +700,12 @@ export interface CreateGroupRequest {
   group_name?: string;
 }
 
+export interface CreateWatchlistRequest {
+  name?: string;
+  watchlist_type?: string;
+  risk_profile?: Record<string, any> | null;
+}
+
 export interface CurrencyField {
   amount?: number;
 }
@@ -611,6 +731,14 @@ export interface DashboardResponse {
   cache_hit?: boolean;
 }
 
+export interface DashboardSummaryResponse {
+  quality_overview?: QualityOverviewResponse;
+  lineage_stats?: LineageStatsResponse;
+  asset_catalog_summary?: Record<string, any>;
+  compliance_metrics?: ComplianceMetricsResponse;
+  last_updated?: string;
+}
+
 export interface DataFetchResponse {
   success?: boolean;
   source?: string | null;
@@ -619,6 +747,17 @@ export interface DataFetchResponse {
   response_time?: number | null;
   cached?: boolean | null;
   error?: string | null;
+}
+
+export interface DataSourceCreate {
+  endpoint_name?: string;
+  source_name?: string;
+  source_type?: string;
+  data_category?: string;
+  parameters?: Record<string, any>;
+  test_parameters?: Record<string, any>;
+  priority?: number;
+  description?: string;
 }
 
 export interface DataSourceHealthResponse {
@@ -633,6 +772,21 @@ export interface DataSourceHealthResponse {
   supported_categories?: string[];
   total_requests?: number;
   success_count?: number;
+}
+
+export interface DataSourceResponse {
+  endpoint_name?: string;
+  source_name?: string;
+  source_type?: string;
+  data_category?: string;
+  parameters?: Record<string, any>;
+  test_parameters?: Record<string, any>;
+  priority?: number;
+  description?: string;
+  status?: string;
+  data_quality_score?: number | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface DataSourceSearchResponse {
@@ -681,6 +835,11 @@ export interface DragonTigerListResponse {
   impact_score?: number | null;
 }
 
+export interface DragonTigerRequest {
+  start_date?: string | null;
+  end_date?: string | null;
+}
+
 export interface EMAParams {
   period?: number;
   price_type?: string;
@@ -721,6 +880,14 @@ export interface ETFQueryParams {
   offset?: number;
 }
 
+export interface EdgeInfo {
+  from_node?: string;
+  to_node?: string;
+  operation?: string;
+  timestamp?: string | null;
+  metadata?: Record<string, any>;
+}
+
 export interface EquityCurvePoint {
   date_field?: string;
   equity?: number;
@@ -751,6 +918,8 @@ export interface ErrorResponseModel {
   timestamp?: number;
 }
 
+export type EventType = 'task.created' | 'task.started' | 'task.progress' | 'task.completed' | 'task.failed' | 'indicator.calculation.started' | 'indicator.calculation.completed' | 'indicator.calculation.failed' | 'stock.indicators.completed' | 'market.data.update' | 'market.price.update' | 'system.heartbeat' | 'system.status_changed';
+
 export interface FeatureGenerationRequest {
   stock_code?: string;
   market?: string;
@@ -773,6 +942,10 @@ export interface FilterParams {
 
 export interface FilterRequest {
   filters?: Record<string, any> | null;
+}
+
+export interface FundBasicRequest {
+  fund_codes?: string[];
 }
 
 export interface FundFlowDataResponse {
@@ -813,6 +986,14 @@ export interface FundFlowResponse {
   created_at?: string | null;
 }
 
+export interface FundNavRequest {
+  fund_code?: string;
+}
+
+export interface FuturesHistoryRequest {
+  quote_id?: string;
+}
+
 export interface GPUPerformanceMetrics {
   device_id?: number;
   matrix_gflops?: number | null;
@@ -849,6 +1030,16 @@ export interface HealthResponse {
   overall_status?: string;
   services?: Record<string, HealthStatus>;
   report_url?: string | null;
+}
+
+export interface HealthScoreResponse {
+  stock_code?: string;
+  score_date?: string;
+  total_score?: number;
+  radar_scores?: Record<string, number>;
+  market_regime?: string;
+  calculation_time_ms?: number;
+  calculation_mode?: string;
 }
 
 export interface HealthStatus {
@@ -893,6 +1084,28 @@ export interface HyperparameterSearchResponse {
   best_rmse?: number;
   best_mse?: number;
   cv_results?: Record<string, any>;
+}
+
+export interface ImpactAnalysisRequest {
+  node_id?: string;
+  max_levels?: number;
+  include_indirect?: boolean;
+}
+
+export interface ImpactAnalysisResponse {
+  node_id?: string;
+  impacted_nodes?: ImpactNode[];
+  total_impacted?: number;
+  max_level?: number;
+  analysis_timestamp?: string;
+}
+
+export interface ImpactNode {
+  node_id?: string;
+  node_type?: string;
+  level?: number;
+  path?: string[];
+  impact_type?: string;
 }
 
 export interface IndexQuote {
@@ -1136,6 +1349,39 @@ export interface KlineResponse {
   count?: number;
 }
 
+export interface LineageGraphRequest {
+  node_id?: string;
+  direction?: string;
+  max_depth?: number;
+  include_metadata?: boolean;
+}
+
+export interface LineageGraphResponse {
+  nodes?: NodeInfo[];
+  edges?: EdgeInfo[];
+  queried_node?: string;
+  depth?: number;
+  total_nodes?: number;
+  total_edges?: number;
+}
+
+export interface LineageRecordRequest {
+  from_node?: string;
+  to_node?: string;
+  operation?: string;
+  from_node_type?: string | null;
+  to_node_type?: string | null;
+  metadata?: Record<string, any>;
+}
+
+export interface LineageStatsResponse {
+  total_nodes?: number;
+  total_edges?: number;
+  node_type_distribution?: Record<string, number>;
+  operation_type_distribution?: Record<string, number>;
+  recent_trends?: Record<string, Record<string, any>[]>;
+}
+
 export interface LogQueryResponse {
   success?: boolean;
   data?: SystemLog[];
@@ -1253,6 +1499,16 @@ export interface MarketOverviewStats {
   rising_stocks?: number;
   falling_stocks?: number;
   avg_change_percent?: number;
+}
+
+export interface MarketRegimeResponse {
+  regime?: string;
+  confidence?: number;
+  composite_score?: number;
+  ma_slope_score?: number;
+  breadth_score?: number;
+  volatility_score?: number;
+  details?: Record<string, any>;
 }
 
 export interface MessageResponse {
@@ -1390,6 +1646,15 @@ export interface NewsItem {
   url?: string;
   image?: string | null;
   category?: string | null;
+}
+
+export interface NodeInfo {
+  node_id?: string;
+  node_type?: string;
+  name?: string;
+  metadata?: Record<string, any>;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface NotificationPreferences {
@@ -1587,6 +1852,22 @@ export interface PerformanceMetrics {
   sortino_ratio?: number | null;
 }
 
+export interface PortfolioAnalysisRequest {
+  watchlist_id?: number;
+  include_risk_metrics?: boolean;
+}
+
+export interface PortfolioAnalysisResponse {
+  watchlist_id?: number;
+  watchlist_name?: string;
+  analysis_date?: string;
+  stocks_count?: number;
+  total_score?: Record<string, any>;
+  radar_averages?: Record<string, number>;
+  risk_metrics?: Record<string, any> | null;
+  stocks?: HealthScoreResponse[];
+}
+
 export interface PortfolioSummary {
   total_market_value?: number;
   total_cost?: number;
@@ -1594,6 +1875,19 @@ export interface PortfolioSummary {
   total_profit_loss_percent?: number;
   position_count?: number;
   positions?: PositionItem[];
+}
+
+export interface PortfolioSummaryResponse {
+  watchlist_id?: number;
+  watchlist_name?: string;
+  analysis_date?: string;
+  total_score?: Record<string, number>;
+  radar_averages?: Record<string, number>;
+  risk_score?: number;
+  position_count?: number;
+  sector_allocation?: Record<string, number>;
+  alert_summary?: Record<string, number>;
+  rebalance_count?: number;
 }
 
 export interface Position {
@@ -1637,6 +1931,13 @@ export interface PredictionResult {
 
 export interface PriceField {
   price?: number;
+}
+
+export interface QualityOverviewResponse {
+  total_assets?: number;
+  avg_quality_score?: number;
+  quality_distribution?: Record<string, number>;
+  top_assets?: Record<string, any>[];
 }
 
 export interface RSIParams {
@@ -1692,6 +1993,17 @@ export interface RealtimeMonitoringResponse {
   is_limit_down?: boolean;
 }
 
+export interface RebalanceSuggestionResponse {
+  reason?: string;
+  priority?: string;
+  stock_code?: string;
+  action?: string;
+  current_weight?: number;
+  target_weight?: number;
+  message?: string;
+  estimated_cost?: number;
+}
+
 export interface RecoveryMetadata {
   backup_id?: string;
   recovery_type?: string;
@@ -1714,6 +2026,10 @@ export interface RecoveryRequestBase {
 export interface RefreshRequest {
   symbol?: string;
   timeframe?: string | null;
+}
+
+export interface ReloadRequest {
+  changed_by?: string;
 }
 
 export interface ResponseModel {
@@ -1803,6 +2119,10 @@ export interface RiskMetricsSummary {
   beta?: number | null;
 }
 
+export interface RollbackRequest {
+  changed_by?: string;
+}
+
 export interface ScheduledJobInfo {
   job_id?: string;
   job_type?: string;
@@ -1859,6 +2179,66 @@ export interface SendWelcomeEmailRequest {
   language?: string;
 }
 
+export interface SignalHistoryResponse {
+  id?: number;
+  strategy_id?: string;
+  symbol?: string;
+  signal_type?: string;
+  generated_at?: string;
+  status?: string;
+  execution_time_ms?: number | null;
+  gpu_used?: boolean;
+  gpu_latency_ms?: number | null;
+  executed?: boolean;
+  executed_at?: string | null;
+  profit_loss?: number | null;
+  profit_loss_percent?: number | null;
+}
+
+export interface SignalQualityReportResponse {
+  strategy_id?: string;
+  period_start?: string;
+  period_end?: string;
+  total_signals?: number;
+  buy_signals?: number;
+  sell_signals?: number;
+  hold_signals?: number;
+  executed_signals?: number;
+  execution_rate?: number;
+  signal_accuracy?: number;
+  signal_success_rate?: number;
+  avg_profit_loss?: number;
+  total_profit_loss?: number;
+  avg_execution_time_ms?: number;
+  gpu_usage_rate?: number;
+  profitable_signals?: number;
+  losing_signals?: number;
+  win_rate?: number;
+}
+
+export interface SignalStatisticsResponse {
+  strategy_id?: string;
+  hour_timestamp?: string;
+  signal_count?: number;
+  buy_count?: number;
+  sell_count?: number;
+  hold_count?: number;
+  executed_count?: number;
+  execution_rate?: number;
+  accuracy_rate?: number;
+  profit_ratio?: number;
+  total_profit_loss?: number;
+  avg_profit_loss?: number;
+  max_profit?: number;
+  max_loss?: number;
+  avg_execution_time_ms?: number;
+  p50_execution_time_ms?: number;
+  p95_execution_time_ms?: number;
+  p99_execution_time_ms?: number;
+  gpu_used_count?: number;
+  gpu_rate?: number;
+}
+
 export interface SortParams {
   sort_by?: string;
   order?: string;
@@ -1883,6 +2263,13 @@ export interface StockInfo {
   change_percent?: number | null;
   volume?: number | null;
   amount?: number | null;
+}
+
+export interface StockKlineRequest {
+  symbol?: string;
+  start_date?: string;
+  end_date?: string;
+  klt?: number;
 }
 
 export interface StockListResponse {
@@ -1951,6 +2338,17 @@ export interface StrategyCreateRequest {
   tags?: string[];
 }
 
+export interface StrategyDetailedHealthResponse {
+  strategy_id?: string;
+  timestamp?: string;
+  health_status?: number;
+  health_status_text?: string;
+  components?: Record<string, any>;
+  metrics?: Record<string, any>;
+  last_check_time?: string;
+  alerts?: string[];
+}
+
 export interface StrategyErrorResponse {
   error_code?: string;
   error_message?: string;
@@ -1979,6 +2377,20 @@ export interface StrategyQueryParams {
   match_result?: boolean | null;
   limit?: number;
   offset?: number;
+}
+
+export interface StrategyRealtimeMonitoringResponse {
+  strategy_id?: string;
+  timestamp?: string;
+  health_status?: number;
+  active_signals_count?: number;
+  signal_generation_rate?: number;
+  avg_latency_ms?: number;
+  p95_latency_ms?: number;
+  p99_latency_ms?: number;
+  gpu_enabled?: boolean;
+  gpu_utilization?: number | null;
+  recent_signals?: Record<string, any>[];
 }
 
 export interface StrategyResultResponse {
@@ -2145,7 +2557,7 @@ export interface TaskStatistics {
   success_rate?: number;
 }
 
-export type TaskStatus = 'pending' | 'running' | 'success' | 'failed' | 'paused' | 'cancelled';
+export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
 
 export type TaskType = 'cron' | 'supervisor' | 'manual' | 'data_sync' | 'indicator_calc' | 'market_fetch' | 'data_processing' | 'strategy_backtest' | 'cache_cleanup' | 'market_sync' | 'notification' | 'health_check' | 'cache_warmup' | 'report_generation';
 
@@ -2324,12 +2736,25 @@ export interface TrendIndicatorsResponse {
   sar?: number | null;
 }
 
+export interface UnifiedResponse {
+  success?: boolean;
+  message?: string | null;
+  data?: Record<string, any> | null;
+}
+
 export interface UpdateGroupRequest {
   group_name?: string;
 }
 
 export interface UpdateWatchlistNotesRequest {
   notes?: string;
+}
+
+export interface UpdateWatchlistRequest {
+  name?: string | null;
+  watchlist_type?: string | null;
+  risk_profile?: Record<string, any> | null;
+  is_active?: boolean | null;
 }
 
 export interface UserPermissions {
@@ -2434,6 +2859,16 @@ export interface ValidationResult {
   suggestion?: string | null;
 }
 
+export interface VersionInfo {
+  endpoint_name?: string;
+  version?: number;
+  change_type?: string;
+  changed_by?: string;
+  changed_at?: string;
+  change_summary?: string;
+  metadata?: Record<string, any>;
+}
+
 export interface VolatilityIndicatorsResponse {
   bb_upper?: number | null;
   bb_middle?: number | null;
@@ -2469,36 +2904,28 @@ export interface WatchlistItem {
 }
 
 export interface WatchlistResponse {
-  id?: string;
+  id?: number;
+  user_id?: number;
   name?: string;
-  description?: string | null;
-  isDefault?: boolean;
-  isPublic?: boolean;
-  owner?: Record<string, string>;
-  stocks?: WatchlistStockResponse[];
-  statistics?: Record<string, any>;
-  tags?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  lastViewedAt?: string | null;
-  sortOrder?: number;
+  watchlist_type?: string;
+  risk_profile?: Record<string, any> | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  stocks_count?: number;
 }
 
 export interface WatchlistStockResponse {
-  symbol?: string;
-  name?: string;
-  market?: string;
-  currentPrice?: number;
-  changeAmount?: number;
-  changePercent?: number;
-  volume?: number;
-  marketCap?: number;
-  pe?: number | null;
-  pb?: number | null;
-  addedAt?: string;
-  notes?: string | null;
-  alerts?: Record<string, any>[];
-  customFields?: Record<string, any> | null;
+  id?: number;
+  watchlist_id?: number;
+  stock_code?: string;
+  entry_price?: number | null;
+  entry_at?: string | null;
+  entry_reason?: string | null;
+  stop_loss_price?: number | null;
+  target_price?: number | null;
+  weight?: number;
+  is_active?: boolean;
 }
 
 export interface WatchlistSummary {

@@ -653,6 +653,7 @@ print(f"数据质量评分: {quality_report['overall_score']:.2f}")
 - `src/adapters/byapi_adapter.py` (625行) - REST API,涨跌停股池,技术指标
 
 **稳定生产适配器**:
+- `src/adapters/efinance_adapter.py` (950行) - Efinance数据源,股票/基金/债券/期货全覆盖
 - `src/adapters/financial_adapter.py` (1078行) - 双数据源(efinance+easyquotation),财务数据全能
 - `src/adapters/akshare_adapter.py` (510行) - 免费全面,历史数据研究首选
 - `src/adapters/baostock_adapter.py` (257行) - 高质量历史数据,复权数据

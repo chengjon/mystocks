@@ -13,7 +13,7 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.database import db_service
-from app.core.responses import create_error_response, ErrorCodes
+from app.core.responses import create_error_response, ErrorCodes, UnifiedResponse, ok, bad_request, server_error
 from app.core.security import User, get_current_user
 from app.services.unified_data_service import UnifiedDataService
 
@@ -1146,3 +1146,606 @@ async def test_data_source_factory(
             "error_details": str(e),
             "test_timestamp": datetime.now().isoformat(),
         }
+
+
+# ==================== 融资融券数据API ====================
+
+
+@router.get("/margin/account-info", response_model=UnifiedResponse)
+async def get_margin_account_info(
+    current_user: User = Depends(get_current_user),
+) -> UnifiedResponse:
+    """
+    获取融资融券账户统计信息
+
+    返回全市场的融资融券余额、买入额等汇总数据
+    """
+    try:
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {}
+
+        # 调用数据源工厂获取margin/account-info数据
+        result = await factory.get_data("data", "margin/account-info", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return ok(data=result.get("data", []), message=result.get("message", "查询成功"))
+        else:
+            return server_error(message=result.get("message", "获取融资融券账户信息失败"))
+
+    except Exception as e:
+        logger.error(f"获取融资融券账户信息失败: {str(e)}", exc_info=True)
+        return server_error(message=f"获取融资融券账户信息失败: {str(e)}")
+
+
+@router.get("/margin/detail/sse", response_model=UnifiedResponse)
+async def get_margin_detail_sse(
+    date: str = Query(..., description="交易日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> UnifiedResponse:
+    """
+    获取上证所融资融券明细数据
+
+    返回指定日期上证所所有股票的融资融券余额、买入额等明细数据
+    """
+    try:
+        # 参数验证
+        if not date:
+            return bad_request(message="交易日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"date": date}
+
+        # 调用数据源工厂获取margin/detail/sse数据
+        result = await factory.get_data("data", "margin/detail/sse", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return ok(data=result.get("data", []), message=result.get("message", "查询成功"))
+        else:
+            return server_error(message=result.get("message", "获取上证所融资融券明细失败"))
+
+    except Exception as e:
+        logger.error(f"获取上证所融资融券明细失败: {str(e)}", exc_info=True)
+        return server_error(message=f"获取上证所融资融券明细失败: {str(e)}")
+
+
+@router.get("/margin/detail/szse", response_model=UnifiedResponse)
+async def get_margin_detail_szse(
+    date: str = Query(..., description="交易日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> UnifiedResponse:
+    """
+    获取深证所融资融券明细数据
+
+    返回指定日期深证所所有股票的融资融券余额、买入额等明细数据
+    """
+    try:
+        # 参数验证
+        if not date:
+            return bad_request(message="交易日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"date": date}
+
+        # 调用数据源工厂获取margin/detail/szse数据
+        result = await factory.get_data("data", "margin/detail/szse", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return ok(data=result.get("data", []), message=result.get("message", "查询成功"))
+        else:
+            return server_error(message=result.get("message", "获取深证所融资融券明细失败"))
+
+    except Exception as e:
+        logger.error(f"获取深证所融资融券明细失败: {str(e)}", exc_info=True)
+        return server_error(message=f"获取深证所融资融券明细失败: {str(e)}")
+
+
+@router.get("/margin/summary/sse", response_model=UnifiedResponse)
+async def get_margin_summary_sse(
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> UnifiedResponse:
+    """
+    获取上证所融资融券汇总数据
+
+    返回指定时间段的上证所融资融券汇总统计
+    """
+    try:
+        # 参数验证
+        if not start_date or not end_date:
+            return bad_request(message="开始日期和结束日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"start_date": start_date, "end_date": end_date}
+
+        # 调用数据源工厂获取margin/summary/sse数据
+        result = await factory.get_data("data", "margin/summary/sse", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return ok(data=result.get("data", []), message=result.get("message", "查询成功"))
+        else:
+            return server_error(message=result.get("message", "获取上证所融资融券汇总失败"))
+
+    except Exception as e:
+        logger.error(f"获取上证所融资融券汇总失败: {str(e)}", exc_info=True)
+        return server_error(message=f"获取上证所融资融券汇总失败: {str(e)}")
+
+
+@router.get("/margin/summary/szse")
+async def get_margin_summary_szse(
+    date: str = Query(..., description="交易日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取深证所融资融券汇总数据
+
+    返回指定日期的深证所融资融券汇总统计
+    """
+    try:
+        # 参数验证
+        if not date:
+            raise HTTPException(status_code=400, detail="交易日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"date": date}
+
+        # 调用数据源工厂获取margin/summary/szse数据
+        result = await factory.get_data("data", "margin/summary/szse", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "date": date,
+                "total": result.get("total", 0),
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取深证所融资融券汇总失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取深证所融资融券汇总失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取深证所融资融券汇总失败: {str(e)}")
+
+
+# ==================== 龙虎榜数据API ====================
+
+
+@router.get("/dragon-tiger/detail", response_model=UnifiedResponse)
+async def get_dragon_tiger_detail(
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    limit: int = Query(100, ge=1, le=1000, description="返回记录数限制"),
+    current_user: User = Depends(get_current_user),
+) -> UnifiedResponse:
+    """
+    获取龙虎榜详情数据
+
+    返回指定时间段的龙虎榜上榜股票详情，包含净买额、成交额等信息
+    """
+    try:
+        # 参数验证
+        if not start_date or not end_date:
+            return bad_request(message="开始日期和结束日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"start_date": start_date, "end_date": end_date, "limit": limit}
+
+        # 调用数据源工厂获取dragon-tiger/detail数据
+        result = await factory.get_data("data", "dragon-tiger/detail", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return ok(data=result.get("data", []), message=result.get("message", "查询成功"))
+        else:
+            return server_error(message=result.get("message", "获取龙虎榜详情失败"))
+
+    except Exception as e:
+        logger.error(f"获取龙虎榜详情失败: {str(e)}", exc_info=True)
+        return server_error(message=f"获取龙虎榜详情失败: {str(e)}")
+
+
+@router.get("/dragon-tiger/institution-daily")
+async def get_dragon_tiger_institution_daily(
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    limit: int = Query(100, ge=1, le=1000, description="返回记录数限制"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取机构买卖每日统计
+
+    返回指定时间段的机构席位买卖统计数据
+    """
+    try:
+        # 参数验证
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"start_date": start_date, "end_date": end_date, "limit": limit}
+
+        # 调用数据源工厂获取dragon-tiger/institution-daily数据
+        result = await factory.get_data("data", "dragon-tiger/institution-daily", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "start_date": start_date,
+                "end_date": end_date,
+                "total": result.get("total", 0),
+                "limit": limit,
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取机构买卖每日统计失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取机构买卖每日统计失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取机构买卖每日统计失败: {str(e)}")
+
+
+@router.get("/dragon-tiger/institution-stats")
+async def get_dragon_tiger_institution_stats(
+    period: str = Query("近一月", description="统计周期: 近一月/近三月/近六月/近一年"),
+    limit: int = Query(50, ge=1, le=200, description="返回记录数限制"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取机构席位追踪统计
+
+    返回指定周期的机构席位追踪统计数据
+    """
+    try:
+        # 参数验证
+        valid_periods = ["近一月", "近三月", "近六月", "近一年"]
+        if period not in valid_periods:
+            raise HTTPException(status_code=400, detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"period": period, "limit": limit}
+
+        # 调用数据源工厂获取dragon-tiger/institution-stats数据
+        result = await factory.get_data("data", "dragon-tiger/institution-stats", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "period": period,
+                "total": result.get("total", 0),
+                "limit": limit,
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取机构席位追踪统计失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取机构席位追踪统计失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取机构席位追踪统计失败: {str(e)}")
+
+
+@router.get("/dragon-tiger/stock-stats")
+async def get_dragon_tiger_stock_stats(
+    period: str = Query("近一月", description="统计周期: 近一月/近三月/近六月/近一年"),
+    limit: int = Query(100, ge=1, le=500, description="返回记录数限制"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取个股上榜统计
+
+    返回指定周期的个股上榜统计数据
+    """
+    try:
+        # 参数验证
+        valid_periods = ["近一月", "近三月", "近六月", "近一年"]
+        if period not in valid_periods:
+            raise HTTPException(status_code=400, detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"period": period, "limit": limit}
+
+        # 调用数据源工厂获取dragon-tiger/stock-stats数据
+        result = await factory.get_data("data", "dragon-tiger/stock-stats", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "period": period,
+                "total": result.get("total", 0),
+                "limit": limit,
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取个股上榜统计失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取个股上榜统计失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取个股上榜统计失败: {str(e)}")
+
+
+# ==================== 股指期货数据API ====================
+
+
+@router.get("/futures/index/daily")
+async def get_futures_index_daily(
+    symbol: str = Query(..., description="期货合约代码，如: IF2401, IH2401, IC2401, IM2401"),
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取股指期货日线数据
+
+    返回指定期货合约的历史日线数据，包括IF、IH、IC、IM等股指期货
+    """
+    try:
+        # 参数验证
+        if not symbol:
+            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"symbol": symbol, "start_date": start_date, "end_date": end_date}
+
+        # 调用数据源工厂获取futures/index/daily数据
+        result = await factory.get_data("data", "futures/index/daily", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "total": result.get("total", 0),
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取股指期货日线数据失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取股指期货日线数据失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取股指期货日线数据失败: {str(e)}")
+
+
+@router.get("/futures/index/realtime")
+async def get_futures_index_realtime(
+    symbol: str = Query(..., description="期货合约代码，如: IF2401, IH2401, IC2401, IM2401"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取股指期货实时行情
+
+    返回指定期货合约的实时行情数据
+    """
+    try:
+        # 参数验证
+        if not symbol:
+            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"symbol": symbol}
+
+        # 调用数据源工厂获取futures/index/realtime数据
+        result = await factory.get_data("data", "futures/index/realtime", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取股指期货实时行情失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取股指期货实时行情失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取股指期货实时行情失败: {str(e)}")
+
+
+@router.get("/futures/index/main-contract")
+async def get_futures_index_main_contract(
+    symbol: str = Query(..., description="主力连续合约代码，如: IF0, IH0, IC0, IM0"),
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取股指期货主力连续合约
+
+    返回指定股指期货主力连续合约的历史数据
+    """
+    try:
+        # 参数验证
+        if not symbol:
+            raise HTTPException(status_code=400, detail="主力连续合约代码不能为空")
+
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+
+        # 验证合约代码
+        valid_symbols = ["IF0", "IH0", "IC0", "IM0"]
+        if symbol not in valid_symbols:
+            raise HTTPException(status_code=400, detail=f"主力连续合约代码错误，支持的合约: {', '.join(valid_symbols)}")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"symbol": symbol, "start_date": start_date, "end_date": end_date}
+
+        # 调用数据源工厂获取futures/index/main-contract数据
+        result = await factory.get_data("data", "futures/index/main-contract", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "total": result.get("total", 0),
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取股指期货主力连续合约失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取股指期货主力连续合约失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取股指期货主力连续合约失败: {str(e)}")
+
+
+@router.get("/futures/basis/analysis")
+async def get_futures_basis_analysis(
+    symbol: str = Query(..., description="期货合约代码，如: IF2401, IH2401, IC2401, IM2401"),
+    start_date: str = Query(..., description="开始日期，格式YYYYMMDD"),
+    end_date: str = Query(..., description="结束日期，格式YYYYMMDD"),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    获取股指期货期现基差分析
+
+    计算期货价格与对应现货指数的基差，用于套利分析
+    """
+    try:
+        # 参数验证
+        if not symbol:
+            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+
+        if not start_date or not end_date:
+            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+
+        # 使用数据源工厂获取数据
+        from app.services.data_source_factory import get_data_source_factory
+
+        factory = await get_data_source_factory()
+
+        # 构建请求参数
+        params = {"symbol": symbol, "start_date": start_date, "end_date": end_date}
+
+        # 调用数据源工厂获取futures/basis/analysis数据
+        result = await factory.get_data("data", "futures/basis/analysis", params)
+
+        # 统一响应格式
+        if result.get("status") == "success":
+            return {
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "total": result.get("total", 0),
+                "timestamp": datetime.now().isoformat(),
+                "source": result.get("source", "data"),
+                "message": result.get("message", "查询成功"),
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "获取股指期货期现基差分析失败"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取股指期货期现基差分析失败: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"获取股指期货期现基差分析失败: {str(e)}")

@@ -34,6 +34,9 @@ import {
   // VWMA 已移除 - technicalindicators v3.1.0 不存在，使用自定义实现
 } from 'technicalindicators'
 
+// 导入自定义实现函数
+import { calculateMACD } from './technicalIndicators.js'
+
 // Re-export basic types and functions from indicators.ts
 export * from './indicators'
 
@@ -495,8 +498,8 @@ export function calculateStochastic(
   const stochData = Stochastic.calculate(stochInput)
 
   return {
-    k: stochData.map(d => d.k),
-    d: stochData.map(d => d.d)
+    k: stochData.map(d => isFinite(d.k) ? d.k : 0),
+    d: stochData.map(d => isFinite(d.d) ? d.d : 0)
   }
 }
 
@@ -635,13 +638,13 @@ export function calculateBB(
 
     const bbData = BollingerBands.calculate(bbInput)
 
-    // 确保返回数据长度与输入一致，前面填充 null
+    // 确保返回数据长度与输入一致，前面填充 0
     const padding = data.length - bbData.length
 
     return {
-      upper: Array(padding).fill(null).concat(bbData.map(d => d.upper)),
-      middle: Array(padding).fill(null).concat(bbData.map(d => d.middle)),
-      lower: Array(padding).fill(null).concat(bbData.map(d => d.lower))
+      upper: Array(padding).fill(0).concat(bbData.map(d => d.upper)),
+      middle: Array(padding).fill(0).concat(bbData.map(d => d.middle)),
+      lower: Array(padding).fill(0).concat(bbData.map(d => d.lower))
     }
   } catch (error) {
     console.error('BollingerBands calculation error:', error)
@@ -792,6 +795,12 @@ export function validateIndicatorParams(
              typeof params.signalPeriod === 'number' && params.signalPeriod > 0
 
     case 'RSI':
+      return typeof params === 'object' &&
+             params !== null &&
+             'period' in params &&
+             typeof params.period === 'number' &&
+             params.period >= 6 && params.period <= 99
+
     case 'CCI':
     case 'MOM':
     case 'ROC':
@@ -837,7 +846,7 @@ export function calculateIndicator(
       case 'HMA': return calculateHMA(data, params?.period || 20)
       case 'PSAR': return calculatePSAR(data, params?.step || 0.02, params?.max || 0.2)
       case 'ADX': return calculateADX(data, params?.period || 14)
-      case 'MACD': return calculateMACD(data)
+      case 'MACD': return calculateMACD(data.map(d => d.close), params?.fastPeriod, params?.slowPeriod, params?.signalPeriod)
       case 'DonchianUpper': return calculateDonchianUpper(data, params?.period || 20)
       case 'DonchianLower': return calculateDonchianLower(data, params?.period || 20)
 

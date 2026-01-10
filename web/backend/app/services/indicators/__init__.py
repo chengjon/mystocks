@@ -22,6 +22,10 @@ Classes:
     IndicatorInterface: 指标计算接口
     IndicatorDependencyGraph: 依赖关系图
     SmartScheduler: 智能调度器
+    TalibGenericIndicator: 通用适配器
+
+Functions:
+    register_all_talib_indicators: 注册所有适配器
 
 Version: 1.0.0
 Author: MyStocks Project
@@ -77,6 +81,11 @@ from .smart_scheduler import (
     create_scheduler,
 )
 
+from .talib_adapter import (
+    TalibGenericIndicator,
+    register_all_talib_indicators
+)
+
 __all__ = [
     # Enums
     "IndicatorCategory",
@@ -118,6 +127,9 @@ __all__ = [
     "SmartScheduler",
     "PerformanceMonitor",
     "create_scheduler",
+    # Adapters
+    "TalibGenericIndicator",
+    "register_all_talib_indicators",
 ]
 
 __version__ = "1.0.0"

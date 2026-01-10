@@ -87,22 +87,37 @@ export default defineConfig(async () => {
       // 代码分割优化 - 首屏体积↓60%
       rollupOptions: {
         output: {
-          // 手动分块策略
-          manualChunks: {
+          // 手动分块策略 - Phase 1.3.1
+          manualChunks(id) {
             // Vue核心库
-            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router')) {
+              return 'vue-vendor'
+            }
 
-            // Element Plus UI库（自动导入，不再手动分块）
-            // 'element-plus': ['element-plus', '@element-plus/icons-vue'],
+            // Element Plus UI库（自动导入，分块优化）
+            if (id.includes('element-plus') || id.includes('@element-plus')) {
+              return 'element-plus'
+            }
 
-            // ECharts图表库（按需引入）
-            'echarts': ['echarts'],
+            // ECharts图表库（按需引入） - Phase 1.3.2
+            if (id.includes('echarts')) {
+              return 'echarts'
+            }
 
             // K线图表库
-            'klinecharts': ['klinecharts'],
+            if (id.includes('klinecharts')) {
+              return 'klinecharts'
+            }
 
             // 网格布局库
-            'vue-grid-layout': ['vue-grid-layout']
+            if (id.includes('vue-grid-layout')) {
+              return 'vue-grid-layout'
+            }
+
+            // Node_modules包
+            if (id.includes('node_modules')) {
+              return 'vendor'
+            }
           },
           // 分块文件命名
           chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -110,32 +125,43 @@ export default defineConfig(async () => {
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
         }
       },
-      // 启用源码映射（生产环境建议关闭）
-      sourcemap: false,
+      // 启用源码映射（开发环境启用，生产环境关闭）
+      sourcemap: process.env.NODE_ENV === 'development',
       // 压缩配置
       minify: 'terser',
       terserOptions: {
         compress: {
-          // 移除console.log
-          drop_console: true,
+          // 移除console.log（生产环境）
+          drop_console: process.env.NODE_ENV === 'production',
           drop_debugger: true
         }
       },
-      // 分块大小警告阈值（KB）
-      chunkSizeWarningLimit: 1000
+      // 分块大小警告阈值（KB） - Phase 1.3.4
+      chunkSizeWarningLimit: 1000,
+      // CSS代码分割 - Phase 1.3.1
+      cssCodeSplit: true,
+      // 目标浏览器支持 - Phase 1.3.3
+      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
     },
-    // 优化依赖预构建
+    // 优化依赖预构建 - Phase 1.3.3 (增量构建)
     optimizeDeps: {
       include: [
         'vue',
         'vue-router',
         'pinia',
-        // ⚠️ Element Plus按需引入，不再预构建
-        // 'element-plus',
-        // ⚠️ 不预构建echarts，使用按需引入版本
-        // 'echarts',
         'klinecharts'
+      ],
+      // 排除不需要预构建的包（按需引入）
+      exclude: [
+        'element-plus',
+        'echarts'
       ]
+    },
+    // 实验性功能 - Phase 1.3.3 (并行构建)
+    experimental: {
+      renderBuiltUrl(filename, hostType) {
+        return { runtime: `/${filename}` }
+      }
     }
   };
 })

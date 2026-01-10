@@ -9,78 +9,84 @@
 
     <!-- Toolbar -->
     <div class="toolbar-section">
-      <div class="toolbar-actions">
-        <div class="search-section">
-          <StockSearchBar
-            v-model="selectedSymbol"
-            @search="handleStockSearch"
-            class="search"
-          />
-        </div>
+        <div class="toolbar-actions">
+          <div class="search-section">
+            <StockSearchBar
+              v-model="selectedSymbol"
+              @search="handleStockSearch"
+              class="search"
+            />
+          </div>
 
-        <div class="date-section">
-          <el-date-picker
-            v-model="dateRange"
-            type="daterange"
-            range-separator="TO"
-            start-placeholder="START DATE"
-            end-placeholder="END DATE"
-            :shortcuts="dateRangeShortcuts"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            class="date-picker"
-            @change="handleDateRangeChange"
-          />
-        </div>
+          <div class="date-section">
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="TO"
+              start-placeholder="START DATE"
+              end-placeholder="END DATE"
+              :shortcuts="dateRangeShortcuts"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              class="date-picker"
+              @change="handleDateRangeChange"
+            />
+          </div>
 
-        <div class="period-section">
-          <el-radio-group v-model="selectedPeriod" size="default" @change="fetchKlineData" class="period-selector">
-            <el-radio-button label="day">DAY</el-radio-button>
-            <el-radio-button label="week">WEEK</el-radio-button>
-            <el-radio-button label="month">MONTH</el-radio-button>
-          </el-radio-group>
-        </div>
+          <div class="period-section">
+            <el-radio-group v-model="selectedPeriod" size="default" @change="fetchKlineData" class="period-selector">
+              <el-radio-button label="day">DAY</el-radio-button>
+              <el-radio-button label="week">WEEK</el-radio-button>
+              <el-radio-button label="month">MONTH</el-radio-button>
+            </el-radio-group>
+          </div>
 
-        <div class="button-group">
-          <el-button type="info" :loading="loading" @click="refreshData">
-            REFRESH
-          </el-button>
-          <el-button type="info" :loading="loading" @click="handleRetry">
-            RETRY
-          </el-button>
-          <el-button type="info" @click="showIndicatorPanel = true">
-            INDICATORS
-          </el-button>
-        </div>
+          <div class="button-group">
+            <el-button type="info" :loading="loading" @click="refreshData">
+              REFRESH
+            </el-button>
+            <el-button type="info" :loading="loading" @click="handleRetry">
+              RETRY
+            </el-button>
+            <el-button type="info" @click="showIndicatorPanel = true">
+              INDICATORS
+            </el-button>
+          </div>
 
-        <el-dropdown @command="handleConfigCommand">
-          <el-button type="info">
-            CONFIGURATION
-            <el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="save">
-                <el-icon><DocumentAdd /></el-icon>
-                SAVE CURRENT CONFIG
-              </el-dropdown-item>
-              <el-dropdown-item command="load">
-                <el-icon><FolderOpened /></el-icon>
-                LOAD SAVED CONFIG
-              </el-dropdown-item>
-              <el-dropdown-item command="manage" divided>
-                <el-icon><Files /></el-icon>
-                MANAGE CONFIGS
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
+          <el-dropdown @command="handleConfigCommand">
+            <el-button type="info">
+              CONFIGURATION
+              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="save">
+                  <el-icon><DocumentAdd /></el-icon>
+                  SAVE CURRENT CONFIG
+                </el-dropdown-item>
+                <el-dropdown-item command="load">
+                  <el-icon><FolderOpened /></el-icon>
+                  LOAD SAVED CONFIG
+                </el-dropdown-item>
+                <el-dropdown-item command="manage" divided>
+                  <el-icon><Files /></el-icon>
+                  MANAGE CONFIGS
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
     </div>
 
     <!-- K线图表区域 -->
-    <div class="chart-section">
-        title="K-LINE CHART"
+    <el-card class="chart-section">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">K-LINE CHART</span>
+        </div>
+      </template>
+
+      <ProKLineChart
         :symbol="chartData.symbol"
         :data="chartData.ohlcv"
         :indicators="chartData.indicators"
@@ -88,7 +94,7 @@
         :last-update="lastUpdateTime"
         @indicator-remove="handleIndicatorRemove"
       />
-    </div>
+    </el-card>
 
     <!-- 指标选择面板 -->
     <IndicatorPanel
@@ -99,7 +105,13 @@
     />
 
     <!-- 数据统计信息 -->
-    <div v-if="chartData.ohlcv" class="stats-section">
+    <el-card v-if="chartData.ohlcv" class="stats-section">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">ANALYSIS SUMMARY</span>
+        </div>
+      </template>
+
       <div class="stats-grid">
         <div class="stat-item">
           <span class="stat-label">SYMBOL</span>
@@ -118,7 +130,7 @@
           <span class="stat-value mono gold">{{ selectedIndicators.length }}</span>
         </div>
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -127,11 +139,11 @@
 
 import { ref, reactive, onMounted, watch, type Ref, computed } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
-import { FolderOpened, DocumentAdd, Files, ArrowDown } from '@element-plus/icons-vue'
 import StockSearchBar from '@/components/technical/StockSearchBar.vue'
-import KLineChart from '@/components/technical/KLineChart.vue'
+import ProKLineChart from '@/components/market/ProKLineChart.vue'
 import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
-import { ElButton } from 'element-plus'
+import { ElCard, ElButton, ElInput, ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
+import { ArrowDown } from '@element-plus/icons-vue'
 import { indicatorService, handleIndicatorError } from '@/services/indicatorService.ts'
 import { dataApi } from '@/api/index.js'
 import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
@@ -701,11 +713,12 @@ window.deleteConfig = deleteConfig
 
 /* Toolbar Section */
 .toolbar-section {
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-  padding: var(--space-lg);
+  background: rgba(15, 17, 21, 0.8);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  padding: 20px;
   position: relative;
   overflow: hidden;
+  border-radius: 8px;
 }
 
 .toolbar-section::before {
@@ -715,9 +728,10 @@ window.deleteConfig = deleteConfig
   left: 4px;
   right: 4px;
   bottom: 4px;
-  border: 1px solid var(--gold-dim);
+  border: 1px solid rgba(247, 147, 26, 0.2);
   pointer-events: none;
   opacity: 0.3;
+  border-radius: 4px;
 }
 
 .toolbar-actions {
@@ -749,8 +763,21 @@ window.deleteConfig = deleteConfig
 
 .button-group {
   display: flex;
-  gap: var(--space-md);
+  gap: 12px;
   margin-left: auto;
+}
+
+.web3-radio-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(247, 147, 26, 0.05);
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.period-btn {
+  min-width: 60px;
 }
 
 /* Chart Section */
@@ -761,11 +788,11 @@ window.deleteConfig = deleteConfig
 
 /* Stats Section */
 .stats-section {
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-  padding: var(--space-lg);
+  background: rgba(15, 17, 21, 0.8);
+  border: 1px solid rgba(247, 147, 26, 0.3);
   position: relative;
   overflow: hidden;
+  border-radius: 8px;
 }
 
 .stats-section::before {
@@ -775,9 +802,10 @@ window.deleteConfig = deleteConfig
   left: 4px;
   right: 4px;
   bottom: 4px;
-  border: 1px solid var(--gold-dim);
+  border: 1px solid rgba(247, 147, 26, 0.2);
   pointer-events: none;
   opacity: 0.3;
+  border-radius: 4px;
 }
 
 .stats-grid {
@@ -817,59 +845,22 @@ window.deleteConfig = deleteConfig
   color: var(--gold-primary);
 }
 
-/* Element Plus overrides */
-:deep(.el-date-editor) {
-  background: var(--bg-primary);
-  border: 1px solid var(--gold-dim);
-  color: var(--silver-text);
-}
+/* Web3 Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(247, 147, 26, 0.3);
 
-:deep(.el-date-editor__inner) {
-  background: transparent;
-  color: var(--silver-text);
-  font-family: var(--font-mono);
-}
-
-:deep(.el-date-editor:hover) {
-  border-color: var(--gold-primary);
-}
-
-:deep(.el-radio-button__inner) {
-  background: var(--bg-primary);
-  border: 1px solid var(--gold-dim);
-  color: var(--silver-text);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-}
-
-:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  background: var(--gold-primary);
-  border-color: var(--gold-primary);
-  color: var(--bg-primary);
-}
-
-:deep(.el-dropdown-menu) {
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-}
-
-:deep(.el-dropdown-menu__item) {
-  color: var(--silver-text);
-  font-family: var(--font-body);
-}
-
-:deep(.el-dropdown-menu__item:hover) {
-  background: rgba(212, 175, 55, 0.1);
-  color: var(--gold-primary);
-}
-
-:deep(.el-empty) {
-  --el-empty-description-color: var(--silver-muted);
-}
-
-:deep(.el-empty__description) {
-  color: var(--silver-muted);
-  font-family: var(--font-body);
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #F7931A;
+  }
 }
 </style>

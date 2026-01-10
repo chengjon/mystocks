@@ -1,62 +1,89 @@
 <template>
   <div class="positions-tab">
+    <!-- Bloomberg-style Action Bar -->
     <div class="action-bar">
       <div class="action-buttons">
-        <button class="btn btn-primary" @click="handleBuy">
+        <el-button type="primary" @click="handleBuy">
           BUY
-        </button>
-        <button class="btn btn-danger" @click="handleSell">
+        </el-button>
+        <el-button type="danger" @click="handleSell">
           SELL
-        </button>
-        <button class="btn btn-info" @click="handleRefresh">
-          <span class="btn-icon">↻</span>
+        </el-button>
+        <el-button @click="handleRefresh" :loading="loading">
           REFRESH
-        </button>
+        </el-button>
       </div>
     </div>
 
+    <!-- Bloomberg-style Table -->
     <div class="table-container" v-loading="loading">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>CODE</th>
-            <th>NAME</th>
-            <th>QUANTITY</th>
-            <th>COST PRICE</th>
-            <th>CURRENT PRICE</th>
-            <th>MARKET VALUE</th>
-            <th>PROFIT</th>
-            <th>PROFIT RATE</th>
-            <th>UPDATE TIME</th>
-            <th>ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="position in positions" :key="position.symbol">
-            <td class="code-cell">{{ position.symbol }}</td>
-            <td>{{ position.stock_name }}</td>
-            <td class="number-cell">{{ position.quantity.toLocaleString() }}</td>
-            <td class="price-cell">¥{{ position.cost_price.toFixed(2) }}</td>
-            <td class="price-cell">¥{{ position.current_price.toFixed(2) }}</td>
-            <td class="amount-cell">¥{{ (position.quantity * position.current_price).toFixed(2) }}</td>
-            <td :class="['profit-cell', position.profit >= 0 ? 'profit-up' : 'profit-down']">
-              ¥{{ position.profit.toFixed(2) }}
-            </td>
-            <td :class="['rate-cell', position.profit_rate >= 0 ? 'profit-up' : 'profit-down']">
-              {{ position.profit_rate >= 0 ? '+' : '' }}{{ position.profit_rate.toFixed(2) }}%
-            </td>
-            <td class="time-cell">{{ formatTime(position.update_time) }}</td>
-            <td class="action-cell">
-              <button class="btn btn-sm btn-danger" @click="handleQuickSell(position)">
-                SELL
-              </button>
-              <button class="btn btn-sm btn-info" @click="handleViewDetails(position)">
-                DETAILS
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <el-table
+        :data="positions"
+        class="bloomberg-table"
+        stripe
+        border
+        style="width: 100%"
+      >
+        <el-table-column prop="symbol" label="CODE" width="120" />
+        <el-table-column prop="stock_name" label="NAME" width="180" />
+        <el-table-column prop="quantity" label="QUANTITY" width="120" align="right">
+          <template #default="{ row }">
+            <span class="mono-text">{{ row.quantity.toLocaleString() }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="cost_price" label="COST PRICE" width="140" align="right">
+          <template #default="{ row }">
+            <span class="mono-text">¥{{ row.cost_price?.toFixed(2) || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="current_price" label="CURRENT PRICE" width="140" align="right">
+          <template #default="{ row }">
+            <span class="mono-text">¥{{ row.current_price?.toFixed(2) || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="MARKET VALUE" width="160" align="right">
+          <template #default="{ row }">
+            <span class="mono-text">¥{{ ((row.quantity * row.current_price)?.toFixed(2)) || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="profit" label="PROFIT" width="140" align="right">
+          <template #default="{ row }">
+            <span class="mono-text" :class="row.profit >= 0 ? 'profit-up' : 'profit-down'">
+              ¥{{ row.profit?.toFixed(2) || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="profit_rate" label="PROFIT RATE" width="120" align="right">
+          <template #default="{ row }">
+            <span class="mono-text" :class="row.profit_rate >= 0 ? 'profit-up' : 'profit-down'">
+              {{ row.profit_rate >= 0 ? '+' : '' }}{{ row.profit_rate?.toFixed(2) || '-' }}%
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="update_time" label="UPDATE TIME" width="160">
+          <template #default="{ row }">
+            <span class="mono-text">{{ formatTime(row.update_time) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="ACTIONS" width="180" fixed="right">
+          <template #default="{ row }">
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleQuickSell(row)"
+            >
+              SELL
+            </el-button>
+            <el-button
+              type="info"
+              size="small"
+              @click="handleViewDetails(row)"
+            >
+              DETAILS
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
@@ -168,168 +195,106 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+// ============================================
+//   Bloomberg Terminal Style Positions Tab
+// ============================================
 
 .positions-tab {
   width: 100%;
 }
 
+// Action Bar
 .action-bar {
-  margin-bottom: var(--spacing-6);
-  padding: var(--spacing-4);
-  background: rgba(212, 175, 55, 0.03);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(0, 128, 255, 0.03);
+  border: 1px solid rgba(0, 128, 255, 0.2);
+  border-radius: 4px;
 }
 
 .action-buttons {
   display: flex;
-  gap: var(--spacing-3);
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.btn-icon {
-  font-size: 14px;
-}
-
+// Table Container
 .table-container {
   overflow-x: auto;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  background: rgba(212, 175, 55, 0.02);
+  border: 1px solid #1E293B;
+  background: linear-gradient(135deg, #0A0C10 0%, #0F1115 100%);
+  border-radius: 6px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 1200px;
+// Bloomberg Table Styling
+.bloomberg-table {
+  background: transparent !important;
 
-  th {
-    background: rgba(212, 175, 55, 0.1);
-    color: var(--accent-gold);
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 2px solid var(--accent-gold);
-    text-align: left;
-    white-space: nowrap;
-  }
+  :deep(.el-table__header-wrapper) {
+    background: #0F1115;
+    border-bottom: 2px solid #1E293B;
 
-  td {
-    padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    color: var(--fg-secondary);
-    font-size: var(--font-size-small);
-  }
-
-  tbody tr {
-    transition: background var(--transition-base);
-
-    &:hover {
-      background: rgba(212, 175, 55, 0.05);
+    th {
+      background: #0F1115 !important;
+      border-bottom: 1px solid #1E293B;
+      color: #94A3B8;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 12px 0;
     }
   }
 
-  .code-cell {
-    font-family: var(--font-mono);
-    color: var(--accent-gold);
+  :deep(.el-table__body-wrapper) {
+    background: transparent;
+
+    tr {
+      background: transparent !important;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 128, 255, 0.05) !important;
+      }
+
+      td {
+        border-bottom: 1px solid #1E293B;
+        color: #E2E8F0;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 13px;
+        padding: 12px 0;
+      }
+    }
   }
 
-  .number-cell {
-    text-align: right;
-    font-family: var(--font-mono);
+  .mono-text {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    color: #FFFFFF;
   }
 
-  .price-cell {
-    font-family: var(--font-mono);
-    text-align: right;
+  .profit-up {
+    color: #FF3B30 !important;
   }
 
-  .amount-cell {
-    font-family: var(--font-mono);
-    text-align: right;
-    color: var(--fg-primary);
-  }
-
-  .profit-cell,
-  .rate-cell {
-    font-family: var(--font-mono);
-    text-align: right;
-    font-weight: 600;
-  }
-
-  .time-cell {
-    font-family: var(--font-mono);
-    font-size: var(--font-size-xs);
-    white-space: nowrap;
-  }
-
-  .action-cell {
-    display: flex;
-    gap: var(--spacing-2);
-    white-space: nowrap;
+  .profit-down {
+    color: #00E676 !important;
   }
 }
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-6);
-  font-family: var(--font-display);
-  font-size: var(--font-size-small);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  border: 2px solid var(--accent-gold);
-  border-radius: 0;
-  cursor: pointer;
-  transition: all var(--transition-base);
+// Responsive Design
+@media (max-width: 768px) {
+  .action-bar {
+    padding: 12px;
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    .action-buttons {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
   }
-}
-
-  background: var(--accent-gold);
-  color: var(--bg-primary);
-
-  &:hover:not(:disabled) {
-    background: var(--accent-gold-light);
-    box-shadow: var(--glow-medium);
-  }
-}
-
-  background: transparent;
-  color: var(--accent-gold);
-
-  &:hover:not(:disabled) {
-    background: rgba(212, 175, 55, 0.1);
-    box-shadow: var(--glow-subtle);
-  }
-}
-
-  background: var(--color-up);
-  border-color: var(--color-up);
-  color: white;
-
-  &:hover:not(:disabled) {
-    background: #D94F51;
-    border-color: #D94F51;
-    box-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
-  }
-}
-
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--font-size-xs);
-  letter-spacing: 0;
-}
-
-.profit-up {
-  color: var(--color-up) !important;
-}
-
-.profit-down {
-  color: var(--color-down) !important;
 }
 </style>

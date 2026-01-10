@@ -13,7 +13,8 @@ import time
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest, CollectorRegistry
+from prometheus_client.registry import REGISTRY
 
 from app.api.auth import User, get_current_user
 from app.core.responses import APIResponse
@@ -26,42 +27,69 @@ metrics_access_count = {}
 
 # ==================== 定义监控指标 ====================
 
+
+def _get_or_create_metric(metric_class, name, documentation, labelnames=None, registry=None):
+    """Get existing metric or create new one, handling duplicates gracefully."""
+    if registry is None:
+        registry = REGISTRY
+
+    try:
+        if hasattr(registry, "_names_to_collectors") and name in registry._names_to_collectors:
+            return registry._names_to_collectors[name]
+        # Try to create the metric
+        if labelnames:
+            return metric_class(name, documentation, labelnames, registry=registry)
+        else:
+            return metric_class(name, documentation, registry=registry)
+    except ValueError as e:
+        if "Duplicated timeseries" in str(e):
+            # Metric already exists, try to get it from registry
+            if hasattr(registry, "_names_to_collectors") and name in registry._names_to_collectors:
+                return registry._names_to_collectors[name]
+            else:
+                logger.warning(f"Cannot access existing metric {name}, creating new registry")
+                # Create a new registry if we can't access the existing one
+                new_registry = CollectorRegistry()
+                if labelnames:
+                    return metric_class(name, documentation, labelnames, registry=new_registry)
+                else:
+                    return metric_class(name, documentation, registry=new_registry)
+        else:
+            raise
+
+
 # HTTP请求计数器
-http_requests_total = Counter(
-    "mystocks_http_requests_total",
-    "Total HTTP requests",
-    ["method", "endpoint", "status"],
+http_requests_total = _get_or_create_metric(
+    Counter, "mystocks_http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
 )
 
 # HTTP请求延迟直方图
-http_request_duration_seconds = Histogram(
-    "mystocks_http_request_duration_seconds",
-    "HTTP request latency",
-    ["method", "endpoint"],
+http_request_duration_seconds = _get_or_create_metric(
+    Histogram, "mystocks_http_request_duration_seconds", "HTTP request latency", ["method", "endpoint"]
 )
 
 # 数据库连接池状态
-db_connections_active = Gauge("mystocks_db_connections_active", "Active database connections", ["database"])
+db_connections_active = _get_or_create_metric(
+    Gauge, "mystocks_db_connections_active", "Active database connections", ["database"]
+)
 
-db_connections_idle = Gauge("mystocks_db_connections_idle", "Idle database connections", ["database"])
+db_connections_idle = _get_or_create_metric(
+    Gauge, "mystocks_db_connections_idle", "Idle database connections", ["database"]
+)
 
 # 缓存命中率
-cache_hits_total = Counter("mystocks_cache_hits_total", "Total cache hits")
+cache_hits_total = _get_or_create_metric(Counter, "mystocks_cache_hits_total", "Total cache hits")
 
-cache_misses_total = Counter("mystocks_cache_misses_total", "Total cache misses")
+cache_misses_total = _get_or_create_metric(Counter, "mystocks_cache_misses_total", "Total cache misses")
 
 # API响应状态
-api_health_status = Gauge(
-    "mystocks_api_health_status",
-    "API health status (1=healthy, 0=unhealthy)",
-    ["service"],
+api_health_status = _get_or_create_metric(
+    Gauge, "mystocks_api_health_status", "API health status (1=healthy, 0=unhealthy)", ["service"]
 )
 
 # 数据源可用性
-datasource_availability = Gauge(
-    "mystocks_datasource_availability",
-    "Data source availability (1=available, 0=unavailable)",
-    ["datasource"],
+datasource_availability = _get_or_create_metric(
+    Gauge, "mystocks_datasource_availability", "Data source availability (1=available, 0=unavailable)", ["datasource"]
 )
 
 # ==================== 辅助函数 ====================

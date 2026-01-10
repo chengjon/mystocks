@@ -1,0 +1,618 @@
+/**
+ * MyStocks Professional Fintech UI Optimization
+ * MyStocks 专业金融终端界面优化
+ *
+ * 基于 UI/UX Pro Max 最佳实践
+ * Design Philosophy: Bloomberg Terminal + Modern Trading Platform
+ *
+ * 核心改进:
+ * 1. OLED-optimized dark colors
+ * 2. Data-dense layout system
+ * 3. Professional typography
+ * 4. Enhanced visual hierarchy
+ * 5. Micro-interactions & animations
+ *
+ * Author: Claude (UI/UX Pro Max)
+ * Created: 2026-01-08
+ */
+
+/* ============================================
+   PRO FINTECH COLOR SYSTEM
+   专业金融配色系统
+   ============================================ */
+
+:root {
+  /* ------------------------------------------
+     OLED-Optimized Background Colors
+     OLED优化的深色背景 (更深的纯黑)
+     ------------------------------------------ */
+
+  /// Main background - Pure OLED black
+  /// 更深的黑色，提升OLED屏幕对比度
+  --bg-primary: #000000;
+
+  /// Secondary background - Deep charcoal
+  /// 用于侧边栏、导航栏
+  --bg-secondary: #0A0A0A;
+
+  /// Card background - Near-black with subtle blue tint
+  /// 用于卡片、面板，保持金融终端的专业感
+  --bg-card: #0F1115;
+
+  /// Elevated surface - Cards above cards
+  /// 用于嵌套卡片、模态框
+  --bg-elevated: #14171C;
+
+  /// Hover state - Subtle lift
+  /// 用于悬停状态，提供清晰的视觉反馈
+  --bg-hover: #1A1D24;
+
+  /// Active state - Selected items
+  /// 用于选中项、激活标签页
+  --bg-active: #22262E;
+
+  /// Overlay - Modal/Dialog backdrop
+  /// 使用更高透明度的遮罩
+  --bg-overlay: rgba(0, 0, 0, 0.90);
+
+  /* ------------------------------------------
+     A-Share Market Colors (CRITICAL - 保持不变)
+     A股市场颜色 - 红涨绿跌
+     ------------------------------------------ */
+
+  /// UP color - Red (上涨) - 增强饱和度
+  --color-up: #FF3B30;
+
+  /// UP background - Enhanced red background
+  --color-up-bg: rgba(255, 59, 48, 0.20);
+
+  /// UP hover - Brighter red for interaction
+  --color-up-hover: #FF5252;
+
+  /// DOWN color - Green (下跌) - 增强饱和度
+  --color-down: #00E676;
+
+  /// DOWN background - Enhanced green background
+  --color-down-bg: rgba(0, 230, 118, 0.20);
+
+  /// DOWN hover - Brighter green for interaction
+  --color-down-hover: #00FA9A;
+
+  /// FLAT color - Grey (平盘)
+  --color-flat: #989B9E;
+
+  /// FLAT background - Grey background
+  --color-flat-bg: rgba(152, 155, 158, 0.15);
+
+  /* ------------------------------------------
+     Professional Accent Colors
+     专业强调色 - 优化对比度
+     ------------------------------------------ */
+
+  /// Primary - Financial blue (trust, stability)
+  /// 用于主要操作、导航、品牌标识
+  --color-primary: #0080FF;
+
+  /// Primary hover - Brighter blue
+  --color-primary-hover: #3395FF;
+
+  /// Primary active - Pressed state
+  --color-primary-active: #0066CC;
+
+  /// Success - Professional green
+  --color-success: #22C55E;
+
+  /// Warning - Amber (high visibility)
+  --color-warning: #F59E0B;
+
+  /// Error - Professional red
+  --color-error: #EF4444;
+
+  /// Info - Cyan (informational)
+  --color-info: #06B6D4;
+
+  /* ------------------------------------------
+     Text Colors (优化对比度)
+     文本颜色 - 符合WCAG AAA标准
+     ------------------------------------------ */
+
+  /// Primary text - Near white (high contrast)
+  --text-primary: #F8FAFC;
+
+  /// Secondary text - Light grey (readable)
+  --text-secondary: #CBD5E0;
+
+  /// Tertiary text - Medium grey (labels)
+  --text-tertiary: #94A3B8;
+
+  /// Muted text - Dark grey (disabled)
+  --text-muted: #64748B;
+
+  /// Inverted text - For dark backgrounds
+  --text-inverted: #FFFFFF;
+
+  /* ------------------------------------------
+     Border & Divider Colors
+     边框和分割线颜色
+     ------------------------------------------ */
+
+  /// Border default - Subtle grey
+  --border-default: #1E293B;
+
+  /// Border light - For card separation
+  --border-light: #334155;
+
+  /// Border accent - Primary color borders
+  --border-accent: #0080FF;
+
+  /// Divider - Content separation
+  --border-divider: #1E293B;
+
+  /* ------------------------------------------
+     Data-Dense Spacing System
+     数据密集型间距系统 (6px基础单位)
+     更紧凑的布局，适合数据密集型应用
+     ------------------------------------------ */
+
+  --spacing-xs: 3px;    // 0.5x (超紧凑)
+  --spacing-sm: 6px;    // 1x (标准紧凑)
+  --spacing-md: 12px;   // 2x (组件间距)
+  --spacing-lg: 18px;   // 3x (模块间距)
+  --spacing-xl: 24px;   // 4x (区域间距)
+  --spacing-xxl: 36px;  // 6x (页面级)
+
+  /* ------------------------------------------
+     Professional Typography
+     专业字体系统
+     ------------------------------------------ */
+
+  /// Font family - IBM Plex Sans (金融专业感)
+  --font-family-base: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /// Font family mono - Data display
+  --font-family-mono: 'Fira Code', 'Roboto Mono', 'SF Mono', 'Monaco', 'Courier New', monospace;
+
+  /// Font sizes - Data-dense system
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  /// Font weights
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /// Line heights - Compact for data density
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* ------------------------------------------
+     Shadows & Elevation
+     阴影和层次 (微妙的专业感)
+     ------------------------------------------ */
+
+  /// Shadow sm - Subtle elevation
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  /// Shadow md - Medium elevation
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
+
+  /// Shadow lg - High elevation (modals, dropdowns)
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
+
+  /// Shadow xl - Maximum elevation (tooltips)
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
+
+  /// Glow effect - For interactive elements
+  --shadow-glow-primary: 0 0 20px rgba(0, 128, 255, 0.3);
+  --shadow-glow-success: 0 0 20px rgba(34, 197, 94, 0.3);
+  --shadow-glow-error: 0 0 20px rgba(239, 68, 68, 0.3);
+
+  /* ------------------------------------------
+     Border Radius
+     圆角 - 更锐利的金融终端风格
+     ------------------------------------------ */
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-full: 9999px;
+
+  /* ------------------------------------------
+     Transitions
+     过渡动画 - 专业且流畅
+     ------------------------------------------ */
+
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ------------------------------------------
+     Z-Index Scale
+     层级管理
+     ------------------------------------------ */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ============================================
+   GLOBAL APPLICATION
+   全局应用
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   DATA-DENSE LAYOUT UTILITIES
+   数据密集型布局工具类
+   ============================================ */
+
+.data-dense {
+  --spacing-base: 6px; /* 紧凑间距 */
+}
+
+.data-dense .el-card {
+  margin-bottom: var(--spacing-sm);
+}
+
+.data-dense .el-table {
+  font-size: var(--font-size-sm);
+}
+
+.data-dense .el-table th,
+.data-dense .el-table td {
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+/* ============================================
+   PROFESSIONAL CARD STYLES
+   专业卡片样式
+   ============================================ */
+
+.el-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-card:hover {
+  border-color: var(--border-light) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.el-card__header {
+  background-color: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: var(--font-size-md) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-card__body {
+  padding: var(--spacing-md) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   DATA TABLE OPTIMIZATION
+   数据表格优化
+   ============================================ */
+
+.el-table {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.el-table th.el-table__cell {
+  background-color: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: var(--font-size-sm) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.el-table td.el-table__cell {
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: var(--bg-hover) !important;
+}
+
+/* 数据颜色应用 */
+.text-up { color: var(--color-up) !important; }
+.text-down { color: var(--color-down) !important; }
+.text-flat { color: var(--color-flat) !important; }
+
+.bg-up { background-color: var(--color-up-bg) !important; }
+.bg-down { background-color: var(--color-down-bg) !important; }
+
+/* ============================================
+   BUTTON ENHANCEMENTS
+   按钮增强
+   ============================================ */
+
+.el-button {
+  font-family: var(--font-family-base) !important;
+  font-weight: var(--font-weight-medium) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-button--primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: var(--shadow-glow-primary) !important;
+}
+
+/* 涨跌按钮 */
+.el-button--success {
+  background-color: var(--color-down) !important; /* 绿=跌，但在买入语境用绿 */
+  border-color: var(--color-down) !important;
+}
+
+.el-button--danger {
+  background-color: var(--color-up) !important; /* 红=涨，但在卖出语境用红 */
+  border-color: var(--color-up) !important;
+}
+
+/* ============================================
+   INPUT & FORM ELEMENTS
+   输入和表单元素
+   ============================================ */
+
+.el-input__wrapper {
+  background-color: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-input__wrapper:hover {
+  border-color: var(--border-light) !important;
+}
+
+.el-input__wrapper.is-focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1) !important;
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+  font-family: var(--font-family-mono) !important; /* 数字用等宽字体 */
+}
+
+/* ============================================
+   NAVIGATION OPTIMIZATION
+   导航优化
+   ============================================ */
+
+.el-menu {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-default) !important;
+}
+
+.el-menu-item {
+  color: var(--text-secondary) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-menu-item:hover {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-menu-item.is-active {
+  background-color: var(--bg-active) !important;
+  color: var(--color-primary) !important;
+  border-right: 2px solid var(--color-primary) !important;
+}
+
+/* ============================================
+   STAT CARD & METRIC DISPLAY
+   统计卡片和指标显示
+   ============================================ */
+
+.stat-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-base) ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-light);
+}
+
+.stat-value {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-change {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.stat-change.positive {
+  color: var(--color-up);
+  background-color: var(--color-up-bg);
+}
+
+.stat-change.negative {
+  color: var(--color-down);
+  background-color: var(--color-down-bg);
+}
+
+/* ============================================
+   CHART COLOR PALETTE
+   图表调色板
+   ============================================ */
+
+.chart-primary { color: #0080FF; }
+.chart-success { color: #22C55E; }
+.chart-warning { color: #F59E0B; }
+.chart-danger { color: #EF4444; }
+.chart-info { color: #06B6D4; }
+.chart-purple { color: #8B5CF6; }
+
+.chart-series-1 { color: #0080FF; }
+.chart-series-2 { color: #22C55E; }
+.chart-series-3 { color: #F59E0B; }
+.chart-series-4 { color: #8B5CF6; }
+.chart-series-5 { color: #EC4899; }
+.chart-series-6 { color: #06B6D4; }
+
+/* ============================================
+   MICRO-INTERACTIONS
+   微交互
+   ============================================ */
+
+.hover-lift {
+  transition: transform var(--transition-base) ease, box-shadow var(--transition-base) ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hover-glow {
+  transition: all var(--transition-base) ease;
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* ============================================
+   SCROLLBAR CUSTOMIZATION
+   滚动条自定义 (保持专业感)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   响应式调整
+   ============================================ */
+
+@media (max-width: 1366px) {
+  :root {
+    --font-size-xs: 10px;
+    --font-size-sm: 11px;
+    --font-size-base: 12px;
+  }
+
+  .data-dense .el-table th,
+  .data-dense .el-table td {
+    padding: 2px var(--spacing-xs);
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --font-size-xs: 12px;
+    --font-size-sm: 13px;
+    --font-size-base: 14px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   无障碍访问
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #FFFFFF;
+    --text-secondary: #E2E8F0;
+    --border-default: #475569;
+  }
+}

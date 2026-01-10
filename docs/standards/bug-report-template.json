@@ -1,0 +1,70 @@
+/**
+ * MyStocks BUG登记模板
+ *
+ * 用法说明：
+ * 1. 在修复BUG后，填写此模板记录BUG信息
+ * 2. 将填写完成的 .json 文件保存到 docs/quality/bugs/ 目录
+ * 3. 定期（每周/每月）汇总BUG报告，更新经验教训文档
+ *
+ * 支持两种格式：
+ * - 单个BUG: 使用 "bug" 对象
+ * - 批量BUG: 使用 "bugs" 数组 (最多20个)
+ *
+ * 字段说明：
+ * - * 为必填字段
+ * - errorCode: 大写字母、数字、下划线组成
+ * - severity: critical(崩溃) / high(严重) / medium(中等) / low(轻微)
+ */
+
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "mystocks-bug-report",
+    "reportedAt": "2026-01-08T11:30:00Z",
+    "reporter": "Claude Code",
+    "contact": "claude@example.com",
+    "description": "MyStocks项目BUG报告"
+  },
+
+  // ============================================================
+  // 格式一：单个BUG
+  // ============================================================
+  "bug": {
+    "errorCode": "ERR_DDD_IMPORT_001",
+    "title": "DDD模块导入路径错误",
+    "message": "在Phase 6验证测试时，发现Market Data Context的仓储接口导入路径错误。src/domain/market_data/repository/__init__.py 中使用了错误的文件名 market_data_repository 而非 imarket_data_repository",
+    "stackTrace": "ModuleNotFoundError: No module named 'src.domain.market_data.repository.market_data_repository'\n    at test_market_data_context_imports (tests/ddd/test_phase_6_validation.py:31)",
+    "severity": "high",
+    "context": {
+      "projectName": "MyStocks",
+      "projectRoot": "/opt/claude/mystocks_spec",
+      "component": "domain-layer",
+      "environment": "development",
+      "phase": "Phase 6 - Market Data Context",
+      "affectedFiles": [
+        "src/domain/market_data/repository/__init__.py",
+        "tests/ddd/test_phase_6_validation.py"
+      ],
+      "rootCause": "__init__.py文件导入路径与实际文件名不一致"
+    }
+  }
+
+  // ============================================================
+  // 格式二：批量BUG（推荐，一次最多20个）
+  // ============================================================
+  // "bugs": [
+  //   {
+  //     "errorCode": "ERR_001",
+  //     "title": "BUG标题1",
+  //     "message": "错误描述1",
+  //     "stackTrace": "堆栈跟踪1（可选）",
+  //     "severity": "critical",
+  //     "context": {
+  //       "projectName": "MyStocks",
+  //       "projectRoot": "/opt/claude/mystocks_spec",
+  //       "component": "组件名",
+  //       "environment": "development"
+  //     }
+  //   }
+  // ]
+}

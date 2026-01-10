@@ -11,6 +11,7 @@ from . import (
     dashboard,
     data,
     data_quality,
+    efinance,  # Efinance数据源API
     health,
     indicators,
     industry_concept_analysis,
@@ -19,9 +20,12 @@ from . import (
     metrics,
     ml,
     monitoring,
+    monitoring_analysis,  # 智能量化监控 - 组合分析与健康度计算
+    monitoring_watchlists,  # 智能量化监控 - 清单管理 API
     multi_source,
     notification,
     risk_management,
+    signal_monitoring,  # 信号监控 API - 信号历史、质量报告、实时监控
     sse_endpoints,
     stock_search,
     strategy,
@@ -46,6 +50,7 @@ __all__ = [
     "dashboard",
     "data",
     "data_quality",
+    "efinance",  # Efinance数据源API
     "health",
     "indicators",
     "industry_concept_analysis",
@@ -54,9 +59,12 @@ __all__ = [
     "metrics",
     "ml",
     "monitoring",
+    "monitoring_analysis",  # 智能量化监控 - 组合分析与健康度计算
+    "monitoring_watchlists",  # 智能量化监控 - 清单管理 API
     "multi_source",
     "notification",
     "risk_management",
+    "signal_monitoring",  # 信号监控 API - 信号历史、质量报告、实时监控
     "sse_endpoints",
     "stock_search",
     "strategy",

@@ -484,71 +484,94 @@ def get_chip_race(
 ) -> List[Dict]:
     """获取竞价抢筹数据
 
+    参考instock实现: /opt/iflow/instock/instock/core/crawling/stock_chip_race.py
+    字段名与tablestructure.py一致
+
+    数据字段说明 (instock标准):
+    - deal_amount: 开盘金额/收盘金额
+    - bid_rate: 抢筹幅度 = (bid_deal_amount - bid_trust_amount) / bid_trust_amount * 100%
+    - bid_ratio: 抢筹占比 = bid_deal_amount / deal_amount * 100%
+    - change_rate: 涨跌幅 = (new_price / pre_close - 1) * 100%
+
     Args:
-        race_type: str - 抢筹类型: open/end
+        race_type: str - 抢筹类型: open(早盘) / end(尾盘)
         trade_date: Optional[str] - 交易日期
         min_race_amount: Optional[float] - 最小抢筹金额
         limit: int - 返回数量
 
     Returns:
         List[Dict]: 竞价抢筹数据，包含:
-                   - symbol: 股票代码
+                   - code: 股票代码
                    - name: 股票名称
-                   - race_amount: 抢筹金额
-                   - race_ratio: 抢筹比例
-                   - open_price: 开盘价
-                   - close_price: 收盘价
-                   - change_pct: 涨跌幅
+                   - date: 交易日期
+                   - new_price: 最新价
+                   - change_rate: 涨跌幅(%)
+                   - pre_close_price: 昨收价
+                   - open_price: 今开价
+                   - deal_amount: 开盘金额/收盘金额
+                   - bid_rate: 抢筹幅度(%)
+                   - bid_trust_amount: 抢筹委托金额
+                   - bid_deal_amount: 抢筹成交金额
+                   - bid_ratio: 抢筹占比(%)
     """
     if not trade_date:
         trade_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    # 生成抢筹数据
     race_data = []
     stock_pool = [
-        {"symbol": "600519", "name": "贵州茅台", "base_price": 1800.0},
-        {"symbol": "600036", "name": "招商银行", "base_price": 35.0},
-        {"symbol": "000001", "name": "平安银行", "base_price": 12.0},
-        {"symbol": "000858", "name": "五粮液", "base_price": 150.0},
-        {"symbol": "600276", "name": "恒瑞医药", "base_price": 45.0},
+        {"code": "600519", "name": "贵州茅台", "base_price": 1800.0},
+        {"code": "600036", "name": "招商银行", "base_price": 35.0},
+        {"code": "000001", "name": "平安银行", "base_price": 12.0},
+        {"code": "000858", "name": "五粮液", "base_price": 150.0},
+        {"code": "600276", "name": "恒瑞医药", "base_price": 45.0},
+        {"code": "601398", "name": "工商银行", "base_price": 15.0},
+        {"code": "601988", "name": "中国银行", "base_price": 10.0},
+        {"code": "600016", "name": "民生银行", "base_price": 8.0},
+        {"code": "600015", "name": "华夏银行", "base_price": 6.0},
+        {"code": "601229", "name": "上海银行", "base_price": 7.0},
     ]
 
     for stock in stock_pool:
-        # 生成抢筹金额
-        race_amount = random.randint(1000000, 100000000)
-        race_ratio = round(random.uniform(0.1, 15.0), 2)
-
-        # 生成价格数据
         base_price = stock["base_price"]
-        change_pct = round(random.uniform(-5.0, 5.0), 2)
-        close_price = round(base_price * (1 + change_pct / 100), 2)
+
+        pre_close_price = round(base_price + random.uniform(-0.5, 0.5), 2)
+
+        change_rate = round(random.uniform(-5.0, 5.0), 2)
+        new_price = round(pre_close_price * (1 + change_rate / 100), 2)
 
         if race_type == "open":
-            # 开盘竞价
-            open_price = round(close_price * (1 + random.uniform(-0.02, 0.02)), 2)
+            open_price = round(pre_close_price * (1 + random.uniform(-0.02, 0.02)), 2)
         else:
-            # 收盘竞价
-            open_price = round(base_price, 2)
+            open_price = pre_close_price
 
-        # 筛选条件
-        if min_race_amount and race_amount < min_race_amount:
+        bid_trust_amount = round(random.uniform(1000000, 50000000), 2)
+        bid_deal_amount = round(bid_trust_amount * (1 + random.uniform(-0.3, 0.5)), 2)
+        deal_amount = open_price * random.randint(10000, 100000)
+
+        bid_rate = round((bid_deal_amount - bid_trust_amount) / bid_trust_amount * 100, 2)
+        bid_ratio = round(bid_deal_amount / deal_amount * 100, 2)
+
+        if min_race_amount and deal_amount < min_race_amount:
             continue
 
         race_data.append(
             {
-                "symbol": stock["symbol"],
+                "code": stock["code"],
                 "name": stock["name"],
-                "race_amount": race_amount,
-                "race_ratio": race_ratio,
+                "date": trade_date,
+                "new_price": new_price,
+                "change_rate": change_rate,
+                "pre_close_price": pre_close_price,
                 "open_price": open_price,
-                "close_price": close_price,
-                "change_pct": change_pct,
-                "trade_date": trade_date,
+                "deal_amount": deal_amount,
+                "bid_rate": bid_rate,
+                "bid_trust_amount": bid_trust_amount,
+                "bid_deal_amount": bid_deal_amount,
+                "bid_ratio": bid_ratio,
             }
         )
 
-    # 按抢筹金额排序
-    race_data = sorted(race_data, key=lambda x: x["race_amount"], reverse=True)
+    race_data = sorted(race_data, key=lambda x: x["deal_amount"], reverse=True)
 
     return race_data[:limit]
 

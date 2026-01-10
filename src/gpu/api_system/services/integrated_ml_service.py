@@ -15,20 +15,35 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.redis_utils import RedisQueue
-from src.utils.monitoring import MetricsCollector
-from src.utils.cache_optimization import CacheManager
-from src.utils.gpu_acceleration_engine import GPUAccelerationEngine
-from api_proto.ml_pb2 import (
-    TrainModelRequest,
-    TrainModelResponse,
-    PredictRequest,
-    PredictResponse,
-    ModelMetrics,
-    TrainingStatus,
-)
-from api_proto.ml_pb2_grpc import MLServiceServicer
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.cache_optimization import CacheManager
+from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+
+try:
+    from src.gpu.api_system.api_proto.ml_pb2 import (
+        TrainModelRequest,
+        TrainModelResponse,
+        PredictRequest,
+        PredictResponse,
+        ModelMetrics,
+        TrainingStatus,
+    )
+    from src.gpu.api_system.api_proto.ml_pb2_grpc import MLServiceServicer
+except ImportError:
+    import sys
+    sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
+    from ml_pb2 import (
+        TrainModelRequest,
+        TrainModelResponse,
+        PredictRequest,
+        PredictResponse,
+        ModelMetrics,
+        TrainingStatus,
+    )
+    from ml_pb2_grpc import MLServiceServicer
+
 import grpc
 
 logger = logging.getLogger(__name__)

@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "format": "mystocks-bug-report",
+    "reportedAt": "2026-01-10T03:00:00Z",
+    "reporter": "Claude Code",
+    "description": "数据源注册表JSONB字段解析错误导致加载失败"
+  },
+  "bug": {
+    "errorCode": "ERR_REGISTRY_JSONB_001",
+    "title": "数据源注册表JSONB字段解析错误",
+    "message": "DataSourceManagerV2初始化时从PostgreSQL数据库加载数据源注册表失败，_load_from_database函数返回0个端点。PostgreSQL的JSONB字段被pandas自动转换为Python dict对象，但代码第62行假设字段值为JSON字符串，尝试使用json.loads()解析dict类型，导致TypeError异常被静默捕获，最终返回空字典。",
+    "stackTrace": "Traceback (most recent call last):\n  File \"src/core/data_source/registry.py\", line 46, in _load_from_database\n    df = pd.read_sql(query, conn)\n  File \"src/core/data_source/registry.py\", line 62, in <lambda>\n    \"parameters\": json.loads(row[\"parameters\"]) if row[\"parameters\"] else {},\nTypeError: the JSON object must be str, bytes or bytearray, not dict",
+    "severity": "high",
+    "context": {
+      "projectName": "MyStocks",
+      "projectRoot": "/opt/claude/mystocks_spec",
+      "component": "data-source-registry",
+      "environment": "development",
+      "affectedFiles": [
+        "src/core/data_source/registry.py"
+      ],
+      "rootCause": "PostgreSQL JSONB字段类型处理不当。pandas.read_sql()读取JSONB字段时自动转换为Python dict，但代码假设为JSON字符串并尝试json.loads()解析",
+      "symptoms": [
+        "DataSourceManagerV2初始化后加载0个端点",
+        "智能路由系统无法找到任何数据源",
+        "webdata虽然已注册到数据库但无法被系统发现和使用"
+      ],
+      "businessImpact": "数据源管理器V2完全无法工作，智能路由失效，已注册的数据源（webdata等12个端点）无法被自动发现和使用",
+      "fixApplied": {
+        "file": "src/core/data_source/registry.py",
+        "line": 62,
+        "before": "\"parameters\": json.loads(row[\"parameters\"]) if row[\"parameters\"] else {},",
+        "after": "\"parameters\": row[\"parameters\"] if isinstance(row[\"parameters\"], dict) else (json.loads(row[\"parameters\"]) if row[\"parameters\"] else {}),",
+        "description": "添加类型检查，支持dict和str两种格式"
+      },
+      "verification": {
+        "testMethod": "初始化DataSourceManagerV2并检查加载的端点数量",
+        "expectedResult": "23个端点",
+        "actualResult": "23个端点 ✅",
+        "testCommand": "python3 -c \"from src.core.data_source.base import DataSourceManagerV2; print(len(DataSourceManagerV2().registry))\""
+      },
+      "prevention": [
+        "在处理数据库字段时，始终考虑ORM/查询库的类型转换行为",
+        "为JSONB/JSON字段编写类型检查，支持多种输入格式",
+        "在异常处理中记录详细错误日志，避免静默失败",
+        "添加单元测试覆盖数据库字段解析逻辑"
+      ],
+      "relatedIssues": [
+        "数据源管理器V2设计文档",
+        "PostgreSQL数据库schema文档",
+        "智能路由系统设计"
+      ]
+    }
+  }
+}
