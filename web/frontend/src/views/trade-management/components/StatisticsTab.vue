@@ -258,6 +258,7 @@ defineExpose({
 
 <style scoped lang="scss">
 
+.subcard {
   background: rgba(212, 175, 55, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: var(--radius-none);
@@ -279,7 +280,6 @@ defineExpose({
       margin: 0;
     }
   }
-}
 
   :deep(.el-descriptions__label) {
     background: rgba(212, 175, 55, 0.1) !important;

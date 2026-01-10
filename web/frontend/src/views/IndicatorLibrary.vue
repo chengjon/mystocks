@@ -8,49 +8,74 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="stats-section">
-        :label="'TOTAL'"
-        :value="registry?.total_count || 0"
-        type="warning"
-      />
-
-        v-for="(count, category) in (registry as any)?.categories"
-        :key="category"
-        :label="getCategoryLabel(String(category))"
-        :value="count"
-        type="getStatVariant(String(category))"
-      /> -->
-      <p>TOTAL: {{ registry?.total_count || 0 }} indicators</p>
-      <div v-for="(count, category) in (registry as any)?.categories" :key="category">
-        {{ getCategoryLabel(String(category)) }}: {{ count }}
+    <el-card class="stats-section">
+      <div class="stats-content">
+        <div class="stat-item">
+          <span class="stat-label">TOTAL INDICATORS</span>
+          <span class="stat-value gold">{{ registry?.total_count || 0 }}</span>
+        </div>
+        <div v-for="(count, category) in (registry as any)?.categories" :key="category" class="stat-item">
+          <span class="stat-label">{{ getCategoryLabel(String(category)) }}</span>
+          <span class="stat-value">{{ count }}</span>
+        </div>
       </div>
-    </div>
+    </el-card>
 
     <!-- Search and Filter -->
-    <div class="filter-section">
-        title="INDICATOR FILTERS"
-        :filters="indicatorFilters"
-        :quick-filters="quickFilters"
-        @filter-change="handleFilterChange"
-      /> -->
-    </div>
+    <el-card class="filter-section">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">INDICATOR FILTERS</span>
+        </div>
+      </template>
+
+      <div class="filter-content">
+        <div class="filter-row">
+          <el-input
+            v-model="searchQuery"
+            placeholder="SEARCH INDICATOR NAME, ABBREVIATION OR DESCRIPTION..."
+            class="search-input"
+            @input="handleFilterChange"
+          />
+
+          <select v-model="selectedCategory" @change="handleFilterChange" class="category-select">
+            <option value="">ALL CATEGORIES</option>
+            <option value="trend">TREND</option>
+            <option value="momentum">MOMENTUM</option>
+            <option value="volatility">VOLATILITY</option>
+            <option value="volume">VOLUME</option>
+            <option value="candlestick">CANDLESTICK</option>
+          </select>
+        </div>
+
+        <div class="quick-filters">
+          <el-button
+            v-for="filter in quickFilters"
+            :key="filter.key"
+            :type="isActiveFilter(filter) ? 'primary' : 'default'"
+            :plain="!isActiveFilter(filter)"
+            size="small"
+            @click="applyQuickFilter(filter)"
+          >
+            {{ filter.label }}
+          </el-button>
+        </div>
+      </div>
+    </el-card>
 
     <!-- Indicators List -->
     <div v-loading="loading" class="indicators-container">
       <el-card
         v-for="indicator in filteredIndicators"
         :key="indicator.abbreviation"
-        class="indicator-card"
-        :hoverable="true"
+        class="indicator-card hover-lift"
       >
         <template #header>
           <div class="indicator-header">
-            <span class="indicator-abbr gold">{{ indicator.abbreviation }}</span>
+            <span class="indicator-abbr">{{ indicator.abbreviation }}</span>
             <div class="indicator-badges">
-              <!-- <el-tag :text="getCategoryLabel(indicator.category)" type="getBadgeVariant(indicator.category)" />
-              <el-tag :text="getPanelLabel(indicator.panel_type)" type="info" /> -->
-              <el-tag>{{ getCategoryLabel(indicator.category) }}</el-tag>
-              <el-tag type="info">{{ getPanelLabel(indicator.panel_type) }}</el-tag>
+              <span class="web3-tag category-tag">{{ getCategoryLabel(indicator.category) }}</span>
+              <span class="web3-tag panel-tag">{{ getPanelLabel(indicator.panel_type) }}</span>
             </div>
           </div>
         </template>
@@ -101,21 +126,15 @@
               <span class="section-icon">📍</span>
               REFERENCE LINES
             </h4>
-            <div class="reference-tags">
-              <!-- <el-tag
-                v-for="(line, idx) in indicator.reference_lines"
-                :key="idx"
-                :text="String(line)"
-                type="warning"
-              /> -->
-              <el-tag
-                v-for="(line, idx) in indicator.reference_lines"
-                :key="idx"
-                type="warning"
-              >
-                {{ line }}
-              </el-tag>
-            </div>
+             <div class="reference-tags">
+               <span
+                 v-for="(line, idx) in indicator.reference_lines"
+                 :key="idx"
+                 class="web3-tag reference-tag"
+               >
+                 {{ line }}
+               </span>
+             </div>
           </div>
 
           <div class="min-data-section">
@@ -138,7 +157,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
-import { ElCard } from 'element-plus'
 import { indicatorService } from '@/services/indicatorService'
 import type { IndicatorMetadata, IndicatorRegistryResponse } from '@/api/types/generated-types'
 
@@ -258,7 +276,8 @@ const handleFilterChange = (filters: Record<string, any>) => {
   selectedCategory.value = filters.category || ''
 }
 
-const getCategoryLabel = (category: string): string => {
+const getCategoryLabel = (category: string | undefined): string => {
+  if (!category) return ''
   const labelMap: Record<string, string> = {
     trend: 'TREND',
     momentum: 'MOMENTUM',
@@ -269,7 +288,8 @@ const getCategoryLabel = (category: string): string => {
   return labelMap[category] || category
 }
 
-const getStatVariant = (category: string): 'default' | 'gold' | 'rise' | 'fall' => {
+const getStatVariant = (category: string | undefined): 'default' | 'gold' | 'rise' | 'fall' => {
+  if (!category) return 'default'
   const variantMap: Record<string, 'default' | 'gold' | 'rise' | 'fall'> = {
     trend: 'gold',
     momentum: 'rise',
@@ -291,8 +311,19 @@ const getBadgeVariant = (category: string): 'gold' | 'rise' | 'fall' | 'info' | 
   return variantMap[category] || 'info'
 }
 
-const getPanelLabel = (panelType: string): string => {
+const getPanelLabel = (panelType: string | undefined): string => {
+  if (!panelType) return ''
   return panelType === 'overlay' ? 'MAIN OVERLAY' : 'SEPARATE PANEL'
+}
+
+const isActiveFilter = (filter: any): boolean => {
+  return filter.filters.search === searchQuery.value && filter.filters.category === selectedCategory.value
+}
+
+const applyQuickFilter = (filter: any): void => {
+  searchQuery.value = filter.filters.search
+  selectedCategory.value = filter.filters.category
+  // 不需要调用 handleFilterChange，因为已经直接设置了值
 }
 </script>
 
@@ -329,39 +360,116 @@ const getPanelLabel = (panelType: string): string => {
 /* Page Header */
 .page-header {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 32px;
 }
 
 .page-title {
-  font-family: var(--font-display);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--gold-primary);
+  background: linear-gradient(135deg, #F7931A 0%, #FFD600 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  margin: 0 0 var(--space-md) 0;
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  margin: 0 0 16px 0;
+  text-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
 }
 
 .page-subtitle {
-  font-family: var(--font-body);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 1rem;
-  color: var(--silver-muted);
+  color: #94A3B8;
   letter-spacing: 0.1em;
   margin: 0;
 }
 
 /* Stats Section */
 .stats-section {
+  background: rgba(15, 17, 21, 0.8);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.stats-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: #E5E7EB;
+
+  &.gold {
+    color: #F7931A;
+  }
 }
 
 /* Filter Section */
 .filter-section {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24px;
+}
+
+.filter-content {
+  padding: 20px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+}
+
+.category-select {
+  min-width: 180px;
+  padding: 8px 12px;
+  background: rgba(15, 17, 21, 0.8);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  border-radius: 6px;
+  color: #E5E7EB;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-select:focus {
+  outline: none;
+  border-color: #F7931A;
+  box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
+}
+
+.quick-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* Indicators Container */
@@ -376,20 +484,27 @@ const getPanelLabel = (panelType: string): string => {
 .indicator-card {
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.indicator-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(247, 147, 26, 0.5);
+  box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
 }
 
 .indicator-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-md);
+  margin-bottom: 16px;
 }
 
 .indicator-abbr {
-  font-family: var(--font-display);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--gold-primary);
+  color: #F7931A;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0;
@@ -397,7 +512,36 @@ const getPanelLabel = (panelType: string): string => {
 
 .indicator-badges {
   display: flex;
-  gap: var(--space-sm);
+  gap: 8px;
+}
+
+.web3-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.category-tag {
+  background: rgba(247, 147, 26, 0.1);
+  color: #F7931A;
+  border: 1px solid rgba(247, 147, 26, 0.3);
+}
+
+.panel-tag {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.reference-tag {
+  background: rgba(245, 101, 101, 0.1);
+  color: #F56565;
+  border: 1px solid rgba(245, 101, 101, 0.3);
 }
 
 .indicator-content {
@@ -553,53 +697,73 @@ const getPanelLabel = (panelType: string): string => {
   letter-spacing: 0.05em;
 }
 
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(247, 147, 26, 0.3);
+
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #F7931A;
+  }
+}
+
 /* Empty State */
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: var(--space-2xl);
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
+  padding: 48px;
+  background: rgba(15, 17, 21, 0.8);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  border-radius: 8px;
 }
 
 .empty-icon {
   font-size: 64px;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24px;
 }
 
 .empty-state h3 {
-  font-family: var(--font-display);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--silver-text);
-  margin: 0 0 var(--space-md) 0;
-}
+  color: #E5E7EB;
+  margin: 0 0 16px 0;
+ }
 
 .empty-state p {
-  font-family: var(--font-body);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.875rem;
-  color: var(--silver-muted);
+  color: #94A3B8;
   margin: 0;
 }
 
 .mono {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .gold {
-  color: var(--gold-primary);
+  color: #F7931A;
 }
 
 /* Loading Override */
 :deep(.el-loading-mask) {
-  background-color: var(--bg-card) !important;
+  background-color: rgba(15, 17, 21, 0.8) !important;
 }
 
 :deep(.el-loading-spinner .path) {
-  stroke: var(--gold-primary);
+  stroke: #F7931A;
 }
 
 :deep(.el-loading-text) {
-  color: var(--gold-primary);
+  color: #F7931A;
 }
 </style>

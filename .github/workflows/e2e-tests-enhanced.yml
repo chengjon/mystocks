@@ -1,0 +1,383 @@
+name: E2E Tests Enhanced (Playwright + EnhancedBaseTest)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # 每天凌晨2点运行完整测试套件
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+env:
+  PYTHONPATH: /opt/claude/mystocks_spec
+  FRONTEND_PORT: 3020
+  BACKEND_PORT: 8000
+
+jobs:
+  e2e-tests-p1-p2:
+    name: E2E Tests (${{ matrix.test_group }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test_group: [P1, P2]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # 确保安装Playwright
+          pip install playwright pytest-playwright
+          playwright install chromium
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd web/frontend
+          npm ci
+
+      - name: Install PM2
+        run: |
+          npm install -g pm2
+
+      - name: Create testing environment
+        run: |
+          # 创建测试环境配置
+          cp web/backend/.env.testing web/backend/.env || true
+          cp web/frontend/.env.development web/frontend/.env || true
+
+      - name: Start backend service
+        run: |
+          cd web/backend
+          # 后台启动后端服务
+          PYTHONPATH=/opt/claude/mystocks_spec/web/backend:/opt/claude/mystocks_spec \
+          python3 -m uvicorn app.main:app \
+            --host 0.0.0.0 \
+            --port 8000 \
+            --env-file .env.testing > /tmp/backend.log 2>&1 &
+
+      - name: Wait for backend
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null; then
+              echo "Backend is ready!"
+              break
+            fi
+            echo "Attempt $i: Backend not ready yet..."
+            sleep 2
+          done
+
+      - name: Start frontend service
+        run: |
+          cd web/frontend
+          # 后台启动前端开发服务器
+          nohup npm run dev -- --port 3020 > /tmp/frontend.log 2>&1 &
+          echo "Frontend started"
+
+      - name: Wait for frontend
+        run: |
+          echo "Waiting for frontend to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3020/ > /dev/null; then
+              echo "Frontend is ready!"
+              break
+            fi
+            echo "Attempt $i: Frontend not ready yet..."
+            sleep 2
+          done
+
+      - name: Verify services
+        run: |
+          echo "Checking services..."
+          curl -s http://localhost:8000/health || echo "Backend health check failed"
+          curl -s http://localhost:3020/ || echo "Frontend check failed"
+          ps aux | grep -E "uvicorn|npm run dev" || echo "No services running"
+
+      - name: Run P1 tests
+        if: matrix.test_group == 'P1'
+        run: |
+          echo "Running P1 important features tests (8 pages)..."
+          pm2 start ecosystem.playwright.p1.fixed.config.js
+          echo "Waiting for P1 tests to complete..."
+          sleep 90  # 等待测试完成
+          pm2 list
+          pm2 logs p1-fixed- --lines 20 --nostream || true
+
+      - name: Run P2 tests
+        if: matrix.test_group == 'P2'
+        run: |
+          echo "Running P2 auxiliary features tests (14 pages)..."
+          pm2 start ecosystem.playwright.p2.config.js
+          echo "Waiting for P2 tests to complete..."
+          sleep 90  # 等待测试完成
+          pm2 list
+          pm2 logs p2- --lines 20 --nostream || true
+
+      - name: Collect test results
+        if: always()
+        run: |
+          mkdir -p /tmp/e2e-results-${{ matrix.test_group }}
+          # 收集JSON结果
+          find /tmp -name "*_fixed_report.json" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
+          find /tmp -name "*_p2_report.json" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
+          # 收集截图
+          find /tmp -name "*.png" -exec cp {} /tmp/e2e-results-${{ matrix.test_group }}/ \; 2>/dev/null || true
+          ls -lh /tmp/e2e-results-${{ matrix.test_group }}/
+
+      - name: Generate summary
+        if: always()
+        run: |
+          python3 -c "
+import json
+import os
+import glob
+
+results_dir = '/tmp/e2e-results-${{ matrix.test_group }}'
+json_files = glob.glob(os.path.join(results_dir, '*.json'))
+
+summary = {
+    'test_group': '${{ matrix.test_group }}',
+    'total_tests': len(json_files),
+    'results': []
+}
+
+for json_file in json_files:
+    try:
+        with open(json_file, 'r') as f:
+            data = json.load(f)
+            summary['results'].append({
+                'page': data.get('page_name', 'Unknown'),
+                'status': data.get('status', 'unknown'),
+                'total_checks': data.get('summary', {}).get('total_checks', 0),
+                'passed_checks': data.get('summary', {}).get('passed_checks', 0),
+                'pass_rate': data.get('summary', {}).get('pass_rate', '0%')
+            })
+    except:
+        pass
+
+with open(os.path.join(results_dir, 'summary.json'), 'w') as f:
+    json.dump(summary, f, indent=2)
+
+print(json.dumps(summary, indent=2))
+"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results-${{ matrix.test_group }}
+          path: /tmp/e2e-results-${{ matrix.test_group }}/
+          retention-days: 30
+
+      - name: Upload test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ matrix.test_group }}
+          path: /tmp/e2e-results-${{ matrix.test_group }}/*.png
+          retention-days: 7
+
+      - name: Upload service logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs-${{ matrix.test_group }}
+          path: |
+            /tmp/backend.log
+            /tmp/frontend.log
+            /var/log/pm2/*.log
+          retention-days: 7
+
+      - name: Stop services
+        if: always()
+        run: |
+          pm2 delete all || true
+          pkill -f "npm run dev" || true
+          pkill -f "uvicorn" || true
+          echo "All services stopped"
+
+      - name: Generate markdown report
+        if: always()
+        run: |
+          python3 -c "
+import json
+import os
+
+results_file = '/tmp/e2e-results-${{ matrix.test_group }}/summary.json'
+output_file = '/tmp/e2e-report-${{ matrix.test_group }}.md'
+
+with open(results_file, 'r') as f:
+    data = json.load(f)
+
+report = f'''# E2E Test Results - ${{ matrix.test_group }}
+
+## Summary
+
+- **Test Group**: ${{ matrix.test_group }}
+- **Total Tests**: {data['total_tests']}
+- **Generated**: $(date)
+
+## Detailed Results
+
+| Page | Status | Passed/Total | Pass Rate |
+|------|--------|--------------|-----------|
+'''
+
+for result in data['results']:
+    status_symbol = '✅' if result['status'] == 'passed' else '❌'
+    report += f\"{status_symbol} {result['page']} | {result['status']} | {result['passed_checks']}/{result['total_checks']} | {result['pass_rate']}\\n\"
+
+with open(output_file, 'w') as f:
+    f.write(report)
+
+print(report)
+"
+
+      - name: Comment PR with results
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = `/tmp/e2e-report-${{ matrix.test_group }}.md`;
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: report
+              });
+            }
+
+  final-summary:
+    name: Generate Final Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-tests-p1-p2]
+    if: always()
+
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: e2e-test-results-*
+          path: /tmp/all-results
+
+      - name: Merge results
+        run: |
+          python3 -c "
+import json
+import os
+import glob
+
+results_dir = '/tmp/all-results'
+summary_files = glob.glob(os.path.join(results_dir, '*/summary.json'))
+
+all_results = {
+    'P1': {'results': [], 'total_pages': 0, 'total_checks': 0, 'passed_checks': 0},
+    'P2': {'results': [], 'total_pages': 0, 'total_checks': 0, 'passed_checks': 0}
+}
+
+for summary_file in summary_files:
+    group = os.path.basename(os.path.dirname(summary_file))
+    if group.startswith('e2e-test-results-'):
+        group_name = group.replace('e2e-test-results-', '')
+        try:
+            with open(summary_file, 'r') as f:
+                data = json.load(f)
+                all_results[group_name]['results'] = data.get('results', [])
+                all_results[group_name]['total_pages'] = data.get('total_tests', 0)
+                for result in data['results']:
+                    all_results[group_name]['total_checks'] += result.get('total_checks', 0)
+                    all_results[group_name]['passed_checks'] += result.get('passed_checks', 0)
+        except:
+            pass
+
+with open('/tmp/final-summary.json', 'w') as f:
+    json.dump(all_results, f, indent=2)
+
+print(json.dumps(all_results, indent=2))
+"
+
+      - name: Generate final report
+        run: |
+          python3 -c "
+import json
+
+with open('/tmp/final-summary.json', 'r') as f:
+    data = json.load(f)
+
+report = '''# E2E Tests Final Summary
+
+## Overall Results
+
+| Test Group | Pages | Total Checks | Passed | Pass Rate |
+|------------|-------|--------------|--------|-----------|
+'''
+
+for group_name, group_data in data.items():
+    total = group_data['total_checks']
+    passed = group_data['passed_checks']
+    rate = f'{(passed/total*100):.1f}%' if total > 0 else 'N/A'
+    report += f\"{group_name} | {group_data['total_pages']} | {total} | {passed} | {rate}\\n\"
+
+report += '''
+## Detailed Results
+
+### P1 Tests (Important Features)
+
+| Page | Status | Pass Rate |
+|------|--------|-----------|
+'''
+
+for result in data.get('P1', {}).get('results', []):
+    status_symbol = '✅' if result['status'] == 'passed' else '❌'
+    report += f\"{status_symbol} {result['page']} | {result['status']} | {result['pass_rate']}\\n\"
+
+report += '''
+### P2 Tests (Auxiliary Features)
+
+| Page | Status | Pass Rate |
+|------|--------|-----------|
+'''
+
+for result in data.get('P2', {}).get('results', []):
+    status_symbol = '✅' if result['status'] == 'passed' else '❌'
+    report += f\"{status_symbol} {result['page']} | {result['status']} | {result['pass_rate']}\\n\"
+
+with open('/tmp/final-report.md', 'w') as f:
+    f.write(report)
+
+print(report)
+"
+
+      - name: Upload final report
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-final-report
+          path: /tmp/final-report.md
+          retention-days: 90
+
+      - name: Report to GitHub summary
+        run: |
+          cat /tmp/final-report.md >> $GITHUB_STEP_SUMMARY

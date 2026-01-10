@@ -10,18 +10,33 @@ from typing import Dict, List, Any
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
-from src.utils.gpu_utils import GPUResourceManager
-from src.utils.redis_utils import RedisQueue
-from src.utils.monitoring import MetricsCollector
-from api_proto.realtime_pb2 import (
-    MarketData,
-    FeatureRequest,
-    FeatureResponse,
-    RealtimeStatistics,
-    StreamRequest,
-    StreamResponse,
-)
-from api_proto.realtime_pb2_grpc import RealTimeServiceServicer
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.redis_utils import RedisQueue
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+
+try:
+    from src.gpu.api_system.api_proto.realtime_pb2 import (
+        MarketData,
+        FeatureRequest,
+        FeatureResponse,
+        RealtimeStatistics,
+        StreamRequest,
+        StreamResponse,
+    )
+    from src.gpu.api_system.api_proto.realtime_pb2_grpc import RealTimeServiceServicer
+except ImportError:
+    import sys
+    sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
+    from realtime_pb2 import (
+        MarketData,
+        FeatureRequest,
+        FeatureResponse,
+        RealtimeStatistics,
+        StreamRequest,
+        StreamResponse,
+    )
+    from realtime_pb2_grpc import RealTimeServiceServicer
+
 import grpc
 
 logger = logging.getLogger(__name__)

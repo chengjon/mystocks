@@ -1,8 +1,8 @@
 # Architecture
 
-**最后更新**: 2026-01-07 15:28:45
+**最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 71
+**文档数量**: 75
 
 
 ---
@@ -57,6 +57,18 @@
 
 - [DATA_SOURCE_MANAGEMENT_V2](architecture/DATA_SOURCE_MANAGEMENT_V2.md)
   - *数据源注册与治理中心 - 优化方案*
+
+- [DDD_ARCHITECTURE_NOTES](architecture/DDD_ARCHITECTURE_NOTES.md)
+  - *DDD Architecture Notes*
+
+- [DDD_IMPLEMENTATION_PLAN](architecture/DDD_IMPLEMENTATION_PLAN.md)
+  - *Task Plan: DDD架构应用实施*
+
+- [DDD_OPTIMIZATION_SUMMARY](architecture/DDD_OPTIMIZATION_SUMMARY.md)
+  - *DDD 架构实施计划 - 优化总结*
+
+- [DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS](architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md)
+  - *MyStocks 项目设计方法论与工具链分析报告*
 
 - [FIRST_PRINCIPLES_ARCHITECTURE_REVIEW](architecture/FIRST_PRINCIPLES_ARCHITECTURE_REVIEW.md)
   - *MyStocks 量化交易系统 - 第一性原理架构审查报告*

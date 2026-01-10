@@ -15,6 +15,11 @@ import asyncio
 import pytest
 import logging
 from datetime import datetime
+import os
+import sys
+
+# Add project root to path
+sys.path.insert(0, os.getcwd())
 
 # 导入待测试的模块
 from src.monitoring.gpu_performance_optimizer import (

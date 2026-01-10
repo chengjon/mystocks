@@ -1,0 +1,624 @@
+/**
+ * Element Plus Theme Override using Design Tokens
+ *
+ * Maps Bloomberg Terminal Design Tokens to Element Plus CSS variables
+ * Ensures consistent styling across custom and Element Plus components
+ *
+ * @version 1.0
+ * @author Claude Code (Main CLI)
+ * @date 2026-01-10
+ */
+
+@use 'sass:color';
+@import './theme-tokens.scss';
+
+// ============================================================
+// Element Plus CSS Variable Mappings
+// ============================================================
+
+:root {
+  // ========== Color System ==========
+
+  // Primary colors (mapped to accent colors)
+  --el-color-primary: var(--color-accent);
+  --el-color-primary-light-3: var(--color-accent-hover);
+  --el-color-primary-light-5: color.adjust(var(--color-accent), $lightness: 20%);
+  --el-color-primary-light-7: color.adjust(var(--color-accent), $lightness: 30%);
+  --el-color-primary-light-8: color.adjust(var(--color-accent), $lightness: 35%);
+  --el-color-primary-light-9: color.adjust(var(--color-accent), $lightness: 40%);
+  --el-color-primary-dark-2: var(--color-accent-active);
+
+  // Functional colors
+  --el-color-success: var(--color-success);
+  --el-color-success-light-3: color.adjust(var(--color-success), $lightness: 20%);
+  --el-color-success-light-5: color.adjust(var(--color-success), $lightness: 30%);
+  --el-color-success-light-7: color.adjust(var(--color-success), $lightness: 40%);
+  --el-color-success-light-8: color.adjust(var(--color-success), $lightness: 45%);
+  --el-color-success-light-9: color.adjust(var(--color-success), $lightness: 50%);
+  --el-color-success-dark-2: color.adjust(var(--color-success), $lightness: -10%);
+
+  --el-color-warning: var(--color-warning);
+  --el-color-warning-light-3: color.adjust(var(--color-warning), $lightness: 20%);
+  --el-color-warning-light-5: color.adjust(var(--color-warning), $lightness: 30%);
+  --el-color-warning-light-7: color.adjust(var(--color-warning), $lightness: 40%);
+  --el-color-warning-light-8: color.adjust(var(--color-warning), $lightness: 45%);
+  --el-color-warning-light-9: color.adjust(var(--color-warning), $lightness: 50%);
+  --el-color-warning-dark-2: color.adjust(var(--color-warning), $lightness: -10%);
+
+  --el-color-danger: var(--color-danger);
+  --el-color-danger-light-3: color.adjust(var(--color-danger), $lightness: 20%);
+  --el-color-danger-light-5: color.adjust(var(--color-danger), $lightness: 30%);
+  --el-color-danger-light-7: color.adjust(var(--color-danger), $lightness: 40%);
+  --el-color-danger-light-8: color.adjust(var(--color-danger), $lightness: 45%);
+  --el-color-danger-light-9: color.adjust(var(--color-danger), $lightness: 50%);
+  --el-color-danger-dark-2: color.adjust(var(--color-danger), $lightness: -10%);
+
+  --el-color-error: var(--color-danger);
+  --el-color-error-light-3: color.adjust(var(--color-danger), $lightness: 20%);
+  --el-color-error-light-5: color.adjust(var(--color-danger), $lightness: 30%);
+  --el-color-error-light-7: color.adjust(var(--color-danger), $lightness: 40%);
+  --el-color-error-light-8: color.adjust(var(--color-danger), $lightness: 45%);
+  --el-color-error-light-9: color.adjust(var(--color-danger), $lightness: 50%);
+  --el-color-error-dark-2: color.adjust(var(--color-danger), $lightness: -10%);
+
+  --el-color-info: var(--color-info);
+  --el-color-info-light-3: color.adjust(var(--color-info), $lightness: 20%);
+  --el-color-info-light-5: color.adjust(var(--color-info), $lightness: 30%);
+  --el-color-info-light-7: color.adjust(var(--color-info), $lightness: 40%);
+  --el-color-info-light-8: color.adjust(var(--color-info), $lightness: 45%);
+  --el-color-info-light-9: color.adjust(var(--color-info), $lightness: 50%);
+  --el-color-info-dark-2: color.adjust(var(--color-info), $lightness: -10%);
+
+  // ========== Background Colors ==========
+
+  --el-bg-color: var(--color-bg-primary);
+  --el-bg-color-page: var(--color-bg-primary);
+  --el-bg-color-overlay: #000000;
+
+  // ========== Text Colors ==========
+
+  --el-text-color-primary: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-secondary);
+  --el-text-color-secondary: var(--color-text-tertiary);
+  --el-text-color-placeholder: var(--color-text-disabled);
+  --el-text-color-disabled: var(--color-text-disabled);
+
+  // ========== Border Colors ==========
+
+  --el-border-color: var(--color-border);
+  --el-border-color-light: var(--color-border-light);
+  --el-border-color-lighter: color.adjust(var(--color-border), $lightness: 10%);
+  --el-border-color-extra-light: color.adjust(var(--color-border), $lightness: 20%);
+  --el-border-color-dark: var(--color-border-dark);
+  --el-border-color-darker: color.adjust(var(--color-border-dark), $lightness: -10%);
+
+  // ========== Fill Colors ==========
+
+  --el-fill-color: var(--color-bg-tertiary);
+  --el-fill-color-light: var(--color-bg-elevated);
+  --el-fill-color-lighter: color.adjust(var(--color-bg-tertiary), $lightness: 10%);
+  --el-fill-color-extra-light: color.adjust(var(--color-bg-tertiary), $lightness: 20%);
+  --el-fill-color-dark: var(--color-bg-secondary);
+  --el-fill-color-darker: var(--color-bg-primary);
+
+  // ========== Typography ==========
+
+  --el-font-size-extra-small: var(--font-size-xs);
+  --el-font-size-small: var(--font-size-sm);
+  --el-font-size-base: var(--font-size-base);
+  --el-font-size-medium: var(--font-size-lg);
+  --el-font-size-large: var(--font-size-xl);
+  --el-font-size-extra-large: var(--font-size-2xl);
+
+  --el-font-family: var(--font-family-sans);
+  --el-font-family-primary: var(--font-family-sans);
+  --el-font-family-mono: var(--font-family-mono);
+
+  // ========== Border Radius (Bloomberg Square Design) ==========
+
+  --el-border-radius-base: 1px;   // Square design for Bloomberg
+  --el-border-radius-small: 1px;   // Minimal rounding
+  --el-border-radius-round: 2px;   // Slightly rounded (still square-ish)
+  --el-border-radius-circle: 9999px; // Only for badges/avatars (minimal use)
+
+  // ========== Shadows ==========
+
+  --el-box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --el-box-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --el-box-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.2);
+
+  // ========== Component Sizes (Compact for data density) ==========
+
+  --el-component-size-small: 28px;
+  --el-component-size-base: 32px;
+  --el-component-size-large: 36px;
+}
+
+// ============================================================
+// Component-Specific Overrides
+// ============================================================
+
+// ========== Button Component ==========
+
+.el-button {
+  --el-button-bg-color: var(--color-bg-tertiary);
+  --el-button-border-color: var(--color-border);
+  --el-button-text-color: var(--color-text-primary);
+  --el-button-hover-bg-color: var(--color-bg-elevated);
+  --el-button-hover-border-color: var(--color-border-light);
+  --el-button-hover-text-color: var(--color-text-primary);
+  --el-button-active-bg-color: var(--color-bg-secondary);
+  --el-button-active-border-color: var(--color-accent);
+  --el-button-active-text-color: var(--color-text-primary);
+  --el-button-disabled-bg-color: var(--color-bg-primary);
+  --el-button-disabled-border-color: var(--color-border-dark);
+  --el-button-disabled-text-color: var(--color-text-disabled);
+
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border-radius: var(--radius-sm) !important; // Force square design
+
+  // Primary button
+  &.el-button--primary {
+    --el-button-bg-color: var(--color-accent);
+    --el-button-border-color: var(--color-accent);
+    --el-button-text-color: #ffffff;
+    --el-button-hover-bg-color: var(--color-accent-hover);
+    --el-button-hover-border-color: var(--color-accent-hover);
+    --el-button-active-bg-color: var(--color-accent-active);
+    --el-button-active-border-color: var(--color-accent-active);
+  }
+
+  // Success button (stock UP - RED for China market)
+  &.el-button--success {
+    --el-button-bg-color: var(--color-stock-up);    // RED for up
+    --el-button-border-color: var(--color-stock-up);
+    --el-button-text-color: #ffffff;
+  }
+
+  // Danger button (stock DOWN - GREEN for China market)
+  &.el-button--danger {
+    --el-button-bg-color: var(--color-stock-down);  // GREEN for down
+    --el-button-border-color: var(--color-stock-down);
+    --el-button-text-color: #000000;
+  }
+
+  // Warning button
+  &.el-button--warning {
+    --el-button-bg-color: var(--color-warning);
+    --el-button-border-color: var(--color-warning);
+    --el-button-text-color: #000000;
+  }
+
+  // Info button
+  &.el-button--info {
+    --el-button-bg-color: var(--color-info);
+    --el-button-border-color: var(--color-info);
+    --el-button-text-color: #ffffff;
+  }
+}
+
+// ========== Table Component ==========
+
+.el-table {
+  --el-table-border-color: var(--color-border);
+  --el-table-bg-color: var(--color-bg-primary);
+  --el-table-header-bg-color: var(--color-bg-secondary);
+  --el-table-row-hover-bg-color: var(--color-bg-tertiary);
+  --el-table-text-color: var(--color-text-primary);
+  --el-table-header-text-color: var(--color-text-primary);
+  --el-table-current-row-bg-color: var(--color-bg-tertiary);
+  --el-table-border: 1px solid var(--color-border);
+  --el-table-header-font-size: var(--font-size-xs);
+  --el-table-font-size: var(--font-size-sm);
+
+  font-family: var(--font-family-sans);
+  font-size: var(--el-table-font-size);
+
+  // Compact cell padding
+  .el-table__cell {
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
+
+  th.el-table__cell {
+    padding: var(--spacing-sm) var(--spacing-sm);
+    font-weight: 600;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  // Stock market colors (China: Red = Up/涨, Green = Down/跌)
+  .row-rise {
+    color: var(--color-stock-up);    // RED for rise
+    font-weight: 600;
+  }
+
+  .row-fall {
+    color: var(--color-stock-down);  // GREEN for fall
+    font-weight: 600;
+  }
+
+  .row-flat {
+    color: var(--color-stock-flat);
+  }
+
+  .cell-rise {
+    color: var(--color-stock-up);    // RED for rise
+  }
+
+  .cell-fall {
+    color: var(--color-stock-down);  // GREEN for fall
+  }
+
+  .cell-flat {
+    color: var(--color-stock-flat);
+  }
+
+  // Hover effect
+  tr:hover > td {
+    background-color: var(--color-bg-tertiary);
+  }
+
+  // Current row
+  .el-table__row.current-row > td {
+    background-color: var(--color-bg-tertiary);
+  }
+}
+
+// ========== Input Component ==========
+
+.el-input {
+  --el-input-bg-color: var(--color-bg-primary);
+  --el-input-border-color: var(--color-border);
+  --el-input-text-color: var(--color-text-primary);
+  --el-input-placeholder-color: var(--color-text-disabled);
+  --el-input-hover-border-color: var(--color-border-light);
+  --el-input-focus-border-color: var(--color-accent);
+  --el-input-clear-hover-color: var(--color-text-secondary);
+
+  font-family: var(--font-family-sans);
+
+  .el-input__wrapper {
+    background-color: var(--el-input-bg-color);
+    border-radius: var(--radius-sm) !important; // Force square design
+    box-shadow: 0 0 0 1px var(--el-input-border-color) inset;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--el-input-hover-border-color) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+    }
+  }
+
+  .el-input__inner {
+    color: var(--el-input-text-color);
+    &::placeholder {
+      color: var(--el-input-placeholder-color);
+    }
+  }
+}
+
+// ========== Select Component ==========
+
+.el-select {
+  .el-input__wrapper {
+    background-color: var(--color-bg-primary);
+  }
+
+  .el-select__popper {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .el-select-dropdown__item {
+    color: var(--color-text-primary);
+    background-color: transparent;
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+    }
+
+    &.is-selected {
+      color: var(--color-accent);
+      background-color: var(--color-bg-tertiary);
+      font-weight: 600;
+    }
+  }
+}
+
+// ========== Card Component ==========
+
+.el-card {
+  --el-card-padding: var(--spacing-md);
+  --el-card-border-color: var(--color-border);
+  --el-card-bg-color: var(--color-bg-secondary);
+  --el-card-border-radius: var(--radius-md) !important; // Force square design
+
+  background-color: var(--el-card-bg-color);
+  border: 1px solid var(--el-card-border-color);
+  border-radius: var(--el-card-border-radius) !important; // Force square design
+
+  .el-card__header {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg-secondary);
+  }
+
+  .el-card__body {
+    padding: var(--spacing-md);
+    color: var(--color-text-secondary);
+  }
+}
+
+// ========== Modal/Dialog Component ==========
+
+.el-dialog {
+  --el-dialog-bg-color: var(--color-bg-secondary);
+  --el-dialog-border-radius: var(--radius-md) !important; // Force square design
+
+  background-color: var(--el-dialog-bg-color);
+  border-radius: var(--el-dialog-border-radius) !important; // Force square design
+  border: 1px solid var(--color-border);
+  box-shadow: var(--el-box-shadow-dark);
+
+  .el-dialog__header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+  }
+
+  .el-dialog__title {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .el-dialog__body {
+    padding: var(--spacing-md);
+    color: var(--color-text-secondary);
+  }
+
+  .el-dialog__footer {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+  }
+
+  .el-dialog__headerbtn {
+    .el-dialog__close {
+      color: var(--color-text-secondary);
+
+      &:hover {
+        color: var(--color-text-primary);
+      }
+    }
+  }
+}
+
+// ========== Tag Component ==========
+
+.el-tag {
+  --el-tag-bg-color: var(--color-bg-tertiary);
+  --el-tag-border-color: var(--color-border);
+  --el-tag-text-color: var(--color-text-primary);
+  --el-tag-font-size: var(--font-size-xs);
+
+  background-color: var(--el-tag-bg-color);
+  border: 1px solid var(--el-tag-border-color);
+  color: var(--el-tag-text-color);
+  font-size: var(--el-tag-font-size);
+  border-radius: var(--el-border-radius-small) !important; // Force square design
+  padding: 4px var(--spacing-sm);
+
+  // Success tag (stock UP - RED for China market)
+  &.el-tag--success {
+    --el-tag-bg-color: var(--color-stock-up-alpha-80);  // Red with low opacity
+    --el-tag-border-color: var(--color-stock-up);       // Red border
+    --el-tag-text-color: var(--color-stock-up);        // Red text
+  }
+
+  // Warning tag
+  &.el-tag--warning {
+    --el-tag-bg-color: var(--color-warning-alpha-80);
+    --el-tag-border-color: var(--color-warning);
+    --el-tag-text-color: var(--color-warning);
+  }
+
+  // Danger tag (stock DOWN - GREEN for China market)
+  &.el-tag--danger {
+    --el-tag-bg-color: var(--color-stock-down-alpha-80);  // Green with low opacity
+    --el-tag-border-color: var(--color-stock-down);       // Green border
+    --el-tag-text-color: var(--color-stock-down);        // Green text
+  }
+
+  // Info tag
+  &.el-tag--info {
+    --el-tag-bg-color: var(--color-info-alpha-80);
+    --el-tag-border-color: var(--color-info);
+    --el-tag-text-color: var(--color-info);
+  }
+}
+
+// ========== Form Component ==========
+
+.el-form {
+  .el-form-item__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .el-form-item__error {
+    color: var(--color-danger);
+    font-size: var(--font-size-xs);
+  }
+}
+
+// ========== Menu/Navigation Component ==========
+
+.el-menu {
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      color: var(--color-accent);
+      background-color: var(--color-bg-tertiary);
+      font-weight: 600;
+      border-right: 3px solid var(--color-accent);
+    }
+  }
+}
+
+// ========== Tabs Component ==========
+
+.el-tabs {
+  .el-tabs__nav-wrap::after {
+    background-color: var(--color-border);
+  }
+
+  .el-tabs__item {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--color-accent);
+  }
+
+  .el-tabs__content {
+    color: var(--color-text-secondary);
+  }
+}
+
+// ========== Pagination Component ==========
+
+.el-pagination {
+  .el-pager li {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      background-color: var(--color-accent);
+      color: #ffffff;
+      border-color: var(--color-accent);
+    }
+  }
+
+  .btn-prev,
+  .btn-next {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ========== Checkbox Component ==========
+
+.el-checkbox {
+  .el-checkbox__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &.is-checked {
+    .el-checkbox__label {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ========== Radio Component ==========
+
+.el-radio {
+  .el-radio__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &.is-checked {
+    .el-radio__label {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ========== Switch Component ==========
+
+.el-switch {
+  --el-switch-on-color: var(--color-accent);
+  --el-switch-off-color: var(--color-bg-tertiary);
+  --el-switch-border-color: var(--color-border);
+
+  &.is-checked {
+    .el-switch__core {
+      background-color: var(--el-switch-on-color);
+    }
+  }
+}
+
+// ========== Tooltip Component ==========
+
+.el-tooltip__popper {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+
+  .el-tooltip__arrow::before {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+  }
+}
+
+// ========== Dropdown Component ==========
+
+.el-dropdown-menu {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+
+  .el-dropdown-menu__item {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+  }
+}

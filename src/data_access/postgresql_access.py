@@ -96,8 +96,16 @@ class PostgreSQLDataAccess:
             self._return_connection(conn)
 
     def create_table(self, table_name: str, schema: Dict[str, str], primary_key: Optional[str] = None):
-        """创建普通表"""
+        """
+        创建普通表（使用上下文管理器防止资源泄漏）
+
+        安全改进：
+        - 使用try-finally确保cursor关闭
+        - 使用try-finally确保连接返回
+        - 记录日志而非print
+        """
         conn = self._get_connection()
+        cursor = None
         try:
             fields = ",\n    ".join([f"{name} {dtype}" for name, dtype in schema.items()])
             if primary_key:
@@ -106,18 +114,33 @@ class PostgreSQLDataAccess:
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
-            cursor.close()
-            print(f"✅ 表创建成功: {table_name}")
+            logger.info(f"Table created successfully: {table_name}")
         except Exception as e:
-            conn.rollback()
-            print(f"❌ 表创建失败: {e}")
+            if conn:
+                conn.rollback()
+            logger.error(f"Failed to create table {table_name}: {e}")
             raise
         finally:
+            # 确保cursor关闭（即使出错）
+            if cursor:
+                try:
+                    cursor.close()
+                except Exception as cursor_error:
+                    logger.error(f"Error closing cursor: {cursor_error}")
+            # 确保连接返回（即使cursor.close()失败）
             self._return_connection(conn)
 
     def create_hypertable(self, table_name: str, time_column: str = "time", chunk_interval: str = "7 days"):
-        """将表转换为TimescaleDB时序表(Hypertable)"""
+        """
+        将表转换为TimescaleDB时序表（防止资源泄漏）
+
+        安全改进：
+        - 确保cursor关闭
+        - 确保连接返回
+        - 使用logger记录日志
+        """
         conn = self._get_connection()
+        cursor = None
         try:
             sql = f"""
                 SELECT create_hypertable(
@@ -131,13 +154,20 @@ class PostgreSQLDataAccess:
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
-            cursor.close()
-            print(f"✅ 时序表创建成功: {table_name}")
+            logger.info(f"Hypertable created successfully: {table_name}")
         except Exception as e:
-            conn.rollback()
-            print(f"❌ 时序表创建失败: {e}")
+            if conn:
+                conn.rollback()
+            logger.error(f"Failed to create hypertable {table_name}: {e}")
             raise
         finally:
+            # 确保cursor关闭
+            if cursor:
+                try:
+                    cursor.close()
+                except Exception as cursor_error:
+                    logger.error(f"Error closing cursor: {cursor_error}")
+            # 确保连接返回
             self._return_connection(conn)
 
     def insert_dataframe(self, table_name: str, df: pd.DataFrame) -> int:

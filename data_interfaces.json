@@ -1,0 +1,677 @@
+{
+  "interfaces": [
+    {
+      "endpoint_name": "mock_daily_kline",
+      "source_name": "system_mock",
+      "source_type": "mock",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "Mock日线数据（用于测试和开发）",
+      "update_frequency": "daily",
+      "data_quality_score": 9.0,
+      "priority": 999,
+      "status": "active",
+      "parameters": {
+        "total": 4,
+        "required": 1,
+        "optional": 3
+      },
+      "has_test_params": true,
+      "tags": [
+        "mock",
+        "test",
+        "development"
+      ]
+    },
+    {
+      "endpoint_name": "akshare_stock_daily",
+      "source_name": "akshare",
+      "source_type": "api_library",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "AKShare A股日线历史行情数据",
+      "update_frequency": "daily",
+      "data_quality_score": 9.5,
+      "priority": 2,
+      "status": "active",
+      "parameters": {
+        "total": 5,
+        "required": 1,
+        "optional": 4
+      },
+      "has_test_params": true,
+      "tags": [
+        "stock",
+        "kline",
+        "free",
+        "akshare"
+      ]
+    },
+    {
+      "endpoint_name": "tushare_daily",
+      "source_name": "tushare",
+      "source_type": "api_library",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "TuShare A股日线行情数据（专业版）",
+      "update_frequency": "daily",
+      "data_quality_score": 9.8,
+      "priority": 1,
+      "status": "active",
+      "parameters": {
+        "total": 4,
+        "required": 1,
+        "optional": 3
+      },
+      "has_test_params": true,
+      "tags": [
+        "stock",
+        "kline",
+        "premium",
+        "high-quality",
+        "tushare"
+      ]
+    },
+    {
+      "endpoint_name": "tdx_realtime",
+      "source_name": "tdx",
+      "source_type": "database",
+      "data_category": "REALTIME_QUOTE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "tdengine",
+      "table_name": "tick_data",
+      "description": "通达信实时行情数据（低延迟）",
+      "update_frequency": "realtime",
+      "data_quality_score": 9.0,
+      "priority": 1,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "realtime",
+        "tick",
+        "low-latency",
+        "tdx"
+      ]
+    },
+    {
+      "endpoint_name": "akshare_stock_basic",
+      "source_name": "akshare",
+      "source_type": "api_library",
+      "data_category": "SYMBOLS_INFO",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "stock_symbols",
+      "description": "AKShare A股股票代码和名称列表",
+      "update_frequency": "weekly",
+      "data_quality_score": 9.0,
+      "priority": 2,
+      "status": "active",
+      "parameters": {
+        "total": 0,
+        "required": 0,
+        "optional": 0
+      },
+      "has_test_params": false,
+      "tags": [
+        "stock",
+        "symbols",
+        "free",
+        "reference"
+      ]
+    },
+    {
+      "endpoint_name": "tushare_financial",
+      "source_name": "tushare",
+      "source_type": "api_library",
+      "data_category": "FINANCIAL_DATA",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "financial_data",
+      "description": "TuShare 利润表数据（专业版）",
+      "update_frequency": "monthly",
+      "data_quality_score": 9.5,
+      "priority": 1,
+      "status": "active",
+      "parameters": {
+        "total": 3,
+        "required": 1,
+        "optional": 2
+      },
+      "has_test_params": true,
+      "tags": [
+        "financial",
+        "premium",
+        "tushare"
+      ]
+    },
+    {
+      "endpoint_name": "baostock_daily",
+      "source_name": "baostock",
+      "source_type": "api_library",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "BaoStock 日K线数据（免费开源）",
+      "update_frequency": "daily",
+      "data_quality_score": 9.0,
+      "priority": 3,
+      "status": "active",
+      "parameters": {
+        "total": 4,
+        "required": 1,
+        "optional": 3
+      },
+      "has_test_params": true,
+      "tags": [
+        "stock",
+        "kline",
+        "free",
+        "baostock",
+        "backup"
+      ]
+    },
+    {
+      "endpoint_name": "baostock_minute",
+      "source_name": "baostock",
+      "source_type": "api_library",
+      "data_category": "MINUTE_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "minute_kline",
+      "description": "BaoStock 分钟K线数据（免费开源）",
+      "update_frequency": "realtime",
+      "data_quality_score": 8.5,
+      "priority": 3,
+      "status": "active",
+      "parameters": {
+        "total": 4,
+        "required": 1,
+        "optional": 3
+      },
+      "has_test_params": true,
+      "tags": [
+        "stock",
+        "minute",
+        "free",
+        "baostock"
+      ]
+    },
+    {
+      "endpoint_name": "baostock_stock_basic",
+      "source_name": "baostock",
+      "source_type": "api_library",
+      "data_category": "SYMBOLS_INFO",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "stock_symbols",
+      "description": "BaoStock 股票基本信息（免费开源）",
+      "update_frequency": "weekly",
+      "data_quality_score": 9.0,
+      "priority": 3,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 0,
+        "optional": 1
+      },
+      "has_test_params": true,
+      "tags": [
+        "stock",
+        "symbols",
+        "free",
+        "baostock",
+        "reference"
+      ]
+    },
+    {
+      "endpoint_name": "baostock_financial",
+      "source_name": "baostock",
+      "source_type": "api_library",
+      "data_category": "FINANCIAL_DATA",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "financial_indicator",
+      "description": "BaoStock 财务指标数据（免费开源）",
+      "update_frequency": "monthly",
+      "data_quality_score": 9.0,
+      "priority": 3,
+      "status": "active",
+      "parameters": {
+        "total": 3,
+        "required": 1,
+        "optional": 2
+      },
+      "has_test_params": true,
+      "tags": [
+        "financial",
+        "indicator",
+        "free",
+        "baostock"
+      ]
+    },
+    {
+      "endpoint_name": "baostock_dupont",
+      "source_name": "baostock",
+      "source_type": "api_library",
+      "data_category": "FINANCIAL_DATA",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "dupont_analysis",
+      "description": "BaoStock 杜邦分析数据（免费开源）",
+      "update_frequency": "monthly",
+      "data_quality_score": 9.0,
+      "priority": 3,
+      "status": "active",
+      "parameters": {
+        "total": 3,
+        "required": 1,
+        "optional": 2
+      },
+      "has_test_params": true,
+      "tags": [
+        "financial",
+        "dupont",
+        "free",
+        "baostock"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_sina_minute_kline",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "MINUTE_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "minute_kline",
+      "description": "新浪财经分钟K线数据",
+      "update_frequency": "realtime",
+      "data_quality_score": 8.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 3,
+        "required": 1,
+        "optional": 2
+      },
+      "has_test_params": true,
+      "tags": [
+        "sina",
+        "kline",
+        "minute",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_sina_qfq",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "ADJUSTMENT_DATA",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "adjustment_factor",
+      "description": "新浪财经前复权数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.0,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 2,
+        "required": 1,
+        "optional": 1
+      },
+      "has_test_params": true,
+      "tags": [
+        "sina",
+        "qfq",
+        "adjustment",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_sina_hfq",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "ADJUSTMENT_DATA",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "adjustment_factor",
+      "description": "新浪财经后复权数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.0,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 2,
+        "required": 1,
+        "optional": 1
+      },
+      "has_test_params": true,
+      "tags": [
+        "sina",
+        "hfq",
+        "adjustment",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_sina_price_dist",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "PRICE_DISTRIBUTION",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "price_distribution",
+      "description": "新浪财经分价表数据",
+      "update_frequency": "daily",
+      "data_quality_score": 7.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 3,
+        "required": 3,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "sina",
+        "price",
+        "distribution",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_sina_keyword",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "SYMBOLS_INFO",
+      "data_classification": "reference_data",
+      "classification_level": 2,
+      "target_db": "postgresql",
+      "table_name": "stock_symbols",
+      "description": "新浪财经关键词搜索股票",
+      "update_frequency": "realtime",
+      "data_quality_score": 7.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "sina",
+        "search",
+        "keyword",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_daily",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "腾讯股票日K线数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "kline",
+        "daily",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_minute",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "MINUTE_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "minute_kline",
+      "description": "腾讯股票分时图数据",
+      "update_frequency": "realtime",
+      "data_quality_score": 8.0,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "minute",
+        "chart",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_5day",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "MINUTE_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "minute_kline",
+      "description": "腾讯股票五天分时图数据",
+      "update_frequency": "realtime",
+      "data_quality_score": 8.0,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "minute",
+        "5day",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_yearly",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "DAILY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "daily_kline",
+      "description": "腾讯股票指定年份日K线数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 2,
+        "required": 2,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "kline",
+        "yearly",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_weekly",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "WEEKLY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "weekly_kline",
+      "description": "腾讯股票周K线数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "kline",
+        "weekly",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_monthly",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "MONTHLY_KLINE",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "monthly_kline",
+      "description": "腾讯股票月K线数据",
+      "update_frequency": "daily",
+      "data_quality_score": 8.5,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 1,
+        "required": 1,
+        "optional": 0
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "kline",
+        "monthly",
+        "free",
+        "webdata"
+      ]
+    },
+    {
+      "endpoint_name": "webdata_tencent_volume",
+      "source_name": "webdata",
+      "source_type": "api_library",
+      "data_category": "REALTIME_VOLUME",
+      "data_classification": "market_data",
+      "classification_level": 1,
+      "target_db": "postgresql",
+      "table_name": "realtime_volume",
+      "description": "腾讯股票实时成交量明细",
+      "update_frequency": "realtime",
+      "data_quality_score": 8.0,
+      "priority": 5,
+      "status": "active",
+      "parameters": {
+        "total": 2,
+        "required": 1,
+        "optional": 1
+      },
+      "has_test_params": true,
+      "tags": [
+        "tencent",
+        "volume",
+        "realtime",
+        "free",
+        "webdata"
+      ]
+    }
+  ],
+  "stats": {
+    "total_interfaces": 23,
+    "by_source_type": {
+      "mock": 1,
+      "api_library": 21,
+      "database": 1
+    },
+    "by_data_category": {
+      "DAILY_KLINE": 6,
+      "REALTIME_QUOTE": 1,
+      "SYMBOLS_INFO": 3,
+      "FINANCIAL_DATA": 3,
+      "MINUTE_KLINE": 4,
+      "ADJUSTMENT_DATA": 2,
+      "PRICE_DISTRIBUTION": 1,
+      "WEEKLY_KLINE": 1,
+      "MONTHLY_KLINE": 1,
+      "REALTIME_VOLUME": 1
+    },
+    "by_target_db": {
+      "postgresql": 22,
+      "tdengine": 1
+    },
+    "quality_score_distribution": {
+      "high": 10,
+      "medium": 13,
+      "low": 0
+    },
+    "priority_distribution": {
+      "low": 1,
+      "high": 5,
+      "medium": 17
+    }
+  },
+  "scan_info": {
+    "timestamp": "2026-01-09T14:20:46.248747",
+    "config_file": "/opt/claude/mystocks_spec/config/data_sources_registry.yaml",
+    "total_interfaces": 23
+  }
+}

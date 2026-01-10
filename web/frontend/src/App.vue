@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-// ArtDeco theme applied globally via main.js imports
+// MyStocks Vue Application
 </script>
 
 <style scoped>

@@ -124,3 +124,21 @@ tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheMana
 tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_comprehensive_stats,2025-11-04 15:35:48.367351,2025-11-04 15:35:48.394341,0.027,P
 tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_query_result_caching,2025-11-04 15:35:48.394724,2025-11-04 15:35:48.398685,0.004,P
 tests/unit/test_cache/test_cache_optimization_enhanced.py::TestEnhancedCacheManager::test_warmup_effectiveness,2025-11-04 15:35:48.399021,2025-11-04 15:35:48.415008,0.016,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+tests/unit/test_gpu/test_acceleration_engine.py::TestBacktestEngineGPU::test_engine_initialization,2026-01-10 22:12:28.887705,2026-01-10 22:12:32.186007,3.298,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestBacktestEngineGPU::test_run_backtest_with_gpu,2026-01-10 22:12:32.186451,2026-01-10 22:12:32.243367,0.057,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestBacktestEngineGPU::test_cpu_fallback,2026-01-10 22:12:32.243843,2026-01-10 22:12:32.302345,0.059,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestBacktestEngineGPU::test_performance_improvement,2026-01-10 22:12:32.302768,2026-01-10 22:12:33.192728,0.890,P
+tests/unit/test_gpu/test_acceleration_engine.py::TestMLTrainingGPU::test_train_random_forest_gpu,2026-01-10 22:12:33.193810,2026-01-10 22:12:33.252471,0.059,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestMLTrainingGPU::test_train_linear_regression_gpu,2026-01-10 22:12:33.252948,2026-01-10 22:12:33.308849,0.056,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestFeatureCalculationGPU::test_calculate_sma,2026-01-10 22:12:33.309292,2026-01-10 22:12:33.366137,0.057,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestFeatureCalculationGPU::test_calculate_rsi,2026-01-10 22:12:33.366560,2026-01-10 22:12:33.422177,0.056,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestFeatureCalculationGPU::test_calculate_macd,2026-01-10 22:12:33.422591,2026-01-10 22:12:33.481829,0.059,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestFeatureCalculationGPU::test_batch_feature_calculation,2026-01-10 22:12:33.482290,2026-01-10 22:12:33.541854,0.060,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestOptimizationGPU::test_grid_search,2026-01-10 22:12:33.542465,2026-01-10 22:12:33.597361,0.055,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestOptimizationGPU::test_bayesian_optimization,2026-01-10 22:12:33.597768,2026-01-10 22:12:33.654047,0.056,Fe
+tests/unit/test_gpu/test_acceleration_engine.py::TestGPUMemoryManagement::test_memory_allocation,2026-01-10 22:12:33.654460,2026-01-10 22:12:33.655901,0.001,P
+tests/unit/test_gpu/test_acceleration_engine.py::TestGPUMemoryManagement::test_memory_release,2026-01-10 22:12:33.656310,2026-01-10 22:12:33.657630,0.001,P
+tests/unit/test_gpu/test_acceleration_engine.py::TestGPUMemoryManagement::test_out_of_memory_handling,2026-01-10 22:12:33.657938,2026-01-10 22:12:33.659653,0.002,P

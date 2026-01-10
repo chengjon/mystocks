@@ -1,5 +1,5 @@
 <template>
-  <div class="artdeco-page-header">
+  <div class="page-header">
     <div class="header-content">
       <div class="header-text">
         <h1 class="page-title">{{ title }}</h1>
@@ -51,9 +51,9 @@ withDefaults(defineProps<Props>(), {
 
 <style scoped lang="scss">
 
-.artdeco-page-header {
+.page-header {
   text-align: center;
-  margin-bottom: var(--artdeco-spacing-8);
+  margin-bottom: 32px;
   position: relative;
   z-index: 1;
 
@@ -61,8 +61,8 @@ withDefaults(defineProps<Props>(), {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--artdeco-spacing-lg);
-    margin-bottom: var(--artdeco-spacing-2);
+    gap: 16px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
   }
 
@@ -72,65 +72,65 @@ withDefaults(defineProps<Props>(), {
   }
 
   .page-title {
-    font-family: var(--artdeco-font-display);
-    font-size: var(--artdeco-font-size-h2);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 24px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-widest);
-    color: var(--artdeco-accent-gold);
-    margin: 0 0 var(--artdeco-spacing-2) 0;
+    letter-spacing: 2px;
+    color: #409eff;
+    margin: 0 0 8px 0;
   }
 
   .page-subtitle {
-    font-family: var(--artdeco-font-body);
-    font-size: var(--artdeco-font-size-small);
-    color: var(--artdeco-fg-muted);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 13px;
+    color: #909399;
     text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-wider);
+    letter-spacing: 1px;
     margin: 0;
   }
 
   .header-actions {
     display: flex;
-    gap: var(--artdeco-spacing-3);
+    gap: 12px;
     align-items: center;
 
     .action-button {
       display: inline-flex;
       align-items: center;
-      gap: var(--artdeco-spacing-2);
-      padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-body);
+      gap: 8px;
+      padding: 12px 24px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: var(--artdeco-tracking-widest);
-      border: 2px solid var(--artdeco-accent-gold);
-      border-radius: var(--artdeco-radius-none);
+      letter-spacing: 2px;
+      border: 2px solid #409eff;
+      border-radius: 0;
       cursor: pointer;
-      transition: all var(--artdeco-transition-base);
+      transition: all 0.3s;
       background: transparent;
-      color: var(--artdeco-accent-gold);
+      color: #409eff;
 
       &:hover {
         background: rgba(212, 175, 55, 0.1);
-        border-color: var(--artdeco-accent-gold);
-        box-shadow: var(--artdeco-glow-subtle);
+        border-color: #409eff;
+        box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
       }
 
       &.variant-primary {
-        background: var(--artdeco-accent-gold);
-        color: var(--artdeco-bg-primary);
+        background: #409eff;
+        color: #ffffff;
 
         &:hover {
-          background: var(--artdeco-accent-gold-light);
-          box-shadow: var(--artdeco-glow-medium);
+          background: #66b1ff;
+          box-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
         }
       }
 
       &.variant-danger {
-        border-color: var(--artdeco-color-down);
-        color: var(--artdeco-color-down);
+        border-color: #f56c6c;
+        color: #f56c6c;
 
         &:hover {
           background: rgba(231, 76, 60, 0.1);
@@ -139,8 +139,8 @@ withDefaults(defineProps<Props>(), {
       }
 
       &.variant-success {
-        border-color: var(--artdeco-color-up);
-        color: var(--artdeco-color-up);
+        border-color: #67c23a;
+        color: #67c23a;
 
         &:hover {
           background: rgba(103, 194, 58, 0.1);
@@ -177,13 +177,13 @@ withDefaults(defineProps<Props>(), {
   .header-divider {
     height: 1px;
     width: 120px;
-    background: linear-gradient(90deg, transparent, var(--artdeco-accent-gold), transparent);
-    margin: var(--artdeco-spacing-2) auto 0;
+    background: linear-gradient(90deg, transparent, #409eff, transparent);
+    margin: 8px auto 0;
   }
 }
 
 @media (max-width: 768px) {
-  .artdeco-page-header {
+  .page-header {
     .header-content {
       flex-direction: column;
       text-align: center;
@@ -196,7 +196,7 @@ withDefaults(defineProps<Props>(), {
     }
 
     .page-title {
-      font-size: var(--artdeco-font-size-h3);
+      font-size: 18px;
     }
   }
 }

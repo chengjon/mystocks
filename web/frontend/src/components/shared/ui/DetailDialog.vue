@@ -8,7 +8,7 @@
     :show-close="showClose"
     :before-close="handleBeforeClose"
     @update:model-value="handleVisibleUpdate"
-    class="artdeco-detail-dialog"
+    class="detail-dialog"
   >
     <!-- Header Slot -->
     <template #header="{ close, titleId }">
@@ -161,29 +161,32 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+// Phase 3.4: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
 
-.artdeco-detail-dialog {
+.detail-dialog {
   :deep(.el-dialog) {
-    background: var(--artdeco-bg-secondary);
-    border: 2px solid var(--artdeco-accent-gold);
-    border-radius: var(--artdeco-radius-sm);
-    box-shadow: var(--artdeco-glow-heavy);
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-lg);
 
     .el-dialog__header {
       padding: 0;
       margin: 0;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 1px solid var(--color-accent-alpha-80);
     }
 
     .el-dialog__body {
-      padding: var(--artdeco-spacing-6);
-      background: var(--artdeco-bg-secondary);
+      padding: var(--spacing-xl);
+      background: var(--color-bg-secondary);
     }
 
     .el-dialog__footer {
-      padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
-      background: rgba(0, 0, 0, 0.2);
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-top: 1px solid var(--color-accent-alpha-80);
+      background: var(--color-bg-elevated-alpha-80);
     }
   }
 
@@ -191,34 +194,34 @@ defineExpose({
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: var(--artdeco-spacing-5) var(--artdeco-spacing-6);
+    padding: var(--spacing-lg) var(--spacing-xl);
     background: linear-gradient(
       180deg,
-      rgba(212, 175, 55, 0.1) 0%,
+      var(--color-accent-alpha-90) 0%,
       transparent 100%
     );
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid var(--color-accent-alpha-80);
 
     .header-content {
       flex: 1;
 
       .dialog-title {
-        font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-h3);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-lg);
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wider);
-        color: var(--artdeco-accent-gold);
-        margin: 0 0 var(--artdeco-spacing-1) 0;
+        letter-spacing: 0.06em;
+        color: var(--color-accent);
+        margin: 0 0 var(--spacing-xs) 0;
       }
 
       .dialog-subtitle {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-font-size-small);
-        color: var(--artdeco-fg-muted);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
         margin: 0;
         text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide);
+        letter-spacing: 0.03em;
       }
     }
 
@@ -229,20 +232,20 @@ defineExpose({
       width: 32px;
       height: 32px;
       background: transparent;
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: var(--artdeco-radius-none);
-      color: var(--artdeco-accent-gold);
+      border: 1px solid var(--color-accent-alpha-70);
+      border-radius: 0;
+      color: var(--color-accent);
       cursor: pointer;
-      transition: all var(--artdeco-transition-base);
+      transition: all 0.3s;
 
       &:hover {
-        background: rgba(212, 175, 55, 0.1);
-        border-color: var(--artdeco-accent-gold);
-        box-shadow: var(--artdeco-glow-subtle);
+        background: var(--color-accent-alpha-90);
+        border-color: var(--color-accent);
+        box-shadow: var(--shadow-md);
       }
 
       .el-icon {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
       }
     }
   }
@@ -258,17 +261,17 @@ defineExpose({
     }
 
     &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: var(--artdeco-radius-sm);
+      background: var(--color-bg-elevated-alpha-80);
+      border-radius: var(--border-radius-sm);
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: var(--artdeco-radius-sm);
-      transition: background var(--artdeco-transition-base);
+      background: var(--color-accent-alpha-70);
+      border-radius: var(--border-radius-sm);
+      transition: background 0.3s;
 
       &:hover {
-        background: rgba(212, 175, 55, 0.5);
+        background: var(--color-accent-alpha-50);
       }
     }
 
@@ -278,37 +281,37 @@ defineExpose({
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: var(--artdeco-spacing-3);
+      gap: var(--spacing-md);
       min-height: 200px;
-      padding: var(--artdeco-spacing-8);
+      padding: var(--spacing-2xl);
     }
 
     .dialog-loading {
-      color: var(--artdeco-accent-gold);
+      color: var(--color-info);
 
       .el-icon {
-        font-size: 32px;
+        font-size: var(--font-size-3xl);
       }
 
       span {
-        font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-body);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-sm);
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide);
+        letter-spacing: 0.03em;
       }
     }
 
     .dialog-error {
-      color: var(--artdeco-color-down);
+      color: var(--color-error);
 
       .el-icon {
-        font-size: 32px;
+        font-size: var(--font-size-3xl);
       }
 
       span {
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-font-size-body);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-sm);
       }
     }
   }
@@ -316,35 +319,35 @@ defineExpose({
   .dialog-footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--artdeco-spacing-3);
+    gap: var(--spacing-md);
 
     .el-button {
-      font-family: var(--artdeco-font-display);
+      font-family: var(--font-family-sans);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: var(--artdeco-tracking-wider);
-      border: 2px solid var(--artdeco-accent-gold);
-      border-radius: var(--artdeco-radius-none);
+      letter-spacing: 0.06em;
+      border: 2px solid var(--color-accent);
+      border-radius: 0;
 
       &.el-button--primary {
-        background: var(--artdeco-accent-gold);
-        border-color: var(--artdeco-accent-gold);
-        color: var(--artdeco-bg-primary);
+        background: var(--color-accent);
+        border-color: var(--color-accent);
+        color: var(--color-bg-primary);
 
         &:hover {
-          background: var(--artdeco-accent-gold-light);
-          border-color: var(--artdeco-accent-gold-light);
+          background: var(--color-accent-hover);
+          border-color: var(--color-accent-hover);
         }
       }
 
       &:not(.el-button--primary) {
         background: transparent;
-        border-color: rgba(212, 175, 55, 0.3);
-        color: var(--artdeco-accent-gold);
+        border-color: var(--color-accent-alpha-70);
+        color: var(--color-accent);
 
         &:hover {
-          background: rgba(212, 175, 55, 0.05);
-          border-color: var(--artdeco-accent-gold);
+          background: var(--color-accent-alpha-90);
+          border-color: var(--color-accent);
         }
       }
 
@@ -356,48 +359,8 @@ defineExpose({
   }
 }
 
-@media (max-width: 768px) {
-  .artdeco-detail-dialog {
-    :deep(.el-dialog) {
-      width: 95% !important;
-      margin: 0 auto;
-    }
-
-    .dialog-header {
-      padding: var(--artdeco-spacing-4) var(--artdeco-spacing-4);
-
-      .header-content {
-        .dialog-title {
-          font-size: var(--artdeco-font-size-h4);
-        }
-
-        .dialog-subtitle {
-          font-size: var(--artdeco-font-size-xs);
-        }
-      }
-
-      .header-close {
-        width: 28px;
-        height: 28px;
-
-        .el-icon {
-          font-size: 16px;
-        }
-      }
-    }
-
-    .dialog-body {
-      max-height: 50vh;
-      padding: var(--artdeco-spacing-4);
-    }
-
-    .dialog-footer {
-      flex-direction: column;
-
-      .el-button {
-        width: 100%;
-      }
-    }
-  }
-}
+// ============================================
+//   DESIGN NOTE - 设计说明
+//   本项目仅支持桌面端，不包含移动端响应式代码
+// ============================================
 </style>

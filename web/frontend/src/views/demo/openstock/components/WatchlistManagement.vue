@@ -361,6 +361,7 @@ const updateNotes = async (stock: any) => {
   }
 }
 
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -373,6 +374,7 @@ const updateNotes = async (stock: any) => {
   z-index: 1000;
 }
 
+.popover-content {
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

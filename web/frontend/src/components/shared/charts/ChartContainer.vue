@@ -23,7 +23,6 @@ interface Props {
   options?: EChartsOption
   height?: string | number
   loading?: boolean
-  theme?: 'artdeco' | 'light' | 'dark'
   notMerge?: boolean
   lazy?: boolean
 }
@@ -31,7 +30,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   height: '400px',
   loading: false,
-  theme: 'artdeco',
   notMerge: false,
   lazy: false
 })
@@ -47,10 +45,10 @@ const getChartOption = (): EChartsOption => {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: props.chartType === 'pie' ? 'item' : 'axis',
-      backgroundColor: 'rgba(20, 20, 20, 0.9)',
-      borderColor: '#D4AF37',
+      backgroundColor: 'rgba(26, 26, 26, 0.95)', // Matches --color-bg-elevated
+      borderColor: '#D4AF37', // Matches --color-accent (gold)
       textStyle: {
-        color: '#F2F0E4'
+        color: '#E5E5E5' // Matches --color-text-primary
       }
     },
     grid: {
@@ -62,14 +60,14 @@ const getChartOption = (): EChartsOption => {
     },
     xAxis: props.chartType !== 'pie' ? {
       type: 'category',
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } },
-      axisLabel: { color: '#8B9BB4' }
+      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } }, // Gold accent
+      axisLabel: { color: '#A0A0A0' } // Matches --color-text-secondary
     } : undefined,
     yAxis: props.chartType !== 'pie' ? {
       type: 'value',
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } },
-      axisLabel: { color: '#8B9BB4' },
-      splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } }, // Gold accent
+      axisLabel: { color: '#A0A0A0' }, // Matches --color-text-secondary
+      splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } } // Gold with low opacity
     } : undefined
   }
 
@@ -88,7 +86,7 @@ const initChart = () => {
       chartInstance.dispose()
     }
 
-    chartInstance = echarts.init(chartRef.value, props.theme)
+    chartInstance = echarts.init(chartRef.value)
     chartInstance.setOption(getChartOption(), props.notMerge)
   } catch (err) {
     console.error('Chart initialization error:', err)
@@ -149,6 +147,9 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+// Phase 3.4: Design Token Migration
+@import '@/styles/theme-tokens.scss';
+
 .chart-container {
   position: relative;
   width: 100%;
@@ -160,8 +161,8 @@ defineExpose({
     justify-content: center;
     height: 100%;
     min-height: 200px;
-    color: var(--artdeco-accent-gold);
-    font-size: 32px;
+    color: var(--color-info);
+    font-size: var(--font-size-3xl);
   }
 
   .chart-error {
@@ -171,12 +172,12 @@ defineExpose({
     justify-content: center;
     height: 100%;
     min-height: 200px;
-    gap: var(--artdeco-spacing-2);
-    color: var(--artdeco-color-down);
-    font-size: var(--artdeco-font-size-body);
+    gap: var(--spacing-sm);
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
 
     .el-icon {
-      font-size: 32px;
+      font-size: var(--font-size-3xl);
     }
   }
 

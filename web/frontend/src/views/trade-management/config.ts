@@ -38,8 +38,8 @@ export const TRADE_STATUS = {
  * 状态标签样式映射
  */
 export const STATUS_BADGE_CLASS: Record<string, string> = {
-  pending: 'artdeco-badge-warning',
-  completed: 'artdeco-badge-success',
-  cancelled: 'artdeco-badge-fall',
-  failed: 'artdeco-badge-danger'
+  pending: 'warning',
+  completed: 'success',
+  cancelled: 'info',
+  failed: 'danger'
 }

@@ -241,6 +241,11 @@ const getStatusText = (status: string) => {
 onMounted(() => {
   loadTrades()
 })
+
+// Expose methods to parent component
+defineExpose({
+  loadTrades
+})
 </script>
 
 <style scoped lang="scss">
@@ -464,6 +469,7 @@ onMounted(() => {
   color: var(--fg-primary);
 }
 
+.pagination-button {
   padding: var(--spacing-2) var(--spacing-4);
   font-family: var(--font-display);
   font-size: var(--font-size-small);
@@ -494,6 +500,7 @@ onMounted(() => {
   }
 }
 
+.action-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -515,6 +522,7 @@ onMounted(() => {
   }
 }
 
+.action-button-primary {
   background: var(--accent-gold);
   color: var(--bg-primary);
 
@@ -524,6 +532,7 @@ onMounted(() => {
   }
 }
 
+.action-button-secondary {
   background: transparent;
   color: var(--accent-gold);
 

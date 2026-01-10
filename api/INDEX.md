@@ -1,8 +1,8 @@
 # Api
 
-**最后更新**: 2026-01-07 15:28:45
+**最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 159
+**文档数量**: 160
 
 
 ---
@@ -468,6 +468,9 @@
 
 - [plugin_list](api/plugin_list.md)
   - *MyStocks 项目 - Claude Code 插件完整列表*
+
+- [task_plan_signal_monitoring_phase2_extended](api/task_plan_signal_monitoring_phase2_extended.md)
+  - *Task Plan: Signal Monitoring System Phase 2 Extended Implementation*
 
 - [technical_debt_analysis_report](api/technical_debt_analysis_report.md)
   - *MyStocks项目技术债务分析报告*

@@ -1,7 +1,7 @@
 <template>
-  <div class="artdeco-breadcrumb-container">
+  <div class="breadcrumb-container">
     <div class="breadcrumb-decoration-line"></div>
-    <el-breadcrumb :separator-icon="separatorIcon" class="artdeco-breadcrumb">
+    <el-breadcrumb :separator-icon="separatorIcon" class="breadcrumb">
       <transition-group name="breadcrumb">
         <el-breadcrumb-item
           v-for="(item, index) in breadcrumbs"
@@ -29,11 +29,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
 
 /**
- * ArtDeco 风格面包屑导航组件
  *
  * 功能:
  * - 根据当前路由自动生成面包屑路径
- * - ArtDeco 装饰艺术风格（金色 + 黑色 + 锐利边角）
  * - 支持2级路由层级显示
  * - 自动识别路由的meta.title作为显示标题
  * - 支持路由图标显示
@@ -167,14 +165,14 @@ export default {
 
 <style scoped lang="scss">
 
-.artdeco-breadcrumb-container {
+.breadcrumb-container {
   position: relative;
   display: flex;
   align-items: center;
   height: 60px;
-  padding: 0 var(--artdeco-spacing-6);
-  background: var(--artdeco-bg-primary);
-  border-bottom: 2px solid var(--artdeco-accent-gold);
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 2px solid #409eff;
   overflow: hidden;
 
   // L形角落装饰
@@ -182,7 +180,7 @@ export default {
   &::after {
     content: '';
     position: absolute;
-    background: var(--artdeco-accent-gold);
+    background: #409eff;
     opacity: 0.6;
   }
 
@@ -214,45 +212,44 @@ export default {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--artdeco-accent-gold) 50%,
+    #409eff 50%,
     transparent 100%
   );
   opacity: 0.3;
 }
 
-/* ArtDeco 面包屑基础样式 */
-.artdeco-breadcrumb {
+.breadcrumb {
   position: relative;
   z-index: 1;
 
   :deep(.el-breadcrumb__item) {
     display: inline-flex;
     align-items: center;
-    font-family: var(--artdeco-font-display);
-    font-size: var(--artdeco-font-size-small);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: var(--artdeco-tracking-wider);
-    color: var(--artdeco-fg-muted);
+    letter-spacing: 1px;
+    color: #909399;
 
     .el-breadcrumb__inner {
       display: inline-flex;
       align-items: center;
       color: rgba(212, 175, 55, 0.7);
-      transition: all var(--artdeco-transition-base);
+      transition: all 0.3s;
 
       &:hover {
-        color: var(--artdeco-accent-gold);
-        text-shadow: var(--artdeco-glow-subtle);
+        color: #409eff;
+        text-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
       }
     }
 
     // 最后一个激活项
     &:last-child {
       .el-breadcrumb__inner {
-        color: var(--artdeco-accent-gold);
+        color: #409eff;
         font-weight: 700;
-        text-shadow: var(--artdeco-glow-medium);
+        text-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
         cursor: default;
       }
     }
@@ -260,9 +257,9 @@ export default {
 
   // 分隔符样式
   :deep(.el-breadcrumb__separator) {
-    color: var(--artdeco-accent-gold);
+    color: #409eff;
     opacity: 0.4;
-    margin: 0 var(--artdeco-spacing-3);
+    margin: 0 12px;
     font-size: 12px;
   }
 }
@@ -270,14 +267,14 @@ export default {
 .breadcrumb-item-content {
   display: inline-flex;
   align-items: center;
-  gap: var(--artdeco-spacing-1);
+  gap: 4px;
 }
 
 .breadcrumb-icon {
   font-size: 16px;
-  color: var(--artdeco-accent-gold);
+  color: #409eff;
   opacity: 0.8;
-  transition: all var(--artdeco-transition-base);
+  transition: all 0.3s;
 
   &:hover {
     opacity: 1;
@@ -286,15 +283,15 @@ export default {
 }
 
 .breadcrumb-active {
-  color: var(--artdeco-accent-gold);
+  color: #409eff;
   font-weight: 700;
-  text-shadow: var(--artdeco-glow-subtle);
+  text-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
 }
 
 /* 面包屑过渡动画 */
 .breadcrumb-enter-active,
 .breadcrumb-leave-active {
-  transition: all var(--artdeco-transition-base);
+  transition: all 0.3s;
 }
 
 .breadcrumb-enter-from {
@@ -309,9 +306,9 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .artdeco-breadcrumb-container {
+  .breadcrumb-container {
     height: 50px;
-    padding: 0 var(--artdeco-spacing-3);
+    padding: 0 12px;
 
     &::before {
       width: 15px;
@@ -322,18 +319,18 @@ export default {
     }
   }
 
-  .artdeco-breadcrumb {
+  .breadcrumb {
     :deep(.el-breadcrumb__item) {
-      font-size: var(--artdeco-font-size-xs);
-      letter-spacing: var(--artdeco-tracking-wide);
+      font-size: 12px;
+      letter-spacing: 0.5px;
 
       .el-breadcrumb__inner {
-        padding: var(--artdeco-spacing-1) 0;
+        padding: 4px 0;
       }
     }
 
     :deep(.el-breadcrumb__separator) {
-      margin: 0 var(--artdeco-spacing-1);
+      margin: 0 4px;
       font-size: 10px;
     }
   }
@@ -345,8 +342,8 @@ export default {
 
 /* 大屏幕优化 */
 @media (min-width: 1440px) {
-  .artdeco-breadcrumb-container {
-    padding: 0 var(--artdeco-spacing-8);
+  .breadcrumb-container {
+    padding: 0 32px;
 
     &::before {
       width: 30px;
@@ -357,16 +354,16 @@ export default {
     }
   }
 
-  .artdeco-breadcrumb {
+  .breadcrumb {
     :deep(.el-breadcrumb__item) {
-      font-size: var(--artdeco-font-size-body);
+      font-size: 14px;
     }
   }
 }
 
 /* 打印样式 */
 @media print {
-  .artdeco-breadcrumb-container {
+  .breadcrumb-container {
     background: white;
     border-bottom: 1px solid #000;
 
@@ -376,7 +373,7 @@ export default {
     }
   }
 
-  .artdeco-breadcrumb :deep(.el-breadcrumb__item .el-breadcrumb__inner) {
+  .breadcrumb :deep(.el-breadcrumb__item .el-breadcrumb__inner) {
     color: #000;
   }
 }

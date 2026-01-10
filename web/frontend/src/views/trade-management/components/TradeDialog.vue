@@ -1,58 +1,83 @@
 <template>
-  <div class="modal-overlay" v-if="visible">
-    <div class="modal">
-      <div class="corner-tl"></div>
-      <div class="corner-br"></div>
+  <el-dialog
+    v-model="dialogVisible"
+    :title="form.type === 'buy' ? 'BUY STOCK' : 'SELL STOCK'"
+    width="600px"
+    :close-on-click-modal="false"
+    class="bloomberg-trade-dialog"
+  >
+    <el-form :model="form" label-width="120px" label-position="left">
+      <el-form-item label="SYMBOL">
+        <el-input
+          v-model="form.symbol"
+          placeholder="E.G: 600519"
+          clearable
+        />
+      </el-form-item>
 
-      <div class="modal-header">
-        <h3 class="modal-title">{{ form.type === 'buy' ? 'BUY STOCK' : 'SELL STOCK' }}</h3>
-        <button class="close-btn" @click="handleClose">×</button>
-      </div>
+      <el-form-item label="STOCK NAME">
+        <el-input
+          v-model="form.stock_name"
+          placeholder="AUTO LOADED"
+          readonly
+        />
+      </el-form-item>
 
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="label">SYMBOL</label>
-          <input v-model="form.symbol" type="text" class="input" placeholder="E.G: 600519">
-        </div>
-        <div class="form-group">
-          <label class="label">STOCK NAME</label>
-          <input v-model="form.stock_name" type="text" class="input" placeholder="AUTO LOADED" readonly>
-        </div>
-        <div class="form-group">
-          <label class="label">QUANTITY</label>
-          <input v-model.number="form.quantity" type="number" class="input" placeholder="MIN 100">
-        </div>
-        <div class="form-group">
-          <label class="label">PRICE</label>
-          <input v-model.number="form.price" type="number" step="0.01" class="input" placeholder="MARKET PRICE">
-        </div>
-        <div class="form-group">
-          <label class="label">TRADE AMOUNT</label>
-          <div class="trade-amount-display gold">
-            ¥{{ (form.quantity * form.price).toFixed(2) }}
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="label">REMARK</label>
-          <textarea v-model="form.remark" class="textarea" rows="2" placeholder="OPTIONAL"></textarea>
-        </div>
-      </div>
+      <el-form-item label="QUANTITY">
+        <el-input-number
+          v-model="form.quantity"
+          :min="100"
+          :step="100"
+          style="width: 100%"
+        />
+      </el-form-item>
 
-      <div class="modal-footer">
-        <button class="btn btn-default" @click="handleClose" :disabled="submitting">
+      <el-form-item label="PRICE">
+        <el-input-number
+          v-model.number="form.price"
+          :min="0"
+          :step="0.01"
+          :precision="2"
+          placeholder="MARKET PRICE"
+          style="width: 100%"
+        />
+      </el-form-item>
+
+      <el-form-item label="TRADE AMOUNT">
+        <div class="trade-amount-display">
+          ¥{{ (form.quantity * form.price).toFixed(2) }}
+        </div>
+      </el-form-item>
+
+      <el-form-item label="REMARK">
+        <el-input
+          v-model="form.remark"
+          type="textarea"
+          :rows="3"
+          placeholder="OPTIONAL"
+        />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleClose" :disabled="submitting">
           CANCEL
-        </button>
-        <button class="btn" :class="form.type === 'buy' ? 'btn-primary' : 'btn-danger'" @click="handleSubmit" :disabled="submitting">
-          <span v-if="submitting" class="spinner"></span>
-          <span v-else>{{ form.type === 'buy' ? 'BUY' : 'SELL' }}</span>
-        </button>
+        </el-button>
+        <el-button
+          :type="form.type === 'buy' ? 'primary' : 'danger'"
+          @click="handleSubmit"
+          :loading="submitting"
+        >
+          {{ form.type === 'buy' ? 'BUY' : 'SELL' }}
+        </el-button>
       </div>
-    </div>
-  </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { tradeApi } from '@/api/trade'
 
@@ -89,6 +114,11 @@ const form = reactive<TradeForm>({
   quantity: 100,
   price: 0,
   remark: ''
+})
+
+const dialogVisible = computed({
+  get: () => props.visible,
+  set: (val) => emit('update:visible', val)
 })
 
 watch(() => props.visible, (newVal) => {
@@ -152,230 +182,201 @@ const handleSubmit = async () => {
   }
 }
 
-const setFormData = (data: Partial<TradeForm>) => {
-  Object.assign(form, data)
-}
-
 defineExpose({
-  setFormData,
   resetForm
 })
 </script>
 
 <style scoped lang="scss">
+// ============================================
+//   Bloomberg Terminal Style Trade Dialog
+// ============================================
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--bg-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
+.bloomberg-trade-dialog {
+  :deep(.el-dialog) {
+    background: linear-gradient(135deg, #0F1115 0%, #141A24 100%);
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.6),
+      0 0 40px rgba(0, 128, 255, 0.1);
+  }
 
-  .modal {
-    position: relative;
-    width: 480px;
-    background: var(--bg-card);
-    border: 1px solid var(--accent-gold);
-    border-radius: var(--radius-none);
-    box-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+  :deep(.el-dialog__header) {
+    background: transparent;
+    border-bottom: 1px solid #1E293B;
+    padding: 20px 24px;
 
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      width: 24px;
-      height: 24px;
-      border-top: 3px solid var(--accent-gold);
-      border-left: 3px solid var(--accent-gold);
+    .el-dialog__title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #0080FF;
     }
+  }
 
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      width: 24px;
-      height: 24px;
-      border-bottom: 3px solid var(--accent-gold);
-      border-right: 3px solid var(--accent-gold);
-    }
+  :deep(.el-dialog__body) {
+    padding: 24px;
+  }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--spacing-5) var(--spacing-6);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  :deep(.el-dialog__footer) {
+    border-top: 1px solid #1E293B;
+    padding: 16px 24px;
+  }
 
-      .modal-title {
-        font-family: var(--font-display);
-        font-size: var(--font-size-h4);
-        font-weight: 600;
+  :deep(.el-form) {
+    .el-form-item {
+      margin-bottom: 20px;
+
+      .el-form-item__label {
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: var(--tracking-widest);
-        color: var(--accent-gold);
-        margin: 0;
-      }
-
-        background: transparent;
-        border: none;
-        color: var(--fg-muted);
-        font-size: 32px;
-        cursor: pointer;
-        transition: color var(--transition-base);
-
-        &:hover {
-          color: var(--accent-gold);
-        }
+        letter-spacing: 0.08em;
+        color: #94A3B8;
       }
     }
+  }
 
-    .modal-body {
-      padding: var(--spacing-6);
+  :deep(.el-input) {
+    .el-input__wrapper {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid #1E293B;
+      border-radius: 4px;
+      box-shadow: none;
+      transition: all 0.3s ease;
 
-      .form-group {
-        margin-bottom: var(--spacing-4);
+      &:hover {
+        border-color: #0080FF;
+      }
 
-          display: block;
-          font-family: var(--font-display);
-          font-size: var(--font-size-xs);
-          font-weight: 600;
+      &.is-focus {
+        border-color: #0080FF;
+        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+      }
+
+      .el-input__inner {
+        color: #FFFFFF;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 14px;
+
+        &::placeholder {
+          color: #64748B;
           text-transform: uppercase;
-          letter-spacing: var(--tracking-wider);
-          color: var(--accent-gold);
-          margin-bottom: var(--spacing-1);
+          letter-spacing: 0.05em;
         }
+      }
 
-        .input {
-          width: 100%;
-          padding: var(--spacing-2) var(--spacing-3);
-          font-family: var(--font-body);
-          font-size: var(--font-size-body);
-          color: var(--fg-primary);
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid var(--accent-gold);
-          border-radius: var(--radius-none);
-          transition: all var(--transition-base);
+      &.is-disabled {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: #1E293B;
 
-          &::placeholder {
-            color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: var(--tracking-normal);
-          }
-
-          &:focus {
-            outline: none;
-            border-bottom-color: var(--accent-gold-light);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
-          }
-
-          &[readonly] {
-            color: var(--fg-muted);
-            background: rgba(212, 175, 55, 0.05);
-            border-bottom-color: rgba(212, 175, 55, 0.2);
-          }
-        }
-
-          width: 100%;
-          padding: var(--spacing-2) var(--spacing-3);
-          font-family: var(--font-body);
-          font-size: var(--font-size-body);
-          color: var(--fg-primary);
-          background: transparent;
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          border-radius: var(--radius-none);
-          transition: all var(--transition-base);
-
-          &::placeholder {
-            color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: var(--tracking-normal);
-          }
-
-          &:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-            box-shadow: var(--glow-subtle);
-          }
-        }
-
-        .trade-amount-display {
-          display: block;
-          font-family: var(--font-mono);
-          font-size: var(--font-size-h4);
-          font-weight: 700;
-          padding: var(--spacing-2) var(--spacing-3);
-          border: 1px solid rgba(212, 175, 55, 0.2);
-          border-radius: var(--radius-none);
-          background: rgba(212, 175, 55, 0.05);
-
-          &.gold {
-            color: var(--accent-gold);
-          }
+        .el-input__inner {
+          color: #64748B;
         }
       }
     }
+  }
 
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: var(--spacing-3);
-      padding: var(--spacing-5) var(--spacing-6);
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
+  :deep(.el-input-number) {
+    width: 100%;
+
+    .el-input__wrapper {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid #1E293B;
+      border-radius: 4px;
+      box-shadow: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #0080FF;
+      }
+
+      &.is-focus {
+        border-color: #0080FF;
+        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+      }
+
+      .el-input__inner {
+        color: #FFFFFF;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 14px;
+        text-align: left;
+      }
+    }
+
+    .el-input-number__decrease,
+    .el-input-number__increase {
+      background: transparent;
+      border-left: 1px solid #1E293B;
+      color: #94A3B8;
+
+      &:hover {
+        color: #0080FF;
+      }
+    }
+  }
+
+  :deep(.el-textarea) {
+    .el-textarea__inner {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid #1E293B;
+      border-radius: 4px;
+      color: #FFFFFF;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+      resize: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #0080FF;
+      }
+
+      &:focus {
+        border-color: #0080FF;
+        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+      }
+
+      &::placeholder {
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
     }
   }
 }
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-6);
-  font-family: var(--font-display);
-  font-size: var(--font-size-body);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
-  border: 2px solid var(--accent-gold);
-  border-radius: var(--radius-none);
-  cursor: pointer;
-  transition: all var(--transition-base);
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-top-color: currentColor;
-    border-radius: 50%;
-  }
-
-    to { transform: rotate(360deg); }
-  }
+// Trade Amount Display
+.trade-amount-display {
+  display: block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0080FF;
+  padding: 12px 16px;
+  background: rgba(0, 128, 255, 0.05);
+  border: 1px solid rgba(0, 128, 255, 0.2);
+  border-radius: 4px;
+  text-align: center;
 }
 
-  background: var(--accent-gold);
-  color: var(--bg-primary);
+// Dialog Footer
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 
-  &:hover:not(:disabled) {
-    background: var(--accent-gold-light);
-    box-shadow: var(--glow-medium);
-  }
-}
-
-  background: transparent;
-  color: var(--accent-gold);
-
-  &:hover:not(:disabled) {
-    background: var(--bg-secondary);
-    box-shadow: var(--glow-subtle);
+  :deep(.el-button) {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    padding: 10px 24px;
   }
 }
 </style>

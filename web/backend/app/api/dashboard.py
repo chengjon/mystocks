@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.core.cache_manager import CacheManager
+from app.core.cache_manager import CacheManager, get_cache_manager_async
 from app.core.responses import (
     ErrorCodes,
     create_error_response,
@@ -36,15 +36,29 @@ from app.models.dashboard import (
 # 配置日志
 logger = logging.getLogger(__name__)
 
-# 全局缓存管理器
+# 全局缓存管理器 (异步初始化)
 _cache_manager: Optional[CacheManager] = None
+_cache_manager_initialized = False
 
 
-def get_cache_manager() -> CacheManager:
-    """获取或初始化缓存管理器（单例模式）"""
-    global _cache_manager
-    if _cache_manager is None:
-        _cache_manager = CacheManager()
+async def get_cache_manager() -> CacheManager:
+    """获取或初始化缓存管理器（单例模式，支持Redis注入）"""
+    global _cache_manager, _cache_manager_initialized
+
+    if _cache_manager is None or not _cache_manager_initialized:
+        # 尝试获取Redis缓存服务
+        redis_cache = None
+        try:
+            from src.core.cache.multi_level import get_cache
+
+            redis_cache = get_cache()
+        except ImportError:
+            logger.warning("Redis缓存服务不可用，将使用L1+L3模式")
+
+        # 使用异步缓存管理器初始化
+        _cache_manager = await get_cache_manager_async(redis_cache=redis_cache)
+        _cache_manager_initialized = True
+
     return _cache_manager
 
 
@@ -385,16 +399,16 @@ def _generate_cache_key(user_id: int, trade_date: Optional[date]) -> str:
     return f"dashboard_user_{user_id}_{date_str}"
 
 
-def _try_get_cached_dashboard(
+async def _try_get_cached_dashboard(
     cache_manager: CacheManager,
     user_id: int,
     trade_date: Optional[date],
 ) -> tuple[Optional[Dict[str, Any]], bool]:
     """
-    尝试从缓存获取仪表盘数据
+    尝试从三级缓存获取仪表盘数据
 
     Args:
-        cache_manager: 缓存管理器实例
+        cache_manager: 异步缓存管理器实例
         user_id: 用户ID
         trade_date: 交易日期
 
@@ -405,25 +419,25 @@ def _try_get_cached_dashboard(
     """
     try:
         cache_key = _generate_cache_key(user_id, trade_date)
-        cached_data = cache_manager.fetch_from_cache(
+        cached_data = await cache_manager.fetch_from_cache(
             symbol=f"user_{user_id}",
             data_type="dashboard",
             timeframe="1d",
         )
 
         if cached_data and isinstance(cached_data, dict):
-            logger.info(f"✅ 仪表盘缓存命中: {cache_key}")
+            logger.info(f"✅ 三级缓存命中: {cache_key}")
             return cached_data, True
         else:
-            logger.debug(f"⚠️ 仪表盘缓存未命中: {cache_key}")
+            logger.debug(f"⚠️ 三级缓存未命中: {cache_key}")
             return None, False
 
     except Exception as e:
-        logger.warning(f"缓存读取失败，将继续获取新数据: {str(e)}")
+        logger.warning(f"三级缓存读取失败，将继续获取新数据: {str(e)}")
         return None, False
 
 
-def _cache_dashboard_data(
+async def _cache_dashboard_data(
     cache_manager: CacheManager,
     user_id: int,
     trade_date: Optional[date],
@@ -431,10 +445,10 @@ def _cache_dashboard_data(
     ttl_hours: int = 24,
 ) -> bool:
     """
-    将仪表盘数据写入缓存
+    将仪表盘数据写入三级缓存
 
     Args:
-        cache_manager: 缓存管理器实例
+        cache_manager: 异步缓存管理器实例
         user_id: 用户ID
         trade_date: 交易日期
         dashboard_data: 要缓存的仪表盘数据
@@ -455,7 +469,7 @@ def _cache_dashboard_data(
             "ttl_hours": ttl_hours,
         }
 
-        success = cache_manager.write_to_cache(
+        success = await cache_manager.write_to_cache(
             symbol=f"user_{user_id}",
             data_type="dashboard",
             timeframe="1d",
@@ -467,14 +481,14 @@ def _cache_dashboard_data(
         # Ensure bool return type
         success_bool: bool = bool(success)
         if success_bool:
-            logger.info(f"✅ 仪表盘数据已缓存: {cache_key}")
+            logger.info(f"✅ 三级缓存写入成功: {cache_key}")
         else:
-            logger.warning(f"⚠️ 仪表盘数据缓存失败: {cache_key}")
+            logger.warning(f"⚠️ 三级缓存写入失败: {cache_key}")
 
         return success_bool
 
     except Exception as e:
-        logger.warning(f"缓存写入失败: {str(e)}")
+        logger.warning(f"三级缓存写入异常: {str(e)}")
         return False
 
 
@@ -516,24 +530,24 @@ async def get_dashboard_summary(
     - 持仓: 持仓列表、总盈亏等
     - 风险预警: 预警列表、未读数量等
     """
-    cache_manager = get_cache_manager()
+    cache_manager = await get_cache_manager()
     cache_hit = False
 
     try:
-        # 第1阶段：尝试从缓存获取数据
+        # 第1阶段：尝试从三级缓存获取数据
         if not bypass_cache:
-            cached_entry, cache_hit = _try_get_cached_dashboard(
+            cached_entry, cache_hit = await _try_get_cached_dashboard(
                 cache_manager,
                 user_id,
                 trade_date,
             )
             if cache_hit and cached_entry:
-                logger.info(f"仪表盘缓存命中: user_id={user_id}, trade_date={trade_date}")
+                logger.info(f"三级缓存命中: user_id={user_id}, trade_date={trade_date}")
                 raw_dashboard = cached_entry.get("dashboard_data", {})
             else:
                 raw_dashboard = None
         else:
-            logger.info(f"跳过缓存获取仪表盘数据: user_id={user_id}")
+            logger.info(f"跳过三级缓存获取仪表盘数据: user_id={user_id}")
             raw_dashboard = None
 
         # 第2阶段：如果缓存未命中，从数据源获取新数据
@@ -558,8 +572,8 @@ async def get_dashboard_summary(
             # 调用数据源工厂获取dashboard/summary数据
             raw_dashboard = await factory.get_data("dashboard", "summary", params)
 
-            # 第3阶段：将新数据写入缓存
-            _cache_dashboard_data(
+            # 第3阶段：将新数据写入三级缓存
+            await _cache_dashboard_data(
                 cache_manager,
                 user_id,
                 trade_date,

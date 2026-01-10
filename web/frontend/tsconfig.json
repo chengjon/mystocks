@@ -7,22 +7,36 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "preserve",
 
-    // Type Checking (relaxed for development)
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictBindCallApply": false,
-    "strictPropertyInitialization": false,
-    "noImplicitThis": false,
-    "alwaysStrict": false,
+    // ============================================================
+    // 🚀 Phase 1: 渐进式TypeScript迁移策略
+    // ============================================================
+    // 策略：允许JS/TS共存，逐步启用strict模式
+    // 目标：TypeScript覆盖率从20% → 90%
 
-    // Allow JavaScript files for gradual migration
-    "allowJs": true,
-    "checkJs": false,
+    // Phase 1.4.1: 启用基础strict模式（仅针对.ts文件）
+    "strict": true,  // ✅ Phase 1启用（配合checkJs: false）
+
+    // 渐进式启用strict子选项（避免一次性大量错误）
+    "noUnusedLocals": false,        // Phase 2启用
+    "noUnusedParameters": false,   // Phase 2启用
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,         // ✅ Phase 1启用（最关键的类型检查）
+    "strictNullChecks": true,      // ✅ Phase 1启用（空值检查）
+    "strictFunctionTypes": false,   // Phase 2启用（较复杂）
+    "strictBindCallApply": false,   // Phase 2启用
+    "strictPropertyInitialization": false,  // Phase 2启用
+    "noImplicitThis": true,        // ✅ Phase 1启用
+    "alwaysStrict": true,
+
+    // Additional Type Checking（Phase 2+启用）
+    "noImplicitReturns": false,     // Phase 2启用
+    "noUncheckedIndexedAccess": false,  // Phase 3启用
+    "noImplicitOverride": false,   // Phase 2启用
+    "exactOptionalPropertyTypes": false,  // Phase 3启用
+
+    // Phase 1.4.2: JS/TS共存配置
+    "allowJs": true,                // ✅ 允许导入.js文件
+    "checkJs": false,               // ✅ 不检查.js文件（仅检查.ts）
 
     // Module Resolution
     "moduleResolution": "bundler",
@@ -34,7 +48,8 @@
     // Path Mapping
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@types/*": ["src/types/*"]  // ✅ Phase 1.4.3: 共享类型目录
     },
 
     // Interop Constraints
@@ -47,8 +62,11 @@
     "types": ["vite/client", "element-plus/global", "node"],
 
     // Additional Options
-    "incremental": true,
-    "sourceMap": true
+    "incremental": true,            // ✅ 增量编译（提升构建速度）
+    "sourceMap": true,
+
+    // Phase 1.4.3: 类型导入别名
+    "baseUrl": "."
   },
 
   // File Includes
@@ -57,8 +75,9 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/**/*.js",
-    "src/**/*.jsx"
+    "src/**/*.js",                 // ✅ 包含.js文件（共存）
+    "src/**/*.jsx",
+    "src/types/**/*.ts"             // ✅ 包含共享类型定义
   ],
 
   // File Excludes
@@ -68,7 +87,7 @@
     "reports",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
-    "src/components/market/ProKLineChart.vue"
+    "src/components/market/ProKLineChart.vue"  // 暂时排除（Phase 2修复）
   ],
 
   // Vue-specific compiler options (via vue-tsc)

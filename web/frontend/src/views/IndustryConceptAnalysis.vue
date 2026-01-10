@@ -79,7 +79,6 @@
         <!-- 统计卡片 -->
         <div class="stats-section" v-if="currentCategory">
           <div class="stats-grid">
-            <!-- TEMP: ArtDecoStatCard removed - awaiting UI/UX migration -->
             <div class="stat-item">
               <div class="stat-label">{{ stats[0]?.title || 'N/A' }}</div>
               <div class="stat-value" :style="{ color: stats[0]?.color || '#D4AF37' }">{{ stats[0]?.value || '-' }}</div>
@@ -512,15 +511,18 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.3: Design Token Migration
+@import '@/styles/theme-tokens.scss';
 
-  padding: 24px;
-  background: var(--bg-primary);
+.industry-concept-analysis {
+  padding: var(--spacing-lg);
+  background: var(--color-bg-primary);
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
   min-height: 100vh;
 
   .card {
-    background: var(--bg-card);
-    border: 1px solid var(--gold-dim);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     position: relative;
 
     &::before,
@@ -529,7 +531,7 @@ onMounted(() => {
       position: absolute;
       width: 16px;
       height: 16px;
-      border: 2px solid var(--gold-primary);
+      border: 2px solid var(--color-accent);
       z-index: 1;
     }
 
@@ -548,13 +550,13 @@ onMounted(() => {
     }
 
     .card-header {
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--gold-dim);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
 
       .header-title {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: var(--spacing-md);
 
         .title-icon {
           width: 40px;
@@ -562,7 +564,7 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--gold-primary);
+          color: var(--color-accent);
           flex-shrink: 0;
 
           svg {
@@ -572,18 +574,18 @@ onMounted(() => {
         }
 
         .title-text {
-          font-family: var(--font-body);
-          font-size: 16px;
+          font-family: var(--font-family-sans);
+          font-size: var(--font-size-base);
           font-weight: 600;
-          color: var(--gold-primary);
+          color: var(--color-accent);
           text-transform: uppercase;
           letter-spacing: 2px;
         }
 
         .title-sub {
-          font-family: var(--font-body);
-          font-size: 10px;
-          color: var(--gold-muted);
+          font-family: var(--font-family-sans);
+          font-size: var(--font-size-xs);
+          color: var(--color-text-tertiary);
           text-transform: uppercase;
           letter-spacing: 3px;
           display: block;
@@ -593,48 +595,48 @@ onMounted(() => {
     }
 
     .card-body {
-      padding: 24px;
+      padding: var(--spacing-lg);
     }
   }
 
   .filter-section {
-    margin-bottom: 32px;
+    margin-bottom: var(--spacing-2xl);
 
     .tabs {
       display: flex;
       gap: 4px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--gold-dim);
+      margin-bottom: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
 
       .tab-button {
-        padding: 12px 24px;
-        font-family: var(--font-body);
-        font-size: 14px;
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-family: var(--font-family-sans);
+        font-size: var(--font-size-sm);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
         border: none;
         background: transparent;
-        color: var(--text-muted);
+        color: var(--color-text-secondary);
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--spacing-sm);
         transition: all 0.3s ease;
         position: relative;
         border-bottom: 2px solid transparent;
 
         .tab-icon {
-          font-size: 16px;
+          font-size: var(--font-size-base);
         }
 
         &:hover {
-          color: var(--gold-primary);
+          color: var(--color-accent);
         }
 
         &.active {
-          color: var(--gold-primary);
-          border-bottom-color: var(--gold-primary);
+          color: var(--color-accent);
+          border-bottom-color: var(--color-accent);
 
           &::after {
             content: '';
@@ -642,10 +644,10 @@ onMounted(() => {
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 24px);
+            width: calc(100% - var(--spacing-lg));
             height: 2px;
-            background: var(--gold-primary);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            background: var(--color-accent);
+            box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
           }
         }
       }
@@ -653,7 +655,7 @@ onMounted(() => {
 
     .filter-controls {
       display: flex;
-      gap: 12px;
+      gap: var(--spacing-md);
       align-items: center;
     }
   }
@@ -662,41 +664,41 @@ onMounted(() => {
   .select-sm {
     background: transparent;
     border: none;
-    border-bottom: 2px solid var(--gold-dim);
+    border-bottom: 2px solid var(--color-border);
     padding: 10px 0;
-    font-family: var(--font-body);
-    font-size: 14px;
-    color: var(--text-primary);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
 
     &:focus {
       outline: none;
-      border-bottom-color: var(--gold-primary);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+      border-bottom-color: var(--color-accent);
+      box-shadow: 0 4px 12px var(--color-accent-alpha-80);
     }
 
     option {
-      background: var(--bg-card);
-      color: var(--text-primary);
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
     }
   }
 
   .button {
-    padding: 10px 20px;
-    font-family: var(--font-body);
-    font-size: 13px;
+    padding: 10px var(--spacing-lg);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border: 2px solid var(--gold-primary);
+    border: 2px solid var(--color-accent);
     background: transparent;
-    color: var(--gold-primary);
+    color: var(--color-accent);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
     transition: all 0.3s ease;
     position: relative;
 
@@ -706,8 +708,8 @@ onMounted(() => {
     }
 
     &:hover:not(.loading) {
-      background: var(--gold-primary);
-      color: var(--bg-primary);
+      background: var(--color-accent);
+      color: var(--color-bg-primary);
     }
 
     &.loading {
@@ -727,65 +729,65 @@ onMounted(() => {
     }
 
     &.button-primary {
-      border-color: var(--rise);
-      color: var(--rise);
+      border-color: var(--color-stock-down);
+      color: var(--color-stock-down);
 
       &::before {
-        border-color: var(--rise);
+        border-color: var(--color-stock-down);
       }
 
       &:hover:not(.loading) {
-        background: var(--rise);
-        color: var(--bg-primary);
+        background: var(--color-stock-down);
+        color: var(--color-bg-primary);
       }
     }
 
     &.button-info {
-      border-color: #409eff;
-      color: #409eff;
+      border-color: var(--color-accent);
+      color: var(--color-accent);
 
       &::before {
-        border-color: #409eff;
+        border-color: var(--color-accent);
       }
 
       &:hover:not(.loading) {
-        background: #409eff;
-        color: var(--bg-primary);
+        background: var(--color-accent);
+        color: var(--color-bg-primary);
       }
     }
   }
 
   .input {
     flex: 1;
-    padding: 10px 16px;
-    font-family: var(--font-body);
-    font-size: 14px;
+    padding: 10px var(--spacing-md);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-sm);
     background: transparent;
-    border: 1px solid var(--gold-dim);
-    color: var(--text-primary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
     transition: all 0.3s ease;
 
     &:focus {
       outline: none;
-      border-color: var(--gold-primary);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 12px var(--color-accent-alpha-80);
     }
   }
 
   .stats-section {
-    margin-bottom: 32px;
+    margin-bottom: var(--spacing-2xl);
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-2xl);
     }
 
     .chart-section {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
+      gap: var(--spacing-lg);
     }
   }
 
@@ -794,10 +796,10 @@ onMounted(() => {
       .card-header {
         .header-title {
           .title-text {
-            font-family: var(--font-body);
-            font-size: 14px;
+            font-family: var(--font-family-sans);
+            font-size: var(--font-size-sm);
             font-weight: 600;
-            color: var(--gold-primary);
+            color: var(--color-accent);
             text-transform: uppercase;
             letter-spacing: 2px;
           }
@@ -805,7 +807,7 @@ onMounted(() => {
 
         .stocks-header-actions {
           display: flex;
-          gap: 12px;
+          gap: var(--spacing-md);
           align-items: center;
         }
       }
@@ -813,7 +815,7 @@ onMounted(() => {
   }
 
   @media (max-width: 768px) {
-    padding: 16px;
+    padding: var(--spacing-md);
 
     .filter-section {
       .filter-controls {
@@ -840,12 +842,12 @@ onMounted(() => {
         .card-header {
           flex-direction: column;
           align-items: flex-start;
-          gap: 16px;
+          gap: var(--spacing-md);
 
           .stocks-header-actions {
             width: 100%;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: var(--spacing-sm);
 
             .input {
               flex: 1;

@@ -2,12 +2,44 @@
   "metadata": {
     "version": "1.0",
     "format": "buger-manual-report",
-    "reportedAt": "2025-12-31T12:00:00Z",
-    "reporter": "Claude Code",
-    "contact": "ai-assistant",
-    "description": "TypeScript 类型错误修复 - Phase 7 Frontend Web 项目"
+    "reportedAt": "2026-01-09T12:37:00Z",
+    "reporter": "Claude Code (Main CLI)",
+    "contact": "claude@anthropic.com",
+    "description": "TradeManagement组件TypeScript类型错误修复 - Web Quality Gate检测"
   },
   "bugs": [
+    {
+      "errorCode": "ERR_TS_TYPE_MISMATCH_001",
+      "title": "TradeManagement组件类型不匹配错误",
+      "message": "AccountOverviewVM类型不能赋值给Portfolio类型。API返回AccountOverviewVM（驼峰命名），但PortfolioOverview组件期望Portfolio类型（下划线命名）。\n\n错误位置：views/TradeManagement.vue(85,46)\n\n错误详情：\n- tradeApi.getAccountOverview() 返回 AccountOverviewVM 类型\n- PortfolioOverview.setPortfolio() 期望 Portfolio 类型\n- 字段命名风格不匹配导致类型转换失败\n\n类型映射关系：\n- totalAssets (AccountOverviewVM) → total_assets (Portfolio)\n- availableCash → available_cash\n- totalPositionValue → position_value\n- totalPnL → total_profit\n- totalPnLPercent → profit_rate",
+      "stackTrace": "error TS2345: Argument of type 'AccountOverviewVM' is not assignable to parameter of type 'Portfolio'.\n  Property 'total_assets' is missing in type 'AccountOverviewVM' but required in type 'Portfolio'.\n  Property 'available_cash' is missing in type 'AccountOverviewVM' but required in type 'Portfolio'.\n  Property 'position_value' is missing in type 'AccountOverviewVM' but required in type 'Portfolio'.\n  Property 'total_profit' is missing in type 'AccountOverviewVM' but required in type 'Portfolio'.\n  Property 'profit_rate' is missing in type 'AccountOverviewVM' but required in type 'Portfolio'.",
+      "severity": "medium",
+      "context": {
+        "projectName": "MyStocks",
+        "projectRoot": "/opt/claude/mystocks_spec",
+        "component": "frontend",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL2)",
+        "nodeVersion": "v24.12.0",
+        "browser": "N/A (TypeScript编译时错误)"
+      }
+    },
+    {
+      "errorCode": "ERR_TS_METHOD_EXPOSE_002",
+      "title": "TradeHistoryTab组件方法未暴露错误",
+      "message": "TradeHistoryTab组件的loadTrades方法未通过defineExpose暴露，父组件无法调用。\n\n错误位置：views/TradeManagement.vue(123,29)\n\n错误详情：\n- TradeHistoryTab.vue 内部定义了loadTrades方法\n- 但未使用defineExpose暴露给父组件\n- 父组件TradeManagement.vue尝试调用tradeHistoryTabRef.value?.loadTrades()失败\n- Vue 3 Composition API的<script setup>默认不暴露方法\n\n需要添加：\n```typescript\n// Expose methods to parent component\ndefineExpose({\n  loadTrades\n})\n```",
+      "stackTrace": "error TS2339: Property 'loadTrades' does not exist on type 'CreateComponentPublicInstanceWithMixins<ToResolvedProps<{}, {}>, {}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, PublicProps, ... 16 more ..., {}>'.",
+      "severity": "medium",
+      "context": {
+        "projectName": "MyStocks",
+        "projectRoot": "/opt/claude/mystocks_spec",
+        "component": "frontend",
+        "environment": "development",
+        "operatingSystem": "Linux (WSL2)",
+        "nodeVersion": "v24.12.0",
+        "browser": "N/A (TypeScript编译时错误)"
+      }
+    },
     {
       "errorCode": "ERR_TS_VUE_TYPE_001",
       "title": "Vue 3.4+ ComponentType 类型未导出",

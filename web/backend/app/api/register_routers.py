@@ -3,6 +3,7 @@ import structlog
 
 # 导入所有 API 路由模块
 from . import (
+    akshare_market,
     announcement,
     auth,
     cache,
@@ -47,6 +48,7 @@ def register_all_routers(app: FastAPI):
     logger.info("开始注册所有API路由器...")
 
     # Standard API Routers
+    app.include_router(akshare_market.router, tags=["akshare-market"])
     app.include_router(data.router, prefix="/api/data", tags=["data"])
     app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])

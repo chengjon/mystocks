@@ -1,85 +1,49 @@
 # config/indicators_registry.yaml
 version: "2.1"
-last_updated: "2026-01-07T14:30:00"
+last_updated: "2026-01-07T16:00:00"
 
 indicators:
-  # -------------------------------------------------------------------------
-  # TREND INDICATORS
-  # -------------------------------------------------------------------------
-  sma_5:
+  # --- Trend ---
+  sma.5:
     indicator_name: "SMA"
-    indicator_type: "trend"
     indicator_id: "sma.5"
-    implementation_type: "python"
     class_name: "SMAIndicator"
     module_path: "src.indicators.implementations.trend.sma"
-    indicator_category: "trend_indicators"
-    use_case: "backtest"
-    supported_backends: ["cpu", "numba", "talib"]
     supports_streaming: true
-    is_lagging: true
-    lookahead_bias: false
-    description: "Simple Moving Average (5 period)"
-    parameters:
-      period:
-        type: "int"
-        default: 5
-        min: 1
-        max: 1000
+    parameters: {period: {default: 5}}
     required_columns: ["close"]
     output_columns: ["sma"]
-    performance_score: 9.0
-    status: "active"
 
-  sma_20:
-    indicator_name: "SMA"
-    indicator_type: "trend"
-    indicator_id: "sma.20"
-    implementation_type: "python"
-    class_name: "SMAIndicator"
-    module_path: "src.indicators.implementations.trend.sma"
-    indicator_category: "trend_indicators"
-    use_case: "backtest"
-    supported_backends: ["cpu", "numba", "talib"]
+  ema.12:
+    indicator_name: "EMA"
+    indicator_id: "ema.12"
+    class_name: "EMAIndicator"
+    module_path: "src.indicators.implementations.trend.ema"
     supports_streaming: true
-    is_lagging: true
-    lookahead_bias: false
-    description: "Simple Moving Average (20 period)"
-    parameters:
-      period:
-        type: "int"
-        default: 20
-        min: 1
-        max: 1000
+    parameters: {period: {default: 12}}
     required_columns: ["close"]
-    output_columns: ["sma"]
-    performance_score: 9.0
-    status: "active"
+    output_columns: ["ema"]
 
-  # -------------------------------------------------------------------------
-  # MOMENTUM INDICATORS
-  # -------------------------------------------------------------------------
-  rsi_14:
+  macd.12.26.9:
+    indicator_name: "MACD"
+    indicator_id: "macd.12.26.9"
+    class_name: "MACDIndicator"
+    module_path: "src.indicators.implementations.trend.macd"
+    supports_streaming: true
+    parameters: 
+      fast_period: 12
+      slow_period: 26
+      signal_period: 9
+    required_columns: ["close"]
+    output_columns: ["macd", "signal", "hist"]
+
+  # --- Momentum ---
+  rsi.14:
     indicator_name: "RSI"
-    indicator_type: "momentum"
     indicator_id: "rsi.14"
-    implementation_type: "python"
     class_name: "RSIIndicator"
     module_path: "src.indicators.implementations.momentum.rsi"
-    indicator_category: "momentum_indicators"
-    use_case: "backtest"
-    supported_backends: ["cpu", "talib", "numba"]
     supports_streaming: true
-    is_lagging: false
-    lookahead_bias: false
-    description: "Relative Strength Index (14 period)"
-    parameters:
-      period:
-        type: "int"
-        default: 14
-        min: 2
-        max: 100
+    parameters: {period: {default: 14}}
     required_columns: ["close"]
     output_columns: ["rsi"]
-    performance_score: 8.5
-    status: "active"

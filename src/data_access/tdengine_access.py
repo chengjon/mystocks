@@ -12,12 +12,61 @@ import pandas as pd
 import logging
 from datetime import datetime
 from typing import Optional
+import re
 
 # 导入核心定义
 from src.core.data_classification import DataClassification
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
 logger = logging.getLogger("TDengineDataAccess")
+
+
+def validate_identifier(identifier: str, identifier_type: str = "identifier") -> str:
+    """
+    验证和清洗SQL标识符（表名、列名等）以防止SQL注入
+
+    Args:
+        identifier: 待验证的标识符
+        identifier_type: 标识符类型（用于错误消息）
+
+    Returns:
+        验证后的安全标识符
+
+    Raises:
+        ValueError: 如果标识符包含不安全字符
+    """
+    # TDengine标识符规则：只能包含字母、数字、下划线
+    # 且必须以字母或下划线开头
+    if not identifier:
+        raise ValueError(f"{identifier_type} cannot be empty")
+
+    # 检查是否只包含安全字符
+    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', identifier):
+        raise ValueError(
+            f"Invalid {identifier_type}: '{identifier}'. "
+            f"Only alphanumeric characters and underscores are allowed."
+        )
+
+    return identifier
+
+
+def validate_table_name(table_name: str) -> str:
+    """验证表名"""
+    return validate_identifier(table_name, "table_name")
+
+
+def validate_symbol(symbol: str) -> str:
+    """验证股票代码格式（6位数字或安全格式）"""
+    if not symbol:
+        raise ValueError("Symbol cannot be empty")
+
+    # 清理：移除不安全字符，只保留字母数字和点
+    clean_symbol = re.sub(r'[^a-zA-Z0-9.]', '', symbol)
+
+    if not clean_symbol:
+        raise ValueError(f"Invalid symbol format: '{symbol}'")
+
+    return clean_symbol
 
 
 class TDengineDataAccess:
@@ -35,13 +84,28 @@ class TDengineDataAccess:
         self._connection = None
 
     def _get_subtable_name(self, super_table: str, symbol: str, suffix: str = "") -> str:
-        """生成子表名"""
-        # 简单清洗 symbol
-        clean_symbol = symbol.lower().replace(".", "_").replace("-", "_")
+        """
+        生成安全的子表名（防止SQL注入）
+
+        Args:
+            super_table: 超级表名称
+            symbol: 股票代码
+            suffix: 后缀（如频率）
+
+        Returns:
+            验证后的安全子表名
+        """
+        # 验证并清洗 symbol
+        clean_symbol = validate_symbol(symbol)
+
+        # 生成子表名（使用安全的字符）
+        clean_symbol = clean_symbol.lower().replace(".", "_").replace("-", "_")
         prefix = "k" if "kline" in super_table else "t"
 
         if suffix:
-            return f"{prefix}_{clean_symbol}_{suffix.lower()}"
+            # 验证后缀
+            clean_suffix = validate_identifier(suffix.lower(), "suffix")
+            return f"{prefix}_{clean_symbol}_{clean_suffix}"
         return f"{prefix}_{clean_symbol}"
 
     def save_data(
@@ -77,14 +141,40 @@ class TDengineDataAccess:
             return False
 
     def _insert_tick_data(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
-        """插入 Tick 数据 (使用直接 SQL 避免 taospy 占位符 Bug)"""
+        """
+        插入 Tick 数据（防止SQL注入和内存失控）
+
+        安全措施：
+        - 使用 validate_symbol 验证股票代码
+        - 使用 validate_table_name 验证表名
+        - 使用 _get_subtable_name 生成安全的子表名
+        - 转义字符串值中的单引号
+        - 限制DataFrame大小防止OOM（最大100万行）
+        """
         try:
+            # 检查DataFrame大小（防止内存失控）
+            if len(data) > 1_000_000:  # 100万行限制
+                raise ValueError(
+                    f"DataFrame too large: {len(data)} rows. "
+                    f"Maximum allowed: 1,000,000 rows. "
+                    f"Please split the data into smaller chunks."
+                )
+
+            # 验证表名
+            safe_table_name = validate_table_name(table_name)
+
             has_txn = "txn_id" in data.columns and "is_valid" in data.columns
 
-            for _, row in data.iterrows():
-                symbol = str(row.get("symbol", "unknown"))
-                exchange = str(row.get("exchange", "sh")).lower()
-                subtable = self._get_subtable_name(table_name, symbol, exchange)
+            # 使用itertuples提高性能（比iterrows快10倍）
+            for row in data.itertuples():
+                # 验证和清洗股票代码
+                symbol = validate_symbol(str(row.get("symbol", "unknown")))
+
+                # 验证和清洗交易所代码
+                exchange = validate_identifier(str(row.get("exchange", "sh")).lower(), "exchange")
+
+                # 生成安全的子表名
+                subtable = self._get_subtable_name(safe_table_name, symbol, exchange)
 
                 ts = row.get("ts", datetime.now())
                 ts_str = ts.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -92,11 +182,19 @@ class TDengineDataAccess:
                 price = float(row.get("price", 0.0))
                 volume = int(row.get("volume", 0))
                 amount = float(row.get("amount", 0.0))
-                txn_id = f"'{row.get('txn_id')}'" if has_txn and row.get("txn_id") else "NULL"
+
+                # 转义 txn_id 中的单引号（如果有）
+                if has_txn and row.get("txn_id"):
+                    txn_id_val = str(row.get("txn_id")).replace("'", "''")
+                    txn_id = f"'{txn_id_val}'"
+                else:
+                    txn_id = "NULL"
+
                 is_valid = str(row.get("is_valid", True)).lower() if has_txn else "true"
 
+                # 使用验证后的标识符构建SQL
                 sql = f"""
-                    INSERT INTO {subtable} USING {table_name}
+                    INSERT INTO {subtable} USING {safe_table_name}
                     TAGS ('{symbol}', '{exchange}')
                     VALUES ('{ts_str}', {price}, {volume}, {amount}, {txn_id}, {is_valid})
                 """
@@ -107,14 +205,39 @@ class TDengineDataAccess:
             return False
 
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
-        """插入分钟 K 线数据 (使用直接 SQL)"""
+        """
+        插入分钟 K 线数据（防止SQL注入和内存失控）
+
+        安全措施：
+        - 验证所有标识符（表名、股票代码、频率）
+        - 转义字符串值中的特殊字符
+        - 限制DataFrame大小防止OOM（最大100万行）
+        - 使用itertuples提高性能
+        """
         try:
+            # 检查DataFrame大小（防止内存失控）
+            if len(data) > 1_000_000:  # 100万行限制
+                raise ValueError(
+                    f"DataFrame too large: {len(data)} rows. "
+                    f"Maximum allowed: 1,000,000 rows. "
+                    f"Please split the data into smaller chunks."
+                )
+
+            # 验证表名
+            safe_table_name = validate_table_name(table_name)
+
             has_txn = "txn_id" in data.columns and "is_valid" in data.columns
 
-            for _, row in data.iterrows():
-                symbol = str(row.get("symbol", "unknown"))
-                frequency = str(row.get("frequency", "1m")).lower()
-                subtable = self._get_subtable_name(table_name, symbol, frequency)
+            # 使用itertuples提高性能（比iterrows快10倍）
+            for row in data.itertuples():
+                # 验证和清洗股票代码
+                symbol = validate_symbol(str(row.get("symbol", "unknown")))
+
+                # 验证和清洗频率
+                frequency = validate_identifier(str(row.get("frequency", "1m")).lower(), "frequency")
+
+                # 生成安全的子表名
+                subtable = self._get_subtable_name(safe_table_name, symbol, frequency)
 
                 ts = row.get("ts", datetime.now())
                 ts_str = ts.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -125,12 +248,19 @@ class TDengineDataAccess:
                 close = float(row.get("close", 0.0))
                 volume = int(row.get("volume", 0))
                 amount = float(row.get("amount", 0.0))
-                txn_id = f"'{row.get('txn_id')}'" if has_txn and row.get("txn_id") else "NULL"
+
+                # 转义 txn_id 中的单引号
+                if has_txn and row.get("txn_id"):
+                    txn_id_val = str(row.get("txn_id")).replace("'", "''")
+                    txn_id = f"'{txn_id_val}'"
+                else:
+                    txn_id = "NULL"
+
                 is_valid = str(row.get("is_valid", True)).lower() if has_txn else "true"
 
                 # 按照 STABLE 定义: ts, open, high, low, close, volume, amount, txn_id, is_valid
                 sql = f"""
-                    INSERT INTO {subtable} USING {table_name}
+                    INSERT INTO {subtable} USING {safe_table_name}
                     TAGS ('{symbol}', '{frequency}')
                     VALUES ('{ts_str}', {open_p}, {high}, {low}, {close}, {volume}, {amount}, {txn_id}, {is_valid})
                 """
@@ -227,17 +357,31 @@ class TDengineDataAccess:
             return False
 
     def invalidate_data_by_txn_id(self, table_name: str, txn_id: str) -> bool:
-        """Saga 补偿操作: 标记数据为无效"""
+        """
+        Saga 补偿操作: 标记数据为无效（防止SQL注入）
+
+        安全措施：
+        - 验证表名
+        - 转义txn_id
+        """
         try:
+            # 验证表名
+            safe_table_name = validate_table_name(table_name)
+
+            # 转义txn_id
+            if not txn_id:
+                raise ValueError("txn_id cannot be empty")
+            safe_txn_id = str(txn_id).replace("'", "''")
+
             conn = self.db_manager.get_connection(self.db_type, "market_data")
-            select_sql = f"SELECT * FROM {table_name} WHERE txn_id = '{txn_id}'"
+            select_sql = f"SELECT * FROM {safe_table_name} WHERE txn_id = '{safe_txn_id}'"
             df = pd.read_sql(select_sql, conn)
 
             if df.empty:
                 return True
 
             df["is_valid"] = False
-            classification = DataClassification.MINUTE_KLINE if "kline" in table_name else DataClassification.TICK_DATA
+            classification = DataClassification.MINUTE_KLINE if "kline" in safe_table_name else DataClassification.TICK_DATA
             return self.save_data(df, classification, table_name)
         except Exception as e:
             logger.error(f"补偿操作失败: {e}")

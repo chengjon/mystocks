@@ -7087,3 +7087,6 @@ web/backend/tests/unit/services/indicators/test_indicator_registry.py::TestOHLCV
 web/backend/tests/unit/services/indicators/test_indicator_registry.py::TestOHLCVData::test_ohlcv_slice,2025-12-30 15:20:21.931643,2025-12-30 15:20:21.932636,0.001,P
 web/backend/tests/unit/services/indicators/test_indicator_registry.py::TestIndicatorResult::test_create_success_result,2025-12-30 15:20:21.933362,2025-12-30 15:20:21.934372,0.001,P
 web/backend/tests/unit/services/indicators/test_indicator_registry.py::TestIndicatorResult::test_get_output,2025-12-30 15:20:21.935293,2025-12-30 15:20:21.937298,0.002,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------

@@ -1,0 +1,316 @@
+"""
+Pytest configuration and fixtures for file-level API testing.
+
+This conftest.py provides shared fixtures and configuration for all
+file-level API tests in the tests/file_level directory.
+
+Features:
+- File-level test client fixtures
+- Test data management
+- Performance monitoring
+- Parallel test execution support
+- Database isolation for file tests
+
+Author: MyStocks Testing Team
+Date: 2026-01-10
+"""
+
+import pytest
+import asyncio
+from typing import Dict, Any, List, Optional, AsyncGenerator
+from pathlib import Path
+from fastapi.testclient import TestClient
+from httpx import AsyncClient
+import tempfile
+import os
+from datetime import datetime
+
+# Import project modules for testing
+try:
+    from web.backend.app.main import app
+    from web.backend.app.core.config import Settings
+    FASTAPI_APP_AVAILABLE = True
+except ImportError:
+    FASTAPI_APP_AVAILABLE = False
+    app = None
+
+# Import our test utilities
+from tests.file_level.fixtures import (
+    TestConfig,
+    TestDataFactory,
+    ParallelTestRunner,
+    PerformanceTester
+)
+
+
+@pytest.fixture(scope="session")
+def test_config() -> TestConfig:
+    """Global test configuration fixture"""
+    return TestConfig()
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create an instance of the default event loop for the test session."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+def fastapi_app():
+    """FastAPI application fixture"""
+    if not FASTAPI_APP_AVAILABLE:
+        pytest.skip("FastAPI application not available for testing")
+    return app
+
+
+@pytest.fixture
+def client(fastapi_app) -> TestClient:
+    """Synchronous test client fixture"""
+    if not fastapi_app:
+        pytest.skip("FastAPI application not available")
+    return TestClient(fastapi_app)
+
+
+@pytest.fixture
+async def async_client(fastapi_app, test_config) -> AsyncGenerator[AsyncClient, None]:
+    """Asynchronous test client fixture"""
+    if not fastapi_app:
+        pytest.skip("FastAPI application not available")
+
+    base_url = test_config.get("api.base_url", "http://testserver")
+    timeout = test_config.get("api.timeout", 30)
+
+    async with AsyncClient(
+        app=fastapi_app,
+        base_url=base_url,
+        timeout=timeout,
+        headers={"Content-Type": "application/json"}
+    ) as client:
+        yield client
+
+
+@pytest.fixture
+def auth_headers(test_config) -> Dict[str, str]:
+    """Authentication headers fixture"""
+    token = test_config.get("api.auth_token")
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return {}
+
+
+@pytest.fixture
+def authenticated_client(client, auth_headers) -> TestClient:
+    """Authenticated test client fixture"""
+    client.headers.update(auth_headers)
+    return client
+
+
+@pytest.fixture
+def test_data_factory() -> TestDataFactory:
+    """Test data factory fixture"""
+    return TestDataFactory()
+
+
+@pytest.fixture
+def sample_market_data(test_data_factory) -> Dict[str, Any]:
+    """Sample market data fixture"""
+    return test_data_factory.create_market_data()
+
+
+@pytest.fixture
+def sample_user_data(test_data_factory) -> Dict[str, Any]:
+    """Sample user data fixture"""
+    return test_data_factory.create_user_data()
+
+
+@pytest.fixture
+def bulk_market_data(test_data_factory) -> List[Dict[str, Any]]:
+    """Bulk market data fixture"""
+    return test_data_factory.create_bulk_market_data(
+        symbols=["600000", "600519", "000001"],
+        count_per_symbol=5
+    )
+
+
+@pytest.fixture
+def parallel_test_runner(test_config) -> ParallelTestRunner:
+    """Parallel test runner fixture"""
+    max_workers = test_config.get("parallel.max_workers", 4)
+    timeout = test_config.get("parallel.worker_timeout", 60)
+    return ParallelTestRunner(max_workers=max_workers, timeout=timeout)
+
+
+@pytest.fixture
+def performance_tester(client) -> PerformanceTester:
+    """Performance tester fixture"""
+    return PerformanceTester(client)
+
+
+@pytest.fixture
+def temp_test_dir() -> Path:
+    """Temporary test directory fixture"""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        yield Path(temp_dir)
+
+
+@pytest.fixture
+def test_report_dir(test_config, temp_test_dir) -> Path:
+    """Test report directory fixture"""
+    report_dir = temp_test_dir / "reports"
+    report_dir.mkdir(exist_ok=True)
+    return report_dir
+
+
+@pytest.fixture(scope="session")
+def test_session_info() -> Dict[str, Any]:
+    """Test session information fixture"""
+    return {
+        "session_id": f"file_test_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+        "start_time": datetime.now(),
+        "test_type": "file_level",
+        "framework_version": "1.0.0"
+    }
+
+
+@pytest.fixture(autouse=True)
+def setup_test_environment(test_config, test_session_info):
+    """Setup test environment for each test"""
+    # Set testing environment variable
+    original_testing = os.environ.get("TESTING")
+    os.environ["TESTING"] = "true"
+
+    yield
+
+    # Restore original environment
+    if original_testing is not None:
+        os.environ["TESTING"] = original_testing
+    else:
+        os.environ.pop("TESTING", None)
+
+
+@pytest.fixture
+def mock_external_services():
+    """Mock external services fixture"""
+    from unittest.mock import MagicMock, patch
+
+    # Mock external API calls
+    mocks = {
+        "akshare": MagicMock(),
+        "tushare": MagicMock(),
+        "baostock": MagicMock(),
+        "efinance": MagicMock(),
+    }
+
+    # Apply patches
+    patches = []
+    for service_name, mock_obj in mocks.items():
+        patch_obj = patch(f"src.adapters.{service_name}_adapter.{service_name}", mock_obj)
+        patch_obj.start()
+        patches.append(patch_obj)
+
+    yield mocks
+
+    # Stop patches
+    for patch_obj in patches:
+        patch_obj.stop()
+
+
+@pytest.fixture
+def isolated_database():
+    """Database isolation fixture for file-level tests"""
+    # This fixture ensures each file-level test gets a clean database state
+    # In a real implementation, this would set up database transactions or
+    # use test-specific database instances
+
+    # For now, just provide isolation context
+    yield
+
+    # Cleanup would happen here
+    # This could include:
+    # - Rolling back database transactions
+    # - Clearing test data
+    # - Resetting database state
+
+
+@pytest.fixture
+def file_test_metadata(request) -> Dict[str, Any]:
+    """Metadata about the current file-level test"""
+    test_class = request.cls
+    test_method = request.function
+
+    # Extract metadata from test class or method
+    metadata = {
+        "test_class": test_class.__name__ if test_class else None,
+        "test_method": test_method.__name__,
+        "file_under_test": getattr(test_class, 'FILE_NAME', None) if test_class else None,
+        "expected_endpoints": getattr(test_class, 'EXPECTED_ENDPOINTS', None) if test_class else None,
+        "api_base": getattr(test_class, 'API_BASE', None) if test_class else None,
+    }
+
+    return metadata
+
+
+# Custom pytest markers for file-level testing
+def pytest_configure(config):
+    """Configure custom pytest markers"""
+    config.addinivalue_line(
+        "markers", "file_level: marks tests as file-level API tests"
+    )
+    config.addinivalue_line(
+        "markers", "contract_test: marks tests as contract validation tests"
+    )
+    config.addinivalue_line(
+        "markers", "performance_test: marks tests as performance tests"
+    )
+    config.addinivalue_line(
+        "markers", "integration_test: marks tests as integration tests"
+    )
+
+
+# Custom pytest hooks for file-level testing
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(config, items):
+    """Modify test collection for file-level tests"""
+    for item in items:
+        # Add file_level marker to tests in file_level directory
+        if "file_level" in str(item.fspath):
+            item.add_marker(pytest.mark.file_level)
+
+        # Add markers based on test class attributes
+        if hasattr(item, 'cls') and item.cls:
+            if hasattr(item.cls, 'TEST_METADATA'):
+                metadata = item.cls.TEST_METADATA
+                if metadata.get('priority') == 'high':
+                    item.add_marker(pytest.mark.high_priority)
+                if 'contract' in metadata.get('test_categories', []):
+                    item.add_marker(pytest.mark.contract_test)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def file_test_session_setup():
+    """Setup for file-level test session"""
+    print("\n🚀 Starting File-Level API Testing Session")
+    print("=" * 60)
+
+    yield
+
+    print("\n✅ File-Level API Testing Session Complete")
+    print("=" * 60)
+
+
+@pytest.fixture(autouse=True)
+def file_test_method_setup(file_test_metadata):
+    """Setup for each file-level test method"""
+    test_info = file_test_metadata
+    if test_info.get('file_under_test'):
+        print(f"\n📋 Testing file: {test_info['file_under_test']}")
+        if test_info.get('expected_endpoints'):
+            print(f"🎯 Expected endpoints: {test_info['expected_endpoints']}")
+
+    yield
+
+    # Test cleanup could go here
+    pass</content>
+<parameter name="filePath">tests/file_level/conftest.py

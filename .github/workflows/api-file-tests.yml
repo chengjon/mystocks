@@ -1,0 +1,149 @@
+# API File-Level Testing CI/CD Pipeline
+
+name: API File-Level Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'web/backend/app/api/**'
+      - 'tests/api/file_tests/**'
+      - 'openspec/changes/implement-api-file-level-testing/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'web/backend/app/api/**'
+      - 'tests/api/file_tests/**'
+
+jobs:
+  api-file-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.11]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: mystocks_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov pytest-xdist
+
+    - name: Install test dependencies
+      run: |
+        pip install fastapi uvicorn httpx pydantic
+
+    - name: Set up test database
+      run: |
+        PGPASSWORD=test psql -h localhost -U postgres -d mystocks_test -f scripts/sql/create_test_schema.sql || true
+
+    - name: Start FastAPI server
+      run: |
+        python -m uvicorn web.backend.app.main:app --host 0.0.0.0 --port 8000 &
+        sleep 10
+
+    - name: Run P0 Contract File Tests
+      run: |
+        python tests/api/file_tests/run_file_tests.py --priority P0 --report json
+      timeout-minutes: 15
+
+    - name: Run P1 Core File Tests
+      run: |
+        python tests/api/file_tests/run_file_tests.py --priority P1 --report json
+      timeout-minutes: 20
+
+    - name: Run P2 Utility File Tests
+      run: |
+        python tests/api/file_tests/run_file_tests.py --priority P2 --report json
+      timeout-minutes: 25
+
+    - name: Generate coverage report
+      run: |
+        python tests/api/file_tests/run_file_tests.py --report json
+        python -m pytest --cov=web/backend/app/api --cov-report=xml --cov-report=html
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          reports/
+          htmlcov/
+
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const results = JSON.parse(fs.readFileSync('reports/api_file_tests.json', 'utf8'));
+
+          const comment = `
+          ## 🧪 API File-Level Test Results
+
+          **Summary:**
+          - 📁 Files: ${results.summary.tested_files}/${results.summary.total_files}
+          - ✅ Passed: ${results.summary.passed_files}
+          - ❌ Failed: ${results.summary.failed_files}
+          - 📊 Success Rate: ${results.summary.overall_success_rate.toFixed(1)}%
+          - 🎯 Coverage: ${results.summary.overall_coverage_rate.toFixed(1)}%
+
+          **Details:** [View Report](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+          `;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: api-file-tests
+    if: always()
+
+    steps:
+    - name: Quality Gate Check
+      run: |
+        # Check if all required tests passed
+        if [ ${{ needs.api-file-tests.result }} != 'success' ]; then
+          echo "❌ API file tests failed - blocking deployment"
+          exit 1
+        fi
+
+        # Check test coverage
+        if [ $(cat reports/api_file_tests.json | jq '.summary.overall_coverage_rate') -lt 70 ]; then
+          echo "❌ Test coverage too low - blocking deployment"
+          exit 1
+        fi
+
+        echo "✅ Quality gate passed - allowing deployment"

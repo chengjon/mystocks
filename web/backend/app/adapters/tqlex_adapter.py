@@ -2,8 +2,13 @@
 通达信TQLEX数据源适配器
 实现竞价抢筹数据获取接口
 
-数据分类: DataClassification.TRADING_ANALYSIS (衍生数据-交易分析)
-存储目标: PostgreSQL+TimescaleDB
+参考instock实现:
+- /opt/iflow/instock/instock/core/crawling/stock_chip_race.py
+- /opt/iflow/instock/instock/core/tablestructure.py
+
+字段说明:
+- sort:1=抢筹委托金额, 2=抢筹成交金额, 3=开盘金额, 4=抢筹幅度, 5=抢筹占比
+- period: 0=早盘(集合竞价), 1=尾盘(收盘竞价)
 """
 
 import os
@@ -20,18 +25,19 @@ logger = logging.getLogger(__name__)
 class TqlexDataSource:
     """通达信TQLEX数据源实现"""
 
-    BASE_URL = "http://excalc.icfqs.com:7616/TQLEX"
-    REQUEST_TIMEOUT = 10
+    BASE_URL = "http://excalc.icfqs.com:7616/TQLEX?Entry=HQServ.hq_nlp"
+    REQUEST_TIMEOUT = 30
     MAX_RETRIES = 3
-    RETRY_DELAY = 1
+    RETRY_DELAY = 2
+    REQUEST_INTERVAL = 3
+
+    HEADERS = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 TdxW",
+    }
 
     def __init__(self, token: Optional[str] = None):
-        """
-        初始化TQLEX数据源
-
-        Args:
-            token: TQLEX接口认证token (如未提供,从环境变量读取)
-        """
+        """初始化TQLEX数据源"""
         if token is None:
             token = os.getenv("TQLEX_TOKEN")
 
@@ -45,16 +51,10 @@ class TqlexDataSource:
         self.token = token
         self.disabled = False
         self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-                "User-Agent": "MyStocks/1.0",
-            }
-        )
+        self.session.headers.update(self.HEADERS)
 
     def _retry_api_call(self, func):
-        """API调用重试装饰器 (复用akshare_adapter的模式)"""
+        """API调用重试装饰器"""
 
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -71,18 +71,120 @@ class TqlexDataSource:
 
         return wrapper
 
+    def _build_request_params(self, period: int, date: Optional[str] = None, count: int = 100) -> list:
+        """构建请求参数"""
+        params = {
+            "funcId": 20,
+            "offset": 0,
+            "count": count,
+            "sort": 1,
+            "period": period,
+            "Token": self.token,
+            "modname": "JJQC",
+        }
+        if date:
+            params["date"] = date
+        return [params]
+
+    def _process_open_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """处理早盘抢筹数据"""
+        if df.empty:
+            return df
+
+        df.columns = [
+            "code",
+            "name",
+            "pre_close",
+            "open_price",
+            "deal_amount",
+            "bid_rate",
+            "bid_trust_amount",
+            "bid_deal_amount",
+            "new_price",
+            "_",
+            "limitup_days",
+            "continuation_days",
+        ]
+
+        df["pre_close"] = df["pre_close"] / 10000
+        df["open_price"] = df["open_price"] / 10000
+        df["bid_rate"] = round(df["bid_rate"] * 100, 2)
+        df["new_price"] = round(df["new_price"], 2)
+        df["change_rate"] = round((df["new_price"] / df["pre_close"] - 1) * 100, 2)
+        df["bid_ratio"] = round((df["bid_deal_amount"] / df["deal_amount"]) * 100, 2)
+
+        df = df[
+            [
+                "code",
+                "name",
+                "new_price",
+                "change_rate",
+                "pre_close",
+                "open_price",
+                "deal_amount",
+                "bid_rate",
+                "bid_trust_amount",
+                "bid_deal_amount",
+                "bid_ratio",
+            ]
+        ]
+
+        return df
+
+    def _process_end_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """处理尾盘抢筹数据"""
+        if df.empty:
+            return df
+
+        df.columns = [
+            "code",
+            "name",
+            "pre_close",
+            "open_price",
+            "deal_amount",
+            "bid_rate",
+            "bid_trust_amount",
+            "bid_deal_amount",
+            "new_price",
+            "_",
+            "limitup_days",
+            "continuation_days",
+        ]
+
+        df["pre_close"] = df["pre_close"] / 10000
+        df["open_price"] = df["open_price"] / 10000
+        df["bid_rate"] = round(df["bid_rate"] * 100, 2)
+        df["new_price"] = round(df["new_price"], 2)
+        df["change_rate"] = round((df["new_price"] / df["pre_close"] - 1) * 100, 2)
+        df["bid_ratio"] = round((df["bid_deal_amount"] / df["deal_amount"]) * 100, 2)
+
+        df = df[
+            [
+                "code",
+                "name",
+                "new_price",
+                "change_rate",
+                "pre_close",
+                "open_price",
+                "deal_amount",
+                "bid_rate",
+                "bid_trust_amount",
+                "bid_deal_amount",
+                "bid_ratio",
+            ]
+        ]
+
+        return df
+
     def get_chip_race_open(self, date: Optional[str] = None) -> pd.DataFrame:
         """
-        获取早盘抢筹数据
+        获取早盘抢筹数据 (集合竞价)
 
         Args:
-            date: 日期 (格式: YYYY-MM-DD), 默认为最新交易日
+            date: 日期 (格式: YYYY-MM-DD 或 YYYYMMDD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 早盘抢筹数据
-                columns: symbol, name, latest_price, change_percent, prev_close,
-                        open_price, race_amount, race_amplitude, race_commission,
-                        race_transaction, race_ratio
         """
         if self.disabled:
             logger.warning("TQLEX适配器未启用,返回空数据")
@@ -90,40 +192,32 @@ class TqlexDataSource:
 
         @self._retry_api_call
         def _fetch():
-            params = {"type": "open"}
-            if date:
-                params["date"] = date
+            if not self.session:
+                return pd.DataFrame()
 
-            response = self.session.get(
-                f"{self.BASE_URL}/chip_race",
-                params=params,
+            date_str = ""
+            if date:
+                date_str = date.replace("-", "")
+
+            params = self._build_request_params(period=0, date=date_str)
+
+            response = self.session.post(
+                self.BASE_URL,
+                json=params,
                 timeout=self.REQUEST_TIMEOUT,
             )
             response.raise_for_status()
 
-            data = response.json()
-            if not data or "data" not in data:
+            data_json = response.json()
+            if not data_json or "datas" not in data_json:
                 return pd.DataFrame()
 
-            df = pd.DataFrame(data["data"])
+            datas = data_json["datas"]
+            if not datas:
+                return pd.DataFrame()
 
-            # 标准化列名(中文 -> 英文)
-            column_mapping = {
-                "代码": "symbol",
-                "名称": "name",
-                "最新价": "latest_price",
-                "涨跌幅": "change_percent",
-                "昨收价": "prev_close",
-                "今开价": "open_price",
-                "开盘金额": "race_amount",
-                "抢筹幅度": "race_amplitude",
-                "抢筹委托金额": "race_commission",
-                "抢筹成交金额": "race_transaction",
-                "抢筹占比": "race_ratio",
-            }
-
-            df = df.rename(columns=column_mapping)
-            df["race_type"] = "open"  # 标记为早盘抢筹
+            df = pd.DataFrame(datas)
+            df = self._process_open_data(df)
 
             return df
 
@@ -131,10 +225,10 @@ class TqlexDataSource:
 
     def get_chip_race_end(self, date: Optional[str] = None) -> pd.DataFrame:
         """
-        获取尾盘抢筹数据
+        获取尾盘抢筹数据 (收盘竞价)
 
         Args:
-            date: 日期 (格式: YYYY-MM-DD), 默认为最新交易日
+            date: 日期 (格式: YYYY-MM-DD 或 YYYYMMDD), 默认为最新交易日
 
         Returns:
             pd.DataFrame: 尾盘抢筹数据
@@ -145,40 +239,32 @@ class TqlexDataSource:
 
         @self._retry_api_call
         def _fetch():
-            params = {"type": "end"}
-            if date:
-                params["date"] = date
+            if not self.session:
+                return pd.DataFrame()
 
-            response = self.session.get(
-                f"{self.BASE_URL}/chip_race",
-                params=params,
+            date_str = ""
+            if date:
+                date_str = date.replace("-", "")
+
+            params = self._build_request_params(period=1, date=date_str)
+
+            response = self.session.post(
+                self.BASE_URL,
+                json=params,
                 timeout=self.REQUEST_TIMEOUT,
             )
             response.raise_for_status()
 
-            data = response.json()
-            if not data or "data" not in data:
+            data_json = response.json()
+            if not data_json or "datas" not in data_json:
                 return pd.DataFrame()
 
-            df = pd.DataFrame(data["data"])
+            datas = data_json["datas"]
+            if not datas:
+                return pd.DataFrame()
 
-            # 标准化列名
-            column_mapping = {
-                "代码": "symbol",
-                "名称": "name",
-                "最新价": "latest_price",
-                "涨跌幅": "change_percent",
-                "昨收价": "prev_close",
-                "收盘价": "close_price",
-                "收盘金额": "race_amount",
-                "抢筹幅度": "race_amplitude",
-                "抢筹委托金额": "race_commission",
-                "抢筹成交金额": "race_transaction",
-                "抢筹占比": "race_ratio",
-            }
-
-            df = df.rename(columns=column_mapping)
-            df["race_type"] = "end"  # 标记为尾盘抢筹
+            df = pd.DataFrame(datas)
+            df = self._process_end_data(df)
 
             return df
 
@@ -201,7 +287,9 @@ class TqlexDataSource:
             if df_open.empty and df_end.empty:
                 return pd.DataFrame()
 
-            # 合并数据
+            df_open["race_type"] = "open"
+            df_end["race_type"] = "end"
+
             df_combined = pd.concat([df_open, df_end], ignore_index=True)
 
             return df_combined
@@ -211,7 +299,6 @@ class TqlexDataSource:
             return pd.DataFrame()
 
 
-# 全局单例
 _tqlex_adapter = None
 
 

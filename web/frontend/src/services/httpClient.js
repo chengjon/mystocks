@@ -27,6 +27,9 @@ class HttpClient {
    * SECURITY: 初始化时调用，获取一次性的CSRF token
    */
   async initializeCsrfToken() {
+    console.log('🔐 Starting CSRF token initialization...')
+    console.log('📡 CSRF endpoint:', this.csrfTokenEndpoint)
+
     try {
       const response = await fetch(this.csrfTokenEndpoint, {
         method: 'GET',
@@ -34,8 +37,11 @@ class HttpClient {
         headers: this.defaultHeaders
       })
 
+      console.log('📡 CSRF response status:', response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log('📦 CSRF response data:', data)
 
         // 处理两种响应格式
         // 新的v1格式: { code, message, data: { token, ... } }
@@ -58,7 +64,7 @@ class HttpClient {
         console.log('✅ CSRF Token initialized successfully')
         return this.csrfToken
       } else {
-        console.warn('⚠️ Failed to retrieve CSRF token')
+        console.warn('⚠️ Failed to retrieve CSRF token, status:', response.status)
         return null
       }
     } catch (error) {
@@ -216,7 +222,10 @@ export const httpClient = new HttpClient()
  * 这应该在Vue应用mount前调用
  */
 export async function initializeSecurity() {
-  await httpClient.initializeCsrfToken()
+  console.log('🛡️ Starting security initialization...')
+  const result = await httpClient.initializeCsrfToken()
+  console.log('🛡️ Security initialization result:', result)
+  return result
 }
 
 export default httpClient

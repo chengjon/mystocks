@@ -1,171 +1,84 @@
-# 智能量化监控与决策系统 - 提案
+# Change: Smart Quantitative Monitoring and Portfolio Management System
+
+## Why
+
+当前系统缺乏智能股票监控和投资组合管理能力，无法满足量化投资需求，而v3.0实施计划通过充分复用现有架构（MonitoringEventPublisher、src/gpu模块）可实现高性价比的快速落地，开发周期9-10周。
+
+## What Changes
+
+### Watchlist Management (监控清单管理)
+- 新增 `monitoring_watchlists` 和 `monitoring_watchlist_stocks` PostgreSQL 表，支持入库上下文记录（entry_price, entry_reason, stop_loss_price, target_price）
+- 新增 8 个 RESTful API 端点（CRUD 清单、批量添加股票、风控配置管理）
+- 数据迁移：现有 watchlist.py 数据 → 新系统（保留历史数据用于回测）
+
+### Dynamic Health Scoring (动态健康度评分)
+- 新增 `MarketRegimeIdentifier` 市场体制识别器（牛/熊/震荡三态）
+- 新增五维雷达图评分（趋势、技术、动量、波动、风险），根据市场体制动态调整权重
+- 新增高级风险指标计算器：Sortino 比率、Calmar 比率、最大回撤持续期、下行标准差
+- 异步批量保存：复用 `MonitoringEventPublisher` + Worker，批量写入 `monitoring_health_scores` 表
+
+### Dual-Mode Calculation Engine (双模计算引擎)
+- 新增 `VectorizedHealthCalculator` (CPU模式，Pandas向量化，100只股票 <5秒)
+- 新增 `GPUHealthCalculator` (GPU模式，CuPy/RAPIDS，1000只股票 <2秒，50-100x加速)
+- 新增 `HealthCalculatorFactory` 智能工厂，根据数据规模和GPU健康状态自动切换
+- 复用 `src/monitoring/gpu_performance_optimizer.py` 和 `src/gpu` 模块
+
+### Portfolio Optimization (投资组合优化)
+- 新增组合整体健康度分析（加权平均评分、风险分布、行业集中度）
+- 新增再平衡建议算法（考虑交易成本、再平衡阈值5%）
+- 新增风险预警系统（止损/止盈触发，三级预警：🔴紧急、🟡提醒、🟢提示）
+
+### Frontend Visualization (前端可视化)
+- 新增清单管理页面（支持入库上下文表单）
+- 新增健康度雷达图组件（ECharts 五维雷达图）
+- 新增风控看板页面（止损/止盈预警列表）
+
+## Impact
+
+### Affected specs
+- 新增 `watchlist-management` 规范
+- 新增 `health-scoring` 规范
+- 新增 `calculation-engine` 规范
+- 新增 `portfolio-optimization` 规范
+- 新增 `data-migration` 规范
+
+### Affected code
+- `src/monitoring/infrastructure/postgresql_async.py` - 新增异步访问层
+- `src/monitoring/domain/market_regime.py` - 新增市场体制识别器
+- `src/monitoring/domain/calculator_cpu.py` - 新增CPU计算引擎
+- `src/monitoring/domain/calculator_gpu.py` - 新增GPU计算引擎
+- `src/monitoring/domain/calculator_factory.py` - 新增计算引擎工厂
+- `src/monitoring/async_monitoring.py` - 扩展支持 `metric_update` 事件
+- `web/backend/app/api/monitoring_watchlists.py` - 新增清单管理API
+- `web/backend/app/api/monitoring_analysis.py` - 新增智能分析API
+- `web/frontend/src/views/monitoring/` - 新增监控相关页面
+
+### Dependencies
+- PostgreSQL (已有) - 存储 watchlist 和 health_scores 表
+- Redis (已有) - 事件总线队列
+- TDengine (已有) - K线数据查询
+- `src/monitoring/gpu_performance_optimizer.py` (已有) - GPU健康检查
+- `src/gpu/` (已有) - GPU加速模块
+
+### Breaking changes
+- None (新增功能，不影响现有系统)
+
+### Performance Impact
+- API响应时间：P95 <500ms (CQRS架构，读写分离)
+- CPU计算：100只股票 <5秒
+- GPU计算：1000只股票 <2秒 (50-100x加速比)
+- Worker批量写入：50条/批次，成功率 >99%
+
+### Data Migration
+- 现有 watchlist.py 数据 → monitoring_watchlists + monitoring_watchlist_stocks 表
+- 保留所有历史入库记录（用于回测验证）
+- 迁移脚本：`scripts/migrations/migrate_watchlist_to_monitoring.py`
+- 预计数据量：~100只股票，5个清单
+
+---
 
 **变更ID**: `add-smart-quant-monitoring`
 **状态**: 待审核
 **创建日期**: 2026-01-07
 **作者**: Claude Code (Main CLI)
-**基于**:
-- `STOCK_MONITORING_IMPLEMENTATION_PLAN_V3.md`
-- `STOCK_MONITORING_IMPLEMENTATION_PLAN_REVIEW.md`
-
----
-
-## 执行摘要
-
-本提案旨在为 MyStocks 系统增加**智能股票监控与投资组合管理能力**，通过充分复用现有架构（MonitoringEventPublisher、GPU加速模块）实现高性价比的快速落地。
-
-### 核心能力
-
-1. **监控清单管理**: 创建多个投资组合清单，精确记录入库上下文（价格、理由、风控）
-2. **动态健康度评分**: 基于市场制度（牛/熊/震荡）自适应调整评分权重
-3. **双模计算引擎**: CPU（Pandas）/GPU（CuPy）自动切换，大数据集性能提升50-100x
-4. **高级风险指标**: Sortino、Calmar、最大回撤持续时间等量化专业指标
-5. **约束优化**: 考虑交易成本的智能权重优化，提供REBALANCE/HOLD建议
-
-### 关键决策
-
-根据审阅反馈，已确定的5个关键问题：
-
-| 问题 | 决策 | 理由 |
-|------|------|------|
-| **GPU切换阈值** | 显存8G，建议4-6G，>3000行用GPU | 平衡性能与资源利用 |
-| **高级风险指标** | ✅ 必须包含 | 专业量化系统核心卖点 |
-| **Phase 2时间** | 建议3周（含GPU集成缓冲） | GPU集成复杂度高 |
-| **entry_strategy_id** | ✅ 删除该字段 | 应用层映射更灵活 |
-| **数据迁移** | ✅ 迁移现有watchlist | 历史数据对回测很重要 |
-
-### 技术亮点
-
-- ✅ **复用率60%**: 充分利用 MonitoringEventPublisher、src/gpu 模块
-- ✅ **CQRS架构**: 读写分离，API响应快4x
-- ✅ **开发周期9周**: 相比全新开发（20周），节省55%时间
-
-### 实施范围
-
-**包含**:
-- 监控清单管理（增强版：入库上下文、风控）
-- 动态健康度评分（五维雷达图 + 高级风险指标）
-- 双模计算引擎（CPU/GPU自动切换）
-- 约束优化算法（交易成本、再平衡阈值）
-- 数据迁移（现有 watchlist.py → 新系统）
-
-**不包含**:
-- 实时交易执行（仅监控和决策）
-- 机器学习预测模型（预留接口）
-- 移动端适配（仅桌面端）
-
-### 风险评估
-
-| 风险 | 等级 | 应对措施 |
-|------|------|---------|
-| GPU集成复杂度 | 🟡 中 | 充分测试、降级到CPU |
-| 异步数据库迁移 | 🟢 低 | 复用现有模式 |
-| 数据迁移失败 | 🟢 低 | 备份、验证测试 |
-| 时间延期 | 🟡 中 | Phase 2预留1周缓冲 |
-
----
-
-## 用户价值
-
-### 量化投资团队
-- **策略归因**: 知道哪个策略贡献最多收益（MACD金叉 vs RSI超卖）
-- **智能调仓**: 自动识别需要止盈/止损的股票
-- **风险控制**: 实时监控组合风险水平（Sortino、Calmar）
-
-### 散户投资者
-- **专业工具**: 获得机构级别的健康度评分
-- **可视化**: 五维雷达图直观展示股票质量
-- **决策支持**: REBALANCE/HOLD建议，避免过度交易
-
----
-
-## 依赖关系
-
-### 前置依赖
-- ✅ FastAPI 后端（已有）
-- ✅ PostgreSQL + TDengine（已有）
-- ✅ Redis（已有）
-- ✅ `src/monitoring/async_monitoring.py`（已有）
-- ✅ `src/gpu` 模块（已有）
-
-### 后续影响
-- 📊 新增前端页面（监控清单、雷达图、风控看板）
-- 🔔 扩展告警系统（止损/止盈提醒）
-- 📈 集成策略回测（使用清单数据）
-
----
-
-## 成功标准
-
-### Phase 1完成标准
-- ✅ 数据库表创建完成
-- ✅ 异步数据库访问层实现
-- ✅ 事件总线扩展完成（支持metric_update事件）
-- ✅ 连接池初始化测试通过
-
-### Phase 2完成标准
-- ✅ 市场体制识别器实现并通过回测验证
-- ✅ CPU向量化引擎实现（100只股票 <5秒）
-- ✅ GPU桥接实现（大数据集性能提升10x+）
-- ✅ 高级风险指标计算器实现（Sortino、Calmar等）
-
-### Phase 3完成标准
-- ✅ 15个API端点实现并测试通过
-- ✅ 数据迁移脚本执行成功
-- ✅ API响应时间 <500ms (P95)
-- ✅ Worker批量写入成功率 >99%
-
-### Phase 4完成标准
-- ✅ 前端清单管理页面上线
-- ✅ 健康度雷达图可视化完成
-- ✅ 风控看板（止损/止盈预警）上线
-
----
-
-## 不包含的内容
-
-为了避免范围蔓延，以下功能**明确排除**在本提案外：
-
-1. **实时交易执行** - 系统仅提供监控和决策建议，不执行实际交易
-2. **机器学习预测** - 不包含基于ML的股价预测模型（预留接口）
-3. **移动端适配** - 仅支持桌面端浏览器（符合项目规范）
-4. **社交功能** - 不包含分享、讨论等社交功能
-5. **多语言支持** - 仅中文界面
-
----
-
-## 后续扩展方向
-
-本提案实施完成后，可考虑以下扩展（需单独提案）：
-
-1. **机器学习集成**: 使用LSTM/Transformer预测股价趋势
-2. **策略回测集成**: 基于清单数据进行历史回测
-3. **实时交易接口**: 对接券商API执行交易
-4. **多因子模型**: 扩展为100+因子的量化模型
-5. **组合优化算法**: 引入Black-Litterman模型
-
----
-
-## 提案审批
-
-### 审批检查清单
-
-- [x] 技术可行性评审通过
-- [x] 架构设计评审通过
-- [x] 实施计划评审通过
-- [ ] 用户需求确认
-- [ ] 时间资源确认
-- [ ] 风险评估完成
-
-### 下一步行动
-
-提案批准后，立即执行：
-1. 创建详细的 `tasks.md`
-2. 启动 Phase 1 开发（基础设施连接）
-3. 建立每周进度评审机制
-
----
-
-**文档版本**: v1.0
-**最后更新**: 2026-01-07
-**状态**: 待审核批准
+**预计周期**: 9-10周

@@ -117,49 +117,92 @@ class ETFData(Base):
         }
 
 
-class ChipRaceData(Base):
-    """竞价抢筹数据表"""
+class ChipRaceOpenData(Base):
+    """早盘抢筹数据表 (cn_stock_chip_race_open)"""
 
-    __tablename__ = "chip_race_data"
+    __tablename__ = "cn_stock_chip_race_open"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    symbol = Column(String(20), nullable=False, comment="股票代码")
+    date = Column(Date, nullable=False, comment="交易日期")
+    code = Column(String(20), nullable=False, comment="股票代码")
     name = Column(String(100), comment="股票名称")
-    trade_date = Column(Date, primary_key=True, nullable=False, comment="交易日期")
-    race_type = Column(String(10), nullable=False, comment="抢筹类型(open/end)")
-    latest_price = Column(DECIMAL(10, 3), comment="最新价")
-    change_percent = Column(DECIMAL(10, 4), comment="涨跌幅")
-    prev_close = Column(DECIMAL(10, 3), comment="昨收价")
+    new_price = Column(DECIMAL(10, 3), comment="最新价")
+    change_rate = Column(DECIMAL(10, 4), comment="涨跌幅")
+    pre_close_price = Column(DECIMAL(10, 3), comment="昨收价")
     open_price = Column(DECIMAL(10, 3), comment="今开价")
-    race_amount = Column(DECIMAL(20, 2), comment="抢筹金额")
-    race_amplitude = Column(DECIMAL(10, 4), comment="抢筹幅度")
-    race_commission = Column(DECIMAL(20, 2), comment="抢筹委托金额")
-    race_transaction = Column(DECIMAL(20, 2), comment="抢筹成交金额")
-    race_ratio = Column(DECIMAL(10, 4), comment="抢筹占比")
+    deal_amount = Column(DECIMAL(20, 2), comment="开盘金额")
+    bid_rate = Column(DECIMAL(10, 4), comment="抢筹幅度")
+    bid_trust_amount = Column(DECIMAL(20, 2), comment="抢筹委托金额")
+    bid_deal_amount = Column(DECIMAL(20, 2), comment="抢筹成交金额")
+    bid_ratio = Column(DECIMAL(10, 4), comment="抢筹占比")
     created_at = Column(TIMESTAMP, default=datetime.utcnow, comment="创建时间")
 
     __table_args__ = (
-        Index("idx_chip_race_symbol", "symbol", "trade_date"),
-        {"comment": "竞价抢筹数据表"},
+        Index("idx_chip_race_open_code", "code", "date"),
+        {"comment": "早盘抢筹数据表"},
     )
 
     def to_dict(self):
         """转换为字典"""
         return {
             "id": self.id,
-            "symbol": self.symbol,
+            "date": self.date.isoformat() if self.date else None,
+            "code": self.code,
             "name": self.name,
-            "trade_date": self.trade_date.isoformat() if self.trade_date else None,
-            "race_type": self.race_type,
-            "latest_price": float(self.latest_price) if self.latest_price else 0,
-            "change_percent": float(self.change_percent) if self.change_percent else 0,
-            "prev_close": float(self.prev_close) if self.prev_close else 0,
+            "new_price": float(self.new_price) if self.new_price else 0,
+            "change_rate": float(self.change_rate) if self.change_rate else 0,
+            "pre_close_price": float(self.pre_close_price) if self.pre_close_price else 0,
             "open_price": float(self.open_price) if self.open_price else 0,
-            "race_amount": float(self.race_amount) if self.race_amount else 0,
-            "race_amplitude": float(self.race_amplitude) if self.race_amplitude else 0,
-            "race_commission": (float(self.race_commission) if self.race_commission else 0),
-            "race_transaction": (float(self.race_transaction) if self.race_transaction else 0),
-            "race_ratio": float(self.race_ratio) if self.race_ratio else 0,
+            "deal_amount": float(self.deal_amount) if self.deal_amount else 0,
+            "bid_rate": float(self.bid_rate) if self.bid_rate else 0,
+            "bid_trust_amount": float(self.bid_trust_amount) if self.bid_trust_amount else 0,
+            "bid_deal_amount": float(self.bid_deal_amount) if self.bid_deal_amount else 0,
+            "bid_ratio": float(self.bid_ratio) if self.bid_ratio else 0,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class ChipRaceEndData(Base):
+    """尾盘抢筹数据表 (cn_stock_chip_race_end)"""
+
+    __tablename__ = "cn_stock_chip_race_end"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    date = Column(Date, nullable=False, comment="交易日期")
+    code = Column(String(20), nullable=False, comment="股票代码")
+    name = Column(String(100), comment="股票名称")
+    new_price = Column(DECIMAL(10, 3), comment="最新价")
+    change_rate = Column(DECIMAL(10, 4), comment="涨跌幅")
+    pre_close_price = Column(DECIMAL(10, 3), comment="昨收价")
+    open_price = Column(DECIMAL(10, 3), comment="今开价")
+    deal_amount = Column(DECIMAL(20, 2), comment="收盘金额")
+    bid_rate = Column(DECIMAL(10, 4), comment="抢筹幅度")
+    bid_trust_amount = Column(DECIMAL(20, 2), comment="抢筹委托金额")
+    bid_deal_amount = Column(DECIMAL(20, 2), comment="抢筹成交金额")
+    bid_ratio = Column(DECIMAL(10, 4), comment="抢筹占比")
+    created_at = Column(TIMESTAMP, default=datetime.utcnow, comment="创建时间")
+
+    __table_args__ = (
+        Index("idx_chip_race_end_code", "code", "date"),
+        {"comment": "尾盘抢筹数据表"},
+    )
+
+    def to_dict(self):
+        """转换为字典"""
+        return {
+            "id": self.id,
+            "date": self.date.isoformat() if self.date else None,
+            "code": self.code,
+            "name": self.name,
+            "new_price": float(self.new_price) if self.new_price else 0,
+            "change_rate": float(self.change_rate) if self.change_rate else 0,
+            "pre_close_price": float(self.pre_close_price) if self.pre_close_price else 0,
+            "open_price": float(self.open_price) if self.open_price else 0,
+            "deal_amount": float(self.deal_amount) if self.deal_amount else 0,
+            "bid_rate": float(self.bid_rate) if self.bid_rate else 0,
+            "bid_trust_amount": float(self.bid_trust_amount) if self.bid_trust_amount else 0,
+            "bid_deal_amount": float(self.bid_deal_amount) if self.bid_deal_amount else 0,
+            "bid_ratio": float(self.bid_ratio) if self.bid_ratio else 0,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

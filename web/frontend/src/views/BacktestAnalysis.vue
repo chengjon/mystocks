@@ -294,7 +294,7 @@ const renderChart = () => {
 
 const exportResult = (row: Result) => console.log('Export:', row)
 const formatPercent = (v: number | null | undefined) => v ? (v * 100).toFixed(2) + '%' : '-'
-const formatMoney = (v: number) => v ? '¥' + v.toLocaleString('zh-CN') : '-'
+const formatMoney = (v: number | null | undefined) => v ? '¥' + v.toLocaleString('zh-CN') : '-'
 const getReturnClass = (v: number | null | undefined) => !v ? '' : v > 0 ? 'data-rise' : v < 0 ? 'data-fall' : ''
 
 onMounted(() => {

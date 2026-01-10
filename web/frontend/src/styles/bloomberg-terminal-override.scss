@@ -1,0 +1,544 @@
+/**
+ * 🎨 MyStocks Bloomberg-Level Terminal UI
+ * Bloomberg级别金融终端界面 - 强制应用版本
+ *
+ * ⚠️  CRITICAL: 使用 !important 确保样式优先级
+ * 解决问题: 界面"太丑"、缺乏专业感、颜色不够深邃
+ *
+ * 创建时间: 2026-01-08
+ * 基于: UI/UX Pro Max + Bloomberg Terminal + TradingView
+ */
+
+/* ============================================
+   强制应用OLED深色背景
+   ============================================ */
+
+:root {
+  /* 纯黑OLED背景 - 更深、更专业 */
+  --el-bg-color: #000000 !important;
+  --el-fill-color-light: #0A0E27 !important;
+  --el-fill-color-lighter: #141824 !important;
+  --el-fill-color-extra-light: #1A1F2E !important;
+  --el-fill-color-blank: #000000 !important;
+  --el-fill-color: #0A0E27 !important;
+
+  /* 文字颜色 - 高对比度 */
+  --el-text-color-primary: #FFFFFF !important;
+  --el-text-color-regular: #E2E8F0 !important;
+  --el-text-color-secondary: #94A3B8 !important;
+  --el-text-color-placeholder: #64748B !important;
+
+  /* 边框颜色 - 微妙但可见 */
+  --el-border-color: #1E293B !important;
+  --el-border-color-light: #334155 !important;
+  --el-border-color-lighter: #475569 !important;
+  --el-border-color-extra-light: #64748B !important;
+
+  /* 专业的金融蓝色 */
+  --el-color-primary: #0080FF !important;
+  --el-color-primary-light-3: #3395FF !important;
+  --el-color-primary-light-5: #66B3FF !important;
+  --el-color-primary-light-7: #99D1FF !important;
+  --el-color-primary-light-8: #B3DEFF !important;
+  --el-color-primary-light-9: #CCE7FF !important;
+  --el-color-primary-dark-2: #0066CC !important;
+
+  /* 成功色 - 绿色（中国习惯：涨） */
+  --el-color-success: #22C55E !important;
+  --el-color-success-light-3: #4ADE80 !important;
+  --el-color-success-light-5: #86EFAC !important;
+  --el-color-success-light-7: #BBF7D0 !important;
+  --el-color-success-dark-2: #16A34A !important;
+
+  /* 警告色 - 橙色 */
+  --el-color-warning: #F59E0B !important;
+  --el-color-warning-light-3: #FBBF24 !important;
+  --el-color-warning-light-5: #FCD34D !important;
+  --el-color-warning-dark-2: #D97706 !important;
+
+  /* 错误色 - 红色（中国习惯：跌） */
+  --el-color-danger: #EF4444 !important;
+  --el-color-danger-light-3: #F87171 !important;
+  --el-color-danger-light-5: #FCA5A5 !important;
+  --el-color-danger-dark-2: #DC2626 !important;
+
+  /* 信息色 - 青色 */
+  --el-color-info: #06B6D4 !important;
+  --el-color-info-light-3: #67E8F9 !important;
+  --el-color-info-light-5: #A5F3FC !important;
+  --el-color-info-dark-2: #0891B2 !important;
+}
+
+/* ============================================
+   全局背景强制应用
+   ============================================ */
+
+body,
+#app {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+/* 主容器背景 */
+.el-container,
+.el-main,
+.app-main,
+.app-container,
+.page-container,
+.view-container {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+/* ============================================
+   侧边栏优化 - 深邃专业
+   ============================================ */
+
+.el-aside,
+.el-menu,
+.el-menu-vertical,
+.sidebar,
+aside {
+  background: linear-gradient(180deg, #000000 0%, #0A0E27 100%) !important;
+  border-right: 1px solid #1E293B !important;
+}
+
+.el-menu-item {
+  color: #94A3B8 !important;
+  transition: all 200ms ease !important;
+}
+
+.el-menu-item:hover {
+  background-color: #1A1F2E !important;
+  color: #FFFFFF !important;
+}
+
+.el-menu-item.is-active {
+  background-color: #0F172A !important;
+  color: #0080FF !important;
+  border-right: 2px solid #0080FF !important;
+}
+
+/* ============================================
+   卡片组件 - 专业深邃
+   ============================================ */
+
+.el-card {
+  background: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  transition: all 200ms ease !important;
+}
+
+.el-card:hover {
+  border-color: #334155 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8) !important;
+  transform: translateY(-2px) !important;
+}
+
+.el-card__header {
+  background: linear-gradient(135deg, #14171C 0%, #1A1F2E 100%) !important;
+  border-bottom: 1px solid #1E293B !important;
+  color: #F8FAFC !important;
+  font-weight: 600 !important;
+  padding: 12px 16px !important;
+}
+
+.el-card__body {
+  background-color: #0F1115 !important;
+  color: #CBD5E0 !important;
+  padding: 16px !important;
+}
+
+/* ============================================
+   表格组件 - 数据密集型
+   ============================================ */
+
+.el-table {
+  background-color: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+}
+
+.el-table th.el-table__cell {
+  background: linear-gradient(180deg, #1A1F2E 0%, #14181F 100%) !important;
+  color: #F8FAFC !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #334155 !important;
+  padding: 8px 0 !important;
+}
+
+.el-table td.el-table__cell {
+  color: #CBD5E0 !important;
+  border-bottom: 1px solid #1E293B !important;
+  padding: 8px 0 !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #1A1F2E !important;
+}
+
+/* 数据颜色类 */
+.text-up { color: #FF3B30 !important; font-weight: 600; }
+.text-down { color: #00E676 !important; font-weight: 600; }
+.text-flat { color: #989B9E !important; }
+
+.bg-up { background-color: rgba(255, 59, 48, 0.15) !important; }
+.bg-down { background-color: rgba(0, 230, 118, 0.15) !important; }
+
+/* ============================================
+   按钮组件 - 专业交互
+   ============================================ */
+
+.el-button {
+  font-weight: 500 !important;
+  transition: all 200ms ease !important;
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #0080FF 0%, #0066CC 100%) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 128, 255, 0.3) !important;
+}
+
+.el-button--primary:hover {
+  background: linear-gradient(135deg, #3395FF 0%, #0080FF 100%) !important;
+  box-shadow: 0 4px 16px rgba(0, 128, 255, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+.el-button--success {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important;
+  border: none !important;
+}
+
+.el-button--danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  border: none !important;
+}
+
+/* ============================================
+   输入框组件
+   ============================================ */
+
+.el-input__wrapper {
+  background-color: #0A0E27 !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  transition: all 200ms ease !important;
+}
+
+.el-input__wrapper:hover {
+  border-color: #334155 !important;
+}
+
+.el-input__wrapper.is-focus {
+  border-color: #0080FF !important;
+  box-shadow: 0 0 0 3px rgba(0, 128, 255, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.el-input__inner {
+  color: #F8FAFC !important;
+  font-family: 'Roboto Mono', 'Courier New', monospace !important;
+}
+
+/* ============================================
+   统计卡片 - 数据展示优化
+   ============================================ */
+
+.stat-card,
+.stats-card,
+.metric-card {
+  background: linear-gradient(135deg, #0F1115 0%, #141A24 100%) !important;
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  transition: all 200ms ease !important;
+}
+
+.stat-card:hover,
+.stats-card:hover,
+.metric-card:hover {
+  border-color: #0080FF !important;
+  box-shadow: 0 0 20px rgba(0, 128, 255, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+.stat-value {
+  font-family: 'Roboto Mono', 'Courier New', monospace !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  line-height: 1.2 !important;
+}
+
+.stat-label {
+  font-size: 12px !important;
+  color: #94A3B8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+}
+
+/* ============================================
+   涨跌颜色 - A股标准（红涨绿跌）
+   ============================================ */
+
+.price-up { color: #FF3B30 !important; }
+.price-down { color: #00E676 !important; }
+.price-flat { color: #989B9E !important; }
+
+.change-up {
+  color: #FF3B30 !important;
+  background: rgba(255, 59, 48, 0.15) !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+}
+
+.change-down {
+  color: #00E676 !important;
+  background: rgba(0, 230, 118, 0.15) !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+}
+
+/* ============================================
+   图表容器优化
+   ============================================ */
+
+.chart-container,
+.kline-container {
+  background: #000000 !important;
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+}
+
+/* ============================================
+   标签页组件
+   ============================================ */
+
+.el-tabs__nav-wrap::after {
+  background-color: #1E293B !important;
+}
+
+.el-tabs__item {
+  color: #94A3B8 !important;
+}
+
+.el-tabs__item:hover {
+  color: #F8FAFC !important;
+}
+
+.el-tabs__item.is-active {
+  color: #0080FF !important;
+}
+
+.el-tabs__active-bar {
+  background-color: #0080FF !important;
+}
+
+/* ============================================
+   下拉菜单
+   ============================================ */
+
+.el-dropdown-menu {
+  background-color: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: #1A1F2E !important;
+  color: #FFFFFF !important;
+}
+
+/* ============================================
+   对话框
+   ============================================ */
+
+.el-dialog {
+  background-color: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+}
+
+.el-dialog__header {
+  background: linear-gradient(135deg, #14171C 0%, #1A1F2E 100%) !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+/* ============================================
+   进度条
+   ============================================ */
+
+.el-progress-bar__inner {
+  background: linear-gradient(90deg, #0080FF 0%, #0066CC 100%) !important;
+}
+
+/* ============================================
+   开关
+   ============================================ */
+
+.el-switch.is-checked .el-switch__core {
+  background-color: #0080FF !important;
+  border-color: #0080FF !important;
+}
+
+/* ============================================
+   滚动条自定义
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0E27 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155 !important;
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important;
+}
+
+/* ============================================
+   专用的数据展示类
+   ============================================ */
+
+/* 专业的数据卡片网格 */
+.data-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* 微光效果 - 悬停时发光 */
+.glow-hover {
+  transition: all 200ms ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgba(0, 128, 255, 0.3) !important;
+}
+
+/* 数据高亮 */
+.data-highlight {
+  color: #FFFFFF !important;
+  font-family: 'Roboto Mono', monospace !important;
+  font-weight: 600 !important;
+}
+
+/* 次要文本 */
+.text-muted {
+  color: #64748B !important;
+}
+
+/* 主要文本 */
+.text-primary {
+  color: #F8FAFC !important;
+}
+
+/* 成功状态文本 */
+.text-success {
+  color: #22C55E !important;
+}
+
+/* 警告状态文本 */
+.text-warning {
+  color: #F59E0B !important;
+}
+
+/* 错误状态文本 */
+.text-danger {
+  color: #EF4444 !important;
+}
+
+/* ============================================
+   响应式调整
+   ============================================ */
+
+@media (max-width: 1366px) {
+  .el-card__body {
+    padding: 12px !important;
+  }
+
+  .stat-value {
+    font-size: 20px !important;
+  }
+}
+
+/* ============================================
+   强制覆盖VitePress和其他样式
+   ============================================ */
+
+.vitepress {
+  --c-bg: #000000 !important;
+  --c-bg-soft: #0A0E27 !important;
+  --c-bg-light: #1A1F2E !important;
+  --c-divider-light: #1E293B !important;
+  --c-text-1: #F8FAFC !important;
+  --c-text-2: #CBD5E0 !important;
+  --c-text-3: #94A3B8 !important;
+}
+
+/* ============================================
+   动画效果
+   ============================================ */
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0, 128, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 128, 255, 0.4);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* 数据加载动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   最终强制覆盖 - 确保样式生效
+   ============================================ */
+
+/* 强制所有容器使用深色背景 */
+* [class*="container"],
+* [class*="layout"],
+* [class*="page"],
+* [class*="view"],
+* [class*="dashboard"],
+* [class*="main"] {
+  background-color: #000000 !important;
+}
+
+/* 强制所有文本使用高对比度颜色 */
+* {
+  text-shadow: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #FFFFFF !important;
+}
+
+p, span, div {
+  color: #CBD5E0 !important;
+}

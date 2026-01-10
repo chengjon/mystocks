@@ -169,6 +169,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 
+.openstock-demo {
   padding: var(--spacing-6);
   max-width: 1400px;
   margin: 0 auto;
@@ -177,6 +178,7 @@ onMounted(() => {
   background: var(--bg-primary);
 }
 
+.background-pattern {
   position: fixed;
   top: 0;
   left: 0;
@@ -228,6 +230,7 @@ onMounted(() => {
   }
 }
 
+.demo-actions {
   display: flex;
   gap: var(--spacing-3);
   margin-bottom: var(--spacing-6);

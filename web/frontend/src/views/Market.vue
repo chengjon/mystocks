@@ -1,96 +1,81 @@
 <template>
   <div class="market-container">
 
+    <!-- Header -->
     <div class="market-header">
-      <h1 class="market-title">MARKET OVERVIEW</h1>
-      <p class="market-subtitle">PORTFOLIO TRACKING | TRADING HISTORY | ASSET DISTRIBUTION</p>
-    </div>
-
-    <div class="stats-grid">
-      <el-card :hoverable="true" class="stat-card">
-        <div class="corner-tl"></div>
-        <div class="stat-content">
-          <div class="stat-icon total-assets">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+      <div class="header-title-section">
+        <h1 class="market-title">MARKET OVERVIEW</h1>
+        <p class="market-subtitle">PORTFOLIO TRACKING | TRADING HISTORY | ASSET DISTRIBUTION</p>
+      </div>
+      <div class="header-actions">
+        <el-button type="primary" size="default" @click="handleRefresh" :loading="loading">
+          <template #icon>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6M1 20v-6h6"></path>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">TOTAL ASSETS</span>
-            <span class="stat-value gold">¥{{ formatNumber(portfolio.total_assets) }}</span>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card :hoverable="true" class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon available-cash">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--fall)" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="16"></line>
-              <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">AVAILABLE CASH</span>
-            <span class="stat-value green">¥{{ formatNumber(portfolio.available_cash) }}</span>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card :hoverable="true" class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon position-value">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2">
-              <path d="M3 3v18h18"></path>
-              <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">POSITION VALUE</span>
-            <span class="stat-value blue">¥{{ formatNumber(portfolio.position_value) }}</span>
-          </div>
-        </div>
-      </el-card>
-
-      <el-card :hoverable="true" class="stat-card">
-        <div class="corner-br"></div>
-        <div class="stat-content">
-          <div class="stat-icon total-profit" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" :stroke="portfolio.total_profit >= 0 ? 'var(--gold-primary)' : 'var(--fall)'" stroke-width="2">
-              <polyline v-if="portfolio.total_profit >= 0" points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-              <polyline v-else points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-              <polyline points="17 6 23 6 23 12"></polyline>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">TOTAL PROFIT</span>
-            <span class="stat-value" :class="portfolio.total_profit >= 0 ? 'profit-up' : 'profit-down'">
-              ¥{{ formatNumber(portfolio.total_profit) }}
-              <span class="stat-percent">({{ portfolio.profit_rate }}%)</span>
-            </span>
-          </div>
-        </div>
-      </el-card>
-    </div>
-
-    <el-card title="I. MARKET DATA" :hoverable="false">
-      <template #header-actions>
-        <el-button type="info" size="small" @click="handleRefresh" :loading="loading">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          REFRESH
+          </template>
+          REFRESH DATA
         </el-button>
+      </div>
+    </div>
+
+    <!-- Bloomberg-style Stat Cards -->
+    <div class="stats-grid">
+      <BloombergStatCard
+        label="TOTAL ASSETS"
+        :value="portfolio.total_assets"
+        icon="wallet"
+        format="currency"
+        :loading="loading"
+      />
+
+      <BloombergStatCard
+        label="AVAILABLE CASH"
+        :value="portfolio.available_cash"
+        icon="coin"
+        trend="down"
+        format="currency"
+        :loading="loading"
+      />
+
+      <BloombergStatCard
+        label="POSITION VALUE"
+        :value="portfolio.position_value"
+        icon="chart"
+        trend="neutral"
+        format="currency"
+        :loading="loading"
+      />
+
+      <BloombergStatCard
+        label="TOTAL PROFIT"
+        :value="portfolio.total_profit"
+        :change="portfolio.profit_rate"
+        :icon="portfolio.total_profit >= 0 ? 'trending-up' : 'trending-down'"
+        :trend="portfolio.total_profit >= 0 ? 'up' : 'down'"
+        format="currency"
+        :loading="loading"
+      />
+    </div>
+
+    <!-- Market Data Section -->
+    <el-card class="market-data-card">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">I. MARKET DATA</span>
+          <div class="header-timestamp" v-if="lastUpdate">
+            Last updated: {{ lastUpdate }}
+          </div>
+        </div>
       </template>
 
-      <div class="tabs">
+      <!-- Bloomberg-style Tabs -->
+      <div class="bloomberg-tabs">
         <button
           v-for="tab in tabs"
           :key="tab.name"
-          :class="['tab', { active: activeTab === tab.name }]"
+          :class="['bloomberg-tab', { active: activeTab === tab.name }]"
           @click="activeTab = tab.name"
         >
           {{ tab.label }}
@@ -98,101 +83,125 @@
       </div>
 
       <div class="tab-content">
+        <!-- Market Stats Tab -->
         <div v-if="activeTab === 'stats'" class="stats-content">
-          <div class="subcard">
+          <div class="bloomberg-subcard">
             <h4 class="subcard-title">TRADING STATISTICS</h4>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <span class="stat-item-label">TOTAL TRADES</span>
-                <span class="stat-item-value">{{ stats.total_trades }}</span>
+            <div class="mini-stats-grid">
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">TOTAL TRADES</span>
+                <span class="mini-stat-value">{{ stats.total_trades }}</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">BUY COUNT</span>
-                <span class="stat-item-value">{{ stats.buy_count }}</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">BUY COUNT</span>
+                <span class="mini-stat-value buy">{{ stats.buy_count }}</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">SELL COUNT</span>
-                <span class="stat-item-value">{{ stats.sell_count }}</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">SELL COUNT</span>
+                <span class="mini-stat-value sell">{{ stats.sell_count }}</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">REALIZED PROFIT</span>
-                <span class="stat-item-value">¥{{ stats.realized_profit?.toFixed(2) || '-' }}</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">REALIZED PROFIT</span>
+                <span class="mini-stat-value">¥{{ stats.realized_profit?.toFixed(2) || '-' }}</span>
               </div>
             </div>
           </div>
 
-          <div class="subcard">
+          <div class="bloomberg-subcard">
             <h4 class="subcard-title">ASSET DISTRIBUTION</h4>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <span class="stat-item-label">TOTAL ASSETS</span>
-                <span class="stat-item-value">¥{{ formatNumber(portfolio.total_assets) }}</span>
+            <div class="mini-stats-grid">
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">TOTAL ASSETS</span>
+                <span class="mini-stat-value">¥{{ formatNumber(portfolio.total_assets) }}</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">CASH RATIO</span>
-                <span class="stat-item-value">{{ ((portfolio.available_cash / portfolio.total_assets) * 100).toFixed(2) }}%</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">CASH RATIO</span>
+                <span class="mini-stat-value">{{ ((portfolio.available_cash / portfolio.total_assets) * 100).toFixed(2) }}%</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">POSITION RATIO</span>
-                <span class="stat-item-value">{{ ((portfolio.position_value / portfolio.total_assets) * 100).toFixed(2) }}%</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">POSITION RATIO</span>
+                <span class="mini-stat-value">{{ ((portfolio.position_value / portfolio.total_assets) * 100).toFixed(2) }}%</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-item-label">YIELD RATE</span>
-                <span class="stat-item-value">{{ portfolio.profit_rate }}%</span>
+              <div class="mini-stat-item">
+                <span class="mini-stat-label">YIELD RATE</span>
+                <span class="mini-stat-value" :class="portfolio.profit_rate >= 0 ? 'profit-up' : 'profit-down'">
+                  {{ portfolio.profit_rate }}%
+                </span>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Positions Tab -->
         <div v-else-if="activeTab === 'positions'">
           <el-table
-            :columns="positionColumns"
             :data="positions"
             :loading="loading"
+            class="bloomberg-table"
+            stripe
+            border
           >
-            <template #cell-symbol="{ value }">
-              <span class="text-mono">{{ value }}</span>
-            </template>
-            <template #cell-quantity="{ value }">
-              <span class="text-mono">{{ value }}</span>
-            </template>
-            <template #cell-cost_price="{ value }">
-              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
-            </template>
-            <template #cell-current_price="{ value }">
-              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
-            </template>
-            <template #cell-market_value="{ row }">
-              <span class="text-mono">¥{{ (row.quantity * row.current_price)?.toFixed(2) || '-' }}</span>
-            </template>
+            <el-table-column prop="symbol" label="CODE" width="120" />
+            <el-table-column prop="stock_name" label="NAME" width="180" />
+            <el-table-column prop="quantity" label="QUANTITY" width="120" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">{{ row.quantity }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="cost_price" label="COST PRICE" width="140" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">¥{{ row.cost_price?.toFixed(2) || '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="current_price" label="CURRENT PRICE" width="140" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">¥{{ row.current_price?.toFixed(2) || '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="MARKET VALUE" width="160" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">¥{{ (row.quantity * row.current_price)?.toFixed(2) || '-' }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
 
+        <!-- Trade History Tab -->
         <div v-else-if="activeTab === 'history'">
           <el-table
-            :columns="tradeColumns"
             :data="trades"
             :loading="loading"
+            class="bloomberg-table"
+            stripe
+            border
           >
-            <template #cell-symbol="{ value }">
-              <span class="text-mono">{{ value }}</span>
-            </template>
-            <template #cell-type="{ row }">
-              <el-tag
-                :text="row.type === 'buy' ? 'BUY' : 'SELL'"
-                :type="row.type === 'buy' ? 'danger' : 'success'"
-                size="small"
-              />
-            </template>
-            <template #cell-quantity="{ value }">
-              <span class="text-mono">{{ value }}</span>
-            </template>
-            <template #cell-price="{ value }">
-              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
-            </template>
-            <template #cell-trade_amount="{ value }">
-              <span class="text-mono">¥{{ value?.toFixed(2) || '-' }}</span>
-            </template>
+            <el-table-column prop="symbol" label="CODE" width="120" />
+            <el-table-column prop="type" label="TYPE" width="100">
+              <template #default="{ row }">
+                <el-tag
+                  :type="row.type === 'buy' ? 'danger' : 'success'"
+                  size="small"
+                >
+                  {{ row.type === 'buy' ? 'BUY' : 'SELL' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="quantity" label="QUANTITY" width="120" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">{{ row.quantity }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="price" label="PRICE" width="140" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">¥{{ row.price?.toFixed(2) || '-' }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="DATE" width="140" />
+            <el-table-column prop="trade_amount" label="AMOUNT" width="160" align="right">
+              <template #default="{ row }">
+                <span class="mono-text">¥{{ row.trade_amount?.toFixed(2) || '-' }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
@@ -201,10 +210,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElCard } from 'element-plus'
-import { ElButton } from 'element-plus'
-import { ElTable, ElTableColumn } from 'element-plus'
+import { ref, onMounted, computed } from 'vue'
+import { ElCard, ElButton, ElTable, ElTableColumn, ElTag } from 'element-plus'
+import BloombergStatCard from '@/components/BloombergStatCard.vue'
 
 interface Portfolio {
   total_assets: number
@@ -240,6 +248,7 @@ interface Trade {
 
 const loading = ref(false)
 const activeTab = ref('stats')
+const lastUpdate = ref('')
 
 const tabs = [
   { name: 'stats', label: 'MARKET STATS' },
@@ -272,24 +281,6 @@ const trades = ref<Trade[]>([
   { symbol: '000002', type: 'buy', quantity: 500, price: 25.80, date: '2025-12-29', trade_amount: 12900 }
 ])
 
-const positionColumns = [
-  { key: 'symbol', label: 'CODE' },
-  { key: 'stock_name', label: 'NAME' },
-  { key: 'quantity', label: 'QUANTITY' },
-  { key: 'cost_price', label: 'COST PRICE' },
-  { key: 'current_price', label: 'CURRENT PRICE' },
-  { key: 'market_value', label: 'MARKET VALUE' }
-]
-
-const tradeColumns = [
-  { key: 'symbol', label: 'CODE' },
-  { key: 'type', label: 'TYPE' },
-  { key: 'quantity', label: 'QUANTITY' },
-  { key: 'price', label: 'PRICE' },
-  { key: 'date', label: 'DATE' },
-  { key: 'trade_amount', label: 'AMOUNT' }
-]
-
 const formatNumber = (value: number): string => {
   if (!value) return '0.00'
   return value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -298,6 +289,18 @@ const formatNumber = (value: number): string => {
 const loadData = async (): Promise<void> => {
   loading.value = true
   await new Promise(resolve => setTimeout(resolve, 500))
+
+  // Update timestamp
+  const now = new Date()
+  lastUpdate.value = now.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
+
   loading.value = false
 }
 
@@ -311,230 +314,296 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+// Phase 3.3: Design Token Migration
+@use 'sass:color';
+@import '@/styles/theme-tokens.scss';
 
+// ============================================
+//   Bloomberg Terminal Style Market Page
+// ============================================
+
+.market-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  background: var(--bg-primary);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-primary);
   min-height: 100vh;
 }
 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.04;
-  background-image:
-    repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
-    repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
-}
-
-  position: relative;
-  z-index: 1;
-}
-
+// Header
 .market-header {
-  text-align: center;
-  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+
+  .header-title-section {
+    flex: 1;
+  }
 
   .market-title {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 600;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--gold-primary);
-    margin: 0 0 var(--space-sm) 0;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    margin: 0 0 var(--spacing-sm) 0;
+    line-height: 1.2;
   }
 
   .market-subtitle {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    color: var(--silver-muted);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
     margin: 0;
+    line-height: 1.4;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: var(--spacing-md);
   }
 }
 
+// Stats Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
-}
+  gap: var(--spacing-lg);
 
-.stat-card {
-  position: relative;
-  padding: var(--space-lg) !important;
-
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
-    border: 2px solid var(--gold-primary);
-  }
-
-    top: 8px;
-    left: 8px;
-    border-right: none;
-    border-bottom: none;
-  }
-
-    bottom: 8px;
-    right: 8px;
-    border-left: none;
-    border-top: none;
+  @media (max-width: 1440px) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.stat-content {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
+// Market Data Card
+.market-data-card {
+  background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-elevated) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
 
-.stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--gold-dim);
-}
-
-.stat-info {
-  flex: 1;
-
-  .stat-label {
-    display: block;
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    color: var(--silver-muted);
-    margin-bottom: var(--space-xs);
+  :deep(.el-card__header) {
+    background: transparent;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-md) var(--spacing-lg);
   }
 
-  .stat-value {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 1.5rem;
-    font-weight: 700;
+  :deep(.el-card__body) {
+    padding: var(--spacing-lg);
+  }
 
-    &.gold { color: var(--gold-primary); }
-    &.green { color: var(--fall); }
-    &.blue { color: #4A90E2; }
-    &.profit-up { color: var(--gold-primary); }
-    &.profit-down { color: var(--fall); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
 
-    .stat-percent {
-      font-size: 0.875rem;
-      margin-left: var(--space-xs);
+    .card-title {
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+    }
+
+    .header-timestamp {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
   }
 }
 
-.tabs {
+// Bloomberg-style Tabs
+.bloomberg-tabs {
   display: flex;
   gap: 2px;
-  border-bottom: 1px solid var(--gold-dim);
-  margin-bottom: var(--space-xl);
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: var(--spacing-lg);
 }
 
-.tab {
+.bloomberg-tab {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: var(--silver-muted);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
+  letter-spacing: 0.15em;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 0.2s ease;
 
   &:hover {
-    color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.05);
+    color: var(--color-accent);
+    background: var(--color-accent-alpha-90);
   }
 
   &.active {
-    color: var(--gold-primary);
-    border-bottom-color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.08);
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+    background: var(--color-accent-alpha-90);
   }
 }
 
+// Tab Content
 .tab-content {
-  min-height: 300px;
+  min-height: 400px;
 }
 
+// Stats Content
 .stats-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
+  gap: var(--spacing-lg);
+
+  @media (max-width: 1440px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-  background: var(--bg-secondary);
-  border: 1px solid var(--gold-dim);
-  padding: var(--space-lg);
+// Bloomberg Subcard
+.bloomberg-subcard {
+  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-lg);
 
   .subcard-title {
-    font-family: var(--font-display);
-    font-size: 0.875rem;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    color: var(--gold-primary);
-    margin: 0 0 var(--space-lg) 0;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    margin: 0 0 var(--spacing-md) 0;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
   }
 }
 
-.stats-grid {
+// Mini Stats Grid
+.mini-stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  gap: var(--spacing-md);
 }
 
-.stat-item {
+.mini-stat-item {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--spacing-xs);
 
-  .stat-item-label {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    color: var(--silver-muted);
+  .mini-stat-label {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: 0.1em;
+    color: var(--color-text-tertiary);
   }
 
-  .stat-item-value {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--silver-text);
+  .mini-stat-value {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+
+    &.buy {
+      color: var(--color-stock-down);
+    }
+
+    &.sell {
+      color: var(--color-stock-up);
+    }
+
+    &.profit-up {
+      color: var(--color-stock-down);
+    }
+
+    &.profit-down {
+      color: var(--color-stock-up);
+    }
   }
 }
 
-.text-mono {
-  font-family: var(--font-mono);
+// Bloomberg Table Styling
+.bloomberg-table {
+  background: transparent !important;
+
+  :deep(.el-table__header-wrapper) {
+    background: var(--color-bg-secondary);
+    border-bottom: 2px solid var(--color-border);
+
+    th {
+      background: var(--color-bg-secondary) !important;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: var(--spacing-md) 0;
+    }
+  }
+
+  :deep(.el-table__body-wrapper) {
+    background: transparent;
+
+    tr {
+      background: transparent !important;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: var(--color-accent-alpha-90) !important;
+      }
+
+      td {
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-md) 0;
+      }
+    }
+  }
+
+  .mono-text {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+  }
 }
 
+// Responsive Design
 @media (max-width: 1440px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .market-container {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .market-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
   }
 
   .stats-content {
@@ -543,12 +612,27 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+  .market-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .market-header {
+    .market-title {
+      font-size: var(--font-size-xl);
+    }
+
+    .market-subtitle {
+      font-size: var(--font-size-xs);
+    }
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
 
-    padding: var(--space-md);
-    gap: var(--space-md);
+  .mini-stats-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

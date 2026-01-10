@@ -275,6 +275,7 @@ onMounted(() => {
   background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
 }
 
+.background-pattern {
   position: fixed;
   top: 0;
   left: 0;

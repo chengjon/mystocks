@@ -35,7 +35,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 8. [代码质量保证](#代码质量保证)
 9. [监控系统](#监控系统)
 10. [技术指标管理](#技术指标管理)
-11. [数据源管理工具](#数据源管理工具)
+11. **[数据源管理工具](#数据源管理工具)** 🚨 **(含强制性开发指引)**
 12. [Task Master AI集成](#task-master-ai集成)
 13. [BUG登记](#bug登记)
 
@@ -993,6 +993,14 @@ docker logs mystocks-grafana -f
 
 **状态**: ✅ 生产就绪 (2026-01-02) | **版本**: V2.0
 
+### 🚨 强制性开发指引
+
+**⚠️ 重要**: 所有新增API和新建数据源的开发工作**必须**阅读并遵守开发指引：
+
+📖 [`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`](./docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+
+---
+
 数据源管理工具提供统一的接口来管理、测试、监控所有外部数据源端点。
 
 ### 管理范围
@@ -1147,63 +1155,139 @@ python scripts/tools/manual_data_source_tester.py --interactive
 
 ---
 
-## BUG登记
+## BUG登记与经验教训管理
 
-**快速命令**: 输入 **"登记BUG"**、**"记BUG"**、**"登记bug"** 或 **"记bug"** 触发
+**核心原则**: 记录所有有一定难度/或出现频度高的BUG，总结经验教训，为后续开发提供预防指引。
 
-### 功能说明
+### 📝 BUG报告系统
 
-当发现需要登记的BUG时，使用上述命令，Claude Code 将：
-1. 读取 `/opt/claude/mystocks_spec/docs/reports/bugs/MANUAL_BUG_REPORTING_GUIDE.md` 获取最新模板格式
-2. 读取 `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-template.json` 获取模板结构
-3. 根据刚才修复的问题，按模板要求生成 BUG 登记文件
-4. 保存到 `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-report.json`
+MyStocks项目使用完整的BUG报告系统，包括：
 
-### 模板格式
+1. **BUG报告模板**: 标准化的BUG登记格式
+2. **经验教训索引**: 总结常见问题和预防措施
+3. **自动报告机制**: 修复BUG时自动生成报告
 
-支持两种格式（由 Claude Code 自动选择）：
+#### 快速命令
+
+输入以下任一命令触发BUG登记：
+- **"登记BUG"**
+- **"记BUG"**
+- **"登记bug"**
+- **"记bug"**
+
+#### BUG报告流程
+
+当发现需要登记的BUG时，Claude Code 将：
+
+1. **读取模板**: `docs/standards/bug-report-template.json`
+2. **填写BUG信息**: 按照模板格式记录问题
+3. **保存报告**: `docs/quality/bugs/BUG-YYYYMMDD-{errorCode}.json`
+4. **更新索引**: 更新经验教训索引文档
+
+#### 模板格式
+
+支持两种格式：
 
 | 格式 | 字段 | 数量限制 |
 |------|------|----------|
 | 单个BUG | `bug` 对象 | 1个 |
 | 批量BUG | `bugs` 数组 | 最多20个 |
 
-### metadata 必填字段
+#### 必填字段
 
-| 字段 | 说明 |
-|------|------|
-| `version` | 固定为 `"1.0"` |
-| `format` | 固定为 `"buger-manual-report"` |
-| `reportedAt` | ISO 8601 格式时间 |
-| `reporter` | 登记人姓名 |
+**metadata 元数据**:
 
-### BUG 字段说明
-
-| 字段 | 必填 | 说明 |
+| 字段 | 说明 | 示例 |
 |------|------|------|
-| `errorCode` | 是 | 大写字母、数字、下划线，如 `ERR_TS_TYPE_001` |
-| `title` | 是 | BUG标题，简明扼要 |
-| `message` | 是 | 详细错误描述 |
-| `severity` | 是 | critical/high/medium/low |
+| `version` | 固定为 `"1.0"` | - |
+| `format` | 固定为 `"mystocks-bug-report"` | - |
+| `reportedAt` | ISO 8601 格式时间 | `"2026-01-08T11:30:00Z"` |
+| `reporter` | 登记人姓名 | `"Claude Code"` |
 
-### 严重程度分级
+**BUG 对象**:
 
-| 级别 | 标识 | 影响范围 |
-|------|------|----------|
-| critical | 🔴 崩溃 | 系统不可用 |
-| high | 🟠 严重 | 核心功能受损 |
-| medium | 🟡 中等 | 功能异常，有 workaround |
-| low | 🟢 轻微 | UI显示问题等 |
+| 字段 | 必填 | 说明 | 示例 |
+|------|------|------|------|
+| `errorCode` | ✅ | 大写字母、数字、下划线 | `ERR_DDD_IMPORT_001` |
+| `title` | ✅ | BUG标题，简明扼要 | "DDD模块导入路径错误" |
+| `message` | ✅ | 详细错误描述 | "Market Data Context的仓储接口导入路径错误..." |
+| `stackTrace` | ❌ | 错误堆栈信息 | "ModuleNotFoundError: ..." |
+| `severity` | ✅ | 严重程度 | critical/high/medium/low |
+| `context` | ❌ | 上下文信息（强烈建议填写） | {projectName, component, phase} |
 
-### 相关文件
+#### 严重程度分级
 
-- 模板指南: `/opt/claude/mystocks_spec/docs/reports/bugs/MANUAL_BUG_REPORTING_GUIDE.md`
-- 模板文件: `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-template.json`
-- 输出位置: `/opt/claude/mystocks_spec/docs/reports/bugs/manual-bug-report.json`
+| 级别 | 标识 | 响应时间 | 影响范围 | 使用场景 |
+|------|------|----------|----------|----------|
+| **critical** | 🔴 崩溃 | **立即修复** | 系统不可用 | 服务启动失败、数据丢失、安全漏洞 |
+| **high** | 🟠 严重 | **4小时内** | 核心功能受损 | 重要功能不可用、性能严重下降 |
+| **medium** | 🟡 中等 | **24小时内** | 功能异常 | 非核心功能异常、有workaround |
+| **low** | 🟢 轻微 | **下迭代** | 轻微问题 | UI显示问题、代码规范 |
+
+### 📚 经验教训索引
+
+**文档位置**: `docs/guides/BUG_LESSONS_LEARNED.md`
+
+**核心功能**:
+- 记录常见BUG类型和根本原因
+- 提供预防措施和最佳实践
+- 为开发人员提供事前指引
+- 包含快速参考和检查清单
+
+**使用方法**:
+1. **开发前查阅**: 看是否有类似问题记录
+2. **应用预防措施**: 在开发前就避免这些问题
+3. **报告新问题**: 如果是新问题，按模板登记BUG并更新索引
+
+**已记录的BUG类型**:
+- DDD架构问题（Dataclass字段顺序、Property vs Method）
+- 数据类型问题（浮点数精度）
+- 测试问题（测试与实现不匹配）
+- 导入路径问题（路径与文件名不一致）
+- 配置问题（Linter自动修改）
+
+### 🔧 开发前检查清单
+
+在开始开发前，请确认：
+
+- [ ] **查阅经验教训索引**: `docs/guides/BUG_LESSONS_LEARNED.md`
+- [ ] **读取现有实现**: 使用Glob/Grep查找相关代码
+- [ ] **理解现有API**: 检查方法签名、参数、返回值
+- [ ] **验证导入路径**: 确保`__init__.py`正确导出
+- [ ] **了解命名约定**: 遵循现有代码风格
+- [ ] **运行现有测试**: 确保基线测试通过
+
+### 📂 相关文件
+
+**BUG报告系统**:
+- 模板文件: `docs/standards/bug-report-template.json`
+- 经验教训索引: `docs/guides/BUG_LESSONS_LEARNED.md`
+- BUG报告目录: `docs/quality/bugs/`
+- 使用指南: `/opt/iflow/buger/tools/maintenance/MANUAL_BUG_REPORTING_GUIDE.md`
+
+**参考文档**（外部）:
+- `/opt/iflow/buger/tools/maintenance/manual-bug-template.json` - 外部BUGer模板
+- `/opt/iflow/buger/tools/maintenance/MANUAL_BUG_REPORTING_GUIDE.md` - 外部BUGer指南
+
+### 🤖 自动报告机制（未来实现）
+
+计划中的自动化功能：
+
+```bash
+# Hook触发：git commit时检查是否修复了BUG
+# 自动生成BUG报告并保存到 docs/quality/bugs/
+# 自动更新经验教训索引
+```
+
+**待实现功能**:
+1. ✅ Pre-commit hook: 检测commit message是否包含BUG修复
+2. ⏳ 自动生成BUG报告: 从diff中提取BUG信息
+3. ⏳ 自动更新索引: 提取关键信息更新经验教训文档
+4. ⏳ 集成到CI/CD: 测试失败时自动登记BUG
 
 ---
 
-**文档版本**: v2.1 (新增 BUG 登记功能)
-**最后更新**: 2025-12-31
+**文档版本**: v2.2 (新增BUG经验教训索引)
+**最后更新**: 2026-01-08
 **维护者**: Main CLI (Claude Code)
-**新增说明**: 添加 BUG 登记快速命令支持
+**新增说明**: 完整的BUG报告系统和经验教训管理机制

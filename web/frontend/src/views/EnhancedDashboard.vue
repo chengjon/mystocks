@@ -374,6 +374,45 @@ import { dataApi, watchlistApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { Document, Money, PieChart, Grid } from '@element-plus/icons-vue'
 
+// TypeScript 类型定义
+interface StockData {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  volume?: number
+  turnover?: number
+  industry?: string
+}
+
+interface StrategyStock {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  strategy: string
+  score: number
+  signal: string
+}
+
+interface ChartDataPoint {
+  name: string
+  value: number
+}
+
+interface ChartOptions {
+  [key: string]: any  // Allow any chart options (xAxis, yAxis, tooltip, legend, series, etc.)
+}
+
+interface StatItem {
+  title: string
+  value: string
+  icon: any
+  color: string
+  trend: string
+  trendClass: string
+}
+
 // 响应式数据
 const loading = reactive({
   main: false,
@@ -388,32 +427,32 @@ const activeSectorTab = ref('favorites')
 const industryStandard = ref('csrc')
 
 // 图表数据（为ChartContainer准备）
-const priceDistributionData = ref([])
-const priceDistributionOptions = ref({})
-const marketHeatData = ref([])
-const marketHeatOptions = ref({})
-const leadingSectorData = ref([])
-const leadingSectorOptions = ref({})
-const capitalFlowData = ref([])
-const capitalFlowOptions = ref({})
-const capitalFlowData2 = ref([])
-const capitalFlowOptions2 = ref({})
-const industryData = ref([])
-const industryOptions = ref({})
+const priceDistributionData = ref<ChartDataPoint[]>([])
+const priceDistributionOptions = ref<ChartOptions>({})
+const marketHeatData = ref<ChartDataPoint[]>([])
+const marketHeatOptions = ref<ChartOptions>({})
+const leadingSectorData = ref<ChartDataPoint[]>([])
+const leadingSectorOptions = ref<ChartOptions>({})
+const capitalFlowData = ref<ChartDataPoint[]>([])
+const capitalFlowOptions = ref<ChartOptions>({})
+const capitalFlowData2 = ref<ChartDataPoint[]>([])
+const capitalFlowOptions2 = ref<ChartOptions>({})
+const industryData = ref<ChartDataPoint[]>([])
+const industryOptions = ref<ChartOptions>({})
 
 // 页面数据
-const stats = ref([
+const stats = ref<StatItem[]>([
   { title: '总股票数', value: '0', icon: 'Document', color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
   { title: '总市值', value: '0', icon: 'Money', color: '#67C23A', trend: '+0%', trendClass: 'up' },
   { title: '市场分布', value: '0', icon: 'PieChart', color: '#E6A23C', trend: '+0%', trendClass: 'up' },
   { title: '行业分布', value: '0', icon: 'Grid', color: '#F56C6C', trend: '+0%', trendClass: 'down' }
 ])
 
-const hotIndustries = ref([])
-const hotConcepts = ref([])
-const watchlistStocks = ref([])
-const favoriteStocks = ref([])
-const strategyStocks = ref([])
+const hotIndustries = ref<Array<{ industry_name: string; avg_change: number; stock_count: number }>>([])
+const hotConcepts = ref<Array<{ concept_name: string; avg_change: number; stock_count: number }>>([])
+const watchlistStocks = ref<StockData[]>([])
+const favoriteStocks = ref<StockData[]>([])
+const strategyStocks = ref<StrategyStock[]>([])
 
 // 添加关注对话框
 const showAddDialog = ref(false)
@@ -423,8 +462,8 @@ const addForm = ref({
 })
 
 // 工具函数 - 图标组件映射
-const getIconComponent = (iconName: string) => {
-  const iconMap = {
+const getIconComponent = (iconName: string): any => {
+  const iconMap: Record<string, any> = {
     'Document': Document,
     'Money': Money,
     'PieChart': PieChart,
@@ -434,7 +473,7 @@ const getIconComponent = (iconName: string) => {
 }
 
 // 工具函数 - 颜色类型映射
-const getColorType = (color: string) => {
+const getColorType = (color: string): string => {
   if (color === '#67C23A') return 'green'
   if (color === '#F56C6C') return 'red'
   if (color === '#E6A23C') return 'orange'
@@ -443,18 +482,18 @@ const getColorType = (color: string) => {
 }
 
 // 工具函数
-const getPriceChangeClass = (change) => {
+const getPriceChangeClass = (change: number): string => {
   if (change > 0) return 'text-red'
   if (change < 0) return 'text-green'
   return ''
 }
 
-const formatPriceChange = (change) => {
+const formatPriceChange = (change: number | undefined | null): string => {
   if (change === undefined || change === null) return '--'
   return `${change > 0 ? '+' : ''}${change}%`
 }
 
-const formatVolume = (volume) => {
+const formatVolume = (volume: number | undefined | null): string => {
   if (!volume) return '--'
   if (volume >= 10000) {
     return `${(volume / 10000).toFixed(1)}万`
@@ -462,7 +501,7 @@ const formatVolume = (volume) => {
   return volume.toString()
 }
 
-const getSignalTagType = (signal) => {
+const getSignalTagType = (signal: string): 'danger' | 'success' | 'info' => {
   if (signal === '买入') return 'danger'
   if (signal === '卖出') return 'success'
   return 'info'
@@ -555,16 +594,16 @@ const loadHotConcepts = async () => {
   }
 }
 
-const loadWatchlist = async () => {
+const loadWatchlist = async (): Promise<void> => {
   loading.watchlist = true
   try {
     const response = await watchlistApi.getWatchlist()
-    const data = response.data || []
+    const data: any[] = response.data || []
     if (data.length > 0) {
-      watchlistStocks.value = data.map(item => ({
+      watchlistStocks.value = data.map((item: any): StockData => ({
         symbol: item.symbol,
-        display_name: item.display_name || item.symbol,
-        price: '--',
+        name: item.display_name || item.symbol,
+        price: 0,
         change: 0,
         volume: 0
       }))
@@ -670,7 +709,7 @@ const confirmAddToWatchlist = async () => {
   }
 }
 
-const removeFromWatchlist = async (symbol) => {
+const removeFromWatchlist = async (symbol: string): Promise<void> => {
   loading.removeWatchlist = true
   try {
     await watchlistApi.removeFromWatchlist(symbol)
@@ -685,8 +724,8 @@ const removeFromWatchlist = async (symbol) => {
 }
 
 // 图表初始化函数（更新数据给ChartContainer）
-const updatePriceDistributionChart = (distributionData) => {
-  const data = Object.entries(distributionData).map(([name, value]) => ({ name, value }))
+const updatePriceDistributionChart = (distributionData: Record<string, number>): void => {
+  const data: ChartDataPoint[] = Object.entries(distributionData).map(([name, value]) => ({ name, value: Number(value) }))
   priceDistributionData.value = data
   priceDistributionOptions.value = {
     tooltip: {
@@ -726,8 +765,8 @@ const updatePriceDistributionChart = (distributionData) => {
   }
 }
 
-const initMarketHeatChart = async () => {
-  const heatData = [
+const initMarketHeatChart = async (): Promise<void> => {
+  const heatData: ChartDataPoint[] = [
     { name: '上证指数', value: 95 },
     { name: '深证成指', value: 88 },
     { name: '创业板指', value: 82 },
@@ -752,28 +791,28 @@ const initMarketHeatChart = async () => {
     },
     yAxis: {
       type: 'category',
-      data: heatData.map(item => item.name)
+      data: heatData.map((item: ChartDataPoint) => item.name)
     },
     series: [
       {
         name: '市场热度',
         type: 'bar',
-        data: heatData.map(item => item.value)
+        data: heatData.map((item: ChartDataPoint) => item.value)
       }
     ]
   }
 }
 
-const initLeadingSectorChart = async () => {
-  const sectorData = [
-    { name: '半导体', change: 5.2 },
-    { name: '新能源车', change: 4.8 },
-    { name: '光伏', change: 4.5 },
-    { name: '医药', change: 3.9 },
-    { name: '白酒', change: 3.6 },
-    { name: '银行', change: 2.8 },
-    { name: '保险', change: 2.5 },
-    { name: '证券', change: 2.1 }
+const initLeadingSectorChart = async (): Promise<void> => {
+  const sectorData: ChartDataPoint[] = [
+    { name: '半导体', value: 5.2 },
+    { name: '新能源车', value: 4.8 },
+    { name: '光伏', value: 4.5 },
+    { name: '医药', value: 3.9 },
+    { name: '白酒', value: 3.6 },
+    { name: '银行', value: 2.8 },
+    { name: '保险', value: 2.5 },
+    { name: '证券', value: 2.1 }
   ]
 
   leadingSectorData.value = sectorData
@@ -794,20 +833,20 @@ const initLeadingSectorChart = async () => {
     },
     yAxis: {
       type: 'category',
-      data: sectorData.map(item => item.name)
+      data: sectorData.map((item: ChartDataPoint) => item.name)
     },
     series: [
       {
         name: '涨幅',
         type: 'bar',
-        data: sectorData.map(item => item.change)
+        data: sectorData.map((item: ChartDataPoint) => item.value)
       }
     ]
   }
 }
 
-const initCapitalFlowChart = async () => {
-  const flowData = [
+const initCapitalFlowChart = async (): Promise<void> => {
+  const flowData: ChartDataPoint[] = [
     { name: '主力资金', value: 120 },
     { name: '散户资金', value: -80 },
     { name: '机构资金', value: 90 },
@@ -823,7 +862,7 @@ const initCapitalFlowChart = async () => {
       axisPointer: {
         type: 'shadow'
       },
-      formatter: (params) => {
+      formatter: (params: any) => {
         const value = params[0].value
         const absValue = Math.abs(value)
         return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
@@ -833,25 +872,25 @@ const initCapitalFlowChart = async () => {
       type: 'value',
       name: '资金流向(亿元)',
       axisLabel: {
-        formatter: (value) => value > 0 ? `+${value}` : value
+        formatter: (value: number) => value > 0 ? `+${value}` : value
       }
     },
     yAxis: {
       type: 'category',
-      data: flowData.map(item => item.name)
+      data: flowData.map((item: ChartDataPoint) => item.name)
     },
     series: [
       {
         name: '资金流向',
         type: 'bar',
-        data: flowData.map(item => item.value)
+        data: flowData.map((item: ChartDataPoint) => item.value)
       }
     ]
   }
 }
 
-const initCapitalFlowChart2 = async () => {
-  const flowData = [
+const initCapitalFlowChart2 = async (): Promise<void> => {
+  const flowData: ChartDataPoint[] = [
     { name: '主力资金', value: 150 },
     { name: '散户资金', value: -90 },
     { name: '机构资金', value: 110 }
@@ -864,7 +903,7 @@ const initCapitalFlowChart2 = async () => {
       axisPointer: {
         type: 'shadow'
       },
-      formatter: (params) => {
+      formatter: (params: any) => {
         const value = params[0].value
         return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
       }
@@ -875,25 +914,25 @@ const initCapitalFlowChart2 = async () => {
     },
     yAxis: {
       type: 'category',
-      data: flowData.map(item => item.name)
+      data: flowData.map((item: ChartDataPoint) => item.name)
     },
     series: [
       {
         name: '资金流向',
         type: 'bar',
-        data: flowData.map(item => item.value)
+        data: flowData.map((item: ChartDataPoint) => item.value)
       }
     ]
   }
 }
 
-const initIndustryChart = async () => {
+const initIndustryChart = async (): Promise<void> => {
   const mockData = {
     categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
     values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
   }
 
-  industryData.value = mockData.categories.map((name, index) => ({
+  industryData.value = mockData.categories.map((name, index): ChartDataPoint => ({
     name,
     value: mockData.values[index]
   }))
@@ -904,7 +943,7 @@ const initIndustryChart = async () => {
       axisPointer: {
         type: 'shadow'
       },
-      formatter: (params) => {
+      formatter: (params: any) => {
         const value = params[0].value
         return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
       }
@@ -913,7 +952,7 @@ const initIndustryChart = async () => {
       type: 'value',
       name: '资金流向(亿元)',
       axisLabel: {
-        formatter: (value) => value > 0 ? `+${value}` : value
+        formatter: (value: number) => value > 0 ? `+${value}` : value
       }
     },
     yAxis: {
@@ -932,7 +971,7 @@ const initIndustryChart = async () => {
         label: {
           show: true,
           position: 'right',
-          formatter: (params) => {
+          formatter: (params: any) => {
             const value = params.value
             return value > 0 ? `+${value}亿` : `${value}亿`
           },

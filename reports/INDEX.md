@@ -1,8 +1,8 @@
 # Reports
 
-**最后更新**: 2026-01-07 15:28:45
+**最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 354
+**文档数量**: 477
 
 
 ---
@@ -10,11 +10,17 @@
 - [AI3_FRONTEND_COMPONENT_PLAN](reports/AI3_FRONTEND_COMPONENT_PLAN.md)
   - *AI 3 前端组件规划文档*
 
+- [AKSHARE_DATA_SOURCE_API_SUMMARY](reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md)
+  - *MyStocks项目akshare数据源API实现情况总结*
+
 - [ANALYSIS_TOOL_COMPLETION_SUMMARY](reports/ANALYSIS_TOOL_COMPLETION_SUMMARY.md)
   - *API与Web前端数据使用分析工具 - 完成摘要*
 
 - [ANALYSIS_TOOL_README](reports/ANALYSIS_TOOL_README.md)
   - *API与Web前端数据使用分析工具*
+
+- [API_AND_DATA_SOURCE_VERIFICATION_REPORT](reports/API_AND_DATA_SOURCE_VERIFICATION_REPORT.md)
+  - *API与数据源管理工具验证报告*
 
 - [API_AUTOMATION_TEST_GUIDE](reports/API_AUTOMATION_TEST_GUIDE.md)
   - *Playwright API 自动化测试指南*
@@ -33,6 +39,9 @@
 
 - [API_ROUTE_PREFIX_FIX_REPORT](reports/API_ROUTE_PREFIX_FIX_REPORT.md)
   - *API路由前缀修复报告*
+
+- [API_SOURCE_INTEGRATION_GUIDE_ENHANCEMENT_REPORT](reports/API_SOURCE_INTEGRATION_GUIDE_ENHANCEMENT_REPORT.md)
+  - *API和数据源开发指引强化完成报告*
 
 - [API_SPLIT_INDEX](reports/api_split/API_SPLIT_INDEX.md)
   - *API数据清单索引*
@@ -55,6 +64,9 @@
 - [API_VERIFICATION_QUICK_SUMMARY](reports/API_VERIFICATION_QUICK_SUMMARY.md)
   - *API 标准化验证 - 快速摘要*
 
+- [API_VERSION_CONTROL_FIX_20260108](reports/API_VERSION_CONTROL_FIX_20260108.md)
+  - *API版本控制规范化修复报告*
+
 - [API_WEB_DATA_USAGE_REPORT](reports/API_WEB_DATA_USAGE_REPORT.md)
   - *API与Web前端数据使用分析报告*
 
@@ -64,8 +76,14 @@
 - [ARCHITECTURE_REVIEW_REPORT](reports/ARCHITECTURE_REVIEW_REPORT.md)
   - *MyStocks Project - Comprehensive Code Architecture Review*
 
+- [ARRAY_TYPE_INFERENCE_FIX_20260110](reports/ARRAY_TYPE_INFERENCE_FIX_20260110.md)
+  - *Frontend Array Type Inference Fix - Completion Report*
+
 - [ARTDECO_AC_COMPLETION_REPORT](reports/ARTDECO_AC_COMPLETION_REPORT.md)
   - *ArtDeco 优化计划 A+C 完成报告*
+
+- [ARTDECO_CLEANUP_COMPLETION_REPORT](reports/ARTDECO_CLEANUP_COMPLETION_REPORT.md)
+  - *ArtDeco 设计风格清理完成报告*
 
 - [ARTDECO_COMPLETE_CLEANUP_COMPLETION](reports/ARTDECO_COMPLETE_CLEANUP_COMPLETION.md)
   - *ArtDeco 完全清理完成报告*
@@ -160,14 +178,26 @@
 - [BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT](reports/BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md)
   - *Backup & Recovery API Security Implementation Report*
 
+- [BLOOMBERG_TERMINAL_PROJECT_SUMMARY](reports/BLOOMBERG_TERMINAL_PROJECT_SUMMARY.md)
+  - *Bloomberg Terminal 项目完成总结*
+
+- [BLOOMBERG_TESTING_COMPLETION_REPORT](reports/BLOOMBERG_TESTING_COMPLETION_REPORT.md)
+  - *Bloomberg Terminal 测试与文档完成报告*
+
 - [BRANCH_MERGE_STATUS_REPORT](reports/BRANCH_MERGE_STATUS_REPORT.md)
   - *分支合并状态报告*
 
 - [BREADCRUMB_ARTDECO_OPTIMIZATION_REPORT](reports/BREADCRUMB_ARTDECO_OPTIMIZATION_REPORT.md)
   - *Breadcrumb 组件 ArtDeco 风格化报告*
 
+- [BUG_REGISTRATION_20260109](reports/BUG_REGISTRATION_20260109.md)
+  - *BUG 登记完成报告*
+
 - [BUG_VERIFICATION_REPORT](reports/api_verification/BUG_VERIFICATION_REPORT.md)
   - *Phase 2.4 Bug验证报告*
+
+- [CACHE_SYSTEM_ANALYSIS_AND_REDIS_PLAN](reports/CACHE_SYSTEM_ANALYSIS_AND_REDIS_PLAN.md)
+  - *缓存系统分析与 Redis 集成方案*
 
 - [CHART_LIBRARY_COMPARISON_KLINECHARTS_VS_LIGHTWEIGHT](reports/CHART_LIBRARY_COMPARISON_KLINECHARTS_VS_LIGHTWEIGHT.md)
   - *MyStocks 图表库选型分析报告*
@@ -196,6 +226,9 @@
 - [COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03](reports/COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03.md)
   - *MyStocks项目全面架构分析报告*
 
+- [COMPREHENSIVE_CODE_REVIEW_REPORT_20260110](reports/COMPREHENSIVE_CODE_REVIEW_REPORT_20260110.md)
+  - *MyStocks Project - Comprehensive Code Review Report*
+
 - [CORS_FIX_COMPLETION_REPORT](reports/test-results/CORS_FIX_COMPLETION_REPORT.md)
   - *CORS Fix Completion Report*
 
@@ -214,8 +247,41 @@
 - [DATA_CLEANING_VERIFICATION_REPORT](reports/DATA_CLEANING_VERIFICATION_REPORT.md)
   - *数据清洗与验证功能 - 验证报告*
 
+- [DATA_GOVERNANCE_ROADMAP](reports/DATA_GOVERNANCE_ROADMAP.md)
+  - *数据治理与架构演进路线图 V3.0 (GPU 加速融合版)*
+
 - [DATA_MIGRATION_STATUS](reports/DATA_MIGRATION_STATUS.md)
   - *数据迁移状态报告*
+
+- [DATA_SOURCE_ARCHITECTURE_CHECKLIST_20260107](reports/DATA_SOURCE_ARCHITECTURE_CHECKLIST_20260107.md)
+  - *数据源集中管理架构检查清单*
+
+- [DATA_SOURCE_ECOSYSTEM_SUMMARY](reports/DATA_SOURCE_ECOSYSTEM_SUMMARY.md)
+  - *MyStocks 数据源生态系统完整总结*
+
+- [DATA_SOURCE_FUNCTION_LIST_20260107](reports/DATA_SOURCE_FUNCTION_LIST_20260107.md)
+  - *数据源集中管理功能列表清单*
+
+- [DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY](reports/DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY.md)
+  - *数据源优化 V2 - 项目总结报告*
+
+- [DATA_SOURCE_OPTIMIZATION_IMPROVEMENT_SUGGESTIONS](reports/DATA_SOURCE_OPTIMIZATION_IMPROVEMENT_SUGGESTIONS.md)
+  - *数据源优化 V2 - 工作成果总结与改进建议*
+
+- [DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT](reports/DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md)
+  - *数据源优化 V2 - Phase 1 完成报告*
+
+- [DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT](reports/DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md)
+  - *数据源优化 V2 - Phase 2 完成报告*
+
+- [DATA_SOURCE_OPTIMIZATION_PLAN_V2](reports/DATA_SOURCE_OPTIMIZATION_PLAN_V2.md)
+  - *数据源管理与数据治理模块优化方案 V2*
+
+- [DATA_SOURCE_OPTIMIZATION_PROPOSAL](reports/DATA_SOURCE_OPTIMIZATION_PROPOSAL.md)
+  - *数据源管理与数据治理模块优化方案*
+
+- [DATA_SOURCE_OPTIMIZATION_V2_FINAL_COMPREHENSIVE_SUMMARY](reports/DATA_SOURCE_OPTIMIZATION_V2_FINAL_COMPREHENSIVE_SUMMARY.md)
+  - *数据源优化 V2 - 综合总结报告*
 
 - [DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL](reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)
   - *数据源管理V2.0 - 功能增强分析与实施建议*
@@ -238,6 +304,57 @@
 - [DAY1_SMOKE_TEST_RESULTS](reports/DAY1_SMOKE_TEST_RESULTS.md)
   - *Day 1-2 冒烟测试报告*
 
+- [DDD_ARCHITECTURE_APPLICATION_PROPOSAL](reports/DDD_ARCHITECTURE_APPLICATION_PROPOSAL.md)
+  - *MyStocks 智能量化监控与投资组合管理系统 - DDD 详细设计规格说明书*
+
+- [DDD_PHASES_0_3_VALIDATION_REPORT](reports/DDD_PHASES_0_3_VALIDATION_REPORT.md)
+  - *DDD架构验证报告 (Phase 0-3)*
+
+- [DDD_PHASE_10_COMPLETION_REPORT](reports/DDD_PHASE_10_COMPLETION_REPORT.md)
+  - *DDD Phase 10 完成报告: Testing Strategy*
+
+- [DDD_PHASE_11B_COMPLETION_REPORT](reports/DDD_PHASE_11B_COMPLETION_REPORT.md)
+  - *Phase 11B: 自选股与组合管理功能实现报告*
+
+- [DDD_PHASE_11B_VERIFICATION_REPORT](reports/DDD_PHASE_11B_VERIFICATION_REPORT.md)
+  - *Phase 11B: 自选股与组合管理功能验证报告*
+
+- [DDD_PHASE_12_2_COMPLETION_REPORT](reports/DDD_PHASE_12_2_COMPLETION_REPORT.md)
+  - *DDD Phase 12.2 完成报告: Concurrency Control*
+
+- [DDD_PHASE_12_3_COMPLETION_REPORT](reports/DDD_PHASE_12_3_COMPLETION_REPORT.md)
+  - *DDD Phase 12.3 完成报告: Real-time Market Data Integration*
+
+- [DDD_PHASE_12_4_12_5_COMPLETION_REPORT](reports/DDD_PHASE_12_4_12_5_COMPLETION_REPORT.md)
+  - *Phase 12.4 + 12.5: Real-time MTM Integration & Performance Optimization*
+
+- [DDD_PHASE_4_COMPLETION_REPORT](reports/DDD_PHASE_4_COMPLETION_REPORT.md)
+  - *DDD Phase 4 完成报告: Trading Context*
+
+- [DDD_PHASE_4_VALIDATION_REPORT](reports/DDD_PHASE_4_VALIDATION_REPORT.md)
+  - *Phase 4 Validation Report: Trading Context*
+
+- [DDD_PHASE_5_COMPLETION_REPORT](reports/DDD_PHASE_5_COMPLETION_REPORT.md)
+  - *DDD Phase 5 完成报告: Portfolio Context*
+
+- [DDD_PHASE_5_VALIDATION_REPORT](reports/DDD_PHASE_5_VALIDATION_REPORT.md)
+  - *Phase 5 Validation Report: Portfolio Context*
+
+- [DDD_PHASE_6_COMPLETION_REPORT](reports/DDD_PHASE_6_COMPLETION_REPORT.md)
+  - *DDD Phase 6 完成报告: Market Data Context*
+
+- [DDD_PHASE_6_VALIDATION_REPORT](reports/DDD_PHASE_6_VALIDATION_REPORT.md)
+  - *Phase 6 Validation Report: Market Data Context*
+
+- [DDD_PHASE_7_COMPLETION_REPORT](reports/DDD_PHASE_7_COMPLETION_REPORT.md)
+  - *DDD Phase 7 完成报告: Application Layer*
+
+- [DDD_PHASE_8_COMPLETION_REPORT](reports/DDD_PHASE_8_COMPLETION_REPORT.md)
+  - *DDD Phase 8 完成报告: Infrastructure Layer*
+
+- [DDD_PHASE_9_COMPLETION_REPORT](reports/DDD_PHASE_9_COMPLETION_REPORT.md)
+  - *DDD Phase 9 完成报告: Interface Layer*
+
 - [DETAILED_ANALYSIS](reports/test-results/DETAILED_ANALYSIS.md)
   - *Web 应用详细测试分析报告*
 
@@ -253,20 +370,41 @@
 - [DOCUMENT_ORGANIZATION_PLAN_REVIEW](reports/DOCUMENT_ORGANIZATION_PLAN_REVIEW.md)
   - *文档组织计划审阅报告*
 
+- [DOC_CLEANUP_COMPLETION_REPORT](reports/DOC_CLEANUP_COMPLETION_REPORT.md)
+  - *🎉 文档整理项目完成报告*
+
 - [DOC_CLEANUP_EXECUTION_GUIDE](reports/DOC_CLEANUP_EXECUTION_GUIDE.md)
   - *文档整理执行指南*
 
 - [DOC_CLEANUP_PROGRESS_REPORT](reports/DOC_CLEANUP_PROGRESS_REPORT.md)
   - *文档整理进度报告*
 
+- [DUAL_REVIEW_SUMMARY_20260110](reports/DUAL_REVIEW_SUMMARY_20260110.md)
+  - *MyStocks 项目代码审查汇总报告*
+
+- [E2E_COMPLETE_TEST_PLAN](reports/E2E_COMPLETE_TEST_PLAN.md)
+  - *MyStocks项目完整E2E测试计划*
+
 - [E2E_FAILURE_CLASSIFICATION](reports/E2E_FAILURE_CLASSIFICATION.md)
   - *E2E 测试失败分类分析报告*
+
+- [E2E_FINAL_COMPREHENSIVE_REPORT](reports/E2E_FINAL_COMPREHENSIVE_REPORT.md)
+  - *MyStocks项目E2E测试最终报告*
+
+- [E2E_FIX_COMPLETION_REPORT](reports/E2E_FIX_COMPLETION_REPORT.md)
+  - *E2E测试高优先级问题修复报告*
 
 - [E2E_MODULES_VERIFICATION_REPORT_2025-12-31](reports/E2E_MODULES_VERIFICATION_REPORT_2025-12-31.md)
   - *E2E模块验证报告 - 2025-12-31*
 
+- [E2E_PHASE1_COMPLETION_REPORT](reports/E2E_PHASE1_COMPLETION_REPORT.md)
+  - *E2E测试Phase 1完成报告 - P0核心页面测试*
+
 - [E2E_ROUND3_TEST_REPORT](reports/E2E_ROUND3_TEST_REPORT.md)
   - *E2E 测试 Round 3 报告*
+
+- [E2E_TESTING_ROADMAP](reports/E2E_TESTING_ROADMAP.md)
+  - *E2E测试路线图 - PM2 + Playwright全覆盖测试*
 
 - [E2E_TEST_FIXES_COMPLETION](reports/E2E_TEST_FIXES_COMPLETION.md)
   - *E2E Test Selector Fixes - Completion Report*
@@ -279,6 +417,9 @@
 
 - [E2E_VERIFICATION_QUICK_SUMMARY](reports/E2E_VERIFICATION_QUICK_SUMMARY.md)
   - *E2E自动化测试验证 - 快速摘要*
+
+- [EFINANCE_INTEGRATION_COMPLETION_REPORT](reports/EFINANCE_INTEGRATION_COMPLETION_REPORT.md)
+  - *Efinance数据源集成完成报告*
 
 - [ELEMENT_PLUS_GRADUAL_MIGRATION_STATUS](reports/ELEMENT_PLUS_GRADUAL_MIGRATION_STATUS.md)
   - *Element Plus 渐进式迁移状态报告*
@@ -298,6 +439,9 @@
 - [ESLint_CONFIG_FIX_REPORT](reports/ESLint_CONFIG_FIX_REPORT.md)
   - *ESLint 配置问题修复报告*
 
+- [FILE_ORGANIZATION_FIX_20260109](reports/FILE_ORGANIZATION_FIX_20260109.md)
+  - *文件组织修复完成报告*
+
 - [FINAL_COMPLETION_REPORT](reports/test-results/FINAL_COMPLETION_REPORT.md)
   - *🎉 Web应用完整测试与修复完成报告*
 
@@ -310,11 +454,68 @@
 - [FIX_RECOMMENDATIONS](reports/test-results/FIX_RECOMMENDATIONS.md)
   - *🔧 Web应用问题修复建议报告*
 
+- [FRONTEND_ARCHITECTURE_DESIGN_EVALUATION_2026-01-08](reports/FRONTEND_ARCHITECTURE_DESIGN_EVALUATION_2026-01-08.md)
+  - *MyStocks Web 前端架构与设计全面评估报告*
+
+- [FRONTEND_BUILD_BUNDLE_OPTIMIZATION_PHASE1](reports/FRONTEND_BUILD_BUNDLE_OPTIMIZATION_PHASE1.md)
+  - *Frontend Build & Bundle Optimization - Phase 1 完成报告*
+
+- [FRONTEND_BUILD_ERROR_FIX_REPORT_2026-01-08](reports/FRONTEND_BUILD_ERROR_FIX_REPORT_2026-01-08.md)
+  - *前端构建错误修复报告*
+
+- [FRONTEND_COMPREHENSIVE_CODE_REVIEW_20260110](reports/FRONTEND_COMPREHENSIVE_CODE_REVIEW_20260110.md)
+  - *MyStocks 前端代码全面审查报告*
+
+- [FRONTEND_OPTIMIZATION_PROGRESS_2026-01-08](reports/FRONTEND_OPTIMIZATION_PROGRESS_2026-01-08.md)
+  - *前端优化进度报告*
+
+- [FRONTEND_OPTION_C_COMPLETION_REPORT](reports/FRONTEND_OPTION_C_COMPLETION_REPORT.md)
+  - *前端全面优化完成报告（选项C）*
+
+- [FRONTEND_PAGES_INVENTORY](reports/FRONTEND_PAGES_INVENTORY.md)
+  - *MyStocks 前端页面完整清单*
+
+- [FRONTEND_PHASE2_3_4_OPTIMIZATION_REPORT](reports/FRONTEND_PHASE2_3_4_OPTIMIZATION_REPORT.md)
+  - *Frontend Bundle Optimization - Phase 2-4 完成报告*
+
+- [FRONTEND_SERVICE_STATUS_20260109](reports/FRONTEND_SERVICE_STATUS_20260109.md)
+  - *MyStocks Frontend Service Status Report*
+
+- [FRONTEND_VISUAL_DIAGNOSIS](reports/FRONTEND_VISUAL_DIAGNOSIS.md)
+  - *前端视觉问题诊断清单*
+
+- [FRONTEND_VISUAL_OPTIMIZATION_SUMMARY](reports/FRONTEND_VISUAL_OPTIMIZATION_SUMMARY.md)
+  - *前端视觉优化 - 最终交付报告*
+
+- [GPU_API_FIXES_VERIFICATION_REPORT_20260110](reports/GPU_API_FIXES_VERIFICATION_REPORT_20260110.md)
+  - *GPU API Fixes Verification Report*
+
+- [GPU_API修复验证报告_20260110](reports/GPU_API修复验证报告_20260110.md)
+  - *GPU API系统修复验证报告*
+
+- [GPU_FUNCTIONALITY_AUDIT_REPORT_20260110](reports/GPU_FUNCTIONALITY_AUDIT_REPORT_20260110.md)
+  - *GPU Functionality Audit Report*
+
+- [GPU功能审计报告_20260110](reports/GPU功能审计报告_20260110.md)
+  - *GPU功能审计报告*
+
 - [HOOKS_REPAIR_COMPLETION_REPORT](reports/HOOKS_REPAIR_COMPLETION_REPORT.md)
   - *Hooks 配置修复完成报告*
 
 - [HOOK_EXCLUSION_RULES_IMPLEMENTATION](reports/HOOK_EXCLUSION_RULES_IMPLEMENTATION.md)
   - *Hook 排除规则实施报告*
+
+- [INDICATOR_SYSTEM_OPTIMIZATION_IMPLEMENTATION_EVALUATION](reports/INDICATOR_SYSTEM_OPTIMIZATION_IMPLEMENTATION_EVALUATION.md)
+  - *股票指标计算系统优化实施评估报告*
+
+- [INDICATOR_SYSTEM_OPTIMIZATION_PLAN](reports/INDICATOR_SYSTEM_OPTIMIZATION_PLAN.md)
+  - *股票指标计算体系优化方案 (V2.2)*
+
+- [INDICATOR_SYSTEM_V2_FINAL_REPORT](reports/INDICATOR_SYSTEM_V2_FINAL_REPORT.md)
+  - *股票指标计算与管理体系 (V2.2) 优化与整合报告*
+
+- [INDICATOR_SYSTEM_V2_VS_REFERENCE_GAP_ANALYSIS](reports/INDICATOR_SYSTEM_V2_VS_REFERENCE_GAP_ANALYSIS.md)
+  - *股票指标计算体系 - 现状与参考方案差距分析报告*
 
 - [INTELLIGENT_THRESHOLD_MANAGER_ANALYSIS](reports/INTELLIGENT_THRESHOLD_MANAGER_ANALYSIS.md)
   - *智能阈值管理器重构分析报告*
@@ -343,6 +544,12 @@
 - [MONITORING_EXPLORATION_COMPLETE](reports/MONITORING_EXPLORATION_COMPLETE.md)
   - *MyStocks Monitoring System - Exploration Complete*
 
+- [MONITORING_QUICK_REFERENCE](reports/MONITORING_QUICK_REFERENCE.md)
+  - *智能量化监控系统 - 快速参考卡片*
+
+- [MONITORING_SYSTEM_INITIALIZATION_REPORT](reports/MONITORING_SYSTEM_INITIALIZATION_REPORT.md)
+  - *智能量化监控系统 - 初始化与测试报告*
+
 - [MONITORING_SYSTEM_SUMMARY](reports/MONITORING_SYSTEM_SUMMARY.md)
   - *MyStocks 监控系统 - 完整总结*
 
@@ -370,6 +577,12 @@
 - [MULTI_ROLE_COMPREHENSIVE_ASSESSMENT_2026-01-03](reports/MULTI_ROLE_COMPREHENSIVE_ASSESSMENT_2026-01-03.md)
   - *MyStocks项目多角色综合评估报告*
 
+- [MyStocks_API全面分析报告_修正版](reports/MyStocks_API全面分析报告_修正版.md)
+  - *MyStocks项目API全面分析报告 (修正版)*
+
+- [OPENSPEC_V2_PROPOSAL_SUMMARY](reports/OPENSPEC_V2_PROPOSAL_SUMMARY.md)
+  - *数据源优化 V2 OpenSpec 提案创建完成*
+
 - [OPENSPROPOSAL_SUMMARY_2026-01-03](reports/OPENSPROPOSAL_SUMMARY_2026-01-03.md)
   - *OpenSpec变更提案创建完成报告*
 
@@ -391,6 +604,9 @@
 - [P0_TASKS_COMPLETION_REPORT_2026-01-03](reports/P0_TASKS_COMPLETION_REPORT_2026-01-03.md)
   - *P0优先级任务完成报告*
 
+- [P0_TEST_VALIDATION_REPORT](reports/P0_TEST_VALIDATION_REPORT.md)
+  - *P0核心页面E2E测试验证报告*
+
 - [P1_DEEP_INTEGRATION_VERIFICATION](reports/P1_DEEP_INTEGRATION_VERIFICATION.md)
   - *P1 Page Deep Integration Verification Report*
 
@@ -402,6 +618,9 @@
 
 - [P2_PRIORITY_PAGES_ASSESSMENT](reports/P2_PRIORITY_PAGES_ASSESSMENT.md)
   - *P2 Priority Pages Assessment Report*
+
+- [PAGES_REORGANIZATION_PROPOSAL](reports/PAGES_REORGANIZATION_PROPOSAL.md)
+  - *页面重新编排方案 (Page Reorganization Proposal)*
 
 - [PHASE10_BUG_REPORT](reports/PHASE10_BUG_REPORT.md)
   - *Phase 10 发现的 Bug 报告*
@@ -475,6 +694,9 @@
 - [PHASE2_FINAL_COMPLETION_REPORT](reports/PHASE2_FINAL_COMPLETION_REPORT.md)
   - *Phase 2 E2E Testing Framework - Final Completion Report*
 
+- [PHASE2_MENU_REFACTORING_COMPLETION_REPORT](reports/PHASE2_MENU_REFACTORING_COMPLETION_REPORT.md)
+  - *Phase 2: 菜单重构完成报告*
+
 - [PHASE2_TASK2.1_COMPLETION_REPORT](reports/PHASE2_TASK2.1_COMPLETION_REPORT.md)
   - *Phase 2 - Task 2.1 Completion Report: data_access Layer Testing*
 
@@ -493,8 +715,26 @@
 - [PHASE2_TASK2.2.5_COMPLETION_REPORT](reports/PHASE2_TASK2.2.5_COMPLETION_REPORT.md)
   - *Phase 2 - Task 2.2.5 完成报告*
 
+- [PHASE2_VERIFICATION_AND_PHASE3_OPTIMIZATION](reports/PHASE2_VERIFICATION_AND_PHASE3_OPTIMIZATION.md)
+  - *Phase 2 验收与 Phase 3 优化建议报告*
+
+- [PHASE3_5_FIXES_REPORT](reports/PHASE3_5_FIXES_REPORT.md)
+  - *Phase 3.5 Bloomberg Terminal Style 修复报告*
+
+- [PHASE3_5_TEST_RESULTS](reports/PHASE3_5_TEST_RESULTS.md)
+  - *Phase 3.5 测试结果报告*
+
+- [PHASE3_BLOOMBERG_STYLE_TEST_REPORT](reports/PHASE3_BLOOMBERG_STYLE_TEST_REPORT.md)
+  - *Phase 3 Bloomberg Terminal Style 测试报告*
+
 - [PHASE3_COMPLETION_REPORT](reports/PHASE3_COMPLETION_REPORT.md)
   - *Phase 3 完成报告*
+
+- [PHASE3_COMPLETION_REPORT_20260109](reports/PHASE3_COMPLETION_REPORT_20260109.md)
+  - *Phase 3: 高级增强、治理与自动化 - 完成报告*
+
+- [PHASE3_PROGRESS_REPORT_20260109](reports/PHASE3_PROGRESS_REPORT_20260109.md)
+  - *Phase 3: 高级增强、治理与自动化 - 进度报告*
 
 - [PHASE3_SOURCE_COVERAGE_ACHIEVEMENTS](reports/PHASE3_SOURCE_COVERAGE_ACHIEVEMENTS.md)
   - *🎯 Phase 3 源代码覆盖率突破性成就报告*
@@ -504,6 +744,9 @@
 
 - [PHASE3_STATUS](reports/PHASE3_STATUS.md)
   - *Phase 3 E2E测试框架 - 快速状态摘要*
+
+- [PHASE3_STYLE_UNIFICATION_PROGRESS_REPORT](reports/PHASE3_STYLE_UNIFICATION_PROGRESS_REPORT.md)
+  - *Phase 3: 样式统一进度报告*
 
 - [PHASE3_TASK_CREATION_SUMMARY](reports/PHASE3_TASK_CREATION_SUMMARY.md)
   - *Phase 3 任务创建总结*
@@ -673,6 +916,12 @@
 - [PHASE_9_IMPLEMENTATION_PLAN](reports/PHASE_9_IMPLEMENTATION_PLAN.md)
   - *Phase 9 Implementation Plan*
 
+- [PORTFOLIO_MANAGEMENT_REDESIGN_SUMMARY](reports/PORTFOLIO_MANAGEMENT_REDESIGN_SUMMARY.md)
+  - *PortfolioManagement 页面重新设计总结*
+
+- [PORTFOLIO_MANAGEMENT_TEST_REPORT_20260108](reports/PORTFOLIO_MANAGEMENT_TEST_REPORT_20260108.md)
+  - *PortfolioManagement Page Test Report*
+
 - [PORT_STANDARDIZATION_COMPLETION_REPORT](reports/test-results/PORT_STANDARDIZATION_COMPLETION_REPORT.md)
   - *端口规范化完成报告*
 
@@ -691,8 +940,14 @@
 - [PROJECT_STATUS_QUICK_INDEX](reports/PROJECT_STATUS_QUICK_INDEX.md)
   - *项目状态快速索引*
 
+- [PRO_FINTECH_UI_IMPROVEMENT_GUIDE](reports/PRO_FINTECH_UI_IMPROVEMENT_GUIDE.md)
+  - *MyStocks 专业金融终端界面改进指南*
+
 - [QUICKSTART](reports/api_split/QUICKSTART.md)
   - *API数据清单 - 快速入门*
+
+- [RALPH_LOOP_AND_QUALITY_GATE_FIX_REPORT](reports/RALPH_LOOP_AND_QUALITY_GATE_FIX_REPORT.md)
+  - *Ralph 循环和 Web Quality Gate 问题 - 修复报告*
 
 - [README_API_CONTRACT](reports/README_API_CONTRACT.md)
   - *API契约标准化项目报告 (Phase 6)*
@@ -700,11 +955,32 @@
 - [REALTIME_MARKET_SAGA_COMPLETION_REPORT](reports/REALTIME_MARKET_SAGA_COMPLETION_REPORT.md)
   - *实时行情接入 Saga 业务补全报告*
 
+- [REDIS_OPTIMIZATION_PHASE2_COMPLETION_REPORT](reports/REDIS_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md)
+  - *Redis Optimization Phase 2: SmartScheduler Distributed Locking - Completion Report*
+
+- [REDIS_OPTIMIZATION_PHASE2_PLAN](reports/REDIS_OPTIMIZATION_PHASE2_PLAN.md)
+  - *Redis 优化方案 Phase 1 验收与后续实施计划*
+
+- [REDIS_OPTIMIZATION_PHASE3_COMPLETION_REPORT](reports/REDIS_OPTIMIZATION_PHASE3_COMPLETION_REPORT.md)
+  - *Redis Optimization Phase 3: Event-Driven Real-Time Monitoring - Completion Report*
+
+- [REDIS_THREE_DATABASE_ARCHITECTURE_INTEGRATION_REPORT](reports/REDIS_THREE_DATABASE_ARCHITECTURE_INTEGRATION_REPORT.md)
+  - *Redis三数据库架构集成完成报告*
+
+- [REDIS_THREE_DATABASE_OPTIMIZATION_PROPOSAL](reports/REDIS_THREE_DATABASE_OPTIMIZATION_PROPOSAL.md)
+  - *Redis 三数据库架构集成与优化方案 (V1.1 优化版)*
+
+- [REDIS_THREE_DATABASE_VERIFICATION_REPORT](reports/REDIS_THREE_DATABASE_VERIFICATION_REPORT.md)
+  - *Redis 三数据库优化方案 - 验证报告*
+
 - [REORGANIZATION_COMPLETION_REPORT](reports/REORGANIZATION_COMPLETION_REPORT.md)
   - *项目目录重组完成报告*
 
 - [RISK_CONTROL_API_DOCUMENTATION](reports/RISK_CONTROL_API_DOCUMENTATION.md)
   - *A股风险控制API文档*
+
+- [RISK_MANAGEMENT_ARCHITECTURE_V3](reports/RISK_MANAGEMENT_ARCHITECTURE_V3.md)
+  - *MyStocks 风险管理系统架构方案 V3.0*
 
 - [SAGA_COORDINATOR_TEST_COMPLETION_REPORT](reports/SAGA_COORDINATOR_TEST_COMPLETION_REPORT.md)
   - *Saga协调器测试完成报告*
@@ -754,6 +1030,24 @@
 - [SIGNALS_DEBUG_REPORT](reports/SIGNALS_DEBUG_REPORT.md)
   - *Signals端点500错误调试报告*
 
+- [SIGNAL_MONITORING_PHASE2_COMPLETION_REPORT](reports/SIGNAL_MONITORING_PHASE2_COMPLETION_REPORT.md)
+  - *信号监控系统实施完成报告*
+
+- [SIGNAL_MONITORING_PHASE2_DEPLOYMENT_TEST_REPORT](reports/SIGNAL_MONITORING_PHASE2_DEPLOYMENT_TEST_REPORT.md)
+  - *信号监控系统 Phase 2 部署与测试报告*
+
+- [SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT](reports/SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md)
+  - *信号监控系统 Phase 2 扩展实施完成报告*
+
+- [SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT](reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md)
+  - *信号监控系统 Phase 2 优化完成报告*
+
+- [SIGNAL_MONITORING_PHASE2_TEST_FIX_REPORT](reports/SIGNAL_MONITORING_PHASE2_TEST_FIX_REPORT.md)
+  - *信号监控系统 Phase 2 测试修复报告*
+
+- [SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108](reports/SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md)
+  - *信号监控管理体系全面梳理报告*
+
 - [SPLIT_COMPLETION_REPORT](reports/api_split/SPLIT_COMPLETION_REPORT.md)
   - *API数据清单拆分完成报告*
 
@@ -762,6 +1056,15 @@
 
 - [SSE_SERVICE_FIX_REPORT](reports/SSE_SERVICE_FIX_REPORT.md)
   - *SSE Service Fix Report*
+
+- [STOCK_MONITORING_IMPLEMENTATION_PLAN_REVIEW](reports/STOCK_MONITORING_IMPLEMENTATION_PLAN_REVIEW.md)
+  - *实施计划审阅报告 v3.0*
+
+- [STOCK_MONITORING_IMPLEMENTATION_PLAN_V3](reports/STOCK_MONITORING_IMPLEMENTATION_PLAN_V3.md)
+  - *智能量化监控与决策系统 - 实施架构设计方案 v3.0*
+
+- [STOCK_MONITORING_PORTFOLIO_OPTIMIZED_PROPOSAL](reports/STOCK_MONITORING_PORTFOLIO_OPTIMIZED_PROPOSAL.md)
+  - *股票监控与智能量化助手系统 - 优化提案*
 
 - [STOCK_MONITORING_PORTFOLIO_PROPOSAL](reports/STOCK_MONITORING_PORTFOLIO_PROPOSAL.md)
   - *股票监控与投资组合管理系统 - 功能规划方案*
@@ -862,6 +1165,9 @@
 - [TECHNICAL_DEBT_STATUS_2026-01-03](reports/TECHNICAL_DEBT_STATUS_2026-01-03.md)
   - *MyStocks 项目技术负债状况报告*
 
+- [TEMP_FILE_CLEANUP_20260109](reports/TEMP_FILE_CLEANUP_20260109.md)
+  - *临时文件清理与归档报告*
+
 - [TEST_CLI_COMPLETION_REPORT](reports/TEST_CLI_COMPLETION_REPORT.md)
   - *Test CLI 最终完成报告*
 
@@ -913,17 +1219,44 @@
 - [TRACK_A_T2_BUGER_INTEGRATION_REPORT](reports/TRACK_A_T2_BUGER_INTEGRATION_REPORT.md)
   - *Track A T2: BUGer 外部服务上报测试报告*
 
+- [TYPESCRIPT_EMERGENCY_FIX_2026-01-08](reports/TYPESCRIPT_EMERGENCY_FIX_2026-01-08.md)
+  - *TypeScript紧急修复说明*
+
+- [TYPESCRIPT_ERROR_FIX_20260109](reports/TYPESCRIPT_ERROR_FIX_20260109.md)
+  - *TypeScript 错误修复报告*
+
 - [TYPESCRIPT_FIX_ARTDECO](reports/TYPESCRIPT_FIX_ARTDECO.md)
   - *TypeScript Errors Fixed - ArtDeco Components*
+
+- [TYPESCRIPT_P0_FIX_COMPLETION_2026-01-08](reports/TYPESCRIPT_P0_FIX_COMPLETION_2026-01-08.md)
+  - *P0 TypeScript类型错误修复完成报告*
 
 - [TYPESCRIPT修复完成报告](reports/TYPESCRIPT修复完成报告.md)
   - *TypeScript 编译错误修复完成报告*
 
+- [UNDEFINED_PASSING_FIX_20260110](reports/UNDEFINED_PASSING_FIX_20260110.md)
+  - *Frontend Undefined Value Passing Fix - Completion Report*
+
 - [VICTORY_LAP_STATUS_REPORT](reports/VICTORY_LAP_STATUS_REPORT.md)
   - *🎯 Victory Lap Status Report*
 
+- [VISUAL_OPTIMIZATION_BEFORE_AFTER_COMPARISON](reports/VISUAL_OPTIMIZATION_BEFORE_AFTER_COMPARISON.md)
+  - *前端视觉优化 - 优化前后对比报告*
+
+- [VISUAL_OPTIMIZATION_GUIDE](reports/VISUAL_OPTIMIZATION_GUIDE.md)
+  - *前端视觉优化 - 快速实施指南*
+
+- [VISUAL_OPTIMIZATION_VERIFICATION_REPORT](reports/VISUAL_OPTIMIZATION_VERIFICATION_REPORT.md)
+  - *视觉优化实施验证报告*
+
+- [VISUAL_SPECIFICATION](reports/VISUAL_SPECIFICATION.md)
+  - *MyStocks 统一视觉规范 (Unified Visual Specification)*
+
 - [VUE_DEMO_FILE_SPLIT_REPORT](reports/VUE_DEMO_FILE_SPLIT_REPORT.md)
   - *Vue Demo 文件拆分完成报告*
+
+- [WEB3_COMPONENT_REMOVAL_FINAL_REPORT](reports/WEB3_COMPONENT_REMOVAL_FINAL_REPORT.md)
+  - *Web3 组件完全移除 - 最终修复报告*
 
 - [WEB_ADAPTER_DEPENDENCY_ANALYSIS](reports/WEB_ADAPTER_DEPENDENCY_ANALYSIS.md)
   - *Web端适配器依赖分析报告*
@@ -940,8 +1273,23 @@
 - [WEB_FIXES_SUMMARY_20251020](reports/WEB_FIXES_SUMMARY_20251020.md)
   - *MyStocks Web 端修复总结*
 
+- [WEB_FRONTEND_API_MAPPING_TABLE](reports/WEB_FRONTEND_API_MAPPING_TABLE.md)
+  - *Web前端页面API对接完整映射表*
+
 - [WEB_FRONTEND_INTEGRATION_TEST_20251020](reports/WEB_FRONTEND_INTEGRATION_TEST_20251020.md)
   - *MyStocks前端联调测试报告*
+
+- [WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION](reports/WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION.md)
+  - *MyStocks Web前端菜单架构评估与优化设计报告*
+
+- [WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2](reports/WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2.md)
+  - *MyStocks Web前端菜单架构优化报告 V2.0*
+
+- [WEB_FRONTEND_OPTIMIZATION_REVIEW_RECOMMENDATIONS](reports/WEB_FRONTEND_OPTIMIZATION_REVIEW_RECOMMENDATIONS.md)
+  - *Web前端优化方案 - 评审建议实施指南*
+
+- [WEB_FRONTEND_PAGE_STRUCTURE](reports/WEB_FRONTEND_PAGE_STRUCTURE.md)
+  - *Web页面结构详细描述文档*
 
 - [WEB_FUNCTIONALITY_AUDIT](reports/WEB_FUNCTIONALITY_AUDIT.md)
   - *MyStocks Web端功能审计报告*
@@ -964,8 +1312,17 @@
 - [WEB_PERFORMANCE_FIXES_SUMMARY](reports/WEB_PERFORMANCE_FIXES_SUMMARY.md)
   - *MyStocks Web Performance Fixes Summary*
 
+- [WEB_QUALITY_GATE_TYPESCRIPT_FIX](reports/WEB_QUALITY_GATE_TYPESCRIPT_FIX.md)
+  - *Web Quality Gate TypeScript错误解决方案*
+
 - [WEB_TEST_FIX_20251020](reports/WEB_TEST_FIX_20251020.md)
   - *MyStocks Web端测试脚本修复报告*
+
+- [WEEK1_EMERGENCY_FIX_PROGRESS_20260110](reports/WEEK1_EMERGENCY_FIX_PROGRESS_20260110.md)
+  - *Week 1 紧急修复进度报告*
+
+- [WEEK1_FIX_SUMMARY_EN_20260110](reports/WEEK1_FIX_SUMMARY_EN_20260110.md)
+  - *Week 1 Emergency Fix Progress Report*
 
 - [WEEK_1_COMPLETION_SUMMARY](reports/WEEK_1_COMPLETION_SUMMARY.md)
   - *Week 1 Emergency Security Fixes - COMPLETION SUMMARY*
@@ -988,6 +1345,9 @@
 - [marketplace_agents_inventory](reports/marketplace_agents_inventory.md)
   - *Marketplace & Agent 完整清单*
 
+- [mystocks-v31-complete-summary-20260110](reports/mystocks-v31-complete-summary-20260110.md)
+  - *MyStocks V3.1 风险管理系统 - 完整项目总结报告*
+
 - [phase2_progress_report](reports/phase2_progress_report.md)
   - *📊 Phase 2 进度报告 - API契约标准化 (CLI-2)*
 
@@ -1008,6 +1368,15 @@
 
 - [phase7_worktree_collaboration_proposal](reports/phase7_worktree_collaboration_proposal.md)
   - *Phase 7: 209 API契约与Web集成 - Worktree协作方案*
+
+- [risk-management-week3-progress-20260110](reports/risk-management-week3-progress-20260110.md)
+  - *MyStocks 风险管理系统 - Week 3 组合平衡器实现进度报告*
+
+- [risk-management-week4-progress-20260110](reports/risk-management-week4-progress-20260110.md)
+  - *MyStocks 风险管理系统 - Week 4 交易哨兵与预警系统实现进度报告*
+
+- [risk-management-week5-progress-20260110](reports/risk-management-week5-progress-20260110.md)
+  - *MyStocks 风险管理系统 - Week 5 智能预警系统实现进度报告*
 
 - [round1_cli1_4_progress_check](reports/round1_cli1_4_progress_check.md)
   - *Round 1 CLI进度检查报告*

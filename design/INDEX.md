@@ -1,8 +1,8 @@
 # Design
 
-**最后更新**: 2026-01-07 15:28:45
+**最后更新**: 2026-01-10 22:15:42
 
-**文档数量**: 23
+**文档数量**: 22
 
 
 ---
@@ -39,9 +39,6 @@
 
 - [AUTOMATION_GUIDE](design/AUTOMATION_GUIDE.md)
   - *Figma 自动化脚本使用指南*
-
-- [ArtDeco](design/html_sample/ArtDeco.md)
-  - *ArtDeco*
 
 - [COMPONENT_LIBRARY_SPECIFICATION](design/COMPONENT_LIBRARY_SPECIFICATION.md)
   - *MyStocks 组件库规范文档*

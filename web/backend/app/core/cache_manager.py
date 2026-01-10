@@ -27,49 +27,75 @@ from collections import defaultdict
 
 from app.core.tdengine_manager import TDengineManager, get_tdengine_manager
 
+# Redis多级缓存服务
+try:
+    from src.core.cache.multi_level import MultiLevelCache, CacheConfig
+
+    REDIS_CACHE_AVAILABLE = True
+except ImportError:
+    REDIS_CACHE_AVAILABLE = False
+    MultiLevelCache = None
+    CacheConfig = None
+
 logger = structlog.get_logger()
 
 
 class CacheManager:
     """
-    统一缓存管理器
+    统一缓存管理器 - 三级缓存架构
 
-    使用 Cache-Aside 模式实现，支持与 TDengine 时序数据库的集成。
+    实现 L1(内存) -> L2(Redis) -> L3(TDengine) 的高速通路
+    支持 Cache-Aside + Write-Through 混合模式
 
     Usage:
         ```python
         manager = get_cache_manager()
 
-        # 单条读取
-        data = manager.fetch_from_cache("000001", "fund_flow")
+        # 单条异步读取
+        data = await manager.fetch_from_cache("000001", "fund_flow")
 
-        # 单条写入
-        manager.write_to_cache("000001", "fund_flow", "1d", {"value": 100})
+        # 单条异步写入
+        await manager.write_to_cache("000001", "fund_flow", "1d", {"value": 100})
 
-        # 批量读取
-        results = manager.batch_read([
+        # 批量异步读取
+        results = await manager.batch_read([
             {"symbol": "000001", "data_type": "fund_flow"},
             {"symbol": "000858", "data_type": "etf"}
         ])
 
         # 清除缓存
-        manager.invalidate_cache(symbol="000001")
+        await manager.invalidate_cache(symbol="000001")
 
         # 检查缓存有效性
-        if manager.is_cache_valid("000001", "fund_flow"):
+        if await manager.is_cache_valid("000001", "fund_flow"):
             print("缓存有效")
         ```
     """
 
-    def __init__(self, tdengine_manager: Optional[TDengineManager] = None):
+    def __init__(
+        self, tdengine_manager: Optional[TDengineManager] = None, redis_cache: Optional[MultiLevelCache] = None
+    ):
         """
         初始化缓存管理器
 
         Args:
-            tdengine_manager: TDengineManager 实例 (如果不提供，使用单例)
+            tdengine_manager: TDengineManager 实例
+            redis_cache: Redis多级缓存服务实例
         """
         self.tdengine = tdengine_manager or get_tdengine_manager()
         self._tdengine_available = self.tdengine is not None
+
+        # Redis缓存服务 (L2)
+        if redis_cache:
+            self.redis_cache = redis_cache
+            self._redis_available = True
+        elif REDIS_CACHE_AVAILABLE:
+            self.redis_cache = MultiLevelCache()
+            self._redis_available = False  # 需要异步初始化
+        else:
+            self.redis_cache = None
+            self._redis_available = False
+
         self._cache_stats: Dict[str, Any] = {
             "hits": 0,
             "misses": 0,
@@ -80,7 +106,7 @@ class CacheManager:
             "total_response_time": 0.0,
         }
 
-        # 内存缓存层 - 替代Redis
+        # 内存缓存层 (L1) - 仅作为Redis的快速缓存
         self._memory_cache: dict[str, Any] = {}
         self._cache_ttl: dict[str, datetime] = {}
         self._cache_lock = Lock()
@@ -112,9 +138,9 @@ class CacheManager:
             return fallback_value
         return self.tdengine
 
-    # ==================== 核心缓存操作 ====================
+    # ==================== 三级缓存核心操作 ====================
 
-    def fetch_from_cache(
+    async def fetch_from_cache(
         self,
         symbol: str,
         data_type: str,
@@ -122,9 +148,9 @@ class CacheManager:
         days: int = 1,
     ) -> Optional[Dict[str, Any]]:
         """
-        从缓存读取数据 (优化后的 Cache-Aside 模式)
+        从三级缓存读取数据 (L1 -> L2 -> L3)
 
-        采用三级缓存策略：内存缓存 -> TDengine缓存 -> 数据源
+        采用三级缓存策略：L1(内存) -> L2(Redis) -> L3(TDengine)
 
         Args:
             symbol: 股票代码 (e.g., "000001")
@@ -142,14 +168,14 @@ class CacheManager:
         self._record_access_pattern(symbol, data_type)
 
         try:
-            # 第一级：内存缓存 (最高性能)
+            # L1: 内存缓存 (最高性能)
             memory_result = self._get_from_memory_cache(symbol, data_type, timeframe)
             if memory_result:
                 response_time = time.time() - start_time
                 self._update_performance_stats(response_time, True)
                 self._cache_stats["hits"] += 1
                 logger.debug(
-                    "✅ 内存缓存命中",
+                    "✅ L1内存缓存命中",
                     symbol=symbol,
                     data_type=data_type,
                     hit_rate=self._calculate_hit_rate(),
@@ -157,14 +183,41 @@ class CacheManager:
                 )
                 return memory_result
 
-            # 第二级：TDengine缓存 (持久化缓存)
+            # L2: Redis缓存 (分布式共享)
+            cache_key = self.get_cache_key(symbol, data_type, timeframe or "1d")
+            if self._redis_available and self.redis_cache:
+                redis_result, found, level = await self.redis_cache.get(cache_key)
+                if found:
+                    response_time = time.time() - start_time
+                    self._update_performance_stats(response_time, True)
+                    self._cache_stats["hits"] += 1
+
+                    # 将数据回填到L1内存缓存
+                    enriched_data = {
+                        "data": redis_result,
+                        "source": "redis",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                    self._add_to_memory_cache(symbol, data_type, timeframe or "1d", enriched_data)
+
+                    logger.debug(
+                        f"✅ L2{level}缓存命中",
+                        symbol=symbol,
+                        data_type=data_type,
+                        hit_rate=self._calculate_hit_rate(),
+                        response_time=response_time,
+                    )
+                    return enriched_data
+
+            # L3: TDengine缓存 (持久化存储)
             cache_data = None
             if self.tdengine is not None:
-                cache_data = self.tdengine.read_cache(
+                cache_data = await self._write_to_tdengine(  # 复用异步TDengine方法
                     symbol=symbol,
                     data_type=data_type,
-                    timeframe=timeframe,
-                    days=days,
+                    timeframe=timeframe or "1d",
+                    data={},  # 读取模式
+                    timestamp=None,
                 )
 
             if cache_data:
@@ -172,17 +225,22 @@ class CacheManager:
                 self._update_performance_stats(response_time, True)
                 self._cache_stats["hits"] += 1
 
-                # 将数据回填到内存缓存
+                # 将数据回填到L1+L2缓存
                 enriched_data = {
                     "data": cache_data,
-                    "source": "cache",
+                    "source": "tdengine",
                     "timestamp": datetime.utcnow().isoformat(),
                 }
-                # timeframe is Optional[str], provide default for _add_to_memory_cache
                 self._add_to_memory_cache(symbol, data_type, timeframe or "1d", enriched_data)
 
+                # 异步回填到Redis (不阻塞响应)
+                if self._redis_available and self.redis_cache:
+                    asyncio.create_task(
+                        self.redis_cache.set(cache_key, enriched_data, ttl=self._get_tiered_ttl(data_type))
+                    )
+
                 logger.debug(
-                    "✅ TDengine缓存命中",
+                    "✅ L3 TDengine缓存命中",
                     symbol=symbol,
                     data_type=data_type,
                     hit_rate=self._calculate_hit_rate(),
@@ -196,7 +254,7 @@ class CacheManager:
             self._update_performance_stats(response_time, False)
 
             logger.debug(
-                "⚠️ 缓存未命中",
+                "⚠️ 三级缓存全部未命中",
                 symbol=symbol,
                 data_type=data_type,
                 hit_rate=self._calculate_hit_rate(),
@@ -208,7 +266,7 @@ class CacheManager:
             response_time = time.time() - start_time
             self._update_performance_stats(response_time, False)
             logger.error(
-                "❌ 缓存读取失败",
+                "❌ 三级缓存读取失败",
                 symbol=symbol,
                 data_type=data_type,
                 error=str(e),
@@ -216,7 +274,7 @@ class CacheManager:
             )
             return None
 
-    def write_to_cache(
+    async def write_to_cache(
         self,
         symbol: str,
         data_type: str,
@@ -226,9 +284,9 @@ class CacheManager:
         timestamp: Optional[datetime] = None,
     ) -> bool:
         """
-        写入数据到缓存 (优化后的写入策略)
+        写入数据到三级缓存 (Write-Through模式)
 
-        同时写入内存缓存和TDengine缓存，确保数据一致性
+        同时写入L1(内存)+L2(Redis)，L3(TDengine)异步写入
 
         Args:
             symbol: 股票代码
@@ -253,6 +311,60 @@ class CacheManager:
                     data_type=data_type,
                 )
                 return False
+
+            # 增加元数据
+            enriched_data = {
+                **data,
+                "_cached_at": datetime.utcnow().isoformat(),
+                "_ttl_days": ttl_days,
+                "_cache_version": "2.0",  # 升级到三级缓存版本
+                "_source": "market_data",
+            }
+
+            # 准备缓存数据格式
+            cache_data = {
+                "data": data,
+                "source": "cache",
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+
+            cache_key = self.get_cache_key(symbol, data_type, timeframe)
+
+            # L1: 内存缓存 (同步写入，最高优先级)
+            self._add_to_memory_cache(symbol, data_type, timeframe, cache_data)
+
+            # L2: Redis缓存 (异步写入，不阻塞响应)
+            if self._redis_available and self.redis_cache:
+                redis_ttl = ttl_days * 24 * 3600  # 转换为秒
+                asyncio.create_task(self.redis_cache.set(cache_key, cache_data, ttl=redis_ttl))
+
+            # L3: TDengine缓存 (异步写入，持久化存储)
+            asyncio.create_task(
+                self._write_to_tdengine(
+                    symbol=symbol,
+                    data_type=data_type,
+                    timeframe=timeframe,
+                    data=enriched_data,
+                    timestamp=timestamp,
+                )
+            )
+
+            logger.debug(
+                "✅ 三级缓存写入完成",
+                symbol=symbol,
+                data_type=data_type,
+                ttl_days=ttl_days,
+            )
+            return True
+
+        except Exception as e:
+            logger.error(
+                "❌ 三级缓存写入异常",
+                symbol=symbol,
+                data_type=data_type,
+                error=str(e),
+            )
+            return False
 
             # 增加元数据
             enriched_data = {
@@ -305,13 +417,13 @@ class CacheManager:
             )
             return False
 
-    def invalidate_cache(
+    async def invalidate_cache(
         self,
         symbol: Optional[str] = None,
         data_type: Optional[str] = None,
     ) -> int:
         """
-        清除特定的缓存 (优化版)
+        清除三级缓存中的特定数据
 
         Args:
             symbol: 股票代码 (可选，如果省略则清除所有 symbol)
@@ -324,7 +436,7 @@ class CacheManager:
 
         try:
             with self._cache_lock:
-                # 首先清理内存缓存
+                # L1: 清理内存缓存
                 if symbol and data_type:
                     # 清除特定符号+数据类型的缓存
                     cache_key = self.get_cache_key(symbol, data_type)
@@ -339,12 +451,11 @@ class CacheManager:
                     if cache_key in self._access_patterns:
                         del self._access_patterns[cache_key]
 
-                    logger.info("🗑️ 清除内存缓存", symbol=symbol, data_type=data_type)
+                    logger.info("🗑️ 清除L1内存缓存", symbol=symbol, data_type=data_type)
 
                 elif symbol:
                     # 清除特定符号的所有缓存
                     keys_to_delete = [key for key in self._memory_cache.keys() if key.startswith(symbol)]
-
                     for key in keys_to_delete:
                         del self._memory_cache[key]
                         total_deleted += 1
@@ -355,7 +466,7 @@ class CacheManager:
                             del self._access_patterns[key]
 
                     logger.info(
-                        "🗑️ 清除符号所有内存缓存",
+                        "🗑️ 清除符号所有L1内存缓存",
                         symbol=symbol,
                         count=len(keys_to_delete),
                     )
@@ -363,22 +474,42 @@ class CacheManager:
                 else:
                     # 清除所有内存缓存
                     total_deleted = self.clear_memory_cache()
-                    logger.warning("🗑️ 清除所有内存缓存")
+                    logger.warning("🗑️ 清除所有L1内存缓存")
 
-            # 清理TDengine缓存（异步）
+            # L2: 清理Redis缓存
+            if self._redis_available and self.redis_cache:
+                try:
+                    if symbol and data_type:
+                        cache_key = self.get_cache_key(symbol, data_type)
+                        await self.redis_cache.delete(cache_key)
+                        logger.info("🗑️ 清除L2 Redis缓存", symbol=symbol, data_type=data_type)
+                    elif symbol:
+                        # 删除所有以symbol开头的缓存
+                        pattern = f"{symbol}:*"
+                        redis_deleted = await self.redis_cache.delete_pattern(pattern)
+                        total_deleted += redis_deleted
+                        logger.info("🗑️ 清除符号所有L2 Redis缓存", symbol=symbol, count=redis_deleted)
+                    else:
+                        await self.redis_cache.clear()
+                        logger.warning("🗑️ 清除所有L2 Redis缓存")
+                except Exception as e:
+                    logger.warning("L2 Redis缓存清理失败", error=str(e))
+
+            # L3: 清理TDengine缓存（异步）
             if self.tdengine is not None:
-                if symbol and data_type:
-                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)  # 需要实现精确删除
-                    total_deleted += tdengine_deleted
-                elif symbol:
-                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
-                    total_deleted += tdengine_deleted
-                else:
-                    tdengine_deleted = self.tdengine.clear_expired_cache(days=0)
-                    total_deleted += tdengine_deleted
+                try:
+                    if symbol and data_type:
+                        # 异步清理TDengine特定缓存
+                        asyncio.create_task(self._async_tdengine_clear(symbol, data_type))
+                    elif symbol:
+                        asyncio.create_task(self._async_tdengine_clear_symbol(symbol))
+                    else:
+                        asyncio.create_task(self._async_tdengine_clear_all())
+                except Exception as e:
+                    logger.warning("L3 TDengine缓存清理任务创建失败", error=str(e))
 
             logger.info(
-                "✅ 缓存清除完成",
+                "✅ 三级缓存清除完成",
                 symbol=symbol,
                 data_type=data_type,
                 total_deleted=total_deleted,
@@ -593,9 +724,9 @@ class CacheManager:
 
     # ==================== 缓存验证与检查 ====================
 
-    def is_cache_valid(self, symbol: str, data_type: str, max_age_days: int = 7) -> bool:
+    async def is_cache_valid(self, symbol: str, data_type: str, max_age_days: int = 7) -> bool:
         """
-        检查缓存的有效性
+        检查三级缓存的有效性
 
         Args:
             symbol: 股票代码
@@ -606,11 +737,81 @@ class CacheManager:
             True 如果缓存有效且未过期，False 否则
         """
         try:
-            # 尝试读取
-            cache_data = self.fetch_from_cache(symbol=symbol, data_type=data_type, days=max_age_days)
+            # 优先检查L1内存缓存
+            cache_data = self._get_from_memory_cache(symbol, data_type, "1d")
+            if cache_data:
+                # 检查时间戳
+                if "_cached_at" in cache_data.get("data", {}):
+                    cached_at_str = cache_data["data"]["_cached_at"]
+                    cached_at = datetime.fromisoformat(cached_at_str)
+                    age = datetime.utcnow() - cached_at
+                    is_valid = age <= timedelta(days=max_age_days)
 
-            if not cache_data:
-                return False
+                    logger.debug(
+                        "L1缓存有效性检查",
+                        symbol=symbol,
+                        data_type=data_type,
+                        age_days=age.days,
+                        valid=is_valid,
+                    )
+                    return is_valid
+                return True
+
+            # 检查L2 Redis缓存
+            if self._redis_available and self.redis_cache:
+                cache_key = self.get_cache_key(symbol, data_type, "1d")
+                redis_result, found, _ = await self.redis_cache.get(cache_key)
+                if found and redis_result:
+                    if "_cached_at" in redis_result.get("data", {}):
+                        cached_at_str = redis_result["data"]["_cached_at"]
+                        cached_at = datetime.fromisoformat(cached_at_str)
+                        age = datetime.utcnow() - cached_at
+                        is_valid = age <= timedelta(days=max_age_days)
+
+                        logger.debug(
+                            "L2缓存有效性检查",
+                            symbol=symbol,
+                            data_type=data_type,
+                            age_days=age.days,
+                            valid=is_valid,
+                        )
+                        return is_valid
+                    return True
+
+            # 检查L3 TDengine缓存
+            if self.tdengine is not None:
+                cache_data = await self._write_to_tdengine(
+                    symbol=symbol,
+                    data_type=data_type,
+                    timeframe="1d",
+                    data={},  # 读取模式
+                    timestamp=None,
+                )
+                if cache_data and "_cached_at" in cache_data.get("data", {}):
+                    cached_at_str = cache_data["data"]["_cached_at"]
+                    cached_at = datetime.fromisoformat(cached_at_str)
+                    age = datetime.utcnow() - cached_at
+                    is_valid = age <= timedelta(days=max_age_days)
+
+                    logger.debug(
+                        "L3缓存有效性检查",
+                        symbol=symbol,
+                        data_type=data_type,
+                        age_days=age.days,
+                        valid=is_valid,
+                    )
+                    return is_valid
+
+            return False
+
+        except Exception as e:
+            logger.error(
+                "❌ 三级缓存有效性检查失败",
+                symbol=symbol,
+                data_type=data_type,
+                error=str(e),
+            )
+            return False
 
             # 检查时间戳
             if "_cached_at" in cache_data.get("data", {}):
@@ -873,6 +1074,37 @@ class CacheManager:
             self._access_patterns.clear()
             return count
 
+    # ==================== 三级缓存辅助方法 ====================
+
+    async def _async_tdengine_clear(self, symbol: str, data_type: str) -> None:
+        """异步清理TDengine特定缓存"""
+        try:
+            if self.tdengine is not None:
+                # 这里需要实现TDengine的精确删除方法
+                # 暂时使用clear_expired_cache作为替代
+                await asyncio.get_event_loop().run_in_executor(None, lambda: self.tdengine.clear_expired_cache(days=0))
+                logger.info("🗑️ L3 TDengine缓存清理完成", symbol=symbol, data_type=data_type)
+        except Exception as e:
+            logger.warning("L3 TDengine缓存清理失败", symbol=symbol, data_type=data_type, error=str(e))
+
+    async def _async_tdengine_clear_symbol(self, symbol: str) -> None:
+        """异步清理TDengine特定符号的所有缓存"""
+        try:
+            if self.tdengine is not None:
+                await asyncio.get_event_loop().run_in_executor(None, lambda: self.tdengine.clear_expired_cache(days=0))
+                logger.info("🗑️ L3 TDengine符号缓存清理完成", symbol=symbol)
+        except Exception as e:
+            logger.warning("L3 TDengine符号缓存清理失败", symbol=symbol, error=str(e))
+
+    async def _async_tdengine_clear_all(self) -> None:
+        """异步清理所有TDengine缓存"""
+        try:
+            if self.tdengine is not None:
+                await asyncio.get_event_loop().run_in_executor(None, lambda: self.tdengine.clear_expired_cache(days=0))
+                logger.warning("🗑️ L3 TDengine全部缓存清理完成")
+        except Exception as e:
+            logger.warning("L3 TDengine全部缓存清理失败", error=str(e))
+
     def optimize_memory_cache(self) -> Dict[str, Any]:
         """优化内存缓存"""
         with self._cache_lock:
@@ -998,14 +1230,58 @@ class CacheManager:
 _cache_manager: Optional[CacheManager] = None
 
 
+async def get_cache_manager_async(
+    tdengine_manager: Optional[TDengineManager] = None,
+    redis_cache: Optional[MultiLevelCache] = None,
+) -> CacheManager:
+    """
+    获取异步缓存管理器单例 (支持Redis注入)
+
+    Args:
+        tdengine_manager: TDengineManager 实例
+        redis_cache: Redis多级缓存服务实例
+
+    Returns:
+        CacheManager 单例实例
+    """
+    global _cache_manager
+
+    if _cache_manager is None:
+        _cache_manager = CacheManager(tdengine_manager, redis_cache)
+
+        # 如果提供了Redis缓存，初始化连接
+        if redis_cache and REDIS_CACHE_AVAILABLE:
+            try:
+                # Redis缓存已在外部初始化，这里只需要验证
+                if not hasattr(redis_cache, "_redis_connected") or not redis_cache._redis_connected:
+                    await redis_cache.initialize()
+                _cache_manager._redis_available = True
+                logger.info("✅ Redis缓存服务已注入到缓存管理器")
+            except Exception as e:
+                logger.warning("⚠️ Redis缓存初始化失败，将降级为L1+L3模式", error=str(e))
+                _cache_manager._redis_available = False
+
+        # 执行健康检查
+        try:
+            health = _cache_manager.health_check()
+            if not health.get("overall_healthy"):
+                logger.warning("⚠️ 缓存管理器健康检查失败", issues=health.get("issues", []))
+        except Exception as e:
+            logger.warning("⚠️ 缓存管理器健康检查异常", error=str(e))
+
+    return _cache_manager
+
+
 def get_cache_manager(
     tdengine_manager: Optional[TDengineManager] = None,
 ) -> CacheManager:
     """
-    获取缓存管理器单例
+    获取缓存管理器单例 (向后兼容)
+
+    注意: 此方法不支持Redis注入。如需Redis支持，请使用 get_cache_manager_async()
 
     Args:
-        tdengine_manager: TDengineManager 实例 (用于初始化时指定)
+        tdengine_manager: TDengineManager 实例
 
     Returns:
         CacheManager 单例实例
@@ -1014,8 +1290,7 @@ def get_cache_manager(
 
     if _cache_manager is None:
         _cache_manager = CacheManager(tdengine_manager)
-        if not _cache_manager.health_check():
-            logger.warning("⚠️ 缓存管理器初始化：TDengine 不可用")
+        logger.warning("⚠️ 使用同步缓存管理器，Redis功能不可用。如需Redis支持，请使用 get_cache_manager_async()")
 
     return _cache_manager
 

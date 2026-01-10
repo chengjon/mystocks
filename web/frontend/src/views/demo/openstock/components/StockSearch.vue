@@ -344,6 +344,7 @@ const addToWatchlist = async () => {
   to { transform: rotate(360deg); }
 }
 
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -356,6 +357,7 @@ const addToWatchlist = async () => {
   z-index: 1000;
 }
 
+.popover-content {
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

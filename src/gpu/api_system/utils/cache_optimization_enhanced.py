@@ -30,8 +30,12 @@ from collections import defaultdict, deque
 import concurrent.futures
 import numpy as np
 
-from src.utils.cache_optimization import (
-    MultiLevelCache,
+from src.gpu.api_system.utils.cache_optimization import (
+    CacheManager,
+    L1Cache,
+    L2Cache,
+    RedisCache,
+    CacheStrategy,
 )
 
 logger = logging.getLogger(__name__)

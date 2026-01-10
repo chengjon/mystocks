@@ -1,0 +1,72 @@
+# File-Level Testing Configuration
+# This file contains configuration for file-level API testing
+
+api:
+  base_url: "http://localhost:8000"
+  timeout: 30
+  auth_token: null  # Set this for authenticated endpoints
+
+database:
+  test_database_url: "postgresql://test:test@localhost:5438/mystocks_test"
+  tdengine_url: "taos://root:taosdata@localhost:6030/mystocks_test"
+
+parallel:
+  max_workers: 4
+  worker_timeout: 60
+
+data:
+  fixtures_dir: "tests/file_level/fixtures"
+  cleanup_after_test: true
+
+reporting:
+  save_results: true
+  report_format: "json"
+  include_timings: true
+  report_dir: "tests/file_level/reports"
+
+# File-specific configurations
+files:
+  market.py:
+    endpoints: 13
+    priority: "high"
+    timeout: 45
+    retries: 2
+
+  technical_analysis.py:
+    endpoints: 9
+    priority: "high"
+    timeout: 60
+    retries: 2
+
+  strategy_management.py:
+    endpoints: 9
+    priority: "medium"
+    timeout: 30
+    retries: 1
+
+  risk_management.py:
+    endpoints: 36
+    priority: "high"
+    timeout: 90
+    retries: 3
+
+  data.py:
+    endpoints: 29
+    priority: "high"
+    timeout: 45
+    retries: 2
+
+# Test execution settings
+execution:
+  fail_fast: false
+  continue_on_error: true
+  verbose_logging: true
+  performance_monitoring: true
+
+# Contract validation settings
+contract:
+  validate_openapi: true
+  check_response_schemas: true
+  validate_error_responses: true
+  strict_mode: false  # Set to true for production validation</content>
+<parameter name="filePath">tests/file_level/config/test_config.yaml

@@ -1,0 +1,398 @@
+/**
+ * Bloomberg Terminal Design Token System
+ *
+ * Complete CSS variable system for MyStocks professional trading interface
+ * Based on Bloomberg Terminal/Wind financial terminal aesthetics
+ *
+ * @version 1.0
+ * @author Claude Code (Main CLI)
+ * @date 2026-01-09
+ */
+
+@use 'sass:color';
+
+:root {
+  // ============================================================
+  // Bloomberg Dark Theme - Color Palette
+  // ============================================================
+
+  // Background Colors (Professional dark theme)
+  --color-bg-primary: #1a1a1a;        // Main background (deep black-gray)
+  --color-bg-secondary: #2d2d2d;      // Secondary background (panels, cards)
+  --color-bg-tertiary: #3a3a3a;       // Tertiary background (nested elements)
+  --color-bg-elevated: #4a4a4a;       // Elevated background (hover states, popovers)
+
+  // Text Colors (High contrast for readability - WCAG AA compliant)
+  --color-text-primary: #ffffff;      // Primary text (white on dark)
+  --color-text-secondary: #d0d0d0;    // Secondary text (light gray) - WCAG AA: 7.5:1
+  --color-text-tertiary: #a0a0a0;     // Tertiary text (medium gray) - WCAG AA: 5.3:1
+  --color-text-disabled: #505050;     // Disabled text (dim gray)
+
+  // Accent Colors (Bloomberg Gold Theme)
+  --color-accent: #D4AF37;            // Primary accent (Bloomberg gold)
+  --color-accent-hover: #E5C349;      // Accent hover state
+  --color-accent-active: #C9A32F;     // Accent active state
+
+  // Functional Colors
+  --color-success: #00d924;           // Success (bright green)
+  --color-warning: #ffc107;           // Warning (amber)
+  --color-danger: #ff4757;            // Danger (bright red)
+  --color-info: #2196f3;              // Info (blue)
+
+  // Stock Market Colors (China A-share standard: Red = Up, Green = Down)
+  --color-stock-up: #ff4757;          // Up/Buy (RED - 红涨)
+  --color-stock-down: #00d924;        // Down/Sell (GREEN - 绿跌)
+  --color-stock-flat: #b0b0b0;        // Flat/unchanged (gray)
+
+  // Border Colors
+  --color-border: #404040;            // Primary border
+  --color-border-light: #505050;       // Light border
+  --color-border-dark: #303030;       // Dark border
+  --color-border-hover: #D4AF37;       // Hover border (Bloomberg gold)
+
+  // Semi-transparent Colors (for backgrounds, overlays, shadows)
+  --color-accent-alpha-90: rgba(212, 175, 55, 0.1);   // 10% opacity (Bloomberg gold)
+  --color-accent-alpha-80: rgba(212, 175, 55, 0.2);   // 20% opacity
+  --color-accent-alpha-70: rgba(212, 175, 55, 0.3);   // 30% opacity
+  --color-accent-alpha-50: rgba(212, 175, 55, 0.5);   // 50% opacity
+  --color-stock-up-alpha-90: rgba(255, 71, 87, 0.1);        // 10% opacity (RED)
+  --color-stock-up-alpha-80: rgba(255, 71, 87, 0.2);        // 20% opacity (RED)
+  --color-stock-down-alpha-90: rgba(0, 217, 36, 0.1);       // 10% opacity (GREEN)
+  --color-stock-down-alpha-80: rgba(0, 217, 36, 0.2);       // 20% opacity (GREEN)
+  --color-bg-elevated-alpha-80: rgba(74, 74, 74, 0.2);  // 20% opacity (for #4a4a4a)
+  --color-bg-elevated-hover: #4e4e4e;                     // Lighter hover version
+
+  // ============================================================
+  // Spacing System (8px baseline grid)
+  // ============================================================
+
+  --spacing-xs: 4px;                  // 0.5x (small elements)
+  --spacing-sm: 8px;                  // 1x (default spacing)
+  --spacing-md: 16px;                 // 2x (component padding)
+  --spacing-lg: 24px;                 // 3x (section spacing)
+  --spacing-xl: 32px;                 // 4x (large sections)
+  --spacing-2xl: 48px;                // 6x (extra large)
+  --spacing-3xl: 64px;                // 8x (major sections)
+
+  // ============================================================
+  // Typography System
+  // ============================================================
+
+  // Font Families
+  --font-family-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-family-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-numbers: 'Roboto Mono', 'Consolas', monospace; // Specialized for numbers
+
+  // Font Sizes
+  --font-size-xs: 12px;               // Small text (labels, captions)
+  --font-size-sm: 14px;               // Body text (default)
+  --font-size-base: 16px;             // Base text (paragraphs)
+  --font-size-lg: 18px;               // Large text (subheadings)
+  --font-size-xl: 20px;               // Extra large (headings)
+  --font-size-2xl: 24px;              // 2X large (page titles)
+  --font-size-3xl: 30px;              // 3X large (hero titles)
+
+  // Font Weights
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  // Line Heights
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  // ============================================================
+  // Border Radius System (Bloomberg Square Design)
+  // ============================================================
+
+  --radius-none: 0;
+  --radius-sm: 1px;                   // Small elements (minimal rounding)
+  --radius-md: 2px;                   // Medium elements (cards, panels)
+  --radius-lg: 2px;                   // Large elements (modals, dialogs)
+  --radius-xl: 2px;                   // Extra large (hero elements)
+  --radius-full: 9999px;              // Circular (badges, avatars - minimal use)
+
+  // ============================================================
+  // Shadow System (Elevation)
+  // ============================================================
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);         // Subtle elevation
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);         // Medium elevation (dropdowns, cards)
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);        // Large elevation (modals, popovers)
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);        // Extra large (dialogs)
+
+  // ============================================================
+  // Transition Animations
+  // ============================================================
+
+  --transition-instant: 100ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // ============================================================
+  // Z-Index Layer System
+  // ============================================================
+
+  --z-dropdown: 1000;                 // Dropdown menus
+  --z-sticky: 1020;                   // Sticky headers
+  --z-fixed: 1030;                    // Fixed elements (sidebar, header)
+  --z-modal-backdrop: 1040;           // Modal backdrop
+  --z-modal: 1050;                    // Modal content
+  --z-popover: 1060;                  // Popovers, tooltips
+  --z-tooltip: 1070;                  // Tooltips (highest)
+
+  // ============================================================
+  // Chart-Specific Colors
+  // ============================================================
+
+  // Candlestick Colors (Red = Up, Green = Down for China market)
+  --chart-up-color: var(--color-stock-up);          // Red for up
+  --chart-down-color: var(--color-stock-down);      // Green for down
+  --chart-up-border-color: #ff0000;                 // Bright red border
+  --chart-down-border-color: #00ff00;               // Bright green border
+  --chart-up-wick-color: var(--chart-up-color);
+  --chart-down-wick-color: var(--chart-down-color);
+  --chart-up-fill-color: rgba(255, 71, 87, 0.2);    // Red fill
+  --chart-down-fill-color: rgba(0, 217, 36, 0.2);   // Green fill
+
+  // Chart Grid and Axis
+  --chart-grid-color: rgba(255, 255, 255, 0.1);
+  --chart-axis-color: rgba(255, 255, 255, 0.3);
+  --chart-crosshair-color: rgba(255, 255, 255, 0.5);
+  --chart-tooltip-bg: rgba(26, 26, 26, 0.95);
+  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+
+  // Technical Indicator Colors
+  --chart-indicator-ma: #f39c12;       // Moving Average (orange)
+  --chart-indicator-ema: #3498db;      // EMA (blue)
+  --chart-indicator-boll: #9b59b6;     // Bollinger Bands (purple)
+  --chart-indicator-macd: #e74c3c;     // MACD (red)
+  --chart-indicator-rsi: #1abc9c;      // RSI (teal)
+  --chart-indicator-kdj: #e67e22;      // KDJ (orange)
+
+  // ============================================================
+  // Component-Specific Tokens
+  // ============================================================
+
+  // Button
+  --button-height-sm: 32px;
+  --button-height-md: 40px;
+  --button-height-lg: 48px;
+  --button-padding-sm: var(--spacing-xs) var(--spacing-sm);
+  --button-padding-md: var(--spacing-sm) var(--spacing-md);
+  --button-padding-lg: var(--spacing-md) var(--spacing-lg);
+
+  // Input
+  --input-height: 40px;
+  --input-padding: var(--spacing-sm) var(--spacing-md);
+  --input-border-width: 1px;
+  --input-border-radius: var(--radius-sm);
+
+  // Card
+  --card-padding: var(--spacing-md);
+  --card-border-radius: var(--radius-md);
+  --card-shadow: var(--shadow-sm);
+
+  // Table
+  --table-header-bg: var(--color-bg-secondary);
+  --table-row-hover-bg: var(--color-bg-tertiary);
+  --table-border-color: var(--color-border);
+
+  // ============================================================
+  // Breakpoints (Desktop-only, no mobile)
+  // ============================================================
+
+  --breakpoint-sm: 1280px;            // Minimum supported resolution
+  --breakpoint-md: 1440px;            // Standard desktop
+  --breakpoint-lg: 1920px;            // Large desktop (recommended)
+  --breakpoint-xl: 2560px;            // Ultra-wide desktop
+}
+
+// ============================================================
+// Utility Mixins
+// ============================================================
+
+@mixin card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-padding);
+}
+
+@mixin card-hover {
+  &:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    transition: all var(--transition-base);
+  }
+}
+
+@mixin button-primary {
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--button-border-radius, var(--radius-sm));
+  height: var(--button-height-md);
+  padding: var(--button-padding-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: var(--color-accent-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    background: var(--color-accent-active);
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  height: var(--button-height-md);
+  padding: var(--button-padding-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: var(--color-bg-elevated);
+    border-color: var(--color-accent);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin input {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: var(--input-border-width) solid var(--color-border);
+  border-radius: var(--input-border-radius);
+  height: var(--input-height);
+  padding: var(--input-padding);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-fast);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);  // Bloomberg gold focus ring
+  }
+
+  &::placeholder {
+    color: var(--color-text-disabled);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin text-mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: -0.3px;
+}
+
+@mixin text-numbers {
+  font-family: var(--font-family-numbers);
+  font-variant-numeric: tabular-nums;
+}
+
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-text-secondary);
+    }
+  }
+}
+
+// Stock price mixins
+@mixin stock-up {
+  color: var(--color-stock-up);
+}
+
+@mixin stock-down {
+  color: var(--color-stock-down);
+}
+
+@mixin stock-flat {
+  color: var(--color-stock-flat);
+}
+
+// Chart indicator mixins
+@mixin indicator-ma {
+  color: var(--chart-indicator-ma);
+}
+
+@mixin indicator-ema {
+  color: var(--chart-indicator-ema);
+}
+
+@mixin indicator-boll {
+  color: var(--chart-indicator-boll);
+}
+
+@mixin indicator-macd {
+  color: var(--chart-indicator-macd);
+}
+
+@mixin indicator-rsi {
+  color: var(--chart-indicator-rsi);
+}
+
+@mixin indicator-kdj {
+  color: var(--chart-indicator-kdj);
+}
+
+// Responsive mixin (desktop-only)
+@mixin desktop-only {
+  @media (min-width: var(--breakpoint-sm)) {
+    @content;
+  }
+}
+
+// Utility class for hiding elements
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
