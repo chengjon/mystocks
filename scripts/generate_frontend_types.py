@@ -113,21 +113,17 @@ class TypeConverter:
     @classmethod
     def _fix_python_type_names(cls, type_str: str) -> str:
         # Fix Python type names in various contexts
+        # First remove parentheses around types: (string, any) -> string, any
+        type_str = re.sub(r'\(([^,]+),\s*([^)]+)\)', r'\1, \2', type_str)
+
+        # Then handle bare types with word boundaries
         replacements = {
-            # Handle types inside angle brackets or parentheses
-            r"\\(str,": "(string,",
-            r"\\(int,": "(number,",
-            r"\\(float,": "(number,",
-            r"\\(bool,": "(boolean,",
-            r"\\(Any\\)": "any",
-            r", Any\\)": ", any)",
-            # Handle bare types with word boundaries
-            r"\\bstr\\b": "string",
-            r"\\bint\\b": "number",
-            r"\\bfloat\\b": "number",
-            r"\\bbool\\b": "boolean",
-            r"\\bAny\\b": "any",
-            r"\\bdict\\b": "Record<string, any>",
+            r'\bstr\b': 'string',
+            r'\bint\b': 'number',
+            r'\bfloat\b': 'number',
+            r'\bbool\b': 'boolean',
+            r'\bAny\b': 'any',
+            r'\bdict\b': 'Record<string, any>',
         }
         for py_type, ts_type in replacements.items():
             type_str = re.sub(py_type, ts_type, type_str)
