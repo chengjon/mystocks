@@ -105,7 +105,13 @@ class TypeConverter:
 
         # Handle Literal[...]
         if type_str.startswith("Literal[") and type_str.endswith("]"):
-            return type_str  # Keep as-is
+            inner = type_str[8:-1]
+            # Remove tuple parentheses if present: ('start', 'stop') -> 'start', 'stop'
+            inner = re.sub(r"^\(|\)$", "", inner)
+            # Split by comma and clean up quotes
+            parts = [p.strip().strip("'\"") for p in inner.split(",")]
+            # Convert to TypeScript union type
+            return " | ".join(f"'{part}'" for part in parts)
 
         # Apply Python type name fixes at the end
         return cls._fix_python_type_names(type_str)
