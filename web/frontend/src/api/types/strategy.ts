@@ -72,20 +72,84 @@ export interface TechnicalIndicatorResponse {
 }
 
 // ViewModel types for frontend adapters
-export type Strategy = StrategyInfo;
+// Redefine Strategy with additional fields used by adapter
+export interface Strategy {
+  id?: string;
+  strategy_id?: string;
+  strategy_type?: string;
+  name?: string;
+  description?: string;
+  trained?: boolean;
+  performance?: StrategyPerformance | Record<string, number> | null;
+  created_at?: string;
+  type?: 'trend_following' | 'mean_reversion' | 'momentum';
+  status?: 'active' | 'inactive' | 'testing';
+  createdAt?: Date;
+  updatedAt?: Date;
+  parameters?: Record<string, any> | null;
+}
 
 export interface StrategyPerformance {
   total_return?: number;
+  totalReturn?: number;
   annualized_return?: number;
+  annualReturn?: number;
   sharpe_ratio?: number;
+  sharpeRatio?: number;
   max_drawdown?: number;
+  maxDrawdown?: number;
   win_rate?: number;
+  winRate?: number;
   total_trades?: number;
+  profit_loss_ratio?: number;
+  profitLossRatio?: number;
 }
 
-export type BacktestTask = BacktestRequest;
+// Redefine BacktestTask with additional fields used by adapter
+export interface BacktestTask {
+  task_id?: string;
+  taskId?: string;
+  strategy_id?: string;
+  strategyId?: string;
+  start_date?: string;
+  end_date?: string;
+  initial_capital?: number;
+  position_size?: number;
+  status?: 'pending' | 'running' | 'completed' | 'failed';
+  progress?: number;
+  startTime?: Date;
+  endTime?: Date;
+  result?: BacktestResult;
+  error?: string;
+}
 
-export type BacktestResult = BacktestResponse;
+// Redefine BacktestResult with additional fields used by adapter
+export interface BacktestResult {
+  strategy_id?: string;
+  strategyId?: string;
+  taskId?: string;
+  total_return?: number;
+  totalReturn?: number;
+  annualized_return?: number;
+  annualReturn?: number;
+  sharpe_ratio?: number;
+  sharpeRatio?: number;
+  max_drawdown?: number;
+  maxDrawdown?: number;
+  win_rate?: number;
+  winRate?: number;
+  total_trades?: number;
+  totalTrades?: number;
+  profit_factor?: number;
+  profitFactor?: number;
+  equity_curve?: number[];
+  trades?: any[];
+  performance_metrics?: Record<string, any>;
+  backtest_duration_ms?: number;
+}
+
+export type BacktestRequest = BacktestTask;
+export type BacktestResponse = BacktestResult;
 
 export interface StrategyListResponse {
   strategies?: StrategyInfo[];
