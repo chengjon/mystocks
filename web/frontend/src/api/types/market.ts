@@ -24,7 +24,26 @@ export interface MarketOverview {
 }
 
 // ViewModel types for frontend adapters
-export type MarketOverviewVM = MarketOverview;
+// Redefine MarketOverviewVM to match adapter usage (camelCase fields)
+export interface MarketOverviewVM {
+  marketStats?: {
+    totalStocks?: number;
+    risingStocks?: number;
+    fallingStocks?: number;
+    avgChangePercent?: number;
+  };
+  topEtfs?: Array<{
+    symbol?: string;
+    name?: string;
+    latestPrice?: number;
+    changePercent?: number;
+    volume?: number;
+  }>;
+  chipRaces?: ChipRaceItem[];
+  longHuBang?: LongHuBangItem[];
+  lastUpdate?: Date;
+  marketIndex?: any;
+}
 export type MarketOverviewData = MarketOverview;
 
 export interface FundFlowChartPoint {
@@ -32,6 +51,10 @@ export interface FundFlowChartPoint {
   net_inflow?: number;
   main_inflow?: number;
   retail_inflow?: number;
+  mainInflow?: number;
+  mainOutflow?: number;
+  netInflow?: number;
+  timestamp?: number;
 }
 
 export interface KLineChartData {
@@ -45,6 +68,9 @@ export interface KLineChartData {
     close?: number;
     volume?: number;
   }>;
+  categoryData?: string[];
+  values?: number[][];
+  volumes?: number[];
 }
 
 export interface ChipRaceItem {
@@ -53,10 +79,16 @@ export interface ChipRaceItem {
   net_buy?: number;
   net_sell?: number;
   net_amount?: number;
+  symbol?: string;
+  raceAmount?: number;
+  changePercent?: number;
 }
 
 export interface LongHuBangItem {
   date?: string;
   dragon?: string; // 涨停（龙）
   tiger?: string; // 跌停（虎）
+  symbol?: string;
+  netAmount?: number;
+  reason?: string;
 }
