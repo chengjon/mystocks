@@ -1,162 +1,62 @@
-/**
- * Market Module Type Definitions
- *
- * Types for market data, overview, fund flow, and K-line data.
- * Compatible with UnifiedResponse v2.0.0 format.
- */
+// Auto-generated types for market domain
+// Generated at: 2026-01-14T14:57:47.574905
 
-// ============================================
-// Market Overview Type Definitions
-// ============================================
-
-/**
- * 市场概览统计数据
- */
-export interface MarketStats {
-  totalStocks: number;
-  risingStocks: number;
-  fallingStocks: number;
-  avgChangePercent: number;
+export interface MarketIndexItem {
+  symbol?: string;
+  name?: string;
+  current_price?: number;
+  change_percent?: number;
+  volume?: number | null;
+  turnover?: number | null;
+  update_time?: string | null;
 }
 
-/**
- * 热门 ETF 项
- */
-export interface TopETFItem {
-  symbol: string;
-  name: string;
-  latestPrice: number;
-  changePercent: number;
-  volume: number;
+export interface MarketOverview {
+  indices?: MarketIndexItem[];
+  up_count?: number;
+  down_count?: number;
+  flat_count?: number;
+  total_volume?: number | null;
+  total_turnover?: number | null;
+  top_gainers?: Record<string, any>[];
+  top_losers?: Record<string, any>[];
+  most_active?: Record<string, any>[];
 }
 
-/**
- * 筹码比拼项
- */
-export interface ChipRaceItem {
-  symbol: string;
-  name: string;
-  raceAmount: number;
-  changePercent: number;
-}
+// ViewModel types for frontend adapters
+export type MarketOverviewVM = MarketOverview;
+export type MarketOverviewData = MarketOverview;
 
-/**
- * 龙虎榜项
- */
-export interface LongHuBangItem {
-  symbol: string;
-  name: string;
-  netAmount: number;
-  reason: string;
-}
-
-/**
- * 市场概览响应
- */
-export interface MarketOverviewData {
-  marketStats: MarketStats;
-  topEtfs: TopETFItem[];
-  chipRaces: ChipRaceItem[];
-  longHuBang: LongHuBangItem[];
-  timestamp: string;
-}
-
-/**
- * 市场概览 ViewModel（用于前端展示）
- */
-export interface MarketOverviewVM {
-  marketStats: MarketStats;
-  topEtfs: TopETFItem[];
-  chipRaces: ChipRaceItem[];
-  longHuBang: LongHuBangItem[];
-  lastUpdate: Date;
-  marketIndex?: { [key: string]: number };
-}
-
-// ============================================
-// Fund Flow Type Definitions
-// ============================================
-
-/**
- * 资金流向项
- */
-export interface FundFlowItem {
-  date: string;
-  mainInflow: number;
-  mainOutflow: number;
-  netInflow: number;
-}
-
-/**
- * 资金流向图表数据点
- */
 export interface FundFlowChartPoint {
-  date: string;
-  mainInflow: number;
-  mainOutflow: number;
-  netInflow: number;
-  timestamp: number;
+  date?: string;
+  net_inflow?: number;
+  main_inflow?: number;
+  retail_inflow?: number;
 }
 
-/**
- * 资金流向响应
- */
-export interface FundFlowData {
-  fundFlow: FundFlowItem[];
-  total: number;
-  symbol: string | null;
-  timeframe: string | null;
-}
-
-// ============================================
-// K-Line Data Type Definitions
-// ============================================
-
-/**
- * K线蜡烛
- */
-export interface KlineCandle {
-  datetime: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-  amount: number | null;
-}
-
-/**
- * K线数据点
- */
-export interface KlineDataPoint {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-  amount: number | null;
-}
-
-/**
- * K线图表数据
- */
 export interface KLineChartData {
-  categoryData: string[];
-  values: number[][];
-  volumes: number[];
-  // Optional data property for compatibility with chart components
-  data?: KlineCandle[]
+  symbol?: string;
+  period?: string;
+  data?: Array<{
+    timestamp?: number;
+    open?: number;
+    high?: number;
+    low?: number;
+    close?: number;
+    volume?: number;
+  }>;
 }
 
-/**
- * K线数据响应
- */
-export interface KLineData {
-  symbol: string;
-  interval: string;
-  data: KlineCandle[];
-  startDate: string;
-  endDate: string;
-  total: number;
+export interface ChipRaceItem {
+  rank?: number;
+  name?: string;
+  net_buy?: number;
+  net_sell?: number;
+  net_amount?: number;
+}
+
+export interface LongHuBangItem {
+  date?: string;
+  dragon?: string; // 涨停（龙）
+  tiger?: string; // 跌停（虎）
 }
