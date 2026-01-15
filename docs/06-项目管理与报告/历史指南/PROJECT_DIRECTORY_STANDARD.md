@@ -112,29 +112,34 @@ PROJECT_ROOT/
 
 ## 📝 根目录文件清单
 
-### 必需文件（最多10个）
+### 必需文件（核心5类，共约15个文件）
+
 ```bash
 # 项目标识
-README.md              # 项目说明
+README.md              # 项目说明（GitHub官方推荐）
 LICENSE                # 许可证
 
 # 版本控制
 .gitignore             # Git忽略规则
+.gitattributes         # Git换行符配置（防止CRLF/LF问题）
+.pre-commit-config.yaml # Pre-commit钩子配置
+
+# AI辅助工具（Claude Code, Gemini等）
+CLAUDE.md              # Claude Code集成指南（GitHub官方推荐）
+GEMINI.md              # Gemini集成指南
+IFLOW.md               # iFlow多CLI协作框架配置
+AGENTS.md              # 多Agent协作配置
+.mcp.json              # MCP服务器配置
+.specify/              # OpenSpec规范框架配置目录
 
 # 依赖管理
 requirements.txt       # Python依赖
-package.json           # Node.js依赖（如果适用）
-Pipfile               # Pipenv依赖（如果适用）
+pyproject.toml        # PEP 517/518构建配置
 
-# 容器化
+# 容器化（如果适用）
 Dockerfile            # Docker镜像构建
 docker-compose.yml    # Docker Compose配置
 docker-compose.*.yml  # 环境特定配置
-
-# 构建配置
-Makefile              # 构建脚本
-pom.xml               # Maven配置（Java项目）
-build.gradle          # Gradle配置（Java项目）
 ```
 
 ### 条件文件（根据项目需要）
@@ -146,7 +151,6 @@ vue.config.js         # Vue.js配置
 
 # Python项目
 setup.py              # 包安装配置
-pyproject.toml        # 现代Python项目配置
 mypy.ini              # 类型检查配置
 pytest.ini            # 测试配置
 

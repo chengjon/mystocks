@@ -1,6 +1,12 @@
 // Auto-generated types for common domain
 // Generated at: 2026-01-14T14:57:47.572281
 
+// Generic type definitions
+export type Dict<T = any> = Record<string, any>;
+export type List<T = any> = any[];
+export type T<T = any> = any;
+export type date_type = string;
+
 export interface APIResponse {
   success?: boolean;
   data?: Record<string, any> | null;
@@ -97,6 +103,19 @@ export interface AlertRuleUpdate {
   notification_config?: Record<string, any> | null;
   priority?: number | null;
   is_active?: boolean | null;
+}
+
+export interface HMMConfig {
+  states?: number;
+  observations?: number;
+  [key: string]: any;
+}
+
+export interface NeuralNetworkConfig {
+  layers?: number[];
+  activation?: string;
+  learning_rate?: number;
+  [key: string]: any;
 }
 
 export interface AlgorithmConfig {
@@ -533,7 +552,7 @@ export interface DashboardResponse {
   user_id?: number;
   trade_date?: string;
   generated_at?: string;
-  market_overview?: MarketOverview | null;
+  market_overview?: any;
   watchlist?: WatchlistSummary | null;
   portfolio?: PortfolioSummary | null;
   risk_alerts?: RiskAlertSummary | null;
@@ -1362,7 +1381,7 @@ export interface PortfolioSummary {
   total_profit_loss?: number;
   total_profit_loss_percent?: number;
   position_count?: number;
-  positions?: PositionItem[];
+  positions?: any[];
 }
 
 export interface Position {

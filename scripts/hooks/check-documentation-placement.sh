@@ -24,7 +24,15 @@ ISSUES_FOUND=0
 echo -e "${BLUE}🔍 检查文档位置...${NC}"
 
 # 检查根目录下的.md文件（应该移到docs/子目录）
-ROOT_MD_FILES=$(find . -maxdepth 1 -name "*.md" -type f ! -name "README.md" ! -name "CLAUDE.md" ! -name "CHANGELOG.md" ! -name "AGENTS.md" 2>/dev/null || true)
+# 允许的根目录文件：项目标识 + AI辅助工具必需文件
+ROOT_MD_FILES=$(find . -maxdepth 1 -name "*.md" -type f \
+    ! -name "README.md" \
+    ! -name "CLAUDE.md" \
+    ! -name "GEMINI.md" \
+    ! -name "IFLOW.md" \
+    ! -name "AGENTS.md" \
+    ! -name "CHANGELOG.md" \
+    2>/dev/null || true)
 if [ -n "$ROOT_MD_FILES" ]; then
     echo -e "${YELLOW}⚠️  发现根目录下的.md文件（应移到docs/子目录）：${NC}"
     echo "$ROOT_MD_FILES" | while read file; do
