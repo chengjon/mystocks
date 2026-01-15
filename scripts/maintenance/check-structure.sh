@@ -193,7 +193,8 @@ check_file_classification() {
         basename_file=$(basename "$file")
 
         # 跳过根目录的必需文档文件
-        if [[ "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md)$ ]]; then
+        # 包含：项目标识 + 版本控制 + AI辅助工具配置文件
+        if [[ "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md|CLAUDE\.md|GEMINI\.md|IFLOW\.md|AGENTS\.md|\.gitattributes|\.pre-commit-config\.yaml|\.mcp\.json)$ ]]; then
             continue
         fi
 
@@ -268,7 +269,7 @@ auto_fix_issues() {
         local basename_file
         basename_file=$(basename "$file")
 
-        if [[ ! "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md)$ ]]; then
+        if [[ ! "$basename_file" =~ ^(README\.md|LICENSE|CHANGELOG\.md|CLAUDE\.md|GEMINI\.md|IFLOW\.md|AGENTS\.md|\.gitattributes|\.pre-commit-config\.yaml|\.mcp\.json)$ ]]; then
             mkdir -p "docs"
             mv "$file" "docs/" 2>/dev/null || true
             log_info "移动文档文件: $file -> docs/"
