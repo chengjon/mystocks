@@ -109,7 +109,7 @@ const tabLabels = {
   batch: '批量读取'
 }
 
-const codeExamples = computed(() => ({
+const codeExamples = computed<Record<string, string>>(() => ({
   day: DAY_PARSER_CODE,
   minute: MINUTE_PARSER_CODE,
   batch: BATCH_LOAD_CODE

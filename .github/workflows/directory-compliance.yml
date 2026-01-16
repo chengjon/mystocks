@@ -1,0 +1,60 @@
+name: Directory Compliance Check
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'docs/**'
+  schedule:
+    - cron: '0 2 * * 0'
+
+jobs:
+  check-compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Check directory structure
+        run: |
+          python scripts/hooks/check_directory_structure.py || exit 1
+      
+      - name: Check file naming
+        run: |
+          python scripts/hooks/check_file_naming.py || exit 1
+      
+      - name: Check __init__.py
+        run: |
+          python scripts/hooks/check_init_py.py || exit 1
+      
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: reports/compliance/
+
+  weekly-full-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Full directory scan
+        run: |
+          python scripts/hooks/full_directory_scan.py
+      
+      - name: Upload full scan report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-scan-report
+          path: reports/compliance/

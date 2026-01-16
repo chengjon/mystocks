@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-01-16T08:33:15.820910",
+  "test_environment": {
+    "base_url": "http://localhost:8000",
+    "authentication": false,
+    "test_type": "real_data_synchronization"
+  },
+  "test_results": {
+    "market_data": {
+      "success": false,
+      "error": "401 Client Error: Unauthorized for url: http://localhost:8000/api/v1/data/markets/overview"
+    },
+    "strategy_api": {
+      "success": false,
+      "error": "Status code: 404"
+    },
+    "backtest_functionality": {
+      "success": false,
+      "error": "没有可用策略"
+    },
+    "data_routing": {
+      "success": false,
+      "data": {
+        "total_endpoints": 2,
+        "successful_endpoints": 0,
+        "routing_tests": [
+          {
+            "endpoint": "/api/market/overview",
+            "status": "unreachable"
+          },
+          {
+            "endpoint": "/api/strategy/strategies",
+            "status": "invalid_structure"
+          }
+        ]
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "successful_tests": 0,
+    "failed_tests": 4,
+    "success_rate": 0.0,
+    "overall_status": "FAILED"
+  },
+  "recommendations": [
+    "检查市场数据源配置和API连接",
+    "验证策略服务状态和数据库连接",
+    "检查回测引擎配置和数据源连接",
+    "修复以下端点的数据路由: /api/market/overview, /api/strategy/strategies"
+  ]
+}

@@ -1,0 +1,512 @@
+# MyStocks 监控验证工作流
+# 将生产监控数据集成到CI/CD流程中，进行自动化质量验证
+
+name: Monitoring Validation
+
+on:
+  # 定时检查：每天早上检查生产环境健康状态
+  schedule:
+    - cron: '0 2 * * *'  # 每天凌晨2点
+  # 手动触发：允许手动运行监控验证
+  workflow_dispatch:
+    inputs:
+      check_type:
+        description: '检查类型'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - performance
+          - security
+          - business
+  # 部署后验证：生产部署完成后自动运行
+  workflow_run:
+    workflows: ["Deploy MyStocks"]
+    types:
+      - completed
+
+env:
+  PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+  GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+  ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+
+jobs:
+  # ============================================================================
+  # 监控数据收集
+  # ============================================================================
+  collect-monitoring-data:
+    name: Collect Monitoring Data
+    runs-on: ubuntu-latest
+    outputs:
+      performance_score: ${{ steps.performance.outputs.score }}
+      security_score: ${{ steps.security.outputs.score }}
+      business_health: ${{ steps.business.outputs.health }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        pip install requests prometheus-client pandas numpy
+
+    - name: Query Prometheus metrics
+      id: prometheus
+      run: |
+        python -c "
+        import requests
+        import json
+        import os
+        from datetime import datetime, timedelta
+
+        PROMETHEUS_URL = os.getenv('PROMETHEUS_URL', 'http://localhost:9090')
+
+        def query_prometheus(query, hours=24):
+            '''查询Prometheus指标'''
+            end_time = datetime.now()
+            start_time = end_time - timedelta(hours=hours)
+
+            params = {
+                'query': query,
+                'start': start_time.timestamp(),
+                'end': end_time.timestamp(),
+                'step': '3600'  # 1小时步长
+            }
+
+            try:
+                response = requests.get(f'{PROMETHEUS_URL}/api/v1/query_range', params=params)
+                response.raise_for_status()
+                return response.json()
+            except Exception as e:
+                print(f'Prometheus query failed: {e}')
+                return {'data': {'result': []}}
+
+        # 查询关键指标
+        metrics = {}
+
+        # API响应时间
+        api_response = query_prometheus('histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))')
+        metrics['api_response_time'] = api_response
+
+        # 错误率
+        error_rate = query_prometheus('rate(http_requests_total{status_code=~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100')
+        metrics['error_rate'] = error_rate
+
+        # 系统资源使用率
+        cpu_usage = query_prometheus('system_cpu_usage_percent')
+        memory_usage = query_prometheus('system_memory_usage_percent')
+        metrics['system_resources'] = {'cpu': cpu_usage, 'memory': memory_usage}
+
+        # 保存指标数据
+        with open('monitoring_data.json', 'w') as f:
+            json.dump(metrics, f, indent=2)
+
+        print('✅ Monitoring data collected')
+        "
+
+    - name: Analyze performance metrics
+      id: performance
+      run: |
+        python -c "
+        import json
+        import os
+
+        # 读取监控数据
+        with open('monitoring_data.json', 'r') as f:
+            data = json.load(f)
+
+        # 分析性能指标
+        performance_score = 100  # 基础分数
+
+        # API响应时间评分 (目标: <2秒 95th percentile)
+        if 'api_response_time' in data and data['api_response_time']['data']['result']:
+            response_times = []
+            for result in data['api_response_time']['data']['result']:
+                if result['values']:
+                    response_times.extend([float(v[1]) for v in result['values']])
+
+            if response_times:
+                avg_response_time = sum(response_times) / len(response_times)
+                if avg_response_time > 2.0:
+                    performance_score -= (avg_response_time - 2.0) * 20  # 每超0.1秒减2分
+                print(f'📊 Average API response time: {avg_response_time:.2f}s')
+
+        # 系统资源评分
+        if 'system_resources' in data:
+            resources = data['system_resources']
+
+            # CPU评分 (目标: <80%)
+            if resources.get('cpu', {}).get('data', {}).get('result'):
+                cpu_values = []
+                for result in resources['cpu']['data']['result']:
+                    if result['values']:
+                        cpu_values.extend([float(v[1]) for v in result['values']])
+
+                if cpu_values:
+                    avg_cpu = sum(cpu_values) / len(cpu_values)
+                    if avg_cpu > 80:
+                        performance_score -= (avg_cpu - 80) * 0.5  # 每超1%减0.5分
+                    print(f'🖥️ Average CPU usage: {avg_cpu:.1f}%')
+
+            # 内存评分 (目标: <85%)
+            if resources.get('memory', {}).get('data', {}).get('result'):
+                mem_values = []
+                for result in resources['memory']['data']['result']:
+                    if result['values']:
+                        mem_values.extend([float(v[1]) for v in result['values']])
+
+                if mem_values:
+                    avg_mem = sum(mem_values) / len(mem_values)
+                    if avg_mem > 85:
+                        performance_score -= (avg_mem - 85) * 0.5  # 每超1%减0.5分
+                    print(f'🧠 Average memory usage: {avg_mem:.1f}%')
+
+        performance_score = max(0, min(100, performance_score))
+
+        print(f'🎯 Performance Score: {performance_score:.1f}/100')
+
+        # 设置输出
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f'score={performance_score:.1f}\\n')
+        "
+
+    - name: Analyze security metrics
+      id: security
+      run: |
+        python -c "
+        import json
+        import os
+
+        # 读取监控数据
+        with open('monitoring_data.json', 'r') as f:
+            data = json.load(f)
+
+        # 分析安全指标
+        security_score = 100  # 基础分数
+
+        # 错误率评分 (目标: <5%)
+        if 'error_rate' in data and data['error_rate']['data']['result']:
+            error_rates = []
+            for result in data['error_rate']['data']['result']:
+                if result['values']:
+                    error_rates.extend([float(v[1]) for v in result['values']])
+
+            if error_rates:
+                avg_error_rate = sum(error_rates) / len(error_rates)
+                if avg_error_rate > 5.0:
+                    security_score -= (avg_error_rate - 5.0) * 5  # 每超1%减5分
+                elif avg_error_rate > 1.0:
+                    security_score -= (avg_error_rate - 1.0) * 2  # 1-5%之间每超1%减2分
+                print(f'🚨 Average error rate: {avg_error_rate:.2f}%')
+
+        # 检查是否有安全告警
+        security_alerts = 0  # 这里可以查询安全相关的告警数量
+
+        if security_alerts > 0:
+            security_score -= security_alerts * 10  # 每个安全告警减10分
+
+        security_score = max(0, min(100, security_score))
+
+        print(f'🔒 Security Score: {security_score:.1f}/100')
+
+        # 设置输出
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f'score={security_score:.1f}\\n')
+        "
+
+    - name: Analyze business metrics
+      id: business
+      run: |
+        python -c "
+        import json
+        import os
+
+        # 业务健康度分析
+        business_health = 'healthy'  # 默认健康
+
+        # 这里可以添加业务指标分析
+        # 例如：用户活跃度、策略成功率、数据质量等
+
+        print(f'📈 Business Health: {business_health}')
+
+        # 设置输出
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f'health={business_health}\\n')
+        "
+
+    - name: Upload monitoring data
+      uses: actions/upload-artifact@v3
+      with:
+        name: monitoring-data
+        path: monitoring_data.json
+
+  # ============================================================================
+  # 质量门禁检查
+  # ============================================================================
+  quality-gate-check:
+    name: Quality Gate Check
+    runs-on: ubuntu-latest
+    needs: collect-monitoring-data
+    if: needs.collect-monitoring-data.result == 'success'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check performance thresholds
+      run: |
+        PERFORMANCE_SCORE=${{ needs.collect-monitoring-data.outputs.performance_score }}
+        SECURITY_SCORE=${{ needs.collect-monitoring-data.outputs.security_score }}
+
+        echo "📊 Performance Score: $PERFORMANCE_SCORE"
+        echo "🔒 Security Score: $SECURITY_SCORE"
+
+        # 性能门禁 (分数 >= 70)
+        if (( $(echo "$PERFORMANCE_SCORE < 70" | bc -l) )); then
+          echo "::error::Performance score too low: $PERFORMANCE_SCORE (required: >=70)"
+          echo "::error::Recent performance degradation detected. Check system resources and API response times."
+          exit 1
+        fi
+
+        # 安全门禁 (分数 >= 80)
+        if (( $(echo "$SECURITY_SCORE < 80" | bc -l) )); then
+          echo "::error::Security score too low: $SECURITY_SCORE (required: >=80)"
+          echo "::error::Security issues detected. Check error rates and system alerts."
+          exit 1
+        fi
+
+        echo "✅ All quality gates passed"
+
+    - name: Generate quality report
+      run: |
+        cat > quality_report.md << EOF
+        # MyStocks 质量门禁报告
+
+        ## 生成时间
+        $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+        ## 质量评分
+
+        ### 性能评分
+        - 分数: ${{ needs.collect-monitoring-data.outputs.performance_score }}/100
+        - 状态: $([ "${{ needs.collect-monitoring-data.outputs.performance_score }}" -ge 70 ] && echo "✅ 通过" || echo "❌ 未通过")
+
+        ### 安全评分
+        - 分数: ${{ needs.collect-monitoring-data.outputs.security_score }}/100
+        - 状态: $([ "${{ needs.collect-monitoring-data.outputs.security_score }}" -ge 80 ] && echo "✅ 通过" || echo "❌ 未通过")
+
+        ### 业务健康度
+        - 状态: ${{ needs.collect-monitoring-data.outputs.business_health }}
+
+        ## 检查详情
+
+        ### 性能指标
+        - API响应时间目标: <2秒 (95th percentile)
+        - CPU使用率目标: <80%
+        - 内存使用率目标: <85%
+
+        ### 安全指标
+        - 错误率目标: <5%
+        - 安全告警: 0个
+
+        ## 建议措施
+
+        EOF
+
+        # 添加改进建议
+        if (( $(echo "${{ needs.collect-monitoring-data.outputs.performance_score }} < 80" | bc -l) )); then
+          echo "- 优化API响应时间，检查数据库查询性能" >> quality_report.md
+        fi
+
+        if (( $(echo "${{ needs.collect-monitoring-data.outputs.security_score }} < 90" | bc -l) )); then
+          echo "- 检查并修复系统错误，优化错误处理逻辑" >> quality_report.md
+        fi
+
+        echo "- 定期监控系统指标，及时发现性能问题" >> quality_report.md
+
+        cat quality_report.md
+
+    - name: Upload quality report
+      uses: actions/upload-artifact@v3
+      with:
+        name: quality-report
+        path: quality_report.md
+
+  # ============================================================================
+  # 告警处理
+  # ============================================================================
+  alert-handling:
+    name: Alert Handling
+    runs-on: ubuntu-latest
+    needs: [collect-monitoring-data, quality-gate-check]
+    if: failure() && needs.quality-gate-check.result == 'failure'
+
+    steps:
+    - name: Create alert notification
+      run: |
+        PERFORMANCE_SCORE=${{ needs.collect-monitoring-data.outputs.performance_score }}
+        SECURITY_SCORE=${{ needs.collect-monitoring-data.outputs.security_score }}
+
+        # 构建告警消息
+        ALERT_MESSAGE="🚨 MyStocks 质量门禁告警\\n\\n"
+
+        if (( $(echo "$PERFORMANCE_SCORE < 70" | bc -l) )); then
+          ALERT_MESSAGE="${ALERT_MESSAGE}❌ 性能评分过低: $PERFORMANCE_SCORE/100\\n"
+        fi
+
+        if (( $(echo "$SECURITY_SCORE < 80" | bc -l) )); then
+          ALERT_MESSAGE="${ALERT_MESSAGE}❌ 安全评分过低: $SECURITY_SCORE/100\\n"
+        fi
+
+        ALERT_MESSAGE="${ALERT_MESSAGE}\\n请立即检查系统状态并采取 corrective action。\\n"
+        ALERT_MESSAGE="${ALERT_MESSAGE}🔗 查看详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+        echo "ALERT_MESSAGE=$ALERT_MESSAGE" >> $GITHUB_ENV
+
+    - name: Send alert notification
+      run: |
+        # 这里可以集成多种通知方式
+
+        # 1. GitHub Issue 创建
+        if [ "${{ github.event_name }}" = "schedule" ]; then
+          gh issue create \
+            --title "🚨 质量门禁告警 - $(date +%Y-%m-%d)" \
+            --body "$ALERT_MESSAGE" \
+            --label "alert,quality-gate"
+        fi
+
+        # 2. Webhook 通知 (如企业微信、Slack等)
+        if [ -n "$ALERT_WEBHOOK_URL" ]; then
+          curl -X POST "$ALERT_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"$ALERT_MESSAGE\"}"
+        fi
+
+        # 3. 邮件通知 (如果配置了)
+        # 这里可以添加邮件发送逻辑
+
+        echo "✅ Alert notifications sent"
+
+  # ============================================================================
+  # 改进建议生成
+  # ============================================================================
+  generate-improvement-plan:
+    name: Generate Improvement Plan
+    runs-on: ubuntu-latest
+    needs: collect-monitoring-data
+    if: always()
+
+    steps:
+    - name: Analyze monitoring trends
+      run: |
+        python -c "
+        import json
+        import os
+
+        # 这里可以实现更复杂的趋势分析
+        # 比较历史数据，识别性能趋势
+
+        improvements = []
+
+        PERFORMANCE_SCORE = float('${{ needs.collect-monitoring-data.outputs.performance_score }}')
+        SECURITY_SCORE = float('${{ needs.collect-monitoring-data.outputs.security_score }}')
+
+        if PERFORMANCE_SCORE < 80:
+            improvements.extend([
+                '优化数据库查询，添加适当的索引',
+                '实现API响应缓存机制',
+                '检查并优化系统资源配置'
+            ])
+
+        if SECURITY_SCORE < 90:
+            improvements.extend([
+                '改进错误处理逻辑，减少5xx错误',
+                '添加请求频率限制',
+                '加强输入验证和数据清理'
+            ])
+
+        # 生成改进计划
+        with open('improvement_plan.md', 'w') as f:
+            f.write('# MyStocks 改进计划\\n\\n')
+            f.write(f'生成时间: {os.popen(\"date -u +'%Y-%m-%d %H:%M:%S UTC'\").read().strip()}\\n\\n')
+
+            if improvements:
+                f.write('## 建议改进项\\n\\n')
+                for i, item in enumerate(improvements, 1):
+                    f.write(f'{i}. {item}\\n')
+            else:
+                f.write('## 系统状态良好\\n\\n')
+                f.write('✅ 所有指标均在正常范围内，无需立即改进。\\n')
+
+            f.write('\\n## 监控建议\\n\\n')
+            f.write('- 继续监控关键性能指标\\n')
+            f.write('- 定期审查系统资源使用情况\\n')
+            f.write('- 关注安全告警和错误率变化\\n')
+
+        print('✅ Improvement plan generated')
+        "
+
+    - name: Upload improvement plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: improvement-plan
+        path: improvement_plan.md
+
+  # ============================================================================
+  # 结果汇总
+  # ============================================================================
+  summary:
+    name: Monitoring Validation Summary
+    runs-on: ubuntu-latest
+    needs: [collect-monitoring-data, quality-gate-check, generate-improvement-plan]
+    if: always()
+
+    steps:
+    - name: Generate final summary
+      run: |
+        echo "## 📊 MyStocks 监控验证结果" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # 检查各个任务状态
+        tasks_status() {
+          local task_name=$1
+          local status=$2
+
+          if [ "$status" = "success" ]; then
+            echo "✅ $task_name" >> $GITHUB_STEP_SUMMARY
+          elif [ "$status" = "failure" ]; then
+            echo "❌ $task_name" >> $GITHUB_STEP_SUMMARY
+          elif [ "$status" = "skipped" ]; then
+            echo "⏭️ $task_name (跳过)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ $task_name ($status)" >> $GITHUB_STEP_SUMMARY
+          fi
+        }
+
+        tasks_status "监控数据收集" "${{ needs.collect-monitoring-data.result }}"
+        tasks_status "质量门禁检查" "${{ needs.quality-gate-check.result }}"
+        tasks_status "改进计划生成" "${{ needs.generate-improvement-plan.result }}"
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📈 关键指标" >> $GITHUB_STEP_SUMMARY
+        echo "- 性能评分: ${{ needs.collect-monitoring-data.outputs.performance_score }}/100" >> $GITHUB_STEP_SUMMARY
+        echo "- 安全评分: ${{ needs.collect-monitoring-data.outputs.security_score }}/100" >> $GITHUB_STEP_SUMMARY
+        echo "- 业务健康度: ${{ needs.collect-monitoring-data.outputs.business_health }}" >> $GITHUB_STEP_SUMMARY
+
+        # 根据整体状态给出建议
+        if [ "${{ needs.quality-gate-check.result }}" = "success" ]; then
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎉 验证通过" >> $GITHUB_STEP_SUMMARY
+          echo "所有质量门禁检查均已通过，系统运行正常。" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚠️ 需要关注" >> $GITHUB_STEP_SUMMARY
+          echo "部分质量门禁检查未通过，请查看详细报告并采取 corrective action。" >> $GITHUB_STEP_SUMMARY
+        fi

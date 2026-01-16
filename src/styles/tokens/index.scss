@@ -1,0 +1,157 @@
+/* ==========================================================================
+   Design Token Index - Professional Financial UI Token System
+   ========================================================================== */
+
+/* Import all token files in correct order */
+@import 'colors';
+@import 'typography';
+@import 'spacing';
+@import 'borders_shadows';
+@import 'components';
+@import 'validation';
+
+/* ==========================================================================
+   Token Validation & Consistency Checks
+   ========================================================================== */
+
+/* Ensure critical tokens are defined */
+:root {
+  /* Validate color contrast ratios for accessibility */
+  --_color-contrast-primary: contrast-ratio(var(--color-text-primary), var(--color-bg-primary));
+  --_color-contrast-secondary: contrast-ratio(var(--color-text-secondary), var(--color-bg-primary));
+
+  /* Validate minimum contrast ratios (WCAG 2.1 AA requires 4.5:1 for normal text) */
+  --_contrast-min-required: 4.5;
+}
+
+/* CSS Custom Property Validation (Modern browsers only) */
+@supports (color: hsl(from red h s l)) {
+  :root {
+    /* Runtime contrast validation */
+    --_contrast-valid-primary: clamp(0, calc(var(--_color-contrast-primary) / var(--_contrast-min-required)), 1);
+    --_contrast-valid-secondary: clamp(0, calc(var(--_color-contrast-secondary) / var(--_contrast-min-required)), 1);
+  }
+}
+
+/* ==========================================================================
+   Token Utility Classes
+   ========================================================================== */
+
+/* Spacing utilities */
+.m-1 { margin: var(--spacing-1); }
+.m-2 { margin: var(--spacing-2); }
+.m-3 { margin: var(--spacing-3); }
+.m-4 { margin: var(--spacing-4); }
+.m-6 { margin: var(--spacing-6); }
+
+.p-1 { padding: var(--spacing-1); }
+.p-2 { padding: var(--spacing-2); }
+.p-3 { padding: var(--spacing-3); }
+.p-4 { padding: var(--spacing-4); }
+.p-6 { padding: var(--spacing-6); }
+
+/* Color utilities */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+
+.bg-primary { background-color: var(--color-bg-primary); }
+.bg-secondary { background-color: var(--color-bg-secondary); }
+.bg-surface { background-color: var(--color-surface-primary); }
+
+/* Border radius utilities */
+.rounded-sm { border-radius: var(--border-radius-sm); }
+.rounded-md { border-radius: var(--border-radius-md); }
+.rounded-lg { border-radius: var(--border-radius-lg); }
+.rounded-full { border-radius: var(--border-radius-full); }
+
+/* Shadow utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* Typography utilities */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+/* Financial-specific utilities */
+.text-financial { @extend .text-financial; }
+.text-financial-number { @extend .text-financial-number; }
+.text-positive { color: var(--color-financial-positive); }
+.text-negative { color: var(--color-financial-negative); }
+
+/* ==========================================================================
+   Dark Theme Application
+   ========================================================================== */
+
+[data-theme="dark"],
+:root {
+  /* Ensure all dark theme colors are applied */
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+/* ==========================================================================
+   Responsive Token Adjustments
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  :root {
+    /* Adjust spacing for mobile */
+    --component-padding-md: var(--spacing-3);
+    --component-padding-lg: var(--spacing-4);
+    --component-gap-md: var(--spacing-2);
+    --component-gap-lg: var(--spacing-3);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    /* Further mobile adjustments */
+    --component-padding-md: var(--spacing-2);
+    --component-padding-lg: var(--spacing-3);
+    --component-gap-md: var(--spacing-1);
+    --component-gap-lg: var(--spacing-2);
+  }
+}
+
+/* ==========================================================================
+   High Contrast Mode Adjustments
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-text-secondary: var(--color-text-primary);
+    --color-text-tertiary: var(--color-text-primary);
+    --color-border-primary: var(--color-text-primary);
+    --color-border-secondary: var(--color-text-primary);
+    --shadow-sm: 0 2px 4px 0 rgba(255, 255, 255, 0.3);
+    --shadow-md: 0 4px 8px 0 rgba(255, 255, 255, 0.4);
+    --shadow-lg: 0 8px 16px 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* ==========================================================================
+   Print Styles (Remove colors for printing)
+   ========================================================================== */
+
+@media print {
+  :root {
+    --color-bg-primary: white;
+    --color-bg-secondary: white;
+    --color-text-primary: black;
+    --color-text-secondary: black;
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+  }
+}

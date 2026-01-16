@@ -1,0 +1,8 @@
+# Mock数据系统依赖包版本锁定
+# 生成时间: 2025-11-13
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pandas==2.1.4
+python-dotenv==1.0.0
+python-multipart==0.0.6
+pydantic==2.5.0

@@ -1,0 +1,14 @@
+# Grafana Prometheus 数据源配置
+apiVersion: 1
+
+datasources:
+  - name: Prometheus-Legacy
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: false
+    editable: true
+    jsonData:
+      timeInterval: 15s
+      queryTimeout: 60s
+      httpMethod: POST

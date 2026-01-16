@@ -1,0 +1,284 @@
+// ============================================
+//   ART DECO PATTERNS & UTILITIES
+//   艺术装饰图案和工具类
+// ============================================
+
+// ============================================
+//   BACKGROUND PATTERNS - 背景图案
+// ============================================
+
+// Diagonal crosshatch (signature Art Deco pattern)
+.artdeco-bg-crosshatch {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(212, 175, 55, 0.03) 0px,
+      rgba(212, 175, 55, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(212, 175, 55, 0.03) 0px,
+      rgba(212, 175, 55, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+// Grid pattern (blockchain/network theme)
+.artdeco-bg-grid {
+  background-image:
+    linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+// Sunburst radial gradient (hero backgrounds)
+.artdeco-bg-sunburst {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212, 175, 55, 0.1) 0%,
+    rgba(212, 175, 55, 0.05) 25%,
+    rgba(212, 175, 55, 0.02) 50%,
+    transparent 75%
+  );
+}
+
+// ============================================
+//   TEXT UTILITIES - 文本工具
+// ============================================
+
+// All-caps with wide tracking (Art Deco signature)
+.artdeco-text-display {
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-widest);
+  font-family: var(--artdeco-font-heading);
+  font-weight: var(--artdeco-font-bold);
+}
+
+// Monospace labels (technical precision)
+.artdeco-text-mono {
+  font-family: var(--artdeco-font-accent);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  font-size: var(--artdeco-text-xs);
+}
+
+// Roman numerals (classical elegance)
+.artdeco-roman-i { content: 'I'; }
+.artdeco-roman-ii { content: 'II'; }
+.artdeco-roman-iii { content: 'III'; }
+.artdeco-roman-iv { content: 'IV'; }
+.artdeco-roman-v { content: 'V'; }
+
+// ============================================
+//   LAYOUT UTILITIES - 布局工具
+// ============================================
+
+// Section dividers with decorative lines
+.artdeco-section-divider {
+  display: flex;
+  align-items: center;
+  margin: var(--artdeco-spacing-12) 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(212, 175, 55, 0.3),
+      transparent
+    );
+  }
+
+  &::before { margin-right: var(--artdeco-spacing-4); }
+  &::after { margin-left: var(--artdeco-spacing-4); }
+}
+
+// Vertical divider lines (architectural columns)
+.artdeco-vertical-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(212, 175, 55, 0.2),
+    transparent
+  );
+}
+
+// ============================================
+//   DECORATIVE ELEMENTS - 装饰元素
+// ============================================
+
+// Corner embellishments (L-shaped brackets)
+.artdeco-corner-bracket {
+  position: relative;
+
+  &.tl::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--artdeco-gold-primary);
+    border-left: 2px solid var(--artdeco-gold-primary);
+  }
+
+  &.br::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid var(--artdeco-gold-primary);
+    border-right: 2px solid var(--artdeco-gold-primary);
+  }
+}
+
+// Rotated diamond containers (45-degree squares)
+.artdeco-diamond-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  transform: rotate(45deg);
+  overflow: hidden;
+
+  .artdeco-diamond-content {
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Double-frame images (frame-within-frame)
+.artdeco-framed-image {
+  position: relative;
+  border: 3px solid var(--artdeco-gold-primary);
+  background: var(--artdeco-bg-global);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.05);
+  }
+
+  img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.2) contrast(1.1);
+    transition: filter var(--artdeco-transition-base);
+
+    &:hover {
+      filter: grayscale(0) contrast(1.2);
+    }
+  }
+}
+
+// ============================================
+//   INTERACTION STATES - 交互状态
+// ============================================
+
+// Hover glow effect
+.artdeco-hover-glow {
+  transition: box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    box-shadow: var(--artdeco-glow-intense);
+  }
+}
+
+// Scale lift effect
+.artdeco-hover-lift {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+  }
+}
+
+// Border highlight
+.artdeco-hover-border {
+  transition: border-color var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    border-color: var(--artdeco-border-hover);
+  }
+}
+
+// ============================================
+//   ANIMATION KEYFRAMES - 动画关键帧
+// ============================================
+
+@keyframes artdeco-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0.5deg);
+  }
+}
+
+@keyframes artdeco-pulse-gold {
+  0%, 100% {
+    box-shadow: var(--artdeco-glow-subtle);
+  }
+  50% {
+    box-shadow: var(--artdeco-glow-intense);
+  }
+}
+
+@keyframes artdeco-shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+// ============================================
+//   RESPONSIVE UTILITIES - 响应式工具
+// ============================================
+
+// Hide on mobile, show on desktop
+@media (max-width: 767px) {
+  .artdeco-hidden-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .artdeco-hidden-desktop {
+    display: none !important;
+  }
+}
+
+// Typography scaling
+@media (max-width: 640px) {
+  :root {
+    --artdeco-text-6xl: 2.5rem;    // 40px on mobile
+    --artdeco-text-7xl: 3rem;     // 48px on mobile
+  }
+}

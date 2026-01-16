@@ -1,16 +1,32 @@
 // Auto-generated types for strategy domain
-// Generated at: 2026-01-14T14:57:47.575152
+// Generated at: 2026-01-15T21:06:03.935517
+
+import type { BacktestResultSummary, BacktestTrade } from './common';
 
 export interface BacktestRequest {
-  strategy_id?: string;
-  symbol?: string;
+  strategy_name?: string;
+  symbols?: string[];
   start_date?: string;
   end_date?: string;
   initial_capital?: number;
+  parameters?: Record<string, any>;
+  strategy_id?: number;
+  symbol?: string;
   position_size?: number;
+  user_id?: number;
+  commission_rate?: number;
+  slippage_rate?: number;
+  benchmark?: string | null;
+  include_analysis?: boolean;
 }
 
 export interface BacktestResponse {
+  task_id?: string;
+  status?: string;
+  summary?: BacktestResultSummary | null;
+  equity_curve?: Record<string, any>[];
+  trades?: BacktestTrade[];
+  error_message?: string | null;
   strategy_id?: string;
   total_return?: number;
   annualized_return?: number;
@@ -71,103 +87,111 @@ export interface TechnicalIndicatorResponse {
   calculated_at?: string;
 }
 
-// ViewModel types for frontend adapters
-// Redefine Strategy with additional fields used by adapter
+// ============================================
+// ViewModel Types for Adapters and Components
+// ============================================
+
+// Backtest Result ViewModel (snake_case for API compatibility)
+export interface BacktestResultVM {
+  task_id?: string;
+  strategy_id?: string;
+  total_return?: number;
+  annualized_return?: number;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  win_rate?: number;
+  total_trades?: number;
+  profit_factor?: number;
+  equity_curve?: Array<{ date: string; value: number; drawdown?: number }>;
+  trades?: Array<{
+    id: string;
+    symbol: string;
+    type: 'buy' | 'sell';
+    quantity: number;
+    price: number;
+    timestamp: Date;
+    profitLoss?: number;
+    profitLossPercent?: number;
+  }>;
+  performance_metrics?: {
+    total_return?: number;
+    annual_return?: number;
+    monthly_return?: number;
+    weekly_return?: number;
+    daily_return?: number;
+    sharpe_ratio?: number;
+    sortino_ratio?: number;
+    calmar_ratio?: number;
+    max_drawdown?: number;
+    avg_drawdown?: number;
+    max_drawdown_duration?: number;
+    win_rate?: number;
+    profit_factor?: number;
+    avg_profit?: number;
+    avg_loss?: number;
+    best_trade?: number;
+    worst_trade?: number;
+    total_trades?: number;
+    winning_trades?: number;
+    losing_trades?: number;
+    avg_trade_duration?: number;
+    expectency?: number;
+  };
+}
+
+// Backtest Task ViewModel
+export interface BacktestTask {
+  task_id?: string;
+  strategy_id?: string;
+  status?: 'pending' | 'running' | 'completed' | 'failed';
+  progress?: number;
+  started_at?: string;
+  completed_at?: string | null;
+  error?: string | null;
+  result?: BacktestResultVM | null;
+}
+
+// Strategy Performance ViewModel (camelCase for frontend)
+export interface StrategyPerformance {
+  totalReturn?: number;
+  annualizedReturn?: number;
+  sharpeRatio?: number;
+  maxDrawdown?: number;
+  winRate?: number;
+  profitLossRatio?: number;
+  // Also support snake_case
+  total_return?: number;
+  annualized_return?: number;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  win_rate?: number;
+  profit_loss_ratio?: number;
+}
+
+// Strategy ViewModel
 export interface Strategy {
   id?: string;
   strategy_id?: string;
-  strategy_type?: string;
   name?: string;
   description?: string;
-  trained?: boolean;
-  performance?: StrategyPerformance | Record<string, number> | null;
-  created_at?: string;
   type?: 'trend_following' | 'mean_reversion' | 'momentum';
   status?: 'active' | 'inactive' | 'testing';
   createdAt?: Date;
   updatedAt?: Date;
-  parameters?: Record<string, any> | null;
+  parameters?: Record<string, any>;
+  performance?: StrategyPerformance | null;
 }
 
-export interface StrategyPerformance {
-  total_return?: number;
-  totalReturn?: number;
-  annualized_return?: number;
-  annualReturn?: number;
-  sharpe_ratio?: number;
-  sharpeRatio?: number;
-  max_drawdown?: number;
-  maxDrawdown?: number;
-  win_rate?: number;
-  winRate?: number;
-  total_trades?: number;
-  profit_loss_ratio?: number;
-  profitLossRatio?: number;
-}
-
-// Redefine BacktestTask with additional fields used by adapter
-export interface BacktestTask {
-  task_id?: string;
-  taskId?: string;
-  strategy_id?: string;
-  strategyId?: string;
-  start_date?: string;
-  end_date?: string;
-  initial_capital?: number;
-  position_size?: number;
-  status?: 'pending' | 'running' | 'completed' | 'failed';
-  progress?: number;
-  startTime?: Date;
-  endTime?: Date;
-  result?: BacktestResult;
-  error?: string;
-}
-
-// Redefine BacktestResult with additional fields used by adapter
-export interface BacktestResult {
-  strategy_id?: string;
-  strategyId?: string;
-  taskId?: string;
-  total_return?: number;
-  totalReturn?: number;
-  annualized_return?: number;
-  annualReturn?: number;
-  sharpe_ratio?: number;
-  sharpeRatio?: number;
-  max_drawdown?: number;
-  maxDrawdown?: number;
-  win_rate?: number;
-  winRate?: number;
-  total_trades?: number;
-  totalTrades?: number;
-  profit_factor?: number;
-  profitFactor?: number;
-  equity_curve?: number[];
-  trades?: any[];
-  performance_metrics?: Record<string, any>;
-  backtest_duration_ms?: number;
-}
-
-export type BacktestRequest = BacktestTask;
-export type BacktestResponse = BacktestResult;
-
-export interface StrategyListResponse {
-  strategies?: StrategyInfo[];
-  total_count?: number;
-}
-
-export interface CreateStrategyRequest {
-  name?: string;
-  description?: string;
-  strategy_type?: string;
-  parameters?: Record<string, any> | null;
-}
-
-export interface UpdateStrategyRequest {
-  strategy_id?: string;
-  name?: string;
-  description?: string;
-  parameters?: Record<string, any> | null;
-}
-
-export type BacktestParams = BacktestRequest;
+// Re-export from common.ts for convenience
+import type {
+  StrategyCreateRequest,
+  StrategyUpdateRequest,
+  StrategyListResponse,
+  BacktestRequest as BacktestRequestFromCommon,
+} from './common';
+export type {
+  StrategyCreateRequest as CreateStrategyRequest,
+  StrategyUpdateRequest as UpdateStrategyRequest,
+  StrategyListResponse,
+  BacktestRequestFromCommon as BacktestParams,
+};

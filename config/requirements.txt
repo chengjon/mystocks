@@ -1,0 +1,66 @@
+# 核心依赖
+pandas>=2.0.0
+numpy>=1.24.0
+pyyaml>=6.0
+pydantic>=2.0.0
+pandera>=0.17.0
+
+# 数据库驱动 (Week 3简化后 - 仅TDengine和PostgreSQL)
+taospy>=2.7.0
+psycopg2-binary>=2.9.5
+
+# 数据源
+akshare>=1.11.0
+baostock>=0.9.0
+tushare>=1.3.0
+efinance>=0.5.0
+
+# 工具
+python-dotenv>=1.0.0
+schedule>=1.2.0
+requests>=2.31.0
+certifi>=2025.11.12
+bcrypt>=5.0.0
+attrs>=25.4.0
+anyio>=4.11.0
+cachetools>=6.2.1
+
+# Web框架和实时通信 (FastAPI + Socket.IO)
+fastapi>=0.114.0
+uvicorn>=0.30.0
+python-socketio>=5.10.0
+python-engineio>=4.8.0
+aiofiles>=25.1.0
+python-multipart>=0.0.6
+
+# GPU加速依赖 (可选安装，用于量化交易回测和AI策略)
+# RTX 2080 GPU加速支持
+cupy-cuda12x>=13.6.0
+cudf-cu12>=25.10.0
+cuml-cu12>=25.10.0
+
+# 开发工具
+pytest>=7.4.0
+mypy>=1.5.0
+black>=25.11.0
+bleach>=6.3.0
+
+# AI/ML和云服务
+anthropic>=0.72.1
+boto3>=1.40.71
+botocore>=1.40.71
+
+# 任务队列
+celery>=5.5.3
+
+# 异步监控 (P0优先级 - ROI 9/10)
+redis>=5.0.0
+
+# 压测工具
+locust>=2.20.0
+datamodel-codegen==0.0.1
+
+# API契约测试
+schemathesis>=3.18.0
+jsonschema>=4.20.0
+asyncpg>=0.29.0

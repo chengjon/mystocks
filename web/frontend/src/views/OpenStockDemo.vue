@@ -98,9 +98,9 @@ const getToken = () => {
 }
 
 // 认证状态检查
-const isAuthenticated = computed(() => {
+const isAuthenticated = computed<boolean>(() => {
   const token = getToken()
-  return token && token.length > 0
+  return !!(token && token.length > 0)
 })
 
 // 跳转到登录页

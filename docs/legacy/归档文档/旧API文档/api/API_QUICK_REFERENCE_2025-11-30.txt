@@ -1,0 +1,228 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║              MyStocks API 快速参考指南                                    ║
+║              生成日期: 2025-11-30                                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📊 API 统计
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+总端点数: 6 个
+├── GET 端点: 5 个 (83%)
+└── POST 端点: 1 个 (17%)
+
+基础 URL: http://localhost:8000
+认证方式: JWT Bearer Token
+数据格式: JSON
+
+
+🔑 认证端点
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  获取 CSRF Token
+   方法: GET
+   路径: /api/csrf-token
+   描述: 获取 CSRF Token (可选)
+
+   示例:
+   $ curl -X GET "http://localhost:8000/api/csrf-token"
+
+2️⃣  用户登录
+   方法: POST
+   路径: /api/auth/login
+   描述: 用户登录，返回 JWT Token
+
+   请求体:
+   {
+     "username": "admin",
+     "password": "admin123"
+   }
+
+   示例:
+   $ curl -X POST "http://localhost:8000/api/auth/login" \
+     -H "Content-Type: application/json" \
+     -d '{"username":"admin","password":"admin123"}'
+
+   响应:
+   {
+     "access_token": "eyJ...",
+     "token_type": "bearer",
+     "user": {...}
+   }
+
+3️⃣  获取用户信息
+   方法: GET
+   路径: /api/auth/user
+   描述: 获取当前登录用户信息 (需要 Token)
+
+   请求头:
+   Authorization: Bearer <access_token>
+
+   示例:
+   $ curl -X GET "http://localhost:8000/api/auth/user" \
+     -H "Authorization: Bearer eyJ..."
+
+
+🏥 系统端点
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  健康检查
+   方法: GET
+   路径: /health
+   描述: 系统健康检查
+
+   示例:
+   $ curl -X GET "http://localhost:8000/health"
+
+2️⃣  根路径
+   方法: GET
+   路径: /
+   描述: 重定向到 Swagger 文档
+
+   示例:
+   $ curl -X GET "http://localhost:8000/"
+
+3️⃣  Swagger UI
+   方法: GET
+   路径: /docs
+   描述: 交互式 API 文档
+
+   浏览器访问:
+   http://localhost:8000/docs
+
+
+🚀 完整工作流
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+第一步: 登录获取 Token
+--------
+
+$ curl -X POST "http://localhost:8000/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+响应示例:
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "user": {
+    "id": "user_123",
+    "username": "admin",
+    "email": "admin@example.com",
+    "role": "admin"
+  }
+}
+
+
+第二步: 使用 Token 获取用户信息
+--------
+
+$ curl -X GET "http://localhost:8000/api/auth/user" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+响应示例:
+{
+  "id": "user_123",
+  "username": "admin",
+  "email": "admin@example.com",
+  "role": "admin",
+  "created_at": "2025-01-01T00:00:00Z",
+  "last_login": "2025-11-30T20:16:00Z"
+}
+
+
+📝 Python 示例
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+import requests
+
+# 登录
+response = requests.post(
+    "http://localhost:8000/api/auth/login",
+    json={"username": "admin", "password": "admin123"}
+)
+data = response.json()
+token = data["access_token"]
+
+# 获取用户信息
+headers = {"Authorization": f"Bearer {token}"}
+user_response = requests.get(
+    "http://localhost:8000/api/auth/user",
+    headers=headers
+)
+print(user_response.json())
+
+
+📋 JavaScript 示例
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 登录
+const loginRes = await fetch('http://localhost:8000/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    username: 'admin',
+    password: 'admin123'
+  })
+});
+
+const { access_token } = await loginRes.json();
+
+// 获取用户信息
+const userRes = await fetch('http://localhost:8000/api/auth/user', {
+  headers: { 'Authorization': `Bearer ${access_token}` }
+});
+
+const user = await userRes.json();
+console.log(user);
+
+
+🌐 在线访问
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Swagger UI:  http://localhost:8000/docs
+OpenAPI:    http://localhost:8000/openapi.json
+Health:     http://localhost:8000/health
+
+
+💡 常用 cURL 命令
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 健康检查
+curl -s http://localhost:8000/health | python3 -m json.tool
+
+# 获取 Token
+TOKEN=$(curl -s -X POST "http://localhost:8000/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+
+# 使用 Token 请求数据
+curl -s -H "Authorization: Bearer $TOKEN" \
+  http://localhost:8000/api/auth/user | python3 -m json.tool
+
+
+❌ 错误代码
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+200: 成功
+201: 已创建
+400: 请求错误
+401: 未授权 (Token 无效或过期)
+403: 禁止访问
+404: 资源不存在
+422: 验证失败
+500: 服务器错误
+
+
+📚 详细文档
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+完整 API 文档:
+/opt/claude/mystocks_spec/docs/api/API_DOCUMENTATION_2025-11-30.md
+
+包含内容:
+- 所有 API 端点的详细文档
+- 请求/响应示例
+- 错误处理
+- 完整工作流
+- 各种编程语言的示例代码
+
+╚════════════════════════════════════════════════════════════════════════════╝

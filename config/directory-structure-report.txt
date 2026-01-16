@@ -1,0 +1,50 @@
+项目目录结构检查报告
+=========================
+生成时间: Sat Jan  3 10:02:02 CST 2026
+项目路径: /opt/claude/mystocks_spec
+
+根目录文件统计:
+69
+
+根目录目录统计:
+57
+
+按文件类型统计:
+      9 md
+      7 ts
+      6 json
+      5 txt
+      4 sh
+      4 js
+      3 log
+      2 yml
+      2 yaml
+      2 py
+      2 ini
+      1 xml
+      1 toml
+      1 reject
+      1 rc
+      1 pylintrc
+      1 merge
+      1 latest_wins
+      1 jsonl
+      1 gitignore
+      1 gitattributes
+      1 first_wins
+      1 example
+      1 env
+      1 csv
+      1 coverage
+      1 backup-20251226-125825
+      1 LICENSE
+      1 FILE_OWNERSHIP
+      1 95%
+      1 90%
+      1 80%
+      1 50%（p50）
+      1 0
+
+大文件列表 (>1MB):
+1.2M ./coverage.xml
+6.4M ./test_timing.csv

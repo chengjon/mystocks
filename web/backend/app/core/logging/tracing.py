@@ -9,13 +9,13 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any, Dict, Optional
 
+import os
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-    ConsoleSpanExporter,
-)
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace.sampling import TraceIdRatioBasedSampler, ParentBasedTraceIdRatioBasedSampler
 from opentelemetry.semconv.resource import ResourceAttributes
 
 logger = logging.getLogger(__name__)
@@ -34,9 +34,18 @@ def setup_telemetry(service_name: str = "mystocks-api") -> trace.Tracer:
         }
     )
 
-    provider = TracerProvider(resource=resource)
+    # Configure sampling rate (default 10% for production efficiency)
+    sampling_ratio = float(os.getenv("OTEL_TRACES_SAMPLER_ARG", "0.1"))
+    sampler = ParentBasedTraceIdRatioBasedSampler(sampling_ratio)
 
-    span_processor = BatchSpanProcessor(ConsoleSpanExporter())
+    provider = TracerProvider(resource=resource, sampler=sampler)
+
+    # Configure OTLP exporter for Tempo
+    otlp_exporter = OTLPSpanExporter(
+        endpoint="http://tempo:4317",
+        insecure=True,
+    )
+    span_processor = BatchSpanProcessor(otlp_exporter)
     provider.add_span_processor(span_processor)
 
     trace.set_tracer_provider(provider)

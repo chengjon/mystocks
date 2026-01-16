@@ -1,0 +1,542 @@
+/**
+ * Element Plus ArtDeco Theme Override
+ *
+ * Maps ArtDeco Design Tokens to Element Plus CSS variables
+ * Ensures Element Plus components match the ArtDeco luxury aesthetic
+ *
+ * @version 1.0
+ * @author Claude Code
+ * @date 2026-01-12
+ */
+
+@use 'sass:color';
+@import './artdeco-tokens.scss';
+
+// ============================================================
+// Element Plus CSS Variable Mappings - ArtDeco Style
+// ============================================================
+
+:root {
+  // ========== Primary Colors (Gold Accent) ==========
+
+  --el-color-primary: var(--artdeco-gold-primary);
+  --el-color-primary-light-3: var(--artdeco-gold-hover);
+  --el-color-primary-light-5: #E6D9A8;
+  --el-color-primary-light-7: #EBE0C4;
+  --el-color-primary-light-8: #F0E6D0;
+  --el-color-primary-light-9: #F5ECDC;
+  --el-color-primary-dark-2: var(--artdeco-gold-dim);
+
+  // ========== Functional Colors ==========
+
+  // Success (Profit/Up in A-shares)
+  --el-color-success: var(--artdeco-success);
+  --el-color-success-light-3: #29FF96;
+  --el-color-success-light-5: #54FFB0;
+  --el-color-success-light-7: #7FFFC9;
+  --el-color-success-light-8: #99FFDB;
+  --el-color-success-light-9: #B2FFE8;
+  --el-color-success-dark-2: #00C762;
+
+  // Warning (Gold)
+  --el-color-warning: var(--artdeco-warning);
+  --el-color-warning-light-3: #FFE066;
+  --el-color-warning-light-5: #FFE899;
+  --el-color-warning-light-7: #FFF0CC;
+  --el-color-warning-light-8: #FFF4E0;
+  --el-color-warning-light-9: #FFF9F3;
+  --el-color-warning-dark-2: #E6C200;
+
+  // Danger (Loss/Down in A-shares)
+  --el-color-danger: var(--artdeco-error);
+  --el-color-danger-light-3: #FF7D7D;
+  --el-color-danger-light-5: #FFA3A3;
+  --el-color-danger-light-7: #FFC9C9;
+  --el-color-danger-light-8: #FFDDDD;
+  --el-color-danger-light-9: #FFEEEE;
+  --el-color-danger-dark-2: #E60000;
+
+  // Error (Same as Danger)
+  --el-color-error: var(--el-color-danger);
+  --el-color-error-light-3: var(--el-color-danger-light-3);
+  --el-color-error-light-5: var(--el-color-danger-light-5);
+  --el-color-error-light-7: var(--el-color-danger-light-7);
+  --el-color-error-light-8: var(--el-color-danger-light-8);
+  --el-color-error-light-9: var(--el-color-danger-light-9);
+  --el-color-error-dark-2: var(--el-color-danger-dark-2);
+
+  // Info (Sky Blue)
+  --el-color-info: var(--artdeco-info);
+  --el-color-info-light-3: #7CD0FF;
+  --el-color-info-light-5: #A5DDFF;
+  --el-color-info-light-7: #CEE9FF;
+  --el-color-info-light-8: #E6F3FF;
+  --el-color-info-light-9: #F8FAFF;
+  --el-color-info-dark-2: #26A8E8;
+
+  // ========== Background Colors ==========
+
+  --el-bg-color: var(--artdeco-bg-base);
+  --el-bg-color-page: var(--artdeco-bg-global);
+  --el-bg-color-overlay: #000000;
+
+  // ========== Text Colors ==========
+
+  --el-text-color-primary: var(--artdeco-fg-primary);
+  --el-text-color-regular: var(--artdeco-fg-muted);
+  --el-text-color-secondary: #A0A0A0;
+  --el-text-color-placeholder: var(--artdeco-fg-subtle);
+  --el-text-color-disabled: #555555;
+
+  // ========== Border Colors ==========
+
+  --el-border-color: var(--artdeco-border-default);
+  --el-border-color-light: rgba(212, 175, 55, 0.15);
+  --el-border-color-lighter: rgba(212, 175, 55, 0.1);
+  --el-border-color-extra-light: rgba(212, 175, 55, 0.05);
+  --el-border-color-dark: var(--artdeco-border-hover);
+  --el-border-color-darker: var(--artdeco-border-accent);
+
+  // ========== Fill Colors ==========
+
+  --el-fill-color: var(--artdeco-bg-elevated);
+  --el-fill-color-light: #202020;
+  --el-fill-color-lighter: #252525;
+  --el-fill-color-extra-light: #2A2A2A;
+  --el-fill-color-dark: #101010;
+  --el-fill-color-darker: #0A0A0A;
+
+  // ========== Border Radius (Sharp ArtDeco) ==========
+
+  --el-border-radius-base: var(--artdeco-radius-none);
+  --el-border-radius-small: var(--artdeco-radius-none);
+  --el-border-radius-round: var(--artdeco-radius-sm);
+  --el-border-radius-circle: 50%;
+
+  // ========== Shadows (Gold Glows) ==========
+
+  --el-box-shadow: var(--artdeco-glow-subtle);
+  --el-box-shadow-light: var(--artdeco-shadow-md);
+  --el-box-shadow-base: var(--artdeco-glow-subtle);
+  --el-box-shadow-dark: var(--artdeco-glow-intense);
+
+  // ========== Typography ==========
+
+  --el-font-family: var(--artdeco-font-body);
+  --el-font-size-base: var(--artdeco-text-base);
+  --el-font-size-small: var(--artdeco-text-sm);
+  --el-font-size-large: var(--artdeco-text-lg);
+  --el-font-weight-primary: var(--artdeco-font-normal);
+  --el-font-weight-secondary: var(--artdeco-font-medium);
+
+  // ========== Spacing ==========
+
+  --el-component-size-large: 48px;
+  --el-component-size: 40px;
+  --el-component-size-small: 32px;
+}
+
+// ============================================================
+// Component-Specific Overrides
+// ============================================================
+
+// ========== Buttons (ArtDeco Geometric Precision) ==========
+
+.el-button {
+  border-radius: var(--artdeco-radius-none) !important;
+  font-family: var(--artdeco-font-body);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &.el-button--primary {
+    background-color: transparent;
+    border-color: var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+
+    &:hover,
+    &:focus {
+      background-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-global);
+      box-shadow: var(--artdeco-glow-intense);
+    }
+  }
+
+  &.el-button--success {
+    background-color: transparent;
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-button--warning {
+    background-color: transparent;
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-button--danger {
+    background-color: transparent;
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+}
+
+// ========== Cards (ArtDeco Framed Exhibits) ==========
+
+.el-card {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  box-shadow: var(--artdeco-glow-subtle);
+
+  .el-card__header {
+    border-bottom: 1px solid var(--artdeco-border-default);
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+  }
+}
+
+// ========== Inputs (ArtDeco Underlined Elegance) ==========
+
+.el-input {
+  .el-input__wrapper {
+    background-color: transparent;
+    border-radius: var(--artdeco-radius-none) !important;
+    border: none;
+    border-bottom: 2px solid var(--artdeco-border-default);
+    box-shadow: none !important;
+    padding: 0;
+
+    &:hover {
+      border-bottom-color: var(--artdeco-border-hover);
+    }
+
+    &.is-focus {
+      border-bottom-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle) !important;
+    }
+  }
+
+  .el-input__inner {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &::placeholder {
+      color: var(--artdeco-fg-subtle);
+    }
+  }
+}
+
+// ========== Tables (ArtDeco Data Grid) ==========
+
+.el-table {
+  background-color: var(--artdeco-bg-card);
+  color: var(--artdeco-fg-primary);
+
+  th.el-table__cell {
+    background-color: var(--artdeco-bg-elevated);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+    border-bottom: 1px solid var(--artdeco-border-default);
+  }
+
+  td.el-table__cell {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  }
+
+  tr:hover > td {
+    background-color: rgba(212, 175, 55, 0.05) !important;
+  }
+
+  .el-table__body tr.current-row > td {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+  }
+}
+
+// ========== Select Dropdown ==========
+
+.el-select-dropdown {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+
+  .el-select-dropdown__item {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      color: var(--artdeco-gold-primary);
+    }
+
+    &.is-selected {
+      color: var(--artdeco-gold-primary);
+      background-color: rgba(212, 175, 55, 0.15);
+    }
+  }
+}
+
+// ========== Dialog/Modal ==========
+
+.el-dialog {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  box-shadow: var(--artdeco-glow-intense);
+
+  .el-dialog__header {
+    border-bottom: 1px solid var(--artdeco-border-default);
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+  }
+
+  .el-dialog__title {
+    color: var(--artdeco-gold-primary);
+  }
+
+  .el-dialog__body {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+// ========== Tabs ==========
+
+.el-tabs {
+  .el-tabs__item {
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--artdeco-gold-primary);
+    }
+
+    &.is-active {
+      color: var(--artdeco-gold-primary);
+      border-bottom-color: var(--artdeco-gold-primary);
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--artdeco-gold-primary);
+  }
+}
+
+// ========== Tags/Labels ==========
+
+.el-tag {
+  border-radius: var(--artdeco-radius-none) !important;
+  font-family: var(--artdeco-font-accent);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+  border: 1px solid;
+
+  &.el-tag--success {
+    background-color: rgba(0, 230, 118, 0.1);
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-tag--warning {
+    background-color: rgba(255, 215, 0, 0.1);
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-tag--danger {
+    background-color: rgba(255, 82, 82, 0.1);
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+
+  &.el-tag--info {
+    background-color: rgba(79, 195, 247, 0.1);
+    border-color: var(--artdeco-info);
+    color: var(--artdeco-info);
+  }
+}
+
+// ========== Progress Bars ==========
+
+.el-progress {
+  .el-progress-bar__outer {
+    background-color: var(--artdeco-bg-elevated);
+    border-radius: var(--artdeco-radius-none) !important;
+  }
+
+  .el-progress-bar__inner {
+    background: linear-gradient(
+      90deg,
+      var(--artdeco-gold-primary),
+      var(--artdeco-gold-hover)
+    );
+    border-radius: var(--artdeco-radius-none) !important;
+    box-shadow: var(--artdeco-glow-subtle);
+  }
+
+  &.is-success .el-progress-bar__inner {
+    background: var(--artdeco-success);
+  }
+
+  &.is-warning .el-progress-bar__inner {
+    background: var(--artdeco-warning);
+  }
+
+  &.is-exception .el-progress-bar__inner {
+    background: var(--artdeco-error);
+  }
+}
+
+// ========== Switch ==========
+
+.el-switch {
+  &.is-checked .el-switch__core {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+}
+
+// ========== Checkbox ==========
+
+.el-checkbox {
+  .el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  .el-checkbox__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+}
+
+// ========== Radio ==========
+
+.el-radio {
+  .el-radio__input.is-checked .el-radio__inner {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  .el-radio__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+}
+
+// ========== Alert ==========
+
+.el-alert {
+  border-radius: var(--artdeco-radius-none) !important;
+  border: 1px solid;
+
+  &.el-alert--success {
+    background-color: rgba(0, 230, 118, 0.1);
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-alert--warning {
+    background-color: rgba(255, 215, 0, 0.1);
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-alert--error {
+    background-color: rgba(255, 82, 82, 0.1);
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+
+  &.el-alert--info {
+    background-color: rgba(79, 195, 247, 0.1);
+    border-color: var(--artdeco-info);
+    color: var(--artdeco-info);
+  }
+}
+
+// ========== Tooltip ==========
+
+.el-tooltip__popper {
+  background-color: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-fg-primary);
+
+  .el-tooltip__arrow::before {
+    border: 1px solid var(--artdeco-border-default);
+    background-color: var(--artdeco-bg-elevated);
+  }
+}
+
+// ========== Notification ==========
+
+.el-notification {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  color: var(--artdeco-fg-primary);
+  box-shadow: var(--artdeco-glow-intense);
+
+  .el-notification__title {
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+  }
+
+  .el-notification__closeBtn {
+    color: var(--artdeco-fg-muted);
+
+    &:hover {
+      color: var(--artdeco-gold-primary);
+    }
+  }
+}
+
+// ========== Loading ==========
+
+.el-loading-mask {
+  background-color: rgba(10, 10, 10, 0.8);
+
+  .el-loading-spinner {
+    .path {
+      stroke: var(--artdeco-gold-primary);
+    }
+
+    .el-loading-text {
+      color: var(--artdeco-gold-primary);
+      font-family: var(--artdeco-font-heading);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wider);
+    }
+  }
+}
+
+// ========== Message ==========
+
+.el-message {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  color: var(--artdeco-fg-primary);
+
+  &.el-message--success {
+    background-color: rgba(0, 230, 118, 0.1);
+    border-color: var(--artdeco-success);
+  }
+
+  &.el-message--warning {
+    background-color: rgba(255, 215, 0, 0.1);
+    border-color: var(--artdeco-warning);
+  }
+
+  &.el-message--error {
+    background-color: rgba(255, 82, 82, 0.1);
+    border-color: var(--artdeco-error);
+  }
+}

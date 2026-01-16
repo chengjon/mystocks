@@ -36,6 +36,25 @@ storage:
       max_workers: 10
       queue_depth: 1000
 
+# Metrics generator for service graphs and RED metrics
+metrics_generator:
+  processor:
+    service_graphs:
+      max_items: 10000
+      wait: 10s
+      bucket_count: 10
+      histogram_buckets: [0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8]
+    span_metrics:
+      histogram_buckets: [0.002, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+  registry:
+    collection_interval: 15s
+    stale_duration: 15m
+  storage:
+    path: /tmp/tempo/generator/wal
+    remote_write:
+      - url: "http://prometheus:9090/api/v1/write"
+        send_exemplars: true
+
 query_frontend:
   search:
     max_duration: 72h

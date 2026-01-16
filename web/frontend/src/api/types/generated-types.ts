@@ -1,6 +1,9 @@
 // Auto-generated TypeScript types from backend Pydantic models
 // Generated at: 2026-01-10T18:22:30.192591
 
+// Re-export types from common.ts to avoid duplicates
+export type { BacktestResultSummary, BacktestResult, BacktestRequest, BacktestResponse, BacktestTrade } from './common';
+
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {
   code: string | number;
@@ -271,77 +274,12 @@ export interface BacktestExecuteRequest {
   benchmark?: string | null;
 }
 
+// Backtest types are re-exported from common.ts at the top of this file
 export interface BacktestListResponse {
   total_count?: number;
-  backtests?: BacktestResultSummary[];
+  backtests?: import('./common').BacktestResultSummary[];
   page?: number;
   page_size?: number;
-}
-
-export interface BacktestRequest {
-  strategy_id?: number;
-  user_id?: number;
-  symbols?: string[];
-  start_date?: string;
-  end_date?: string;
-  initial_capital?: number;
-  commission_rate?: number;
-  slippage_rate?: number;
-  benchmark?: string | null;
-  include_analysis?: boolean;
-}
-
-export interface BacktestResponse {
-  task_id?: string;
-  status?: string;
-  summary?: BacktestResultSummary | null;
-  equity_curve?: Record<string, any>[];
-  trades?: BacktestTrade[];
-  error_message?: string | null;
-}
-
-export interface BacktestResult {
-  backtest_id?: number;
-  strategy_id?: number;
-  user_id?: number;
-  symbols?: string[];
-  start_date?: string;
-  end_date?: string;
-  initial_capital?: number;
-  final_capital?: number;
-  performance?: PerformanceMetrics;
-  equity_curve?: EquityCurvePoint[];
-  trades?: TradeRecord[];
-  status?: BacktestStatus;
-  created_at?: string;
-  completed_at?: string | null;
-  error_message?: string | null;
-}
-
-export interface BacktestResultSummary {
-  backtest_id?: number;
-  strategy_id?: number;
-  strategy_name?: string;
-  symbols?: string[];
-  date_range?: string;
-  total_return?: number;
-  sharpe_ratio?: number;
-  max_drawdown?: number;
-  status?: BacktestStatus;
-  created_at?: string;
-}
-
-export type BacktestStatus = 'pending' | 'running' | 'completed' | 'failed';
-
-export interface BacktestTrade {
-  symbol?: string;
-  entry_date?: string;
-  exit_date?: string;
-  entry_price?: number;
-  exit_price?: number;
-  quantity?: number;
-  pnl?: number;
-  return_pct?: number;
 }
 
 export interface BackupListQueryParams {
@@ -494,7 +432,7 @@ export interface CategoryStatsResponse {
 
 export interface ChartConfigRequest {
   symbol?: string;
-  market?: string;
+  market?: string | null;
   interval?: string;
   theme?: string;
   locale?: string;
@@ -922,7 +860,7 @@ export type EventType = 'task.created' | 'task.started' | 'task.progress' | 'tas
 
 export interface FeatureGenerationRequest {
   stock_code?: string;
-  market?: string;
+  market?: string | null;
   step?: number;
   include_indicators?: boolean;
 }
@@ -1071,7 +1009,7 @@ export interface HotSector {
 
 export interface HyperparameterSearchRequest {
   stock_code?: string;
-  market?: string;
+  market?: string | null;
   step?: number;
   cv?: number;
   param_grid?: Record<string, any[]> | null;
@@ -1449,7 +1387,7 @@ export interface MarketDataRequest {
 }
 
 export interface MarketFilterParams {
-  market?: string;
+  market?: string | null;
   limit?: number | null;
 }
 
@@ -1533,7 +1471,7 @@ export interface ModelDetailResponse {
 export interface ModelEvaluationRequest {
   model_name?: string;
   stock_code?: string;
-  market?: string;
+  market?: string | null;
 }
 
 export interface ModelEvaluationResponse {
@@ -1562,7 +1500,7 @@ export interface ModelListResponse {
 export interface ModelPredictRequest {
   model_name?: string;
   stock_code?: string;
-  market?: string;
+  market?: string | null;
   days?: number;
 }
 
@@ -1576,7 +1514,7 @@ export interface ModelPredictResponse {
 
 export interface ModelTrainRequest {
   stock_code?: string;
-  market?: string;
+  market?: string | null;
   step?: number;
   test_size?: number;
   model_name?: string;
@@ -1874,7 +1812,7 @@ export interface PortfolioSummary {
   total_profit_loss?: number;
   total_profit_loss_percent?: number;
   position_count?: number;
-  positions?: PositionItem[];
+  positions?: import('./common').PositionItem[];
 }
 
 export interface PortfolioSummaryResponse {
@@ -1890,33 +1828,11 @@ export interface PortfolioSummaryResponse {
   rebalance_count?: number;
 }
 
-export interface Position {
-  symbol?: string;
-  symbol_name?: string | null;
-  quantity?: number;
-  available_quantity?: number;
-  cost_price?: number;
-  current_price?: number | null;
-  market_value?: number;
-  profit_loss?: number;
-  profit_loss_percent?: number;
-  last_update?: string;
-}
-
-export interface PositionItem {
-  symbol?: string;
-  name?: string | null;
-  quantity?: number;
-  avg_cost?: number;
-  current_price?: number | null;
-  market_value?: number | null;
-  profit_loss?: number | null;
-  profit_loss_percent?: number | null;
-  position_percent?: number | null;
-}
+// Position and PositionItem are defined in common.ts - re-export for compatibility
+export type { Position as PositionAlias, PositionItem } from './common';
 
 export interface PositionsResponse {
-  positions?: Position[];
+  positions?: import('./common').Position[];
   total_count?: number;
   total_market_value?: number;
   total_profit_loss?: number;
@@ -2140,7 +2056,7 @@ export interface SchedulerControlRequest {
 
 export interface SearchRequest {
   query?: string;
-  market?: string;
+  market?: string | null;
   limit?: number;
 }
 
@@ -2563,19 +2479,19 @@ export type TaskType = 'cron' | 'supervisor' | 'manual' | 'data_sync' | 'indicat
 
 export interface TdxDataRequest {
   stock_code?: string;
-  market?: string;
+  market?: string | null;
 }
 
 export interface TdxDataResponse {
   code?: string;
-  market?: string;
+  market?: string | null;
   data?: Record<string, any>[];
   total_records?: number;
 }
 
 export interface TdxExportRequest {
   stock_code?: string;
-  market?: string;
+  market?: string | null;
   output_format?: string;
 }
 
@@ -2736,11 +2652,7 @@ export interface TrendIndicatorsResponse {
   sar?: number | null;
 }
 
-export interface UnifiedResponse {
-  success?: boolean;
-  message?: string | null;
-  data?: Record<string, any> | null;
-}
+// Removed duplicate UnifiedResponse interface - using the one at the top of the file
 
 export interface UpdateGroupRequest {
   group_name?: string;
@@ -3154,7 +3066,7 @@ export interface KLinePoint {
 export interface StockSearchResult {
   symbol?: string;
   name?: string;
-  market?: string;
+  market?: string | null;
   type?: string;
   current?: number;
   change?: number;

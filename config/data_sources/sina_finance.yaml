@@ -1,0 +1,47 @@
+'#': 包含所有sina_finance相关的1个数据源
+data_sources:
+  sina_finance_stock_ratings:
+    source_name: sina_finance
+    source_type: crawler
+    endpoint_name: sina_finance.stock_ratings
+    call_method: function_call
+    data_category: DERIVED_DATA
+    data_classification: derived_data
+    classification_level: 3
+    target_db: postgresql
+    table_name: stock_ratings_sina
+    parameters:
+      max_pages:
+        type: integer
+        required: false
+        default: 5
+        minimum: 1
+        maximum: 10
+        description: 最大爬取页数
+        example: 5
+    description: 新浪财经股票评级数据 - 分析师评级、目标价、评级机构等信息
+    update_frequency: daily
+    data_quality_score: 8.5
+    priority: 2
+    status: active
+    tags:
+    - stock-ratings
+    - analyst-ratings
+    - target-price
+    - sina-finance
+    - crawler
+    test_parameters:
+      max_pages: 1
+    quality_rules:
+      min_record_count: 10
+      max_response_time: 30.0
+      required_columns:
+      - 股票代码
+      - 股票名称
+      - 目标价
+      - 最新评级
+      - 评级机构
+      - 分析师
+      - 行业
+      - 评级日期
+      - 摘要

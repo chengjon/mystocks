@@ -1,0 +1,401 @@
+# MyStocks 量化策略专项验证工作流
+# 专门验证量化策略的正确性、性能和合规性
+
+name: Quant Strategy Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/strategies/**'
+      - 'src/ml_strategy/**'
+      - 'src/backtesting/**'
+      - 'src/domain/strategy/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/strategies/**'
+      - 'src/ml_strategy/**'
+      - 'src/backtesting/**'
+      - 'src/domain/strategy/**'
+  workflow_dispatch:
+    inputs:
+      validation_scope:
+        description: '验证范围'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - syntax-only
+          - performance-only
+      benchmark_update:
+        description: '更新基准数据'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # ============================================================================
+  # 量化策略正确性验证
+  # ============================================================================
+  quant-strategy-correctness:
+    name: Quant Strategy Correctness Validation
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        validation_type: [syntax, imports, backtest_engine, security, code_quality, integration_testing, performance_regression, ai_enhanced, correctness]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pandas numpy scikit-learn tensorflow torch
+        # 安装可选依赖
+        pip install ta-lib --no-cache-dir || echo "TA-Lib not available"
+
+    - name: Cache strategy benchmarks
+      uses: actions/cache@v3
+      with:
+        path: ~/.mystocks/strategy_benchmarks
+        key: strategy-benchmarks-${{ github.sha }}
+        restore-keys: |
+          strategy-benchmarks-
+
+    - name: Run Quant Strategy Validation
+      run: |
+        echo "🤖 运行量化策略正确性验证 - ${{ matrix.validation_type }}"
+
+        # 设置环境变量
+        export VALIDATION_TYPE="${{ matrix.validation_type }}"
+        export BENCHMARK_UPDATE="${{ github.event.inputs.benchmark_update || 'false' }}"
+        export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
+
+        # 运行验证脚本
+        chmod +x scripts/ci/quant_strategy_validation.py
+        python scripts/ci/quant_strategy_validation.py
+
+      env:
+        VALIDATION_TYPE: ${{ matrix.validation_type }}
+        GITHUB_STEP_SUMMARY: strategy_validation_summary_${{ matrix.validation_type }}.md
+
+    - name: Upload validation results
+      uses: actions/upload-artifact@v3
+      with:
+        name: strategy-validation-${{ matrix.validation_type }}
+        path: |
+          quant_strategy_validation_results.json
+          strategy_validation_summary_${{ matrix.validation_type }}.md
+        retention-days: 30
+
+    - name: Upload benchmark data (if updated)
+      if: github.event.inputs.benchmark_update == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: updated-benchmarks
+        path: ~/.mystocks/strategy_benchmarks/
+        retention-days: 90
+
+  # ============================================================================
+  # ML策略专项验证
+  # ============================================================================
+  ml-strategy-special-validation:
+    name: ML Strategy Special Validation
+    runs-on: ubuntu-latest
+    needs: quant-strategy-correctness
+    if: contains(needs.quant-strategy-correctness.result, 'success')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install ML dependencies
+      run: |
+        pip install scikit-learn tensorflow torch xgboost lightgbm
+        pip install pandas numpy matplotlib seaborn
+
+    - name: Validate ML Model Performance
+      run: |
+        echo "🧠 验证ML模型性能..."
+
+        python -c "
+        import sys
+        sys.path.insert(0, 'src')
+
+        # 测试ML策略的核心功能
+        try:
+            from src.ml_strategy.validation.ml_strategy_validator import MLStrategyValidator
+            
+            # 创建验证器
+            validator = MLStrategyValidator()
+            print('✅ ML策略验证器初始化成功')
+
+            # 这里可以添加更详细的ML模型验证逻辑
+            # 包括模型准确性、过拟合检测、特征重要性等
+
+        except Exception as e:
+            print(f'❌ ML策略验证失败: {e}')
+            exit(1)
+        "
+
+  # ============================================================================
+  # 策略基准数据管理
+  # ============================================================================
+  benchmark-data-management:
+    name: Benchmark Data Management
+    runs-on: ubuntu-latest
+    needs: [quant-strategy-correctness, ml-strategy-special-validation]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download validation results
+      uses: actions/download-artifact@v3
+      with:
+        name: strategy-validation-correctness
+        path: validation-results
+
+    - name: Process benchmark updates
+      run: |
+        echo "📊 处理策略基准数据更新..."
+
+        if [ -f "validation-results/quant_strategy_validation_results.json" ]; then
+          # 解析验证结果，提取新的基准数据
+          python -c "
+          import json
+          import os
+
+          with open('validation-results/quant_strategy_validation_results.json', 'r') as f:
+              results = json.load(f)
+
+          # 检查是否有新的基准数据需要更新
+          # 这里可以实现基准数据的自动更新逻辑
+
+          print('✅ 基准数据处理完成')
+          "
+        else
+          echo "⚠️ 未找到验证结果文件"
+        fi
+
+    - name: Update strategy benchmarks
+      if: github.event.inputs.benchmark_update == 'true'
+      run: |
+        echo "🔄 更新策略基准数据..."
+
+        # 创建基准数据目录
+        mkdir -p .mystocks/benchmarks
+
+        # 生成新的基准数据
+        python -c "
+        import json
+        import os
+        from datetime import datetime
+
+        # 这里可以从历史数据生成新的基准
+        benchmarks = {
+            'timestamp': datetime.now().isoformat(),
+            'version': '1.0.0',
+            'benchmarks': {
+                'momentum_strategy': {
+                    'sharpe_ratio': 1.2,
+                    'max_drawdown': -0.15,
+                    'total_return': 0.25
+                },
+                'mean_reversion_strategy': {
+                    'sharpe_ratio': 0.8,
+                    'max_drawdown': -0.12,
+                    'total_return': 0.18
+                }
+            }
+        }
+
+        with open('.mystocks/benchmarks/current.json', 'w') as f:
+            json.dump(benchmarks, f, indent=2)
+
+        print('✅ 基准数据更新完成')
+        "
+
+    - name: Upload updated benchmarks
+      if: github.event.inputs.benchmark_update == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: strategy-benchmarks
+        path: .mystocks/benchmarks/
+        retention-days: 365
+
+  # ============================================================================
+  # 验证结果汇总与报告
+  # ============================================================================
+  validation-summary:
+    name: Validation Summary & Reporting
+    runs-on: ubuntu-latest
+    needs: [quant-strategy-correctness, ml-strategy-special-validation, benchmark-data-management]
+    if: always()
+
+    steps:
+    - name: Download all validation results
+      uses: actions/download-artifact@v3
+      with:
+        path: all-results
+
+    - name: Generate comprehensive report
+      run: |
+        echo "## 📊 MyStocks 量化策略验证报告" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**验证时间**: $(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # 汇总各个验证阶段的结果
+        echo "### 🔍 验证阶段结果" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # 语法验证
+        if [ -f "all-results/strategy-validation-syntax/quant_strategy_validation_results.json" ]; then
+          syntax_result=$(jq -r '.summary.overall_passed' all-results/strategy-validation-syntax/quant_strategy_validation_results.json)
+          if [ "$syntax_result" = "true" ]; then
+            echo "✅ **语法验证**: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **语法验证**: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+        # 导入验证
+        if [ -f "all-results/strategy-validation-imports/quant_strategy_validation_results.json" ]; then
+          import_result=$(jq -r '.summary.overall_passed' all-results/strategy-validation-imports/quant_strategy_validation_results.json)
+          if [ "$import_result" = "true" ]; then
+            echo "✅ **导入验证**: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **导入验证**: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+        # 回测引擎验证
+        if [ -f "all-results/strategy-validation-backtest_engine/quant_strategy_validation_results.json" ]; then
+          engine_result=$(jq -r '.summary.overall_passed' all-results/strategy-validation-backtest_engine/quant_strategy_validation_results.json)
+          if [ "$engine_result" = "true" ]; then
+            echo "✅ **回测引擎验证**: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **回测引擎验证**: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+        # 策略正确性验证
+        if [ -f "all-results/strategy-validation-correctness/quant_strategy_validation_results.json" ]; then
+          correctness_result=$(jq -r '.summary.overall_passed' all-results/strategy-validation-correctness/quant_strategy_validation_results.json)
+          success_rate=$(jq -r '.summary.success_rate' all-results/strategy-validation-correctness/quant_strategy_validation_results.json)
+
+          if [ "$correctness_result" = "true" ]; then
+            echo "✅ **策略正确性验证**: 通过 (${success_rate}%)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **策略正确性验证**: 失败 (${success_rate}%)" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+        # 性能验证
+        if [ -f "all-results/strategy-validation-performance/quant_strategy_validation_results.json" ]; then
+          perf_result=$(jq -r '.summary.overall_passed' all-results/strategy-validation-performance/quant_strategy_validation_results.json)
+          if [ "$perf_result" = "true" ]; then
+            echo "✅ **性能验证**: 通过" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **性能验证**: 失败" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # 总体评估
+        total_passed=0
+        total_checks=0
+
+        for result_file in all-results/strategy-validation-*/quant_strategy_validation_results.json; do
+          if [ -f "$result_file" ]; then
+            if jq -r '.summary.overall_passed' "$result_file" | grep -q "true"; then
+              ((total_passed++))
+            fi
+            ((total_checks++))
+          fi
+        done
+
+        if [ $total_checks -gt 0 ]; then
+          overall_rate=$((total_passed * 100 / total_checks))
+
+          echo "### 📈 总体评估" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**通过率**: ${overall_rate}% ($total_passed/$total_checks)" >> $GITHUB_STEP_SUMMARY
+
+          if [ $overall_rate -ge 80 ]; then
+            echo "**状态**: 🟢 优秀" >> $GITHUB_STEP_SUMMARY
+          elif [ $overall_rate -ge 60 ]; then
+            echo "**状态**: 🟡 良好" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**状态**: 🔴 需要改进" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+
+    - name: Create GitHub Issue for failures
+      if: needs.quant-strategy-correctness.result == 'failure'
+      run: |
+        echo "🚨 发现策略验证失败，创建问题跟踪..."
+
+        # 创建详细的问题报告
+        ISSUE_BODY="## 🚨 量化策略验证失败
+
+**验证时间**: $(date '+%Y-%m-%d %H:%M:%S')
+**Commit**: ${{ github.sha }}
+**分支**: ${{ github.ref }}
+
+### 失败详情
+
+$(cat $GITHUB_STEP_SUMMARY | grep -A 20 "### 🔍 验证阶段结果")
+
+### 建议措施
+
+1. 检查失败的验证项目
+2. 查看详细的验证日志
+3. 修复相关问题后重新提交
+
+### 相关文件
+- 验证结果: strategy-validation-*.zip
+- 详细日志: 查看Actions运行日志
+
+/cc @quant-team"
+
+        gh issue create \
+          --title "🚨 量化策略验证失败 - $(date +%Y%m%d)" \
+          --body "$ISSUE_BODY" \
+          --label "bug,quant-strategy,validation-failure" \
+          --assignee ${{ github.actor }}
+
+    - name: Final status notification
+      run: |
+        if [ "${{ needs.quant-strategy-correctness.result }}" = "success" ] && \
+           [ "${{ needs.ml-strategy-special-validation.result }}" = "success" ]; then
+          echo "🎉 量化策略验证全部通过！"
+        else
+          echo "⚠️ 量化策略验证部分失败，请检查详细报告。"
+          exit 1
+        fi

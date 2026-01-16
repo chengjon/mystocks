@@ -1,0 +1,12 @@
+'#': 控制子配置文件的加载
+version: '2.1'
+last_updated: '2026-01-15T10:00:00'
+load_sources:
+- sina_finance
+global_config:
+  default_target_db: postgresql
+  enable_caching: true
+  health_check_interval: 300
+aliases:
+  akshare.stock_zh_a_hist: akshare_daily_kline
+  sina_finance.stock_ratings: stock_ratings_sina

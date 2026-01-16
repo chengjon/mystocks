@@ -1,0 +1,572 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MyStocks Advanced Analysis API",
+    "version": "1.0.0",
+    "description": "高级量化分析API - 提供12种专业量化分析功能",
+    "contact": {
+      "name": "MyStocks Team",
+      "email": "support@mystocks.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/advanced-analysis/fundamental": {
+      "get": {
+        "summary": "基本面分析",
+        "description": "执行股票基本面分析，包括财务比率、偿债能力、盈利能力等指标",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "基本面分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          },
+          "401": {"description": "未授权"},
+          "422": {"description": "参数验证失败"}
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/technical": {
+      "get": {
+        "summary": "技术面分析",
+        "description": "执行股票技术面分析，包括26个技术指标和趋势分析",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "技术面分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/trading-signals": {
+      "get": {
+        "summary": "交易信号分析",
+        "description": "执行交易信号分析，识别买卖点和市场信号",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "signal_types",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {"type": "string", "enum": ["momentum", "mean_reversion", "breakout", "volume"]}
+            },
+            "description": "信号类型筛选"
+          },
+          {
+            "name": "min_confidence",
+            "in": "query",
+            "schema": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.5},
+            "description": "最小置信度"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "交易信号分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/time-series": {
+      "get": {
+        "summary": "时序分析",
+        "description": "执行时序分析，包括拐点检测、趋势分割和预测分析",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "时序分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/market-panorama": {
+      "get": {
+        "summary": "市场全景分析",
+        "description": "执行市场全景分析，包括资金流向、交易活跃度、趋势变化等",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "市场全景分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/capital-flow": {
+      "get": {
+        "summary": "资金流向分析",
+        "description": "执行资金流向分析，包括主力控盘和资金分布",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "资金流向分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/chip-distribution": {
+      "get": {
+        "summary": "筹码分布分析",
+        "description": "执行筹码分布分析，基于成本转换原理",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "筹码分布分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/anomaly-tracking": {
+      "get": {
+        "summary": "异常追踪分析",
+        "description": "执行异常追踪分析，基于涨跌幅排序等指标",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "异常追踪分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/financial-valuation": {
+      "get": {
+        "summary": "财务估值分析",
+        "description": "执行财务估值分析，包括财务指标、杜邦分析、定价方法等",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "财务估值分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/sentiment": {
+      "get": {
+        "summary": "情绪分析",
+        "description": "执行情绪分析，包括研报、新闻、人气等数据",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "情绪分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/decision-models": {
+      "get": {
+        "summary": "决策模型分析",
+        "description": "执行决策模型分析，包括巴菲特、欧内尔、林奇模型等",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "决策模型分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/advanced-analysis/multidimensional-radar": {
+      "get": {
+        "summary": "多维度雷达分析",
+        "description": "执行多维度雷达综合分析，整合所有8个分析维度的结果",
+        "tags": ["advanced-analysis"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "example": "000001"},
+            "description": "股票代码"
+          },
+          {
+            "name": "include_raw_data",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "是否包含原始数据"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "多维度雷达分析结果",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/RadarAnalysisResult"}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "AnalysisResult": {
+        "type": "object",
+        "properties": {
+          "analysis_type": {
+            "type": "string",
+            "enum": ["fundamental", "technical", "trading_signals", "time_series", "market_panorama", "capital_flow", "chip_distribution", "anomaly_tracking", "financial_valuation", "sentiment_analysis", "decision_models", "multidimensional_radar"],
+            "description": "分析类型"
+          },
+          "stock_code": {
+            "type": "string",
+            "description": "股票代码"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "分析时间戳"
+          },
+          "scores": {
+            "type": "object",
+            "description": "评分结果",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {"type": "string"},
+                "strength": {"type": "number"},
+                "description": {"type": "string"}
+              }
+            },
+            "description": "交易信号列表"
+          },
+          "recommendations": {
+            "type": "object",
+            "description": "投资建议",
+            "additionalProperties": true
+          },
+          "risk_assessment": {
+            "type": "object",
+            "description": "风险评估",
+            "additionalProperties": true
+          },
+          "metadata": {
+            "type": "object",
+            "description": "元数据",
+            "additionalProperties": true
+          }
+        },
+        "required": ["analysis_type", "stock_code", "timestamp"]
+      },
+      "RadarAnalysisResult": {
+        "type": "object",
+        "properties": {
+          "overall_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "综合评分"
+          },
+          "risk_assessment": {
+            "type": "object",
+            "description": "风险评估",
+            "properties": {
+              "overall_risk_level": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "extreme"]
+              },
+              "risk_distribution": {
+                "type": "object",
+                "additionalProperties": {"type": "integer"}
+              },
+              "high_risk_dimensions": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          },
+          "investment_recommendation": {
+            "type": "string",
+            "description": "投资建议"
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "score": {"type": "number", "minimum": 0, "maximum": 100},
+                "weight": {"type": "number", "minimum": 0, "maximum": 1},
+                "risk_level": {"type": "string", "enum": ["low", "medium", "high", "extreme"]},
+                "signals": {"type": "array", "items": {"type": "object"}}
+              }
+            },
+            "description": "各维度分析结果"
+          },
+          "radar_chart_data": {
+            "type": "object",
+            "description": "雷达图数据",
+            "properties": {
+              "labels": {"type": "array", "items": {"type": "string"}},
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": {"type": "string"},
+                    "data": {"type": "array", "items": {"type": "number"}}
+                  }
+                }
+              }
+            }
+          },
+          "key_insights": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "关键洞察"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["overall_score", "risk_assessment", "dimensions", "radar_chart_data", "timestamp"]
+      }
+    }
+  }
+}

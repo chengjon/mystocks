@@ -8,7 +8,7 @@ import type {
   Strategy,
   StrategyPerformance,
   BacktestTask,
-  BacktestResult,
+  BacktestResultVM,
 } from '@/api/types/strategy';
 
 /**
@@ -16,7 +16,7 @@ import type {
  */
 export const mockStrategyPerformance: StrategyPerformance = {
   totalReturn: 0.256,      // 25.6%
-  annualReturn: 0.312,     // 31.2%
+  annualizedReturn: 0.312,     // 31.2%
   sharpeRatio: 1.85,
   maxDrawdown: -0.124,     // -12.4%
   winRate: 0.68,           // 68%
@@ -120,40 +120,40 @@ export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0];
 /**
  * Mock backtest result
  */
-export const mockBacktestResult: BacktestResult = {
-  taskId: 'bt_20250125_001',
-  strategyId: '1',
-  totalReturn: 0.256,
-  annualReturn: 0.312,
-  sharpeRatio: 1.85,
-  maxDrawdown: -0.124,
-  winRate: 0.68,
-  totalTrades: 156,
-  profitFactor: 2.15,
-  equityCurve: generateMockEquityCurve(),
+export const mockBacktestResult: BacktestResultVM = {
+  task_id: 'bt_20250125_001',
+  strategy_id: '1',
+  total_return: 0.256,
+  annualized_return: 0.312,
+  sharpe_ratio: 1.85,
+  max_drawdown: -0.124,
+  win_rate: 0.68,
+  total_trades: 156,
+  profit_factor: 2.15,
+  equity_curve: generateMockEquityCurve(),
   trades: generateMockTrades(20),
-  performanceMetrics: {
-    totalReturn: 0.256,
-    annualReturn: 0.312,
-    monthlyReturn: 0.021,
-    weeklyReturn: 0.005,
-    dailyReturn: 0.0012,
-    sharpeRatio: 1.85,
-    sortinoRatio: 2.12,
-    calmarRatio: 2.52,
-    maxDrawdown: -0.124,
-    avgDrawdown: -0.045,
-    maxDrawdownDuration: 18,
-    winRate: 0.68,
-    profitFactor: 2.15,
-    avgProfit: 0.032,
-    avgLoss: -0.015,
-    bestTrade: 0.125,
-    worstTrade: -0.048,
-    totalTrades: 156,
-    winningTrades: 106,
-    losingTrades: 50,
-    avgTradeDuration: 3.2,
+  performance_metrics: {
+    total_return: 0.256,
+    annual_return: 0.312,
+    monthly_return: 0.021,
+    weekly_return: 0.005,
+    daily_return: 0.0012,
+    sharpe_ratio: 1.85,
+    sortino_ratio: 2.12,
+    calmar_ratio: 2.52,
+    max_drawdown: -0.124,
+    avg_drawdown: -0.045,
+    max_drawdown_duration: 18,
+    win_rate: 0.68,
+    profit_factor: 2.15,
+    avg_profit: 0.032,
+    avg_loss: -0.015,
+    best_trade: 0.125,
+    worst_trade: -0.048,
+    total_trades: 156,
+    winning_trades: 106,
+    losing_trades: 50,
+    avg_trade_duration: 3.2,
     expectency: 0.018,
   },
 };
@@ -162,12 +162,12 @@ export const mockBacktestResult: BacktestResult = {
  * Mock backtest task
  */
 export const mockBacktestTask: BacktestTask = {
-  taskId: 'bt_20250125_001',
-  strategyId: '1',
+  task_id: 'bt_20250125_001',
+  strategy_id: '1',
   status: 'completed',
   progress: 100,
-  startTime: new Date('2025-01-24T10:00:00'),
-  endTime: new Date('2025-01-24T10:05:30'),
+  started_at: '2025-01-24T10:00:00',
+  completed_at: '2025-01-24T10:05:30',
   result: mockBacktestResult,
 };
 
@@ -256,28 +256,28 @@ export const mockBacktestTasks: BacktestTask[] = [
     ...mockBacktestTask,
   },
   {
-    taskId: 'bt_20250124_003',
-    strategyId: '2',
+    task_id: 'bt_20250124_003',
+    strategy_id: '2',
     status: 'completed',
     progress: 100,
-    startTime: new Date('2025-01-23T14:00:00'),
-    endTime: new Date('2025-01-23T14:03:45'),
+    started_at: '2025-01-23T14:00:00',
+    completed_at: '2025-01-23T14:03:45',
     result: {
       ...mockBacktestResult,
-      taskId: 'bt_20250124_003',
-      strategyId: '2',
-      totalReturn: 0.189,
-      annualReturn: 0.234,
-      sharpeRatio: 1.62,
-      maxDrawdown: -0.098,
+      task_id: 'bt_20250124_003',
+      strategy_id: '2',
+      total_return: 0.189,
+      annualized_return: 0.234,
+      sharpe_ratio: 1.62,
+      max_drawdown: -0.098,
     },
   },
   {
-    taskId: 'bt_20250125_002',
-    strategyId: '3',
+    task_id: 'bt_20250125_002',
+    strategy_id: '3',
     status: 'running',
     progress: 65,
-    startTime: new Date('2025-01-25T09:30:00'),
+    started_at: '2025-01-25T09:30:00',
   },
 ];
 
@@ -300,7 +300,7 @@ export function getMockStrategyById(id: string): Strategy | undefined {
  * Get backtest task by ID
  */
 export function getMockBacktestById(taskId: string): BacktestTask | undefined {
-  return mockBacktestTasks.find((t) => t.taskId === taskId);
+  return mockBacktestTasks.find((t) => t.task_id === taskId);
 }
 
 export default {

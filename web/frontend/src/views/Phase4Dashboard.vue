@@ -416,7 +416,7 @@ function updateIndicesChart() {
       type: 'bar',
       data: marketOverview.indices.map(idx => idx.current_price),
       itemStyle: {
-        color: (params) => {
+        color: (params: any) => {
           const idx = marketOverview.indices[params.dataIndex]
           return idx.change_percent > 0 ? '#C94042' : '#3D9970'
         }

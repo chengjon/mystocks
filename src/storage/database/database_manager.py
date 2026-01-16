@@ -986,6 +986,22 @@ class DatabaseTableManager:
         if hasattr(self, "monitor_session"):
             self.monitor_session.close()
 
+    def close(self) -> None:
+        """关闭连接的别名，用于兼容性"""
+        self.close_all_connections()
+
+    def get_tdengine_connection(self, db_name: str = "market_data", **kwargs):
+        """获取TDengine连接（兼容测试）"""
+        return self.get_connection(DatabaseType.TDENGINE, db_name, **kwargs)
+
+    def get_postgresql_connection(self, db_name: str = "postgres", **kwargs):
+        """获取PostgreSQL连接（兼容测试）"""
+        return self.get_connection(DatabaseType.POSTGRESQL, db_name, **kwargs)
+
+    def get_tdx_connection(self, db_name: str = "market_data", **kwargs):
+        """获取TDengine连接（兼容测试）"""
+        return self.get_connection(DatabaseType.TDENGINE, db_name, **kwargs)
+
     def __enter__(self):
         """Context manager entry - 返回自身实例"""
         return self
@@ -1042,7 +1058,3 @@ if __name__ == "__main__":
     print(f"Drop table {'成功' if success else '失败'}")
 
     manager.close_all_connections()
-
-    def get_tdx_connection(self, db_name: str = "market_data", **kwargs):
-        """获取TDengine连接（兼容测试）"""
-        return self.get_connection(DatabaseType.TDENGINE, db_name, **kwargs)
