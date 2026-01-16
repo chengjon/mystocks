@@ -15,6 +15,19 @@ export interface ApiResponse<T = any> {
 }
 
 /**
+ * Menu item for navigation
+ */
+export interface MenuItem {
+  key: string
+  label: string
+  icon?: string
+  path?: string
+  children?: MenuItem[]
+  disabled?: boolean
+  hidden?: boolean
+}
+
+/**
  * Pagination parameters
  */
 export interface PaginationParams {

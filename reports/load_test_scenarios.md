@@ -1,0 +1,273 @@
+# MyStocks Load Testing Scenarios
+
+Generated: 2025-11-12T03:05:43.988322
+Task: 14.1 - Locust Load Testing Scripts
+
+## Scenario 1: Baseline Test
+
+Verify basic API performance with 100 concurrent users
+
+**Duration**: 300s
+**Target Users**: 100
+
+### Configuration
+
+```json
+{
+  "name": "Baseline Test",
+  "description": "Verify basic API performance with 100 concurrent users",
+  "target_users": 100,
+  "spawn_rate": 10,
+  "duration": 300,
+  "objectives": [
+    "Response time < 500ms for 95% of requests",
+    "Error rate < 1%",
+    "Database connection pool: 20-30 connections"
+  ],
+  "monitored_endpoints": [
+    "/health",
+    "/api/market/realtime/000001",
+    "/api/auth/login"
+  ]
+}
+```
+
+### Objectives
+
+- Response time < 500ms for 95% of requests
+- Error rate < 1%
+- Database connection pool: 20-30 connections
+
+## Scenario 2: Normal Load Test
+
+Simulate typical daytime trading activity with 500 users
+
+**Duration**: 600s
+**Target Users**: 500
+
+### Configuration
+
+```json
+{
+  "name": "Normal Load Test",
+  "description": "Simulate typical daytime trading activity with 500 users",
+  "target_users": 500,
+  "spawn_rate": 25,
+  "duration": 600,
+  "traffic_profile": {
+    "6": 0.1,
+    "7": 0.2,
+    "8": 0.5,
+    "9": 1.5,
+    "10": 1.8,
+    "11": 1.2,
+    "12": 0.6,
+    "13": 0.7,
+    "14": 1.5,
+    "15": 1.9,
+    "16": 0.8,
+    "17": 0.6,
+    "18": 0.5,
+    "19": 0.4,
+    "20": 0.3,
+    "21": 0.2,
+    "22": 0.1,
+    "23": 0.05,
+    "0": 0.05,
+    "1": 0.05,
+    "2": 0.05,
+    "3": 0.05,
+    "4": 0.1,
+    "5": 0.1
+  },
+  "user_distribution": {
+    "day_trader": 75,
+    "swing_trader": 125,
+    "investor": 200,
+    "analyst": 75,
+    "monitoring": 25
+  },
+  "objectives": [
+    "Response time < 1s for 95% of requests",
+    "Error rate < 0.5%",
+    "Database connections: 30-50",
+    "Cache hit rate > 70%"
+  ],
+  "monitored_endpoints": [
+    "/api/market/realtime/[stock_code]",
+    "/api/market/kline/[stock_code]",
+    "/api/market/fund-flow/[stock_code]"
+  ],
+  "monitored_services": [
+    "api",
+    "database",
+    "cache",
+    "websocket"
+  ]
+}
+```
+
+### Objectives
+
+- Response time < 1s for 95% of requests
+- Error rate < 0.5%
+- Database connections: 30-50
+- Cache hit rate > 70%
+
+## Scenario 3: Peak Load Test
+
+Simulate market open/close peak traffic with 1000 users
+
+**Duration**: 600s
+**Target Users**: 1000
+
+### Configuration
+
+```json
+{
+  "name": "Peak Load Test",
+  "description": "Simulate market open/close peak traffic with 1000 users",
+  "target_users": 1000,
+  "spawn_rate": 50,
+  "duration": 600,
+  "scenarios": {
+    "day_traders": {
+      "user_count": 150,
+      "behavior": "high_frequency",
+      "avg_requests_per_second": 2.0,
+      "avg_response_time_target": 800
+    },
+    "swing_traders": {
+      "user_count": 250,
+      "behavior": "medium_frequency",
+      "avg_requests_per_second": 0.8,
+      "avg_response_time_target": 1000
+    },
+    "investors": {
+      "user_count": 400,
+      "behavior": "low_frequency",
+      "avg_requests_per_second": 0.2,
+      "avg_response_time_target": 1200
+    },
+    "analysts": {
+      "user_count": 150,
+      "behavior": "analysis_heavy",
+      "avg_requests_per_second": 1.5,
+      "avg_response_time_target": 1000
+    },
+    "monitoring": {
+      "user_count": 50,
+      "behavior": "monitoring",
+      "avg_requests_per_second": 0.1,
+      "avg_response_time_target": 500
+    }
+  },
+  "objectives": [
+    "Response time < 2s for 95% of requests",
+    "Error rate < 1%",
+    "Database connections: 60-100",
+    "WebSocket connections: > 500",
+    "Cache hit rate > 60%"
+  ],
+  "stress_points": [
+    "Market open (9:30)",
+    "Lunch break (11:30-13:00)",
+    "Market close (15:00)",
+    "After hours (18:00)"
+  ]
+}
+```
+
+### Objectives
+
+- Response time < 2s for 95% of requests
+- Error rate < 1%
+- Database connections: 60-100
+- WebSocket connections: > 500
+- Cache hit rate > 60%
+
+## Scenario 4: Stress Test
+
+Push system to its limits with 2000 concurrent users
+
+**Duration**: 900s
+**Target Users**: 2000
+
+### Configuration
+
+```json
+{
+  "name": "Stress Test",
+  "description": "Push system to its limits with 2000 concurrent users",
+  "target_users": 2000,
+  "spawn_rate": 100,
+  "ramp_up_time": 200,
+  "duration": 900,
+  "test_phases": [
+    {
+      "phase": "ramp_up",
+      "duration": 200,
+      "users": "0 -> 2000",
+      "description": "Gradually increase users"
+    },
+    {
+      "phase": "sustained",
+      "duration": 600,
+      "users": "2000",
+      "description": "Hold at peak load"
+    },
+    {
+      "phase": "breakdown",
+      "duration": 100,
+      "users": "0",
+      "description": "Gracefully disconnect users"
+    }
+  ],
+  "objectives": [
+    "System remains operational",
+    "Error rate < 5% acceptable",
+    "No deadlocks or hangs",
+    "Database connection pool limits respected",
+    "Graceful degradation observed"
+  ],
+  "monitoring_targets": [
+    "CPU usage",
+    "Memory consumption",
+    "Network bandwidth",
+    "Disk I/O",
+    "Database connection pool exhaustion",
+    "WebSocket connection limits",
+    "Request queue depths"
+  ],
+  "alerts": [
+    {
+      "metric": "error_rate",
+      "threshold": 0.05,
+      "severity": "critical"
+    },
+    {
+      "metric": "response_time_p95",
+      "threshold": 5000,
+      "severity": "warning"
+    },
+    {
+      "metric": "db_connection_pool_exhaustion",
+      "threshold": 0.9,
+      "severity": "critical"
+    },
+    {
+      "metric": "websocket_connection_failures",
+      "threshold": 0.01,
+      "severity": "warning"
+    }
+  ]
+}
+```
+
+### Objectives
+
+- System remains operational
+- Error rate < 5% acceptable
+- No deadlocks or hangs
+- Database connection pool limits respected
+- Graceful degradation observed

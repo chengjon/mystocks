@@ -1,0 +1,63 @@
+# AI Test Optimizer 配置文件
+# 专业级智能测试优化工具包配置
+
+project:
+  name: "MyStocks"
+  version: "2.0"
+  description: "量化交易系统智能测试优化"
+
+source_paths:
+  - "src/"
+  - "web/backend/"
+
+test_paths:
+  - "tests/"
+  - "scripts/tests/"
+
+exclude_patterns:
+  - "*/migrations/*"
+  - "*/venv/*"
+  - "*/.venv/*"
+  - "*/node_modules/*"
+  - "*/__pycache__/*"
+
+analysis:
+  complexity_threshold: 10
+  security_scan: true
+  performance_analysis: true
+  bug_detection:
+    sql_injection: true
+    xss: true
+    resource_leaks: true
+    null_pointer: true
+    off_by_one: true
+
+test_generation:
+  max_tests_per_file: 20
+  include_security_tests: true
+  include_performance_tests: true
+  include_boundary_tests: true
+  mock_framework: "unittest.mock"
+
+quality_gates:
+  coverage_threshold: 80
+  complexity_threshold: 10
+  bug_threshold: 0
+  security_threshold: 0
+
+reporting:
+  output_format: ["html", "json", "markdown"]
+  auto_generate: true
+  include_trends: true
+  include_recommendations: true
+
+monitoring:
+  enabled: true
+  metrics_collection: true
+  performance_tracking: true
+  usage_analytics: true
+
+integrations:
+  github_actions: true
+  code_coverage: "codecov"
+  security_scan: "bandit"

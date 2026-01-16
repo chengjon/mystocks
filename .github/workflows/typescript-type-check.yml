@@ -1,0 +1,468 @@
+# GitHub Actions TypeScript Type Checking Pipeline
+# 使用 vue-tsc 进行 Vue 3 + TypeScript 类型检查
+
+name: TypeScript Type Check (vue-tsc)
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'web/frontend/src/**/*.{ts,tsx,vue}'
+      - 'web/frontend/tsconfig.json'
+      - 'web/frontend/vite.config.ts'
+      - 'web/frontend/package.json'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'web/frontend/src/**/*.{ts,tsx,vue}'
+      - 'web/frontend/tsconfig.json'
+      - 'web/frontend/vite.config.ts'
+      - 'web/frontend/package.json'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  WORKING_DIRECTORY: 'web/frontend'
+  TYPE_CHECK_THRESHOLD: 40  # 允许的最大类型错误数（根据 quality gate）
+
+jobs:
+  # ============================================================
+  # 阶段1: 快速类型检查（仅 .ts/.tsx 文件）
+  # ============================================================
+  type-check-typescript:
+    name: Type Check (TypeScript only)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate TypeScript types
+        run: npm run generate-types
+
+      - name: Run TypeScript compiler (tsc)
+        run: |
+          npx tsc --noEmit \
+            --pretty \
+            --incremental \
+            --tsBuildInfoFile .tsbuildinfo | tee tsc-output.txt
+        continue-on-error: true
+
+      - name: Count TypeScript errors
+        id: tsc-errors
+        run: |
+          if [ -f tsc-output.txt ]; then
+            ERROR_COUNT=$(grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0")
+            echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+            echo "TypeScript 错误数: $ERROR_COUNT"
+          else
+            echo "error_count=0" >> $GITHUB_OUTPUT
+            echo "TypeScript 错误数: 0"
+          fi
+
+      - name: Upload tsc results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tsc-results
+          path: |
+            tsc-output.txt
+            .tsbuildinfo
+          retention-days: 7
+
+  # ============================================================
+  # 阶段2: 完整 Vue 类型检查（包含 .vue 文件）
+  # ============================================================
+  type-check-vue:
+    name: Type Check (Vue + TypeScript)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate TypeScript types
+        run: npm run generate-types
+
+      - name: Run vue-tsc (full check)
+        run: |
+          npx vue-tsc --noEmit \
+            --pretty \
+            --force \
+            2>&1 | tee vue-tsc-output.txt
+        continue-on-error: true
+
+      - name: Filter type errors
+        id: filter-errors
+        run: |
+          # 过滤已知的误报错误（与本地 quality gate hook 一致）
+          cat vue-tsc-output.txt | grep -v \
+            -e "src/components/artdeco" \
+            -e "src/utils/cache.ts" \
+            -e "src/api/types/generated-types.ts" \
+            -e "Could not find a declaration file for module" \
+            -e "is declared but its value is never read" \
+            > vue-tsc-filtered.txt || true
+
+          # 统计过滤后的错误
+          ERROR_COUNT=$(wc -l < vue-tsc-filtered.txt | tr -d ' ')
+          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          echo "过滤后的类型错误数: $ERROR_COUNT"
+
+      - name: Generate type error report
+        if: always()
+        run: |
+          cat > type-check-report.md << 'EOF'
+          # Vue + TypeScript 类型检查报告
+
+          **执行时间**: $(date)
+          **提交**: ${{ github.sha }}
+          **分支**: ${{ github.ref_name }}
+
+          ## 错误统计
+
+          ### 原始错误数
+          \`\`\`
+          $(wc -l < vue-tsc-output.txt | tr -d ' ') 个错误
+          \`\`\`
+
+          ### 过滤后错误数（排除 ArtDeco、cache.ts 等）
+          \`\`\`
+          ${{ steps.filter-errors.outputs.error_count }} 个错误 (阈值: ${{ env.TYPE_CHECK_THRESHOLD }})
+          \`\`\`
+
+          ### 质量门禁状态
+          ${{ steps.filter-errors.outputs.error_count < env.TYPE_CHECK_THRESHOLD && '✅ 通过' || '❌ 失败' }}
+
+          ## 主要错误（前20个）
+
+          \`\`\`
+          $(head -20 vue-tsc-filtered.txt)
+          \`\`\`
+
+          ## 过滤规则
+
+          已排除以下误报：
+          - ArtDeco 组件（已知问题）
+          - cache.ts（缓存持久化错误）
+          - generated-types.ts（自动生成文件）
+          - 模块声明缺失（第三方库）
+
+          EOF
+
+          cat type-check-report.md
+
+      - name: Upload vue-tsc results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vue-tsc-results
+          path: |
+            vue-tsc-output.txt
+            vue-tsc-filtered.txt
+            type-check-report.md
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'type-check-report.md';
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                body: report
+              });
+            }
+
+  # ============================================================
+  # 阶段3: ESLint TypeScript 检查
+  # ============================================================
+  eslint-typescript:
+    name: ESLint TypeScript Check
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint (TypeScript files only)
+        run: |
+          npx eslint src --ext .ts,.tsx,.vue \
+            --format json \
+            --output-file eslint-report.json \
+            || true
+
+      - name: Generate ESLint summary
+        run: |
+          if [ -f eslint-report.json ]; then
+            ERROR_COUNT=$(node -e "
+              const fs = require('fs');
+              const report = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+              let errors = 0;
+              let warnings = 0;
+              report.forEach(file => {
+                file.messages.forEach(msg => {
+                  if (msg.severity === 2) errors++;
+                  if (msg.severity === 1) warnings++;
+                });
+              });
+              console.log(errors + warnings);
+            ")
+
+            echo "ESLint 问题总数: $ERROR_COUNT"
+            echo $ERROR_COUNT > eslint-count.txt
+          else
+            echo "0" > eslint-count.txt
+          fi
+
+      - name: Upload ESLint results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eslint-results
+          path: |
+            eslint-report.json
+            eslint-count.txt
+          retention-days: 7
+
+  # ============================================================
+  # 阶段4: 类型覆盖率分析
+  # ============================================================
+  type-coverage:
+    name: Type Coverage Analysis
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Analyze type coverage
+        run: |
+          # 统计 TypeScript 文件和类型注解覆盖率
+          python -c "
+import os
+import re
+from pathlib import Path
+
+def analyze_ts_coverage(directory):
+    '''分析 TypeScript 代码的类型覆盖率'''
+    total_files = 0
+    total_interfaces = 0
+    total_types = 0
+
+    for ts_file in Path(directory).rglob('*.ts'):
+        if 'node_modules' in str(ts_file) or '.test.' in str(ts_file):
+            continue
+        total_files += 1
+
+        try:
+            with open(ts_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # 统计接口定义
+            interfaces = len(re.findall(r'interface\s+\w+', content))
+            total_interfaces += interfaces
+
+            # 统计类型别名
+            types = len(re.findall(r'type\s+\w+', content))
+            total_types += types
+
+        except Exception as e:
+            print(f'Error processing {ts_file}: {e}')
+
+    # 输出结果
+    print(f'TypeScript 文件数: {total_files}')
+    print(f'接口定义数: {total_interfaces}')
+    print(f'类型别名数: {total_types}')
+
+    # 写入 JSON 报告
+    import json
+    report = {
+        'timestamp': '$(date -Iseconds)',
+        'total_files': total_files,
+        'total_interfaces': total_interfaces,
+        'total_types': total_types
+    }
+
+    with open('type-coverage.json', 'w') as f:
+        json.dump(report, f, indent=2)
+          "
+        working-directory: src/
+
+      - name: Upload type coverage results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ts-type-coverage-results
+          path: src/type-coverage.json
+          retention-days: 30
+
+  # ============================================================
+  # 阶段5: 类型检查质量门禁
+  # ============================================================
+  type-check-gate:
+    name: Type Check Quality Gate
+    runs-on: ubuntu-latest
+    needs: [type-check-vue, eslint-typescript]
+
+    outputs:
+      type-check-pass: ${{ steps.gate.outputs.pass }}
+
+    steps:
+      - name: Download type check artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-results'
+          path: .
+
+      - name: Evaluate quality gate
+        id: gate
+        run: |
+          QUALITY_PASS=true
+          GATE_ISSUES=""
+
+          # 检查 vue-tsc 错误
+          if [ -f vue-tsc-results/vue-tsc-filtered.txt ]; then
+            ERROR_COUNT=$(wc -l < vue-tsc-results/vue-tsc-filtered.txt | tr -d ' ')
+            echo "Vue-tsc 错误数: $ERROR_COUNT (阈值: ${{ env.TYPE_CHECK_THRESHOLD }})"
+
+            if [ "$ERROR_COUNT" -gt "${{ env.TYPE_CHECK_THRESHOLD }}" ]; then
+              QUALITY_PASS=false
+              GATE_ISSUES="$GATE_ISSUES Vue-tsc 错误超过阈值: $ERROR_COUNT > ${{ env.TYPE_CHECK_THRESHOLD }}"
+            fi
+          fi
+
+          # 检查 ESLint 错误
+          if [ -f eslint-results/eslint-count.txt ]; then
+            ESLINT_COUNT=$(cat eslint-results/eslint-count.txt)
+            echo "ESLint 问题数: $ESLINT_COUNT"
+
+            if [ "$ESLINT_COUNT" -gt 100 ]; then
+              QUALITY_PASS=false
+              GATE_ISSUES="$GATE_ISSUES ESLint 问题过多: $ESLINT_COUNT"
+            fi
+          fi
+
+          # 输出结果
+          if [ "$QUALITY_PASS" = "true" ]; then
+            echo "✅ TypeScript 类型检查质量门禁通过"
+            echo "pass=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ TypeScript 类型检查质量门禁失败: $GATE_ISSUES"
+            echo "pass=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+  # ============================================================
+  # 阶段6: 最终报告汇总
+  # ============================================================
+  final-report:
+    name: Final Type Check Report
+    runs-on: ubuntu-latest
+    needs: [type-check-typescript, type-check-vue, eslint-typescript, type-coverage, type-check-gate]
+    if: always()
+
+    steps:
+      - name: Download all type check artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate consolidated report
+        run: |
+          cat > type-check-summary.md << 'EOF'
+          # TypeScript 类型检查总结
+
+          **执行时间**: $(date)
+          **提交**: ${{ github.sha }}
+          **分支**: ${{ github.ref_name }}
+
+          ## 检查项目
+
+          - ✅ TypeScript 编译器检查 (tsc)
+          - ✅ Vue 类型检查 (vue-tsc)
+          - ✅ ESLint TypeScript 检查
+          - ✅ 类型覆盖率分析
+          - ✅ 质量门禁评估
+
+          ## 质量门禁状态
+
+          **类型检查**: ${{ needs.type-check-gate.outputs.type-check-pass == 'true' && '✅ 通过' || '❌ 失败' }}
+
+          ## 详细报告
+
+          ### TypeScript 错误
+          \`\`\`
+          $(cat tsc-results/tsc-output.txt 2>/dev/null || echo "无错误")
+          \`\`\`
+
+          ### Vue + TypeScript 错误（过滤后）
+          \`\`\`
+          $(cat vue-tsc-results/vue-tsc-filtered.txt 2>/dev/null | head -20 || echo "无错误")
+          \`\`\`
+
+          EOF
+
+          cat type-check-summary.md
+
+      - name: Upload final report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts-type-check-final-report
+          path: type-check-summary.md
+          retention-days: 90

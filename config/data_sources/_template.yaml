@@ -1,0 +1,35 @@
+'#': 复制此模板创建新的数据源配置
+data_sources:
+  your_source_name_endpoint:
+    source_name: your_source_name
+    source_type: api_library
+    endpoint_name: your_source_name.your_endpoint
+    call_method: function_call
+    '#': 数据质量规则
+    data_category: DAILY_KLINE
+    data_classification: market_data
+    classification_level: 1
+    target_db: postgresql
+    table_name: your_table_name
+    parameters:
+      symbol:
+        type: string
+        required: true
+        description: 股票代码
+        example: '600000'
+    description: 数据源描述
+    update_frequency: daily
+    data_quality_score: 8.0
+    priority: 1
+    status: active
+    tags:
+    - tag1
+    - tag2
+    test_parameters:
+      symbol: '600000'
+    quality_rules:
+      min_record_count: 1
+      max_response_time: 10.0
+      required_columns:
+      - column1
+      - column2

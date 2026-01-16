@@ -1,0 +1,210 @@
+groups:
+  # ==================== 追踪和性能告警 ====================
+  - name: mystocks_tracing_alerts
+    interval: 30s
+    rules:
+      # Trace发送失败告警
+      - alert: TraceExportFailed
+        expr: |
+          rate(otel_col_exporter_send_failed_spans_total{job="mystocks-backend"}[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          service: tracing
+          component: tempo
+        annotations:
+          summary: "Trace export failed"
+          description: "OpenTelemetry spans failed to export to Tempo for 2 minutes (current: {{ $value }}/sec)"
+
+      # Trace采样率异常告警
+      - alert: TraceSamplingRateAbnormal
+        expr: |
+          rate(traces_span_processed_total{job="tempo-metrics"}[5m]) / rate(traces_calls_total{job="tempo-metrics"}[5m]) < 0.05
+        for: 5m
+        labels:
+          severity: info
+          service: tracing
+          component: sampling
+        annotations:
+          summary: "Trace sampling rate too low"
+          description: "Effective trace sampling rate below 5% for 5 minutes (current: {{ $value | humanizePercentage }})"
+
+  # ==================== 业务指标告警 ====================
+  - name: mystocks_business_alerts
+    interval: 30s
+    rules:
+      # API响应时间过长
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.95, rate(mystocks_http_request_duration_seconds_bucket{job="mystocks-backend"}[5m])) > 2
+        for: 3m
+        labels:
+          severity: warning
+          service: api
+          component: backend
+        annotations:
+          summary: "API high latency (95th percentile)"
+          description: "API 95th percentile latency above 2 seconds for 3 minutes (current: {{ $value }}s)"
+
+      # API错误率过高
+      - alert: APIHighErrorRate
+        expr: |
+          rate(mystocks_http_requests_total{job="mystocks-backend", status=~"5.."}[5m]) /
+          rate(mystocks_http_requests_total{job="mystocks-backend"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: api
+          component: backend
+        annotations:
+          summary: "API high error rate"
+          description: "API 5xx error rate above 5% for 2 minutes (current: {{ $value | humanizePercentage }})"
+
+      # 市场数据获取失败
+      - alert: MarketDataUnavailable
+        expr: |
+          up{job="mystocks-market"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: market-data
+          component: external-api
+        annotations:
+          summary: "Market data service unavailable"
+          description: "Market data health check failed for 2 minutes"
+
+      # 缓存命中率过低
+      - alert: CacheHitRateLow
+        expr: |
+          rate(mystocks_cache_hits_total{job="mystocks-backend"}[5m]) /
+          (rate(mystocks_cache_hits_total{job="mystocks-backend"}[5m]) +
+           rate(mystocks_cache_misses_total{job="mystocks-backend"}[5m])) < 0.7
+        for: 5m
+        labels:
+          severity: warning
+          service: caching
+          component: redis
+        annotations:
+          summary: "Cache hit rate low"
+          description: "Cache hit rate below 70% for 5 minutes (current: {{ $value | humanizePercentage }})"
+
+      # 数据库连接池耗尽
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          mystocks_db_connections_active{job="mystocks-backend"} /
+          mystocks_db_connections_total{job="mystocks-backend"} > 0.9
+        for: 3m
+        labels:
+          severity: warning
+          service: database
+          component: connection-pool
+        annotations:
+          summary: "Database connection pool exhausted"
+          description: "Database connection pool utilization above 90% for 3 minutes (current: {{ $value | humanizePercentage }})"
+
+  # ==================== 服务依赖图告警 ====================
+  - name: mystocks_service_graph_alerts
+    interval: 60s
+    rules:
+      # 服务间调用延迟异常
+      - alert: ServiceCallHighLatency
+        expr: |
+          histogram_quantile(0.95, rate(traces_span_duration_seconds_bucket{job="tempo-metrics"}[5m])) > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: service-mesh
+          component: inter-service
+        annotations:
+          summary: "Inter-service call high latency"
+          description: "95th percentile inter-service call latency above 5 seconds for 3 minutes (current: {{ $value }}s)"
+
+      # 服务间调用错误率过高
+      - alert: ServiceCallHighErrorRate
+        expr: |
+          rate(traces_span_errored_total{job="tempo-metrics"}[5m]) /
+          rate(traces_calls_total{job="tempo-metrics"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          service: service-mesh
+          component: inter-service
+        annotations:
+          summary: "Inter-service call high error rate"
+          description: "Inter-service call error rate above 10% for 2 minutes (current: {{ $value | humanizePercentage }})"
+
+  # ==================== 数据源监控告警 ====================
+  - name: mystocks_data_source_alerts
+    interval: 30s
+    rules:
+      # 数据源调用失败率过高
+      - alert: DataSourceHighFailureRate
+        expr: |
+          rate(mystocks_data_source_call_failures_total[5m]) /
+          rate(mystocks_data_source_calls_total[5m]) > 0.2
+        for: 3m
+        labels:
+          severity: warning
+          service: data-sources
+          component: external-apis
+        annotations:
+          summary: "Data source high failure rate"
+          description: "Data source call failure rate above 20% for 3 minutes (current: {{ $value | humanizePercentage }})"
+
+      # 数据源响应时间过长
+      - alert: DataSourceHighLatency
+        expr: |
+          histogram_quantile(0.95, rate(mystocks_data_source_request_duration_seconds_bucket[5m])) > 10
+        for: 3m
+        labels:
+          severity: warning
+          service: data-sources
+          component: external-apis
+        annotations:
+          summary: "Data source high latency"
+          description: "Data source 95th percentile latency above 10 seconds for 3 minutes (current: {{ $value }}s)"
+
+  # ==================== 业务逻辑告警 ====================
+  - name: mystocks_business_logic_alerts
+    interval: 60s
+    rules:
+      # 技术指标计算失败
+      - alert: TechnicalIndicatorCalculationFailed
+        expr: |
+          rate(mystocks_indicator_calculation_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: technical-analysis
+          component: indicators
+        annotations:
+          summary: "Technical indicator calculation failed"
+          description: "Technical indicator calculation errors detected for 1 minute (current: {{ $value }}/min)"
+
+      # 策略回测超时
+      - alert: StrategyBacktestTimeout
+        expr: |
+          increase(mystocks_strategy_backtest_timeout_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: info
+          service: strategy
+          component: backtesting
+        annotations:
+          summary: "Strategy backtest timeout"
+          description: "Strategy backtest operations timed out for 1 minute (current: {{ $value }})"
+
+      # 用户会话异常
+      - alert: UserSessionAnomaly
+        expr: |
+          abs(rate(mystocks_active_user_sessions[5m]) -
+               predict_linear(rate(mystocks_active_user_sessions[1h])[1h], 300)) /
+          rate(mystocks_active_user_sessions[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: info
+          service: user-management
+          component: sessions
+        annotations:
+          summary: "User session anomaly detected"
+          description: "Active user sessions deviated from expected pattern by >50% for 5 minutes"

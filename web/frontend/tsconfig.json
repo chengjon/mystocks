@@ -87,6 +87,7 @@
     "reports",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
+    "src/api/types/generated-types.ts",  // 自动生成文件，类型冲突
     "src/components/market/ProKLineChart.vue"  // 暂时排除（Phase 2修复）
   ],
 

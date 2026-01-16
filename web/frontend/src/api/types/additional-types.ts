@@ -237,47 +237,9 @@ export interface IndicatorParameter {
   step?: number;
 }
 
-// ============================================
-// Backtest Types (moved from generated-types)
-// ============================================
-
-export interface BacktestRequest {
-  strategyName?: string;
-  symbols?: string[];
-  startDate?: string;
-  endDate?: string;
-  initialCapital?: number;
-  parameters?: Record<string, any>;
-}
-
-export interface BacktestResponse {
-  taskId?: string;
-  status?: string;
-  summary?: BacktestResultSummary | null;
-  equityCurve?: Record<string, any>[];
-  trades?: BacktestTrade[];
-  errorMessage?: string | null;
-}
-
-export interface BacktestResultSummary {
-  totalReturn?: number;
-  annualizedReturn?: number;
-  maxDrawdown?: number;
-  sharpeRatio?: number;
-  winRate?: number;
-  totalTrades?: number;
-}
-
-export interface BacktestTrade {
-  symbol?: string;
-  entryDate?: string;
-  exitDate?: string;
-  entryPrice?: number;
-  exitPrice?: number;
-  quantity?: number;
-  pnl?: number;
-  returnPct?: number;
-}
+// Backtest types are imported from common.ts (snake_case to match backend API)
+// BacktestRequest, BacktestResponse, BacktestResultSummary, BacktestTrade
+// are all defined in common.ts with snake_case naming convention
 
 // ============================================
 // Notification Types

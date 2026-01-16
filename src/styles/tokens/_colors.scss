@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Color Tokens - Professional Financial UI (Bloomberg-inspired Dark Theme)
+   ========================================================================== */
+
+/* Base Colors */
+:root {
+  /* Primary Brand Colors */
+  --color-primary-50: #e3f2fd;
+  --color-primary-100: #bbdefb;
+  --color-primary-200: #90caf9;
+  --color-primary-300: #64b5f6;
+  --color-primary-400: #42a5f5;
+  --color-primary-500: #2196f3;
+  --color-primary-600: #1e88e5;
+  --color-primary-700: #1976d2;
+  --color-primary-800: #1565c0;
+  --color-primary-900: #0d47a1;
+
+  /* Secondary Colors */
+  --color-secondary-50: #fce4ec;
+  --color-secondary-100: #f8bbd9;
+  --color-secondary-200: #f48fb1;
+  --color-secondary-300: #f06292;
+  --color-secondary-400: #ec407a;
+  --color-secondary-500: #e91e63;
+  --color-secondary-600: #d81b60;
+  --color-secondary-700: #c2185b;
+  --color-secondary-800: #ad1457;
+  --color-secondary-900: #880e4f;
+
+  /* Neutral Grays */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #eeeeee;
+  --color-gray-300: #e0e0e0;
+  --color-gray-400: #bdbdbd;
+  --color-gray-500: #9e9e9e;
+  --color-gray-600: #757575;
+  --color-gray-700: #616161;
+  --color-gray-800: #424242;
+  --color-gray-900: #212121;
+
+  /* Dark Theme Base */
+  --color-dark-bg-primary: #0a0a0a;
+  --color-dark-bg-secondary: #1a1a1a;
+  --color-dark-bg-tertiary: #2a2a2a;
+  --color-dark-surface-primary: #1e1e1e;
+  --color-dark-surface-secondary: #262626;
+  --color-dark-surface-tertiary: #333333;
+}
+
+/* Semantic Color Tokens */
+:root {
+  /* Background Colors */
+  --color-bg-primary: var(--color-dark-bg-primary);
+  --color-bg-secondary: var(--color-dark-bg-secondary);
+  --color-bg-tertiary: var(--color-dark-bg-tertiary);
+  --color-bg-overlay: rgba(0, 0, 0, 0.8);
+  --color-bg-modal: var(--color-dark-surface-primary);
+  --color-bg-tooltip: var(--color-dark-surface-tertiary);
+  --color-bg-dropdown: var(--color-dark-surface-secondary);
+
+  /* Surface Colors */
+  --color-surface-primary: var(--color-dark-surface-primary);
+  --color-surface-secondary: var(--color-dark-surface-secondary);
+  --color-surface-tertiary: var(--color-dark-surface-tertiary);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-surface-active: rgba(255, 255, 255, 0.08);
+  --color-surface-disabled: rgba(255, 255, 255, 0.02);
+
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e0e0e0;
+  --color-text-tertiary: #b0b0b0;
+  --color-text-disabled: #666666;
+  --color-text-inverse: #000000;
+  --color-text-link: var(--color-primary-400);
+  --color-text-link-hover: var(--color-primary-300);
+  --color-text-link-active: var(--color-primary-500);
+
+  /* Border Colors */
+  --color-border-primary: #404040;
+  --color-border-secondary: #333333;
+  --color-border-tertiary: #262626;
+  --color-border-focus: var(--color-primary-500);
+  --color-border-error: #ef5350;
+  --color-border-warning: #ffb74d;
+  --color-border-success: #4caf50;
+
+  /* Status Colors */
+  --color-status-success: #4caf50;
+  --color-status-success-bg: rgba(76, 175, 80, 0.1);
+  --color-status-warning: #ffb74d;
+  --color-status-warning-bg: rgba(255, 183, 77, 0.1);
+  --color-status-error: #ef5350;
+  --color-status-error-bg: rgba(239, 83, 80, 0.1);
+  --color-status-info: var(--color-primary-400);
+  --color-status-info-bg: rgba(33, 150, 243, 0.1);
+
+  /* Financial Colors */
+  --color-financial-positive: #4caf50;
+  --color-financial-negative: #ef5350;
+  --color-financial-neutral: #ffb74d;
+  --color-financial-volume: var(--color-primary-400);
+  --color-financial-bearish: #f44336;
+  --color-financial-bullish: #4caf50;
+
+  /* Chart Colors */
+  --color-chart-line-1: var(--color-primary-400);
+  --color-chart-line-2: #ffb74d;
+  --color-chart-line-3: #4caf50;
+  --color-chart-line-4: #ef5350;
+  --color-chart-line-5: #9c27b0;
+  --color-chart-candle-bull: #4caf50;
+  --color-chart-candle-bear: #ef5350;
+  --color-chart-volume: rgba(33, 150, 243, 0.3);
+  --color-chart-grid: #333333;
+  --color-chart-crosshair: #666666;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border-primary: #ffffff;
+    --color-border-secondary: #cccccc;
+    --color-text-secondary: #ffffff;
+    --color-text-tertiary: #cccccc;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-fast: 0ms;
+    --animation-duration-normal: 0ms;
+    --animation-duration-slow: 0ms;
+  }
+}

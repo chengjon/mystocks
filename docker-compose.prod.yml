@@ -1,0 +1,301 @@
+version: '3.8'
+
+# MyStocks 生产环境配置
+# 用于生产部署和线上服务
+
+services:
+  # PostgreSQL 数据库 (生产环境)
+  postgres-prod:
+    image: postgres:15-alpine
+    container_name: mystocks-postgres-prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mystocks_prod}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./scripts/database/init-prod-db.sql:/docker-entrypoint-initdb.d/init-prod-db.sql:ro
+      - ./config/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    ports:
+      - "127.0.0.1:5432:5432"  # 只绑定到本地
+    networks:
+      - mystocks-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+
+  # Redis 缓存 (生产环境)
+  redis-prod:
+    image: redis:7-alpine
+    container_name: mystocks-redis-prod
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_prod_data:/data
+      - ./config/redis/redis.conf:/etc/redis/redis.conf:ro
+    ports:
+      - "127.0.0.1:6379:6379"  # 只绑定到本地
+    networks:
+      - mystocks-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  # TDengine 时序数据库 (生产环境)
+  tdengine-prod:
+    image: tdengine/tdengine:3.0.5.0
+    container_name: mystocks-tdengine-prod
+    environment:
+      TAOS_FIRST_EP: tdengine-prod
+      TAOS_SECOND_EP: tdengine-prod
+      TAOS_FQDN: ${TDENGINE_FQDN:-localhost}
+    volumes:
+      - tdengine_prod_data:/var/lib/taos
+      - ./config/tdengine/taos.cfg:/etc/taos/taos.cfg:ro
+    ports:
+      - "127.0.0.1:6041:6041"  # REST API端口
+      - "127.0.0.1:6030:6030"  # 内部通信端口
+    networks:
+      - mystocks-prod
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6041/-/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+
+  # MyStocks 后端服务 (生产环境)
+  mystocks-backend-prod:
+    build:
+      context: ./web/backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: mystocks-backend-prod
+    environment:
+      # 数据库配置
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-prod:5432/${POSTGRES_DB}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis-prod:6379/0
+      TDENGINE_URL: http://${TDENGINE_FQDN:-tdengine-prod}:6041
+
+      # 应用配置
+      ENVIRONMENT: production
+      DEBUG: false
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+
+      # 安全配置
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+
+      # 监控配置
+      ENABLE_MONITORING: true
+      PROMETHEUS_METRICS_ENABLED: true
+
+      # 性能配置
+      WORKERS: ${WORKERS:-4}
+      WORKER_TIMEOUT: ${WORKER_TIMEOUT:-30}
+
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - mystocks-prod
+    depends_on:
+      postgres-prod:
+        condition: service_healthy
+      redis-prod:
+        condition: service_healthy
+      tdengine-prod:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # MyStocks 前端服务 (生产环境)
+  mystocks-frontend-prod:
+    build:
+      context: ./web/frontend
+      dockerfile: Dockerfile.prod
+    container_name: mystocks-frontend-prod
+    environment:
+      NODE_ENV: production
+      VUE_APP_API_BASE_URL: ${VUE_APP_API_BASE_URL}
+      VUE_APP_WS_BASE_URL: ${VUE_APP_WS_BASE_URL}
+    ports:
+      - "127.0.0.1:80:80"
+    networks:
+      - mystocks-prod
+    depends_on:
+      - mystocks-backend-prod
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Nginx 反向代理 (生产环境)
+  nginx-prod:
+    image: nginx:1.24-alpine
+    container_name: mystocks-nginx-prod
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - mystocks-prod
+    depends_on:
+      - mystocks-frontend-prod
+      - mystocks-backend-prod
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+
+  # Prometheus 监控 (生产环境)
+  prometheus-prod:
+    image: prom/prometheus:v2.45.0
+    container_name: mystocks-prometheus-prod
+    volumes:
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus_prod_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - mystocks-prod
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    user: "65534:65534"
+
+  # Grafana 可视化 (生产环境)
+  grafana-prod:
+    image: grafana/grafana:10.2.0
+    container_name: mystocks-grafana-prod
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - grafana_prod_data:/var/lib/grafana
+      - ./config/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - mystocks-prod
+    depends_on:
+      - prometheus-prod
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    user: "472:472"
+
+  # 备份服务 (生产环境)
+  backup-service:
+    build:
+      context: ./scripts/backup
+      dockerfile: Dockerfile
+    container_name: mystocks-backup-service
+    environment:
+      BACKUP_SCHEDULE: ${BACKUP_SCHEDULE:-"0 2 * * *"}
+      POSTGRES_HOST: postgres-prod
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      REDIS_HOST: redis-prod
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      TDENGINE_HOST: tdengine-prod
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+    volumes:
+      - backup_data:/backup
+      - ./config/backup:/config:ro
+    networks:
+      - mystocks-prod
+    depends_on:
+      - postgres-prod
+      - redis-prod
+      - tdengine-prod
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    profiles:
+      - backup
+
+networks:
+  mystocks-prod:
+    driver: bridge
+    internal: true  # 生产环境网络隔离
+
+volumes:
+  postgres_prod_data:
+    driver: local
+  redis_prod_data:
+    driver: local
+  tdengine_prod_data:
+    driver: local
+  prometheus_prod_data:
+    driver: local
+  grafana_prod_data:
+    driver: local
+  nginx_logs:
+    driver: local
+  backup_data:
+    driver: local

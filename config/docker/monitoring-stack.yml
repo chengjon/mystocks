@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: mystocks-prometheus
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    volumes:
+      - ${PROMETHEUS_CONFIG_PATH:-./config/prometheus/prometheus.yml}:/etc/prometheus/prometheus.yml
+      - ${PROMETHEUS_ALERTS_PATH:-./config/alerts}:/etc/prometheus/alerts
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - "--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-200h}"
+      - '--web.enable-lifecycle'
+    networks:
+      - mystocks-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - grafana
+
+  # Grafana - Visualization Dashboard
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: mystocks-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3100}:3000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ${GRAFANA_PROVISIONING_PATH:-./data/grafana/provisioning}:/etc/grafana/provisioning
+      - ${GRAFANA_DASHBOARDS_PATH:-./data/grafana/dashboards}:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS:-}
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SERVER_DOMAIN=${GRAFANA_HOST:-localhost}
+      - GF_SERVER_ROOT_URL=http://${GRAFANA_HOST:-localhost}:${GRAFANA_PORT:-3000}/
+    networks:
+      - mystocks-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # MongoDB - Document Database
+  mongodb:
+    image: mongo:7.0.5
+    container_name: mystocks-mongodb
+    restart: unless-stopped
+    ports:
+      - "${MONGODB_PORT:-27018}:27017"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    volumes:
+      - mongodb_data:/data/db
+      - ${MONGODB_CONFIG_PATH:-./config/mongodb}/mongod.conf:/etc/mongod.conf
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE:-mystocks}
+    command: mongod --auth --config /etc/mongod.conf
+    networks:
+      - mystocks-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # AlertManager - Alert Management
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: mystocks-alertmanager
+    restart: unless-stopped
+    ports:
+      - "${ALERTMANAGER_PORT:-9093}:9093"
+    volumes:
+      - ${ALERTMANAGER_CONFIG_PATH:-./config/alertmanager}/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - mystocks-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+
+networks:
+  mystocks-network:
+    driver: bridge
+    name: ${DOCKER_NETWORK_NAME:-mystocks-network}
+    ipam:
+      config:
+        - subnet: ${DOCKER_NETWORK_SUBNET:-172.20.0.0/16}

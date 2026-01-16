@@ -471,7 +471,7 @@ export function memoize<T extends (...args: any[]) => any>(
       ttl: options.ttl || 0 // No expiration by default
     })
 
-    descriptor.value = function (...args: Parameters<T>): ReturnType<T> {
+    descriptor.value = function (this: any, ...args: Parameters<T>): ReturnType<T> {
       const key = options.keyGenerator
         ? options.keyGenerator(...args)
         : JSON.stringify(args)

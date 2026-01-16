@@ -1,0 +1,194 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "MyStocks 用户体验监控面板",
+    "tags": ["mystocks", "user-experience", "monitoring"],
+    "timezone": "Asia/Shanghai",
+    "panels": [
+      {
+        "id": 1,
+        "title": "用户体验健康总览",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "user_experience_health_score{component=\"overall\"}",
+            "legendFormat": "整体健康评分"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "orange", "value": 50 },
+                { "color": "yellow", "value": 70 },
+                { "color": "green", "value": 80 }
+              ]
+            }
+          }
+        },
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+      },
+      {
+        "id": 2,
+        "title": "API响应时间 (< 2秒目标)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 },
+        "yAxes": [
+          { "format": "s", "label": "响应时间", "logBase": 1 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "API成功率 (目标100%)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status_code!~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100",
+            "legendFormat": "成功率 (%)"
+          }
+        ],
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "yAxes": [
+          { "format": "percent", "label": "成功率", "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "系统资源使用率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "system_cpu_usage_percent",
+            "legendFormat": "CPU使用率"
+          },
+          {
+            "expr": "system_memory_usage_percent",
+            "legendFormat": "内存使用率"
+          },
+          {
+            "expr": "system_disk_usage_percent",
+            "legendFormat": "磁盘使用率"
+          }
+        ],
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "yAxes": [
+          { "format": "percent", "label": "使用率", "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "阈值违规统计",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "sum(increase(threshold_violations_total[1h])) by (metric_type, severity)",
+            "legendFormat": "{{metric_type}} - {{severity}}"
+          }
+        ],
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 5 },
+                { "color": "red", "value": 10 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "慢请求比例",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(slow_http_requests_total[5m]) / rate(http_requests_total[5m]) * 100",
+            "legendFormat": "慢请求比例 (%)"
+          }
+        ],
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 },
+        "yAxes": [
+          { "format": "percent", "label": "比例", "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "活跃请求数",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "http_requests_active",
+            "legendFormat": "活跃请求数"
+          }
+        ],
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 },
+        "yAxes": [
+          { "format": "short", "label": "请求数" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "关键接口性能",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 2 },
+                { "color": "red", "value": 5 }
+              ]
+            },
+            "unit": "s"
+          }
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 0,
+    "links": []
+  }
+}

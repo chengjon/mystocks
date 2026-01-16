@@ -1,0 +1,16 @@
+# 数据库连通性测试程序依赖库
+# Database connectivity test dependencies
+
+# 基础依赖
+python-dotenv>=1.0.0       # 读取.env文件
+sqlalchemy>=1.4.0          # SQL数据库连接引擎
+
+# 各数据库驱动
+pymysql>=1.0.0             # MySQL/MariaDB连接驱动
+psycopg2-binary>=2.9.0     # PostgreSQL连接驱动
+redis>=4.0.0               # Redis连接库
+taos-ws-py>=1.0.0          # TDengine WebSocket连接驱动（官方推荐）
+
+# 可选依赖 (如果需要更好的性能)
+# mysqlclient>=2.1.0       # 替代pymysql，性能更好但安装复杂
+# psycopg2>=2.9.0          # 替代psycopg2-binary，需要编译

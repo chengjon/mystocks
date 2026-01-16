@@ -10,7 +10,7 @@ import type {
   Strategy,
   StrategyPerformance,
   BacktestTask,
-  BacktestResult,
+  BacktestResultVM,
   StrategyListResponse,
 } from '../types/strategy';
 import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock';
@@ -31,7 +31,7 @@ export class StrategyAdapter {
     }
 
     try {
-      return apiResponse.data.strategies.map((s) => this.adaptStrategy(s));
+      return (apiResponse.data.strategies || []).map((s) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
       return mockStrategyList.strategies;
@@ -69,7 +69,7 @@ export class StrategyAdapter {
   static adaptPerformance(apiPerf: any): StrategyPerformance {
     return {
       totalReturn: apiPerf.total_return || apiPerf.totalReturn || 0,
-      annualReturn: apiPerf.annual_return || apiPerf.annualReturn || 0,
+      annualizedReturn: apiPerf.annual_return || apiPerf.annualized_return || apiPerf.annualReturn || 0,
       sharpeRatio: apiPerf.sharpe_ratio || apiPerf.sharpeRatio || 0,
       maxDrawdown: apiPerf.max_drawdown || apiPerf.maxDrawdown || 0,
       winRate: apiPerf.win_rate || apiPerf.winRate || 0,
@@ -94,12 +94,12 @@ export class StrategyAdapter {
     try {
       const task = apiResponse.data as any; // Support both snake_case and camelCase
       return {
-        taskId: task.taskId,
-        strategyId: task.strategyId,
+        task_id: task.task_id || task.taskId,
+        strategy_id: task.strategy_id || task.strategyId,
         status: this.translateBacktestStatus(task.status),
         progress: task.progress || 0,
-        startTime: this.parseDate(task.start_time || task.startTime),
-        endTime: task.end_time || task.endTime ? this.parseDate(task.end_time || task.endTime) : undefined,
+        started_at: task.started_at || task.startTime,
+        completed_at: task.completed_at || task.endTime,
         result: task.result ? this.adaptBacktestResult(task.result) : undefined,
         error: task.error,
       };
@@ -113,22 +113,22 @@ export class StrategyAdapter {
    * Adapt backtest result
    *
    * @param apiResult - Raw backtest result from API
-   * @returns Adapted BacktestResult object
+   * @returns Adapted BacktestResultVM object
    */
-  static adaptBacktestResult(apiResult: any): BacktestResult {
+  static adaptBacktestResult(apiResult: any): BacktestResultVM {
     return {
-      taskId: apiResult.task_id || '',
-      strategyId: apiResult.strategy_id || '',
-      totalReturn: apiResult.total_return || apiResult.totalReturn || 0,
-      annualReturn: apiResult.annual_return || apiResult.annualReturn || 0,
-      sharpeRatio: apiResult.sharpe_ratio || apiResult.sharpeRatio || 0,
-      maxDrawdown: apiResult.max_drawdown || apiResult.maxDrawdown || 0,
-      winRate: apiResult.win_rate || apiResult.winRate || 0,
-      totalTrades: apiResult.total_trades || apiResult.totalTrades || 0,
-      profitFactor: apiResult.profit_factor || apiResult.profitFactor || 0,
-      equityCurve: apiResult.equity_curve || apiResult.equityCurve || [],
-      trades: apiResult.trades || apiResult.trades || [],
-      performanceMetrics: apiResult.performance_metrics || apiResult.performanceMetrics || {},
+      task_id: apiResult.task_id || apiResult.taskId || '',
+      strategy_id: apiResult.strategy_id || apiResult.strategyId || '',
+      total_return: apiResult.total_return || apiResult.totalReturn || 0,
+      annualized_return: apiResult.annual_return || apiResult.annualized_return || 0,
+      sharpe_ratio: apiResult.sharpe_ratio || apiResult.sharpeRatio || 0,
+      max_drawdown: apiResult.max_drawdown || apiResult.maxDrawdown || 0,
+      win_rate: apiResult.win_rate || apiResult.winRate || 0,
+      total_trades: apiResult.total_trades || apiResult.totalTrades || 0,
+      profit_factor: apiResult.profit_factor || apiResult.profitFactor || 0,
+      equity_curve: apiResult.equity_curve || apiResult.equityCurve || [],
+      trades: apiResult.trades || [],
+      performance_metrics: apiResult.performance_metrics || apiResult.performanceMetrics || {},
     };
   }
 
@@ -244,7 +244,7 @@ export class StrategyAdapter {
       return false;
     }
 
-    if (!['trend_following', 'mean_reversion', 'momentum'].includes(strategy.type)) {
+    if (!strategy.type || !['trend_following', 'mean_reversion', 'momentum'].includes(strategy.type)) {
       console.error('[StrategyAdapter] Invalid strategy type:', strategy.type);
       return false;
     }

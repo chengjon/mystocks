@@ -1,16 +1,40 @@
 // Auto-generated types for common domain
-// Generated at: 2026-01-14T14:57:47.572281
+// Generated at: 2026-01-15T21:06:03.932742
 
-// Generic type definitions
-export type Dict<T = any> = Record<string, any>;
-export type List<T = any> = any[];
-export type T<T = any> = any;
-export type date_type = string;
+// ============================================
+// Core Utility Types
+// ============================================
+
+export type Dict<T = any> = Record<string, T>;
+export type List<T = any> = T[];
+
+// ============================================
+// Response Types
+// ============================================
+
+export interface BaseResponse<T = any> {
+  success?: boolean;
+  message?: string;
+  data?: T;
+  timestamp?: string;
+}
+
+export interface PagedResponse<T = any> {
+  items?: T[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  hasMore?: boolean;
+}
 
 export interface APIResponse {
   success?: boolean;
   data?: Record<string, any> | null;
+  error?: ErrorDetail | null;
   timestamp?: string;
+  code?: number;
+  message?: string;
+  request_id?: string;
 }
 
 export interface AccountInfo {
@@ -57,8 +81,8 @@ export interface AlertRecordResponse {
   alert_level?: string;
   alert_title?: string | null;
   alert_message?: string | null;
-  alert_details?: Record<string, any> | null;
-  snapshot_data?: Record<string, any> | null;
+  alert_details?: Dict | null;
+  snapshot_data?: Dict | null;
   is_read?: boolean;
   is_handled?: boolean;
   created_at?: string;
@@ -70,9 +94,9 @@ export interface AlertRuleCreate {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Record<string, any>;
-  trigger_conditions?: Record<string, any>;
-  notification_config?: Record<string, any>;
+  parameters?: Dict;
+  trigger_conditions?: Dict;
+  notification_config?: Dict;
   priority?: number;
   is_active?: boolean;
 }
@@ -84,9 +108,9 @@ export interface AlertRuleResponse {
   description?: string | null;
   symbol?: string | null;
   stock_name?: string | null;
-  parameters?: Record<string, any>;
-  trigger_conditions?: Record<string, any>;
-  notification_config?: Record<string, any>;
+  parameters?: Dict;
+  trigger_conditions?: Dict;
+  notification_config?: Dict;
   is_active?: boolean;
   priority?: number;
   created_at?: string;
@@ -98,24 +122,11 @@ export type AlertRuleType = 'price_change' | 'volume_surge' | 'technical_break' 
 export interface AlertRuleUpdate {
   rule_name?: string | null;
   description?: string | null;
-  parameters?: Record<string, any> | null;
-  trigger_conditions?: Record<string, any> | null;
-  notification_config?: Record<string, any> | null;
+  parameters?: Dict | null;
+  trigger_conditions?: Dict | null;
+  notification_config?: Dict | null;
   priority?: number | null;
   is_active?: boolean | null;
-}
-
-export interface HMMConfig {
-  states?: number;
-  observations?: number;
-  [key: string]: any;
-}
-
-export interface NeuralNetworkConfig {
-  layers?: number[];
-  activation?: string;
-  learning_rate?: number;
-  [key: string]: any;
 }
 
 export interface AlgorithmConfig {
@@ -290,12 +301,16 @@ export interface BacktestListResponse {
 }
 
 export interface BacktestRequest {
-  strategy_id?: number;
-  user_id?: number;
+  strategy_name?: string;
   symbols?: string[];
   start_date?: string;
   end_date?: string;
   initial_capital?: number;
+  parameters?: Record<string, any>;
+  strategy_id?: number;
+  symbol?: string;
+  position_size?: number;
+  user_id?: number;
   commission_rate?: number;
   slippage_rate?: number;
   benchmark?: string | null;
@@ -309,6 +324,14 @@ export interface BacktestResponse {
   equity_curve?: Record<string, any>[];
   trades?: BacktestTrade[];
   error_message?: string | null;
+  strategy_id?: string;
+  total_return?: number;
+  annualized_return?: number;
+  sharpe_ratio?: number;
+  max_drawdown?: number;
+  win_rate?: number;
+  total_trades?: number;
+  backtest_duration_ms?: number;
 }
 
 export interface BacktestResult {
@@ -330,14 +353,17 @@ export interface BacktestResult {
 }
 
 export interface BacktestResultSummary {
+  total_return?: number;
+  annualized_return?: number;
+  max_drawdown?: number;
+  sharpe_ratio?: number;
+  win_rate?: number;
+  total_trades?: number;
   backtest_id?: number;
   strategy_id?: number;
   strategy_name?: string;
   symbols?: string[];
   date_range?: string;
-  total_return?: number;
-  sharpe_ratio?: number;
-  max_drawdown?: number;
   status?: BacktestStatus;
   created_at?: string;
 }
@@ -391,14 +417,6 @@ export interface BaseEvent {
   version?: string;
 }
 
-export interface BaseResponse {
-  success?: boolean;
-  message?: string;
-  data?: T | null;
-  timestamp?: string;
-  request_id?: string | null;
-}
-
 export interface BatchOperation {
   operation?: string;
   data?: Record<string, any>;
@@ -407,9 +425,16 @@ export interface BatchOperation {
 
 export interface BatchOperationRequest {
   operations?: BatchOperation[];
+  parallel_execution?: boolean;
+  max_concurrent?: number | null;
 }
 
 export interface BatchOperationResult {
+  total_operations?: number;
+  successful_operations?: number;
+  failed_operations?: number;
+  results?: AlgorithmResult[];
+  execution_time?: number;
   id?: string | null;
   success?: boolean;
   data?: any | null;
@@ -548,11 +573,13 @@ export interface DashboardRequest {
   include_risk_alerts?: boolean;
 }
 
+import type { MarketOverview } from './market';
+
 export interface DashboardResponse {
   user_id?: number;
   trade_date?: string;
   generated_at?: string;
-  market_overview?: any;
+  market_overview?: MarketOverview | null;
   watchlist?: WatchlistSummary | null;
   portfolio?: PortfolioSummary | null;
   risk_alerts?: RiskAlertSummary | null;
@@ -581,7 +608,7 @@ export interface DragonTigerListResponse {
   institution_buy_count?: number;
   institution_sell_count?: number;
   institution_net_amount?: number | null;
-  detail_data?: Record<string, any> | null;
+  detail_data?: Dict | null;
   impact_score?: number | null;
 }
 
@@ -630,11 +657,14 @@ export interface ErrorDetail {
 }
 
 export interface ErrorResponse {
-  success?: 'False';
+  error?: string;
+  detail?: string | null;
   message?: string;
   error_code?: string;
+  error_message?: string;
   details?: Record<string, any> | null;
   timestamp?: string;
+  success?: 'False';
   path?: string | null;
   request_id?: string | null;
 }
@@ -708,6 +738,13 @@ export interface FundFlowResponse {
   medium_net_inflow?: number;
   small_net_inflow?: number;
   created_at?: string | null;
+}
+
+export interface HMMConfig {
+  n_states?: number;
+  n_iter?: number;
+  covariance_type?: string;
+  random_state?: number;
 }
 
 export interface HMMPredictRequest {
@@ -850,8 +887,9 @@ export interface IndicatorMetadata {
 }
 
 export interface IndicatorRegistryResponse {
-  indicators?: IndicatorInfo[];
   total_count?: number;
+  categories?: Record<string, number>;
+  indicators?: IndicatorInfo[];
   last_updated?: string;
 }
 
@@ -872,6 +910,8 @@ export interface IndicatorResult {
 }
 
 export interface IndicatorSpec {
+  indicator_type?: string;
+  params?: Record<string, any> | null;
   abbreviation?: string;
   parameters?: Record<string, any>;
 }
@@ -979,10 +1019,11 @@ export interface KlineRequest {
 }
 
 export interface KlineResponse {
-  symbol?: string;
+  code?: string;
   period?: string;
   data?: KlineCandle[];
   count?: number;
+  symbol?: string;
 }
 
 export interface LongHuBangItem {
@@ -1098,6 +1139,14 @@ export interface ModelEvaluationResponse {
 }
 
 export interface ModelInfo {
+  name?: string;
+  path?: string;
+  trained_at?: string;
+  test_rmse?: number;
+  test_r2?: number;
+  train_samples?: number | null;
+  test_samples?: number | null;
+  feature_dim?: number | null;
   model_id?: string;
   algorithm_type?: string;
   symbol?: string;
@@ -1181,9 +1230,19 @@ export interface NGramTrainRequest {
   window_size?: number;
 }
 
+export interface NeuralNetworkConfig {
+  hidden_layers?: number[];
+  activation?: string;
+  optimizer?: string;
+  learning_rate?: number;
+  epochs?: number;
+  batch_size?: number;
+  dropout?: number;
+}
+
 export interface NeuralNetworkPredictRequest {
   model_id?: string;
-  current_data?: Record<string, List[number]>;
+  current_data?: Record<string, List<number>>;
 }
 
 export interface NeuralNetworkTrainRequest {
@@ -1308,7 +1367,7 @@ export interface OverlayIndicatorValue {
   lower?: number | null;
 }
 
-export interface PagedResponse {
+export interface PagedResponse<T = any> {
   success?: boolean;
   message?: string;
   data?: T[];
@@ -1321,11 +1380,13 @@ export interface PagedResponse {
   timestamp?: string;
 }
 
-export interface PaginatedResponse {
-  data?: T[];
+export interface PaginatedResponse<T = any> {
+  items?: List<T>;
   total?: number;
   page?: number;
   page_size?: number;
+  total_pages?: number;
+  data?: T[];
 }
 
 export interface PaginationInfo {
@@ -1375,13 +1436,24 @@ export interface PerformanceMetrics {
   sortino_ratio?: number | null;
 }
 
+export interface PositionItem {
+  symbol?: string;
+  quantity?: number;
+  avg_cost?: number;
+  current_price?: number | null;
+  market_value?: number | null;
+  profit_loss?: number | null;
+  profit_loss_percent?: number | null;
+  position_percent?: number | null;
+}
+
 export interface PortfolioSummary {
   total_market_value?: number;
   total_cost?: number;
   total_profit_loss?: number;
   total_profit_loss_percent?: number;
   position_count?: number;
-  positions?: any[];
+  positions?: PositionItem[];
 }
 
 export interface Position {
@@ -1408,8 +1480,10 @@ export interface PositionsResponse {
 export type PredictionLabel = 'BUY' | 'SELL' | 'HOLD';
 
 export interface PredictionResult {
-  prediction?: (string | number | List[number]);
+  date?: string;
+  predicted_price?: number;
   confidence?: number | null;
+  prediction?: (string | number | List[number]);
   probabilities?: Record<string, number> | null;
   metadata?: Record<string, any> | null;
 }
@@ -1451,7 +1525,7 @@ export interface RealtimeMonitoringResponse {
   change_percent?: number | null;
   volume?: number | null;
   amount?: number | null;
-  indicators?: Record<string, any> | null;
+  indicators?: Dict | null;
   market_strength?: string | null;
   is_limit_up?: boolean;
   is_limit_down?: boolean;
@@ -1553,7 +1627,7 @@ export interface RiskDashboardResponse {
 }
 
 export interface RiskHistoryPoint {
-  date?: date_type;
+  date?: string;
   var_95_hist?: number | null;
   cvar_95?: number | null;
   beta?: number | null;
@@ -1815,7 +1889,7 @@ export interface TaskStatistics {
   success_rate?: number;
 }
 
-export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+export type TaskStatus = 'pending' | 'running' | 'success' | 'failed' | 'paused' | 'cancelled';
 
 export type TaskType = 'cron' | 'supervisor' | 'manual' | 'data_sync' | 'indicator_calc' | 'market_fetch' | 'data_processing' | 'strategy_backtest' | 'cache_cleanup' | 'market_sync' | 'notification' | 'health_check' | 'cache_warmup' | 'report_generation';
 

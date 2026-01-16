@@ -1,0 +1,175 @@
+# Prometheus 配置文件
+# 用于抓取 MyStocks FastAPI 后端的监控指标
+
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+  # 外部标签
+  external_labels:
+    cluster: 'mystocks-monitoring'
+    environment: 'production'
+
+# 告警管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# 告警规则文件
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# 抓取配置
+scrape_configs:
+  # ==================== MyStocks FastAPI 后端 ====================
+  # 注意: 根据Docker环境选择正确的target:
+  #   - Docker Desktop/Mac/Windows: 使用 host.docker.internal:8000
+  #   - Linux Docker: 使用宿主机IP (如 192.168.123.104:8000 或 172.17.0.1:8000)
+  - job_name: 'mystocks-backend'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'  # Docker Desktop 访问宿主机
+          # - '192.168.123.104:8000'     # Linux Docker - 使用宿主机实际IP (参考 .env 中 MYSTOCKS_BACKEND_HOST)
+          # - '172.17.0.1:8000'          # Linux Docker - 使用 Docker 网桥网关
+        labels:
+          service: 'mystocks-api'
+          component: 'backend'
+
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+    # 健康检查端点
+    params:
+      format: ['prometheus']
+
+  # ==================== MyStocks 健康检查 ====================
+  - job_name: 'mystocks-health'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          service: 'mystocks-health'
+
+    metrics_path: '/health'
+    scrape_interval: 30s
+
+  # ==================== 各组件健康检查 ====================
+  - job_name: 'mystocks-components'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'system'
+    metrics_path: '/api/system/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-monitoring'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'monitoring'
+    metrics_path: '/api/monitoring/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-trade'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'trade'
+    metrics_path: '/api/trade/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-technical'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'technical'
+    metrics_path: '/api/technical/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-announcement'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'announcement'
+    metrics_path: '/api/announcement/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-market'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'market'
+    metrics_path: '/api/market/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-wencai'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'wencai'
+    metrics_path: '/api/wencai/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-tasks'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'tasks'
+    metrics_path: '/api/tasks/health'
+    scrape_interval: 30s
+
+  - job_name: 'mystocks-multi-source'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8000'
+          # - '192.168.123.104:8000'  # Linux Docker
+        labels:
+          component: 'multi-source'
+    metrics_path: '/api/multi_source/health'
+    scrape_interval: 30s
+
+  # ==================== 数据源监控指标 ====================
+  # 监控 DataSourceManager V2 的数据源调用和健康状态
+  - job_name: 'mystocks-data-sources'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8001'  # 数据源指标服务器端口
+          # - '192.168.123.104:8001'     # Linux Docker - 使用宿主机实际IP
+        labels:
+          service: 'mystocks-data-sources'
+          component: 'data-source-manager'
+
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # ==================== Prometheus 自身监控 ====================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+
+  # ==================== Node Exporter (系统指标) ====================
+  - job_name: 'node'
+    static_configs:
+      - targets:
+          - 'node_exporter:9100'

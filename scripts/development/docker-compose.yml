@@ -1,0 +1,127 @@
+# MyStocks 监控栈 - Prometheus + Grafana + Loki + Tempo
+# 用于展示 Phase 6 实现的完整监控系统
+#
+# 启动命令: docker-compose up -d
+# 访问地址:
+#   - Prometheus: http://localhost:9090
+#   - Grafana: http://localhost:3000
+#   - Loki: http://localhost:3100
+#   - Tempo: http://localhost:3200
+#   - Node Exporter: http://localhost:9100
+#
+# 环境变量配置文件: .env.monitoring
+
+version: "3.8"
+
+services:
+  # ==================== Prometheus ====================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ${PROMETHEUS_CONTAINER_NAME:-mystocks-prometheus}
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/rules:/etc/prometheus/rules:ro
+      - /data/docker/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - mystocks-monitoring
+
+  # ==================== Grafana ====================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ${GRAFANA_CONTAINER_NAME:-mystocks-grafana}
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=${GRAFANA_ALLOW_SIGN_UP:-false}
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-localhost}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_LOG_LEVEL=${GRAFANA_LOG_LEVEL:-info}
+    volumes:
+      - /data/docker/grafana:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - mystocks-monitoring
+    depends_on:
+      - prometheus
+
+  # ==================== AlertManager (可选) ====================
+  # alertmanager:
+  #   image: prom/alertmanager:latest
+  #   container_name: ${ALERTMANAGER_CONTAINER_NAME:-mystocks-alertmanager}
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${ALERTMANAGER_PORT:-9093}:9093"
+  #   volumes:
+  #     - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+  #     - ${ALERTMANAGER_DATA_VOLUME:-./data/alertmanager}:/alertmanager
+  #   command:
+  #     - '--config.file=/etc/alertmanager/alertmanager.yml'
+  #     - '--storage.path=/alertmanager'
+  #   networks:
+  #     - mystocks-monitoring
+
+  # ==================== Node Exporter (系统指标) ====================
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: ${NODE_EXPORTER_CONTAINER_NAME:-mystocks-node-exporter}
+    restart: unless-stopped
+    ports:
+      - "${NODE_EXPORTER_PORT:-9100}:9100"
+    command:
+      - '--path.procfs=/proc'
+      - '--path.sysfs=/sys'
+    networks:
+      - mystocks-monitoring
+
+  # ==================== Loki (日志聚合) ====================
+  loki:
+    image: grafana/loki:latest
+    container_name: ${LOKI_CONTAINER_NAME:-mystocks-loki}
+    restart: unless-stopped
+    ports:
+      - "${LOKI_PORT:-3100}:3100"
+      - "${LOKI_GRPC_PORT:-9096}:9096"
+    volumes:
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - ${LOKI_DATA_VOLUME:-/home/docker/loki}:/home/docker/loki
+    command:
+      - '-config.file=/etc/loki/local-config.yaml'
+      - '-config.expand-env=true'
+    networks:
+      - mystocks-monitoring
+
+  # ==================== Tempo (分布式追踪) ====================
+  tempo:
+    image: grafana/tempo:latest
+    container_name: ${TEMPO_CONTAINER_NAME:-mystocks-tempo}
+    restart: unless-stopped
+    ports:
+      - "${TEMPO_PORT:-3200}:3200"
+      - "${TEMPO_OTLP_GRPC_PORT:-4317}:4317"
+      - "${TEMPO_OTLP_HTTP_PORT:-4318}:4318"
+    volumes:
+      - ./config/tempo-config.yaml:/etc/tempo-config.yaml:ro
+      - ${TEMPO_DATA_VOLUME:-/home/docker/tempo}:/home/docker/tempo
+    command:
+      - '-config.file=/etc/tempo-config.yaml'
+      - '-config.expand-env=true'
+    networks:
+      - mystocks-monitoring
+
+networks:
+  mystocks-monitoring:
+    external: true

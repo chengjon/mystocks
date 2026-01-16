@@ -12,24 +12,24 @@
 
       <div class="meta">
         <span class="type-badge">{{ typeLabel }}</span>
-        <span class="date">创建于 {{ formatDate(strategy.createdAt) }}</span>
+        <span class="date">创建于 {{ strategy.createdAt ? formatDate(strategy.createdAt) : '未知' }}</span>
       </div>
 
       <!-- 性能指标 -->
       <div v-if="strategy.performance" class="performance">
         <div class="metric">
           <span class="label">总收益</span>
-          <span class="value" :class="{ positive: strategy.performance.totalReturn > 0, negative: strategy.performance.totalReturn < 0 }">
-            {{ (strategy.performance.totalReturn * 100).toFixed(2) }}%
+          <span class="value" :class="{ positive: (strategy.performance.totalReturn || 0) > 0, negative: (strategy.performance.totalReturn || 0) < 0 }">
+            {{ ((strategy.performance.totalReturn || 0) * 100).toFixed(2) }}%
           </span>
         </div>
         <div class="metric">
           <span class="label">夏普比率</span>
-          <span class="value">{{ strategy.performance.sharpeRatio.toFixed(2) }}</span>
+          <span class="value">{{ (strategy.performance.sharpeRatio || 0).toFixed(2) }}</span>
         </div>
         <div class="metric">
           <span class="label">胜率</span>
-          <span class="value">{{ (strategy.performance.winRate * 100).toFixed(2) }}%</span>
+          <span class="value">{{ ((strategy.performance.winRate || 0) * 100).toFixed(2) }}%</span>
         </div>
       </div>
 
@@ -82,20 +82,20 @@ const formatDate = (date: Date) => {
   }).format(date);
 };
 
-const statusTextMap: Record<Strategy['status'], string> = {
+const statusTextMap: Record<string, string> = {
   active: '运行中',
   inactive: '未激活',
   testing: '测试中',
 };
 
-const typeLabelMap: Record<Strategy['type'], string> = {
+const typeLabelMap: Record<string, string> = {
   trend_following: '趋势跟踪',
   mean_reversion: '均值回归',
   momentum: '动量策略',
 };
 
-const statusText = statusTextMap[props.strategy.status];
-const typeLabel = typeLabelMap[props.strategy.type];
+const statusText = statusTextMap[props.strategy.status || ''] || '未知';
+const typeLabel = typeLabelMap[props.strategy.type || ''] || '自定义';
 
 const handleDelete = () => {
   if (confirm(`确定要删除策略 "${props.strategy.name}" 吗？此操作不可撤销。`)) {

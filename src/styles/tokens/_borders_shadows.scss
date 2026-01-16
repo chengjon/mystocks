@@ -1,0 +1,189 @@
+/* ==========================================================================
+   Border Radius & Shadow Tokens - Professional Financial UI Effects
+   ========================================================================== */
+
+/* Border Radius Scale */
+:root {
+  --border-radius-none: 0;
+  --border-radius-xs: 0.125rem;   /* 2px */
+  --border-radius-sm: 0.25rem;    /* 4px */
+  --border-radius-md: 0.375rem;   /* 6px */
+  --border-radius-lg: 0.5rem;     /* 8px */
+  --border-radius-xl: 0.75rem;    /* 12px */
+  --border-radius-2xl: 1rem;      /* 16px */
+  --border-radius-3xl: 1.5rem;    /* 24px */
+  --border-radius-full: 9999px;
+}
+
+/* Component Border Radius */
+:root {
+  --component-radius-button: var(--border-radius-md);
+  --component-radius-input: var(--border-radius-md);
+  --component-radius-card: var(--border-radius-lg);
+  --component-radius-modal: var(--border-radius-xl);
+  --component-radius-tooltip: var(--border-radius-sm);
+  --component-radius-badge: var(--border-radius-full);
+  --component-radius-tab: var(--border-radius-md);
+  --component-radius-dropdown: var(--border-radius-md);
+}
+
+/* Financial Chart Border Radius */
+:root {
+  --chart-radius-candle: var(--border-radius-xs);
+  --chart-radius-tooltip: var(--border-radius-sm);
+  --chart-radius-legend: var(--border-radius-md);
+  --chart-radius-toolbar: var(--border-radius-lg);
+}
+
+/* Shadow Scale (Layer-based) */
+:root {
+  /* Level 1 - Subtle */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  /* Level 2 - Light */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+  /* Level 3 - Medium */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Level 4 - Large */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Level 5 - Extra Large */
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Level 6 - 2XL */
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Level 7 - Inner Shadow */
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  /* Level 8 - None */
+  --shadow-none: none;
+}
+
+/* Component Shadows */
+:root {
+  --component-shadow-button: var(--shadow-sm);
+  --component-shadow-button-hover: var(--shadow-md);
+  --component-shadow-button-active: var(--shadow-xs);
+  --component-shadow-button-disabled: var(--shadow-none);
+
+  --component-shadow-card: var(--shadow-sm);
+  --component-shadow-card-hover: var(--shadow-md);
+  --component-shadow-card-active: var(--shadow-lg);
+
+  --component-shadow-modal: var(--shadow-xl);
+  --component-shadow-tooltip: var(--shadow-md);
+  --component-shadow-dropdown: var(--shadow-lg);
+
+  --component-shadow-input: var(--shadow-xs);
+  --component-shadow-input-focus: 0 0 0 3px rgba(33, 150, 243, 0.1);
+
+  --component-shadow-nav: var(--shadow-sm);
+  --component-shadow-nav-hover: var(--shadow-md);
+}
+
+/* Financial Chart Shadows */
+:root {
+  --chart-shadow-tooltip: var(--shadow-md);
+  --chart-shadow-legend: var(--shadow-sm);
+  --chart-shadow-toolbar: var(--shadow-lg);
+  --chart-shadow-cursor: 0 0 0 1px rgba(33, 150, 243, 0.5);
+}
+
+/* Elevation System (Z-index layers) */
+:root {
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+  --z-index-toast: 1080;
+  --z-index-command-palette: 1090;
+}
+
+/* Animation Tokens */
+:root {
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 300ms;
+  --animation-duration-slow: 500ms;
+
+  --animation-timing-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-timing-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --animation-timing-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --animation-timing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --animation-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animation-timing-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Financial UI Animation Classes */
+@keyframes financial-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes financial-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(var(--spacing-4));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes financial-pulse-positive {
+  0%, 100% {
+    background-color: var(--color-financial-positive);
+    opacity: 0.1;
+  }
+  50% {
+    background-color: var(--color-financial-positive);
+    opacity: 0.3;
+  }
+}
+
+@keyframes financial-pulse-negative {
+  0%, 100% {
+    background-color: var(--color-financial-negative);
+    opacity: 0.1;
+  }
+  50% {
+    background-color: var(--color-financial-negative);
+    opacity: 0.3;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-fast: 0ms;
+    --animation-duration-normal: 0ms;
+    --animation-duration-slow: 0ms;
+  }
+
+  * {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* High Contrast Shadow Adjustments */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-sm: 0 2px 4px 0 rgba(255, 255, 255, 0.2);
+    --shadow-md: 0 4px 8px 0 rgba(255, 255, 255, 0.3);
+    --shadow-lg: 0 8px 16px 0 rgba(255, 255, 255, 0.4);
+  }
+}

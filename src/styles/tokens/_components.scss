@@ -1,0 +1,242 @@
+/* ==========================================================================
+   Component-Specific Token Collections - Financial UI Components
+   ========================================================================== */
+
+/* Button Component Tokens */
+:root {
+  /* Button Sizes */
+  --button-height-xs: var(--spacing-6);
+  --button-height-sm: var(--spacing-8);
+  --button-height-md: var(--spacing-10);
+  --button-height-lg: var(--spacing-12);
+  --button-height-xl: var(--spacing-14);
+
+  --button-padding-x-xs: var(--spacing-2);
+  --button-padding-x-sm: var(--spacing-3);
+  --button-padding-x-md: var(--spacing-4);
+  --button-padding-x-lg: var(--spacing-5);
+  --button-padding-x-xl: var(--spacing-6);
+
+  --button-font-size-xs: var(--font-size-xs);
+  --button-font-size-sm: var(--font-size-sm);
+  --button-font-size-md: var(--font-size-base);
+  --button-font-size-lg: var(--font-size-lg);
+  --button-font-size-xl: var(--font-size-xl);
+
+  /* Button Variants - Primary */
+  --button-primary-bg: var(--color-primary-600);
+  --button-primary-bg-hover: var(--color-primary-700);
+  --button-primary-bg-active: var(--color-primary-800);
+  --button-primary-bg-disabled: var(--color-gray-600);
+  --button-primary-text: var(--color-text-primary);
+  --button-primary-text-disabled: var(--color-text-disabled);
+  --button-primary-border: var(--color-primary-600);
+  --button-primary-shadow: var(--component-shadow-button);
+
+  /* Button Variants - Secondary */
+  --button-secondary-bg: var(--color-surface-secondary);
+  --button-secondary-bg-hover: var(--color-surface-tertiary);
+  --button-secondary-bg-active: var(--color-surface-primary);
+  --button-secondary-bg-disabled: var(--color-surface-disabled);
+  --button-secondary-text: var(--color-text-primary);
+  --button-secondary-text-disabled: var(--color-text-disabled);
+  --button-secondary-border: var(--color-border-primary);
+  --button-secondary-shadow: var(--component-shadow-button);
+
+  /* Button Variants - Financial Positive */
+  --button-financial-positive-bg: var(--color-financial-positive);
+  --button-financial-positive-bg-hover: #45a049;
+  --button-financial-positive-bg-active: #3d8b40;
+  --button-financial-positive-text: var(--color-text-primary);
+
+  /* Button Variants - Financial Negative */
+  --button-financial-negative-bg: var(--color-financial-negative);
+  --button-financial-negative-bg-hover: #e53935;
+  --button-financial-negative-bg-active: #d32f2f;
+  --button-financial-negative-text: var(--color-text-primary);
+
+  /* Button States */
+  --button-transition: all var(--animation-duration-fast) var(--animation-timing-ease);
+  --button-border-width: 1px;
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--line-height-tight);
+}
+
+/* Input Component Tokens */
+:root {
+  /* Input Sizes */
+  --input-height-xs: var(--spacing-6);
+  --input-height-sm: var(--spacing-8);
+  --input-height-md: var(--spacing-10);
+  --input-height-lg: var(--spacing-12);
+  --input-height-xl: var(--spacing-14);
+
+  --input-padding-x: var(--spacing-3);
+  --input-padding-y: var(--spacing-2);
+  --input-font-size: var(--font-size-base);
+  --input-line-height: var(--line-height-normal);
+
+  /* Input States */
+  --input-bg: var(--color-surface-primary);
+  --input-bg-hover: var(--color-surface-secondary);
+  --input-bg-focus: var(--color-surface-primary);
+  --input-bg-disabled: var(--color-surface-disabled);
+  --input-bg-error: rgba(239, 83, 80, 0.05);
+
+  --input-border: var(--color-border-primary);
+  --input-border-hover: var(--color-border-secondary);
+  --input-border-focus: var(--color-border-focus);
+  --input-border-error: var(--color-border-error);
+  --input-border-disabled: var(--color-border-tertiary);
+
+  --input-text: var(--color-text-primary);
+  --input-text-disabled: var(--color-text-disabled);
+  --input-text-placeholder: var(--color-text-tertiary);
+
+  --input-shadow: var(--component-shadow-input);
+  --input-shadow-focus: var(--component-shadow-input-focus);
+  --input-transition: all var(--animation-duration-fast) var(--animation-timing-ease);
+
+  /* Financial Input Variants */
+  --input-financial-text: var(--color-text-primary);
+  --input-financial-bg: var(--color-dark-bg-secondary);
+  --input-financial-border: var(--color-border-secondary);
+  --input-financial-font-family: var(--font-family-mono);
+  --input-financial-font-variant: tabular-nums;
+}
+
+/* Card Component Tokens */
+:root {
+  /* Card Layout */
+  --card-padding: var(--spacing-4);
+  --card-padding-lg: var(--spacing-6);
+  --card-margin: var(--spacing-2);
+  --card-border-radius: var(--component-radius-card);
+  --card-border-width: 1px;
+
+  /* Card Colors */
+  --card-bg: var(--color-surface-primary);
+  --card-border: var(--color-border-primary);
+  --card-shadow: var(--component-shadow-card);
+  --card-shadow-hover: var(--component-shadow-card-hover);
+
+  /* Financial Card Variants */
+  --card-financial-bg: var(--color-dark-bg-tertiary);
+  --card-financial-border: var(--color-border-secondary);
+  --card-financial-header-bg: var(--color-surface-secondary);
+  --card-financial-positive-border: var(--color-financial-positive);
+  --card-financial-negative-border: var(--color-financial-negative);
+}
+
+/* Table Component Tokens */
+:root {
+  /* Table Layout */
+  --table-row-height: var(--spacing-12);
+  --table-header-height: var(--spacing-10);
+  --table-cell-padding: var(--spacing-3);
+  --table-border-width: var(--table-border-width);
+
+  /* Table Colors */
+  --table-bg: var(--color-surface-primary);
+  --table-header-bg: var(--color-surface-secondary);
+  --table-row-bg-hover: var(--color-surface-hover);
+  --table-row-bg-selected: var(--color-surface-active);
+  --table-border: var(--color-border-primary);
+  --table-text: var(--color-text-primary);
+  --table-text-secondary: var(--color-text-secondary);
+
+  /* Financial Table Variants */
+  --table-financial-bg: var(--color-dark-bg-tertiary);
+  --table-financial-header-bg: var(--color-surface-primary);
+  --table-financial-positive-text: var(--color-financial-positive);
+  --table-financial-negative-text: var(--color-financial-negative);
+  --table-financial-volume-text: var(--color-financial-volume);
+}
+
+/* Navigation Component Tokens */
+:root {
+  /* Navigation Layout */
+  --nav-height: var(--layout-header-height);
+  --nav-padding: var(--spacing-4);
+  --nav-item-padding: var(--spacing-3);
+  --nav-item-margin: var(--spacing-1);
+  --nav-submenu-offset: var(--spacing-2);
+
+  /* Navigation Colors */
+  --nav-bg: var(--color-dark-bg-secondary);
+  --nav-border: var(--color-border-primary);
+  --nav-text: var(--color-text-primary);
+  --nav-text-hover: var(--color-primary-400);
+  --nav-text-active: var(--color-primary-500);
+  --nav-bg-hover: var(--color-surface-hover);
+  --nav-bg-active: var(--color-surface-active);
+
+  /* Sidebar Navigation */
+  --sidebar-width: var(--layout-sidebar-width);
+  --sidebar-collapsed-width: var(--layout-sidebar-collapsed-width);
+  --sidebar-bg: var(--color-dark-bg-tertiary);
+  --sidebar-border: var(--color-border-primary);
+  --sidebar-transition: width var(--animation-duration-normal) var(--animation-timing-ease);
+}
+
+/* Modal Component Tokens */
+:root {
+  /* Modal Layout */
+  --modal-max-width: 800px;
+  --modal-padding: var(--spacing-6);
+  --modal-border-radius: var(--component-radius-modal);
+  --modal-shadow: var(--component-shadow-modal);
+  --modal-backdrop-bg: var(--color-bg-overlay);
+  --modal-backdrop-blur: var(--overlay-backdrop-blur);
+
+  /* Modal Colors */
+  --modal-bg: var(--color-surface-primary);
+  --modal-border: var(--color-border-primary);
+  --modal-header-border: var(--color-border-secondary);
+  --modal-text: var(--color-text-primary);
+  --modal-title-text: var(--color-text-primary);
+}
+
+/* Chart Component Tokens */
+:root {
+  /* Chart Layout */
+  --chart-padding: var(--spacing-4);
+  --chart-toolbar-height: var(--spacing-10);
+  --chart-legend-height: var(--spacing-8);
+  --chart-tooltip-padding: var(--spacing-2);
+  --chart-axis-label-font-size: var(--font-size-xs);
+
+  /* Chart Colors */
+  --chart-bg: var(--color-surface-primary);
+  --chart-grid: var(--color-chart-grid);
+  --chart-text: var(--color-text-secondary);
+  --chart-crosshair: var(--color-chart-crosshair);
+  --chart-tooltip-bg: var(--color-surface-tertiary);
+  --chart-tooltip-text: var(--color-text-primary);
+  --chart-tooltip-shadow: var(--chart-shadow-tooltip);
+
+  /* Financial Chart Colors */
+  --chart-candle-bull: var(--color-chart-candle-bull);
+  --chart-candle-bear: var(--color-chart-candle-bear);
+  --chart-volume: var(--color-chart-volume);
+  --chart-line-colors: var(--color-chart-line-1), var(--color-chart-line-2), var(--color-chart-line-3), var(--color-chart-line-4), var(--color-chart-line-5);
+}
+
+/* Status Indicator Tokens */
+:root {
+  /* Status Colors */
+  --status-success-color: var(--color-status-success);
+  --status-success-bg: var(--color-status-success-bg);
+  --status-warning-color: var(--color-status-warning);
+  --status-warning-bg: var(--color-status-warning-bg);
+  --status-error-color: var(--color-status-error);
+  --status-error-bg: var(--color-status-error-bg);
+  --status-info-color: var(--color-status-info);
+  --status-info-bg: var(--color-status-info-bg);
+
+  /* Status Sizes */
+  --status-indicator-size-xs: var(--spacing-2);
+  --status-indicator-size-sm: var(--spacing-3);
+  --status-indicator-size-md: var(--spacing-4);
+  --status-indicator-size-lg: var(--spacing-5);
+}

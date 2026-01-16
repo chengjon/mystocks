@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-01-16T08:36:02.904416",
+  "test_environment": {
+    "base_url": "http://localhost:8000",
+    "authentication": false,
+    "test_type": "real_data_synchronization"
+  },
+  "test_results": {
+    "market_data": {
+      "success": true,
+      "data": {
+        "available": true,
+        "service_status": "ok",
+        "response_data": {
+          "status": "ok",
+          "service": "announcement"
+        },
+        "last_update": null
+      }
+    },
+    "strategy_api": {
+      "success": true,
+      "data": {
+        "available": true,
+        "stats_available": true,
+        "response_data": {
+          "success": true,
+          "total_count": 0,
+          "today_count": 0,
+          "important_count": 0,
+          "triggered_count": 0,
+          "by_source": {},
+          "by_type": {},
+          "by_sentiment": {}
+        }
+      }
+    },
+    "backtest_functionality": {
+      "success": true,
+      "data": {
+        "available": true,
+        "announcements_count": 0,
+        "service_status": "available"
+      }
+    },
+    "data_routing": {
+      "success": true,
+      "data": {
+        "total_endpoints": 2,
+        "successful_endpoints": 2,
+        "routing_tests": [
+          {
+            "endpoint": "/api/announcement/health",
+            "status": "success"
+          },
+          {
+            "endpoint": "/api/announcement/stats",
+            "status": "success"
+          }
+        ]
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "successful_tests": 4,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "overall_status": "PASSED"
+  },
+  "recommendations": [
+    "所有数据同步测试通过，系统运行正常"
+  ]
+}

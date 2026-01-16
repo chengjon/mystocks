@@ -9,6 +9,7 @@
 import type {
   StrategyListResponse
 } from '@/api/types/generated-types'
+import type { Strategy } from '@/api/types/strategy'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
@@ -61,6 +62,10 @@ export interface ParameterOptionVM {
 }
 
 export interface BacktestResultVM {
+  // Status fields for polling
+  status?: 'pending' | 'running' | 'completed' | 'failed'
+  error?: string
+  // Result fields
   strategyId: string
   strategyName: string
   startDate: string
@@ -307,6 +312,54 @@ export class StrategyAdapter {
       return `${(num / 10000).toFixed(1)}万`
     }
     return num.toLocaleString()
+  }
+
+  // ========================================
+  // Aliases for backward compatibility
+  // ========================================
+
+  /**
+   * Alias for toStrategyListVM
+   */
+  static adaptStrategyList(data: any): StrategyListItemVM[] {
+    return this.toStrategyListVM(data)
+  }
+
+  /**
+   * Alias for toStrategyConfigVM
+   */
+  static adaptStrategyDetail(data: any): StrategyConfigVM {
+    return this.toStrategyConfigVM(data)
+  }
+
+  /**
+   * Alias for toStrategyConfigVM
+   */
+  static adaptStrategy(data: any): Strategy {
+    return {
+      id: data.id || data.strategy_id || '',
+      strategy_id: data.strategy_id || data.id || '',
+      name: data.name || data.strategy_name || '',
+      description: data.description || '',
+      type: data.type || 'custom',
+      status: data.status ? this.getStrategyStatus(data.status) : 'inactive',
+      performance: data.performance ? {
+        totalReturn: data.performance.total_return || data.performance.totalReturn || 0,
+        sharpeRatio: data.performance.sharpe_ratio || data.performance.sharpeRatio || 0,
+        maxDrawdown: data.performance.max_drawdown || data.performance.maxDrawdown || 0,
+        winRate: data.performance.win_rate || data.performance.winRate || 0,
+      } : null,
+      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+      updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
+    }
+  }
+
+  /**
+   * Alias for toBacktestResultVM
+   */
+  static adaptBacktestTask(data: any): BacktestResultVM | null {
+    if (!data) return null
+    return this.toBacktestResultVM(data)
   }
 }
 

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mystocks-mongodb
+    restart: unless-stopped
+    ports:
+      - "${MONGODB_PORT:-27018}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ${MONGODB_CONFIG_PATH:-./config/mongodb}/mongod.conf:/etc/mongod.conf
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD:-mystocks2025}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE:-mystocks}
+    command: mongod --auth --config /etc/mongod.conf
+    networks:
+      - mystocks-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  mystocks-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

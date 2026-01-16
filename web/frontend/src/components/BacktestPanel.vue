@@ -235,7 +235,7 @@ const handleStartBacktest = async () => {
       ? config.value.symbols.split(',').map((s) => s.trim())
       : undefined;
 
-    const task = await startBacktest(props.strategy.id, {
+    const task = await startBacktest(props.strategy.id || '', {
       startDate: config.value.startDate,
       endDate: config.value.endDate,
       initialCapital: config.value.initialCapital,

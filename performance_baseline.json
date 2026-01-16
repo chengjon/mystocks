@@ -1,0 +1,8 @@
+{
+  "created_at": 1768321792.9061654,
+  "metrics": {
+    "throughput": 1000,
+    "latency_p95": 50,
+    "error_rate": 0.01
+  }
+}

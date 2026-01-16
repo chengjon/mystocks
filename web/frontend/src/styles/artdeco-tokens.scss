@@ -1,0 +1,343 @@
+// ============================================
+//   ART DECO DESIGN TOKENS
+//   艺术装饰风格设计令牌
+// ============================================
+
+// ⚡ P0 字体加载优化: 字体已从 index.html 中加载
+// 移除 @import 以避免阻塞渲染，提升首屏性能
+// @import url('https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap');
+
+// ============================================
+//   COLORS - 颜色系统
+//   Deep luxury palette: Obsidian black + Metallic gold
+// ============================================
+
+:root {
+  // Backgrounds - 深黑背景系列
+  --artdeco-bg-global: #0A0A0A;        // 黑曜石黑 - 绝对最深
+  --artdeco-bg-base: #141414;         // 丰富的炭黑 - 表面
+  --artdeco-bg-card: #141414;         // 卡片背景
+  --artdeco-bg-elevated: #1a1a1a;     // 提升表面
+
+  // Foregrounds - 浅色前景系列
+  --artdeco-fg-primary: #F2F0E4;      // 香槟奶油 - 主要文本
+  --artdeco-fg-muted: #888888;        // 锡色 - 次要文本
+  --artdeco-fg-subtle: rgba(255,255,255,0.6); // 微妙 - 占位符
+
+  // Accent - 金色强调系列
+  --artdeco-gold-primary: #D4AF37;    // 金属金 - 核心奢华元素
+  --artdeco-gold-hover: #F2E8C4;     // 亮金 - 悬停状态
+  --artdeco-gold-dim: #8B7355;       // 暗金
+  --artdeco-gold-muted: rgba(212, 175, 55, 0.3); // 金色阴影
+
+  // Borders - 边界系列
+  --artdeco-border-default: rgba(212, 175, 55, 0.2); // 默认边框
+  --artdeco-border-hover: rgba(212, 175, 55, 0.5);   // 悬停边框
+  --artdeco-border-accent: rgba(212, 175, 55, 0.8);  // 强调边框
+
+  // ============================================
+  //   FINANCIAL COLORS - 金融专用颜色
+  //   A股标准：红涨绿跌（与国际惯例相反）
+  // ============================================
+
+  // 涨跌颜色（A股标准）
+  --artdeco-up: #FF5252;             // 涨 - 红色（中国A股）
+  --artdeco-down: #00E676;           // 跌 - 绿色（中国A股）
+  --artdeco-flat: #888888;           // 平 - 灰色
+
+  // 盈亏颜色（语义化）
+  --artdeco-profit: #00E676;         // 盈利 - 绿色
+  --artdeco-loss: #FF5252;           // 亏损 - 红色
+
+  // 状态颜色
+  --artdeco-warning: #FFD700;        // 警告 - 金色
+  --artdeco-info: #4FC3F7;           // 信息 - 天蓝
+  --artdeco-success: #00E676;        // 成功 - 绿色
+  --artdeco-error: #FF5252;          // 错误 - 红色
+
+  // 向后兼容别名（已废弃，建议使用新变量）
+  --artdeco-rise: var(--artdeco-up);           // ❌ 已废弃，使用 --artdeco-up
+  --artdeco-fall: var(--artdeco-down);         // ❌ 已废弃，使用 --artdeco-down
+  --artdeco-color-up: var(--artdeco-up);       // 兼容旧版
+  --artdeco-color-down: var(--artdeco-down);   // 兼容旧版
+}
+
+// ============================================
+//   TYPOGRAPHY - 排版系统
+//   Marcellus + Josefin Sans for classic Art Deco feel
+//   ⚡ P0 字体优化: 完善的回退策略，确保在任何情况下都有可读字体
+// ============================================
+
+:root {
+  // Font Families with comprehensive fallbacks
+  --artdeco-font-heading: 'Marcellus', 'Times New Roman', 'Georgia', 'Cambria', serif;  // 标题 - 罗马结构
+  --artdeco-font-body: 'Josefin Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;    // 正文 - 几何复古感
+  --artdeco-font-accent: 'Josefin Sans', 'Consolas', 'Monaco', 'Courier New', monospace; // 强调 - 技术标签
+
+  // Font Sizes (Art Deco dramatic contrast)
+  --artdeco-text-xs: 0.75rem;      // 12px - 标签
+  --artdeco-text-sm: 0.875rem;     // 14px - 辅助文本
+  --artdeco-text-base: 1rem;       // 16px - 正文
+  --artdeco-text-lg: 1.125rem;     // 18px - 大正文
+  --artdeco-text-xl: 1.25rem;      // 20px - 小标题
+  --artdeco-text-2xl: 1.5rem;      // 24px - 卡片标题
+  --artdeco-text-3xl: 1.875rem;    // 30px - 部分标题
+  --artdeco-text-4xl: 2.25rem;     // 36px - 大标题
+  --artdeco-text-5xl: 3rem;        // 48px - 英雄标题
+  --artdeco-text-6xl: 3.75rem;     // 60px - 戏剧性标题
+  --artdeco-text-7xl: 4.5rem;      // 72px - 史诗标题
+
+  // Font Weights
+  --artdeco-font-light: 400;
+  --artdeco-font-normal: 400;
+  --artdeco-font-medium: 500;
+  --artdeco-font-semibold: 600;
+  --artdeco-font-bold: 700;
+
+  // Line Heights
+  --artdeco-leading-none: 1;
+  --artdeco-leading-tight: 1.25;
+  --artdeco-leading-snug: 1.375;
+  --artdeco-leading-normal: 1.5;
+  --artdeco-leading-relaxed: 1.625;
+  --artdeco-leading-loose: 2;
+
+   // Letter Spacing (Art Deco wide tracking)
+   --artdeco-tracking-tighter: -0.05em;
+   --artdeco-tracking-tight: -0.025em;
+   --artdeco-tracking-normal: 0em;
+   --artdeco-tracking-wide: 0.025em;
+   --artdeco-tracking-wider: 0.05em;
+   --artdeco-tracking-widest: 0.1em;
+
+   // ============================================
+   //   ALIASES FOR COMPONENT COMPATIBILITY
+   //   组件兼容性别名
+   // ============================================
+
+   // Font Size Aliases (for backward compatibility)
+   --artdeco-font-size-xs: var(--artdeco-text-xs);
+   --artdeco-font-size-sm: var(--artdeco-text-sm);
+   --artdeco-font-size-base: var(--artdeco-text-base);
+   --artdeco-font-size-md: var(--artdeco-text-lg);
+   --artdeco-font-size-lg: var(--artdeco-text-xl);
+   --artdeco-font-size-xl: var(--artdeco-text-2xl);
+
+   // Font Family Aliases
+   --artdeco-font-display: var(--artdeco-font-heading);
+   --artdeco-font-mono: var(--artdeco-font-accent);
+
+   // Color Aliases (for component compatibility)
+   --artdeco-accent-gold: var(--artdeco-gold-primary);
+   --artdeco-silver-dim: var(--artdeco-fg-muted);
+   --artdeco-silver-light: var(--artdeco-fg-primary);
+   --artdeco-gold-border: var(--artdeco-gold-primary);
+   --artdeco-gold-dim: var(--artdeco-gold-muted);
+
+   // Input Height Alias
+   --artdeco-input-height: 48px;
+
+   // Input Padding Aliases
+   --artdeco-input-padding-x: var(--artdeco-spacing-3);
+   --artdeco-input-padding-y: var(--artdeco-spacing-2);
+
+   // Progress Component Variables
+   --artdeco-circumference: 314.159265; // 2 * π * 50 (gauge radius)
+}
+
+// ============================================
+//   SPACING - 间距系统
+//   Base unit: 4px (Tailwind default)
+// ============================================
+
+:root {
+  --artdeco-spacing-px: 1px;
+  --artdeco-spacing-0: 0;
+  --artdeco-spacing-1: 0.25rem;    // 4px
+  --artdeco-spacing-2: 0.5rem;     // 8px
+  --artdeco-spacing-3: 0.75rem;    // 12px
+  --artdeco-spacing-4: 1rem;       // 16px
+  --artdeco-spacing-5: 1.25rem;    // 20px
+  --artdeco-spacing-6: 1.5rem;     // 24px
+  --artdeco-spacing-8: 2rem;       // 32px
+  --artdeco-spacing-10: 2.5rem;    // 40px
+  --artdeco-spacing-12: 3rem;      // 48px
+  --artdeco-spacing-16: 4rem;      // 64px
+  --artdeco-spacing-20: 5rem;      // 80px
+  --artdeco-spacing-24: 6rem;      // 96px
+  --artdeco-spacing-32: 8rem;      // 128px
+}
+
+// ============================================
+//   RADIUS - 圆角系统
+//   Art Deco: Sharp lines, minimal curves
+// ============================================
+
+:root {
+  --artdeco-radius-none: 0px;      // 尖锐 - Art Deco标准
+  --artdeco-radius-sm: 2px;        // 最小软化
+  --artdeco-radius-md: 8px;        // 中等 - 卡片和容器
+  --artdeco-radius-lg: 12px;       // 大 - 特殊元素
+  --artdeco-radius-xl: 16px;       // 最大 - 英雄元素
+  --artdeco-radius-full: 9999px;   // 胶囊 - 按钮
+}
+
+// ============================================
+//   SHADOWS - 阴影系统
+//   Colored luminescence, not black drop shadows
+// ============================================
+
+:root {
+  --artdeco-shadow-none: 0 0 #0000;
+  --artdeco-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --artdeco-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --artdeco-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --artdeco-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  // Art Deco specific glows (gold-tinted)
+  --artdeco-glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);
+  --artdeco-glow-intense: 0 0 20px rgba(212, 175, 55, 0.4);
+  --artdeco-glow-max: 0 0 30px rgba(212, 175, 55, 0.6);
+}
+
+// ============================================
+//   TRANSITIONS - 过渡系统
+//   Theatrical, not snappy
+// ============================================
+
+:root {
+  --artdeco-transition-fast: 150ms;
+  --artdeco-transition-base: 300ms;
+  --artdeco-transition-slow: 500ms;
+
+  --artdeco-ease-linear: linear;
+  --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ============================================
+//   Z-INDEX - 层级系统
+// ============================================
+
+:root {
+  --artdeco-z-auto: auto;
+  --artdeco-z-0: 0;
+  --artdeco-z-10: 10;
+  --artdeco-z-20: 20;
+  --artdeco-z-30: 30;
+  --artdeco-z-40: 40;
+  --artdeco-z-50: 50;
+}
+
+// ============================================
+//   MIXINS & UTILITIES - 混入和工具
+// ============================================
+
+// Hover lift effect (Art Deco architectural feel)
+@mixin artdeco-hover-lift {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+  }
+}
+
+// Gradient text (for headlines)
+@mixin artdeco-gradient-text {
+  background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Corner brackets (Art Deco embellishments)
+@mixin artdeco-corner-brackets {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--artdeco-gold-primary);
+    border-left: 2px solid var(--artdeco-gold-primary);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid var(--artdeco-gold-primary);
+    border-right: 2px solid var(--artdeco-gold-primary);
+  }
+}
+
+// Stepped corners (ziggurat effect) - Art Deco signature
+@mixin artdeco-stepped-corners($size: 8px) {
+  clip-path: polygon(
+    0 0,
+    calc(100% - #{$size}) 0,
+    100% $size,
+    100% calc(100% - #{$size}),
+    calc(100% - #{$size}) 100%,
+    $size 100%,
+    0 calc(100% - #{$size})
+  );
+}
+
+// Geometric corners (L-shaped brackets) - Art Deco embellishments
+@mixin artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px) {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: $size;
+    height: $size;
+    border-top: $border-width solid $color;
+    border-left: $border-width solid $color;
+    opacity: 0.4;
+    transition: opacity var(--artdeco-transition-base);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: $size;
+    height: $size;
+    border-bottom: $border-width solid $color;
+    border-right: $border-width solid $color;
+    opacity: 0.4;
+    transition: opacity var(--artdeco-transition-base);
+  }
+}
+
+// Hover lift with glow (theatrical effect)
+@mixin artdeco-hover-lift-glow {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out),
+              border-color var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+    border-color: var(--artdeco-gold-primary);
+  }
+}
+
+// Financial data display (monospace numbers)
+@mixin artdeco-financial-data {
+  font-family: var(--artdeco-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}

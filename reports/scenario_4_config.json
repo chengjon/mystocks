@@ -1,0 +1,78 @@
+{
+  "name": "Stress Test",
+  "description": "Push system to its limits with 2000 concurrent users",
+  "target_users": 2000,
+  "spawn_rate": 100,
+  "ramp_up_time": 200,
+  "duration": 900,
+  "test_phases": [
+    {
+      "phase": "ramp_up",
+      "duration": 200,
+      "users": "0 -> 2000",
+      "description": "Gradually increase users"
+    },
+    {
+      "phase": "sustained",
+      "duration": 600,
+      "users": "2000",
+      "description": "Hold at peak load"
+    },
+    {
+      "phase": "breakdown",
+      "duration": 100,
+      "users": "0",
+      "description": "Gracefully disconnect users"
+    }
+  ],
+  "objectives": [
+    "System remains operational",
+    "Error rate < 5% acceptable",
+    "No deadlocks or hangs",
+    "Database connection pool limits respected",
+    "Graceful degradation observed"
+  ],
+  "monitoring_targets": [
+    "CPU usage",
+    "Memory consumption",
+    "Network bandwidth",
+    "Disk I/O",
+    "Database connection pool exhaustion",
+    "WebSocket connection limits",
+    "Request queue depths"
+  ],
+  "alerts": [
+    {
+      "metric": "error_rate",
+      "threshold": 0.05,
+      "severity": "critical"
+    },
+    {
+      "metric": "response_time_p95",
+      "threshold": 5000,
+      "severity": "warning"
+    },
+    {
+      "metric": "db_connection_pool_exhaustion",
+      "threshold": 0.9,
+      "severity": "critical"
+    },
+    {
+      "metric": "websocket_connection_failures",
+      "threshold": 0.01,
+      "severity": "warning"
+    }
+  ],
+  "api_host": "http://localhost:8000",
+  "api_timeout": 30,
+  "generated_at": "2025-11-12T03:05:43.987529",
+  "task": "Task 14.1: Load Testing",
+  "performance_targets": {
+    "response_time_p50_ms": 200,
+    "response_time_p95_ms": 1000,
+    "response_time_p99_ms": 2000,
+    "error_rate_percent": 1.0,
+    "cache_hit_rate_percent": 70,
+    "throughput_requests_per_second": 500
+  }
+}

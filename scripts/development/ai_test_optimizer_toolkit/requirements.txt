@@ -1,0 +1,34 @@
+# AI Test Optimizer Toolkit 依赖
+
+# 核心依赖
+ast>=3.8.0
+pytest>=8.0.0
+pytest-cov>=4.0.0
+coverage>=7.0.0
+
+# 代码质量
+bandit>=1.7.0
+safety>=2.3.0
+pylint>=3.0.0
+mypy>=1.5.0
+
+# 数据分析
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# 报告生成
+jinja2>=3.1.0
+markdown>=3.4.0
+pyyaml>=6.0.0
+
+# 开发工具
+click>=8.1.0
+rich>=13.0.0
+tqdm>=4.65.0
+
+# 可选依赖 (AI功能)
+# torch>=2.0.0
+# scikit-learn>=1.3.0
+# transformers>=4.30.0

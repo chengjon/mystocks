@@ -1,0 +1,21 @@
+{
+  "timestamp": 1768326017.523947,
+  "validation_type": "performance_regression",
+  "checks": {
+    "performance_regression_validation": {
+      "name": "性能回归验证",
+      "passed": false,
+      "duration": 0
+    }
+  },
+  "summary": {
+    "total_checks": 1,
+    "passed_checks": 0,
+    "failed_checks": 1,
+    "success_rate": 0.0,
+    "overall_passed": false
+  },
+  "errors": [],
+  "warnings": [],
+  "execution_time": 2.418119430541992
+}

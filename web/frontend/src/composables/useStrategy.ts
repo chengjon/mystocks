@@ -7,8 +7,9 @@
 
 import { ref, readonly, onMounted } from 'vue';
 import { StrategyApiService } from '@/api/services/strategyService';
-import { StrategyAdapter } from '@/api/adapters/strategyAdapter';
+import { StrategyAdapter } from '@/utils/strategy-adapters';
 import type { Strategy } from '@/api/types/strategy';
+import type { StrategyListItemVM } from '@/utils/strategy-adapters';
 import type { CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/strategy';
 
 /**
@@ -18,7 +19,7 @@ import type { CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/s
  */
 export function useStrategy(autoFetch = true) {
   // State
-  const strategies = ref<Strategy[]>([]);
+  const strategies = ref<StrategyListItemVM[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -116,11 +117,17 @@ export function useStrategy(autoFetch = true) {
       const response = await strategyService.updateStrategy(id, data);
 
       if (response.success) {
-        // Update local state
+        // Update local state with partial update
         const index = strategies.value.findIndex((s) => s.id === id);
         if (index !== -1 && response.data) {
-          const updatedStrategy = StrategyAdapter.adaptStrategy(response.data);
-          strategies.value[index] = updatedStrategy;
+          // Update only the fields that exist in StrategyListItemVM
+          const updated = StrategyAdapter.adaptStrategy(response.data);
+          strategies.value[index] = {
+            ...strategies.value[index],
+            name: updated.name || strategies.value[index].name,
+            description: updated.description || strategies.value[index].description,
+            type: updated.type || strategies.value[index].type,
+          };
         }
         return true;
       } else {
@@ -186,10 +193,10 @@ export function useStrategy(autoFetch = true) {
       const response = await strategyService.startStrategy(id, config);
 
       if (response.success) {
-        // Update local status to active
+        // Update local status to running
         const index = strategies.value.findIndex((s) => s.id === id);
         if (index !== -1) {
-          strategies.value[index].status = 'active';
+          strategies.value[index].status = 'running';
         }
         return true;
       } else {
@@ -220,10 +227,10 @@ export function useStrategy(autoFetch = true) {
       const response = await strategyService.stopStrategy(id);
 
       if (response.success) {
-        // Update local status to inactive
+        // Update local status to stopped
         const index = strategies.value.findIndex((s) => s.id === id);
         if (index !== -1) {
-          strategies.value[index].status = 'inactive';
+          strategies.value[index].status = 'stopped';
         }
         return true;
       } else {
@@ -352,7 +359,15 @@ export function useBacktest() {
     error.value = null;
 
     try {
-      const response = await strategyService.startBacktest(strategyId, params);
+      // Convert camelCase params to snake_case for API
+      const backtestParams = {
+        strategy_id: parseInt(strategyId, 10),
+        start_date: params.startDate,
+        end_date: params.endDate,
+        initial_capital: params.initialCapital,
+        symbols: params.symbols,
+      };
+      const response = await strategyService.startBacktest(strategyId, backtestParams);
       const task = StrategyAdapter.adaptBacktestTask(response);
 
       if (task) {

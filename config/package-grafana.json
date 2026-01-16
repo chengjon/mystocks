@@ -1,0 +1,28 @@
+{
+  "name": "Grafana Setup Automation",
+  "version": "1.0.0",
+  "description": "自动化 Grafana 数据源和 Dashboard 配置",
+  "scripts": {
+    "setup": "playwright test --config=playwright-grafana.config.ts",
+    "setup:headed": "playwright test --config=playwright-grafana.config.ts --headed",
+    "setup:ui": "playwright test --ui=html"
+    "report": "playwright show-report"
+    "test": "npm test"
+    "test:debug": "playwright test --debug"
+    "test:trace": "playwright test --trace"
+    "install": "npx playwright install chromium",
+    "reinstall": "npx playwright install --force",
+    "clean": "npx playwright install --with-deps chromium"
+    "browsers": "npx playwright install --force chromium"
+    "help": "playwright --help"
+    "dev": "npx playwright codegen"
+    "deactivate": "npx playwright deactivate",
+    "uninstall": "npx playwright uninstall chromium"
+    "test:project": "playwright test --project"
+    "test:grep": "playwright test --grep"
+    "test:validate": "playwright test --validate",
+    "test:install-deps": "npm install",
+    "test:list": "playwright test --list",
+    "test:project:install-deps": "npm install"
+  }
+}

@@ -1,0 +1,431 @@
+/**
+ * MyStocks Accessibility - Focus State Enhancement
+ * MyStocks 无障碍性增强 - 焦点状态优化
+ *
+ * Purpose: 增强键盘导航时的焦点可见性 (WCAG 2.1 AA Compliance)
+ *          Enhance keyboard navigation focus visibility
+ *
+ * Features:
+ * 1. ArtDeco金色主题焦点环
+ * 2. 双层焦点指示器（outline + box-shadow）
+ * 3. 高对比度焦点状态
+ * 4. 一致的焦点行为
+ *
+ * Version: 1.0
+ * Created: 2026-01-13
+ * Priority: P1 - Accessibility Enhancement
+ *
+ * WCAG Compliance:
+ * - 2.4.7 Focus Visible (Level AA)
+ * - 2.4.11 Focus Not Obscured (Level AAA)
+ *
+ * Usage: 在 main.js 中导入此文件（在所有其他样式文件之后）
+ *        import '@/styles/accessibility-focus-enhancement.scss'
+ */
+
+/* ============================================
+   FOCUS VISIBLE ENHANCEMENT
+   焦点可见性增强
+   ============================================ */
+
+/**
+ * 全局焦点可见性增强
+ * Global focus-visible enhancement
+ *
+ * 使用 focus-visible 伪类确保只有键盘导航时显示焦点环
+ * Only show focus ring for keyboard navigation (not mouse clicks)
+ */
+*:focus-visible {
+  /* ArtDeco金色主题焦点环 */
+  outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: 2px !important;
+
+  /* 金色光晕效果（双层焦点指示器） */
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 4px var(--artdeco-gold-primary, #D4AF37),
+    0 0 12px rgba(212, 175, 55, 0.4) !important;
+
+  /* 确保焦点元素在最上层 */
+  z-index: 1000;
+
+  /* 平滑过渡效果 */
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* ============================================
+   COMPONENT-SPECIFIC FOCUS STYLES
+   组件特定焦点样式
+   ============================================ */
+
+/**
+ * 按钮焦点增强
+ * Button focus enhancement
+ */
+button:focus-visible,
+.el-button:focus-visible,
+[class*="btn"]:focus-visible,
+[class*="button"]:focus-visible {
+  /* 更强的焦点环（按钮通常需要更明显的焦点） */
+  outline-width: 3px !important;
+  outline-offset: 3px !important;
+
+  /* 增强的光晕效果 */
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 5px var(--artdeco-gold-primary, #D4AF37),
+    0 0 20px rgba(212, 175, 55, 0.5),
+    inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
+}
+
+/**
+ * 输入框焦点增强
+ * Input field focus enhancement
+ */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+.el-input__inner:focus-visible,
+.el-textarea__inner:focus-visible {
+  /* 输入框使用更明显的焦点边框 */
+  outline: none !important; /* 移除默认outline，使用border代替 */
+  border-color: var(--artdeco-gold-primary, #D4AF37) !important;
+  border-width: 2px !important;
+
+  /* 金色光晕 */
+  box-shadow:
+    0 0 0 3px rgba(212, 175, 55, 0.2),
+    0 0 12px rgba(212, 175, 55, 0.3) !important;
+}
+
+/**
+ * 链接焦点增强
+ * Link focus enhancement
+ */
+a:focus-visible,
+.router-link-active:focus-visible {
+  /* 链接使用更细的焦点环 */
+  outline-width: 2px !important;
+  outline-offset: 1px !important;
+
+  /* 下划线 + 焦点环 */
+  text-decoration: underline;
+  text-decoration-color: var(--artdeco-gold-primary, #D4AF37);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/**
+ * 卡片焦点增强（可点击卡片）
+ * Card focus enhancement (clickable cards)
+ */
+[role="button"]:focus-visible,
+.artdeco-card:focus-visible,
+.clickable:focus-visible {
+  /* 卡片焦点环 */
+  outline: 3px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: 4px !important;
+
+  /* 卡片提升效果 */
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 3px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 6px var(--artdeco-gold-primary, #D4AF37),
+    0 8px 24px rgba(212, 175, 55, 0.3) !important;
+}
+
+/**
+ * 选择器焦点增强
+ * Select/Radio/Checkbox focus enhancement
+ */
+.el-radio:focus-visible,
+.el-checkbox:focus-visible,
+.el-select:focus-visible {
+  outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: 2px !important;
+
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 4px var(--artdeco-gold-primary, #D4AF37) !important;
+}
+
+/**
+ * 表格单元格焦点增强（可交互单元格）
+ * Table cell focus enhancement (interactive cells)
+ */
+td:focus-visible,
+th:focus-visible,
+[role="gridcell"]:focus-visible,
+[role="columnheader"]:focus-visible {
+  outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: -2px !important;
+
+  background-color: rgba(212, 175, 55, 0.1) !important;
+}
+
+/**
+ * 下拉菜单焦点增强
+ * Dropdown menu focus enhancement
+ */
+.el-dropdown-menu__item:focus-visible,
+.el-menu-item:focus-visible {
+  outline: none !important; /* 下拉菜单使用背景色代替outline */
+
+  /* 金色背景 */
+  background-color: rgba(212, 175, 55, 0.15) !important;
+
+  /* 左侧金色指示条 */
+  border-left: 3px solid var(--artdeco-gold-primary, #D4AF37);
+  padding-left: calc(var(--spacing-sm) - 3px) !important;
+
+  /* 轻微光晕 */
+  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
+}
+
+/**
+ * 模态框焦点增强
+ * Modal/Dialog focus enhancement
+ */
+.el-dialog:focus-visible,
+.el-message-box:focus-visible {
+  outline: 3px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: 4px !important;
+
+  box-shadow:
+    0 0 0 4px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 8px var(--artdeco-gold-primary, #D4AF37),
+    0 20px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+/**
+ * 标签页焦点增强
+ * Tab focus enhancement
+ */
+.el-tabs__item:focus-visible {
+  outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+  outline-offset: 2px !important;
+
+  border-bottom: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+}
+
+/* ============================================
+   SPECIAL FOCUS STATES
+   特殊焦点状态
+   ============================================ */
+
+/**
+ * 错误状态焦点（红色焦点环）
+ * Error state focus (red focus ring)
+ */
+.is-error:focus-visible,
+.el-form-item.is-error .el-input__inner:focus-visible {
+  outline-color: #ef4444 !important;
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 4px #ef4444,
+    0 0 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/**
+ * 警告状态焦点（橙色焦点环）
+ * Warning state focus (orange focus ring)
+ */
+.is-warning:focus-visible {
+  outline-color: #f59e0b !important;
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 4px #f59e0b,
+    0 0 12px rgba(245, 158, 11, 0.4) !important;
+}
+
+/**
+ * 成功状态焦点（绿色焦点环）
+ * Success state focus (green focus ring)
+ */
+.is-success:focus-visible {
+  outline-color: #10b981 !important;
+  box-shadow:
+    0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+    0 0 0 4px #10b981,
+    0 0 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+ * 减少动画支持（无障碍性）
+   ============================================ */
+
+/**
+ * 为偏好减少动画的用户禁用焦点过渡效果
+ * Disable focus transitions for users who prefer reduced motion
+ */
+@media (prefers-reduced-motion: reduce) {
+  *:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE SUPPORT
+ * 高对比度模式支持
+   ============================================ */
+
+/**
+ * 高对比度模式下的焦点增强
+ * Focus enhancement in high contrast mode
+ */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    /* 更粗的焦点环（3px） */
+    outline-width: 3px !important;
+
+    /* 更强的光晕效果 */
+    box-shadow:
+      0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
+      0 0 0 6px var(--artdeco-gold-primary, #D4AF37),
+      0 0 20px rgba(212, 175, 55, 0.6) !important;
+  }
+}
+
+/* ============================================
+   FOCUS INDICATOR REMOVAL (CLICK ONLY)
+ * 移除鼠标点击的焦点指示器
+   ============================================ */
+
+/**
+ * 移除鼠标点击后的焦点环（仅保留键盘导航焦点）
+ * Remove focus ring after mouse click (keep keyboard navigation focus)
+ *
+ * 注意：不要使用 :focus { outline: none }，因为这会同时移除键盘焦点
+ * Note: Never use :focus { outline: none } as it removes keyboard focus too
+ */
+
+/* 鼠标点击时隐藏焦点环（使用 :not(:focus-visible) 选择器） */
+:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   ACCESSIBILITY UTILITIES
+ * 无障碍工具类
+   ============================================ */
+
+/**
+ * 仅显示键盘导航焦点（可选）
+ * Show keyboard navigation focus only (optional)
+ *
+ * Usage: 添加到不需要鼠标点击焦点的元素上
+ *        Add to elements that don't need mouse click focus
+ */
+.focus-visible-only {
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/**
+ * 移除焦点指示器（谨慎使用）
+ * Remove focus indicator (use sparingly)
+ *
+ * WARNING: 仅在完全不需要焦点的元素上使用
+ *          Only use on elements that truly don't need focus
+ *
+ * Usage: 添加到纯装饰性元素上
+ *        Add to purely decorative elements
+ */
+.no-focus {
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+ * 打印样式
+   ============================================ */
+
+@media print {
+  /* 打印时隐藏焦点环 */
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================
+   DOCUMENTATION
+   文档说明
+   ============================================ */
+
+/**
+ * IMPLEMENTATION NOTES:
+ *
+ * 1. 焦点环使用ArtDeco金色主题 (#D4AF37)
+ *    Focus ring uses ArtDeco gold theme color
+ *
+ * 2. 双层指示器：outline（外圈） + box-shadow（内圈光晕）
+ *    Dual indicator: outline (outer ring) + box-shadow (inner glow)
+ *
+ * 3. 使用 focus-visible 伪类（Firefox/Chrome支持）
+ *    使用 :focus:not(:focus-visible) 作为后备
+ *    Use focus-visible pseudo-class (Firefox/Chrome support)
+ *    Fallback to :focus:not(:focus-visible)
+ *
+ * 4. 过渡效果250ms（可通过prefers-reduced-motion禁用）
+ *    Transition 250ms (can be disabled via prefers-reduced-motion)
+ *
+ * 5. 所有焦点状态符合WCAG 2.1 AA标准（对比度3:1）
+ *    All focus states meet WCAG 2.1 AA standards (3:1 contrast ratio)
+ *
+ * TESTING CHECKLIST:
+ *
+ * ✅ Tab键导航时焦点环是否清晰可见？
+ *    Is focus ring clearly visible during Tab navigation?
+ *
+ * ✅ 焦点环是否不遮挡内容？
+ *    Does focus ring not obscure content?
+ *
+ * ✅ 焦点环在不同组件间是否一致？
+ *    Is focus ring consistent across different components?
+ *
+ * ✅ 鼠标点击后焦点环是否消失？
+ *    Does focus ring disappear after mouse click?
+ *
+ * ✅ 高对比度模式下焦点环是否依然可见？
+ *    Is focus ring still visible in high contrast mode?
+ *
+ * BROWSER SUPPORT:
+ *
+ * ✅ Chrome 86+ (:focus-visible)
+ * ✅ Firefox 85+ (:focus-visible)
+ * ✅ Safari 15.4+ (:focus-visible)
+ * ⚠️ Edge 86+ (:focus-visible)
+ * ⚠️ IE11 (使用 :focus fallback)
+ *
+ * ACCESSIBILITY TESTING:
+ *
+ * 1. 键盘导航测试：确保所有交互元素可通过Tab键访问
+ *    Keyboard navigation test: Ensure all interactive elements accessible via Tab
+ *
+ * 2. 屏幕阅读器测试：使用NVDA/JAWS验证焦点顺序
+ *    Screen reader test: Verify focus order with NVDA/JAWS
+ *
+ * 3. 对比度测试：使用Chrome DevTools验证焦点对比度≥3:1
+ *    Contrast test: Verify focus contrast ≥3:1 using Chrome DevTools
+ *
+ * 4. 真实用户测试：邀请键盘用户进行可用性测试
+ *    Real user test: Invite keyboard-only users for usability testing
+ */

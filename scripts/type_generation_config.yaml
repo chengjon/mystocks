@@ -1,0 +1,81 @@
+# Type Generation Configuration
+# Defines conflict resolution strategies and priority rules
+
+# Conflict Resolution Strategies
+conflict_resolution:
+  # Priority order for resolving conflicts (higher = preferred)
+  priority_sources:
+    - "latest"        # Prefer most recently defined
+    - "annotated"     # Prefer explicitly annotated types
+    - "nullable"      # Prefer nullable versions (string | null over string)
+    - "strict"        # Prefer stricter types
+    - "first"         # Fallback to first definition
+
+  # Automatic fixes for deterministic conflicts
+  auto_fix_rules:
+    # Nullability conflicts
+    - pattern: "string vs string \\| null"
+      action: "prefer_nullable"
+      description: "Automatically resolve string vs string | null conflicts by preferring nullable"
+
+    - pattern: "number vs number \\| null"
+      action: "prefer_nullable"
+      description: "Automatically resolve number vs number | null conflicts by preferring nullable"
+
+    - pattern: "boolean vs boolean \\| null"
+      action: "prefer_nullable"
+      description: "Automatically resolve boolean vs boolean | null conflicts by preferring nullable"
+
+    # Date vs string conflicts
+    - pattern: "date vs string"
+      action: "prefer_string"
+      description: "Prefer string over date for API compatibility"
+
+    # Generic type conflicts
+    - pattern: "Optional\\[Any\\] vs Optional\\[T\\]"
+      action: "prefer_any"
+      description: "Prefer Any over generic T for flexibility"
+
+    - pattern: "List\\[dict\\] vs List\\[T\\]"
+      action: "prefer_dict"
+      description: "Prefer dict over generic T for compatibility"
+
+  # Fields to ignore conflicts for (known acceptable variations)
+  ignore_conflicts:
+    - "market"         # Market field variations are acceptable
+    - "timestamp"      # Timestamp formats may vary
+    - "id"            # ID types may vary between string/int/uuid
+
+# Output Configuration
+output:
+  # Generate warnings for these conflict types
+  warn_on_conflicts: true
+
+  # Maximum warnings to show (0 = unlimited)
+  max_warnings: 50
+
+  # Include conflict details in generated files
+  include_conflict_comments: false
+
+# Domain Configuration
+domains:
+  # Domain-specific conflict resolution rules
+  common:
+    priority: "nullable"
+    auto_fix: true
+
+  trading:
+    priority: "latest"
+    auto_fix: true
+
+  strategy:
+    priority: "strict"
+    auto_fix: false
+
+# Validation Rules
+validation:
+  # Strict mode - fail on any conflicts
+  strict_mode: false
+
+  # Required domains (will warn if missing)
+  required_domains: ["common", "trading", "strategy"]

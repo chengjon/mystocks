@@ -82,7 +82,7 @@ import { BACKTEST_METRICS } from '../config'
 import { BACKTEST_EXAMPLES } from '../code-examples'
 
 const backtestMetrics = BACKTEST_METRICS
-const backtestExamples = BACKTEST_EXAMPLES
+const backtestExamples: Record<string, string> = BACKTEST_EXAMPLES
 
 const activeTab = ref('simple')
 

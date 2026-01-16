@@ -1,0 +1,29 @@
+{
+  "mystocks_test": {
+    "description": "MyStocks 测试日志格式",
+    "timestamp-field": "timestamp",
+    "level-field": "log_level",
+    "json": true,
+    "pattern": {
+      "timestamp": {
+        "format": "%Y-%m-%d %H:%M:%S.%f",
+        "timezone": "UTC"
+      },
+      "log_level": {
+        "values": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+      },
+      "test_case_id": {
+        "pattern": "CASE-[A-Z0-9-]+"
+      },
+      "module": {
+        "values": ["frontend", "backend", "database", "tests"]
+      },
+      "performance": {
+        "response_time": {
+          "unit": "ms",
+          "pattern": "\\d+ms"
+        }
+      }
+    }
+  }
+}

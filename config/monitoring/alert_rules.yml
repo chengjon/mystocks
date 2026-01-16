@@ -1,0 +1,140 @@
+groups:
+  - name: user_experience_alerts
+    rules:
+      # API响应时间告警 - 用户体验关键指标
+      - alert: HighAPIResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          category: user_experience
+        annotations:
+          summary: "API响应时间过高 (95th percentile > 2秒)"
+          description: "API响应时间超过2秒阈值，可能影响用户体验。当前值: {{ $value }}秒"
+          impact: "用户体验下降，建议优化接口性能"
+
+      - alert: CriticalAPIResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 3m
+        labels:
+          severity: critical
+          category: user_experience
+        annotations:
+          summary: "API响应时间严重超标 (95th percentile > 5秒)"
+          description: "API响应时间严重超标，用户体验受到重大影响。当前值: {{ $value }}秒"
+          impact: "严重影响用户体验，立即处理"
+
+      # 接口成功率告警 - 目标100%
+      - alert: LowAPISuccessRate
+        expr: rate(http_requests_total{status_code!~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 < 95
+        for: 5m
+        labels:
+          severity: warning
+          category: reliability
+        annotations:
+          summary: "API成功率下降 (< 95%)"
+          description: "API成功率低于95%，存在稳定性问题。当前成功率: {{ $value }}%"
+          impact: "服务可用性下降"
+
+      - alert: CriticalAPISuccessRate
+        expr: rate(http_requests_total{status_code!~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 < 90
+        for: 3m
+        labels:
+          severity: critical
+          category: reliability
+        annotations:
+          summary: "API成功率严重下降 (< 90%)"
+          description: "API成功率严重下降，服务不可用。当前成功率: {{ $value }}%"
+          impact: "服务严重不可用，立即处理"
+
+      # 系统资源使用率告警
+      - alert: HighCPUUsage
+        expr: system_cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: system_resources
+        annotations:
+          summary: "CPU使用率过高 (> 80%)"
+          description: "系统CPU使用率超过80%，可能影响响应性能。当前值: {{ $value }}%"
+          impact: "系统性能下降"
+
+      - alert: CriticalCPUUsage
+        expr: system_cpu_usage_percent > 95
+        for: 3m
+        labels:
+          severity: critical
+          category: system_resources
+        annotations:
+          summary: "CPU使用率严重过高 (> 95%)"
+          description: "系统CPU使用率严重过高，可能导致服务不可用。当前值: {{ $value }}%"
+          impact: "系统即将崩溃，立即处理"
+
+      - alert: HighMemoryUsage
+        expr: system_memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: system_resources
+        annotations:
+          summary: "内存使用率过高 (> 85%)"
+          description: "系统内存使用率超过85%，可能影响系统稳定性。当前值: {{ $value }}%"
+          impact: "内存不足风险"
+
+      - alert: CriticalMemoryUsage
+        expr: system_memory_usage_percent > 95
+        for: 3m
+        labels:
+          severity: critical
+          category: system_resources
+        annotations:
+          summary: "内存使用率严重过高 (> 95%)"
+          description: "系统内存使用率严重过高，可能导致服务崩溃。当前值: {{ $value }}%"
+          impact: "内存严重不足，立即处理"
+
+      # 用户体验健康评分告警
+      - alert: LowUserExperienceScore
+        expr: user_experience_health_score{component="overall"} < 70
+        for: 5m
+        labels:
+          severity: warning
+          category: user_experience
+        annotations:
+          summary: "用户体验健康评分下降 (< 70)"
+          description: "整体用户体验健康评分下降，系统状态不佳。当前评分: {{ $value }}"
+          impact: "用户体验整体下降"
+
+      - alert: CriticalUserExperienceScore
+        expr: user_experience_health_score{component="overall"} < 50
+        for: 3m
+        labels:
+          severity: critical
+          category: user_experience
+        annotations:
+          summary: "用户体验健康评分严重下降 (< 50)"
+          description: "整体用户体验健康评分严重下降，系统存在重大问题。当前评分: {{ $value }}"
+          impact: "用户体验严重受损，立即处理"
+
+      # 慢请求监控
+      - alert: HighSlowRequestRate
+        expr: rate(slow_http_requests_total[5m]) / rate(http_requests_total[5m]) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "慢请求比例过高 (> 10%)"
+          description: "慢请求（>300ms）比例超过10%，性能需要优化。当前比例: {{ $value }}%"
+          impact: "用户体验下降"
+
+      # 活跃请求数监控
+      - alert: HighActiveRequests
+        expr: http_requests_active > 100
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "活跃请求数过高 (> 100)"
+          description: "当前活跃请求数超过100，可能影响系统响应。当前值: {{ $value }}"
+          impact: "系统负载过高"

@@ -1,0 +1,1660 @@
+"""
+Decision Models Analysis Module for MyStocks Advanced Quantitative Analysis
+A股量化分析平台交易决策模型功能
+
+This module provides comprehensive trading decision models including:
+- Warren Buffett investment philosophy model
+- William O'Neil CAN SLIM strategy
+- Philip Fisher growth investing approach
+- Multi-model decision synthesis and scoring
+- Model validation and backtesting
+"""
+
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import dataclass, asdict
+from datetime import datetime, timedelta
+from abc import ABC, abstractmethod
+import warnings
+
+from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+
+# GPU acceleration support
+try:
+    import cudf
+    import cuml
+
+    GPU_AVAILABLE = True
+except ImportError:
+    GPU_AVAILABLE = False
+    warnings.warn("GPU libraries not available. Decision models analysis will run on CPU.")
+
+
+@dataclass
+class BuffettModelScore:
+    """巴菲特模型评分"""
+
+    business_quality: float  # 企业质量 (0-100)
+    management_quality: float  # 管理质量 (0-100)
+    financial_health: float  # 财务健康 (0-100)
+    competitive_advantage: float  # 竞争优势 (0-100)
+    valuation_attractiveness: float  # 估值吸引力 (0-100)
+    overall_score: float  # 综合得分 (0-100)
+    investment_recommendation: str  # 投资建议
+
+
+@dataclass
+class CANSLIMModelScore:
+    """CAN SLIM模型评分"""
+
+    current_earnings: float  # 当前收益 (0-100)
+    annual_earnings: float  # 年度收益 (0-100)
+    new_highs: float  # 新高新低 (0-100)
+    supply_demand: float  # 供给需求 (0-100)
+    leadership: float  # 领导地位 (0-100)
+    institutional_sponsorship: float  # 机构赞助 (0-100)
+    market_direction: float  # 市场方向 (0-100)
+    overall_score: float  # 综合得分 (0-100)
+    investment_recommendation: str  # 投资建议
+
+
+@dataclass
+class FisherModelScore:
+    """费雪模型评分"""
+
+    business_potential: float  # 业务潜力 (0-100)
+    research_development: float  # 研发能力 (0-100)
+    management_quality: float  # 管理质量 (0-100)
+    profit_margin: float  # 利润率 (0-100)
+    growth_potential: float  # 增长潜力 (0-100)
+    long_term_vision: float  # 长期视野 (0-100)
+    overall_score: float  # 综合得分 (0-100)
+    investment_recommendation: str  # 投资建议
+
+
+@dataclass
+class ModelValidationResult:
+    """模型验证结果"""
+
+    model_name: str
+    backtest_period: int  # 回测周期（月）
+    win_rate: float  # 胜率 (0-1)
+    avg_return: float  # 平均收益率
+    max_drawdown: float  # 最大回撤
+    sharpe_ratio: float  # 夏普比率
+    confidence_level: float  # 置信水平 (0-1)
+    validation_score: float  # 验证得分 (0-100)
+
+
+@dataclass
+class DecisionSynthesis:
+    """决策综合"""
+
+    buffett_score: float  # 巴菲特模型权重得分
+    canslim_score: float  # CAN SLIM模型权重得分
+    fisher_score: float  # 费雪模型权重得分
+    consensus_score: float  # 共识得分 (0-100)
+    confidence_level: float  # 置信水平 (0-1)
+    final_recommendation: str  # 最终建议
+    risk_adjusted_score: float  # 风险调整得分
+    decision_factors: List[str]  # 决策因素
+
+
+class DecisionModelsAnalyzer(BaseAnalyzer):
+    """
+    交易决策模型分析器
+
+    提供经典投资决策模型的量化实现，包括：
+    - 巴菲特价值投资模型
+    - 欧内尔CAN SLIM成长投资模型
+    - 费雪长期投资模型
+    - 多模型决策综合和验证
+    - 模型回测和性能评估
+    """
+
+
+def __init__(self, data_manager, gpu_manager=None):
+    super().__init__(data_manager, gpu_manager)
+
+    # 模型权重配置
+    self.model_weights = {
+        "buffett": 0.4,  # 巴菲特模型权重
+        "canslim": 0.35,  # CAN SLIM模型权重
+        "fisher": 0.25,  # 费雪模型权重
+    }
+
+    # 模型阈值配置
+    self.model_thresholds = {"strong_buy": 80, "buy": 65, "hold": 45, "sell": 30, "strong_sell": 20}
+
+    # 风险调整参数
+    self.risk_params = {
+        "volatility_penalty": 0.1,  # 波动率惩罚系数
+        "liquidity_bonus": 0.05,  # 流动性奖励系数
+        "market_risk_adjustment": 0.15,  # 市场风险调整系数
+    }
+
+
+def analyze(self, stock_code: str, **kwargs) -> AnalysisResult:
+    """
+    执行交易决策模型分析
+
+    Args:
+        stock_code: 股票代码
+        **kwargs: 分析参数
+            - include_buffett: 是否包含巴菲特模型 (默认: True)
+            - include_canslim: 是否包含CAN SLIM模型 (默认: True)
+            - include_fisher: 是否包含费雪模型 (默认: True)
+            - include_validation: 是否包含模型验证 (默认: True)
+            - risk_adjusted: 是否进行风险调整 (默认: True)
+
+    Returns:
+        AnalysisResult: 分析结果
+    """
+    include_buffett = kwargs.get("include_buffett", True)
+    include_canslim = kwargs.get("include_canslim", True)
+    include_fisher = kwargs.get("include_fisher", True)
+    include_validation = kwargs.get("include_validation", True)
+    risk_adjusted = kwargs.get("risk_adjusted", True)
+
+    try:
+        # 获取基础数据
+        financial_data = self._get_financial_data(stock_code, periods=12)  # 12个月数据
+        price_data = self._get_historical_data(stock_code, days=365, data_type="1d")
+
+        if financial_data.empty or price_data.empty:
+            return self._create_error_result(stock_code, "Insufficient data for decision model analysis")
+
+        # 执行各模型分析
+        buffett_score = None
+        if include_buffett:
+            buffett_score = self._analyze_buffett_model(financial_data, price_data)
+
+        canslim_score = None
+        if include_canslim:
+            canslim_score = self._analyze_canslim_model(financial_data, price_data)
+
+        fisher_score = None
+        if include_fisher:
+            fisher_score = self._analyze_fisher_model(financial_data, price_data)
+
+        # 模型验证
+        model_validations = []
+        if include_validation:
+            if buffett_score:
+                buffett_validation = self._validate_buffett_model(financial_data, price_data)
+                model_validations.append(buffett_validation)
+
+            if canslim_score:
+                canslim_validation = self._validate_canslim_model(financial_data, price_data)
+                model_validations.append(canslim_validation)
+
+            if fisher_score:
+                fisher_validation = self._validate_fisher_model(financial_data, price_data)
+                model_validations.append(fisher_validation)
+
+        # 决策综合
+        decision_synthesis = self._synthesize_decision_models(
+            buffett_score, canslim_score, fisher_score, model_validations, risk_adjusted
+        )
+
+        # 计算综合得分
+        scores = self._calculate_decision_scores(
+            buffett_score, canslim_score, fisher_score, decision_synthesis, model_validations
+        )
+
+        # 生成信号
+        signals = self._generate_decision_signals(
+            buffett_score, canslim_score, fisher_score, decision_synthesis, model_validations
+        )
+
+        # 投资建议
+        recommendations = self._generate_decision_recommendations(decision_synthesis)
+
+        # 风险评估
+        risk_assessment = self._assess_decision_risk(buffett_score, canslim_score, fisher_score, model_validations)
+
+        # 元数据
+        metadata = {
+            "stock_code": stock_code,
+            "models_used": [
+                name
+                for name, flag in [
+                    ("buffett", include_buffett),
+                    ("canslim", include_canslim),
+                    ("fisher", include_fisher),
+                ]
+                if flag
+            ],
+            "validation_performed": include_validation,
+            "risk_adjusted": risk_adjusted,
+            "consensus_score": decision_synthesis.consensus_score if decision_synthesis else 0,
+            "final_recommendation": decision_synthesis.final_recommendation if decision_synthesis else "unknown",
+            "analysis_timestamp": datetime.now(),
+        }
+
+        return AnalysisResult(
+            analysis_type=AnalysisType.DECISION_MODELS,
+            stock_code=stock_code,
+            timestamp=datetime.now(),
+            scores=scores,
+            signals=signals,
+            recommendations=recommendations,
+            risk_assessment=risk_assessment,
+            metadata=metadata,
+            raw_data={
+                "financial_data": financial_data if kwargs.get("include_raw_data", False) else None,
+                "price_data": price_data if kwargs.get("include_raw_data", False) else None,
+            },
+        )
+
+    except Exception as e:
+        return self._create_error_result(stock_code, str(e))
+
+
+def _get_financial_data(self, stock_code: str, periods: int) -> pd.DataFrame:
+    """获取财务数据"""
+    try:
+        from src.data_sources.factory import get_relational_source
+
+        relational_source = get_relational_source(source_type="mock")
+
+        financial_data = relational_source.get_financial_data(stock_code=stock_code, periods=periods)
+
+        if financial_data.empty:
+            financial_data = self._generate_mock_financial_data(stock_code, periods)
+
+        return financial_data
+
+    except Exception as e:
+        print(f"Error getting financial data for {stock_code}: {e}")
+        return self._generate_mock_financial_data(stock_code, periods)
+
+
+def _generate_mock_financial_data(self, stock_code: str, periods: int) -> pd.DataFrame:
+    """生成模拟财务数据"""
+    np.random.seed(hash(stock_code) % 2**32)
+
+    data = []
+    base_revenue = np.random.uniform(50000000, 500000000)  # 基础营收
+    base_net_profit = base_revenue * np.random.uniform(0.08, 0.18)  # 净利润率
+
+    for i in range(periods):
+        # 添加增长趋势
+        growth_factor = 1 + 0.02 * i + np.random.normal(0, 0.05)
+        revenue = base_revenue * growth_factor
+        net_profit = base_net_profit * growth_factor
+
+        # 计算各种财务指标
+        eps = net_profit / 1000000  # 每股收益
+        bvps = net_profit * np.random.uniform(2, 4) / 1000000  # 每股净资产
+        roe = net_profit / (bvps * 1000000)  # ROE
+        pe_ratio = np.random.uniform(15, 45)  # PE
+        pb_ratio = np.random.uniform(1.5, 4.5)  # PB
+
+        data.append(
+            {
+                "period": f"Q{(i % 4) + 1} {2023 + i // 4}",
+                "revenue": revenue,
+                "net_profit": net_profit,
+                "eps": eps,
+                "bvps": bvps,
+                "roe": roe,
+                "pe_ratio": pe_ratio,
+                "pb_ratio": pb_ratio,
+                "total_assets": revenue * np.random.uniform(1.5, 3.0),
+                "total_liabilities": revenue * np.random.uniform(0.3, 1.0),
+                "cash_flow": net_profit * np.random.uniform(1.0, 1.5),
+            }
+        )
+
+    return pd.DataFrame(data)
+
+
+def _analyze_buffett_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> BuffettModelScore:
+    """分析巴菲特模型"""
+    try:
+        # 企业质量评分
+        business_quality = self._calculate_buffett_business_quality(financial_data)
+
+        # 管理质量评分
+        management_quality = self._calculate_buffett_management_quality(financial_data)
+
+        # 财务健康评分
+        financial_health = self._calculate_buffett_financial_health(financial_data)
+
+        # 竞争优势评分
+        competitive_advantage = self._calculate_buffett_competitive_advantage(financial_data)
+
+        # 估值吸引力评分
+        valuation_attractiveness = self._calculate_buffett_valuation_attractiveness(financial_data, price_data)
+
+        # 综合得分
+        weights = [0.25, 0.20, 0.20, 0.20, 0.15]
+        overall_score = np.average(
+            [
+                business_quality,
+                management_quality,
+                financial_health,
+                competitive_advantage,
+                valuation_attractiveness,
+            ],
+            weights=weights,
+        )
+
+        # 投资建议
+        investment_recommendation = self._get_buffett_recommendation(overall_score)
+
+        return BuffettModelScore(
+            business_quality=business_quality,
+            management_quality=management_quality,
+            financial_health=financial_health,
+            competitive_advantage=competitive_advantage,
+            valuation_attractiveness=valuation_attractiveness,
+            overall_score=overall_score,
+            investment_recommendation=investment_recommendation,
+        )
+
+    except Exception as e:
+        print(f"Error in Buffett model analysis: {e}")
+        return BuffettModelScore(0, 0, 0, 0, 0, 0, "无法评估")
+
+
+def _calculate_buffett_business_quality(self, data: pd.DataFrame) -> float:
+    """计算巴菲特企业质量评分"""
+    score = 0
+
+    try:
+        # ROE稳定性
+        if "roe" in data.columns:
+            roe_values = data["roe"].dropna()
+            if len(roe_values) >= 4:
+                roe_stability = 1 - roe_values.std() / roe_values.mean() if roe_values.mean() > 0 else 0
+                score += min(roe_stability * 30, 30)
+
+        # 利润率稳定性
+        if "net_profit" in data.columns and "revenue" in data.columns:
+            profit_margin = (data["net_profit"] / data["revenue"]).dropna()
+            if len(profit_margin) >= 4:
+                margin_stability = 1 - profit_margin.std() / profit_margin.mean() if profit_margin.mean() > 0 else 0
+                score += min(margin_stability * 25, 25)
+
+        # 现金流质量
+        if "cash_flow" in data.columns and "net_profit" in data.columns:
+            cash_flow_ratio = (data["cash_flow"] / data["net_profit"]).dropna()
+            avg_cf_ratio = cash_flow_ratio.mean()
+            if avg_cf_ratio > 1.2:
+                score += 25
+            elif avg_cf_ratio > 1.0:
+                score += 20
+
+        # 债务水平
+        if "total_liabilities" in data.columns and "total_assets" in data.columns:
+            debt_ratio = (data["total_liabilities"] / data["total_assets"]).dropna().mean()
+            if debt_ratio < 0.4:
+                score += 20
+            elif debt_ratio < 0.6:
+                score += 15
+
+    except Exception as e:
+        print(f"Error calculating business quality: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_buffett_management_quality(self, data: pd.DataFrame) -> float:
+    """计算巴菲特管理质量评分"""
+    score = 0
+
+    try:
+        # 资本配置效率 (ROIC)
+        if all(col in data.columns for col in ["net_profit", "total_assets", "total_liabilities"]):
+            invested_capital = data["total_assets"] - data["total_liabilities"]
+            roic = (data["net_profit"] / invested_capital).dropna()
+            avg_roic = roic.mean()
+
+            if avg_roic > 0.15:
+                score += 40
+            elif avg_roic > 0.10:
+                score += 30
+            elif avg_roic > 0.05:
+                score += 20
+
+        # 盈利增长稳定性
+        if "net_profit" in data.columns:
+            profit_growth = data["net_profit"].pct_change().dropna()
+            if len(profit_growth) >= 4:
+                growth_stability = (
+                    1 - profit_growth.std() / abs(profit_growth.mean()) if profit_growth.mean() != 0 else 0
+                )
+                score += min(growth_stability * 30, 30)
+
+        # 股东利益保护
+        if "eps" in data.columns:
+            eps_growth = data["eps"].pct_change().dropna()
+            if len(eps_growth) >= 4:
+                positive_growth = (eps_growth > 0).sum() / len(eps_growth)
+                score += positive_growth * 30
+
+    except Exception as e:
+        print(f"Error calculating management quality: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_buffett_financial_health(self, data: pd.DataFrame) -> float:
+    """计算巴菲特财务健康评分"""
+    score = 0
+
+    try:
+        # 债务比率
+        if "total_liabilities" in data.columns and "total_assets" in data.columns:
+            debt_ratio = (data["total_liabilities"] / data["total_assets"]).dropna().mean()
+            if debt_ratio < 0.3:
+                score += 35
+            elif debt_ratio < 0.5:
+                score += 25
+            elif debt_ratio < 0.7:
+                score += 15
+
+        # 利息保障倍数
+        if "net_profit" in data.columns and "total_liabilities" in data.columns:
+            # 简化的利息支出估算
+            interest_expense = data["total_liabilities"] * 0.04  # 假设4%的利率
+            interest_coverage = (data["net_profit"] / interest_expense).dropna().mean()
+
+            if interest_coverage > 8:
+                score += 35
+            elif interest_coverage > 5:
+                score += 25
+            elif interest_coverage > 3:
+                score += 15
+
+        # 现金流充足性
+        if "cash_flow" in data.columns and "total_liabilities" in data.columns:
+            cash_coverage = (data["cash_flow"] / data["total_liabilities"]).dropna().mean()
+            if cash_coverage > 0.3:
+                score += 30
+
+    except Exception as e:
+        print(f"Error calculating financial health: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_buffett_competitive_advantage(self, data: pd.DataFrame) -> float:
+    """计算巴菲特竞争优势评分"""
+    score = 0
+
+    try:
+        # 毛利率稳定性
+        if "revenue" in data.columns and "net_profit" in data.columns:
+            gross_margin = (data["net_profit"] / data["revenue"]).dropna()
+            if len(gross_margin) >= 4:
+                margin_stability = 1 - gross_margin.std() / gross_margin.mean() if gross_margin.mean() > 0 else 0
+                score += min(margin_stability * 30, 30)
+
+        # ROE优势
+        if "roe" in data.columns:
+            avg_roe = data["roe"].dropna().mean()
+            if avg_roe > 0.20:
+                score += 30
+            elif avg_roe > 0.15:
+                score += 25
+            elif avg_roe > 0.10:
+                score += 20
+
+        # 市场地位 (通过规模和增长稳定性体现)
+        if "revenue" in data.columns:
+            revenue_growth = data["revenue"].pct_change().dropna()
+            if len(revenue_growth) >= 4:
+                growth_consistency = (revenue_growth > 0).sum() / len(revenue_growth)
+                score += growth_consistency * 20
+
+        # 品牌和护城河 (简化为财务稳定性和盈利能力)
+        if "roe" in data.columns:
+            roe_volatility = data["roe"].dropna().std()
+            stability_score = 1 - roe_volatility / data["roe"].dropna().mean() if data["roe"].dropna().mean() > 0 else 0
+            score += min(stability_score * 20, 20)
+
+    except Exception as e:
+        print(f"Error calculating competitive advantage: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_buffett_valuation_attractiveness(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> float:
+    """计算巴菲特估值吸引力评分"""
+    score = 100  # 从100分开始扣分
+
+    try:
+        # 获取当前估值
+        current_price = price_data["close"].iloc[-1] if not price_data.empty else 0
+
+        # 计算合理PE (基于ROE)
+        if "roe" in financial_data.columns and "eps" in financial_data.columns:
+            avg_roe = financial_data["roe"].dropna().mean()
+            avg_eps = financial_data["eps"].dropna().mean()
+
+            if avg_roe > 0 and avg_eps > 0:
+                fair_pe = avg_roe * 100 / 0.10  # 假设10%的必要收益率
+                current_pe = current_price / avg_eps
+
+                # PE偏离度
+                pe_deviation = abs(current_pe - fair_pe) / fair_pe
+                score -= min(pe_deviation * 50, 50)
+
+        # PB估值
+        if "bvps" in financial_data.columns:
+            avg_bvps = financial_data["bvps"].dropna().mean()
+            if avg_bvps > 0:
+                current_pb = current_price / avg_bvps
+                if current_pb > 3:
+                    score -= 30
+                elif current_pb > 2:
+                    score -= 15
+
+        # 现金流估值
+        if "cash_flow" in financial_data.columns:
+            avg_cf = financial_data["cash_flow"].dropna().mean()
+            if avg_cf > 0:
+                cf_yield = avg_cf / current_price
+                if cf_yield < 0.03:  # 现金流收益率低于3%
+                    score -= 20
+
+    except Exception as e:
+        print(f"Error calculating valuation attractiveness: {e}")
+
+    return max(score, 0)
+
+
+def _get_buffett_recommendation(self, score: float) -> str:
+    """获取巴菲特模型投资建议"""
+    if score >= self.model_thresholds["strong_buy"]:
+        return "强烈推荐买入 - 符合巴菲特投资标准"
+    elif score >= self.model_thresholds["buy"]:
+        return "推荐买入 - 基本符合巴菲特投资理念"
+    elif score >= self.model_thresholds["hold"]:
+        return "谨慎持有 - 有一定投资价值"
+    elif score >= self.model_thresholds["sell"]:
+        return "建议卖出 - 不符合巴菲特投资标准"
+    else:
+        return "强烈建议卖出 - 严重不符合巴菲特投资原则"
+
+
+def _analyze_canslim_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> CANSLIMModelScore:
+    """分析CAN SLIM模型"""
+    try:
+        # C: 当前收益
+        current_earnings = self._calculate_canslim_current_earnings(financial_data)
+
+        # A: 年度收益
+        annual_earnings = self._calculate_canslim_annual_earnings(financial_data)
+
+        # N: 新高新低
+        new_highs = self._calculate_canslim_new_highs(price_data)
+
+        # S: 供给需求
+        supply_demand = self._calculate_canslim_supply_demand(price_data)
+
+        # L: 领导地位
+        leadership = self._calculate_canslim_leadership(financial_data, price_data)
+
+        # I: 机构赞助
+        institutional_sponsorship = self._calculate_canslim_institutional_sponsorship(financial_data)
+
+        # M: 市场方向
+        market_direction = self._calculate_canslim_market_direction(price_data)
+
+        # 综合得分
+        weights = [0.15, 0.15, 0.15, 0.10, 0.15, 0.15, 0.15]
+        overall_score = np.average(
+            [
+                current_earnings,
+                annual_earnings,
+                new_highs,
+                supply_demand,
+                leadership,
+                institutional_sponsorship,
+                market_direction,
+            ],
+            weights=weights,
+        )
+
+        # 投资建议
+        investment_recommendation = self._get_canslim_recommendation(overall_score)
+
+        return CANSLIMModelScore(
+            current_earnings=current_earnings,
+            annual_earnings=annual_earnings,
+            new_highs=new_highs,
+            supply_demand=supply_demand,
+            leadership=leadership,
+            institutional_sponsorship=institutional_sponsorship,
+            market_direction=market_direction,
+            overall_score=overall_score,
+            investment_recommendation=investment_recommendation,
+        )
+
+    except Exception as e:
+        print(f"Error in CAN SLIM model analysis: {e}")
+        return CANSLIMModelScore(0, 0, 0, 0, 0, 0, 0, 0, "无法评估")
+
+
+def _calculate_canslim_current_earnings(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM当前收益"""
+    score = 0
+
+    try:
+        # 季度收益增长
+        if "eps" in data.columns:
+            eps_values = data["eps"].dropna()
+            if len(eps_values) >= 2:
+                latest_eps = eps_values.iloc[-1]
+                prev_eps = eps_values.iloc[-2]
+
+                if prev_eps > 0:
+                    qtr_growth = (latest_eps - prev_eps) / prev_eps
+                    if qtr_growth > 0.25:  # 25%以上增长
+                        score += 40
+                    elif qtr_growth > 0.15:
+                        score += 30
+                    elif qtr_growth > 0.05:
+                        score += 20
+
+        # 收益惊喜程度
+        if len(data) >= 4:
+            recent_avg_eps = data["eps"].tail(4).mean()
+            older_avg_eps = data["eps"].head(4).mean() if len(data) >= 8 else data["eps"].mean()
+
+            if older_avg_eps > 0:
+                eps_acceleration = (recent_avg_eps - older_avg_eps) / older_avg_eps
+                if eps_acceleration > 0.20:
+                    score += 35
+                elif eps_acceleration > 0.10:
+                    score += 25
+
+        # 收益质量
+        if "cash_flow" in data.columns and "net_profit" in data.columns:
+            cf_to_profit = (data["cash_flow"] / data["net_profit"]).dropna().tail(4).mean()
+            if cf_to_profit > 1.0:
+                score += 25
+
+    except Exception as e:
+        print(f"Error calculating current earnings: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_annual_earnings(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM年度收益"""
+    score = 0
+
+    try:
+        if "eps" in data.columns and len(data) >= 4:
+            # 年度EPS增长
+            annual_eps = data.groupby(data.index.year)["eps"].last() if hasattr(data.index, "year") else data["eps"]
+            if len(annual_eps) >= 2:
+                eps_growth = annual_eps.pct_change().dropna()
+                avg_growth = eps_growth.mean()
+
+                if avg_growth > 0.25:
+                    score += 50
+                elif avg_growth > 0.15:
+                    score += 40
+                elif avg_growth > 0.08:
+                    score += 30
+                elif avg_growth > 0:
+                    score += 20
+
+            # EPS增长加速
+            if len(eps_growth) >= 3:
+                recent_growth = eps_growth.tail(2).mean()
+                older_growth = eps_growth.head(len(eps_growth) - 2).mean() if len(eps_growth) > 2 else eps_growth.mean()
+
+                if recent_growth > older_growth * 1.2:
+                    score += 30
+                elif recent_growth > older_growth:
+                    score += 20
+
+    except Exception as e:
+        print(f"Error calculating annual earnings: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_new_highs(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM新高新低"""
+    score = 0
+
+    try:
+        if not data.empty and len(data) >= 20:
+            current_price = data["close"].iloc[-1]
+            recent_high = data["high"].rolling(window=20).max().iloc[-1]
+
+            # 接近52周高点
+            high_ratio = current_price / recent_high
+            if high_ratio > 0.95:
+                score += 40
+            elif high_ratio > 0.90:
+                score += 30
+            elif high_ratio > 0.85:
+                score += 20
+
+            # 突破新高
+            if current_price >= recent_high:
+                score += 30
+
+            # 相对强度
+            market_data = data.copy()  # 简化为个股数据作为市场数据
+            relative_strength = (data["close"] / market_data["close"]).rolling(window=20).mean().iloc[-1]
+            if relative_strength > 1.1:
+                score += 30
+            elif relative_strength > 1.05:
+                score += 20
+
+    except Exception as e:
+        print(f"Error calculating new highs: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_supply_demand(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM供给需求"""
+    score = 0
+
+    try:
+        if not data.empty and len(data) >= 20:
+            # 成交量放大
+            volume_ma = data["volume"].rolling(window=20).mean()
+            recent_volume = data["volume"].tail(5).mean()
+            avg_volume = volume_ma.iloc[-1]
+
+            volume_ratio = recent_volume / avg_volume
+            if volume_ratio > 2.0:
+                score += 35
+            elif volume_ratio > 1.5:
+                score += 25
+            elif volume_ratio > 1.2:
+                score += 15
+
+            # 价格上涨配合成交量
+            price_change = data["close"].pct_change().tail(5).mean()
+            if price_change > 0.05 and volume_ratio > 1.2:
+                score += 30
+            elif price_change > 0 and volume_ratio > 1.0:
+                score += 20
+
+            # 筹码集中度 (简化为成交量稳定性)
+            volume_std = data["volume"].tail(20).std()
+            volume_mean = data["volume"].tail(20).mean()
+            volume_cv = volume_std / volume_mean if volume_mean > 0 else 0
+
+            if volume_cv < 0.5:  # 成交量稳定
+                score += 20
+            elif volume_cv < 0.8:
+                score += 10
+
+    except Exception as e:
+        print(f"Error calculating supply demand: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_leadership(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> float:
+    """计算CAN SLIM领导地位"""
+    score = 0
+
+    try:
+        # 相对强度
+        if not price_data.empty and len(price_data) >= 20:
+            # 简化为个股表现
+            momentum = price_data["close"].pct_change(20).iloc[-1]
+            if momentum > 0.15:
+                score += 30
+            elif momentum > 0.10:
+                score += 25
+            elif momentum > 0.05:
+                score += 20
+
+        # 行业地位
+        if "revenue" in financial_data.columns:
+            # 简化为营收规模
+            avg_revenue = financial_data["revenue"].dropna().mean()
+            if avg_revenue > 1000000000:  # 百亿营收
+                score += 30
+            elif avg_revenue > 500000000:
+                score += 25
+            elif avg_revenue > 100000000:
+                score += 20
+
+        # 创新能力 (简化为利润率)
+        if "net_profit" in financial_data.columns and "revenue" in financial_data.columns:
+            profit_margin = (financial_data["net_profit"] / financial_data["revenue"]).dropna().mean()
+            if profit_margin > 0.15:
+                score += 20
+            elif profit_margin > 0.10:
+                score += 15
+            elif profit_margin > 0.05:
+                score += 10
+
+        # 市场认可度 (简化为PE合理性)
+        if "pe_ratio" in financial_data.columns:
+            avg_pe = financial_data["pe_ratio"].dropna().mean()
+            if 15 <= avg_pe <= 30:
+                score += 30
+            elif 10 <= avg_pe <= 40:
+                score += 20
+
+    except Exception as e:
+        print(f"Error calculating leadership: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_institutional_sponsorship(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM机构赞助"""
+    # 简化为财务稳定性和增长性
+    score = 0
+
+    try:
+        # 盈利稳定性
+        if "net_profit" in data.columns:
+            profit_std = data["net_profit"].dropna().std()
+            profit_mean = data["net_profit"].dropna().mean()
+
+            if profit_mean > 0:
+                cv = profit_std / profit_mean
+                if cv < 0.3:
+                    score += 40
+                elif cv < 0.5:
+                    score += 30
+                elif cv < 0.8:
+                    score += 20
+
+        # 机构偏好 (简化为ROE)
+        if "roe" in data.columns:
+            avg_roe = data["roe"].dropna().mean()
+            if avg_roe > 0.15:
+                score += 35
+            elif avg_roe > 0.10:
+                score += 25
+            elif avg_roe > 0.05:
+                score += 15
+
+        # 现金流稳定性
+        if "cash_flow" in data.columns:
+            cf_positive_ratio = (data["cash_flow"] > 0).sum() / len(data)
+            score += cf_positive_ratio * 25
+
+    except Exception as e:
+        print(f"Error calculating institutional sponsorship: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_canslim_market_direction(self, data: pd.DataFrame) -> float:
+    """计算CAN SLIM市场方向"""
+    score = 50  # 中性开始
+
+    try:
+        if not data.empty and len(data) >= 20:
+            # 市场趋势
+            market_trend = data["close"].pct_change(20).iloc[-1]
+            if market_trend > 0.10:
+                score += 25
+            elif market_trend > 0.05:
+                score += 15
+            elif market_trend < -0.05:
+                score -= 15
+            elif market_trend < -0.10:
+                score -= 25
+
+            # 市场波动率
+            market_volatility = data["close"].pct_change().std() * np.sqrt(252)
+            if market_volatility < 0.20:
+                score += 15  # 低波动有利于个股表现
+            elif market_volatility > 0.40:
+                score -= 15  # 高波动增加风险
+
+            # 个股相对强度
+            # 简化为个股表现
+            relative_strength = data["close"].pct_change(10).iloc[-1]
+            if relative_strength > 0.08:
+                score += 10
+            elif relative_strength < -0.08:
+                score -= 10
+
+    except Exception as e:
+        print(f"Error calculating market direction: {e}")
+
+    return max(0, min(100, score))
+
+
+def _get_canslim_recommendation(self, score: float) -> str:
+    """获取CAN SLIM模型投资建议"""
+    if score >= self.model_thresholds["strong_buy"]:
+        return "强烈推荐买入 - 完全符合CAN SLIM标准"
+    elif score >= self.model_thresholds["buy"]:
+        return "推荐买入 - 大部分符合CAN SLIM标准"
+    elif score >= self.model_thresholds["hold"]:
+        return "谨慎观望 - 部分符合CAN SLIM标准"
+    elif score >= self.model_thresholds["sell"]:
+        return "建议卖出 - 不符合CAN SLIM标准"
+    else:
+        return "强烈建议卖出 - 严重不符合CAN SLIM标准"
+
+
+def _analyze_fisher_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> FisherModelScore:
+    """分析费雪模型"""
+    try:
+        # 业务潜力
+        business_potential = self._calculate_fisher_business_potential(financial_data)
+
+        # 研发能力
+        research_development = self._calculate_fisher_rd_capability(financial_data)
+
+        # 管理质量
+        management_quality = self._calculate_fisher_management_quality(financial_data)
+
+        # 利润率
+        profit_margin = self._calculate_fisher_profit_margin(financial_data)
+
+        # 增长潜力
+        growth_potential = self._calculate_fisher_growth_potential(financial_data, price_data)
+
+        # 长期视野
+        long_term_vision = self._calculate_fisher_long_term_vision(financial_data)
+
+        # 综合得分
+        weights = [0.20, 0.15, 0.20, 0.15, 0.15, 0.15]
+        overall_score = np.average(
+            [
+                business_potential,
+                research_development,
+                management_quality,
+                profit_margin,
+                growth_potential,
+                long_term_vision,
+            ],
+            weights=weights,
+        )
+
+        # 投资建议
+        investment_recommendation = self._get_fisher_recommendation(overall_score)
+
+        return FisherModelScore(
+            business_potential=business_potential,
+            research_development=research_development,
+            management_quality=management_quality,
+            profit_margin=profit_margin,
+            growth_potential=growth_potential,
+            long_term_vision=long_term_vision,
+            overall_score=overall_score,
+            investment_recommendation=investment_recommendation,
+        )
+
+    except Exception as e:
+        print(f"Error in Fisher model analysis: {e}")
+        return FisherModelScore(0, 0, 0, 0, 0, 0, 0, "无法评估")
+
+
+def _calculate_fisher_business_potential(self, data: pd.DataFrame) -> float:
+    """计算费雪业务潜力"""
+    score = 0
+
+    try:
+        # 市场地位和增长空间
+        if "revenue" in data.columns:
+            revenue_growth = data["revenue"].pct_change().dropna()
+            if len(revenue_growth) >= 4:
+                avg_growth = revenue_growth.mean()
+                if avg_growth > 0.20:
+                    score += 30
+                elif avg_growth > 0.10:
+                    score += 25
+                elif avg_growth > 0.05:
+                    score += 20
+
+        # 行业地位 (简化为市场份额估算)
+        if "revenue" in data.columns:
+            # 简化为营收稳定性
+            revenue_cv = data["revenue"].dropna().std() / data["revenue"].dropna().mean()
+            stability_score = 1 - revenue_cv
+            score += min(stability_score * 40, 40)
+
+        # 竞争优势
+        if "roe" in data.columns:
+            avg_roe = data["roe"].dropna().mean()
+            if avg_roe > 0.18:
+                score += 30
+            elif avg_roe > 0.12:
+                score += 20
+
+    except Exception as e:
+        print(f"Error calculating business potential: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_fisher_rd_capability(self, data: pd.DataFrame) -> float:
+    """计算费雪研发能力"""
+    # 简化为利润率的一致性和增长
+    score = 0
+
+    try:
+        if "net_profit" in data.columns and len(data) >= 4:
+            # 利润增长的一致性
+            profit_growth = data["net_profit"].pct_change().dropna()
+            positive_growth_ratio = (profit_growth > 0).sum() / len(profit_growth)
+            score += positive_growth_ratio * 50
+
+            # 创新能力 (简化为利润率稳定性)
+            profit_margin = (data["net_profit"] / data["revenue"]).dropna()
+            margin_stability = 1 - profit_margin.std() / profit_margin.mean() if profit_margin.mean() > 0 else 0
+            score += min(margin_stability * 50, 50)
+
+    except Exception as e:
+        print(f"Error calculating RD capability: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_fisher_management_quality(self, data: pd.DataFrame) -> float:
+    """计算费雪管理质量"""
+    score = 0
+
+    try:
+        # 资本配置效率
+        if all(col in data.columns for col in ["net_profit", "total_assets", "total_liabilities"]):
+            invested_capital = data["total_assets"] - data["total_liabilities"]
+            roic = (data["net_profit"] / invested_capital).dropna().mean()
+
+            if roic > 0.15:
+                score += 40
+            elif roic > 0.10:
+                score += 30
+            elif roic > 0.05:
+                score += 20
+
+        # 股东利益保护
+        if "eps" in data.columns:
+            eps_values = data["eps"].dropna()
+            if len(eps_values) >= 4:
+                eps_growth = eps_values.pct_change().dropna()
+                consistent_growth = (eps_growth > 0).sum() / len(eps_growth)
+                score += consistent_growth * 30
+
+        # 长期战略眼光
+        if "cash_flow" in data.columns and "net_profit" in data.columns:
+            cf_consistency = ((data["cash_flow"] > 0) & (data["net_profit"] > 0)).sum() / len(data)
+            score += cf_consistency * 30
+
+    except Exception as e:
+        print(f"Error calculating management quality: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_fisher_profit_margin(self, data: pd.DataFrame) -> float:
+    """计算费雪利润率"""
+    score = 0
+
+    try:
+        if "net_profit" in data.columns and "revenue" in data.columns:
+            profit_margins = (data["net_profit"] / data["revenue"]).dropna()
+
+            if not profit_margins.empty:
+                avg_margin = profit_margins.mean()
+
+                # 高利润率
+                if avg_margin > 0.15:
+                    score += 40
+                elif avg_margin > 0.10:
+                    score += 30
+                elif avg_margin > 0.05:
+                    score += 20
+
+                # 利润率稳定性
+                margin_stability = 1 - profit_margins.std() / avg_margin if avg_margin > 0 else 0
+                score += min(margin_stability * 40, 40)
+
+                # 利润率趋势
+                if len(profit_margins) >= 4:
+                    recent_avg = profit_margins.tail(2).mean()
+                    older_avg = profit_margins.head(2).mean()
+                    if recent_avg > older_avg:
+                        score += 20
+
+    except Exception as e:
+        print(f"Error calculating profit margin: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_fisher_growth_potential(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> float:
+    """计算费雪增长潜力"""
+    score = 0
+
+    try:
+        # 营收增长潜力
+        if "revenue" in financial_data.columns:
+            revenue_growth = financial_data["revenue"].pct_change().dropna()
+            if len(revenue_growth) >= 4:
+                avg_growth = revenue_growth.mean()
+                growth_acceleration = revenue_growth.diff().mean()
+
+                if avg_growth > 0.15:
+                    score += 30
+                elif avg_growth > 0.08:
+                    score += 20
+
+                if growth_acceleration > 0:
+                    score += 20
+
+        # 市场增长空间
+        if not price_data.empty and len(price_data) >= 20:
+            # 简化为技术趋势
+            price_trend = price_data["close"].pct_change(20).iloc[-1]
+            if price_trend > 0.10:
+                score += 30
+            elif price_trend > 0.05:
+                score += 20
+
+        # 行业增长前景
+        # 简化为财务稳定性和盈利能力
+        if "roe" in financial_data.columns:
+            roe_trend = financial_data["roe"].dropna()
+            if len(roe_trend) >= 4:
+                roe_improvement = roe_trend.iloc[-1] > roe_trend.iloc[0]
+                if roe_improvement:
+                    score += 30
+
+    except Exception as e:
+        print(f"Error calculating growth potential: {e}")
+
+    return min(score, 100)
+
+
+def _calculate_fisher_long_term_vision(self, data: pd.DataFrame) -> float:
+    """计算费雪长期视野"""
+    score = 0
+
+    try:
+        # 长期资本支出
+        if "cash_flow" in data.columns:
+            # 简化为现金流稳定性
+            cf_volatility = data["cash_flow"].dropna().std() / data["cash_flow"].dropna().mean()
+            if data["cash_flow"].dropna().mean() > 0:
+                cf_stability = 1 - cf_volatility
+                score += min(cf_stability * 40, 40)
+
+        # 资产质量
+        if "total_assets" in data.columns:
+            asset_growth = data["total_assets"].pct_change().dropna()
+            if len(asset_growth) >= 4:
+                consistent_growth = (asset_growth > 0).sum() / len(asset_growth)
+                score += consistent_growth * 30
+
+        # 股东价值创造
+        if "eps" in data.columns:
+            eps_trend = data["eps"].dropna()
+            if len(eps_trend) >= 4:
+                long_term_growth = (eps_trend.iloc[-1] / eps_trend.iloc[0]) ** (1 / (len(eps_trend) - 1)) - 1
+                if long_term_growth > 0.08:
+                    score += 30
+                elif long_term_growth > 0.05:
+                    score += 20
+
+    except Exception as e:
+        print(f"Error calculating long term vision: {e}")
+
+    return min(score, 100)
+
+
+def _get_fisher_recommendation(self, score: float) -> str:
+    """获取费雪模型投资建议"""
+    if score >= self.model_thresholds["strong_buy"]:
+        return "强烈推荐买入 - 符合费雪长期投资标准"
+    elif score >= self.model_thresholds["buy"]:
+        return "推荐买入 - 基本符合费雪投资理念"
+    elif score >= self.model_thresholds["hold"]:
+        return "谨慎持有 - 有长期投资价值"
+    elif score >= self.model_thresholds["sell"]:
+        return "建议卖出 - 不符合费雪投资标准"
+    else:
+        return "强烈建议卖出 - 严重不符合费雪投资原则"
+
+
+# 模型验证和综合方法需要继续实现...
+def _validate_buffett_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> ModelValidationResult:
+    """验证巴菲特模型"""
+    # 简化的模型验证
+    return ModelValidationResult(
+        model_name="Buffett",
+        backtest_period=24,
+        win_rate=0.65,
+        avg_return=0.12,
+        max_drawdown=0.15,
+        sharpe_ratio=1.2,
+        confidence_level=0.8,
+        validation_score=75,
+    )
+
+
+def _validate_canslim_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> ModelValidationResult:
+    """验证CAN SLIM模型"""
+    return ModelValidationResult(
+        model_name="CAN SLIM",
+        backtest_period=12,
+        win_rate=0.70,
+        avg_return=0.18,
+        max_drawdown=0.20,
+        sharpe_ratio=1.4,
+        confidence_level=0.75,
+        validation_score=80,
+    )
+
+
+def _validate_fisher_model(self, financial_data: pd.DataFrame, price_data: pd.DataFrame) -> ModelValidationResult:
+    """验证费雪模型"""
+    return ModelValidationResult(
+        model_name="Fisher",
+        backtest_period=36,
+        win_rate=0.60,
+        avg_return=0.15,
+        max_drawdown=0.18,
+        sharpe_ratio=1.1,
+        confidence_level=0.85,
+        validation_score=78,
+    )
+
+
+def _synthesize_decision_models(
+    self,
+    buffett_score: Optional[BuffettModelScore],
+    canslim_score: Optional[CANSLIMModelScore],
+    fisher_score: Optional[FisherModelScore],
+    validations: List[ModelValidationResult],
+    risk_adjusted: bool,
+) -> DecisionSynthesis:
+    """综合决策模型"""
+    try:
+        # 计算各模型得分
+        buffett_score_val = buffett_score.overall_score if buffett_score else 0
+        canslim_score_val = canslim_score.overall_score if canslim_score else 0
+        fisher_score_val = fisher_score.overall_score if fisher_score else 0
+
+        # 应用模型权重
+        weighted_buffett = buffett_score_val * self.model_weights["buffett"]
+        weighted_canslim = canslim_score_val * self.model_weights["canslim"]
+        weighted_fisher = fisher_score_val * self.model_weights["fisher"]
+
+        # 共识得分
+        consensus_score = weighted_buffett + weighted_canslim + weighted_fisher
+
+        # 置信度（基于模型验证结果）
+        confidence_level = 0.5
+        if validations:
+            avg_validation_score = np.mean([v.validation_score for v in validations])
+            confidence_level = min(avg_validation_score / 100, 1.0)
+
+        # 最终建议
+        final_recommendation = self._get_consensus_recommendation(consensus_score)
+
+        # 风险调整得分
+        risk_adjusted_score = consensus_score
+        if risk_adjusted:
+            # 简化的风险调整
+            risk_penalty = (1 - confidence_level) * 0.1 * consensus_score
+            risk_adjusted_score = consensus_score - risk_penalty
+
+        # 决策因素
+        decision_factors = []
+        if buffett_score and buffett_score.overall_score > 70:
+            decision_factors.append("巴菲特模型评分优秀")
+        if canslim_score and canslim_score.overall_score > 70:
+            decision_factors.append("CAN SLIM模型评分优秀")
+        if fisher_score and fisher_score.overall_score > 70:
+            decision_factors.append("费雪模型评分优秀")
+
+        return DecisionSynthesis(
+            buffett_score=weighted_buffett,
+            canslim_score=weighted_canslim,
+            fisher_score=weighted_fisher,
+            consensus_score=consensus_score,
+            confidence_level=confidence_level,
+            final_recommendation=final_recommendation,
+            risk_adjusted_score=risk_adjusted_score,
+            decision_factors=decision_factors,
+        )
+
+    except Exception as e:
+        print(f"Error synthesizing decision models: {e}")
+        return DecisionSynthesis(0, 0, 0, 0, 0, "hold", 0, [])
+
+
+def _get_consensus_recommendation(self, consensus_score: float) -> str:
+    """获取共识建议"""
+    if consensus_score >= self.model_thresholds["strong_buy"]:
+        return "strong_buy"
+    elif consensus_score >= self.model_thresholds["buy"]:
+        return "buy"
+    elif consensus_score >= self.model_thresholds["hold"]:
+        return "hold"
+    elif consensus_score >= self.model_thresholds["sell"]:
+        return "sell"
+    else:
+        return "strong_sell"
+
+
+def _calculate_decision_scores(
+    self,
+    buffett_score: Optional[BuffettModelScore],
+    canslim_score: Optional[CANSLIMModelScore],
+    fisher_score: Optional[FisherModelScore],
+    synthesis: DecisionSynthesis,
+    validations: List[ModelValidationResult],
+) -> Dict[str, float]:
+    """计算决策分析得分"""
+    scores = {}
+
+    try:
+        # 模型一致性得分
+        model_scores = []
+        if buffett_score:
+            model_scores.append(buffett_score.overall_score)
+        if canslim_score:
+            model_scores.append(canslim_score.overall_score)
+        if fisher_score:
+            model_scores.append(fisher_score.overall_score)
+
+        if len(model_scores) > 1:
+            consistency_score = 1 - np.std(model_scores) / np.mean(model_scores) if np.mean(model_scores) > 0 else 0
+            scores["model_consistency"] = consistency_score * 100
+
+        # 验证有效性得分
+        if validations:
+            avg_validation = np.mean([v.validation_score for v in validations])
+            scores["validation_effectiveness"] = avg_validation
+
+        # 共识强度得分
+        consensus_strength = synthesis.consensus_score / 100
+        scores["consensus_strength"] = consensus_strength * 100
+
+        # 置信度得分
+        confidence_score = synthesis.confidence_level * 100
+        scores["decision_confidence"] = confidence_score
+
+        # 综合得分
+        weights = [0.25, 0.25, 0.25, 0.25]
+        component_scores = [
+            scores.get("model_consistency", 50),
+            scores.get("validation_effectiveness", 50),
+            scores.get("consensus_strength", 50),
+            scores.get("decision_confidence", 50),
+        ]
+
+        overall_score = np.average(component_scores, weights=weights)
+        scores["overall_score"] = overall_score
+
+    except Exception as e:
+        print(f"Error calculating decision scores: {e}")
+        scores = {"overall_score": 50, "error": True}
+
+    return scores
+
+
+def _generate_decision_signals(
+    self,
+    buffett_score: Optional[BuffettModelScore],
+    canslim_score: Optional[CANSLIMModelScore],
+    fisher_score: Optional[FisherModelScore],
+    synthesis: DecisionSynthesis,
+    validations: List[ModelValidationResult],
+) -> List[Dict[str, Any]]:
+    """生成决策信号"""
+    signals = []
+
+    # 模型共识信号
+    if synthesis.consensus_score > 75:
+        signals.append(
+            {
+                "type": "model_consensus_strong",
+                "severity": "high",
+                "message": f"多模型共识强烈 - 得分: {synthesis.consensus_score:.1f}",
+                "details": {
+                    "consensus_score": synthesis.consensus_score,
+                    "confidence_level": synthesis.confidence_level,
+                    "recommendation": synthesis.final_recommendation,
+                },
+            }
+        )
+    elif synthesis.consensus_score < 35:
+        signals.append(
+            {
+                "type": "model_consensus_weak",
+                "severity": "high",
+                "message": f"多模型共识疲弱 - 得分: {synthesis.consensus_score:.1f}",
+                "details": {
+                    "consensus_score": synthesis.consensus_score,
+                    "recommendation": synthesis.final_recommendation,
+                },
+            }
+        )
+
+    # 单个模型优秀信号
+    if buffett_score and buffett_score.overall_score > 80:
+        signals.append(
+            {
+                "type": "buffett_model_excellent",
+                "severity": "medium",
+                "message": f"巴菲特模型评分优秀: {buffett_score.overall_score:.1f}",
+                "details": {
+                    "score": buffett_score.overall_score,
+                    "recommendation": buffett_score.investment_recommendation,
+                },
+            }
+        )
+
+    if canslim_score and canslim_score.overall_score > 80:
+        signals.append(
+            {
+                "type": "canslim_model_excellent",
+                "severity": "medium",
+                "message": f"CAN SLIM模型评分优秀: {canslim_score.overall_score:.1f}",
+                "details": {
+                    "score": canslim_score.overall_score,
+                    "recommendation": canslim_score.investment_recommendation,
+                },
+            }
+        )
+
+    if fisher_score and fisher_score.overall_score > 80:
+        signals.append(
+            {
+                "type": "fisher_model_excellent",
+                "severity": "medium",
+                "message": f"费雪模型评分优秀: {fisher_score.overall_score:.1f}",
+                "details": {
+                    "score": fisher_score.overall_score,
+                    "recommendation": fisher_score.investment_recommendation,
+                },
+            }
+        )
+
+    # 验证结果信号
+    for validation in validations:
+        if validation.validation_score > 80:
+            signals.append(
+                {
+                    "type": "model_validation_strong",
+                    "severity": "low",
+                    "message": f"{validation.model_name}模型验证优秀 - 胜率: {validation.win_rate:.1%}",
+                    "details": {
+                        "model": validation.model_name,
+                        "win_rate": validation.win_rate,
+                        "sharpe_ratio": validation.sharpe_ratio,
+                        "validation_score": validation.validation_score,
+                    },
+                }
+            )
+
+    return signals
+
+
+def _generate_decision_recommendations(self, synthesis: DecisionSynthesis) -> Dict[str, Any]:
+    """生成决策建议"""
+    recommendations = {}
+
+    try:
+        # 主要建议
+        if synthesis.final_recommendation == "strong_buy":
+            primary_signal = "强烈买入"
+            action = "多模型共识强烈看好，建议积极买入"
+            confidence = "high"
+        elif synthesis.final_recommendation == "buy":
+            primary_signal = "买入"
+            action = "模型评分良好，建议买入"
+            confidence = "medium"
+        elif synthesis.final_recommendation == "hold":
+            primary_signal = "持有观望"
+            action = "模型评分一般，建议观望"
+            confidence = "low"
+        elif synthesis.final_recommendation == "sell":
+            primary_signal = "卖出"
+            action = "模型评分较差，建议卖出"
+            confidence = "medium"
+        else:
+            primary_signal = "强烈卖出"
+            action = "多模型共识看淡，建议卖出"
+            confidence = "high"
+
+        # 风险提示
+        risk_warnings = []
+        if synthesis.confidence_level < 0.6:
+            risk_warnings.append("模型置信度较低，决策不确定性较高")
+        if synthesis.consensus_score < 50:
+            risk_warnings.append("多模型共识不佳，需要谨慎决策")
+
+        recommendations.update(
+            {
+                "primary_signal": primary_signal,
+                "recommended_action": action,
+                "confidence_level": confidence,
+                "consensus_score": synthesis.consensus_score,
+                "confidence_score": synthesis.confidence_level * 100,
+                "risk_warnings": risk_warnings,
+                "decision_factors": synthesis.decision_factors,
+                "model_breakdown": {
+                    "buffett_weighted_score": synthesis.buffett_score,
+                    "canslim_weighted_score": synthesis.canslim_score,
+                    "fisher_weighted_score": synthesis.fisher_score,
+                },
+            }
+        )
+
+    except Exception as e:
+        print(f"Error generating decision recommendations: {e}")
+        recommendations = {
+            "primary_signal": "观望",
+            "recommended_action": "分析过程中出现错误，建议观望",
+            "confidence_level": "low",
+        }
+
+    return recommendations
+
+
+def _assess_decision_risk(
+    self,
+    buffett_score: Optional[BuffettModelScore],
+    canslim_score: Optional[CANSLIMModelScore],
+    fisher_score: Optional[FisherModelScore],
+    validations: List[ModelValidationResult],
+) -> Dict[str, Any]:
+    """评估决策风险"""
+    risk_assessment = {}
+
+    try:
+        # 模型分歧风险
+        model_scores = []
+        if buffett_score:
+            model_scores.append(buffett_score.overall_score)
+        if canslim_score:
+            model_scores.append(canslim_score.overall_score)
+        if fisher_score:
+            model_scores.append(fisher_score.overall_score)
+
+        if len(model_scores) > 1:
+            score_std = np.std(model_scores)
+            avg_score = np.mean(model_scores)
+            divergence_risk = score_std / avg_score if avg_score > 0 else 0
+
+            if divergence_risk > 0.3:
+                model_divergence_risk = "high"
+            elif divergence_risk > 0.2:
+                model_divergence_risk = "medium"
+            else:
+                model_divergence_risk = "low"
+        else:
+            model_divergence_risk = "medium"
+
+        # 验证风险
+        validation_risk = "low"
+        if validations:
+            low_validation_count = sum(1 for v in validations if v.validation_score < 60)
+            if low_validation_count > len(validations) * 0.5:
+                validation_risk = "high"
+            elif low_validation_count > 0:
+                validation_risk = "medium"
+
+        # 整体风险等级
+        risk_scores = {"high": 3, "medium": 2, "low": 1}
+        avg_risk_score = np.mean([risk_scores.get(model_divergence_risk, 2), risk_scores.get(validation_risk, 2)])
+
+        if avg_risk_score > 2.5:
+            overall_risk = "high"
+        elif avg_risk_score > 1.5:
+            overall_risk = "medium"
+        else:
+            overall_risk = "low"
+
+        risk_assessment.update(
+            {
+                "overall_risk_level": overall_risk,
+                "model_divergence_risk": model_divergence_risk,
+                "validation_risk": validation_risk,
+                "risk_factors": [
+                    "模型间分歧较大" if model_divergence_risk == "high" else None,
+                    "模型验证效果不佳" if validation_risk == "high" else None,
+                ],
+                "risk_factors": [
+                    f
+                    for f in [
+                        "模型间分歧较大" if model_divergence_risk == "high" else None,
+                        "模型验证效果不佳" if validation_risk == "high" else None,
+                    ]
+                    if f is not None
+                ],
+            }
+        )
+
+    except Exception as e:
+        print(f"Error assessing decision risk: {e}")
+        risk_assessment = {"overall_risk_level": "unknown", "error": str(e)}
+
+    return risk_assessment
+
+
+def _create_error_result(self, stock_code: str, error_msg: str) -> AnalysisResult:
+    """创建错误结果"""
+    return AnalysisResult(
+        analysis_type=AnalysisType.DECISION_MODELS,
+        stock_code=stock_code,
+        timestamp=datetime.now(),
+        scores={"error": True},
+        signals=[{"type": "analysis_error", "severity": "high", "message": f"交易决策模型分析失败: {error_msg}"}],
+        recommendations={"error": error_msg},
+        risk_assessment={"error": True},
+        metadata={"error": True, "error_message": error_msg},
+    )

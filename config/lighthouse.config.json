@@ -1,0 +1,74 @@
+{
+  "name": "mystocks-lighthouse",
+  "version": "1.0.0",
+  "description": "Lighthouse CI configuration for MyStocks Web Application",
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:3000"],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "formFactor": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0
+        }
+      },
+      "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
+      "skipAudits": [
+        "is-on-https",
+        "uses-http2",
+        "no-service-worker-reg",
+        "render-blocking-resources"
+      ]
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    },
+    "assert": {
+      "assertions": {
+        "preset": "lighthouse:recommended",
+        "assertions": [
+          {
+            "name": "categories:performance",
+            "explicit": true,
+            "expected": ">= 0.9"
+          },
+          {
+            "name": "categories:accessibility",
+            "explicit": true,
+            "expected": ">= 0.9"
+          },
+          {
+            "name": "categories:best-practices",
+            "explicit": true,
+            "expected": ">= 0.9"
+          },
+          {
+            "name": "categories:seo",
+            "explicit": true,
+            "expected": ">= 0.9"
+          },
+          {
+            "name": "first-contentful-paint",
+            "explicit": true,
+            "expected": "<= 2000"
+          },
+          {
+            "name": "interactive",
+            "explicit": true,
+            "expected": "<= 5000"
+          },
+          {
+            "name": "cumulative-layout-shift",
+            "explicit": true,
+            "expected": "<= 0.1"
+          }
+        ]
+      }
+    }
+  }
+}

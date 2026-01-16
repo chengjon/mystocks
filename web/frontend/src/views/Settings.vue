@@ -387,8 +387,8 @@ const logSummary: Ref<LogSummary> = ref({
 })
 const logsLoading: Ref<boolean> = ref(false)
 const filterErrors: Ref<boolean> = ref(false)
-const selectedLevel: Ref<string | null> = ref(null)
-const selectedCategory: Ref<string | null> = ref(null)
+const selectedLevel: Ref<string> = ref('')
+const selectedCategory: Ref<string> = ref('')
 const currentPage: Ref<number> = ref(1)
 const pageSize: Ref<number> = ref(20)
 const totalLogs: Ref<number> = ref(0)
@@ -514,7 +514,7 @@ const viewLogDetails = (log: LogEntry): void => {
 }
 
 const getStatusBadgeClass = (status: string) => {
-  const classes = {
+  const classes: Record<string, string> = {
     success: 'badge-success',
     error: 'badge-danger',
     testing: 'badge-warning',
@@ -524,7 +524,7 @@ const getStatusBadgeClass = (status: string) => {
 }
 
 const getStatusText = (status: string) => {
-  const texts = {
+  const texts: Record<string, string> = {
     success: 'CONNECTED',
     error: 'FAILED',
     testing: 'TESTING...',
@@ -534,7 +534,7 @@ const getStatusText = (status: string) => {
 }
 
 const getLevelBadgeClass = (level: string) => {
-  const classes = {
+  const classes: Record<string, string> = {
     'INFO': 'badge-info',
     'WARNING': 'badge-warning',
     'ERROR': 'badge-danger',

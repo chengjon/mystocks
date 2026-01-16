@@ -1,0 +1,18 @@
+{
+	"ulid": "01KDABS3JQ66RBY3F00XKCX232",
+	"minTime": 1766642401135,
+	"maxTime": 1766649600000,
+	"stats": {
+		"numSamples": 417135,
+		"numFloatSamples": 417135,
+		"numSeries": 894,
+		"numChunks": 3489
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01KDABS3JQ66RBY3F00XKCX232"
+		]
+	},
+	"version": 1
+}

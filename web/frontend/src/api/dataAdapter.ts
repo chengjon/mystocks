@@ -52,14 +52,13 @@ export {
 // ============================================
 
 // Market Types
-export type { MarketOverviewVM } from '@/utils/adapters'
-export type { FundFlowChartPoint, KLineChartData } from '@/utils/adapters'
-export type { MarketOverviewData } from '@/api/types/market'
+export type { MarketOverviewVM, MarketOverview } from '@/api/types/market'
+export type { FundFlowChartPoint, KLineChartData } from '@/api/types/market'
 export type { MarketOverviewDetailedResponse as MarketOverviewResponse, KLineDataResponse } from '@/api/types/generated-types'
 
 // Strategy Types
 export type { Strategy, StrategyListResponse } from '@/api/types/strategy'
-export type { BacktestTask, BacktestResult, BacktestParams } from '@/api/types/strategy'
+export type { BacktestTask, BacktestResultVM as BacktestResult, BacktestParams } from '@/api/types/strategy'
 
 // Trade Types
 export type { OrderVM, PositionVM, AccountOverviewVM, TradeHistoryVM } from '@/utils/trade-adapters'

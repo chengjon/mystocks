@@ -1,0 +1,1126 @@
+{
+  "statistics": {
+    "total_files": 343,
+    "valid_yaml": 326,
+    "invalid_yaml": 17,
+    "duplicates": 141,
+    "empty_files": 0,
+    "large_files": 0
+  },
+  "issues": [
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/python-type-check.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 197, column 1:\n    import os\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 198, column 1:\n    import re\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 197, column 1:\n    import os\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 198, column 1:\n    import re\n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/cicd-monthly-review.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 166, column 1:\n    $description\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 168, column 1:\n    ## 分类\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 166, column 1:\n    $description\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 168, column 1:\n    ## 分类\n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/quant-strategy-validation.yml",
+      "error": "while scanning an alias\n  in \"<unicode string>\", line 367, column 1:\n    **验证时间**: $(date '+%Y-%m-%d %H:% ... \n    ^\nexpected alphabetic or numeric character, but found '*'\n  in \"<unicode string>\", line 367, column 2:\n    **验证时间**: $(date '+%Y-%m-%d %H:%M ... \n     ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning an alias\n  in \"<unicode string>\", line 367, column 1:\n    **验证时间**: $(date '+%Y-%m-%d %H:% ... \n    ^\nexpected alphabetic or numeric character, but found '*'\n  in \"<unicode string>\", line 367, column 2:\n    **验证时间**: $(date '+%Y-%m-%d %H:%M ... \n     ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/comprehensive-testing.yml",
+      "error": "while scanning an alias\n  in \"<unicode string>\", line 267, column 1:\n    **Date**: $(date -u +\"%Y-%m-%d % ... \n    ^\nexpected alphabetic or numeric character, but found '*'\n  in \"<unicode string>\", line 267, column 2:\n    **Date**: $(date -u +\"%Y-%m-%d %H ... \n     ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning an alias\n  in \"<unicode string>\", line 267, column 1:\n    **Date**: $(date -u +\"%Y-%m-%d % ... \n    ^\nexpected alphabetic or numeric character, but found '*'\n  in \"<unicode string>\", line 267, column 2:\n    **Date**: $(date -u +\"%Y-%m-%d %H ... \n     ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/typescript-type-check.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 300, column 1:\n    import os\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 301, column 1:\n    import re\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 300, column 1:\n    import os\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 301, column 1:\n    import re\n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/code-quality.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 139, column 1:\n    import sys\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 140, column 1:\n    sys.path.insert(0, '.')\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 139, column 1:\n    import sys\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 140, column 1:\n    sys.path.insert(0, '.')\n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/e2e-testing.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 394, column 1:\n    {\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 395, column 3:\n      \"timestamp\": \"$(date -u +%Y-%m-% ... \n      ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 394, column 1:\n    {\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 395, column 3:\n      \"timestamp\": \"$(date -u +%Y-%m-% ... \n      ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/test-coverage.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 165, column 1:\n    import time\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 166, column 1:\n    import sys\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 165, column 1:\n    import time\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 166, column 1:\n    import sys\n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/security-testing.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 231, column 1:\n    import json\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 232, column 1:\n    with open('bandit-report.json')  ... \n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 231, column 1:\n    import json\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 232, column 1:\n    with open('bandit-report.json')  ... \n    ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.github/workflows/e2e-tests-enhanced.yml",
+      "error": "while scanning a simple key\n  in \"<unicode string>\", line 151, column 1:\n    import json\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 152, column 1:\n    import os\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a simple key\n  in \"<unicode string>\", line 151, column 1:\n    import json\n    ^\ncould not find expected ':'\n  in \"<unicode string>\", line 152, column 1:\n    import os\n    ^"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/trumpet@1.7.2/node_modules/trumpet/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-tokenize@1.2.5/node_modules/html-tokenize/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/readable-wrap@1.0.0/node_modules/readable-wrap/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@0.0.10/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/resolve/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/hasown/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/pnpm-lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/trumpet@1.7.2/node_modules/trumpet/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/html-tokenize@1.2.5/node_modules/html-tokenize/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/readable-wrap@1.0.0/node_modules/readable-wrap/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/websocket-server/a-stock-dashboard/node_modules/.pnpm/minimist@0.0.10/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./scripts/development/ai_test_optimizer_toolkit/config/development_config.yaml",
+      "error": "while scanning a double-quoted scalar\n  in \"<unicode string>\", line 29, column 14:\n          files: \".*\\.py$\"\n                 ^\nfound unknown escape character '.'\n  in \"<unicode string>\", line 29, column 18:\n          files: \".*\\.py$\"\n                     ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning a double-quoted scalar\n  in \"<unicode string>\", line 29, column 14:\n          files: \".*\\.py$\"\n                 ^\nfound unknown escape character '.'\n  in \"<unicode string>\", line 29, column 18:\n          files: \".*\\.py$\"\n                     ^"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/pnpm-lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/trumpet@1.7.2/node_modules/trumpet/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/html-tokenize@1.2.5/node_modules/html-tokenize/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/readable-wrap@1.0.0/node_modules/readable-wrap/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-financial/node_modules/.pnpm/minimist@0.0.10/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/balanced-match/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/pnpm-lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/lock.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/pnpm-lock.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/pnpm-lock.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/resolve@1.22.11/node_modules/resolve/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-inline@1.2.0/node_modules/html-inline/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/dotenv-expand@11.0.7/node_modules/dotenv-expand/tea.yaml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/duplexer2@0.0.2/node_modules/duplexer2/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/through@2.3.8/node_modules/through/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/minimist@1.1.3/node_modules/minimist/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/supports-preserve-symlinks-flag@1.0.0/node_modules/supports-preserve-symlinks-flag/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/trumpet@1.7.2/node_modules/trumpet/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/html-select@2.3.24/node_modules/html-select/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/split@0.3.3/node_modules/split/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/html-tokenize@1.2.5/node_modules/html-tokenize/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/object-keys@0.4.0/node_modules/object-keys/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/readable-wrap@1.0.0/node_modules/readable-wrap/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/stream-splicer@1.3.2/node_modules/stream-splicer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/a-stock-backtest/node_modules/.pnpm/minimist@0.0.10/node_modules/minimist/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./scripts/development/function-bind/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./scripts/deployment/k8s-deployment.yaml",
+      "error": "expected a single document in the stream\n  in \"<unicode string>\", line 6, column 1:\n    apiVersion: v1\n    ^\nbut found another document\n  in \"<unicode string>\", line 14, column 1:\n    ---\n    ^",
+      "severity": "high",
+      "message": "YAML格式错误: expected a single document in the stream\n  in \"<unicode string>\", line 6, column 1:\n    apiVersion: v1\n    ^\nbut found another document\n  in \"<unicode string>\", line 14, column 1:\n    ---\n    ^"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./tests/settings.yaml",
+      "duplicate_of": "./scripts/testing/test-directory-org/settings.yaml",
+      "severity": "high",
+      "message": "与 ./scripts/testing/test-directory-org/settings.yaml 内容完全相同"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./tests/file_level/config/test_config.yaml",
+      "error": "expected '<document start>', but found '<scalar>'\n  in \"<unicode string>\", line 1, column 3:\n    \"\"\"\n      ^",
+      "severity": "high",
+      "message": "YAML格式错误: expected '<document start>', but found '<scalar>'\n  in \"<unicode string>\", line 1, column 3:\n    \"\"\"\n      ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./.archive/old_code/specifications/specs/003-inside-mystocks/contracts/market_data_api.yaml",
+      "error": "mapping values are not allowed here\n  in \"<unicode string>\", line 54, column 31:\n              description: 股票代码 (如: 600519.SH)\n                                  ^",
+      "severity": "high",
+      "message": "YAML格式错误: mapping values are not allowed here\n  in \"<unicode string>\", line 54, column 31:\n              description: 股票代码 (如: 600519.SH)\n                                  ^"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/ajv/scripts/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/scripts/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/require-directory/.travis.yml",
+      "duplicate_of": "./scripts/development/require-directory/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/require-directory/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/stackback/.travis.yml",
+      "duplicate_of": "./scripts/development/stackback/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/stackback/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-stable-stringify-without-jsonify@1.0.1/node_modules/json-stable-stringify-without-jsonify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/siginfo/.travis.yml",
+      "duplicate_of": "./scripts/development/siginfo/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/siginfo/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/unplugin-vue-components/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/hasown/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/hasown@2.0.2/node_modules/hasown/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/concat-map/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/concat-map@0.0.1/node_modules/concat-map/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/fast-json-stable-stringify/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/fast-json-stable-stringify@2.1.0/node_modules/fast-json-stable-stringify/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/deep-is/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/deep-is@0.1.4/node_modules/deep-is/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/why-is-node-running/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/why-is-node-running/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/why-is-node-running/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./web/frontend/node_modules/technicalindicators/.doclets.yml",
+      "error": "while scanning for the next token\nfound character '\\t' that cannot start any token\n  in \"<unicode string>\", line 4, column 2:\n     \t- Overview: README.md\n     ^",
+      "severity": "high",
+      "message": "YAML格式错误: while scanning for the next token\nfound character '\\t' that cannot start any token\n  in \"<unicode string>\", line 4, column 2:\n     \t- Overview: README.md\n     ^"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/json-schema-traverse/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/json-schema-traverse/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-schema-traverse@0.4.1/node_modules/json-schema-traverse/spec/.eslintrc.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/balanced-match/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/balanced-match@1.0.2/node_modules/balanced-match/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/json-buffer/.travis.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/json-buffer@3.0.1/node_modules/json-buffer/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/function-bind/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/function-bind@1.1.2/node_modules/function-bind/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/editorconfig/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/@vue/language-core/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/reusify/.github/dependabot.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/dependabot.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/reusify/.github/workflows/ci.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/reusify@1.1.0/node_modules/reusify/.github/workflows/ci.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/unplugin-auto-import/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/proxy-from-env/.travis.yml",
+      "duplicate_of": "./scripts/development/proxy-from-env/.travis.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/proxy-from-env/.travis.yml 内容完全相同"
+    },
+    {
+      "type": "duplicate_content",
+      "file": "./web/frontend/node_modules/glob/node_modules/brace-expansion/.github/FUNDING.yml",
+      "duplicate_of": "./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml",
+      "severity": "high",
+      "message": "与 ./scripts/development/a-stock-risk-management/node_modules/.pnpm/brace-expansion@2.0.2/node_modules/brace-expansion/.github/FUNDING.yml 内容完全相同"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./config/table_config.yaml",
+      "error": "while parsing a block collection\n  in \"<unicode string>\", line 623, column 7:\n          - name: 'id'\n          ^\nexpected <block end>, but found '<block sequence start>'\n  in \"<unicode string>\", line 644, column 8:\n           - name: 'description'\n           ^",
+      "severity": "high",
+      "message": "YAML格式错误: while parsing a block collection\n  in \"<unicode string>\", line 623, column 7:\n          - name: 'id'\n          ^\nexpected <block end>, but found '<block sequence start>'\n  in \"<unicode string>\", line 644, column 8:\n           - name: 'description'\n           ^"
+    },
+    {
+      "type": "invalid_yaml",
+      "file": "./config/data_sources_registry.yaml",
+      "error": "while parsing a block mapping\n  in \"<unicode string>\", line 41, column 3:\n      mock_daily_kline:\n      ^\nexpected <block end>, but found '<block mapping start>'\n  in \"<unicode string>\", line 280, column 5:\n        description: \"AKShare深证所融资融券汇总数据\"\n        ^",
+      "severity": "high",
+      "message": "YAML格式错误: while parsing a block mapping\n  in \"<unicode string>\", line 41, column 3:\n      mock_daily_kline:\n      ^\nexpected <block end>, but found '<block mapping start>'\n  in \"<unicode string>\", line 280, column 5:\n        description: \"AKShare深证所融资融券汇总数据\"\n        ^"
+    }
+  ],
+  "recommendations": [
+    "🔴 修复 17 个YAML格式错误",
+    "🟡 清理 141 个重复配置文件",
+    "📋 建立配置schema验证",
+    "🔄 实现配置版本控制",
+    "📊 添加配置健康监控",
+    "🏷️ 为配置添加文档注释"
+  ]
+}

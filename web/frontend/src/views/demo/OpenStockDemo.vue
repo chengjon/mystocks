@@ -104,9 +104,9 @@ const getToken = () => {
   return localStorage.getItem('token') || ''
 }
 
-const isAuthenticated = computed(() => {
+const isAuthenticated = computed<boolean>(() => {
   const token = getToken()
-  return token && token.length > 0
+  return !!(token && token.length > 0)
 })
 
 const goToLogin = () => {

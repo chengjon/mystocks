@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+"""
+AI Test Optimizer CLI
+命令行工具入口点
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# 添加工具包路径
+toolkit_root = Path(__file__).parent
+sys.path.insert(0, str(toolkit_root))
+
+try:
+    from bin.ai_test_optimizer_simple import main
+    main()
+except ImportError as e:
+    print(f"❌ 导入错误: {e}")
+    sys.exit(1)

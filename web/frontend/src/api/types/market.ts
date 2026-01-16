@@ -1,5 +1,5 @@
 // Auto-generated types for market domain
-// Generated at: 2026-01-14T14:57:47.574905
+// Generated at: 2026-01-15T21:06:03.935353
 
 export interface MarketIndexItem {
   symbol?: string;
@@ -23,34 +23,34 @@ export interface MarketOverview {
   most_active?: Record<string, any>[];
 }
 
-// ViewModel types for frontend adapters
-// Redefine MarketOverviewVM to match adapter usage (camelCase fields)
+// ============================================
+// ViewModel Types for Adapters (camelCase naming)
+// ============================================
+
 export interface MarketOverviewVM {
-  marketStats?: {
-    totalStocks?: number;
-    risingStocks?: number;
-    fallingStocks?: number;
-    avgChangePercent?: number;
-  };
-  topEtfs?: Array<{
-    symbol?: string;
-    name?: string;
-    latestPrice?: number;
-    changePercent?: number;
-    volume?: number;
-  }>;
-  chipRaces?: ChipRaceItem[];
-  longHuBang?: LongHuBangItem[];
-  lastUpdate?: Date;
-  marketIndex?: any;
+  indices?: MarketIndexItem[];
+  upCount?: number;
+  downCount?: number;
+  flatCount?: number;
+  totalVolume?: number | null;
+  totalTurnover?: number | null;
+  topGainers?: Record<string, any>[];
+  topLosers?: Record<string, any>[];
+  mostActive?: Record<string, any>[];
+  marketStats?: Record<string, any>;
+  topEtfs?: Array<{ symbol: string; name: string; latestPrice?: number; changePercent?: number; volume?: number }>;
+  chipRaces?: ChipRaceItemVM[];
+  longHuBang?: LongHuBangItemVM[];
+  lastUpdate?: string | Date;
+  marketIndex?: Record<string, any>;
 }
-export type MarketOverviewData = MarketOverview;
 
 export interface FundFlowChartPoint {
+  time?: string;
+  mainNetInflow?: number;
+  smallNetInflow?: number;
   date?: string;
-  net_inflow?: number;
-  main_inflow?: number;
-  retail_inflow?: number;
+  value?: number;
   mainInflow?: number;
   mainOutflow?: number;
   netInflow?: number;
@@ -58,37 +58,36 @@ export interface FundFlowChartPoint {
 }
 
 export interface KLineChartData {
-  symbol?: string;
-  period?: string;
-  data?: Array<{
-    timestamp?: number;
-    open?: number;
-    high?: number;
-    low?: number;
-    close?: number;
-    volume?: number;
-  }>;
-  categoryData?: string[];
-  values?: number[][];
+  dates?: string[];
+  open?: number[];
+  high?: number[];
+  low?: number[];
+  close?: number[];
+  volume?: number[];
   volumes?: number[];
+  categoryData?: string[];
+  values?: number[][] | number[];
 }
 
-export interface ChipRaceItem {
-  rank?: number;
-  name?: string;
-  net_buy?: number;
-  net_sell?: number;
-  net_amount?: number;
+// VM suffix to avoid conflict with common.ts types
+export interface ChipRaceItemVM {
   symbol?: string;
-  raceAmount?: number;
+  name?: string;
+  cost?: number;
+  ratio?: number;
+  price?: number;
+}
+
+// VM suffix to avoid conflict with common.ts types
+export interface LongHuBangItemVM {
+  symbol?: string;
+  name?: string;
+  longAmount?: number;
+  shortAmount?: number;
+  netAmount?: number;
+  close?: number;
   changePercent?: number;
 }
 
-export interface LongHuBangItem {
-  date?: string;
-  dragon?: string; // 涨停（龙）
-  tiger?: string; // 跌停（虎）
-  symbol?: string;
-  netAmount?: number;
-  reason?: string;
-}
+// Alias for backward compatibility
+export type { ChipRaceItemVM as ChipRaceItem, LongHuBangItemVM as LongHuBangItem };
