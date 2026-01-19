@@ -145,7 +145,7 @@ class CacheLayer:
         with self.lock:
             self.cache.clear()
             self.metrics = CacheMetrics()
-    
+
     def size(self) -> int:
         """获取缓存大小"""
         with self.lock:
@@ -211,12 +211,14 @@ class CacheLayer:
 
 class L1Cache(CacheLayer):
     """L1内存缓存"""
+
     def __init__(self, max_size: int = 1000, ttl: int = 60):
         super().__init__("L1", max_size, ttl)
 
 
 class L2Cache(CacheLayer):
     """L2本地缓存"""
+
     def __init__(self, cache_dir: str = "/tmp/gpu_api_cache", ttl: int = 300, max_size: int = 5000):
         super().__init__("L2", max_size, ttl)
         self.cache_dir = cache_dir
@@ -224,6 +226,7 @@ class L2Cache(CacheLayer):
 
 class RedisCache:
     """Redis缓存"""
+
     def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0, ttl: int = 600):
         self.host = host
         self.port = port
@@ -231,7 +234,7 @@ class RedisCache:
         self.ttl = ttl
         self.client = None
         self.connect()
-        
+
     def connect(self):
         try:
             self.client = redis.Redis(host=self.host, port=self.port, db=self.db, decode_responses=True)
@@ -242,7 +245,7 @@ class RedisCache:
         if self.client:
             return self.client.ping()
         return False
-        
+
     def get(self, key):
         if self.client:
             val = self.client.get(key)
@@ -252,33 +255,33 @@ class RedisCache:
                 except:
                     return val
         return None
-        
+
     def set(self, key, value, ttl=None):
         if self.client:
             val = json.dumps(value) if isinstance(value, (dict, list)) else value
             return self.client.set(key, val, ex=ttl or self.ttl)
         return False
-        
+
     def hset(self, name, key, value):
         if self.client:
             return self.client.hset(name, key, value)
         return False
-        
+
     def hgetall(self, name):
         if self.client:
             return self.client.hgetall(name)
         return {}
-        
+
     def lpush(self, name, value):
         if self.client:
             return self.client.lpush(name, value)
         return False
-        
+
     def rpop(self, name):
         if self.client:
             return self.client.rpop(name)
         return None
-        
+
     def delete(self, key):
         if self.client:
             return self.client.delete(key)
@@ -287,6 +290,7 @@ class RedisCache:
 
 class CacheStrategy:
     """缓存策略"""
+
     READ_THROUGH = "read_through"
     WRITE_THROUGH = "write_through"
     WRITE_BEHIND = "write_behind"

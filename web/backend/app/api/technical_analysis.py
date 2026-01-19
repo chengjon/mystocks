@@ -6,10 +6,11 @@ Enhanced Technical Analysis
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Path, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
+from app.core.exceptions import BusinessException, ValidationException
 from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
@@ -280,7 +281,11 @@ async def get_all_indicators(
 
         if circuit_breaker.is_open():
             logger.warning("⚠️ Circuit breaker for technical_analysis is OPEN")
-            raise HTTPException(status_code=503, detail="技术分析服务暂不可用，请稍后重试")
+            raise BusinessException(
+                detail="技术分析服务暂不可用，请稍后重试",
+                status_code=503,
+                error_code="TECHNICAL_ANALYSIS_SERVICE_UNAVAILABLE",
+            )
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -304,7 +309,7 @@ async def get_all_indicators(
             raise
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         # 转换为AllIndicatorsResponse格式
         response_data = result.get("data", {})
@@ -320,10 +325,10 @@ async def get_all_indicators(
             volume=response_data.get("volume", {}),
         )
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.get("/{symbol}/trend", response_model=Dict, summary="获取趋势指标")
@@ -372,10 +377,7 @@ async def get_trend_indicators(
         logger.info("TREND_ADAPTER_RESULT", result_keys=list(result.keys()) if result else None)
 
         if "error" in result:
-            raise HTTPException(
-                status_code=500,
-                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
-            )
+            raise BusinessException(detail=result["error"], status_code=500, error_code="EXTERNAL_SERVICE_ERROR")
 
         data = result.get("data", {})
 
@@ -391,13 +393,12 @@ async def get_trend_indicators(
         logger.info("TREND_ENDPOINT_SUCCESS")
         return response
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
         logger.error("TREND_ENDPOINT_ERROR", error=str(e), exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取趋势指标失败: {str(e)}").model_dump(),
+        raise BusinessException(
+            detail=f"获取趋势指标失败: {str(e)}", status_code=500, error_code="INTERNAL_SERVER_ERROR"
         )
 
 
@@ -437,7 +438,7 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
         result = await technical_analysis_adapter.get_data("momentum", params)
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         return {
             "success": True,
@@ -446,10 +447,10 @@ async def get_momentum_indicators(symbol: str, period: str = Query("daily", desc
             "count": result.get("data", {}).get("count", 0),
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.get("/{symbol}/volatility", response_model=Dict)
@@ -487,7 +488,7 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
         result = await technical_analysis_adapter.get_data("volatility", params)
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         return {
             "success": True,
@@ -496,10 +497,10 @@ async def get_volatility_indicators(symbol: str, period: str = Query("daily", de
             "count": result.get("data", {}).get("count", 0),
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.get("/{symbol}/volume", response_model=Dict)
@@ -537,7 +538,7 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
         result = await technical_analysis_adapter.get_data("volume", params)
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         return {
             "success": True,
@@ -546,10 +547,10 @@ async def get_volume_indicators(symbol: str, period: str = Query("daily", descri
             "count": result.get("data", {}).get("count", 0),
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.get("/{symbol}/signals", response_model=Dict)
@@ -589,10 +590,7 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
         result = await technical_analysis_adapter.get_data("signals", params)
 
         if "error" in result:
-            raise HTTPException(
-                status_code=500,
-                detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
-            )
+            raise BusinessException(detail=result["error"], status_code=500, error_code="EXTERNAL_SERVICE_ERROR")
 
         signals_data = result.get("data", {})
 
@@ -601,12 +599,11 @@ async def get_trading_signals(symbol: str, period: str = Query("daily", descript
             message=f"获取{validated_symbol.symbol}交易信号成功",
         )
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"获取交易信号失败: {str(e)}").model_dump(),
+        raise BusinessException(
+            detail=f"获取交易信号失败: {str(e)}", status_code=500, error_code="INTERNAL_SERVER_ERROR"
         )
 
 
@@ -647,14 +644,14 @@ async def get_stock_history(
         result = await technical_analysis_adapter.get_data("history", params)
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         return {"success": True, **result.get("data", {})}
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.post("/batch/indicators")
@@ -673,7 +670,7 @@ async def get_batch_indicators(
     """
     try:
         if len(symbols) > 20:
-            raise HTTPException(status_code=400, detail="Maximum 20 symbols allowed")
+            raise ValidationException(detail="Maximum 20 symbols allowed", field="symbols")
 
         # 使用数据源工厂
         data_source_factory = DataSourceFactory()
@@ -684,14 +681,14 @@ async def get_batch_indicators(
         result = await technical_analysis_adapter.get_data("batch_indicators", params)
 
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
         return {"success": True, **result.get("data", {})}
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
 @router.get("/patterns/{symbol}")

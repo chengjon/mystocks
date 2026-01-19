@@ -35,8 +35,55 @@
             </template>
         </ArtDecoHeader>
 
-        <!-- 市场全景仪表盘 -->
+        <!-- 市场全景仪表盘 - 增强功能展示 -->
         <div class="market-panorama">
+            <!-- 增强的市场资金流向概览 -->
+            <div class="enhanced-fund-flow">
+                <ArtDecoCard class="fund-flow-overview" variant="elevated" gradient>
+                    <template #header>
+                        <div class="card-header">
+                            <ArtDecoIcon name="trending-up" />
+                            <h3>市场资金流向概览</h3>
+                        </div>
+                    </template>
+
+                    <div class="fund-flow-grid">
+                        <ArtDecoStatCard
+                            label="沪股通净流入"
+                            :value="marketData.fundFlow.hgt.amount + '亿'"
+                            :change="'+' + marketData.fundFlow.hgt.change + '亿'"
+                            change-percent
+                            variant="rise"
+                            size="medium"
+                            :sub-value="'较昨日'"
+                        />
+                        <ArtDecoStatCard
+                            label="深股通净流入"
+                            :value="marketData.fundFlow.sgt.amount + '亿'"
+                            :change="'+' + marketData.fundFlow.sgt.change + '亿'"
+                            change-percent
+                            variant="rise"
+                            size="medium"
+                            :sub-value="'较昨日'"
+                        />
+                        <ArtDecoStatCard
+                            label="北向资金总额"
+                            :value="marketData.fundFlow.northTotal.amount + '亿'"
+                            :sub-value="'本月累计 ' + marketData.fundFlow.northTotal.monthly + '亿'"
+                            variant="gold"
+                            size="medium"
+                        />
+                        <ArtDecoStatCard
+                            label="主力净流入"
+                            :value="marketData.fundFlow.mainForce.amount + '亿'"
+                            :sub-value="'占比 ' + marketData.fundFlow.mainForce.percentage + '%'"
+                            variant="gold"
+                            size="medium"
+                        />
+                    </div>
+                </ArtDecoCard>
+            </div>
+
             <!-- 主要市场指标 - 戏剧性布局 -->
             <ArtDecoCard class="market-indicators" variant="elevated" gradient>
                 <template #header>
@@ -121,10 +168,10 @@
                     <ArtDecoStatCard
                         label="涨跌家数"
                         :value="`${marketData.stocks.up}↑/${marketData.stocks.down}↓`"
-                    change="2.1"
-                    change-percent
-                    variant="gold"
-                />
+                        change="2.1"
+                        change-percent
+                        variant="gold"
+                    />
                 <ArtDecoStatCard
                     label="成交金额"
                     :value="marketData.volume.amount"
@@ -132,6 +179,7 @@
                     change-percent
                     variant="gold"
                 />
+                </ArtDecoCard>
             </div>
         </div>
 
@@ -393,14 +441,33 @@
         saveState('monitoring', expanded)
     }
 
-    // 模拟市场数据
+    // 模拟市场数据 - 增强版包含HTML dashboard的功能
     const marketData = ref({
-        shanghai: { index: 3128.45, change: 0.85 },
-        shenzhen: { index: 10245.67, change: 1.23 },
-        chuangye: { index: 2156.89, change: -0.45 },
+        shanghai: {
+            index: 3128.45,
+            change: 0.85,
+            changePercent: '+0.03%'
+        },
+        shenzhen: {
+            index: 10245.67,
+            change: 1.23,
+            changePercent: '+0.01%'
+        },
+        chuangye: {
+            index: 2156.89,
+            change: -0.45,
+            changePercent: '-0.02%'
+        },
         northFund: { amount: 58.8, change: 15.6 },
         stocks: { up: 2856, down: 1689 },
-        volume: { amount: '8,956亿', change: 15.8 }
+        volume: { amount: '8,956亿', change: 15.8 },
+        // 从HTML dashboard提取的资金流向数据 - 使用ArtDeco风格展示
+        fundFlow: {
+            hgt: { amount: 28.6, change: 5.2 },      // 沪股通净流入
+            sgt: { amount: 30.2, change: 8.9 },      // 深股通净流入
+            northTotal: { amount: 58.8, monthly: 1256 }, // 北向资金总额
+            mainForce: { amount: 126.5, percentage: 68 }  // 主力净流入
+        }
     })
 
     // 市场热度数据
@@ -1198,6 +1265,52 @@
             }
         }
     }
+
+    // ============================================
+    // ENHANCED FUND FLOW OVERVIEW - Art Deco Style
+    // ============================================
+
+    .enhanced-fund-flow {
+        margin-bottom: 2rem;
+
+        .fund-flow-overview {
+            .fund-flow-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+                margin-top: 1rem;
+            }
+        }
+    }
+
+    // Art Deco 装饰增强
+    .fund-flow-overview {
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--artdeco-gold-primary) 20%,
+                var(--artdeco-gold-primary) 80%,
+                transparent 100%);
+            border-radius: 2px 2px 0 0;
+        }
+
+        // 金色装饰边框
+        .artdeco-card-content {
+            border-left: 2px solid var(--artdeco-gold-primary);
+            border-right: 2px solid var(--artdeco-gold-primary);
+            margin: 0 1px;
+            padding: 1.5rem;
+        }
+    }
+
     // ============================================
 </style>
 
@@ -1214,7 +1327,7 @@ var(--artdeco-font-mono); font-size: var(--artdeco-text-lg); font-weight: 700; c
 margin-bottom: var(--artdeco-spacing-1); } .indicator-trend { font-family: var(--artdeco-font-body); font-size:
 var(--artdeco-text-sm); font-weight: 600; text-transform: uppercase; letter-spacing: var(--artdeco-tracking-wide);
 &.rise { color: var(--artdeco-up); } &.fall { color: var(--artdeco-down); } &.neutral { color: var(--artdeco-fg-muted);
-} } } // 系统监控 .monitoring-section { margin-bottom: var(--artdeco-spacing-6); } .monitoring-grid { display: grid;
+} } }; // 系统监控 .monitoring-section { margin-bottom: var(--artdeco-spacing-6); } .monitoring-grid { display: grid
 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--artdeco-spacing-4); } .monitor-item { display:
 flex; justify-content: space-between; align-items: center; padding: var(--artdeco-spacing-4); background:
 var(--artdeco-bg-card); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: var(--artdeco-radius-none);

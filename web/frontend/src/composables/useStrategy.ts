@@ -8,9 +8,9 @@
 import { ref, readonly, onMounted } from 'vue';
 import { StrategyApiService } from '@/api/services/strategyService';
 import { StrategyAdapter } from '@/utils/strategy-adapters';
-import type { Strategy } from '@/api/types/strategy';
+import type { StrategyVM as Strategy } from '@/api/types/extensions';
 import type { StrategyListItemVM } from '@/utils/strategy-adapters';
-import type { CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/strategy';
+import type { CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
 
 /**
  * Strategy management composable

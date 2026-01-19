@@ -12,9 +12,8 @@ Strategy Registry - 策略注册表
 """
 
 import yaml
-import json
 import logging
-from typing import Dict, List, Any, Optional, Type, Callable
+from typing import Dict, List, Any, Optional, Type
 from pathlib import Path
 from dataclasses import dataclass, field
 
@@ -85,15 +84,9 @@ class StrategyRegistry:
         }
 
         # 注册并创建实例
-        self.register_and_create(
-            "rsi_strategy", RSIStrategy, default_params["rsi_strategy"]
-        )
-        self.register_and_create(
-            "macd_strategy", MACDStrategy, default_params["macd_strategy"]
-        )
-        self.register_and_create(
-            "bbands_strategy", BollingerBandsStrategy, default_params["bbands_strategy"]
-        )
+        self.register_and_create("rsi_strategy", RSIStrategy, default_params["rsi_strategy"])
+        self.register_and_create("macd_strategy", MACDStrategy, default_params["macd_strategy"])
+        self.register_and_create("bbands_strategy", BollingerBandsStrategy, default_params["bbands_strategy"])
 
         logger.info("Built-in strategies registered and instantiated")
 
@@ -193,14 +186,10 @@ class StrategyRegistry:
             strategies = self.load_from_yaml(str(yaml_file))
             all_strategies.extend(strategies)
 
-        logger.info(
-            f"Loaded {len(all_strategies)} strategies from directory {directory_path}"
-        )
+        logger.info(f"Loaded {len(all_strategies)} strategies from directory {directory_path}")
         return all_strategies
 
-    def create_strategy(
-        self, definition: StrategyDefinition
-    ) -> Optional[SignalStrategy]:
+    def create_strategy(self, definition: StrategyDefinition) -> Optional[SignalStrategy]:
         """
         创建策略实例
 
@@ -372,9 +361,7 @@ class StrategyRegistry:
             }
 
             with open(yaml_path, "w", encoding="utf-8") as f:
-                yaml.dump(
-                    strategies_config, f, default_flow_style=False, allow_unicode=True
-                )
+                yaml.dump(strategies_config, f, default_flow_style=False, allow_unicode=True)
 
             logger.info(f"Strategies saved to {yaml_path}")
 

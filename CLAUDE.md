@@ -906,6 +906,16 @@ pylint --rcfile=.pylint.test.rc --output=report.html --output-format=html tests/
 
 ---
 
+## 🔧 TypeScript 修复规范 ⚠️ **(强制性要求)**
+
+**⚠️ 重要**: 修复TypeScript错误**必须**遵守以下4个核心文档的要求：
+- [TYPESCRIPT_FIX_BEST_PRACTICES.md](./docs/reports/TYPESCRIPT_FIX_BEST_PRACTICES.md) - 7种错误模式与修复方法
+- [TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md](./docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md) - 技术债务管理策略
+- [TYPESCRIPT_TECHNICAL_DEBTS.md](./docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md) - 技术债务清单
+- [TYPESCRIPT_FIX_REFLECTION.md](./docs/reports/TYPESCRIPT_FIX_REFLECTION.md) - 反思与经验总结
+
+**历史成果**: 1160→66错误 (94.3%修复率, 4小时完成)
+
 ## 监控系统
 
 MyStocks 使用 **LGTM Stack** (Loki, Grafana, Tempo, Prometheus) 实现完整可观测性。

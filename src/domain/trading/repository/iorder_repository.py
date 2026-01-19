@@ -51,9 +51,7 @@ class IOrderRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_portfolio(
-        self, portfolio_id: str, limit: int = 100
-    ) -> List[Order]:
+    def find_by_portfolio(self, portfolio_id: str, limit: int = 100) -> List[Order]:
         """
         查找投资组合的所有订单
 
@@ -67,9 +65,7 @@ class IOrderRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_symbol(
-        self, symbol: str, limit: int = 100
-    ) -> List[Order]:
+    def find_by_symbol(self, symbol: str, limit: int = 100) -> List[Order]:
         """
         查找标的的所有订单
 
@@ -83,9 +79,7 @@ class IOrderRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_status(
-        self, status: OrderStatus, limit: int = 100
-    ) -> List[Order]:
+    def find_by_status(self, status: OrderStatus, limit: int = 100) -> List[Order]:
         """
         查找特定状态的订单
 
@@ -109,9 +103,7 @@ class IOrderRepository(ABC):
         pass
 
     @abstractmethod
-    def find_recent_orders(
-        self, hours: int = 24, limit: int = 100
-    ) -> List[Order]:
+    def find_recent_orders(self, hours: int = 24, limit: int = 100) -> List[Order]:
         """
         查找最近的订单
 

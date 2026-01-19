@@ -17,11 +17,10 @@ Author: MyStocks Project
 import logging
 import asyncio
 from typing import Dict, Set, Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import WebSocket
-from json import dumps as json_dumps
 
-from app.models.event_models import BaseEvent, EventChannels
+from app.models.event_models import BaseEvent
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +63,7 @@ class ConnectionManager:
         websocket: WebSocket,
         connection_id: str,
         user_id: Optional[str] = None,
-        subscribe_channels: Optional[List[str]] = None
+        subscribe_channels: Optional[List[str]] = None,
     ):
         """
         Accept a new WebSocket connection
@@ -85,7 +84,7 @@ class ConnectionManager:
         self.connection_metadata[connection_id] = {
             "connected_at": datetime.utcnow(),
             "user_id": user_id,
-            "remote_addr": websocket.client.host if websocket.client else None
+            "remote_addr": websocket.client.host if websocket.client else None,
         }
 
         # Track user connection
@@ -102,11 +101,10 @@ class ConnectionManager:
         logger.info(f"WebSocket connected: {connection_id} (user: {user_id})")
 
         # Send welcome message
-        await self.send_personal_message({
-            "type": "connected",
-            "connection_id": connection_id,
-            "timestamp": datetime.utcnow().isoformat()
-        }, connection_id)
+        await self.send_personal_message(
+            {"type": "connected", "connection_id": connection_id, "timestamp": datetime.utcnow().isoformat()},
+            connection_id,
+        )
 
         # Start heartbeat checker if not running
         if self._heartbeat_task is None:
@@ -317,10 +315,7 @@ class ConnectionManager:
             "total_connections": len(self.active_connections),
             "total_users": len(self.user_connections),
             "total_channels": len(self.channel_subscriptions),
-            "channels": {
-                channel: len(subscribers)
-                for channel, subscribers in self.channel_subscriptions.items()
-            }
+            "channels": {channel: len(subscribers) for channel, subscribers in self.channel_subscriptions.items()},
         }
 
 

@@ -103,7 +103,7 @@
     import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
     import { useRoute } from 'vue-router'
     import ArtDecoSkipLink from '@/components/artdeco/base/ArtDecoSkipLink.vue'
-    import ArtDecoBreadcrumb from '@/components/artdeco/base/ArtDecoBreadcrumb.vue'
+    import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
     import CommandPalette, { type CommandItem } from '@/components/shared/command-palette/CommandPalette.vue'
 
     interface MenuItem {

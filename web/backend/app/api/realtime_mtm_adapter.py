@@ -33,7 +33,7 @@ class PortfolioSnapshot:
     available_cash: float = 0.0
     position_count: int = 0
     last_update: datetime = field(default_factory=datetime.now)
-    positions: Dict[str, 'PositionSnapshot'] = field(default_factory=dict)
+    positions: Dict[str, "PositionSnapshot"] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,12 +80,7 @@ class RealtimeMTMAdapter:
     3. 提供与 position_mtm_engine 相同的接口
     """
 
-    def __init__(
-        self,
-        portfolio_repo,
-        valuation_service,
-        event_bus=None
-    ):
+    def __init__(self, portfolio_repo, valuation_service, event_bus=None):
         """
         初始化适配器
 
@@ -101,6 +96,7 @@ class RealtimeMTMAdapter:
         # 订阅价格变更事件
         if event_bus:
             from src.domain.market_data.streaming import PriceChangedEvent
+
             event_bus.subscribe(PriceChangedEvent, self._on_price_changed)
 
         # 缓存最新的快照
@@ -115,12 +111,7 @@ class RealtimeMTMAdapter:
         pass
 
     def register_position(
-        self,
-        position_id: str,
-        portfolio_id: str,
-        symbol: str,
-        quantity: int,
-        avg_price: float
+        self, position_id: str, portfolio_id: str, symbol: str, quantity: int, avg_price: float
     ) -> bool:
         """
         注册持仓（兼容旧接口）
@@ -187,11 +178,7 @@ class RealtimeMTMAdapter:
 
                 # 更新价格并重新计算
                 prices = {symbol: price}
-                performance = self.valuation_service.revaluate_portfolio(
-                    portfolio.id,
-                    prices,
-                    force_save=True
-                )
+                performance = self.valuation_service.revaluate_portfolio(portfolio.id, prices, force_save=True)
 
                 if performance:
                     # 获取更新后的持仓
@@ -207,7 +194,7 @@ class RealtimeMTMAdapter:
                         new_price=new_price,
                         old_market_value=old_market_value,
                         new_market_value=new_market_value,
-                        profit_change=new_market_value - old_market_value
+                        profit_change=new_market_value - old_market_value,
                     )
                     updates.append(update)
 
@@ -267,7 +254,7 @@ class RealtimeMTMAdapter:
         """
         try:
             # 解析 position_id
-            parts = position_id.split('_', 1)
+            parts = position_id.split("_", 1)
             if len(parts) != 2:
                 return None
 
@@ -290,7 +277,7 @@ class RealtimeMTMAdapter:
                 market_price=pos.current_price,
                 market_value=pos.market_value,
                 unrealized_profit=pos.unrealized_pnl,
-                profit_ratio=((pos.current_price / pos.average_cost) - 1) * 100 if pos.average_cost > 0 else 0.0
+                profit_ratio=((pos.current_price / pos.average_cost) - 1) * 100 if pos.average_cost > 0 else 0.0,
             )
 
             return snapshot
@@ -309,7 +296,7 @@ class RealtimeMTMAdapter:
                 "cached_snapshots": len(self._portfolio_snapshots),
                 "valuation_metrics": valuation_metrics,
                 "adapter_type": "RealtimeMTMAdapter",
-                "architecture": "DDD (Phase 12.3)"
+                "architecture": "DDD (Phase 12.3)",
             }
         except Exception as e:
             logger.error(f"Failed to get metrics: {e}")
@@ -318,16 +305,10 @@ class RealtimeMTMAdapter:
     def _convert_to_snapshot(self, portfolio, performance) -> PortfolioSnapshot:
         """将 Portfolio 转换为 PortfolioSnapshot"""
         # 计算总成本
-        total_cost = sum(
-            pos.quantity * pos.average_cost
-            for pos in portfolio.positions.values()
-        )
+        total_cost = sum(pos.quantity * pos.average_cost for pos in portfolio.positions.values())
 
         # 计算总未实现盈亏
-        total_unrealized_profit = sum(
-            pos.unrealized_pnl
-            for pos in portfolio.positions.values()
-        )
+        total_unrealized_profit = sum(pos.unrealized_pnl for pos in portfolio.positions.values())
 
         # 转换持仓快照
         position_snapshots = {}
@@ -341,7 +322,7 @@ class RealtimeMTMAdapter:
                 market_price=pos.current_price,
                 market_value=pos.market_value,
                 unrealized_profit=pos.unrealized_pnl,
-                profit_ratio=((pos.current_price / pos.average_cost) - 1) * 100 if pos.average_cost > 0 else 0.0
+                profit_ratio=((pos.current_price / pos.average_cost) - 1) * 100 if pos.average_cost > 0 else 0.0,
             )
 
         # 创建投资组合快照
@@ -357,7 +338,7 @@ class RealtimeMTMAdapter:
             available_cash=performance.cash_balance,
             position_count=len(portfolio.positions),
             last_update=performance.calculated_at,
-            positions=position_snapshots
+            positions=position_snapshots,
         )
 
         return snapshot
@@ -410,9 +391,7 @@ def initialize_adapter(db_session, event_bus=None):
 
     # 创建适配器
     _adapter = RealtimeMTMAdapter(
-        portfolio_repo=portfolio_repo,
-        valuation_service=valuation_service,
-        event_bus=event_bus
+        portfolio_repo=portfolio_repo, valuation_service=valuation_service, event_bus=event_bus
     )
 
     logger.info("✅ RealtimeMTMAdapter initialized with DDD architecture")

@@ -15,7 +15,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.sampling import TraceIdRatioBasedSampler, ParentBasedTraceIdRatioBasedSampler
+from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatioBasedSampler
 from opentelemetry.semconv.resource import ResourceAttributes
 
 logger = logging.getLogger(__name__)

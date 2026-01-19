@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-01-18T01:58:54.514045",
+  "version": "1.0",
+  "benchmarks": {},
+  "thresholds": {
+    "api_response_time": {
+      "market_overview": 500,
+      "health_check": 100,
+      "daily_kline": 200,
+      "technical_indicators": 300
+    },
+    "throughput": {
+      "min_rps": 50,
+      "target_rps": 100
+    },
+    "error_rate": {
+      "max_percent": 1.0
+    }
+  },
+  "recommendations": [
+    "当前性能基线良好，所有API响应时间都在合理范围内"
+  ]
+}

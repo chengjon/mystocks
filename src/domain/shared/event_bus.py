@@ -23,7 +23,7 @@ class IEventBus(ABC):
     """
 
     @abstractmethod
-    def publish(self, event: 'DomainEvent') -> None:
+    def publish(self, event: "DomainEvent") -> None:
         """
         发布领域事件
 
@@ -33,7 +33,7 @@ class IEventBus(ABC):
         pass
 
     @abstractmethod
-    def subscribe(self, event_type: Type['DomainEvent'], handler: Callable[['DomainEvent'], None]) -> None:
+    def subscribe(self, event_type: Type["DomainEvent"], handler: Callable[["DomainEvent"], None]) -> None:
         """
         订阅领域事件
 

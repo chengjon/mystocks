@@ -167,29 +167,33 @@ scrape_configs:
     static_configs:
       - targets:
           - 'localhost:9090'
+        labels:
+          service: 'prometheus'
 
-   # ==================== Node Exporter (系统指标) ====================
-   - job_name: 'node'
-     static_configs:
-       - targets:
-           - 'node_exporter:9100'
+  # ==================== Node Exporter (系统指标) ====================
+  - job_name: 'node'
+    static_configs:
+      - targets:
+          - 'node_exporter:9100'
+        labels:
+          service: 'node-exporter'
 
-   # ==================== Tempo Metrics (服务依赖图和RED指标) ====================
-   # 从 Tempo metrics generator 获取服务依赖图和 RED 方法指标
-   - job_name: 'tempo-metrics'
-     static_configs:
-       - targets:
-           - 'tempo:3200'
-         labels:
-           service: 'tempo-metrics'
-           component: 'tracing'
+  # ==================== Tempo Metrics (服务依赖图和RED指标) ====================
+  # 从 Tempo metrics generator 获取服务依赖图和 RED 方法指标
+  - job_name: 'tempo-metrics'
+    static_configs:
+      - targets:
+          - 'tempo:3200'
+        labels:
+          service: 'tempo-metrics'
+          component: 'tracing'
 
-     metrics_path: '/metrics'
-     scrape_interval: 30s
-     scrape_timeout: 15s
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 15s
 
-     # 只抓取 Tempo 生成的指标，排除 Tempo 自身指标
-     metric_relabel_configs:
-       - source_labels: [__name__]
-         regex: 'traces_.*|tempo_.*'
-         action: keep
+    # 只抓取 Tempo 生成的指标，排除 Tempo 自身指标
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'traces_.*|tempo_.*'
+        action: keep

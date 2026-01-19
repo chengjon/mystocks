@@ -389,11 +389,7 @@ class RiskAlertService(IRiskAlertService):
         history = self.alert_history.get(alert_key, [])
 
         # 只保留最近30分钟的记录
-        recent_history = [
-            record
-            for record in history
-            if (now - record["timestamp"]).total_seconds() < 1800  # 30分钟
-        ]
+        recent_history = [record for record in history if (now - record["timestamp"]).total_seconds() < 1800]  # 30分钟
 
         # 更新历史记录
         self.alert_history[alert_key] = recent_history

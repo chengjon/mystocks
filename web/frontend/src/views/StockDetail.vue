@@ -106,7 +106,7 @@
               <span class="indicator-value gold">{{ indicator }}</span>
             </div>
           </div>
-        </div>
+        </el-card>
 
          <el-card>
            <template #header>
@@ -170,7 +170,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </el-card>
       </div>
 
        <div class="trading-card">

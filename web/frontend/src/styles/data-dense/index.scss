@@ -1,0 +1,58 @@
+// Data Dense SCSS - Optimized for high-density data display
+
+// Variables
+:root {
+  --data-dense-border-width: 1px;
+  --data-dense-border-color: rgba(212, 175, 55, 0.2);
+  --data-dense-gap-sm: 8px;
+  --data-dense-gap-xs: 4px;
+  --data-dense-font-xs: 10px;
+  --data-dense-font-sm: 12px;
+  --data-dense-font-base: 14px;
+  --data-dense-font-lg: 16px;
+  --data-dense-padding-xs: 4px;
+  --data-dense-padding-lg: 16px;
+  --data-dense-table-cell-padding: 6px 12px;
+  --data-dense-table-header-height: 32px;
+  --hybrid-font-display: 'Josefin Sans', sans-serif;
+  --hybrid-font-body: 'Inter', sans-serif;
+  --hybrid-font-mono: 'JetBrains Mono', monospace;
+}
+
+// Mixins
+@mixin hybrid-card {
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--data-dense-border-color);
+  position: relative;
+}
+
+@mixin gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@mixin virtual-scroll-container {
+  contain: strict;
+  will-change: transform, scroll-position;
+}
+
+@mixin data-dense-spacing {
+  padding: 8px;
+  gap: 8px;
+}
+
+@mixin artdeco-gold-accent {
+  color: var(--artdeco-gold-primary);
+  border-color: var(--artdeco-gold-primary);
+}
+
+@mixin data-dense-transitions {
+  transition: all 0.2s ease-in-out;
+}
+
+@mixin data-dense-typography {
+  font-family: var(--hybrid-font-body);
+  font-size: var(--data-dense-font-sm);
+  line-height: 1.2;
+}

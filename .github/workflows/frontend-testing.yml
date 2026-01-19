@@ -1,0 +1,80 @@
+name: Frontend Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'web/frontend/**'
+      - '.github/workflows/frontend-testing.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'web/frontend/**'
+
+jobs:
+  frontend-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: web/frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Lint code
+      run: npm run lint
+
+    - name: Type check
+      run: npm run type-check
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+    - name: Run e2e tests
+      run: npm run test:e2e
+
+    - name: Build for production
+      run: npm run build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: web/frontend/dist/
+
+  frontend-security:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: web/frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run npm audit
+      run: npm audit --audit-level moderate
+
+    - name: Run security scan
+      run: |
+        npm install -g audit-ci
+        audit-ci --config audit-ci.json

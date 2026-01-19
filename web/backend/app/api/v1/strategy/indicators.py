@@ -22,14 +22,10 @@ class TechnicalIndicatorResponse(BaseModel):
     calculated_at: str
 
 
-@router.get(
-    "", response_model=TechnicalIndicatorResponse, summary="Get Technical Indicators"
-)
+@router.get("", response_model=TechnicalIndicatorResponse, summary="Get Technical Indicators")
 async def get_technical_indicators(
     symbol: str = Query(..., description="Stock symbol"),
-    indicators: List[str] = Query(
-        ..., description="Indicator names (rsi,macd,bollinger,etc.)"
-    ),
+    indicators: List[str] = Query(..., description="Indicator names (rsi,macd,bollinger,etc.)"),
     period: int = Query(14, description="Calculation period"),
 ):
     """

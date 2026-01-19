@@ -109,6 +109,7 @@ class SignalGenerationService:
             except Exception as e:
                 # 不影响主流程，只记录错误
                 import warnings
+
                 warnings.warn(f"数据库记录失败（非关键）: {e}")
 
         update_active_signals_count(strategy_id=strategy_id.id, symbol=symbol, signal_type="total", count=len(signals))

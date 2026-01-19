@@ -22,10 +22,11 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
+from app.core.exceptions import BusinessException, ValidationException, NotFoundException, ForbiddenException
 from app.core.responses import create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
@@ -178,7 +179,11 @@ def rate_limit(limit: int, window: int):
                 user_key = "indicators_anonymous"
 
             if not rate_limiter.is_allowed(user_key, limit, window):
-                raise HTTPException(status_code=429, detail=f"技术指标计算请求过于频繁，请在{window}秒后重试")
+                raise BusinessException(
+                    detail=f"技术指标计算请求过于频繁，请在{window}秒后重试",
+                    status_code=429,
+                    error_code="RATE_LIMIT_EXCEEDED",
+                )
 
             return await func(*args, **kwargs)
 
@@ -344,7 +349,9 @@ async def get_indicator_registry_endpoint(
 
     except Exception as e:
         logger.error("技术指标注册表查询失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取指标注册表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取指标注册表失败: {str(e)}", status_code=500, error_code="INDICATOR_REGISTRY_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/registry/{category}", response_model=List[IndicatorMetadata])
@@ -359,9 +366,8 @@ async def get_indicators_by_category(category: str):
         try:
             indicator_category = IndicatorCategory(category)
         except ValueError:
-            raise HTTPException(
-                status_code=400,
-                detail=f"无效的指标分类: {category}. 有效分类: {[c.value for c in IndicatorCategory]}",
+            raise ValidationException(
+                detail=f"无效的指标分类: {category}. 有效分类: {[c.value for c in IndicatorCategory]}", field="category"
             )
 
         registry = get_indicator_registry()
@@ -393,11 +399,13 @@ async def get_indicators_by_category(category: str):
 
         return indicators_list
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to get indicators for category {category}", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"获取分类指标失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取分类指标失败: {str(e)}", status_code=500, error_code="CATEGORY_INDICATORS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/calculate")
@@ -442,9 +450,9 @@ async def calculate_indicators(
         # 验证日期范围
         date_range_days = (request.end_date - request.start_date).days
         if date_range_days < 1:
-            raise HTTPException(status_code=400, detail="结束日期必须晚于开始日期")
+            raise ValidationException(detail="结束日期必须晚于开始日期", field="end_date")
         if date_range_days > 3650:  # 10年限制
-            raise HTTPException(status_code=400, detail="日期范围不能超过10年")
+            raise ValidationException(detail="日期范围不能超过10年", field="date_range")
 
         # 生成缓存键
         indicator_specs = [
@@ -493,9 +501,9 @@ async def calculate_indicators(
         try:
             df, ohlcv_data = data_service.get_daily_ohlcv(symbol=request.symbol, start_date=start_dt, end_date=end_dt)
         except StockDataNotFoundError as e:
-            raise HTTPException(status_code=404, detail=f"股票数据未找到: {str(e)}")
+            raise NotFoundException(resource="股票数据", identifier="查询条件")
         except InvalidDateRangeError as e:
-            raise HTTPException(status_code=400, detail=f"无效日期范围: {str(e)}")
+            raise ValidationException(detail=f"无效日期范围: {str(e)}", field="date_range")
 
         # Get symbol name
         symbol_name = data_service.get_symbol_name(request.symbol)
@@ -507,15 +515,17 @@ async def calculate_indicators(
         calculator = get_indicator_calculator()
         is_valid, error_msg = calculator.validate_data_quality(ohlcv_data)
         if not is_valid:
-            raise HTTPException(status_code=422, detail=f"OHLCV数据质量验证失败: {error_msg}")
+            raise ValidationException(detail=f"OHLCV数据质量验证失败: {error_msg}", field="data_quality")
 
         # 批量计算指标（优化版本）
         try:
             results = calculator.calculate_multiple_indicators(indicator_specs, ohlcv_data)
         except InsufficientDataError as e:
-            raise HTTPException(status_code=422, detail=f"数据不足，无法计算指标: {str(e)}")
+            raise ValidationException(detail=f"数据不足，无法计算指标: {str(e)}", field="data_length")
         except IndicatorCalculationError as e:
-            raise HTTPException(status_code=500, detail=f"指标计算错误: {str(e)}")
+            raise BusinessException(
+                detail=f"指标计算错误: {str(e)}", status_code=500, error_code="INDICATOR_CALCULATION_FAILED"
+            )
 
         # 转换为响应格式
         indicator_results = []
@@ -623,37 +633,27 @@ async def calculate_indicators(
 
     except InvalidDateRangeError as e:
         logger.warning("Invalid date range", error=str(e))
-        raise HTTPException(
-            status_code=422,
-            detail={"error_code": "INVALID_DATE_RANGE", "error_message": str(e)},
-        )
+        raise ValidationException(detail=f"无效日期范围: {str(e)}", field="date_range")
 
     except StockDataNotFoundError as e:
         logger.warning("Stock data not found", error=str(e))
-        raise HTTPException(
-            status_code=404,
-            detail={"error_code": "STOCK_DATA_NOT_FOUND", "error_message": str(e)},
-        )
+        raise NotFoundException(resource="股票数据", identifier="查询条件")
 
     except InsufficientDataError as e:
         logger.warning("Insufficient data for indicator calculation", error=str(e))
-        raise HTTPException(
-            status_code=422,
-            detail={"error_code": "INSUFFICIENT_DATA", "error_message": str(e)},
-        )
+        raise ValidationException(detail=f"数据不足，无法计算指标: {str(e)}", field="data_length")
 
     except IndicatorCalculationError as e:
         logger.error("Indicator calculation error", error=str(e))
-        raise HTTPException(
-            status_code=500,
-            detail={"error_code": "CALCULATION_ERROR", "error_message": str(e)},
-        )
+        raise BusinessException(detail=f"指标计算错误: {str(e)}", status_code=500, error_code="CALCULATION_ERROR")
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"计算指标时发生错误: {str(e)}")
+        raise BusinessException(
+            detail=f"计算指标时发生错误: {str(e)}", status_code=500, error_code="INDICATOR_CALCULATION_ERROR"
+        )
 
 
 @router.post("/calculate/batch")
@@ -742,7 +742,9 @@ async def calculate_indicators_batch(
 
     except Exception as e:
         logger.error("批量技术指标计算异常", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"批量计算失败: {str(e)}")
+        raise BusinessException(
+            detail=f"批量计算失败: {str(e)}", status_code=500, error_code="BATCH_CALCULATION_FAILED"
+        )
 
 
 async def _calculate_single_indicator(request, current_user):
@@ -790,7 +792,9 @@ async def get_cache_statistics(current_user: User = Depends(get_current_active_u
 
     except Exception as e:
         logger.error("缓存统计查询失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取缓存统计失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取缓存统计失败: {str(e)}", status_code=500, error_code="CACHE_STATS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/cache/clear")
@@ -807,7 +811,7 @@ async def clear_cache(
     try:
         # 检查权限
         if current_user.role != "admin":
-            raise HTTPException(status_code=403, detail="仅管理员可以清理缓存")
+            raise ForbiddenException(detail="仅管理员可以清理缓存")
 
         if not pattern or pattern == "all":
             # 清空所有缓存
@@ -826,11 +830,11 @@ async def clear_cache(
             data={"cleared_count": cleared_count}, message=f"缓存清理完成，已清理{cleared_count}"
         ).dict(exclude_unset=True)
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("缓存清理失败", user_id=current_user.id, error=str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f"缓存清理失败: {str(e)}")
+        raise BusinessException(detail=f"缓存清理失败: {str(e)}", status_code=500, error_code="CACHE_CLEANUP_FAILED")
 
 
 @router.post("/configs", response_model=IndicatorConfigResponse)
@@ -857,7 +861,6 @@ async def create_indicator_config(
     user_id = current_user.id
 
     try:
-
         from app.core.database import get_mysql_session
         from app.models.indicator_config import IndicatorConfiguration
 
@@ -875,7 +878,9 @@ async def create_indicator_config(
             )
 
             if existing:
-                raise HTTPException(status_code=409, detail=f"配置名称已存在: {request.name}")
+                raise BusinessException(
+                    detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS"
+                )
 
             # 创建新配置
             indicators_json = [
@@ -908,11 +913,11 @@ async def create_indicator_config(
         finally:
             session.close()
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to create indicator config", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"创建配置失败: {str(e)}")
+        raise BusinessException(detail=f"创建配置失败: {str(e)}", status_code=500, error_code="CONFIG_CREATION_FAILED")
 
 
 @router.get("/configs", response_model=IndicatorConfigListResponse)
@@ -968,7 +973,9 @@ async def list_indicator_configs(current_user: User = Depends(get_current_active
 
     except Exception as e:
         logger.error("Failed to list indicator configs", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"获取配置列表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取配置列表失败: {str(e)}", status_code=500, error_code="CONFIG_LIST_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/configs/{config_id}", response_model=IndicatorConfigResponse)
@@ -1000,7 +1007,7 @@ async def get_indicator_config(config_id: int, current_user: User = Depends(get_
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise NotFoundException(resource="配置", identifier=config_id)
 
             # 更新最后使用时间
             config.last_used_at = datetime.now()
@@ -1022,11 +1029,11 @@ async def get_indicator_config(config_id: int, current_user: User = Depends(get_
         finally:
             session.close()
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to get indicator config", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"获取配置失败: {str(e)}")
+        raise BusinessException(detail=f"获取配置失败: {str(e)}", status_code=500, error_code="CONFIG_RETRIEVAL_FAILED")
 
 
 @router.put("/configs/{config_id}", response_model=IndicatorConfigResponse)
@@ -1062,7 +1069,7 @@ async def update_indicator_config(
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise NotFoundException(resource="配置", identifier=config_id)
 
             # 更新字段
             if request.name is not None:
@@ -1078,7 +1085,9 @@ async def update_indicator_config(
                 )
 
                 if existing:
-                    raise HTTPException(status_code=409, detail=f"配置名称已存在: {request.name}")
+                    raise BusinessException(
+                        detail=f"配置名称已存在: {request.name}", status_code=409, error_code="CONFIG_NAME_EXISTS"
+                    )
 
                 config.name = request.name
 
@@ -1106,11 +1115,11 @@ async def update_indicator_config(
         finally:
             session.close()
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to update indicator config", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"更新配置失败: {str(e)}")
+        raise BusinessException(detail=f"更新配置失败: {str(e)}", status_code=500, error_code="CONFIG_UPDATE_FAILED")
 
 
 @router.delete("/configs/{config_id}", status_code=204)
@@ -1140,7 +1149,7 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
             )
 
             if not config:
-                raise HTTPException(status_code=404, detail=f"配置不存在: ID={config_id}")
+                raise NotFoundException(resource="配置", identifier=config_id)
 
             session.delete(config)
             session.commit()
@@ -1152,8 +1161,8 @@ async def delete_indicator_config(config_id: int, current_user: User = Depends(g
         finally:
             session.close()
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to delete indicator config", exc_info=e)
-        raise HTTPException(status_code=500, detail=f"删除配置失败: {str(e)}")
+        raise BusinessException(detail=f"删除配置失败: {str(e)}", status_code=500, error_code="CONFIG_DELETION_FAILED")

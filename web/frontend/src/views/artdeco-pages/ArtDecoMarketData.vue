@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <!-- Main Navigation Tabs -->
+        <!-- Enhanced Main Navigation Tabs - 优化布局 -->
         <nav class="main-tabs">
             <button
                 v-for="tab in mainTabs"
@@ -26,6 +26,7 @@
             >
                 <span class="tab-icon">{{ tab.icon }}</span>
                 <span class="tab-label">{{ tab.label }}</span>
+                <span v-if="tab.badge" class="tab-badge">{{ tab.badge }}</span>
             </button>
         </nav>
 
@@ -2117,6 +2118,105 @@
                     </div>
                 </ArtDecoCard>
             </div>
+
+            <!-- 机构评级 - 从HTML增强功能 -->
+            <div v-if="activeTab === 'institutions'" class="tab-panel">
+                <ArtDecoCard title="机构评级统计" hoverable class="institutions-card">
+                    <div class="rating-overview">
+                        <ArtDecoStatCard
+                            label="买入评级"
+                            :value="institutionData.buyRating.count"
+                            :sub-value="'占比 ' + institutionData.buyRating.percentage + '%'"
+                            variant="rise"
+                            size="medium"
+                        />
+                        <ArtDecoStatCard
+                            label="增持评级"
+                            :value="institutionData.holdRating.count"
+                            :sub-value="'占比 ' + institutionData.holdRating.percentage + '%'"
+                            variant="gold"
+                            size="medium"
+                        />
+                        <ArtDecoStatCard
+                            label="中性评级"
+                            :value="institutionData.neutralRating.count"
+                            :sub-value="'占比 ' + institutionData.neutralRating.percentage + '%'"
+                            variant="warning"
+                            size="medium"
+                        />
+                        <ArtDecoStatCard
+                            label="减持评级"
+                            :value="institutionData.reduceRating.count"
+                            :sub-value="'占比 ' + institutionData.reduceRating.percentage + '%'"
+                            variant="fall"
+                            size="medium"
+                        />
+                        <ArtDecoStatCard
+                            label="卖出评级"
+                            :value="institutionData.sellRating.count"
+                            :sub-value="'占比 ' + institutionData.sellRating.percentage + '%'"
+                            variant="danger"
+                            size="medium"
+                        />
+                    </div>
+                </ArtDecoCard>
+
+                <ArtDecoCard title="最新机构评级" hoverable class="latest-ratings-card">
+                    <ArtDecoTable :data="latestRatings" :columns="ratingColumns" />
+                </ArtDecoCard>
+            </div>
+
+            <!-- 问财搜索 - 从HTML增强功能 -->
+            <div v-if="activeTab === 'wencai'" class="tab-panel">
+                <ArtDecoCard title="智能问财搜索" hoverable class="wencai-card">
+                    <div class="search-container">
+                        <div class="search-input-group">
+                            <ArtDecoInput
+                                v-model="wencaiQuery"
+                                placeholder="输入问财查询条件，如：涨停股、创历史新高..."
+                                size="large"
+                                @keyup.enter="executeWencaiSearch"
+                            />
+                            <ArtDecoButton
+                                variant="primary"
+                                size="large"
+                                @click="executeWencaiSearch"
+                                :loading="wencaiLoading"
+                            >
+                                <template #icon>
+                                    <ArtDecoIcon name="search" />
+                                </template>
+                                搜索
+                            </ArtDecoButton>
+                        </div>
+
+                        <div class="quick-tags">
+                            <div class="tag-group">
+                                <span class="tag-label">快速条件:</span>
+                                <ArtDecoButton
+                                    v-for="tag in quickTags"
+                                    :key="tag"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="addTagToQuery(tag)"
+                                >
+                                    {{ tag }}
+                                </ArtDecoButton>
+                            </div>
+                        </div>
+                    </div>
+                </ArtDecoCard>
+
+                <ArtDecoCard v-if="wencaiResults.length > 0" title="搜索结果" hoverable class="results-card">
+                    <div class="results-header">
+                        <div class="result-count">找到 {{ wencaiResults.length }} 只股票</div>
+                        <ArtDecoButton variant="outline" size="sm" @click="exportResults">
+                            导出结果
+                        </ArtDecoButton>
+                    </div>
+                    <ArtDecoTable :data="wencaiResults" :columns="wencaiColumns" />
+                </ArtDecoCard>
+            </div>
         </div>
     </div>
 </template>
@@ -2133,14 +2233,59 @@
     const selectedConcept = ref(null)
     const lastUpdate = ref('')
 
-    // 主标签页
+    // 主标签页 - 增强版包含HTML的所有功能
     const mainTabs = [
         { key: 'data-quality', label: '数据质量', icon: '🛡️' },
         { key: 'fund-flow', label: '资金流向', icon: '💰' },
         { key: 'etf', label: 'ETF分析', icon: '🏷️' },
         { key: 'concepts', label: '概念板块', icon: '💡' },
         { key: 'lhb', label: '龙虎榜', icon: '🏆' },
-        { key: 'auction', label: '竞价抢筹', icon: '⏰' }
+        { key: 'auction', label: '竞价抢筹', icon: '⏰' },
+        { key: 'institutions', label: '机构评级', icon: '🏢', badge: '新' },
+        { key: 'wencai', label: '问财搜索', icon: '🔍' }
+    ]
+
+    // 机构评级数据 - 从HTML功能增强
+    const institutionData = ref({
+        buyRating: { count: 156, percentage: 32.4 },
+        holdRating: { count: 289, percentage: 60.1 },
+        neutralRating: { count: 45, percentage: 9.4 },
+        reduceRating: { count: 12, percentage: 2.5 },
+        sellRating: { count: 5, percentage: 1.0 }
+    })
+
+    const latestRatings = ref([
+        { stock: '600519', name: '贵州茅台', rating: '买入', institution: '中信证券', date: '2024-01-16', target: 1890 },
+        { stock: '000001', name: '平安银行', rating: '增持', institution: '国泰君安', date: '2024-01-16', target: 12.8 },
+        { stock: '300750', name: '宁德时代', rating: '买入', institution: '招商证券', date: '2024-01-15', target: 245 },
+        { stock: '600036', name: '招商银行', rating: '中性', institution: '海通证券', date: '2024-01-15', target: 38.5 }
+    ])
+
+    const ratingColumns = [
+        { key: 'stock', label: '股票代码', width: 100 },
+        { key: 'name', label: '股票名称', width: 120 },
+        { key: 'rating', label: '评级', width: 80 },
+        { key: 'institution', label: '机构', width: 120 },
+        { key: 'date', label: '评级日期', width: 100 },
+        { key: 'target', label: '目标价', width: 80 }
+    ]
+
+    // 问财搜索数据 - 从HTML功能增强
+    const wencaiQuery = ref('')
+    const wencaiLoading = ref(false)
+    const wencaiResults = ref([])
+    const quickTags = ref([
+        '涨停股', '创历史新高', '主力净流入', '北向资金买入',
+        '技术指标金叉', '量能放大', '突破平台', '均线多头排列'
+    ])
+
+    const wencaiColumns = [
+        { key: 'code', label: '股票代码', width: 100 },
+        { key: 'name', label: '股票名称', width: 120 },
+        { key: 'price', label: '最新价', width: 80 },
+        { key: 'change', label: '涨跌幅', width: 80 },
+        { key: 'volume', label: '成交量', width: 100 },
+        { key: 'score', label: '匹配度', width: 80 }
     ]
 
     // 时间筛选器
@@ -2260,6 +2405,52 @@
             minute: '2-digit',
             second: '2-digit'
         })
+    }
+
+    // 问财搜索相关方法 - 从HTML功能增强
+    const executeWencaiSearch = async () => {
+        if (!wencaiQuery.value.trim()) return
+
+        wencaiLoading.value = true
+        try {
+            // 模拟问财搜索 - 实际实现应调用后端API
+            await new Promise(resolve => setTimeout(resolve, 1500)) // 模拟网络延迟
+
+            // 模拟搜索结果
+            wencaiResults.value = [
+                { code: '600519', name: '贵州茅台', price: 1890.50, change: '+2.34%', volume: '15.6万手', score: 95 },
+                { code: '000001', name: '平安银行', price: 12.45, change: '+1.23%', volume: '89.3万手', score: 87 },
+                { code: '300750', name: '宁德时代', price: 245.80, change: '+3.45%', volume: '45.2万手', score: 92 },
+                { code: '600036', name: '招商银行', price: 38.65, change: '+1.67%', volume: '67.8万手', score: 84 }
+            ]
+        } catch (error) {
+            console.error('问财搜索失败:', error)
+        } finally {
+            wencaiLoading.value = false
+        }
+    }
+
+    const addTagToQuery = tag => {
+        if (wencaiQuery.value) {
+            wencaiQuery.value += ' ' + tag
+        } else {
+            wencaiQuery.value = tag
+        }
+    }
+
+    const exportResults = () => {
+        // 模拟导出功能
+        const csvContent = wencaiResults.value.map(row =>
+            Object.values(row).join(',')
+        ).join('\n')
+
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'wencai-search-results.csv'
+        a.click()
+        window.URL.revokeObjectURL(url)
     }
 
     const selectConcept = concept => {

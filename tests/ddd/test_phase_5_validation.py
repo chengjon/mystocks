@@ -17,20 +17,32 @@ sys.path.insert(0, project_root)
 
 def test_portfolio_context_imports():
     """测试投资组合上下文导入"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试1: Portfolio Context模块导入")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
 
     tests = [
-        ("PerformanceMetrics value object", "from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics"),
-        ("PositionInfo value object", "from src.domain.portfolio.value_objects.performance_metrics import PositionInfo"),
+        (
+            "PerformanceMetrics value object",
+            "from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics",
+        ),
+        (
+            "PositionInfo value object",
+            "from src.domain.portfolio.value_objects.performance_metrics import PositionInfo",
+        ),
         ("Portfolio aggregate root", "from src.domain.portfolio.model.portfolio import Portfolio"),
         ("Transaction entity", "from src.domain.portfolio.model.transaction import Transaction"),
-        ("IPortfolioRepository interface", "from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository"),
-        ("ITransactionRepository interface", "from src.domain.portfolio.repository.iportfolio_repository import ITransactionRepository"),
+        (
+            "IPortfolioRepository interface",
+            "from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository",
+        ),
+        (
+            "ITransactionRepository interface",
+            "from src.domain.portfolio.repository.iportfolio_repository import ITransactionRepository",
+        ),
         ("RebalancerService service", "from src.domain.portfolio.service.rebalancer_service import RebalancerService"),
         ("RebalanceAction", "from src.domain.portfolio.service.rebalancer_service import RebalanceAction"),
     ]
@@ -50,9 +62,9 @@ def test_portfolio_context_imports():
 
 def test_performance_metrics():
     """测试PerformanceMetrics值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试2: PerformanceMetrics值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -84,6 +96,7 @@ def test_performance_metrics():
     except Exception as e:
         print(f"❌ PerformanceMetrics测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -93,9 +106,9 @@ def test_performance_metrics():
 
 def test_position_info():
     """测试PositionInfo值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试3: PositionInfo值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -130,6 +143,7 @@ def test_position_info():
     except Exception as e:
         print(f"❌ PositionInfo测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -139,9 +153,9 @@ def test_position_info():
 
 def test_portfolio_lifecycle():
     """测试Portfolio聚合根生命周期"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试4: Portfolio聚合根生命周期")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -168,6 +182,7 @@ def test_portfolio_lifecycle():
         print("\n📍 测试总资产计算...")
         # 添加一个持仓
         from src.domain.portfolio.value_objects.performance_metrics import PositionInfo
+
         portfolio.positions["000001.SZ"] = PositionInfo(
             symbol="000001.SZ",
             quantity=1000,
@@ -178,7 +193,7 @@ def test_portfolio_lifecycle():
         # 计算持仓市值
         positions_value = sum(pos.market_value for pos in portfolio.positions.values())
         total_value = portfolio.cash + positions_value
-        
+
         assert total_value == 100000.0 + (1000 * 11.00)  # 现金 + 持仓市值
         print(f"✅ 总资产计算正确: {total_value:.2f}")
         passed += 1
@@ -186,6 +201,7 @@ def test_portfolio_lifecycle():
     except Exception as e:
         print(f"❌ Portfolio生命周期测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -195,9 +211,9 @@ def test_portfolio_lifecycle():
 
 def test_transaction_entity():
     """测试Transaction实体"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试5: Transaction实体")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -219,7 +235,7 @@ def test_transaction_entity():
         assert buy_transaction.side == OrderSide.BUY
         assert buy_transaction.total_amount == 1000 * 10.50 + 5.0
         assert buy_transaction.quantity == 1000
-        assert buy_transaction.is_buy if hasattr(buy_transaction, 'is_buy') else True
+        assert buy_transaction.is_buy if hasattr(buy_transaction, "is_buy") else True
         print("✅ 买入交易创建成功")
         passed += 1
 
@@ -241,6 +257,7 @@ def test_transaction_entity():
     except Exception as e:
         print(f"❌ Transaction测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -250,9 +267,9 @@ def test_transaction_entity():
 
 def test_repository_interfaces():
     """测试仓储接口定义"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试6: 仓储接口定义")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -264,10 +281,7 @@ def test_repository_interfaces():
         )
 
         # 检查IPortfolioRepository方法
-        required_methods = [
-            "save", "find_by_id", "find_by_name", "find_all",
-            "delete", "exists", "count"
-        ]
+        required_methods = ["save", "find_by_id", "find_by_name", "find_all", "delete", "exists", "count"]
 
         for method in required_methods:
             if hasattr(IPortfolioRepository, method):
@@ -278,10 +292,7 @@ def test_repository_interfaces():
                 failed += 1
 
         # 检查ITransactionRepository方法
-        required_methods = [
-            "save", "find_by_id", "find_by_portfolio",
-            "find_by_portfolio_and_symbol", "delete"
-        ]
+        required_methods = ["save", "find_by_id", "find_by_portfolio", "find_by_portfolio_and_symbol", "delete"]
 
         for method in required_methods:
             if hasattr(ITransactionRepository, method):
@@ -301,9 +312,9 @@ def test_repository_interfaces():
 
 def test_rebalancer_service():
     """测试RebalancerService领域服务"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试7: RebalancerService领域服务")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -320,7 +331,7 @@ def test_rebalancer_service():
 
         assert len(weights) == 3
         for symbol, weight in weights.items():
-            assert abs(weight - 1.0/3) < 0.001
+            assert abs(weight - 1.0 / 3) < 0.001
         print("✅ 等权重计算正确")
         passed += 1
 
@@ -378,6 +389,7 @@ def test_rebalancer_service():
     except Exception as e:
         print(f"❌ RebalancerService测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -387,9 +399,9 @@ def test_rebalancer_service():
 
 def main():
     """主测试函数"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  Phase 5验证测试: Portfolio Context")
-    print("="*60)
+    print("=" * 60)
     print(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     total_passed = 0
@@ -425,9 +437,9 @@ def main():
     total_failed += f
 
     # 总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试总结")
-    print("="*60)
+    print("=" * 60)
     print(f"总通过: {total_passed}")
     print(f"总失败: {total_failed}")
     print(f"成功率: {total_passed/(total_passed+total_failed)*100:.1f}%")

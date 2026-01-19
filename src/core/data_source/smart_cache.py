@@ -259,10 +259,7 @@ class SmartCache:
         """
         with self.lock:
             current_time = time.time()
-            expired_keys = [
-                key for key, entry in self.cache.items()
-                if current_time > entry["expires_at"]
-            ]
+            expired_keys = [key for key, entry in self.cache.items() if current_time > entry["expires_at"]]
 
             for key in expired_keys:
                 del self.cache[key]

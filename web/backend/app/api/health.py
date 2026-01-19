@@ -9,9 +9,10 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import psycopg2
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, Request, Depends
 from pydantic import BaseModel
 
+from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import (
     ErrorCodes,
     create_error_response,
@@ -134,7 +135,7 @@ async def check_api_service() -> HealthStatus:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'http://localhost:{os.getenv("BACKEND_PORT", "8000")}/api/health',
+                f"http://localhost:{os.getenv('BACKEND_PORT', '8000')}/api/health",
                 timeout=aiohttp.ClientTimeout(total=5),
             ) as response:
                 response_time = (time.time() - start_time) * 1000  # 转换为毫秒
@@ -315,7 +316,7 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
         else:
             raise Exception(f"健康检查脚本不存在: {health_script}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"详细健康检查失败: {str(e)}")
+        raise BusinessException(detail=f"详细健康检查失败: {str(e)}", status_code=500, error_code="HEALTH_CHECK_FAILED")
 
 
 @router.get("/reports/health/{timestamp}")
@@ -330,13 +331,13 @@ async def get_health_report(timestamp: str, current_user: User = Depends(get_cur
         report_file = f"/opt/mystocks/logs/health_reports/health_report_{timestamp}.json"
 
         if not os.path.exists(report_file):
-            raise HTTPException(status_code=404, detail="报告不存在")
+            raise NotFoundException(resource="健康检查报告", identifier=timestamp)
 
         with open(report_file, "r", encoding="utf-8") as f:
             report_data = json.load(f)
 
         return report_data
-    except HTTPException:
+    except NotFoundException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取报告失败: {str(e)}")
+        raise BusinessException(detail=f"获取报告失败: {str(e)}", status_code=500, error_code="REPORT_RETRIEVAL_FAILED")

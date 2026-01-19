@@ -81,10 +81,7 @@ from .smart_scheduler import (
     create_scheduler,
 )
 
-from .talib_adapter import (
-    TalibGenericIndicator,
-    register_all_talib_indicators
-)
+from .talib_adapter import TalibGenericIndicator, register_all_talib_indicators
 
 __all__ = [
     # Enums

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SignalRecord:
     """信号记录数据模型"""
+
     strategy_id: str
     symbol: str
     signal_type: str  # BUY/SELL/HOLD
@@ -31,6 +32,7 @@ class SignalRecord:
 @dataclass
 class SignalExecutionRecord:
     """信号执行结果记录"""
+
     signal_id: int
     executed: bool = True
     executed_at: Optional[datetime] = None
@@ -87,6 +89,7 @@ class SignalRecorder:
         if self._pg_pool is None:
             try:
                 from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
                 pg = get_postgres_async()
                 if not pg.is_connected():
                     logger.warning("监控数据库未连接，信号记录功能将不可用")

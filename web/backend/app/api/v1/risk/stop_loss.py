@@ -63,9 +63,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "添加监控失败")
-            )
+            raise HTTPException(status_code=400, detail=result.get("error", "添加监控失败"))
 
         return result
 
@@ -232,9 +230,7 @@ async def get_stop_loss_performance(
 
 
 @router.get("/history/recommendations", response_model=Dict[str, Any])
-async def get_stop_loss_recommendations(
-    strategy_type: str, symbol: Optional[str] = None
-) -> Dict[str, Any]:
+async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str] = None) -> Dict[str, Any]:
     """获取止损策略优化建议"""
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
@@ -244,9 +240,7 @@ async def get_stop_loss_recommendations(
         if not history_service:
             raise HTTPException(status_code=503, detail="历史分析服务不可用")
 
-        result = await history_service.get_strategy_recommendations(
-            strategy_type, symbol
-        )
+        result = await history_service.get_strategy_recommendations(strategy_type, symbol)
         return result
 
     except HTTPException:

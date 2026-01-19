@@ -16,16 +16,18 @@ logger = logging.getLogger(__name__)
 
 class SignalStatus(Enum):
     """信号状态枚举"""
+
     GENERATED = "generated"  # 已生成
-    EXECUTED = "executed"     # 已执行
-    CANCELLED = "cancelled"   # 已取消
-    EXPIRED = "expired"       # 已过期
-    FAILED = "failed"         # 执行失败
+    EXECUTED = "executed"  # 已执行
+    CANCELLED = "cancelled"  # 已取消
+    EXPIRED = "expired"  # 已过期
+    FAILED = "failed"  # 执行失败
 
 
 @dataclass
 class ExecutionResult:
     """执行结果数据模型"""
+
     signal_id: int
     executed: bool
     executed_at: datetime
@@ -72,6 +74,7 @@ class SignalResultTracker:
         if self._pg_pool is None:
             try:
                 from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
                 pg = get_postgres_async()
                 if not pg.is_connected():
                     logger.warning("监控数据库未连接，结果追踪功能将不可用")
@@ -150,6 +153,7 @@ class SignalResultTracker:
         try:
             # 查询信号详情
             from src.monitoring.signal_recorder import get_signal_recorder
+
             recorder = get_signal_recorder()
             signal = await recorder.get_signal_by_id(signal_id)
 
@@ -217,8 +221,7 @@ class SignalResultTracker:
                     accuracy_percentage=accuracy,
                 )
                 logger.debug(
-                    f"更新准确率: strategy_id={strategy_id}, signal_type={signal_type}, "
-                    f"accuracy={accuracy:.2f}%"
+                    f"更新准确率: strategy_id={strategy_id}, signal_type={signal_type}, " f"accuracy={accuracy:.2f}%"
                 )
 
         except Exception as e:

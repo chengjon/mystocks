@@ -137,6 +137,7 @@ class TestSmartCache:
 
     def test_background_refresh_failure(self):
         """测试后台刷新失败处理"""
+
         def failing_refresh_func():
             raise Exception("Refresh failed")
 

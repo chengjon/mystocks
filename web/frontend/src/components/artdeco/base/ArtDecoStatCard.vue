@@ -129,7 +129,7 @@
 
     .artdeco-stat-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -137,13 +137,13 @@
     }
 
     .artdeco-stat-icon {
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       color: rgba(212, 175, 55, 0.2);
     }
 
     .artdeco-stat-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-xl) // 32px - Compact v3.1;
+      font-size: var(--artdeco-font-size-xl); // 32px - Compact v3.1
       font-weight: 600;
       line-height: 1;
       margin-bottom: var(--artdeco-spacing-2);
@@ -168,7 +168,7 @@
       align-items: center;
       gap: 4px;
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       padding: 4px 12px;
       border-radius: var(--artdeco-radius-none);
@@ -176,7 +176,7 @@
     }
 
     .artdeco-stat-arrow {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
     }
 
     .artdeco-stat-change-rise {
@@ -197,7 +197,7 @@
     .artdeco-stat-description {
       margin-top: var(--artdeco-spacing-3);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-silver-dim);
       line-height: 1.4;
     }

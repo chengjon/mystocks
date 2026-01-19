@@ -8,7 +8,9 @@ Multi-data Source Support
 from datetime import date, timedelta
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Path, Query
+
+from app.core.exceptions import BusinessException, ValidationException, NotFoundException
 
 from app.models.announcement import (
     Announcement,
@@ -61,14 +63,16 @@ async def fetch_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Failed to fetch"))
+            raise BusinessException(
+                detail=result.get("error", "Failed to fetch"), status_code=400, error_code="ANNOUNCEMENT_FETCH_FAILED"
+            )
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/list")
@@ -110,14 +114,16 @@ async def get_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise BusinessException(
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+            )
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/today")
@@ -145,7 +151,9 @@ async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0,
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise BusinessException(
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+            )
 
         return {
             "success": True,
@@ -154,10 +162,10 @@ async def get_today_announcements(min_importance: Optional[int] = Query(0, ge=0,
             "count": result["total"],
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/important")
@@ -190,7 +198,9 @@ async def get_important_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise BusinessException(
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+            )
 
         return {
             "success": True,
@@ -201,10 +211,10 @@ async def get_important_announcements(
             "count": result["total"],
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/stock/{stock_code}")
@@ -237,7 +247,9 @@ async def get_stock_announcements(
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Query failed"))
+            raise BusinessException(
+                detail=result.get("error", "Query failed"), status_code=400, error_code="ANNOUNCEMENT_QUERY_FAILED"
+            )
 
         return {
             "success": True,
@@ -248,10 +260,10 @@ async def get_stock_announcements(
             "count": result["total"],
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.post("/monitor/evaluate")
@@ -270,14 +282,18 @@ async def evaluate_monitor_rules():
         result = service.evaluate_monitor_rules()
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "Evaluation failed"))
+            raise BusinessException(
+                detail=result.get("error", "Evaluation failed"),
+                status_code=400,
+                error_code="ANNOUNCEMENT_EVALUATION_FAILED",
+            )
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/stats")
@@ -318,7 +334,7 @@ async def get_announcement_stats():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/types")
@@ -341,7 +357,7 @@ async def get_announcement_types():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/monitor-rules")
@@ -363,7 +379,7 @@ async def get_monitor_rules():
         finally:
             session.close()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.post("/monitor-rules")
@@ -390,7 +406,7 @@ async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
             )
 
             if existing_rule:
-                raise HTTPException(status_code=400, detail="规则名称已存在")
+                raise BusinessException(detail="规则名称已存在", status_code=400, error_code="RULE_NAME_EXISTS")
 
             # 创建新规则
             new_rule = AnnouncementMonitorRule(
@@ -411,10 +427,10 @@ async def create_monitor_rule(rule: AnnouncementMonitorRuleCreate):
             return AnnouncementMonitorRuleResponse.from_orm(new_rule)
         finally:
             session.close()
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.put("/monitor-rules/{rule_id}")
@@ -437,7 +453,7 @@ async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpda
             rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
 
             if not rule:
-                raise HTTPException(status_code=404, detail="规则不存在")
+                raise NotFoundException(resource="规则", identifier="查询条件")
 
             # 更新字段
             for field, value in updates.dict(exclude_unset=True).items():
@@ -450,10 +466,10 @@ async def update_monitor_rule(rule_id: int, updates: AnnouncementMonitorRuleUpda
             return AnnouncementMonitorRuleResponse.from_orm(rule)
         finally:
             session.close()
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.delete("/monitor-rules/{rule_id}")
@@ -475,7 +491,7 @@ async def delete_monitor_rule(rule_id: int):
             rule = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.id == rule_id).first()
 
             if not rule:
-                raise HTTPException(status_code=404, detail="规则不存在")
+                raise NotFoundException(resource="规则", identifier="查询条件")
 
             session.delete(rule)
             session.commit()
@@ -483,10 +499,10 @@ async def delete_monitor_rule(rule_id: int):
             return {"success": True, "message": "规则已删除"}
         finally:
             session.close()
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")
 
 
 @router.get("/triggered-records")
@@ -562,4 +578,4 @@ async def get_triggered_records(
         finally:
             session.close()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="ANNOUNCEMENT_OPERATION_FAILED")

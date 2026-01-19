@@ -10,6 +10,7 @@ from datetime import datetime
 from uuid import uuid4
 from src.domain.trading.value_objects import OrderSide
 
+
 @dataclass
 class Transaction:
     """
@@ -33,16 +34,17 @@ class Transaction:
     quantity: int = 0
     price: float = 0.0
     commission: float = 0.0  # 手续费
-    total_amount: float = 0.0 # 总金额
+    total_amount: float = 0.0  # 总金额
     timestamp: datetime = field(default_factory=datetime.now)
-    
+
     @classmethod
-    def create(cls, portfolio_id: str, symbol: str, side: OrderSide, 
-               quantity: int, price: float, commission: float) -> 'Transaction':
-        
+    def create(
+        cls, portfolio_id: str, symbol: str, side: OrderSide, quantity: int, price: float, commission: float
+    ) -> "Transaction":
+
         amount = quantity * price
         total = amount + commission if side == OrderSide.BUY else amount - commission
-        
+
         return cls(
             id=str(uuid4()),
             portfolio_id=portfolio_id,
@@ -52,7 +54,7 @@ class Transaction:
             price=price,
             commission=commission,
             total_amount=total,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
     def __post_init__(self):

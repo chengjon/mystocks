@@ -12,9 +12,7 @@
 版本: 1.0.0
 """
 
-import os
-import uuid
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -26,15 +24,11 @@ from app.core.responses import (
     bad_request,
     not_found,
     server_error,
-    validation_error,
-    ErrorDetail,
 )
 from app.core.security import get_current_user, User
 from app.schemas.algorithm_schemas import (
     AlgorithmTrainRequest,
     AlgorithmPredictRequest,
-    AlgorithmInfoRequest,
-    SVMTrainRequest,
     DecisionTreeTrainRequest,
 )
 from app.services.algorithm_service import algorithm_service
@@ -102,9 +96,7 @@ async def health_check(
             "status": "healthy",
             "algorithms_loaded": True,
             "gpu_available": gpu_available,
-            "supported_algorithms": len(alg_type.get_all_algorithms())
-            if alg_type
-            else 0,
+            "supported_algorithms": len(alg_type.get_all_algorithms()) if alg_type else 0,
             "timestamp": datetime.utcnow().isoformat(),
         }
 
@@ -128,12 +120,8 @@ async def list_algorithms(
         alg_module, alg_type = get_algorithms_module()
 
         algorithms_list = {
-            "classification": [
-                alg.value for alg in alg_type.get_classification_algorithms()
-            ],
-            "pattern_matching": [
-                alg.value for alg in alg_type.get_pattern_matching_algorithms()
-            ],
+            "classification": [alg.value for alg in alg_type.get_classification_algorithms()],
+            "pattern_matching": [alg.value for alg in alg_type.get_pattern_matching_algorithms()],
             "advanced": [alg.value for alg in alg_type.get_advanced_algorithms()],
         }
 
@@ -145,9 +133,7 @@ async def list_algorithms(
 
 
 @router.get("/{algorithm_type}/info", response_model=UnifiedResponse)
-async def get_algorithm_info(
-    algorithm_type: str, current_user: User = Depends(get_current_user)
-) -> UnifiedResponse:
+async def get_algorithm_info(algorithm_type: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     获取算法详细信息
 
@@ -217,17 +203,13 @@ async def train_algorithm(
             model_id=result.get("model_id"),
         )
 
-        return ok(
-            data=result, message=f"{request.algorithm_type.value.upper()}算法训练成功"
-        )
+        return ok(data=result, message=f"{request.algorithm_type.value.upper()}算法训练成功")
 
     except HTTPException:
         # 服务层已抛出HTTPException，直接重新抛出
         raise
     except Exception as e:
-        logger.error(
-            "算法训练失败", algorithm=request.algorithm_type.value, error=str(e)
-        )
+        logger.error("算法训练失败", algorithm=request.algorithm_type.value, error=str(e))
         return server_error(message="算法训练过程中发生错误")
 
 
@@ -245,9 +227,7 @@ async def predict_with_algorithm(
         预测结果，包括预测值和置信度
     """
     try:
-        logger.info(
-            "收到算法预测请求", user=current_user.username, model_id=request.model_id
-        )
+        logger.info("收到算法预测请求", user=current_user.username, model_id=request.model_id)
 
         # 使用服务层进行预测
         result = await algorithm_service.predict_with_algorithm(request)
@@ -290,9 +270,7 @@ async def list_active_models(
 
 
 @router.delete("/models/{model_id}", response_model=UnifiedResponse)
-async def unload_model(
-    model_id: str, current_user: User = Depends(get_current_user)
-) -> UnifiedResponse:
+async def unload_model(model_id: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     卸载指定的算法模型
 
@@ -600,16 +578,12 @@ async def get_model_history(
 
         # 获取训练历史
         if history_type in ["all", "training"]:
-            training_history = await algorithm_service.get_training_history(
-                model_id=model_id, limit=limit
-            )
+            training_history = await algorithm_service.get_training_history(model_id=model_id, limit=limit)
             result["training_history"] = training_history
 
         # 获取预测历史
         if history_type in ["all", "prediction"]:
-            prediction_history = await algorithm_service.get_prediction_history(
-                model_id=model_id, limit=limit
-            )
+            prediction_history = await algorithm_service.get_prediction_history(model_id=model_id, limit=limit)
             result["prediction_history"] = prediction_history
 
         return ok(data=result, message="获取模型历史成功")
@@ -643,9 +617,7 @@ async def get_algorithm_statistics(
 
 
 @router.get("/models/{model_id}", response_model=UnifiedResponse)
-async def get_model_details(
-    model_id: str, current_user: User = Depends(get_current_user)
-) -> UnifiedResponse:
+async def get_model_details(model_id: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     获取指定模型的详细信息 (Phase 1.4)
 
@@ -712,9 +684,7 @@ async def train_decision_tree_algorithm(
                 "max_features": request.tree_config.max_features,
                 "random_state": request.tree_config.random_state,
                 "use_random_forest": request.tree_config.use_random_forest,
-                "n_estimators": request.tree_config.n_estimators
-                if request.tree_config.use_random_forest
-                else None,
+                "n_estimators": request.tree_config.n_estimators if request.tree_config.use_random_forest else None,
                 "enable_gpu": request.tree_config.enable_gpu,
                 "gpu_memory_limit_mb": 2048,
             },
@@ -754,9 +724,7 @@ async def predict_decision_tree_algorithm(
         决策树预测结果，包括分类标签、置信度和特征重要性
     """
     try:
-        logger.info(
-            "收到决策树预测请求", user=current_user.username, model_id=request.model_id
-        )
+        logger.info("收到决策树预测请求", user=current_user.username, model_id=request.model_id)
 
         # 验证模型是否为决策树
         model_info = await algorithm_service.get_model_info(request.model_id)
@@ -794,9 +762,7 @@ async def get_decision_tree_feature_importance(
         特征重要性分析结果
     """
     try:
-        logger.info(
-            "获取决策树特征重要性", user=current_user.username, model_id=model_id
-        )
+        logger.info("获取决策树特征重要性", user=current_user.username, model_id=model_id)
 
         # 使用服务层获取特征重要性
         result = await algorithm_service.get_feature_importance(model_id)
@@ -924,9 +890,7 @@ async def get_naive_bayes_class_probabilities(
         各类别的先验概率和条件概率信息
     """
     try:
-        logger.info(
-            "获取朴素贝叶斯类别概率", user=current_user.username, model_id=model_id
-        )
+        logger.info("获取朴素贝叶斯类别概率", user=current_user.username, model_id=model_id)
 
         # 使用服务层获取模型统计信息
         result = await algorithm_service.get_model_statistics(model_id)

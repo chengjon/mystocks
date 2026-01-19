@@ -16,10 +16,11 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Body, Depends, Path, Query, status
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
+from app.core.exceptions import BusinessException, NotFoundException, ForbiddenException
 from app.core.responses import APIResponse
 from app.models.task import TaskConfig, TaskExecution, TaskResponse, TaskStatistics
 from app.services.task_manager import task_manager
@@ -306,7 +307,9 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
     try:
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="任务注册频率过高，请稍后再试")
+            raise BusinessException(
+                detail="任务注册频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 记录操作审计
         log_task_operation(
@@ -328,7 +331,7 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
 
         response = task_manager.register_task(task_config)
         if not response.success:
-            raise HTTPException(status_code=400, detail=response.message)
+            raise BusinessException(detail=response.message, status_code=400, error_code="TASK_OPERATION_FAILED")
 
         # 添加创建者信息
         if response.data:
@@ -337,11 +340,11 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
         logger.info(f"Task registered successfully by {current_user.username}: {task_config.name}")
         return response
 
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to register task for user {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="任务注册失败")
+        raise BusinessException(detail="任务注册失败", status_code=500, error_code="TASK_REGISTRATION_FAILED")
 
 
 @router.delete("/{task_id}", response_model=TaskResponse)
@@ -361,23 +364,25 @@ async def unregister_task(
     try:
         # 检查操作频率限制
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=5):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="任务操作频率过高，请稍后再试")
+            raise BusinessException(
+                detail="任务操作频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 记录操作审计
         log_task_operation(user=current_user, operation="unregister_task", task_id=task_id)
 
         response = task_manager.unregister_task(task_id)
         if not response.success:
-            raise HTTPException(status_code=404, detail=response.message)
+            raise NotFoundException(resource="任务", identifier=response.message)
 
         logger.info(f"Task {task_id} unregistered successfully by {current_user.username}")
         return response
 
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to unregister task {task_id} for user {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="任务注销失败")
+        raise BusinessException(detail="任务注销失败", status_code=500, error_code="TASK_UNREGISTRATION_FAILED")
 
 
 @router.get("/", response_model=List[TaskConfig])
@@ -407,7 +412,9 @@ async def list_tasks(
     try:
         # 检查操作频率限制（读取操作限制较宽松）
         if not check_task_rate_limit(current_user.id, max_operations_per_minute=30):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="查询频率过高，请稍后再试")
+            raise BusinessException(
+                detail="查询频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 记录操作审计
         log_task_operation(
@@ -424,12 +431,12 @@ async def list_tasks(
             mock_tasks = []
             for i in range(min(limit, 10)):
                 task = TaskConfig(
-                    task_id=f"task_{i+1000}",
-                    name=f"模拟任务_{i+1}",
-                    description=f"这是一个模拟任务_{i+1}",
+                    task_id=f"task_{i + 1000}",
+                    name=f"模拟任务_{i + 1}",
+                    description=f"这是一个模拟任务_{i + 1}",
                     task_type=TaskType.DATA_PROCESSING,
-                    config={"param1": f"value{i+1}"},
-                    tags=[f"tag{i+1}", "mock"],
+                    config={"param1": f"value{i + 1}"},
+                    tags=[f"tag{i + 1}", "mock"],
                     enabled=True,
                     created_at=datetime.now() - timedelta(days=i),
                     created_by=current_user.username,  # 标记创建者
@@ -447,16 +454,16 @@ async def list_tasks(
         logger.info(f"Tasks listed by {current_user.username}: {len(tasks)} tasks")
         return tasks
 
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to list tasks for user {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="获取任务列表失败")
+        raise BusinessException(detail="获取任务列表失败", status_code=500, error_code="TASK_LIST_RETRIEVAL_FAILED")
 
 
 @router.get("/{task_id}", response_model=TaskConfig)
 async def get_task(
-    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
+    task_id: str = Path(..., description="任务ID", min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$"),
 ):
     """获取任务详情"""
     if use_mock:
@@ -478,13 +485,13 @@ async def get_task(
     try:
         task = task_manager.get_task(task_id)
         if not task:
-            raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
+            raise NotFoundException(resource="任务", identifier=task_id)
         return task
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to get task", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.post("/{task_id}/start", response_model=TaskResponse)
@@ -493,13 +500,13 @@ async def start_task(task_id: str, params: Optional[Dict[str, Any]] = Body(None)
     try:
         response = await task_manager.start_task(task_id, params)
         if not response.success:
-            raise HTTPException(status_code=400, detail=response.message)
+            raise BusinessException(detail=response.message, status_code=400, error_code="TASK_OPERATION_FAILED")
         return response
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to start task", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.post("/{task_id}/stop", response_model=TaskResponse)
@@ -508,13 +515,13 @@ async def stop_task(task_id: str):
     try:
         response = task_manager.stop_task(task_id)
         if not response.success:
-            raise HTTPException(status_code=400, detail=response.message)
+            raise BusinessException(detail=response.message, status_code=400, error_code="TASK_OPERATION_FAILED")
         return response
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to stop task", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.get("/executions/", response_model=List[TaskExecution])
@@ -530,8 +537,8 @@ async def list_task_executions(
         executions = []
         for i in range(min(limit, 10)):
             execution = TaskExecution(
-                execution_id=f"exec_{i+1000}",
-                task_id=task_id or f"task_{i%3+1000}",
+                execution_id=f"exec_{i + 1000}",
+                task_id=task_id or f"task_{i % 3 + 1000}",
                 status=TaskStatus.COMPLETED if i % 4 != 0 else TaskStatus.FAILED,
                 start_time=datetime.now() - timedelta(hours=i + 1),
                 end_time=datetime.now() - timedelta(hours=i) + timedelta(minutes=30),
@@ -546,7 +553,7 @@ async def list_task_executions(
         return executions
     except Exception as e:
         logger.error("Failed to list task executions", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.get("/executions/{execution_id}", response_model=TaskExecution)
@@ -555,13 +562,13 @@ async def get_execution(execution_id: str):
     try:
         execution = task_manager.get_execution(execution_id)
         if not execution:
-            raise HTTPException(status_code=404, detail=f"Execution {execution_id} not found")
+            raise NotFoundException(resource="任务执行", identifier=execution_id)
         return execution
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to get execution", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.get("/statistics/", response_model=Dict[str, TaskStatistics])
@@ -593,7 +600,7 @@ async def get_task_statistics():
         return stats
     except Exception as e:
         logger.error("Failed to get task statistics", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.post("/import", response_model=TaskResponse)
@@ -602,13 +609,13 @@ async def import_config(config_path: str = Body(..., embed=True)):
     try:
         response = task_manager.import_config(config_path)
         if not response.success:
-            raise HTTPException(status_code=400, detail=response.message)
+            raise BusinessException(detail=response.message, status_code=400, error_code="TASK_OPERATION_FAILED")
         return response
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error("Failed to import config", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.post("/export")
@@ -623,7 +630,7 @@ async def export_config(output_path: str = Body(..., embed=True)):
         }
     except Exception as e:
         logger.error("Failed to export config", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.delete("/executions/cleanup")
@@ -638,7 +645,7 @@ async def cleanup_executions(days: int = Query(7, ge=1, le=90)):
         }
     except Exception as e:
         logger.error("Failed to cleanup executions", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="TASK_OPERATION_FAILED")
 
 
 @router.get("/health", summary="任务管理健康检查", description="检查后台任务系统的运行状态", tags=["health"])
@@ -733,7 +740,7 @@ async def get_audit_logs(
         # 检查管理员权限
         if not check_admin_privileges(current_user):
             logger.warning(f"Unauthorized audit log access attempt by user: {current_user.username}")
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
+            raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 记录审计日志访问
         log_task_operation(
@@ -766,11 +773,11 @@ async def get_audit_logs(
             "returned_count": len(result_logs),
         }
 
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to get audit logs for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="获取审计日志失败")
+        raise BusinessException(detail="获取审计日志失败", status_code=500, error_code="AUDIT_LOG_RETRIEVAL_FAILED")
 
 
 @router.post("/cleanup/audit", response_model=APIResponse)
@@ -789,7 +796,7 @@ async def cleanup_audit_logs(
         # 检查管理员权限
         if not check_admin_privileges(current_user):
             logger.warning(f"Unauthorized audit cleanup attempt by user: {current_user.username}")
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
+            raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 计算清理时间点
         cutoff_time = datetime.utcnow() - timedelta(days=days)
@@ -815,8 +822,8 @@ async def cleanup_audit_logs(
             message=f"已清理 {cleaned_count} 条旧审计日志",
         )
 
-    except HTTPException:
+    except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Failed to cleanup audit logs for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=500, detail="清理审计日志失败")
+        raise BusinessException(detail="清理审计日志失败", status_code=500, error_code="AUDIT_LOG_CLEANUP_FAILED")

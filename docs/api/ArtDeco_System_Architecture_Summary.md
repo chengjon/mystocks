@@ -8,7 +8,7 @@ Based on comprehensive exploration of the MyStocks project, here's the complete 
 - **Location**: `web/frontend/src/`
 - **Framework**: Vue 3 + TypeScript + Element Plus (styled with ArtDeco)
 - **Pages**: 9 ArtDeco pages in `views/artdeco-pages/`
-- **Components**: 52 components organized in 4 categories (base/specialized/advanced/core)
+- **Components**: 64 components organized in 4 categories (base/specialized/advanced/core)
 - **Styling**: SCSS-based design system with CSS variables and geometric patterns
 
 **Backend Integration:**
@@ -191,7 +191,7 @@ Based on comprehensive exploration of the MyStocks project, here's the complete 
 
 ## 📊 System Statistics
 
-- **Total Components**: 52 ArtDeco components
+- **Total Components**: 64 ArtDeco components (13 base, 11 core, 30 specialized, 10 advanced)
 - **Pages**: 9 complete page implementations
 - **API Endpoints**: ~469 across 15 modules
 - **Documentation Files**: 100+ MD files with ArtDeco references

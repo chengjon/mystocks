@@ -18,8 +18,10 @@ import os
 from datetime import date, datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field, ValidationError, field_validator
+
+from app.core.exceptions import BusinessException, ValidationException, NotFoundException
 
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
@@ -267,11 +269,8 @@ async def get_fund_flow(
         ]
         return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(
-                ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取资金流向数据失败: {str(e)}"
-            ).model_dump(),
+        raise BusinessException(
+            detail=f"获取资金流向数据失败: {str(e)}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR"
         )
 
 
@@ -290,11 +289,8 @@ async def refresh_fund_flow(
         result = service.fetch_and_save_fund_flow(symbol, timeframe)
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=400,
-                detail=create_error_response(
-                    ErrorCodes.OPERATION_FAILED, result.get("message", "刷新资金流向数据失败")
-                ).model_dump(),
+            raise BusinessException(
+                detail=result.get("message", "刷新资金流向数据失败"), status_code=400, error_code="OPERATION_FAILED"
             )
 
         return create_success_response(
@@ -302,14 +298,11 @@ async def refresh_fund_flow(
             message=result.get("message", f"{symbol}资金流向数据刷新成功"),
         )
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(
-                ErrorCodes.INTERNAL_SERVER_ERROR, f"刷新资金流向数据时发生错误: {str(e)}"
-            ).model_dump(),
+        raise BusinessException(
+            detail=f"刷新资金流向数据时发生错误: {str(e)}", status_code=500, error_code="INTERNAL_SERVER_ERROR"
         )
 
 
@@ -348,9 +341,8 @@ async def get_etf_list(
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取ETF列表失败: {str(e)}").model_dump(),
+        raise BusinessException(
+            detail=f"获取ETF列表失败: {str(e)}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR"
         )
 
 
@@ -367,7 +359,7 @@ async def refresh_etf_data(
     result = service.fetch_and_save_etf_spot()
 
     if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["message"])
+        raise BusinessException(detail=result["message"], status_code=400, error_code="MARKET_OPERATION_FAILED")
 
     return MessageResponse(**result)
 
@@ -398,7 +390,7 @@ async def get_chip_race(
         results = service.query_chip_race(race_type, trade_date, min_race_amount, limit)
         return [ChipRaceResponse.model_validate(r) for r in results]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MARKET_SERVICE_ERROR")
 
 
 @router.post("/chip-race/refresh", response_model=MessageResponse, summary="刷新抢筹数据")
@@ -418,7 +410,7 @@ async def refresh_chip_race(
     result = service.fetch_and_save_chip_race(race_type, trade_date)
 
     if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["message"])
+        raise BusinessException(detail=result["message"], status_code=400, error_code="MARKET_OPERATION_FAILED")
 
     return MessageResponse(**result)
 
@@ -451,7 +443,7 @@ async def get_lhb_detail(
         results = service.query_lhb_detail(symbol, start_date, end_date, min_net_amount, limit)
         return [LongHuBangResponse.model_validate(r) for r in results]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MARKET_SERVICE_ERROR")
 
 
 @router.post("/lhb/refresh", response_model=MessageResponse, summary="刷新龙虎榜")
@@ -469,7 +461,7 @@ async def refresh_lhb_detail(
     result = service.fetch_and_save_lhb_detail(trade_date)
 
     if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["message"])
+        raise BusinessException(detail=result["message"], status_code=400, error_code="MARKET_OPERATION_FAILED")
 
     return MessageResponse(**result)
 
@@ -521,9 +513,8 @@ async def get_market_quotes(
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, f"获取实时行情失败: {str(e)}").model_dump(),
+        raise BusinessException(
+            detail=f"获取实时行情失败: {str(e)}", status_code=500, error_code="EXTERNAL_SERVICE_ERROR"
         )
 
 
@@ -633,10 +624,7 @@ async def get_stock_list(
             )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询股票列表失败: {str(e)}").model_dump(),
-        )
+        raise BusinessException(detail=f"查询股票列表失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
 
 # ==================== K线数据 ====================
@@ -682,14 +670,14 @@ async def get_kline_data(
                 # 验证日期格式但不转换
                 dt_convert.strptime(start_date, "%Y-%m-%d")
             except ValueError:
-                raise HTTPException(status_code=422, detail=f"开始日期格式错误: {start_date}，应为 YYYY-MM-DD")
+                raise ValidationException(detail=f"开始日期格式错误: {start_date}，应为 YYYY-MM-DD", field="start_date")
 
         if end_date:
             try:
                 # 验证日期格式但不转换
                 dt_convert.strptime(end_date, "%Y-%m-%d")
             except ValueError:
-                raise HTTPException(status_code=422, detail=f"结束日期格式错误: {end_date}，应为 YYYY-MM-DD")
+                raise ValidationException(detail=f"结束日期格式错误: {end_date}，应为 YYYY-MM-DD", field="end_date")
 
         # P0改进 Task 3: 使用熔断器保护外部API调用
         circuit_breaker = get_circuit_breaker("market_data")
@@ -697,7 +685,9 @@ async def get_kline_data(
         if circuit_breaker.is_open():
             # 熔断器打开，使用降级策略
             logger.warning("⚠️ Circuit breaker for market_data is OPEN, K线数据服务暂不可用")
-            raise HTTPException(status_code=503, detail="市场数据服务暂不可用，请稍后重试")
+            raise BusinessException(
+                detail="市场数据服务暂不可用，请稍后重试", status_code=503, error_code="MARKET_SERVICE_UNAVAILABLE"
+            )
 
         service = get_stock_search_service()
         try:
@@ -718,11 +708,11 @@ async def get_kline_data(
             raise
 
         if result is None:
-            raise HTTPException(status_code=404, detail=f"股票代码 {stock_code} 不存在或暂无K线数据")
+            raise NotFoundException(resource="股票K线数据", identifier=stock_code)
 
         # Validate data availability
         if result.get("count", 0) < 10:
-            raise HTTPException(status_code=422, detail="该股票历史数据不足10个交易日，无法生成K线图")
+            raise ValidationException(detail="该股票历史数据不足10个交易日，无法生成K线图", field="date_range")
 
         return {"success": True, **result, "timestamp": datetime.now().isoformat()}
 
@@ -734,13 +724,15 @@ async def get_kline_data(
         return create_error_response(error_code="VALIDATION_ERROR", message="输入参数验证失败", details=error_details)
     except ValueError as e:
         # Invalid stock code format or parameters
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="MARKET_OPERATION_FAILED")
     except HTTPException:
         # Re-raise HTTP exceptions
         raise
     except Exception as e:
         # Unexpected errors (e.g., AKShare failures)
-        raise HTTPException(status_code=500, detail=f"数据源暂时不可用，请稍后重试: {str(e)}")
+        raise BusinessException(
+            detail=f"数据源暂时不可用，请稍后重试: {str(e)}", status_code=500, error_code="DATA_SOURCE_UNAVAILABLE"
+        )
 
 
 # ==================== 股票热力图 ====================
@@ -834,7 +826,9 @@ async def get_market_heatmap(
                     except Exception:
                         continue
             else:
-                raise HTTPException(status_code=400, detail=f"不支持的市场类型: {market}")
+                raise BusinessException(
+                    detail=f"不支持的市场类型: {market}", status_code=400, error_code="UNSUPPORTED_MARKET_TYPE"
+                )
 
             # 按涨跌幅排序
             result = sorted(result, key=lambda x: x["change_pct"], reverse=True)
@@ -848,9 +842,11 @@ async def get_market_heatmap(
             }
 
     except ImportError:
-        raise HTTPException(status_code=500, detail="AKShare库未安装")
+        raise BusinessException(detail="AKShare库未安装", status_code=500, error_code="LIBRARY_NOT_INSTALLED")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取热力图数据失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取热力图数据失败: {str(e)}", status_code=500, error_code="HEATMAP_DATA_FAILED"
+        )
 
 
 # ==================== 健康检查 ====================

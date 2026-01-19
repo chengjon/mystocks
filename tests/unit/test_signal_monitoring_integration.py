@@ -43,6 +43,7 @@ from pydantic import BaseModel
 
 class SignalRecord(BaseModel):
     """信号记录模型"""
+
     strategy_id: str
     symbol: str
     signal_type: str  # BUY/SELL/HOLD
@@ -55,6 +56,7 @@ class SignalRecord(BaseModel):
 
 class SignalExecutionResult(BaseModel):
     """信号执行结果模型"""
+
     signal_id: int
     executed: bool = True
     executed_at: datetime = None
@@ -65,6 +67,7 @@ class SignalExecutionResult(BaseModel):
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest_asyncio.fixture
 async def pg_pool():
@@ -176,10 +179,7 @@ class TestSignalDatabaseOperations:
     @pytest.mark.asyncio
     async def test_batch_insert_signals(self, pg_pool):
         """测试批量插入信号记录"""
-        test_signals = [
-            (TEST_STRATEGY_ID, symbol, "BUY", 3, 45.5, True)
-            for symbol in TEST_SYMBOLS
-        ]
+        test_signals = [(TEST_STRATEGY_ID, symbol, "BUY", 3, 45.5, True) for symbol in TEST_SYMBOLS]
 
         async with pg_pool.pool.acquire() as conn:
             signal_ids = []
@@ -331,9 +331,7 @@ class TestSignalMonitoringAPI:
             pytest.skip(f"无法插入测试数据: {e}")
 
         # 测试API
-        response = await test_api_client.get(
-            f"/api/signals/history?strategy_id={TEST_STRATEGY_ID}&limit=10"
-        )
+        response = await test_api_client.get(f"/api/signals/history?strategy_id={TEST_STRATEGY_ID}&limit=10")
 
         assert response.status_code == 200
 
@@ -344,7 +342,9 @@ class TestSignalMonitoringAPI:
     @pytest.mark.asyncio
     async def test_signal_quality_report_endpoint(self, test_api_client):
         """测试信号质量报告API"""
-        response = await test_api_client.get(f"/api/signals/quality-report?strategy_id={TEST_STRATEGY_ID}&period_days=7")
+        response = await test_api_client.get(
+            f"/api/signals/quality-report?strategy_id={TEST_STRATEGY_ID}&period_days=7"
+        )
 
         # API可能返回空数据或错误，这里只验证端点可访问
         assert response.status_code in [200, 404, 500]  # 允许不同的响应状态
@@ -447,7 +447,9 @@ class TestPrometheusMetrics:
         from src.monitoring.signal_metrics import record_signal_generation
 
         # 测试不会抛出异常
-        record_signal_generation(strategy_id=TEST_STRATEGY_ID, signal_type="BUY", symbol="600519.SH", status="generated")
+        record_signal_generation(
+            strategy_id=TEST_STRATEGY_ID, signal_type="BUY", symbol="600519.SH", status="generated"
+        )
 
     def test_update_signal_accuracy(self):
         """测试更新信号准确率"""

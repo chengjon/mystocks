@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 # Optional: Import Redis lock if available
 try:
     from app.services.redis import redis_lock
+
     REDIS_LOCK_AVAILABLE = True
     logger.info("Redis distributed lock enabled for SmartScheduler")
 except ImportError:
@@ -452,10 +453,11 @@ class SmartScheduler:
         # 第二次检查: 查Redis L2缓存 (如果可用)
         if REDIS_LOCK_AVAILABLE:
             from app.services.redis import redis_cache
+
             redis_cached = redis_cache.get_cached_indicator_result(
                 stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
                 indicator_code=abbr,
-                params=params
+                params=params,
             )
             if redis_cached is not None:
                 # 回填本地缓存
@@ -468,9 +470,7 @@ class SmartScheduler:
             if self.enable_distributed_lock and REDIS_LOCK_AVAILABLE:
                 # 尝试获取锁，非阻塞模式
                 lock_token = redis_lock.acquire(
-                    resource=lock_resource,
-                    timeout=300,  # 5分钟超时
-                    blocking=False  # 非阻塞
+                    resource=lock_resource, timeout=300, blocking=False  # 5分钟超时  # 非阻塞
                 )
                 lock_acquired = lock_token is not None
 
@@ -484,10 +484,11 @@ class SmartScheduler:
 
                     if REDIS_LOCK_AVAILABLE:
                         from app.services.redis import redis_cache
+
                         redis_cached = redis_cache.get_cached_indicator_result(
                             stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
                             indicator_code=abbr,
-                            params=params
+                            params=params,
                         )
                         if redis_cached is not None:
                             self._update_local_cache(node_id, redis_cached)
@@ -499,12 +500,13 @@ class SmartScheduler:
                     # 写入Redis L2缓存
                     if REDIS_LOCK_AVAILABLE and result.success:
                         from app.services.redis import redis_cache
+
                         redis_cache.cache_indicator_result(
                             stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
                             indicator_code=abbr,
                             params=params,
                             result=result,
-                            ttl=self.cache_ttl
+                            ttl=self.cache_ttl,
                         )
 
                     # 释放锁
@@ -524,14 +526,17 @@ class SmartScheduler:
 
                         if REDIS_LOCK_AVAILABLE:
                             from app.services.redis import redis_cache
+
                             redis_cached = redis_cache.get_cached_indicator_result(
                                 stock_code=ohlcv.timestamps[0].strftime("%Y%m%d") if ohlcv.timestamps else "unknown",
                                 indicator_code=abbr,
-                                params=params
+                                params=params,
                             )
                             if redis_cached is not None:
                                 self._update_local_cache(node_id, redis_cached)
-                                logger.debug(f"Found Redis cached result for {node_id} after lock wait (attempt {attempt + 1})")
+                                logger.debug(
+                                    f"Found Redis cached result for {node_id} after lock wait (attempt {attempt + 1})"
+                                )
                                 return redis_cached
 
                         time.sleep(0.5)
@@ -693,7 +698,7 @@ def create_scheduler(
     max_workers: int = 4,
     mode: CalculationMode = CalculationMode.ASYNC_PARALLEL,
     enable_cache: bool = True,
-    enable_distributed_lock: bool = True
+    enable_distributed_lock: bool = True,
 ) -> SmartScheduler:
     """
     创建调度器
@@ -708,9 +713,6 @@ def create_scheduler(
         SmartScheduler实例
     """
     scheduler = SmartScheduler(
-        max_workers=max_workers,
-        mode=mode,
-        enable_cache=enable_cache,
-        enable_distributed_lock=enable_distributed_lock
+        max_workers=max_workers, mode=mode, enable_cache=enable_cache, enable_distributed_lock=enable_distributed_lock
     )
     return scheduler

@@ -2,10 +2,42 @@
 // 支持开发/生产环境自动切换
 module.exports = {
   apps: [{
+    // 前端服务: Vite开发服务器
+    name: 'mystocks-frontend',
+    script: 'npm run dev',
+    cwd: '/opt/claude/mystocks_spec/web/frontend',
+    env: {
+      NODE_ENV: 'development',
+      PORT: 3002,
+      HOST: '0.0.0.0'
+    },
+    instances: 1,
+    exec_mode: 'fork',
+    // 健康检查配置
+    health_check: {
+      url: 'http://localhost:3002',
+      timeout: 5000,
+      retries: 3,
+      interval: 10000
+    },
+    // 自动重启配置
+    autorestart: true,
+    max_restarts: 5,
+    min_uptime: '10s',
+    // 日志配置
+    log_file: '/tmp/pm2-mystocks-frontend.log',
+    out_file: '/tmp/pm2-mystocks-frontend-out.log',
+    error_file: '/tmp/pm2-mystocks-frontend-error.log',
+    merge_logs: true,
+    // 资源限制
+    max_memory_restart: '1G'
+  },
+  {
     // 核心服务: 后端 API 服务
     name: 'mystocks-backend',
-    script: './start_backend.sh',
-    interpreter: 'bash',
+    script: 'python -m uvicorn app.main:app',
+    args: '--host 0.0.0.0 --port 8000 --reload',
+    interpreter: 'python',
     cwd: '/opt/claude/mystocks_spec/web/backend',
     instances: 1,
     exec_mode: 'fork',
@@ -41,21 +73,19 @@ module.exports = {
     // 资源限制
     max_memory_restart: '1G',
 
-    // 健康检查
+    // 健康检查配置
     health_check: {
-      enable: true,
-      url: 'http://localhost:8000/health',
-      interval: 1000,
-      max_retries: 3,
-      timeout: 5000
+      url: 'http://localhost:8000/api/health',
+      timeout: 3000,
+      retries: 3,
+      interval: 15000
     },
 
     // 日志配置
-    log_file: './logs/backend.log',
-    out_file: './logs/backend.log',
-    error_file: './logs/backend.log',
-    time: true,
-    log_date_format: 'YYYY-MM-DD HH:mm:ss',
+    log_file: '/tmp/pm2-mystocks-backend.log',
+    out_file: '/tmp/pm2-mystocks-backend-out.log',
+    error_file: '/tmp/pm2-mystocks-backend-error.log',
+    merge_logs: true,
 
     // 进程管理
     min_uptime: '10s'

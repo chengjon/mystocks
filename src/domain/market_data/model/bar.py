@@ -68,11 +68,11 @@ class Bar:
     def to_dict(self) -> dict:
         """转换为字典"""
         return {
-            'symbol': self.symbol,
-            'timestamp': self.timestamp.isoformat(),
-            'open': self.open,
-            'high': self.high,
-            'low': self.low,
-            'close': self.close,
-            'volume': self.volume
+            "symbol": self.symbol,
+            "timestamp": self.timestamp.isoformat(),
+            "open": self.open,
+            "high": self.high,
+            "low": self.low,
+            "close": self.close,
+            "volume": self.volume,
         }

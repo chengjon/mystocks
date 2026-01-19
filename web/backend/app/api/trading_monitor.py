@@ -6,14 +6,13 @@ Real-time Trading Monitoring API
 Provides real-time trading status monitoring, strategy performance tracking, risk metrics monitoring, etc.
 """
 
-import asyncio
 from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
 from pydantic import BaseModel, Field
 
 from src.trading.realtime_strategy_executor import RealtimeStrategyExecutor
-from src.trading.live_trading_engine import LiveTradingEngine, LiveTradingConfig
+from src.trading.live_trading_engine import LiveTradingConfig
 
 router = APIRouter(prefix="/api/trading", tags=["实时交易监控"])
 

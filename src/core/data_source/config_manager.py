@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ConfigVersion:
     """配置版本信息"""
+
     endpoint_name: str
     version: int
     config_snapshot: Dict[str, Any]
@@ -40,6 +41,7 @@ class ConfigVersion:
 @dataclass
 class ConfigChangeResult:
     """配置变更结果"""
+
     success: bool
     endpoint_name: str
     version: Optional[int] = None
@@ -50,6 +52,7 @@ class ConfigChangeResult:
 @dataclass
 class BatchOperationResult:
     """批量操作结果"""
+
     total: int
     succeeded: int
     failed: int
@@ -89,11 +92,7 @@ class ConfigManager:
     ... )
     """
 
-    def __init__(
-        self,
-        yaml_config_path: str = "config/data_sources_registry.yaml",
-        postgresql_access = None
-    ):
+    def __init__(self, yaml_config_path: str = "config/data_sources_registry.yaml", postgresql_access=None):
         """
         初始化配置管理器
 
@@ -122,11 +121,11 @@ class ConfigManager:
     def _load_configs(self):
         """从YAML文件加载配置"""
         try:
-            with open(self.yaml_config_path, 'r', encoding='utf-8') as f:
+            with open(self.yaml_config_path, "r", encoding="utf-8") as f:
                 config_data = yaml.safe_load(f)
 
-            if config_data and 'data_sources' in config_data:
-                self.config_cache = config_data['data_sources']
+            if config_data and "data_sources" in config_data:
+                self.config_cache = config_data["data_sources"]
                 logger.info(f"Loaded {len(self.config_cache)} data source configurations")
             else:
                 logger.warning(f"No data sources found in {self.yaml_config_path}")
@@ -150,7 +149,7 @@ class ConfigManager:
         priority: int = 5,
         description: str = "",
         changed_by: str = "system",
-        **kwargs
+        **kwargs,
     ) -> ConfigChangeResult:
         """
         创建新的数据源配置
@@ -178,9 +177,7 @@ class ConfigManager:
             # 检查端点是否已存在
             if endpoint_name in self.config_cache:
                 return ConfigChangeResult(
-                    success=False,
-                    endpoint_name=endpoint_name,
-                    error=f"Endpoint '{endpoint_name}' already exists"
+                    success=False, endpoint_name=endpoint_name, error=f"Endpoint '{endpoint_name}' already exists"
                 )
 
             # 创建配置对象
@@ -196,7 +193,7 @@ class ConfigManager:
                 "status": "active",
                 "created_at": datetime.now().isoformat(),
                 "updated_at": datetime.now().isoformat(),
-                **kwargs
+                **kwargs,
             }
 
             # 验证配置
@@ -214,16 +211,12 @@ class ConfigManager:
                 config=config,
                 change_type="create",
                 changed_by=changed_by,
-                change_summary=f"Created endpoint '{endpoint_name}'"
+                change_summary=f"Created endpoint '{endpoint_name}'",
             )
 
             # 记录审计日志
             self._record_audit_log(
-                endpoint_name=endpoint_name,
-                action="create",
-                actor=changed_by,
-                request_body=config,
-                response_status=201
+                endpoint_name=endpoint_name, action="create", actor=changed_by, request_body=config, response_status=201
             )
 
             logger.info(f"Created endpoint: {endpoint_name}")
@@ -232,14 +225,11 @@ class ConfigManager:
                 success=True,
                 endpoint_name=endpoint_name,
                 version=1,
-                message=f"Endpoint '{endpoint_name}' created successfully"
+                message=f"Endpoint '{endpoint_name}' created successfully",
             )
 
     def update_endpoint(
-        self,
-        endpoint_name: str,
-        updates: Dict[str, Any],
-        changed_by: str = "system"
+        self, endpoint_name: str, updates: Dict[str, Any], changed_by: str = "system"
     ) -> ConfigChangeResult:
         """
         更新数据源配置
@@ -260,9 +250,7 @@ class ConfigManager:
             # 检查端点是否存在
             if endpoint_name not in self.config_cache:
                 return ConfigChangeResult(
-                    success=False,
-                    endpoint_name=endpoint_name,
-                    error=f"Endpoint '{endpoint_name}' not found"
+                    success=False, endpoint_name=endpoint_name, error=f"Endpoint '{endpoint_name}' not found"
                 )
 
             # 获取当前配置
@@ -280,11 +268,7 @@ class ConfigManager:
                 current_config[key] = value
 
             if not changed_fields:
-                return ConfigChangeResult(
-                    success=True,
-                    endpoint_name=endpoint_name,
-                    message="No changes detected"
-                )
+                return ConfigChangeResult(success=True, endpoint_name=endpoint_name, message="No changes detected")
 
             # 更新时间戳
             current_config["updated_at"] = datetime.now().isoformat()
@@ -308,10 +292,7 @@ class ConfigManager:
                 change_type="update",
                 changed_by=changed_by,
                 change_summary=f"Updated fields: {', '.join(changed_fields)}",
-                metadata={
-                    "changed_fields": changed_fields,
-                    "previous_values": previous_values
-                }
+                metadata={"changed_fields": changed_fields, "previous_values": previous_values},
             )
 
             # 记录审计日志
@@ -321,7 +302,7 @@ class ConfigManager:
                 actor=changed_by,
                 request_body=updates,
                 response_status=200,
-                metadata={"changed_fields": changed_fields}
+                metadata={"changed_fields": changed_fields},
             )
 
             logger.info(f"Updated endpoint: {endpoint_name}, version: {next_version}")
@@ -330,14 +311,10 @@ class ConfigManager:
                 success=True,
                 endpoint_name=endpoint_name,
                 version=next_version,
-                message=f"Endpoint '{endpoint_name}' updated successfully (version {next_version})"
+                message=f"Endpoint '{endpoint_name}' updated successfully (version {next_version})",
             )
 
-    def delete_endpoint(
-        self,
-        endpoint_name: str,
-        changed_by: str = "system"
-    ) -> ConfigChangeResult:
+    def delete_endpoint(self, endpoint_name: str, changed_by: str = "system") -> ConfigChangeResult:
         """
         删除数据源配置
 
@@ -355,9 +332,7 @@ class ConfigManager:
             # 检查端点是否存在
             if endpoint_name not in self.config_cache:
                 return ConfigChangeResult(
-                    success=False,
-                    endpoint_name=endpoint_name,
-                    error=f"Endpoint '{endpoint_name}' not found"
+                    success=False, endpoint_name=endpoint_name, error=f"Endpoint '{endpoint_name}' not found"
                 )
 
             # 获取当前配置
@@ -378,7 +353,7 @@ class ConfigManager:
                 config=current_config,
                 change_type="delete",
                 changed_by=changed_by,
-                change_summary=f"Deleted endpoint '{endpoint_name}'"
+                change_summary=f"Deleted endpoint '{endpoint_name}'",
             )
 
             # 记录审计日志
@@ -387,7 +362,7 @@ class ConfigManager:
                 action="delete",
                 actor=changed_by,
                 request_body={"endpoint_name": endpoint_name},
-                response_status=204
+                response_status=204,
             )
 
             logger.info(f"Deleted endpoint: {endpoint_name}")
@@ -396,7 +371,7 @@ class ConfigManager:
                 success=True,
                 endpoint_name=endpoint_name,
                 version=next_version,
-                message=f"Endpoint '{endpoint_name}' deleted successfully"
+                message=f"Endpoint '{endpoint_name}' deleted successfully",
             )
 
     def get_endpoint(self, endpoint_name: str) -> Optional[Dict[str, Any]]:
@@ -413,10 +388,7 @@ class ConfigManager:
             return self.config_cache.get(endpoint_name)
 
     def list_endpoints(
-        self,
-        data_category: Optional[str] = None,
-        source_type: Optional[str] = None,
-        status: Optional[str] = "active"
+        self, data_category: Optional[str] = None, source_type: Optional[str] = None, status: Optional[str] = "active"
     ) -> List[Dict[str, Any]]:
         """
         列出数据源配置
@@ -449,10 +421,7 @@ class ConfigManager:
             return endpoints
 
     def rollback_to_version(
-        self,
-        endpoint_name: str,
-        target_version: int,
-        changed_by: str = "system"
+        self, endpoint_name: str, target_version: int, changed_by: str = "system"
     ) -> ConfigChangeResult:
         """
         回滚配置到指定版本
@@ -474,9 +443,7 @@ class ConfigManager:
 
             if not versions:
                 return ConfigChangeResult(
-                    success=False,
-                    endpoint_name=endpoint_name,
-                    error=f"No version history found for '{endpoint_name}'"
+                    success=False, endpoint_name=endpoint_name, error=f"No version history found for '{endpoint_name}'"
                 )
 
             # 查找目标版本
@@ -490,7 +457,7 @@ class ConfigManager:
                 return ConfigChangeResult(
                     success=False,
                     endpoint_name=endpoint_name,
-                    error=f"Version {target_version} not found for '{endpoint_name}'"
+                    error=f"Version {target_version} not found for '{endpoint_name}'",
                 )
 
             # 恢复配置
@@ -510,9 +477,7 @@ class ConfigManager:
                 change_type="restore",
                 changed_by=changed_by,
                 change_summary=f"Restored to version {target_version}",
-                metadata={
-                    "restored_from_version": target_version
-                }
+                metadata={"restored_from_version": target_version},
             )
 
             # 记录审计日志
@@ -522,7 +487,7 @@ class ConfigManager:
                 actor=changed_by,
                 request_body={"target_version": target_version},
                 response_status=200,
-                metadata={"restored_from_version": target_version}
+                metadata={"restored_from_version": target_version},
             )
 
             logger.info(f"Rolled back endpoint: {endpoint_name} to version {target_version}")
@@ -531,14 +496,10 @@ class ConfigManager:
                 success=True,
                 endpoint_name=endpoint_name,
                 version=next_version,
-                message=f"Rolled back to version {target_version} successfully"
+                message=f"Rolled back to version {target_version} successfully",
             )
 
-    def get_version_history(
-        self,
-        endpoint_name: str,
-        limit: int = 10
-    ) -> List[ConfigVersion]:
+    def get_version_history(self, endpoint_name: str, limit: int = 10) -> List[ConfigVersion]:
         """
         获取版本历史
 
@@ -595,11 +556,7 @@ class ConfigManager:
                 request_body={},
                 response_status=200,
                 execution_time_ms=int(duration * 1000),
-                metadata={
-                    "old_count": old_count,
-                    "new_count": len(self.config_cache),
-                    "duration_seconds": duration
-                }
+                metadata={"old_count": old_count, "new_count": len(self.config_cache), "duration_seconds": duration},
             )
 
             logger.info(f"Configuration reloaded: {old_count} -> {len(self.config_cache)} endpoints")
@@ -609,7 +566,7 @@ class ConfigManager:
                 "old_count": old_count,
                 "new_count": len(self.config_cache),
                 "duration": duration,
-                "reloaded_at": datetime.now().isoformat()
+                "reloaded_at": datetime.now().isoformat(),
             }
 
     def register_reload_callback(self, callback):
@@ -627,12 +584,7 @@ class ConfigManager:
 
     def _validate_config(self, config: Dict[str, Any]):
         """验证配置"""
-        required_fields = [
-            "endpoint_name",
-            "source_name",
-            "source_type",
-            "data_category"
-        ]
+        required_fields = ["endpoint_name", "source_name", "source_type", "data_category"]
 
         missing_fields = [f for f in required_fields if f not in config]
 
@@ -647,21 +599,24 @@ class ConfigManager:
 
         # 验证数据分类
         if config.get("data_category") not in [
-            "DAILY_KLINE", "MINUTE_KLINE", "REALTIME_QUOTE",
-            "FINANCIAL_DATA", "REFERENCE_DATA"
+            "DAILY_KLINE",
+            "MINUTE_KLINE",
+            "REALTIME_QUOTE",
+            "FINANCIAL_DATA",
+            "REFERENCE_DATA",
         ]:
             logger.warning(f"Unknown data_category: {config.get('data_category')}")
 
     def _save_to_yaml(self):
         """保存配置到YAML文件"""
         try:
-            with open(self.yaml_config_path, 'w', encoding='utf-8') as f:
+            with open(self.yaml_config_path, "w", encoding="utf-8") as f:
                 yaml.dump(
                     {"data_sources": self.config_cache},
                     f,
                     default_flow_style=False,
                     allow_unicode=True,
-                    sort_keys=False
+                    sort_keys=False,
                 )
             logger.debug(f"Saved configuration to {self.yaml_config_path}")
         except Exception as e:
@@ -675,7 +630,7 @@ class ConfigManager:
         change_type: str,
         changed_by: str,
         change_summary: str = "",
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, Any] = None,
     ):
         """
         记录配置版本
@@ -696,7 +651,7 @@ class ConfigManager:
             changed_by=changed_by,
             changed_at=datetime.now(),
             change_summary=change_summary,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         # 添加到版本缓存
@@ -738,8 +693,8 @@ class ConfigManager:
                     version_info.change_type,
                     version_info.changed_by,
                     version_info.change_summary,
-                    version_info.metadata
-                )
+                    version_info.metadata,
+                ),
             )
 
             logger.debug(f"Saved version to database: {version_info.endpoint_name} v{version_info.version}")
@@ -757,7 +712,7 @@ class ConfigManager:
         response_status: int = 200,
         error_message: str = None,
         execution_time_ms: int = None,
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, Any] = None,
     ):
         """
         记录审计日志
@@ -798,8 +753,8 @@ class ConfigManager:
                         response_status,
                         error_message,
                         execution_time_ms,
-                        metadata
-                    )
+                        metadata,
+                    ),
                 )
 
                 logger.debug(f"Saved audit log: {action} on {endpoint_name}")

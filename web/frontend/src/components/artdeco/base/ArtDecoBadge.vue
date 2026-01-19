@@ -25,9 +25,9 @@
 
     const customStyle = computed(() => {
         const sizeStyles = {
-            sm: 'font-size: var(--artdeco-font-size-xs) // 10px - Compact v3.1; padding: 3px 8px;',
-            md: 'font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1; padding: 4px 12px;',
-            lg: 'font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1; padding: 6px 16px;'
+            sm: 'font-size: var(--artdeco-font-size-xs); // 10px - Compact v3.1; padding: 3px 8px',
+            md: 'font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1; padding: 4px 12px',
+            lg: 'font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1; padding: 6px 16px'
         }
         return sizeStyles[props.size]
     })

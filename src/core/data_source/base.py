@@ -47,6 +47,7 @@ class DataSourceManagerV2:
         """延迟加载数据库管理器"""
         if self.db_manager is None:
             from src.storage.database import DatabaseConnectionManager
+
             self.db_manager = DatabaseConnectionManager()
         return self.db_manager
 
@@ -60,7 +61,7 @@ class DataSourceManagerV2:
         except Exception as e:
             logger.debug(f"DB load failed (expected if db not ready): {e}")
             db_sources = {}
-        
+
         # 2. 从YAML加载配置
         try:
             yaml_sources = self._load_from_yaml()
@@ -99,51 +100,70 @@ class DataSourceManagerV2:
 
     def _load_from_database(self) -> Dict:
         from .registry import _load_from_database
+
         return _load_from_database(self)
 
     def _load_from_yaml(self) -> Dict:
         from .registry import _load_from_yaml
+
         return _load_from_yaml(self)
 
     def _merge_sources(self, db_sources: Dict, yaml_sources: Dict) -> Dict:
         from .registry import _merge_sources
+
         return _merge_sources(self, db_sources, yaml_sources)
 
     def find_endpoints(self, **kwargs) -> List[Dict]:
         from .router import find_endpoints
+
         return find_endpoints(self, **kwargs)
 
     def get_best_endpoint(self, data_category: str) -> Optional[Dict]:
         from .router import get_best_endpoint
+
         return get_best_endpoint(self, data_category)
 
     def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> Any:
         from .handler import _call_endpoint
+
         return _call_endpoint(self, endpoint_info, **kwargs)
 
     def get_stock_daily(self, symbol, start_date=None, end_date=None, adjust="qfq"):
         best = self.get_best_endpoint("DAILY_KLINE")
-        if not best: 
+        if not best:
             logger.warning(f"No endpoint found for DAILY_KLINE")
             return None
         return self._call_endpoint(best, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust)
 
     def get_stock_realtime(self, symbols):
         best = self.get_best_endpoint("REALTIME_QUOTE")
-        if not best: return None
+        if not best:
+            return None
         return self._call_endpoint(best, symbols=symbols)
-        
+
     def list_all_endpoints(self):
         from .router import list_all_endpoints
+
         return list_all_endpoints(self)
-        
-    def _record_success(self, *args, **kwargs): pass
-    def _record_failure(self, *args, **kwargs): pass
-    def _save_call_history_async(self, *args, **kwargs): pass
+
+    def _record_success(self, *args, **kwargs):
+        pass
+
+    def _record_failure(self, *args, **kwargs):
+        pass
+
+    def _save_call_history_async(self, *args, **kwargs):
+        pass
+
     def _create_handler(self, endpoint_info):
         from .handler import _create_handler
+
         return _create_handler(self, endpoint_info)
+
     def _identify_caller(self):
         from .handler import _identify_caller
+
         return _identify_caller(self)
-    def _validate_data(self, *args, **kwargs): pass
+
+    def _validate_data(self, *args, **kwargs):
+        pass

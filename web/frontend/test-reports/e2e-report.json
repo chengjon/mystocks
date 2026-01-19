@@ -1,0 +1,3161 @@
+{
+  "startTime": "2026-01-18T18:20:35.801Z",
+  "config": {
+    "baseURL": "http://localhost:3001",
+    "backendURL": "http://localhost:8000",
+    "screenshotDir": "./test-reports/e2e-screenshots",
+    "logDir": "./test-reports/e2e-logs",
+    "reportPath": "./test-reports/e2e-report.json",
+    "headless": false,
+    "slowMo": 100,
+    "timeout": 30000
+  },
+  "backendTests": [
+    {
+      "api": "GET /health",
+      "status": 200,
+      "duration": 57,
+      "contentType": "application/json",
+      "data": {
+        "success": true,
+        "code": 200,
+        "message": "系统健康检查完成",
+        "data": {
+          "service": "mystocks-web-api",
+          "status": "healthy",
+          "timestamp": 1768760436.0845842,
+          "version": "1.0.0",
+          "middleware": "response_format_enabled"
+        },
+        "timestamp": "2026-01-18T18:20:36.084602Z",
+        "request_id": null,
+        "errors": null
+      },
+      "success": true
+    },
+    {
+      "api": "GET /api/v1/market/list",
+      "status": 404,
+      "duration": 12,
+      "contentType": "application/json",
+      "data": {
+        "detail": "Not Found"
+      },
+      "success": false,
+      "error": {
+        "detail": "Not Found"
+      }
+    },
+    {
+      "api": "GET /api/v1/market/quote/600519",
+      "status": 404,
+      "duration": 6,
+      "contentType": "application/json",
+      "data": {
+        "detail": "Not Found"
+      },
+      "success": false,
+      "error": {
+        "detail": "Not Found"
+      }
+    },
+    {
+      "api": "GET /api/v1/auth/status",
+      "status": 404,
+      "duration": 8,
+      "contentType": "application/json",
+      "data": {
+        "detail": "Not Found"
+      },
+      "success": false,
+      "error": {
+        "detail": "Not Found"
+      }
+    },
+    {
+      "api": "GET /api/system/info",
+      "status": 404,
+      "duration": 5,
+      "contentType": "application/json",
+      "data": {
+        "detail": "Not Found"
+      },
+      "success": false,
+      "error": {
+        "detail": "Not Found"
+      }
+    }
+  ],
+  "frontendTests": [
+    {
+      "name": "Home",
+      "url": "/",
+      "expectedTitle": "Test Page",
+      "startTime": "2026-01-18T18:20:36.256Z",
+      "issues": [
+        {
+          "type": "console_errors",
+          "message": "发现15个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "warning",
+          "text": "⚠️ Security initialization timed out (non-blocking)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "body",
+          "description": "页面主体",
+          "visible": true
+        }
+      ],
+      "backendCheck": null,
+      "duration": 5488,
+      "screenshot": "test-reports/e2e-screenshots/Home_success_2026-01-18T18-20-41-216Z.png",
+      "success": false
+    },
+    {
+      "name": "ArtDeco市场数据分析中心",
+      "url": "/artdeco/market",
+      "expectedTitle": "市场数据分析中心",
+      "startTime": "2026-01-18T18:20:41.887Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"市场数据分析中心\"",
+          "expected": "市场数据分析中心",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_found",
+          "message": "页面标题未找到",
+          "selector": "h1, h2, .title",
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "数据容器不可见",
+          "selector": ".el-table, table, .data-container"
+        },
+        {
+          "type": "element_not_found",
+          "message": "操作按钮未找到",
+          "selector": ".el-button, button, .action-bar",
+          "error": "locator.isVisible: Error: strict mode violation: locator('.el-button, button, .action-bar') resolved to 2 elements:\n    1) <button data-v-7a7a37b1=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).first()\n    2) <button data-v-3ba78f5a=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).nth(1)\n\nCall log:\n\u001b[2m    - checking visibility of locator('.el-button, button, .action-bar')\u001b[22m\n"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "h1, h2, .title",
+          "description": "页面标题",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "selector": ".el-table, table, .data-container",
+          "description": "数据容器",
+          "visible": false
+        },
+        {
+          "selector": ".el-button, button, .action-bar",
+          "description": "操作按钮",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('.el-button, button, .action-bar') resolved to 2 elements:\n    1) <button data-v-7a7a37b1=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).first()\n    2) <button data-v-3ba78f5a=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).nth(1)\n\nCall log:\n\u001b[2m    - checking visibility of locator('.el-button, button, .action-bar')\u001b[22m\n"
+        }
+      ],
+      "backendCheck": null,
+      "duration": 2113,
+      "screenshot": "test-reports/e2e-screenshots/ArtDeco市场数据分析中心_success_2026-01-18T18-20-43-637Z.png",
+      "success": false
+    },
+    {
+      "name": "ArtDeco市场行情中心",
+      "url": "/artdeco/market-quotes",
+      "expectedTitle": "市场行情中心",
+      "startTime": "2026-01-18T18:20:44.172Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"市场行情中心\"",
+          "expected": "市场行情中心",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_found",
+          "message": "页面标题未找到",
+          "selector": "h1, h2, .title",
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "行情数据容器不可见",
+          "selector": ".quote-container, .market-data"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "刷新按钮不可见",
+          "selector": ".refresh-button, .el-button"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "h1, h2, .title",
+          "description": "页面标题",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "selector": ".quote-container, .market-data",
+          "description": "行情数据容器",
+          "visible": false
+        },
+        {
+          "selector": ".refresh-button, .el-button",
+          "description": "刷新按钮",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 1959,
+      "screenshot": "test-reports/e2e-screenshots/ArtDeco市场行情中心_success_2026-01-18T18-20-45-868Z.png",
+      "success": false
+    },
+    {
+      "name": "ArtDeco量化交易管理中心",
+      "url": "/artdeco/trading",
+      "expectedTitle": "量化交易管理中心",
+      "startTime": "2026-01-18T18:20:46.272Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"量化交易管理中心\"",
+          "expected": "量化交易管理中心",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_found",
+          "message": "页面标题未找到",
+          "selector": "h1, h2, .title",
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "交易面板不可见",
+          "selector": ".trading-panel, .order-form"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "持仓列表不可见",
+          "selector": ".position-list, .portfolio"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "h1, h2, .title",
+          "description": "页面标题",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "selector": ".trading-panel, .order-form",
+          "description": "交易面板",
+          "visible": false
+        },
+        {
+          "selector": ".position-list, .portfolio",
+          "description": "持仓列表",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 1777,
+      "screenshot": "test-reports/e2e-screenshots/ArtDeco量化交易管理中心_success_2026-01-18T18-20-47-770Z.png",
+      "success": false
+    },
+    {
+      "name": "ArtDeco策略回测管理中心",
+      "url": "/artdeco/backtest",
+      "expectedTitle": "策略回测管理中心",
+      "startTime": "2026-01-18T18:20:48.162Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"策略回测管理中心\"",
+          "expected": "策略回测管理中心",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_found",
+          "message": "页面标题未找到",
+          "selector": "h1, h2, .title",
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "回测配置不可见",
+          "selector": ".backtest-form, .strategy-config"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "回测结果不可见",
+          "selector": ".result-chart, .backtest-results"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "h1, h2, .title",
+          "description": "页面标题",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "selector": ".backtest-form, .strategy-config",
+          "description": "回测配置",
+          "visible": false
+        },
+        {
+          "selector": ".result-chart, .backtest-results",
+          "description": "回测结果",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 2325,
+      "screenshot": "test-reports/e2e-screenshots/ArtDeco策略回测管理中心_success_2026-01-18T18-20-50-162Z.png",
+      "success": false
+    },
+    {
+      "name": "ArtDeco风险管理中心",
+      "url": "/artdeco/risk",
+      "expectedTitle": "风险管理中心",
+      "startTime": "2026-01-18T18:20:50.630Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"风险管理中心\"",
+          "expected": "风险管理中心",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_found",
+          "message": "页面标题未找到",
+          "selector": "h1, h2, .title",
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "风险仪表板不可见",
+          "selector": ".risk-dashboard, .risk-metrics"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "告警列表不可见",
+          "selector": ".alert-list, .risk-alerts"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": "h1, h2, .title",
+          "description": "页面标题",
+          "visible": false,
+          "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+        },
+        {
+          "selector": ".risk-dashboard, .risk-metrics",
+          "description": "风险仪表板",
+          "visible": false
+        },
+        {
+          "selector": ".alert-list, .risk-alerts",
+          "description": "告警列表",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 2707,
+      "screenshot": "test-reports/e2e-screenshots/ArtDeco风险管理中心_success_2026-01-18T18-20-52-989Z.png",
+      "success": false
+    },
+    {
+      "name": "Dashboard总览",
+      "url": "/dashboard/overview",
+      "expectedTitle": "Overview",
+      "startTime": "2026-01-18T18:20:53.496Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"Overview\"",
+          "expected": "Overview",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "仪表板容器不可见",
+          "selector": ".dashboard, .overview"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "指标卡片不可见",
+          "selector": ".metric-card, .stat-card"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "图表不可见",
+          "selector": ".chart, .data-visualization"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": ".dashboard, .overview",
+          "description": "仪表板容器",
+          "visible": false
+        },
+        {
+          "selector": ".metric-card, .stat-card",
+          "description": "指标卡片",
+          "visible": false
+        },
+        {
+          "selector": ".chart, .data-visualization",
+          "description": "图表",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 2396,
+      "screenshot": "test-reports/e2e-screenshots/Dashboard总览_success_2026-01-18T18-20-55-525Z.png",
+      "success": false
+    },
+    {
+      "name": "股票列表",
+      "url": "/market/list",
+      "expectedTitle": "Stock List",
+      "startTime": "2026-01-18T18:20:56.060Z",
+      "issues": [
+        {
+          "type": "title_mismatch",
+          "message": "页面标题不匹配，期望包含: \"Stock List\"",
+          "expected": "Stock List",
+          "actual": "Test Page - MyStocks Platform"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "股票列表表格不可见",
+          "selector": ".stock-list, .el-table"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "搜索栏不可见",
+          "selector": ".search-bar, .filter-panel"
+        },
+        {
+          "type": "element_not_visible",
+          "message": "分页器不可见",
+          "selector": ".pagination, .page-nav"
+        },
+        {
+          "type": "console_errors",
+          "message": "发现14个控制台错误",
+          "errors": [
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            },
+            {
+              "type": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+            }
+          ]
+        },
+        {
+          "type": "network_errors",
+          "message": "发现14个网络请求失败",
+          "errors": [
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/monitoring/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/technical/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/strategy/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/v2/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/market/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/indicators/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/system/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/tdx/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/announcement/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/data-sources/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/auth/active",
+              "status": 404
+            },
+            {
+              "url": "http://localhost:8000/contracts/contracts/active",
+              "status": 404
+            }
+          ]
+        }
+      ],
+      "consoleErrors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "elementChecks": [
+        {
+          "selector": ".stock-list, .el-table",
+          "description": "股票列表表格",
+          "visible": false
+        },
+        {
+          "selector": ".search-bar, .filter-panel",
+          "description": "搜索栏",
+          "visible": false
+        },
+        {
+          "selector": ".pagination, .page-nav",
+          "description": "分页器",
+          "visible": false
+        }
+      ],
+      "backendCheck": null,
+      "duration": 2315,
+      "screenshot": "test-reports/e2e-screenshots/股票列表_success_2026-01-18T18-20-58-279Z.png",
+      "success": false
+    }
+  ],
+  "integrationTests": [],
+  "summary": {
+    "totalTests": 13,
+    "passedTests": 1,
+    "failedTests": 12,
+    "frontendIssues": [
+      {
+        "page": "Home",
+        "url": "/",
+        "issues": [
+          {
+            "type": "console_errors",
+            "message": "发现15个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "ArtDeco市场数据分析中心",
+        "url": "/artdeco/market",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"市场数据分析中心\"",
+            "expected": "市场数据分析中心",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_found",
+            "message": "页面标题未找到",
+            "selector": "h1, h2, .title",
+            "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "数据容器不可见",
+            "selector": ".el-table, table, .data-container"
+          },
+          {
+            "type": "element_not_found",
+            "message": "操作按钮未找到",
+            "selector": ".el-button, button, .action-bar",
+            "error": "locator.isVisible: Error: strict mode violation: locator('.el-button, button, .action-bar') resolved to 2 elements:\n    1) <button data-v-7a7a37b1=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).first()\n    2) <button data-v-3ba78f5a=\"\">Update Time</button> aka getByRole('button', { name: 'Update Time' }).nth(1)\n\nCall log:\n\u001b[2m    - checking visibility of locator('.el-button, button, .action-bar')\u001b[22m\n"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "ArtDeco市场行情中心",
+        "url": "/artdeco/market-quotes",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"市场行情中心\"",
+            "expected": "市场行情中心",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_found",
+            "message": "页面标题未找到",
+            "selector": "h1, h2, .title",
+            "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "行情数据容器不可见",
+            "selector": ".quote-container, .market-data"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "刷新按钮不可见",
+            "selector": ".refresh-button, .el-button"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "ArtDeco量化交易管理中心",
+        "url": "/artdeco/trading",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"量化交易管理中心\"",
+            "expected": "量化交易管理中心",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_found",
+            "message": "页面标题未找到",
+            "selector": "h1, h2, .title",
+            "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "交易面板不可见",
+            "selector": ".trading-panel, .order-form"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "持仓列表不可见",
+            "selector": ".position-list, .portfolio"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "ArtDeco策略回测管理中心",
+        "url": "/artdeco/backtest",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"策略回测管理中心\"",
+            "expected": "策略回测管理中心",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_found",
+            "message": "页面标题未找到",
+            "selector": "h1, h2, .title",
+            "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "回测配置不可见",
+            "selector": ".backtest-form, .strategy-config"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "回测结果不可见",
+            "selector": ".result-chart, .backtest-results"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "ArtDeco风险管理中心",
+        "url": "/artdeco/risk",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"风险管理中心\"",
+            "expected": "风险管理中心",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_found",
+            "message": "页面标题未找到",
+            "selector": "h1, h2, .title",
+            "error": "locator.isVisible: Error: strict mode violation: locator('h1, h2, .title') resolved to 3 elements:\n    1) <h1 data-v-7a7a37b1=\"\">MyStocks Application</h1> aka getByRole('heading', { name: 'MyStocks Application' })\n    2) <h1 data-v-3ba78f5a=\"\">MyStocks Test Page</h1> aka getByRole('heading', { name: 'MyStocks Test Page' })\n    3) <h2 class=\"el-notification__title\">API版本弃用警告</h2> aka getByRole('heading', { name: 'API版本弃用警告' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('h1, h2, .title')\u001b[22m\n"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "风险仪表板不可见",
+            "selector": ".risk-dashboard, .risk-metrics"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "告警列表不可见",
+            "selector": ".alert-list, .risk-alerts"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "Dashboard总览",
+        "url": "/dashboard/overview",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"Overview\"",
+            "expected": "Overview",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "仪表板容器不可见",
+            "selector": ".dashboard, .overview"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "指标卡片不可见",
+            "selector": ".metric-card, .stat-card"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "图表不可见",
+            "selector": ".chart, .data-visualization"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "page": "股票列表",
+        "url": "/market/list",
+        "issues": [
+          {
+            "type": "title_mismatch",
+            "message": "页面标题不匹配，期望包含: \"Stock List\"",
+            "expected": "Stock List",
+            "actual": "Test Page - MyStocks Platform"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "股票列表表格不可见",
+            "selector": ".stock-list, .el-table"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "搜索栏不可见",
+            "selector": ".search-bar, .filter-panel"
+          },
+          {
+            "type": "element_not_visible",
+            "message": "分页器不可见",
+            "selector": ".pagination, .page-nav"
+          },
+          {
+            "type": "console_errors",
+            "message": "发现14个控制台错误",
+            "errors": [
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              },
+              {
+                "type": "error",
+                "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+              }
+            ]
+          },
+          {
+            "type": "network_errors",
+            "message": "发现14个网络请求失败",
+            "errors": [
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/monitoring/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/technical/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/strategy/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/v2/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/market/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/indicators/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/system/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/tdx/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/announcement/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/data-sources/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/auth/active",
+                "status": 404
+              },
+              {
+                "url": "http://localhost:8000/contracts/contracts/active",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "backendIssues": [
+      {
+        "api": "GET /api/v1/market/list",
+        "error": {
+          "detail": "Not Found"
+        }
+      },
+      {
+        "api": "GET /api/v1/market/quote/600519",
+        "error": {
+          "detail": "Not Found"
+        }
+      },
+      {
+        "api": "GET /api/v1/auth/status",
+        "error": {
+          "detail": "Not Found"
+        }
+      },
+      {
+        "api": "GET /api/system/info",
+        "error": {
+          "detail": "Not Found"
+        }
+      }
+    ],
+    "integrationIssues": []
+  },
+  "endTime": "2026-01-18T18:20:58.392Z"
+}

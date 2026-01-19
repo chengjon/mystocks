@@ -53,7 +53,7 @@ class MockMarketDataRepository(IMarketDataRepository):
                 high=round(high_price, 2),
                 low=round(low_price, 2),
                 close=round(close_price, 2),
-                volume=float(volume)
+                volume=float(volume),
             )
             bars.append(bar)
             base_price = close_price
@@ -102,14 +102,8 @@ class MockMarketDataRepository(IMarketDataRepository):
 
         # Phase 0简化：返回固定指标值
         return {
-            'symbol': symbol,
-            'price': latest_bar.close,
-            'timestamp': latest_bar.timestamp,
-            'indicators': {
-                'RSI': 75.0,  # 超买
-                'MACD': 0.5,
-                'MA_5': 10.2,
-                'MA_10': 10.5,
-                'MA_20': 10.8
-            }
+            "symbol": symbol,
+            "price": latest_bar.close,
+            "timestamp": latest_bar.timestamp,
+            "indicators": {"RSI": 75.0, "MACD": 0.5, "MA_5": 10.2, "MA_10": 10.5, "MA_20": 10.8},  # 超买
         }

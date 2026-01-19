@@ -1,10 +1,12 @@
 <template>
-  <div class="backtest-analysis">
+  <div class="backtest-analysis artdeco-page">
 
-    <div class="page-header">
-      <h1 class="page-title">BACKTEST ANALYSIS</h1>
-      <p class="page-subtitle">QUANTITATIVE STRATEGY BACKTESTING | PERFORMANCE METRICS | RETURN ANALYTICS</p>
-    </div>
+    <!-- Art Deco Header -->
+    <ArtDecoHeader
+      :title="'STRATEGY BACKTESTING'"
+      subtitle="QUANTITATIVE ANALYSIS | PERFORMANCE METRICS | RISK ASSESSMENT"
+      variant="gold-accent"
+    />
 
       :strategies="strategies"
       :default-capital="100000"
@@ -13,106 +15,212 @@
       @submit="handleBacktestSubmit"
     /> -->
 
-    <el-card title="BACKTEST RESULTS HISTORY" :hoverable="false">
-      <template #header-actions>
-        <el-button type="info" :loading="loading" @click="loadResults">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          REFRESH
-        </el-button>
+    <!-- Art Deco Backtest Results -->
+    <ArtDecoCard variant="luxury" :decorated="true">
+      <template #header>
+        <div class="backtest-header">
+          <ArtDecoBadge variant="gold">BACKTEST RESULTS</ArtDecoBadge>
+          <ArtDecoButton
+            variant="primary"
+            :glow="true"
+            :loading="loading"
+            @click="loadResults"
+          >
+            <template #icon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6M1 20v-6h6"></path>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+            </template>
+            REFRESH RESULTS
+          </ArtDecoButton>
+        </div>
       </template>
 
-      <el-table
-        :columns="resultColumns"
+      <ArtDecoTable
         :data="results"
         :loading="loading"
-        row-key="backtest_id"
+        gold-headers
+        striped
+        :sortable="true"
       >
-        <template #cell-backtest_id="{ value }">
-          <span class="text-mono">{{ value }}</span>
+        <template #columns>
+          <ArtDecoTableColumn prop="backtest_id" label="ID" width="120" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-mono">{{ row.backtest_id }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="strategy_code" label="STRATEGY" width="120" sortable>
+            <template #default="{ row }">
+              <ArtDecoBadge variant="warning">{{ row.strategy_code }}</ArtDecoBadge>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="period" label="PERIOD" width="180" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-mono">{{ row.start_date }} ~ {{ row.end_date }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="total_return" label="TOTAL RETURN" width="120" align="right" sortable>
+            <template #default="{ row }">
+              <span :class="getArtDecoReturnClass(row.total_return)">
+                {{ formatPercent(row.total_return) }}
+              </span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="annual_return" label="ANNUAL RETURN" width="130" align="right" sortable>
+            <template #default="{ row }">
+              <span :class="getArtDecoReturnClass(row.annual_return)">
+                {{ formatPercent(row.annual_return) }}
+              </span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="max_drawdown" label="MAX DRAWDOWN" width="130" align="right" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-negative">{{ formatPercent(row.max_drawdown) }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="sharpe_ratio" label="SHARPE RATIO" width="120" align="right" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-info">{{ row.sharpe_ratio?.toFixed(2) || '-' }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="created_at" label="CREATED" width="150" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-mono">{{ row.created_at }}</span>
+            </template>
+          </ArtDecoTableColumn>
         </template>
-        <template #cell-strategy_code="{ value }">
-          <el-tag type="warning" size="small">{{ value }}</el-tag>
-        </template>
-        <template #cell-period="{ row }">
-          <span class="text-mono">{{ row.start_date }} ~ {{ row.end_date }}</span>
-        </template>
-        <template #cell-total_return="{ row }">
-          <span :class="[getReturnClass(row.total_return), 'text-mono']">
-            {{ formatPercent(row.total_return) }}
-          </span>
-        </template>
-        <template #cell-annual_return="{ row }">
-          <span :class="[getReturnClass(row.annual_return), 'text-mono']">
-            {{ formatPercent(row.annual_return) }}
-          </span>
-        </template>
-        <template #cell-max_drawdown="{ value }">
-          <span class="data-fall text-mono">{{ formatPercent(value) }}</span>
-        </template>
-        <template #cell-sharpe_ratio="{ value }">
-          <span class="text-mono" style="color: #60A5FA">{{ value?.toFixed(2) || '-' }}</span>
-        </template>
-        <template #cell-created_at="{ value }">
-          <span class="text-mono">{{ value }}</span>
-        </template>
+
         <template #actions="{ row }">
-          <el-button type="info" size="small" @click="viewDetail(row)">
-            DETAILS
-          </el-button>
-          <el-button type="info" size="small" @click="exportResult(row)">
+          <ArtDecoButton
+            variant="primary"
+            size="small"
+            @click="viewDetail(row)"
+          >
+            VIEW DETAILS
+          </ArtDecoButton>
+
+          <ArtDecoButton
+            variant="outline"
+            size="small"
+            @click="exportResult(row)"
+          >
             EXPORT
-          </el-button>
+          </ArtDecoButton>
         </template>
-      </el-table>
+      </ArtDecoTable>
 
-      <div class="pagination-section">
-        <div class="pagination">
-          <button class="page-btn" :disabled="pagination.page === 1" @click="pagination.page--">PREV</button>
-          <span class="page-info">PAGE {{ pagination.page }} OF {{ totalPages }}</span>
-          <button class="page-btn" :disabled="pagination.page === totalPages" @click="pagination.page++">NEXT</button>
+      <!-- Art Deco Pagination -->
+      <template #footer>
+        <div class="pagination-section">
+          <ArtDecoPagination
+            v-model:current-page="pagination.page"
+            :total="totalResults"
+            :page-size="pagination.pageSize"
+            @page-change="handlePageChange"
+          />
         </div>
-      </div>
-    </el-card>
+      </template>
+    </ArtDecoCard>
 
-    <div v-if="detailVisible" class="modal-overlay" @click.self="detailVisible = false">
-      <div class="modal modal-lg">
-        <div class="modal-header">
-          <h3 class="modal-title">BACKTEST DETAILS</h3>
-          <button class="modal-close" @click="detailVisible = false">×</button>
-        </div>
-        <div v-if="selectedResult" class="modal-body">
-          <div class="metrics-grid">
-            <div class="metric-box">
-              <span class="metric-label">TOTAL RETURN</span>
-              <span :class="['metric-value', 'text-mono', getReturnClass(selectedResult.total_return)]">
-                {{ formatPercent(selectedResult.total_return) }}
-              </span>
-            </div>
-            <div class="metric-box">
-              <span class="metric-label">ANNUAL RETURN</span>
-              <span :class="['metric-value', 'text-mono', getReturnClass(selectedResult.annual_return)]">
-                {{ formatPercent(selectedResult.annual_return) }}
-              </span>
-            </div>
-            <div class="metric-box">
-              <span class="metric-label">MAX DRAWDOWN</span>
-              <span class="metric-value data-fall text-mono">{{ formatPercent(selectedResult.max_drawdown) }}</span>
-            </div>
-            <div class="metric-box">
-              <span class="metric-label">SHARPE RATIO</span>
-              <span class="metric-value text-mono" style="color: #60A5FA">{{ selectedResult.sharpe_ratio?.toFixed(2) || '-' }}</span>
+    <!-- Art Deco Backtest Detail Dialog -->
+    <ArtDecoDialog
+      v-model="detailVisible"
+      title="STRATEGY BACKTEST ANALYSIS"
+      size="large"
+      :decorated="true"
+    >
+      <template #default>
+        <div v-if="selectedResult" class="backtest-detail-content">
+          <!-- Performance Metrics Grid -->
+          <div class="metrics-section">
+            <h4 class="section-title">PERFORMANCE METRICS</h4>
+            <div class="metrics-grid">
+              <ArtDecoStatCard
+                label="TOTAL RETURN"
+                :value="formatPercent(selectedResult.total_return)"
+                :variant="getReturnVariant(selectedResult.total_return)"
+                :animated="true"
+              />
+
+              <ArtDecoStatCard
+                label="ANNUAL RETURN"
+                :value="formatPercent(selectedResult.annual_return)"
+                :variant="getReturnVariant(selectedResult.annual_return)"
+                :animated="true"
+              />
+
+              <ArtDecoStatCard
+                label="MAX DRAWDOWN"
+                :value="formatPercent(selectedResult.max_drawdown)"
+                variant="danger"
+                :animated="true"
+              />
+
+              <ArtDecoStatCard
+                label="SHARPE RATIO"
+                :value="selectedResult.sharpe_ratio?.toFixed(2) || '--'"
+                variant="info"
+                :animated="true"
+              />
             </div>
           </div>
 
-          <div class="divider"></div>
+          <!-- Strategy Details -->
+          <div class="details-section">
+            <h4 class="section-title">STRATEGY DETAILS</h4>
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-label">STRATEGY CODE</span>
+                <ArtDecoBadge variant="warning">{{ selectedResult.strategy_code }}</ArtDecoBadge>
+              </div>
 
-          <div class="descriptions-grid">
-            <div class="desc-item">
-              <span class="desc-label">STRATEGY</span>
-              <span class="desc-value text-mono">{{ selectedResult.strategy_code }}</span>
+              <div class="detail-item">
+                <span class="detail-label">BACKTEST PERIOD</span>
+                <span class="detail-value artdeco-mono">
+                  {{ selectedResult.start_date }} ~ {{ selectedResult.end_date }}
+                </span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">CREATED AT</span>
+                <span class="detail-value artdeco-mono">{{ selectedResult.created_at }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">BACKTEST ID</span>
+                <span class="detail-value artdeco-mono">{{ selectedResult.backtest_id }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="dialog-actions">
+          <ArtDecoButton
+            variant="outline"
+            @click="exportResult(selectedResult)"
+          >
+            EXPORT REPORT
+          </ArtDecoButton>
+
+          <ArtDecoButton
+            variant="primary"
+            @click="detailVisible = false"
+          >
+            CLOSE
+          </ArtDecoButton>
+        </div>
+      </template>
+    </ArtDecoDialog>
             </div>
             <div class="desc-item">
               <span class="desc-label">SYMBOL</span>
@@ -158,10 +266,19 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
-import { ElButton } from 'element-plus'
-import { ElTag } from 'element-plus'
-import { ElCard } from 'element-plus'
-import { ElTable, ElTableColumn } from 'element-plus'
+
+// Import Art Deco components
+import {
+  ArtDecoHeader,
+  ArtDecoCard,
+  ArtDecoTable,
+  ArtDecoTableColumn,
+  ArtDecoPagination,
+  ArtDecoButton,
+  ArtDecoBadge,
+  ArtDecoDialog,
+  ArtDecoStatCard
+} from '@/components/artdeco'
 
 interface Strategy { strategy_code: string; strategy_name_cn: string }
 interface Result {
@@ -297,6 +414,25 @@ const formatPercent = (v: number | null | undefined) => v ? (v * 100).toFixed(2)
 const formatMoney = (v: number | null | undefined) => v ? '¥' + v.toLocaleString('zh-CN') : '-'
 const getReturnClass = (v: number | null | undefined) => !v ? '' : v > 0 ? 'data-rise' : v < 0 ? 'data-fall' : ''
 
+// Art Deco specific helper functions
+const getArtDecoReturnClass = (v: number | null | undefined) => {
+  if (!v) return ''
+  return v > 0 ? 'artdeco-positive' : v < 0 ? 'artdeco-negative' : ''
+}
+
+const getReturnVariant = (v: number | null | undefined) => {
+  if (!v) return 'neutral'
+  return v > 0 ? 'success' : v < 0 ? 'danger' : 'neutral'
+}
+
+const totalResults = computed(() => results.value.length)
+const totalPages = computed(() => Math.ceil(totalResults.value / pagination.value.pageSize))
+
+const handlePageChange = (page: number) => {
+  pagination.value.page = page
+  loadResults()
+}
+
 onMounted(() => {
   loadStrategies()
   loadResults()
@@ -309,48 +445,162 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// Art Deco Design System Integration
+@import '@/styles/artdeco-tokens.scss';
 
 .backtest-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  background: var(--bg-primary);
+  @include artdeco-crosshatch-bg(); // Diagonal crosshatch background
   min-height: 100vh;
+  padding: $artdeco-spacing-xl;
+
+  // Backtest header section
+  .backtest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: $artdeco-spacing-lg;
+  }
+
+  // Pagination section
+  .pagination-section {
+    display: flex;
+    justify-content: center;
+    padding: $artdeco-spacing-lg;
+    border-top: 2px solid $artdeco-accent-gold;
+  }
+
+  // Backtest detail content
+  .backtest-detail-content {
+    .section-title {
+      font-family: 'Marcellus', serif;
+      font-size: $artdeco-font-size-lg;
+      font-weight: 600;
+      color: $artdeco-accent-gold;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: $artdeco-spacing-lg;
+      text-align: center;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: $artdeco-spacing-lg;
+      margin-bottom: $artdeco-spacing-xl;
+    }
+
+    .details-section {
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: $artdeco-spacing-md;
+
+        .detail-item {
+          display: flex;
+          flex-direction: column;
+          gap: $artdeco-spacing-xs;
+
+          .detail-label {
+            font-family: 'Marcellus', serif;
+            font-size: $artdeco-font-size-sm;
+            font-weight: 600;
+            color: $artdeco-text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
+
+          .detail-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: $artdeco-font-size-base;
+            font-weight: 500;
+            color: $artdeco-text-primary;
+          }
+        }
+      }
+    }
+  }
+
+  // Dialog actions
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $artdeco-spacing-md;
+  }
+
+  // Art Deco specific styling
+  .artdeco-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  .artdeco-positive {
+    color: $artdeco-color-up;
+    font-weight: 600;
+  }
+
+  .artdeco-negative {
+    color: $artdeco-color-down;
+    font-weight: 600;
+  }
+
+  .artdeco-info {
+    color: #60A5FA;
+    font-weight: 600;
+  }
+
+// Art Deco responsive design
+@media (max-width: 768px) {
+  .backtest-analysis {
+    padding: $artdeco-spacing-lg;
+
+    .backtest-header {
+      flex-direction: column;
+      gap: $artdeco-spacing-md;
+      align-items: flex-start;
+    }
+
+    .backtest-detail-content {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dialog-actions {
+      flex-direction: column;
+
+      .artdeco-btn {
+        width: 100%;
+      }
+    }
+  }
 }
 
-.background-pattern {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.03;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+// Art Deco animations
+@keyframes artdeco-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-
-.page-header { text-align: center; margin-bottom: var(--space-lg); }
-.page-title { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.2em; margin: 0 0 var(--space-md) 0; }
-.page-subtitle { font-family: var(--font-body); font-size: 1rem; color: var(--silver-muted); letter-spacing: 0.1em; margin: 0; }
-
-.text-mono { font-family: var(--font-mono); }
-.data-rise { color: var(--rise); }
-.data-fall { color: var(--fall); }
-
-.pagination-section { display: flex; justify-content: center; margin-top: var(--space-lg); }
-.page-btn { padding: var(--space-sm) var(--space-lg); background: transparent; border: 1px solid var(--gold-dim); color: var(--silver-text); font-family: var(--font-display); font-size: 0.875rem; cursor: pointer; }
-.page-btn:hover:not(:disabled) { border-color: var(--gold-primary); color: var(--gold-primary); }
-.page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.page-info { font-family: var(--font-mono); font-size: 0.875rem; color: var(--silver-text); }
-
-.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: var(--bg-card); border: 1px solid var(--gold-dim); width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; }
-.modal-lg { max-width: 1000px; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--gold-dim); }
+@keyframes artdeco-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
+  }
+}
 .modal-title { font-family: var(--font-display); font-size: 1.25rem; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.1em; margin: 0; }
 .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--silver-muted); cursor: pointer; }
 .modal-close:hover { color: var(--gold-primary); }

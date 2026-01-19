@@ -10,9 +10,11 @@ import type {
   MarketOverviewVM,
   FundFlowChartPoint,
   KLineChartData,
+} from '../types/extensions';
+import type {
   ChipRaceItem,
   LongHuBangItem,
-} from '../types/market';
+} from '../types/common';
 
 // Import new API types
 import type {
@@ -56,23 +58,16 @@ export class MarketAdapter {
       const total = rise + fall + flat;
 
       return {
-        marketStats: {
-          totalStocks: total,
-          risingStocks: rise,
-          fallingStocks: fall,
-          avgChangePercent: 0, // Not available in new API response
+        price_distribution: {
+          up_stocks: rise,
+          down_stocks: fall,
+          flat_stocks: flat,
+          limit_up: 0, // Not available in new API response
+          limit_down: 0, // Not available in new API response
+          total_stocks: total,
         },
-        topEtfs: apiData.top_etfs?.map((etf: any) => ({
-          symbol: etf.symbol || '',
-          name: etf.name || '',
-          latestPrice: 0, // Not available in new API response
-          changePercent: etf.change_percent || 0,
-          volume: 0, // Not available in new API response
-        })) || [],
-        chipRaces: [], // Fetched separately in new API
-        longHuBang: [], // Fetched separately in new API
-        lastUpdate: apiData.timestamp ? new Date(apiData.timestamp) : new Date(),
-        marketIndex: apiData.market_index,
+        // Note: topEtfs, chipRaces, longHuBang are fetched separately in new API
+        lastUpdate: apiData.timestamp ? new Date(apiData.timestamp).toISOString() : new Date().toISOString(),
       };
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt market overview:', error);
@@ -98,12 +93,55 @@ export class MarketAdapter {
       // Access fundFlow array directly from the response data
       const fundFlowData = apiResponse.data?.fundFlow || [];
 
+      // Transform API data to match FundFlowChartPoint interface
       return fundFlowData.map((item) => ({
         date: item.trade_date || '',
-        mainInflow: item.super_large_net_inflow || 0,
-        mainOutflow: item.large_net_inflow || 0,
-        netInflow: item.main_net_inflow || 0,
         timestamp: item.trade_date ? new Date(item.trade_date).getTime() : Date.now(),
+
+        // Main force (large institutions)
+        main_force: {
+          inflow: item.super_large_net_inflow || 0,
+          outflow: Math.abs(item.super_large_net_outflow || 0),
+          net_flow: item.super_large_net_inflow || 0,
+          ratio: 0 // Will be calculated based on total
+        },
+
+        // Large orders (>400,000 yuan)
+        large_orders: {
+          inflow: item.large_net_inflow || 0,
+          outflow: Math.abs(item.large_net_outflow || 0),
+          net_flow: item.large_net_inflow || 0,
+          ratio: 0
+        },
+
+        // Big orders (200,000-400,000 yuan)
+        big_orders: {
+          inflow: item.medium_net_inflow || 0,
+          outflow: Math.abs(item.medium_net_outflow || 0),
+          net_flow: item.medium_net_inflow || 0,
+          ratio: 0
+        },
+
+        // Medium orders (40,000-200,000 yuan)
+        medium_orders: {
+          inflow: item.small_net_inflow || 0,
+          outflow: Math.abs(item.small_net_outflow || 0),
+          net_flow: item.small_net_inflow || 0,
+          ratio: 0
+        },
+
+        // Small orders (<40,000 yuan)
+        small_orders: {
+          inflow: 0,
+          outflow: 0,
+          net_flow: 0,
+          ratio: 0
+        },
+
+        // Market totals
+        total_inflow: item.total_inflow || 0,
+        total_outflow: item.total_outflow || 0,
+        total_net_flow: item.net_flow_total || 0
       }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
@@ -130,19 +168,20 @@ export class MarketAdapter {
       const points = klineData.data || [];
 
       const categoryData = points.map((p) => p.datetime || '');
-      const values = points.map((p) => [
-        p.open || 0,
-        p.close || 0,
-        p.low || 0,
-        p.high || 0,
-      ]);
+      const values = points.map((p) => ({
+        open: p.open || 0,
+        close: p.close || 0,
+        low: p.low || 0,
+        high: p.high || 0,
+        volume: p.volume || 0,
+      }));
       const volumes = points.map((p) => p.volume || 0);
 
       return {
         categoryData,
         values,
         volumes,
-      };
+      } as any;
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt K-line data:', error);
       return this.getMockKLineData();
@@ -196,11 +235,80 @@ export class MarketAdapter {
     console.log('[MarketAdapter] 📦 Using Mock Market Overview data');
     // Basic fallback that matches VM structure
     return {
-        marketStats: { totalStocks: 0, risingStocks: 0, fallingStocks: 0, avgChangePercent: 0 },
-        topEtfs: [],
-        chipRaces: [],
-        longHuBang: [],
-        lastUpdate: new Date()
+        market_status: 'sideways',
+        market_phase: 'accumulation',
+        indices: {
+          shanghai: {
+            name: '上证指数',
+            code: '000001',
+            full_name: '上证综合指数',
+            current_price: 0,
+            change_amount: 0,
+            change_percent: 0,
+            volume: 0,
+            amount: 0,
+            open: 0,
+            high: 0,
+            low: 0,
+            close: 0,
+            prev_close: 0
+          },
+          shenzhen: {
+            name: '深证成指',
+            code: '399001',
+            full_name: '深证成份指数',
+            current_price: 0,
+            change_amount: 0,
+            change_percent: 0,
+            volume: 0,
+            amount: 0,
+            open: 0,
+            high: 0,
+            low: 0,
+            close: 0,
+            prev_close: 0
+          },
+          chiNext: {
+            name: '创业板指',
+            code: '399006',
+            full_name: '创业板指数',
+            current_price: 0,
+            change_amount: 0,
+            change_percent: 0,
+            volume: 0,
+            amount: 0,
+            open: 0,
+            high: 0,
+            low: 0,
+            close: 0,
+            prev_close: 0
+          }
+        },
+        sentiment: {
+          advance_decline_ratio: 0,
+          up_down_volume_ratio: 0,
+          new_highs_new_lows_ratio: 0
+        },
+        turnover: {
+          total_value: 0,
+          total_volume: 0,
+          average_price: 0,
+          turnover_rate: 0
+        },
+        price_distribution: {
+          up_stocks: 0,
+          down_stocks: 0,
+          flat_stocks: 0,
+          limit_up: 0,
+          limit_down: 0,
+          turnover_rate: 0
+        },
+        health_indicators: {
+          market_breadth: 0,
+          advance_decline_ratio: 0,
+          up_down_ratio: 0,
+          new_highs_new_lows_ratio: 0
+        }
     };
   }
 
@@ -255,7 +363,7 @@ export class MarketAdapter {
    * Validate market overview data
    */
   static validateMarketOverview(data: MarketOverviewVM): boolean {
-    if (!data.marketStats) return false;
+    if (!data.indices || !data.price_distribution) return false;
     return true;
   }
 }

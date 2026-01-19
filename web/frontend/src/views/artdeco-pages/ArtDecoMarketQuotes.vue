@@ -287,18 +287,44 @@
                 </div>
 
                 <div class="tdx-grid">
-                    <ArtDecoCard title="五档报价" hoverable class="order-book-card">
-                        <div class="order-book">
-                            <div class="order-book-header">
-                                <span>卖盘</span>
-                                <span>价格</span>
-                                <span>买盘</span>
+                    <ArtDecoCard title="十档报价 (Level 2)" hoverable class="order-book-card">
+                        <div class="order-book-detailed">
+                            <!-- 卖盘 (Ask) -->
+                            <div class="order-side sell-side">
+                                <div class="order-side-header">卖盘 (10档)</div>
+                                <div class="order-side-body">
+                                    <div class="order-row-header">
+                                        <span class="order-price-header">价格</span>
+                                        <span class="order-volume-header">委托量</span>
+                                    </div>
+                                    <div class="order-row sell-row" v-for="ask in detailedOrderBook.asks" :key="ask.price">
+                                        <span class="order-price sell">{{ ask.price }}</span>
+                                        <span class="order-volume">{{ ask.volume }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="order-book-body">
-                                <div class="order-row" v-for="level in orderBook" :key="level.price">
-                                    <div class="sell-volume">{{ level.sellVolume }}</div>
-                                    <div class="price" :class="level.type">{{ level.price }}</div>
-                                    <div class="buy-volume">{{ level.buyVolume }}</div>
+
+                            <!-- 中间价格显示 -->
+                            <div class="price-center">
+                                <div class="latest-price">{{ detailedOrderBook.latestPrice }}</div>
+                                <div class="price-change" :class="{ positive: detailedOrderBook.change > 0, negative: detailedOrderBook.change < 0 }">
+                                    {{ detailedOrderBook.change > 0 ? '+' : '' }}{{ detailedOrderBook.change }}
+                                    ({{ detailedOrderBook.changePercent }}%)
+                                </div>
+                            </div>
+
+                            <!-- 买盘 (Bid) -->
+                            <div class="order-side buy-side">
+                                <div class="order-side-header">买盘 (10档)</div>
+                                <div class="order-side-body">
+                                    <div class="order-row-header">
+                                        <span class="order-price-header">价格</span>
+                                        <span class="order-volume-header">委托量</span>
+                                    </div>
+                                    <div class="order-row buy-row" v-for="bid in detailedOrderBook.bids" :key="bid.price">
+                                        <span class="order-price buy">{{ bid.price }}</span>
+                                        <span class="order-volume">{{ bid.volume }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1254,7 +1280,7 @@
         { name: 'N科创板', code: '300751', change: 89.0, type: 'surge', typeText: '冲高' }
     ])
 
-    // 五档报价
+    // 五档报价 (兼容现有代码)
     const orderBook = ref([
         { sellVolume: '50万', price: '185.50', buyVolume: '', type: 'sell' },
         { sellVolume: '80万', price: '185.45', buyVolume: '', type: 'sell' },
@@ -1268,6 +1294,37 @@
         { sellVolume: '', price: '185.05', buyVolume: '180万', type: 'buy' },
         { sellVolume: '', price: '185.00', buyVolume: '320万', type: 'buy' }
     ])
+
+    // 详细Level 2数据 - 从HTML功能增强
+    const detailedOrderBook = ref({
+        latestPrice: '185.25',
+        change: '+2.34',
+        changePercent: '+1.28%',
+        asks: [ // 卖盘
+            { price: '185.60', volume: '3,245' },
+            { price: '185.50', volume: '5,678' },
+            { price: '185.40', volume: '2,345' },
+            { price: '185.30', volume: '8,901' },
+            { price: '185.20', volume: '4,567' },
+            { price: '185.10', volume: '6,789' },
+            { price: '185.00', volume: '3,456' },
+            { price: '184.90', volume: '2,134' },
+            { price: '184.80', volume: '7,890' },
+            { price: '184.70', volume: '5,432' }
+        ],
+        bids: [ // 买盘
+            { price: '185.20', volume: '4,567' },
+            { price: '185.10', volume: '3,234' },
+            { price: '185.00', volume: '6,789' },
+            { price: '184.90', volume: '2,345' },
+            { price: '184.80', volume: '5,678' },
+            { price: '184.70', volume: '3,456' },
+            { price: '184.60', volume: '7,890' },
+            { price: '184.50', volume: '4,567' },
+            { price: '184.40', volume: '2,134' },
+            { price: '184.30', volume: '8,901' }
+        ]
+    })
 
     // 成交明细
     const tradeTicks = ref([
@@ -2153,6 +2210,134 @@
         }
     }
 
+    // 详细Level 2报价 - 从HTML功能增强
+    .order-book-detailed {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: var(--artdeco-spacing-4);
+        align-items: stretch;
+
+        .order-side {
+            background: var(--artdeco-bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: var(--artdeco-radius-none);
+
+            &.sell-side {
+                border-color: rgba(239, 68, 68, 0.3);
+            }
+
+            &.buy-side {
+                border-color: rgba(34, 197, 148, 0.3);
+            }
+
+            .order-side-header {
+                padding: var(--artdeco-spacing-3);
+                background: rgba(212, 175, 55, 0.05);
+                text-align: center;
+                font-family: var(--artdeco-font-display);
+                font-size: var(--artdeco-text-sm);
+                font-weight: 600;
+                color: var(--artdeco-gold-primary);
+                text-transform: uppercase;
+                letter-spacing: var(--artdeco-tracking-wide);
+                border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            }
+
+            .order-side-body {
+                max-height: 300px;
+                overflow-y: auto;
+
+                .order-row-header {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--artdeco-spacing-2);
+                    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+                    background: rgba(212, 175, 55, 0.02);
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-text-xs);
+                    font-weight: 600;
+                    color: var(--artdeco-fg-muted);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+
+                    .order-price-header,
+                    .order-volume-header {
+                        text-align: center;
+                    }
+                }
+
+                .order-row {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--artdeco-spacing-2);
+                    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.05);
+                    font-family: var(--artdeco-font-mono);
+                    font-size: var(--artdeco-text-sm);
+                    align-items: center;
+
+                    &:hover {
+                        background: rgba(212, 175, 55, 0.02);
+                    }
+
+                    &.sell-row {
+                        .order-price {
+                            color: var(--artdeco-down);
+                        }
+                    }
+
+                    &.buy-row {
+                        .order-price {
+                            color: var(--artdeco-up);
+                        }
+                    }
+
+                    .order-price,
+                    .order-volume {
+                        text-align: center;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+
+        .price-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--artdeco-spacing-4);
+            background: linear-gradient(135deg, var(--artdeco-bg-card), rgba(212, 175, 55, 0.02));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--artdeco-radius-none);
+            min-width: 150px;
+
+            .latest-price {
+                font-family: var(--artdeco-font-display);
+                font-size: var(--artdeco-text-2xl);
+                font-weight: 700;
+                color: var(--artdeco-gold-primary);
+                text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+                margin-bottom: var(--artdeco-spacing-1);
+            }
+
+            .price-change {
+                font-family: var(--artdeco-font-body);
+                font-size: var(--artdeco-text-sm);
+                font-weight: 600;
+
+                &.positive {
+                    color: var(--artdeco-up);
+                }
+
+                &.negative {
+                    color: var(--artdeco-down);
+                }
+            }
+        }
+    }
+
     // 成交明细
     .trade-ticks {
         .tick-header {
@@ -2468,7 +2653,7 @@ var(--artdeco-spacing-6); align-items: flex-end; } .alert-settings { display: fl
 var(--artdeco-font-body); font-size: var(--artdeco-text-sm); color: var(--artdeco-fg-muted); cursor: pointer;
 input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--artdeco-gold-primary); } } // 监控网格
 .monitoring-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--artdeco-spacing-6); margin-bottom:
-var(--artdeco-spacing-6); } // 异动列表 .abnormal-list { display: flex; flex-direction: column; gap:
+var(--artdeco-spacing-6); }; // 异动列表 .abnormal-list { display: flex; flex-direction: column gap:
 var(--artdeco-spacing-2); } .abnormal-item { display: grid; grid-template-columns: 80px 1fr 80px 100px; gap:
 var(--artdeco-spacing-3); padding: var(--artdeco-spacing-3); background: var(--artdeco-bg-card); border: 1px solid
 rgba(212, 175, 55, 0.1); border-radius: var(--artdeco-radius-none); align-items: center; .abnormal-time { font-family:

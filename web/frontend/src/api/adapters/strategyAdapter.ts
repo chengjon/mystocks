@@ -7,12 +7,12 @@
 
 import type { UnifiedResponse } from '../apiClient';
 import type {
-  Strategy,
-  StrategyPerformance,
-  BacktestTask,
+  StrategyVM as Strategy,
+  StrategyPerformanceVM as StrategyPerformance,
+  BacktestRequestVM as BacktestTask,
   BacktestResultVM,
-  StrategyListResponse,
-} from '../types/strategy';
+  StrategyListResponseVM as StrategyListResponse,
+} from '../types/extensions';
 import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock';
 
 export class StrategyAdapter {
@@ -31,7 +31,7 @@ export class StrategyAdapter {
     }
 
     try {
-      return (apiResponse.data.strategies || []).map((s) => this.adaptStrategy(s));
+      return (apiResponse.data.strategies || []).map((s: any) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
       return mockStrategyList.strategies;
@@ -68,12 +68,13 @@ export class StrategyAdapter {
    */
   static adaptPerformance(apiPerf: any): StrategyPerformance {
     return {
-      totalReturn: apiPerf.total_return || apiPerf.totalReturn || 0,
-      annualizedReturn: apiPerf.annual_return || apiPerf.annualized_return || apiPerf.annualReturn || 0,
-      sharpeRatio: apiPerf.sharpe_ratio || apiPerf.sharpeRatio || 0,
-      maxDrawdown: apiPerf.max_drawdown || apiPerf.maxDrawdown || 0,
-      winRate: apiPerf.win_rate || apiPerf.winRate || 0,
-      profitLossRatio: apiPerf.profit_loss_ratio || apiPerf.profitLossRatio || 0,
+      strategy_id: apiPerf.strategy_id || '',
+      total_return: apiPerf.total_return || apiPerf.totalReturn || 0,
+      annual_return: apiPerf.annual_return || apiPerf.annualized_return || apiPerf.annualReturn || 0,
+      sharpe_ratio: apiPerf.sharpe_ratio || apiPerf.sharpeRatio || 0,
+      max_drawdown: apiPerf.max_drawdown || apiPerf.maxDrawdown || 0,
+      win_rate: apiPerf.win_rate || apiPerf.winRate || 0,
+      profit_factor: apiPerf.profit_factor || apiPerf.profitLossRatio || 0,
     };
   }
 
@@ -94,14 +95,13 @@ export class StrategyAdapter {
     try {
       const task = apiResponse.data as any; // Support both snake_case and camelCase
       return {
-        task_id: task.task_id || task.taskId,
+        id: task.task_id || task.id,
         strategy_id: task.strategy_id || task.strategyId,
         status: this.translateBacktestStatus(task.status),
+        created_at: this.parseDateToString(task.created_at || task.createdAt),
         progress: task.progress || 0,
-        started_at: task.started_at || task.startTime,
-        completed_at: task.completed_at || task.endTime,
+        startTime: this.parseDateToString(task.started_at || task.startTime),
         result: task.result ? this.adaptBacktestResult(task.result) : undefined,
-        error: task.error,
       };
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt backtest task:', error);
@@ -117,18 +117,22 @@ export class StrategyAdapter {
    */
   static adaptBacktestResult(apiResult: any): BacktestResultVM {
     return {
-      task_id: apiResult.task_id || apiResult.taskId || '',
-      strategy_id: apiResult.strategy_id || apiResult.strategyId || '',
+      task_id: apiResult.task_id || '',
+      strategy_id: apiResult.strategy_id || '',
+      status: apiResult.status || 'completed',
+      performance: apiResult.summary || {},
+      trades: (apiResult.trades || []).map((t: any) => ({
+        symbol: t.symbol || '',
+        entry_date: t.entry_date || t.entryDate || '',
+        exit_date: t.exit_date || t.exitDate || '',
+        entry_price: t.entry_price || t.entryPrice || 0,
+        exit_price: t.exit_price || t.exitPrice || 0,
+        pnl: t.pnl || 0,
+      })),
       total_return: apiResult.total_return || apiResult.totalReturn || 0,
-      annualized_return: apiResult.annual_return || apiResult.annualized_return || 0,
-      sharpe_ratio: apiResult.sharpe_ratio || apiResult.sharpeRatio || 0,
-      max_drawdown: apiResult.max_drawdown || apiResult.maxDrawdown || 0,
-      win_rate: apiResult.win_rate || apiResult.winRate || 0,
-      total_trades: apiResult.total_trades || apiResult.totalTrades || 0,
-      profit_factor: apiResult.profit_factor || apiResult.profitFactor || 0,
       equity_curve: apiResult.equity_curve || apiResult.equityCurve || [],
-      trades: apiResult.trades || [],
-      performance_metrics: apiResult.performance_metrics || apiResult.performanceMetrics || {},
+      created_at: apiResult.created_at || new Date().toISOString(),
+      completed_at: apiResult.completed_at || new Date().toISOString(),
     };
   }
 
@@ -230,6 +234,17 @@ export class StrategyAdapter {
       console.warn('[StrategyAdapter] Invalid date string:', dateStr);
       return new Date();
     }
+  }
+
+  /**
+   * Parse date string to ISO string
+   *
+   * @param dateStr - Date string from API
+   * @returns ISO date string (or current date if invalid)
+   */
+  private static parseDateToString(dateStr: string | Date): string {
+    const date = this.parseDate(dateStr);
+    return date.toISOString();
   }
 
   /**

@@ -127,17 +127,23 @@ class TestRealtimeMarketIntegration:
         # 添加持仓
         print(f"\n🔍 [DEBUG] Before handle_order_filled - Portfolio has {len(portfolio.positions)} positions")
         portfolio.handle_order_filled(
-            type("Event", (), {
-                "symbol": "000001.SZ",
-                "side": OrderSide.BUY,  # 使用真正的枚举值
-                "filled_quantity": 1000,
-                "filled_price": 10.0,
-                "commission": 5.0
-            })
+            type(
+                "Event",
+                (),
+                {
+                    "symbol": "000001.SZ",
+                    "side": OrderSide.BUY,  # 使用真正的枚举值
+                    "filled_quantity": 1000,
+                    "filled_price": 10.0,
+                    "commission": 5.0,
+                },
+            )
         )
         print(f"🔍 [DEBUG] After handle_order_filled - Portfolio has {len(portfolio.positions)} positions")
         for symbol, pos in portfolio.positions.items():
-            print(f"   {symbol}: quantity={pos.quantity}, avg_cost={pos.average_cost}, current_price={pos.current_price}")
+            print(
+                f"   {symbol}: quantity={pos.quantity}, avg_cost={pos.average_cost}, current_price={pos.current_price}"
+            )
 
         print(f"🔍 [DEBUG] Portfolio ID: {portfolio.id}")
         print(f"🔍 [DEBUG] Portfolio cash: {portfolio.cash}")
@@ -149,7 +155,9 @@ class TestRealtimeMarketIntegration:
         print(f"\n🔍 [DEBUG] After save - Portfolio has {len(saved_portfolio.positions)} positions")
         if saved_portfolio.positions:
             for symbol, pos in saved_portfolio.positions.items():
-                print(f"   {symbol}: quantity={pos.quantity}, avg_cost={pos.average_cost}, current_price={pos.current_price}")
+                print(
+                    f"   {symbol}: quantity={pos.quantity}, avg_cost={pos.average_cost}, current_price={pos.current_price}"
+                )
 
         # 创建估值服务
         valuation_service = PortfolioValuationService(portfolio_repo)
@@ -165,7 +173,9 @@ class TestRealtimeMarketIntegration:
 
         # 验证持仓价格已更新（在重新计算之前）
         current_portfolio = portfolio_repo.find_by_id(portfolio.id)
-        print(f"🔍 [DEBUG] Position before assert: symbol={list(current_portfolio.positions.keys())[0]}, current_price={list(current_portfolio.positions.values())[0].current_price}")
+        print(
+            f"🔍 [DEBUG] Position before assert: symbol={list(current_portfolio.positions.keys())[0]}, current_price={list(current_portfolio.positions.values())[0].current_price}"
+        )
 
         assert performance is not None
         # PerformanceMetrics 有 total_return (百分比), holdings_value, cash_balance
@@ -182,13 +192,17 @@ class TestRealtimeMarketIntegration:
         # 创建测试投资组合
         portfolio = Portfolio.create(name="Concurrent Test", initial_capital=100000.0)
         portfolio.handle_order_filled(
-            type("Event", (), {
-                "symbol": "000001.SZ",
-                "side": OrderSide.BUY,  # 使用真正的枚举值
-                "filled_quantity": 1000,
-                "filled_price": 10.0,
-                "commission": 5.0
-            })
+            type(
+                "Event",
+                (),
+                {
+                    "symbol": "000001.SZ",
+                    "side": OrderSide.BUY,  # 使用真正的枚举值
+                    "filled_quantity": 1000,
+                    "filled_price": 10.0,
+                    "commission": 5.0,
+                },
+            )
         )
         portfolio_repo.save(portfolio)
 
@@ -211,13 +225,17 @@ class TestRealtimeMarketIntegration:
         # 创建测试投资组合
         portfolio = Portfolio.create(name="Realtime Test", initial_capital=100000.0)
         portfolio.handle_order_filled(
-            type("Event", (), {
-                "symbol": "000001.SZ",
-                "side": OrderSide.BUY,  # 使用真正的枚举值
-                "filled_quantity": 1000,
-                "filled_price": 10.0,
-                "commission": 5.0
-            })
+            type(
+                "Event",
+                (),
+                {
+                    "symbol": "000001.SZ",
+                    "side": OrderSide.BUY,  # 使用真正的枚举值
+                    "filled_quantity": 1000,
+                    "filled_price": 10.0,
+                    "commission": 5.0,
+                },
+            )
         )
         portfolio_repo.save(portfolio)
 

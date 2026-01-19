@@ -142,7 +142,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useBacktest } from '@/composables/useStrategy';
-import type { Strategy } from '@/api/types/strategy';
+import type { StrategyVM as Strategy } from '@/api/types/extensions';
 
 const props = defineProps<{
   strategy: Strategy;

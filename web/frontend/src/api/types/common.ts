@@ -1,31 +1,5 @@
 // Auto-generated types for common domain
-// Generated at: 2026-01-15T21:06:03.932742
-
-// ============================================
-// Core Utility Types
-// ============================================
-
-export type Dict<T = any> = Record<string, T>;
-export type List<T = any> = T[];
-
-// ============================================
-// Response Types
-// ============================================
-
-export interface BaseResponse<T = any> {
-  success?: boolean;
-  message?: string;
-  data?: T;
-  timestamp?: string;
-}
-
-export interface PagedResponse<T = any> {
-  items?: T[];
-  total?: number;
-  page?: number;
-  pageSize?: number;
-  hasMore?: boolean;
-}
+// Generated at: 2026-01-19T22:34:18.293479
 
 export interface APIResponse {
   success?: boolean;
@@ -417,6 +391,14 @@ export interface BaseEvent {
   version?: string;
 }
 
+export interface BaseResponse {
+  success?: boolean;
+  message?: string;
+  data?: T | null;
+  timestamp?: string;
+  request_id?: string | null;
+}
+
 export interface BatchOperation {
   operation?: string;
   data?: Record<string, any>;
@@ -572,8 +554,6 @@ export interface DashboardRequest {
   include_portfolio?: boolean;
   include_risk_alerts?: boolean;
 }
-
-import type { MarketOverview } from './market';
 
 export interface DashboardResponse {
   user_id?: number;
@@ -738,13 +718,6 @@ export interface FundFlowResponse {
   medium_net_inflow?: number;
   small_net_inflow?: number;
   created_at?: string | null;
-}
-
-export interface HMMConfig {
-  n_states?: number;
-  n_iter?: number;
-  covariance_type?: string;
-  random_state?: number;
 }
 
 export interface HMMPredictRequest {
@@ -1230,19 +1203,9 @@ export interface NGramTrainRequest {
   window_size?: number;
 }
 
-export interface NeuralNetworkConfig {
-  hidden_layers?: number[];
-  activation?: string;
-  optimizer?: string;
-  learning_rate?: number;
-  epochs?: number;
-  batch_size?: number;
-  dropout?: number;
-}
-
 export interface NeuralNetworkPredictRequest {
   model_id?: string;
-  current_data?: Record<string, List<number>>;
+  current_data?: Record<string, List[number]>;
 }
 
 export interface NeuralNetworkTrainRequest {
@@ -1367,7 +1330,7 @@ export interface OverlayIndicatorValue {
   lower?: number | null;
 }
 
-export interface PagedResponse<T = any> {
+export interface PagedResponse {
   success?: boolean;
   message?: string;
   data?: T[];
@@ -1380,8 +1343,8 @@ export interface PagedResponse<T = any> {
   timestamp?: string;
 }
 
-export interface PaginatedResponse<T = any> {
-  items?: List<T>;
+export interface PaginatedResponse {
+  items?: list[T];
   total?: number;
   page?: number;
   page_size?: number;
@@ -1434,17 +1397,6 @@ export interface PerformanceMetrics {
   profit_factor?: number;
   calmar_ratio?: number | null;
   sortino_ratio?: number | null;
-}
-
-export interface PositionItem {
-  symbol?: string;
-  quantity?: number;
-  avg_cost?: number;
-  current_price?: number | null;
-  market_value?: number | null;
-  profit_loss?: number | null;
-  profit_loss_percent?: number | null;
-  position_percent?: number | null;
 }
 
 export interface PortfolioSummary {
@@ -1627,7 +1579,7 @@ export interface RiskDashboardResponse {
 }
 
 export interface RiskHistoryPoint {
-  date?: string;
+  date?: date_type;
   var_95_hist?: number | null;
   cvar_95?: number | null;
   beta?: number | null;

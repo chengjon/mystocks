@@ -31,8 +31,14 @@ class Portfolio:
     updated_at: datetime = field(default_factory=datetime.now)
 
     @classmethod
-    def create(cls, name: str, portfolio_type: str, initial_capital: float, 
-               description: str = "", benchmark_index: str = "000300") -> "Portfolio":
+    def create(
+        cls,
+        name: str,
+        portfolio_type: str,
+        initial_capital: float,
+        description: str = "",
+        benchmark_index: str = "000300",
+    ) -> "Portfolio":
         return cls(
             id=str(uuid4()),
             name=name,
@@ -62,7 +68,9 @@ class Portfolio:
         self.updated_at = datetime.now()
         return holding
 
-    def update_holding(self, symbol: str, quantity_change: int, price: float, side: str = "LONG") -> Optional["Holding"]:
+    def update_holding(
+        self, symbol: str, quantity_change: int, price: float, side: str = "LONG"
+    ) -> Optional["Holding"]:
         if symbol not in self.holdings:
             return None
 
@@ -109,8 +117,9 @@ class Portfolio:
         return list(self.holdings.values())
 
     def get_performance_metrics(self) -> PerformanceMetrics:
-        total_return = ((self.current_value - self.initial_capital) / self.initial_capital * 100 
-                        if self.initial_capital > 0 else 0)
+        total_return = (
+            (self.current_value - self.initial_capital) / self.initial_capital * 100 if self.initial_capital > 0 else 0
+        )
         holdings_value = self.current_value - self.cash
 
         winning_trades = sum(1 for t in self.transactions if t.pnl and t.pnl > 0)
@@ -145,10 +154,7 @@ class Portfolio:
         total = self.current_value if self.current_value > 0 else 1
         weights = sorted([h.market_value / total * 100 for h in self.holdings.values()], reverse=True)
 
-        return {
-            "max_position": weights[0],
-            "top5_concentration": sum(weights[:5])
-        }
+        return {"max_position": weights[0], "top5_concentration": sum(weights[:5])}
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -165,6 +171,7 @@ class Portfolio:
 @dataclass
 class Holding:
     """持仓实体"""
+
     id: str
     portfolio_id: str
     symbol: str
@@ -188,8 +195,17 @@ class Holding:
         return self.market_value - self.cost_basis
 
     @classmethod
-    def create(cls, portfolio_id: str, symbol: str, quantity: int, average_cost: float, side: str = "LONG") -> "Holding":
-        return cls(id=str(uuid4()), portfolio_id=portfolio_id, symbol=symbol, quantity=quantity, average_cost=average_cost, side=side)
+    def create(
+        cls, portfolio_id: str, symbol: str, quantity: int, average_cost: float, side: str = "LONG"
+    ) -> "Holding":
+        return cls(
+            id=str(uuid4()),
+            portfolio_id=portfolio_id,
+            symbol=symbol,
+            quantity=quantity,
+            average_cost=average_cost,
+            side=side,
+        )
 
     def add_quantity(self, quantity: int, price: float) -> None:
         total_cost = self.quantity * self.average_cost + quantity * price
@@ -223,6 +239,7 @@ class Holding:
 @dataclass
 class Transaction:
     """交易流水"""
+
     id: str
     portfolio_id: str
     symbol: str
@@ -234,10 +251,26 @@ class Transaction:
     timestamp: datetime = field(default_factory=datetime.now)
 
     @classmethod
-    def create(cls, portfolio_id: str, symbol: str, side: str, quantity: int, price: float, 
-               commission: float = 0.0, pnl: float = None) -> "Transaction":
-        return cls(id=str(uuid4()), portfolio_id=portfolio_id, symbol=symbol, side=side, 
-                   quantity=quantity, price=price, commission=commission, pnl=pnl)
+    def create(
+        cls,
+        portfolio_id: str,
+        symbol: str,
+        side: str,
+        quantity: int,
+        price: float,
+        commission: float = 0.0,
+        pnl: float = None,
+    ) -> "Transaction":
+        return cls(
+            id=str(uuid4()),
+            portfolio_id=portfolio_id,
+            symbol=symbol,
+            side=side,
+            quantity=quantity,
+            price=price,
+            commission=commission,
+            pnl=pnl,
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         return {

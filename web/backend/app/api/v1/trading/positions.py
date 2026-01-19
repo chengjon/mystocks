@@ -4,9 +4,9 @@
 提供交易持仓管理功能
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 router = APIRouter(
@@ -92,9 +92,7 @@ async def list_positions(
     if symbol:
         mock_positions = [p for p in mock_positions if p["symbol"] == symbol]
     if session_id:
-        mock_positions = [
-            p for p in mock_positions if p.get("session_id") == session_id
-        ]
+        mock_positions = [p for p in mock_positions if p.get("session_id") == session_id]
 
     total_value = sum(p["market_value"] for p in mock_positions)
     for p in mock_positions:
@@ -155,9 +153,7 @@ async def create_position(request: PositionCreate):
     )
 
 
-@router.patch(
-    "/{position_id}", response_model=PositionResponse, summary="Update Position"
-)
+@router.patch("/{position_id}", response_model=PositionResponse, summary="Update Position")
 async def update_position(position_id: str, request: PositionUpdate):
     """
     更新持仓

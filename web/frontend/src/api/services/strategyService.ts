@@ -8,13 +8,13 @@
 import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient';
 import type { UnifiedResponse } from '../apiClient';
 import type {
-  Strategy,
-  CreateStrategyRequest,
-  UpdateStrategyRequest,
-  BacktestParams,
-  BacktestTask,
-  StrategyListResponse,
-} from '../types/strategy';
+  StrategyVM as Strategy,
+  CreateStrategyRequestVM as CreateStrategyRequest,
+  UpdateStrategyRequestVM as UpdateStrategyRequest,
+  BacktestRequestVM as BacktestParams,
+  BacktestRequestVM as BacktestTask,
+  StrategyListResponseVM as StrategyListResponse,
+} from '../types/extensions';
 
 export class StrategyApiService {
   /**

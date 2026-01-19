@@ -60,7 +60,7 @@
 
     .artdeco-switch-label {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       letter-spacing: 1px;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -111,7 +111,7 @@
 
     .artdeco-switch-status {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       min-width: 25px;
     }

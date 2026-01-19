@@ -12,7 +12,7 @@ GPU Indicator Adapter - GPU指标适配器
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional
 from abc import ABC, abstractmethod
 import time
 import numpy as np
@@ -40,9 +40,7 @@ class IndicatorResult:
 # Base indicator interface
 class IndicatorInterface(ABC):
     @abstractmethod
-    def calculate(
-        self, data: Dict[str, Any], parameters: Optional[Dict[str, Any]] = None
-    ) -> IndicatorResult:
+    def calculate(self, data: Dict[str, Any], parameters: Optional[Dict[str, Any]] = None) -> IndicatorResult:
         pass
 
 
@@ -190,9 +188,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
 
         return base_memory
 
-    def calculate(
-        self, data: Dict[str, Any], parameters: Optional[Dict[str, Any]] = None
-    ) -> IndicatorResult:
+    def calculate(self, data: Dict[str, Any], parameters: Optional[Dict[str, Any]] = None) -> IndicatorResult:
         """
         计算技术指标
 
@@ -243,9 +239,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
             raise
 
     @abstractmethod
-    def _calculate_gpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_gpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """
         GPU计算实现
 
@@ -259,9 +253,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
         pass
 
     @abstractmethod
-    def _calculate_cpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """
         CPU计算实现（回退用）
 
@@ -295,9 +287,7 @@ class GPUMACDIndicator(GPUIndicatorAdapter):
     def __init__(self, config: IndicatorConfig):
         super().__init__(config)
 
-    def _calculate_gpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_gpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """GPU计算MACD"""
         if not GPU_AVAILABLE:
             raise RuntimeError("GPU not available")
@@ -334,9 +324,7 @@ class GPUMACDIndicator(GPUIndicatorAdapter):
             logger.error(f"GPU MACD calculation failed: {e}")
             raise
 
-    def _calculate_cpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """CPU计算MACD"""
         close_prices = np.array(data["close"])
 
@@ -380,9 +368,7 @@ class GPURSIIndicator(GPUIndicatorAdapter):
     def __init__(self, config: IndicatorConfig):
         super().__init__(config)
 
-    def _calculate_gpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_gpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """GPU计算RSI"""
         if not GPU_AVAILABLE:
             raise RuntimeError("GPU not available")
@@ -408,17 +394,13 @@ class GPURSIIndicator(GPUIndicatorAdapter):
             rs = avg_gain / avg_loss
             rsi = 100 - (100 / (1 + rs))
 
-            return {
-                "rsi": rsi.to_pandas().fillna(50).values  # RSI默认50
-            }
+            return {"rsi": rsi.to_pandas().fillna(50).values}  # RSI默认50
 
         except Exception as e:
             logger.error(f"GPU RSI calculation failed: {e}")
             raise
 
-    def _calculate_cpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """CPU计算RSI"""
         close_prices = np.array(data["close"])
         period = parameters.get("period", 14)
@@ -448,9 +430,7 @@ class GPUBollingerBandsIndicator(GPUIndicatorAdapter):
     def __init__(self, config: IndicatorConfig):
         super().__init__(config)
 
-    def _calculate_gpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_gpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """GPU计算布林带"""
         if not GPU_AVAILABLE:
             raise RuntimeError("GPU not available")
@@ -482,9 +462,7 @@ class GPUBollingerBandsIndicator(GPUIndicatorAdapter):
             logger.error(f"GPU Bollinger Bands calculation failed: {e}")
             raise
 
-    def _calculate_cpu(
-        self, data: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """CPU计算布林带"""
         close_prices = np.array(data["close"])
         period = parameters.get("period", 20)
@@ -529,9 +507,7 @@ class GPUIndicatorFactory:
     }
 
     @classmethod
-    def create_indicator(
-        cls, indicator_type: str, config: IndicatorConfig
-    ) -> GPUIndicatorAdapter:
+    def create_indicator(cls, indicator_type: str, config: IndicatorConfig) -> GPUIndicatorAdapter:
         """
         创建GPU指标实例
 

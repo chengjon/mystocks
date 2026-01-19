@@ -10,7 +10,9 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
 import pandas as pd
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
+
+from app.core.exceptions import BusinessException, ValidationException
 
 from app.core.database import db_service
 from app.core.responses import create_error_response, ErrorCodes, UnifiedResponse, ok, bad_request, server_error
@@ -52,10 +54,10 @@ async def get_stocks_basic(
     try:
         # 参数校验
         if limit <= 0:
-            raise HTTPException(status_code=400, detail="limit参数必须为正整数")
+            raise ValidationException(detail="limit参数必须为正整数", field="limit")
 
         if limit > 1000:
-            raise HTTPException(status_code=400, detail="limit参数不能超过1000")
+            raise ValidationException(detail="limit参数不能超过1000", field="limit")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -90,13 +92,19 @@ async def get_stocks_basic(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取股票基本信息失败"))
+            raise BusinessException(
+                detail=result.get("message", "获取股票基本信息失败"),
+                status_code=500,
+                error_code="STOCK_BASIC_INFO_RETRIEVAL_FAILED",
+            )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"查询股票基本信息失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"查询股票基本信息失败: {str(e)}")
+        raise BusinessException(
+            detail=f"查询股票基本信息失败: {str(e)}", status_code=500, error_code="STOCK_BASIC_INFO_QUERY_FAILED"
+        )
 
 
 @router.get("/stocks/industries")
@@ -219,7 +227,7 @@ async def get_daily_kline(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="股票代码不能为空")
+            raise ValidationException(detail="股票代码不能为空", field="symbol")
 
         # 设置默认日期范围（最近90天）
         if not end_date:
@@ -253,13 +261,19 @@ async def get_daily_kline(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取日线数据失败"))
+            raise BusinessException(
+                detail=result.get("message", "获取日线数据失败"),
+                status_code=500,
+                error_code="DAILY_KLINE_DATA_RETRIEVAL_FAILED",
+            )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"查询日线数据失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"查询日线数据失败: {str(e)}")
+        raise BusinessException(
+            detail=f"查询日线数据失败: {str(e)}", status_code=500, error_code="DAILY_KLINE_DATA_QUERY_FAILED"
+        )
 
 
 @router.get("/markets/overview")
@@ -293,13 +307,19 @@ async def get_market_overview(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取市场概览失败"))
+            raise BusinessException(
+                detail=result.get("message", "获取市场概览失败"),
+                status_code=500,
+                error_code="MARKET_OVERVIEW_RETRIEVAL_FAILED",
+            )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"获取市场概览失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取市场概览失败: {str(e)}", status_code=500, error_code="MARKET_OVERVIEW_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/stocks/search")
@@ -338,13 +358,15 @@ async def search_stocks(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "股票搜索失败"))
+            raise BusinessException(
+                detail=result.get("message", "股票搜索失败"), status_code=500, error_code="STOCK_SEARCH_FAILED"
+            )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"股票搜索失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"股票搜索失败: {str(e)}")
+        raise BusinessException(detail=f"股票搜索失败: {str(e)}", status_code=500, error_code="STOCK_SEARCH_FAILED")
 
 
 # K线数据端点（别名）
@@ -568,13 +590,19 @@ async def get_financial_data(
                 "message": result.get("message", "查询成功"),
             }
         else:
-            raise HTTPException(status_code=500, detail=result.get("message", "获取财务数据失败"))
+            raise BusinessException(
+                detail=result.get("message", "获取财务数据失败"),
+                status_code=500,
+                error_code="FINANCIAL_DATA_RETRIEVAL_FAILED",
+            )
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"查询财务数据失败: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"查询财务数据失败: {str(e)}")
+        raise BusinessException(
+            detail=f"查询财务数据失败: {str(e)}", status_code=500, error_code="FINANCIAL_DATA_QUERY_FAILED"
+        )
 
 
 # ==================== Dashboard相关API ====================
@@ -640,7 +668,9 @@ async def get_price_distribution(
         return result
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取涨跌分布失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取涨跌分布失败: {str(e)}", status_code=500, error_code="PRICE_CHANGE_DISTRIBUTION_FAILED"
+        )
 
 
 @router.get("/markets/hot-industries")
@@ -854,7 +884,7 @@ async def get_intraday_data(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="股票代码不能为空")
+            raise ValidationException(detail="股票代码不能为空", field="symbol")
 
         # 设置默认日期为今天
         if not date:
@@ -864,7 +894,7 @@ async def get_intraday_data(
         try:
             datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
-            raise HTTPException(status_code=400, detail="日期格式错误，请使用YYYY-MM-DD格式")
+            raise ValidationException(detail="日期格式错误，请使用YYYY-MM-DD格式", field="date")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1308,7 +1338,7 @@ async def get_margin_summary_szse(
     try:
         # 参数验证
         if not date:
-            raise HTTPException(status_code=400, detail="交易日期不能为空")
+            raise ValidationException(detail="交易日期不能为空", field="trade_date")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1399,7 +1429,7 @@ async def get_dragon_tiger_institution_daily(
     try:
         # 参数验证
         if not start_date or not end_date:
-            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+            raise ValidationException(detail="开始日期和结束日期不能为空", field="date_range")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1450,7 +1480,9 @@ async def get_dragon_tiger_institution_stats(
         # 参数验证
         valid_periods = ["近一月", "近三月", "近六月", "近一年"]
         if period not in valid_periods:
-            raise HTTPException(status_code=400, detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}")
+            raise ValidationException(
+                detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}", field="period"
+            )
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1500,7 +1532,9 @@ async def get_dragon_tiger_stock_stats(
         # 参数验证
         valid_periods = ["近一月", "近三月", "近六月", "近一年"]
         if period not in valid_periods:
-            raise HTTPException(status_code=400, detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}")
+            raise ValidationException(
+                detail=f"统计周期参数错误，支持的周期: {', '.join(valid_periods)}", field="period"
+            )
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1553,10 +1587,10 @@ async def get_futures_index_daily(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+            raise ValidationException(detail="期货合约代码不能为空", field="symbol")
 
         if not start_date or not end_date:
-            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+            raise ValidationException(detail="开始日期和结束日期不能为空", field="date_range")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1605,7 +1639,7 @@ async def get_futures_index_realtime(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+            raise ValidationException(detail="期货合约代码不能为空", field="symbol")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1653,15 +1687,17 @@ async def get_futures_index_main_contract(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="主力连续合约代码不能为空")
+            raise ValidationException(detail="主力连续合约代码不能为空", field="symbol")
 
         if not start_date or not end_date:
-            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+            raise ValidationException(detail="开始日期和结束日期不能为空", field="date_range")
 
         # 验证合约代码
         valid_symbols = ["IF0", "IH0", "IC0", "IM0"]
         if symbol not in valid_symbols:
-            raise HTTPException(status_code=400, detail=f"主力连续合约代码错误，支持的合约: {', '.join(valid_symbols)}")
+            raise ValidationException(
+                detail=f"主力连续合约代码错误，支持的合约: {', '.join(valid_symbols)}", field="symbol"
+            )
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory
@@ -1712,10 +1748,10 @@ async def get_futures_basis_analysis(
     try:
         # 参数验证
         if not symbol:
-            raise HTTPException(status_code=400, detail="期货合约代码不能为空")
+            raise ValidationException(detail="期货合约代码不能为空", field="symbol")
 
         if not start_date or not end_date:
-            raise HTTPException(status_code=400, detail="开始日期和结束日期不能为空")
+            raise ValidationException(detail="开始日期和结束日期不能为空", field="date_range")
 
         # 使用数据源工厂获取数据
         from app.services.data_source_factory import get_data_source_factory

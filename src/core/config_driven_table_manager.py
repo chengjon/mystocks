@@ -32,6 +32,7 @@ class ConfigDrivenTableManager:
         self.config_path = Path(config_path)
         self.safe_mode = safe_mode
         self.conn_manager = DatabaseConnectionManager()
+        self.logger = logger
 
         if not self.config_path.exists():
             raise FileNotFoundError(f"配置文件不存在: {self.config_path}")

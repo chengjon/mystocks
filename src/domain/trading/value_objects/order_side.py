@@ -10,6 +10,7 @@ from enum import Enum
 
 class OrderSide(Enum):
     """订单方向枚举"""
+
     BUY = "BUY"
     SELL = "SELL"
 
@@ -17,7 +18,7 @@ class OrderSide(Enum):
         return self.value
 
     @classmethod
-    def from_string(cls, value: str) -> 'OrderSide':
+    def from_string(cls, value: str) -> "OrderSide":
         """从字符串创建OrderSide"""
         if value.upper() == "BUY":
             return cls.BUY

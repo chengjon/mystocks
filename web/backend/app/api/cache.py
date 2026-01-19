@@ -15,12 +15,13 @@ Endpoints:
 - DELETE /cache                   - 清除所有缓存
 """
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Query, Depends
 from datetime import datetime
 from typing import Dict, Any, Optional
 import structlog
 
 from app.core.cache_manager import get_cache_manager
+from app.core.exceptions import BusinessException
 from app.core.cache_eviction import (
     get_eviction_strategy,
     get_eviction_scheduler,
@@ -84,7 +85,7 @@ async def get_cache_status(current_user: User = Depends(get_current_user)) -> Di
 
     except Exception as e:
         logger.error("❌ 获取缓存统计失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存读取 ====================
@@ -168,10 +169,10 @@ async def get_cached_data(
 
     except ValueError as e:
         logger.warning("⚠️ 输入验证失败", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_CACHE_REQUEST")
     except Exception as e:
         logger.error("❌ 读取缓存失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存写入 ====================
@@ -266,14 +267,14 @@ async def write_cache_data(
             symbol=symbol,
             data_type=data_type,
         )
-        raise HTTPException(status_code=500, detail="缓存写入失败，请稍后重试")
+        raise BusinessException(detail="缓存写入失败，请稍后重试", status_code=500, error_code="CACHE_WRITE_FAILED")
 
     except ValueError as e:
         logger.warning("⚠️ 输入验证失败", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_CACHE_REQUEST")
     except Exception as e:
         logger.error("❌ 缓存写入异常", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存清除 ====================
@@ -328,10 +329,10 @@ async def invalidate_symbol_cache(symbol: str, current_user: User = Depends(get_
 
     except ValueError as e:
         logger.warning("⚠️ 输入验证失败", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_CACHE_REQUEST")
     except Exception as e:
         logger.error("❌ 缓存清除失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 @router.delete("")
@@ -381,10 +382,10 @@ async def clear_all_cache(
 
     except ValueError as e:
         logger.warning("⚠️ 输入验证失败", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_CACHE_REQUEST")
     except Exception as e:
         logger.error("❌ 清除所有缓存失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存验证 ====================
@@ -454,10 +455,10 @@ async def check_cache_freshness(
 
     except ValueError as e:
         logger.warning("⚠️ 输入验证失败", error=str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_CACHE_REQUEST")
     except Exception as e:
         logger.error("❌ 缓存新鲜度检查失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存淘汰 ====================
@@ -510,7 +511,7 @@ async def manual_cache_eviction(current_user: User = Depends(get_current_user)) 
 
     except Exception as e:
         logger.error("❌ 手动缓存淘汰异常", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 @router.get("/eviction/stats")
@@ -577,7 +578,7 @@ async def get_eviction_statistics(current_user: User = Depends(get_current_user)
 
     except Exception as e:
         logger.error("❌ 获取淘汰统计失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 # ==================== 缓存预热与监控 ====================
@@ -629,7 +630,7 @@ async def trigger_cache_prewarming(current_user: User = Depends(get_current_user
 
     except Exception as e:
         logger.error("❌ 缓存预热失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 @router.get("/prewarming/status")
@@ -669,7 +670,7 @@ async def get_prewarming_status(current_user: User = Depends(get_current_user)) 
 
     except Exception as e:
         logger.error("❌ 获取预热状态失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 @router.get("/monitoring/metrics")
@@ -723,7 +724,7 @@ async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_
 
     except Exception as e:
         logger.error("❌ 获取监控指标失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")
 
 
 @router.get("/monitoring/health")
@@ -777,4 +778,4 @@ async def get_cache_health_status(current_user: User = Depends(get_current_user)
 
     except Exception as e:
         logger.error("❌ 获取健康状态失败", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="CACHE_OPERATION_FAILED")

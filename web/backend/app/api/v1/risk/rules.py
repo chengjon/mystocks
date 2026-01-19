@@ -97,9 +97,7 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
         rule_id = rule_data.pop("rule_id")
 
         if "template_name" in request:
-            rule = await rule_engine.create_rule_from_template(
-                request["template_name"], rule_id, rule_data
-            )
+            rule = await rule_engine.create_rule_from_template(request["template_name"], rule_id, rule_data)
         else:
             if AlertRule is None:
                 raise HTTPException(status_code=503, detail="AlertRule类不可用")

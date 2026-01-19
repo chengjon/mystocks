@@ -150,7 +150,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
 
         # 安全访问row字段（按索引）
         # 表结构: id, name, watchlist_type, description, config_json, color_tag, created_at, updated_at
-        row_dict = dict(row._mapping) if hasattr(row, '_mapping') else {}
+        row_dict = dict(row._mapping) if hasattr(row, "_mapping") else {}
 
         return Watchlist(
             id=row[0],

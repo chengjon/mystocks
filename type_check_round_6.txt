@@ -1,0 +1,16 @@
+
+> mystocks-web-frontend@1.0.0 type-check
+> vue-tsc --noEmit
+
+src/api/adapters/strategyAdapter.ts(119,5): error TS2741: Property 'summary' is missing in type '{ task_id: any; strategy_id: any; total_return: any; annualized_return: any; sharpe_ratio: any; max_drawdown: any; win_rate: any; total_trades: any; profit_factor: any; equity_curve: any; trades: any; performance_metrics: any; }' but required in type 'BacktestResultVM'.
+src/api/types/index.ts(17,1): error TS2308: Module './common' has already exported a member named 'MarketOverviewStats'. Consider explicitly re-exporting to resolve the ambiguity.
+src/api/types/index.ts(20,1): error TS2308: Module './common' has already exported a member named 'StrategyListResponse'. Consider explicitly re-exporting to resolve the ambiguity.
+src/api/types/index.ts(26,1): error TS2308: Module './common' has already exported a member named 'PositionItem'. Consider explicitly re-exporting to resolve the ambiguity.
+src/components/artdeco/core/ArtDecoLoadingOverlay.vue(6,18): error TS18048: '__VLS_ctx.progress' is possibly 'undefined'.
+src/components/StrategyCard.vue(15,67): error TS2345: Argument of type 'string | Date' is not assignable to parameter of type 'Date'.
+  Type 'string' is not assignable to type 'Date'.
+src/composables/usePageTitle.ts(29,39): error TS2551: Property 'roles' does not exist on type '{ id: number; username: string; email: string; role: string; permissions: string[]; }'. Did you mean 'role'?
+src/composables/usePageTitle.ts(30,17): error TS2322: Type 'number | undefined' is not assignable to type 'string | undefined'.
+  Type 'number' is not assignable to type 'string'.
+src/composables/useStrategy.ts(60,7): error TS2739: Type 'StrategyConfigVM' is missing the following properties from type 'Strategy': type, status
+src/mock/strategyMock.ts(123,14): error TS2741: Property 'summary' is missing in type '{ task_id: string; strategy_id: string; total_return: number; annualized_return: number; sharpe_ratio: number; max_drawdown: number; win_rate: number; total_trades: number; profit_factor: number; equity_curve: { ...; }[]; trades: { ...; }[]; performance_metrics: { ...; }; }' but required in type 'BacktestResultVM'.

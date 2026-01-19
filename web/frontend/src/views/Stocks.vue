@@ -1,96 +1,137 @@
 <template>
-    <!-- 页面头部 -->
-    <PageHeader
-      title="股票列表"
-      subtitle="STOCK LIST"
+    <!-- Art Deco Header -->
+    <ArtDecoHeader
+      :title="'PORTFOLIO MANAGEMENT'"
+      subtitle="STOCK PORTFOLIO | WATCHLIST | PERFORMANCE TRACKING"
+      variant="gold-accent"
     />
 
-    <!-- 筛选栏 -->
-    <FilterBar
+    <!-- Art Deco Filter Bar -->
+    <ArtDecoFilterBar
       :filters="filterConfig"
       @search="handleSearch"
       @reset="handleReset"
       @change="handleFilterChange"
     >
       <template #actions>
-        <button class="button button-success" @click="handleRefresh" :class="{ loading: loading }">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M23 4v6h-6"></path>
-            <path d="M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          刷新
-        </button>
-      </template>
-    </FilterBar>
-
-    <!-- 股票列表表格 -->
-    <div class="card table-card">
-      <div class="table-header">
-        <div class="table-options">
-          <div class="total-info">
-            <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        <ArtDecoButton
+          variant="primary"
+          :glow="true"
+          :loading="loading"
+          @click="handleRefresh"
+        >
+          <template #icon>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6"></path>
+              <path d="M1 20v-6h6"></path>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            共找到 <span class="total-number">{{ total }}</span> 只股票
+          </template>
+          REFRESH DATA
+        </ArtDecoButton>
+      </template>
+    </ArtDecoFilterBar>
+
+    <!-- Art Deco Portfolio Table -->
+    <ArtDecoCard variant="luxury" :decorated="true">
+      <template #header>
+        <div class="table-header-section">
+          <ArtDecoBadge variant="gold">PORTFOLIO ASSETS</ArtDecoBadge>
+          <div class="portfolio-stats">
+            <span class="stat-label">TOTAL STOCKS:</span>
+            <span class="stat-value">{{ total }}</span>
           </div>
         </div>
-      </div>
+      </template>
 
-      <div class="card-body table-body">
-        <StockListTable
-          :columns="tableColumns"
-          :data="stocks"
-          :loading="loading"
-          :actions="tableActions"
-          :row-clickable="true"
-          @selection-change="handleSelectionChange"
-          @row-click="handleRowClick"
-        >
-          <template #cell-symbol="{ row }">
-            <span class="mono">{{ row.symbol }}</span>
-          </template>
-          <template #cell-price="{ row }">
-            <span class="price">{{ row.price || '--' }}</span>
-          </template>
-          <template #cell-change="{ row }">
-            <span :class="getChangeClass(row.change)">
-              {{ row.change ? (row.change > 0 ? '+' : '') + row.change : '--' }}
-            </span>
-          </template>
-          <template #cell-change_pct="{ row }">
-            <span :class="getChangeClass(row.change_pct)">
-              {{ row.change_pct ? (row.change_pct > 0 ? '+' : '') + row.change_pct + '%' : '--' }}
-            </span>
-          </template>
-          <template #cell-volume="{ row }">
-            <span class="mono">{{ row.volume ? formatVolume(row.volume) : '--' }}</span>
-          </template>
-          <template #cell-turnover="{ row }">
-            <span>{{ row.turnover ? row.turnover + '%' : '--' }}</span>
-          </template>
-          <template #cell-market="{ row }">
-            <span :class="['market-badge', row.market.toLowerCase()]">
-              {{ row.market }}
-            </span>
-          </template>
-        </StockListTable>
-      </div>
+      <ArtDecoTable
+        :data="stocks"
+        :loading="loading"
+        gold-headers
+        striped
+        :row-clickable="true"
+        @row-click="handleRowClick"
+        @selection-change="handleSelectionChange"
+      >
+        <template #columns>
+          <ArtDecoTableColumn prop="symbol" label="SYMBOL" width="120" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-mono">{{ row.symbol }}</span>
+            </template>
+          </ArtDecoTableColumn>
 
-      <!-- 分页 -->
-      <div class="table-footer">
-        <PaginationBar
-          v-model:page="pagination.currentPage"
-          v-model:page-size="pagination.pageSize"
-          :total="total"
-          :page-sizes="[10, 20, 50, 100]"
-          @page-change="handlePageChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
-    </div>
+          <ArtDecoTableColumn prop="name" label="NAME" width="150" sortable />
+
+          <ArtDecoTableColumn prop="price" label="PRICE" width="100" align="right" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-price">{{ row.price || '--' }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="change" label="CHANGE" width="100" align="right" sortable>
+            <template #default="{ row }">
+              <span :class="getArtDecoChangeClass(row.change)">
+                {{ row.change ? (row.change > 0 ? '+' : '') + row.change : '--' }}
+              </span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="change_pct" label="CHANGE %" width="120" align="right" sortable>
+            <template #default="{ row }">
+              <span :class="getArtDecoChangeClass(row.change_pct)">
+                {{ row.change_pct ? (row.change_pct > 0 ? '+' : '') + row.change_pct + '%' : '--' }}
+              </span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="volume" label="VOLUME" width="120" align="right" sortable>
+            <template #default="{ row }">
+              <span class="artdeco-mono">{{ row.volume ? formatVolume(row.volume) : '--' }}</span>
+            </template>
+          </ArtDecoTableColumn>
+
+          <ArtDecoTableColumn prop="market" label="MARKET" width="80" sortable>
+            <template #default="{ row }">
+              <ArtDecoBadge :variant="getMarketBadgeVariant(row.market)">
+                {{ row.market }}
+              </ArtDecoBadge>
+            </template>
+          </ArtDecoTableColumn>
+        </template>
+
+        <template #actions="{ row }">
+          <ArtDecoButton
+            variant="outline"
+            size="small"
+            @click="handleView(row)"
+          >
+            VIEW
+          </ArtDecoButton>
+
+          <ArtDecoButton
+            variant="gold"
+            size="small"
+            @click="handleAnalyze(row)"
+          >
+            ANALYZE
+          </ArtDecoButton>
+        </template>
+      </ArtDecoTable>
+
+      <!-- Art Deco Pagination -->
+      <template #footer>
+        <div class="pagination-section">
+          <ArtDecoPagination
+            v-model:current-page="pagination.currentPage"
+            v-model:page-size="pagination.pageSize"
+            :total="total"
+            :page-sizes="[10, 20, 50, 100]"
+            @page-change="handlePageChange"
+            @size-change="handleSizeChange"
+          />
+        </div>
+      </template>
+    </ArtDecoCard>
 </template>
 
 <script setup lang="ts">
@@ -98,8 +139,17 @@ import { ref, onMounted, reactive, computed, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { PageHeader, FilterBar, StockListTable, PaginationBar } from '@/components/shared'
-import type { FilterItem, TableColumn, TableAction } from '@/components/shared'
+// Import Art Deco components
+import {
+  ArtDecoHeader,
+  ArtDecoFilterBar,
+  ArtDecoTable,
+  ArtDecoTableColumn,
+  ArtDecoPagination,
+  ArtDecoButton,
+  ArtDecoBadge,
+  ArtDecoCard
+} from '@/components/artdeco'
 
 const router = useRouter()
 const loading = ref(false)
@@ -170,91 +220,9 @@ const filterConfig = computed((): FilterItem[] => [
   }
 ])
 
-// StockListTable 列配置
-const tableColumns = computed((): TableColumn[] => [
-  {
-    prop: 'symbol',
-    label: '股票代码',
-    width: 120,
-    sortable: true,
-    className: 'mono'
-  },
-  {
-    prop: 'name',
-    label: '股票名称',
-    width: 120,
-    sortable: true
-  },
-  {
-    prop: 'industry',
-    label: '行业',
-    width: 150,
-    sortable: true
-  },
-  {
-    prop: 'market',
-    label: '市场',
-    width: 80,
-    sortable: true
-  },
-  {
-    prop: 'price',
-    label: '价格',
-    width: 100,
-    sortable: true,
-    align: 'right'
-  },
-  {
-    prop: 'change',
-    label: '涨跌额',
-    width: 100,
-    sortable: true,
-    align: 'right',
-    colorClass: (row) => getChangeClass(row.change)
-  },
-  {
-    prop: 'change_pct',
-    label: '涨跌幅(%)',
-    width: 120,
-    sortable: true,
-    align: 'right',
-    colorClass: (row) => getChangeClass(row.change_pct)
-  },
-  {
-    prop: 'volume',
-    label: '成交量',
-    width: 120,
-    sortable: true,
-    align: 'right'
-  },
-  {
-    prop: 'turnover',
-    label: '换手率(%)',
-    width: 120,
-    sortable: true,
-    align: 'right'
-  }
-])
+// Table columns are now defined inline in template using ArtDecoTableColumn
 
-// StockListTable 操作按钮
-const tableActions = computed((): TableAction[] => [
-  {
-    key: 'view',
-    text: '查看',
-    type: 'button',
-    variant: 'primary',
-    size: 'small',
-    handler: (row) => handleView(row)
-  },
-  {
-    key: 'analyze',
-    text: '分析',
-    type: 'button',
-    variant: 'default',
-    size: 'small',
-    handler: (row) => handleAnalyze(row)
-  }
-])
+// Table actions are now defined inline in template using ArtDecoButton
 
 const loadFilterOptions = async () => {
   try {
@@ -374,10 +342,23 @@ const handleSelectionChange = (selection: any[]) => {
   console.log('Selection changed:', selection)
 }
 
+// Legacy change class function (for backward compatibility)
 const getChangeClass = (value: number | string | null | undefined) => {
   if (value === null || value === undefined || value === '--') return ''
   const numValue = typeof value === 'string' ? parseFloat(value) : value
   return numValue > 0 ? 'positive' : numValue < 0 ? 'negative' : ''
+}
+
+// Art Deco change class function
+const getArtDecoChangeClass = (value: number | string | null | undefined) => {
+  if (value === null || value === undefined || value === '--') return ''
+  const numValue = typeof value === 'string' ? parseFloat(value) : value
+  return numValue > 0 ? 'artdeco-positive' : numValue < 0 ? 'artdeco-negative' : ''
+}
+
+// Market badge variant function
+const getMarketBadgeVariant = (market: string) => {
+  return market.toLowerCase() === 'sh' ? 'success' : 'primary'
 }
 
 const formatVolume = (volume: number | null | undefined) => {
@@ -397,93 +378,70 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-// Phase 3.3: Design Token Migration
-@use 'sass:color';
-@import '@/styles/theme-tokens.scss';
+// Art Deco Design System Integration
+@import '@/styles/artdeco-tokens.scss';
 
-.stocks {
-  padding: var(--spacing-lg);
-  background: var(--color-bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+.stocks-page {
+  @include artdeco-crosshatch-bg(); // Diagonal crosshatch background
   min-height: 100vh;
+  padding: $artdeco-spacing-xl;
 
-  .table-card {
-    margin-top: var(--spacing-lg);
-  }
+  .table-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 
-  .table-header {
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border);
-
-    .table-options {
+    .portfolio-stats {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: $artdeco-spacing-sm;
+      font-family: 'Marcellus', serif;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: $artdeco-font-size-sm;
+      color: $artdeco-text-muted;
 
-      .total-info {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-sm);
-        color: var(--color-text-tertiary);
+      .stat-label {
+        font-weight: 400;
+      }
 
-        .info-icon {
-          width: 16px;
-          height: 16px;
-        }
-
-        .total-number {
-          font-family: var(--font-family-mono);
-          font-weight: 600;
-          color: var(--color-accent);
-        }
+      .stat-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        color: $artdeco-accent-gold;
+        font-size: $artdeco-font-size-lg;
       }
     }
   }
 
-  .table-body {
-    min-height: 400px;
-
-    .mono {
-      font-family: var(--font-family-mono);
-    }
-
-    .price {
-      font-family: var(--font-family-mono);
-      font-weight: 600;
-    }
-
-    .positive {
-      color: var(--color-stock-down);
-    }
-
-    .negative {
-      color: var(--color-stock-up);
-    }
-
-    .market-badge {
-      display: inline-block;
-      padding: 2px var(--spacing-sm);
-      font-size: var(--font-size-xs);
-      border-radius: var(--border-radius-sm);
-      font-weight: 500;
-
-      &.sh {
-        background: var(--color-stock-down-alpha-90);
-        color: var(--color-stock-down);
-      }
-
-      &.sz {
-        background: var(--color-accent-alpha-90);
-        color: var(--color-accent);
-      }
-    }
+  .pagination-section {
+    display: flex;
+    justify-content: center;
+    padding: $artdeco-spacing-lg;
+    border-top: 2px solid $artdeco-accent-gold;
   }
 
-  .table-footer {
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--color-border);
+  // Art Deco specific styling
+  .artdeco-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  .artdeco-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: $artdeco-font-size-base;
+  }
+
+  .artdeco-positive {
+    color: $artdeco-color-up; // Red for gains
+    font-weight: 600;
+  }
+
+  .artdeco-negative {
+    color: $artdeco-color-down; // Green for losses
+    font-weight: 600;
   }
 
   .button {
@@ -567,10 +525,47 @@ onMounted(async () => {
   }
 }
 
+// Art Deco responsive design
 @media (max-width: 768px) {
-  .stocks {
-    padding: var(--spacing-md);
+  .stocks-page {
+    padding: $artdeco-spacing-lg;
+
+    .table-header-section {
+      flex-direction: column;
+      gap: $artdeco-spacing-md;
+      align-items: flex-start;
+
+      .portfolio-stats {
+        font-size: $artdeco-font-size-xs;
+      }
+    }
+
+    .pagination-section {
+      padding: $artdeco-spacing-md;
+    }
   }
+}
+
+// Art Deco animations
+@keyframes artdeco-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes artdeco-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
+  }
+}
 
   .table-header {
       padding: var(--spacing-md) var(--spacing-md);

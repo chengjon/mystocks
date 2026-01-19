@@ -69,9 +69,7 @@ class BaseAnalyzer(ABC):
         """执行分析的核心方法"""
         pass
 
-    def _get_historical_data(
-        self, stock_code: str, days: int = 365, data_type: str = "daily"
-    ) -> pd.DataFrame:
+    def _get_historical_data(self, stock_code: str, days: int = 365, data_type: str = "daily") -> pd.DataFrame:
         """获取历史数据"""
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
@@ -89,9 +87,7 @@ class BaseAnalyzer(ABC):
         else:
             raise ValueError(f"Unsupported data type: {data_type}")
 
-    def _calculate_score(
-        self, metrics: Dict[str, float], weights: Dict[str, float]
-    ) -> float:
+    def _calculate_score(self, metrics: Dict[str, float], weights: Dict[str, float]) -> float:
         """计算加权综合得分"""
         total_score = 0.0
         total_weight = 0.0
@@ -103,9 +99,7 @@ class BaseAnalyzer(ABC):
 
         return total_score / total_weight if total_weight > 0 else 0.0
 
-    def _generate_recommendation(
-        self, score: float, thresholds: Dict[str, float]
-    ) -> str:
+    def _generate_recommendation(self, score: float, thresholds: Dict[str, float]) -> str:
         """生成投资建议"""
         if score >= thresholds.get("strong_buy", 0.8):
             return "强烈买入"
@@ -126,40 +120,18 @@ class AdvancedAnalysisEngine:
         self.data_manager = data_manager
         self.gpu_manager = None  # GPU manager will be set if needed
         self.analyzers = {
-            AnalysisType.FUNDAMENTAL: FundamentalAnalyzer(
-                data_manager, self.gpu_manager
-            ),
+            AnalysisType.FUNDAMENTAL: FundamentalAnalyzer(data_manager, self.gpu_manager),
             AnalysisType.TECHNICAL: TechnicalAnalyzer(data_manager, self.gpu_manager),
-            AnalysisType.TRADING_SIGNALS: TradingSignalAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.TIME_SERIES: TimeSeriesAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.MARKET_PANORAMA: MarketPanoramaAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.CAPITAL_FLOW: CapitalFlowAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.CHIP_DISTRIBUTION: ChipDistributionAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.ANOMALY_TRACKING: AnomalyTrackingAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.FINANCIAL_VALUATION: FinancialValuationAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.SENTIMENT_ANALYSIS: SentimentAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.DECISION_MODELS: DecisionModelsAnalyzer(
-                data_manager, self.gpu_manager
-            ),
-            AnalysisType.MULTIDIMENSIONAL_RADAR: MultidimensionalRadarAnalyzer(
-                data_manager, self.gpu_manager
-            ),
+            AnalysisType.TRADING_SIGNALS: TradingSignalAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.TIME_SERIES: TimeSeriesAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.MARKET_PANORAMA: MarketPanoramaAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.CAPITAL_FLOW: CapitalFlowAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.CHIP_DISTRIBUTION: ChipDistributionAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.ANOMALY_TRACKING: AnomalyTrackingAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.FINANCIAL_VALUATION: FinancialValuationAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.SENTIMENT_ANALYSIS: SentimentAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.DECISION_MODELS: DecisionModelsAnalyzer(data_manager, self.gpu_manager),
+            AnalysisType.MULTIDIMENSIONAL_RADAR: MultidimensionalRadarAnalyzer(data_manager, self.gpu_manager),
         }
 
 
@@ -209,8 +181,7 @@ def _gpu_parallel_analysis(
     results = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         future_to_analysis = {
-            executor.submit(self.analyzers[atype].analyze, stock_code, **kwargs): atype
-            for atype in analysis_types
+            executor.submit(self.analyzers[atype].analyze, stock_code, **kwargs): atype for atype in analysis_types
         }
 
         for future in concurrent.futures.as_completed(future_to_analysis):

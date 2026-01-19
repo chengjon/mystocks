@@ -112,7 +112,7 @@
     }
 
     .row-label {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       width: 40px;
     }
 
@@ -127,7 +127,7 @@
     .row-volume {
       text-align: right;
       color: var(--artdeco-silver-dim);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
     }
 
     .artdeco-depth-bar {
@@ -152,7 +152,7 @@
     }
 
     .current-price {
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -161,7 +161,7 @@
     }
 
     .price-details {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-muted);
       margin-top: 4px;
     }
@@ -170,5 +170,5 @@
     .text-fall { color: var(--artdeco-down); }
     .text-flat { color: var(--artdeco-fg-muted); }
 
-    .price-arrow { font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1; }
+    .price-arrow { font-size: var(--artdeco-font-size-sm); } // 12px - Compact v3.1
 </style>

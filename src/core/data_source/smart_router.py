@@ -108,10 +108,7 @@ class SmartRouter:
 
         best_score, best_endpoint = scored_endpoints[0]
 
-        logger.debug(
-            f"SmartRouter selected: {best_endpoint.get('endpoint_name')} "
-            f"(score={best_score:.2f})"
-        )
+        logger.debug(f"SmartRouter selected: {best_endpoint.get('endpoint_name')} " f"(score={best_score:.2f})")
 
         return best_endpoint
 
@@ -175,16 +172,10 @@ class SmartRouter:
             return 50.0
 
         # 计算平均延迟 (P50 权重最高)
-        avg_latency = (
-            stats["p50_latency"] * 0.5
-            + stats["p95_latency"] * 0.3
-            + stats["p99_latency"] * 0.2
-        )
+        avg_latency = stats["p50_latency"] * 0.5 + stats["p95_latency"] * 0.3 + stats["p99_latency"] * 0.2
 
         # 计算成功率
-        success_rate = (
-            stats["success_count"] / stats["call_count"] if stats["call_count"] > 0 else 0
-        )
+        success_rate = stats["success_count"] / stats["call_count"] if stats["call_count"] > 0 else 0
 
         # 延迟评分: 延迟越低，分数越高
         # 0ms -> 100分, 1000ms -> 0分
@@ -194,7 +185,7 @@ class SmartRouter:
         success_score = success_rate * 100
 
         # 综合性能评分
-        performance_score = (latency_score * 0.6 + success_score * 0.4)
+        performance_score = latency_score * 0.6 + success_score * 0.4
 
         return performance_score
 
@@ -305,9 +296,7 @@ class SmartRouter:
         # 增加负载计数
         self.current_load[endpoint_name] += 1
 
-        logger.debug(
-            f"Recorded call: {endpoint_name}, latency={latency:.3f}s, success={success}"
-        )
+        logger.debug(f"Recorded call: {endpoint_name}, latency={latency:.3f}s, success={success}")
 
     def record_call_complete(self, endpoint_name: str):
         """
@@ -353,19 +342,11 @@ class SmartRouter:
         return {
             "endpoint_name": endpoint_name,
             "call_count": stats["call_count"],
-            "avg_latency": (
-                stats["total_latency"] / stats["call_count"]
-                if stats["call_count"] > 0
-                else 0
-            ),
+            "avg_latency": (stats["total_latency"] / stats["call_count"] if stats["call_count"] > 0 else 0),
             "p50_latency": stats["p50_latency"],
             "p95_latency": stats["p95_latency"],
             "p99_latency": stats["p99_latency"],
-            "success_rate": (
-                stats["success_count"] / stats["call_count"]
-                if stats["call_count"] > 0
-                else 0
-            ),
+            "success_rate": (stats["success_count"] / stats["call_count"] if stats["call_count"] > 0 else 0),
             "current_load": self.current_load[endpoint_name],
             "performance_score": self._score_by_performance(endpoint_name),
         }
@@ -377,10 +358,7 @@ class SmartRouter:
         Returns:
             所有数据源的统计信息
         """
-        return {
-            endpoint_name: self.get_stats(endpoint_name)
-            for endpoint_name in self.performance_stats.keys()
-        }
+        return {endpoint_name: self.get_stats(endpoint_name) for endpoint_name in self.performance_stats.keys()}
 
     def reset_stats(self, endpoint_name: Optional[str] = None):
         """

@@ -20,9 +20,9 @@ API Contract Management Compliant:
 
 from fastapi import APIRouter, HTTPException, Depends, Query, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field, validator
-from typing import List, Dict, Any, Optional, Union
-from datetime import datetime, date
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
+from datetime import datetime
 from enum import Enum
 import pandas as pd
 
@@ -929,16 +929,18 @@ async def analyze_news_sentiment(request: NewsSentimentRequest):
             confidence=0.78,
             article_count=12,
             time_range_hours=request.hours_back,
-            articles=[
-                {
-                    "title": f"{symbol}新闻标题示例",
-                    "sentiment_score": 0.15,
-                    "confidence": 0.78,
-                    "published_at": "2025-01-20T10:30:00Z",
-                }
-            ]
-            if request.include_articles
-            else None,
+            articles=(
+                [
+                    {
+                        "title": f"{symbol}新闻标题示例",
+                        "sentiment_score": 0.15,
+                        "confidence": 0.78,
+                        "published_at": "2025-01-20T10:30:00Z",
+                    }
+                ]
+                if request.include_articles
+                else None
+            ),
         )
         mock_responses.append(mock_response)
 

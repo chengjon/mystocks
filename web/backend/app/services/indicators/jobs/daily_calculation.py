@@ -12,21 +12,14 @@ Author: MyStocks Project
 
 import logging
 import time
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from datetime import datetime
 import pandas as pd
-import numpy as np
 
 from app.core.database import db_service
-from app.services.indicators import (
-    SmartScheduler,
-    create_scheduler,
-    CalculationMode,
-    OHLCVData
-)
+from app.services.indicators import create_scheduler, CalculationMode, OHLCVData
 from app.services.indicators.defaults import load_default_indicators
 from app.repositories.indicator_repo import IndicatorRepository
-from app.services.indicators.indicator_registry import get_indicator_registry
 
 # Phase 3: Event publishing
 try:
@@ -36,8 +29,9 @@ try:
         create_stock_indicators_completed_event,
         create_task_completed_event,
         TaskStatus,
-        EventChannels
+        EventChannels,
     )
+
     REDIS_PUBSUB_AVAILABLE = True
     logger.info("Redis Pub/Sub enabled for daily_calculation")
 except ImportError:
@@ -49,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 # ========== Event Publishing Helpers (Phase 3) ==========
 
+
 async def _publish_task_progress(
     job_id: str,
     task_type: str,
@@ -57,7 +52,7 @@ async def _publish_task_progress(
     message: str = "",
     processed: int = 0,
     total: int = 0,
-    failed: int = 0
+    failed: int = 0,
 ):
     """Publish task progress event"""
     if not REDIS_PUBSUB_AVAILABLE:
@@ -72,7 +67,7 @@ async def _publish_task_progress(
             message=message,
             processed=processed,
             total=total,
-            failed=failed
+            failed=failed,
         )
 
         # Publish to both global tasks channel and specific task channel
@@ -89,7 +84,7 @@ async def _publish_stock_completed(
     success_count: int,
     failed_count: int = 0,
     calculation_time_ms: float = 0,
-    from_cache_count: int = 0
+    from_cache_count: int = 0,
 ):
     """Publish stock indicators completed event (Batching optimization)"""
     if not REDIS_PUBSUB_AVAILABLE:
@@ -102,7 +97,7 @@ async def _publish_stock_completed(
             success_count=success_count,
             failed_count=failed_count,
             calculation_time_ms=calculation_time_ms,
-            from_cache_count=from_cache_count
+            from_cache_count=from_cache_count,
         )
 
         # Publish to indicators channel
@@ -112,24 +107,14 @@ async def _publish_stock_completed(
         logger.error(f"Failed to publish stock completed event: {e}")
 
 
-async def _publish_task_completed(
-    job_id: str,
-    task_type: str,
-    status: TaskStatus,
-    duration_seconds: float,
-    **result
-):
+async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatus, duration_seconds: float, **result):
     """Publish task completed event"""
     if not REDIS_PUBSUB_AVAILABLE:
         return
 
     try:
         event = create_task_completed_event(
-            task_id=job_id,
-            task_type=task_type,
-            status=status,
-            duration_seconds=duration_seconds,
-            **result
+            task_id=job_id, task_type=task_type, status=status, duration_seconds=duration_seconds, **result
         )
 
         # Publish to both channels
@@ -141,6 +126,7 @@ async def _publish_task_completed(
 
 
 # ========== Main Calculation Function ==========
+
 
 async def run_daily_calculation(params: Dict[str, Any] = None):
     """
@@ -174,7 +160,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
         progress=0.0,
         message=f"Starting daily calculation for {target_date}",
         processed=0,
-        total=0
+        total=0,
     )
 
     # 1. Initialize Registry
@@ -182,11 +168,10 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
 
     # 2. Initialize Scheduler & Repo
     scheduler = create_scheduler(max_workers=10, mode=CalculationMode.ASYNC_PARALLEL)
-    scheduler.set_calculation_function(lambda abbr, data, p:
-        from_factory(abbr).calculate(data, p)
-    )
+    scheduler.set_calculation_function(lambda abbr, data, p: from_factory(abbr).calculate(data, p))
 
     from app.services.indicators import IndicatorPluginFactory
+
     def from_factory(abbr):
         instance = IndicatorPluginFactory.create_instance(abbr)
         if not instance:
@@ -196,17 +181,20 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
     repo = IndicatorRepository()
 
     # 3. Determine Indicators to Calculate
-    target_indicators = params.get("indicators", [
-        {"abbreviation": "SMA", "params": {"timeperiod": 5}},
-        {"abbreviation": "SMA", "params": {"timeperiod": 10}},
-        {"abbreviation": "SMA", "params": {"timeperiod": 20}},
-        {"abbreviation": "SMA", "params": {"timeperiod": 60}},
-        {"abbreviation": "MACD", "params": {}},
-        {"abbreviation": "RSI", "params": {"timeperiod": 14}},
-        {"abbreviation": "BBANDS", "params": {}},
-        {"abbreviation": "ATR", "params": {}},
-        {"abbreviation": "KDJ", "params": {}}
-    ])
+    target_indicators = params.get(
+        "indicators",
+        [
+            {"abbreviation": "SMA", "params": {"timeperiod": 5}},
+            {"abbreviation": "SMA", "params": {"timeperiod": 10}},
+            {"abbreviation": "SMA", "params": {"timeperiod": 20}},
+            {"abbreviation": "SMA", "params": {"timeperiod": 60}},
+            {"abbreviation": "MACD", "params": {}},
+            {"abbreviation": "RSI", "params": {"timeperiod": 14}},
+            {"abbreviation": "BBANDS", "params": {}},
+            {"abbreviation": "ATR", "params": {}},
+            {"abbreviation": "KDJ", "params": {}},
+        ],
+    )
 
     # 4. Get Stocks
     stock_codes = params.get("stocks")
@@ -220,10 +208,10 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                     task_type="batch_daily",
                     status=TaskStatus.FAILED,
                     progress=0.0,
-                    message="No stocks found in database"
+                    message="No stocks found in database",
                 )
                 return
-            stock_codes = df_stocks['symbol'].tolist()
+            stock_codes = df_stocks["symbol"].tolist()
         except Exception as e:
             logger.error(f"Failed to fetch stock list: {e}")
             await _publish_task_progress(
@@ -231,7 +219,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 task_type="batch_daily",
                 status=TaskStatus.FAILED,
                 progress=0.0,
-                message=f"Failed to fetch stock list: {e}"
+                message=f"Failed to fetch stock list: {e}",
             )
             return
 
@@ -266,12 +254,12 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
             # Convert to OHLCVData
             try:
                 ohlcv = OHLCVData(
-                    open=df_kline['open'].values.astype(float),
-                    high=df_kline['high'].values.astype(float),
-                    low=df_kline['low'].values.astype(float),
-                    close=df_kline['close'].values.astype(float),
-                    volume=df_kline['volume'].values.astype(float),
-                    timestamps=pd.to_datetime(df_kline['date']).to_pydatetime()
+                    open=df_kline["open"].values.astype(float),
+                    high=df_kline["high"].values.astype(float),
+                    low=df_kline["low"].values.astype(float),
+                    close=df_kline["close"].values.astype(float),
+                    volume=df_kline["volume"].values.astype(float),
+                    timestamps=pd.to_datetime(df_kline["date"]).to_pydatetime(),
                 )
             except Exception as e:
                 logger.warning(f"Data conversion failed for {code}: {e}")
@@ -310,7 +298,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 success_count=len(calculated_indicators),
                 failed_count=failed_indicators,
                 calculation_time_ms=stock_calc_time,
-                from_cache_count=from_cache_count
+                from_cache_count=from_cache_count,
             )
 
         except Exception as e:
@@ -319,8 +307,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
 
         # Phase 3: Throttled progress updates (every 1% or 50 stocks)
         current_progress = (idx + 1) / total_stocks * 100
-        if (current_progress - last_progress_percent >= 1.0 or  # Every 1%
-            (idx + 1) % 50 == 0):  # Or every 50 stocks
+        if current_progress - last_progress_percent >= 1.0 or (idx + 1) % 50 == 0:  # Every 1%  # Or every 50 stocks
 
             last_progress_percent = current_progress
 
@@ -339,28 +326,31 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 message=f"Processing {code} ({idx + 1}/{total_stocks})",
                 processed=idx + 1,
                 total=total_stocks,
-                failed=fail_count
+                failed=fail_count,
             )
 
     # 6. Finalize
     job_duration = time.time() - job_start_time
 
     try:
-        repo.update_task(job_id, "success", 100.0,
-                        {"success": success_count, "failed": fail_count})
+        repo.update_task(job_id, "success", 100.0, {"success": success_count, "failed": fail_count})
     except:
         pass
 
     # Phase 3: Publish task completed event
-    final_status = TaskStatus.COMPLETED if fail_count == 0 else TaskStatus.COMPLETED  # Still completed even with some failures
+    final_status = (
+        TaskStatus.COMPLETED if fail_count == 0 else TaskStatus.COMPLETED
+    )  # Still completed even with some failures
     await _publish_task_completed(
         job_id=job_id,
         task_type="batch_daily",
         status=final_status,
         duration_seconds=job_duration,
         success=success_count,
-        failed=fail_count
+        failed=fail_count,
     )
 
-    logger.info(f"Job {job_id} completed. Success: {success_count}, Failed: {fail_count}, Duration: {job_duration:.2f}s")
+    logger.info(
+        f"Job {job_id} completed. Success: {success_count}, Failed: {fail_count}, Duration: {job_duration:.2f}s"
+    )
     return {"success": success_count, "failed": fail_count}

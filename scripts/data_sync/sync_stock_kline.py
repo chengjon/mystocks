@@ -48,7 +48,7 @@ def get_latest_trade_date_for_symbol(
         result_df = manager.load_data_by_classification(
             classification=DataClassification.DAILY_KLINE,
             table_name="daily_kline",
-            filters={"columns": ["MAX(trade_date) as latest_date]"},
+            filters={"columns": ["MAX(trade_date) as latest_date"]},
         )
 
         # 手动添加WHERE条件（需要改进UnifiedManager的API）

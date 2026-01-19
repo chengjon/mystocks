@@ -17,6 +17,7 @@ from ..value_objects.order_side import OrderSide
 @dataclass
 class PositionOpenedEvent:
     """持仓开仓事件"""
+
     position_id: str
     portfolio_id: str
     symbol: str
@@ -32,6 +33,7 @@ class PositionOpenedEvent:
 @dataclass
 class PositionIncreasedEvent:
     """持仓加仓事件"""
+
     position_id: str
     symbol: str
     added_quantity: int
@@ -47,6 +49,7 @@ class PositionIncreasedEvent:
 @dataclass
 class PositionDecreasedEvent:
     """持仓减仓事件"""
+
     position_id: str
     symbol: str
     decreased_quantity: int
@@ -62,6 +65,7 @@ class PositionDecreasedEvent:
 @dataclass
 class StopLossTriggeredEvent:
     """止损触发事件"""
+
     position_id: str
     portfolio_id: str
     symbol: str
@@ -229,9 +233,7 @@ class Position:
             actual_decreased = -decreased_quantity
 
         if abs(actual_decreased) > abs(self.quantity):
-            raise ValueError(
-                f"Cannot decrease {decreased_quantity} when holding {self.quantity}"
-            )
+            raise ValueError(f"Cannot decrease {decreased_quantity} when holding {self.quantity}")
 
         # 计算实现盈亏
         if self.quantity > 0:
@@ -332,14 +334,10 @@ class Position:
 
         # 验证止损价合理性
         if self.quantity > 0 and stop_loss_price >= self.avg_price:
-            raise ValueError(
-                f"Long position stop loss ({stop_loss_price}) must be below avg price ({self.avg_price})"
-            )
+            raise ValueError(f"Long position stop loss ({stop_loss_price}) must be below avg price ({self.avg_price})")
 
         if self.quantity < 0 and stop_loss_price <= self.avg_price:
-            raise ValueError(
-                f"Short position stop loss ({stop_loss_price}) must be above avg price ({self.avg_price})"
-            )
+            raise ValueError(f"Short position stop loss ({stop_loss_price}) must be above avg price ({self.avg_price})")
 
         self.stop_loss_price = stop_loss_price
         self.updated_at = datetime.now()

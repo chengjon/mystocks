@@ -142,11 +142,13 @@ class TestCircuitBreaker:
                     # 偶数线程: 成功调用
                     def success_func():
                         return "success"
+
                     cb.call(success_func)
                 else:
                     # 奇数线程: 失败调用
                     def failing_func():
                         raise ValueError("Failure")
+
                     cb.call(failing_func)
             except Exception as e:
                 errors.append((worker_id, e))
@@ -159,9 +161,7 @@ class TestCircuitBreaker:
 
         # 检查是否有非预期的错误
         unexpected_errors = [
-            (worker_id, e)
-            for worker_id, e in errors
-            if not isinstance(e, (ValueError, CircuitBreakerOpenError))
+            (worker_id, e) for worker_id, e in errors if not isinstance(e, (ValueError, CircuitBreakerOpenError))
         ]
         assert len(unexpected_errors) == 0, f"Unexpected errors: {unexpected_errors}"
 
@@ -274,9 +274,7 @@ class TestCircuitBreaker:
     def test_expected_exception(self):
         """测试预期的异常类型"""
         # 只捕获 ValueError
-        cb = CircuitBreaker(
-            failure_threshold=3, recovery_timeout=60, expected_exception=ValueError
-        )
+        cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60, expected_exception=ValueError)
 
         def value_error_func():
             raise ValueError("Expected error")

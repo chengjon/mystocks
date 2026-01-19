@@ -1,0 +1,2 @@
+main() { echo hello; }
+main

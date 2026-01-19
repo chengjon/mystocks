@@ -51,16 +51,22 @@ export default defineConfig({
   // Shared settings for all tests
   use: {
     // Base URL for tests (PM2 served production build)
-    baseURL: process.env.BASE_URL || 'http://localhost:8080',
+    baseURL: process.env.BASE_URL || 'http://localhost:3001',
 
     // Collect trace on first retry
     trace: 'on-first-retry',
 
-    // Screenshot configuration
-    screenshot: 'only-on-failure',
+    // Screenshot configuration - 增强截图收集
+    screenshot: {
+      mode: 'only-on-failure',
+      fullPage: true, // 截取完整页面
+    },
 
-    // Video recording
-    video: 'retain-on-failure',
+    // Video recording - 增强视频证据收集
+    video: {
+      mode: 'retain-on-failure',
+      size: { width: 1280, height: 720 }, // 标准高清尺寸
+    },
 
     // Browser viewport
     viewport: { width: 1920, height: 1080 },
@@ -68,8 +74,8 @@ export default defineConfig({
     // Ignore HTTPS errors (if using self-signed certs)
     ignoreHTTPSErrors: true,
 
-    // Wait for network idle
-    waitUntil: 'networkidle',
+    // Wait for network idle - 增强页面加载等待
+    waitUntil: 'domcontentloaded', // 更快的等待策略
 
     // Action timeout
     actionTimeout: 10000,

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ValidationResult:
     """验证结果"""
+
     passed: bool
     message: str
     check_type: str
@@ -24,6 +25,7 @@ class ValidationResult:
 @dataclass
 class ValidationSummary:
     """验证汇总"""
+
     passed: bool
     total_checks: int
     passed_checks: int
@@ -163,6 +165,7 @@ class DataQualityValidator:
             if not hasattr(data, "shape"):
                 # 如果是 dict 或其他格式，尝试转换
                 import pandas as pd
+
                 data = pd.DataFrame(data)
 
             # 检查必需列
@@ -177,12 +180,8 @@ class DataQualityValidator:
 
             # OHLC 逻辑检查
             high_low_valid = (data["high"] >= data["low"]).all()
-            close_valid = (
-                (data["close"] >= data["low"]) & (data["close"] <= data["high"])
-            ).all()
-            open_valid = (
-                (data["open"] >= data["low"]) & (data["open"] <= data["high"])
-            ).all()
+            close_valid = ((data["close"] >= data["low"]) & (data["close"] <= data["high"])).all()
+            open_valid = ((data["open"] >= data["low"]) & (data["open"] <= data["high"])).all()
 
             # 成交量检查 (如果存在)
             volume_valid = True
@@ -259,9 +258,7 @@ class DataQualityValidator:
                 extreme_count = extreme_change.sum()
 
                 if extreme_count > 0:
-                    warnings.append(
-                        f"Extreme price change detected ({extreme_count} rows > 20%)"
-                    )
+                    warnings.append(f"Extreme price change detected ({extreme_count} rows > 20%)")
 
             # 3. 异常成交量检查 (>10 倍均值)
             if "volume" in data.columns:
@@ -271,9 +268,7 @@ class DataQualityValidator:
                     abnormal_count = abnormal_volume.sum()
 
                     if abnormal_count > 0:
-                        warnings.append(
-                            f"Abnormal volume detected ({abnormal_count} rows > 10x mean)"
-                        )
+                        warnings.append(f"Abnormal volume detected ({abnormal_count} rows > 10x mean)")
 
             # 4. 停牌数据检查 (价格完全不变)
             if "close" in data.columns and len(data) > 1:
@@ -361,9 +356,7 @@ class DataQualityValidator:
                     lower_bound = mean_volume - 3 * std_volume
                     upper_bound = mean_volume + 3 * std_volume
 
-                    outlier_mask = (data["volume"] < lower_bound) | (
-                        data["volume"] > upper_bound
-                    )
+                    outlier_mask = (data["volume"] < lower_bound) | (data["volume"] > upper_bound)
                     outlier_count = outlier_mask.sum()
 
                     if outlier_count > 0:
@@ -390,9 +383,7 @@ class DataQualityValidator:
                 check_type="statistical_check",
             )
 
-    def _cross_source_check(
-        self, data: Any, reference_data: Any
-    ) -> ValidationResult:
+    def _cross_source_check(self, data: Any, reference_data: Any) -> ValidationResult:
         """
         跨源验证 (一致性检查)
 

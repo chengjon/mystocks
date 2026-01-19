@@ -25,19 +25,15 @@ API Version: v1
 Contract Version: 1.0
 """
 
-import os
 import logging
-from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, HTTPException, Query, Depends, Request
+from fastapi import APIRouter, Query, Depends, Request
 from pydantic import BaseModel, Field, validator
 
 # 导入统一响应格式
 from app.core.responses import (
     UnifiedResponse,
-    ErrorDetail,
     BusinessCode,
-    ResponseMessages,
     create_unified_success_response,
     create_unified_error_response,
     not_found,
@@ -65,7 +61,9 @@ router = APIRouter(
 class DataSourceCreate(BaseModel):
     """创建数据源配置请求"""
 
-    endpoint_name: str = Field(..., description="端点名称（唯一标识）", min_length=1, max_length=255, example="akshare.stock_zh_a_hist")
+    endpoint_name: str = Field(
+        ..., description="端点名称（唯一标识）", min_length=1, max_length=255, example="akshare.stock_zh_a_hist"
+    )
     source_name: str = Field(..., description="数据源名称", min_length=1, max_length=100, example="akshare")
     source_type: str = Field(..., description="数据源类型", min_length=1, max_length=50, example="http")
     data_category: str = Field(
@@ -148,6 +146,7 @@ def get_config_manager():
     postgresql_access = None
     try:
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
         postgresql_access = get_postgres_async()
     except Exception:
         pass
@@ -190,9 +189,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 
 
 @router.post("/", response_model=UnifiedResponse, status_code=201)
-async def create_data_source(
-    config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)
-):
+async def create_data_source(config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)):
     """
     创建新的数据源配置
 
@@ -675,7 +672,9 @@ async def rollback_to_version(
         )
 
     except Exception as e:
-        logger.error(f"Failed to rollback {endpoint_name} to version {version}: {str(e)}", extra={"request_id": request_id})
+        logger.error(
+            f"Failed to rollback {endpoint_name} to version {version}: {str(e)}", extra={"request_id": request_id}
+        )
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"回滚配置失败: {str(e)}",

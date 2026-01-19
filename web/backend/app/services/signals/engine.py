@@ -13,12 +13,12 @@ Signal Engine Core - 信号引擎核心
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Set
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+from datetime import datetime
 import time
 
-from web.backend.app.core.event_bus import EventBus, get_event_bus, Event
+from web.backend.app.core.event_bus import get_event_bus, Event
 from web.backend.app.services.signals.strategies.base_strategies import (
     SignalStrategy,
     TradingSignal,
@@ -87,12 +87,8 @@ class SignalEngine:
 
         # 集成现有的信号监控系统（如果可用）
         self.signal_recorder = get_signal_recorder() if MONITORING_AVAILABLE else None
-        self.result_tracker = (
-            get_signal_result_tracker() if MONITORING_AVAILABLE else None
-        )
-        self.notification_manager = (
-            get_monitored_notification_manager() if NOTIFICATION_AVAILABLE else None
-        )
+        self.result_tracker = get_signal_result_tracker() if MONITORING_AVAILABLE else None
+        self.notification_manager = get_monitored_notification_manager() if NOTIFICATION_AVAILABLE else None
 
         # 信号策略
         self.strategies: List[SignalStrategy] = []
@@ -202,9 +198,7 @@ class SignalEngine:
         except Exception as e:
             logger.error(f"Error handling market bar: {e}")
 
-    async def _update_indicators(
-        self, symbol: str, market_data: Dict[str, Any], data_type: str
-    ):
+    async def _update_indicators(self, symbol: str, market_data: Dict[str, Any], data_type: str):
         """
         更新指标数据
 
@@ -225,16 +219,12 @@ class SignalEngine:
             # 计算指标
             for indicator_name in required_indicators:
                 try:
-                    indicator_data = await self._calculate_indicator(
-                        symbol, indicator_name, market_data
-                    )
+                    indicator_data = await self._calculate_indicator(symbol, indicator_name, market_data)
                     if indicator_data:
                         self.indicator_cache[symbol][indicator_name] = indicator_data
 
                 except Exception as e:
-                    logger.error(
-                        f"Error calculating {indicator_name} for {symbol}: {e}"
-                    )
+                    logger.error(f"Error calculating {indicator_name} for {symbol}: {e}")
 
         except Exception as e:
             logger.error(f"Error updating indicators for {symbol}: {e}")
@@ -344,14 +334,10 @@ class SignalEngine:
         if symbol not in self.last_signal_time:
             return True
 
-        time_since_last_signal = (
-            datetime.now() - self.last_signal_time[symbol]
-        ).total_seconds()
+        time_since_last_signal = (datetime.now() - self.last_signal_time[symbol]).total_seconds()
         return time_since_last_signal >= self.config.signal_cooldown_seconds
 
-    def _filter_and_rank_signals(
-        self, signals: List[TradingSignal]
-    ) -> List[TradingSignal]:
+    def _filter_and_rank_signals(self, signals: List[TradingSignal]) -> List[TradingSignal]:
         """
         过滤和排序信号
 
@@ -416,9 +402,7 @@ class SignalEngine:
             self.active_signals[signal.symbol].append(signal)
             self.signals_published += 1
 
-            logger.info(
-                f"Published signal: {signal.signal_id} for {signal.symbol} ({signal.signal_type.value})"
-            )
+            logger.info(f"Published signal: {signal.signal_id} for {signal.symbol} ({signal.signal_type.value})")
 
         except Exception as e:
             logger.error(f"Error publishing signal {signal.signal_id}: {e}")
@@ -583,9 +567,7 @@ class SignalEngine:
             logger.error(f"Error analyzing trading signals: {e}")
             return []
 
-    def get_active_signals(
-        self, symbol: Optional[str] = None
-    ) -> Dict[str, List[TradingSignal]]:
+    def get_active_signals(self, symbol: Optional[str] = None) -> Dict[str, List[TradingSignal]]:
         """
         获取活跃信号
 
@@ -605,11 +587,8 @@ class SignalEngine:
             "signals_generated": self.signals_generated,
             "signals_published": self.signals_published,
             "active_symbols": len(self.active_signals),
-            "total_active_signals": sum(
-                len(signals) for signals in self.active_signals.values()
-            ),
-            "average_processing_time": self.processing_time
-            / max(self.signals_generated, 1),
+            "total_active_signals": sum(len(signals) for signals in self.active_signals.values()),
+            "average_processing_time": self.processing_time / max(self.signals_generated, 1),
             "strategies_count": len(self.strategies),
         }
 
@@ -621,10 +600,7 @@ class SignalEngine:
         for symbol, signals in self.active_signals.items():
             # 移除过期信号
             active_signals = [
-                signal
-                for signal in signals
-                if signal.validity_period is None
-                or signal.validity_period > current_time
+                signal for signal in signals if signal.validity_period is None or signal.validity_period > current_time
             ]
 
             if not active_signals:
@@ -637,9 +613,7 @@ class SignalEngine:
             del self.active_signals[symbol]
 
         if expired_symbols:
-            logger.info(
-                f"Cleaned up expired signals for {len(expired_symbols)} symbols"
-            )
+            logger.info(f"Cleaned up expired signals for {len(expired_symbols)} symbols")
 
     async def shutdown(self):
         """关闭信号引擎"""

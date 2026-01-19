@@ -1,43 +1,117 @@
 # MyStocks API 文档中心
 
+**📅 最新更新**: 2026-01-19 API文档重新评估和修正
+- ✅ **基于实际代码审计**: 571个API端点，54个API文件，反映真实项目状态
+- ✅ **核心文档优先级调整**: 突出API契约管理、集成指南、端点分析三个核心文档
+- ✅ **降低实验性功能权重**: APIFOX等尝试性功能移至次要位置
+- ✅ **架构重新评估**: 完整FastAPI后端系统，多种数据源集成，无实质性APIFOX依赖
+
+---
+
+## 🎯 核心文档优先级
+
+### 🔥 一级核心文档（必须阅读）
+
+#### 1. **API契约管理架构** 📋
+**位置**: `docs/api/API_CONTRACT_ARCHITECTURE_ANALYSIS.md`
+**重要性**: ⭐⭐⭐⭐⭐ 最高优先级
+**内容**: API契约生态系统、同步机制、版本管理、企业级应用
+
+#### 2. **API集成指南** 🔌
+**位置**: `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+**重要性**: ⭐⭐⭐⭐⭐ 最高优先级
+**内容**: 数据源集成、适配器模式、强制性开发要求、BUG案例分析
+
+#### 3. **API端点统计分析** 📊
+**位置**: `docs/api/API_ENDPOINTS_STATISTICS_REPORT.md`
+**重要性**: ⭐⭐⭐⭐⭐ 最高优先级
+**内容**: 571个端点分析、功能分类、HTTP方法分布、性能统计
+
+---
+
 ## 📚 文档导航
 
 ### 🚀 快速开始
-- **[Apifox 快速开始](APIFOX_QUICK_START.md)** - 5分钟上手 Apifox
-- **[API 使用指南](API_GUIDE.md)** - 完整的 API 使用教程
-- **[API 使用示例和最佳实践](API_EXAMPLES.md)** - 详细的代码示例、常见场景和客户端SDK 🆕
+
+#### 系统架构概览
+MyStocks采用**双数据库架构** + **多数据源集成**的完整量化交易系统：
+
+```
+前端 (Vue 3) ←→ 后端 (FastAPI 571个API) ←→ 数据源 (7个适配器)
+                           ↓
+数据库: TDengine (时序) + PostgreSQL (结构化) + Redis (缓存)
+```
+
+#### 核心架构特性
+
+**🎯 双数据库分工**:
+- **TDengine**: 高频时序数据（Tick/分钟K线，20:1压缩比，极致写入性能）
+- **PostgreSQL**: 结构化数据（股票信息、交易记录、技术指标、元数据）
+- **Redis**: 缓存层（热点数据、会话管理）
+
+**🔧 适配器模式**: 7个核心数据源适配器统一接口，支持动态切换和故障转移
+
+**📊 智能路由**: 根据数据分类自动选择最优存储引擎
+
+**🔐 企业级安全**: JWT认证、CSRF保护、API合规性验证
+
+#### 启动完整系统
+```bash
+# 一键启动所有服务
+./run_platform.sh
+
+# 或手动启动
+# 1. 数据库: docker run -d tdengine/tdengine:3.0.4.0
+# 2. 后端: cd web/backend && uvicorn app.main:app --port 8000
+# 3. 前端: cd web/frontend && npm run dev --port 3000
+```
+
+**访问地址**:
+- 🌐 前端界面: http://localhost:3000
+- 🔧 API文档: http://localhost:8000/docs
+- 📊 健康检查: http://localhost:8000/health
 - **[Swagger UI 指南](SWAGGER_UI_GUIDE.md)** - 本地 Swagger UI 使用
 
 ### 🔗 API-Web 对齐集成 🆕
-- **[API集成优化计划](API_Integration_Optimization_Plan.md)** - 4阶段优化实施方案（2025-12-25）
-- **[API集成实施状态](API_INTEGRATION_IMPLEMENTATION_STATUS.md)** - Phase 1-2 实施进度报告（50%完成）
-- **[API验收标准](API_ACCEPTANCE_STANDARDS.md)** - 完整的4层验收体系（E2E/UX/运维）🆕
-- **[Phase 2 完成报告](PHASE2_COMPLETION_REPORT.md)** - 策略管理模块完整实施报告 🆕
+- **[API集成优化计划](guides/integration/api_integration_optimization_plan.md)** - 4阶段优化实施方案（2025-12-25）
+- **[API集成实施状态](guides/integration/api_integration_implementation_status.md)** - Phase 1-2 实施进度报告（50%完成）
+- **[API验收标准](testing/compliance/api_acceptance_standards.md)** - 完整的4层验收体系（E2E/UX/运维）🆕
+- **[Phase 2 完成报告](reports/milestones/PHASE2_COMPLETION_REPORT.md)** - 策略管理模块完整实施报告
 - **[前后端API对齐方案](../guides/API对齐方案.md)** - 完整的对齐策略和方法论
 - **[前后端API对齐核心流程](../guides/API对齐核心流程.md)** - 数据对接与控件对齐核心流程
 
-### 📋 导入指南
-- **[Apifox 导入指南](APIFOX_IMPORT_GUIDE.md)** - 完整的导入操作手册
-- **[导入成功报告](APIFOX_IMPORT_SUCCESS.md)** - 最近一次导入结果
+
 
 ### 🔧 API 开发指南
-- **[API 开发标准指南](API_DEVELOPMENT_GUIDELINES.md)** - REST API开发标准和最佳实践 🆕
-- **[API 开发检查清单](API_DEVELOPMENT_CHECKLIST.md)** - 开发过程中的质量检查清单 🆕
-- **[API 快速开始模板](API_QUICK_START_TEMPLATE.md)** - 5分钟创建新API端点的模板 🆕
-- **[API 端点文档](API_ENDPOINT_DOCUMENTATION.md)** - 完整的280+个API端点参考
+- **[API 开发标准指南](guides/development/api_development_guidelines.md)** - REST API开发标准和最佳实践 🆕
+- **[API 开发检查清单](guides/development/api_development_checklist.md)** - 开发过程中的质量检查清单 🆕
+- **[API 快速开始模板](guides/development/api_quick_start_template.md)** - 5分钟创建新API端点的模板 🆕
+- **[API 端点统计](reports/analysis/api_endpoints_statistics_report.md)** - 完整的571个API端点分析
 
 ### 🧪 API 合规性测试
-- **[API 合规性测试框架](API_COMPLIANCE_TESTING_FRAMEWORK.md)** - 完整的自动化测试框架 (1,200+ LOC) 🆕
-- **[API 合规性报告](API_COMPLIANCE_REPORT.md)** - 详细的合规性分析和改进建议 🆕
-- **[API 合规性改进建议](API_COMPLIANCE_IMPROVEMENTS.md)** - 具体的代码改进示例和最佳实践 🆕
-- **[API 合规性测试完成报告](API_COMPLIANCE_TEST_COMPLETION_REPORT.md)** - 测试框架部署和验证结果 🆕
-- **[合规性测试快速开始](README_COMPLIANCE_TESTING.md)** - 5分钟设置自动化测试环境 🆕
-- **[Phase 4 完成报告](API_PHASE4_COMPLETION_REPORT_2025-12-03.md)** - API企业级安全优化完成报告 🆕
+- **[API 合规性测试框架](testing/compliance/api_compliance_testing_framework.md)** - 完整的自动化测试框架 (1,200+ LOC) 🆕
+- **[API 合规性报告](testing/compliance/api_compliance_report.md)** - 详细的合规性分析和改进建议 🆕
+- **[API 合规性改进建议](testing/compliance/api_compliance_improvements.md)** - 具体的代码改进示例和最佳实践 🆕
+- **[API 合规性测试完成报告](reports/milestones/api_compliance_test_completion_report.md)** - 测试框架部署和验证结果 🆕
+- **[Phase 4 完成报告](reports/milestones/phase4_completion_report.md)** - API企业级安全优化完成报告 🆕
+
+#### 🔧 合规性测试快速开始
+```bash
+# 一键设置合规性测试环境
+./setup_compliance_testing.sh
+
+# 运行所有合规性测试
+./run_compliance_tests.sh
+
+# 生成合规性报告
+./generate_compliance_report.sh
+```
+**测试内容**: API合规性、静态代码分析、文档验证、性能安全测试
 
 ### 📖 API 参考
 - **[OpenAPI 规范 (JSON)](openapi.json)** - OpenAPI 3.1.0 格式
 - **[OpenAPI 规范 (YAML)](openapi.yaml)** - YAML 格式
-- **[API 前端映射](API_FRONTEND_MAPPING.md)** - 前端组件与API的对应关系
+- **[API 前端映射](guides/integration/api_frontend_mapping.md)** - 前端组件与API的对应关系
 
 ### 🗂️ 任务完成总结
 
@@ -155,14 +229,7 @@
 
 ## 🌐 在线访问
 
-### Apifox 项目
-**项目地址**: https://app.apifox.com/project/7376246
 
-**导入状态**:
-- ✅ 218 个 API 端点
-- ✅ 96 个数据模型
-- ✅ 25 个接口目录
-- ✅ 0 个错误
 
 ### 本地 Swagger UI
 **Swagger UI**: http://localhost:8000/api/docs
@@ -193,8 +260,9 @@
 
 ### API 统计
 
-- **总端点数**: 218
+- **总端点数**: 571（基于实际代码审计）
 - **数据模型**: 96
+- **API 文件**: 54个
 - **认证方式**: JWT Bearer Token + CSRF
 - **API 版本**: 2.0.0
 - **OpenAPI 版本**: 3.1.0
@@ -203,31 +271,30 @@
 
 ## 🔧 工具和脚本
 
-### 导入工具
+### 文档导出工具
 
-**Python 脚本**: `scripts/runtime/import_to_apifox.py`
+**从运行中的服务导出**:
 
 ```bash
-# 运行导入脚本
-python scripts/runtime/import_to_apifox.py
-```
+# 导出 OpenAPI 规范
+curl http://localhost:8000/openapi.json > openapi.json
+curl http://localhost:8000/openapi.yaml > openapi.yaml
 
-**功能**:
-- ✅ 自动导入 OpenAPI 文档到 Apifox
-- ✅ 智能合并（保留现有数据）
-- ✅ 详细的导入统计
-- ✅ 错误检测和报告
+# 查看 Swagger UI
+open http://localhost:8000/docs
+
+# 查看 ReDoc
+open http://localhost:8000/redoc
+```
 
 ### 同步脚本
 
-当 API 有更新时，使用同步脚本：
+当 API 有更新时，从运行中的服务重新导出：
 
 ```bash
-# 方法1: 从运行中的服务导出
+# 导出最新规范
 curl http://localhost:8000/openapi.json > docs/api/openapi.json
-
-# 方法2: 重新导入到 Apifox
-python scripts/runtime/import_to_apifox.py
+curl http://localhost:8000/openapi.yaml > docs/api/openapi.yaml
 ```
 
 ---
@@ -246,32 +313,39 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
   http://localhost:8000/api/market/realtime/000001
 ```
 
-**使用 Apifox**:
-1. 在 Apifox 中选择 API
-2. 填写参数
-3. 点击发送
+**使用 Swagger UI**:
+1. 访问 http://localhost:8000/docs
+2. 选择 API 端点
+3. 填写参数并执行
 
 ### 批量测试
 
-**在 Apifox 中**:
-1. 创建测试套件
-2. 添加测试用例
-3. 运行测试
+**使用测试脚本**:
+1. 运行合规性测试: `./run_compliance_tests.sh`
+2. 查看测试报告: `docs/api/testing/compliance/`
+3. 运行端到端测试: `npm run test:e2e`
 
 ### 生成客户端代码
 
-**在 Apifox 中**:
-1. 选择 API
-2. 点击 "代码生成"
-3. 选择语言（Python/JavaScript/Java/Go...）
-4. 复制代码
+**使用 OpenAPI 生成器**:
+```bash
+# 生成 Python 客户端
+openapi-generator generate -i openapi.json -g python -o client/python
+
+# 生成 TypeScript 客户端
+openapi-generator generate -i openapi.json -g typescript -o client/typescript
+```
 
 ### 导出文档
 
-**在 Apifox 中**:
-1. 点击右上角 "⋯"
-2. 选择 "导出"
-3. 选择格式（Markdown/HTML/PDF）
+**导出文档**:
+```bash
+# Markdown 格式
+curl http://localhost:8000/openapi.json | jq . > api_spec.json
+
+# HTML 文档
+redoc-cli bundle openapi.json --output docs/api/index.html
+```
 
 ---
 
@@ -331,7 +405,7 @@ Authorization: Bearer eyJhbGc...
 
 ### 1. 使用环境变量
 
-在 Apifox 中配置环境变量：
+配置环境变量：
 
 ```json
 {
@@ -347,20 +421,24 @@ Authorization: Bearer eyJhbGc...
 
 ### 3. Mock 数据开发
 
-前端开发时使用 Apifox Mock 服务，无需等待后端完成。
+前端开发时可以使用本地 Mock 服务或测试数据，无需等待后端完成。
 
 ### 4. API 文档同步
 
-API 变更后及时更新 Apifox 文档：
+API 变更后重新导出文档：
 ```bash
-python scripts/runtime/import_to_apifox.py
+curl http://localhost:8000/openapi.json > docs/api/openapi.json
 ```
 
 ### 5. 持续集成
 
 在 CI/CD 中集成 API 测试：
 ```bash
-apifox run --project-id 7376246 --test-suite "核心功能测试"
+# 运行合规性测试
+./run_compliance_tests.sh
+
+# 运行端到端测试
+npm run test:e2e
 ```
 
 ---
@@ -405,14 +483,9 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 ## 📞 获取帮助
 
 ### 文档资源
-- **Swagger UI**: http://localhost:8000/api/docs
-- **ReDoc**: http://localhost:8000/api/redoc
-- **Apifox 项目**: https://app.apifox.com/project/7376246
-
-### Apifox 资源
-- **官方文档**: https://apifox.com/help/
-- **视频教程**: https://apifox.com/help/video/
-- **社区论坛**: https://community.apifox.com/
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
 
 ### MyStocks 项目
 - **GitHub**: [项目仓库]
@@ -423,8 +496,8 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 
 ## 🎉 下一步
 
-1. ✅ **访问 Apifox 项目**: https://app.apifox.com/project/7376246
-2. ✅ **阅读快速开始**: [APIFOX_QUICK_START.md](APIFOX_QUICK_START.md)
+1. ✅ **访问 Swagger UI**: http://localhost:8000/docs
+2. ✅ **查看 API 规范**: http://localhost:8000/openapi.json
 3. ✅ **测试核心 API**: 从健康检查开始
 4. ✅ **配置认证**: 设置自动登录脚本
 5. ✅ **创建测试套件**: 自动化测试
@@ -432,11 +505,12 @@ apifox run --project-id 7376246 --test-suite "核心功能测试"
 
 ---
 
-**最后更新**: 2025-12-25 17:00 UTC
-**文档版本**: 2.3.0
-**API 端点**: 231 (+13 Alert History/Analytics endpoints)
+**最后更新**: 2026-01-19 12:00 UTC
+**文档版本**: 2.4.0
+**API 端点**: 571（基于实际代码审计修正）
 **数据模型**: 96
+**API 文件**: 54个
 **API合规性**: 97% (企业级标准)
-**完成任务**: Task 13 (Monitoring) ✅ | Task 15 (Alert Escalation) ✅ | Phase 4 API Security ✅ | Phase 2: Strategy Management ✅
+**核心修正**: 去除实验性功能权重，突出真实架构
 
 _开始您的 API 探索之旅！_ 🚀

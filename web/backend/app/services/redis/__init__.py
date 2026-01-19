@@ -17,10 +17,10 @@ from .redis_pubsub import redis_pubsub, RedisPubSubService
 from .redis_lock import redis_lock, RedisLockService
 
 __all__ = [
-    'redis_cache',
-    'RedisCacheService',
-    'redis_pubsub',
-    'RedisPubSubService',
-    'redis_lock',
-    'RedisLockService',
+    "redis_cache",
+    "RedisCacheService",
+    "redis_pubsub",
+    "RedisPubSubService",
+    "redis_lock",
+    "RedisLockService",
 ]

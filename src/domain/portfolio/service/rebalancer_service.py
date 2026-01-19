@@ -12,6 +12,7 @@ from dataclasses import dataclass
 @dataclass
 class RebalanceAction:
     """再平衡动作"""
+
     symbol: str
     action: str  # BUY, SELL, HOLD
     target_quantity: int

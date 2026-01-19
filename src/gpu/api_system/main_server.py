@@ -145,7 +145,7 @@ class GPUAPIServer:
         # Usually generated code uses absolute imports.
         # Let's try to append the proto dir to sys.path just in case.
         sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
-        
+
         try:
             from src.gpu.api_system.api_proto.backtest_pb2_grpc import add_BacktestServiceServicer_to_server
             from src.gpu.api_system.api_proto.realtime_pb2_grpc import add_RealTimeServiceServicer_to_server

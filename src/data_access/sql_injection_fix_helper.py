@@ -48,10 +48,9 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
         raise ValueError(f"{identifier_type} cannot be empty")
 
     # 检查是否只包含安全字符
-    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', identifier):
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", identifier):
         raise ValueError(
-            f"Invalid {identifier_type}: '{identifier}'. "
-            f"Only alphanumeric characters and underscores are allowed."
+            f"Invalid {identifier_type}: '{identifier}'. " f"Only alphanumeric characters and underscores are allowed."
         )
 
     return identifier
@@ -114,7 +113,7 @@ def validate_symbol(symbol: str) -> str:
         raise ValueError("Symbol cannot be empty")
 
     # 清理：移除不安全字符，只保留字母数字和点
-    clean_symbol = re.sub(r'[^a-zA-Z0-9.]', '', symbol)
+    clean_symbol = re.sub(r"[^a-zA-Z0-9.]", "", symbol)
 
     if not clean_symbol:
         raise ValueError(f"Invalid symbol format: '{symbol}'")
@@ -160,7 +159,7 @@ def build_safe_insert_sql(
     columns: List[str],
     values: List[Tuple[Any, ...]],
     using_clause: Optional[str] = None,
-    tags_clause: Optional[str] = None
+    tags_clause: Optional[str] = None,
 ) -> str:
     """
     构建安全的INSERT语句（防止SQL注入）
@@ -221,9 +220,7 @@ def build_safe_insert_sql(
 
 
 def build_safe_select_sql(
-    table_name: str,
-    where_conditions: Optional[dict] = None,
-    columns: Optional[List[str]] = None
+    table_name: str, where_conditions: Optional[dict] = None, columns: Optional[List[str]] = None
 ) -> str:
     """
     构建安全的SELECT语句（防止SQL注入）
@@ -269,10 +266,7 @@ def build_safe_select_sql(
     return sql
 
 
-def build_safe_delete_sql(
-    table_name: str,
-    where_conditions: dict
-) -> str:
+def build_safe_delete_sql(table_name: str, where_conditions: dict) -> str:
     """
     构建安全的DELETE语句（防止SQL注入）
 

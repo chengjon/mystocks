@@ -250,9 +250,7 @@ class PriceStreamProcessor:
                         try:
                             # 调用 PortfolioValuationService 重新计算
                             performance = self.valuation_service.revaluate_portfolio(
-                                portfolio_id=portfolio_id,
-                                prices=prices,
-                                force_save=True
+                                portfolio_id=portfolio_id, prices=prices, force_save=True
                             )
 
                             if performance:

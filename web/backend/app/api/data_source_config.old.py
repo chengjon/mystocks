@@ -22,24 +22,16 @@ Version: 1.0.0
 API Version: v1
 """
 
-import os
-from datetime import datetime
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, HTTPException, Query, Depends, Request
 from pydantic import BaseModel, Field, validator
 
 # 导入统一响应格式
 from app.core.responses import (
     UnifiedResponse,
-    ErrorDetail,
     BusinessCode,
-    ResponseMessages,
     create_unified_success_response,
     create_unified_error_response,
-    ok,
-    created,
-    not_found,
-    bad_request,
 )
 
 router = APIRouter(prefix="/api/v1/data-sources/config", tags=["数据源配置管理"])
@@ -231,9 +223,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 
 
 @router.post("/", response_model=UnifiedResponse, status_code=201)
-async def create_data_source(
-    config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)
-):
+async def create_data_source(config: DataSourceCreate, request: Request, current_user: str = Depends(get_current_user)):
     """
     创建新的数据源配置
 
@@ -494,9 +484,7 @@ async def list_data_sources(
 
 
 @router.post("/batch", response_model=BatchOperationResponse)
-async def batch_operations(
-    batch_request: BatchOperationRequest, current_user: str = Depends(get_current_user)
-):
+async def batch_operations(batch_request: BatchOperationRequest, current_user: str = Depends(get_current_user)):
     """
     批量操作数据源配置
 
@@ -556,7 +544,9 @@ async def batch_operations(
                 elif action == "update":
                     endpoint_name = op.get("endpoint_name")
                     updates = op.get("updates", {})
-                    result = manager.update_endpoint(endpoint_name=endpoint_name, updates=updates, changed_by=current_user)
+                    result = manager.update_endpoint(
+                        endpoint_name=endpoint_name, updates=updates, changed_by=current_user
+                    )
 
                 elif action == "delete":
                     endpoint_name = op.get("endpoint_name")
@@ -668,7 +658,9 @@ async def rollback_to_version(
     try:
         manager = get_config_manager()
 
-        result = manager.rollback_to_version(endpoint_name=endpoint_name, target_version=version, changed_by=current_user)
+        result = manager.rollback_to_version(
+            endpoint_name=endpoint_name, target_version=version, changed_by=current_user
+        )
 
         if not result.success:
             if "not found" in result.error:

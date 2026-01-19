@@ -53,9 +53,7 @@ class NewsArticle:
 def __post_init__(self):
     if not self.article_id:
         # 生成文章唯一ID
-        content_hash = hashlib.md5(
-            f"{self.title}{self.url}{self.published_at}".encode()
-        ).hexdigest()[:16]
+        content_hash = hashlib.md5(f"{self.title}{self.url}{self.published_at}".encode()).hexdigest()[:16]
         self.article_id = f"{self.source}_{content_hash}"
 
 
@@ -124,9 +122,7 @@ async def collect_news(self, hours_back: int = 24) -> List[NewsArticle]:
     async with aiohttp.ClientSession() as session:
         for source_key, source_config in self.sources.items():
             try:
-                articles = await self._collect_from_source(
-                    session, source_key, source_config, cutoff_time
-                )
+                articles = await self._collect_from_source(session, source_key, source_config, cutoff_time)
                 all_articles.extend(articles)
                 logger.info(f"从 {source_config['name']} 采集到 {len(articles)} 篇文章")
 
@@ -173,9 +169,7 @@ async def _collect_rss_feed(
     try:
         async with session.get(source_config["url"], timeout=30) as response:
             if response.status != 200:
-                logger.warning(
-                    f"RSS源 {source_config['url']} 返回状态码 {response.status}"
-                )
+                logger.warning(f"RSS源 {source_config['url']} 返回状态码 {response.status}")
                 return articles
 
             content = await response.text()
@@ -205,9 +199,7 @@ async def _collect_rss_feed(
                     )
 
                     # 识别相关股票
-                    article.symbols = self._identify_related_symbols(
-                        title + " " + content
-                    )
+                    article.symbols = self._identify_related_symbols(title + " " + content)
 
                     articles.append(article)
 
@@ -384,9 +376,7 @@ async def analyze_sentiment(self, text: str) -> SentimentResult:
 
     except Exception as e:
         logger.error(f"情感分析失败: {e}")
-        return SentimentResult(
-            text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5
-        )
+        return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
 
 async def _analyze_with_model(self, text: str) -> SentimentResult:
@@ -435,9 +425,7 @@ async def _analyze_with_model(self, text: str) -> SentimentResult:
         # 平均所有句子的情感
         if sentence_scores:
             avg_score = sum(s["score"] for s in sentence_scores) / len(sentence_scores)
-            avg_confidence = sum(s["confidence"] for s in sentence_scores) / len(
-                sentence_scores
-            )
+            avg_confidence = sum(s["confidence"] for s in sentence_scores) / len(sentence_scores)
 
             # 确定情感标签
             if avg_score > 0.1:
@@ -471,12 +459,8 @@ def _analyze_with_fallback(self, text: str) -> SentimentResult:
     try:
         text_lower = text.lower()
 
-        positive_count = sum(
-            1 for word in self.fallback_analyzer["positive_words"] if word in text_lower
-        )
-        negative_count = sum(
-            1 for word in self.fallback_analyzer["negative_words"] if word in text_lower
-        )
+        positive_count = sum(1 for word in self.fallback_analyzer["positive_words"] if word in text_lower)
+        negative_count = sum(1 for word in self.fallback_analyzer["negative_words"] if word in text_lower)
 
         total_words = len(text.split())
         if total_words == 0:
@@ -505,9 +489,7 @@ def _analyze_with_fallback(self, text: str) -> SentimentResult:
 
         # 计算置信度
         total_emotional_words = positive_count + negative_count
-        confidence = min(
-            0.9, total_emotional_words / max(1, total_words * 0.1)
-        )  # 基于情感词密度
+        confidence = min(0.9, total_emotional_words / max(1, total_words * 0.1))  # 基于情感词密度
 
         return SentimentResult(
             text=text,
@@ -518,9 +500,7 @@ def _analyze_with_fallback(self, text: str) -> SentimentResult:
 
     except Exception as e:
         logger.error(f"Fallback情感分析失败: {e}")
-        return SentimentResult(
-            text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5
-        )
+        return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
 
 def _split_into_sentences(self, text: str) -> List[str]:
@@ -557,13 +537,8 @@ async def collect_and_analyze_news(self, hours_back: int = 24) -> List[NewsArtic
             content_sentiment = await self.analyzer.analyze_sentiment(article.content)
 
             # 综合情感分析结果
-            combined_score = (
-                title_sentiment.sentiment_score * 0.6
-                + content_sentiment.sentiment_score * 0.4
-            )
-            combined_confidence = (
-                title_sentiment.confidence + content_sentiment.confidence
-            ) / 2
+            combined_score = title_sentiment.sentiment_score * 0.6 + content_sentiment.sentiment_score * 0.4
+            combined_confidence = (title_sentiment.confidence + content_sentiment.confidence) / 2
 
             # 确定最终情感标签
             if combined_score > 0.05:
@@ -579,9 +554,7 @@ async def collect_and_analyze_news(self, hours_back: int = 24) -> List[NewsArtic
             article.confidence = combined_confidence
 
             # 计算相关性得分（基于情感强度和股票提及次数）
-            article.relevance_score = (
-                abs(combined_score) * len(article.symbols) * combined_confidence
-            )
+            article.relevance_score = abs(combined_score) * len(article.symbols) * combined_confidence
 
             analyzed_articles.append(article)
 
@@ -634,9 +607,7 @@ async def _save_articles_to_db(self, articles: List[NewsArticle]):
         logger.error(f"保存新闻文章到数据库失败: {e}")
 
 
-async def get_sentiment_indicators(
-    self, symbol: str, hours: int = 24
-) -> Dict[str, Any]:
+async def get_sentiment_indicators(self, symbol: str, hours: int = 24) -> Dict[str, Any]:
     """获取股票的情感指标"""
     try:
         cutoff_time = datetime.now() - timedelta(hours=hours)
@@ -698,9 +669,7 @@ async def get_sentiment_indicators(
             "confidence": avg_confidence,
             "article_count": len(rows),
             "time_range_hours": hours,
-            "latest_update": max(row["published_at"] for row in rows).isoformat()
-            if rows
-            else None,
+            "latest_update": max(row["published_at"] for row in rows).isoformat() if rows else None,
         }
 
     except Exception as e:
@@ -726,11 +695,7 @@ async def get_market_sentiment_overview(self, hours: int = 24) -> Dict[str, Any]
             sentiment_data[symbol] = await self.get_sentiment_indicators(symbol, hours)
 
         # 计算市场整体情感
-        valid_scores = [
-            data["sentiment_score"]
-            for data in sentiment_data.values()
-            if "error" not in data
-        ]
+        valid_scores = [data["sentiment_score"] for data in sentiment_data.values() if "error" not in data]
 
         if valid_scores:
             market_sentiment = sum(valid_scores) / len(valid_scores)
@@ -748,9 +713,7 @@ async def get_market_sentiment_overview(self, hours: int = 24) -> Dict[str, Any]
         return {
             "market_sentiment_score": market_sentiment,
             "market_trend": market_trend,
-            "analyzed_symbols": len(
-                [s for s in sentiment_data.values() if "error" not in s]
-            ),
+            "analyzed_symbols": len([s for s in sentiment_data.values() if "error" not in s]),
             "total_symbols": len(key_symbols),
             "time_range_hours": hours,
             "symbol_sentiments": sentiment_data,

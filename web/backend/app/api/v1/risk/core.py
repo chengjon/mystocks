@@ -99,9 +99,7 @@ def get_monitoring_db():
 
 class RiskCalculator:
     @staticmethod
-    def calculate_all(
-        returns: pd.Series, confidence_level: float = 0.95
-    ) -> Dict[str, float]:
+    def calculate_all(returns: pd.Series, confidence_level: float = 0.95) -> Dict[str, float]:
         if returns.empty:
             return {
                 "var_95_hist": 0.0,
@@ -173,9 +171,7 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
 
         start = datetime.now() - timedelta(days=365)
         end = datetime.now()
-        kline = ts_source.get_kline_data(
-            symbol="sh600000", start_time=start, end_time=end, interval="1d"
-        )
+        kline = ts_source.get_kline_data(symbol="sh600000", start_time=start, end_time=end, interval="1d")
         if kline is not None and len(kline) > 1:
             returns = kline["close"].pct_change().dropna()
         else:
@@ -261,25 +257,14 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
 
         start = datetime.now() - timedelta(days=365)
         end = datetime.now()
-        asset_kline = ts_source.get_kline_data(
-            symbol="sh600000", start_time=start, end_time=end, interval="1d"
-        )
+        asset_kline = ts_source.get_kline_data(symbol="sh600000", start_time=start, end_time=end, interval="1d")
         if market_index == "000001":
             market_symbol = "sh000001"
         else:
-            market_symbol = (
-                f"sz{market_index}" if len(market_index) == 6 else market_symbol
-            )
-        market_kline = ts_source.get_kline_data(
-            symbol=market_symbol, start_time=start, end_time=end, interval="1d"
-        )
+            market_symbol = f"sz{market_index}" if len(market_index) == 6 else market_symbol
+        market_kline = ts_source.get_kline_data(symbol=market_symbol, start_time=start, end_time=end, interval="1d")
 
-        if (
-            asset_kline is not None
-            and market_kline is not None
-            and len(asset_kline) > 1
-            and len(market_kline) > 1
-        ):
+        if asset_kline is not None and market_kline is not None and len(asset_kline) > 1 and len(market_kline) > 1:
             asset_returns = asset_kline["close"].pct_change().dropna()
             market_returns = market_kline["close"].pct_change().dropna()
         else:
@@ -352,9 +337,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         latest_metrics = None
         if metrics_df is not None and len(metrics_df) > 0:
-            latest_metrics = (
-                metrics_df.sort_values("metric_date", ascending=False).iloc[0].to_dict()
-            )
+            latest_metrics = metrics_df.sort_values("metric_date", ascending=False).iloc[0].to_dict()
 
         alerts_df = manager.load_data_by_classification(
             classification=DataClassification.MODEL_OUTPUT,
@@ -371,16 +354,12 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
         risk_history = []
         if history_df is not None:
-            history_df = history_df[
-                history_df["metric_date"] >= pd.Timestamp(thirty_days_ago)
-            ]
+            history_df = history_df[history_df["metric_date"] >= pd.Timestamp(thirty_days_ago)]
             risk_history = history_df.sort_values("metric_date").to_dict("records")
 
         return {
             "metrics": {
-                "var_95_hist": (
-                    latest_metrics.get("var_95_hist") if latest_metrics else None
-                ),
+                "var_95_hist": (latest_metrics.get("var_95_hist") if latest_metrics else None),
                 "cvar_95": latest_metrics.get("cvar_95") if latest_metrics else None,
                 "beta": latest_metrics.get("beta") if latest_metrics else None,
             },
@@ -409,9 +388,7 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
 
 
 @router.get("/metrics/history")
-async def get_risk_metrics_history(
-    entity_type: str, entity_id: int, start_date: str, end_date: str
-):
+async def get_risk_metrics_history(entity_type: str, entity_id: int, start_date: str, end_date: str):
     try:
         manager = MyStocksUnifiedManager()  # noqa: F821
 
@@ -475,24 +452,15 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
             returns_series = pd.Series(request.get("returns", []))
 
             metrics = {
-                "volatility": float(returns_series.std() * np.sqrt(252))
-                if len(returns_series) > 0
-                else 0,
+                "volatility": float(returns_series.std() * np.sqrt(252)) if len(returns_series) > 0 else 0,
                 "sharpe_ratio": (
-                    float(
-                        (returns_series.mean() * 252)
-                        / (returns_series.std() * np.sqrt(252))
-                    )
+                    float((returns_series.mean() * 252) / (returns_series.std() * np.sqrt(252)))
                     if returns_series.std() > 0
                     else 0
                 ),
                 "max_drawdown": request.get("max_drawdown", 0),
-                "skewness": float(returns_series.skew())
-                if len(returns_series) > 0
-                else 0,
-                "kurtosis": float(returns_series.kurtosis())
-                if len(returns_series) > 0
-                else 0,
+                "skewness": float(returns_series.skew()) if len(returns_series) > 0 else 0,
+                "kurtosis": float(returns_series.kurtosis()) if len(returns_series) > 0 else 0,
             }
 
             return {

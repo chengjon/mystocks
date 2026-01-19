@@ -5,6 +5,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import commonjs from 'vite-plugin-commonjs'
 
 // 查找可用端口的函数
 async function findAvailablePort(startPort: number, endPort: number): Promise<number> {
@@ -40,7 +41,7 @@ export default defineConfig(async () => {
   let availablePort = 3000; // 默认端口
 
   try {
-    availablePort = await findAvailablePort(3020, 3029);
+    availablePort = await findAvailablePort(3001, 3009);
     console.log(`🚀 Using available port: ${availablePort}`);
   } catch (error) {
     console.error(`❌ ${(error as Error).message}`);
@@ -48,14 +49,21 @@ export default defineConfig(async () => {
   }
 
   return {
-    plugins: [
+  plugins: [
       vue(),
-      // ⚡ Element Plus 自动导入（按需引入，减少Bundle）
+      // CJS转ESM：解决dayjs等CJS模块兼容问题
+      commonjs({
+        include: [/dayjs/, /node_modules/]
+      }),
+      // 重新启用Element Plus自动导入（按需导入模式）
       AutoImport({
         resolvers: [ElementPlusResolver()],
       }),
       Components({
+        // 重新启用Element Plus Resolver（按需导入模式）
         resolvers: [ElementPlusResolver()],
+        dirs: ['src/components/artdeco'],
+        dts: 'src/components.d.ts',
       }),
       // Bundle分析插件 - 生成可视化报告
       visualizer({
@@ -66,8 +74,18 @@ export default defineConfig(async () => {
       })
     ],
     resolve: {
+      mainFields: ['module', 'main'],  // 优先使用ESM版本
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        'axios': 'axios/dist/browser/axios.cjs'
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',  // 使用现代 Sass API，消除 legacy 警告
+          silenceDeprecations: ['legacy-js-api', 'import']  // 静默弃用警告
+        }
       }
     },
     server: {
@@ -89,14 +107,10 @@ export default defineConfig(async () => {
         output: {
           // 手动分块策略 - Phase 1.3.1
           manualChunks(id) {
-            // Vue核心库
-            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router')) {
+            // Vue核心库 + Element Plus (合并以避免循环依赖)
+            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') ||
+                id.includes('element-plus') || id.includes('@element-plus')) {
               return 'vue-vendor'
-            }
-
-            // Element Plus UI库（自动导入，分块优化）
-            if (id.includes('element-plus') || id.includes('@element-plus')) {
-              return 'element-plus'
             }
 
             // ECharts图表库（按需引入） - Phase 1.3.2
@@ -149,19 +163,15 @@ export default defineConfig(async () => {
         'vue',
         'vue-router',
         'pinia',
-        'klinecharts'
+        'klinecharts',
+        'axios'  // 🔧 修复apiClient.ts加载问题 - 预构建axios
       ],
       // 排除不需要预构建的包（按需引入）
       exclude: [
-        'element-plus',
         'echarts'
+        // 移除dayjs排除，让Vite预构建dayjs及其插件
+        // 移除了element-plus排除，现在使用按需导入
       ]
-    },
-    // 实验性功能 - Phase 1.3.3 (并行构建)
-    experimental: {
-      renderBuiltUrl(filename, hostType) {
-        return { runtime: `/${filename}` }
-      }
     }
   };
 })

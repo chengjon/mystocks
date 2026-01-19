@@ -26,6 +26,7 @@ try:
     from src.gpu.api_system.api_proto.realtime_pb2_grpc import RealTimeServiceServicer
 except ImportError:
     import sys
+
     sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
     from realtime_pb2 import (
         MarketData,

@@ -77,9 +77,7 @@ class Quote:
         # 买一价 <= 卖一价（如果两者都提供）
         if self.bid_price is not None and self.ask_price is not None:
             if self.bid_price > self.ask_price:
-                raise ValueError(
-                    f"Bid price ({self.bid_price}) must be <= ask price ({self.ask_price})"
-                )
+                raise ValueError(f"Bid price ({self.bid_price}) must be <= ask price ({self.ask_price})")
 
         # 开盘价、最高价、最低价必须为正数（如果提供）
         if self.open_price is not None and self.open_price <= 0:

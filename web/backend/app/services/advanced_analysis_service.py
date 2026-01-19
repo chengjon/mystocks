@@ -9,8 +9,6 @@ import asyncio
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from app.core.database import get_db
-from app.core.cache import get_cache
 
 # from app.core.monitoring import PerformanceMonitor  # TODO: Add monitoring module
 from app.core.logging import get_logger
@@ -82,21 +80,15 @@ class AdvancedAnalysisService:
             }
 
             # 广播到分析相关的频道
-            await websocket_manager.broadcast_to_channel(
-                channel=f"analysis:{symbol}", message=event_data
-            )
+            await websocket_manager.broadcast_to_channel(channel=f"analysis:{symbol}", message=event_data)
 
             # 也广播到全局分析频道
-            await websocket_manager.broadcast_to_channel(
-                channel="analysis:all", message=event_data
-            )
+            await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
         except Exception as e:
             logger.warning(f"Failed to broadcast analysis progress: {e}")
 
-    async def _broadcast_analysis_complete(
-        self, analysis_type: str, symbol: str, result: Dict
-    ):
+    async def _broadcast_analysis_complete(self, analysis_type: str, symbol: str, result: Dict):
         """广播分析完成事件"""
         try:
             event_data = {
@@ -107,53 +99,35 @@ class AdvancedAnalysisService:
                 "timestamp": datetime.now().isoformat(),
             }
 
-            await websocket_manager.broadcast_to_channel(
-                channel=f"analysis:{symbol}", message=event_data
-            )
+            await websocket_manager.broadcast_to_channel(channel=f"analysis:{symbol}", message=event_data)
 
-            await websocket_manager.broadcast_to_channel(
-                channel="analysis:all", message=event_data
-            )
+            await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
         except Exception as e:
             logger.warning(f"Failed to broadcast analysis completion: {e}")
 
-    async def perform_analysis_with_realtime_updates(
-        self, analysis_type: str, symbol: str, **kwargs
-    ) -> Dict[str, Any]:
+    async def perform_analysis_with_realtime_updates(self, analysis_type: str, symbol: str, **kwargs) -> Dict[str, Any]:
         """执行分析并提供实时进度更新"""
         try:
             # 广播分析开始
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, 0.0, "started"
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, 0.0, "started")
 
             # 执行分析（这里应该调用具体的分析方法）
             # 为了演示，我们模拟分析过程
             await asyncio.sleep(0.5)  # 模拟数据加载
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, 25.0, "loading_data"
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, 25.0, "loading_data")
 
             await asyncio.sleep(0.5)  # 模拟计算
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, 50.0, "calculating"
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, 50.0, "calculating")
 
             await asyncio.sleep(0.5)  # 模拟分析
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, 75.0, "analyzing"
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, 75.0, "analyzing")
 
             # 这里应该调用实际的分析方法
-            result = await self._perform_actual_analysis(
-                analysis_type, symbol, **kwargs
-            )
+            result = await self._perform_actual_analysis(analysis_type, symbol, **kwargs)
 
             await asyncio.sleep(0.5)  # 模拟完成
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, 100.0, "completed", result
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, 100.0, "completed", result)
 
             # 广播完成事件
             await self._broadcast_analysis_complete(analysis_type, symbol, result)
@@ -162,15 +136,11 @@ class AdvancedAnalysisService:
 
         except Exception as e:
             # 广播错误状态
-            await self._broadcast_analysis_progress(
-                analysis_type, symbol, -1.0, "error", {"error": str(e)}
-            )
+            await self._broadcast_analysis_progress(analysis_type, symbol, -1.0, "error", {"error": str(e)})
             logger.error(f"Analysis failed for {analysis_type}:{symbol}: {e}")
             raise
 
-    async def _perform_actual_analysis(
-        self, analysis_type: str, symbol: str, **kwargs
-    ) -> Dict[str, Any]:
+    async def _perform_actual_analysis(self, analysis_type: str, symbol: str, **kwargs) -> Dict[str, Any]:
         """执行实际的分析逻辑"""
         # 这里应该根据analysis_type调用相应的分析方法
         # 暂时返回模拟结果
@@ -213,11 +183,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_fundamental")
-                if self.monitor
-                else None
-            ):
+            with self.monitor.track_operation("analyze_fundamental") if self.monitor else None:
                 result = self.analysis_engine.analyzers["fundamental"].analyze(symbol)
 
                 # 缓存结果
@@ -238,11 +204,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_technical")
-                if self.monitor
-                else None
-            ):
+            with self.monitor.track_operation("analyze_technical") if self.monitor else None:
                 result = self.analysis_engine.analyzers["technical"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
@@ -262,14 +224,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_trading_signals")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["trading_signals"].analyze(
-                    symbol
-                )
+            with self.monitor.track_operation("analyze_trading_signals") if self.monitor else None:
+                result = self.analysis_engine.analyzers["trading_signals"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -283,11 +239,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_time_series")
-                if self.monitor
-                else None
-            ):
+            with self.monitor.track_operation("analyze_time_series") if self.monitor else None:
                 result = self.analysis_engine.analyzers["time_series"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
@@ -302,14 +254,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_market_panorama")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["market_panorama"].analyze(
-                    "market_overview"
-                )
+            with self.monitor.track_operation("analyze_market_panorama") if self.monitor else None:
+                result = self.analysis_engine.analyzers["market_panorama"].analyze("market_overview")
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -323,11 +269,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_capital_flow")
-                if self.monitor
-                else None
-            ):
+            with self.monitor.track_operation("analyze_capital_flow") if self.monitor else None:
                 result = self.analysis_engine.analyzers["capital_flow"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
@@ -342,14 +284,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_chip_distribution")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["chip_distribution"].analyze(
-                    symbol
-                )
+            with self.monitor.track_operation("analyze_chip_distribution") if self.monitor else None:
+                result = self.analysis_engine.analyzers["chip_distribution"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -363,14 +299,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_anomaly_tracking")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["anomaly_tracking"].analyze(
-                    symbol
-                )
+            with self.monitor.track_operation("analyze_anomaly_tracking") if self.monitor else None:
+                result = self.analysis_engine.analyzers["anomaly_tracking"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -384,14 +314,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_financial_valuation")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["financial_valuation"].analyze(
-                    symbol
-                )
+            with self.monitor.track_operation("analyze_financial_valuation") if self.monitor else None:
+                result = self.analysis_engine.analyzers["financial_valuation"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -405,11 +329,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_sentiment")
-                if self.monitor
-                else None
-            ):
+            with self.monitor.track_operation("analyze_sentiment") if self.monitor else None:
                 result = self.analysis_engine.analyzers["sentiment"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
@@ -424,14 +344,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_decision_models")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers["decision_models"].analyze(
-                    symbol
-                )
+            with self.monitor.track_operation("analyze_decision_models") if self.monitor else None:
+                result = self.analysis_engine.analyzers["decision_models"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -445,14 +359,8 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_multidimensional_radar")
-                if self.monitor
-                else None
-            ):
-                result = self.analysis_engine.analyzers[
-                    "multidimensional_radar"
-                ].analyze(symbol)
+            with self.monitor.track_operation("analyze_multidimensional_radar") if self.monitor else None:
+                result = self.analysis_engine.analyzers["multidimensional_radar"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
@@ -469,9 +377,7 @@ class AdvancedAnalysisService:
         await self._ensure_initialized()
 
         try:
-            with (
-                self.monitor.track_operation("analyze_batch") if self.monitor else None
-            ):
+            with self.monitor.track_operation("analyze_batch") if self.monitor else None:
                 results = {}
 
                 # 并行执行批量分析
@@ -482,9 +388,7 @@ class AdvancedAnalysisService:
                         tasks.append((symbol, analysis_type, task))
 
                 # 等待所有任务完成
-                completed_results = await asyncio.gather(
-                    *[task for _, _, task in tasks], return_exceptions=True
-                )
+                completed_results = await asyncio.gather(*[task for _, _, task in tasks], return_exceptions=True)
 
                 # 整理结果
                 for (symbol, analysis_type, _), result in zip(tasks, completed_results):
@@ -502,9 +406,7 @@ class AdvancedAnalysisService:
             logger.error(f"批量分析失败: {e}")
             raise
 
-    async def _analyze_single(
-        self, symbol: str, analysis_type: str, user_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    async def _analyze_single(self, symbol: str, analysis_type: str, user_id: Optional[str] = None) -> Dict[str, Any]:
         """执行单个分析"""
         analysis_methods = {
             "fundamental": self.analyze_fundamental,
@@ -539,9 +441,7 @@ class AdvancedAnalysisService:
             health_info = {
                 "service": "advanced_analysis",
                 "overall_status": "healthy",
-                "analyzers_count": len(self.analysis_engine.analyzers)
-                if self.analysis_engine
-                else 0,
+                "analyzers_count": len(self.analysis_engine.analyzers) if self.analysis_engine else 0,
                 "analyzers_status": {},
                 "cache_status": "available" if self.cache else "unavailable",
                 "monitor_status": "available" if self.monitor else "unavailable",

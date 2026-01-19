@@ -6,14 +6,12 @@ Alternative Data API - News and Social Media Sentiment Analysis
 Provides news collection, sentiment analysis, social media monitoring and other alternative data services.
 """
 
-import asyncio
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Query, Path, BackgroundTasks
 from pydantic import BaseModel, Field
 
 from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
-from src.core.database import DatabaseHelper
 from src.logging.audit_system import get_audit_manager, AuditEvent
 
 router = APIRouter(prefix="/api/alternative-data", tags=["另类数据分析"])
@@ -116,14 +114,10 @@ async def collect_and_analyze_news(
         raise HTTPException(status_code=500, detail=f"启动新闻采集失败: {str(e)}")
 
 
-@router.get(
-    "/news/recent", response_model=List[NewsArticleResponse], summary="获取最近新闻"
-)
+@router.get("/news/recent", response_model=List[NewsArticleResponse], summary="获取最近新闻")
 async def get_recent_news(
     limit: int = Query(50, description="返回文章数量", ge=1, le=200),
-    sentiment_filter: Optional[str] = Query(
-        None, description="情感过滤", enum=["positive", "negative", "neutral"]
-    ),
+    sentiment_filter: Optional[str] = Query(None, description="情感过滤", enum=["positive", "negative", "neutral"]),
     symbol: Optional[str] = Query(None, description="股票代码过滤"),
     hours_back: int = Query(24, description="时间范围(小时)", ge=1, le=168),
 ):
@@ -146,11 +140,7 @@ async def get_recent_news(
                 "published_at": (datetime.now() - timedelta(hours=i)).isoformat(),
                 "symbols": ["600519", "000001"] if i % 2 == 0 else ["600036"],
                 "sentiment_score": 0.3 if i % 3 == 0 else -0.2 if i % 3 == 1 else 0.0,
-                "sentiment_label": "positive"
-                if i % 3 == 0
-                else "negative"
-                if i % 3 == 1
-                else "neutral",
+                "sentiment_label": "positive" if i % 3 == 0 else "negative" if i % 3 == 1 else "neutral",
                 "confidence": 0.8,
                 "relevance_score": 0.6,
             }
@@ -159,9 +149,7 @@ async def get_recent_news(
 
         # 应用过滤器
         if sentiment_filter:
-            mock_articles = [
-                a for a in mock_articles if a["sentiment_label"] == sentiment_filter
-            ]
+            mock_articles = [a for a in mock_articles if a["sentiment_label"] == sentiment_filter]
 
         if symbol:
             mock_articles = [a for a in mock_articles if symbol in a["symbols"]]
@@ -191,9 +179,7 @@ async def get_stock_sentiment(
         indicators = await service.get_sentiment_indicators(symbol, hours)
 
         if "error" in indicators:
-            raise HTTPException(
-                status_code=500, detail=f"获取情感指标失败: {indicators['error']}"
-            )
+            raise HTTPException(status_code=500, detail=f"获取情感指标失败: {indicators['error']}")
 
         return SentimentIndicatorResponse(**indicators)
 
@@ -221,9 +207,7 @@ async def get_market_sentiment(
         overview = await service.get_market_sentiment_overview(hours)
 
         if "error" in overview:
-            raise HTTPException(
-                status_code=500, detail=f"获取市场情感概览失败: {overview['error']}"
-            )
+            raise HTTPException(status_code=500, detail=f"获取市场情感概览失败: {overview['error']}")
 
         return MarketSentimentResponse(**overview)
 
@@ -255,9 +239,7 @@ async def get_sentiment_trend(
             if "error" not in indicators:
                 trend_data.append(
                     {
-                        "date": (datetime.now() - timedelta(days=i)).strftime(
-                            "%Y-%m-%d"
-                        ),
+                        "date": (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"),
                         "sentiment_score": indicators["sentiment_score"],
                         "confidence": indicators["confidence"],
                         "article_count": indicators["article_count"],
@@ -267,13 +249,7 @@ async def get_sentiment_trend(
         # 计算趋势
         if len(trend_data) >= 2:
             scores = [d["sentiment_score"] for d in trend_data]
-            trend = (
-                "improving"
-                if scores[0] > scores[-1]
-                else "declining"
-                if scores[0] < scores[-1]
-                else "stable"
-            )
+            trend = "improving" if scores[0] > scores[-1] else "declining" if scores[0] < scores[-1] else "stable"
         else:
             trend = "insufficient_data"
 
@@ -367,9 +343,7 @@ async def get_social_media_sentiment(
         return mock_sentiment
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"获取社交媒体情感数据失败: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"获取社交媒体情感数据失败: {str(e)}")
 
 
 @router.get("/alternative-data/summary", summary="获取另类数据汇总")

@@ -1,7 +1,7 @@
 # ArtDeco 组件库完整清单
 
-**更新时间**: 2026-01-12
-**组件总数**: 52 个
+**更新时间**: 2026-01-18
+**组件总数**: 64 个
 **设计系统**: Art Deco (The "Gatsby" Aesthetic)
 **核心风格**: 几何装饰、金色强调、戏剧性对比、奢华视觉体验
 
@@ -11,8 +11,8 @@
 
 | 分类 | 组件数 | 用途 |
 |------|--------|------|
-| **Base (基础)** | 8 | 通用 UI 组件 |
-| **Core (核心)** | 4 | 分析仪表板 |
+| **Base (基础)** | 13 | 通用 UI 组件 |
+| **Core (核心)** | 11 | 分析仪表板和核心功能 |
 | **Specialized (专用)** | 30 | 金融/交易专用组件 |
 | **Advanced (高级)** | 10 | 高级分析功能 |
 
@@ -143,6 +143,49 @@
 />
 ```
 
+### 1.9 ArtDecoDialog
+**文件**: `ArtDecoDialog.vue`
+**功能**: 模态对话框
+
+**特性**:
+- Art Deco 风格边框
+- 金色标题强调
+- 动画过渡效果
+
+### 1.10 ArtDecoBreadcrumb
+**文件**: `ArtDecoBreadcrumb.vue`
+**功能**: 面包屑导航
+
+**特性**:
+- 金色分隔符
+- 全大写文字
+- 悬停高亮效果
+
+### 1.11 ArtDecoCollapsible
+**文件**: `ArtDecoCollapsible.vue`
+**功能**: 可折叠面板
+
+**特性**:
+- 金色展开/折叠图标
+- 平滑动画过渡
+- 嵌套支持
+
+### 1.12 ArtDecoSkipLink
+**文件**: `ArtDecoSkipLink.vue`
+**功能**: 跳过链接（无障碍访问）
+
+**特性**:
+- 键盘导航支持
+- 屏幕阅读器友好
+
+### 1.13 ArtDecoLanguageSwitcher
+**文件**: `ArtDecoLanguageSwitcher.vue`
+**功能**: 语言切换器
+
+**特性**:
+- 多语言支持
+- 金色下拉样式
+
 ---
 
 ## 2️⃣ Core Components (核心组件)
@@ -186,6 +229,69 @@
 - 多维度评分
 - 雷达图可视化
 - 行业对比
+
+### 2.5 ArtDecoHeader
+**文件**: `ArtDecoHeader.vue`
+**功能**: 页面头部组件
+
+**特性**:
+- 金色装饰线
+- 全大写标题
+- 响应式设计
+
+### 2.6 ArtDecoFooter
+**文件**: `ArtDecoFooter.vue`
+**功能**: 页面底部组件
+
+**特性**:
+- 版权信息
+- 链接导航
+- 品牌标识
+
+### 2.7 ArtDecoFunctionTree
+**文件**: `ArtDecoFunctionTree.vue`
+**功能**: 功能树导航
+
+**特性**:
+- 层级导航
+- 展开/折叠
+- 选中状态
+
+### 2.8 ArtDecoLoadingOverlay
+**文件**: `ArtDecoLoadingOverlay.vue`
+**功能**: 加载遮罩层
+
+**特性**:
+- 全屏遮罩
+- Art Deco 风格加载动画
+- 透明背景
+
+### 2.9 ArtDecoStatusIndicator
+**文件**: `ArtDecoStatusIndicator.vue`
+**功能**: 状态指示器
+
+**特性**:
+- 多种状态颜色
+- 图标 + 文字
+- 动画效果
+
+### 2.10 ArtDecoIcon
+**文件**: `ArtDecoIcon.vue`
+**功能**: 图标组件
+
+**特性**:
+- Art Deco 风格图标
+- 可自定义大小
+- 颜色变体
+
+### 2.11 ArtDecoBreadcrumb
+**文件**: `ArtDecoBreadcrumb.vue`
+**功能**: 面包屑导航（核心版本）
+
+**特性**:
+- 导航路径显示
+- 点击跳转
+- 金色分隔符
 
 ---
 
@@ -708,11 +814,11 @@ ArtDecoComponent.vue
 
 | 分类 | 组件数 | 占比 |
 |------|--------|------|
-| Base | 8 | 15.4% |
-| Core | 4 | 7.7% |
-| Specialized | 30 | 57.7% |
-| Advanced | 10 | 19.2% |
-| **总计** | **52** | **100%** |
+| Base | 13 | 20.3% |
+| Core | 11 | 17.2% |
+| Specialized | 30 | 46.9% |
+| Advanced | 10 | 15.6% |
+| **总计** | **64** | **100%** |
 
 ---
 
@@ -735,6 +841,6 @@ ArtDecoComponent.vue
 
 ---
 
-**文档版本**: v1.0
-**最后更新**: 2026-01-12
+**文档版本**: v1.1
+**最后更新**: 2026-01-18
 **维护者**: MyStocks Frontend Team

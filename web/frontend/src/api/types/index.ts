@@ -1,14 +1,8 @@
 // Auto-generated index file for TypeScript types
-// Generated at: 2026-01-15T21:06:03.936028
+// Generated at: 2026-01-19T22:34:18.300110
 
-// Common types (includes BacktestResult, BacktestRequest, PositionItem, etc.)
-// Note: Uses explicit exports to avoid duplicate conflicts
-export type { Dict, List, BaseResponse, PagedResponse, APIResponse, ErrorDetail } from './common';
-export type { AccountInfo, ActiveAlert, AlertLevel } from './common';
-export type { BacktestRequest as BacktestParams, BacktestResponse, BacktestResultSummary, BacktestTrade, BacktestResult } from './common';
-export type { PositionItem, Position, PositionsResponse } from './common';
-export type { PortfolioSummary } from './common';
-export type { StrategyCreateRequest as CreateStrategyRequest, StrategyUpdateRequest as UpdateStrategyRequest, StrategyConfig, StrategyListResponse } from './common';
+// Common types
+export * from './common';
 
 // Admin domain types
 export * from './admin';
@@ -16,16 +10,14 @@ export * from './admin';
 // Analysis domain types
 export * from './analysis';
 
-// Market domain types (explicit exports to avoid conflicts with common.ts)
-export type { MarketIndexItem, MarketOverview } from './market';
-export type { MarketOverviewVM, FundFlowChartPoint, KLineChartData, ChipRaceItem, LongHuBangItem } from './market';
+// Common domain types
+export * from './common';
+
+// Market domain types
+export * from './market';
 
 // Strategy domain types
-export type { Strategy } from './strategy';
-export type { StrategyPerformance } from './strategy';
-export type { BacktestTask } from './strategy';
-export type { BacktestResultVM } from './strategy';
-export type { StrategyInfo, StrategyPredictionRequest, StrategyPredictionResponse, StrategyTrainingRequest, StrategyTrainingResponse, TechnicalIndicatorResponse } from './strategy';
+export * from './strategy';
 
 // System domain types
 export * from './system';

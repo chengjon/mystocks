@@ -209,7 +209,7 @@
 
     .rule-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -238,7 +238,7 @@
 
     .condition-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -247,7 +247,7 @@
 
     .condition-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-secondary);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
@@ -268,7 +268,7 @@
 
     .meta-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -277,7 +277,7 @@
 
     .meta-value {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-secondary);
     }
 
@@ -297,7 +297,7 @@
 
     .actions-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -315,7 +315,7 @@
       background: var(--artdeco-bg-primary);
       border: 1px solid rgba(212, 175, 55, 0.2);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-secondary);
       text-transform: uppercase;
     }
@@ -335,7 +335,7 @@
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -370,14 +370,14 @@
     }
 
     .artdeco-alert-rule.compact .rule-title {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 
     .artdeco-alert-rule.compact .meta-label {
-      font-size: var(--artdeco-font-size-xs) // 10px - Compact v3.1;
+      font-size: var(--artdeco-font-size-xs); // 10px - Compact v3.1
     }
 
     .artdeco-alert-rule.compact .meta-value {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
     }
 </style>

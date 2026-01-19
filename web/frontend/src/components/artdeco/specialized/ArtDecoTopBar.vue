@@ -122,7 +122,7 @@
       align-items: center;
       gap: var(--artdeco-spacing-2);  // 16px
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       letter-spacing: var(--artdeco-tracking-wide);  // 0.05em
     }
 
@@ -162,7 +162,7 @@
       width: 100%;
       padding: 8px 40px 8px 0;
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-primary);
       background: transparent;
       border: none;
@@ -190,7 +190,7 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--artdeco-accent-gold);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       opacity: 0.7;
       transition: opacity var(--artdeco-transition-base);
       pointer-events: none;
@@ -212,7 +212,7 @@
       align-items: center;
       gap: var(--artdeco-spacing-2);  // 16px
       padding: 6px 12px;
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-family: var(--artdeco-font-mono);
       color: var(--artdeco-fg-secondary);
       background: transparent;

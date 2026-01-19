@@ -94,7 +94,7 @@
 // @ts-nocheck
 
 import { ref, computed, watch } from 'vue';
-import type { Strategy, CreateStrategyRequest, UpdateStrategyRequest } from '@/api/types/strategy';
+import type { StrategyVM as Strategy, CreateStrategyRequestVM as CreateStrategyRequest, UpdateStrategyRequestVM as UpdateStrategyRequest } from '@/api/types/extensions';
 
 const props = defineProps<{
   strategy?: Strategy | null;

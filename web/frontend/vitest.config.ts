@@ -43,7 +43,20 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // ESM兼容性保障 - 强制使用dayjs ESM版本
+      'dayjs': 'dayjs/esm/index.js',
+      // 修复dayjs插件导入问题 - Element Plus需要的ESM兼容导入
+      'dayjs/plugin/advancedFormat': 'dayjs/esm/plugin/advancedFormat',
+      'dayjs/plugin/customParseFormat': 'dayjs/esm/plugin/customParseFormat',
+      'dayjs/plugin/localeData': 'dayjs/esm/plugin/localeData',
+      'dayjs/plugin/weekday': 'dayjs/esm/plugin/weekday',
+      'dayjs/plugin/weekOfYear': 'dayjs/esm/plugin/weekOfYear',
+      'dayjs/plugin/weekYear': 'dayjs/esm/plugin/weekYear',
       '@': resolve(__dirname, './src'),
     },
+  },
+  // ESM模块优化配置
+  optimizeDeps: {
+    exclude: ['dayjs'] // 排除dayjs，避免预构建问题
   },
 });

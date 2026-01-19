@@ -2,6 +2,7 @@
 Local Event Bus Implementation
 内存中同步事件分发，适用于单体应用和原型验证
 """
+
 import logging
 from collections import defaultdict
 from typing import Callable, Type, List, Dict
@@ -10,11 +11,12 @@ from src.domain.shared.event_bus import IEventBus
 
 logger = logging.getLogger(__name__)
 
+
 class LocalEventBus(IEventBus):
     """
     进程内同步事件总线
     """
-    
+
     def __init__(self):
         self._handlers: Dict[str, List[Callable]] = defaultdict(list)
 
@@ -22,14 +24,14 @@ class LocalEventBus(IEventBus):
         """发布事件"""
         event_name = event.event_name()
         logger.debug(f"Publishing event: {event_name}")
-        
+
         # 匹配具体的类名处理器
         handlers = list(self._handlers[event_name])
-        
+
         # 也匹配基类处理器 (如果是通用的)
         if event_name != "DomainEvent":
             handlers.extend(self._handlers["DomainEvent"])
-            
+
         for handler in handlers:
             try:
                 handler(event)
@@ -43,7 +45,7 @@ class LocalEventBus(IEventBus):
         self._handlers[event_name].append(handler)
         handler_name = getattr(handler, "__name__", str(handler))
         logger.debug(f"Subscribed {handler_name} to {event_name}")
-        
+
     def clear_handlers(self):
         """清除所有处理器 (主要用于测试)"""
         self._handlers.clear()

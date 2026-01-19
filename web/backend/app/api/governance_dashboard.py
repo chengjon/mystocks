@@ -18,7 +18,7 @@ import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
 from app.core.responses import (
@@ -407,7 +407,10 @@ async def get_assets_catalog(
         UnifiedResponse: 数据资产目录
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
-    logger.info(f"Fetching assets catalog: page={page}, page_size={page_size}, type={asset_type}", extra={"request_id": request_id})
+    logger.info(
+        f"Fetching assets catalog: page={page}, page_size={page_size}, type={asset_type}",
+        extra={"request_id": request_id},
+    )
 
     try:
         conn = await get_postgres_connection()
@@ -524,9 +527,7 @@ async def get_compliance_metrics(
 
         try:
             # 查询已配置数据源数
-            total_data_sources = await conn.fetchval(
-                "SELECT COUNT(DISTINCT endpoint_name) FROM data_source_versions"
-            )
+            total_data_sources = await conn.fetchval("SELECT COUNT(DISTINCT endpoint_name) FROM data_source_versions")
 
             # 查询配置版本总数
             total_config_versions = await conn.fetchval("SELECT COUNT(*) FROM data_source_versions")
@@ -535,9 +536,7 @@ async def get_compliance_metrics(
             total_audit_logs = await conn.fetchval("SELECT COUNT(*) FROM data_source_audit_log")
 
             # 查询活跃操作用户数
-            active_users = await conn.fetchval(
-                "SELECT COUNT(DISTINCT actor) FROM data_source_audit_log"
-            )
+            active_users = await conn.fetchval("SELECT COUNT(DISTINCT actor) FROM data_source_audit_log")
 
             # 查询最近配置变更
             recent_changes_rows = await conn.fetch(
@@ -626,7 +625,6 @@ async def get_dashboard_summary(http_request: Request):
 
     try:
         # 并行获取所有数据
-        import asyncio
 
         async def fetch_all_data():
             # 获取数据质量总览

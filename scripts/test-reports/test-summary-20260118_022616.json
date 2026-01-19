@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-01-18T02:26:16+08:00",
+  "summary": {
+    "total_tests": 0,
+    "passed_tests": 0,
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "error_tests": 0,
+    "success_rate": 0,
+    "coverage_percent": 0,
+    "performance_score": 0
+  },
+  "status": "failure",
+  "quality_score": 0,
+  "recommendations": [
+    "提高测试成功率，修复失败的测试用例",
+    "增加测试覆盖率，补充缺失的测试",
+    "优化性能表现，检查性能瓶颈"
+  ]
+}

@@ -11,25 +11,12 @@ Signal Engine - 信号引擎
 日期: 2026-01-14
 """
 
-import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Callable, Union
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-import json
 
-from web.backend.app.core.event_bus import (
-    EventBus,
-    get_event_bus,
-    subscribe_event,
-    Event,
-)
-from web.backend.app.services.indicators.gpu_adapter import (
-    IndicatorConfig,
-    IndicatorResult,
-)
-from web.backend.app.services.indicators.gpu_adapter import GPUIndicatorFactory
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +71,7 @@ class TradingSignal:
             "stop_loss": self.stop_loss,
             "take_profit": self.take_profit,
             "risk_reward_ratio": self.risk_reward_ratio,
-            "validity_period": self.validity_period.isoformat()
-            if self.validity_period
-            else None,
+            "validity_period": self.validity_period.isoformat() if self.validity_period else None,
         }
 
     @classmethod
@@ -105,9 +90,7 @@ class TradingSignal:
             stop_loss=data.get("stop_loss"),
             take_profit=data.get("take_profit"),
             risk_reward_ratio=data.get("risk_reward_ratio"),
-            validity_period=datetime.fromisoformat(data["validity_period"])
-            if data.get("validity_period")
-            else None,
+            validity_period=datetime.fromisoformat(data["validity_period"]) if data.get("validity_period") else None,
         )
 
 
@@ -147,9 +130,7 @@ class SignalStrategy:
         """
         raise NotImplementedError("Subclasses must implement evaluate method")
 
-    def calculate_stop_loss(
-        self, entry_price: float, atr_value: Optional[float] = None
-    ) -> float:
+    def calculate_stop_loss(self, entry_price: float, atr_value: Optional[float] = None) -> float:
         """计算止损价"""
         if atr_value:
             # 使用ATR计算止损
@@ -218,9 +199,7 @@ class RSIStrategy(SignalStrategy):
                 symbol=symbol,
                 signal_type=SignalType.SELL,
                 strength=SignalStrength.MODERATE,
-                confidence=min(
-                    0.8, (current_rsi - overbought_level) / (100 - overbought_level)
-                ),
+                confidence=min(0.8, (current_rsi - overbought_level) / (100 - overbought_level)),
                 price=current_price,
                 indicators={"rsi": current_rsi},
                 reason=f"RSI超买回落: {current_rsi:.1f}",
@@ -236,9 +215,7 @@ class MACDStrategy(SignalStrategy):
     """MACD策略"""
 
     def __init__(self, parameters: Dict[str, Any]):
-        super().__init__(
-            name="macd_strategy", indicators=["macd"], parameters=parameters
-        )
+        super().__init__(name="macd_strategy", indicators=["macd"], parameters=parameters)
 
     def evaluate(
         self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
@@ -307,21 +284,14 @@ class BollingerBandsStrategy(SignalStrategy):
     """布林带策略"""
 
     def __init__(self, parameters: Dict[str, Any]):
-        super().__init__(
-            name="bbands_strategy", indicators=["bbands"], parameters=parameters
-        )
+        super().__init__(name="bbands_strategy", indicators=["bbands"], parameters=parameters)
 
     def evaluate(
         self, symbol: str, indicator_data: Dict[str, Any], market_data: Dict[str, Any]
     ) -> Optional[TradingSignal]:
         """基于布林带评估信号"""
         bb_data = indicator_data.get("bbands", {})
-        if (
-            not bb_data
-            or "upper" not in bb_data
-            or "lower" not in bb_data
-            or "middle" not in bb_data
-        ):
+        if not bb_data or "upper" not in bb_data or "lower" not in bb_data or "middle" not in bb_data:
             return None
 
         upper = bb_data["upper"]
@@ -332,11 +302,7 @@ class BollingerBandsStrategy(SignalStrategy):
             return None
 
         current_price = market_data.get("close", [0])[-1]
-        prev_price = (
-            market_data.get("close", [0])[-2]
-            if len(market_data.get("close", [])) > 1
-            else current_price
-        )
+        prev_price = market_data.get("close", [0])[-2] if len(market_data.get("close", [])) > 1 else current_price
 
         # 检查价格突破布林带
         if prev_price <= upper[-2] and current_price > upper[-1]:

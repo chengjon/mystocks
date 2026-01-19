@@ -362,9 +362,9 @@ def test_backtest_real_functionality(real_data_tester):
 def test_data_routing_real_correctness(real_data_tester):
     """测试数据路由真实正确性"""
     result = real_data_tester.test_data_routing_correctness()
-    assert result["success"], (
-        f"数据路由不正确: {len([t for t in result['data']['routing_tests'] if t['status'] != 'success'])} 个端点失败"
-    )
+    assert result[
+        "success"
+    ], f"数据路由不正确: {len([t for t in result['data']['routing_tests'] if t['status'] != 'success'])} 个端点失败"
 
 
 # 命令行运行函数

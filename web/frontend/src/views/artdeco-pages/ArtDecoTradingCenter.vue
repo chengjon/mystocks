@@ -301,7 +301,7 @@
     // 当前组件属性
     const currentComponentProps = computed(() => ({
         functionKey: activeFunction.value,
-        userPermissions: authStore.permissions,
+        userPermissions: authStore.user?.permissions || [],
         systemConfig: tradingStore.systemConfig
     }))
 

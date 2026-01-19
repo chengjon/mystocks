@@ -17,9 +17,9 @@ sys.path.insert(0, project_root)
 
 def test_market_data_context_imports():
     """测试市场数据上下文导入"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试1: Market Data Context模块导入")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -28,7 +28,10 @@ def test_market_data_context_imports():
         ("Bar value object", "from src.domain.market_data.value_objects.bar import Bar"),
         ("Tick value object", "from src.domain.market_data.value_objects.tick import Tick"),
         ("Quote value object", "from src.domain.market_data.value_objects.quote import Quote"),
-        ("IMarketDataRepository interface", "from src.domain.market_data.repository.imarket_data_repository import IMarketDataRepository"),
+        (
+            "IMarketDataRepository interface",
+            "from src.domain.market_data.repository.imarket_data_repository import IMarketDataRepository",
+        ),
     ]
 
     for test_name, import_statement in tests:
@@ -46,9 +49,9 @@ def test_market_data_context_imports():
 
 def test_bar_value_object():
     """测试Bar值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试2: Bar值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -115,6 +118,7 @@ def test_bar_value_object():
     except Exception as e:
         print(f"❌ Bar测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -124,9 +128,9 @@ def test_bar_value_object():
 
 def test_bar_validation():
     """测试Bar验证逻辑"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试3: Bar验证逻辑")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -186,6 +190,7 @@ def test_bar_validation():
     except Exception as e:
         print(f"❌ Bar验证测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -195,9 +200,9 @@ def test_bar_validation():
 
 def test_tick_value_object():
     """测试Tick值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试4: Tick值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -250,6 +255,7 @@ def test_tick_value_object():
     except Exception as e:
         print(f"❌ Tick测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -259,9 +265,9 @@ def test_tick_value_object():
 
 def test_tick_validation():
     """测试Tick验证逻辑"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试5: Tick验证逻辑")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -318,6 +324,7 @@ def test_tick_validation():
     except Exception as e:
         print(f"❌ Tick验证测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -327,9 +334,9 @@ def test_tick_validation():
 
 def test_quote_value_object():
     """测试Quote值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试6: Quote值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -390,6 +397,7 @@ def test_quote_value_object():
     except Exception as e:
         print(f"❌ Quote测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -399,9 +407,9 @@ def test_quote_value_object():
 
 def test_quote_validation():
     """测试Quote验证逻辑"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试7: Quote验证逻辑")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -451,6 +459,7 @@ def test_quote_validation():
     except Exception as e:
         print(f"❌ Quote验证测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -460,9 +469,9 @@ def test_quote_validation():
 
 def test_repository_interface():
     """测试仓储接口定义"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试8: IMarketDataRepository仓储接口")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -471,9 +480,7 @@ def test_repository_interface():
         from src.domain.market_data.repository.imarket_data_repository import IMarketDataRepository
 
         # 检查K线数据方法
-        bar_methods = [
-            "get_bars", "get_latest_bar", "save_bars", "has_bars"
-        ]
+        bar_methods = ["get_bars", "get_latest_bar", "save_bars", "has_bars"]
 
         for method in bar_methods:
             if hasattr(IMarketDataRepository, method):
@@ -484,9 +491,7 @@ def test_repository_interface():
                 failed += 1
 
         # 检查分笔数据方法
-        tick_methods = [
-            "get_ticks", "save_ticks", "has_ticks"
-        ]
+        tick_methods = ["get_ticks", "save_ticks", "has_ticks"]
 
         for method in tick_methods:
             if hasattr(IMarketDataRepository, method):
@@ -497,9 +502,7 @@ def test_repository_interface():
                 failed += 1
 
         # 检查实时报价方法
-        quote_methods = [
-            "get_quote", "get_quotes", "save_quote"
-        ]
+        quote_methods = ["get_quote", "get_quotes", "save_quote"]
 
         for method in quote_methods:
             if hasattr(IMarketDataRepository, method):
@@ -519,9 +522,9 @@ def test_repository_interface():
 
 def main():
     """主测试函数"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  Phase 6验证测试: Market Data Context")
-    print("="*60)
+    print("=" * 60)
     print(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     total_passed = 0
@@ -561,9 +564,9 @@ def main():
     total_failed += f
 
     # 总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试总结")
-    print("="*60)
+    print("=" * 60)
     print(f"总通过: {total_passed}")
     print(f"总失败: {total_failed}")
     print(f"成功率: {total_passed/(total_passed+total_failed)*100:.1f}%")

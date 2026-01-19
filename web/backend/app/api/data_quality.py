@@ -8,8 +8,9 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 
+from app.core.exceptions import NotFoundException
 from app.core.responses import create_error_response, create_success_response
 from app.services.data_quality_monitor import get_data_quality_monitor, monitor_data_quality
 from app.services.data_source_factory import get_data_source_factory
@@ -78,7 +79,7 @@ async def get_data_quality_metrics(source: Optional[str] = Query(None, descripti
             # 获取特定数据源的指标
             source_metrics = monitor.get_source_metrics(source)
             if not source_metrics:
-                raise HTTPException(status_code=404, detail=f"Data source '{source}' not found")
+                raise NotFoundException(resource="数据源", identifier=source)
 
             quality_score = source_metrics.get_overall_quality_score()
             active_alerts = source_metrics.get_active_alerts()
@@ -142,7 +143,7 @@ async def get_data_quality_metrics(source: Optional[str] = Query(None, descripti
                 data=all_metrics_data, message="All data quality metrics retrieved successfully"
             )
 
-    except HTTPException:
+    except NotFoundException:
         raise
     except Exception as e:
         logger.error(f"Failed to get data quality metrics: {str(e)}")
@@ -220,11 +221,11 @@ async def acknowledge_alert(alert_id: str):
                 break
 
         if not acknowledged:
-            raise HTTPException(status_code=404, detail=f"Alert '{alert_id}' not found")
+            raise NotFoundException(resource="告警", identifier=alert_id)
 
         return create_success_response(message=f"Alert '{alert_id}' acknowledged successfully")
 
-    except HTTPException:
+    except NotFoundException:
         raise
     except Exception as e:
         logger.error(f"Failed to acknowledge alert: {str(e)}")
@@ -247,11 +248,11 @@ async def resolve_alert(alert_id: str):
                 break
 
         if not resolved:
-            raise HTTPException(status_code=404, detail=f"Alert '{alert_id}' not found")
+            raise NotFoundException(resource="告警", identifier=alert_id)
 
         return create_success_response(message=f"Alert '{alert_id}' resolved successfully")
 
-    except HTTPException:
+    except NotFoundException:
         raise
     except Exception as e:
         logger.error(f"Failed to resolve alert: {str(e)}")
@@ -416,7 +417,7 @@ async def get_quality_trends(
         source_metrics = monitor.get_source_metrics(source)
 
         if not source_metrics:
-            raise HTTPException(status_code=404, detail=f"Data source '{source}' not found")
+            raise NotFoundException(resource="数据源", identifier=source)
 
         # 获取评估历史
         evaluation_history = monitor.evaluation_history.get(source, [])
@@ -475,7 +476,7 @@ async def get_quality_trends(
 
         return create_success_response(data=trend_data, message=f"Quality trends for '{source}' retrieved successfully")
 
-    except HTTPException:
+    except NotFoundException:
         raise
     except Exception as e:
         logger.error(f"Failed to get quality trends: {str(e)}")

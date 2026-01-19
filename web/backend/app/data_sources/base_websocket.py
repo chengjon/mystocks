@@ -240,13 +240,9 @@ class BaseWebSocketAdapter(ABC):
                     continue
 
                 # 检查最后心跳时间
-                time_since_heartbeat = (
-                    datetime.now() - self.last_heartbeat
-                ).total_seconds()
+                time_since_heartbeat = (datetime.now() - self.last_heartbeat).total_seconds()
                 if time_since_heartbeat > self.config.heartbeat_interval * 2:
-                    logger.warning(
-                        f"No heartbeat received for {time_since_heartbeat:.1f}s, attempting reconnect"
-                    )
+                    logger.warning(f"No heartbeat received for {time_since_heartbeat:.1f}s, attempting reconnect")
                     await self._reconnect()
 
             except asyncio.CancelledError:
@@ -265,9 +261,7 @@ class BaseWebSocketAdapter(ABC):
         """执行重连"""
         for attempt in range(self.config.reconnect_attempts):
             try:
-                logger.info(
-                    f"Reconnection attempt {attempt + 1}/{self.config.reconnect_attempts}"
-                )
+                logger.info(f"Reconnection attempt {attempt + 1}/{self.config.reconnect_attempts}")
 
                 # 断开现有连接
                 if self.is_connected():

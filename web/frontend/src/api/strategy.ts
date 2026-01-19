@@ -9,7 +9,7 @@ import { StrategyAdapter } from '@/utils/strategy-adapters'
 import type {
   BacktestRequest,
   BacktestResponse
-} from '@/api/types/common'
+} from '@/api/types/strategy'
 import type {
   StrategyListItemVM,
   StrategyConfigVM,

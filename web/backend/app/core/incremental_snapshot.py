@@ -3,7 +3,6 @@
 集成测试使用增量数据而非全量导入，提升测试效率和稳定性
 """
 
-import os
 import hashlib
 import pickle
 from typing import Dict, List, Optional, Any, Set
@@ -15,13 +14,9 @@ from prometheus_client import Counter, Gauge, Histogram
 
 # ==================== 监控指标 ====================
 
-SNAPSHOT_OPERATION_COUNT = Counter(
-    "snapshot_operations_total", "快照操作计数", ["operation_type", "result"]
-)
+SNAPSHOT_OPERATION_COUNT = Counter("snapshot_operations_total", "快照操作计数", ["operation_type", "result"])
 
-SNAPSHOT_SIZE_BYTES = Gauge(
-    "snapshot_size_bytes", "快照文件大小(字节)", ["snapshot_type"]
-)
+SNAPSHOT_SIZE_BYTES = Gauge("snapshot_size_bytes", "快照文件大小(字节)", ["snapshot_type"])
 
 SNAPSHOT_OPERATION_TIME = Histogram(
     "snapshot_operation_duration_seconds",
@@ -30,9 +25,7 @@ SNAPSHOT_OPERATION_TIME = Histogram(
     buckets=[0.1, 0.5, 1, 5, 10, 30],
 )
 
-INCREMENTAL_UPDATE_COUNT = Counter(
-    "incremental_updates_total", "增量更新计数", ["data_type"]
-)
+INCREMENTAL_UPDATE_COUNT = Counter("incremental_updates_total", "增量更新计数", ["data_type"])
 
 # ==================== 数据结构 ====================
 
@@ -78,9 +71,7 @@ class IncrementalDataManager:
         # 已处理的记录ID集合（用于增量更新）
         self.processed_ids: Dict[str, Set[str]] = {}
 
-    def create_base_snapshot(
-        self, snapshot_type: str, data: Any, version: str = "1.0.0"
-    ) -> bool:
+    def create_base_snapshot(self, snapshot_type: str, data: Any, version: str = "1.0.0") -> bool:
         """创建基础快照"""
         start_time = datetime.now()
 
@@ -111,12 +102,8 @@ class IncrementalDataManager:
             self.processed_ids[snapshot_type] = self._extract_ids(data)
 
             # 更新监控指标
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="create_base", result="success"
-            ).inc()
-            SNAPSHOT_SIZE_BYTES.labels(snapshot_type=snapshot_type).set(
-                metadata.size_bytes
-            )
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="create_base", result="success").inc()
+            SNAPSHOT_SIZE_BYTES.labels(snapshot_type=snapshot_type).set(metadata.size_bytes)
             SNAPSHOT_OPERATION_TIME.labels(operation_type="create_base").observe(
                 (datetime.now() - start_time).total_seconds()
             )
@@ -124,9 +111,7 @@ class IncrementalDataManager:
             return True
 
         except Exception as e:
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="create_base", result="error"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="create_base", result="error").inc()
             print(f"Failed to create base snapshot for {snapshot_type}: {e}")
             return False
 
@@ -151,9 +136,7 @@ class IncrementalDataManager:
             updated_records = []
             new_ids_set = set(new_ids)
 
-            if isinstance(new_data, pd.DataFrame) and isinstance(
-                existing_data, pd.DataFrame
-            ):
+            if isinstance(new_data, pd.DataFrame) and isinstance(existing_data, pd.DataFrame):
                 # DataFrame增量更新
                 existing_ids_set = set(existing_ids)
 
@@ -161,23 +144,13 @@ class IncrementalDataManager:
                 new_mask = ~new_ids_set.issubset(existing_ids_set)
                 if new_mask:
                     new_records_df = new_data[~new_data.index.isin(existing_ids)]
-                    new_records = (
-                        new_records_df.to_dict("records")
-                        if not new_records_df.empty
-                        else []
-                    )
+                    new_records = new_records_df.to_dict("records") if not new_records_df.empty else []
 
                 # 更新的记录（暂时简化处理，实际可根据时间戳判断）
-                updated_records = new_data[new_data.index.isin(existing_ids)].to_dict(
-                    "records"
-                )
+                updated_records = new_data[new_data.index.isin(existing_ids)].to_dict("records")
 
                 # 合并数据
-                updated_data = (
-                    pd.concat([existing_data, new_records_df])
-                    if not new_records_df.empty
-                    else existing_data
-                )
+                updated_data = pd.concat([existing_data, new_records_df]) if not new_records_df.empty else existing_data
                 # 去重（保留最新的）
                 updated_data = updated_data[~updated_data.index.duplicated(keep="last")]
 
@@ -185,12 +158,8 @@ class IncrementalDataManager:
                 # 简单的数据合并（适用于列表或字典）
                 if isinstance(new_data, list) and isinstance(existing_data, list):
                     # 合并列表，保留新数据
-                    updated_data = existing_data + [
-                        item for item in new_data if item not in existing_data
-                    ]
-                    new_records = [
-                        item for item in new_data if item not in existing_data
-                    ]
+                    updated_data = existing_data + [item for item in new_data if item not in existing_data]
+                    new_records = [item for item in new_data if item not in existing_data]
                 else:
                     # 字典更新
                     updated_data = {**existing_data, **new_data}
@@ -212,9 +181,7 @@ class IncrementalDataManager:
                 if isinstance(updated_data, pd.DataFrame):
                     metadata.record_count = len(updated_data)
                 elif isinstance(updated_data, (list, dict)):
-                    metadata.record_count = (
-                        len(updated_data) if hasattr(updated_data, "__len__") else 1
-                    )
+                    metadata.record_count = len(updated_data) if hasattr(updated_data, "__len__") else 1
 
                 # 保存更新后的快照
                 snapshot_path = self.base_dir / f"{snapshot_type}_incremental.pkl"
@@ -229,15 +196,11 @@ class IncrementalDataManager:
                     )
 
                 metadata.size_bytes = snapshot_path.stat().st_size
-                SNAPSHOT_SIZE_BYTES.labels(snapshot_type=snapshot_type).set(
-                    metadata.size_bytes
-                )
+                SNAPSHOT_SIZE_BYTES.labels(snapshot_type=snapshot_type).set(metadata.size_bytes)
 
             # 更新监控指标
             INCREMENTAL_UPDATE_COUNT.labels(data_type=snapshot_type).inc()
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="incremental_update", result="success"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="incremental_update", result="success").inc()
             SNAPSHOT_OPERATION_TIME.labels(operation_type="incremental_update").observe(
                 (datetime.now() - start_time).total_seconds()
             )
@@ -246,15 +209,11 @@ class IncrementalDataManager:
                 "success": True,
                 "new_records_count": len(new_records),
                 "updated_records_count": len(updated_records),
-                "total_records": metadata.record_count
-                if snapshot_type in self.metadata
-                else 0,
+                "total_records": metadata.record_count if snapshot_type in self.metadata else 0,
             }
 
         except Exception as e:
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="incremental_update", result="error"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="incremental_update", result="error").inc()
             print(f"Failed to update snapshot incrementally for {snapshot_type}: {e}")
             return {"success": False, "error": str(e)}
 
@@ -279,9 +238,7 @@ class IncrementalDataManager:
             # 重新构建已处理ID集合
             self.processed_ids[snapshot_type] = self._extract_ids(snapshot_data["data"])
 
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="load", result="success"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="load", result="success").inc()
             return True
 
         except Exception as e:
@@ -333,14 +290,10 @@ class IncrementalDataManager:
                     snapshot_file.unlink()
                     cleaned_count += 1
 
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="cleanup", result="success"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="cleanup", result="success").inc()
 
         except Exception as e:
-            SNAPSHOT_OPERATION_COUNT.labels(
-                operation_type="cleanup", result="error"
-            ).inc()
+            SNAPSHOT_OPERATION_COUNT.labels(operation_type="cleanup", result="error").inc()
             print(f"Failed to cleanup old snapshots: {e}")
 
         return cleaned_count

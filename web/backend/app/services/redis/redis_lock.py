@@ -50,7 +50,7 @@ class RedisLockService:
         resource: str,
         timeout: Optional[int] = None,
         blocking: bool = True,
-        blocking_timeout: Optional[int] = None
+        blocking_timeout: Optional[int] = None,
     ) -> Optional[str]:
         """
         获取锁
@@ -73,12 +73,7 @@ class RedisLockService:
         while True:
             try:
                 # SETNX + EXPIRE (原子操作)
-                acquired = self.redis.set(
-                    lock_key,
-                    token,
-                    nx=True,  # 仅当键不存在时设置
-                    ex=timeout  # 自动过期时间
-                )
+                acquired = self.redis.set(lock_key, token, nx=True, ex=timeout)  # 仅当键不存在时设置  # 自动过期时间
 
                 if acquired:
                     logger.debug(f"Lock acquired: {resource} (token: {token[:8]}...)")
@@ -184,7 +179,7 @@ class RedisLockService:
         resource: str,
         timeout: Optional[int] = None,
         blocking: bool = True,
-        blocking_timeout: Optional[int] = None
+        blocking_timeout: Optional[int] = None,
     ):
         """
         锁上下文管理器
@@ -246,11 +241,7 @@ class RedisLockService:
             token = self.redis.get(lock_key)
             if token:
                 ttl = self.redis.ttl(lock_key)
-                return {
-                    'resource': resource,
-                    'token': token,
-                    'remaining_ttl': ttl
-                }
+                return {"resource": resource, "token": token, "remaining_ttl": ttl}
         except Exception as e:
             logger.error(f"Failed to get lock info {resource}: {e}")
         return None
@@ -258,12 +249,7 @@ class RedisLockService:
     # ========== 预定义锁场景 ==========
 
     @contextmanager
-    def indicator_calculation_lock(
-        self,
-        stock_code: str,
-        indicator_code: str,
-        params: Optional[Dict] = None
-    ):
+    def indicator_calculation_lock(self, stock_code: str, indicator_code: str, params: Optional[Dict] = None):
         """
         指标计算锁 (防止重复计算)
 

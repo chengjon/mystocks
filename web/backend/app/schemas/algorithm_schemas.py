@@ -13,7 +13,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from enum import Enum
-from pydantic import BaseModel, Field, validator, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 # ==================== 枚举定义 ====================
