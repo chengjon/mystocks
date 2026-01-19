@@ -5,12 +5,13 @@
 from datetime import timedelta
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.config import settings
 from app.core.responses import create_success_response
+from app.core.exceptions import UnauthorizedException, ForbiddenException
 from app.core.security import (
     User,
     authenticate_user,
@@ -102,46 +103,26 @@ async def get_current_user(
     验证 JWT token 并返回授权用户信息
     """
     if not credentials:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException(detail="Missing authentication credentials")
 
     try:
         # 验证 JWT token
         token_data = verify_token(credentials.credentials)
         if token_data is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid or expired token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise UnauthorizedException(detail="Invalid or expired token")
 
         username: str = token_data.username
         if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token claims",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise UnauthorizedException(detail="Invalid token claims")
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid credentials: {str(e)}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException(detail=f"Invalid credentials: {str(e)}")
 
     # 从安全模块获取用户信息（数据库或模拟数据）
     from app.core.security import authenticate_user_by_id
 
     user_in_db = authenticate_user_by_id(token_data.user_id)
     if user_in_db is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException(detail="User not found")
 
     user = User(
         id=user_in_db.id,
@@ -161,11 +142,7 @@ async def get_current_active_user(
     检查用户是否处于活跃状态
     """
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User account is inactive",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException(detail="User account is inactive")
     return current_user
 
 
@@ -181,11 +158,7 @@ async def login_for_access_token(
     # 验证用户身份
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户名或密码错误",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException(detail="用户名或密码错误")
 
     # 创建访问令牌
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
@@ -254,7 +227,7 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
     从PostgreSQL数据库获取所有活跃用户
     """
     if not check_permission(current_user.role, "admin"):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="权限不足")
+        raise ForbiddenException(detail="权限不足")
 
     try:
         from app.core.database import get_postgresql_session
@@ -285,15 +258,13 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
 
     except (DatabaseConnectionError, DatabaseOperationError) as e:
         # 数据库查询失败时返回错误响应
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Failed to retrieve users: {str(e)}",
-        )
+        raise ForbiddenException(detail="权限不足")
     except Exception as e:
         # 捕获其他异常
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error retrieving users: {str(e)}",
+        from app.core.exceptions import BusinessException
+
+        raise BusinessException(
+            detail=f"Error retrieving users: {str(e)}", status_code=500, error_code="USER_RETRIEVAL_FAILED"
         )
 
 
@@ -477,36 +448,39 @@ async def register_user(user_data: UserRegisterRequest):
 
     except DataValidationError as e:
         # Validation errors (invalid input format)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=e.message,
-        )
+        from app.core.exceptions import ValidationException
+
+        raise ValidationException(detail=e.message)
 
     except DatabaseOperationError as e:
         # Database operation errors (duplicate username/email)
         if e.code in ["USERNAME_EXISTS", "EMAIL_EXISTS"]:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=e.message,
-            )
+            from app.core.exceptions import BusinessException
+
+            raise BusinessException(detail=e.message, status_code=409, error_code="USER_ALREADY_EXISTS")
         else:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=e.message,
-            )
+            from app.core.exceptions import BusinessException
+
+            raise BusinessException(detail=e.message, status_code=500, error_code="DATABASE_OPERATION_FAILED")
 
     except (DatabaseConnectionError, DatabaseOperationError) as e:
         # Database connection errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        from app.core.exceptions import BusinessException
+
+        raise BusinessException(
             detail=f"Registration failed: {e.message if hasattr(e, 'message') else str(e)}",
+            status_code=500,
+            error_code="REGISTRATION_FAILED",
         )
 
     except Exception as e:
         # Unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        from app.core.exceptions import BusinessException
+
+        raise BusinessException(
             detail=f"Unexpected error during registration: {str(e)}",
+            status_code=500,
+            error_code="REGISTRATION_UNEXPECTED_ERROR",
         )
 
     finally:
@@ -651,9 +625,10 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
         # Verify reset token
         token_data = verify_token(reset_data.token)
         if not token_data:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid or expired reset token",
+            from app.core.exceptions import BusinessException
+
+            raise BusinessException(
+                detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN"
             )
 
         # Check if token is for password reset
@@ -664,23 +639,24 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             try:
                 payload = jwt.decode(reset_data.token, settings.secret_key, algorithms=[settings.algorithm])
                 if payload.get("purpose") != "password_reset":
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="Invalid token purpose",
+                    from app.core.exceptions import BusinessException
+
+                    raise BusinessException(
+                        detail="Invalid token purpose", status_code=400, error_code="INVALID_TOKEN_PURPOSE"
                     )
             except Exception:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Invalid or expired reset token",
+                from app.core.exceptions import BusinessException
+
+                raise BusinessException(
+                    detail="Invalid or expired reset token", status_code=400, error_code="INVALID_RESET_TOKEN"
                 )
 
         # Get user from token
         user_id = token_data.user_id
         if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid token payload",
-            )
+            from app.core.exceptions import BusinessException
+
+            raise BusinessException(detail="Invalid token payload", status_code=400, error_code="INVALID_TOKEN_PAYLOAD")
 
         # Update password in database
         session = get_postgresql_session()
@@ -719,16 +695,17 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             message="Password reset successfully",
         )
 
-    except HTTPException:
-        # Re-raise HTTP exceptions
+    except (UnauthorizedException, ForbiddenException, BusinessException):
+        # Re-raise custom exceptions
         raise
 
     except Exception as e:
         if session:
             session.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to reset password: {str(e)}",
+        from app.core.exceptions import BusinessException
+
+        raise BusinessException(
+            detail=f"Failed to reset password: {str(e)}", status_code=500, error_code="PASSWORD_RESET_FAILED"
         )
 
     finally:

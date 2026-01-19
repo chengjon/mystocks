@@ -37,12 +37,12 @@ storage:
       queue_depth: 1000
 
 # Metrics generator for service graphs and RED metrics
+# 注意: bucket_count 字段在较新版本的 Tempo 中已被移除
 metrics_generator:
   processor:
     service_graphs:
       max_items: 10000
       wait: 10s
-      bucket_count: 10
       histogram_buckets: [0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8]
     span_metrics:
       histogram_buckets: [0.002, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]

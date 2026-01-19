@@ -6,13 +6,13 @@ from sqlalchemy.exc import SQLAlchemyError
 import structlog
 
 # Import existing core components
-from app.core.error_codes import ErrorCode, get_http_status, get_error_message, is_client_error
+from app.core.error_codes import ErrorCode
 from app.core.exception_handler import (
-    global_exception_handler, http_exception_handler,
-    validation_exception_handler, database_exception_handler,
-    ExceptionHandlerConfig # Import the config to apply production/dev settings
+    global_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+    database_exception_handler,  # Import the config to apply production/dev settings
 )
-from app.schemas.common_schemas import CommonError # For direct error response body
 
 # Initialize logger
 logger = structlog.get_logger(__name__)
@@ -20,7 +20,7 @@ logger = structlog.get_logger(__name__)
 # Configure exception handler (production vs development)
 # For this new API, we will use the existing config from app.core.exception_handler
 # Set ENVIRONMENT variable to "production" or "development"
-os.environ["ENVIRONMENT"] = "development" # For demonstration purposes, assume development
+os.environ["ENVIRONMENT"] = "development"  # For demonstration purposes, assume development
 
 app = FastAPI(
     title="MyStocks Quant Algorithms API",
@@ -33,7 +33,9 @@ app = FastAPI(
 app.add_exception_handler(Exception, global_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(ValidationError, validation_exception_handler) # Pydantic ValidationError not caught by RequestValidationError
+app.add_exception_handler(
+    ValidationError, validation_exception_handler
+)  # Pydantic ValidationError not caught by RequestValidationError
 app.add_exception_handler(SQLAlchemyError, database_exception_handler)
 
 # --- Placeholder for Middleware (e.g., CORS, Rate Limiting) ---
@@ -43,6 +45,7 @@ app.add_exception_handler(SQLAlchemyError, database_exception_handler)
 # from routers import classification, management # Example imports
 # app.include_router(classification.router, prefix="/api/v1")
 # app.include_router(management.router, prefix="/api/v1")
+
 
 @app.get("/api/v1/health", summary="Health check endpoint", tags=["System"])
 async def health_check():
@@ -56,16 +59,18 @@ async def health_check():
             "code": ErrorCode.SUCCESS.value,
             "message": "API service is healthy",
             "data": None,
-            "request_id": getattr(app.state, "request_id", "unknown"), # request_id will be set by a middleware
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }
+            "request_id": getattr(app.state, "request_id", "unknown"),  # request_id will be set by a middleware
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        },
     )
+
 
 # --- Request ID Middleware (Example) ---
 # In a real project, a middleware would be responsible for setting request_id
 # For now, let's add a simple one here to ensure request_id is always present
 from uuid import uuid4
 from datetime import datetime, timezone
+
 
 @app.middleware("http")
 async def add_request_id_middleware(request: Request, call_next):
@@ -76,5 +81,6 @@ async def add_request_id_middleware(request: Request, call_next):
     response.headers["X-Request-ID"] = request.state.request_id
     response.headers["X-Process-Time"] = str(process_time)
     return response
+
 
 import time

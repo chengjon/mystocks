@@ -32,7 +32,7 @@
         subtitle?: string
         hoverable?: boolean
         clickable?: boolean
-        variant?: 'default' | 'stat' | 'bordered' | 'chart' | 'form'
+        variant?: 'default' | 'stat' | 'bordered' | 'chart' | 'form' | 'elevated'
         aspectRatio?: string
     }
 
@@ -237,5 +237,11 @@
         .artdeco-card__header {
             margin-bottom: var(--artdeco-spacing-3);
         }
+    }
+
+    .artdeco-card--elevated {
+        box-shadow: var(--artdeco-shadow-md);
+        border-color: rgba(212, 175, 55, 0.3);
+        background: var(--artdeco-bg-surface);
     }
 </style>

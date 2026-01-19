@@ -6,10 +6,11 @@
 import re
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, Path
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.auth import User, get_current_user
+from app.core.exceptions import BusinessException, NotFoundException
 from app.services.data_source_factory import DataSourceFactory
 from app.services.watchlist_service import WatchlistError, get_watchlist_service
 
@@ -56,7 +57,7 @@ class AddWatchlistRequest(BaseModel):
             return v
         valid_exchanges = ["NYSE", "NASDAQ", "AMEX", "SSE", "SZSE", "HKEX", "NSE", "BSE"]
         if v.upper() not in valid_exchanges:
-            raise ValueError(f'交易所代码无效，支持的交易所: {", ".join(valid_exchanges)}')
+            raise ValueError(f"交易所代码无效，支持的交易所: {', '.join(valid_exchanges)}")
         return v.upper()
 
     @field_validator("group_name")
@@ -168,14 +169,20 @@ async def get_my_watchlist(
         result = await watchlist_adapter.get_data("list", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股列表失败"))
+            raise BusinessException(
+                detail=result.get("error", "获取自选股列表失败"),
+                status_code=500,
+                error_code="WATCHLIST_RETRIEVAL_FAILED",
+            )
 
         return result.get("data", [])
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取自选股列表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取自选股列表失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/symbols", response_model=List[str])
@@ -195,14 +202,20 @@ async def get_my_watchlist_symbols(
         result = await watchlist_adapter.get_data("symbols", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股代码列表失败"))
+            raise BusinessException(
+                detail=result.get("error", "获取自选股代码列表失败"),
+                status_code=500,
+                error_code="WATCHLIST_SYMBOLS_RETRIEVAL_FAILED",
+            )
 
         return result.get("data", [])
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取自选股代码列表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取自选股代码列表失败: {str(e)}", status_code=500, error_code="WATCHLIST_SYMBOLS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/add")
@@ -232,7 +245,9 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
         result = await watchlist_adapter.get_data("add", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "添加自选股失败"))
+            raise BusinessException(
+                detail=result.get("error", "添加自选股失败"), status_code=500, error_code="STOCK_ADDITION_FAILED"
+            )
 
         return {
             "success": True,
@@ -241,10 +256,10 @@ async def add_to_watchlist(request: AddWatchlistRequest, current_user: User = De
             "group_name": request.group_name if request.group_name else "默认分组",
         }
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"添加自选股失败: {str(e)}")
+        raise BusinessException(detail=f"添加自选股失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
 @router.delete("/remove/{symbol}")
@@ -265,13 +280,13 @@ async def remove_from_watchlist(
         result = await watchlist_adapter.get_data("remove", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=404, detail=result.get("error", "自选股不存在或删除失败"))
+            raise NotFoundException(resource="自选股", identifier="查询条件")
 
         return {"success": True, "message": "已从自选股移除", "symbol": symbol}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除自选股失败: {str(e)}")
+        raise BusinessException(detail=f"删除自选股失败: {str(e)}", status_code=500, error_code="STOCK_DELETION_FAILED")
 
 
 @router.get("/check/{symbol}")
@@ -292,13 +307,15 @@ async def check_in_watchlist(
         result = await watchlist_adapter.get_data("check", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "检查自选股失败"))
+            raise BusinessException(
+                detail=result.get("error", "检查自选股失败"), status_code=500, error_code="STOCK_CHECK_FAILED"
+            )
 
         return {"symbol": symbol, "is_in_watchlist": result.get("data", {}).get("is_in_watchlist", False)}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"检查自选股失败: {str(e)}")
+        raise BusinessException(detail=f"检查自选股失败: {str(e)}", status_code=500, error_code="STOCK_CHECK_FAILED")
 
 
 @router.put("/notes/{symbol}")
@@ -320,13 +337,13 @@ async def update_watchlist_notes(
         result = await watchlist_adapter.get_data("update_notes", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=404, detail=result.get("error", "自选股不存在或更新失败"))
+            raise NotFoundException(resource="自选股", identifier="查询条件")
 
         return {"success": True, "message": "备注已更新", "symbol": symbol}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新备注失败: {str(e)}")
+        raise BusinessException(detail=f"更新备注失败: {str(e)}", status_code=500, error_code="NOTE_UPDATE_FAILED")
 
 
 @router.get("/count")
@@ -344,13 +361,19 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
         result = await watchlist_adapter.get_data("count", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "获取自选股数量失败"))
+            raise BusinessException(
+                detail=result.get("error", "获取自选股数量失败"),
+                status_code=500,
+                error_code="WATCHLIST_COUNT_RETRIEVAL_FAILED",
+            )
 
         return {"count": result.get("data", {}).get("count", 0)}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取自选股数量失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取自选股数量失败: {str(e)}", status_code=500, error_code="WATCHLIST_COUNT_RETRIEVAL_FAILED"
+        )
 
 
 @router.delete("/clear")
@@ -368,13 +391,17 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
         result = await watchlist_adapter.get_data("clear", params)
 
         if not result.get("success", False):
-            raise HTTPException(status_code=500, detail=result.get("error", "清空自选股失败"))
+            raise BusinessException(
+                detail=result.get("error", "清空自选股失败"), status_code=500, error_code="WATCHLIST_CLEAR_FAILED"
+            )
 
         return {"success": True, "message": "自选股列表已清空"}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"清空自选股失败: {str(e)}")
+        raise BusinessException(
+            detail=f"清空自选股失败: {str(e)}", status_code=500, error_code="WATCHLIST_CLEAR_FAILED"
+        )
 
 
 # ==================== 分组管理 API ====================
@@ -390,7 +417,9 @@ async def get_user_groups(current_user: User = Depends(get_current_user)) -> Lis
         groups = service.get_user_groups(current_user.id)
         return groups
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取分组列表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取分组列表失败: {str(e)}", status_code=500, error_code="GROUP_LIST_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/groups")
@@ -403,20 +432,20 @@ async def create_group(request: CreateGroupRequest, current_user: User = Depends
         group = service.create_group(current_user.id, request.group_name)
 
         if not group:
-            raise HTTPException(status_code=400, detail="分组创建失败")
+            raise BusinessException(detail="分组创建失败", status_code=400, error_code="GROUP_CREATION_FAILED")
 
         return {
             "success": True,
             "message": f"分组 '{request.group_name}' 创建成功",
             "group": group,
         }
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except WatchlistError as e:
         # 捕获自定义异常并返回具体错误信息
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="VALIDATION_ERROR")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"创建分组失败: {str(e)}")
+        raise BusinessException(detail=f"创建分组失败: {str(e)}", status_code=500, error_code="GROUP_CREATION_FAILED")
 
 
 @router.put("/groups/{group_id}")
@@ -433,17 +462,17 @@ async def update_group(
         success = service.update_group(current_user.id, group_id, request.group_name)
 
         if not success:
-            raise HTTPException(status_code=404, detail="分组不存在或更新失败")
+            raise NotFoundException(resource="分组", identifier="查询条件")
 
         return {
             "success": True,
             "message": f"分组已更新为 '{request.group_name}'",
             "group_id": group_id,
         }
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新分组失败: {str(e)}")
+        raise BusinessException(detail=f"更新分组失败: {str(e)}", status_code=500, error_code="GROUP_UPDATE_FAILED")
 
 
 @router.delete("/groups/{group_id}")
@@ -458,13 +487,13 @@ async def delete_group(
         success = service.delete_group(current_user.id, group_id)
 
         if not success:
-            raise HTTPException(status_code=404, detail="分组不存在或无法删除（默认分组不能删除）")
+            raise NotFoundException(resource="分组", identifier="查询条件（默认分组不能删除）")
 
         return {"success": True, "message": "分组已删除", "group_id": group_id}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除分组失败: {str(e)}")
+        raise BusinessException(detail=f"删除分组失败: {str(e)}", status_code=500, error_code="GROUP_DELETION_FAILED")
 
 
 @router.get("/group/{group_id}")
@@ -479,7 +508,9 @@ async def get_watchlist_by_group(
         watchlist = service.get_watchlist_by_group(current_user.id, group_id)
         return watchlist
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取分组自选股失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取分组自选股失败: {str(e)}", status_code=500, error_code="GROUP_STOCKS_RETRIEVAL_FAILED"
+        )
 
 
 @router.put("/move")
@@ -497,7 +528,7 @@ async def move_stock_to_group(request: MoveStockRequest, current_user: User = De
         )
 
         if not success:
-            raise HTTPException(status_code=404, detail="移动失败，股票或分组不存在")
+            raise NotFoundException(resource="股票或分组", identifier="移动操作")
 
         return {
             "success": True,
@@ -505,10 +536,10 @@ async def move_stock_to_group(request: MoveStockRequest, current_user: User = De
             "symbol": request.symbol,
             "to_group_id": request.to_group_id,
         }
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"移动股票失败: {str(e)}")
+        raise BusinessException(detail=f"移动股票失败: {str(e)}", status_code=500, error_code="STOCK_MOVE_FAILED")
 
 
 @router.get("/with-groups")
@@ -523,4 +554,6 @@ async def get_watchlist_with_groups(
         result = service.get_watchlist_with_groups(current_user.id)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取分组视图失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取分组视图失败: {str(e)}", status_code=500, error_code="GROUP_VIEW_RETRIEVAL_FAILED"
+        )

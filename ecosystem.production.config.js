@@ -5,13 +5,14 @@ module.exports = {
     {
       // 核心服务: 后端 API 服务
       name: 'mystocks-backend',
-      script: 'python',
-      args: '-m uvicorn app.main:app --host 0.0.0.0 --port 8000',
+      script: '/root/miniconda3/envs/stock/bin/python',
+      args: '-m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4',
       cwd: '/opt/claude/mystocks_spec/web/backend',
+      interpreter: 'none',
 
       // 生产环境集群配置
-      instances: 4,
-      exec_mode: 'cluster',
+      instances: 1,
+      exec_mode: 'fork',
 
       // 生产环境变量
       env: {
@@ -57,12 +58,13 @@ module.exports = {
     {
       // 前端静态文件服务
       name: 'mystocks-frontend',
-      script: 'npx',
+      script: '/root/.nvm/versions/node/v24.7.0/bin/npx',
       args: 'serve web/frontend/dist -l 3000 -s',
       cwd: '/opt/claude/mystocks_spec',
 
       instances: 1,
       exec_mode: 'fork',
+      interpreter: 'none',
 
       env: {
         NODE_ENV: 'production',

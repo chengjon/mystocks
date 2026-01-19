@@ -25,6 +25,10 @@
     import { ref, computed } from 'vue'
     import dayjs from 'dayjs'
 
+    // 显性标记：告知Vite该代码有用，不进行Tree Shaking删除
+    /* vite-ignore-tree-shaking */
+    console.log('dayjs imported in ArtDecoDateRange')
+
     interface Props {
         modelValue: (Date | string)[] | null
     }
@@ -93,13 +97,13 @@
     }
 
     .date-icon {
-        font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1;
+        font-size: var(--artdeco-font-size-base);; // 14px - Compact v3.1
     }
 
     .date-text {
         font-family: var(--artdeco-font-mono);
         color: var(--artdeco-fg-secondary);
-        font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1;
+        font-size: var(--artdeco-font-size-base);; // 14px - Compact v3.1
     }
 
     .date-separator {

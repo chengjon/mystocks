@@ -41,7 +41,7 @@ class Strategy:
     updated_at: datetime = field(default_factory=datetime.now)
 
     @classmethod
-    def create(cls, name: str, description: str = "") -> 'Strategy':
+    def create(cls, name: str, description: str = "") -> "Strategy":
         """
         创建新策略
 
@@ -56,11 +56,7 @@ class Strategy:
             raise ValueError("Strategy name cannot be empty")
 
         return cls(
-            id=StrategyId.generate(),
-            name=name.strip(),
-            description=description.strip(),
-            rules=[],
-            is_active=False
+            id=StrategyId.generate(), name=name.strip(), description=description.strip(), rules=[], is_active=False
         )
 
     def add_rule(self, rule: Rule) -> None:
@@ -75,10 +71,12 @@ class Strategy:
         """
         # 简单验证：同一指标不能有相同操作符和阈值
         for existing_rule in self.rules:
-            if (existing_rule.indicator_name == rule.indicator_name and
-                existing_rule.operator == rule.operator and
-                existing_rule.threshold == rule.threshold and
-                existing_rule.action == rule.action):
+            if (
+                existing_rule.indicator_name == rule.indicator_name
+                and existing_rule.operator == rule.operator
+                and existing_rule.threshold == rule.threshold
+                and existing_rule.action == rule.action
+            ):
                 raise ValueError(f"Duplicate rule: {rule}")
 
         self.rules.append(rule)
@@ -121,16 +119,16 @@ class Strategy:
             return []
 
         # 验证输入数据
-        if 'symbol' not in market_data:
+        if "symbol" not in market_data:
             raise ValueError("market_data must contain 'symbol'")
-        if 'price' not in market_data:
+        if "price" not in market_data:
             raise ValueError("market_data must contain 'price'")
-        if 'indicators' not in market_data:
+        if "indicators" not in market_data:
             raise ValueError("market_data must contain 'indicators'")
 
-        symbol = market_data['symbol']
-        price = market_data['price']
-        indicators = market_data['indicators']
+        symbol = market_data["symbol"]
+        price = market_data["price"]
+        indicators = market_data["indicators"]
 
         signals = []
 
@@ -148,7 +146,7 @@ class Strategy:
                         price=price,
                         quantity=100,  # Phase 0 简化：固定数量
                         confidence=1.0,
-                        reason=f"Rule triggered: {rule}"
+                        reason=f"Rule triggered: {rule}",
                     )
                     signals.append(signal)
             except Exception as e:
@@ -169,12 +167,7 @@ class Strategy:
         """
         orders = []
         for signal in signals:
-            order = Order.create(
-                symbol=signal.symbol,
-                quantity=signal.quantity,
-                price=signal.price,
-                side=signal.side
-            )
+            order = Order.create(symbol=signal.symbol, quantity=signal.quantity, price=signal.price, side=signal.side)
             order.submit()  # 自动提交订单
             orders.append(order)
         return orders
@@ -185,9 +178,4 @@ class Strategy:
         return len(self.rules)
 
     def __str__(self) -> str:
-        return (
-            f"Strategy(id={self.id}, "
-            f"name={self.name}, "
-            f"rules={self.rule_count}, "
-            f"active={self.is_active})"
-        )
+        return f"Strategy(id={self.id}, " f"name={self.name}, " f"rules={self.rule_count}, " f"active={self.is_active})"

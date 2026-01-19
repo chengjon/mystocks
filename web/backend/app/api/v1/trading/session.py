@@ -105,9 +105,7 @@ async def get_trading_session(session_id: str):
     )
 
 
-@router.post(
-    "", response_model=TradingSessionResponse, summary="Create Trading Session"
-)
+@router.post("", response_model=TradingSessionResponse, summary="Create Trading Session")
 async def create_trading_session(request: TradingSessionCreate):
     """
     创建新的交易会话

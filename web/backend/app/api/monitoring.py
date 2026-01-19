@@ -7,9 +7,10 @@ import os
 from datetime import date
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
+from app.core.exceptions import BusinessException, NotFoundException
 from app.core.security import get_current_user, User
 from app.mock.unified_mock_data import get_mock_data_manager
 from app.models.monitoring import (
@@ -52,7 +53,7 @@ async def get_alert_rules(
         )
         return [AlertRuleResponse.from_orm(rule) for rule in rules]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/alert-rules", response_model=AlertRuleResponse)
@@ -79,7 +80,7 @@ async def create_alert_rule(rule: AlertRuleCreate, current_user: User = Depends(
         created_rule = monitoring_service.create_alert_rule(rule_data)
         return AlertRuleResponse.from_orm(created_rule)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_MONITORING_REQUEST")
 
 
 @router.put("/alert-rules/{rule_id}", response_model=AlertRuleResponse)
@@ -96,9 +97,9 @@ async def update_alert_rule(rule_id: int, updates: AlertRuleUpdate, current_user
         updated_rule = monitoring_service.update_alert_rule(rule_id, update_data)
         return AlertRuleResponse.from_orm(updated_rule)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise NotFoundException(resource="监控数据", identifier=str(e))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_MONITORING_REQUEST")
 
 
 @router.delete("/alert-rules/{rule_id}")
@@ -113,9 +114,9 @@ async def delete_alert_rule(rule_id: int, current_user: User = Depends(get_curre
         success = monitoring_service.delete_alert_rule(rule_id)
         return {"success": success, "message": "告警规则已删除"}
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise NotFoundException(resource="监控数据", identifier=str(e))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=400, error_code="INVALID_MONITORING_REQUEST")
 
 
 # ============================================================================
@@ -182,7 +183,7 @@ async def get_alert_records(
             offset=offset,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/alerts/{alert_id}/mark-read")
@@ -196,12 +197,12 @@ async def mark_alert_read(alert_id: int, current_user: User = Depends(get_curren
     try:
         success = monitoring_service.mark_alert_read(alert_id)
         if not success:
-            raise HTTPException(status_code=404, detail="告警记录不存在")
+            raise NotFoundException(resource="告警记录", identifier="查询条件")
         return {"success": True, "message": "已标记为已读"}
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/alerts/mark-all-read")
@@ -211,7 +212,7 @@ async def mark_all_alerts_read(current_user: User = Depends(get_current_user)):
         # TODO: 实现批量标记功能
         return {"success": True, "message": "功能开发中"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 # ============================================================================
@@ -243,15 +244,15 @@ async def get_realtime_monitoring(symbol: str, current_user: User = Depends(get_
             )
 
             if not record:
-                raise HTTPException(status_code=404, detail="未找到该股票的监控数据")
+                raise NotFoundException(resource="股票监控数据", identifier="查询条件")
 
             return RealtimeMonitoringResponse.from_orm(record)
         finally:
             session.close()
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.get("/realtime", response_model=List[RealtimeMonitoringResponse])
@@ -279,7 +280,6 @@ async def get_realtime_monitoring_list(
     try:
         session = monitoring_service.get_session()
         try:
-
             from app.models.monitoring import RealtimeMonitoring
 
             query = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == date.today())
@@ -303,7 +303,7 @@ async def get_realtime_monitoring_list(
         finally:
             session.close()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/realtime/fetch")
@@ -342,7 +342,7 @@ async def fetch_realtime_data(symbols: Optional[List[str]] = None, current_user:
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 # ============================================================================
@@ -393,7 +393,7 @@ async def get_dragon_tiger_list(
         finally:
             session.close()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/dragon-tiger/fetch")
@@ -420,7 +420,7 @@ async def fetch_dragon_tiger_data(trade_date: Optional[date] = None, current_use
             "data": {"trade_date": trade_date.isoformat(), "count": count},
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 # ============================================================================
@@ -479,7 +479,7 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
             summary = monitoring_service.get_monitoring_summary()
             return MonitoringSummaryResponse(**summary)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.get("/stats/today")
@@ -511,7 +511,7 @@ async def get_today_statistics(current_user: User = Depends(get_current_user)):
         finally:
             session.close()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 # ============================================================================
@@ -544,7 +544,7 @@ async def start_monitoring(request: MonitoringControlRequest, current_user: User
             "data": {"symbols": request.symbols, "interval": request.interval},
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.post("/control/stop")
@@ -554,7 +554,7 @@ async def stop_monitoring(current_user: User = Depends(get_current_user)):
         monitoring_service.stop_monitoring()
         return {"success": True, "message": "监控已停止"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
 
 @router.get("/control/status")
@@ -639,4 +639,4 @@ async def get_monitoring_status():
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")

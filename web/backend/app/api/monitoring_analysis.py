@@ -16,7 +16,7 @@ API 端点:
 import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime, date
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, HTTPException, Query, Path
 
 from app.core.responses import UnifiedResponse
@@ -203,21 +203,23 @@ async def batch_calculate_health_scores(
                     market_regime=data.get("market_regime", "choppy"),
                     calculation_time_ms=data["calculation_time_ms"],
                     calculation_mode=data.get("calculation_mode", "CPU"),
-                    sortino_ratio=data.get("risk_metrics", {}).get("sortino_ratio")
-                    if request.include_risk_metrics
-                    else None,
-                    calmar_ratio=data.get("risk_metrics", {}).get("calmar_ratio")
-                    if request.include_risk_metrics
-                    else None,
-                    max_drawdown=data.get("risk_metrics", {}).get("max_drawdown")
-                    if request.include_risk_metrics
-                    else None,
-                    max_drawdown_duration=data.get("risk_metrics", {}).get("max_drawdown_duration")
-                    if request.include_risk_metrics
-                    else None,
-                    downside_deviation=data.get("risk_metrics", {}).get("downside_deviation")
-                    if request.include_risk_metrics
-                    else None,
+                    sortino_ratio=(
+                        data.get("risk_metrics", {}).get("sortino_ratio") if request.include_risk_metrics else None
+                    ),
+                    calmar_ratio=(
+                        data.get("risk_metrics", {}).get("calmar_ratio") if request.include_risk_metrics else None
+                    ),
+                    max_drawdown=(
+                        data.get("risk_metrics", {}).get("max_drawdown") if request.include_risk_metrics else None
+                    ),
+                    max_drawdown_duration=(
+                        data.get("risk_metrics", {}).get("max_drawdown_duration")
+                        if request.include_risk_metrics
+                        else None
+                    ),
+                    downside_deviation=(
+                        data.get("risk_metrics", {}).get("downside_deviation") if request.include_risk_metrics else None
+                    ),
                 )
             )
 
@@ -267,9 +269,11 @@ async def get_health_score_history(
             results.append(
                 HealthScoreResponse(
                     stock_code=h["stock_code"],
-                    score_date=h["score_date"].isoformat()
-                    if isinstance(h["score_date"], (datetime, date))
-                    else str(h["score_date"]),
+                    score_date=(
+                        h["score_date"].isoformat()
+                        if isinstance(h["score_date"], (datetime, date))
+                        else str(h["score_date"])
+                    ),
                     total_score=h["total_score"],
                     radar_scores=h.get("radar_scores", {}),
                     market_regime=h.get("market_regime", "choppy"),
@@ -331,9 +335,11 @@ async def analyze_portfolio(
         result = factory.calculate_health_scores(
             inputs=inputs,
             engine_type=factory._select_engine(
-                factory._select_engine.__code__.co_varnames[1]
-                if hasattr(factory._select_engine, "__code__")
-                else "AUTO",
+                (
+                    factory._select_engine.__code__.co_varnames[1]
+                    if hasattr(factory._select_engine, "__code__")
+                    else "AUTO"
+                ),
                 len(inputs),
             ),
             include_risk_metrics=include_risk_metrics,
@@ -349,9 +355,9 @@ async def analyze_portfolio(
             "trend": sum(s["radar_scores"]["trend"] for s in score_list) / len(score_list) if score_list else 0,
             "technical": sum(s["radar_scores"]["technical"] for s in score_list) / len(score_list) if score_list else 0,
             "momentum": sum(s["radar_scores"]["momentum"] for s in score_list) / len(score_list) if score_list else 0,
-            "volatility": sum(s["radar_scores"]["volatility"] for s in score_list) / len(score_list)
-            if score_list
-            else 0,
+            "volatility": (
+                sum(s["radar_scores"]["volatility"] for s in score_list) / len(score_list) if score_list else 0
+            ),
             "risk": sum(s["radar_scores"]["risk"] for s in score_list) / len(score_list) if score_list else 0,
         }
 
@@ -359,13 +365,14 @@ async def analyze_portfolio(
         if include_risk_metrics:
             sortinos = [s.get("risk_metrics", {}).get("sortino_ratio") for s in score_list if s.get("risk_metrics")]
             risk_metrics_summary = {
-                "avg_sortino_ratio": sum(s for s in sortinos if s is not None)
-                / len([s for s in sortinos if s is not None])
-                if sortinos
-                else None,
-                "max_drawdown_min": min(s.get("risk_metrics", {}).get("max_drawdown", 1) for s in score_list)
-                if score_list
-                else None,
+                "avg_sortino_ratio": (
+                    sum(s for s in sortinos if s is not None) / len([s for s in sortinos if s is not None])
+                    if sortinos
+                    else None
+                ),
+                "max_drawdown_min": (
+                    min(s.get("risk_metrics", {}).get("max_drawdown", 1) for s in score_list) if score_list else None
+                ),
             }
 
         response = PortfolioAnalysisResponse(

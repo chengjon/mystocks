@@ -63,10 +63,7 @@
 
     // Additional Options
     "incremental": true,            // ✅ 增量编译（提升构建速度）
-    "sourceMap": true,
-
-    // Phase 1.4.3: 类型导入别名
-    "baseUrl": "."
+    "sourceMap": true
   },
 
   // File Includes

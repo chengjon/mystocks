@@ -12,12 +12,14 @@ from enum import Enum
 
 class OrderSide(Enum):
     """订单方向（本地定义，避免跨上下文依赖）"""
+
     BUY = "BUY"
     SELL = "SELL"
 
 
 class SignalStrength(Enum):
     """信号强度"""
+
     WEAK = "weak"  # 弱信号
     MODERATE = "moderate"  # 中等信号
     STRONG = "strong"  # 强信号
@@ -87,7 +89,7 @@ class SignalDefinition:
         strength: SignalStrength = SignalStrength.MODERATE,
         confidence: float = 0.8,
         reason_template: str = "Buy signal generated",
-        **metadata
+        **metadata,
     ) -> "SignalDefinition":
         """创建买入信号定义"""
         return cls(
@@ -105,7 +107,7 @@ class SignalDefinition:
         strength: SignalStrength = SignalStrength.MODERATE,
         confidence: float = 0.8,
         reason_template: str = "Sell signal generated",
-        **metadata
+        **metadata,
     ) -> "SignalDefinition":
         """创建卖出信号定义"""
         return cls(

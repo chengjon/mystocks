@@ -13,11 +13,10 @@ Event Bus System - 事件总线系统
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Callable, Optional, Set
+from typing import Dict, List, Any, Callable, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -211,9 +210,7 @@ class EventBus:
             if subscription["id"] == subscription_id:
                 subscription["active"] = False
                 self.subscribers[event_type].pop(i)
-                logger.debug(
-                    f"Unsubscribed from {event_type} with ID: {subscription_id}"
-                )
+                logger.debug(f"Unsubscribed from {event_type} with ID: {subscription_id}")
                 return True
 
         return False
@@ -291,9 +288,7 @@ class EventBus:
         if event.type not in self.subscribers:
             return
 
-        active_subscribers = [
-            sub for sub in self.subscribers[event.type] if sub["active"]
-        ]
+        active_subscribers = [sub for sub in self.subscribers[event.type] if sub["active"]]
 
         if not active_subscribers:
             return
@@ -334,9 +329,7 @@ class EventBus:
             "history_size": len(self.event_history),
         }
 
-    def get_subscribers(
-        self, event_type: Optional[str] = None
-    ) -> Dict[str, List[Dict[str, Any]]]:
+    def get_subscribers(self, event_type: Optional[str] = None) -> Dict[str, List[Dict[str, Any]]]:
         """获取订阅者信息"""
         if event_type:
             return {event_type: self.subscribers.get(event_type, [])}

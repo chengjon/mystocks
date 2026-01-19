@@ -98,9 +98,7 @@ def _setup_logger(self) -> logging.Logger:
         # 使用structlog进行结构化日志
         formatter = structlog.WriteASJSON()
     else:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     # 控制台处理器
     if self.config.enable_console:
@@ -214,9 +212,7 @@ def log_security_event(
     )
 
 
-def log_business_event(
-    self, event_type: str, details: Dict[str, Any], user_id: Optional[str] = None
-):
+def log_business_event(self, event_type: str, details: Dict[str, Any], user_id: Optional[str] = None):
     """记录业务事件"""
     request_id = request_id_var.get()
 
@@ -283,9 +279,7 @@ async def _audit_worker(self):
                 try:
                     # 尝试获取多个事件进行批量处理
                     while len(events) < 10:  # 最多批量处理10个事件
-                        event = await asyncio.wait_for(
-                            self.audit_queue.get(), timeout=1.0
-                        )
+                        event = await asyncio.wait_for(self.audit_queue.get(), timeout=1.0)
                         events.append(event)
                 except asyncio.TimeoutError:
                     pass
@@ -315,9 +309,7 @@ async def _batch_insert_audit_events(self, events: List[AuditEvent]):
                         event.resource_id,
                         event.ip_address,
                         event.user_agent,
-                        "POST"
-                        if event.details.get("method") == "POST"
-                        else "GET",  # 简化
+                        "POST" if event.details.get("method") == "POST" else "GET",  # 简化
                         event.details.get("path", ""),
                         event.status,
                         None,  # error_message
@@ -402,12 +394,8 @@ async def get_audit_logs(
                     "request_path": row["request_path"],
                     "status": row["status"],
                     "error_message": row["error_message"],
-                    "additional_data": json.loads(row["additional_data"])
-                    if row["additional_data"]
-                    else None,
-                    "created_at": row["created_at"].isoformat()
-                    if row["created_at"]
-                    else None,
+                    "additional_data": json.loads(row["additional_data"]) if row["additional_data"] else None,
+                    "created_at": row["created_at"].isoformat() if row["created_at"] else None,
                 }
                 for row in rows
             ]
@@ -423,9 +411,7 @@ async def cleanup_old_audit_logs(self, days_to_keep: int = 90):
         cutoff_date = datetime.now() - timedelta(days=days_to_keep)
 
         async with self.db_manager.get_connection() as conn:
-            deleted_count = await conn.execute(
-                "DELETE FROM audit_logs WHERE created_at < $1", cutoff_date
-            )
+            deleted_count = await conn.execute("DELETE FROM audit_logs WHERE created_at < $1", cutoff_date)
 
             logger.info(
                 f"Cleaned up {deleted_count} old audit log entries older than {
@@ -459,9 +445,7 @@ def record_failed_login(self, ip_address: str, username: str):
     # 清理旧的记录（1小时前）
     cutoff = datetime.now() - timedelta(hours=1)
     self.failed_login_attempts[ip_address] = [
-        attempt
-        for attempt in self.failed_login_attempts[ip_address]
-        if attempt > cutoff
+        attempt for attempt in self.failed_login_attempts[ip_address] if attempt > cutoff
     ]
 
     # 检查是否达到阈值（5次失败）
@@ -484,9 +468,7 @@ def _detect_brute_force_attack(self, ip_address: str, username: str):
         }
     )
 
-    logger.warning(
-        f"Brute force attack detected from IP {ip_address} targeting user {username}"
-    )
+    logger.warning(f"Brute force attack detected from IP {ip_address} targeting user {username}")
 
 
 def record_suspicious_activity(
@@ -507,25 +489,17 @@ def record_suspicious_activity(
         }
     )
 
-    logger.warning(
-        f"Suspicious activity detected: {activity_type} from IP {ip_address}"
-    )
+    logger.warning(f"Suspicious activity detected: {activity_type} from IP {ip_address}")
 
 
 def get_security_report(self) -> Dict[str, Any]:
     """获取安全报告"""
     # 清理过期记录
     cutoff = datetime.now() - timedelta(hours=24)
-    self.suspicious_activities = [
-        activity
-        for activity in self.suspicious_activities
-        if activity["timestamp"] > cutoff
-    ]
+    self.suspicious_activities = [activity for activity in self.suspicious_activities if activity["timestamp"] > cutoff]
 
     return {
-        "failed_login_attempts": {
-            ip: len(attempts) for ip, attempts in self.failed_login_attempts.items()
-        },
+        "failed_login_attempts": {ip: len(attempts) for ip, attempts in self.failed_login_attempts.items()},
         "suspicious_activities": self.suspicious_activities,
         "total_suspicious_events": len(self.suspicious_activities),
         "report_generated_at": datetime.now().isoformat(),
@@ -593,9 +567,7 @@ def log_security_event(
     logger.log_security_event(event_type, severity, details, user_id)
 
 
-def log_business_event(
-    event_type: str, details: Dict[str, Any], user_id: Optional[str] = None
-):
+def log_business_event(event_type: str, details: Dict[str, Any], user_id: Optional[str] = None):
     """便捷函数：记录业务事件"""
     logger = get_structured_logger()
     logger.log_business_event(event_type, details, user_id)

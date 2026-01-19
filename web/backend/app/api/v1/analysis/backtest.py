@@ -7,7 +7,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List
-from datetime import datetime
 
 router = APIRouter(
     prefix="/backtest",
@@ -91,9 +90,7 @@ async def run_monte_carlo_backtest(request: MonteCarloRequest):
     )
 
 
-@router.post(
-    "/stress-test", response_model=StressTestResponse, summary="Run Stress Test"
-)
+@router.post("/stress-test", response_model=StressTestResponse, summary="Run Stress Test")
 async def run_stress_test(request: StressTestRequest):
     """
     运行压力测试

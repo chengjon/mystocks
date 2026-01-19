@@ -46,22 +46,19 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
         self.incremental_calculators: Dict[str, IncrementalCalculator] = {}
 
         # 跟踪持仓价格变化历史
-        self.price_history: Dict[str, Dict[str, List[float]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
+        self.price_history: Dict[str, Dict[str, List[float]]] = defaultdict(lambda: defaultdict(list))
 
         # 扩展指标
-        self.metrics.update({
-            "incremental_updates": 0,
-            "full_recalculations": 0,
-            "delta_calculations": 0,
-            "calculation_time_saved_ms": 0.0,
-        })
-
-        logger.info(
-            f"✅ Optimized Portfolio Valuation Service initialized "
-            f"(incremental={enable_incremental})"
+        self.metrics.update(
+            {
+                "incremental_updates": 0,
+                "full_recalculations": 0,
+                "delta_calculations": 0,
+                "calculation_time_saved_ms": 0.0,
+            }
         )
+
+        logger.info(f"✅ Optimized Portfolio Valuation Service initialized " f"(incremental={enable_incremental})")
 
     def revaluate_portfolio(
         self, portfolio_id: str, prices: Dict[str, float], force_save: bool = True
@@ -150,9 +147,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
 
         logger.debug(f"📊 Initialized incremental calculator for {portfolio_id}: {performance.holdings_value:.2f}")
 
-    def _revaluate_incremental(
-        self, portfolio: Portfolio, prices: Dict[str, float]
-    ) -> PerformanceMetrics:
+    def _revaluate_incremental(self, portfolio: Portfolio, prices: Dict[str, float]) -> PerformanceMetrics:
         """
         使用增量计算重新估值
 
@@ -166,6 +161,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
             PerformanceMetrics: 绩效指标
         """
         import time
+
         start_time = time.time()
 
         portfolio_id = portfolio.id
@@ -206,9 +202,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
 
         return performance
 
-    def _revaluate_full(
-        self, portfolio: Portfolio, prices: Dict[str, float]
-    ) -> PerformanceMetrics:
+    def _revaluate_full(self, portfolio: Portfolio, prices: Dict[str, float]) -> PerformanceMetrics:
         """
         使用完整计算重新估值
 

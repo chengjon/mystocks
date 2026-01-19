@@ -6,12 +6,10 @@ Stock Ratings API Router
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.database import db_service
 from app.core.responses import UnifiedResponse, ok, bad_request, server_error
 from app.core.security import User, get_current_user
 from app.schemas.stock_ratings_schemas import (
@@ -47,9 +45,7 @@ async def get_stock_ratings(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info(
-            f"API调用: 股票评级数据, 用户={current_user.username}, 页数={max_pages}"
-        )
+        logger.info(f"API调用: 股票评级数据, 用户={current_user.username}, 页数={max_pages}")
 
         # 获取评级数据
         df = sina_adapter.get_sina_stock_ratings(max_pages=max_pages)
@@ -143,9 +139,7 @@ async def health_check() -> Dict[str, Any]:
                 timestamp=datetime.now().isoformat(),
             )
         else:
-            return server_error(
-                message="股票评级服务异常", details=health_response.dict()
-            )
+            return server_error(message="股票评级服务异常", details=health_response.dict())
 
     except Exception as e:
         logger.error(f"健康检查API异常: {str(e)}", exc_info=True)
@@ -165,9 +159,7 @@ async def refresh_ratings_cache(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info(
-            f"API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}"
-        )
+        logger.info(f"API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}")
 
         # 重新获取数据（这会自动应用数据质量检查）
         df = sina_adapter.get_sina_stock_ratings(max_pages=request.max_pages)

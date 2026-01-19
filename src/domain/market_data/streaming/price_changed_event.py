@@ -98,7 +98,9 @@ class PriceChangedEvent(DomainEvent):
         )
 
     @classmethod
-    def create_batch(cls, prices: Dict[str, float], old_prices: Dict[str, float] | None = None, **kwargs) -> list["PriceChangedEvent"]:
+    def create_batch(
+        cls, prices: Dict[str, float], old_prices: Dict[str, float] | None = None, **kwargs
+    ) -> list["PriceChangedEvent"]:
         """
         工厂方法：批量创建价格变更事件
 

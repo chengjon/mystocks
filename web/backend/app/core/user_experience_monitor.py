@@ -5,8 +5,7 @@
 
 import time
 import psutil
-from typing import Dict, Any, Optional
-from prometheus_client import Gauge, Histogram, Counter, Info, generate_latest
+from prometheus_client import Gauge, Histogram, Counter, generate_latest
 
 # ==================== 用户体验核心指标 ====================
 
@@ -19,16 +18,12 @@ API_RESPONSE_TIME = Histogram(
 )
 
 # 2. 接口成功率指标
-API_SUCCESS_RATE = Gauge(
-    "api_success_rate", "API接口成功率(%) - 目标100%", ["endpoint", "time_window"]
-)
+API_SUCCESS_RATE = Gauge("api_success_rate", "API接口成功率(%) - 目标100%", ["endpoint", "time_window"])
 
 # 3. 系统资源使用率（影响用户体验）
 SYSTEM_CPU_USAGE = Gauge("system_cpu_usage_percent", "系统CPU使用率(%) - 阈值80%")
 
-SYSTEM_MEMORY_USAGE = Gauge(
-    "system_memory_usage_percent", "系统内存使用率(%) - 阈值85%"
-)
+SYSTEM_MEMORY_USAGE = Gauge("system_memory_usage_percent", "系统内存使用率(%) - 阈值85%")
 
 SYSTEM_DISK_USAGE = Gauge("system_disk_usage_percent", "系统磁盘使用率(%) - 数据目录")
 
@@ -58,9 +53,7 @@ THRESHOLD_VIOLATIONS = Counter(
 )
 
 # 用户体验健康状态
-USER_EXPERIENCE_HEALTH = Gauge(
-    "user_experience_health_score", "用户体验健康评分(0-100) - 综合评估", ["component"]
-)
+USER_EXPERIENCE_HEALTH = Gauge("user_experience_health_score", "用户体验健康评分(0-100) - 综合评估", ["component"])
 
 # ==================== 监控工具类 ====================
 
@@ -96,13 +89,9 @@ class UserExperienceMonitor:
         except Exception as e:
             print(f"Failed to update system metrics: {e}")
 
-    def record_api_response(
-        self, endpoint: str, method: str, status_code: int, response_time: float
-    ):
+    def record_api_response(self, endpoint: str, method: str, status_code: int, response_time: float):
         """记录API响应"""
-        API_RESPONSE_TIME.labels(
-            endpoint=endpoint, method=method, status_code=str(status_code)
-        ).observe(response_time)
+        API_RESPONSE_TIME.labels(endpoint=endpoint, method=method, status_code=str(status_code)).observe(response_time)
 
         # 检查是否超过2秒阈值
         if response_time > 2.0:
@@ -112,9 +101,7 @@ class UserExperienceMonitor:
                 threshold_value="2.0",
             ).inc()
 
-    def record_page_load(
-        self, page: str, load_time: float, device_type: str = "desktop"
-    ):
+    def record_page_load(self, page: str, load_time: float, device_type: str = "desktop"):
         """记录页面加载时间"""
         PAGE_LOAD_TIME.labels(page=page, device_type=device_type).observe(load_time)
 
@@ -140,9 +127,7 @@ class UserExperienceMonitor:
         """计算并记录成功率"""
         if total_count > 0:
             success_rate = (success_count / total_count) * 100
-            API_SUCCESS_RATE.labels(endpoint=endpoint, time_window=time_window).set(
-                success_rate
-            )
+            API_SUCCESS_RATE.labels(endpoint=endpoint, time_window=time_window).set(success_rate)
 
             # 检查是否低于100%成功率
             if success_rate < 100.0:
@@ -171,9 +156,7 @@ class UserExperienceMonitor:
             # 计算综合健康评分
             if scores:
                 overall_score = sum(scores) / len(scores)
-                USER_EXPERIENCE_HEALTH.labels(component="system_resources").set(
-                    overall_score
-                )
+                USER_EXPERIENCE_HEALTH.labels(component="system_resources").set(overall_score)
                 USER_EXPERIENCE_HEALTH.labels(component="overall").set(overall_score)
 
         except Exception as e:
@@ -213,16 +196,12 @@ class UserExperienceMiddleware:
 # ==================== 工具函数 ====================
 
 
-def record_api_performance(
-    endpoint: str, method: str, status_code: int, response_time: float
-):
+def record_api_performance(endpoint: str, method: str, status_code: int, response_time: float):
     """便捷函数：记录API性能"""
     ux_monitor.record_api_response(endpoint, method, status_code, response_time)
 
 
-def record_page_load_performance(
-    page: str, load_time: float, device_type: str = "desktop"
-):
+def record_page_load_performance(page: str, load_time: float, device_type: str = "desktop"):
     """便捷函数：记录页面加载性能"""
     ux_monitor.record_page_load(page, load_time, device_type)
 
@@ -232,9 +211,7 @@ def record_db_query_performance(query_type: str, table: str, query_time: float):
     ux_monitor.record_db_query(query_type, table, query_time)
 
 
-def update_api_success_rate(
-    endpoint: str, success_count: int, total_count: int, time_window: str = "5m"
-):
+def update_api_success_rate(endpoint: str, success_count: int, total_count: int, time_window: str = "5m"):
     """便捷函数：更新API成功率"""
     ux_monitor.calculate_success_rate(endpoint, success_count, total_count, time_window)
 

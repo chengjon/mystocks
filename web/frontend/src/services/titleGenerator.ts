@@ -8,7 +8,7 @@ export interface TitleContext {
     user?: {
         username?: string
         role?: string
-        id?: string
+        id?: string | number
     }
     route?: {
         params: Record<string, string>

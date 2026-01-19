@@ -220,6 +220,10 @@ class DatabaseTarget(str, Enum):
     POSTGRESQL = "postgresql"
     """PostgreSQL+TimescaleDB - 复杂时序查询,自动分区,ACID合规,用于参考数据、衍生数据、元数据和历史分析"""
 
+    def __str__(self) -> str:
+        """返回枚举值作为字符串"""
+        return self.value
+
     @classmethod
     def get_all_targets(cls) -> List[str]:
         """返回所有数据库类型列表"""

@@ -74,7 +74,7 @@
 
                 <!-- Progress Arc -->
                 <circle
-                    class="artdeco-progress__progress-arc"
+                    class="artdeco-progress__progress-arc artdeco-progress__arc--animating"
                     cx="100"
                     cy="60"
                     r="50"
@@ -82,7 +82,6 @@
                     :stroke="progressColor"
                     :stroke-dasharray="progressDashArray"
                     :stroke-dashoffset="dashOffset"
-                    class="artdeco-progress__arc--animating"
                 />
             </div>
         </div>
@@ -334,7 +333,7 @@
     // Value Text - 大号显示百分比
     .artdeco-progress__value {
         font-family: var(--artdeco-font-display);
-        font-size: var(--artdeco-font-size-xl); // 32px - Compact v3.1;
+        font-size: var(--artdeco-font-size-xl);; // 32px - Compact v3.1
         font-weight: 700;
         fill: var(--artdeco-accent-gold);
         text-anchor: middle;

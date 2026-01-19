@@ -12,6 +12,7 @@ from enum import Enum
 
 class AssetClass(Enum):
     """资产类别"""
+
     EQUITY = "equity"  # 股票
     FUTURES = "futures"  # 期货
     OPTIONS = "options"  # 期权
@@ -51,9 +52,7 @@ class InstrumentPool:
             raise ValueError(f"max_positions must be positive, got {self.max_positions}")
 
         if len(self.symbols) > self.max_positions:
-            raise ValueError(
-                f"Pool size ({len(self.symbols)}) exceeds max_positions ({self.max_positions})"
-            )
+            raise ValueError(f"Pool size ({len(self.symbols)}) exceeds max_positions ({self.max_positions})")
 
     @property
     def size(self) -> int:

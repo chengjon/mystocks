@@ -75,7 +75,7 @@
 
     .artdeco-loader-text {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-accent-gold);
       letter-spacing: 3px;
       text-transform: uppercase;

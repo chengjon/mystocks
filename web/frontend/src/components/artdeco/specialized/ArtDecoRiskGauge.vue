@@ -177,7 +177,7 @@
 
     .gauge-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -209,7 +209,7 @@
 
     .gauge-value {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-xl) // 32px - Compact v3.1;
+      font-size: var(--artdeco-font-size-xl); // 32px - Compact v3.1
       font-weight: 700;
     }
 
@@ -229,7 +229,7 @@
 
     .detail-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -238,7 +238,7 @@
 
     .detail-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 700;
       color: var(--artdeco-fg-secondary);
     }
@@ -270,7 +270,7 @@
 
     .breakdown-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-secondary);
       text-transform: uppercase;
     }
@@ -289,7 +289,7 @@
 
     .breakdown-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
       text-align: right;
@@ -302,7 +302,7 @@
     }
 
     .artdeco-risk-gauge.compact .gauge-value {
-      font-size: var(--artdeco-font-size-lg) // 24px - Compact v3.1;
+      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
     }
 
     .artdeco-risk-gauge.compact .gauge-details {
@@ -310,10 +310,10 @@
     }
 
     .artdeco-risk-gauge.compact .detail-label {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
     }
 
     .artdeco-risk-gauge.compact .detail-value {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 </style>

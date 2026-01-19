@@ -17,6 +17,7 @@ from src.gpu.api_system.utils.redis_utils import RedisQueue
 from src.gpu.api_system.utils.monitoring import MetricsCollector
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+
 try:
     from src.gpu.api_system.api_proto.backtest_pb2 import (
         BacktestRequest,
@@ -30,6 +31,7 @@ except ImportError:
     # Fallback if generated files use absolute imports that don't match this structure
     # or if sys.path hacking is needed.
     import sys
+
     sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
     from backtest_pb2 import (
         BacktestRequest,

@@ -15,12 +15,10 @@ import time
 import logging
 from typing import Dict, Any, List
 import numpy as np
-import pandas as pd
 from dataclasses import dataclass
 from pathlib import Path
 
 from web.backend.app.services.indicators.gpu_adapter import (
-    GPUIndicatorAdapter,
     GPUIndicatorFactory,
     GPU_AVAILABLE,
 )

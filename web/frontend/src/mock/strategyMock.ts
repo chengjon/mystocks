@@ -5,22 +5,23 @@
  */
 
 import type {
-  Strategy,
-  StrategyPerformance,
-  BacktestTask,
+  StrategyVM as Strategy,
+  StrategyPerformanceVM as StrategyPerformance,
+  BacktestRequestVM as BacktestTask,
   BacktestResultVM,
-} from '@/api/types/strategy';
+} from '@/api/types/extensions';
 
 /**
  * Mock strategy performance data
  */
 export const mockStrategyPerformance: StrategyPerformance = {
-  totalReturn: 0.256,      // 25.6%
-  annualizedReturn: 0.312,     // 31.2%
-  sharpeRatio: 1.85,
-  maxDrawdown: -0.124,     // -12.4%
-  winRate: 0.68,           // 68%
-  profitLossRatio: 2.15,
+  strategy_id: '1',
+  total_return: 0.256,      // 25.6%
+  annual_return: 0.312,     // 31.2%
+  sharpe_ratio: 1.85,
+  max_drawdown: -0.124,     // -12.4%
+  win_rate: 0.68,           // 68%
+  profit_factor: 2.15,
 };
 
 /**
@@ -59,12 +60,13 @@ export const mockStrategyList = {
         exitThreshold: 0.01,
       },
       performance: {
-        totalReturn: 0.189,
-        annualReturn: 0.234,
-        sharpeRatio: 1.62,
-        maxDrawdown: -0.098,
-        winRate: 0.72,
-        profitLossRatio: 1.95,
+        strategy_id: '2',
+        total_return: 0.189,
+        annual_return: 0.234,
+        sharpe_ratio: 1.62,
+        max_drawdown: -0.098,
+        win_rate: 0.72,
+        profit_factor: 1.95,
       },
     },
     {
@@ -98,12 +100,13 @@ export const mockStrategyList = {
         positionSize: 0.1,
       },
       performance: {
-        totalReturn: 0.145,
-        annualReturn: 0.178,
-        sharpeRatio: 1.35,
-        maxDrawdown: -0.089,
-        winRate: 0.65,
-        profitLossRatio: 1.78,
+        strategy_id: '4',
+        total_return: 0.145,
+        annual_return: 0.178,
+        sharpe_ratio: 1.35,
+        max_drawdown: -0.089,
+        win_rate: 0.65,
+        profit_factor: 1.78,
       },
     },
   ],
@@ -123,51 +126,42 @@ export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0];
 export const mockBacktestResult: BacktestResultVM = {
   task_id: 'bt_20250125_001',
   strategy_id: '1',
-  total_return: 0.256,
-  annualized_return: 0.312,
-  sharpe_ratio: 1.85,
-  max_drawdown: -0.124,
-  win_rate: 0.68,
-  total_trades: 156,
-  profit_factor: 2.15,
-  equity_curve: generateMockEquityCurve(),
-  trades: generateMockTrades(20),
-  performance_metrics: {
+  status: 'completed',
+  performance: {
     total_return: 0.256,
-    annual_return: 0.312,
-    monthly_return: 0.021,
-    weekly_return: 0.005,
-    daily_return: 0.0012,
-    sharpe_ratio: 1.85,
-    sortino_ratio: 2.12,
-    calmar_ratio: 2.52,
+    annualized_return: 0.312,
     max_drawdown: -0.124,
-    avg_drawdown: -0.045,
-    max_drawdown_duration: 18,
+    sharpe_ratio: 1.85,
     win_rate: 0.68,
-    profit_factor: 2.15,
-    avg_profit: 0.032,
-    avg_loss: -0.015,
-    best_trade: 0.125,
-    worst_trade: -0.048,
-    total_trades: 156,
-    winning_trades: 106,
-    losing_trades: 50,
-    avg_trade_duration: 3.2,
-    expectency: 0.018,
   },
+  trades: generateMockTrades(20).map(t => ({
+    symbol: t.symbol,
+    entry_date: t.timestamp.toISOString(),
+    exit_date: new Date(t.timestamp.getTime() + 86400000).toISOString(),
+    entry_price: t.price,
+    exit_price: t.price * (1 + (Math.random() - 0.4) * 0.1),
+    pnl: (Math.random() - 0.4) * 1000
+  })),
+  total_return: 0.256,
+  equity_curve: generateMockEquityCurve().map(item => ({
+    date: item.date,
+    equity: item.value,
+    drawdown: item.drawdown
+  })),
+  created_at: new Date('2025-01-24T10:00:00').toISOString(),
+  completed_at: new Date('2025-01-24T10:05:30').toISOString(),
 };
 
 /**
  * Mock backtest task
  */
 export const mockBacktestTask: BacktestTask = {
-  task_id: 'bt_20250125_001',
+  id: 'bt_20250125_001',
   strategy_id: '1',
   status: 'completed',
+  created_at: new Date('2025-01-24T10:00:00').toISOString(),
+  startTime: new Date('2025-01-24T10:00:00').toISOString(),
   progress: 100,
-  started_at: '2025-01-24T10:00:00',
-  completed_at: '2025-01-24T10:05:30',
   result: mockBacktestResult,
 };
 
@@ -256,28 +250,24 @@ export const mockBacktestTasks: BacktestTask[] = [
     ...mockBacktestTask,
   },
   {
-    task_id: 'bt_20250124_003',
+    id: 'bt_20250124_003',
     strategy_id: '2',
     status: 'completed',
+    created_at: new Date('2025-01-23T14:00:00').toISOString(),
     progress: 100,
-    started_at: '2025-01-23T14:00:00',
-    completed_at: '2025-01-23T14:03:45',
+    startTime: new Date('2025-01-23T14:00:00').toISOString(),
     result: {
       ...mockBacktestResult,
-      task_id: 'bt_20250124_003',
-      strategy_id: '2',
       total_return: 0.189,
-      annualized_return: 0.234,
-      sharpe_ratio: 1.62,
-      max_drawdown: -0.098,
     },
   },
   {
-    task_id: 'bt_20250125_002',
+    id: 'bt_20250125_002',
     strategy_id: '3',
     status: 'running',
+    created_at: new Date('2025-01-25T09:30:00').toISOString(),
     progress: 65,
-    started_at: '2025-01-25T09:30:00',
+    startTime: new Date('2025-01-25T09:30:00').toISOString(),
   },
 ];
 
@@ -300,7 +290,7 @@ export function getMockStrategyById(id: string): Strategy | undefined {
  * Get backtest task by ID
  */
 export function getMockBacktestById(taskId: string): BacktestTask | undefined {
-  return mockBacktestTasks.find((t) => t.task_id === taskId);
+  return mockBacktestTasks.find((t) => t.id === taskId);
 }
 
 export default {

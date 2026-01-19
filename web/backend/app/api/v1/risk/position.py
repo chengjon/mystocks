@@ -56,9 +56,7 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
         max_position_size = config.get("max_position_size", 0.10)
 
         total_position_value = sum(p.get("value", 0) for p in positions)
-        position_ratio = (
-            total_position_value / total_capital if total_capital > 0 else 0
-        )
+        position_ratio = total_position_value / total_capital if total_capital > 0 else 0
         cash_ratio = 1 - position_ratio
 
         position_concentration = []
@@ -82,17 +80,13 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
             )
 
             if exceeds_limit:
-                exceeded_positions.append(
-                    {"symbol": symbol, "concentration": concentration}
-                )
+                exceeded_positions.append({"symbol": symbol, "concentration": concentration})
 
             if sector not in sector_concentration:
                 sector_concentration[sector] = 0
             sector_concentration[sector] += value
 
-        position_sizes = [
-            p["value"] / total_capital for p in positions if total_capital > 0
-        ]
+        position_sizes = [p["value"] / total_capital for p in positions if total_capital > 0]
         herfindahl_index = sum(p**2 for p in position_sizes) if position_sizes else 0
 
         if len(exceeded_positions) > 0 or herfindahl_index > 0.5:
@@ -175,9 +169,7 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
                 {
                     "type": "daily_loss_limit_exceeded",
                     "severity": "WARNING",
-                    "message": (
-                        f"单日亏损超限: {daily_loss_pct * 100:.2f}% < {-daily_loss_limit * 100:.2f}%"
-                    ),
+                    "message": (f"单日亏损超限: {daily_loss_pct * 100:.2f}% < {-daily_loss_limit * 100:.2f}%"),
                     "timestamp": alert_time,
                     "suggestion": "暂停开仓，检查策略执行情况",
                 }

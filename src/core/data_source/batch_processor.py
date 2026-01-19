@@ -51,9 +51,7 @@ class BatchProcessor:
         self.successful_requests = 0
         self.failed_requests = 0
 
-        logger.info(
-            f"BatchProcessor initialized: max_workers={max_workers}, timeout={timeout}s"
-        )
+        logger.info(f"BatchProcessor initialized: max_workers={max_workers}, timeout={timeout}s")
 
     def fetch_batch_kline(
         self,
@@ -228,9 +226,7 @@ class BatchProcessor:
             },
         }
 
-    def _group_by_data_source(
-        self, data_fetcher: Any, symbols: List[str]
-    ) -> Dict[str, List[str]]:
+    def _group_by_data_source(self, data_fetcher: Any, symbols: List[str]) -> Dict[str, List[str]]:
         """
         按数据源分组股票代码
 
@@ -342,11 +338,7 @@ class BatchProcessor:
         Returns:
             统计信息字典
         """
-        success_rate = (
-            self.successful_requests / self.total_requests
-            if self.total_requests > 0
-            else 0
-        )
+        success_rate = self.successful_requests / self.total_requests if self.total_requests > 0 else 0
 
         return {
             "total_batches": self.total_batches,

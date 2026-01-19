@@ -52,4 +52,4 @@ pytest-playwright>=0.4.0
 # akshare - for A-share data (install from root project)
 # requests - already present above
 # psycopg2-binary - already present above
-# Email support is already available via smtplib (Python standard library)swagger-ui-py>=25.7.0
+# Email support is already available via smtplib (Python standard library)

@@ -20,9 +20,10 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
-from fastapi import APIRouter, HTTPException, Depends, Path, Query
+from fastapi import APIRouter, Path, Query
 
-from app.core.responses import UnifiedResponse, PaginatedResponse, create_unified_success_response
+from app.core.exceptions import BusinessException, NotFoundException
+from app.core.responses import UnifiedResponse
 from app.core.exception_handlers import handle_exceptions
 
 logger = logging.getLogger(__name__)
@@ -130,7 +131,7 @@ async def create_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlist_id = await postgres_async.create_watchlist(
             user_id=user_id,
@@ -156,13 +157,13 @@ async def create_watchlist(
             )
             return UnifiedResponse(data=response, message="创建清单成功")
 
-        raise HTTPException(status_code=500, detail="创建清单失败")
+        raise BusinessException(detail="创建清单失败", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"创建监控清单失败: {e}")
-        raise HTTPException(status_code=500, detail=f"创建失败: {str(e)}")
+        raise BusinessException(detail=f"创建失败: {str(e)}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
 
 @router.get("", response_model=UnifiedResponse[List[WatchlistResponse]])
@@ -179,7 +180,7 @@ async def list_watchlists(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
 
@@ -202,11 +203,11 @@ async def list_watchlists(
 
         return UnifiedResponse(data=results, message="获取清单列表成功")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取监控清单列表失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
+        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.get("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
@@ -224,13 +225,13 @@ async def get_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((w for w in watchlists if w["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
 
@@ -248,11 +249,11 @@ async def get_watchlist(
 
         return UnifiedResponse(data=response, message="获取清单成功")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取监控清单失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
+        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.put("/{watchlist_id}", response_model=UnifiedResponse[WatchlistResponse])
@@ -265,7 +266,7 @@ async def update_watchlist(
     """
     更新监控清单
     """
-    raise HTTPException(status_code=501, detail="更新功能待实现")
+    raise BusinessException(detail="更新功能待实现", status_code=501, error_code="FEATURE_NOT_IMPLEMENTED")
 
 
 @router.delete("/{watchlist_id}", response_model=UnifiedResponse[None])
@@ -283,13 +284,13 @@ async def delete_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((w for w in watchlists if w["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         from src.monitoring.infrastructure.postgresql_async_v3 import MonitoringPostgreSQLAccess
 
@@ -299,11 +300,11 @@ async def delete_watchlist(
 
         return UnifiedResponse(message="删除清单成功")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"删除监控清单失败: {e}")
-        raise HTTPException(status_code=500, detail=f"删除失败: {str(e)}")
+        raise BusinessException(detail=f"删除失败: {str(e)}", status_code=500, error_code="WATCHLIST_DELETION_FAILED")
 
 
 @router.post("/{watchlist_id}/stocks", response_model=UnifiedResponse[WatchlistStockResponse])
@@ -322,13 +323,13 @@ async def add_stock_to_watchlist(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((w for w in watchlists if w["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         stock_id = await postgres_async.add_stock_to_watchlist(
             watchlist_id=watchlist_id,
@@ -358,13 +359,13 @@ async def add_stock_to_watchlist(
             )
             return UnifiedResponse(data=response, message="添加股票成功")
 
-        raise HTTPException(status_code=500, detail="添加股票失败")
+        raise BusinessException(detail="添加股票失败", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"添加股票到清单失败: {e}")
-        raise HTTPException(status_code=500, detail=f"添加失败: {str(e)}")
+        raise BusinessException(detail=f"添加失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
 @router.get("/{watchlist_id}/stocks", response_model=UnifiedResponse[List[WatchlistStockResponse]])
@@ -382,13 +383,13 @@ async def list_watchlist_stocks(
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
-            raise HTTPException(status_code=503, detail="数据库未连接")
+            raise BusinessException(detail="数据库未连接", status_code=503, error_code="DATABASE_UNAVAILABLE")
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((w for w in watchlists if w["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise NotFoundException(resource="监控清单", identifier="查询条件")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
 
@@ -411,11 +412,11 @@ async def list_watchlist_stocks(
 
         return UnifiedResponse(data=results, message="获取股票列表成功")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取清单股票列表失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
+        raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
 @router.delete("/{watchlist_id}/stocks/{stock_code}", response_model=UnifiedResponse[None])
@@ -437,8 +438,8 @@ async def remove_stock_from_watchlist(
 
         return UnifiedResponse(message="移除股票成功")
 
-    except HTTPException:
+    except (BusinessException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"从清单移除股票失败: {e}")
-        raise HTTPException(status_code=500, detail=f"移除失败: {str(e)}")
+        raise BusinessException(detail=f"移除失败: {str(e)}", status_code=500, error_code="STOCK_REMOVAL_FAILED")

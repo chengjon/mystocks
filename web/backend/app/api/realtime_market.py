@@ -9,7 +9,7 @@ Date: 2026-01-09
 Phase: 12.4 - Integrated with DDD Architecture
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 from datetime import datetime
 import structlog
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query, HTTPException
@@ -20,12 +20,13 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.services.market_data_parser import get_market_data_parser, ParsedQuote
+from src.services.market_data_parser import get_market_data_parser
+
 # Phase 12.4: 使用新的 DDD 架构适配器
-from web.backend.app.api.realtime_mtm_adapter import get_realtime_mtm_adapter, RealtimeMTMAdapter, MTMUpdate
+from web.backend.app.api.realtime_mtm_adapter import MTMUpdate
+
 # 保留旧接口以兼容性
 from web.backend.app.api.realtime_mtm_adapter import get_mtm_engine
-from web.backend.app.core.socketio_manager import get_socketio_manager
 
 logger = structlog.get_logger()
 

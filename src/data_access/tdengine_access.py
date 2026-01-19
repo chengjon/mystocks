@@ -41,10 +41,9 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
         raise ValueError(f"{identifier_type} cannot be empty")
 
     # 检查是否只包含安全字符
-    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', identifier):
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", identifier):
         raise ValueError(
-            f"Invalid {identifier_type}: '{identifier}'. "
-            f"Only alphanumeric characters and underscores are allowed."
+            f"Invalid {identifier_type}: '{identifier}'. " f"Only alphanumeric characters and underscores are allowed."
         )
 
     return identifier
@@ -61,7 +60,7 @@ def validate_symbol(symbol: str) -> str:
         raise ValueError("Symbol cannot be empty")
 
     # 清理：移除不安全字符，只保留字母数字和点
-    clean_symbol = re.sub(r'[^a-zA-Z0-9.]', '', symbol)
+    clean_symbol = re.sub(r"[^a-zA-Z0-9.]", "", symbol)
 
     if not clean_symbol:
         raise ValueError(f"Invalid symbol format: '{symbol}'")
@@ -381,7 +380,9 @@ class TDengineDataAccess:
                 return True
 
             df["is_valid"] = False
-            classification = DataClassification.MINUTE_KLINE if "kline" in safe_table_name else DataClassification.TICK_DATA
+            classification = (
+                DataClassification.MINUTE_KLINE if "kline" in safe_table_name else DataClassification.TICK_DATA
+            )
             return self.save_data(df, classification, table_name)
         except Exception as e:
             logger.error(f"补偿操作失败: {e}")

@@ -12,11 +12,19 @@ import logging
 import time
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest, CollectorRegistry
-from prometheus_client.registry import REGISTRY
+from fastapi import APIRouter, Depends, Response
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    REGISTRY,
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+)
 
 from app.api.auth import User, get_current_user
+from app.core.exceptions import BusinessException, ForbiddenException
 from app.core.responses import APIResponse
 
 logger = logging.getLogger(__name__)
@@ -184,7 +192,7 @@ async def health_check() -> Dict[str, Any]:
         return {"status": "healthy", "timestamp": time.time(), "version": "1.0.0"}
     except Exception as e:
         logger.error(f"Health check failed: {e}")
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Service unavailable")
+        raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
 @router.get("/status")
@@ -209,7 +217,7 @@ async def basic_status() -> APIResponse:
         )
     except Exception as e:
         logger.error(f"Status check failed: {e}")
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Service unavailable")
+        raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
 # ==================== 用户级别端点（需要认证）====================
@@ -231,7 +239,9 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
     try:
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=30):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="访问频率过高，请稍后再试")
+            raise BusinessException(
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 更新监控指标
         update_database_metrics()
@@ -248,11 +258,13 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
         return APIResponse(success=True, data=basic_data, message="基础监控数据获取成功")
 
-    except HTTPException:
+    except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Basic metrics failed for user {current_user.username}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取监控数据失败")
+        raise BusinessException(
+            detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/performance")
@@ -271,7 +283,9 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
     try:
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=20):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="访问频率过高，请稍后再试")
+            raise BusinessException(
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 返回性能指标
         performance_data = {
@@ -287,11 +301,13 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 
         return APIResponse(success=True, data=performance_data, message="性能监控数据获取成功")
 
-    except HTTPException:
+    except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Performance metrics failed for user {current_user.username}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取性能数据失败")
+        raise BusinessException(
+            detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED"
+        )
 
 
 # ==================== 管理员级别端点（需要管理员权限）====================
@@ -314,11 +330,13 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         # 检查管理员权限
         if not check_admin_privileges(current_user):
             logger.warning(f"Unauthorized metrics access attempt by user: {current_user.username}")
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
+            raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 检查访问频率限制（更严格的限制）
         if not check_rate_limit(current_user.id, max_requests_per_minute=10):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="访问频率过高，请稍后再试")
+            raise BusinessException(
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 更新所有监控指标
         update_database_metrics()
@@ -329,11 +347,11 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         # 生成Prometheus格式的metrics
         return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
-    except HTTPException:
+    except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Prometheus metrics failed for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取指标数据失败")
+        raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
 
 @router.get("/detailed")
@@ -353,11 +371,13 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         # 检查管理员权限
         if not check_admin_privileges(current_user):
             logger.warning(f"Unauthorized detailed metrics access attempt by user: {current_user.username}")
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
+            raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 检查访问频率限制
         if not check_rate_limit(current_user.id, max_requests_per_minute=5):
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="访问频率过高，请稍后再试")
+            raise BusinessException(
+                detail="访问频率过高，请稍后再试", status_code=429, error_code="RATE_LIMIT_EXCEEDED"
+            )
 
         # 更新监控指标
         update_database_metrics()
@@ -378,11 +398,13 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
 
         return APIResponse(success=True, data=detailed_data, message="详细监控数据获取成功")
 
-    except HTTPException:
+    except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Detailed metrics failed for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="获取详细监控数据失败")
+        raise BusinessException(
+            detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/reset")
@@ -401,7 +423,7 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         # 检查管理员权限
         if not check_admin_privileges(current_user):
             logger.warning(f"Unauthorized metrics reset attempt by user: {current_user.username}")
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限访问此端点")
+            raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 清理访问频率限制数据
         global metrics_access_count
@@ -411,11 +433,11 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
         return APIResponse(success=True, data={"reset_count": len(metrics_access_count)}, message="监控指标已重置")
 
-    except HTTPException:
+    except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
         logger.error(f"Metrics reset failed for admin {current_user.username}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="重置监控指标失败")
+        raise BusinessException(detail="重置监控指标失败", status_code=500, error_code="METRICS_RESET_FAILED")
 
 
 # ==================== 监控中间件辅助函数 ====================

@@ -11,10 +11,11 @@ from app.services.indicators.jobs.daily_calculation import run_daily_calculation
 
 logger = logging.getLogger(__name__)
 
+
 async def batch_calculate_indicators(params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Batch calculate indicators for stocks.
-    
+
     Wraps the daily calculation job.
     Args:
         params: Dict containing:

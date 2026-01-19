@@ -44,15 +44,15 @@ class Rule:
         if value is None:
             return False
 
-        if self.operator == '>':
+        if self.operator == ">":
             return value > self.threshold
-        elif self.operator == '<':
+        elif self.operator == "<":
             return value < self.threshold
-        elif self.operator == '>=':
+        elif self.operator == ">=":
             return value >= self.threshold
-        elif self.operator == '<=':
+        elif self.operator == "<=":
             return value <= self.threshold
-        elif self.operator == '==':
+        elif self.operator == "==":
             return value == self.threshold
         else:
             raise ValueError(f"Invalid operator: {self.operator}")

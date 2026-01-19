@@ -266,7 +266,7 @@
 
     .form-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -278,7 +278,7 @@
       background: transparent;
       border: none;
       color: var(--artdeco-fg-muted);
-      font-size: var(--artdeco-font-size-lg) // 24px - Compact v3.1;
+      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
       cursor: pointer;
       padding: 0;
       width: 32px;
@@ -309,7 +309,7 @@
 
     .artdeco-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -322,7 +322,7 @@
       border: 1px solid rgba(212, 175, 55, 0.2);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       transition: all var(--artdeco-transition-base);
     }
@@ -347,7 +347,7 @@
 
     .trade-amount-display {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-lg) // 24px - Compact v3.1;
+      font-size: var(--artdeco-font-size-lg); // 24px - Compact v3.1
       font-weight: 700;
       padding: var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
@@ -369,7 +369,7 @@
 
     .max-quantity-display {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-muted);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
@@ -392,7 +392,7 @@
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;

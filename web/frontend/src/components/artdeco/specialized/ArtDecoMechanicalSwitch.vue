@@ -411,7 +411,7 @@
     }
 
     // Disabled state
-    &.is-disabled {
+    .artdeco-mechanical-switch__thumb.is-disabled {
         background: linear-gradient(
             135deg,
             var(--artdeco-bg-primary) 0%,

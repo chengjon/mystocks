@@ -55,6 +55,7 @@ def initialize_realtime_mtm():
         event_bus = None
         try:
             from src.infrastructure.messaging.redis_event_bus import RedisEventBus
+
             event_bus = RedisEventBus(host="localhost", port=6379, db=0)
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
         except Exception as e:
@@ -62,6 +63,7 @@ def initialize_realtime_mtm():
 
         # 初始化适配器
         from web.backend.app.api.realtime_mtm_adapter import initialize_adapter
+
         adapter = initialize_adapter(db_session, event_bus)
 
         logger.info("✅ Real-time MTM system initialized successfully")
@@ -80,6 +82,7 @@ def get_realtime_mtm_adapter():
         RealtimeMTMAdapter: 适配器实例
     """
     from web.backend.app.api.realtime_mtm_adapter import get_realtime_mtm_adapter as get_adapter
+
     return get_adapter()
 
 
@@ -110,6 +113,7 @@ def register_startup_events(app):
     Args:
         app: FastAPI 应用实例
     """
+
     @app.on_event("startup")
     async def startup_event():
         logger.info("🚀 Starting Real-time MTM system...")

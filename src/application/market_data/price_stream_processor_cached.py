@@ -76,12 +76,14 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
             logger.info("⚠️ Cache disabled")
 
         # 扩展指标
-        self.metrics.update({
-            "cache_hits": 0,
-            "cache_misses": 0,
-            "cache_stores": 0,
-            "cache_evictions": 0,
-        })
+        self.metrics.update(
+            {
+                "cache_hits": 0,
+                "cache_misses": 0,
+                "cache_stores": 0,
+                "cache_evictions": 0,
+            }
+        )
 
     async def start(self) -> None:
         """启动处理器"""
@@ -105,11 +107,9 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
 
                 # 存入缓存
                 cache_key = f"portfolio:{portfolio.id}"
-                self.portfolio_cache.set(cache_key, {
-                    "portfolio": portfolio,
-                    "performance": performance,
-                    "cached_at": datetime.now()
-                })
+                self.portfolio_cache.set(
+                    cache_key, {"portfolio": portfolio, "performance": performance, "cached_at": datetime.now()}
+                )
 
                 self.metrics["cache_stores"] += 1
 
@@ -190,9 +190,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                         try:
                             # 调用 PortfolioValuationService 重新计算
                             performance = self.valuation_service.revaluate_portfolio(
-                                portfolio_id=portfolio_id,
-                                prices=prices,
-                                force_save=True
+                                portfolio_id=portfolio_id, prices=prices, force_save=True
                             )
 
                             if performance:
@@ -201,11 +199,14 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                                     cache_key = f"portfolio:{portfolio_id}"
                                     updated_portfolio = self.valuation_service.portfolio_repo.find_by_id(portfolio_id)
 
-                                    self.portfolio_cache.set(cache_key, {
-                                        "portfolio": updated_portfolio,
-                                        "performance": performance,
-                                        "cached_at": datetime.now()
-                                    })
+                                    self.portfolio_cache.set(
+                                        cache_key,
+                                        {
+                                            "portfolio": updated_portfolio,
+                                            "performance": performance,
+                                            "cached_at": datetime.now(),
+                                        },
+                                    )
                                     self.metrics["cache_stores"] += 1
 
                                 logger.info(
@@ -239,8 +240,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                 "cache_misses": self.metrics["cache_misses"],
                 "cache_stores": self.metrics["cache_stores"],
                 "cache_hit_rate": (
-                    self.metrics["cache_hits"] /
-                    (self.metrics["cache_hits"] + self.metrics["cache_misses"])
+                    self.metrics["cache_hits"] / (self.metrics["cache_hits"] + self.metrics["cache_misses"])
                     if (self.metrics["cache_hits"] + self.metrics["cache_misses"]) > 0
                     else 0
                 ),

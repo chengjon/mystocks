@@ -5,9 +5,8 @@
 """
 
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List
-from datetime import datetime
+from pydantic import BaseModel
+from typing import Dict, Any
 
 router = APIRouter(
     prefix="/optimization",
@@ -42,9 +41,7 @@ async def vacuum_database():
     )
 
 
-@router.post(
-    "/analyze", response_model=OptimizationResponse, summary="Analyze Database"
-)
+@router.post("/analyze", response_model=OptimizationResponse, summary="Analyze Database")
 async def analyze_database():
     """
     执行数据库Analyze操作
@@ -62,9 +59,7 @@ async def analyze_database():
     )
 
 
-@router.post(
-    "/reindex", response_model=OptimizationResponse, summary="Reindex Database"
-)
+@router.post("/reindex", response_model=OptimizationResponse, summary="Reindex Database")
 async def reindex_database():
     """
     执行数据库Reindex操作

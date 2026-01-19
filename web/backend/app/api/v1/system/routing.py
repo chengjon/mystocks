@@ -34,9 +34,7 @@ class DataRoutingResponse(BaseModel):
     recommended_strategy: str = Field(..., description="Recommended query strategy")
 
 
-@router.post(
-    "/route", response_model=DataRoutingResponse, summary="Data Routing Decision"
-)
+@router.post("/route", response_model=DataRoutingResponse, summary="Data Routing Decision")
 async def get_data_route(request: DataRoutingRequest):
     """
     根据数据特性和查询条件智能选择数据库路由

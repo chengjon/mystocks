@@ -1,22 +1,22 @@
 项目目录结构检查报告
 =========================
-生成时间: Fri Jan 16 12:45:21 CST 2026
+生成时间: Tue Jan 20 01:58:51 CST 2026
 项目路径: /opt/claude/mystocks_spec
 
 根目录文件统计:
-102
+105
 
 根目录目录统计:
-96
+101
 
 按文件类型统计:
-     18 py
-     15 md
-     11 json
-     10 js
+     20 py
+     12 json
+     11 js
+      9 txt
+      8 sh
+      8 md
       7 ts
-      6 sh
-      5 txt
       3 yml
       2 yaml
       2 ini
@@ -45,4 +45,4 @@
       1 FILE_OWNERSHIP
 
 大文件列表 (>1MB):
-1.2M ./coverage.xml
+4.0M ./coverage.xml

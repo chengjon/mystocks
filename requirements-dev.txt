@@ -1,0 +1,43 @@
+# Development and Testing Dependencies
+# These are additional dependencies for development and testing, separate from production requirements
+
+# Testing Framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+pytest-xdist>=3.5.0
+
+# Type Checking
+mypy>=1.5.0
+types-all>=1.0.0
+
+# Code Quality
+ruff>=0.1.0
+black>=25.11.0
+pre-commit>=3.5.0
+
+# API Testing
+httpx>=0.25.0
+requests-mock>=1.11.0
+
+# Database Testing
+pytest-postgresql>=5.0.0
+
+# Frontend Testing (if needed)
+playwright>=1.40.0
+
+# Performance Testing
+pytest-benchmark>=4.0.0
+
+# Security Testing
+bandit>=1.7.5
+safety>=2.3.0
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.4.0
+
+# Development Tools
+ipykernel>=6.25.0
+jupyter>=1.0.0

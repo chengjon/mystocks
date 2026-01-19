@@ -17,9 +17,9 @@ sys.path.insert(0, project_root)
 
 def test_trading_context_imports():
     """测试交易上下文导入"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试1: Trading Context模块导入")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -31,8 +31,14 @@ def test_trading_context_imports():
         ("Order aggregate root", "from src.domain.trading.model.order import Order"),
         ("Position aggregate root", "from src.domain.trading.model.position import Position"),
         ("IOrderRepository interface", "from src.domain.trading.repository.iorder_repository import IOrderRepository"),
-        ("IPositionRepository interface", "from src.domain.trading.repository.iposition_repository import IPositionRepository"),
-        ("Position events", "from src.domain.trading.model.position import PositionOpenedEvent, PositionIncreasedEvent, PositionDecreasedEvent, StopLossTriggeredEvent"),
+        (
+            "IPositionRepository interface",
+            "from src.domain.trading.repository.iposition_repository import IPositionRepository",
+        ),
+        (
+            "Position events",
+            "from src.domain.trading.model.position import PositionOpenedEvent, PositionIncreasedEvent, PositionDecreasedEvent, StopLossTriggeredEvent",
+        ),
     ]
 
     for test_name, import_statement in tests:
@@ -50,9 +56,9 @@ def test_trading_context_imports():
 
 def test_order_type():
     """测试OrderType值对象"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试2: OrderType值对象")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -99,9 +105,9 @@ def test_order_type():
 
 def test_position_lifecycle():
     """测试Position聚合根生命周期"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试3: Position聚合根生命周期")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -206,6 +212,7 @@ def test_position_lifecycle():
     except Exception as e:
         print(f"❌ Position生命周期测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -215,9 +222,9 @@ def test_position_lifecycle():
 
 def test_position_validation():
     """测试Position验证逻辑"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试4: Position验证逻辑")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -279,6 +286,7 @@ def test_position_validation():
     except Exception as e:
         print(f"❌ Position验证测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -288,9 +296,9 @@ def test_position_validation():
 
 def test_repository_interfaces():
     """测试仓储接口定义"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试5: 仓储接口定义")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -301,9 +309,16 @@ def test_repository_interfaces():
 
         # 检查IOrderRepository方法
         required_methods = [
-            "save", "find_by_id", "find_by_portfolio", "find_by_symbol",
-            "find_by_status", "find_pending_orders", "find_recent_orders",
-            "delete", "exists", "count_by_status"
+            "save",
+            "find_by_id",
+            "find_by_portfolio",
+            "find_by_symbol",
+            "find_by_status",
+            "find_pending_orders",
+            "find_recent_orders",
+            "delete",
+            "exists",
+            "count_by_status",
         ]
 
         for method in required_methods:
@@ -316,8 +331,15 @@ def test_repository_interfaces():
 
         # 检查IPositionRepository方法
         required_methods = [
-            "save", "find_by_id", "find_by_portfolio", "find_by_portfolio_and_symbol",
-            "find_open_positions", "find_by_symbol", "delete", "exists", "count_by_portfolio"
+            "save",
+            "find_by_id",
+            "find_by_portfolio",
+            "find_by_portfolio_and_symbol",
+            "find_open_positions",
+            "find_by_symbol",
+            "delete",
+            "exists",
+            "count_by_portfolio",
         ]
 
         for method in required_methods:
@@ -338,9 +360,9 @@ def test_repository_interfaces():
 
 def test_domain_events_completeness():
     """测试领域事件完整性"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试6: Trading Context领域事件")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -403,6 +425,7 @@ def test_domain_events_completeness():
     except Exception as e:
         print(f"❌ 领域事件测试失败: {e}")
         import traceback
+
         traceback.print_exc()
         failed += 1
 
@@ -412,9 +435,9 @@ def test_domain_events_completeness():
 
 def main():
     """主测试函数"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  Phase 4验证测试: Trading Context")
-    print("="*60)
+    print("=" * 60)
     print(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     total_passed = 0
@@ -446,9 +469,9 @@ def main():
     total_failed += f
 
     # 总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("  测试总结")
-    print("="*60)
+    print("=" * 60)
     print(f"总通过: {total_passed}")
     print(f"总失败: {total_failed}")
     print(f"成功率: {total_passed/(total_passed+total_failed)*100:.1f}%")

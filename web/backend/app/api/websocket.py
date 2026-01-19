@@ -26,9 +26,7 @@ router = APIRouter(prefix="/ws", tags=["websocket"])
 
 @router.websocket("/events")
 async def websocket_events(
-    websocket: WebSocket,
-    token: Optional[str] = Query(None),
-    channels: Optional[str] = Query(None)
+    websocket: WebSocket, token: Optional[str] = Query(None), channels: Optional[str] = Query(None)
 ):
     """
     WebSocket endpoint for real-time events
@@ -47,6 +45,7 @@ async def websocket_events(
     """
     # Generate connection ID
     import time
+
     connection_id = f"ws_{int(time.time() * 1000)}"
 
     # Parse channels
@@ -61,7 +60,7 @@ async def websocket_events(
         websocket=websocket,
         connection_id=connection_id,
         user_id=token,  # Use token as user_id for simplicity (should validate in production)
-        subscribe_channels=subscribe_channels
+        subscribe_channels=subscribe_channels,
     )
 
     logger.info(f"WebSocket client connected: {connection_id}, channels: {subscribe_channels}")
@@ -127,44 +126,43 @@ async def list_channels():
 
     Returns channel descriptions and recommended usage
     """
-    from app.models.event_models import EventChannels
 
     return {
         "channels": {
             "events:tasks": {
                 "description": "All task events (created, started, progress, completed, failed)",
                 "example_use": "Monitor background calculation jobs",
-                "event_types": ["task.created", "task.started", "task.progress", "task.completed", "task.failed"]
+                "event_types": ["task.created", "task.started", "task.progress", "task.completed", "task.failed"],
             },
             "events:task:{task_id}": {
                 "description": "Specific task events (subscribe to individual task)",
                 "example_use": "Monitor a specific calculation job",
-                "event_types": ["task.progress", "task.completed", "task.failed"]
+                "event_types": ["task.progress", "task.completed", "task.failed"],
             },
             "events:market": {
                 "description": "All market data events",
                 "example_use": "Real-time price updates",
-                "event_types": ["market.data.update", "market.price.update"]
+                "event_types": ["market.data.update", "market.price.update"],
             },
             "events:market:{stock_code}": {
                 "description": "Specific stock market events",
                 "example_use": "Monitor specific stock price",
-                "event_types": ["market.price.update"]
+                "event_types": ["market.price.update"],
             },
             "events:indicators": {
                 "description": "All indicator calculation events",
                 "example_use": "Track indicator calculations",
-                "event_types": ["stock.indicators.completed"]
+                "event_types": ["stock.indicators.completed"],
             },
             "events:system": {
                 "description": "System events (heartbeat, status)",
                 "example_use": "Health monitoring",
-                "event_types": ["system.heartbeat"]
-            }
+                "event_types": ["system.heartbeat"],
+            },
         },
         "usage_examples": [
             "ws://localhost:8000/ws/events  # Subscribe to default channels",
             "ws://localhost:8000/ws/events?channels=events:tasks,events:indicators  # Custom channels",
-            "ws://localhost:8000/ws/events?channels=events:task:calc_1234567890  # Specific task"
-        ]
+            "ws://localhost:8000/ws/events?channels=events:task:calc_1234567890  # Specific task",
+        ],
     }

@@ -17,14 +17,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from src.storage.database.database_manager import DatabaseType, DatabaseTableManager
 
+
 class TestDatabaseTableManager:
     """测试数据库表管理器"""
 
     @pytest.fixture
     def db_manager(self):
         """创建数据库管理器实例，Mock 掉监控引擎初始化"""
-        with patch("src.storage.database.database_manager.create_engine"), \
-             patch("src.storage.database.database_manager.sessionmaker"):
+        with (
+            patch("src.storage.database.database_manager.create_engine"),
+            patch("src.storage.database.database_manager.sessionmaker"),
+        ):
             return DatabaseTableManager()
 
     def test_initialization(self, db_manager):
@@ -54,8 +57,10 @@ class TestDatabaseManagerQueryOperations:
     @pytest.fixture
     def db_manager(self):
         """创建数据库管理器实例"""
-        with patch("src.storage.database.database_manager.create_engine"), \
-             patch("src.storage.database.database_manager.sessionmaker"):
+        with (
+            patch("src.storage.database.database_manager.create_engine"),
+            patch("src.storage.database.database_manager.sessionmaker"),
+        ):
             return DatabaseTableManager()
 
     def test_validate_table_structure(self, db_manager):
@@ -63,9 +68,9 @@ class TestDatabaseManagerQueryOperations:
         schema = [
             {"name": "ts", "type": "TIMESTAMP"},
             {"name": "symbol", "type": "BINARY", "length": 20},
-            {"name": "price", "type": "FLOAT"}
+            {"name": "price", "type": "FLOAT"},
         ]
-        
+
         # Mock get_table_info to return matching structure
         with patch.object(db_manager, "get_table_info") as mock_get_info:
             mock_get_info.return_value = {
@@ -73,12 +78,12 @@ class TestDatabaseManagerQueryOperations:
                 "columns": [
                     {"name": "ts", "type": "TIMESTAMP", "nullable": True},
                     {"name": "symbol", "type": "BINARY", "length": 20, "nullable": True},
-                    {"name": "price", "type": "FLOAT", "nullable": True}
-                ]
+                    {"name": "price", "type": "FLOAT", "nullable": True},
+                ],
             }
             # Mock monitor session
             db_manager.monitor_session = MagicMock()
-            
+
             result = db_manager.validate_table_structure(DatabaseType.TDENGINE, "test_db", "test_table", schema)
             assert isinstance(result, dict)
             assert result["matches"] is True
@@ -91,10 +96,10 @@ class TestDatabaseManagerQueryOperations:
         mock_cursor.fetchall.return_value = [
             ("ts", "TIMESTAMP", 8, "PRESET", "YES"),
             ("symbol", "BINARY", 20, "PRESET", "YES"),
-            ("price", "FLOAT", 4, "PRESET", "YES")
+            ("price", "FLOAT", 4, "PRESET", "YES"),
         ]
         mock_connection.cursor.return_value = mock_cursor
-        
+
         with patch.object(db_manager, "get_connection", return_value=mock_connection):
             info = db_manager.get_table_info(DatabaseType.TDENGINE, "test_db", "test_table")
             assert info is not None
@@ -108,8 +113,10 @@ class TestDatabaseManagerDDL:
     @pytest.fixture
     def db_manager(self):
         """创建数据库管理器实例"""
-        with patch("src.storage.database.database_manager.create_engine"), \
-             patch("src.storage.database.database_manager.sessionmaker"):
+        with (
+            patch("src.storage.database.database_manager.create_engine"),
+            patch("src.storage.database.database_manager.sessionmaker"),
+        ):
             return DatabaseTableManager()
 
     def test_generate_postgresql_ddl(self, db_manager):
@@ -117,7 +124,7 @@ class TestDatabaseManagerDDL:
         schema = [
             {"name": "symbol", "type": "VARCHAR", "length": 20},
             {"name": "date", "type": "DATE"},
-            {"name": "close", "type": "DECIMAL", "precision": 10, "scale": 2}
+            {"name": "close", "type": "DECIMAL", "precision": 10, "scale": 2},
         ]
 
         ddl = db_manager._generate_postgresql_ddl("test_table", schema)
@@ -128,13 +135,8 @@ class TestDatabaseManagerDDL:
 
     def test_generate_tdengine_ddl(self, db_manager):
         """测试生成TDengine DDL"""
-        schema = [
-            {"name": "ts", "type": "TIMESTAMP"},
-            {"name": "price", "type": "FLOAT"}
-        ]
-        tags = [
-            {"name": "symbol", "type": "BINARY", "length": 20}
-        ]
+        schema = [{"name": "ts", "type": "TIMESTAMP"}, {"name": "price", "type": "FLOAT"}]
+        tags = [{"name": "symbol", "type": "BINARY", "length": 20}]
 
         ddl = db_manager._generate_tdengine_ddl("test_stable", schema, tags, is_super_table=True)
         assert "CREATE STABLE IF NOT EXISTS test_stable" in ddl
@@ -145,7 +147,7 @@ class TestDatabaseManagerDDL:
         schema = [
             {"name": "id", "type": "INT", "primary_key": True},
             {"name": "symbol", "type": "VARCHAR", "length": 20},
-            {"name": "date", "type": "DATE"}
+            {"name": "date", "type": "DATE"},
         ]
 
         ddl = db_manager._generate_mysql_ddl("test_table", schema)
@@ -160,8 +162,10 @@ class TestDatabaseManagerUtilities:
     @pytest.fixture
     def db_manager(self):
         """创建数据库管理器实例"""
-        with patch("src.storage.database.database_manager.create_engine"), \
-             patch("src.storage.database.database_manager.sessionmaker"):
+        with (
+            patch("src.storage.database.database_manager.create_engine"),
+            patch("src.storage.database.database_manager.sessionmaker"),
+        ):
             return DatabaseTableManager()
 
     def test_close_connections(self, db_manager):

@@ -107,9 +107,7 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
 
 
 @router.put("/{alert_id}")
-async def update_risk_alert(
-    alert_id: int, alert_update: RiskAlertUpdate
-) -> Dict[str, str]:
+async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dict[str, str]:
     """更新风险预警规则"""
     from datetime import datetime as dt
 

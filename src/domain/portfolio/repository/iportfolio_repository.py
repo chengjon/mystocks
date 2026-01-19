@@ -145,9 +145,7 @@ class ITransactionRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_portfolio(
-        self, portfolio_id: str, limit: int = 100
-    ) -> List[Transaction]:
+    def find_by_portfolio(self, portfolio_id: str, limit: int = 100) -> List[Transaction]:
         """
         查找投资组合的所有交易流水
 
@@ -161,9 +159,7 @@ class ITransactionRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_portfolio_and_symbol(
-        self, portfolio_id: str, symbol: str, limit: int = 100
-    ) -> List[Transaction]:
+    def find_by_portfolio_and_symbol(self, portfolio_id: str, symbol: str, limit: int = 100) -> List[Transaction]:
         """
         查找投资组合中特定标的的交易流水
 

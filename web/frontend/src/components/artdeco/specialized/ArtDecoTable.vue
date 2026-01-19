@@ -122,7 +122,7 @@
     }
 
     interface Props {
-        columns: Column[]
+        columns?: Column[]
         data: any[]
         title?: string
         rowKey?: string
@@ -141,6 +141,7 @@
     }
 
     const props = withDefaults(defineProps<Props>(), {
+        columns: () => [],
         title: '',
         rowKey: 'id',
         pagination: false,

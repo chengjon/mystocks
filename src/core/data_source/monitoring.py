@@ -29,6 +29,7 @@ def _create_handler(self, endpoint_info: Dict):
 
     return handler_class(endpoint_info)
 
+
 def _select_api_handler(self, source_name: str):
     """根据数据源名称选择处理器"""
     from src.core.data_source_handlers_v2 import AkshareHandler, TushareHandler
@@ -36,6 +37,7 @@ def _select_api_handler(self, source_name: str):
     handler_map = {"akshare": AkshareHandler, "tushare": TushareHandler, "baostock": TushareHandler}  # 复用
 
     return handler_map.get(source_name, AkshareHandler)
+
 
 def _identify_caller(self) -> str:
     """识别调用方"""
@@ -51,9 +53,11 @@ def _identify_caller(self) -> str:
 
     return "unknown"
 
+
 # ==========================================================================
 # 监控和记录
 # ==========================================================================
+
 
 def _record_success(self, endpoint_name: str, response_time: float, record_count: int, caller: str):
     """记录成功调用"""
@@ -91,6 +95,7 @@ def _record_success(self, endpoint_name: str, response_time: float, record_count
         record_count=record_count,
         caller=caller,
     )
+
 
 def _record_failure(self, endpoint_name: str, response_time: float, error_message: str, caller: str):
     """记录失败调用"""

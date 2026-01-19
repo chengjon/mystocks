@@ -62,13 +62,13 @@ class SnapshotService:
         """优化：使用智能路由获取实时价格"""
         if not self.data_source_manager:
             return None
-            
+
         try:
             # 动态查找最佳实时行情接口
             endpoint = self.data_source_manager.get_best_endpoint("REALTIME_QUOTE")
             if not endpoint:
                 return None
-                
+
             data = self.data_source_manager._call_endpoint(endpoint, symbols=[stock_code])
             if data is not None and not data.empty:
                 row = data.iloc[0]
@@ -87,27 +87,27 @@ class SnapshotService:
         """优化：使用智能路由获取历史数据并计算"""
         if not self.data_source_manager:
             return 0.0
-            
+
         try:
             # 动态查找最佳日线接口
             endpoint = self.data_source_manager.get_best_endpoint("DAILY_KLINE")
             if not endpoint:
                 return 0.0
-                
+
             data = self.data_source_manager._call_endpoint(endpoint, symbol=stock_code)
             if data is not None and not data.empty:
                 # 截取计算所需长度
-                if len(data) > lookback_days + 50: # 多取一点缓冲
+                if len(data) > lookback_days + 50:  # 多取一点缓冲
                     data = data.tail(lookback_days + 50)
 
                 # 使用工厂计算指标
                 result = self.indicator_factory.calculate(indicator_id, data)
-                
+
                 if isinstance(result, pd.Series):
                     return float(result.iloc[-1]) if not result.empty else 0.0
                 elif isinstance(result, pd.DataFrame):
                     # 处理 MACD 等返回多列的情况
-                    col = indicator_id.split('.')[0] if '.' in indicator_id else result.columns[0]
+                    col = indicator_id.split(".")[0] if "." in indicator_id else result.columns[0]
                     return float(result[col].iloc[-1]) if not result.empty else 0.0
         except Exception as e:
             logger.debug(f"Indicator calculation failed for {stock_code}/{indicator_id}: {e}")

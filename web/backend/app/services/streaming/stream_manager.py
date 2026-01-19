@@ -82,9 +82,7 @@ class StreamManager:
 
         logger.info("✅ Unified Stream Manager initialized")
 
-    async def subscribe(
-        self, symbols: List[str], subscriber_id: str = "default"
-    ) -> Dict[str, bool]:
+    async def subscribe(self, symbols: List[str], subscriber_id: str = "default") -> Dict[str, bool]:
         """
         订阅股票实时数据流
 
@@ -103,9 +101,7 @@ class StreamManager:
                     subscription = self.subscriptions[symbol]
                     subscription.subscribers.add(subscriber_id)
                     results[symbol] = True
-                    logger.debug(
-                        f"Added subscriber {subscriber_id} to existing stream {symbol}"
-                    )
+                    logger.debug(f"Added subscriber {subscriber_id} to existing stream {symbol}")
                     continue
 
                 subscription = StreamSubscription(symbol=symbol)
@@ -125,9 +121,7 @@ class StreamManager:
                 results[symbol] = success
 
                 if success:
-                    logger.info(
-                        f"Successfully subscribed to {symbol} via {adapter_name}"
-                    )
+                    logger.info(f"Successfully subscribed to {symbol} via {adapter_name}")
                 else:
                     logger.error(f"Failed to start stream for {symbol}")
 
@@ -137,9 +131,7 @@ class StreamManager:
 
         return results
 
-    async def unsubscribe(
-        self, symbols: List[str], subscriber_id: str = "default"
-    ) -> Dict[str, bool]:
+    async def unsubscribe(self, symbols: List[str], subscriber_id: str = "default") -> Dict[str, bool]:
         """
         取消订阅
 
@@ -193,11 +185,7 @@ class StreamManager:
         Returns:
             活跃流符号列表
         """
-        return [
-            symbol
-            for symbol, sub in self.subscriptions.items()
-            if sub.status == StreamStatus.ACTIVE
-        ]
+        return [symbol for symbol, sub in self.subscriptions.items() if sub.status == StreamStatus.ACTIVE]
 
     def add_event_handler(self, event_type: str, handler: Callable) -> None:
         """
@@ -372,13 +360,9 @@ class StreamManager:
                     continue
 
                 if subscription.last_update:
-                    time_since_update = (
-                        datetime.now() - subscription.last_update
-                    ).total_seconds()
+                    time_since_update = (datetime.now() - subscription.last_update).total_seconds()
                     if time_since_update > self.heartbeat_interval * 2:
-                        logger.warning(
-                            f"No data received for {symbol} in {time_since_update:.1f}s"
-                        )
+                        logger.warning(f"No data received for {symbol} in {time_since_update:.1f}s")
 
             except asyncio.CancelledError:
                 break

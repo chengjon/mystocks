@@ -34,6 +34,28 @@ declare module 'vue-router' {
 }
 
 const routes: RouteRecordRaw[] = [
+  // ========== 测试路由 ==========
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/views/Test.vue'),
+    meta: {
+      title: 'Test Page',
+      requiresAuth: false
+    }
+  },
+
+  // ArtDeco 组件测试页面
+  {
+    path: '/artdeco/test',
+    name: 'artdeco-test',
+    component: () => import('@/views/ArtDecoTest.vue'),
+    meta: {
+      title: 'ArtDeco Component Test',
+      requiresAuth: false
+    }
+  },
+
   // ========== 公开路由 ==========
   {
     path: '/login',
@@ -45,15 +67,210 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
-  // ========== Dashboard域 (MainLayout) ==========
+   // ========== ArtDeco 主菜单系统 ==========
+   // 使用统一的ArtDecoLayout提供菜单导航
+
+   // ArtDeco 主页路由 - MyStocks 指挥中心 (仪表盘)
+   {
+     path: '/',
+     name: 'home',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/dashboard',
+     children: [
+       {
+         path: '/dashboard',
+         name: 'dashboard',
+         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
+         meta: {
+           title: '仪表盘',
+           icon: '🏛️',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 市场行情
+   {
+     path: '/market',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/market/data',
+     children: [
+       {
+         path: 'data',
+         name: 'market-data',
+         component: () => import('@/views/artdeco-pages/ArtDecoMarketData.vue'),
+         meta: {
+           title: '市场行情',
+           icon: '📊',
+           requiresAuth: false
+         }
+       },
+       {
+         path: 'quotes',
+         name: 'market-quotes',
+         component: () => import('@/views/artdeco-pages/ArtDecoMarketQuotes.vue'),
+         meta: {
+           title: '行情报价',
+           icon: '📈',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 股票管理
+   {
+     path: '/stocks',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/stocks/management',
+     children: [
+       {
+         path: 'management',
+         name: 'stock-management',
+         component: () => import('@/views/artdeco-pages/ArtDecoStockManagement.vue'),
+         meta: {
+           title: '股票管理',
+           icon: '📋',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 投资分析
+   {
+     path: '/analysis',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/analysis/data',
+     children: [
+       {
+         path: 'data',
+         name: 'data-analysis',
+         component: () => import('@/views/artdeco-pages/ArtDecoDataAnalysis.vue'),
+         meta: {
+           title: '投资分析',
+           icon: '🔍',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 风险管理
+   {
+     path: '/risk',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/risk/management',
+     children: [
+       {
+         path: 'management',
+         name: 'risk-management',
+         component: () => import('@/views/artdeco-pages/ArtDecoRiskManagement.vue'),
+         meta: {
+           title: '风险管理',
+           icon: '⚠️',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 策略和交易管理
+   {
+     path: '/strategy',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/strategy/trading',
+     children: [
+       {
+         path: 'trading',
+         name: 'trading-management',
+         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         meta: {
+           title: '策略和交易管理',
+           icon: '💰',
+           requiresAuth: false
+         }
+       },
+       {
+         path: 'backtest',
+         name: 'strategy-backtest',
+         component: () => import('@/views/artdeco-pages/ArtDecoTradingCenter.vue'),
+         meta: {
+           title: '策略回测',
+           icon: '🔬',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ArtDeco 系统监控
+   {
+     path: '/system',
+     component: () => import('@/layouts/ArtDecoLayout.vue'),
+     redirect: '/system/monitoring',
+     children: [
+       {
+         path: 'monitoring',
+         name: 'system-monitoring',
+         component: () => import('@/views/artdeco-pages/ArtDecoSettings.vue'),
+         meta: {
+           title: '系统监控',
+           icon: '⚙️',
+           requiresAuth: false
+         }
+       }
+     ]
+   },
+
+   // ========== 兼容旧的ArtDeco路由 (重定向到新结构) ==========
+   {
+     path: '/artdeco/market',
+     redirect: '/market/data'
+   },
+   {
+     path: '/artdeco/market-quotes',
+     redirect: '/market/quotes'
+   },
+   {
+     path: '/artdeco/stock-management',
+     redirect: '/stocks/management'
+   },
+   {
+     path: '/artdeco/analysis',
+     redirect: '/analysis/data'
+   },
+   {
+     path: '/artdeco/risk',
+     redirect: '/risk/management'
+   },
+   {
+     path: '/artdeco/trading',
+     redirect: '/strategy/trading'
+   },
+   {
+     path: '/artdeco/backtest',
+     redirect: '/strategy/backtest'
+   },
+   {
+     path: '/artdeco/settings',
+     redirect: '/system/monitoring'
+   },
+
+  // ========== 保留原有路由结构 (已禁用，统一使用ArtDeco) ==========
+  // ========== Dashboard域 (MainLayout) - DISABLED ==========
+  // 注释原因: 统一使用ArtDecoLayout + ArtDecoDashboard
+  // Date: 2026-01-19
+  /*
   {
-    path: '/',
+    path: '/dashboard',
     component: () => import('@/layouts/MainLayout.vue'),
-    redirect: '/dashboard',
+    redirect: '/dashboard/overview',
     meta: { requiresAuth: false },
     children: [
       {
-        path: 'dashboard',
+        path: 'overview',
         name: 'dashboard',
         component: () => import('@/views/Dashboard.vue'),
         meta: { title: 'Overview', icon: '📊', breadcrumb: 'Dashboard' }
@@ -95,6 +312,7 @@ const routes: RouteRecordRaw[] = [
       }
     ]
   },
+  */
 
   // ========== Market Data域 (MarketLayout) ==========
   {

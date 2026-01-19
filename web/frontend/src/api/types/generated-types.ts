@@ -1,8 +1,9 @@
 // Auto-generated TypeScript types from backend Pydantic models
 // Generated at: 2026-01-10T18:22:30.192591
 
-// Re-export types from common.ts to avoid duplicates
-export type { BacktestResultSummary, BacktestResult, BacktestRequest, BacktestResponse, BacktestTrade } from './common';
+// Re-export types from strategy.ts to avoid duplicates
+export type { BacktestRequest, BacktestResponse } from './strategy';
+export type { BacktestResultSummary, BacktestTrade } from './common';
 
 // Standard Unified Response Wrapper
 export interface UnifiedResponse<TData = any> {
@@ -1812,7 +1813,7 @@ export interface PortfolioSummary {
   total_profit_loss?: number;
   total_profit_loss_percent?: number;
   position_count?: number;
-  positions?: import('./common').PositionItem[];
+  positions?: import('./common').Position[];
 }
 
 export interface PortfolioSummaryResponse {
@@ -1828,8 +1829,8 @@ export interface PortfolioSummaryResponse {
   rebalance_count?: number;
 }
 
-// Position and PositionItem are defined in common.ts - re-export for compatibility
-export type { Position as PositionAlias, PositionItem } from './common';
+// Position is defined in common.ts - re-export for compatibility
+export type { Position } from './common';
 
 export interface PositionsResponse {
   positions?: import('./common').Position[];

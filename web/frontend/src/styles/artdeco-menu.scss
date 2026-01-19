@@ -1,0 +1,134 @@
+// web/frontend/src/styles/artdeco-menu.scss
+@import './artdeco-tokens.scss'; // Assuming artdeco-tokens.scss is in the same directory
+
+.artdeco-sidebar {
+  background: var(--artdeco-bg-global);
+  border-right: 2px solid var(--artdeco-gold-primary);
+  position: relative;
+
+  // ArtDeco装饰性双重边框
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 3px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--artdeco-gold-primary) 0%,
+      var(--artdeco-gold-dim) 50%,
+      var(--artdeco-gold-primary) 100%
+    );
+  }
+}
+
+.nav-item {
+  // ArtDeco几何角落装饰
+  .nav-link {
+    position: relative;
+    padding: var(--spacing-sm) var(--spacing-md); // Ensure consistent padding
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    &::before {
+      top: 4px;
+      left: 4px;
+      border-top-color: var(--artdeco-gold-dim);
+      border-left-color: var(--artdeco-gold-dim);
+    }
+
+    &::after {
+      bottom: 4px;
+      right: 4px;
+      border-bottom-color: var(--artdeco-gold-dim);
+      border-right-color: var(--artdeco-gold-dim);
+    }
+
+    &:hover::before,
+    &:hover::after {
+      width: 12px;
+      height: 12px;
+      border-color: var(--artdeco-gold-primary);
+    }
+  }
+
+  // 激活状态：金色发光
+  &.active .nav-link {
+    color: var(--artdeco-gold-hover);
+    background: linear-gradient(
+      90deg,
+      rgba(212, 175, 55, 0.15) 0%,
+      rgba(212, 175, 55, 0.05) 100%
+    );
+    border-left-color: var(--artdeco-gold-primary);
+    border-left-width: 4px;
+    box-shadow:
+      inset 0 0 20px rgba(212, 175, 55, 0.1),
+      0 0 10px rgba(212, 175, 55, 0.2);
+  }
+
+  // 特色功能：放射状装饰
+  &.nav-item--featured { // Changed from .featured to .nav-item--featured to match template
+    background-image:
+      repeating-conic-gradient(
+        from 0deg,
+        transparent 0deg 15deg,
+        rgba(212, 175, 55, 0.03) 15deg 30deg
+      );
+  }
+
+  &.priority-primary {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+
+    &.nav-item--featured {
+      // 金色光晕效果
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+  }
+
+  &.priority-secondary {
+    font-weight: 400;
+  }
+
+  &.priority-tertiary {
+    font-weight: 300;
+    opacity: 0.8;
+  }
+}
+
+// 实时状态指示器
+.live-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: auto;
+  flex-shrink: 0; // Prevent shrinking
+
+  &.status-live {
+    background: var(--artdeco-up, #28a745); // Default green if token not found
+    animation: pulse 2s infinite;
+  }
+
+  &.status-idle {
+    background: var(--artdeco-fg-muted, #888888); // Default gray
+  }
+
+  &.status-error {
+    background: var(--artdeco-error, #dc3545); // Default red
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); } // Using default green
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(40, 167, 69, 0); }
+}

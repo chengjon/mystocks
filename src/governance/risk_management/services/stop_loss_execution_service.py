@@ -286,9 +286,11 @@ class StopLossExecutionService:
                     "highest_price": position.highest_price,
                     "is_active": position.is_active,
                     "last_check_time": position.last_check_time,
-                    "time_since_last_check": (datetime.now() - position.last_check_time).total_seconds()
-                    if position.last_check_time
-                    else None,
+                    "time_since_last_check": (
+                        (datetime.now() - position.last_check_time).total_seconds()
+                        if position.last_check_time
+                        else None
+                    ),
                 }
             else:
                 # 返回所有监控持仓的概览

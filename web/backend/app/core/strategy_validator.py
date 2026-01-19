@@ -5,9 +5,9 @@
 
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 import hashlib
 import json
 
@@ -15,13 +15,9 @@ from prometheus_client import Counter, Gauge, Histogram
 
 # ==================== 校验指标 ====================
 
-STRATEGY_VALIDATION_COUNT = Counter(
-    "strategy_validation_total", "策略校验总次数", ["strategy_name", "result"]
-)
+STRATEGY_VALIDATION_COUNT = Counter("strategy_validation_total", "策略校验总次数", ["strategy_name", "result"])
 
-STRATEGY_ACCURACY_SCORE = Gauge(
-    "strategy_accuracy_score", "策略准确性评分(0-100)", ["strategy_name"]
-)
+STRATEGY_ACCURACY_SCORE = Gauge("strategy_accuracy_score", "策略准确性评分(0-100)", ["strategy_name"])
 
 STRATEGY_VALIDATION_TIME = Histogram(
     "strategy_validation_duration_seconds",
@@ -81,9 +77,7 @@ class StrategyValidator:
         self.benchmarks[strategy_name] = benchmark_result
         print(f"✅ 已注册策略 '{strategy_name}' 的基准结果")
 
-    def create_benchmark_from_backtest(
-        self, strategy_name: str, backtest_results: Dict[str, Any]
-    ) -> BenchmarkResult:
+    def create_benchmark_from_backtest(self, strategy_name: str, backtest_results: Dict[str, Any]) -> BenchmarkResult:
         """从回测结果创建基准"""
         # 计算关键指标
         returns = backtest_results.get("returns", [])
@@ -109,9 +103,7 @@ class StrategyValidator:
         risk_free_rate = 0.03
         excess_returns = pd.Series(returns) - risk_free_rate / days_per_year
         sharpe_ratio = (
-            excess_returns.mean() / excess_returns.std() * np.sqrt(days_per_year)
-            if excess_returns.std() > 0
-            else 0
+            excess_returns.mean() / excess_returns.std() * np.sqrt(days_per_year) if excess_returns.std() > 0 else 0
         )
 
         # 胜率和交易统计
@@ -135,9 +127,7 @@ class StrategyValidator:
             "total_trades": total_trades,
             "avg_profit_per_trade": avg_profit_per_trade,
         }
-        result_hash = hashlib.sha256(
-            json.dumps(result_data, sort_keys=True).encode()
-        ).hexdigest()
+        result_hash = hashlib.sha256(json.dumps(result_data, sort_keys=True).encode()).hexdigest()
 
         benchmark = BenchmarkResult(
             strategy_name=strategy_name,
@@ -154,9 +144,7 @@ class StrategyValidator:
         self.register_benchmark(strategy_name, benchmark)
         return benchmark
 
-    def validate_strategy_result(
-        self, strategy_name: str, current_results: Dict[str, Any]
-    ) -> ValidationResult:
+    def validate_strategy_result(self, strategy_name: str, current_results: Dict[str, Any]) -> ValidationResult:
         """校验策略结果"""
         start_time = datetime.now()
 
@@ -184,11 +172,7 @@ class StrategyValidator:
             for metric, benchmark_value in benchmark_dict.items():
                 current_value = current_metrics.get(metric, 0)
                 if benchmark_value != 0:
-                    deviation = (
-                        abs(current_value - benchmark_value)
-                        / abs(benchmark_value)
-                        * 100
-                    )
+                    deviation = abs(current_value - benchmark_value) / abs(benchmark_value) * 100
                 else:
                     deviation = abs(current_value) * 100 if current_value != 0 else 0
                 deviations[metric] = deviation
@@ -198,9 +182,7 @@ class StrategyValidator:
             accuracy_score = max(0, 100 - sum(deviations.values()) / len(deviations))
 
             # 判定是否通过校验
-            is_valid = all(
-                deviation <= max_allowed_deviation for deviation in deviations.values()
-            )
+            is_valid = all(deviation <= max_allowed_deviation for deviation in deviations.values())
 
             # 创建校验结果
             result = ValidationResult(
@@ -219,9 +201,7 @@ class StrategyValidator:
             # 记录到历史
             self.validation_history.append(result)
             if len(self.validation_history) > self.max_history_size:
-                self.validation_history = self.validation_history[
-                    -self.max_history_size :
-                ]
+                self.validation_history = self.validation_history[-self.max_history_size :]
 
             # 更新监控指标
             self._update_monitoring_metrics(result)
@@ -240,9 +220,7 @@ class StrategyValidator:
                 error_message=str(e),
             )
 
-            STRATEGY_VALIDATION_COUNT.labels(
-                strategy_name=strategy_name, result="error"
-            ).inc()
+            STRATEGY_VALIDATION_COUNT.labels(strategy_name=strategy_name, result="error").inc()
             return error_result
 
     def _calculate_metrics(self, results: Dict[str, Any]) -> Dict[str, Any]:
@@ -270,9 +248,7 @@ class StrategyValidator:
         risk_free_rate = 0.03
         excess_returns = pd.Series(returns) - risk_free_rate / days_per_year
         sharpe_ratio = (
-            excess_returns.mean() / excess_returns.std() * np.sqrt(days_per_year)
-            if excess_returns.std() > 0
-            else 0
+            excess_returns.mean() / excess_returns.std() * np.sqrt(days_per_year) if excess_returns.std() > 0 else 0
         )
 
         # 交易统计
@@ -300,29 +276,19 @@ class StrategyValidator:
         """更新监控指标"""
         # 校验计数
         result_label = "passed" if result.is_valid else "failed"
-        STRATEGY_VALIDATION_COUNT.labels(
-            strategy_name=result.strategy_name, result=result_label
-        ).inc()
+        STRATEGY_VALIDATION_COUNT.labels(strategy_name=result.strategy_name, result=result_label).inc()
 
         # 准确性评分
-        STRATEGY_ACCURACY_SCORE.labels(strategy_name=result.strategy_name).set(
-            result.accuracy_score
-        )
+        STRATEGY_ACCURACY_SCORE.labels(strategy_name=result.strategy_name).set(result.accuracy_score)
 
         # 校验耗时
-        STRATEGY_VALIDATION_TIME.labels(strategy_name=result.strategy_name).observe(
-            result.execution_time
-        )
+        STRATEGY_VALIDATION_TIME.labels(strategy_name=result.strategy_name).observe(result.execution_time)
 
         # 基准偏差
         for metric, deviation in result.deviations.items():
-            BENCHMARK_DEVIATION.labels(
-                strategy_name=result.strategy_name, metric=metric
-            ).set(deviation)
+            BENCHMARK_DEVIATION.labels(strategy_name=result.strategy_name, metric=metric).set(deviation)
 
-    def get_validation_history(
-        self, strategy_name: Optional[str] = None, limit: int = 50
-    ) -> List[ValidationResult]:
+    def get_validation_history(self, strategy_name: Optional[str] = None, limit: int = 50) -> List[ValidationResult]:
         """获取校验历史"""
         history = self.validation_history
         if strategy_name:
@@ -330,9 +296,7 @@ class StrategyValidator:
 
         return history[-limit:]
 
-    def get_validation_summary(
-        self, strategy_name: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def get_validation_summary(self, strategy_name: Optional[str] = None) -> Dict[str, Any]:
         """获取校验汇总统计"""
         history = self.get_validation_history(strategy_name)
 
@@ -365,14 +329,10 @@ strategy_validator = StrategyValidator()
 
 def register_strategy_benchmark(strategy_name: str, backtest_results: Dict[str, Any]):
     """便捷函数：注册策略基准"""
-    return strategy_validator.create_benchmark_from_backtest(
-        strategy_name, backtest_results
-    )
+    return strategy_validator.create_benchmark_from_backtest(strategy_name, backtest_results)
 
 
-def validate_strategy(
-    strategy_name: str, current_results: Dict[str, Any]
-) -> ValidationResult:
+def validate_strategy(strategy_name: str, current_results: Dict[str, Any]) -> ValidationResult:
     """便捷函数：校验策略结果"""
     return strategy_validator.validate_strategy_result(strategy_name, current_results)
 

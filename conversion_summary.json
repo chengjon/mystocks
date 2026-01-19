@@ -1,0 +1,22 @@
+{
+  "total_files": 9,
+  "converted_files": [
+    "web/frontend/src/views/converted/stock-management.vue",
+    "web/frontend/src/views/converted/backtest-management.vue",
+    "web/frontend/src/views/converted/setting.vue",
+    "web/frontend/src/views/converted/data-analysis.vue",
+    "web/frontend/src/views/converted/market-data.vue",
+    "web/frontend/src/views/converted/trading-management.vue",
+    "web/frontend/src/views/converted/risk-management.vue",
+    "web/frontend/src/views/converted/dashboard.vue",
+    "web/frontend/src/views/converted/market-quotes.vue"
+  ],
+  "conversion_date": "2026-01-16",
+  "artdeco_components_used": [
+    "ArtDecoCard",
+    "ArtDecoHeader",
+    "ArtDecoTable",
+    "ArtDecoKLineChartContainer",
+    "ArtDecoSidebar"
+  ]
+}

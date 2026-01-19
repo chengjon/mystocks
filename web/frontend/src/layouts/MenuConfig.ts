@@ -11,6 +11,17 @@ export interface MenuItem {
   icon: string
   badge?: string | number
   description?: string
+  children?: MenuItem[]
+  disabled?: boolean
+  divider?: boolean
+  apiEndpoint?: string
+  apiMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  liveUpdate?: boolean
+  wsChannel?: string
+  priority?: 'primary' | 'secondary' | 'tertiary'
+  featured?: boolean
+  lastUpdate?: number // Timestamp
+  count?: number
 }
 
 // ========== Dashboard域菜单 ==========
@@ -214,6 +225,89 @@ export const MONITORING_MENU_ITEMS: MenuItem[] = [
   }
 ]
 
+// ========== ArtDeco 菜单配置 (新设计) ==========
+export const ARTDECO_MENU_ITEMS: MenuItem[] = [
+  { 
+    path: '/dashboard', 
+    label: '仪表盘', 
+    icon: '📊', 
+    description: '汇总信息、市场热度、资金流向、股票池表现',
+    apiEndpoint: '/api/dashboard/overview',
+    apiMethod: 'GET',
+    liveUpdate: false,
+    wsChannel: undefined,
+    priority: 'primary',
+    featured: true
+  },
+  { 
+    path: '/market/data', 
+    label: '市场行情', 
+    icon: '📊', 
+    description: '实时行情、TDX接口、资金流向、ETF、概念、龙虎榜',
+    apiEndpoint: '/api/market/realtime-summary',
+    apiMethod: 'GET',
+    liveUpdate: true,
+    wsChannel: 'market:summary',
+    priority: 'primary',
+    featured: true
+  },
+  { 
+    path: '/stocks/management', 
+    label: '股票管理', 
+    icon: '📋', 
+    description: '自选股、关注列表、策略选股、行业选股',
+    apiEndpoint: '/api/user/stock-management-summary',
+    apiMethod: 'GET',
+    liveUpdate: false,
+    wsChannel: undefined,
+    priority: 'secondary'
+  },
+  { 
+    path: '/analysis/data', 
+    label: '投资分析', 
+    icon: '🔍', 
+    description: '技术分析、基本面分析、指标分析、筛选',
+    apiEndpoint: '/api/analysis/summary',
+    apiMethod: 'GET',
+    liveUpdate: false,
+    wsChannel: undefined,
+    priority: 'secondary'
+  },
+  { 
+    path: '/risk/management', 
+    label: '风险管理', 
+    icon: '⚠️', 
+    description: '个股预警设置、风险指标管理、舆情管理、个股/监控列表的风险表现，因子分析等',
+    apiEndpoint: '/api/risk/overview',
+    apiMethod: 'GET',
+    liveUpdate: true,
+    wsChannel: 'risk:overview',
+    priority: 'secondary'
+  },
+  { 
+    path: '/strategy/trading', 
+    label: '策略和交易管理', 
+    icon: '💰', 
+    description: '策略的设计、管理、测试，GPU加速回测，交易信号，交易历史记录，持仓分析，事后归因等',
+    apiEndpoint: '/api/strategy/overview',
+    apiMethod: 'GET',
+    liveUpdate: true,
+    wsChannel: 'strategy:overview',
+    priority: 'secondary'
+  },
+  { 
+    path: '/system/monitoring', 
+    label: '系统监控', 
+    icon: '⚙️', 
+    description: '平台监控、系统设置、数据更新、数据质量监控',
+    apiEndpoint: '/api/monitoring/platform-status',
+    apiMethod: 'GET',
+    liveUpdate: true,
+    wsChannel: 'system:status',
+    priority: 'secondary'
+  }
+]
+
 // ========== 菜单映射表 ==========
 export const MENU_CONFIG_MAP = {
   MainLayout: DASHBOARD_MENU_ITEMS,
@@ -221,7 +315,9 @@ export const MENU_CONFIG_MAP = {
   DataLayout: ANALYSIS_MENU_ITEMS,
   RiskLayout: RISK_MENU_ITEMS,
   StrategyLayout: STRATEGY_MENU_ITEMS,
-  MonitoringLayout: MONITORING_MENU_ITEMS
+  MonitoringLayout: MONITORING_MENU_ITEMS,
+  // 新增 ArtDeco 布局映射
+  ArtDecoDashboard: ARTDECO_MENU_ITEMS
 } as const
 
 // ========== 类型导出 ==========

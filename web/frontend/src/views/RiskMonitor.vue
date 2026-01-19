@@ -1,62 +1,70 @@
 <template>
-  <div class="risk-monitor">
+  <div class="risk-monitor artdeco-page">
 
-    <!-- 页面头部 -->
-    <PageHeader
-      title="RISK MANAGEMENT DASHBOARD"
+    <!-- Art Deco Header -->
+    <ArtDecoHeader
+      :title="'RISK MANAGEMENT DASHBOARD'"
       subtitle="REAL-TIME RISK MONITORING | VaR | CVaR | BETA ANALYSIS"
+      variant="gold-accent"
     />
 
-    <!-- 统计卡片网格 -->
+    <!-- Art Deco Risk Metrics Grid -->
     <div class="metrics-grid">
-        :title="stats[0].title"
+      <ArtDecoStatCard
+        :label="stats[0].title"
         :value="stats[0].value"
-        :icon="stats[0].icon"
-        :color="stats[0].color"
-        :description="stats[0].description"
-        hoverable
+        variant="primary"
+        :animated="true"
       />
-        :title="stats[1].title"
+
+      <ArtDecoStatCard
+        :label="stats[1].title"
         :value="stats[1].value"
-        :icon="stats[1].icon"
-        :color="stats[1].color"
-        :description="stats[1].description"
-        hoverable
+        variant="success"
+        :animated="true"
       />
-        :title="stats[2].title"
+
+      <ArtDecoStatCard
+        :label="stats[2].title"
         :value="stats[2].value"
-        :icon="stats[2].icon"
-        :color="stats[2].color"
-        :description="stats[2].description"
-        hoverable
+        variant="warning"
+        :animated="true"
       />
-        :title="stats[3].title"
+
+      <ArtDecoStatCard
+        :label="stats[3].title"
         :value="stats[3].value"
-        :icon="stats[3].icon"
-        :color="stats[3].color"
-        :description="stats[3].description"
-        hoverable
+        variant="danger"
+        :animated="true"
       />
     </div>
 
     <div class="content-grid">
-      <el-card title="I. RISK METRICS HISTORY" hoverable>
-          <template #header>
-            <div class="card-header">
-              <span>RISK METRICS HISTORY</span>
-              <div class="header-actions">
-                <el-select v-model="historyPeriod" @change="loadMetricsHistory" class="select">
-                  <el-option label="7 DAYS" value="7d" />
-                  <el-option label="30 DAYS" value="30d" />
-                  <el-option label="90 DAYS" value="90d" />
-                </el-select>
-                <el-button type="info" size="small" @click="loadMetricsHistory" :loading="historyLoading">
-                  REFRESH
-                </el-button>
-              </div>
-            </div>
-          </template>
+      <ArtDecoCard variant="luxury" :decorated="true">
+        <template #header>
+          <div class="risk-header">
+            <ArtDecoBadge variant="gold">RISK METRICS HISTORY</ArtDecoBadge>
+            <ArtDecoSelect
+              v-model="historyPeriod"
+              :options="[
+                { label: '7 DAYS', value: '7d' },
+                { label: '30 DAYS', value: '30d' },
+                { label: '90 DAYS', value: '90d' }
+              ]"
+              @change="loadMetricsHistory"
+            <ArtDecoButton
+              variant="primary"
+              size="small"
+              :loading="historyLoading"
+              @click="loadMetricsHistory"
+            >
+              REFRESH
+            </ArtDecoButton>
+          </div>
+        </template>
 
+        <!-- Risk Metrics Chart -->
+        <div class="chart-container">
           <ChartContainer
             ref="riskChartRef"
             chart-type="line"
@@ -65,64 +73,94 @@
             height="300px"
             :loading="historyLoading"
           />
-        </el-card>
+        </div>
+      </ArtDecoCard>
       </div>
 
       <div class="content-grid">
-        <el-card title="II. RISK ALERTS" hoverable>
+        <ArtDecoCard variant="luxury" :decorated="true">
           <template #header>
-            <div class="card-header">
-              <span>RISK ALERTS</span>
-              <el-button type="primary" size="small" @click="showCreateAlertDialog">
-                NEW ALERT
-              </el-button>
+            <div class="alerts-header">
+              <ArtDecoBadge variant="warning">RISK ALERTS</ArtDecoBadge>
+              <ArtDecoButton
+                variant="primary"
+                size="small"
+                @click="showCreateAlertDialog"
+              >
+                CREATE ALERT
+              </ArtDecoButton>
             </div>
           </template>
 
-          <el-scrollbar max-height="300px">
+          <div class="alerts-container">
             <div v-if="alertsLoading" class="loading-container">
-              <el-skeleton :rows="3" animated />
+              <div class="artdeco-loading">
+                <div class="loading-spinner"></div>
+                <span class="loading-text">LOADING ALERTS...</span>
+              </div>
             </div>
 
             <div v-else-if="alerts.length > 0" class="alerts-list">
               <div v-for="alert in alerts" :key="alert.id" class="alert-item">
                 <div class="alert-header">
-                  <el-tag :type="getAlertBadgeVariant(alert.level)">
+                  <ArtDecoBadge :variant="getAlertBadgeVariant(alert.level)">
                     {{ alert.level.toUpperCase() }}
-                  </el-tag>
-                  <span class="alert-time">{{ formatTime(alert.created_at) }}</span>
+                  </ArtDecoBadge>
+                  <span class="alert-time artdeco-mono">{{ formatTime(alert.created_at) }}</span>
                 </div>
                 <div class="alert-content">
-                  <p class="alert-title">{{ alert.title }}</p>
+                  <h4 class="alert-title">{{ alert.title }}</h4>
                   <p class="alert-description">{{ alert.description }}</p>
                 </div>
                 <div class="alert-actions">
-                  <el-button type="info" size="small" @click="viewAlertDetail(alert)">
+                  <ArtDecoButton
+                    variant="outline"
+                    size="small"
+                    @click="viewAlertDetail(alert)"
+                  >
                     VIEW DETAILS
-                  </el-button>
+                  </ArtDecoButton>
                 </div>
               </div>
             </div>
 
-            <el-empty v-else description="NO ACTIVE ALERTS" :image-size="80" />
-          </el-scrollbar>
-        </el-card>
+            <div v-else class="empty-state">
+              <div class="empty-icon">🔔</div>
+              <div class="empty-text">NO ACTIVE ALERTS</div>
+            </div>
+          </div>
+        </ArtDecoCard>
       </div>
 
       <div class="content-grid-half">
-      <el-card title="III. VaR RISK ANALYSIS" hoverable>
+        <ArtDecoCard variant="luxury" :decorated="true">
           <template #header>
-            <div class="card-header">
-              <span>VaR RISK ANALYSIS</span>
-              <el-button type="info" size="small" @click="loadVarCvar">
+            <div class="var-header">
+              <ArtDecoBadge variant="danger">VaR RISK ANALYSIS</ArtDecoBadge>
+              <ArtDecoButton
+                variant="primary"
+                size="small"
+                :loading="varLoading"
+                @click="loadVarCvar"
+              >
                 REFRESH
-              </el-button>
+              </ArtDecoButton>
             </div>
           </template>
 
-          <el-table
-            :columns="varColumns"
+          <ArtDecoTable
             :data="varData"
+            :loading="varLoading"
+            gold-headers
+            striped
+          >
+            <template #columns>
+              <ArtDecoTableColumn prop="symbol" label="SYMBOL" width="100" sortable />
+              <ArtDecoTableColumn prop="confidence_level" label="CONFIDENCE" width="120" sortable>
+                <template #default="{ row }">
+                  {{ row.confidence_level }}%
+                </template>
+              </ArtDecoTableColumn>
             :loading="varLoading"
           >
             <template #cell-confidence_level="{ row }">
@@ -221,17 +259,22 @@
 <script setup lang="ts">
 import { ref, onMounted, type Ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import {
-  TrendCharts,
-  Warning,
-  DataLine,
-  BellFilled,
-} from '@element-plus/icons-vue'
 import { riskApi } from '@/api'
-import { ElCard } from 'element-plus'
-import { ElButton } from 'element-plus'
-import { ElInput } from 'element-plus'
-import { ElTable, ElTableColumn } from 'element-plus'
+
+// Import Art Deco components
+import {
+  ArtDecoHeader,
+  ArtDecoCard,
+  ArtDecoStatCard,
+  ArtDecoTable,
+  ArtDecoTableColumn,
+  ArtDecoButton,
+  ArtDecoBadge,
+  ArtDecoDialog,
+  ArtDecoSelect,
+  ArtDecoInput,
+  ArtDecoRiskGauge
+} from '@/components/artdeco'
 
 interface RiskDashboard {
   var_95: number

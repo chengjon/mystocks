@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
     import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+    import * as echarts from 'echarts'
     import ArtDecoBadge from '../base/ArtDecoBadge.vue'
 
     interface Position {
@@ -148,7 +149,6 @@
         if (!chartCanvas.value || props.pnlHistory.length === 0) return
 
         try {
-            const echarts = require('echarts')
             chartInstance = echarts.init(chartCanvas.value)
 
             const option = {
@@ -274,7 +274,7 @@
 
     .stock-code {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 700;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -288,7 +288,7 @@
 
     .update-time {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-muted);
     }
 
@@ -317,7 +317,7 @@
 
     .item-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -326,7 +326,7 @@
 
     .item-value {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
     }
@@ -336,7 +336,7 @@
     }
 
     .item-value.large {
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
     }
 
     .item-value.profit-up {
@@ -348,7 +348,7 @@
     }
 
     .percent {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       margin-left: var(--artdeco-spacing-1);
     }
 
@@ -367,7 +367,7 @@
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;

@@ -116,7 +116,7 @@
 
     .chart-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -132,7 +132,7 @@
 
     .update-time {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-muted);
     }
 

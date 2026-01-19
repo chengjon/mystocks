@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Mount Test</title>
+</head>
+<body>
+    <div id="app">Loading...</div>
+    <script>
+        // Test if basic JavaScript is working
+        console.log('✅ JavaScript is working');
+
+        const app = document.getElementById('app');
+        if (app) {
+            console.log('✅ Found #app element');
+            app.innerHTML = '<h1>Test Page</h1><p>JavaScript is working!</p>';
+            console.log('✅ Updated #app content');
+        } else {
+            console.error('❌ Could not find #app element');
+        }
+
+        setTimeout(() => {
+            console.log('Final #app HTML:', app.innerHTML);
+        }, 100);
+    </script>
+</body>
+</html>

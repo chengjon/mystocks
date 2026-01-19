@@ -23,8 +23,10 @@ Date: 2026-01-10
 - ✅ 双数据库架构优化
 """
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import Optional, List, Dict, Any
+
+from app.core.exceptions import BusinessException, ValidationException, NotFoundException
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
@@ -310,7 +312,7 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
         )
 
         if not result:
-            raise HTTPException(status_code=500, detail="保存风险指标失败")
+            raise BusinessException(detail="保存风险指标失败", status_code=500, error_code="RISK_METRICS_SAVE_FAILED")
 
         return VaRCVaRResult(
             var_95_hist=metrics["var_95_hist"],
@@ -335,7 +337,9 @@ async def calculate_var_cvar(request: VaRCVaRRequest) -> VaRCVaRResult:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"计算VaR/CVaR失败: {str(e)}")
+        raise BusinessException(
+            detail=f"计算VaR/CVaR失败: {str(e)}", status_code=500, error_code="VAR_CALCULATION_FAILED"
+        )
 
 
 @router.post("/beta", response_model=BetaResult)
@@ -433,7 +437,7 @@ async def calculate_beta(request: BetaRequest) -> BetaResult:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"计算Beta失败: {str(e)}")
+        raise BusinessException(detail=f"计算Beta失败: {str(e)}", status_code=500, error_code="BETA_CALCULATION_FAILED")
 
 
 @router.get("/dashboard", response_model=RiskDashboardResponse)
@@ -504,7 +508,9 @@ async def get_risk_dashboard() -> RiskDashboardResponse:
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取仪表盘数据失败: {str(e)}", status_code=500, error_code="DASHBOARD_DATA_RETRIEVAL_FAILED"
+        )
 
 
 # ===== Week 5 新增API端点 =====
@@ -519,11 +525,15 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         result = await execution_service.add_position_monitoring(
             symbol=request["symbol"],
@@ -535,15 +545,19 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result.get("error", "添加监控失败"))
+            raise BusinessException(
+                detail=result.get("error", "添加监控失败"), status_code=400, error_code="MONITORING_ADDITION_FAILED"
+            )
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"添加止损监控失败: {e}")
-        raise HTTPException(status_code=500, detail=f"添加止损监控失败: {str(e)}")
+        raise BusinessException(
+            detail=f"添加止损监控失败: {str(e)}", status_code=500, error_code="STOP_LOSS_MONITORING_ADDITION_FAILED"
+        )
 
 
 @router.post("/v31/stop-loss/update-price", response_model=Dict[str, Any])
@@ -555,11 +569,15 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         result = await execution_service.update_position_price(
             position_id=request["position_id"],
@@ -568,11 +586,13 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"更新止损价格失败: {e}")
-        raise HTTPException(status_code=500, detail=f"更新止损价格失败: {str(e)}")
+        raise BusinessException(
+            detail=f"更新止损价格失败: {str(e)}", status_code=500, error_code="STOP_LOSS_PRICE_UPDATE_FAILED"
+        )
 
 
 @router.delete("/v31/stop-loss/remove-position/{position_id}", response_model=Dict[str, Any])
@@ -584,24 +604,30 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         success = await execution_service.remove_position_monitoring(position_id)
 
         if not success:
-            raise HTTPException(status_code=404, detail="持仓不存在或已移除")
+            raise NotFoundException(resource="持仓", identifier="查询条件")
 
         return {"success": True, "position_id": position_id, "message": "止损监控已移除"}
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"移除止损监控失败: {e}")
-        raise HTTPException(status_code=500, detail=f"移除止损监控失败: {str(e)}")
+        raise BusinessException(
+            detail=f"移除止损监控失败: {str(e)}", status_code=500, error_code="STOP_LOSS_MONITORING_REMOVAL_FAILED"
+        )
 
 
 @router.get("/v31/stop-loss/status/{position_id}", response_model=Dict[str, Any])
@@ -613,24 +639,30 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         result = await execution_service.get_monitoring_status(position_id)
 
         if not result.get("found"):
-            raise HTTPException(status_code=404, detail="持仓不存在")
+            raise NotFoundException(resource="持仓", identifier="查询条件")
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取止损状态失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取止损状态失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取止损状态失败: {str(e)}", status_code=500, error_code="STOP_LOSS_STATUS_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/v31/stop-loss/overview", response_model=Dict[str, Any])
@@ -642,20 +674,26 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         result = await execution_service.get_monitoring_status()
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取止损总览失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取止损总览失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取止损总览失败: {str(e)}", status_code=500, error_code="STOP_LOSS_OVERVIEW_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/v31/stop-loss/batch-update", response_model=Dict[str, Any])
@@ -667,24 +705,30 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         execution_service = get_stop_loss_execution_service()
         if not execution_service:
-            raise HTTPException(status_code=503, detail="止损执行服务不可用")
+            raise BusinessException(
+                detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE"
+            )
 
         price_updates = request.get("price_updates", {})
         if not price_updates:
-            raise HTTPException(status_code=400, detail="缺少价格更新数据")
+            raise ValidationException(detail="缺少价格更新数据", field="price_update_data")
 
         result = await execution_service.batch_update_prices(price_updates)
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"批量更新止损价格失败: {e}")
-        raise HTTPException(status_code=500, detail=f"批量更新止损价格失败: {str(e)}")
+        raise BusinessException(
+            detail=f"批量更新止损价格失败: {str(e)}", status_code=500, error_code="BATCH_STOP_LOSS_UPDATE_FAILED"
+        )
 
 
 @router.get("/v31/stop-loss/history/performance", response_model=Dict[str, Any])
@@ -698,11 +742,15 @@ async def get_stop_loss_performance(
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         history_service = get_stop_loss_history_service()
         if not history_service:
-            raise HTTPException(status_code=503, detail="历史分析服务不可用")
+            raise BusinessException(
+                detail="历史分析服务不可用", status_code=503, error_code="HISTORICAL_ANALYSIS_UNAVAILABLE"
+            )
 
         date_from = datetime.now() - timedelta(days=days)
 
@@ -714,11 +762,13 @@ async def get_stop_loss_performance(
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取止损表现失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取止损表现失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取止损表现失败: {str(e)}", status_code=500, error_code="STOP_LOSS_PERFORMANCE_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/v31/stop-loss/history/recommendations", response_model=Dict[str, Any])
@@ -730,20 +780,26 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         history_service = get_stop_loss_history_service()
         if not history_service:
-            raise HTTPException(status_code=503, detail="历史分析服务不可用")
+            raise BusinessException(
+                detail="历史分析服务不可用", status_code=503, error_code="HISTORICAL_ANALYSIS_UNAVAILABLE"
+            )
 
         result = await history_service.get_strategy_recommendations(strategy_type, symbol)
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取止损建议失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取止损建议失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取止损建议失败: {str(e)}", status_code=500, error_code="STOP_LOSS_SUGGESTIONS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/v31/alert/send", response_model=Dict[str, Any])
@@ -755,11 +811,15 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         notification_manager = get_risk_alert_notification_manager()
         if not notification_manager:
-            raise HTTPException(status_code=503, detail="告警通知管理器不可用")
+            raise BusinessException(
+                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE"
+            )
 
         alert_type = request.get("alert_type", "general_risk")
         severity = request.get("severity", "warning")
@@ -796,11 +856,13 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
 
         return result
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"发送风险告警失败: {e}")
-        raise HTTPException(status_code=500, detail=f"发送风险告警失败: {str(e)}")
+        raise BusinessException(
+            detail=f"发送风险告警失败: {str(e)}", status_code=500, error_code="RISK_ALERT_SENDING_FAILED"
+        )
 
 
 @router.get("/v31/alert/statistics", response_model=Dict[str, Any])
@@ -812,20 +874,26 @@ async def get_alert_statistics() -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         notification_manager = get_risk_alert_notification_manager()
         if not notification_manager:
-            raise HTTPException(status_code=503, detail="告警通知管理器不可用")
+            raise BusinessException(
+                detail="告警通知管理器不可用", status_code=503, error_code="ALERT_NOTIFICATION_MANAGER_UNAVAILABLE"
+            )
 
         stats = notification_manager.get_alert_statistics()
         return stats
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取告警统计失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取告警统计失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取告警统计失败: {str(e)}", status_code=500, error_code="ALERT_STATISTICS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/v31/rules/evaluate", response_model=List[Dict[str, Any]])
@@ -837,11 +905,15 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
-            raise HTTPException(status_code=503, detail="告警规则引擎不可用")
+            raise BusinessException(
+                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
+            )
 
         # 创建告警上下文
         context = AlertContext(
@@ -868,11 +940,13 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
 
         return response
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"评估告警规则失败: {e}")
-        raise HTTPException(status_code=500, detail=f"评估告警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"评估告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_EVALUATION_FAILED"
+        )
 
 
 @router.post("/v31/rules/add", response_model=Dict[str, Any])
@@ -884,11 +958,15 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
-            raise HTTPException(status_code=503, detail="告警规则引擎不可用")
+            raise BusinessException(
+                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
+            )
 
         # 从请求数据创建规则
         rule_data = request.copy()
@@ -905,13 +983,15 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
         if rule_engine.add_rule(rule):
             return {"success": True, "rule_id": rule_id, "message": "规则添加成功"}
         else:
-            raise HTTPException(status_code=400, detail="规则添加失败")
+            raise BusinessException(detail="规则添加失败", status_code=400, error_code="RULE_ADDITION_FAILED")
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"添加告警规则失败: {e}")
-        raise HTTPException(status_code=500, detail=f"添加告警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"添加告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_ADDITION_FAILED"
+        )
 
 
 @router.delete("/v31/rules/remove/{rule_id}", response_model=Dict[str, Any])
@@ -923,22 +1003,28 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
-            raise HTTPException(status_code=503, detail="告警规则引擎不可用")
+            raise BusinessException(
+                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
+            )
 
         if rule_engine.remove_rule(rule_id):
             return {"success": True, "rule_id": rule_id, "message": "规则移除成功"}
         else:
-            raise HTTPException(status_code=404, detail="规则不存在")
+            raise NotFoundException(resource="规则", identifier="查询条件")
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"移除告警规则失败: {e}")
-        raise HTTPException(status_code=500, detail=f"移除告警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"移除告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_REMOVAL_FAILED"
+        )
 
 
 @router.get("/v31/rules/statistics", response_model=Dict[str, Any])
@@ -950,20 +1036,26 @@ async def get_rule_statistics() -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         rule_engine = get_alert_rule_engine()
         if not rule_engine:
-            raise HTTPException(status_code=503, detail="告警规则引擎不可用")
+            raise BusinessException(
+                detail="告警规则引擎不可用", status_code=503, error_code="ALERT_RULE_ENGINE_UNAVAILABLE"
+            )
 
         stats = rule_engine.get_rule_statistics()
         return stats
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取规则统计失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取规则统计失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取规则统计失败: {str(e)}", status_code=500, error_code="RULE_STATISTICS_RETRIEVAL_FAILED"
+        )
 
 
 @router.get("/v31/risk/realtime/{symbol}", response_model=Dict[str, Any])
@@ -975,7 +1067,9 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
     """
     try:
         if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            raise HTTPException(status_code=503, detail="增强风险功能不可用")
+            raise BusinessException(
+                detail="增强风险功能不可用", status_code=503, error_code="ENHANCED_RISK_FEATURE_UNAVAILABLE"
+            )
 
         # 这里应该集成实时风险计算
         # 暂时返回模拟数据
@@ -989,11 +1083,15 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
             "last_updated": datetime.now(),
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"获取实时风险指标失败 {symbol}: {e}")
-        raise HTTPException(status_code=500, detail=f"获取实时风险指标失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取实时风险指标失败: {str(e)}",
+            status_code=500,
+            error_code="REALTIME_RISK_METRICS_RETRIEVAL_FAILED",
+        )
 
 
 @router.get("/metrics/history", response_model=List[Dict[str, Any]])
@@ -1032,7 +1130,9 @@ async def get_risk_metrics_history(
         ]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取历史数据失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取历史数据失败: {str(e)}", status_code=500, error_code="HISTORICAL_DATA_RETRIEVAL_FAILED"
+        )
 
 
 # ============ 风险预警管理 ============
@@ -1057,7 +1157,9 @@ async def list_risk_alerts(is_active: Optional[bool] = None) -> List[Dict[str, A
         return alerts_df.to_dict("records") if alerts_df is not None else []
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取预警列表失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取预警列表失败: {str(e)}", status_code=500, error_code="ALERT_LIST_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/alerts", response_model=RiskAlertResponse)
@@ -1097,7 +1199,7 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
             data_dict["id"] = int(datetime.now().timestamp())
             return RiskAlertResponse(**data_dict)
         else:
-            raise HTTPException(status_code=500, detail="创建预警规则失败")
+            raise BusinessException(detail="创建预警规则失败", status_code=500, error_code="ALERT_RULE_CREATION_FAILED")
 
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
@@ -1110,7 +1212,9 @@ async def create_risk_alert(alert_data: RiskAlertCreate) -> RiskAlertResponse:
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"创建预警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"创建预警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_CREATION_FAILED"
+        )
 
 
 @router.put("/alerts/{alert_id}")
@@ -1135,10 +1239,12 @@ async def update_risk_alert(alert_id: int, alert_update: RiskAlertUpdate) -> Dic
         if result:
             return {"message": "预警规则已更新"}
         else:
-            raise HTTPException(status_code=500, detail="更新预警规则失败")
+            raise BusinessException(detail="更新预警规则失败", status_code=500, error_code="ALERT_RULE_UPDATE_FAILED")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新预警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"更新预警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_UPDATE_FAILED"
+        )
 
 
 @router.delete("/alerts/{alert_id}")
@@ -1160,10 +1266,12 @@ async def delete_risk_alert(alert_id: int) -> Dict[str, str]:
         if result:
             return {"message": "预警规则已禁用"}
         else:
-            raise HTTPException(status_code=500, detail="删除预警规则失败")
+            raise BusinessException(detail="删除预警规则失败", status_code=500, error_code="ALERT_RULE_DELETION_FAILED")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除预警规则失败: {str(e)}")
+        raise BusinessException(
+            detail=f"删除预警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_DELETION_FAILED"
+        )
 
 
 # ============ 通知管理 ============
@@ -1184,7 +1292,7 @@ async def test_notification(request: NotificationTestRequest) -> NotificationTes
         elif request.notification_type == "webhook":
             result = notifier.send_webhook(message="MyStocks 测试通知", test=True)
         else:
-            raise HTTPException(status_code=400, detail="不支持的通知类型")
+            raise ValidationException(detail="不支持的通知类型", field="notification_type")
 
         if result:
             return NotificationTestResponse(success=True, message="测试通知发送成功")
@@ -1192,7 +1300,7 @@ async def test_notification(request: NotificationTestRequest) -> NotificationTes
             return NotificationTestResponse(success=False, message="测试通知发送失败")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"发送失败: {str(e)}")
+        raise BusinessException(detail=f"发送失败: {str(e)}", status_code=500, error_code="SENDING_FAILED")
 
 
 # ============ 风险指标计算（新功能 - 2025-12-26）============
@@ -1268,7 +1376,9 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"计算风险指标失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"计算风险指标失败: {str(e)}")
+        raise BusinessException(
+            detail=f"计算风险指标失败: {str(e)}", status_code=500, error_code="RISK_METRICS_CALCULATION_FAILED"
+        )
 
 
 @router.post("/position/assess")
@@ -1361,7 +1471,9 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"评估仓位风险失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"评估仓位风险失败: {str(e)}")
+        raise BusinessException(
+            detail=f"评估仓位风险失败: {str(e)}", status_code=500, error_code="POSITION_RISK_ASSESSMENT_FAILED"
+        )
 
 
 @router.post("/alerts/generate")
@@ -1425,7 +1537,9 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"生成风险告警失败: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"生成风险告警失败: {str(e)}")
+        raise BusinessException(
+            detail=f"生成风险告警失败: {str(e)}", status_code=500, error_code="RISK_ALERT_GENERATION_FAILED"
+        )
 
 
 # ============ V3.1 新增功能 - 完整风险管理系统 ============
@@ -1440,11 +1554,15 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core:
-            raise HTTPException(status_code=503, detail="风险管理核心不可用")
+            raise BusinessException(
+                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE"
+            )
 
         # 计算个股风险指标
         risk_metrics = await core.calculate_stock_risk(symbol)
@@ -1462,11 +1580,13 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
             },
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"V3.1个股风险计算失败 {symbol}: {e}")
-        raise HTTPException(status_code=500, detail=f"个股风险计算失败: {str(e)}")
+        raise BusinessException(
+            detail=f"个股风险计算失败: {str(e)}", status_code=500, error_code="INDIVIDUAL_STOCK_RISK_CALCULATION_FAILED"
+        )
 
 
 @router.get("/v31/portfolio/{portfolio_id}")
@@ -1478,11 +1598,15 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core:
-            raise HTTPException(status_code=503, detail="风险管理核心不可用")
+            raise BusinessException(
+                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE"
+            )
 
         # 计算组合风险指标
         risk_metrics = await core.calculate_portfolio_risk(portfolio_id)
@@ -1502,11 +1626,13 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
             },
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"V3.1组合风险计算失败 {portfolio_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"组合风险计算失败: {str(e)}")
+        raise BusinessException(
+            detail=f"组合风险计算失败: {str(e)}", status_code=500, error_code="PORTFOLIO_RISK_CALCULATION_FAILED"
+        )
 
 
 @router.post("/v31/stop-loss/calculate")
@@ -1518,11 +1644,13 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core or not core.stop_loss_engine:
-            raise HTTPException(status_code=503, detail="止损引擎不可用")
+            raise BusinessException(detail="止损引擎不可用", status_code=503, error_code="STOP_LOSS_ENGINE_UNAVAILABLE")
 
         strategy_type = request.get("strategy_type", "volatility_adaptive")
         symbol = request.get("symbol", "placeholder")
@@ -1539,7 +1667,7 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
                 trailing_percentage=request.get("trailing_percentage", 0.08),
             )
         else:
-            raise HTTPException(status_code=400, detail=f"不支持的止损策略类型: {strategy_type}")
+            raise ValidationException(detail=f"不支持的止损策略类型: {strategy_type}", field="strategy_type")
 
         return {
             "status": "success",
@@ -1549,11 +1677,13 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
             "version": "3.1",
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException):
         raise
     except Exception as e:
         logger.error(f"V3.1止损计算失败: {e}")
-        raise HTTPException(status_code=500, detail=f"止损计算失败: {str(e)}")
+        raise BusinessException(
+            detail=f"止损计算失败: {str(e)}", status_code=500, error_code="STOP_LOSS_CALCULATION_FAILED"
+        )
 
 
 @router.post("/v31/stop-loss/trigger")
@@ -1565,18 +1695,22 @@ async def trigger_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core:
-            raise HTTPException(status_code=503, detail="风险管理核心不可用")
+            raise BusinessException(
+                detail="风险管理核心不可用", status_code=503, error_code="RISK_MANAGEMENT_CORE_UNAVAILABLE"
+            )
 
         symbol = request.get("symbol")
         current_price = request.get("current_price")
         stop_loss_price = request.get("stop_loss_price")
 
         if not all([symbol, current_price, stop_loss_price]):
-            raise HTTPException(status_code=400, detail="缺少必要参数: symbol, current_price, stop_loss_price")
+            raise ValidationException(detail="缺少必要参数: symbol, current_price, stop_loss_price", field="parameters")
 
         # 执行止损检查
         triggered, execution_result = await core.execute_stop_loss_check(
@@ -1596,11 +1730,13 @@ async def trigger_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
             "version": "3.1",
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"V3.1止损执行失败: {e}")
-        raise HTTPException(status_code=500, detail=f"止损执行失败: {str(e)}")
+        raise BusinessException(
+            detail=f"止损执行失败: {str(e)}", status_code=500, error_code="STOP_LOSS_EXECUTION_FAILED"
+        )
 
 
 @router.get("/v31/alerts/active")
@@ -1612,11 +1748,13 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core or not core.alert_service:
-            raise HTTPException(status_code=503, detail="告警服务不可用")
+            raise BusinessException(detail="告警服务不可用", status_code=503, error_code="ALERT_SERVICE_UNAVAILABLE")
 
         # 这里应该从数据库查询活跃告警
         # 暂时返回模拟数据
@@ -1624,11 +1762,13 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
 
         return {"status": "success", "data": {"alerts": alerts, "total": len(alerts), "version": "3.1"}}
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"V3.1获取活跃告警失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取活跃告警失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取活跃告警失败: {str(e)}", status_code=500, error_code="ACTIVE_ALERTS_RETRIEVAL_FAILED"
+        )
 
 
 @router.post("/v31/alerts/{alert_id}/acknowledge")
@@ -1640,11 +1780,13 @@ async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[
     """
     try:
         if not RISK_MANAGEMENT_V31_AVAILABLE:
-            raise HTTPException(status_code=503, detail="V3.1风险管理系统未初始化")
+            raise BusinessException(
+                detail="V3.1风险管理系统未初始化", status_code=503, error_code="RISK_MANAGEMENT_SYSTEM_NOT_INITIALIZED"
+            )
 
         core = get_risk_management_core()
         if not core or not core.alert_service:
-            raise HTTPException(status_code=503, detail="告警服务不可用")
+            raise BusinessException(detail="告警服务不可用", status_code=503, error_code="ALERT_SERVICE_UNAVAILABLE")
 
         action_taken = request.get("action_taken", "")
         feedback = request.get("feedback", "")
@@ -1664,11 +1806,13 @@ async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[
             "version": "3.1",
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"V3.1确认告警失败 {alert_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"确认告警失败: {str(e)}")
+        raise BusinessException(
+            detail=f"确认告警失败: {str(e)}", status_code=500, error_code="ALERT_CONFIRMATION_FAILED"
+        )
 
 
 @router.get("/v31/health")
@@ -1880,7 +2024,7 @@ async def broadcast_risk_update(topic: str, message: Dict[str, Any]):
     """
     try:
         if topic not in connection_manager.subscriptions:
-            raise HTTPException(status_code=400, detail=f"不支持的主题: {topic}")
+            raise ValidationException(detail=f"不支持的主题: {topic}", field="topic")
 
         # 添加时间戳和消息类型
         broadcast_message = {
@@ -1900,11 +2044,11 @@ async def broadcast_risk_update(topic: str, message: Dict[str, Any]):
             "broadcast_at": datetime.now().isoformat(),
         }
 
-    except HTTPException:
+    except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
         logger.error(f"广播风险更新失败 {topic}: {e}")
-        raise HTTPException(status_code=500, detail=f"广播失败: {str(e)}")
+        raise BusinessException(detail=f"广播失败: {str(e)}", status_code=500, error_code="BROADCAST_FAILED")
 
 
 @router.get("/v31/ws/connections")
@@ -1930,7 +2074,9 @@ async def get_websocket_connections():
 
     except Exception as e:
         logger.error(f"获取WebSocket连接统计失败: {e}")
-        raise HTTPException(status_code=500, detail=f"获取统计失败: {str(e)}")
+        raise BusinessException(
+            detail=f"获取统计失败: {str(e)}", status_code=500, error_code="STATISTICS_RETRIEVAL_FAILED"
+        )
 
 
 # ===== 集成风险事件到WebSocket广播 =====

@@ -73,8 +73,7 @@ class Parameter:
         expected_type = type_map.get(self.parameter_type)
         if expected_type and not isinstance(self.value, expected_type):
             raise TypeError(
-                f"Parameter '{self.name}' expects {self.parameter_type}, "
-                f"got {type(self.value).__name__}"
+                f"Parameter '{self.name}' expects {self.parameter_type}, " f"got {type(self.value).__name__}"
             )
 
     def _validate_value(self):
@@ -83,19 +82,13 @@ class Parameter:
             value = float(self.value)
 
             if self.min_value is not None and value < self.min_value:
-                raise ValueError(
-                    f"Parameter '{self.name}' value {value} < min_value {self.min_value}"
-                )
+                raise ValueError(f"Parameter '{self.name}' value {value} < min_value {self.min_value}")
 
             if self.max_value is not None and value > self.max_value:
-                raise ValueError(
-                    f"Parameter '{self.name}' value {value} > max_value {self.max_value}"
-                )
+                raise ValueError(f"Parameter '{self.name}' value {value} > max_value {self.max_value}")
 
         if self.allowed_values and self.value not in self.allowed_values:
-            raise ValueError(
-                f"Parameter '{self.name}' value {self.value} not in allowed values {self.allowed_values}"
-            )
+            raise ValueError(f"Parameter '{self.name}' value {self.value} not in allowed values {self.allowed_values}")
 
     def update(self, new_value: Any) -> None:
         """
@@ -199,6 +192,7 @@ class Parameter:
 @dataclass
 class ParameterChangedEvent:
     """参数变更事件"""
+
     parameter_id: str
     parameter_name: str
     old_value: Any

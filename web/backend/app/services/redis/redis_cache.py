@@ -101,7 +101,7 @@ class RedisCacheService:
                 try:
                     return pickle.loads(cached)
                 except Exception:
-                    return cached.decode('utf-8')
+                    return cached.decode("utf-8")
 
         except Exception as e:
             logger.error(f"Failed to get cache {key}: {e}")
@@ -186,7 +186,7 @@ class RedisCacheService:
                         try:
                             result[key] = pickle.loads(value)
                         except:
-                            result[key] = value.decode('utf-8')
+                            result[key] = value.decode("utf-8")
 
         except Exception as e:
             logger.error(f"Failed to mget cache: {e}")
@@ -247,12 +247,7 @@ class RedisCacheService:
     # ========== 指标缓存专用方法 ==========
 
     def cache_indicator_result(
-        self,
-        stock_code: str,
-        indicator_code: str,
-        params: Dict[str, Any],
-        result: Dict[str, Any],
-        ttl: int = 3600
+        self, stock_code: str, indicator_code: str, params: Dict[str, Any], result: Dict[str, Any], ttl: int = 3600
     ) -> bool:
         """
         缓存指标计算结果
@@ -269,6 +264,7 @@ class RedisCacheService:
         """
         # 生成唯一键: indicator:{stock_code}:{indicator_code}:{params_hash}
         import hashlib
+
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
 
@@ -276,10 +272,7 @@ class RedisCacheService:
         return self.set(key, result, ttl)
 
     def get_cached_indicator_result(
-        self,
-        stock_code: str,
-        indicator_code: str,
-        params: Dict[str, Any]
+        self, stock_code: str, indicator_code: str, params: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
         """
         获取缓存的指标计算结果
@@ -293,6 +286,7 @@ class RedisCacheService:
             缓存的计算结果，不存在返回None
         """
         import hashlib
+
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
 
@@ -302,11 +296,7 @@ class RedisCacheService:
     # ========== API响应缓存 ==========
 
     def cache_api_response(
-        self,
-        endpoint: str,
-        params: Dict[str, Any],
-        response: Any,
-        ttl: int = 300  # 默认5分钟
+        self, endpoint: str, params: Dict[str, Any], response: Any, ttl: int = 300  # 默认5分钟
     ) -> bool:
         """
         缓存API响应
@@ -321,17 +311,14 @@ class RedisCacheService:
             bool: 是否缓存成功
         """
         import hashlib
+
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
 
         key = f"api:{endpoint}:{params_hash}"
         return self.set(key, response, ttl)
 
-    def get_cached_api_response(
-        self,
-        endpoint: str,
-        params: Dict[str, Any]
-    ) -> Optional[Any]:
+    def get_cached_api_response(self, endpoint: str, params: Dict[str, Any]) -> Optional[Any]:
         """
         获取缓存的API响应
 
@@ -343,6 +330,7 @@ class RedisCacheService:
             缓存的响应数据，不存在返回None
         """
         import hashlib
+
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
 
@@ -359,12 +347,13 @@ class RedisCacheService:
             Dict: 包含键数量、内存使用等信息
         """
         try:
-            info = self.redis.info('stats')
+            info = self.redis.info("stats")
             return {
-                'total_keys': info.get('keyspace', 0),
-                'hits': info.get('keyspace_hits', 0),
-                'misses': info.get('keyspace_misses', 0),
-                'hit_rate': info.get('keyspace_hits', 0) / max(info.get('keyspace_hits', 0) + info.get('keyspace_misses', 0), 1)
+                "total_keys": info.get("keyspace", 0),
+                "hits": info.get("keyspace_hits", 0),
+                "misses": info.get("keyspace_misses", 0),
+                "hit_rate": info.get("keyspace_hits", 0)
+                / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1),
             }
         except Exception as e:
             logger.error(f"Failed to get cache stats: {e}")

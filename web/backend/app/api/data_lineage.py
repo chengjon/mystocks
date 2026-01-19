@@ -18,17 +18,14 @@ import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel, Field
 
 from app.core.responses import (
     UnifiedResponse,
-    ErrorDetail,
     BusinessCode,
-    ResponseMessages,
     create_unified_success_response,
     create_unified_error_response,
-    not_found,
 )
 from app.core.config import settings
 
@@ -271,7 +268,9 @@ async def record_lineage(
 
         await conn.close()
 
-        logger.info(f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id})
+        logger.info(
+            f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id}
+        )
 
         return create_unified_success_response(
             data={
@@ -325,6 +324,7 @@ async def get_upstream_lineage(
 
         # 使用队列进行BFS遍历
         from collections import deque
+
         queue = deque([(node_id, 0)])  # (node_id, depth)
 
         while queue:
@@ -503,7 +503,10 @@ async def get_lineage_graph(
         UnifiedResponse: 包含完整血缘图的统一响应
     """
     request_id = getattr(http_request.state, "request_id", None)
-    logger.info(f"Querying lineage graph for node: {request.node_id}, direction: {request.direction}", extra={"request_id": request_id})
+    logger.info(
+        f"Querying lineage graph for node: {request.node_id}, direction: {request.direction}",
+        extra={"request_id": request_id},
+    )
 
     try:
         tracker, conn = await get_lineage_tracker()
@@ -616,7 +619,10 @@ async def analyze_impact(
         UnifiedResponse: 包含影响分析结果的统一响应
     """
     request_id = getattr(http_request_obj.state, "request_id", None)
-    logger.info(f"Analyzing impact for node: {request.node_id}, max_levels: {request.max_levels}", extra={"request_id": request_id})
+    logger.info(
+        f"Analyzing impact for node: {request.node_id}, max_levels: {request.max_levels}",
+        extra={"request_id": request_id},
+    )
 
     try:
         tracker, conn = await get_lineage_tracker()

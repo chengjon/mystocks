@@ -51,130 +51,159 @@
 
                 <!-- 核心功能网格 -->
                 <div class="artdeco-content-grid">
-                <!-- 交易概览卡片 -->
-                <ArtDecoCard class="overview-card">
-                    <template #header>
-                        <div class="card-header">
-                            <ArtDecoIcon name="bar-chart" />
-                            <h3>交易概览</h3>
-                        </div>
-                    </template>
-                    <ArtDecoTradingStats :stats="tradingStats" />
-                </ArtDecoCard>
+                    <!-- 交易概览卡片 -->
+                    <ArtDecoCard class="overview-card">
+                        <template #header>
+                            <div class="card-header">
+                                <ArtDecoIcon name="bar-chart" />
+                                <h3>交易概览</h3>
+                            </div>
+                        </template>
+                        <ArtDecoTradingStats :stats="tradingStats" />
+                    </ArtDecoCard>
 
-                <!-- 交易控制面板 -->
-                <ArtDecoCard class="controls-card" variant="bordered">
-                    <template #header>
-                        <div class="card-header">
-                            <ArtDecoIcon name="sliders" />
-                            <h3>交易控制</h3>
-                        </div>
-                    </template>
-                    <ArtDecoTradingSignalsControls
-                        :signal-filters="signalFilters"
-                        :active-signal-filter="activeSignalFilter"
-                        @export-csv="handleExportCsv"
-                        @batch-execute="handleBatchExecute"
-                    />
-                </ArtDecoCard>
+                    <!-- 交易控制面板 -->
+                    <ArtDecoCard class="controls-card" variant="bordered">
+                        <template #header>
+                            <div class="card-header">
+                                <ArtDecoIcon name="sliders" />
+                                <h3>交易控制</h3>
+                            </div>
+                        </template>
+                        <ArtDecoTradingSignalsControls
+                            :signal-filters="signalFilters"
+                            :active-signal-filter="activeSignalFilter"
+                            @export-csv="handleExportCsv"
+                            @batch-execute="handleBatchExecute"
+                        />
+                    </ArtDecoCard>
 
-                <!-- 实时交易面板 -->
-                <ArtDecoCard class="realtime-panel" gradient>
-                    <template #header>
-                        <div class="card-header dramatic">
-                            <div class="header-icon">
-                                <ArtDecoIcon name="activity" />
+                    <!-- 实时交易面板 -->
+                    <ArtDecoCard class="realtime-panel" gradient>
+                        <template #header>
+                            <div class="card-header dramatic">
+                                <div class="header-icon">
+                                    <ArtDecoIcon name="activity" />
+                                </div>
+                                <div class="header-content">
+                                    <h3>实时交易</h3>
+                                    <p>活跃持仓与交易信号</p>
+                                </div>
+                                <div class="header-actions">
+                                    <ArtDecoBadge :variant="realtimeStatusColor" pulse>
+                                        {{ realtimeStatus }}
+                                    </ArtDecoBadge>
+                                </div>
                             </div>
-                            <div class="header-content">
-                                <h3>实时交易</h3>
-                                <p>活跃持仓与交易信号</p>
+                        </template>
+
+                        <div class="panel-grid">
+                            <!-- 活跃持仓 -->
+                            <div class="panel-section">
+                                <div class="section-header">
+                                    <ArtDecoIcon name="briefcase" />
+                                    <h4>活跃持仓</h4>
+                                    <span class="count-badge">{{ activePositions.length }}</span>
+                                </div>
+                                <ArtDecoTradingPositions
+                                    :positions="activePositions"
+                                    @close-position="handleClosePosition"
+                                    @adjust-position="handleAdjustPosition"
+                                />
                             </div>
-                            <div class="header-actions">
-                                <ArtDecoBadge :variant="realtimeStatusColor" pulse>
-                                    {{ realtimeStatus }}
-                                </ArtDecoBadge>
+
+                            <!-- 交易信号 -->
+                            <div class="panel-section">
+                                <div class="section-header">
+                                    <ArtDecoIcon name="zap" />
+                                    <h4>交易信号</h4>
+                                    <span class="count-badge">{{ tradingSignals.length }}</span>
+                                </div>
+                                <ArtDecoTradingSignals
+                                    :signals="tradingSignals"
+                                    @execute-signal="handleExecuteSignal"
+                                    @cancel-signal="handleCancelSignal"
+                                />
                             </div>
                         </div>
-                    </template>
+                    </ArtDecoCard>
 
-                    <div class="panel-grid">
-                        <!-- 活跃持仓 -->
-                        <div class="panel-section">
-                            <div class="section-header">
-                                <ArtDecoIcon name="briefcase" />
-                                <h4>活跃持仓</h4>
-                                <span class="count-badge">{{ activePositions.length }}</span>
+                    <!-- 历史分析面板 -->
+                    <ArtDecoCard class="history-panel" variant="bordered">
+                        <template #header>
+                            <div class="card-header elegant">
+                                <div class="header-icon">
+                                    <ArtDecoIcon name="clock" />
+                                </div>
+                                <div class="header-content">
+                                    <h3>历史分析</h3>
+                                    <p>交易历史查询与分析</p>
+                                </div>
                             </div>
-                            <ArtDecoTradingPositions
-                                :positions="activePositions"
-                                @close-position="handleClosePosition"
-                                @adjust-position="handleAdjustPosition"
+                        </template>
+
+                        <!-- 历史控制区域 -->
+                        <div class="history-controls">
+                            <ArtDecoTradingHistoryControls
+                                :symbol-options="symbolOptions"
+                                :trade-type-options="tradeTypeOptions"
+                                :start-date="startDate"
+                                :end-date="endDate"
+                                :selected-symbol="selectedSymbol"
+                                :selected-type="selectedType"
+                                @update:start-date="startDate = $event"
+                                @update:end-date="endDate = $event"
+                                @update:symbol="selectedSymbol = String($event)"
+                                @update:type="selectedType = String($event)"
+                                @search="handleHistoryFilter"
                             />
                         </div>
 
-                        <!-- 交易信号 -->
-                        <div class="panel-section">
-                            <div class="section-header">
-                                <ArtDecoIcon name="zap" />
-                                <h4>交易信号</h4>
-                                <span class="count-badge">{{ tradingSignals.length }}</span>
-                            </div>
-                            <ArtDecoTradingSignals
-                                :signals="tradingSignals"
-                                @execute-signal="handleExecuteSignal"
-                                @cancel-signal="handleCancelSignal"
+                        <!-- 历史数据区域 -->
+                        <div class="history-data">
+                            <ArtDecoTradingHistory
+                                :history="tradingHistory"
+                                :loading="historyLoading"
+                                @load-more="handleLoadMoreHistory"
                             />
                         </div>
-                    </div>
-                </ArtDecoCard>
+                    </ArtDecoCard>
 
-                <!-- 历史分析面板 -->
-                <ArtDecoCard class="history-panel" variant="bordered">
-                    <template #header>
-                        <div class="card-header elegant">
-                            <div class="header-icon">
-                                <ArtDecoIcon name="clock" />
+                    <!-- 收益归因分析 - 从HTML功能扩展 -->
+                    <ArtDecoCard class="attribution-card" variant="elevated" gradient>
+                        <template #header>
+                            <div class="card-header">
+                                <ArtDecoIcon name="pie-chart" />
+                                <h3>收益归因分析</h3>
                             </div>
-                            <div class="header-content">
-                                <h3>历史分析</h3>
-                                <p>交易历史查询与分析</p>
+                        </template>
+
+                        <div class="attribution-content">
+                            <ArtDecoAttributionControls
+                                :date-range="attributionDateRange"
+                                :portfolio="selectedPortfolio"
+                                @update:date-range="attributionDateRange = $event"
+                                @update:portfolio="selectedPortfolio = $event"
+                                @analyze="handleAttributionAnalysis"
+                            />
+
+                            <div class="attribution-results">
+                                <ArtDecoAttributionAnalysis
+                                    :strategy-breakdown="strategyBreakdown"
+                                    :stock-breakdown="stockBreakdown"
+                                    :loading="attributionLoading"
+                                />
                             </div>
                         </div>
-                    </template>
-
-                    <!-- 历史控制区域 -->
-                    <div class="history-controls">
-                        <ArtDecoTradingHistoryControls
-                            :symbol-options="symbolOptions"
-                            :trade-type-options="tradeTypeOptions"
-                            :start-date="startDate"
-                            :end-date="endDate"
-                            :selected-symbol="selectedSymbol"
-                            :selected-type="selectedType"
-                            @update:start-date="startDate = $event"
-                            @update:end-date="endDate = $event"
-                            @update:symbol="selectedSymbol = String($event)"
-                            @update:type="selectedType = String($event)"
-                            @search="handleHistoryFilter"
-                        />
-                    </div>
-
-                    <!-- 历史数据区域 -->
-                    <div class="history-data">
-                        <ArtDecoTradingHistory
-                            :history="tradingHistory"
-                            :loading="historyLoading"
-                            @load-more="handleLoadMoreHistory"
-                        />
-                    </div>
-                </ArtDecoCard>
+                    </ArtDecoCard>
+                </div>
             </div>
         </div>
     </ArtDecoLayout>
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
     import ArtDecoLayout from '@/layouts/ArtDecoLayout.vue'
     import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
@@ -188,6 +217,8 @@
     import ArtDecoTradingSignals from './components/ArtDecoTradingSignals.vue'
     import ArtDecoTradingHistoryControls from './components/ArtDecoTradingHistoryControls.vue'
     import ArtDecoTradingHistory from './components/ArtDecoTradingHistory.vue'
+    import ArtDecoAttributionControls from './components/ArtDecoAttributionControls.vue'
+    import ArtDecoAttributionAnalysis from './components/ArtDecoAttributionAnalysis.vue'
 
     // 交易统计数据
     const tradingStats = ref({
@@ -245,6 +276,27 @@
 
     // 状态管理
     const refreshing = ref(false)
+
+    // 收益归因分析数据 - 从HTML功能扩展
+    const attributionDateRange = ref({
+        start: '2025-01-01',
+        end: '2025-01-15'
+    })
+    const selectedPortfolio = ref('all')
+    const attributionLoading = ref(false)
+    const strategyBreakdown = ref([
+        { strategy: '双均线交叉', contribution: 45.6, weight: 35.2 },
+        { strategy: 'MACD金叉', contribution: 23.4, weight: 28.7 },
+        { strategy: 'RSI超卖反弹', contribution: 15.8, weight: 18.9 },
+        { strategy: '布林带突破', contribution: 12.3, weight: 17.2 }
+    ])
+    const stockBreakdown = ref([
+        { stock: '600519', name: '贵州茅台', contribution: 28.5, weight: 15.6 },
+        { stock: '000001', name: '平安银行', contribution: 18.3, weight: 12.4 },
+        { stock: '300750', name: '宁德时代', contribution: 15.2, weight: 10.8 },
+        { stock: '600036', name: '招商银行', contribution: 12.8, weight: 9.2 },
+        { stock: '000725', name: '京东方A', contribution: 8.9, weight: 6.7 }
+    ])
 
     // 活跃持仓
     const activePositions = ref<any[]>([
@@ -391,12 +443,37 @@
     }
 
     const handleLoadMoreHistory = () => {
-        historyLoading.value = true
-        console.log('加载更多历史')
-        // TODO: 实现加载更多历史逻辑
-        setTimeout(() => {
-            historyLoading.value = false
-        }, 1000)
+        // 加载更多历史数据
+        console.log('Loading more history...')
+    }
+
+    // 收益归因分析方法 - 从HTML功能扩展
+    const handleAttributionAnalysis = async () => {
+        attributionLoading.value = true
+        try {
+            // 模拟归因分析计算
+            await new Promise(resolve => setTimeout(resolve, 2000))
+
+            // 更新分析结果 (实际实现应调用API)
+            strategyBreakdown.value = [
+                { strategy: '双均线交叉', contribution: 42.3, weight: 35.2 },
+                { strategy: 'MACD金叉', contribution: 26.1, weight: 28.7 },
+                { strategy: 'RSI超卖反弹', contribution: 18.7, weight: 18.9 },
+                { strategy: '布林带突破', contribution: 15.6, weight: 17.2 }
+            ]
+
+            stockBreakdown.value = [
+                { stock: '600519', name: '贵州茅台', contribution: 31.2, weight: 15.6 },
+                { stock: '000001', name: '平安银行', contribution: 22.8, weight: 12.4 },
+                { stock: '300750', name: '宁德时代', contribution: 19.5, weight: 10.8 },
+                { stock: '600036', name: '招商银行', contribution: 16.3, weight: 9.2 },
+                { stock: '000725', name: '京东方A', contribution: 12.1, weight: 6.7 }
+            ]
+        } catch (error) {
+            console.error('Attribution analysis failed:', error)
+        } finally {
+            attributionLoading.value = false
+        }
     }
 
     onMounted(() => {

@@ -18,11 +18,11 @@ class EnhancedBaseTest:
         self.browser = None
         self.playwright = None
         self.test_results = {
-            'page_name': page_name,
-            'start_time': datetime.now().isoformat(),
-            'checks': [],
-            'errors': [],
-            'warnings': []
+            "page_name": page_name,
+            "start_time": datetime.now().isoformat(),
+            "checks": [],
+            "errors": [],
+            "warnings": [],
         }
 
     async def setup(self, headless: bool = False):
@@ -46,7 +46,7 @@ class EnhancedBaseTest:
         try:
             print("🔥 预热浏览器...")
             # 访问首页进行预热
-            await self.page.goto(f"{self.base_url}/#/dashboard", wait_until='domcontentloaded', timeout=30000)
+            await self.page.goto(f"{self.base_url}/#/dashboard", wait_until="domcontentloaded", timeout=30000)
             # 等待Vue应用初始化
             await self.page.wait_for_timeout(3000)
             print("   ✅ 浏览器预热完成")
@@ -56,24 +56,19 @@ class EnhancedBaseTest:
 
         # 收集控制台日志
         self.console_logs = []
-        self.page.on('console', lambda msg: self.console_logs.append({
-            'type': msg.type,
-            'text': msg.text
-        }))
+        self.page.on("console", lambda msg: self.console_logs.append({"type": msg.type, "text": msg.text}))
 
         # 收集网络请求
         self.network_requests = []
-        self.page.on('request', lambda request: self.network_requests.append({
-            'url': request.url,
-            'method': request.method
-        }))
+        self.page.on(
+            "request", lambda request: self.network_requests.append({"url": request.url, "method": request.method})
+        )
 
         # 收集网络响应
         self.network_responses = []
-        self.page.on('response', lambda response: self.network_responses.append({
-            'url': response.url,
-            'status': response.status
-        }))
+        self.page.on(
+            "response", lambda response: self.network_responses.append({"url": response.url, "status": response.status})
+        )
 
     async def teardown(self):
         """测试后置清理"""
@@ -92,21 +87,21 @@ class EnhancedBaseTest:
         """
         try:
             # 支持多个备选选择器
-            selectors = [s.strip() for s in selector.split(',')]
+            selectors = [s.strip() for s in selector.split(",")]
 
             for sel in selectors:
                 try:
                     await self.page.wait_for_selector(sel, timeout=timeout)
-                    await self.add_check(f'智能等待({sel})', True, f'元素在{timeout}ms内出现')
+                    await self.add_check(f"智能等待({sel})", True, f"元素在{timeout}ms内出现")
                     return True
                 except:
                     continue
 
-            await self.add_warning('智能等待', f'所有选择器都失败: {selector}')
+            await self.add_warning("智能等待", f"所有选择器都失败: {selector}")
             return False
 
         except Exception as e:
-            await self.add_error('智能等待', f'{selector}: {str(e)}')
+            await self.add_error("智能等待", f"{selector}: {str(e)}")
             return False
 
     async def wait_for_data_loaded(self, indicators: list = None, timeout: int = 10000):
@@ -119,11 +114,11 @@ class EnhancedBaseTest:
         """
         if indicators is None:
             indicators = [
-                '.data-loaded',
+                ".data-loaded",
                 '[data-loaded="true"]',
-                '.el-table__row',  # 表格行出现
-                '.chart canvas',     # 图表canvas出现
-                '.analysis-results', # 分析结果区域显示
+                ".el-table__row",  # 表格行出现
+                ".chart canvas",  # 图表canvas出现
+                ".analysis-results",  # 分析结果区域显示
             ]
 
         print(f"\n⏳ 等待数据加载完成（最长{timeout}ms）...")
@@ -132,7 +127,7 @@ class EnhancedBaseTest:
         for indicator in indicators:
             try:
                 await self.page.wait_for_selector(indicator, timeout=timeout)
-                await self.add_check('数据加载检测', True, f'检测到: {indicator}')
+                await self.add_check("数据加载检测", True, f"检测到: {indicator}")
                 print(f"   ✅ 数据已加载（检测到: {indicator}）")
                 return True
             except:
@@ -141,13 +136,13 @@ class EnhancedBaseTest:
         # 策略2: 等待API请求完成
         api_completed = await self.wait_for_api_completion(timeout)
         if api_completed:
-            await self.add_check('数据加载检测', True, 'API请求已完成')
+            await self.add_check("数据加载检测", True, "API请求已完成")
             print("   ✅ 数据已加载（API请求完成）")
             return True
 
         # 策略3: 等待固定时间后继续（兜底方案）
         await self.page.wait_for_timeout(2000)
-        await self.add_warning('数据加载检测', '使用固定等待时间')
+        await self.add_warning("数据加载检测", "使用固定等待时间")
         print("   ⚠️  使用固定等待时间（2秒）")
         return True
 
@@ -161,8 +156,7 @@ class EnhancedBaseTest:
         try:
             # 等待包含 /api/ 的响应
             await self.page.wait_for_response(
-                lambda response: '/api/' in response.url and response.status == 200,
-                timeout=timeout
+                lambda response: "/api/" in response.url and response.status == 200, timeout=timeout
             )
             return True
         except:
@@ -178,7 +172,7 @@ class EnhancedBaseTest:
         """
         try:
             # 支持多个备选选择器
-            selectors = [s.strip() for s in selector.split(',')]
+            selectors = [s.strip() for s in selector.split(",")]
 
             for sel in selectors:
                 try:
@@ -186,16 +180,16 @@ class EnhancedBaseTest:
                     if element:
                         is_visible = await element.is_visible()
                         elem_name = name or sel
-                        await self.add_check(f'元素可见({elem_name})', is_visible, sel)
+                        await self.add_check(f"元素可见({elem_name})", is_visible, sel)
                         return is_visible
                 except:
                     continue
 
-            await self.add_warning('元素检查', f'所有选择器都未找到: {selector}')
+            await self.add_warning("元素检查", f"所有选择器都未找到: {selector}")
             return False
 
         except Exception as e:
-            await self.add_error('元素检查', f'{selector}: {str(e)}')
+            await self.add_error("元素检查", f"{selector}: {str(e)}")
             return False
 
     async def check_elements_count(self, selector: str, min_count: int = 1, name: str = None):
@@ -208,7 +202,7 @@ class EnhancedBaseTest:
             name: 元素名称
         """
         try:
-            selectors = [s.strip() for s in selector.split(',')]
+            selectors = [s.strip() for s in selector.split(",")]
 
             for sel in selectors:
                 try:
@@ -216,16 +210,16 @@ class EnhancedBaseTest:
                     count = len(elements)
                     if count >= min_count:
                         elem_name = name or sel
-                        await self.add_check(f'元素数量({elem_name})', True, f'找到 {count} 个')
+                        await self.add_check(f"元素数量({elem_name})", True, f"找到 {count} 个")
                         return True
                 except:
                     continue
 
-            await self.add_warning('元素数量检查', f'未找到足够的元素: {selector}')
+            await self.add_warning("元素数量检查", f"未找到足够的元素: {selector}")
             return False
 
         except Exception as e:
-            await self.add_error('元素数量检查', f'{selector}: {str(e)}')
+            await self.add_error("元素数量检查", f"{selector}: {str(e)}")
             return False
 
     async def navigate_and_wait(self, path: str, wait_time: int = 3000, timeout: int = 20000):
@@ -240,91 +234,80 @@ class EnhancedBaseTest:
         url = f"{self.base_url}{path}"
         try:
             # 使用更长的超时时间进行导航
-            await self.page.goto(url, wait_until='domcontentloaded', timeout=timeout)
+            await self.page.goto(url, wait_until="domcontentloaded", timeout=timeout)
             await self.page.wait_for_timeout(wait_time)
 
             # 等待Vue应用挂载完成
-            await self.page.wait_for_selector('body', timeout=10000)
+            await self.page.wait_for_selector("body", timeout=10000)
 
-            self.test_results['url'] = url
-            await self.add_check('页面导航', True, f'成功导航到 {url}')
+            self.test_results["url"] = url
+            await self.add_check("页面导航", True, f"成功导航到 {url}")
 
             # 智能等待数据加载
             await self.wait_for_data_loaded()
 
         except Exception as e:
-            await self.add_error('页面导航', f'{path}: {str(e)}')
+            await self.add_error("页面导航", f"{path}: {str(e)}")
             raise
 
     async def add_check(self, name: str, passed: bool, details: str = None):
         """添加检查结果"""
-        check = {
-            'name': name,
-            'passed': passed,
-            'details': details,
-            'timestamp': datetime.now().isoformat()
-        }
-        self.test_results['checks'].append(check)
+        check = {"name": name, "passed": passed, "details": details, "timestamp": datetime.now().isoformat()}
+        self.test_results["checks"].append(check)
 
     async def add_error(self, name: str, details: str):
         """添加错误"""
-        error = {
-            'name': name,
-            'details': details,
-            'timestamp': datetime.now().isoformat()
-        }
-        self.test_results['errors'].append(error)
+        error = {"name": name, "details": details, "timestamp": datetime.now().isoformat()}
+        self.test_results["errors"].append(error)
 
     async def add_warning(self, name: str, details: str):
         """添加警告"""
-        warning = {
-            'name': name,
-            'details': details,
-            'timestamp': datetime.now().isoformat()
-        }
-        self.test_results['warnings'].append(warning)
+        warning = {"name": name, "details": details, "timestamp": datetime.now().isoformat()}
+        self.test_results["warnings"].append(warning)
 
     async def take_screenshot(self, name: str = None, full_page: bool = False):
         """保存截图"""
         try:
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_name = name or f"{self.page_name}_{timestamp}"
             screenshot_path = f"/tmp/{screenshot_name}.png"
 
             await self.page.screenshot(path=screenshot_path, full_page=full_page)
-            self.test_results['screenshot'] = screenshot_path
-            await self.add_check('截图保存', True, screenshot_path)
+            self.test_results["screenshot"] = screenshot_path
+            await self.add_check("截图保存", True, screenshot_path)
         except Exception as e:
-            await self.add_error('截图保存', str(e))
+            await self.add_error("截图保存", str(e))
 
     async def generate_report(self) -> dict:
         """生成测试报告"""
-        self.test_results['end_time'] = datetime.now().isoformat()
+        self.test_results["end_time"] = datetime.now().isoformat()
 
         # 计算统计
-        total_checks = len(self.test_results['checks'])
-        passed_checks = sum(1 for c in self.test_results['checks'] if c['passed'])
+        total_checks = len(self.test_results["checks"])
+        passed_checks = sum(1 for c in self.test_results["checks"] if c["passed"])
         failed_checks = total_checks - passed_checks
 
-        self.test_results['summary'] = {
-            'total_checks': total_checks,
-            'passed_checks': passed_checks,
-            'failed_checks': failed_checks,
-            'pass_rate': f'{(passed_checks / total_checks * 100):.1f}%' if total_checks > 0 else '0%',
-            'total_errors': len(self.test_results['errors']),
-            'total_warnings': len(self.test_results['warnings']),
-            'network_requests': len(self.network_requests),
-            'network_responses': len(self.network_responses)
+        self.test_results["summary"] = {
+            "total_checks": total_checks,
+            "passed_checks": passed_checks,
+            "failed_checks": failed_checks,
+            "pass_rate": f"{(passed_checks / total_checks * 100):.1f}%" if total_checks > 0 else "0%",
+            "total_errors": len(self.test_results["errors"]),
+            "total_warnings": len(self.test_results["warnings"]),
+            "network_requests": len(self.network_requests),
+            "network_responses": len(self.network_responses),
         }
 
-        self.test_results['status'] = 'passed' if failed_checks == 0 and len(self.test_results['errors']) == 0 else 'failed'
+        self.test_results["status"] = (
+            "passed" if failed_checks == 0 and len(self.test_results["errors"]) == 0 else "failed"
+        )
 
         # 保存JSON报告
         report_path = f"/tmp/{self.page_name}_fixed_report.json"
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(self.test_results, f, indent=2, ensure_ascii=False)
 
-        self.test_results['report_path'] = report_path
+        self.test_results["report_path"] = report_path
 
         return self.test_results
 
@@ -332,9 +315,9 @@ class EnhancedBaseTest:
         """打印测试摘要"""
         report = await self.generate_report()
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"✅ {self.page_name} 页面测试完成（修复版）")
-        print("="*60)
+        print("=" * 60)
         print(f"📊 测试结果:")
         print(f"   - 总检查项: {report['summary']['total_checks']}")
         print(f"   - 通过: {report['summary']['passed_checks']}")
@@ -342,7 +325,7 @@ class EnhancedBaseTest:
         print(f"   - 通过率: {report['summary']['pass_rate']}")
         print(f"   - 错误: {report['summary']['total_errors']}")
         print(f"   - 警告: {report['summary']['total_warnings']}")
-        print("="*60)
+        print("=" * 60)
 
         return report
 
@@ -376,10 +359,11 @@ async def run_enhanced_test(test_class: EnhancedBaseTest, page_path: str):
     except Exception as e:
         print(f"\n❌ 测试执行失败: {str(e)}")
         import traceback
+
         traceback.print_exc()
 
         await test_class.take_screenshot(f"{test_class.page_name}_error")
-        await test_class.add_error('测试执行', str(e))
+        await test_class.add_error("测试执行", str(e))
 
         return await test_class.generate_report()
 

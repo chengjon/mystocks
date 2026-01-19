@@ -145,23 +145,16 @@ class DataSourceMetrics:
         status = "success" if success else "failure"
 
         # 记录延迟
-        self.api_latency.labels(endpoint=endpoint, data_category=data_category).observe(
-            latency
-        )
+        self.api_latency.labels(endpoint=endpoint, data_category=data_category).observe(latency)
 
         # 记录调用数
-        self.api_calls_total.labels(
-            endpoint=endpoint, data_category=data_category, status=status
-        ).inc()
+        self.api_calls_total.labels(endpoint=endpoint, data_category=data_category, status=status).inc()
 
         # 记录成本
         if cost > 0:
             self.api_cost_estimated.labels(endpoint=endpoint).set(cost)
 
-        logger.debug(
-            f"Recorded API call: {endpoint}, latency={latency:.3f}s, "
-            f"status={status}, cost={cost:.4f}"
-        )
+        logger.debug(f"Recorded API call: {endpoint}, latency={latency:.3f}s, " f"status={status}, cost={cost:.4f}")
 
     def record_cache_hit(self, endpoint: str):
         """
@@ -189,9 +182,7 @@ class DataSourceMetrics:
         self.cache_misses_total.labels(endpoint=endpoint).inc()
         logger.debug(f"Recorded cache miss: {endpoint}")
 
-    def record_data_quality(
-        self, endpoint: str, check_type: str, quality_score: float
-    ):
+    def record_data_quality(self, endpoint: str, check_type: str, quality_score: float):
         """
         记录数据质量评分
 
@@ -203,12 +194,8 @@ class DataSourceMetrics:
         if not self.enabled:
             return
 
-        self.data_quality.labels(endpoint=endpoint, check_type=check_type).set(
-            quality_score
-        )
-        logger.debug(
-            f"Recorded data quality: {endpoint}, {check_type}={quality_score:.1f}"
-        )
+        self.data_quality.labels(endpoint=endpoint, check_type=check_type).set(quality_score)
+        logger.debug(f"Recorded data quality: {endpoint}, {check_type}={quality_score:.1f}")
 
     def record_circuit_breaker_state(self, endpoint: str, state: int):
         """
@@ -261,15 +248,11 @@ class DataSourceMetrics:
             return 0.0
 
         success_calls = (
-            self.api_calls_total.labels(
-                endpoint=endpoint, data_category=data_category, status="success"
-            )._value.get()
+            self.api_calls_total.labels(endpoint=endpoint, data_category=data_category, status="success")._value.get()
             or 0
         )
         failure_calls = (
-            self.api_calls_total.labels(
-                endpoint=endpoint, data_category=data_category, status="failure"
-            )._value.get()
+            self.api_calls_total.labels(endpoint=endpoint, data_category=data_category, status="failure")._value.get()
             or 0
         )
 

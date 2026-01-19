@@ -25,9 +25,7 @@ class IIndicatorCalculator(ABC):
     """
 
     @abstractmethod
-    def calculate_rsi(
-        self, data: pd.DataFrame, period: int = 14
-    ) -> pd.Series:
+    def calculate_rsi(self, data: pd.DataFrame, period: int = 14) -> pd.Series:
         """
         计算RSI指标
 
@@ -63,9 +61,7 @@ class IIndicatorCalculator(ABC):
         pass
 
     @abstractmethod
-    def calculate_ma(
-        self, data: pd.DataFrame, period: int = 20, ma_type: str = "SMA"
-    ) -> pd.Series:
+    def calculate_ma(self, data: pd.DataFrame, period: int = 20, ma_type: str = "SMA") -> pd.Series:
         """
         计算移动平均线
 
@@ -97,9 +93,7 @@ class IIndicatorCalculator(ABC):
         pass
 
     @abstractmethod
-    def calculate_atr(
-        self, data: pd.DataFrame, period: int = 14
-    ) -> pd.Series:
+    def calculate_atr(self, data: pd.DataFrame, period: int = 14) -> pd.Series:
         """
         计算ATR（Average True Range）
 
@@ -133,9 +127,7 @@ class IIndicatorCalculator(ABC):
         pass
 
     @abstractmethod
-    def batch_calculate(
-        self, data: pd.DataFrame, indicators: List[Dict[str, Any]]
-    ) -> Dict[str, pd.Series]:
+    def batch_calculate(self, data: pd.DataFrame, indicators: List[Dict[str, Any]]) -> Dict[str, pd.Series]:
         """
         批量计算多个指标
 

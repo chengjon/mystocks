@@ -2,6 +2,7 @@
 Implementation of Repository Interfaces
 使用 SQLAlchemy 实现领域仓储接口
 """
+
 import logging
 from typing import List, Optional
 from sqlalchemy.orm import Session
@@ -23,6 +24,7 @@ from .exceptions import ConcurrencyException, RepositoryException
 
 logger = logging.getLogger(__name__)
 
+
 class StrategyRepositoryImpl(IStrategyRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -33,12 +35,12 @@ class StrategyRepositoryImpl(IStrategyRepository):
             if not model:
                 model = StrategyModel(id=strategy.id.value)
                 self.session.add(model)
-            
+
             model.name = strategy.name
             model.description = strategy.description
-            model.rules_json = [r.__dict__ for r in strategy.rules] if hasattr(strategy, 'rules') else []
+            model.rules_json = [r.__dict__ for r in strategy.rules] if hasattr(strategy, "rules") else []
             model.is_active = strategy.is_active
-            
+
             self.session.commit()
         except StaleDataError:
             self.session.rollback()
@@ -51,12 +53,9 @@ class StrategyRepositoryImpl(IStrategyRepository):
         model = self.session.query(StrategyModel).filter_by(id=strategy_id.value).first()
         if not model:
             return None
-        
+
         return Strategy(
-            id=StrategyId(model.id),
-            name=model.name,
-            description=model.description,
-            is_active=model.is_active
+            id=StrategyId(model.id), name=model.name, description=model.description, is_active=model.is_active
         )
 
     def get_by_id(self, strategy_id: str) -> Optional[Strategy]:
@@ -90,6 +89,7 @@ class StrategyRepositoryImpl(IStrategyRepository):
     def count_active(self) -> int:
         return self.session.query(StrategyModel).filter_by(is_active=True).count()
 
+
 class OrderRepositoryImpl(IOrderRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -100,7 +100,7 @@ class OrderRepositoryImpl(IOrderRepository):
             if not model:
                 model = OrderModel(id=order.id.value)
                 self.session.add(model)
-            
+
             model.symbol = order.symbol
             model.quantity = order.quantity
             model.price = order.price
@@ -118,7 +118,7 @@ class OrderRepositoryImpl(IOrderRepository):
         model = self.session.query(OrderModel).filter_by(id=order_id.value).first()
         if not model:
             return None
-        
+
         return Order(
             id=OrderId(model.id),
             symbol=model.symbol,
@@ -128,7 +128,7 @@ class OrderRepositoryImpl(IOrderRepository):
             order_type=OrderType(model.order_type),
             status=OrderStatus(model.status),
             filled_quantity=model.filled_quantity,
-            average_fill_price=model.average_fill_price
+            average_fill_price=model.average_fill_price,
         )
 
     def get_by_symbol(self, symbol: str) -> List[Order]:
@@ -140,6 +140,7 @@ class OrderRepositoryImpl(IOrderRepository):
         models = self.session.query(OrderModel).filter(OrderModel.status.notin_(terminal_statuses)).all()
         return [self.get_by_id(OrderId(m.id)) for m in models]
 
+
 class TradingPositionRepositoryImpl(IPositionRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -150,11 +151,11 @@ class TradingPositionRepositoryImpl(IPositionRepository):
             if not model:
                 model = PositionModel(id=position.id.value)
                 self.session.add(model)
-            
+
             model.symbol = position.symbol
             model.quantity = position.quantity
             model.average_cost = position.average_cost
-            
+
             self.session.commit()
         except StaleDataError:
             self.session.rollback()
@@ -167,23 +168,19 @@ class TradingPositionRepositoryImpl(IPositionRepository):
         model = self.session.query(PositionModel).filter_by(symbol=symbol).first()
         if not model:
             return None
-        
+
         pos = TradingPosition(
-            id=PositionId(model.id),
-            symbol=model.symbol,
-            quantity=model.quantity,
-            average_cost=model.average_cost
+            id=PositionId(model.id), symbol=model.symbol, quantity=model.quantity, average_cost=model.average_cost
         )
         return pos
 
     def get_all(self) -> List[TradingPosition]:
         models = self.session.query(PositionModel).all()
-        return [TradingPosition(
-            id=PositionId(m.id),
-            symbol=m.symbol,
-            quantity=m.quantity,
-            average_cost=m.average_cost
-        ) for m in models]
+        return [
+            TradingPosition(id=PositionId(m.id), symbol=m.symbol, quantity=m.quantity, average_cost=m.average_cost)
+            for m in models
+        ]
+
 
 class PortfolioRepositoryImpl(IPortfolioRepository):
     def __init__(self, session: Session):
@@ -196,14 +193,14 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
             if not model:
                 model = PortfolioModel(id=portfolio.id)
                 self.session.add(model)
-            
+
             model.name = portfolio.name
             model.initial_capital = portfolio.initial_capital
             model.cash = portfolio.cash
-            
+
             # 先执行一次显式 flush，以便触发版本检查
             self.session.flush()
-            
+
             # 处理持仓
             self.session.query(PositionModel).filter_by(portfolio_id=portfolio.id).delete()
             for symbol, pos in portfolio.positions.items():
@@ -213,10 +210,10 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
                     symbol=symbol,
                     quantity=pos.quantity,
                     average_cost=pos.average_cost,
-                    current_price=pos.current_price  # 保存当前价格
+                    current_price=pos.current_price,  # 保存当前价格
                 )
                 self.session.add(pos_model)
-                
+
             self.session.commit()
         except StaleDataError:
             self.session.rollback()
@@ -229,22 +226,19 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
         model = self.session.query(PortfolioModel).filter_by(id=portfolio_id).first()
         if not model:
             return None
-        
+
         p = Portfolio(
-            id=model.id,
-            name=model.name,
-            initial_capital=float(model.initial_capital),
-            cash=float(model.cash)
+            id=model.id, name=model.name, initial_capital=float(model.initial_capital), cash=float(model.cash)
         )
-        
+
         for pos_model in model.positions:
             p.positions[pos_model.symbol] = PositionInfo(
                 symbol=pos_model.symbol,
                 quantity=pos_model.quantity,
                 average_cost=pos_model.average_cost,
-                current_price=pos_model.current_price  # 从数据库读取当前价格
+                current_price=pos_model.current_price,  # 从数据库读取当前价格
             )
-            
+
         return p
 
     def get_by_id(self, portfolio_id: str) -> Optional[Portfolio]:

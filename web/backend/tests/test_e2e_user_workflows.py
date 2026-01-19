@@ -14,9 +14,7 @@ Phase: 4.1 - Comprehensive Testing
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import Mock, patch
-import requests
-import json
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 
 @pytest.fixture
@@ -817,9 +815,9 @@ class TestRealDataIntegration(RealDataValidationMixin):
             else client.post(endpoint, data={"username": "admin", "password": "admin123"})
         )
 
-        assert response.status_code == expected_status, (
-            f"API端点 {endpoint} 返回状态码 {response.status_code}, 期望 {expected_status}"
-        )
+        assert (
+            response.status_code == expected_status
+        ), f"API端点 {endpoint} 返回状态码 {response.status_code}, 期望 {expected_status}"
 
         # 验证响应包含数据
         response_data = response.json()

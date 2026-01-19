@@ -24,6 +24,7 @@ def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> 
 
     return endpoints[0] if endpoints else None
 
+
 def list_all_endpoints(self) -> pd.DataFrame:
     """
     列出所有已注册的数据端点（便于查看和管理）
@@ -62,9 +63,11 @@ def list_all_endpoints(self) -> pd.DataFrame:
 
     return pd.DataFrame(data)
 
+
 # ==========================================================================
 # 高层业务接口（向后兼容）
 # ==========================================================================
+
 
 def get_stock_daily(
     self, symbol: str, start_date: str = None, end_date: str = None, adjust: str = "qfq"
@@ -100,9 +103,8 @@ def get_stock_daily(
     logger.info(f"使用接口: {best_endpoint['endpoint_name']}")
 
     # 调用接口（根据数据源类型适配参数）
-    return self._call_endpoint(
-        best_endpoint, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust
-    )
+    return self._call_endpoint(best_endpoint, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust)
+
 
 def get_stock_realtime(self, symbols: List[str]) -> pd.DataFrame:
     """获取实时行情（高层业务接口）"""
@@ -113,6 +115,7 @@ def get_stock_realtime(self, symbols: List[str]) -> pd.DataFrame:
 
     return self._call_endpoint(best_endpoint, symbols=symbols)
 
+
 def get_stock_symbols(self) -> pd.DataFrame:
     """获取股票代码列表（高层业务接口）"""
     best_endpoint = self.get_best_endpoint("SYMBOLS_INFO")
@@ -122,9 +125,11 @@ def get_stock_symbols(self) -> pd.DataFrame:
 
     return self._call_endpoint(best_endpoint)
 
+
 # ==========================================================================
 # 内部调用方法
 # ==========================================================================
+
 
 def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> pd.DataFrame:
     """

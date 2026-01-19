@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def _load_from_database(self) -> Dict:
     """从PostgreSQL数据库加载数据源注册表"""
     query = """
@@ -59,7 +60,11 @@ def _load_from_database(self) -> Dict:
                 "classification_level": row["classification_level"],
                 "target_db": row["target_db"],
                 "table_name": row["table_name"],
-                "parameters": row["parameters"] if isinstance(row["parameters"], dict) else (json.loads(row["parameters"]) if row["parameters"] else {}),
+                "parameters": (
+                    row["parameters"]
+                    if isinstance(row["parameters"], dict)
+                    else (json.loads(row["parameters"]) if row["parameters"] else {})
+                ),
                 "data_quality_score": row["data_quality_score"],
                 "priority": row["priority"],
                 "status": row["status"],
@@ -82,6 +87,7 @@ def _load_from_database(self) -> Dict:
         # logger.error(f"从数据库加载失败: {e}")
         return {}
 
+
 def _load_from_yaml(self) -> Dict:
     """从YAML配置文件加载数据源"""
     try:
@@ -103,6 +109,7 @@ def _load_from_yaml(self) -> Dict:
         return sources
     except Exception as e:
         return {}
+
 
 def _merge_sources(self, db_sources: Dict, yaml_sources: Dict) -> Dict:
     merged = db_sources.copy()

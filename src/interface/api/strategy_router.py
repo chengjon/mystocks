@@ -2,6 +2,7 @@
 Strategy Router
 DDD 架构下的策略相关 API
 """
+
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from src.application.strategy.backtest_service import BacktestApplicationService
@@ -9,11 +10,13 @@ from src.application.dto.strategy_dto import BacktestRequest, BacktestResultDTO
 
 router = APIRouter(prefix="/api/v1/ddd/strategies", tags=["DDD Strategy"])
 
+
 # 这里应该有依赖注入逻辑来获取 Service
 # 简化演示：
 def get_backtest_service():
     # 实际应从容器中获取
-    return None 
+    return None
+
 
 @router.post("/backtest/run", response_model=BacktestResultDTO)
 async def run_backtest(

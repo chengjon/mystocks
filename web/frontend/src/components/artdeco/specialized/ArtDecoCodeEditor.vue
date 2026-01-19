@@ -124,14 +124,14 @@
 
     .editor-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-accent-gold);
       letter-spacing: 1px;
     }
 
     .editor-lang {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-muted);
     }
 
@@ -148,7 +148,7 @@
       border-right: 1px solid rgba(212, 175, 55, 0.2);
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       line-height: 1.5; /* Match textarea line-height */
       text-align: right;
       padding: 10px 8px 10px 0;
@@ -167,7 +167,7 @@
       border: none;
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       line-height: 1.5;
       padding: 10px;
       resize: none;

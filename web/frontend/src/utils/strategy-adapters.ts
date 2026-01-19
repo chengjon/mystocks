@@ -40,6 +40,7 @@ export interface StrategyConfigVM {
   parameters: StrategyParameterVM[]
   canEdit: boolean
   lastModified: string
+  [key: string]: unknown
 }
 
 export interface StrategyParameterVM {

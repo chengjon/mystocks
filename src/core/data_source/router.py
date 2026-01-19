@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def find_endpoints(self, **kwargs) -> List[Dict]:
     """
     查找满足条件的数据端点
@@ -18,10 +19,10 @@ def find_endpoints(self, **kwargs) -> List[Dict]:
     Returns:
         端点列表，按优先级和质量评分排序
     """
-    data_category = kwargs.get('data_category')
-    source_name = kwargs.get('source_name')
-    target_db = kwargs.get('target_db')
-    only_healthy = kwargs.get('only_healthy', True)
+    data_category = kwargs.get("data_category")
+    source_name = kwargs.get("source_name")
+    target_db = kwargs.get("target_db")
+    only_healthy = kwargs.get("only_healthy", True)
 
     results = []
     for endpoint_name, source in self.registry.items():
@@ -45,16 +46,10 @@ def find_endpoints(self, **kwargs) -> List[Dict]:
             if health_status == "failed":
                 continue
 
-        results.append({
-            "endpoint_name": endpoint_name,
-            "config": config
-        })
+        results.append({"endpoint_name": endpoint_name, "config": config})
 
     # 排序：优先级升序，质量评分降序
-    results.sort(key=lambda x: (
-        x["config"].get("priority", 999),
-        -x["config"].get("data_quality_score", 0)
-    ))
+    results.sort(key=lambda x: (x["config"].get("priority", 999), -x["config"].get("data_quality_score", 0)))
 
     return results
 

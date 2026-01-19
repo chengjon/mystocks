@@ -186,9 +186,7 @@ class PredictionService:
             trend = (
                 "increasing"
                 if recent_vol > historical_vol * 1.1
-                else "decreasing"
-                if recent_vol < historical_vol * 0.9
-                else "stable"
+                else "decreasing" if recent_vol < historical_vol * 0.9 else "stable"
             )
 
             return {

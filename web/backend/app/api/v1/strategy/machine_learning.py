@@ -6,7 +6,7 @@
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from datetime import datetime
 from enum import Enum
 
@@ -33,9 +33,7 @@ class StrategyTrainingRequest(BaseModel):
     symbol: str = Field(..., description="Training symbol")
     start_date: str = Field(..., description="Training start date (YYYY-MM-DD)")
     end_date: str = Field(..., description="Training end date (YYYY-MM-DD)")
-    parameters: Optional[Dict[str, Any]] = Field(
-        default_factory=dict, description="Strategy parameters"
-    )
+    parameters: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Strategy parameters")
 
 
 class StrategyTrainingResponse(BaseModel):
@@ -45,12 +43,8 @@ class StrategyTrainingResponse(BaseModel):
     strategy_type: str = Field(..., description="Strategy type")
     training_accuracy: float = Field(..., description="Training accuracy")
     validation_score: float = Field(..., description="Validation score")
-    feature_importance: Dict[str, float] = Field(
-        ..., description="Feature importance scores"
-    )
-    training_duration_ms: int = Field(
-        ..., description="Training duration in milliseconds"
-    )
+    feature_importance: Dict[str, float] = Field(..., description="Feature importance scores")
+    training_duration_ms: int = Field(..., description="Training duration in milliseconds")
     model_size_bytes: int = Field(..., description="Model size in bytes")
 
 
@@ -93,9 +87,7 @@ class BacktestResponse(BaseModel):
     max_drawdown: float = Field(..., description="Maximum drawdown percentage")
     win_rate: float = Field(..., description="Win rate percentage")
     total_trades: int = Field(..., description="Total number of trades")
-    backtest_duration_ms: int = Field(
-        ..., description="Backtest duration in milliseconds"
-    )
+    backtest_duration_ms: int = Field(..., description="Backtest duration in milliseconds")
 
 
 class StrategyInfo(BaseModel):
@@ -110,9 +102,7 @@ class StrategyInfo(BaseModel):
     created_at: str
 
 
-@router.post(
-    "/train", response_model=StrategyTrainingResponse, summary="Train ML Strategy"
-)
+@router.post("/train", response_model=StrategyTrainingResponse, summary="Train ML Strategy")
 async def train_ml_strategy(request: StrategyTrainingRequest):
     """
     训练机器学习交易策略
@@ -167,9 +157,7 @@ async def generate_strategy_prediction(request: StrategyPredictionRequest):
     return mock_response
 
 
-@router.post(
-    "/backtest", response_model=BacktestResponse, summary="Backtest ML Strategy"
-)
+@router.post("/backtest", response_model=BacktestResponse, summary="Backtest ML Strategy")
 async def backtest_ml_strategy(request: BacktestRequest):
     """
     回测机器学习策略
@@ -238,9 +226,7 @@ async def list_strategies(
     ]
 
     if strategy_type:
-        mock_strategies = [
-            s for s in mock_strategies if s["strategy_type"] == strategy_type.value
-        ]
+        mock_strategies = [s for s in mock_strategies if s["strategy_type"] == strategy_type.value]
 
     if trained_only:
         mock_strategies = [s for s in mock_strategies if s["trained"]]

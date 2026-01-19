@@ -1,0 +1,151 @@
+name: Security Enhancement
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install security tools
+      run: |
+        pip install safety pip-audit
+
+    - name: Scan Python dependencies
+      run: |
+        safety check --full-report --output json -o safety-report.json || true
+        pip-audit --format json -o pip-audit-report.json || true
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          safety-report.json
+          pip-audit-report.json
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  code-security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Bandit
+      run: pip install bandit
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r src/ web/backend/app/ -f json -o bandit-report.json -iii
+        bandit -r src/ web/backend/app/
+
+  container-security:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build test container
+      run: |
+        docker build -f web/backend/Dockerfile -t mystocks-test .
+
+    - name: Scan container for vulnerabilities
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'image'
+        scan-ref: 'mystocks-test'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  compliance-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check license compliance
+      run: |
+        # Check for license files
+        find . -name "LICENSE*" -o -name "COPYING*" | head -5
+
+        # Check for license headers in source files
+        python scripts/check_license_headers.py
+
+    - name: Check for sensitive data patterns
+      run: |
+        # Check for hardcoded secrets, passwords, API keys
+        grep -r "password\|secret\|api_key\|token" --include="*.py" --include="*.js" --include="*.ts" --include="*.json" . | grep -v "test\|mock\|example\|template" | head -10 || true
+
+  security-report:
+    needs: [dependency-scan, secrets-scan, code-security-scan, compliance-check]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download security reports
+      uses: actions/download-artifact@v4
+      with:
+        name: security-reports
+
+    - name: Generate security summary
+      run: |
+        python scripts/generate_security_report.py \
+          --safety-report safety-report.json \
+          --bandit-report ../bandit-report.json \
+          --output security-summary.md
+
+    - name: Comment security summary on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync('security-summary.md', 'utf8');
+
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 🔒 Security Scan Results\n\n${summary}`
+          });
+
+    - name: Fail on critical vulnerabilities
+      run: |
+        # Check for critical/high severity issues
+        python scripts/check_security_thresholds.py \
+          --safety-report safety-report.json \
+          --bandit-report ../bandit-report.json \
+          --fail-on-high=true

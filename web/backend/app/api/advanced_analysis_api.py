@@ -20,12 +20,11 @@ Advanced Quantitative Analysis API Endpoints
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
-from app.core.responses import UnifiedResponse, ok, bad_request, server_error
+from app.core.responses import UnifiedResponse, ok, server_error
 from app.core.security import User, get_current_user
-from app.core.database import get_db
 from app.services.advanced_analysis_service import AdvancedAnalysisService
 
 # 创建路由器
@@ -548,9 +547,7 @@ async def analyze_batch(
     - financial_valuation, sentiment, decision_models, multidimensional_radar
     """
     try:
-        result = await service.analyze_batch(
-            symbols=symbols, analysis_types=analysis_types, user_id=current_user.id
-        )
+        result = await service.analyze_batch(symbols=symbols, analysis_types=analysis_types, user_id=current_user.id)
 
         return ok(
             data=result,
@@ -579,9 +576,7 @@ async def health_check(service: AdvancedAnalysisService = Depends()) -> Dict[str
         return ok(
             data=health_status,
             message="高级分析模块健康检查完成",
-            status="healthy"
-            if health_status.get("overall_status") == "healthy"
-            else "degraded",
+            status="healthy" if health_status.get("overall_status") == "healthy" else "degraded",
             analyzers_count=health_status.get("analyzers_count"),
             timestamp=datetime.now().isoformat(),
         )

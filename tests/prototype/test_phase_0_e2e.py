@@ -49,18 +49,10 @@ def test_phase_0_vertical_slice():
     # ========================================
     print_section("Step 1: 创建SimpleStrategy（RSI > 70 卖出策略）")
 
-    strategy = Strategy.create(
-        name="Simple RSI Strategy",
-        description="当RSI指标大于70时，生成卖出信号"
-    )
+    strategy = Strategy.create(name="Simple RSI Strategy", description="当RSI指标大于70时，生成卖出信号")
 
     # 添加规则：RSI > 70 -> SELL
-    rsi_rule = Rule(
-        indicator_name="RSI",
-        operator=">",
-        threshold=70.0,
-        action="SELL"
-    )
+    rsi_rule = Rule(indicator_name="RSI", operator=">", threshold=70.0, action="SELL")
     strategy.add_rule(rsi_rule)
 
     print(f"✓ 创建策略: {strategy}")
@@ -84,7 +76,7 @@ def test_phase_0_vertical_slice():
     print(f"  - 价格: {market_snapshot['price']}")
     print(f"  - 时间: {market_snapshot['timestamp']}")
     print(f"  - 指标:")
-    for indicator, value in market_snapshot['indicators'].items():
+    for indicator, value in market_snapshot["indicators"].items():
         print(f"    * {indicator}: {value}")
 
     # ========================================
@@ -208,13 +200,15 @@ def test_phase_0_vertical_slice():
         print("✗ 检查5: 领域事件触发 - 失败")
 
     # 统计通过的检查
-    checks_passed = sum([
-        len(signals) > 0 and len(orders) > 0,  # 检查1
-        len(signals) > 0 and signals[0].side.value == "SELL",  # 检查2
-        initial_order_status == OrderStatus.SUBMITTED,  # 检查3（使用初始状态）
-        execution_time < 100,  # 检查4
-        len(events) > 0 and events[0].event_name() == "OrderFilledEvent"  # 检查5
-    ])
+    checks_passed = sum(
+        [
+            len(signals) > 0 and len(orders) > 0,  # 检查1
+            len(signals) > 0 and signals[0].side.value == "SELL",  # 检查2
+            initial_order_status == OrderStatus.SUBMITTED,  # 检查3（使用初始状态）
+            execution_time < 100,  # 检查4
+            len(events) > 0 and events[0].event_name() == "OrderFilledEvent",  # 检查5
+        ]
+    )
 
     # ========================================
     # 总结
@@ -241,5 +235,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ 测试执行出错: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

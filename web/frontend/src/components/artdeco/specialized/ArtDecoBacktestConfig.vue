@@ -269,7 +269,7 @@
 
     .config-title {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -297,7 +297,7 @@
 
     .artdeco-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -309,7 +309,7 @@
       border: 1px solid rgba(212, 175, 55, 0.2);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       transition: all var(--artdeco-transition-base);
     }
@@ -340,7 +340,7 @@
       border: none;
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       text-transform: uppercase;
       letter-spacing: 0.1em;
       cursor: pointer;
@@ -379,7 +379,7 @@
       border: 1px solid rgba(212, 175, 55, 0.2);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;

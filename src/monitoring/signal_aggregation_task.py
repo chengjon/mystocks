@@ -448,6 +448,7 @@ class SignalStatisticsAggregator:
         if self._pg_pool is None:
             try:
                 from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
                 pg = get_postgres_async()
                 if not pg.is_connected():
                     logger.warning("监控数据库未连接，统计聚合功能将不可用")
@@ -497,9 +498,7 @@ class SignalStatisticsAggregator:
             logger.info(f"数据库统计聚合完成: {result['aggregated_count']} 条记录")
 
             # 2. 清理旧数据（90天前）
-            cleanup_count = await conn.fetchval(
-                "SELECT cleanup_old_signal_statistics()"
-            )
+            cleanup_count = await conn.fetchval("SELECT cleanup_old_signal_statistics()")
             result["cleanup_count"] = cleanup_count or 0
 
             result["success"] = True

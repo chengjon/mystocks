@@ -26,9 +26,11 @@ def _save_call_history_async(self, **kwargs):
     except Exception as e:
         logger.error(f"保存调用历史失败: {e}")
 
+
 # ==========================================================================
 # 健康检查
 # ==========================================================================
+
 
 def health_check(self, endpoint_name: str = None) -> Dict:
     """
@@ -44,6 +46,7 @@ def health_check(self, endpoint_name: str = None) -> Dict:
         return self._check_single_endpoint(endpoint_name)
     else:
         return self._check_all_endpoints()
+
 
 def _check_single_endpoint(self, endpoint_name: str) -> Dict:
     """检查单个端点"""

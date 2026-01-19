@@ -25,12 +25,12 @@ class StrategyId:
     value: str
 
     @classmethod
-    def generate(cls) -> 'StrategyId':
+    def generate(cls) -> "StrategyId":
         """生成新的策略ID"""
         return cls(value=str(uuid4()))
 
     @classmethod
-    def from_string(cls, value: str) -> 'StrategyId':
+    def from_string(cls, value: str) -> "StrategyId":
         """从字符串创建策略ID"""
         if not value or not value.strip():
             raise ValueError("Strategy ID cannot be empty")

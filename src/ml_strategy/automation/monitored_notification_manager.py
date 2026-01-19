@@ -25,6 +25,7 @@ try:
         record_signal_push,
         record_push_latency,
     )
+
     MONITORING_AVAILABLE = True
 except ImportError:
     logger.warning("信号监控模块不可用，将不记录推送指标")
@@ -294,12 +295,8 @@ class MonitoredNotificationManager(NotificationManager):
                 continue
 
             channel_total = channel_stats["success"] + channel_stats["failed"]
-            channel_success_rate = (
-                (channel_stats["success"] / channel_total) * 100 if channel_total > 0 else 0
-            )
-            channel_avg_latency = (
-                (channel_stats["total_latency_ms"] / channel_total) if channel_total > 0 else 0
-            )
+            channel_success_rate = (channel_stats["success"] / channel_total) * 100 if channel_total > 0 else 0
+            channel_avg_latency = (channel_stats["total_latency_ms"] / channel_total) if channel_total > 0 else 0
 
             stats["channels"][channel] = {
                 "total": channel_total,

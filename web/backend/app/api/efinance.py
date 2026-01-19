@@ -14,8 +14,8 @@ Efinance Data Source API
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from fastapi import APIRouter, HTTPException, Query, Depends
+from typing import List, Optional
+from fastapi import APIRouter, Query, Depends
 from pydantic import BaseModel, Field
 
 from app.core.security import User, get_current_user

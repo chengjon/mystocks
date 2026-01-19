@@ -10,8 +10,8 @@ module.exports = {
   apps: [
     {
       name: 'mystocks-frontend',
-      script: 'serve', // Using serve for static production build
-      args: 'dist -l 8080', // Serve dist directory on port 8080 with logging
+      script: 'npm run dev', // 🔧 修复：使用开发服务器以支持HMR和实时编译
+      //      args: 'dist -l 8080', // Serve dist directory on port 8080 with logging
 
       // Environment configuration
       env: {

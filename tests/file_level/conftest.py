@@ -231,9 +231,9 @@ class TestMarketAPIFileLevel:
 
         # File-level success criteria: at least 50% of tested endpoints work
         success_rate = (endpoints_working / endpoints_tested) * 100 if endpoints_tested > 0 else 0
-        assert success_rate >= 50, (
-            f"File-level integration failed: {endpoints_working}/{endpoints_tested} endpoints working ({success_rate:.1f}%)"
-        )
+        assert (
+            success_rate >= 50
+        ), f"File-level integration failed: {endpoints_working}/{endpoints_tested} endpoints working ({success_rate:.1f}%)"
 
     def test_error_handling_consistency(self):
         """Test 15: Error handling consistency across endpoints"""
@@ -310,9 +310,9 @@ class TestMarketAPIFileLevel:
 
         # Verify documented endpoints match our expectations
         documented_endpoints = len(market_paths)
-        assert documented_endpoints >= 5, (
-            f"Too few market endpoints documented: {documented_endpoints}"
-        )  # At least 5 core endpoints
+        assert (
+            documented_endpoints >= 5
+        ), f"Too few market endpoints documented: {documented_endpoints}"  # At least 5 core endpoints
 
     @pytest.mark.parametrize(
         "endpoint_suffix,expected_min_status",

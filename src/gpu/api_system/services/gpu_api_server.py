@@ -20,6 +20,7 @@ try:
     from src.gpu.api_system.api_proto import backtest_pb2_grpc
 except ImportError:
     import sys
+
     sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
     import realtime_pb2_grpc
     import backtest_pb2_grpc

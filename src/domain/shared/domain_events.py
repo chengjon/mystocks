@@ -20,6 +20,7 @@ class SignalGeneratedEvent:
 
     当策略生成交易信号时发布。
     """
+
     signal_id: str
     strategy_id: str
     symbol: str
@@ -42,6 +43,7 @@ class OrderCreatedEvent:
 
     当订单被创建并提交时发布。
     """
+
     order_id: str
     portfolio_id: str
     symbol: str
@@ -64,6 +66,7 @@ class OrderFilledEvent:
     当订单完全成交时发布。
     注意：此事件在 Trading Context 中已定义，这里提供共享版本。
     """
+
     order_id: str
     symbol: str
     filled_quantity: int
@@ -83,6 +86,7 @@ class PositionClosedEvent:
 
     当持仓完全平仓时发布。
     """
+
     portfolio_id: str
     symbol: str
     closed_quantity: int
@@ -104,6 +108,7 @@ class PortfolioRebalancedEvent:
 
     当投资组合完成再平衡操作时发布。
     """
+
     portfolio_id: str
     rebalance_id: str
     total_trades: int = 0
@@ -123,6 +128,7 @@ class StrategyActivatedEvent:
 
     当策略被激活时发布。
     """
+
     strategy_id: str
     strategy_name: str
     event_id: str = field(default_factory=lambda: str(uuid4()))
@@ -139,6 +145,7 @@ class StrategyDeactivatedEvent:
 
     当策略被停用时发布。
     """
+
     strategy_id: str
     strategy_name: str
     reason: Optional[str] = None

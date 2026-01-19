@@ -135,7 +135,7 @@
     /* Status Label */
     .artdeco-status-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 500;
       color: var(--artdeco-fg-secondary);
       letter-spacing: var(--artdeco-tracking-normal);
@@ -148,7 +148,7 @@
     }
 
     .artdeco-status-sm .artdeco-status-label {
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
     }
 
     .artdeco-status-lg .artdeco-status-dot {
@@ -157,6 +157,6 @@
     }
 
     .artdeco-status-lg .artdeco-status-label {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 </style>

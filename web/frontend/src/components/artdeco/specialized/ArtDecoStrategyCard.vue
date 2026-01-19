@@ -86,6 +86,7 @@
 
 <script setup lang="ts">
     import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+    import * as echarts from 'echarts'
     import ArtDecoBadge from '../base/ArtDecoBadge.vue'
     import ArtDecoStatus from './ArtDecoStatus.vue'
 
@@ -174,7 +175,6 @@
         if (!chartCanvas.value || !props.strategy.equity_curve || props.strategy.equity_curve.length === 0) return
 
         try {
-            const echarts = require('echarts')
             chartInstance = echarts.init(chartCanvas.value)
 
             const option = {
@@ -301,7 +301,7 @@
 
     .strategy-code {
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-md) // 18px - Compact v3.1;
+      font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
       font-weight: 700;
       color: var(--artdeco-accent-gold);
       text-transform: uppercase;
@@ -322,7 +322,7 @@
 
     .strategy-name {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
       margin: 0;
@@ -330,7 +330,7 @@
 
     .strategy-description {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       color: var(--artdeco-fg-muted);
       line-height: 1.6;
       margin: 0;
@@ -350,7 +350,7 @@
 
     .item-label {
       font-family: var(--artdeco-font-body);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-muted);
       text-transform: uppercase;
@@ -359,7 +359,7 @@
 
     .item-value {
       font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
       font-weight: 600;
       color: var(--artdeco-fg-secondary);
     }
@@ -409,7 +409,7 @@
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-font-size-sm) // 12px - Compact v3.1;
+      font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -449,18 +449,18 @@
     }
 
     .artdeco-strategy-card.compact .strategy-code {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 
     .artdeco-strategy-card.compact .strategy-name {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 
     .artdeco-strategy-card.compact .item-label {
-      font-size: var(--artdeco-font-size-xs) // 10px - Compact v3.1;
+      font-size: var(--artdeco-font-size-xs); // 10px - Compact v3.1
     }
 
     .artdeco-strategy-card.compact .item-value {
-      font-size: var(--artdeco-font-size-base) // 14px - Compact v3.1;
+      font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
     }
 </style>

@@ -7,8 +7,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
-from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 
 router = APIRouter(
     prefix="/auth",

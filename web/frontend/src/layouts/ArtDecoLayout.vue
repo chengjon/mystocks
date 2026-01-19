@@ -1,57 +1,15 @@
 <template>
-    <div class="artdeco-layout">
-        <!-- Dynamic Sidebar -->
-        <ArtDecoDynamicSidebar ref="sidebarRef" class="artdeco-sidebar" />
-
-        <!-- Main Content Area -->
-        <div class="artdeco-main">
-            <!-- Content Container with proper spacing -->
-            <div class="artdeco-content">
-                <!-- Page Content Slot -->
-                <slot />
-            </div>
-        </div>
-    </div>
+  <BaseLayout
+    page-title="MyStocks 量化交易管理中心"
+    :menu-items="ARTDECO_MENU_ITEMS"
+  >
+    <router-view />
+  </BaseLayout>
 </template>
 
-<script setup>
-    import ArtDecoDynamicSidebar from '@/components/artdeco/specialized/ArtDecoDynamicSidebar.vue'
-    import { ref, onMounted } from 'vue'
-    import { useRoute } from 'vue-router'
-
-    // 响应式数据
-    const sidebarRef = ref()
-
-    // 路由信息
-    const route = useRoute()
-
-    // 在组件挂载后，根据当前路由设置侧边栏的活动模块
-    onMounted(() => {
-        if (sidebarRef.value) {
-            // 根据路由路径自动设置活动模块
-            const path = route.path
-
-            if (path.startsWith('/dashboard') || path === '/') {
-                sidebarRef.value.switchModule('dashboard')
-            } else if (path.startsWith('/market')) {
-                sidebarRef.value.switchModule('market')
-            } else if (path.startsWith('/stocks') || path.startsWith('/portfolio') || path.startsWith('/trade')) {
-                sidebarRef.value.switchModule('stocks')
-            } else if (
-                path.startsWith('/analysis') ||
-                path.startsWith('/technical') ||
-                path.startsWith('/indicators')
-            ) {
-                sidebarRef.value.switchModule('analysis')
-            } else if (path.startsWith('/risk')) {
-                sidebarRef.value.switchModule('risk')
-            } else if (path.startsWith('/strategy') || path.startsWith('/backtest')) {
-                sidebarRef.value.switchModule('strategy')
-            } else if (path.startsWith('/system') || path.startsWith('/settings')) {
-                sidebarRef.value.switchModule('system')
-            }
-        }
-    })
+<script setup lang="ts">
+import BaseLayout from './BaseLayout.vue'
+import { ARTDECO_MENU_ITEMS } from './MenuConfig'
 </script>
 
 <style scoped lang="scss">

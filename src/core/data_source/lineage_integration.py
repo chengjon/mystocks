@@ -60,6 +60,7 @@ class LineageIntegrationMixin:
 
             # 创建数据库连接
             import asyncio
+
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
@@ -95,6 +96,7 @@ class LineageIntegrationMixin:
             数据库配置字典
         """
         import os
+
         return {
             "host": os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
             "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
@@ -370,6 +372,7 @@ class LineageEnabledDataSourceManager(LineageIntegrationMixin, object):
 
         # 导入并继承DataSourceManagerV2
         from .base import DataSourceManagerV2
+
         DataSourceManagerV2.__init__(self, *args, **kwargs)
 
         logger.info("✅ LineageEnabledDataSourceManager initialized")
@@ -413,9 +416,7 @@ class LineageEnabledDataSourceManager(LineageIntegrationMixin, object):
 
 # 便捷函数
 def create_lineage_enabled_manager(
-    yaml_config_path: str = "config/data_sources_registry.yaml",
-    enable_lineage: bool = True,
-    **kwargs
+    yaml_config_path: str = "config/data_sources_registry.yaml", enable_lineage: bool = True, **kwargs
 ) -> LineageEnabledDataSourceManager:
     """
     创建血缘增强的数据源管理器
@@ -428,8 +429,4 @@ def create_lineage_enabled_manager(
     Returns:
         LineageEnabledDataSourceManager实例
     """
-    return LineageEnabledDataSourceManager(
-        yaml_config_path=yaml_config_path,
-        enable_lineage=enable_lineage,
-        **kwargs
-    )
+    return LineageEnabledDataSourceManager(yaml_config_path=yaml_config_path, enable_lineage=enable_lineage, **kwargs)

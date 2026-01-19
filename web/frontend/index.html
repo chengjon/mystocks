@@ -14,7 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- SECURITY FIX 1.2: Content-Security-Policy header to prevent XSS attacks -->
+    <!-- CSP temporarily disabled for debugging -->
+    <!--
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
                    script-src 'self' 'unsafe-inline' 'unsafe-eval';
@@ -22,9 +23,9 @@
                    img-src 'self' data: https: blob:;
                    font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com data:;
                    connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 ws://localhost:8000;
-                   frame-ancestors 'none';
                    form-action 'self';
                    base-uri 'self';" />
+    -->
 
     <!-- Prevent clickjacking attacks -->
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -36,7 +37,7 @@
     <title>MyStocks - Professional Stock Analysis</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">Loading...</div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

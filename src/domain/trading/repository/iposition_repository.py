@@ -48,9 +48,7 @@ class IPositionRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_portfolio(
-        self, portfolio_id: str
-    ) -> List[Position]:
+    def find_by_portfolio(self, portfolio_id: str) -> List[Position]:
         """
         查找投资组合的所有持仓
 
@@ -63,9 +61,7 @@ class IPositionRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_portfolio_and_symbol(
-        self, portfolio_id: str, symbol: str
-    ) -> Optional[Position]:
+    def find_by_portfolio_and_symbol(self, portfolio_id: str, symbol: str) -> Optional[Position]:
         """
         查找投资组合中特定标的的持仓
 

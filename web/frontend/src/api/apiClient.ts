@@ -44,6 +44,15 @@ const instance: AxiosInstance = axios.create({
 // Request interceptor
 instance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    // Add JWT token for authentication
+    const jwtToken = getJWTToken();
+    if (jwtToken) {
+      if (!config.headers) {
+        config.headers = {} as any;
+      }
+      (config.headers as any)['Authorization'] = `Bearer ${jwtToken}`;
+    }
+
     // Add CSRF token for POST/PUT/PATCH/DELETE
     if (
       config.method?.toUpperCase() !== 'GET' &&
@@ -73,6 +82,30 @@ instance.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    // Handle JWT token expiration
+    if (error.response?.status === 401) {
+      // Clear expired token
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
+
+      // Redirect to login if not already there
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+
+      const unifiedError: UnifiedResponse = {
+        success: false,
+        code: 401,
+        message: '登录已过期，请重新登录',
+        data: null,
+        timestamp: new Date().toISOString(),
+        request_id: '',
+        errors: null,
+      };
+
+      return Promise.resolve(unifiedError);
+    }
+
     // Transform error to UnifiedResponse format
     const unifiedError: UnifiedResponse = {
       success: false,
@@ -89,6 +122,11 @@ instance.interceptors.response.use(
     return Promise.resolve(unifiedError);
   }
 );
+
+// JWT token management
+function getJWTToken(): string | null {
+  return localStorage.getItem('auth_token');
+}
 
 // CSRF token management
 let csrfTokenCache: string | null = null;

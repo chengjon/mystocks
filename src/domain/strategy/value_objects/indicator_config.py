@@ -12,6 +12,7 @@ from enum import Enum
 
 class IndicatorType(Enum):
     """指标类型"""
+
     TREND = "trend"  # 趋势指标（MA, EMA, MACD）
     MOMENTUM = "momentum"  # 动量指标（RSI, KDJ）
     VOLATILITY = "volatility"  # 波动率指标（Bollinger, ATR）

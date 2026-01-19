@@ -56,9 +56,7 @@ class TestDataQualityValidator:
         assert result.quality_score < 100.0
 
         # 找到逻辑检查失败的结果
-        logic_result = next(
-            (r for r in result.results if r.check_type == "logic_check"), None
-        )
+        logic_result = next((r for r in result.results if r.check_type == "logic_check"), None)
         assert logic_result is not None
         assert logic_result.passed is False
 
@@ -80,9 +78,7 @@ class TestDataQualityValidator:
         result = validator.validate(data, data_source="test")
 
         # 业务规则应该检测到极端价格
-        business_result = next(
-            (r for r in result.results if r.check_type == "business_check"), None
-        )
+        business_result = next((r for r in result.results if r.check_type == "business_check"), None)
         assert business_result is not None
         assert "Extreme price change" in business_result.message
 
@@ -104,9 +100,7 @@ class TestDataQualityValidator:
         result = validator.validate(data, data_source="test")
 
         # 业务规则应该检测到异常成交量
-        business_result = next(
-            (r for r in result.results if r.check_type == "business_check"), None
-        )
+        business_result = next((r for r in result.results if r.check_type == "business_check"), None)
         assert business_result is not None
         assert "Abnormal volume" in business_result.message
 
@@ -128,9 +122,7 @@ class TestDataQualityValidator:
         result = validator.validate(data, data_source="test")
 
         # 业务规则应该检测到停牌
-        business_result = next(
-            (r for r in result.results if r.check_type == "business_check"), None
-        )
+        business_result = next((r for r in result.results if r.check_type == "business_check"), None)
         assert business_result is not None
         assert "Suspended stock" in business_result.message
 
@@ -151,9 +143,7 @@ class TestDataQualityValidator:
         result = validator.validate(data, data_source="test")
 
         # 业务规则应该检测到零价格
-        business_result = next(
-            (r for r in result.results if r.check_type == "business_check"), None
-        )
+        business_result = next((r for r in result.results if r.check_type == "business_check"), None)
         assert business_result is not None
         assert business_result.passed is False
         assert "Zero or negative price" in business_result.message
@@ -176,9 +166,7 @@ class TestDataQualityValidator:
         result = validator.validate(data, data_source="test")
 
         # 统计检查应该检测到离群值
-        stat_result = next(
-            (r for r in result.results if r.check_type == "statistical_check"), None
-        )
+        stat_result = next((r for r in result.results if r.check_type == "statistical_check"), None)
         assert stat_result is not None
         assert "outliers" in stat_result.message.lower()
 
@@ -211,9 +199,7 @@ class TestDataQualityValidator:
         result = validator.validate(data1, data_source="source1", reference_data=data2)
 
         # 跨源验证应该通过 (差异 < 1%)
-        cross_source_result = next(
-            (r for r in result.results if r.check_type == "cross_source_check"), None
-        )
+        cross_source_result = next((r for r in result.results if r.check_type == "cross_source_check"), None)
         assert cross_source_result is not None
         assert cross_source_result.passed is True
 
@@ -246,9 +232,7 @@ class TestDataQualityValidator:
         result = validator.validate(data1, data_source="source1", reference_data=data2)
 
         # 跨源验证应该失败
-        cross_source_result = next(
-            (r for r in result.results if r.check_type == "cross_source_check"), None
-        )
+        cross_source_result = next((r for r in result.results if r.check_type == "cross_source_check"), None)
         assert cross_source_result is not None
         assert cross_source_result.passed is False
 
@@ -384,8 +368,6 @@ class TestDataQualityValidator:
 
         # 应该检测到缺失列
         assert result.passed is False
-        logic_result = next(
-            (r for r in result.results if r.check_type == "logic_check"), None
-        )
+        logic_result = next((r for r in result.results if r.check_type == "logic_check"), None)
         assert logic_result is not None
         assert "Missing required columns" in logic_result.message

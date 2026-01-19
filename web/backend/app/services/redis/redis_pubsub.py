@@ -73,11 +73,7 @@ class RedisPubSubService:
     # ========== 预定义消息发布方法 ==========
 
     def publish_indicator_calculated(
-        self,
-        stock_code: str,
-        indicator_code: str,
-        params: Dict[str, Any],
-        success: bool = True
+        self, stock_code: str, indicator_code: str, params: Dict[str, Any], success: bool = True
     ) -> int:
         """
         发布指标计算完成事件
@@ -98,17 +94,11 @@ class RedisPubSubService:
                 "indicator_code": indicator_code,
                 "params": params,
                 "success": success,
-                "timestamp": asyncio.get_event_loop().time()
-            }
+                "timestamp": asyncio.get_event_loop().time(),
+            },
         )
 
-    def publish_price_update(
-        self,
-        stock_code: str,
-        price: float,
-        change: float,
-        change_pct: float
-    ) -> int:
+    def publish_price_update(self, stock_code: str, price: float, change: float, change_pct: float) -> int:
         """
         发布实时价格更新事件
 
@@ -128,17 +118,11 @@ class RedisPubSubService:
                 "price": price,
                 "change": change,
                 "change_pct": change_pct,
-                "timestamp": asyncio.get_event_loop().time()
-            }
+                "timestamp": asyncio.get_event_loop().time(),
+            },
         )
 
-    def publish_task_updated(
-        self,
-        task_id: str,
-        status: str,
-        progress: float,
-        result: Optional[Dict] = None
-    ) -> int:
+    def publish_task_updated(self, task_id: str, status: str, progress: float, result: Optional[Dict] = None) -> int:
         """
         发布任务状态更新事件
 
@@ -158,8 +142,8 @@ class RedisPubSubService:
                 "status": status,
                 "progress": progress,
                 "result": result,
-                "timestamp": asyncio.get_event_loop().time()
-            }
+                "timestamp": asyncio.get_event_loop().time(),
+            },
         )
 
     def publish_config_reloaded(self, config_type: str) -> int:
@@ -173,11 +157,7 @@ class RedisPubSubService:
             订阅者数量
         """
         return self.publish(
-            "config:reloaded",
-            {
-                "config_type": config_type,
-                "timestamp": asyncio.get_event_loop().time()
-            }
+            "config:reloaded", {"config_type": config_type, "timestamp": asyncio.get_event_loop().time()}
         )
 
     # ========== 订阅 (Subscriber) ==========
@@ -228,8 +208,8 @@ class RedisPubSubService:
             message: Redis消息对象
         """
         try:
-            channel = message['channel'].replace(self.prefix, '')
-            data = json.loads(message['data'])
+            channel = message["channel"].replace(self.prefix, "")
+            data = json.loads(message["data"])
 
             # 调用该频道的所有回调
             if channel in self._listeners:
@@ -294,12 +274,7 @@ class RedisPubSubService:
             订阅者数量
         """
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(
-            self._executor,
-            self.publish,
-            channel,
-            message
-        )
+        return await loop.run_in_executor(self._executor, self.publish, channel, message)
 
     def broadcast(self, message: Dict[str, Any], exclude_channel: Optional[str] = None) -> int:
         """

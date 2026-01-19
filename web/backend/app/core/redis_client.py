@@ -28,7 +28,7 @@ class RedisManager:
     4. 健康检查
     """
 
-    _instance: Optional['RedisManager'] = None
+    _instance: Optional["RedisManager"] = None
     _redis_client: Optional[redis.Redis] = None
 
     def __new__(cls):

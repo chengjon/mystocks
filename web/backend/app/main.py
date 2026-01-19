@@ -24,7 +24,7 @@ from sqlalchemy import text
 # from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
 
 # 导入配置
-from .core.config import settings
+from .core.config import settings, validate_required_settings
 
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
@@ -44,8 +44,9 @@ from .core.exception_handler import register_exception_handlers
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
 
-# 配置日志 - DEBUG级别
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# 配置日志 - 从环境变量读取级别，默认INFO，生产环境可设置为WARNING/ERROR
+log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
+logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = structlog.get_logger()
 
 
@@ -180,15 +181,17 @@ async def lifespan(app: FastAPI):
     try:
         # 1. Load Defaults
         from .services.indicators.defaults import load_default_indicators
+
         load_default_indicators()
         logger.info("✅ Default indicators loaded (V2 Registry)")
-        
+
         # 2. Register Tasks
         from .services.task_manager import task_manager
         from .tasks.indicator_tasks import batch_calculate_indicators
+
         task_manager.register_function("batch_calculate_indicators", batch_calculate_indicators)
         logger.info("✅ Indicator tasks registered")
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to initialize Indicator System: {e}")
 
@@ -229,6 +232,16 @@ async def lifespan(app: FastAPI):
 
 # 获取OpenAPI配置
 openapi_config = get_openapi_config()
+
+# 在应用启动前验证必需的环境变量配置
+try:
+    validate_required_settings(settings)
+    logger.info("✅ 环境变量配置验证通过")
+except ValueError as e:
+    logger.error(f"❌ 启动失败：{e}")
+    import sys
+
+    sys.exit(1)
 
 # 创建 FastAPI 应用（使用增强的OpenAPI配置）
 app = FastAPI(
@@ -273,13 +286,13 @@ else:
         name="static",
     )
 
-# 配置 CORS
+# 配置 CORS - 白名单模式，仅允许明确的前端域名
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins,  # 白名单域名列表
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # 仅允许必要请求方法
+    allow_headers=["Content-Type", "Authorization"],  # 仅允许必要请求头
 )
 
 # 配置响应压缩 (性能优化)
@@ -294,9 +307,11 @@ app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
 performance_middleware = PerformanceMiddleware()
 app.add_middleware(PerformanceMiddleware)
 
-# Phase 3: 注册全局异常处理器 (API契约标准化)
+# Phase 3: 注册全局异常处理器 (统一异常处理框架)
+from .core.exceptions import register_exception_handlers
+
 register_exception_handlers(app)
-logger.info("✅ Global exception handlers registered")
+logger.info("✅ 统一异常处理器已注册")
 
 # 初始化Socket.IO服务器
 socketio_manager = get_socketio_manager()
@@ -752,7 +767,6 @@ if __name__ == "__main__":
             logger.error(f"❌ 关闭监控数据库失败: {e}")
 
     # 尝试使用异步生命周期（如果可用）
-    import asyncio
 
     try:
         from fastapi import FastAPI

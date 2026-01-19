@@ -685,11 +685,22 @@ async def health_check():
 
         db_status = "connected" if pg.is_connected() else "disconnected"
 
-        return {"status": "healthy" if db_status == "connected" else "degraded", "service": "signal-monitoring-api", "version": "v1.0", "database": db_status}
+        return {
+            "status": "healthy" if db_status == "connected" else "degraded",
+            "service": "signal-monitoring-api",
+            "version": "v1.0",
+            "database": db_status,
+        }
 
     except Exception as e:
         logger.error(f"健康检查失败: {e}")
-        return {"status": "unhealthy", "service": "signal-monitoring-api", "version": "v1.0", "database": "error", "error": str(e)}
+        return {
+            "status": "unhealthy",
+            "service": "signal-monitoring-api",
+            "version": "v1.0",
+            "database": "error",
+            "error": str(e),
+        }
 
 
 # ============================================================================

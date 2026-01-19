@@ -106,7 +106,272 @@ const mockData = createMockData();
 const _mockData = createMockData();  // TypeScript知道这是故意的
 ```
 
-### 3️⃣ TS2345: 类型不匹配
+### 4️⃣ TS2304: 未定义的类型名称
+
+**错误示例**:
+```typescript
+// ❌ 错误代码
+src/api/types/common.ts(58,19): error TS2304: Cannot find name 'Dict'.
+src/api/types/common.ts(735,16): error TS2304: Cannot find name 'HMMConfig'.
+```
+
+**根本原因**: 自动生成文件使用了自定义类型别名，但这些类型未定义
+
+**修复方案**:
+
+#### 方法1: 添加类型别名定义（在文件顶部）
+```typescript
+// ❌ Before: 使用未定义的类型
+interface AlertRecordResponse {
+  alert_details?: Dict | null;
+  features_data?: List[number];
+}
+
+// ✅ After: 添加类型定义
+export type Dict = Record<string, unknown>;
+export type List<T = unknown> = T[];
+
+// 然后正常使用
+interface AlertRecordResponse {
+  alert_details?: Dict | null;
+  features_data?: List<number>;
+}
+```
+
+#### 方法2: Python风格泛型转换
+```typescript
+// ❌ Before: Python风格泛型
+features_data?: (List[number] | List[List[number]]);
+param_grid?: Record<string, List[any]>;
+prediction?: (string | number | List[number]);
+
+// ✅ After: TypeScript语法
+features_data?: (number[] | number[][]);
+param_grid?: Record<string, any[]>;
+prediction?: (string | number | number[]);
+```
+
+#### 方法3: 泛型接口添加默认类型参数
+```typescript
+// ❌ Before: 缺少泛型参数
+export interface BaseResponse {
+  data?: T | null;  // Error: Cannot find name 'T'
+}
+
+export interface PagedResponse<T> {
+  data?: T[];  // Error: Cannot find name 'T'
+}
+
+// ✅ After: 添加默认类型参数
+export interface BaseResponse<T = unknown> {
+  success?: boolean;
+  message?: string;
+  data?: T | null;
+  timestamp?: string;
+}
+
+export interface PagedResponse<T = unknown> {
+  success?: boolean;
+  message?: string;
+  data?: T[];
+  total?: number;
+  page?: number;
+}
+```
+
+### 5️⃣ TS2308: 重复导出冲突
+
+**错误示例**:
+```typescript
+// ❌ 错误代码
+src/api/types/index.ts(20,1): error TS2308: Module './common' has already exported a member named 'BacktestRequest'.
+src/api/types/index.ts(20,1): error TS2308: Module './trading' has already exported a member named 'PositionItem'.
+```
+
+**根本原因**: 多个模块导出相同名称的类型
+
+**修复方案**:
+
+#### 方法1: 使用选择性导出代替 `export *`
+```typescript
+// ❌ Before: 重复导出
+export * from './common';
+export * from './trading';  // PositionItem 与 common.ts 冲突
+
+// ✅ After: 选择性导出
+export type {
+  PositionCreate,
+  TradingPositionItem,  // 使用别名避免冲突
+  PositionResponse,
+  PositionUpdate,
+} from './trading';
+
+// Note: PositionItem 从 common.ts 导出
+```
+
+#### 方法2: 创建类型别名解决命名冲突
+```typescript
+// trading.ts - 使用别名
+export interface TradingPositionItem {
+  symbol?: string;
+  name?: string | null;
+  quantity?: number;
+  avg_cost?: number;
+}
+
+// 保持向后兼容
+export type { TradingPositionItem as PositionItem };
+```
+
+### 6️⃣ TS2614: Vue组件类型导出问题
+
+**错误示例**:
+```typescript
+// ❌ 错误代码
+src/components/shared/index.ts(8,15): error TS2614: Module '"*.vue"' has no exported member 'FilterItem'.
+src/components/shared/index.ts(9,15): error TS2614: Module '"*.vue"' has no exported member 'TableColumn'.
+```
+
+**根本原因**: TypeScript无法从`.vue`文件直接导出类型
+
+**修复方案**: 创建独立的类型文件
+```typescript
+// ✅ 创建 src/components/shared/types.ts
+export interface FilterOption {
+  label: string;
+  value: string | number | boolean;
+}
+
+export interface FilterItem {
+  key: string;
+  label: string;
+  type: 'input' | 'select' | 'date-picker';
+  placeholder?: string;
+  options?: FilterOption[];
+}
+
+export interface TableColumn<T = any> {
+  prop?: string;
+  label: string;
+  width?: string | number;
+  align?: 'left' | 'center' | 'right';
+  sortable?: boolean | 'custom';
+}
+
+export interface CommandItem {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  category?: string;
+}
+
+// ✅ 更新 index.ts 使用新的类型文件
+export type { FilterItem, FilterOption, TableColumn, CommandItem } from './types'
+```
+
+### 7️⃣ TS2561: 对象字面量类型不匹配
+
+**错误示例**:
+```typescript
+// ❌ 错误代码
+src/api/adapters/strategyAdapter.ts(73,7): error TS2561:
+  Object literal may only specify known properties, but 'sharpeRatio' does not exist.
+  Did you mean to write 'sharpe_ratio'?
+```
+
+**根本原因**: API返回驼峰命名，但类型定义是下划线命名
+
+**修复方案**: 添加索引签名支持两种命名风格
+```typescript
+// ❌ Before: 严格类型定义
+export interface StrategyPerformance {
+  total_return?: number;
+  annualized_return?: number;
+  sharpe_ratio?: number;
+}
+
+// ✅ After: 添加索引签名
+export interface StrategyPerformance {
+  strategy_id?: number;
+  total_return?: number;
+  annualized_return?: number;
+  sharpe_ratio?: number;
+  // 驼峰命名兼容
+  totalReturn?: number;
+  annualizedReturn?: number;
+  sharpeRatio?: number;
+  // 索引签名允许任意属性
+  [key: string]: unknown;
+}
+```
+
+### 8️⃣ TS2724: 模块导出缺失
+
+**错误示例**:
+```typescript
+// ❌ 错误代码
+src/api/services/strategyService.ts(13,3): error TS2724:
+  '"../types/strategy"' has no exported member named 'UpdateStrategyRequest'.
+```
+
+**修复方案**: 补充缺失的类型定义
+```typescript
+// ✅ 在 types/strategy.ts 中添加缺失的类型
+export interface UpdateStrategyRequest {
+  name?: string;
+  description?: string;
+  type?: string;
+  parameters?: Record<string, any>;
+  status?: string;
+}
+```
+
+---
+
+## 🚀 批量修复脚本
+
+### 自动修复常见错误
+
+```bash
+cd web/frontend
+
+# 1. 安装tsx（TypeScript执行器）
+npm install -D tsx
+
+# 2. 运行修复脚本
+./scripts/fix-typescript-errors.sh
+```
+
+### 手动批量修复
+
+#### **修复Python风格泛型**
+```bash
+# 查找所有需要修复的位置
+grep -rn "List\[" src/api/types --include="*.ts"
+
+# 批量修复 List[...] -> ...
+perl -i -pe 's/List\[(\w+)\]/$1[]/g' src/api/types/*.ts
+perl -i -pe 's/List\[List\[(\w+)\]\]/${1}[][]/g' src/api/types/*.ts
+```
+
+#### **添加泛型默认类型参数**
+```bash
+# 修复 BaseResponse<T> -> BaseResponse<T = unknown>
+perl -i -pe 's/export interface BaseResponse \{/export interface BaseResponse<T = unknown> {/g' src/api/types/common.ts
+
+# 修复 PagedResponse<T> -> PagedResponse<T = unknown>
+perl -i -pe 's/export interface PagedResponse \{/export interface PagedResponse<T = unknown> {/g' src/api/types/common.ts
+```
+
+#### **删除重复导出声明**
+```bash
+# 查找文件末尾的重复导出
+grep -n "export type {" src/api/types/*.ts
+
+# 批量删除（谨慎使用）
+perl -i -pe 'BEGIN{undef $/;} s/export type \{[^}]*\};//gs' src/api/types/chart-types.ts
+```
 
 **错误示例**:
 ```typescript

@@ -173,6 +173,19 @@ repos:
         pass_filenames: false
         always_run: true
 
+  # ============================================================================
+  # 第十一步：TypeScript 质量门禁 (新增)
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: typescript-check
+        name: TypeScript Quality Guard
+        # 使用 vue-tsc 检查前端代码质量
+        entry: bash -c "cd web/frontend && npx vue-tsc --noEmit"
+        language: system
+        files: ^web/frontend/.*\.(ts|tsx|vue)$
+        pass_filenames: false
+
 # ============================================================================
 # CI 配置
 # ============================================================================

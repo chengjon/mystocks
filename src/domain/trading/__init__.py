@@ -2,6 +2,7 @@
 Trading Context
 交易上下文，负责订单管理和持仓跟踪
 """
+
 from .model.order import Order
 from .model.position import Position
 from .value_objects import OrderId, OrderSide, OrderType, OrderStatus, TimeInForce
@@ -18,5 +19,5 @@ __all__ = [
     "OrderCreatedEvent",
     "OrderFilledEvent",
     "OrderCancelledEvent",
-    "OrderRejectedEvent"
+    "OrderRejectedEvent",
 ]

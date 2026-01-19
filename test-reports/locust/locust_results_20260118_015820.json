@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-01-18T01:58:20.750019",
+  "config": {
+    "host": "http://localhost:8000",
+    "users": 10,
+    "spawn_rate": 10,
+    "run_time": "30s",
+    "target_rps": 50
+  },
+  "summary": {
+    "total_requests": 1714,
+    "total_failures": 22,
+    "average_response_time": 168.37252114322087,
+    "min_response_time": 92.77549643501186,
+    "max_response_time": 1050.7389123475687,
+    "requests_per_second": 59.98280902009004,
+    "user_count": 10
+  },
+  "response_time_percentiles": {
+    "50": 124.89464410447718,
+    "95": 451.3445974484273,
+    "99": 502.7175968811921
+  },
+  "status": "completed"
+}
