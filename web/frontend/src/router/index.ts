@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 
 /**
  * MyStocks Frontend Router Configuration (Phase 2.3 - 优化版)
@@ -70,60 +70,97 @@ const routes: RouteRecordRaw[] = [
    // ========== ArtDeco 主菜单系统 ==========
    // 使用统一的ArtDecoLayout提供菜单导航
 
-   // ArtDeco 主页路由 - MyStocks 指挥中心 (仪表盘)
-   {
-     path: '/',
-     name: 'home',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/dashboard',
-     children: [
-       {
-         path: '/dashboard',
-         name: 'dashboard',
-         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
-         meta: {
-           title: '仪表盘',
-           icon: '🏛️',
-           requiresAuth: false
-         }
-       }
-     ]
-   },
+    // ArtDeco 主页路由 - MyStocks 指挥中心 (仪表盘)
+    {
+      path: '/',
+      name: 'home',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/dashboard',
+      children: [
+        {
+          path: '/dashboard',
+          name: 'dashboard',
+          component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
+          meta: {
+            title: '仪表盘',
+            icon: '🏛️',
+            requiresAuth: false
+          }
+        }
+      ]
+    },
 
-   // ArtDeco 市场行情
-   {
-     path: '/market',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/market/data',
+    // ArtDeco Market域 - 市场行情
+    {
+      path: '/market',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/market/realtime',
      children: [
        {
-         path: 'data',
-         name: 'market-data',
-         component: () => import('@/views/artdeco-pages/ArtDecoMarketData.vue'),
+         path: 'realtime',
+         name: 'market-realtime',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoRealtimeMonitor.vue'),
          meta: {
-           title: '市场行情',
-           icon: '📊',
-           requiresAuth: false
+           title: '实时监控',
+           icon: '⚡',
+           breadcrumb: 'Market > Realtime Monitor',
+           requiresAuth: false,
+           description: '实时市场监控',
+           apiEndpoint: '/api/market/v2/realtime-summary',
+           liveUpdate: true,
+           wsChannel: 'market:realtime'
          }
        },
        {
-         path: 'quotes',
-         name: 'market-quotes',
-         component: () => import('@/views/artdeco-pages/ArtDecoMarketQuotes.vue'),
+         path: 'analysis',
+         name: 'market-analysis',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketAnalysis.vue'),
          meta: {
-           title: '行情报价',
-           icon: '📈',
-           requiresAuth: false
+           title: '市场分析',
+           icon: '📊',
+           breadcrumb: 'Market > Analysis',
+           requiresAuth: false,
+           description: '市场数据分析',
+           apiEndpoint: '/api/market/v2/analysis',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'overview',
+         name: 'market-overview',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketOverview.vue'),
+         meta: {
+           title: '市场概览',
+           icon: '🌐',
+           breadcrumb: 'Market > Overview',
+           requiresAuth: false,
+           description: '市场总体概览',
+           apiEndpoint: '/api/market/v2/overview',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'industry',
+         name: 'market-industry',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoIndustryAnalysis.vue'),
+         meta: {
+           title: '行业分析',
+           icon: '🏢',
+           breadcrumb: 'Market > Industry Analysis',
+           requiresAuth: false,
+           description: '行业板块分析',
+           apiEndpoint: '/api/market/sector',
+           liveUpdate: false
          }
        }
      ]
    },
 
-   // ArtDeco 股票管理
-   {
-     path: '/stocks',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/stocks/management',
+    // ArtDeco 股票管理
+    {
+      path: '/stocks',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/stocks/management',
      children: [
        {
          path: 'management',
@@ -138,11 +175,11 @@ const routes: RouteRecordRaw[] = [
      ]
    },
 
-   // ArtDeco 投资分析
-   {
-     path: '/analysis',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/analysis/data',
+    // ArtDeco 投资分析
+    {
+      path: '/analysis',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/analysis/data',
      children: [
        {
          path: 'data',
@@ -157,68 +194,222 @@ const routes: RouteRecordRaw[] = [
      ]
    },
 
-   // ArtDeco 风险管理
-   {
-     path: '/risk',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/risk/management',
+    // ArtDeco Risk域 - 风险管理
+    {
+      path: '/risk',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/risk/alerts',
      children: [
        {
-         path: 'management',
-         name: 'risk-management',
-         component: () => import('@/views/artdeco-pages/ArtDecoRiskManagement.vue'),
+         path: 'alerts',
+         name: 'risk-alerts',
+         component: () => import('@/views/artdeco-pages/components/risk/ArtDecoRiskAlerts.vue'),
          meta: {
-           title: '风险管理',
-           icon: '⚠️',
-           requiresAuth: false
+           title: '风险告警',
+           icon: '🔔',
+           breadcrumb: 'Risk > Alerts',
+           requiresAuth: false,
+           description: '风险告警通知',
+           apiEndpoint: '/api/v1/risk/alerts',
+           liveUpdate: true,
+           wsChannel: 'risk:alerts'
+         }
+       },
+       {
+         path: 'monitor',
+         name: 'risk-monitor',
+         component: () => import('@/views/artdeco-pages/components/risk/ArtDecoRiskMonitor.vue'),
+         meta: {
+           title: '风险监控',
+           icon: '📊',
+           breadcrumb: 'Risk > Monitor',
+           requiresAuth: false,
+           description: '风险指标监控',
+           apiEndpoint: '/api/monitoring/watchlists',
+           liveUpdate: true
+         }
+       },
+       {
+         path: 'announcement',
+         name: 'risk-announcement',
+         component: () => import('@/views/artdeco-pages/components/risk/ArtDecoAnnouncementMonitor.vue'),
+         meta: {
+           title: '公告监控',
+           icon: '📰',
+           breadcrumb: 'Risk > Announcement',
+           requiresAuth: false,
+           description: '公司公告监控',
+           apiEndpoint: '/api/announcements',
+           liveUpdate: false
          }
        }
      ]
    },
 
-   // ArtDeco 策略和交易管理
-   {
-     path: '/strategy',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/strategy/trading',
+    // ArtDeco Trading域 - 交易管理
+    {
+      path: '/trading',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/trading/signals',
      children: [
        {
-         path: 'trading',
-         name: 'trading-management',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         path: 'signals',
+         name: 'trading-signals',
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingSignals.vue'),
          meta: {
-           title: '策略和交易管理',
-           icon: '💰',
-           requiresAuth: false
+           title: '交易信号',
+           icon: '📡',
+           breadcrumb: 'Trading > Signals',
+           requiresAuth: false,
+           description: '实时交易信号监控',
+           apiEndpoint: '/api/trading/signals',
+           liveUpdate: true,
+           wsChannel: 'trading:signals'
+         }
+       },
+       {
+         path: 'history',
+         name: 'trading-history',
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingHistory.vue'),
+         meta: {
+           title: '交易历史',
+           icon: '📋',
+           breadcrumb: 'Trading > History',
+           requiresAuth: false,
+           description: '历史交易记录',
+           apiEndpoint: '/api/trading/history',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'positions',
+         name: 'trading-positions',
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingPositions.vue'),
+         meta: {
+           title: '持仓监控',
+           icon: '📊',
+           breadcrumb: 'Trading > Positions',
+           requiresAuth: false,
+           description: '当前持仓统计',
+           apiEndpoint: '/api/api/mtm/portfolio',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'stats',
+         name: 'trading-stats',
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingStats.vue'),
+         meta: {
+           title: '交易统计',
+           icon: '📈',
+           breadcrumb: 'Trading > Statistics',
+           requiresAuth: false,
+           description: '交易数据分析',
+           apiEndpoint: '/api/trading/statistics',
+           liveUpdate: false
+         }
+       }
+     ]
+   },
+
+    // ArtDeco Strategy域 - 策略管理
+    {
+      path: '/strategy',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/strategy/management',
+     children: [
+       {
+         path: 'management',
+         name: 'strategy-management',
+         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoStrategyManagement.vue'),
+         meta: {
+           title: '策略管理',
+           icon: '⚙️',
+           breadcrumb: 'Strategy > Management',
+           requiresAuth: false,
+           description: '策略配置、测试、管理',
+           apiEndpoint: '/api/strategy-mgmt/strategies',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'optimization',
+         name: 'strategy-optimization',
+         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoStrategyOptimization.vue'),
+         meta: {
+           title: '策略优化',
+           icon: '🎯',
+           breadcrumb: 'Strategy > Optimization',
+           requiresAuth: false,
+           description: '参数优化、性能评估',
+           apiEndpoint: '/api/strategy/optimize',
+           liveUpdate: false
          }
        },
        {
          path: 'backtest',
          name: 'strategy-backtest',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingCenter.vue'),
+         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoBacktestAnalysis.vue'),
          meta: {
-           title: '策略回测',
+           title: '回测分析',
            icon: '🔬',
-           requiresAuth: false
+           breadcrumb: 'Strategy > Backtest',
+           requiresAuth: false,
+           description: '回测配置、结果分析',
+           apiEndpoint: '/api/analysis/backtest',
+           liveUpdate: false
          }
        }
      ]
    },
 
-   // ArtDeco 系统监控
-   {
-     path: '/system',
-     component: () => import('@/layouts/ArtDecoLayout.vue'),
-     redirect: '/system/monitoring',
+    // ArtDeco System域 - 系统管理
+    {
+      path: '/system',
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
+      redirect: '/system/monitoring',
      children: [
        {
          path: 'monitoring',
          name: 'system-monitoring',
-         component: () => import('@/views/artdeco-pages/ArtDecoSettings.vue'),
+         component: () => import('@/views/artdeco-pages/components/system/ArtDecoMonitoringDashboard.vue'),
          meta: {
-           title: '系统监控',
+           title: '监控面板',
+           icon: '📊',
+           breadcrumb: 'System > Monitoring Dashboard',
+           requiresAuth: false,
+           description: '平台监控仪表板',
+           apiEndpoint: '/api/monitoring/platform-status',
+           liveUpdate: true,
+           wsChannel: 'system:status'
+         }
+       },
+       {
+         path: 'data',
+         name: 'system-data',
+         component: () => import('@/views/artdeco-pages/components/system/ArtDecoDataManagement.vue'),
+         meta: {
+           title: '数据管理',
+           icon: '🗂️',
+           breadcrumb: 'System > Data Management',
+           requiresAuth: false,
+           description: '数据源配置和管理',
+           apiEndpoint: '/api/data-sources/config',
+           liveUpdate: false
+         }
+       },
+       {
+         path: 'settings',
+         name: 'system-settings',
+         component: () => import('@/views/artdeco-pages/components/system/ArtDecoSystemSettings.vue'),
+         meta: {
+           title: '系统设置',
            icon: '⚙️',
-           requiresAuth: false
+           breadcrumb: 'System > Settings',
+           requiresAuth: false,
+           description: '系统配置和设置',
+           apiEndpoint: '/api/system/config',
+           liveUpdate: false
          }
        }
      ]
@@ -411,12 +602,13 @@ const routes: RouteRecordRaw[] = [
     redirect: '/risk/overview',
     meta: { requiresAuth: false, title: 'Risk Monitor', icon: '⚠️' },
     children: [
-      {
-        path: 'overview',
-        name: 'risk-overview',
-        component: () => import('@/views/RiskMonitor.vue'),
-        meta: { title: 'Overview', icon: '📊', breadcrumb: 'Overview' }
-      },
+      // Temporarily removed - RiskMonitor.vue needs to be recreated
+      // {
+      //   path: 'overview',
+      //   name: 'risk-overview',
+      //   component: () => import('@/views/RiskMonitor.vue'),
+      //   meta: { title: 'Overview', icon: '📊', breadcrumb: 'Overview' }
+      // },
       {
         path: 'position',
         name: 'risk-position',
@@ -601,8 +793,23 @@ const routes: RouteRecordRaw[] = [
   }
 ]
 
+// ✅ HTML5 History API 支持检测（IE9优雅降级）
+// 检测浏览器是否支持HTML5 History API（pushState、replaceState）
+const supportsHistory = 'pushState' in window.history &&
+                        'replaceState' in window.history &&
+                        !!(window.navigator.userAgent.indexOf('MSIE') === -1 ||
+                           window.navigator.userAgent.indexOf('Trident/') === -1)
+
+// 开发环境日志：记录使用的路由模式
+if (import.meta.env.DEV) {
+  console.log(`🚀 Router mode: ${supportsHistory ? 'HTML5 History' : 'Hash (fallback for IE9)'}`)
+}
+
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  // 使用条件判断：支持History API时使用HTML5模式，否则回退到Hash模式
+  history: supportsHistory
+    ? createWebHistory(import.meta.env.BASE_URL)
+    : createWebHashHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
