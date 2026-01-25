@@ -1,3 +1,11 @@
+import logging
+import time
+from datetime import datetime
+from typing import Dict, Optional
+
+logger = logging.getLogger(__name__)
+
+
 def _save_call_history_async(self, **kwargs):
     """异步保存调用历史（避免阻塞）"""
     try:
@@ -32,7 +40,7 @@ def _save_call_history_async(self, **kwargs):
 # ==========================================================================
 
 
-def health_check(self, endpoint_name: str = None) -> Dict:
+def health_check(self, endpoint_name: Optional[str] = None) -> Dict:
     """
     执行健康检查
 

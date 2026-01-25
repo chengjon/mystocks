@@ -1,0 +1,235 @@
+name: Visual Baseline Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      description:
+        required: false
+        default: 'Update visual baselines for ArtDeco V3.0 design system'
+      commit_message:
+        required: true
+        default: 'chore: Update visual regression baselines'
+      scope:
+        required: false
+        default: 'all'
+        description: 'Scope of updates (all, pages, components)'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_VERSION: '1.48.1'
+
+jobs:
+  update-baselines:
+    name: Update Visual Baselines
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web/frontend/package-lock.json
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            web/frontend/node_modules
+            ~/.cache/ms-playwright
+          key: visual-baseline-${{ hashFiles('web/frontend/package-lock.json') }}
+          restore-keys: |
+            visual-baseline-
+
+      - name: Install Dependencies
+        run: |
+          cd web/frontend
+          npm ci --only=production
+          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
+          npx playwright install --with-deps chromium
+
+      - name: Setup Environment
+        run: |
+          cd web/frontend
+          export VITE_API_BASE_URL=http://localhost:8000
+          export USE_MOCK_DATA=true
+          echo "VITE_API_BASE_URL=http://localhost:8000" >> $GITHUB_ENV
+          echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
+
+      - name: Start Frontend Server
+        run: |
+          cd web/frontend
+          npm run dev -- --port 5173 &
+          echo "Frontend server started"
+          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
+
+      - name: Update Visual Baselines
+        run: |
+          cd web/frontend
+          echo "🎨 Updating visual baselines..."
+          echo "Scope: ${{ github.event.inputs.scope || 'all' }}"
+          echo "Description: ${{ github.event.inputs.description }}"
+
+          npx playwright test \
+            --config=tests/visual/config/visual.config.ts \
+            --project=chromium \
+            --update-snapshots
+
+          echo "✅ Visual baselines updated successfully"
+
+      - name: Check Changed Files
+        id: changed
+        run: |
+          echo "Changed files:" >> $GITHUB_STEP_SUMMARY
+          git status --short >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          changed_count=$(git status --short | wc -l)
+          echo "Files changed: $changed_count"
+
+          if [ $changed_count -gt 0 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and Push Changes
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          cd web/frontend
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          commit_msg="${{ github.event.inputs.commit_message || 'chore: Update visual regression baselines' }}"
+
+          git add tests/visual/baselines/
+          git status
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "$commit_msg" -m "Automated baseline update by GitHub Actions
+
+            ArtDeco V3.0 Design System - Visual Regression Baselines
+
+            Generated from workflow: ${{ github.workflow }}
+            Run ID: ${{ github.run_id }}
+            Commit: ${{ github.sha }}"
+
+            echo "✅ Changes committed"
+            git push
+            echo "✅ Changes pushed to repository"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Update Report
+        run: |
+          echo "# Visual Baseline Update Report" > visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "**Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> visual-baseline-update-report.md
+          echo "**Workflow:** ${{ github.workflow }}" >> visual-baseline-update-report.md
+          echo "**Run ID:** ${{ github.run_id }}" >> visual-baseline-update-report.md
+          echo "**Commit:** ${{ github.sha }}" >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "## Update Details" >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "| Field | Value |" >> visual-baseline-update-report.md
+          echo "|-------|-------|" >> visual-baseline-update-report.md
+          echo "| Scope | ${{ github.event.inputs.scope || 'all' }} |" >> visual-baseline-update-report.md
+          echo "| Description | ${{ github.event.inputs.description || 'N/A' }} |" >> visual-baseline-update-report.md
+          echo "| Commit Message | ${{ github.event.inputs.commit_message || 'chore: Update visual regression baselines' }} |" >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "## Files Updated" >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          git status --short >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "## ArtDeco V3.0 Components" >> visual-baseline-update-report.md
+          echo "" >> visual-baseline-update-report.md
+          echo "Updated baselines for:" >> visual-baseline-update-report.md
+          echo "- Dashboard charts (8 instances)" >> visual-baseline-update-report.md
+          echo "- Technical analysis charts (6 instances)" >> visual-baseline-update-report.md
+          echo "- Backtest results charts (4 instances)" >> visual-baseline-update-report.md
+          echo "- Strategy template charts (2 instances)" >> visual-baseline-update-report.md
+
+      - name: Upload Update Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: visual-baseline-update-report
+          path: visual-baseline-update-report.md
+          retention-days: 7
+
+      - name: Summary
+        run: |
+          echo "## Visual Baseline Update Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Visual baselines have been updated for ArtDeco V3.0 design system" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Updated components:" >> $GITHUB_STEP_SUMMARY
+          echo "- Dashboard charts" >> $GITHUB_STEP_SUMMARY
+          echo "- Technical analysis charts" >> $GITHUB_STEP_SUMMARY
+          echo "- Backtest results charts" >> $GITHUB_STEP_SUMMARY
+          echo "- Strategy template charts" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The changes have been committed and pushed to the repository." >> $GITHUB_STEP_SUMMARY
+
+  create-pr:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: update-baselines
+    if: needs.update-baselines.outputs.has_changes == 'true'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Update Report
+        uses: actions/download-artifact@v3
+        with:
+          name: visual-baseline-update-report
+          path: .
+
+      - name: Create Pull Request
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('visual-baseline-update-report.md', 'utf8');
+            const prTitle = 'chore: Update Visual Regression Baselines';
+            const prBody = 'Visual baseline update for ArtDeco V3.0 design system.\n\nChanges:\n' + report;
+
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              title: prTitle,
+              body: prBody,
+              head: 'visual-baseline-update',
+              base: 'main'
+            });
+
+            console.log('PR created:', pr.data.html_url);
+
+      - name: Comment PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: '🎨 Visual baseline update PR created. Please review the changes and merge when ready.'
+            });

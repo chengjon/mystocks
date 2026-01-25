@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 def _check_all_endpoints(self) -> Dict:
     """检查所有端点"""
     results = {}

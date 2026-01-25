@@ -8,6 +8,7 @@ PostgreSQL数据访问层
 版本: 1.1.0 (Added Transaction Scope)
 """
 
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 from contextlib import contextmanager
@@ -17,6 +18,8 @@ from psycopg2 import sql
 from psycopg2.extras import execute_values
 
 from src.storage.database.connection_manager import get_connection_manager
+
+logger = logging.getLogger(__name__)
 
 
 class PostgreSQLDataAccess:
