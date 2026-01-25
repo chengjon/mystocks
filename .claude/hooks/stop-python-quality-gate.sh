@@ -240,7 +240,9 @@ while IFS= read -r repo; do
         else
             # 检查失败，解析错误
             if [ -n "$ERROR_PATTERNS" ]; then
-                ERROR_COUNT=$(echo "$CHECK_OUTPUT" | grep -cE "$ERROR_PATTERNS" || echo 0)
+                ERROR_COUNT=$(echo "$CHECK_OUTPUT" | grep -cE "$ERROR_PATTERNS" 2>/dev/null || echo 0)
+                ERROR_COUNT=$(echo "$ERROR_COUNT" | tr -d '[:space:]' | sed 's/[^0-9]//g')
+                [ -z "$ERROR_COUNT" ] && ERROR_COUNT=0
             else
                 # 默认：任何输出都算1个错误
                 if [ -n "$CHECK_OUTPUT" ]; then
@@ -286,7 +288,10 @@ if [ "$TOTAL_ERRORS" -lt "$ERROR_THRESHOLD" ]; then
     # 构建错误详情 JSON 数组
     ERROR_DETAILS_ARRAY="[]"
     for check_name in "${!CHECK_ERRORS[@]}"; do
-        ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "${CHECK_ERRORS[$check_name]}" '. += [{name: $name, errors: $count}]')
+        error_count="${CHECK_ERRORS[$check_name]}"
+        error_count=$(echo "$error_count" | tr -d '[:space:]' | grep -E '^[0-9]+$' || echo 0)
+        [ -z "$error_count" ] && error_count=0
+        ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "$error_count" '. += [{name: $name, errors: $count}]')
     done
 
     # 使用 jq 生成有效的 JSON（不阻断）
@@ -301,11 +306,14 @@ fi
 # ===== 错误 ≥ 阈值，阻断 Stop =====
 debug_log "✗ Found $TOTAL_ERRORS errors (threshold: $ERROR_THRESHOLD), blocking stop"
 
-# 构建错误详情 JSON 数组
-ERROR_DETAILS_ARRAY="[]"
-for check_name in "${!CHECK_ERRORS[@]}"; do
-    ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "${CHECK_ERRORS[$check_name]}" '. += [{name: $name, errors: $count}]')
-done
+    # 构建错误详情 JSON 数组
+    ERROR_DETAILS_ARRAY="[]"
+    for check_name in "${!CHECK_ERRORS[@]}"; do
+        error_count="${CHECK_ERRORS[$check_name]}"
+        error_count=$(echo "$error_count" | tr -d '[:space:]' | grep -E '^[0-9]+$' || echo 0)
+        [ -z "$error_count" ] && error_count=0
+        ERROR_DETAILS_ARRAY=$(echo "$ERROR_DETAILS_ARRAY" | jq --arg name "$check_name" --argjson count "$error_count" '. += [{name: $name, errors: $count}]')
+    done
 
 # 构建原因字符串
 REASON="❌ Python 质量检查失败: 发现 $TOTAL_ERRORS 个错误（阈值: $ERROR_THRESHOLD）

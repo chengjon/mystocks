@@ -1,0 +1,226 @@
+name: Visual Testing Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'web/frontend/src/**'
+      - 'web/frontend/**/*.vue'
+      - 'web/frontend/**/*.ts'
+      - 'web/frontend/**/*.scss'
+      - 'web/frontend/**/*.css'
+      - '.github/workflows/visual-testing.yml'
+      - 'tests/visual/**'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'web/frontend/src/**'
+      - 'web/frontend/**/*.vue'
+      - 'web/frontend/**/*.ts'
+      - 'web/frontend/**/*.scss'
+      - 'web/frontend/**/*.css'
+      - '.github/workflows/visual-testing.yml'
+      - 'tests/visual/**'
+  workflow_dispatch:
+    inputs:
+      update_baselines:
+        description: 'Update visual baselines after test'
+        required: false
+        type: boolean
+        default: false
+      test_scope:
+        description: 'Test scope (all, pages, components)'
+        required: false
+        type: string
+        default: 'all'
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_VERSION: '1.48.1'
+
+jobs:
+  visual-test-setup:
+    name: Visual Test Setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    outputs:
+      cache_key: ${{ steps.cache_key.outputs.cache_key }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Cache Key
+        id: cache_key
+        run: |
+          echo "cache_key=visual-${{ hashFiles('web/frontend/package-lock.json', 'web/frontend/package.json', 'tests/visual/**') }}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/frontend/package-lock.json
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            web/frontend/node_modules
+            ~/.cache/ms-playwright
+          key: ${{ steps.cache_key.outputs.cache_key }}
+          restore-keys: |
+            visual-
+
+      - name: Install Dependencies
+        run: |
+          cd web/frontend
+          npm ci --only=production
+          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
+          npx playwright install --with-deps chromium
+
+      - name: Verify Setup
+        run: |
+          echo "Node.js version: $(node --version)"
+          echo "Playwright version: $(npx playwright --version)"
+
+  visual-tests:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: visual-test-setup
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium]
+        shard: ['1/1']
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/frontend/package-lock.json
+
+      - name: Restore Dependencies Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            web/frontend/node_modules
+            ~/.cache/ms-playwright
+          key: ${{ needs.visual-test-setup.outputs.cache_key }}
+          restore-keys: |
+            visual-
+
+      - name: Install Playwright
+        run: |
+          cd web/frontend
+          npm ci --only=production
+          npm install @playwright/test@${{ env.PLAYWRIGHT_VERSION }}
+          npx playwright install --with-deps chromium
+
+      - name: Setup Test Environment
+        run: |
+          cd web/frontend
+          echo "VITE_API_BASE_URL=http://localhost:8000" >> $GITHUB_ENV
+          echo "USE_MOCK_DATA=true" >> $GITHUB_ENV
+
+      - name: Start Frontend Server
+        run: |
+          cd web/frontend
+          npm run dev -- --port 5173 &
+          echo "Frontend server started"
+          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
+
+      - name: Run Visual Tests
+        if: inputs.update_baselines != true
+        run: |
+          cd web/frontend
+          npx playwright test \
+            --config=tests/visual/config/visual.config.ts \
+            --project=${{ matrix.browser }} \
+            --reporter=html,json,junit \
+            --output=test-results/visual/ \
+            --trace=on
+
+      - name: Update Visual Baselines
+        if: inputs.update_baselines == true
+        run: |
+          cd web/frontend
+          echo "Updating visual baselines"
+          npx playwright test \
+            --config=tests/visual/config/visual.config.ts \
+            --project=${{ matrix.browser }} \
+            --update-snapshots
+
+      - name: Upload Visual Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: visual-test-results-${{ matrix.browser }}-${{ matrix.shard }}
+          path: |
+            web/frontend/test-results/visual/
+            !web/frontend/test-results/visual/**/*.zip
+          retention-days: 30
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: visual-playwright-report-${{ matrix.browser }}-${{ matrix.shard }}
+          path: web/frontend/playwright-report/
+          retention-days: 30
+
+  visual-test-results:
+    name: Visual Test Results Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: visual-tests
+    if: always()
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: test-results/
+
+      - name: Collect Results
+        run: |
+          echo "Collecting Visual Test Results"
+          total_tests=0
+          passed_tests=0
+          failed_tests=0
+
+          for result_dir in test-results/*/; do
+            if [ -f "${result_dir}results.json" ]; then
+              local_tests=$(jq '.suites[].tests | length' "${result_dir}results.json" 2>/dev/null || echo "0")
+              local_passed=$(jq '[.suites[].tests[] | select(.status == "passed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
+              local_failed=$(jq '[.suites[].tests[] | select(.status == "failed")] | length' "${result_dir}results.json" 2>/dev/null || echo "0")
+
+              total_tests=$((total_tests + local_tests))
+              passed_tests=$((passed_tests + local_passed))
+              failed_tests=$((failed_tests + local_failed))
+            fi
+          done
+
+          echo "Total Tests: $total_tests"
+          echo "Passed: $passed_tests"
+          echo "Failed: $failed_tests"
+
+      - name: Upload Test Summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: visual-test-summary
+          path: visual-test-summary.json
