@@ -7,15 +7,16 @@ ensemble methods for improved accuracy and robustness.
 """
 
 import logging
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Optional, Union
 
 try:
     from cuml.ensemble import RandomForestClassifier
-    from cuml.tree import DecisionTreeClassifier
-    from cuml.preprocessing import StandardScaler as GPUStandardScaler
     from cuml.metrics import accuracy_score as gpu_accuracy_score
+    from cuml.preprocessing import StandardScaler as GPUStandardScaler
+    from cuml.tree import DecisionTreeClassifier
 
     CUMl_AVAILABLE = True
 except ImportError:
@@ -23,7 +24,6 @@ except ImportError:
     logging.warning("cuML not available, Decision Tree will use CPU fallback")
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
 from src.algorithms.metadata import AlgorithmFingerprint
 from src.gpu.core.hardware_abstraction import GPUResourceManager
 
@@ -81,8 +81,8 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
                 await self.fallback_to_cpu()
                 return
 
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"dt_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
+            gpu_id = self.gpu_manager.allocate_context(
+                strategy_id=f"dt_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
             )
 
             if gpu_id is not None:
@@ -99,7 +99,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"dt_{self.metadata.name}")
+                self.gpu_manager.release_context(f"dt_{self.metadata.name}")
                 logger.info("Decision Tree GPU resources released")
             except Exception as e:
                 logger.error(f"GPU resource release failed: {e}")
@@ -157,8 +157,8 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
                 self.model.fit(X_scaled, y)
 
             else:
-                from sklearn.preprocessing import StandardScaler
                 from sklearn.ensemble import RandomForestClassifier
+                from sklearn.preprocessing import StandardScaler
                 from sklearn.tree import DecisionTreeClassifier
 
                 self.scaler = StandardScaler()
@@ -289,7 +289,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             if self.gpu_enabled and CUMl_AVAILABLE:
                 accuracy = float(gpu_accuracy_score(actual_values, pred_values))
             else:
-                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+                from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
                 accuracy = accuracy_score(actual_values, pred_values)
                 precision = precision_score(actual_values, pred_values, average="weighted", zero_division=0)
