@@ -6,23 +6,23 @@ leveraging cuML for GPU-accelerated training and prediction.
 """
 
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Optional, Union
-from datetime import datetime
 
 try:
-    from cuml.svm import SVC
-    from cuml.preprocessing import StandardScaler as GPUStandardScaler
     from cuml.metrics import accuracy_score as gpu_accuracy_score
+    from cuml.preprocessing import StandardScaler as GPUStandardScaler
+    from cuml.svm import SVC
 
     CUMl_AVAILABLE = True
 except ImportError:
     CUMl_AVAILABLE = False
     logging.warning("cuML not available, SVM will use CPU fallback")
 
-from src.algorithms.base import GPUAcceleratedAlgorithm, AlgorithmMetadata
-from src.algorithms.types import AlgorithmType
+from src.algorithms.base import AlgorithmMetadata, GPUAcceleratedAlgorithm
 from src.algorithms.metadata import AlgorithmFingerprint
 from src.gpu.core.hardware_abstraction import GPUResourceManager
 
@@ -72,8 +72,8 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
                 return
 
             # Allocate GPU memory for model
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"svm_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
+            gpu_id = self.gpu_manager.allocate_context(
+                strategy_id=f"svm_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
             )
 
             if gpu_id is not None:
@@ -90,7 +90,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"svm_{self.metadata.name}")
+                self.gpu_manager.release_context(f"svm_{self.metadata.name}")
                 logger.info("SVM GPU resources released")
             except Exception as e:
                 logger.error(f"GPU resource release failed: {e}")
@@ -291,7 +291,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
                 accuracy = float(gpu_accuracy_score(actual_values, pred_values))
             else:
                 # CPU metrics
-                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+                from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
                 accuracy = accuracy_score(actual_values, pred_values)
                 precision = precision_score(actual_values, pred_values, average="weighted", zero_division=0)
