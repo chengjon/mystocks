@@ -9,16 +9,17 @@ TDengine时序数据源实现
 版本: 1.0.0
 """
 
-from typing import List, Dict, Optional, Any
+import logging
 from datetime import date, datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from src.interfaces.timeseries_data_source import ITimeSeriesDataSource
-from src.data_access.tdengine_access import TDengineDataAccess
 from src.core import DataClassification
 from src.core.exceptions import (
-    DataSourceQueryError,
     DataSourceDataNotFound,
+    DataSourceQueryError,
 )
+from src.data_access.tdengine_access import TDengineDataAccess
+from src.interfaces.timeseries_data_source import ITimeSeriesDataSource
 
 
 class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
@@ -46,6 +47,8 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
         self._conn_pool_size = connection_pool_size
         # 股票名称缓存，提高查询性能
         self._stock_name_cache: Dict[str, str] = {}
+        # 初始化logger
+        self.logger = logging.getLogger(__name__)
 
     def get_realtime_quotes(self, symbols: List[str], fields: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """
@@ -122,10 +125,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取实时行情失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_realtime_quotes",
-                query_params={"symbols": symbols},
+                source_name="tdengine",
+                query=f"获取实时行情失败: {str(e)}",
+                details=f"symbols: {symbols}",
             )
 
     def get_kline_data(
@@ -206,15 +208,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取K线数据失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_kline_data",
-                query_params={
-                    "symbol": symbol,
-                    "period": period,
-                    "start_date": str(start_date),
-                    "end_date": str(end_date),
-                },
+                source_name="tdengine",
+                query=f"获取K线数据失败: {str(e)}",
+                details=f"symbol: {symbol}, period: {period}, start_date: {start_date}, end_date: {end_date}",
             )
 
     def get_intraday_chart(self, symbol: str, trade_date: Optional[date] = None) -> List[Dict[str, Any]]:
@@ -271,10 +267,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取分时图数据失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_intraday_chart",
-                query_params={"symbol": symbol, "trade_date": str(trade_date)},
+                source_name="tdengine",
+                query=f"获取分时图数据失败: {str(e)}",
+                details=f"symbol: {symbol}, trade_date: {trade_date}",
             )
 
     def get_fund_flow(self, symbol: str, trade_date: Optional[date] = None) -> Dict[str, Any]:
@@ -338,10 +333,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             raise
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取资金流向失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_fund_flow",
-                query_params={"symbol": symbol},
+                source_name="tdengine",
+                query=f"获取资金流向失败: {str(e)}",
+                details=f"symbol: {symbol}",
             )
 
     def get_top_fund_flow_stocks(
@@ -489,9 +483,8 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取市场概览失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_market_overview",
+                source_name="tdengine",
+                query=f"获取市场概览失败: {str(e)}",
             )
 
     def get_index_realtime(self, index_codes: List[str]) -> List[Dict[str, Any]]:
@@ -544,10 +537,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取指数实时行情失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_index_realtime",
-                query_params={"index_codes": index_codes},
+                source_name="tdengine",
+                query=f"获取指数实时行情失败: {str(e)}",
+                details=f"index_codes: {index_codes}",
             )
 
     def calculate_technical_indicators(
@@ -608,10 +600,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"计算技术指标失败: {str(e)}",
-                source_type="tdengine",
-                operation="calculate_technical_indicators",
-                query_params={"symbol": symbol, "indicators": indicators},
+                source_name="tdengine",
+                query=f"计算技术指标失败: {str(e)}",
+                details=f"symbol: {symbol}, indicators: {indicators}",
             )
 
     def get_auction_data(
@@ -676,10 +667,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
             raise
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取竞价数据失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_auction_data",
-                query_params={"symbol": symbol},
+                source_name="tdengine",
+                query=f"获取竞价数据失败: {str(e)}",
+                details=f"symbol: {symbol}",
             )
 
     def check_data_quality(self, symbol: str, start_date: date, end_date: date) -> Dict[str, Any]:
