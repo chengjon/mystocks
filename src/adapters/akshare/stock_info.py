@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 class StockInfoAdapter(BaseAkshareAdapter):
     """股票信息适配器"""
-
+    # 日志记录器
+    logger = logging.getLogger(__name__)
     @retry_api_call(max_retries=3, delay=1)
     async def get_concept_classify(self) -> pd.DataFrame:
         """
@@ -194,6 +195,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
         try:
             self.logger.info(f"[Akshare] 开始获取上海交易所每日概况数据，日期: {date}")
 
+            # pylint: disable=no-member
             if date:
                 df = ak.stock_sse_index_spot(date=date)
             else:
