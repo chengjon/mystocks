@@ -7,14 +7,15 @@ market regime detection and probabilistic signal generation.
 """
 
 import logging
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Optional
 
 try:
-    from cuml.naive_bayes import MultinomialNB, GaussianNB, ComplementNB
-    from cuml.preprocessing import StandardScaler as GPUStandardScaler
     from cuml.metrics import accuracy_score as gpu_accuracy_score
+    from cuml.naive_bayes import ComplementNB, GaussianNB, MultinomialNB
+    from cuml.preprocessing import StandardScaler as GPUStandardScaler
 
     CUMl_AVAILABLE = True
 except ImportError:
@@ -22,7 +23,6 @@ except ImportError:
     logging.warning("cuML not available, Naive Bayes will use CPU fallback")
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
 from src.algorithms.metadata import AlgorithmFingerprint
 from src.gpu.core.hardware_abstraction import GPUResourceManager
 
@@ -68,8 +68,8 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
                 await self.fallback_to_cpu()
                 return
 
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"nb_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
+            gpu_id = self.gpu_manager.allocate_context(
+                strategy_id=f"nb_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
             )
 
             if gpu_id is not None:
@@ -86,7 +86,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"nb_{self.metadata.name}")
+                self.gpu_manager.release_context(f"nb_{self.metadata.name}")
                 logger.info("Naive Bayes GPU resources released")
             except Exception as e:
                 logger.error(f"GPU resource release failed: {e}")
@@ -149,7 +149,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
                 logger.info(f"Training {self.variant} Naive Bayes on GPU")
 
             else:
-                from sklearn.naive_bayes import GaussianNB, MultinomialNB, ComplementNB
+                from sklearn.naive_bayes import ComplementNB, GaussianNB, MultinomialNB
                 from sklearn.preprocessing import StandardScaler
 
                 if self.variant == "gaussian":
@@ -282,7 +282,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
             if self.gpu_enabled and CUMl_AVAILABLE:
                 accuracy = float(gpu_accuracy_score(actual_values, pred_values))
             else:
-                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+                from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
                 accuracy = accuracy_score(actual_values, pred_values)
                 precision = precision_score(actual_values, pred_values, average="weighted", zero_division=0)
