@@ -6,9 +6,11 @@
 import asyncio
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Any, Dict
+
 import asyncpg
 import structlog
+
 from .config import DatabaseConfig
 from .exceptions import DatabaseConnectionError, DatabaseOperationError
 
@@ -250,10 +252,8 @@ class DatabaseConnectionPool:
                     error=str(e),
                 )
                 raise DatabaseOperationError(
-                    message=f"Query execution failed: {str(e)}",
-                    code="QUERY_EXECUTION_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
+                    operation="query execution",
+                    details=f"Failed: {str(e)}",
                 )
 
     async def execute_command(self, command: str, params: tuple = None, timeout: int = 30) -> str:
@@ -285,17 +285,15 @@ class DatabaseConnectionPool:
                 return result
 
             except Exception as e:
-                self._stats["query_errors"] += 1
+                self._stats["command_errors"] += 1
                 logger.error(
                     "命令执行失败",
                     command=command[:100] + "..." if len(command) > 100 else command,
                     error=str(e),
                 )
                 raise DatabaseOperationError(
-                    message=f"Command execution failed: {str(e)}",
-                    code="COMMAND_EXECUTION_FAILED",
-                    severity="HIGH",
-                    original_exception=e,
+                    operation="command execution",
+                    details=f"Failed: {str(e)}",
                 )
 
     def get_stats(self) -> Dict[str, Any]:

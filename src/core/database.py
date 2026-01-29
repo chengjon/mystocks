@@ -3,8 +3,10 @@
 提供统一的数据库访问接口
 """
 
+from typing import Any, Dict, List
+
 import structlog
-from typing import List, Dict, Any
+
 from .database_pool import DatabaseConnectionManager
 from .exceptions import DataValidationError
 
@@ -63,16 +65,16 @@ class DatabaseHelper:
         """
         if not isinstance(page, int) or page < 1:
             raise DataValidationError(
-                message="Page must be a positive integer",
-                code="INVALID_PAGE",
-                severity="MEDIUM",
+                field="page",
+                value=page,
+                expected="positive integer",
             )
 
         if not isinstance(page_size, int) or page_size < 1 or page_size > 100:
             raise DataValidationError(
-                message="Page size must be an integer between 1 and 100",
-                code="INVALID_PAGE_SIZE",
-                severity="MEDIUM",
+                field="page_size",
+                value=page_size,
+                expected="integer between 1 and 100",
             )
 
         offset = (page - 1) * page_size
