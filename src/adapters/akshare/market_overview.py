@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 class MarketOverviewAdapter(BaseAkshareAdapter):
     """市场总貌数据适配器"""
+    # 日志记录器
+    logger = logging.getLogger(__name__)
 
     @retry_api_call(max_retries=3, delay=1)
     async def get_market_overview_sse(self) -> pd.DataFrame:
@@ -193,6 +195,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
         try:
             self.logger.info(f"[Akshare] 开始获取深圳行业成交数据，日期: {date}")
 
+            # pylint: disable=no-member
             df = ak.stock_szse_industry_summary(date=date)
 
             if df is None or df.empty:
