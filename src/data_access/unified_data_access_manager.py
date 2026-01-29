@@ -5,33 +5,33 @@
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
-from .interfaces.i_data_access import (
-    IDataAccess,
-    DataQuery,
-    QueryResult,
-    SaveResult,
-    UpdateResult,
-    DeleteResult,
-    DatabaseType,
-    QueryOperation,
-    Transaction,
-    IsolationLevel,
-    DataRecord,
-    SaveOptions,
-    QueryCriteria,
-)
-from .routers.query_router import QueryRouter, get_global_router
-from .optimizers.query_optimizer import QueryOptimizer, get_global_optimizer
 from .capabilities.database_detector import (
     DatabaseCapabilityDetector,
     get_global_detector,
 )
+from .interfaces.i_data_access import (
+    DatabaseType,
+    DataQuery,
+    DataRecord,
+    DeleteResult,
+    IDataAccess,
+    IsolationLevel,
+    QueryCriteria,
+    QueryOperation,
+    QueryResult,
+    SaveOptions,
+    SaveResult,
+    Transaction,
+    UpdateResult,
+)
+from .optimizers.query_optimizer import QueryOptimizer, get_global_optimizer
 from .postgresql_access import PostgreSQLDataAccess
+from .routers.query_router import QueryRouter, get_global_router
 from .tdengine_access import TDengineDataAccess
 
 logger = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ class UnifiedDataAccessManager:
         # 初始化PostgreSQL适配器
         try:
             pg_adapter = PostgreSQLDataAccess()
-            await pg_adapter.connect()
+            pg_adapter.connect()
             self.adapters.setdefault(DatabaseType.POSTGRESQL, []).append(pg_adapter)
             logger.info("PostgreSQL适配器初始化成功")
         except Exception as e:
@@ -138,7 +138,7 @@ class UnifiedDataAccessManager:
         # 初始化TDengine适配器
         try:
             td_adapter = TDengineDataAccess()
-            await td_adapter.connect()
+            td_adapter.connect()
             self.adapters.setdefault(DatabaseType.TDENGINE, []).append(td_adapter)
             logger.info("TDengine适配器初始化成功")
         except Exception as e:
