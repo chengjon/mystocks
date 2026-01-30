@@ -15,6 +15,7 @@ import pandas as pd
 try:
     from cuml.metrics import accuracy_score as gpu_accuracy_score
     from cuml.naive_bayes import ComplementNB, GaussianNB, MultinomialNB
+            # type: ignore[E0601]  # Pylint false positive - imports available in all code paths
     from cuml.preprocessing import StandardScaler as GPUStandardScaler
 
     CUMl_AVAILABLE = True
@@ -35,6 +36,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
 
     Uses probabilistic Naive Bayes algorithms to classify market data into
     buy/sell/hold signals based on feature independence assumptions.
+            # type: ignore[E0601]  # Pylint false positive - imports available in all code paths
     Supports multiple variants: Gaussian, Multinomial, and Complement NB.
     """
 
