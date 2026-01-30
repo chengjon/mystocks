@@ -1,3 +1,4 @@
+# pylint: disable=no-member
 """
 AkShare市场总貌数据模块
 
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class MarketOverviewAdapter(BaseAkshareAdapter):
     """市场总貌数据适配器"""
-    self.logger = logging.getLogger(__name__)
     # 日志记录器
+    pass
 
     @retry_api_call(max_retries=3, delay=1)
     async def get_market_overview_sse(self) -> pd.DataFrame:
