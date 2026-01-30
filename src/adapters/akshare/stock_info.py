@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 class StockInfoAdapter(BaseAkshareAdapter):
     """股票信息适配器"""
+    self.logger = logging.getLogger(__name__)
     # 日志记录器
-    logger = logging.getLogger(__name__)
     @retry_api_call(max_retries=3, delay=1)
     async def get_concept_classify(self) -> pd.DataFrame:
         """
@@ -39,11 +39,8 @@ class StockInfoAdapter(BaseAkshareAdapter):
                 - stock_count: 成分股数量
                 - leader_stock: 领涨股
         """
-        try:
-            self.logger.info("[Akshare] 开始获取概念分类数据...")
-
-            df = ak.stock_board_concept_name_em()
-
+                - leader_stock: 领涨股
+        """
             if df is None or df.empty:
                 self.logger.info("[Akshare] 未能获取到概念分类数据")
                 return pd.DataFrame()
