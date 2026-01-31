@@ -7,7 +7,7 @@ import functools
 import logging
 from typing import Callable, Optional
 
-from .multi_level import get_cache, generate_cache_key
+from .multi_level import generate_cache_key, get_cache
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def cached(
 
             cached_value, found, level = await cache.get(cache_key)
             if found:
-                logger.debug(f"Cache hit: {cache_key} ({level})")
+                logger.debug("Cache hit: %(cache_key)s (%(level)s)"")
                 return cached_value
 
             result = await func(*args, **kwargs)
@@ -86,7 +86,7 @@ def cached(
                 else:
                     await cache.set(cache_key, result, ttl=ttl)
 
-                logger.debug(f"Cached: {cache_key}")
+                logger.debug("Cached: %(cache_key)s"")
 
             return result
 
@@ -204,7 +204,7 @@ def create_cache_middleware(
 
         cached_value, found, level = await cache.get(cache_key)
         if found:
-            logger.debug(f"HTTP cache hit: {cache_key}")
+            logger.debug("HTTP cache hit: %(cache_key)s"")
             return cached_value
 
         response = await call_next(request)

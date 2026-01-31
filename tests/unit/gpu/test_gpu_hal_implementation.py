@@ -5,8 +5,8 @@ GPU硬件抽象层（HAL）实现测试
 """
 
 import asyncio
-import sys
 import logging
+import sys
 import time
 from pathlib import Path
 
@@ -14,17 +14,18 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
+import numpy as np
+
 # 导入HAL组件
 from src.gpu.core.hardware_abstraction import (
-    GPUResourceManager,
-    StrategyPriority,
-    PerformanceProfile,
-    RealTimeGPUPath,
     DeviceHealthMonitor,
+    GPUResourceManager,
+    PerformanceProfile,
     PerformanceThreshold,
+    RealTimeGPUPath,
+    StrategyPriority,
 )
 from src.gpu.core.hardware_abstraction.memory_pool import MemoryPoolConfig
-import numpy as np
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -60,38 +61,38 @@ class HALImplementationTest:
         total_tests = len(tests)
 
         for test_name, test_func in tests:
-            logger.info(f"\n--- Running Test: {test_name} ---")
+            logger.info("\n--- Running Test: %(test_name)s ---")
             try:
                 start_time = time.time()
                 result = await test_func()
                 duration = (time.time() - start_time) * 1000
 
                 if result:
-                    logger.info(f"✅ {test_name} PASSED ({duration:.1f}ms)")
+                    logger.info("✅ %(test_name)s PASSED ({duration:.1f}ms)")
                     passed_tests += 1
                     self.test_results[test_name] = {
                         "status": "PASSED",
                         "duration_ms": duration,
                     }
                 else:
-                    logger.error(f"❌ {test_name} FAILED")
+                    logger.error("❌ %(test_name)s FAILED")
                     self.test_results[test_name] = {
                         "status": "FAILED",
                         "duration_ms": duration,
                     }
 
             except Exception as e:
-                logger.error(f"❌ {test_name} ERROR: {e}")
+                logger.error("❌ %(test_name)s ERROR: %(e)s")
                 self.test_results[test_name] = {"status": "ERROR", "error": str(e)}
 
         # 输出测试结果摘要
         logger.info("\n" + "=" * 60)
         logger.info("Test Results Summary")
         logger.info("=" * 60)
-        logger.info(f"Total Tests: {total_tests}")
-        logger.info(f"Passed: {passed_tests}")
-        logger.info(f"Failed: {total_tests - passed_tests}")
-        logger.info(f"Success Rate: {passed_tests / total_tests * 100:.1f}%")
+        logger.info("Total Tests: %(total_tests)s")
+        logger.info("Passed: %(passed_tests)s")
+        logger.info("Failed: {total_tests - passed_tests}")
+        logger.info("Success Rate: {passed_tests / total_tests * 100:.1f}%")
 
         return passed_tests == total_tests
 
@@ -102,9 +103,9 @@ class HALImplementationTest:
 
         if success:
             devices = self.resource_manager.get_available_devices()
-            logger.info(f"Detected {len(devices)} GPU devices")
+            logger.info("Detected {len(devices)} GPU devices")
             for device in devices:
-                logger.info(f"  Device {device.device_id}: {device.name} ({device.memory_total}MB)")
+                logger.info("  Device {device.device_id}: {device.name} ({device.memory_total}MB)")
         else:
             logger.error("Failed to initialize GPU ResourceManager")
 
@@ -129,12 +130,12 @@ class HALImplementationTest:
         context = await self.resource_manager.allocate_context(request)
 
         if context:
-            logger.info(f"Allocated context for strategy {context.get_strategy_id()}")
-            logger.info(f"Device ID: {context.get_device_id()}")
+            logger.info("Allocated context for strategy {context.get_strategy_id()}")
+            logger.info("Device ID: {context.get_device_id()}")
 
             # 测试性能指标
             metrics = context.get_performance_metrics()
-            logger.info(f"Strategy metrics: {metrics}")
+            logger.info("Strategy metrics: %(metrics)s")
 
             # 清理
             success = await self.resource_manager.release_context("test_strategy_001")
@@ -164,7 +165,7 @@ class HALImplementationTest:
 
             # 获取使用统计
             stats = memory_pool.get_usage_statistics()
-            logger.info(f"Memory usage: {stats['usage']['utilization']:.2%}")
+            logger.info("Memory usage: {stats['usage']['utilization']:.2%}")
 
             # 测试内存释放
             success1 = memory_pool.deallocate(ptr1, "test_memory_strategy")
@@ -215,7 +216,7 @@ class HALImplementationTest:
 
                     # 获取预热状态
                     status = self.realtime_path.get_prewarm_status()
-                    logger.info(f"Prewarm status: {status}")
+                    logger.info("Prewarm status: %(status)s")
 
                     return True
 
@@ -233,14 +234,14 @@ class HALImplementationTest:
 
         # 获取初始设备健康状态
         summary = self.health_monitor.get_device_health_summary()
-        logger.info(f"Health monitor status: {summary['monitoring_active']}")
-        logger.info(f"Monitored devices: {summary['monitored_devices']}")
+        logger.info("Health monitor status: {summary['monitoring_active']}")
+        logger.info("Monitored devices: {summary['monitored_devices']}")
 
         # 检查性能阈值
         if self.resource_manager.get_available_devices():
             device_id = self.resource_manager.get_available_devices()[0].device_id
             issues = self.health_monitor.check_performance_thresholds(device_id)
-            logger.info(f"Performance issues: {issues}")
+            logger.info("Performance issues: %(issues)s")
 
             return True
 
@@ -256,7 +257,7 @@ class HALImplementationTest:
 
         # 获取资源使用摘要
         summary = self.resource_manager.get_resource_usage_summary()
-        logger.info(f"Resource usage summary: {summary}")
+        logger.info("Resource usage summary: %(summary)s")
 
         return True
 
@@ -289,7 +290,7 @@ class HALImplementationTest:
 
                 # 测试资源管理摘要
                 summary = self.resource_manager.get_resource_usage_summary()
-                logger.info(f"Active strategies: {summary['active_strategies']}")
+                logger.info("Active strategies: {summary['active_strategies']}")
 
                 # 清理所有策略
                 for context in strategies:
@@ -299,7 +300,7 @@ class HALImplementationTest:
                 return True
 
         except Exception as e:
-            logger.error(f"Integration test error: {e}")
+            logger.error("Integration test error: %(e)s")
             return False
 
     async def cleanup(self):

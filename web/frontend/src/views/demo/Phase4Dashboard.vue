@@ -226,7 +226,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import * as echarts from 'echarts'
-import axios from 'axios'
+import { dashboardService } from '@/services/dashboardService' // Import dashboardService
 
 const loading = ref(false)
 const activeTab = ref('indices')
@@ -302,8 +302,12 @@ let distributionChart = null
 let portfolioChart = null
 
 const formatCurrency = (value) => {
-  if (!value) return '¥0.00'
-  return `¥${(value / 10000).toFixed(2)}万`
+  if (typeof value === 'undefined' || value === null) return '¥0.00'; // Handle undefined/null
+  // Ensure value is a number for toFixed
+  const numericValue = Number(value);
+  if (isNaN(numericValue)) return '¥0.00';
+
+  return `¥${(numericValue / 10000).toFixed(2)}万`
 }
 
 const getAlertBadgeClass = (level) => {
@@ -319,43 +323,40 @@ const loadDashboardData = async () => {
   try {
     loading.value = true
 
-    const response = await axios.get('/api/dashboard/summary', {
-      params: {
-        user_id: 1001,
-        include_market: true,
-        include_watchlist: true,
-        include_portfolio: true,
-        include_alerts: true
+    // Using a fixed user_id for now, can be dynamic later
+    const response = await dashboardService.getDashboardSummary(1001)
+
+    if (response.success && response.data) {
+      const data = response.data
+
+      if (data.marketOverview) { // Using marketOverview from DashboardSummary
+        Object.assign(marketOverview, data.marketOverview)
+        marketStats.indexCount = data.marketOverview.indices?.length || 0
+        marketStats.trend = `${data.marketOverview.up_count || 0} UP / ${data.marketOverview.down_count || 0} DOWN`
+        marketStats.trendClass = (data.marketOverview.up_count || 0) > (data.marketOverview.down_count || 0) ? 'change-up' : 'change-down'
       }
-    })
 
-    const data = response.data
+      if (data.watchlist) { // Using watchlist from DashboardSummary
+        Object.assign(watchlist, data.watchlist)
+        watchlistStats.count = data.watchlist.total_count
+        watchlistStats.avgChange = data.watchlist.avg_change_percent?.toFixed(2) || 0
+        watchlistStats.trendClass = (data.watchlist.avg_change_percent || 0) > 0 ? 'change-up' : 'change-down'
+      }
 
-    if (data.market_overview) {
-      Object.assign(marketOverview, data.market_overview)
-      marketStats.indexCount = data.market_overview.indices?.length || 0
-      marketStats.trend = `${data.market_overview.up_count} UP / ${data.market_overview.down_count} DOWN`
-      marketStats.trendClass = data.market_overview.up_count > data.market_overview.down_count ? 'change-up' : 'change-down'
-    }
+      if (data.portfolio) { // Using portfolio from DashboardSummary
+        Object.assign(portfolio, data.portfolio)
+        portfolioStats.totalValue = formatCurrency(data.portfolio.total_market_value)
+        portfolioStats.profitLoss = formatCurrency(data.portfolio.total_profit_loss)
+        portfolioStats.trendClass = (data.portfolio.total_profit_loss || 0) > 0 ? 'change-up' : 'change-down'
+      }
 
-    if (data.watchlist) {
-      Object.assign(watchlist, data.watchlist)
-      watchlistStats.count = data.watchlist.total_count
-      watchlistStats.avgChange = data.watchlist.avg_change_percent?.toFixed(2) || 0
-      watchlistStats.trendClass = data.watchlist.avg_change_percent > 0 ? 'change-up' : 'change-down'
-    }
-
-    if (data.portfolio) {
-      Object.assign(portfolio, data.portfolio)
-      portfolioStats.totalValue = formatCurrency(data.portfolio.total_market_value)
-      portfolioStats.profitLoss = formatCurrency(data.portfolio.total_profit_loss)
-      portfolioStats.trendClass = data.portfolio.total_profit_loss > 0 ? 'change-up' : 'change-down'
-    }
-
-    if (data.risk_alerts) {
-      Object.assign(riskAlerts, data.risk_alerts)
-      riskStats.total = data.risk_alerts.total_count
-      riskStats.unread = data.risk_alerts.unread_count
+      if (data.riskAlerts) { // Using riskAlerts from DashboardSummary
+        Object.assign(riskAlerts, data.riskAlerts)
+        riskStats.total = data.riskAlerts.total_count
+        riskStats.unread = data.riskAlerts.unread_count
+      }
+    } else {
+      ElMessage.error(response.message || 'Failed to load dashboard data')
     }
 
     updateCharts()
@@ -363,7 +364,9 @@ const loadDashboardData = async () => {
     ElMessage.success('Dashboard data loaded successfully')
   } catch (error) {
     console.error('Failed to load dashboard data:', error)
-    ElMessage.error(error.response?.data?.detail || 'Failed to load dashboard data')
+    // Check if error is an AxiosError and extract message properly if not UnifiedResponse
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to load dashboard data'
+    ElMessage.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -480,17 +483,20 @@ const updatePortfolioChart = () => {
           fontWeight: 'bold',
           color: '#D4AF37'
         }
-      },
-      labelLine: { show: false },
-      data: portfolio.positions.map((pos, index) => ({
-        value: pos.market_value || 0,
-        name: pos.name || pos.symbol,
-        itemStyle: {
-          color: `rgba(212, 175, 55, ${0.4 + (index * 0.1)})`
-        }
-      }))
+      }
     }]
   }
+  // Data mapping from portfolio.positions to chart data
+  const chartData = portfolio.positions.map((pos, index) => ({
+    value: pos.market_value || 0,
+    name: pos.name || pos.symbol || `Item ${index}`, // Provide a fallback name
+    itemStyle: {
+      // Use color-blind friendly palette or predefined colors
+      color: `rgba(212, 175, 55, ${0.4 + (index * 0.1)})`
+    }
+  }));
+
+  option.series[0].data = chartData; // Assign generated chart data
 
   portfolioChart.setOption(option)
 }

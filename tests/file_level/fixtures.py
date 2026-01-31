@@ -15,16 +15,17 @@ Author: MyStocks Testing Team
 Date: 2026-01-10
 """
 
-import os
-import json
-import yaml
-import pytest
 import asyncio
-from typing import Dict, List, Any, Optional, Callable, AsyncGenerator
-from pathlib import Path
+import json
+import os
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, AsyncMock
+from pathlib import Path
+from typing import Any, AsyncGenerator, Callable, Dict, List, Optional
+from unittest.mock import AsyncMock, MagicMock
+
 import httpx
+import pytest
+import yaml
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -468,8 +469,8 @@ class ParallelTestRunner:
         Returns:
             List of test results
         """
-        from concurrent.futures import ThreadPoolExecutor
         import asyncio
+        from concurrent.futures import ThreadPoolExecutor
 
         async def run_single_test(test_func):
             """Run a single test function"""

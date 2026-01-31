@@ -139,6 +139,7 @@ import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
+import { artDecoTheme } from '@/utils/echarts'
 import request from '@/api'
 
 // ============================================
@@ -269,7 +270,7 @@ const renderChart = (): void => {
   if (!chartRef.value || fundFlowData.value.length === 0) return
 
   if (!chartInstance) {
-    chartInstance = echarts.init(chartRef.value)
+    chartInstance = echarts.init(chartRef.value, artDecoTheme)
   }
 
   const dates = fundFlowData.value.map(d => d.trade_date)

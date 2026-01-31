@@ -3,8 +3,9 @@ MyStocks项目安全配置测试用例
 验证安全扫描和配置系统的功能
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 class TestSecurityConfig:

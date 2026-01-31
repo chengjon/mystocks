@@ -7,10 +7,11 @@
 版本: 1.0.0
 """
 
-import yaml
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # 数据库连接
 from src.storage.database.connection_manager import DatabaseConnectionManager
@@ -69,7 +70,7 @@ class ConfigDrivenTableManager:
                 created = self._create_table(table_def)
                 if created:
                     result["tables_created"] += 1
-                    logger.info("✅ 创建表: {table_def['table_name']} ({table_def['database_type']})")
+                    logger.info("创建表: %s (%s)", table_def['table_name'], table_def['database_type'])
                 else:
                     result["tables_skipped"] += 1
                     logger.info("⏭️ 跳过表: %s (已存在)", table_def["table_name"])

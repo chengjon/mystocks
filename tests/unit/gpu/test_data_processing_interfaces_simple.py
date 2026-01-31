@@ -8,12 +8,13 @@ Data Processing Interfaces Simple Test Suite
 测试重点: 基础功能验证，避免复杂断言
 """
 
-import pytest
-import sys
 import os
+import sys
 from abc import ABC
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import pandas as pd
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
@@ -123,7 +124,7 @@ class TestDataProcessingInterfacesSimple:
 
     def test_interface_imports(self):
         """测试接口模块导入"""
-        from typing import Dict, List, Any
+        from typing import Any, Dict, List
 
         # 验证依赖导入
         assert ABC is not None
@@ -236,8 +237,9 @@ class TestMockDataProcessorImplementationSimple:
 
     def test_load_and_preprocess_implementation(self):
         """测试load_and_preprocess实现"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import pandas as pd
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
             def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

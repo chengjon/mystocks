@@ -3,14 +3,16 @@ ColumnMapper测试文件
 用于测试列名映射器功能
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import unittest
+
 import pandas as pd
+
 from src.utils.column_mapper import ColumnMapper
 
 

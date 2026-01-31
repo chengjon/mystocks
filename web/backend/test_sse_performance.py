@@ -18,7 +18,7 @@ try:
     from app.core.sse_manager import get_sse_manager, get_sse_broadcaster, SSEEvent
     from app.core.sse_performance_optimizer import get_performance_optimizer
 except ImportError as e:
-    logger.error(f"无法导入SSE模块: {e}")
+    logger.error("无法导入SSE模块: %(e)s"")
     print("请确保在正确的目录中运行此脚本")
     exit(1)
 
@@ -33,7 +33,7 @@ async def test_basic_sse_functionality():
 
         # 测试连接
         client_id, queue = await manager.connect("test_channel", "test_client_001")
-        logger.info(f"✅ 客户端连接成功: {client_id}")
+        logger.info("✅ 客户端连接成功: %(client_id)s"")
 
         # 测试事件发送
         test_event = SSEEvent(
@@ -55,7 +55,7 @@ async def test_basic_sse_functionality():
         return True
 
     except Exception as e:
-        logger.error(f"❌ 基础SSE功能测试失败: {e}")
+        logger.error("❌ 基础SSE功能测试失败: %(e)s"")
         return False
 
 
@@ -74,17 +74,17 @@ async def test_performance_optimizer():
         }
 
         optimized = await optimizer.optimize_event(test_event)
-        logger.info(f"✅ 事件优化成功: {type(optimized)}")
+        logger.info("✅ 事件优化成功: {type(optimized)}"")
 
         # 测试批量优化
         batch_events = [test_event] * 10
         optimized_batch = await optimizer.optimize_batch(batch_events)
-        logger.info(f"✅ 批量优化成功: {len(optimized_batch)} 个事件")
+        logger.info("✅ 批量优化成功: {len(optimized_batch)} 个事件"")
 
         return True
 
     except Exception as e:
-        logger.error(f"❌ 性能优化器测试失败: {e}")
+        logger.error("❌ 性能优化器测试失败: %(e)s"")
         return False
 
 
@@ -107,15 +107,15 @@ async def test_performance_stats():
 
         # 获取性能统计
         stats = manager.get_performance_stats()
-        logger.info(f"✅ 性能统计获取成功: {len(str(stats))} 字符")
+        logger.info("✅ 性能统计获取成功: {len(str(stats))} 字符"")
 
         # 获取连接指标
         metrics = manager.get_connection_metrics()
-        logger.info(f"✅ 连接指标获取成功: {metrics['total_connections']} 个连接")
+        logger.info("✅ 连接指标获取成功: {metrics['total_connections']} 个连接"")
 
         # 获取系统健康状态
         health = manager.get_system_health()
-        logger.info(f"✅ 系统健康状态: {health['status']}")
+        logger.info("✅ 系统健康状态: {health['status']}"")
 
         # 清理连接
         for client_id in client_ids:
@@ -124,7 +124,7 @@ async def test_performance_stats():
         return True
 
     except Exception as e:
-        logger.error(f"❌ 性能统计测试失败: {e}")
+        logger.error("❌ 性能统计测试失败: %(e)s"")
         return False
 
 
@@ -148,7 +148,7 @@ async def test_broadcast_optimization():
         }
 
         sent_count = await manager.broadcast_optimized("broadcast_test", test_data)
-        logger.info(f"✅ 优化广播成功: 发送到 {sent_count} 个客户端")
+        logger.info("✅ 优化广播成功: 发送到 %(sent_count)s 个客户端"")
 
         # 测试批量广播
         batch_data = [
@@ -158,7 +158,7 @@ async def test_broadcast_optimization():
         ]
 
         batch_count = await manager.broadcast_batch("broadcast_test", batch_data)
-        logger.info(f"✅ 批量广播成功: 发送 {batch_count} 个事件")
+        logger.info("✅ 批量广播成功: 发送 %(batch_count)s 个事件"")
 
         # 清理连接
         for client_id in client_ids:
@@ -167,7 +167,7 @@ async def test_broadcast_optimization():
         return True
 
     except Exception as e:
-        logger.error(f"❌ 优化广播测试失败: {e}")
+        logger.error("❌ 优化广播测试失败: %(e)s"")
         return False
 
 
@@ -180,11 +180,11 @@ async def test_error_handling():
 
         # 测试无效频道
         health = manager.get_channel_health("invalid_channel")
-        logger.info(f"✅ 无效频道处理: {health['status']}")
+        logger.info("✅ 无效频道处理: {health['status']}"")
 
         # 测试无效客户端
         metrics = manager.get_connection_metrics("invalid_client")
-        logger.info(f"✅ 无效客户端处理: {metrics['total_connections']} 个连接")
+        logger.info("✅ 无效客户端处理: {metrics['total_connections']} 个连接"")
 
         # 测试性能统计错误处理
         # 这里我们直接调用方法，因为它应该有错误处理
@@ -194,7 +194,7 @@ async def test_error_handling():
         return True
 
     except Exception as e:
-        logger.error(f"❌ 错误处理测试失败: {e}")
+        logger.error("❌ 错误处理测试失败: %(e)s"")
         return False
 
 
@@ -215,7 +215,7 @@ async def main():
     ]
 
     for test_name, test_func in tests:
-        logger.info(f"\n🔍 测试: {test_name}")
+        logger.info("\n🔍 测试: %(test_name)s"")
         start_time = time.time()
 
         try:
@@ -223,12 +223,12 @@ async def main():
             test_results[test_name] = result
 
             if result:
-                logger.info(f"✅ {test_name} 测试通过 (耗时: {time.time() - start_time:.2f}s)")
+                logger.info("✅ %(test_name)s 测试通过 (耗时: {time.time() - start_time:.2f}s)"")
             else:
-                logger.error(f"❌ {test_name} 测试失败")
+                logger.error("❌ %(test_name)s 测试失败"")
 
         except Exception as e:
-            logger.error(f"💥 {test_name} 测试异常: {e}")
+            logger.error("💥 %(test_name)s 测试异常: %(e)s"")
             test_results[test_name] = False
 
     # 测试总结
@@ -240,12 +240,12 @@ async def main():
 
     for test_name, result in test_results.items():
         status = "✅ 通过" if result else "❌ 失败"
-        logger.info(f"  {test_name}: {status}")
+        logger.info("  %(test_name)s: %(status)s"")
         if result:
             passed += 1
 
     success_rate = (passed / total) * 100 if total > 0 else 0
-    logger.info(f"\n📊 总体结果: {passed}/{total} 测试通过 ({success_rate:.1f}%)")
+    logger.info("\n📊 总体结果: %(passed)s/%(total)s 测试通过 ({success_rate:.1f}%)"")
 
     if success_rate >= 80:
         logger.info("🎉 SSE性能优化功能测试基本通过！")

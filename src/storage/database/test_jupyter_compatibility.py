@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# pylint: disable=import-error,no-name-in-module
 # -*- coding: utf-8 -*-
 """
 测试 Jupyter 环境兼容性
 """
 
-import sys
 import os
+import sys
 
 # 添加路径以便导入模块
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

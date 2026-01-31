@@ -25,11 +25,11 @@ interface RequestConfig extends AxiosRequestConfig {
   skipCSRF?: boolean;
 }
 
-// Internal request config for interceptors
-interface InternalRequestConfig extends InternalAxiosRequestConfig {
-  skipErrorHandler?: boolean;
-  skipCSRF?: boolean;
-}
+// Internal request config for interceptors (currently unused)
+// interface InternalRequestConfig extends InternalAxiosRequestConfig {
+//   skipErrorHandler?: boolean;
+//   skipCSRF?: boolean;
+// }
 
 // Create axios instance
 const instance: AxiosInstance = axios.create({
@@ -153,25 +153,42 @@ async function getCSRFToken(): Promise<string> {
   return '';
 }
 
+import { mockApiClient } from './mockApiClient';
+
 // Export API methods
 export const apiClient = {
   get<T = UnifiedResponse>(url: string, config?: RequestConfig): Promise<T> {
+    if (import.meta.env.VITE_USE_MOCK_DATA) {
+      return mockApiClient.get<T>(url, config);
+    }
     return instance.get(url, config);
   },
 
   post<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+    if (import.meta.env.VITE_USE_MOCK_DATA) {
+      return mockApiClient.post<T>(url, data, config);
+    }
     return instance.post(url, data, config);
   },
 
   put<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+    if (import.meta.env.VITE_USE_MOCK_DATA) {
+      return mockApiClient.put<T>(url, data, config);
+    }
     return instance.put(url, data, config);
   },
 
   patch<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+    if (import.meta.env.VITE_USE_MOCK_DATA) {
+      return mockApiClient.patch<T>(url, data, config);
+    }
     return instance.patch(url, data, config);
   },
 
   delete<T = UnifiedResponse>(url: string, config?: RequestConfig): Promise<T> {
+    if (import.meta.env.VITE_USE_MOCK_DATA) {
+      return mockApiClient.delete<T>(url, config);
+    }
     return instance.delete(url, config);
   },
 };

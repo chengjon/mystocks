@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-import type { KLineData, IndicatorResult } from '@/types/kline';
-import type { IndicatorParams } from '@/types/indicator';
+import type { KLineData } from '@/types/kline';
+// import type { IndicatorResult } from '@/types/kline';  // Currently unused
+// import type { IndicatorParams } from '@/types/indicator';  // Currently unused
 
 interface WorkerMessage {
   type: 'CALCULATE_INDICATOR';
@@ -176,8 +177,8 @@ function calculateKDJ(
   low: number[],
   close: number[],
   period: number = 9,
-  kPeriod: number = 3,
-  dPeriod: number = 3
+  _kPeriod: number = 3,
+  _dPeriod: number = 3
 ): { k: number[]; d: number[]; j: number[] } {
   const resultK: number[] = [];
   const resultD: number[] = [];
@@ -240,7 +241,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
 
   try {
     const closes = data.map(d => d.close);
-    const opens = data.map(d => d.open);
+    const _opens = data.map(d => d.open);  // Currently unused
     const highs = data.map(d => d.high);
     const lows = data.map(d => d.low);
     const timestamps = data.map(d => d.timestamp);

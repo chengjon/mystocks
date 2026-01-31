@@ -8,7 +8,7 @@
 - indicators.py: 技术指标计算
 """
 
-from .machine_learning import router as ml_router
 from .indicators import router as indicators_router
+from .machine_learning import router as ml_router
 
 __all__ = ["ml_router", "indicators_router"]

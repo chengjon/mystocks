@@ -5,14 +5,15 @@
 适用于MyStocks量化交易系统的实时性能监控
 """
 
-import time
-import psutil
-import threading
 import logging
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass
+import threading
+import time
 from collections import deque
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional
+
 import numpy as np
+import psutil
 
 # 导入GPU组件
 from .cpu_fallback import ComponentSelector

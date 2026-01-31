@@ -4,8 +4,10 @@ GPU Indicator Calculator Implementation
 """
 
 import logging
-from typing import List, Any, Dict
+from typing import Any, Dict, List
+
 import pandas as pd
+
 from src.domain.strategy.service import IIndicatorCalculator
 
 logger = logging.getLogger(__name__)
@@ -13,7 +15,6 @@ logger = logging.getLogger(__name__)
 # 尝试导入 RAPIDS 相关库
 try:
     import cudf
-    import cupy
 
     HAS_GPU = True
 except ImportError:
@@ -33,7 +34,7 @@ class GPUIndicatorCalculator(IIndicatorCalculator):
                 # 预检查 GPU 驱动
                 cudf.Series([1])
             except Exception as e:
-                logger.warning(f"cuDF loaded but GPU check failed: {e}. Falling back to CPU.")
+                logger.warning("cuDF loaded but GPU check failed: %(e)s. Falling back to CPU.")
                 self.use_gpu = False
 
     def calculate_rsi(self, data: pd.DataFrame, period: int = 14) -> pd.Series:

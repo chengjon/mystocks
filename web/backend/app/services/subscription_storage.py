@@ -14,15 +14,16 @@ Date: 2025-11-07
 """
 
 import json
-from typing import Dict, List, Optional, Any
 from datetime import datetime
 from decimal import Decimal
-import structlog
+from typing import Any, Dict, List, Optional
+
 import psycopg2
+import structlog
 
 from app.services.filter_service import (
-    Subscription,
     Alert,
+    Subscription,
 )
 
 logger = structlog.get_logger()

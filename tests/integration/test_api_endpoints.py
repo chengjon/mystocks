@@ -1,9 +1,10 @@
 """API Integration Tests for FastAPI endpoints, CORS, and JWT authentication."""
 
-import pytest
-import sys
 import os
-from unittest.mock import patch, MagicMock
+import sys
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -11,11 +12,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 # Skip all tests if FastAPI is not available (for CI/CD compatibility)
 fastapi_available = False
 try:
-    from fastapi.testclient import TestClient
+    import os
 
     # Import the actual MyStocks FastAPI app
     import sys
-    import os
+
+    from fastapi.testclient import TestClient
 
     # Ensure we can import from the web backend
     backend_path = os.path.join(os.path.dirname(__file__), "..", "..", "web", "backend")

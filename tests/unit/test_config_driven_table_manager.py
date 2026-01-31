@@ -3,15 +3,16 @@ ConfigDrivenTableManager测试文件
 用于测试配置驱动的表管理器功能
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-import unittest
-from unittest.mock import patch, MagicMock
 import tempfile
+import unittest
+from unittest.mock import MagicMock, patch
+
 import yaml
 
 # 导入被测试的模块

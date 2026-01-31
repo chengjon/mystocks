@@ -16,19 +16,22 @@ Features:
 - 监控指标: 同步延迟、失败率、死信数量
 """
 
-from datetime import datetime
-from typing import Dict, Any
 import enum
+from datetime import datetime
+from typing import Any, Dict
+
 from sqlalchemy import (
+    DECIMAL,
+    CheckConstraint,
     Column,
+    DateTime,
+)
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import (
+    Index,
     Integer,
     String,
     Text,
-    DateTime,
-    DECIMAL,
-    Index,
-    CheckConstraint,
-    Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base

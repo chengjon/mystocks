@@ -11,14 +11,15 @@ data_manager 模块单元测试
 """
 
 import sys
-import pandas as pd
-from unittest.mock import Mock, patch
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import pandas as pd
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-from src.core.data_classification import DataClassification, DatabaseTarget
+from src.core.data_classification import DatabaseTarget, DataClassification
 
 
 class TestNullMonitoring:

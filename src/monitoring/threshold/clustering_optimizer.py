@@ -8,8 +8,9 @@
 """
 
 import logging
-import numpy as np
 from typing import List
+
+import numpy as np
 from sklearn.cluster import DBSCAN
 
 from .base_threshold_manager import OptimizationResult

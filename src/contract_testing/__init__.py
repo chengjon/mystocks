@@ -11,15 +11,15 @@ Modules:
     - api_consistency_checker: API vs spec consistency verification
 """
 
-from .contract_engine import ContractTestEngine
-from .spec_validator import SpecificationValidator, APIEndpoint, HTTPMethod, Parameter
-from .test_hooks import TestHooksManager, HookContext, HookType, Hook
 from .api_consistency_checker import (
     APIConsistencyChecker,
     DiscrepancyReport,
     DiscrepancyType,
 )
+from .contract_engine import ContractTestEngine
 from .report_generator import ContractTestReportGenerator
+from .spec_validator import APIEndpoint, HTTPMethod, Parameter, SpecificationValidator
+from .test_hooks import Hook, HookContext, HookType, TestHooksManager
 
 __all__ = [
     "ContractTestEngine",

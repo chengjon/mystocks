@@ -4,7 +4,9 @@ Provides common functionality for all page objects
 """
 
 from typing import Optional
-from playwright.sync_api import Page, Locator, TimeoutError as PlaywrightTimeoutError
+
+from playwright.sync_api import Locator, Page
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 
 class BasePage:

@@ -6,11 +6,12 @@
 - StrategyRegistry: 获取策略实例
 """
 
-from dataclasses import dataclass
-from typing import Dict, Any
-import pandas as pd
-import numpy as np
 import logging
+from dataclasses import dataclass
+from typing import Any, Dict
+
+import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -72,8 +73,9 @@ class BacktestEngine:
             BacktestResult: 回测结果
         """
         try:
-            from app.strategies.strategy_base import get_strategy_registry
             import uuid
+
+            from app.strategies.strategy_base import get_strategy_registry
 
             # 1. 获取策略实例
             registry = get_strategy_registry()
@@ -86,7 +88,7 @@ class BacktestEngine:
             signals_df = strategy.execute(symbol, start_date, end_date, strategy_params or {})
 
             if signals_df.empty:
-                logger.warning(f"策略 {strategy_id} 未生成任何信号")
+                logger.warning("策略 %(strategy_id)s 未生成任何信号"")
                 return self._empty_result(strategy_id, symbol)
 
             # 3. 模拟交易执行
@@ -104,7 +106,7 @@ class BacktestEngine:
             return result
 
         except Exception as e:
-            logger.error(f"回测执行失败: {e}")
+            logger.error("回测执行失败: %(e)s"")
             raise
 
     def _simulate_trades(self, signals_df: pd.DataFrame) -> pd.DataFrame:

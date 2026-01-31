@@ -3,14 +3,15 @@ DataClassification测试文件
 用于测试数据分类枚举功能
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import unittest
-from src.core.data_classification import DataClassification, DatabaseTarget
+
+from src.core.data_classification import DatabaseTarget, DataClassification
 
 
 class TestDataClassification(unittest.TestCase):

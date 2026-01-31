@@ -7,11 +7,12 @@ Isolated Alert Manager Test Suite
 测试模块: src.monitoring.alert_manager (148行)
 """
 
-import pytest
-import logging
-from unittest.mock import patch, MagicMock
-from typing import Dict, Any, Optional
 import enum
+import logging
+from typing import Any, Dict, Optional
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class AlertLevel(str, enum.Enum):

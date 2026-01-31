@@ -2,8 +2,8 @@
 简化测试脚本，用于检查Customer适配器是否能正常导入和初始化
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

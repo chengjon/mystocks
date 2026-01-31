@@ -3,10 +3,11 @@
 测试unified_manager.py等核心组件
 """
 
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

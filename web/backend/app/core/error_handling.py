@@ -89,7 +89,7 @@ class CircuitBreaker:
             if self.last_failure_time:
                 elapsed = time.time() - self.last_failure_time
                 if elapsed >= self.recovery_timeout:
-                    logger.info(f"🔄 Circuit breaker '{self.name}' transitioning to HALF_OPEN")
+                    logger.info("🔄 Circuit breaker '{self.name}' transitioning to HALF_OPEN"")
                     self.state = CircuitBreakerState.HALF_OPEN
                     self.success_count = 0
                     return False
@@ -103,12 +103,12 @@ class CircuitBreaker:
 
         if self.state == CircuitBreakerState.HALF_OPEN:
             # HALF_OPEN中失败，返回OPEN
-            logger.warning(f"⚠️ Circuit breaker '{self.name}' reopening")
+            logger.warning("⚠️ Circuit breaker '{self.name}' reopening"")
             self.state = CircuitBreakerState.OPEN
             self.failure_count = 0
         elif self.failure_count >= self.failure_threshold:
             # CLOSED中失败达到阈值，打开熔断器
-            logger.error(f"🔴 Circuit breaker '{self.name}' opened (failures: {self.failure_count})")
+            logger.error("🔴 Circuit breaker '{self.name}' opened (failures: {self.failure_count})"")
             self.state = CircuitBreakerState.OPEN
 
     def record_success(self):
@@ -119,7 +119,7 @@ class CircuitBreaker:
             self.success_count += 1
             if self.success_count >= self.success_threshold:
                 # HALF_OPEN中成功达到阈值，关闭熔断器
-                logger.info(f"✅ Circuit breaker '{self.name}' closed")
+                logger.info("✅ Circuit breaker '{self.name}' closed"")
                 self.state = CircuitBreakerState.CLOSED
                 self.success_count = 0
 
@@ -173,14 +173,14 @@ class FallbackStrategy:
                         if isinstance(cached_value, dict) and "timestamp" in cached_value:
                             age = time.time() - cached_value["timestamp"]
                             if age < cache_ttl:
-                                logger.info(f"✅ Using cached data for {cache_key} (age: {int(age)}s)")
+                                logger.info("✅ Using cached data for %(cache_key)s (age: {int(age)}s)"")
                                 return cached_value.get("data")
 
-                        logger.warning(f"⚠️ Cached data for {cache_key} is stale (age: {int(age)}s > {cache_ttl}s)")
+                        logger.warning("⚠️ Cached data for %(cache_key)s is stale (age: {int(age)}s > %(cache_ttl)ss)"")
                         return cached_value
 
                     # 缓存中没有数据，返回空
-                    logger.error(f"❌ No cached data available for {cache_key}")
+                    logger.error("❌ No cached data available for %(cache_key)s"")
                     raise RuntimeError(f"Service failed and no cache available for {cache_key}")
 
             return wrapper
@@ -317,7 +317,7 @@ class RetryPolicy:
                     )
                     await asyncio.sleep(delay)
                 else:
-                    logger.error(f"❌ All {self.max_attempts} attempts failed", exc_info=e)
+                    logger.error("❌ All {self.max_attempts} attempts failed", exc_info=e)
 
         raise last_exception
 
@@ -351,7 +351,7 @@ class RetryPolicy:
                     )
                     time.sleep(delay)
                 else:
-                    logger.error(f"❌ All {self.max_attempts} attempts failed", exc_info=e)
+                    logger.error("❌ All {self.max_attempts} attempts failed", exc_info=e)
 
         raise last_exception
 

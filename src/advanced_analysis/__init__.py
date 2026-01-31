@@ -7,15 +7,14 @@ analysis features on top of the existing MyStocks platform architecture.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
-from enum import Enum
-import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 from src.core import DataClassification, MyStocksUnifiedManager
-from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
 from src.gpu.core.hardware_abstraction import GPUResourceManager
 from src.monitoring import AlertManager
 
@@ -67,7 +66,6 @@ class BaseAnalyzer(ABC):
     @abstractmethod
     def analyze(self, stock_code: str, **kwargs) -> AnalysisResult:
         """执行分析的核心方法"""
-        pass
 
     def _get_historical_data(self, stock_code: str, days: int = 365, data_type: str = "daily") -> pd.DataFrame:
         """获取历史数据"""
@@ -116,6 +114,7 @@ class BaseAnalyzer(ABC):
 class AdvancedAnalysisEngine:
     """高级分析引擎 - 统一管理所有分析功能"""
 
+    # pylint: disable=abstract-class-instantiated
     def __init__(self, data_manager: MyStocksUnifiedManager):
         self.data_manager = data_manager
         self.gpu_manager = None  # GPU manager will be set if needed
@@ -216,15 +215,15 @@ def get_realtime_alerts(self, stock_code: str) -> List[Dict[str, Any]]:
     return sorted(alerts, key=lambda x: x.get("severity", 0), reverse=True)
 
 
-from .fundamental_analyzer import FundamentalAnalyzer
-from .technical_analyzer import TechnicalAnalyzer
-from .trading_signals_analyzer import TradingSignalAnalyzer
-from .timeseries_analyzer import TimeSeriesAnalyzer
-from .market_panorama_analyzer import MarketPanoramaAnalyzer
+from .anomaly_tracking_analyzer import AnomalyTrackingAnalyzer
 from .capital_flow_analyzer import CapitalFlowAnalyzer
 from .chip_distribution_analyzer import ChipDistributionAnalyzer
-from .anomaly_tracking_analyzer import AnomalyTrackingAnalyzer
-from .financial_valuation_analyzer import FinancialValuationAnalyzer
-from .sentiment_analyzer import SentimentAnalyzer
 from .decision_models_analyzer import DecisionModelsAnalyzer
+from .financial_valuation_analyzer import FinancialValuationAnalyzer
+from .fundamental_analyzer import FundamentalAnalyzer
+from .market_panorama_analyzer import MarketPanoramaAnalyzer
 from .multidimensional_radar import MultidimensionalRadarAnalyzer
+from .sentiment_analyzer import SentimentAnalyzer
+from .technical_analyzer import TechnicalAnalyzer
+from .timeseries_analyzer import TimeSeriesAnalyzer
+from .trading_signals_analyzer import TradingSignalAnalyzer

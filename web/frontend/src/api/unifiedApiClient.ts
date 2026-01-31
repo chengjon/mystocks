@@ -10,7 +10,7 @@
  */
 
 import request from './index.js'
-import LRUCache from '@/utils/cache'
+import { LRUCache } from '@/utils/cache'
 import { useLoadingStore } from '@/stores/loading'
 
 // 缓存策略配置
@@ -120,6 +120,225 @@ class RetryHandler {
     }
 }
 
+// 契约验证错误类
+export class ContractValidationError extends Error {
+    constructor(
+        message: string,
+        public contractName: string,
+        public endpoint: string,
+        public expectedSchema?: any,
+        public actualData?: any
+    ) {
+        super(message)
+        this.name = 'ContractValidationError'
+    }
+}
+
+// 运行时契约验证器
+class RuntimeContractValidator {
+    private contractCache = new Map<string, any>()
+    private validationEnabled: boolean
+
+    constructor() {
+        // 从环境变量或配置中读取验证启用状态
+        this.validationEnabled = import.meta.env.VITE_CONTRACT_VALIDATION_ENABLED === 'true' ||
+                                import.meta.env.DEV // 开发环境默认启用
+    }
+
+    async validateResponse(endpoint: string, method: string, response: any): Promise<void> {
+        if (!this.validationEnabled) {
+            return
+        }
+
+        try {
+            const contractSchema = await this.fetchContractSchema(endpoint, method)
+
+            if (!contractSchema) {
+                console.warn(`No contract schema found for ${method} ${endpoint}`)
+                return
+            }
+
+            // 使用Zod验证响应
+            const result = contractSchema.safeParse(response.data || response)
+
+            if (!result.success) {
+                throw new ContractValidationError(
+                    `Contract validation failed for ${method} ${endpoint}: ${result.error.message}`,
+                    this.getContractName(endpoint),
+                    endpoint,
+                    contractSchema,
+                    response.data || response
+                )
+            }
+
+            console.debug(`Contract validation passed for ${method} ${endpoint}`)
+        } catch (error) {
+            if (error instanceof ContractValidationError) {
+                throw error
+            }
+            // 如果契约获取或验证过程出错，在开发环境抛出，在生产环境记录警告
+            if (import.meta.env.DEV) {
+                throw new ContractValidationError(
+                    `Contract validation error: ${error instanceof Error ? error.message : String(error)}`,
+                    this.getContractName(endpoint),
+                    endpoint
+                )
+            } else {
+                console.warn(`Contract validation skipped due to error:`, error)
+            }
+        }
+    }
+
+    private async fetchContractSchema(endpoint: string, method: string): Promise<any | null> {
+        const contractName = this.getContractName(endpoint)
+
+        // 检查缓存
+        if (this.contractCache.has(contractName)) {
+            return this.contractCache.get(contractName)
+        }
+
+        try {
+            // 从后端API获取契约
+            const response: any = await request({
+                method: 'get',
+                url: `/api/contracts/${contractName}/active`
+            })
+
+            if (response?.success && response.data?.spec) {
+                const openApiSpec = response.data.spec
+
+                // 转换为Zod schema (简化实现)
+                const zodSchema = this.convertOpenAPIToZod(openApiSpec, endpoint, method)
+
+                // 缓存结果
+                this.contractCache.set(contractName, zodSchema)
+                return zodSchema
+            }
+        } catch (error) {
+            console.warn(`Failed to fetch contract for ${contractName}:`, error)
+        }
+
+        return null
+    }
+
+    private convertOpenAPIToZod(openApiSpec: any, endpoint: string, method: string): any {
+        const { z } = require('zod')
+
+        // 查找对应的操作
+        const paths = openApiSpec.paths || {}
+        const pathItem = paths[endpoint]
+
+        if (!pathItem) {
+            console.warn(`Path ${endpoint} not found in OpenAPI spec`)
+            return z.any() // 返回宽松的schema
+        }
+
+        const operation = pathItem[method.toLowerCase()]
+        if (!operation) {
+            console.warn(`Method ${method} not found for path ${endpoint}`)
+            return z.any()
+        }
+
+        // 获取响应的schema
+        const responses = operation.responses || {}
+        const successResponse = responses['200'] || responses['201'] || Object.values(responses)[0]
+
+        if (!successResponse) {
+            return z.any()
+        }
+
+        // 解析response schema
+        const schema = successResponse.content?.['application/json']?.schema
+        if (!schema) {
+            return z.any()
+        }
+
+        return this.convertJsonSchemaToZod(schema)
+    }
+
+    private convertJsonSchemaToZod(schema: any): any {
+        const { z } = require('zod')
+
+        if (!schema) {
+            return z.any()
+        }
+
+        switch (schema.type) {
+            case 'string':
+                let stringSchema = z.string()
+                if (schema.format === 'date-time') {
+                    stringSchema = stringSchema.datetime()
+                } else if (schema.format === 'email') {
+                    stringSchema = stringSchema.email()
+                } else if (schema.format === 'uuid') {
+                    stringSchema = stringSchema.uuid()
+                }
+                return schema.required === false ? stringSchema.optional() : stringSchema
+
+            case 'number':
+            case 'integer':
+                let numberSchema = schema.type === 'integer' ? z.number().int() : z.number()
+                if (typeof schema.minimum === 'number') {
+                    numberSchema = numberSchema.min(schema.minimum)
+                }
+                if (typeof schema.maximum === 'number') {
+                    numberSchema = numberSchema.max(schema.maximum)
+                }
+                return schema.required === false ? numberSchema.optional() : numberSchema
+
+            case 'boolean':
+                return schema.required === false ? z.boolean().optional() : z.boolean()
+
+            case 'array':
+                const itemSchema = this.convertJsonSchemaToZod(schema.items)
+                return schema.required === false ?
+                    z.array(itemSchema).optional() :
+                    z.array(itemSchema)
+
+            case 'object':
+                if (schema.properties) {
+                    const shape: any = {}
+                    for (const [key, propSchema] of Object.entries(schema.properties)) {
+                        shape[key] = this.convertJsonSchemaToZod(propSchema)
+                    }
+                    const objectSchema = z.object(shape)
+
+                    // 处理必需字段
+                    if (schema.required && Array.isArray(schema.required)) {
+                        // Zod会自动处理required字段，无需额外处理
+                    }
+
+                    return schema.required === false ? objectSchema.optional() : objectSchema
+                }
+                return z.record(z.any())
+
+            default:
+                return z.any()
+        }
+    }
+
+    private getContractName(endpoint: string): string {
+        // 根据endpoint路径推断契约名称
+        // 例如: /api/market/symbols -> market-api
+        const pathParts = endpoint.split('/')
+        if (pathParts.length >= 3 && pathParts[1] === 'api') {
+            return `${pathParts[2]}-api`
+        }
+        return 'default-api'
+    }
+
+    setValidationEnabled(enabled: boolean): void {
+        this.validationEnabled = enabled
+    }
+
+    clearCache(): void {
+        this.contractCache.clear()
+    }
+}
+
+// 全局契约验证器实例
+export const contractValidator = new RuntimeContractValidator()
+
 // 错误处理器
 class ApiErrorHandler {
     static handle(error: any, context: string): never {
@@ -155,7 +374,19 @@ class ApiErrorHandler {
         }
     }
 
-    static getUserFriendlyMessage(error: ApiError): string {
+    static getUserFriendlyMessage(error: ApiError | ContractValidationError): string {
+        // 处理契约验证错误
+        if (error instanceof ContractValidationError) {
+            if (import.meta.env.DEV) {
+                // 开发环境显示详细错误信息
+                return `API响应格式不匹配：${error.message}`
+            } else {
+                // 生产环境显示用户友好的信息
+                return '数据格式异常，请联系技术支持'
+            }
+        }
+
+        // 处理普通API错误
         const statusCode = error.statusCode
         if (statusCode === 401) {
             return '您的登录已过期，请重新登录'
@@ -178,16 +409,23 @@ class ApiErrorHandler {
 // 主API客户端类
 export class UnifiedApiClient {
     private baseURL: string
-    private loadingStore: ReturnType<typeof useLoadingStore>
+    private loadingStore: ReturnType<typeof useLoadingStore> | null = null
     private cache: LRUCache
 
     constructor(baseURL = '/api') {
         this.baseURL = baseURL
-        this.loadingStore = useLoadingStore()
+        // Don't initialize store in constructor to avoid "no active Pinia" error
         this.cache = new LRUCache({
             maxSize: 100,
             ttl: 5 * 60 * 1000 // 5 minutes
         })
+    }
+
+    private getStore() {
+        if (!this.loadingStore) {
+            this.loadingStore = useLoadingStore()
+        }
+        return this.loadingStore
     }
 
     // 统一的API调用方法
@@ -214,8 +452,16 @@ export class UnifiedApiClient {
         const executeRequest = async (): Promise<T> => {
             try {
                 const response = (await request(requestConfig)) as T
+
+                // 添加契约验证拦截器
+                await contractValidator.validateResponse(url, method, response)
+
                 return response
             } catch (error) {
+                // 如果是契约验证错误，直接抛出
+                if (error instanceof ContractValidationError) {
+                    throw error
+                }
                 ApiErrorHandler.handle(error, `${method} ${url}`)
             }
         }
@@ -242,7 +488,7 @@ export class UnifiedApiClient {
     private async executeWithLoadingAndRetry<T>(operation: () => Promise<T>, config: ApiConfig): Promise<T> {
         // 设置加载状态
         if (config.loading?.enabled) {
-            this.loadingStore.setLoading(config.loading.key, true)
+            this.getStore().setLoading(config.loading.key, true)
         }
 
         try {
@@ -255,7 +501,7 @@ export class UnifiedApiClient {
         } finally {
             // 清除加载状态
             if (config.loading?.enabled) {
-                this.loadingStore.setLoading(config.loading.key, false)
+                this.getStore().setLoading(config.loading.key, false)
             }
         }
     }
@@ -281,11 +527,14 @@ export class UnifiedApiClient {
 // 创建全局API客户端实例
 export const unifiedApiClient = new UnifiedApiClient()
 
-// 创建全局API客户端实例
-const globalLoadingStore = useLoadingStore()
-
 // 导出工具函数
-export const isLoading = (key: string): boolean => globalLoadingStore.isLoading(key)
+export const isLoading = (key: string): boolean => {
+    try {
+        return useLoadingStore().isLoading(key)
+    } catch (e) {
+        return false
+    }
+}
 export const getUserFriendlyErrorMessage = (error: any): string => {
     if (error instanceof ApiError) {
         return ApiErrorHandler.getUserFriendlyMessage(error)

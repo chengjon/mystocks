@@ -15,14 +15,15 @@
 版本: 简化版 v1.0
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
+from datetime import datetime
+from typing import Any, Dict, Optional
+
 import pandas as pd
 import redis
-from datetime import datetime
-from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 
@@ -103,7 +104,7 @@ class SimpleRealtimeDataSaver:
 
         self.logger.info("✅ 配置参数加载完成")
         self.logger.info("📊 市场代码: %s", self.config["market_symbol"])
-        self.logger.info("💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']}")
+        self.logger.info("💾 Redis服务器: {self.config['redis_host']}:{self.config['redis_port']")
         self.logger.info("📁 CSV备份: %s", self.config["save_to_csv"])
 
     def initialize_redis(self) -> bool:

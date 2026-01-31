@@ -4,7 +4,7 @@ TradingView Widget 集成服务模块
 迁移自 OpenStock 项目
 """
 
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 
 class TradingViewWidgetService:

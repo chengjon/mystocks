@@ -8,9 +8,10 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import structlog
 
 logger = structlog.get_logger()

@@ -10,10 +10,11 @@ Akshare适配器扩展模块
 4. get_dividend_data() - 分红配送数据
 """
 
+import logging
+from typing import Dict, Optional
+
 import akshare as ak
 import pandas as pd
-from typing import Dict, Optional
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ class AkshareExtension:
                 return df
             return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取ETF数据失败: {e}")
+            logger.error("获取ETF数据失败: %(e)s"")
             return pd.DataFrame()
 
     @staticmethod
@@ -87,7 +88,7 @@ class AkshareExtension:
             # 使用akshare的stock_individual_fund_flow_rank接口
             df = ak.stock_individual_fund_flow_rank(indicator=indicator)
             if df is None or df.empty:
-                logger.warning(f"未获取到{indicator}资金流向数据")
+                logger.warning("未获取到%(indicator)s资金流向数据"")
                 return {}
 
             # 处理股票代码格式 (移除.SH/.SZ后缀)
@@ -97,7 +98,7 @@ class AkshareExtension:
             filtered_df = df[df["代码"] == stock_code]
 
             if filtered_df.empty:
-                logger.warning(f"未找到股票代码 {symbol} 的资金流向数据")
+                logger.warning("未找到股票代码 %(symbol)s 的资金流向数据"")
                 return {}
 
             # 转换为统一格式
@@ -112,7 +113,7 @@ class AkshareExtension:
                 "small_net_inflow": float(row.get("小单净流入-净额", 0)),
             }
         except Exception as e:
-            logger.error(f"获取资金流向数据失败: {e}")
+            logger.error("获取资金流向数据失败: %(e)s"")
             return {}
 
     @staticmethod
@@ -163,7 +164,7 @@ class AkshareExtension:
                 return df
             return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取龙虎榜数据失败: {e}")
+            logger.error("获取龙虎榜数据失败: %(e)s"")
             return pd.DataFrame()
 
     @staticmethod
@@ -207,7 +208,7 @@ class AkshareExtension:
                 return df
             return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取分红配送数据失败: {e}")
+            logger.error("获取分红配送数据失败: %(e)s"")
             return pd.DataFrame()
 
     @staticmethod
@@ -242,7 +243,7 @@ class AkshareExtension:
                 return df
             return pd.DataFrame()
         except Exception as e:
-            logger.error(f"获取板块资金流向数据失败: {e}")
+            logger.error("获取板块资金流向数据失败: %(e)s"")
             return pd.DataFrame()
 
 

@@ -7,23 +7,21 @@ Monitored Notification Manager
 
 import logging
 import time
-from typing import Dict, List, Optional, Any
-from datetime import datetime
+from typing import Any, Dict, Optional
 
 from .notification_manager import (
-    NotificationManager,
-    NotificationConfig,
     Notification,
     NotificationChannel,
-    NotificationLevel,
+    NotificationConfig,
+    NotificationManager,
 )
 
 logger = logging.getLogger(__name__)
 
 try:
     from src.monitoring.signal_decorator import (
-        record_signal_push,
         record_push_latency,
+        record_signal_push,
     )
 
     MONITORING_AVAILABLE = True
@@ -101,7 +99,7 @@ class MonitoredNotificationManager(NotificationManager):
             # 调用父类方法
             success = super()._send_email(notification)
         except Exception as e:
-            logger.error(f"发送邮件失败: {e}")
+            logger.error("发送邮件失败: %(e)s")
             success = False
         finally:
             # 记录推送指标
@@ -119,7 +117,7 @@ class MonitoredNotificationManager(NotificationManager):
             # 调用父类方法
             success = super()._send_webhook(notification)
         except Exception as e:
-            logger.error(f"发送Webhook失败: {e}")
+            logger.error("发送Webhook失败: %(e)s")
             success = False
         finally:
             # 记录推送指标
@@ -180,7 +178,7 @@ class MonitoredNotificationManager(NotificationManager):
                     )
                 )
             except Exception as e:
-                logger.warning(f"异步记录推送日志失败（非关键）: {e}")
+                logger.warning("异步记录推送日志失败（非关键）: %(e)s")
 
         return success
 
@@ -217,7 +215,7 @@ class MonitoredNotificationManager(NotificationManager):
                 record_signal_push(channel=channel, status=status)
                 record_push_latency(channel=channel, latency_seconds=latency_ms / 1000)
             except Exception as e:
-                logger.warning(f"记录 Prometheus 指标失败: {e}")
+                logger.warning("记录 Prometheus 指标失败: %(e)s")
 
     async def _log_push_to_database(
         self,
@@ -250,10 +248,10 @@ class MonitoredNotificationManager(NotificationManager):
                 error_message="" if success else "Push notification failed",
             )
 
-            logger.debug(f"记录推送日志到数据库: signal_id={signal_id}, channel={channel}, success={success}")
+            logger.debug("记录推送日志到数据库: signal_id=%(signal_id)s, channel=%(channel)s, success=%(success)s")
 
         except Exception as e:
-            logger.warning(f"记录推送日志到数据库失败（非关键）: {e}")
+            logger.warning("记录推送日志到数据库失败（非关键）: %(e)s")
 
     def _determine_primary_channel(self) -> str:
         """确定主要推送渠道"""
@@ -326,7 +324,7 @@ class MonitoredNotificationManager(NotificationManager):
         for channel in self.push_stats:
             self.push_stats[channel] = {"success": 0, "failed": 0, "total_latency_ms": 0}
 
-        logger.info(f"重置推送统计: strategy_id={self.strategy_id}")
+        logger.info("重置推送统计: strategy_id={self.strategy_id")
 
 
 def create_monitored_notification_manager(

@@ -20,9 +20,7 @@
                 >
                     <!-- 图标 -->
                     <span v-if="item.icon && showIcon" class="breadcrumb-icon">
-                        <el-icon>
-                            <component :is="item.icon" />
-                        </el-icon>
+                        <ArtDecoIcon :name="item.icon" size="xs" />
                     </span>
 
                     <!-- 文本 -->
@@ -58,6 +56,7 @@
     import { computed } from 'vue'
     import { useRoute } from 'vue-router'
     import type { RouteLocationNormalized } from 'vue-router'
+    import ArtDecoIcon from './ArtDecoIcon.vue'
 
     /**
      * ArtDeco Breadcrumb Component
@@ -119,7 +118,7 @@
             breadcrumbList.push({
                 path: props.homePath,
                 title: props.homeTitle.toUpperCase(),
-                icon: 'HomeFilled'
+                icon: 'Home'
             })
         }
 

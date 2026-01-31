@@ -6,6 +6,7 @@ Sina Finance Stock Ratings API Schemas
 """
 
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 

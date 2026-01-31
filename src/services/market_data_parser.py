@@ -8,12 +8,12 @@ Author: Claude Code
 Date: 2026-01-09
 """
 
-from typing import Dict, Any, Optional, List
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
 import structlog
-import re
 
 logger = structlog.get_logger()
 
@@ -111,7 +111,7 @@ class MarketDataParser:
     def register_parser(self, source: str, parser: callable) -> None:
         """注册自定义解析器"""
         self.parsers[source] = parser
-        logger.info(f"Registered parser for source: {source}")
+        logger.info("Registered parser for source: %(source)s")
 
     def parse(self, data: Dict[str, Any], source: str = "auto") -> Optional[ParsedQuote]:
         """
@@ -135,11 +135,11 @@ class MarketDataParser:
                     result.source = source
                 return result
             else:
-                logger.warning(f"Unknown source: {source}, trying generic parser")
+                logger.warning("Unknown source: %(source)s, trying generic parser")
                 return self._parse_generic(data)
 
         except Exception as e:
-            logger.error(f"Failed to parse market data: {e}", exc_info=True)
+            logger.error("Failed to parse market data: {e}", exc_info=True)
             return None
 
     def parse_batch(self, data_list: List[Dict[str, Any]], source: str = "auto") -> List[ParsedQuote]:
@@ -193,7 +193,7 @@ class MarketDataParser:
                 timestamp=datetime.now(),
             )
         except Exception as e:
-            logger.error(f"Failed to parse efinance data: {e}")
+            logger.error("Failed to parse efinance data: %(e)s")
             return None
 
     def _parse_easyquotation_data(self, data: Dict[str, Any]) -> Optional[ParsedQuote]:
@@ -221,7 +221,7 @@ class MarketDataParser:
                 timestamp=datetime.now(),
             )
         except Exception as e:
-            logger.error(f"Failed to parse easyquotation data: {e}")
+            logger.error("Failed to parse easyquotation data: %(e)s")
             return None
 
     def _parse_websocket_data(self, data: Dict[str, Any]) -> Optional[ParsedQuote]:
@@ -247,7 +247,7 @@ class MarketDataParser:
                 timestamp=datetime.fromtimestamp(data.get("timestamp", datetime.now().timestamp())),
             )
         except Exception as e:
-            logger.error(f"Failed to parse websocket data: {e}")
+            logger.error("Failed to parse websocket data: %(e)s")
             return None
 
     def _parse_akshare_data(self, data: Dict[str, Any]) -> Optional[ParsedQuote]:
@@ -273,7 +273,7 @@ class MarketDataParser:
                 timestamp=datetime.now(),
             )
         except Exception as e:
-            logger.error(f"Failed to parse akshare data: {e}")
+            logger.error("Failed to parse akshare data: %(e)s")
             return None
 
     def _parse_generic(self, data: Dict[str, Any]) -> Optional[ParsedQuote]:
@@ -299,7 +299,7 @@ class MarketDataParser:
                 timestamp=datetime.now(),
             )
         except Exception as e:
-            logger.error(f"Failed to parse generic data: {e}")
+            logger.error("Failed to parse generic data: %(e)s")
             return None
 
     def _normalize_symbol(self, symbol: str) -> str:

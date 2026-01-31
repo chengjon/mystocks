@@ -11,6 +11,7 @@ import logging
 from typing import Callable, Any
 import asyncio
 from functools import wraps
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ class BaseAkshareAdapter:
         try:
             return api_func(*args, **kwargs)
         except Exception as e:
-            self.logger.error(f"API调用失败: {str(e)}", exc_info=True)
+            self.logger.error("API调用失败: {str(e)}", exc_info=True)
             raise
 
 

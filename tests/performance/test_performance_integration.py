@@ -7,15 +7,16 @@ MyStocks 测试性能集成系统
 """
 
 import asyncio
-import time
 import json
 import statistics
-import psutil
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable
+import time
 from dataclasses import dataclass
-import pandas as pd
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
+
+import pandas as pd
+import psutil
 
 
 @dataclass
@@ -114,8 +115,8 @@ class PerformanceIntegrationSystem:
 
     def initialize_components(self):
         """初始化所有组件"""
-        from .test_performance_optimizer import PerformanceOptimizer
         from .test_advanced_performance_monitor import DynamicPerformanceOptimizer
+        from .test_performance_optimizer import PerformanceOptimizer
 
         # 初始化性能优化器
         self.optimizer = PerformanceOptimizer()

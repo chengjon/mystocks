@@ -28,7 +28,7 @@ if (!fs.existsSync(TEST_OUTPUT_DIR)) fs.mkdirSync(TEST_OUTPUT_DIR, { recursive: 
 if (!fs.existsSync(SCREENSHOT_DIR)) fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
 if (!fs.existsSync(VIDEO_DIR)) fs.mkdirSync(VIDEO_DIR, { recursive: true });
 
-let testResults = {
+const testResults = {
   preflight: { passed: 0, failed: 0, details: [] as any[] },
   pageLoad: { passed: 0, failed: 0, details: [] as any[] },
   integration: { passed: 0, failed: 0, details: [] as any[] },

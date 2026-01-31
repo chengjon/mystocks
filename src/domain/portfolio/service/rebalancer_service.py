@@ -5,8 +5,8 @@ Rebalancer Service
 提供投资组合再平衡的领域逻辑。
 """
 
-from typing import List, Dict, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Tuple
 
 
 @dataclass

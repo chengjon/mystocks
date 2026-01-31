@@ -5,15 +5,15 @@ Baostock 数据源适配器
 将 baostock 接口集成到 DataSourceManagerV2 系统中。
 """
 
+import contextlib
 import logging
-import pandas as pd
-from typing import Dict, Any, Optional
+import os
 from datetime import datetime, timedelta
 from functools import wraps
+from typing import Any, Dict, Optional
 
 import baostock as bs
-import contextlib
-import os
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def _logout():
 def _rs_to_df(rs, error_msg="查询失败"):
     """将 baostock rs 对象转换为 DataFrame"""
     if rs.error_code != "0":
-        logger.error(f"{error_msg}: {rs.error_msg}")
+        logger.error("%(error_msg)s: {rs.error_msg")
         return pd.DataFrame()
     data_list = []
     while rs.error_code == "0" and rs.next():
@@ -63,10 +63,10 @@ def with_baostock_login(func):
     """装饰器：自动登录、登出"""
 
     @wraps(func)
-def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         lg = _login()
         if hasattr(lg, "error_code") and lg.error_code != "0":
-            logger.error(f"Baostock登录失败: {lg.error_msg}")
+            logger.error("Baostock登录失败: {lg.error_msg")
             return pd.DataFrame()
         try:
             return func(*args, **kwargs)
@@ -83,11 +83,11 @@ class BaoStockAdapter:
     提供与 DataSourceManagerV2 兼容的接口。
     """
 
-def __init__(self):
+    def __init__(self):
         pass
 
     @with_baostock_login
-def get_daily_kline(
+    def get_daily_kline(
         self, symbol: str, start_date: str = None, end_date: str = None, adjust: str = "qfq"
     ) -> pd.DataFrame:
         """
@@ -134,7 +134,7 @@ def get_daily_kline(
         return df
 
     @with_baostock_login
-def get_minute_kline(
+    def get_minute_kline(
         self, symbol: str, period: str = "5", start_date: str = None, end_date: str = None
     ) -> pd.DataFrame:
         """
@@ -165,7 +165,7 @@ def get_minute_kline(
         return df
 
     @with_baostock_login
-def get_stock_basic(self, code: str = None) -> pd.DataFrame:
+    def get_stock_basic(self, code: str = None) -> pd.DataFrame:
         """
         获取股票基本信息
 
@@ -178,7 +178,7 @@ def get_stock_basic(self, code: str = None) -> pd.DataFrame:
         return _rs_to_df(rs, "获取股票基本信息失败")
 
     @with_baostock_login
-def get_trade_dates(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_trade_dates(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """
         获取交易日历
 
@@ -195,7 +195,7 @@ def get_trade_dates(self, start_date: str = None, end_date: str = None) -> pd.Da
         return _rs_to_df(rs, "获取交易日历失败")
 
     @with_baostock_login
-def get_financial_indicator(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
+    def get_financial_indicator(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
         """
         获取财务指标
 
@@ -214,7 +214,7 @@ def get_financial_indicator(self, code: str, year: int = None, quarter: int = No
         return _rs_to_df(rs, "获取财务指标失败")
 
     @with_baostock_login
-def get_dupont_data(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
+    def get_dupont_data(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
         """
         获取杜邦分析数据
 
@@ -233,7 +233,7 @@ def get_dupont_data(self, code: str, year: int = None, quarter: int = None) -> p
         return _rs_to_df(rs, "获取杜邦数据失败")
 
     @with_baostock_login
-def get_balance_sheet(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
+    def get_balance_sheet(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
         """
         获取资产负债表
 
@@ -252,7 +252,7 @@ def get_balance_sheet(self, code: str, year: int = None, quarter: int = None) ->
         return _rs_to_df(rs, "获取资产负债表失败")
 
     @with_baostock_login
-def get_income_statement(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
+    def get_income_statement(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
         """
         获取利润表
 
@@ -271,7 +271,7 @@ def get_income_statement(self, code: str, year: int = None, quarter: int = None)
         return _rs_to_df(rs, "获取利润表失败")
 
     @with_baostock_login
-def get_cash_flow(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
+    def get_cash_flow(self, code: str, year: int = None, quarter: int = None) -> pd.DataFrame:
         """
         获取现金流量表
 
@@ -290,7 +290,7 @@ def get_cash_flow(self, code: str, year: int = None, quarter: int = None) -> pd.
         return _rs_to_df(rs, "获取现金流量表失败")
 
     @with_baostock_login
-def get_index_components(self, index_code: str) -> pd.DataFrame:
+    def get_index_components(self, index_code: str) -> pd.DataFrame:
         """
         获取指数成分股
 
@@ -321,7 +321,7 @@ def get_index_components(self, index_code: str) -> pd.DataFrame:
         return _rs_to_df(rs, "获取指数成分股失败")
 
     @with_baostock_login
-def get_deposit_rate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_deposit_rate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """
         获取存款利率
         """
@@ -334,7 +334,7 @@ def get_deposit_rate(self, start_date: str = None, end_date: str = None) -> pd.D
         return _rs_to_df(rs, "获取存款利率失败")
 
     @with_baostock_login
-def get_loan_rate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_loan_rate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """
         获取贷款利率
         """
@@ -347,7 +347,7 @@ def get_loan_rate(self, start_date: str = None, end_date: str = None) -> pd.Data
         return _rs_to_df(rs, "获取贷款利率失败")
 
     @with_baostock_login
-def get_reserve_ratio(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_reserve_ratio(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """
         获取存款准备金率
         """
@@ -360,7 +360,7 @@ def get_reserve_ratio(self, start_date: str = None, end_date: str = None) -> pd.
         return _rs_to_df(rs, "获取存款准备金率失败")
 
     @with_baostock_login
-def get_money_supply_monthly(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def get_money_supply_monthly(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         """
         获取货币供应量(月度)
         """
@@ -373,7 +373,7 @@ def get_money_supply_monthly(self, start_date: str = None, end_date: str = None)
         return _rs_to_df(rs, "获取货币供应量(月度)失败")
 
     @with_baostock_login
-def get_industry_classified(self) -> pd.DataFrame:
+    def get_industry_classified(self) -> pd.DataFrame:
         """
         获取行业分类
         """

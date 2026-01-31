@@ -1,7 +1,8 @@
 ## -*- coding: utf-8 -*-
 
-import pandas as pd
 from struct import unpack
+
+import pandas as pd
 from loguru import logger
 
 """

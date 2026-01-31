@@ -3,10 +3,11 @@ Distributed Lock implementation using Redis
 分布式锁实现，用于解决并发冲突
 """
 
+import logging
 import time
 import uuid
-import logging
 from typing import Optional
+
 import redis
 
 logger = logging.getLogger(__name__)
@@ -39,12 +40,12 @@ class RedisDistributedLock:
         while time.time() < end_time:
             # SET NX PX: 只有不存在时设置，并带有过期毫秒数 (原子操作)
             if self.redis.set(lock_key, identifier, nx=True, ex=expire_seconds):
-                logger.debug(f"Acquired lock: {lock_name}")
+                logger.debug("Acquired lock: %(lock_name)s")
                 return identifier
 
             time.sleep(0.1)  # 短暂重试间隔
 
-        logger.warning(f"Timeout waiting for lock: {lock_name}")
+        logger.warning("Timeout waiting for lock: %(lock_name)s")
         return None
 
     def release(self, lock_name: str, identifier: str) -> bool:
@@ -66,9 +67,9 @@ class RedisDistributedLock:
         success = bool(result)
 
         if success:
-            logger.debug(f"Released lock: {lock_name}")
+            logger.debug("Released lock: %(lock_name)s")
         else:
-            logger.warning(f"Failed to release lock: {lock_name} (Identifier mismatch or lock expired)")
+            logger.warning("Failed to release lock: %(lock_name)s (Identifier mismatch or lock expired)")
 
         return success
 

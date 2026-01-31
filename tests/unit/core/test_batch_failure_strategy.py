@@ -7,19 +7,20 @@ batch_failure_strategy 模块单元测试
 - BatchFailureHandler 处理器类
 """
 
-import pytest
 import sys
 import time
-import pandas as pd
 from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
 from src.core.batch_failure_strategy import (
+    BatchFailureHandler,
     BatchFailureStrategy,
     BatchOperationResult,
-    BatchFailureHandler,
 )
 
 

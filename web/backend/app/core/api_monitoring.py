@@ -278,7 +278,7 @@ class APIMonitor:
             self.metrics = [m for m in self.metrics if m.timestamp > cutoff_time]
             removed_count = original_len - len(self.metrics)
             if removed_count > 0:
-                logger.info(f"Cleared {removed_count} old metrics")
+                logger.info("Cleared %(removed_count)s old metrics"")
             return removed_count
 
 

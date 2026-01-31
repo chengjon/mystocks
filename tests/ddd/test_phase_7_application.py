@@ -2,12 +2,14 @@
 Phase 7: Application Layer 验证测试
 """
 
-import pytest
-from unittest.mock import MagicMock
 from datetime import datetime
-from src.application.trading.order_mgmt_service import OrderManagementService
+from unittest.mock import MagicMock
+
+import pytest
+
 from src.application.dto.trading_dto import CreateOrderRequest
-from src.domain.trading.value_objects import OrderId, OrderStatus, OrderSide
+from src.application.trading.order_mgmt_service import OrderManagementService
+from src.domain.trading.value_objects import OrderId, OrderSide, OrderStatus
 
 
 class TestOrderManagementService:

@@ -14,10 +14,11 @@ Phase: 2 - Task 2.1.2
 """
 
 import unittest
-from unittest.mock import Mock, patch
 from datetime import datetime
-import pandas as pd
+from unittest.mock import Mock, patch
+
 import numpy as np
+import pandas as pd
 
 from src.data_access.postgresql_access import PostgreSQLDataAccess
 

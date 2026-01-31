@@ -8,30 +8,29 @@ import logging
 import signal
 import sys
 import time
+from concurrent import futures
 
 import grpc
 import prometheus_client
-from concurrent import futures
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Gauge, Histogram
 
 # 导入gRPC服务
 try:
-    from src.gpu.api_system.api_proto import realtime_pb2_grpc
-    from src.gpu.api_system.api_proto import backtest_pb2_grpc
+    from src.gpu.api_system.api_proto import backtest_pb2_grpc, realtime_pb2_grpc
 except ImportError:
     import sys
 
     sys.path.append("/opt/claude/mystocks_spec/src/gpu/api_system/api_proto")
-    import realtime_pb2_grpc
     import backtest_pb2_grpc
+    import realtime_pb2_grpc
 
 # 导入自定义模块
-from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
-from src.gpu.api_system.utils.monitoring import MetricsCollector
-from src.gpu.api_system.services.realtime_service import RealTimeService
 from src.gpu.api_system.services.backtest_service import BacktestService
+from src.gpu.api_system.services.realtime_service import RealTimeService
 from src.gpu.api_system.services.resource_scheduler import ResourceScheduler
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 # 配置日志
 logging.basicConfig(

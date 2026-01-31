@@ -3,10 +3,11 @@ DatabaseConnectionManager 纯Mock测试
 完全避免数据库连接，仅测试逻辑和流程
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../.."))
 
@@ -21,8 +22,8 @@ class TestDatabaseConnectionManagerPureMock:
         try:
             from src.storage.database.connection_manager import (
                 DatabaseConnectionManager,
+                get_connection_manager,
             )
-            from src.storage.database.connection_manager import get_connection_manager
 
             assert DatabaseConnectionManager is not None
             assert get_connection_manager is not None

@@ -6,9 +6,10 @@ from fastapi import HTTPException, status
 
 # 使用新的状态码常量（避免弃用警告）
 HTTP_422_UNPROCESSABLE_ENTITY = status.HTTP_422_UNPROCESSABLE_ENTITY
-from fastapi.responses import JSONResponse
 from logging import getLogger
 from typing import Any, Dict, Optional
+
+from fastapi.responses import JSONResponse
 
 logger = getLogger(__name__)
 
@@ -35,7 +36,7 @@ class BusinessException(HTTPException):
         self.error_code = error_code or f"HTTP_{status_code}"
 
         # 统一记录异常日志
-        logger.error(f"业务异常：{detail}（状态码：{status_code}, 错误码：{self.error_code}）")
+        logger.error("业务异常：%(detail)s（状态码：%(status_code)s, 错误码：{self.error_code}）"")
 
 
 # 数据验证异常
@@ -83,7 +84,7 @@ class ConfigurationException(Exception):
 
     def __init__(self, detail: str):
         super().__init__(detail)
-        logger.error(f"配置异常：{detail}")
+        logger.error("配置异常：%(detail)s"")
 
 
 # 全局通用异常处理（挂载到FastAPI app）
@@ -155,7 +156,7 @@ def register_exception_handlers(app):
     @app.exception_handler(Exception)
     async def general_exception_handler(request, exc: Exception):
         """处理未捕获的异常"""
-        logger.error(f"未处理的异常：{exc}", exc_info=True)
+        logger.error("未处理的异常：{exc}", exc_info=True)
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={

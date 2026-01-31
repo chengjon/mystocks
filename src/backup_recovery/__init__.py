@@ -7,9 +7,9 @@
 """
 
 from .backup_manager import BackupManager
-from .recovery_manager import RecoveryManager
 from .backup_scheduler import BackupScheduler
 from .integrity_checker import IntegrityChecker
+from .recovery_manager import RecoveryManager
 
 __all__ = [
     "BackupManager",

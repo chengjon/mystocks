@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
 from app.core.exceptions import BusinessException, NotFoundException
-from app.core.security import get_current_user, User
+from app.core.security import User, get_current_user
 from app.mock.unified_mock_data import get_mock_data_manager
 from app.models.monitoring import (
     AlertLevel,

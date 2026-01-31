@@ -1,3 +1,15 @@
+"""
+AkShare实时数据获取方法
+"""
+
+from typing import Dict, Any
+import pandas as pd
+import akshare as ak
+from loguru import logger
+
+from src.utils.date_utils import normalize_date
+
+
 def get_real_time_data(self, symbol: str) -> Dict[str, Any]:
     """获取实时数据-Akshare实现"""
     try:

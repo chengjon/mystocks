@@ -15,13 +15,12 @@
 版权: MyStocks Project © 2026
 """
 
-import asyncio
 import json
 import logging
 import os
-from typing import List, Dict, Optional, Any
-from datetime import datetime, date
 from dataclasses import dataclass
+from datetime import date
+from typing import Dict, List, Optional
 
 try:
     import asyncpg
@@ -97,7 +96,7 @@ class MonitoringPostgreSQLAccess:
         POSTGRESQL_HOST=192.168.123.104
         POSTGRESQL_PORT=5438
         POSTGRESQL_USER=postgres
-        POSTGRESQL_PASSWORD=c790414J
+        POSTGRESQL_PASSWORD=<从环境变量获取>
         POSTGRESQL_DATABASE=mystocks
         """
         if not ASYNCPG_AVAILABLE:
@@ -109,7 +108,7 @@ class MonitoringPostgreSQLAccess:
                 host=os.getenv("POSTGRESQL_HOST", "192.168.123.104"),
                 port=int(os.getenv("POSTGRESQL_PORT", 5438)),
                 user=os.getenv("POSTGRESQL_USER", "postgres"),
-                password=os.getenv("POSTGRESQL_PASSWORD", "c790414J"),
+                password=os.getenv("POSTGRESQL_PASSWORD"),
                 database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
                 min_size=5,
                 max_size=20,
@@ -118,13 +117,13 @@ class MonitoringPostgreSQLAccess:
             )
             self._connected = True
             logger.info("✅ 监控模块数据库连接池已初始化 (v3.0)")
-            logger.info(f"   - Host: {os.getenv('POSTGRESQL_HOST')}")
-            logger.info(f"   - Port: {os.getenv('POSTGRESQL_PORT')}")
-            logger.info(f"   - Database: {os.getenv('POSTGRESQL_DATABASE')}")
-            logger.info(f"   - Pool Size: 5-20")
+            logger.info("   - Host: {os.getenv('POSTGRESQL_HOST')")
+            logger.info("   - Port: {os.getenv('POSTGRESQL_PORT')")
+            logger.info("   - Database: {os.getenv('POSTGRESQL_DATABASE')")
+            logger.info("   - Pool Size: 5-20")
 
         except Exception as e:
-            logger.error(f"❌ 数据库连接池初始化失败: {e}")
+            logger.error("❌ 数据库连接池初始化失败: %(e)s")
             raise
 
     async def close(self):
@@ -169,7 +168,7 @@ class MonitoringPostgreSQLAccess:
                 json.dumps(params.risk_profile) if params.risk_profile else None,
             )
 
-        logger.info(f"✅ 创建监控清单: {params.name} (ID: {watchlist_id})")
+        logger.info("✅ 创建监控清单: {params.name} (ID: %(watchlist_id)s)")
         return watchlist_id
 
     async def get_watchlist(self, watchlist_id: int) -> Optional[Dict]:
@@ -215,7 +214,7 @@ class MonitoringPostgreSQLAccess:
                 result["risk_profile"] = json.loads(result["risk_profile"])
             results.append(result)
 
-        logger.info(f"✅ 获取用户 {user_id} 的 {len(results)} 个清单")
+        logger.info("✅ 获取用户 %(user_id)s 的 {len(results)} 个清单")
         return results
 
     async def add_stock_to_watchlist(self, params: StockToAdd) -> int:
@@ -256,7 +255,7 @@ class MonitoringPostgreSQLAccess:
                 params.weight,
             )
 
-        logger.info(f"✅ 添加股票到清单 {params.watchlist_id}: {params.stock_code}")
+        logger.info("✅ 添加股票到清单 {params.watchlist_id}: {params.stock_code")
         return record_id
 
     async def batch_add_stocks(self, watchlist_id: int, stocks: List[StockToAdd]) -> Dict[str, int]:
@@ -295,7 +294,7 @@ class MonitoringPostgreSQLAccess:
                 except Exception:
                     skipped_count += 1
 
-        logger.info(f"✅ 批量添加股票: 成功 {success_count}, 跳过 {skipped_count}")
+        logger.info("✅ 批量添加股票: 成功 %(success_count)s, 跳过 %(skipped_count)s")
         return {"success": success_count, "skipped": skipped_count}
 
     async def get_watchlist_with_stocks(self, watchlist_id: int) -> Optional[Dict]:
@@ -352,7 +351,7 @@ class MonitoringPostgreSQLAccess:
         async with self.pool.acquire() as conn:
             await conn.execute("DELETE FROM monitoring_watchlists WHERE id = $1", watchlist_id)
 
-        logger.info(f"✅ 删除清单: {watchlist_id}")
+        logger.info("✅ 删除清单: %(watchlist_id)s")
         return True
 
     async def remove_stock_from_watchlist(self, watchlist_id: int, stock_code: str) -> bool:
@@ -373,7 +372,7 @@ class MonitoringPostgreSQLAccess:
                 stock_code,
             )
 
-        logger.info(f"✅ 从清单 {watchlist_id} 移除股票: {stock_code}")
+        logger.info("✅ 从清单 %(watchlist_id)s 移除股票: %(stock_code)s")
         return True
 
     async def get_watchlist_stocks(self, watchlist_id: int) -> List[Dict]:
@@ -453,7 +452,7 @@ class MonitoringPostgreSQLAccess:
                 ],
             )
 
-        logger.info(f"✅ 批量保存 {len(scores)} 条健康度评分 (含高级风险指标)")
+        logger.info("✅ 批量保存 {len(scores)} 条健康度评分 (含高级风险指标)")
 
     async def get_health_score(self, stock_code: str, score_date: date) -> Optional[Dict]:
         """
@@ -518,7 +517,7 @@ class MonitoringPostgreSQLAccess:
             result["radar_scores"] = json.loads(result.get("radar_scores", "{}"))
             results.append(result)
 
-        logger.info(f"✅ 获取股票 {stock_code} 健康度历史: {len(results)} 条记录")
+        logger.info("✅ 获取股票 %(stock_code)s 健康度历史: {len(results)} 条记录")
         return results
 
     async def get_latest_health_scores(self, stock_codes: List[str]) -> Dict[str, Dict]:
@@ -564,7 +563,7 @@ class MonitoringPostgreSQLAccess:
             result["radar_scores"] = json.loads(result.get("radar_scores", "{}"))
             results[row["stock_code"]] = result
 
-        logger.info(f"✅ 批量获取 {len(results)} 只股票的最新健康度评分")
+        logger.info("✅ 批量获取 {len(results)} 只股票的最新健康度评分")
         return results
 
     # =====================================================
@@ -687,7 +686,7 @@ async def initialize_postgres_async() -> bool:
         await instance.initialize()
         return True
     except Exception as e:
-        logger.error(f"❌ 异步数据库初始化失败: {e}")
+        logger.error("❌ 异步数据库初始化失败: %(e)s")
         return False
 
 

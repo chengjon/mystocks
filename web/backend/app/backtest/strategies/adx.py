@@ -5,9 +5,9 @@ ADX平均趋向指标策略 - 判断趋势强度和方向
 Average Directional Index
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class ADXStrategy(BaseStrategy):

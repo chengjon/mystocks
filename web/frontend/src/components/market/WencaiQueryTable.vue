@@ -202,7 +202,7 @@ const exportData = () => {
 
 // 查看详情
 const viewDetails = (row) => {
-  selectedStock = ref(row)
+  selectedStock.value = row
   detailsVisible.value = true
 }
 

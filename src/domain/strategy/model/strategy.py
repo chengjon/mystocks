@@ -7,13 +7,13 @@ Strategy Aggregate Root
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
+from ...trading.model.order import Order
+from ...trading.value_objects.order_side import OrderSide
+from ..value_objects.strategy_id import StrategyId
 from .rule import Rule
 from .signal import Signal
-from ..value_objects.strategy_id import StrategyId
-from ...trading.value_objects.order_side import OrderSide
-from ...trading.model.order import Order
 
 
 @dataclass

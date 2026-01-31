@@ -13,17 +13,16 @@
 """
 
 import time
-import requests
-import pandas as pd
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List
+
+import pandas as pd
+import requests
 
 
 class DataSourceError(Exception):
     """数据源异常"""
-
-    pass
 
 
 class IDataSource(ABC):
@@ -33,33 +32,27 @@ class IDataSource(ABC):
     @abstractmethod
     def source_name(self) -> str:
         """数据源名称"""
-        pass
 
     @property
     @abstractmethod
     def supported_markets(self) -> List[str]:
         """支持的市场列表"""
-        pass
 
     @abstractmethod
     def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
         """获取K线数据"""
-        pass
 
     @abstractmethod
     def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
         """获取实时行情"""
-        pass
 
     @abstractmethod
     def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
         """获取财务数据"""
-        pass
 
     @abstractmethod
     def get_stock_list(self) -> pd.DataFrame:
         """获取股票列表"""
-        pass
 
 
 class ByapiAdapter(IDataSource):
@@ -177,7 +170,7 @@ class ByapiAdapter(IDataSource):
         self._rate_limit()
 
         try:
-            response = self.session.get(url, timeout=timeout)
+            response = requests.get(url, timeout=timeout)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
@@ -449,6 +442,50 @@ class ByapiAdapter(IDataSource):
 
         except Exception as e:
             raise DataSourceError(f"获取财务数据失败 [{symbol}, {data_type}]: {e}")
+
+    def get_technical_indicator(
+        self,
+        symbol: str,
+        indicator: str,
+        frequency: str = "daily",
+        limit: int | None = None,
+    ) -> pd.DataFrame:
+        """
+        获取技术指标数据 (byapi特有功能)
+
+        Args:
+            symbol: 股票代码
+            indicator: 指标名称 (如 macd, ma)
+            frequency: 频率 (daily/5min/15min/30min/60min/weekly/monthly)
+            limit: 返回条数限制
+
+        Returns:
+            DataFrame包含技术指标数据
+        """
+        std_symbol = self._standardize_symbol(symbol)
+        level = self.frequency_map.get(frequency)
+        if not level:
+            raise ValueError(f"不支持的频率: {frequency}. 支持: {list(self.frequency_map.keys())}")
+
+        url = f"{self.base_url}/hsstock/technical/{indicator}/{std_symbol}/{level}/{self.licence}"
+        if limit:
+            url = f"{url}?lt={limit}"
+
+        try:
+            data = self._request(url)
+
+            if not isinstance(data, list) or len(data) == 0:
+                return pd.DataFrame()
+
+            df = pd.DataFrame(data)
+            df["symbol"] = std_symbol
+            if "t" in df.columns:
+                df["timestamp"] = pd.to_datetime(df["t"], utc=True)
+
+            return df
+
+        except Exception as e:
+            raise DataSourceError(f"获取技术指标失败 [{symbol}, {indicator}]: {e}")
 
     def get_limit_up_stocks(self, trade_date: str) -> pd.DataFrame:
         """

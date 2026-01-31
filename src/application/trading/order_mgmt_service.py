@@ -4,12 +4,12 @@ Order Management Application Service
 """
 
 import logging
-from typing import Optional, List
-from src.domain.trading.model.order import Order
-from src.domain.trading.value_objects import OrderSide, OrderType, OrderId
-from src.domain.trading.repository import IOrderRepository
-from src.domain.shared.event import DomainEvent
+from typing import Optional
+
 from src.application.dto.trading_dto import CreateOrderRequest, OrderResponse
+from src.domain.trading.model.order import Order
+from src.domain.trading.repository import IOrderRepository
+from src.domain.trading.value_objects import OrderId, OrderSide, OrderType
 
 logger = logging.getLogger(__name__)
 
@@ -41,12 +41,12 @@ class OrderManagementService:
             self.order_repo.save(order)
             self._publish_events(order)
 
-            logger.info(f"Order placed successfully: {order.id}")
+            logger.info("Order placed successfully: {order.id")
 
             return self._map_to_response(order)
 
         except Exception as e:
-            logger.error(f"Failed to place order: {e}")
+            logger.error("Failed to place order: %(e)s")
             raise
 
     def handle_execution_report(self, order_id: str, filled_qty: int, price: float):
@@ -80,7 +80,7 @@ class OrderManagementService:
             try:
                 self.event_bus.publish(event)
             except Exception as e:
-                logger.error(f"Failed to publish event: {e}")
+                logger.error("Failed to publish event: %(e)s")
 
     def _map_to_response(self, order: Order) -> OrderResponse:
         return OrderResponse(

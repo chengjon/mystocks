@@ -28,10 +28,11 @@ def get_data():
 Estimated Duplication Reduced: 80+ lines
 """
 
-from typing import Any, Dict, Optional, List
 from datetime import datetime
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
+
 import structlog
+from pydantic import BaseModel, Field
 
 logger = structlog.get_logger()
 

@@ -4,11 +4,12 @@ Alert Manager 综合测试
 测试告警管理器的核心功能和多渠道通知
 """
 
-import pytest
-from unittest.mock import patch
-from datetime import datetime, timedelta
-import sys
 import os
+import sys
+from datetime import datetime, timedelta
+from unittest.mock import patch
+
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))

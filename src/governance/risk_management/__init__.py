@@ -9,10 +9,10 @@ Risk Management Initialization Module
 import logging
 from typing import Optional
 
-from src.governance.risk_management.core import RiskManagementCore
 from src.governance.risk_management.calculators.gpu_calculator import get_gpu_risk_calculator
-from src.governance.risk_management.services.stop_loss_engine import get_stop_loss_engine
+from src.governance.risk_management.core import RiskManagementCore
 from src.governance.risk_management.services.alert_service import get_risk_alert_service
+from src.governance.risk_management.services.stop_loss_engine import get_stop_loss_engine
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class RiskManagementInitializer:
             return self.core
 
         except Exception as e:
-            logger.error(f"❌ 风险管理系统初始化失败: {e}")
+            logger.error("❌ 风险管理系统初始化失败: %(e)s")
             self.is_initialized = False
             raise
 
@@ -84,7 +84,7 @@ class RiskManagementInitializer:
             logger.info("✅ 风险管理系统已关闭")
 
         except Exception as e:
-            logger.error(f"❌ 关闭风险管理系统时出错: {e}")
+            logger.error("❌ 关闭风险管理系统时出错: %(e)s")
 
     def get_core(self) -> Optional[RiskManagementCore]:
         """获取风险管理核心实例"""

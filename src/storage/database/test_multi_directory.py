@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=import-error,no-name-in-module
 # -*- coding: utf-8 -*-
 """
 模拟不同工作目录下运行的测试

@@ -186,7 +186,7 @@ repos:
         files: ^web/frontend/.*\.(ts|tsx|vue)$
         pass_filenames: false
 
-# ============================================================================
+   # ============================================================================   # 第十二步：前端页面配置验证 (新增)   # ============================================================================   # 验证路由配置与 pageConfig.ts 的一致性   # - 检测新增路由是否缺少配置   # - 检测已删除路由的配置是否残留   # - 验证配置的必需字段完整性   # ============================================================================   - repo: local     hooks:       - id: page-config-validator         name: Page Configuration Validator         # 运行配置验证（不阻塞提交，仅警告）         entry: bash -c "cd web/frontend && node ../../scripts/hooks/check-page-config.mjs --warn || true"         language: system         files: ^web/frontend/src/(router/|config/)/         pass_filenames: false         stages: [pre-commit]         always_run: true # ================# ============================================================================
 # CI 配置
 # ============================================================================
 ci:

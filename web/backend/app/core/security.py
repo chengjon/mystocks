@@ -85,25 +85,57 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
 
 
 def verify_token(token: str) -> Optional[TokenData]:
-    """验证 JWT 令牌"""
-    # 开发环境mock token支持
-    if token == "dev-mock-token-for-development":
-        return TokenData(username="dev_user", user_id=1, role="admin")
-
+    """验证 JWT 令牌（增强安全性）"""
     try:
+        # 检查token是否在黑名单中（撤销的token）
+        if _is_token_revoked(token):
+            return None
+
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+
+        # 增强过期检查
+        exp = payload.get("exp")
+        if exp and datetime.utcnow().timestamp() > exp:
+            return None
+
+        # 验证必要字段
         username: str = payload.get("sub")
         user_id: int = payload.get("user_id")
         role: str = payload.get("role")
 
-        if username is None:
+        if not all([username, user_id, role]):
+            return None
+
+        # 验证角色有效性
+        if role not in ["user", "admin"]:
             return None
 
         token_data = TokenData(username=username, user_id=user_id, role=role)
         return token_data
 
-    except jwt.PyJWTError:
+    except jwt.ExpiredSignatureError:
+        # Token已过期
         return None
+    except jwt.InvalidTokenError:
+        # Token无效
+        return None
+    except Exception:
+        # 其他JWT错误
+        return None
+
+
+# 撤销的token存储（内存中的黑名单，生产环境建议使用Redis）
+_revoked_tokens = set()
+
+
+def revoke_token(token: str) -> None:
+    """撤销JWT令牌，将其加入黑名单"""
+    _revoked_tokens.add(token)
+
+
+def _is_token_revoked(token: str) -> bool:
+    """检查token是否已被撤销"""
+    return token in _revoked_tokens
 
 
 # 注意：硬编码密码哈希已移除以提高安全性
@@ -219,7 +251,7 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
         return get_user_from_database_by_id(user_id)
     except Exception as e:
         # 数据库查询失败时记录错误
-        print(f"Database user lookup failed for ID {user_id} " f"(will return None): {type(e).__name__}: {str(e)}")
+        print(f"Database user lookup failed for ID {user_id} (will return None): {type(e).__name__}: {str(e)}")
         return None
         mock_users = {
             1: {

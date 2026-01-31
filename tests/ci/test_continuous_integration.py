@@ -20,8 +20,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-import docker
 from pydantic import BaseModel, Field
+
+import docker
 
 # 设置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -169,7 +170,7 @@ class ContinuousIntegrationManager:
         try:
             self.docker_client = docker.from_env()
         except Exception as e:
-            logger.warning(f"Docker初始化失败: {e}")
+            logger.warning("Docker初始化失败: %(e)s")
 
         # 初始化HTTP会话
         self.session = aiohttp.ClientSession()
@@ -189,14 +190,14 @@ class ContinuousIntegrationManager:
             with open(self.config_file, "r", encoding="utf-8") as f:
                 config_data = json.load(f)
                 self.config = PipelineConfig(**config_data)
-                logger.info(f"加载配置成功: {self.config}")
+                logger.info("加载配置成功: {self.config}")
                 return self.config
         except FileNotFoundError:
-            logger.warning(f"配置文件 {self.config_file} 不存在，使用默认配置")
+            logger.warning("配置文件 {self.config_file} 不存在，使用默认配置")
             self.config = self._create_default_config()
             return self.config
         except Exception as e:
-            logger.error(f"加载配置失败: {e}")
+            logger.error("加载配置失败: %(e)s")
             raise
 
     def _create_default_config(self) -> PipelineConfig:
@@ -230,7 +231,7 @@ class ContinuousIntegrationManager:
 
         self.pipelines[pipeline_id] = pipeline_info
 
-        logger.info(f"开始运行流水线: {pipeline_id}")
+        logger.info("开始运行流水线: %(pipeline_id)s")
 
         try:
             # 执行流水线步骤
@@ -251,14 +252,14 @@ class ContinuousIntegrationManager:
             pipeline_info["reports"] = await self._generate_pipeline_reports(pipeline_id, config)
 
         except Exception as e:
-            logger.error(f"流水线执行失败: {e}")
+            logger.error("流水线执行失败: %(e)s")
             pipeline_info["status"] = PipelineStatus.FAILED.value
             pipeline_info["error"] = str(e)
 
         finally:
             pipeline_info["end_time"] = datetime.now().isoformat()
 
-        logger.info(f"流水线执行完成: {pipeline_id} - {pipeline_info['status']}")
+        logger.info("流水线执行完成: %(pipeline_id)s - {pipeline_info['status']}")
         return pipeline_info
 
     async def _run_pipeline_parallel(self, config: PipelineConfig) -> List[Dict[str, Any]]:
@@ -292,7 +293,7 @@ class ContinuousIntegrationManager:
 
             for i, step_result in enumerate(step_results):
                 if isinstance(step_result, Exception):
-                    logger.error(f"步骤 {executable_steps[i].name} 执行失败: {step_result}")
+                    logger.error("步骤 {executable_steps[i].name} 执行失败: %(step_result)s")
                     steps.append(
                         {
                             "id": executable_steps[i].id,
@@ -335,7 +336,7 @@ class ContinuousIntegrationManager:
             "error": "",
         }
 
-        logger.info(f"开始执行步骤: {step.name}")
+        logger.info("开始执行步骤: {step.name}")
 
         try:
             # 设置环境变量
@@ -361,24 +362,24 @@ class ContinuousIntegrationManager:
                 if process.returncode == 0:
                     step_info["status"] = PipelineStatus.SUCCESS.value
                     step_info["output"] = stdout.decode("utf-8", errors="ignore")
-                    logger.info(f"步骤执行成功: {step.name}")
+                    logger.info("步骤执行成功: {step.name}")
                 else:
                     step_info["status"] = PipelineStatus.FAILED.value
                     step_info["output"] = stdout.decode("utf-8", errors="ignore")
                     step_info["error"] = stderr.decode("utf-8", errors="ignore")
-                    logger.error(f"步骤执行失败: {step.name} - {stderr.decode('utf-8', errors='ignore')}")
+                    logger.error("步骤执行失败: {step.name} - {stderr.decode('utf-8', errors='ignore')}")
 
             except asyncio.TimeoutError:
                 process.kill()
                 await process.wait()
                 step_info["status"] = PipelineStatus.FAILED.value
                 step_info["error"] = f"步骤超时: {step.timeout}秒"
-                logger.error(f"步骤执行超时: {step.name}")
+                logger.error("步骤执行超时: {step.name}")
 
         except Exception as e:
             step_info["status"] = PipelineStatus.FAILED.value
             step_info["error"] = str(e)
-            logger.error(f"步骤执行异常: {step.name} - {e}")
+            logger.error("步骤执行异常: {step.name} - %(e)s")
 
         step_info["end_time"] = datetime.now().isoformat()
         return step_info
@@ -413,7 +414,7 @@ class ContinuousIntegrationManager:
 
     async def run_test_suite(self, suite: TestSuite) -> TestReport:
         """运行测试套件"""
-        logger.info(f"开始运行测试套件: {suite.name}")
+        logger.info("开始运行测试套件: {suite.name}")
 
         start_time = datetime.now()
         total_tests = len(suite.tests)
@@ -434,7 +435,7 @@ class ContinuousIntegrationManager:
         for result in results:
             if isinstance(result, Exception):
                 error_tests += 1
-                logger.error(f"测试执行异常: {result}")
+                logger.error("测试执行异常: %(result)s")
             elif result.get("status") == "passed":
                 passed_tests += 1
             elif result.get("status") == "failed":
@@ -460,7 +461,7 @@ class ContinuousIntegrationManager:
             artifacts=[],
         )
 
-        logger.info(f"测试套件执行完成: {suite.name} - {report.summary}")
+        logger.info("测试套件执行完成: {suite.name} - {report.summary}")
         return report
 
     async def _run_test_file(self, test_file: str, suite: TestSuite) -> Dict[str, Any]:
@@ -534,7 +535,7 @@ class ContinuousIntegrationManager:
             checks["dependency_check"] = result.get("success", False)
 
         except Exception as e:
-            logger.error(f"代码质量检查失败: {e}")
+            logger.error("代码质量检查失败: %(e)s")
 
         return checks
 
@@ -558,7 +559,7 @@ class ContinuousIntegrationManager:
 
     async def build_and_deploy(self, environment: EnvironmentType) -> Dict[str, Any]:
         """构建和部署应用"""
-        logger.info(f"开始构建和部署: {environment.value}")
+        logger.info("开始构建和部署: {environment.value}")
 
         result = {
             "environment": environment.value,
@@ -592,7 +593,7 @@ class ContinuousIntegrationManager:
 
         except Exception as e:
             result["error"] = str(e)
-            logger.error(f"构建和部署失败: {e}")
+            logger.error("构建和部署失败: %(e)s")
 
         return result
 
@@ -652,7 +653,7 @@ class ContinuousIntegrationManager:
                 if step.get("status") == PipelineStatus.RUNNING.value:
                     step["status"] = PipelineStatus.CANCELLED.value
 
-            logger.info(f"流水线已取消: {pipeline_id}")
+            logger.info("流水线已取消: %(pipeline_id)s")
             return True
 
         return False

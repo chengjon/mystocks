@@ -18,7 +18,7 @@ Mock数据文件: TradingView
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 
 def get_chart_config(

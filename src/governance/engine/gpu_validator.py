@@ -1,6 +1,7 @@
 import logging
-import numpy as np
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
+
 from .base import BaseValidator
 
 logger = logging.getLogger(__name__)
@@ -8,7 +9,6 @@ logger = logging.getLogger(__name__)
 # 尝试导入 cudf
 try:
     import cudf
-    import cupy
 
     # 简单的 check，不一定代表运行时真的有 GPU
     _CUDF_IMPORTED = True
@@ -32,7 +32,7 @@ class GPUValidator(BaseValidator):
                 # 尝试初始化一个小对象来验证 GPU 是否真正可用
                 cudf.Series([1])
             except Exception as e:
-                logger.warning(f"检测到 cudf 但无法连接 GPU: {e}。自动降级到 CPU 模式。")
+                logger.warning("检测到 cudf 但无法连接 GPU: %(e)s。自动降级到 CPU 模式。")
                 self.use_gpu = False
 
     def validate(self, data: Any, rules: List[str] = None) -> Dict[str, Any]:
@@ -59,7 +59,7 @@ class GPUValidator(BaseValidator):
             try:
                 gdf = cudf.DataFrame.from_pandas(data)
             except Exception as e:
-                logger.error(f"数据传输到 GPU 失败: {e}。尝试降级到 CPU。")
+                logger.error("数据传输到 GPU 失败: %(e)s。尝试降级到 CPU。")
                 self.use_gpu = False
                 return self._validate_cpu(data, rules)
 
@@ -75,15 +75,14 @@ class GPUValidator(BaseValidator):
                 elif rule == "suspension":
                     results["suspension"] = self._validate_suspension_gpu(gdf)
                 else:
-                    logger.warning(f"未知规则: {rule}")
+                    logger.warning("未知规则: %(rule)s")
             except Exception as e:
-                logger.error(f"GPU规则 {rule} 执行失败: {e}")
+                logger.error("GPU规则 %(rule)s 执行失败: %(e)s")
 
         return results
 
     def _validate_cpu(self, data: Any, rules: List[str] = None) -> Dict[str, Any]:
         """CPU 模式实现 (Pandas)"""
-        import pandas as pd
 
         if hasattr(data, "to_pandas"):
             df = data.to_pandas()
@@ -102,9 +101,9 @@ class GPUValidator(BaseValidator):
                 elif rule == "suspension":
                     results["suspension"] = self._validate_suspension_cpu(df)
                 else:
-                    logger.warning(f"未知规则: {rule}")
+                    logger.warning("未知规则: %(rule)s")
             except Exception as e:
-                logger.error(f"CPU规则 {rule} 执行失败: {e}")
+                logger.error("CPU规则 %(rule)s 执行失败: %(e)s")
         return results
 
     # ---------------- GPU Implementations ----------------

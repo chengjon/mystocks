@@ -94,8 +94,19 @@
     import ArtDecoStatusIndicator from '@/components/artdeco/core/ArtDecoStatusIndicator.vue'
     // @ts-ignore - Component not implemented yet
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
-
-    // 导入所有功能组件
+    
+    // ========== 配置系统集成 ==========
+    import { getPageConfig, getTabConfig } from '@/config/pageConfig'
+    
+    const routeName = 'artdeco-trading-center'
+    const pageConfig = ref(getPageConfig(routeName))
+    
+    console.log('Trading Center - 配置系统已就绪')
+    
+    // ========== 配置系统集成 ==========
+    import { useTradingStore } from '@/stores/trading'
+    import { useAuthStore } from '@/stores/auth'
+    // 导入所有功能组件（均为@ts-ignore状态）
     // @ts-ignore - Component not implemented yet
     import ArtDecoMarketOverview from './components/market/ArtDecoMarketOverview.vue'
     // @ts-ignore - Component not implemented yet
@@ -143,17 +154,17 @@
     const globalLoading = ref(false)
     const globalLoadingProgress = ref(0)
 
-    // 系统状态
-    const systemStatus = ref('正常运行')
-    const statusType = ref<'success' | 'warning' | 'error'>('success')
-    const apiStatus = ref<'online' | 'offline' | 'degraded'>('online')
-    const apiStatusText = ref('626个端点正常')
-    const dataQualityStatus = ref<'good' | 'warning' | 'error'>('good')
-    const dataQualityScore = ref('98.5%')
-    const systemLoadStatus = ref<'low' | 'medium' | 'high'>('medium')
-    const systemLoadPercent = ref('45%')
-    const lastUpdateTime = ref('--:--:--')
-    const version = ref('2.0.0')
+    // 从 Trading Store 获取系统状态
+    const systemStatus = computed(() => tradingStore.systemStatus)
+    const statusType = computed(() => tradingStore.statusType)
+    const apiStatus = computed(() => tradingStore.apiStatus)
+    const apiStatusText = computed(() => tradingStore.apiStatusText)
+    const dataQualityStatus = computed(() => tradingStore.dataQualityStatus)
+    const dataQualityScore = computed(() => tradingStore.dataQualityScore)
+    const systemLoadStatus = computed(() => tradingStore.systemLoadStatus)
+    const systemLoadPercent = computed(() => tradingStore.systemLoadPercent)
+    const version = computed(() => tradingStore.version)
+    const lastUpdateTime = computed(() => tradingStore.lastUpdateTime)
 
     // 功能树数据结构
     const functionTreeData = ref([
@@ -321,7 +332,7 @@
                 }
             }
             return []
-        }
+                }
 
         const path = findNode(functionTreeData.value, activeFunction.value)
         return path.map(node => ({
@@ -360,13 +371,57 @@
 
     const refreshAllData = async () => {
         refreshing.value = true
+        globalLoading.value = true
+        globalLoadingProgress.value = 0
+        
         try {
-            await tradingStore.refreshAllData()
-            updateLastUpdateTime()
+            // 配置系统集成 - 并行加载真实API数据
+            const progressSteps = [
+                { step: 'market', label: '正在加载市场数据...', weight: 25 },
+                { step: 'trading', label: '正在加载交易数据...', weight: 25 },
+                { step: 'strategy', label: '正在加载策略数据...', weight: 25 },
+                { step: 'system', label: '正在加载系统状态...', weight: 25 }
+            ]
+            
+            let totalProgress = 0
+            
+            // 并行加载市场数据
+            const marketPromise = marketService.getMarketOverview()
+            const fundFlowPromise = marketService.getFundFlow()
+            const industryPromise = marketService.getIndustryFlow()
+            
+            // 并行加载交易数据
+            const strategiesPromise = strategyService.getStrategyList({ status: 'active', pageSize: 10 })
+            
+            // 等待市场数据
+            const marketResult = await marketPromise
+            totalProgress += 25
+            globalLoadingProgress.value = totalProgress
+            tradingStore.updateMarketData(marketResult.data)
+            
+            // 等待交易数据
+            const tradingResult = await strategiesPromise
+            totalProgress += 25
+            globalLoadingProgress.value = totalProgress
+            tradingStore.updateTradingData(tradingResult.data)
+            
+            // 等待策略数据
+            const strategyResult = await strategyService.getStrategyList({ status: 'all' })
+            totalProgress += 25
+            globalLoadingProgress.value = totalProgress
+            tradingStore.updateStrategyData(strategyResult.data)
+            
+            // 完成
+            totalProgress = 100
+            globalLoadingProgress.value = totalProgress
+            
+            console.log('✅ Trading Center 数据刷新完成')
         } catch (error) {
             console.error('Failed to refresh data:', error)
         } finally {
             refreshing.value = false
+            globalLoading.value = false
+            globalLoadingProgress.value = 100
         }
     }
 
@@ -374,28 +429,14 @@
         activeFunction.value = 'system-settings'
     }
 
-    const updateLastUpdateTime = () => {
-        const now = new Date()
-        lastUpdateTime.value = now.toLocaleTimeString('zh-CN', {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        })
-    }
-
     // 生命周期
     onMounted(() => {
-        // 初始化数据
-        updateLastUpdateTime()
+        // fetchSystemStatus is called on store creation and via setInterval in store
+    })
 
-        // 定时更新
-        const updateTimer = setInterval(updateLastUpdateTime, 1000)
-
-        // 清理定时器
-        onUnmounted(() => {
-            clearInterval(updateTimer)
-        })
+    // 清理定时器 (The setInterval is now handled within the store, but good to keep this pattern if there were other local timers)
+    onUnmounted(() => {
+        // clearInterval(updateTimer) // No longer needed here
     })
 
     // 监听功能切换
@@ -403,7 +444,6 @@
         tradingStore.switchActiveFunction(newValue)
     })
 </script>
-
 <style scoped lang="scss">
     .artdeco-trading-center {
         display: flex;

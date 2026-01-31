@@ -5,23 +5,24 @@ GPU加速的数据处理器
 支持大规模金融数据的并行处理和实时分析
 """
 
+import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+from typing import Callable, Dict, List, Tuple
+
+import cudf
+import cupy as cp
+import dask.dataframe as dd
 import numpy as np
 import pandas as pd
-import cupy as cp
-import cudf
-from typing import Dict, List, Tuple, Callable
-from dataclasses import dataclass
-import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import dask.dataframe as dd
 from dask.distributed import Client
 
 # 尝试导入 cuML 库
 try:
-    from cuml.preprocessing import StandardScaler
-    from cuml.feature_selection import SelectKBest
     from cuml.decomposition import PCA
+    from cuml.feature_selection import SelectKBest
+    from cuml.preprocessing import StandardScaler
 
     CUML_AVAILABLE = True
 except ImportError:

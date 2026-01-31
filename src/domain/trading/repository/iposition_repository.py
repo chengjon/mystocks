@@ -32,7 +32,6 @@ class IPositionRepository(ABC):
         Args:
             position: 持仓聚合根
         """
-        pass
 
     @abstractmethod
     def find_by_id(self, position_id: str) -> Optional[Position]:
@@ -45,7 +44,6 @@ class IPositionRepository(ABC):
         Returns:
             持仓聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_by_portfolio(self, portfolio_id: str) -> List[Position]:
@@ -58,7 +56,6 @@ class IPositionRepository(ABC):
         Returns:
             持仓列表
         """
-        pass
 
     @abstractmethod
     def find_by_portfolio_and_symbol(self, portfolio_id: str, symbol: str) -> Optional[Position]:
@@ -72,7 +69,6 @@ class IPositionRepository(ABC):
         Returns:
             持仓聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_open_positions(self, portfolio_id: str) -> List[Position]:
@@ -85,7 +81,6 @@ class IPositionRepository(ABC):
         Returns:
             开仓持仓列表
         """
-        pass
 
     @abstractmethod
     def find_by_symbol(self, symbol: str) -> List[Position]:
@@ -98,7 +93,6 @@ class IPositionRepository(ABC):
         Returns:
             持仓列表
         """
-        pass
 
     @abstractmethod
     def delete(self, position_id: str) -> None:
@@ -108,7 +102,6 @@ class IPositionRepository(ABC):
         Args:
             position_id: 持仓ID
         """
-        pass
 
     @abstractmethod
     def exists(self, position_id: str) -> bool:
@@ -121,7 +114,6 @@ class IPositionRepository(ABC):
         Returns:
             如果存在返回True，否则返回False
         """
-        pass
 
     @abstractmethod
     def count_by_portfolio(self, portfolio_id: str) -> int:
@@ -134,4 +126,3 @@ class IPositionRepository(ABC):
         Returns:
             持仓数量
         """
-        pass

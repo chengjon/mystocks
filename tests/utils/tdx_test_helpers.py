@@ -1,7 +1,8 @@
-import pytest
 import os
-import pandas as pd
 import sys
+
+import pandas as pd
+import pytest
 
 # Add project root to path for src imports
 # Assuming tests/utils is two levels down from project root
@@ -9,7 +10,6 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 sys.path.insert(0, project_root)
 
 from src.adapters.tdx_adapter import TdxDataSource
-
 
 # Common TDX file path (e.g., for day files)
 # This path might need to be configured via a test config or environment variable

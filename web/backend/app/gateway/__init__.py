@@ -13,8 +13,8 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from .rate_limiter import RateLimiter, RateLimitConfig
 from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, CircuitBreakerState
+from .rate_limiter import RateLimitConfig, RateLimiter
 from .request_router import RequestRouter, RouteConfig
 from .request_transformer import RequestTransformer, ResponseTransformer
 

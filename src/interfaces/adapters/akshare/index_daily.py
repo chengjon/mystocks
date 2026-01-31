@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """获取指数日线数据-Akshare实现
     使用优先级：

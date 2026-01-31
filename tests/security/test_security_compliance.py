@@ -6,14 +6,15 @@ MyStocks 安全合规测试套件
 提供全面的安全合规性验证，包括GDPR、PCI DSS、SOX等合规性测试。
 """
 
-import pytest
 import asyncio
 import json
 import logging
-from datetime import datetime
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import pytest
 from cryptography.fernet import Fernet
 
 # 设置日志
@@ -273,7 +274,7 @@ class ComplianceTestEngine:
                     self._print_control_result(control, result)
 
                 except Exception as e:
-                    logger.error(f"测试控制项 {control.control_id} 失败: {str(e)}")
+                    logger.error("测试控制项 {control.control_id} 失败: {str(e)}")
                     standard_results[control.control_id] = {
                         "status": ComplianceLevel.NOT_TESTED,
                         "error": str(e),
@@ -1668,7 +1669,7 @@ async def test_compliance_gdpr():
             control.last_tested = datetime.now()
             control.test_results = result
         except Exception as e:
-            logger.error(f"测试GDPR控制项 {control.control_id} 失败: {str(e)}")
+            logger.error("测试GDPR控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
     assert len(results) >= 1  # 至少测试了1个GDPR控制项
@@ -1702,7 +1703,7 @@ async def test_compliance_pci_dss():
             control.last_tested = datetime.now()
             control.test_results = result
         except Exception as e:
-            logger.error(f"测试PCI DSS控制项 {control.control_id} 失败: {str(e)}")
+            logger.error("测试PCI DSS控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
     assert len(results) >= 1  # 至少测试了1个PCI DSS控制项
@@ -1736,7 +1737,7 @@ async def test_compliance_sox():
             control.last_tested = datetime.now()
             control.test_results = result
         except Exception as e:
-            logger.error(f"测试SOX控制项 {control.control_id} 失败: {str(e)}")
+            logger.error("测试SOX控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
     assert len(results) >= 1  # 至少测试了1个SOX控制项
@@ -1770,7 +1771,7 @@ async def test_compliance_owasp():
             control.last_tested = datetime.now()
             control.test_results = result
         except Exception as e:
-            logger.error(f"测试OWASP控制项 {control.control_id} 失败: {str(e)}")
+            logger.error("测试OWASP控制项 {control.control_id} 失败: {str(e)}")
 
     # 验证结果
     assert len(results) >= 1  # 至少测试了1个OWASP控制项

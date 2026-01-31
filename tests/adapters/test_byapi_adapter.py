@@ -17,6 +17,7 @@ Phase: 2 - Task 2.2.5
 
 import unittest
 from unittest.mock import Mock, patch
+
 import pandas as pd
 
 from src.adapters.byapi_adapter import ByapiAdapter, DataSourceError

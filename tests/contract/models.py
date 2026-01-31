@@ -5,11 +5,11 @@
 定义契约测试的配置、套件和用例模型
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
-from enum import Enum
-from datetime import datetime
 import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class TestCategory(Enum):

@@ -11,13 +11,14 @@ Test Coverage:
 - 并发性能测试
 """
 
-import pytest
+import os
+import sys
 import time
 from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 from fastapi.testclient import TestClient
-import sys
-import os
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

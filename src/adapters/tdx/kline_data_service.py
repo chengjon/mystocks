@@ -6,9 +6,10 @@
 # 说明：专门处理TDX K线数据的获取和处理
 """
 
-import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Optional
+
+import pandas as pd
 from loguru import logger
 
 from .base_tdx_adapter import BaseTdxAdapter
@@ -63,7 +64,7 @@ class KlineDataService(BaseTdxAdapter):
             market_code = self._get_market_code(symbol)
 
             # 获取日线数据
-            logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
+            logger.info("获取股票日线数据: %s %s ~ %s", symbol, start_date, end_date)
             data = tdx_api.get_k_data(
                 code=symbol,
                 start_date=start_date,
@@ -109,11 +110,11 @@ class KlineDataService(BaseTdxAdapter):
             df["market"] = "上交所" if market_code == 1 else "深交所"
             df["adjust"] = adjust
 
-            logger.info(f"成功获取股票日线数据: {symbol}, 共 {len(df)} 条记录")
+            logger.info("成功获取股票日线数据: %s, 共 %s 条记录", symbol, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取股票日线数据失败: {e}")
+            logger.error("获取股票日线数据失败: %s", e)
             raise
 
     def get_index_daily(
@@ -149,7 +150,7 @@ class KlineDataService(BaseTdxAdapter):
             tdx_api = self._get_tdx_connection()
 
             # 获取指数日线数据
-            logger.info(f"获取指数日线数据: {index_code} {start_date} ~ {end_date}")
+            logger.info("获取指数日线数据: %s %s ~ %s", index_code, start_date, end_date)
             data = tdx_api.get_k_data(
                 code=index_code,
                 start_date=start_date,
@@ -184,11 +185,11 @@ class KlineDataService(BaseTdxAdapter):
             df["symbol"] = index_code
             df["security_type"] = "index"
 
-            logger.info(f"成功获取指数日线数据: {index_code}, 共 {len(df)} 条记录")
+            logger.info("成功获取指数日线数据: %s, 共 %s 条记录", index_code, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取指数日线数据失败: {e}")
+            logger.error("获取指数日线数据失败: %s", e)
             raise
 
     def get_stock_kline(
@@ -270,7 +271,7 @@ class KlineDataService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取股票K线数据失败: {e}")
+            logger.error("获取股票K线数据失败: %s", e)
             return {
                 "symbol": symbol,
                 "period": period,
@@ -354,7 +355,7 @@ class KlineDataService(BaseTdxAdapter):
             return result
 
         except Exception as e:
-            logger.error(f"获取指数K线数据失败: {e}")
+            logger.error("获取指数K线数据失败: %s", e)
             return {
                 "index_code": index_code,
                 "period": period,
@@ -403,7 +404,7 @@ class KlineDataService(BaseTdxAdapter):
             return resampled
 
         except Exception as e:
-            logger.error(f"重新采样K线数据失败: {e}")
+            logger.error("重新采样K线数据失败: %s", e)
             return pd.DataFrame()
 
     def get_minute_kline(
@@ -443,7 +444,7 @@ class KlineDataService(BaseTdxAdapter):
 
             # 获取分钟线数据 (使用 get_history_minute_time_data)
             # 注意: TDX API 不支持按数量获取，这里获取最新日期的分钟数据
-            logger.info(f"获取股票分钟K线数据: {symbol} {period}")
+            logger.info("获取股票分钟K线数据: %s %s", symbol, period)
             data = tdx_api.get_history_minute_time_data(
                 market=market_code,
                 code=symbol,
@@ -481,9 +482,110 @@ class KlineDataService(BaseTdxAdapter):
             df["period"] = period
             df["adjust"] = adjust
 
-            logger.info(f"成功获取股票分钟K线数据: {symbol}, 共 {len(df)} 条记录")
+            logger.info("成功获取股票分钟K线数据: %s, 共 %s 条记录", symbol, len(df))
             return df
 
         except Exception as e:
-            logger.error(f"获取股票分钟K线数据失败: {e}")
+            logger.error("获取股票分钟K线数据失败: %s", e)
             raise
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_stock_basic(self, symbol: str) -> Dict:
+        """
+        获取股票基本信息
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 股票基本信息
+
+        Note:
+            KlineDataService专注于K线数据，不支持股票基本信息
+        """
+        logger.warning("KlineDataService不支持获取股票基本信息: %s", symbol)
+        return {}
+
+    def get_index_components(self, symbol: str) -> list:
+        """
+        获取指数成分股
+
+        Args:
+            symbol: 指数代码
+
+        Returns:
+            list: 指数成分股代码列表
+
+        Note:
+            KlineDataService专注于K线数据，不支持指数成分股
+        """
+        logger.warning("KlineDataService不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_real_time_data(self, symbol: str) -> Optional[Dict]:
+        """
+        获取实时数据
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Optional[Dict]: 实时数据
+
+        Note:
+            KlineDataService专注于历史K线数据，不支持实时数据
+        """
+        logger.warning("KlineDataService不支持获取实时数据: %s", symbol)
+        return None
+
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取交易日历
+
+        Args:
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 交易日历数据
+
+        Note:
+            KlineDataService专注于K线数据，不支持交易日历
+        """
+        logger.warning("KlineDataService不支持获取交易日历")
+        return pd.DataFrame()
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """
+        获取财务数据
+
+        Args:
+            symbol: 股票代码
+            period: 报告期间
+
+        Returns:
+            pd.DataFrame: 财务数据
+
+        Note:
+            KlineDataService专注于K线数据，不支持财务数据
+        """
+        logger.warning("KlineDataService不支持获取财务数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> list:
+        """
+        获取新闻数据
+
+        Args:
+            symbol: 股票代码
+            limit: 返回数量限制
+
+        Returns:
+            list: 新闻数据列表
+
+        Note:
+            KlineDataService专注于K线数据，不支持新闻数据
+        """
+        logger.warning("KlineDataService不支持获取新闻数据")
+        return []

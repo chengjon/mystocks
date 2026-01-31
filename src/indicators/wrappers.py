@@ -1,7 +1,8 @@
 import time
-from typing import Dict, Any
+from typing import Any, Dict
+
 from src.indicators.base import StreamingIndicator
-from src.monitoring.indicator_metrics import STREAMING_LATENCY, CALCULATION_REQUESTS
+from src.monitoring.indicator_metrics import CALCULATION_REQUESTS, STREAMING_LATENCY
 
 
 class MonitoredStreamingIndicator(StreamingIndicator):

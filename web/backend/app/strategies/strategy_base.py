@@ -6,11 +6,12 @@
 - data_service (OHLCV数据加载) - EXISTING
 """
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-from enum import Enum
-import pandas as pd
 import logging
+from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,6 @@ class StrategyBase(ABC):
                 columns: ['date', 'signal', 'price', 'reason']
                 signal: 1=买入, -1=卖出, 0=持有
         """
-        pass
 
     def get_default_parameters(self) -> Dict[str, Any]:
         """获取默认参数"""
@@ -75,7 +75,7 @@ class StrategyRegistry:
         """注册策略"""
         strategy_instance = strategy_class()
         self._strategies[strategy_instance.strategy_id] = strategy_class
-        logger.info(f"注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}")
+        logger.info("注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}"")
 
     def get_strategy(self, strategy_id: str) -> Optional[StrategyBase]:
         """获取策略实例"""

@@ -5,19 +5,20 @@ GPU加速的价格预测器
 支持RTX 2080 GPU加速，提供实时预测能力
 """
 
+import logging
 import time
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Dict, List, Tuple
+
+import cudf
+import cupy as cp
 import numpy as np
 import pandas as pd
-import cupy as cp
-import cudf
-from cuml.linear_model import LinearRegression, Ridge, Lasso
 from cuml.ensemble import RandomForestRegressor
-from cuml.preprocessing import StandardScaler
+from cuml.linear_model import Lasso, LinearRegression, Ridge
 from cuml.model_selection import train_test_split as gpu_train_test_split
-from typing import Dict, List, Tuple
-from dataclasses import dataclass
-import logging
-from datetime import datetime, timedelta
+from cuml.preprocessing import StandardScaler
 
 
 @dataclass

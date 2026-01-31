@@ -5,12 +5,13 @@ Unified data source registry that supports dynamic registration,
 deregistration, and querying of data sources.
 """
 
+import logging
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
+
 import redis.asyncio as redis
-import logging
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ class DataSourceRegistry:
             await self._redis.ping()
             logger.info("Connected to Redis for DataSourceRegistry")
         except Exception as e:
-            logger.warning(f"Failed to connect to Redis: {e}, using local cache only")
+            logger.warning("Failed to connect to Redis: %(e)s, using local cache only")
 
     async def disconnect(self) -> None:
         """Disconnect from Redis"""
@@ -120,10 +121,10 @@ class DataSourceRegistry:
                 await self._redis.hset("datasource:configs", config.source_id, config.model_dump_json())
                 await self._redis.hset("datasource:health", config.source_id, HealthStatus.UNKNOWN.value)
 
-            logger.info(f"Registered data source: {config.source_id}")
+            logger.info("Registered data source: {config.source_id")
             return True
         except Exception as e:
-            logger.error(f"Failed to register data source {config.source_id}: {e}")
+            logger.error("Failed to register data source {config.source_id}: %(e)s")
             return False
 
     async def unregister(self, source_id: str) -> bool:
@@ -145,10 +146,10 @@ class DataSourceRegistry:
                 await self._redis.hdel("datasource:configs", source_id)
                 await self._redis.hdel("datasource:health", source_id)
 
-            logger.info(f"Unregistered data source: {source_id}")
+            logger.info("Unregistered data source: %(source_id)s")
             return True
         except Exception as e:
-            logger.error(f"Failed to unregister data source {source_id}: {e}")
+            logger.error("Failed to unregister data source %(source_id)s: %(e)s")
             return False
 
     async def get_config(self, source_id: str) -> Optional[DataSourceConfig]:
@@ -172,7 +173,7 @@ class DataSourceRegistry:
                     self._local_cache[source_id] = config
                     return config
             except Exception as e:
-                logger.error(f"Failed to get config from Redis: {e}")
+                logger.error("Failed to get config from Redis: %(e)s")
 
         return None
 
@@ -224,7 +225,7 @@ class DataSourceRegistry:
 
             return True
         except Exception as e:
-            logger.error(f"Failed to update health status: {e}")
+            logger.error("Failed to update health status: %(e)s")
             return False
 
     async def get_health_status(self, source_id: str) -> Optional[HealthReport]:
@@ -266,8 +267,8 @@ class DataSourceRegistry:
                     config = DataSourceConfig.model_validate_json(config_json)
                     self._local_cache[source_id] = config
                 except Exception as e:
-                    logger.error(f"Failed to parse config for {source_id}: {e}")
+                    logger.error("Failed to parse config for %(source_id)s: %(e)s")
 
-            logger.info(f"Loaded {len(self._local_cache)} data sources from Redis")
+            logger.info("Loaded {len(self._local_cache)} data sources from Redis")
         except Exception as e:
-            logger.error(f"Failed to load from Redis: {e}")
+            logger.error("Failed to load from Redis: %(e)s")

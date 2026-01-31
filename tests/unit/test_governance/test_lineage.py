@@ -2,20 +2,21 @@
 Unit tests for Data Lineage Tracking Module
 """
 
-import pytest
+import os
+import sys
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
-import sys
-import os
+
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from src.data_governance.lineage import (
-    LineageTracker,
-    LineageStorage,
-    LineageNode,
     LineageEdge,
     LineageGraph,
+    LineageNode,
+    LineageStorage,
+    LineageTracker,
     NodeType,
     OperationType,
 )

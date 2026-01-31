@@ -138,7 +138,7 @@
     import ArtDecoLayout from '@/layouts/ArtDecoLayout.vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import ArtDecoTable from '@/components/artdeco/specialized/ArtDecoTable.vue'
+    import ArtDecoTable from '@/components/artdeco/trading/ArtDecoTable.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
     import ArtDecoInput from '@/components/artdeco/base/ArtDecoInput.vue'
 

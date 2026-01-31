@@ -8,15 +8,14 @@ Author: Claude Code
 Date: 2026-01-09
 """
 
-from typing import Dict, Any, Optional, List
+import asyncio
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from decimal import Decimal
-from collections import defaultdict
-import structlog
-import asyncio
-from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import structlog
 
 logger = structlog.get_logger()
 
@@ -305,12 +304,12 @@ class PositionMTMEngine:
                     listener(updates)
                 self.metrics["listeners_notified"] += 1
             except Exception as e:
-                logger.error(f"Error notifying listener: {e}")
+                logger.error("Error notifying listener: %(e)s")
 
     def add_listener(self, listener: callable):
         """添加市值更新监听器"""
         self.listeners.append(listener)
-        logger.info(f"✅ Listener added: {listener.__name__}")
+        logger.info("✅ Listener added: {listener.__name__")
 
     def remove_listener(self, listener: callable):
         """移除市值更新监听器"""

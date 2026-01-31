@@ -5,7 +5,8 @@ Local Event Bus Implementation
 
 import logging
 from collections import defaultdict
-from typing import Callable, Type, List, Dict
+from typing import Callable, Dict, List, Type
+
 from src.domain.shared.event import DomainEvent
 from src.domain.shared.event_bus import IEventBus
 
@@ -23,7 +24,7 @@ class LocalEventBus(IEventBus):
     def publish(self, event: DomainEvent):
         """发布事件"""
         event_name = event.event_name()
-        logger.debug(f"Publishing event: {event_name}")
+        logger.debug("Publishing event: %(event_name)s")
 
         # 匹配具体的类名处理器
         handlers = list(self._handlers[event_name])
@@ -37,14 +38,14 @@ class LocalEventBus(IEventBus):
                 handler(event)
             except Exception as e:
                 handler_name = getattr(handler, "__name__", str(handler))
-                logger.error(f"Error handling event {event_name} by {handler_name}: {e}")
+                logger.error("Error handling event %(event_name)s by %(handler_name)s: %(e)s")
 
     def subscribe(self, event_type: Type[DomainEvent], handler: Callable):
         """订阅事件"""
         event_name = event_type.__name__
         self._handlers[event_name].append(handler)
         handler_name = getattr(handler, "__name__", str(handler))
-        logger.debug(f"Subscribed {handler_name} to {event_name}")
+        logger.debug("Subscribed %(handler_name)s to %(event_name)s")
 
     def clear_handlers(self):
         """清除所有处理器 (主要用于测试)"""

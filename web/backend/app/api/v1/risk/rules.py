@@ -12,12 +12,13 @@ Version: 3.1.0
 Date: 2026-01-10
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, List
-from datetime import datetime
-import structlog
-import sys
 import os
+import sys
+from datetime import datetime
+from typing import Any, Dict, List
+
+import structlog
+from fastapi import APIRouter, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -27,9 +28,9 @@ if project_root not in sys.path:
 
 try:
     from src.governance.risk_management.services.alert_rule_engine import (
-        get_alert_rule_engine,
         AlertContext,
         AlertRule,
+        get_alert_rule_engine,
     )
 
     ENHANCED_RISK_FEATURES_AVAILABLE = True
@@ -78,7 +79,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"评估告警规则失败: {e}")
+        logger.error("评估告警规则失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"评估告警规则失败: {str(e)}")
 
 
@@ -111,7 +112,7 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"添加告警规则失败: {e}")
+        logger.error("添加告警规则失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"添加告警规则失败: {str(e)}")
 
 
@@ -134,7 +135,7 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"移除告警规则失败: {e}")
+        logger.error("移除告警规则失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"移除告警规则失败: {str(e)}")
 
 
@@ -155,7 +156,7 @@ async def get_rule_statistics() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取规则统计失败: {e}")
+        logger.error("获取规则统计失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取规则统计失败: {str(e)}")
 
 
@@ -179,5 +180,5 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取实时风险指标失败 {symbol}: {e}")
+        logger.error("获取实时风险指标失败 %(symbol)s: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取实时风险指标失败: {str(e)}")

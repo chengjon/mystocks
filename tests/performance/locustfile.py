@@ -3,7 +3,7 @@ Locust Performance Test Configuration
 For API load testing and performance benchmarking
 """
 
-from locust import HttpUser, task, between, events
+from locust import HttpUser, between, events, task
 from locust.runners import MasterRunner
 
 

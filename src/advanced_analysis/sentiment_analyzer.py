@@ -10,21 +10,19 @@ This module provides comprehensive sentiment analysis including:
 - Multi-source sentiment aggregation
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
-import re
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+import numpy as np
+import pandas as pd
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
 
 # GPU acceleration support
 try:
-    import cudf
-    import cuml
+    pass
 
     GPU_AVAILABLE = True
 except ImportError:

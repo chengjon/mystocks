@@ -7,10 +7,10 @@
 """
 
 from .base_tdx_adapter import BaseTdxAdapter, tdx_retry
+from .config import TdxConfigManager, get_tdx_config, get_tdx_path, get_tdx_server_list
 from .kline_data_service import KlineDataService
 from .realtime_service import RealtimeService
 from .tdx_data_source import TdxDataSource
-from .config import TdxConfigManager, get_tdx_config, get_tdx_server_list, get_tdx_path
 
 # 板块数据支持
 try:
@@ -43,14 +43,17 @@ __author__ = "MyStocks Project"
 # 模块级别的便捷函数
 def create_tdx_data_source():
     """创建TDX数据源实例的便捷函数"""
+    # pylint: disable=abstract-class-instantiated
     return TdxDataSource()
 
 
 def create_kline_service():
     """创建K线数据服务实例的便捷函数"""
+    # pylint: disable=abstract-class-instantiated
     return KlineDataService()
 
 
 def create_realtime_service():
     """创建实时数据服务实例的便捷函数"""
+    # pylint: disable=abstract-class-instantiated
     return RealtimeService()

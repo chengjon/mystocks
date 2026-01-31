@@ -5,12 +5,13 @@ Validates OpenAPI/Swagger specifications and extracts test cases.
 """
 
 import json
-import yaml
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 logger = logging.getLogger(__name__)
 

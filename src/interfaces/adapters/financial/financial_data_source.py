@@ -257,7 +257,7 @@ def validate_data_integrity(self, data: Dict) -> bool:
 
 def _validate_symbol(self, symbol: str) -> bool:
     """验证股票代码格式"""
-    return symbol_utils.is_valid_symbol(symbol)
+    return symbol_utils.is_valid_stock_code(symbol)
 
 
 def get_data_source_status(self) -> Dict:

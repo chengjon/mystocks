@@ -19,9 +19,9 @@ def test_basic_connection_pool_functionality():
 
     try:
         from src.data_sources.real.connection_pool import (
-            PostgreSQLConnectionPool,
-            PoolConfig,
             ConnectionMetrics,
+            PoolConfig,
+            PostgreSQLConnectionPool,
         )
 
         # 测试配置类

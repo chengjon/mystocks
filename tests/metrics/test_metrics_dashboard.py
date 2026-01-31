@@ -8,15 +8,16 @@ MyStocks 测试质量指标仪表盘
 
 import asyncio
 import json
-import time
 import statistics
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Union
+import time
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union
+
 import numpy as np
 
-from .test_quality_metrics import TestQualityMetrics, TestSuiteMetrics, TestResult
+from .test_quality_metrics import TestQualityMetrics, TestResult, TestSuiteMetrics
 
 
 class AlertLevel(Enum):

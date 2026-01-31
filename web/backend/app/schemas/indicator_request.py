@@ -3,10 +3,11 @@ Pydantic Request Schemas for Indicator API
 定义指标计算API的请求数据模型
 """
 
-from pydantic import BaseModel, Field, validator
-from typing import List, Dict, Any, Optional
-from datetime import date
 import re
+from datetime import date
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, validator
 
 
 class IndicatorSpec(BaseModel):

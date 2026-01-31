@@ -21,33 +21,32 @@ from .core.config import settings
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
 
-# 导入Socket.IO服务器管理器
-from .core.socketio_manager import get_socketio_manager
-
-# 导入统一响应格式中间件
-from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
-
 # 导入全局异常处理器 (增强版 - UnifiedResponse格式)
 from .core.global_exception_handlers import register_global_exception_handlers
 
-# 导入OpenAPI配置
-from .openapi_config import get_openapi_config
-
 # 导入响应模型，用于全局异常处理
 from .core.responses import (
-    ErrorCodes,
-    ResponseMessages,
     BusinessCode,
+    ErrorCodes,
     ErrorDetail,
+    ResponseMessages,
     UnifiedResponse,
     create_health_response,
     create_success_response,
     create_unified_success_response,
 )
 
+# 导入Socket.IO服务器管理器
+from .core.socketio_manager import get_socketio_manager
+
 # 导入输入验证中间件
 from .core.validation import request_middleware
 
+# 导入统一响应格式中间件
+from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+
+# 导入OpenAPI配置
+from .openapi_config import get_openapi_config
 
 logger = structlog.get_logger()
 
@@ -254,7 +253,7 @@ def create_app() -> FastAPI:
 
                 # 验证CSRF token
                 if not csrf_manager.validate_token(csrf_token):
-                    logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                    logger.warning("❌ Invalid CSRF token for {request.method} {request.url.path}"")
                     request_id = getattr(request.state, "request_id", None)
                     unified_response = UnifiedResponse(
                         success=False,

@@ -5,17 +5,18 @@ RESTful API endpoints for managing data sources,
 including CRUD operations and health monitoring.
 """
 
-from datetime import datetime
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, Field
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 
 from src.core.datasource import (
-    DataSourceRegistry,
     DataSourceConfig,
-    DataSourceType,
     DataSourceHealthMonitor,
+    DataSourceRegistry,
+    DataSourceType,
     HealthStatus,
 )
 
@@ -100,8 +101,8 @@ async def get_registry() -> DataSourceRegistry:
 
 async def get_monitor() -> DataSourceHealthMonitor:
     """Dependency to get health monitor"""
-    from src.core.datasource.registry import DataSourceRegistry
     from src.core.datasource.health import DataSourceHealthMonitor
+    from src.core.datasource.registry import DataSourceRegistry
 
     registry = DataSourceRegistry()
     await registry.connect()

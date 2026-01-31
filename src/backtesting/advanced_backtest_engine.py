@@ -13,15 +13,16 @@ Phase 5: 高级分析功能
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+import multiprocessing
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from concurrent.futures import ProcessPoolExecutor, as_completed
-import multiprocessing
 
-from src.ml_strategy.backtest.backtest_engine import BacktestEngine, BacktestConfig
+from src.ml_strategy.backtest.backtest_engine import BacktestConfig, BacktestEngine
 from src.ml_strategy.backtest.performance_metrics import PerformanceMetrics
 from src.ml_strategy.backtest.risk_metrics import RiskMetrics
 
@@ -101,7 +102,7 @@ def run_analysis(self, price_data: pd.DataFrame, signals_func: callable, **kwarg
     # 执行逐窗口回测
     window_results = []
     for i, (train_data, test_data) in enumerate(windows):
-        self.logger.info(f"执行窗口 {i + 1}/{len(windows)}")
+        self.logger.info("执行窗口 {i + 1}/%s")
 
         # 生成测试信号
         test_signals = signals_func(test_data, **kwargs)
@@ -139,12 +140,12 @@ def _validate_data(self, price_data: pd.DataFrame) -> bool:
     """验证价格数据"""
     required_columns = ["open", "high", "low", "close", "volume"]
     if not all(col in price_data.columns for col in required_columns):
-        self.logger.error(f"缺少必需列: {required_columns}")
+        self.logger.error("缺少必需列: %(required_columns)s")
         return False
 
     min_required_periods = self.config.initial_train_window + self.config.test_window
     if len(price_data) < min_required_periods:
-        self.logger.error(f"数据长度不足: 需要至少{min_required_periods}个周期")
+        self.logger.error("数据长度不足: 需要至少%(min_required_periods)s个周期")
         return False
 
     return True
@@ -177,7 +178,7 @@ def _generate_analysis_windows(self, price_data: pd.DataFrame) -> List[Tuple[pd.
 
         start_idx += self.config.step_size
 
-    self.logger.info(f"生成了 {len(windows)} 个分析窗口")
+    self.logger.info("生成了 {len(windows)} 个分析窗口")
     return windows
 
 
@@ -286,7 +287,7 @@ def run_simulation(self, returns: pd.Series, simulation_func: callable, **kwargs
     返回：
         dict: 模拟结果
     """
-    self.logger.info(f"开始Monte Carlo模拟: {self.config.num_simulations} 次")
+    self.logger.info("开始Monte Carlo模拟: {self.config.num_simulations} 次")
 
     # 数据验证
     if len(returns) < 30:
@@ -327,7 +328,7 @@ def _run_parallel_simulations(self, returns: pd.Series, simulation_func: callabl
                 result = future.result()
                 results.append(result)
             except Exception as exc:
-                self.logger.error(f"模拟 {sim_id} 失败: {exc}")
+                self.logger.error("模拟 %(sim_id)s 失败: %(exc)s")
                 results.append({"simulation_id": sim_id, "error": str(exc)})
 
     return sorted(results, key=lambda x: x.get("simulation_id", 0))
@@ -342,7 +343,7 @@ def _run_sequential_simulations(self, returns: pd.Series, simulation_func: calla
             result = self._single_simulation(returns, simulation_func, sim_id, **kwargs)
             results.append(result)
         except Exception as exc:
-            self.logger.error(f"模拟 {sim_id} 失败: {exc}")
+            self.logger.error("模拟 %(sim_id)s 失败: %(exc)s")
             results.append({"simulation_id": sim_id, "error": str(exc)})
 
     return results
@@ -558,7 +559,7 @@ def run_advanced_backtest(
         results["comprehensive_report"] = comprehensive_report
 
     except Exception as e:
-        self.logger.error(f"高级回测分析失败: {e}")
+        self.logger.error("高级回测分析失败: %(e)s")
         results["error"] = str(e)
 
     self.logger.info("高级回测分析完成")

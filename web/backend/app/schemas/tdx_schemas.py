@@ -2,8 +2,9 @@
 TDX数据API的Pydantic模型定义
 """
 
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List
 
 
 class RealTimeQuoteResponse(BaseModel):

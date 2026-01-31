@@ -5,8 +5,8 @@
 """
 
 import sys
+from datetime import date, datetime
 from pathlib import Path
-from datetime import datetime, date
 
 # 添加项目根路径
 project_root = Path.cwd()
@@ -72,10 +72,10 @@ def test_result_set_mapper():
 
     try:
         from src.data_sources.real.data_mapper import (
+            CommonTransformers,
             FieldMapping,
             FieldType,
             ResultSetMapper,
-            CommonTransformers,
         )
 
         # 创建字段映射配置
@@ -177,10 +177,10 @@ def test_business_mappers():
 
     try:
         from src.data_sources.real.business_mappers import (
-            WatchlistMapper,
-            StrategyConfigMapper,
-            RiskAlertMapper,
             STOCK_BASIC_INFO_MAPPER,
+            RiskAlertMapper,
+            StrategyConfigMapper,
+            WatchlistMapper,
         )
 
         # 测试自选股映射器
@@ -304,11 +304,11 @@ def test_mapper_customization():
 
     try:
         from src.data_sources.real.data_mapper import (
-            FieldMapping,
-            FieldType,
             BaseDataMapper,
             CommonTransformers,
             CommonValidators,
+            FieldMapping,
+            FieldType,
         )
 
         # 创建自定义映射器

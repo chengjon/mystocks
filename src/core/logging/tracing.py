@@ -10,12 +10,12 @@ from contextvars import ContextVar
 from typing import Any, Dict, Optional
 
 from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
     ConsoleSpanExporter,
 )
-from opentelemetry.sdk.resources import Resource
 from opentelemetry.semconv.resource import ResourceAttributes
 
 logger = logging.getLogger(__name__)
@@ -88,7 +88,6 @@ class TracingMiddleware:
 
     async def app(self, scope, receive, send):
         """ASGI app"""
-        pass
 
 
 class TracingClient:

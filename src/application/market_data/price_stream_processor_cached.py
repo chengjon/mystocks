@@ -9,17 +9,16 @@ Date: 2026-01-09
 Phase: 12.5 - Performance Optimization Integration
 """
 
-import asyncio
 import logging
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Dict
 
 from src.application.market_data.price_stream_processor import PriceStreamProcessor
-from src.services.performance_optimizer import LRUCache
-from src.domain.market_data.streaming import IPriceStreamAdapter, PriceUpdate
-from src.domain.shared.event_bus import IEventBus
 from src.domain.portfolio.service import PortfolioValuationService
+from src.domain.shared.event_bus import IEventBus
+from src.domain.market_data.streaming.price_changed_event import PriceChangedEvent
+from src.services.performance_optimizer import LRUCache
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +69,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
         self.enable_cache = enable_cache
         if enable_cache:
             self.portfolio_cache = LRUCache(max_size=cache_max_size, ttl=cache_ttl)
-            logger.info(f"✅ Cache enabled: max_size={cache_max_size}, ttl={cache_ttl}s")
+            logger.info("✅ Cache enabled: max_size=%(cache_max_size)s, ttl=%(cache_ttl)ss")
         else:
             self.portfolio_cache = None
             logger.info("⚠️ Cache disabled")
@@ -113,10 +112,10 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
 
                 self.metrics["cache_stores"] += 1
 
-            logger.info(f"✅ Cache warmed up: {len(portfolios)} portfolios loaded")
+            logger.info("✅ Cache warmed up: {len(portfolios)} portfolios loaded")
 
         except Exception as e:
-            logger.error(f"Failed to warm up cache: {e}")
+            logger.error("Failed to warm up cache: %(e)s")
 
     async def _flush_updates(self) -> None:
         """刷新更新队列（带缓存优化版本）"""
@@ -128,7 +127,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
         self._update_queue.clear()
         self._last_flush = datetime.now()
 
-        logger.debug(f"🔄 Flushing {len(updates)} price updates...")
+        logger.debug("🔄 Flushing {len(updates)} price updates...")
 
         # 按投资组合分组
         portfolio_updates: Dict[str, Dict[str, float]] = defaultdict(dict)
@@ -151,7 +150,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                     self.event_bus.publish(event)
                     self.metrics["events_published"] += 1
                 except Exception as e:
-                    logger.error(f"Failed to publish PriceChangedEvent: {e}")
+                    logger.error("Failed to publish PriceChangedEvent: %(e)s")
 
             # 更新价格缓存
             self._price_cache.update(all_prices)
@@ -177,7 +176,7 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                         portfolio = self.valuation_service.portfolio_repo.find_by_id(portfolio_id)
 
                     if not portfolio:
-                        logger.warning(f"⚠️ Portfolio not found: {portfolio_id}")
+                        logger.warning("⚠️ Portfolio not found: %(portfolio_id)s")
                         continue
 
                     # 如果有分布式锁，先获取锁
@@ -215,19 +214,19 @@ class CachedPriceStreamProcessor(PriceStreamProcessor):
                                 )
                                 self.metrics["portfolio_revaluations"] += 1
                             else:
-                                logger.warning(f"⚠️ Failed to revaluate portfolio {portfolio_id}")
+                                logger.warning("⚠️ Failed to revaluate portfolio %(portfolio_id)s")
 
                         finally:
                             if identifier and self._lock_manager:
                                 self._lock_manager.release(lock_name, identifier)
                     else:
-                        logger.warning(f"⚠️ Could not acquire lock for portfolio {portfolio_id}")
+                        logger.warning("⚠️ Could not acquire lock for portfolio %(portfolio_id)s")
 
                 except Exception as e:
-                    logger.error(f"Failed to revaluate portfolio {portfolio_id}: {e}")
+                    logger.error("Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
 
         self.metrics["batches_processed"] += 1
-        logger.debug(f"✅ Flushed {len(updates)} price updates")
+        logger.debug("✅ Flushed {len(updates)} price updates")
 
     def get_metrics(self) -> dict:
         """获取处理器指标（包含缓存指标）"""

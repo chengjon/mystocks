@@ -13,12 +13,13 @@ Prometheus指标定义和收集
 """
 
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from prometheus_client import (
+    CollectorRegistry,
     Counter,
     Gauge,
     Histogram,
-    CollectorRegistry,
 )
 
 logger = logging.getLogger(__name__)

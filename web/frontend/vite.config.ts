@@ -6,6 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import commonjs from 'vite-plugin-commonjs'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // 查找可用端口的函数
 async function findAvailablePort(startPort: number, endPort: number): Promise<number> {
@@ -41,7 +42,8 @@ export default defineConfig(async () => {
   let availablePort = 3000; // 默认端口
 
   try {
-    availablePort = await findAvailablePort(3001, 3009);
+    // 端口分配规则: 前端使用 3000-3009 范围
+    availablePort = await findAvailablePort(3000, 3009);
     console.log(`🚀 Using available port: ${availablePort}`);
   } catch (error) {
     console.error(`❌ ${(error as Error).message}`);
@@ -49,6 +51,10 @@ export default defineConfig(async () => {
   }
 
   return {
+    define: {
+      'import.meta.env.VITE_USE_MOCK_DATA': JSON.stringify(process.env.VITE_USE_MOCK_DATA === 'true'),
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || 'http://localhost:8000/api')
+    },
   plugins: [
       vue(),
       // CJS转ESM：解决dayjs等CJS模块兼容问题
@@ -71,6 +77,82 @@ export default defineConfig(async () => {
         gzipSize: true,
         brotliSize: true,
         open: false
+      }),
+
+      // PWA插件 - 生成Service Worker和Web App Manifest
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+        manifest: {
+          name: 'MyStocks - Professional Quantitative Trading Platform',
+          short_name: 'MyStocks',
+          description: 'Advanced quantitative trading platform with real-time market data, technical analysis, and automated trading strategies',
+          theme_color: '#D4AF37',
+          background_color: '#0A0A0A',
+          display: 'standalone',
+          orientation: 'any',
+          scope: '/',
+          start_url: '/',
+          icons: [
+            {
+              src: 'icons/icon-192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'any maskable'
+            },
+            {
+              src: 'icons/icon-512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any maskable'
+            }
+          ]
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                },
+                cacheKeyWillBeUsed: async ({ request }) => {
+                  return `${request.url}?${Date.now()}`
+                }
+              }
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-static-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                }
+              }
+            },
+            {
+              urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 5 // 5 minutes
+                },
+                networkTimeoutSeconds: 10
+              }
+            }
+          ]
+        },
+        devOptions: {
+          enabled: false // Disable PWA in development
+        }
       })
     ],
     resolve: {
@@ -105,15 +187,15 @@ export default defineConfig(async () => {
       // 代码分割优化 - 首屏体积↓60%
       rollupOptions: {
         output: {
-          // 手动分块策略 - Phase 1.3.1
+          // 手动分块策略 - 修复循环依赖问题
           manualChunks(id) {
-            // Vue核心库 + Element Plus (合并以避免循环依赖)
+            // 将Vue和Element Plus打包在一起，避免循环依赖
             if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') ||
                 id.includes('element-plus') || id.includes('@element-plus')) {
-              return 'vue-vendor'
+              return 'vue-framework'
             }
 
-            // ECharts图表库（按需引入） - Phase 1.3.2
+            // ECharts图表库（按需引入）
             if (id.includes('echarts')) {
               return 'echarts'
             }
@@ -128,7 +210,7 @@ export default defineConfig(async () => {
               return 'vue-grid-layout'
             }
 
-            // Node_modules包
+            // 其他node_modules包
             if (id.includes('node_modules')) {
               return 'vendor'
             }

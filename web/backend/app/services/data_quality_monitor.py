@@ -14,7 +14,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -159,7 +158,7 @@ class DataSourceQualityMetrics:
     def update_metric(self, metric_name: str, value: float) -> Optional[DataQualityAlert]:
         """更新指标并生成告警"""
         if metric_name not in self.metrics:
-            logger.warning(f"Unknown metric: {metric_name}")
+            logger.warning("Unknown metric: %(metric_name)s"")
             return None
 
         metric = self.metrics[metric_name]
@@ -253,17 +252,14 @@ class IDataQualityRule(ABC):
     @abstractmethod
     async def evaluate(self, data: Any, source: str) -> Dict[str, Any]:
         """评估数据质量"""
-        pass
 
     @abstractmethod
     def get_name(self) -> str:
         """获取规则名称"""
-        pass
 
     @abstractmethod
     def get_description(self) -> str:
         """获取规则描述"""
-        pass
 
 
 class SchemaValidationRule(IDataQualityRule):
@@ -503,7 +499,7 @@ class DataQualityMonitor:
                 total_rules += 1
 
             except Exception as e:
-                logger.error(f"Rule {rule.get_name()} evaluation failed: {e}")
+                logger.error("Rule {rule.get_name()} evaluation failed: %(e)s"")
                 rule_results.append(
                     {
                         "rule": rule.get_name(),
@@ -591,7 +587,7 @@ class DataQualityMonitor:
 
     async def _trigger_alert(self, alert: DataQualityAlert) -> None:
         """触发告警"""
-        logger.warning(f"Data quality alert triggered: {alert.message}")
+        logger.warning("Data quality alert triggered: {alert.message}"")
 
         # 通知所有注册的回调
         for callback in self.alert_callbacks:
@@ -601,7 +597,7 @@ class DataQualityMonitor:
                 else:
                     callback(alert)
             except Exception as e:
-                logger.error(f"Alert callback failed: {e}")
+                logger.error("Alert callback failed: %(e)s"")
 
     def add_alert_callback(self, callback: Callable[[DataQualityAlert], None]) -> None:
         """添加告警回调"""

@@ -4,9 +4,9 @@ Schemathesis API契约测试
 """
 
 import pytest
-import schemathesis
-from httpx import AsyncClient
+schemathesis = pytest.importorskip("schemathesis")
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
 from web.backend.app.main import app
 
@@ -217,8 +217,8 @@ class TestAPIContractEdgeCases:
 
     def test_concurrent_requests_simulation(self, client):
         """模拟并发请求的一致性"""
-        import threading
         import queue
+        import threading
 
         results = queue.Queue()
         errors = []

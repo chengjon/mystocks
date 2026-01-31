@@ -8,10 +8,10 @@ import asyncio
 import json
 import re
 import time
-from datetime import datetime
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin, urlparse
 
 import httpx
@@ -20,6 +20,7 @@ import httpx
 class ScannerType(Enum):
     """扫描器类型枚举"""
 
+    AUTO_DETECT = "auto_detect"
     SWAGGER_UI = "swagger_ui"
     OPENAPI_JSON = "openapi_json"
     OPENAPI_YAML = "openapi_yaml"

@@ -9,12 +9,13 @@ API契约测试 - 数据同步验证系统
 4. 契约一致性保障
 """
 
-import pytest
-import requests
-from typing import Dict, Any, List, Optional
+import json
 from dataclasses import dataclass
 from datetime import datetime
-import json
+from typing import Any, Dict, List, Optional
+
+import pytest
+import requests
 import yaml
 
 from src.api.types.common import APIResponse

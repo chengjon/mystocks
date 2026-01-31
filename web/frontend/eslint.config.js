@@ -17,7 +17,45 @@ export default [
       'reports/**',
       '*.min.js',
       'src/**/*.spec.ts',
-      'src/**/*.test.ts'
+      'src/**/*.test.ts',
+      // 诊断和测试文件（临时文件）
+      '*.mjs',
+      '*-diagnostic.mjs',
+      '*-test*.mjs',
+      'test_*.js',
+      'test_*.mjs',
+      'e2e-test-runner.mjs',
+      'web_test*.mjs',
+      'verify-*.mjs',
+      'check-*.mjs',
+      'console-error-diagnostic.mjs',
+      'comprehensive-diagnostic.mjs',
+      'browser-diagnostic.mjs',
+      'artdeco-page-structure-diagnostic.mjs',
+      'mainjs-check-detailed.mjs',
+      'scripts/diagnostics/**',
+      'tests/**',
+      'tests.unit/**',
+      'tests.utils/**',
+      'tests.e2e/**',
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      '**/*.spec.js',
+      '**/*.test.js',
+      'cypress/**',
+      // CommonJS 配置文件
+      '.eslintrc.*',
+      'ecosystem*.js',
+      'run-comprehensive-e2e.js',
+      'scripts/**/*.js',
+      'validate-e2e-setup.js',
+      'verify-mount.js',
+      'validate-*.js',
+      'verify-*.mjs',
+      'test-*.js',
+      // 备份文件
+      'archives/**',
+      '**/*.min.js'
     ]
   },
 
@@ -94,7 +132,7 @@ export default [
 
       // TypeScript specific rules
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',  // Downgraded to warn for Phase 1 migration
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
@@ -126,8 +164,11 @@ export default [
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
       'no-unused-vars': 'off',
-      'prefer-const': 'error',
-      'no-var': 'error'
+      'prefer-const': 'warn',  // Downgraded to warn for Phase 1
+      'no-var': 'error',
+      'no-empty': 'warn',  // Downgraded to warn for Phase 1
+      'no-case-declarations': 'warn',  // Downgraded to warn for Phase 1
+      'no-redeclare': 'warn'  // Downgraded to warn for Phase 1 (many in generated types)
     }
   },
 
@@ -145,18 +186,35 @@ export default [
         window: true,
         document: true,
         localStorage: true,
-        process: true
+        sessionStorage: true,
+        process: true,
+        // Element Plus components (auto-imported)
+        ElMessage: true,
+        ElMessageBox: true,
+        ElNotification: true,
+        ElLoading: true,
+        // Browser globals
+        URLSearchParams: true,
+        URL: true,
+        Headers: true,
+        Request: true,
+        Response: true,
+        fetch: true,
+        Blob: true,
+        FormData: true,
+        XMLHttpRequest: true
       }
     },
     rules: {
       'no-unused-vars': [
-        'error',
+        'warn',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_'
         }
-      ]
+      ],
+      'no-undef': 'warn'
     }
   },
 

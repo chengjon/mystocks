@@ -1,3 +1,4 @@
+# pylint: disable=import-error,no-name-in-module
 """
 # 功能：通达信(TDX)数据源适配器，提供实时行情和多周期K线数据
 # 作者：JohnC (ninjas@sina.com) & Claude
@@ -9,11 +10,6 @@
 # 版权：MyStocks Project © 2025
 """
 
-from src.utils.tdx_server_config import TdxServerConfig
-from src.utils.date_utils import normalize_date
-from src.utils.column_mapper import ColumnMapper
-from src.interfaces.data_source import IDataSource
-from pytdx.hq import TdxHq_API
 import logging
 import os
 import sys
@@ -23,6 +19,12 @@ from functools import wraps
 from typing import Dict, List, Optional
 
 import pandas as pd
+from pytdx.hq import TdxHq_API
+
+from src.interfaces.data_source import IDataSource
+from src.utils.column_mapper import ColumnMapper
+from src.utils.date_utils import normalize_date
+from src.utils.tdx_server_config import TdxServerConfig
 
 # 添加temp目录到路径以导入本地pytdx
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "temp"))
@@ -698,10 +700,10 @@ def get_block_data(self, block_type: str = "all", result_type: str = "flat") -> 
         >>> df_all = tdx.get_block_data(block_type='all')
     """
     try:
-        from src.data_sources.tdx_block_reader import TdxBlockReader
-
         # 使用环境变量TDX_DATA_PATH
         import os
+
+        from src.data_sources.tdx_block_reader import TdxBlockReader
 
         tdx_path = os.getenv("TDX_DATA_PATH")
         if not tdx_path:
@@ -754,9 +756,9 @@ def get_stock_blocks(self, stock_code: str) -> List[Dict[str, str]]:
         ...     print(f"{block['blockname']} ({block['block_type']})")
     """
     try:
-        from src.data_sources.tdx_block_reader import TdxBlockReader
-
         import os
+
+        from src.data_sources.tdx_block_reader import TdxBlockReader
 
         tdx_path = os.getenv("TDX_DATA_PATH")
         if not tdx_path:
@@ -788,9 +790,9 @@ def get_block_stocks(self, block_name: str) -> List[str]:
         >>> print(stocks[:10])  # 前10只股票
     """
     try:
-        from src.data_sources.tdx_block_reader import TdxBlockReader
-
         import os
+
+        from src.data_sources.tdx_block_reader import TdxBlockReader
 
         tdx_path = os.getenv("TDX_DATA_PATH")
         if not tdx_path:

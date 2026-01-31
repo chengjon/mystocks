@@ -13,6 +13,7 @@ import type {
   BacktestResultVM,
   StrategyListResponseVM as StrategyListResponse,
 } from '../types/extensions';
+import type { BacktestRequest } from '../types/strategy';
 import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock';
 
 export class StrategyAdapter {
@@ -27,14 +28,14 @@ export class StrategyAdapter {
   ): Strategy[] {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[StrategyAdapter] API failed, using mock data:', apiResponse.message);
-      return mockStrategyList.strategies;
+      return mockStrategyList.strategies as any;
     }
 
     try {
       return (apiResponse.data.strategies || []).map((s: any) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
-      return mockStrategyList.strategies;
+      return mockStrategyList.strategies as any;
     }
   }
 
@@ -51,8 +52,8 @@ export class StrategyAdapter {
       description: apiStrategy.description || '',
       type: this.translateType(apiStrategy.type),
       status: this.translateStatus(apiStrategy.status),
-      createdAt: this.parseDate(apiStrategy.created_at),
-      updatedAt: this.parseDate(apiStrategy.updated_at),
+      created_at: this.parseDateToString(apiStrategy.created_at),
+      updated_at: this.parseDateToString(apiStrategy.updated_at),
       parameters: apiStrategy.parameters || {},
       performance: apiStrategy.performance
         ? this.adaptPerformance(apiStrategy.performance)
@@ -68,13 +69,20 @@ export class StrategyAdapter {
    */
   static adaptPerformance(apiPerf: any): StrategyPerformance {
     return {
-      strategy_id: apiPerf.strategy_id || '',
       total_return: apiPerf.total_return || apiPerf.totalReturn || 0,
-      annual_return: apiPerf.annual_return || apiPerf.annualized_return || apiPerf.annualReturn || 0,
+      annualized_return: apiPerf.annualized_return || apiPerf.annual_return || apiPerf.annualReturn || 0,
       sharpe_ratio: apiPerf.sharpe_ratio || apiPerf.sharpeRatio || 0,
+      sortino_ratio: apiPerf.sortino_ratio || apiPerf.sortinoRatio || 0,
       max_drawdown: apiPerf.max_drawdown || apiPerf.maxDrawdown || 0,
+      volatility: apiPerf.volatility || 0,
+      value_at_risk: apiPerf.value_at_risk || apiPerf.valueAtRisk || 0,
+      total_trades: apiPerf.total_trades || apiPerf.totalTrades || 0,
       win_rate: apiPerf.win_rate || apiPerf.winRate || 0,
       profit_factor: apiPerf.profit_factor || apiPerf.profitLossRatio || 0,
+      average_win: apiPerf.average_win || apiPerf.averageWin || 0,
+      average_loss: apiPerf.average_loss || apiPerf.averageLoss || 0,
+      calmar_ratio: apiPerf.calmar_ratio || apiPerf.calmarRatio || 0,
+      information_ratio: apiPerf.information_ratio || apiPerf.informationRatio || 0,
     };
   }
 
@@ -95,14 +103,19 @@ export class StrategyAdapter {
     try {
       const task = apiResponse.data as any; // Support both snake_case and camelCase
       return {
-        id: task.task_id || task.id,
-        strategy_id: task.strategy_id || task.strategyId,
+        strategy_id: task.strategy_id || task.strategyId || task.task_id || task.id || '',
+        symbol: task.symbol || '',
+        start_date: task.start_date || task.startDate || '',
+        end_date: task.end_date || task.endDate || '',
+        initial_capital: task.initial_capital || task.initialCapital || 0,
+        parameters: task.parameters || {},
+        // Additional fields not in the original interface but used by the UI
         status: this.translateBacktestStatus(task.status),
         created_at: this.parseDateToString(task.created_at || task.createdAt),
         progress: task.progress || 0,
         startTime: this.parseDateToString(task.started_at || task.startTime),
         result: task.result ? this.adaptBacktestResult(task.result) : undefined,
-      };
+      } as BacktestTask;
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt backtest task:', error);
       return null;
@@ -116,11 +129,18 @@ export class StrategyAdapter {
    * @returns Adapted BacktestResultVM object
    */
   static adaptBacktestResult(apiResult: any): BacktestResultVM {
+    // BacktestResultVM is aliased to BacktestRequestVM, so return a valid BacktestRequestVM object
+    // plus additional fields that the UI might need
     return {
-      task_id: apiResult.task_id || '',
-      strategy_id: apiResult.strategy_id || '',
+      strategy_id: apiResult.strategy_id || apiResult.task_id || '',
+      symbol: apiResult.symbol || '',
+      start_date: apiResult.start_date || '',
+      end_date: apiResult.end_date || '',
+      initial_capital: apiResult.initial_capital || 0,
+      parameters: apiResult.parameters || {},
+      // Additional fields for UI display (not in the original interface)
       status: apiResult.status || 'completed',
-      performance: apiResult.summary || {},
+      performance: apiResult.summary || apiResult.performance || {},
       trades: (apiResult.trades || []).map((t: any) => ({
         symbol: t.symbol || '',
         entry_date: t.entry_date || t.entryDate || '',
@@ -133,7 +153,7 @@ export class StrategyAdapter {
       equity_curve: apiResult.equity_curve || apiResult.equityCurve || [],
       created_at: apiResult.created_at || new Date().toISOString(),
       completed_at: apiResult.completed_at || new Date().toISOString(),
-    };
+    } as BacktestResultVM;
   }
 
   /**
@@ -273,7 +293,7 @@ export class StrategyAdapter {
    * @param params - Backtest parameters to validate
    * @returns True if valid, false otherwise
    */
-  static validateBacktestParams(params: any): params is import('../types/strategy').BacktestParams {
+  static validateBacktestParams(params: any): params is BacktestRequest {
     if (!params.startDate || !params.endDate) {
       console.error('[StrategyAdapter] Missing required date parameters');
       return false;

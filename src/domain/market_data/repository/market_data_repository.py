@@ -5,6 +5,7 @@ Market Data Repository Interface (ACL)
 
 from abc import ABC, abstractmethod
 from typing import List
+
 from ..value_objects import Bar, Quote
 
 
@@ -21,14 +22,11 @@ class IMarketDataRepository(ABC):
     @abstractmethod
     def get_history_kline(self, symbol: str, start_date: str, end_date: str) -> List[Bar]:
         """获取历史K线"""
-        pass
 
     @abstractmethod
     def get_realtime_quote(self, symbols: List[str]) -> List[Quote]:
         """获取实时行情"""
-        pass
 
     @abstractmethod
     def get_latest_price(self, symbol: str) -> float:
         """获取最新价格（便捷方法）"""
-        pass

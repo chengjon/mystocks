@@ -4,9 +4,9 @@ Risk Manager
 风险管理器，负责仓位控制、止损止盈检查等风险管理功能
 """
 
-from typing import Optional, Dict, Any
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
+from typing import Any, Dict, Optional
 
 from app.backtest.events import OrderEvent
 from app.backtest.portfolio_manager import PortfolioManager, Position

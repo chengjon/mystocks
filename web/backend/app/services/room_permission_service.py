@@ -13,9 +13,10 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, List, Optional, Set, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set
+
 import structlog
 
 try:

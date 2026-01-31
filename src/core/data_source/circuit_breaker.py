@@ -4,11 +4,11 @@
 实现线程安全的熔断器模式，保护系统免受级联故障影响。
 """
 
+import logging
 import threading
 import time
-import logging
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +23,6 @@ class CircuitState(Enum):
 
 class CircuitBreakerOpenError(Exception):
     """熔断器开启异常"""
-
-    pass
 
 
 class CircuitBreaker:
@@ -101,10 +99,12 @@ class CircuitBreaker:
         if not self._can_attempt():
             remaining_time = self._get_remaining_time()
             logger.warning(
-                f"CircuitBreaker '{self.name}' is OPEN, " f"rejecting call ({remaining_time:.1f}s remaining)"
+                f"CircuitBreaker '{self.name}' is OPEN, "
+                f"rejecting call ({remaining_time:.1f}s remaining)"
             )
             raise CircuitBreakerOpenError(
-                f"CircuitBreaker '{self.name}' is OPEN. " f"Retry after {remaining_time:.1f} seconds"
+                f"CircuitBreaker '{self.name}' is OPEN. "
+                f"Retry after {remaining_time:.1f} seconds"
             )
 
         # 执行函数调用
@@ -132,7 +132,10 @@ class CircuitBreaker:
             if self.state == CircuitState.OPEN:
                 if self._should_attempt_reset():
                     # 超时，进入 HALF_OPEN 状态
-                    logger.info(f"CircuitBreaker '{self.name}' timeout reached, " "transitioning to HALF_OPEN")
+                    logger.info(
+                        f"CircuitBreaker '{self.name}' timeout reached, "
+                        "transitioning to HALF_OPEN"
+                    )
                     self.state = CircuitState.HALF_OPEN
                     self.success_count = 0
                     return True
@@ -187,7 +190,10 @@ class CircuitBreaker:
 
                 # 如果连续成功次数达到阈值，回到 CLOSED 状态
                 if self.success_count >= 2:  # 连续 2 次成功
-                    logger.info(f"CircuitBreaker '{self.name}' recovered, " "transitioning to CLOSED")
+                    logger.info(
+                        f"CircuitBreaker '{self.name}' recovered, "
+                        "transitioning to CLOSED"
+                    )
                     self.state = CircuitState.CLOSED
                     self.failure_count = 0
                     self.success_count = 0
@@ -214,7 +220,8 @@ class CircuitBreaker:
             elif self.state == CircuitState.HALF_OPEN:
                 # HALF_OPEN 状态: 失败直接回到 OPEN 状态
                 logger.warning(
-                    f"CircuitBreaker '{self.name}' test call failed in " "HALF_OPEN state, transitioning back to OPEN"
+                    f"CircuitBreaker '{self.name}' test call failed in "
+                    "HALF_OPEN state, transitioning back to OPEN"
                 )
                 self.state = CircuitState.OPEN
                 self.opened_at = time.time()

@@ -7,16 +7,18 @@ PostgreSQL集成测试
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-import pandas as pd
 import numpy as np
-from src.data_access.postgresql_access import PostgreSQLDataAccess
+import pandas as pd
+import pytest
+
 from src.core.data_classification import DataClassification
 from src.core.unified_manager import MyStocksUnifiedManager
+from src.data_access.postgresql_access import PostgreSQLDataAccess
 
 print("\n" + "=" * 80)
 print("PostgreSQL集成测试")
@@ -32,7 +34,7 @@ try:
 except Exception as e:
     print(f"❌ PostgreSQL连接失败: {e}")
     print("⚠️  跳过PostgreSQL集成测试 (数据库未配置)\n")
-    sys.exit(0)
+    pytest.skip("PostgreSQL未配置，跳过集成测试", allow_module_level=True)
 
 # 测试2: 通过UnifiedManager保存日线数据
 print("📍 测试2: 日线K线数据路由测试")

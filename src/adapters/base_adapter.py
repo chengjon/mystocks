@@ -3,10 +3,11 @@
 提供通用的适配器功能和数据质量检查集成
 """
 
-import pandas as pd
-from typing import Dict, Any, Optional, List
-from abc import ABC
 import logging
+from abc import ABC
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 from src.core.data_quality_validator import DataQualityValidator
 

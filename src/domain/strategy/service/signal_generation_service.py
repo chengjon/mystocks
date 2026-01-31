@@ -6,20 +6,22 @@ Signal Generation Service
 """
 
 import time
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, List
+
 import pandas as pd
 
-from .indicator_calculator import IIndicatorCalculator
-from ..model.rule import Rule
-from ..model.signal import Signal
-from ..value_objects.strategy_id import StrategyId
 from src.monitoring.signal_metrics import (
     record_signal_generation,
     record_signal_latency,
     update_active_signals_count,
 )
-from src.monitoring.signal_recorder import get_signal_recorder, SignalRecord
+from src.monitoring.signal_recorder import get_signal_recorder
+
+from ..model.rule import Rule
+from ..model.signal import Signal
+from ..value_objects.strategy_id import StrategyId
+from .indicator_calculator import IIndicatorCalculator
 
 
 @dataclass
@@ -77,7 +79,9 @@ class SignalGenerationService:
 
         # 3. 记录指标
         latency_ms = (time.time() - start_time) * 1000
-        record_signal_latency(strategy_id=strategy_id.id, latency_seconds=latency, indicator_count=indicator_count)
+        record_signal_latency(
+            strategy_id=strategy_id.id, latency_seconds=latency_ms / 1000, indicator_count=indicator_count
+        )
 
         # 4. 记录到数据库（异步，不阻塞主流程）
         recorder = get_signal_recorder()

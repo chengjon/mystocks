@@ -60,7 +60,7 @@ class BaseFinancialAdapter(IDataSource, ABC):
 
     def _validate_symbol(self, symbol: str) -> bool:
         """验证股票代码格式"""
-        return symbol_utils.is_valid_symbol(symbol)
+        return symbol_utils.is_valid_stock_code(symbol)
 
     def _validate_date_range(self, start_date: str, end_date: str) -> bool:
         """验证日期范围"""

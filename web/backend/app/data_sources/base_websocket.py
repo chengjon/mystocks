@@ -14,9 +14,9 @@ WebSocket Adapter Interface - WebSocket适配器接口
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Callable, Protocol
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ class BaseWebSocketAdapter(ABC):
         self.connection_attempts = 0
         self.reconnect_task: Optional[asyncio.Task] = None
 
-        logger.info(f"✅ {self.__class__.__name__} initialized with {config.url}")
+        logger.info("✅ {self.__class__.__name__} initialized with {config.url}"")
 
     @abstractmethod
     async def connect(self) -> bool:
@@ -110,12 +110,10 @@ class BaseWebSocketAdapter(ABC):
         Returns:
             是否连接成功
         """
-        pass
 
     @abstractmethod
     async def disconnect(self) -> None:
         """断开WebSocket连接"""
-        pass
 
     @abstractmethod
     async def _send_subscription_message(self, symbols: List[str], action: str) -> bool:
@@ -129,7 +127,6 @@ class BaseWebSocketAdapter(ABC):
         Returns:
             是否发送成功
         """
-        pass
 
     async def subscribe(self, symbols: List[str]) -> bool:
         """
@@ -151,14 +148,14 @@ class BaseWebSocketAdapter(ABC):
             success = await self._send_subscription_message(symbols, "subscribe")
             if success:
                 self.subscribed_symbols.update(symbols)
-                logger.info(f"Subscribed to symbols: {symbols}")
+                logger.info("Subscribed to symbols: %(symbols)s"")
                 return True
             else:
-                logger.error(f"Failed to subscribe to symbols: {symbols}")
+                logger.error("Failed to subscribe to symbols: %(symbols)s"")
                 return False
 
         except Exception as e:
-            logger.error(f"Error subscribing to symbols {symbols}: {e}")
+            logger.error("Error subscribing to symbols %(symbols)s: %(e)s"")
             return False
 
     async def unsubscribe(self, symbols: List[str]) -> bool:
@@ -180,14 +177,14 @@ class BaseWebSocketAdapter(ABC):
             success = await self._send_subscription_message(symbols, "unsubscribe")
             if success:
                 self.subscribed_symbols.difference_update(symbols)
-                logger.info(f"Unsubscribed from symbols: {symbols}")
+                logger.info("Unsubscribed from symbols: %(symbols)s"")
                 return True
             else:
-                logger.error(f"Failed to unsubscribe from symbols: {symbols}")
+                logger.error("Failed to unsubscribe from symbols: %(symbols)s"")
                 return False
 
         except Exception as e:
-            logger.error(f"Error unsubscribing from symbols {symbols}: {e}")
+            logger.error("Error unsubscribing from symbols %(symbols)s: %(e)s"")
             return False
 
     def on_message(self, handler: Callable[[Dict[str, Any]], None]) -> None:
@@ -198,7 +195,7 @@ class BaseWebSocketAdapter(ABC):
             handler: 消息处理函数
         """
         self.message_handlers.append(handler)
-        logger.debug(f"Added message handler: {handler.__name__}")
+        logger.debug("Added message handler: {handler.__name__}"")
 
     async def _handle_message(self, message: Dict[str, Any]) -> None:
         """
@@ -216,10 +213,10 @@ class BaseWebSocketAdapter(ABC):
                 try:
                     await handler(message)
                 except Exception as e:
-                    logger.error(f"Error in message handler {handler.__name__}: {e}")
+                    logger.error("Error in message handler {handler.__name__}: %(e)s"")
 
         except Exception as e:
-            logger.error(f"Error handling message: {e}")
+            logger.error("Error handling message: %(e)s"")
 
     def is_connected(self) -> bool:
         """
@@ -242,13 +239,13 @@ class BaseWebSocketAdapter(ABC):
                 # 检查最后心跳时间
                 time_since_heartbeat = (datetime.now() - self.last_heartbeat).total_seconds()
                 if time_since_heartbeat > self.config.heartbeat_interval * 2:
-                    logger.warning(f"No heartbeat received for {time_since_heartbeat:.1f}s, attempting reconnect")
+                    logger.warning("No heartbeat received for {time_since_heartbeat:.1f}s, attempting reconnect"")
                     await self._reconnect()
 
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in heartbeat monitor: {e}")
+                logger.error("Error in heartbeat monitor: %(e)s"")
 
     async def _reconnect(self) -> None:
         """重连逻辑"""
@@ -261,7 +258,7 @@ class BaseWebSocketAdapter(ABC):
         """执行重连"""
         for attempt in range(self.config.reconnect_attempts):
             try:
-                logger.info(f"Reconnection attempt {attempt + 1}/{self.config.reconnect_attempts}")
+                logger.info("Reconnection attempt {attempt + 1}/{self.config.reconnect_attempts}"")
 
                 # 断开现有连接
                 if self.is_connected():
@@ -281,13 +278,13 @@ class BaseWebSocketAdapter(ABC):
                     return
 
             except Exception as e:
-                logger.error(f"Reconnection attempt {attempt + 1} failed: {e}")
+                logger.error("Reconnection attempt {attempt + 1} failed: %(e)s"")
 
         logger.error("All reconnection attempts failed")
 
     async def close(self) -> None:
         """关闭适配器"""
-        logger.info(f"Closing {self.__class__.__name__}...")
+        logger.info("Closing {self.__class__.__name__}..."")
 
         self.is_running = False
 
@@ -299,7 +296,7 @@ class BaseWebSocketAdapter(ABC):
         if self.is_connected():
             await self.disconnect()
 
-        logger.info(f"✅ {self.__class__.__name__} closed")
+        logger.info("✅ {self.__class__.__name__} closed"")
 
 
 class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
@@ -340,7 +337,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
             return True
 
         except Exception as e:
-            logger.error(f"Failed to connect to Sina Finance WebSocket: {e}")
+            logger.error("Failed to connect to Sina Finance WebSocket: %(e)s"")
             return False
 
     async def disconnect(self) -> None:
@@ -354,7 +351,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
                 logger.info("✅ Disconnected from Sina Finance WebSocket")
 
         except Exception as e:
-            logger.error(f"Error disconnecting from Sina Finance WebSocket: {e}")
+            logger.error("Error disconnecting from Sina Finance WebSocket: %(e)s"")
 
     async def _send_subscription_message(self, symbols: List[str], action: str) -> bool:
         """发送订阅消息"""
@@ -370,7 +367,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
             }
 
             # 发送消息（模拟）
-            logger.debug(f"Sending {action} message for symbols: {symbols}")
+            logger.debug("Sending %(action)s message for symbols: %(symbols)s"")
 
             # 这里应该实际发送WebSocket消息
             # await self.websocket.send(json.dumps(message))
@@ -378,5 +375,5 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
             return True
 
         except Exception as e:
-            logger.error(f"Error sending {action} message: {e}")
+            logger.error("Error sending %(action)s message: %(e)s"")
             return False

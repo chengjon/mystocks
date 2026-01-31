@@ -8,20 +8,21 @@ Sync Database Manager for Dual-Database Consistency
 3. 提供消息查询和统计接口
 """
 
-from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine, and_, or_, func, desc
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.exc import SQLAlchemyError
+from typing import Any, Dict, List, Optional
+
 import structlog
+from sqlalchemy import and_, create_engine, desc, func, or_
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import get_postgresql_connection_string
 from app.models.sync_message import (
     Base,
-    SyncMessage,
     MessageStatus,
-    SyncDirection,
     OperationType,
+    SyncDirection,
+    SyncMessage,
 )
 
 logger = structlog.get_logger()

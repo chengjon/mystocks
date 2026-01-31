@@ -18,9 +18,10 @@ Date: 2025-11-06
 """
 
 import uuid
-from typing import Dict, Optional, Any, List, Callable
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
+
 import structlog
 
 logger = structlog.get_logger()
@@ -299,7 +300,7 @@ class RoomManager:
             self.event_callbacks[event_type] = []
 
         self.event_callbacks[event_type].append(handler)
-        logger.info(f"✅ Registered room event handler: {event_type}")
+        logger.info("✅ Registered room event handler: %(event_type)s"")
 
     def _trigger_event(self, event_type: RoomEventType, data: Dict[str, Any]) -> None:
         """触发事件"""

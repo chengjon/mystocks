@@ -92,25 +92,28 @@ export function useMarket(options?: {
       }
 
       // Merge ETF data if available
-      if (etfRes.success && etfRes.data && etfRes.data.etfs) {
-          vm.topEtfs = etfRes.data.etfs.map(etf => ({
-              symbol: etf.symbol || '',
-              name: etf.name || '',
-              latestPrice: etf.latest_price || 0,
-              changePercent: etf.change_percent || 0,
-              volume: etf.volume || 0
-          }));
-      }
+      // TODO: MarketOverviewVM interface doesn't have topEtfs field
+      // if (etfRes.success && etfRes.data && etfRes.data.etfs) {
+      //     vm.topEtfs = etfRes.data.etfs.map(etf => ({
+      //         symbol: etf.symbol || '',
+      //         name: etf.name || '',
+      //         latestPrice: etf.latest_price || 0,
+      //         changePercent: etf.change_percent || 0,
+      //         volume: etf.volume || 0
+      //     }));
+      // }
 
       // Merge Chip Race data
-      if (chipRes.success) {
-          vm.chipRaces = MarketAdapter.adaptChipRace(chipRes);
-      }
+      // TODO: MarketOverviewVM interface doesn't have chipRaces field
+      // if (chipRes.success) {
+      //     vm.chipRaces = MarketAdapter.adaptChipRace(chipRes);
+      // }
 
       // Merge Long Hu Bang data
-      if (lhbRes.success) {
-          vm.longHuBang = MarketAdapter.adaptLongHuBang(lhbRes);
-      }
+      // TODO: MarketOverviewVM interface doesn't have longHuBang field
+      // if (lhbRes.success) {
+      //     vm.longHuBang = MarketAdapter.adaptLongHuBang(lhbRes);
+      // }
 
       // Cache the result
       if (enableCache) {

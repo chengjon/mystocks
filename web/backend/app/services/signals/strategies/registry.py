@@ -11,17 +11,18 @@ Strategy Registry - 策略注册表
 日期: 2026-01-14
 """
 
-import yaml
 import logging
-from typing import Dict, List, Any, Optional, Type
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Type
+
+import yaml
 
 from web.backend.app.services.signals.strategies.base_strategies import (
-    SignalStrategy,
-    RSIStrategy,
-    MACDStrategy,
     BollingerBandsStrategy,
+    MACDStrategy,
+    RSIStrategy,
+    SignalStrategy,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ class StrategyRegistry:
             strategy_class: 策略类
         """
         self.strategies[name] = strategy_class
-        logger.debug(f"Strategy registered: {name}")
+        logger.debug("Strategy registered: %(name)s"")
 
     def register_and_create(
         self,
@@ -119,9 +120,9 @@ class StrategyRegistry:
         try:
             instance = strategy_class(parameters)
             self.instances[name] = instance
-            logger.debug(f"Strategy instance created: {name}")
+            logger.debug("Strategy instance created: %(name)s"")
         except Exception as e:
-            logger.error(f"Failed to create strategy instance {name}: {e}")
+            logger.error("Failed to create strategy instance %(name)s: %(e)s"")
 
     def load_from_yaml(self, yaml_path: str) -> List[str]:
         """
@@ -154,11 +155,11 @@ class StrategyRegistry:
                     self.definitions[definition.name] = definition
                     loaded_strategies.append(definition.name)
 
-            logger.info(f"Loaded {len(loaded_strategies)} strategies from {yaml_path}")
+            logger.info("Loaded {len(loaded_strategies)} strategies from %(yaml_path)s"")
             return loaded_strategies
 
         except Exception as e:
-            logger.error(f"Error loading strategies from {yaml_path}: {e}")
+            logger.error("Error loading strategies from %(yaml_path)s: %(e)s"")
             return []
 
     def load_from_directory(self, directory_path: str) -> List[str]:
@@ -173,7 +174,7 @@ class StrategyRegistry:
         """
         directory = Path(directory_path)
         if not directory.exists():
-            logger.warning(f"Strategy directory not found: {directory_path}")
+            logger.warning("Strategy directory not found: %(directory_path)s"")
             return []
 
         all_strategies = []
@@ -186,7 +187,7 @@ class StrategyRegistry:
             strategies = self.load_from_yaml(str(yaml_file))
             all_strategies.extend(strategies)
 
-        logger.info(f"Loaded {len(all_strategies)} strategies from directory {directory_path}")
+        logger.info("Loaded {len(all_strategies)} strategies from directory %(directory_path)s"")
         return all_strategies
 
     def create_strategy(self, definition: StrategyDefinition) -> Optional[SignalStrategy]:
@@ -201,23 +202,23 @@ class StrategyRegistry:
         """
         try:
             if not definition.enabled:
-                logger.debug(f"Strategy {definition.name} is disabled")
+                logger.debug("Strategy {definition.name} is disabled"")
                 return None
 
             if definition.type not in self.strategies:
-                logger.error(f"Strategy type not found: {definition.type}")
+                logger.error("Strategy type not found: {definition.type}"")
                 return None
 
             strategy_class = self.strategies[definition.type]
             strategy_instance = strategy_class(definition.parameters)
 
             self.instances[definition.name] = strategy_instance
-            logger.info(f"Strategy instance created: {definition.name}")
+            logger.info("Strategy instance created: {definition.name}"")
 
             return strategy_instance
 
         except Exception as e:
-            logger.error(f"Error creating strategy {definition.name}: {e}")
+            logger.error("Error creating strategy {definition.name}: %(e)s"")
             return None
 
     def get_strategy(self, name: str) -> Optional[SignalStrategy]:
@@ -269,7 +270,7 @@ class StrategyRegistry:
         """
         if name in self.definitions:
             self.definitions[name].enabled = True
-            logger.info(f"Strategy enabled: {name}")
+            logger.info("Strategy enabled: %(name)s"")
             return True
         return False
 
@@ -285,7 +286,7 @@ class StrategyRegistry:
         """
         if name in self.definitions:
             self.definitions[name].enabled = False
-            logger.info(f"Strategy disabled: {name}")
+            logger.info("Strategy disabled: %(name)s"")
             return True
         return False
 
@@ -308,12 +309,12 @@ class StrategyRegistry:
                     definition.parameters.update(parameters)
                     new_instance = self.create_strategy(definition)
                     if new_instance:
-                        logger.info(f"Strategy parameters updated: {name}")
+                        logger.info("Strategy parameters updated: %(name)s"")
                         return True
             return False
 
         except Exception as e:
-            logger.error(f"Error updating strategy parameters: {e}")
+            logger.error("Error updating strategy parameters: %(e)s"")
             return False
 
     def get_strategy_stats(self) -> Dict[str, Any]:
@@ -363,10 +364,10 @@ class StrategyRegistry:
             with open(yaml_path, "w", encoding="utf-8") as f:
                 yaml.dump(strategies_config, f, default_flow_style=False, allow_unicode=True)
 
-            logger.info(f"Strategies saved to {yaml_path}")
+            logger.info("Strategies saved to %(yaml_path)s"")
 
         except Exception as e:
-            logger.error(f"Error saving strategies to {yaml_path}: {e}")
+            logger.error("Error saving strategies to %(yaml_path)s: %(e)s"")
 
     def clear_cache(self):
         """清空缓存的实例"""

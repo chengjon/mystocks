@@ -3,10 +3,11 @@
 遵循TDD原则：先写失败测试，再实现功能
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock
+
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

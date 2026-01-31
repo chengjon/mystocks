@@ -12,13 +12,13 @@
 """
 
 import cProfile
-import pstats
 import io
-import tracemalloc
+import pstats
 import time
-from typing import Dict, List, Any, Optional, Callable
+import tracemalloc
 from dataclasses import dataclass, field
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
 
 
 @dataclass

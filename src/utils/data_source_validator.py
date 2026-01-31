@@ -3,10 +3,12 @@
 用于批量校验Mock数据源和真实数据源的输出格式是否一致
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import pandas as pd
-from src.interfaces.data_source_interface import DataSourceInterface
+
 from src.factories.data_source_factory import MockDataSource, RealDataSource
+from src.interfaces.data_source_interface import DataSourceInterface
 
 
 def compare_data_structure(mock_result: Any, real_result: Any, field_path: str = "") -> List[str]:
@@ -166,6 +168,7 @@ def run_compatibility_check() -> Dict[str, Any]:
     print("开始运行数据源格式兼容性检查...")
 
     # 创建数据源实例
+    # pylint: disable=abstract-class-instantiated
     mock_source = MockDataSource()
     real_source = RealDataSource()
 

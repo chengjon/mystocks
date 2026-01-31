@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 MyStocks 量化交易数据访问接口定义
 提供统一的数据访问抽象接口
 
@@ -9,11 +10,12 @@ MyStocks 量化交易数据访问接口定义
 日期: 2025-12-16
 """
 
-import pandas as pd
+import logging
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict, List, Optional
-from abc import ABC, abstractmethod
-import logging
+
+import pandas as pd
 
 # 导入核心模块
 from src.core import (
@@ -73,7 +75,6 @@ class IDataAccessLayer(ABC):
         Returns:
             pd.DataFrame: 查询结果
         """
-        pass
 
     @abstractmethod
     def save_data(
@@ -95,7 +96,6 @@ class IDataAccessLayer(ABC):
         Returns:
             bool: 保存是否成功
         """
-        pass
 
     @abstractmethod
     def delete_data(
@@ -117,7 +117,6 @@ class IDataAccessLayer(ABC):
         Returns:
             bool: 删除是否成功
         """
-        pass
 
     @abstractmethod
     def get_latest_timestamp(self, classification: DataClassification, symbol: str) -> Optional[datetime]:
@@ -131,7 +130,6 @@ class IDataAccessLayer(ABC):
         Returns:
             Optional[datetime]: 最新时间戳
         """
-        pass
 
     @abstractmethod
     def check_connection(self) -> bool:
@@ -141,7 +139,6 @@ class IDataAccessLayer(ABC):
         Returns:
             bool: 连接是否正常
         """
-        pass
 
     # 市场数据专用方法
     def get_market_data(
@@ -309,22 +306,14 @@ class IDataAccessLayer(ABC):
 class DataAccessError(Exception):
     """数据访问异常"""
 
-    pass
-
 
 class ConnectionError(DataAccessError):
     """连接异常"""
-
-    pass
 
 
 class DataNotFoundError(DataAccessError):
     """数据未找到异常"""
 
-    pass
-
 
 class InvalidParameterError(DataAccessError):
     """无效参数异常"""
-
-    pass

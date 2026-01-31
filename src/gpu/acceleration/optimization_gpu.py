@@ -7,10 +7,11 @@
 # 说明：GPU加速的参数优化和超参数调优引擎
 """
 
-import time
 import logging
 import random
-from typing import Dict, Any, List, Callable
+import time
+from typing import Any, Callable, Dict, List
+
 import numpy as np
 import pandas as pd
 

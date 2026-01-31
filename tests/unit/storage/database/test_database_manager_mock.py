@@ -4,10 +4,11 @@ Database Manager Mock 测试
 目标覆盖率: 60%+
 """
 
-import pytest
-from unittest.mock import Mock, patch, mock_open
-import sys
 import os
+import sys
+from unittest.mock import Mock, mock_open, patch
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../.."))
 

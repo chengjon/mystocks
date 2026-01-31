@@ -11,11 +11,12 @@
 
 import logging
 
-from .interfaces import IDataAccess as IDataAccessLayer
-from .tdengine_access import TDengineDataAccess
-from .postgresql_access import PostgreSQLDataAccess
-from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 from src.monitoring import MonitoringDatabase
+from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
+
+from .interfaces import IDataAccess as IDataAccessLayer
+from .postgresql_access import PostgreSQLDataAccess
+from .tdengine_access import TDengineDataAccess
 
 logger = logging.getLogger("MyStocksDataAccessFactory")
 
@@ -176,8 +177,8 @@ class DataAccessFactory:
             IDataAccessLayer: 数据访问器实例
         """
         if not self._db_manager:
-            from src.storage.database.database_manager import DatabaseTableManager
             from src.monitoring import MonitoringDatabase
+            from src.storage.database.database_manager import DatabaseTableManager
 
             # 创建测试用的数据库管理器
             self._db_manager = DatabaseTableManager()

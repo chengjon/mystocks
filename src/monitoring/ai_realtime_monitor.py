@@ -13,13 +13,14 @@ AI驱动的实时监控系统，负责系统性能、GPU状态、AI策略性能�
 """
 
 import asyncio
-import time
 import logging
-import psutil
+import time
 from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Optional
+
+import psutil
 
 try:
     import GPUtil
@@ -34,7 +35,6 @@ from src.monitoring.ai_alert_manager import (
     SystemMetrics,
     get_ai_alert_manager,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -83,12 +83,10 @@ class IMetricsCollector(ABC):
     @abstractmethod
     async def collect_metrics(self) -> Dict[str, Any]:
         """收集指标"""
-        pass
 
     @abstractmethod
     def is_available(self) -> bool:
         """检查是否可用"""
-        pass
 
 
 class SystemMetricsCollector(IMetricsCollector):

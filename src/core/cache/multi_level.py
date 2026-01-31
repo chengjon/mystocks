@@ -9,7 +9,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 import redis.asyncio as redis
 from prometheus_client import Counter, Gauge, Histogram

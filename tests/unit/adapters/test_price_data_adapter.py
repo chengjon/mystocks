@@ -7,12 +7,13 @@ Price Data Adapter Test Suite
 测试模块: src.adapters.price_data_adapter (139行)
 """
 
-import pytest
-import pandas as pd
+import os
 
 # 添加src路径到导入路径
 import sys
-import os
+
+import pandas as pd
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 

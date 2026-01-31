@@ -3,9 +3,8 @@ Strategy Router
 DDD 架构下的策略相关 API
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List
-from src.application.strategy.backtest_service import BacktestApplicationService
+from fastapi import APIRouter, HTTPException
+
 from src.application.dto.strategy_dto import BacktestRequest, BacktestResultDTO
 
 router = APIRouter(prefix="/api/v1/ddd/strategies", tags=["DDD Strategy"])

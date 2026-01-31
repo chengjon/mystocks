@@ -9,8 +9,9 @@ from typing import List, Optional
 from uuid import uuid4
 
 from src.domain.shared.event import DomainEvent
-from ..value_objects import OrderId, OrderSide, OrderType, OrderStatus, TimeInForce
-from ..events import OrderCreatedEvent, OrderSubmittedEvent, OrderFilledEvent, OrderCancelledEvent, OrderRejectedEvent
+
+from ..events import OrderCancelledEvent, OrderCreatedEvent, OrderFilledEvent, OrderRejectedEvent, OrderSubmittedEvent
+from ..value_objects import OrderId, OrderSide, OrderStatus, OrderType, TimeInForce
 
 
 @dataclass

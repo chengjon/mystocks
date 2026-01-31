@@ -1,5 +1,5 @@
-from typing import Callable, Dict, List, Any
 import logging
+from typing import Any, Callable, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class EventBus:
         if event_type not in self._subscribers:
             self._subscribers[event_type] = []
         self._subscribers[event_type].append(handler)
-        logger.debug(f"Handler subscribed to {event_type}")
+        logger.debug("Handler subscribed to %(event_type)s")
 
     def emit(self, event_type: str, data: Dict[str, Any]):
         """
@@ -32,4 +32,4 @@ class EventBus:
             try:
                 handler(data)
             except Exception as e:
-                logger.error(f"Error handling event {event_type}: {e}")
+                logger.error("Error handling event %(event_type)s: %(e)s")

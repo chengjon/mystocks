@@ -8,11 +8,12 @@ Unit tests for Signal Monitoring Module
 2. signal_decorator.py - 装饰器和监控上下文
 """
 
-import pytest
+import os
+import sys
 import time
 from unittest.mock import MagicMock, patch
-import sys
-import os
+
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -62,10 +63,10 @@ class TestSignalMetrics:
         """Test all update helper functions"""
         try:
             from src.monitoring.signal_metrics import (
+                update_active_signals_count,
+                update_profit_ratio,
                 update_signal_accuracy,
                 update_signal_success_rate,
-                update_profit_ratio,
-                update_active_signals_count,
                 update_strategy_health,
             )
 

@@ -15,17 +15,17 @@ Date: 2026-01-09
 """
 
 import logging
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
 from app.core.responses import (
-    UnifiedResponse,
     BusinessCode,
-    create_unified_success_response,
+    UnifiedResponse,
     create_unified_error_response,
+    create_unified_success_response,
 )
 
 logger = logging.getLogger(__name__)
@@ -117,6 +117,7 @@ async def get_postgres_connection():
         数据库连接
     """
     import asyncpg
+
     from app.core.config import settings
 
     return await asyncpg.connect(
@@ -260,7 +261,7 @@ async def get_quality_overview(http_request: Request):
             raise e
 
     except Exception as e:
-        logger.error(f"Failed to fetch quality overview: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to fetch quality overview: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_governance_error(str(e), request_id)
 
 
@@ -286,7 +287,7 @@ async def get_lineage_stats(
         UnifiedResponse: 数据血缘统计
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
-    logger.info(f"Fetching lineage stats for last {days} days", extra={"request_id": request_id})
+    logger.info("Fetching lineage stats for last {days} days", extra={"request_id": request_id})
 
     try:
         conn = await get_postgres_connection()
@@ -381,7 +382,7 @@ async def get_lineage_stats(
             raise e
 
     except Exception as e:
-        logger.error(f"Failed to fetch lineage stats: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to fetch lineage stats: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_governance_error(str(e), request_id)
 
 
@@ -490,7 +491,7 @@ async def get_assets_catalog(
             raise e
 
     except Exception as e:
-        logger.error(f"Failed to fetch assets catalog: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to fetch assets catalog: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_governance_error(str(e), request_id)
 
 
@@ -520,7 +521,7 @@ async def get_compliance_metrics(
         UnifiedResponse: 治理合规指标
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
-    logger.info(f"Fetching compliance metrics: {days} days, {limit} changes", extra={"request_id": request_id})
+    logger.info("Fetching compliance metrics: {days} days, {limit} changes", extra={"request_id": request_id})
 
     try:
         conn = await get_postgres_connection()
@@ -603,7 +604,7 @@ async def get_compliance_metrics(
             raise e
 
     except Exception as e:
-        logger.error(f"Failed to fetch compliance metrics: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to fetch compliance metrics: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_governance_error(str(e), request_id)
 
 
@@ -674,5 +675,5 @@ async def get_dashboard_summary(http_request: Request):
         )
 
     except Exception as e:
-        logger.error(f"Failed to fetch dashboard summary: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to fetch dashboard summary: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_governance_error(str(e), request_id)

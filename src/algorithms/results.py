@@ -6,10 +6,10 @@ and evaluation metrics. All models use Pydantic for validation and
 structured data handling.
 """
 
-from typing import Dict, List, Any, Optional, Union
-from pydantic import BaseModel, Field
 from datetime import datetime
-import numpy as np
+from typing import Any, Dict, List, Optional, Union
+
+from pydantic import BaseModel, Field
 
 
 class AlgorithmMetrics(BaseModel):

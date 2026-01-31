@@ -17,22 +17,21 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, Callable
-from datetime import datetime
-from dataclasses import dataclass
-from enum import Enum
-import logging
-import threading
-import queue
-import time
-
 # WebSocket支持（可选）
 import importlib.util
+import logging
+import queue
+import threading
+import time
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Callable, Dict, List, Optional
 
 WEBSOCKET_AVAILABLE = bool(importlib.util.find_spec("websocket"))
 if not WEBSOCKET_AVAILABLE:

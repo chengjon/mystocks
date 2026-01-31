@@ -11,12 +11,13 @@ Author: Claude Code
 Date: 2026-01-09
 """
 
-import pytest
 import asyncio
+import os
+import sys
 from datetime import datetime
 from decimal import Decimal
-import sys
-import os
+
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -278,10 +279,10 @@ class TestPerformanceOptimizer:
     def setup_method(self):
         """测试初始化"""
         from src.services.performance_optimizer import (
-            LRUCache,
             BatchProcessor,
-            IncrementalCalculator,
             CacheKeyGenerator,
+            IncrementalCalculator,
+            LRUCache,
         )
 
         self.cache = LRUCache(max_size=10, ttl=60.0)

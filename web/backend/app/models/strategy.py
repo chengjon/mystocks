@@ -6,20 +6,21 @@
 - StrategyResult: 策略筛选结果
 """
 
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Date,
-    Boolean,
-    Text,
-    Integer,
-    BigInteger,
-    TIMESTAMP,
-    Index,
     JSON,
+    TIMESTAMP,
+    BigInteger,
+    Boolean,
+    Column,
+    Date,
+    Index,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 

@@ -2,10 +2,12 @@
 单元测试: CircuitBreaker
 """
 
-import pytest
-import time
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
+
+import pytest
+
 from src.core.data_source.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerOpenError,

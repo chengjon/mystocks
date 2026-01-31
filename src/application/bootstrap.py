@@ -5,24 +5,25 @@ DDD Bootstrap & Composition Root
 
 import logging
 import os
+
 import redis
 from sqlalchemy.orm import Session
-from src.infrastructure.persistence.repository_impl import (
-    StrategyRepositoryImpl,
-    OrderRepositoryImpl,
-    PortfolioRepositoryImpl,
-    TradingPositionRepositoryImpl,
-)
-from src.infrastructure.messaging.local_event_bus import LocalEventBus
-from src.infrastructure.messaging.redis_event_bus import RedisEventBus
-from src.infrastructure.market_data.adapter import DataSourceV2Adapter
-from src.infrastructure.calculation.gpu_calculator import GPUIndicatorCalculator
-from src.infrastructure.cache.redis_lock import RedisDistributedLock
 
 from src.application.strategy.backtest_service import BacktestApplicationService
 from src.application.trading.order_mgmt_service import OrderManagementService
 from src.domain.strategy.service import SignalGenerationService
 from src.domain.trading.events import OrderFilledEvent
+from src.infrastructure.cache.redis_lock import RedisDistributedLock
+from src.infrastructure.calculation.gpu_calculator import GPUIndicatorCalculator
+from src.infrastructure.market_data.adapter import DataSourceV2Adapter
+from src.infrastructure.messaging.local_event_bus import LocalEventBus
+from src.infrastructure.messaging.redis_event_bus import RedisEventBus
+from src.infrastructure.persistence.repository_impl import (
+    OrderRepositoryImpl,
+    PortfolioRepositoryImpl,
+    StrategyRepositoryImpl,
+    TradingPositionRepositoryImpl,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +83,7 @@ class AppContainer:
 
     def _on_order_filled(self, event: OrderFilledEvent):
         """跨上下文订阅处理器：Trading -> Portfolio"""
-        logger.info(f"Cross-context trigger: Handling {event.event_name()} for {event.symbol}")
+        logger.info("Cross-context trigger: Handling {event.event_name()} for {event.symbol")
 
         # 1. 找到该订单关联的投资组合 (演示先取第一个)
         portfolios = self.portfolio_repo.get_all()
@@ -97,7 +98,7 @@ class AppContainer:
         token = self.dist_lock.acquire(lock_name)
 
         if not token:
-            logger.error(f"Failed to acquire lock for portfolio {p.id}")
+            logger.error("Failed to acquire lock for portfolio {p.id")
             return
 
         try:
@@ -105,7 +106,7 @@ class AppContainer:
             p.handle_order_filled(event)
             # 3. 持久化 (Repository 会触发乐观锁检查)
             self.portfolio_repo.save(p)
-            logger.info(f"Portfolio {p.name} updated successfully via Event Bus")
+            logger.info("Portfolio {p.name} updated successfully via Event Bus")
         finally:
             self.dist_lock.release(lock_name, token)
 

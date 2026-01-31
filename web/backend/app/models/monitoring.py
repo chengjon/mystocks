@@ -5,23 +5,23 @@ Real-time Monitoring System
 
 from datetime import date, datetime
 from typing import Dict, Optional
+
 from sqlalchemy import (
+    DECIMAL,
+    BigInteger,
     Boolean,
     Column,
     Date,
     DateTime,
+    ForeignKey,
+    Index,
     Integer,
     String,
     Text,
-    DECIMAL,
-    BigInteger,
-    ForeignKey,
-    Index,
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -224,8 +224,9 @@ class MonitoringStatistics(Base):
 # Pydantic schemas for API request/response
 # ============================================================================
 
-from pydantic import BaseModel, Field, validator
 from enum import Enum
+
+from pydantic import BaseModel, Field, validator
 
 
 class AlertRuleType(str, Enum):

@@ -12,32 +12,31 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pytest
 import time
 
+import pytest
+
 from src.ml_strategy.automation import (
-    TaskScheduler,
+    JobLock,
+    NotificationChannel,
+    NotificationConfig,
+    NotificationLevel,
+    NotificationManager,
     TaskConfig,
     TaskPriority,
-    JobLock,
-    NotificationManager,
-    NotificationConfig,
-    NotificationChannel,
-    NotificationLevel,
+    TaskScheduler,
 )
-
 from src.ml_strategy.automation.predefined_tasks import (
     PredefinedTasks,
     create_daily_update_task,
-    create_strategy_execution_task,
     create_health_check_task,
+    create_strategy_execution_task,
 )
-
 
 # =============================================================================
 # JobLock Tests

@@ -7,20 +7,21 @@ Logging Config Test Suite
 测试模块: src.utils.logging_config (138行)
 """
 
-import pytest
 import logging
 import os
 import tempfile
 from unittest.mock import patch
 
+import pytest
+
 from src.utils.logging_config import (
     ColoredFormatter,
-    setup_logging,
     get_logger,
-    log_info,
-    log_error,
-    log_warning,
     log_debug,
+    log_error,
+    log_info,
+    log_warning,
+    setup_logging,
 )
 
 
@@ -466,6 +467,7 @@ class TestLoggingConfigIntegration:
         """测试默认配置"""
         # 重新导入模块以触发默认配置
         from importlib import reload
+
         import src.utils.logging_config
 
         reload(src.utils.logging_config)

@@ -3,11 +3,12 @@
 测试完整的API工作流和服务集成
 """
 
-import pytest
-import grpc
-import time
 import json
+import time
 from unittest.mock import Mock, patch
+
+import grpc
+import pytest
 
 
 class TestBacktestEndToEnd:

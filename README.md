@@ -3,8 +3,8 @@
 **创建人**: JohnC & Claude
 **版本**: 3.0.0
 **批准日期**: 2025-10-15
-**最后修订**: 2025-10-24
-**本次修订内容**: Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成
+**最后修订**: 2026-01-23
+**本次修订内容**: Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成 + Phase 2前端统一配置系统 + Phase 3 WebSocket解耦
 
 ---
 
@@ -22,6 +22,69 @@
 **核心原则**: **专库专用，简洁胜于过度复杂**
 
 详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
+
+---
+
+## 📋 Phase 2 前端优化完成 (2026-01-23)
+
+**统一配置系统实施**: 创建集中化页面配置，避免硬编码
+
+**实施成果**:
+- ✅ 创建 `src/config/pageConfig.ts` 统一配置对象（8个路由）
+- ✅ 创建完整使用指南 `docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md`
+- ✅ 创建架构文档索引 `docs/architecture/README.md`
+- ✅ TypeScript类型安全（编译时检查）
+- ✅ 零技术债务（无新增编译错误）
+
+**核心优势**:
+- 类型安全的配置访问（防止拼写错误）
+- 集中管理API端点和WebSocket频道
+- 易于维护（单点配置变更）
+- 为组件迁移提供完整指南
+
+**架构定位**:
+- Phase 1: 路由系统修复 ✅ 已完成（认证、规范化）
+- Phase 2: 统一配置系统 ✅ 已完成（配置对象、文档、示例）
+- Phase 3: WebSocket解耦 ✅ 已完成（自动订阅、解耦、示例）
+
+详细文档：[docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md](./docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md)
+
+---
+
+## 🌐 Phase 3 WebSocket解耦完成 (2026-01-23)
+
+**WebSocket订阅逻辑解耦**: 基于统一配置自动订阅，无硬编码频道名
+
+**实施成果**:
+- ✅ 创建 `useWebSocketWithConfig.ts` 基于配置的WebSocket管理器
+- ✅ 实现自动订阅功能（`subscribeByRoute`）
+- ✅ 解耦WebSocket与路由的耦合（无硬编码）
+- ✅ 创建完整使用示例（`WebSocketConfigExample.vue`）
+- ✅ TypeScript类型安全（零新错误）
+
+**核心功能**:
+- **按路由订阅**: `subscribeByRoute('market-realtime', callback)` - 自动从配置读取频道
+- **自动订阅当前路由**: `autoSubscribeByCurrentRoute(routeName, callback)` - 路由变化自动订阅
+- **批量订阅**: `subscribeAllWebSocketRoutes(callback)` - 一次性订阅所有需要WebSocket的路由
+- **类型安全**: 使用 `RouteName` 类型，编译时检查错误
+
+**架构优势**:
+- 无硬编码频道名（所有频道配置在 `PAGE_CONFIG`）
+- 集中管理（修改频道名仅需改配置文件）
+- 自动化（路由变化自动订阅/取消订阅）
+- 类型安全（编译时防止配置错误）
+
+**对比**:
+```typescript
+// ❌ 之前：硬编码频道
+ws.emit('subscribe', 'market:realtime')
+
+// ✅ 现在：从配置读取
+const config = PAGE_CONFIG['market-realtime']
+ws.emit('subscribe', config.wsChannel)
+```
+
+详细文档：[src/composables/examples/README.md](./web/frontend/src/composables/examples/README.md)
 
 ---
 

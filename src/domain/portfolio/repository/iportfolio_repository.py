@@ -33,7 +33,6 @@ class IPortfolioRepository(ABC):
         Args:
             portfolio: 投资组合聚合根
         """
-        pass
 
     @abstractmethod
     def find_by_id(self, portfolio_id: str) -> Optional[Portfolio]:
@@ -46,7 +45,6 @@ class IPortfolioRepository(ABC):
         Returns:
             投资组合聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_by_name(self, name: str) -> Optional[Portfolio]:
@@ -59,7 +57,6 @@ class IPortfolioRepository(ABC):
         Returns:
             投资组合聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_all(self, limit: int = 100) -> List[Portfolio]:
@@ -72,7 +69,6 @@ class IPortfolioRepository(ABC):
         Returns:
             投资组合列表
         """
-        pass
 
     @abstractmethod
     def delete(self, portfolio_id: str) -> None:
@@ -82,7 +78,6 @@ class IPortfolioRepository(ABC):
         Args:
             portfolio_id: 投资组合ID
         """
-        pass
 
     @abstractmethod
     def exists(self, portfolio_id: str) -> bool:
@@ -95,7 +90,6 @@ class IPortfolioRepository(ABC):
         Returns:
             如果存在返回True，否则返回False
         """
-        pass
 
     @abstractmethod
     def count(self) -> int:
@@ -105,7 +99,6 @@ class IPortfolioRepository(ABC):
         Returns:
             投资组合数量
         """
-        pass
 
 
 class ITransactionRepository(ABC):
@@ -129,7 +122,6 @@ class ITransactionRepository(ABC):
         Args:
             transaction: 交易流水实体
         """
-        pass
 
     @abstractmethod
     def find_by_id(self, transaction_id: str) -> Optional[Transaction]:
@@ -142,7 +134,6 @@ class ITransactionRepository(ABC):
         Returns:
             交易流水实体，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_by_portfolio(self, portfolio_id: str, limit: int = 100) -> List[Transaction]:
@@ -156,7 +147,6 @@ class ITransactionRepository(ABC):
         Returns:
             交易流水列表，按时间倒序
         """
-        pass
 
     @abstractmethod
     def find_by_portfolio_and_symbol(self, portfolio_id: str, symbol: str, limit: int = 100) -> List[Transaction]:
@@ -171,7 +161,6 @@ class ITransactionRepository(ABC):
         Returns:
             交易流水列表，按时间倒序
         """
-        pass
 
     @abstractmethod
     def delete(self, transaction_id: str) -> None:
@@ -181,4 +170,3 @@ class ITransactionRepository(ABC):
         Args:
             transaction_id: 交易流水ID
         """
-        pass

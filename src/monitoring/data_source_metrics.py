@@ -25,8 +25,9 @@
 创建时间：2026-01-02
 """
 
-from prometheus_client import Gauge, Counter, Histogram, Info, start_http_server
 import logging
+
+from prometheus_client import Counter, Gauge, Histogram, Info, start_http_server
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ class DataSourceMetricsExporter:
         data_source_total_calls.labels(endpoint_name=endpoint_name, source_name=source_name).set(0)
 
         self.initialized_sources.add(endpoint_name)
-        logger.info(f"初始化metrics: {endpoint_name}")
+        logger.info("初始化metrics: %(endpoint_name)s")
 
     def update_call_metrics(
         self,
@@ -205,7 +206,7 @@ class DataSourceMetricsExporter:
                 endpoint_name=endpoint_name, source_name=source_name, data_category=data_category
             ).set(0)
 
-            logger.error(f"数据源调用失败: {endpoint_name}, 错误: {error_msg}")
+            logger.error("数据源调用失败: %(endpoint_name)s, 错误: %(error_msg)s")
 
     def update_health_metrics(
         self,
@@ -359,9 +360,9 @@ def start_metrics_server(port: int = 8001):
     """
     try:
         start_http_server(port)
-        logger.info(f"Prometheus metrics服务器已启动: http://localhost:{port}/metrics")
+        logger.info("Prometheus metrics服务器已启动: http://localhost:%(port)s/metrics")
     except Exception as e:
-        logger.error(f"启动metrics服务器失败: {e}")
+        logger.error("启动metrics服务器失败: %(e)s")
         raise
 
 

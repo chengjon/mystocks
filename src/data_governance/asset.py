@@ -5,12 +5,12 @@ Manages metadata for all datasets, providing asset discovery,
 tracking, and catalog capabilities.
 """
 
-from datetime import datetime
-from enum import Enum
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field, asdict
 import json
 import logging
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +115,7 @@ class AssetStorage:
                 )
             return True
         except Exception as e:
-            logger.error(f"Failed to save asset {asset.asset_id}: {e}")
+            logger.error("Failed to save asset {asset.asset_id}: %(e)s")
             return False
 
     async def get(self, asset_id: str) -> Optional[DataAsset]:
@@ -149,7 +149,7 @@ class AssetStorage:
                         metadata=json.loads(row["metadata"] or "{}"),
                     )
         except Exception as e:
-            logger.error(f"Failed to get asset {asset_id}: {e}")
+            logger.error("Failed to get asset %(asset_id)s: %(e)s")
         return None
 
     async def list(
@@ -173,9 +173,9 @@ class AssetStorage:
         Returns:
             List of DataAsset objects
         """
-        assets = []
+        assets: List[DataAsset] = []
         query = "SELECT * FROM data_assets WHERE 1=1"
-        params = []
+        params: List[Any] = []
         param_count = 0
 
         if asset_type:
@@ -190,8 +190,9 @@ class AssetStorage:
 
         if tags:
             param_count += 1
-            query += f" AND tags::jsonb ?| array[{param_count}]"
-            params.append(tags)
+            query += f" AND tags::jsonb ?| array[${param_count}]"
+            # tags is a list of strings, convert to comma-separated for PostgreSQL array
+            params.append(",".join(tags) if tags else "")
 
         query += f" ORDER BY updated_at DESC LIMIT ${param_count + 1} OFFSET ${param_count + 2}"
         params.extend([limit, offset])
@@ -218,7 +219,7 @@ class AssetStorage:
                         )
                     )
         except Exception as e:
-            logger.error(f"Failed to list assets: {e}")
+            logger.error("Failed to list assets: %(e)s")
 
         return assets
 
@@ -237,7 +238,7 @@ class AssetStorage:
                 await conn.execute("DELETE FROM data_assets WHERE asset_id = $1", asset_id)
             return True
         except Exception as e:
-            logger.error(f"Failed to delete asset {asset_id}: {e}")
+            logger.error("Failed to delete asset %(asset_id)s: %(e)s")
             return False
 
 
@@ -294,7 +295,7 @@ class DataAssetRegistry:
         success = await self._storage.save(asset)
         if success:
             self._local_cache[asset_id] = asset
-            logger.info(f"Registered asset: {asset_id}")
+            logger.info("Registered asset: %(asset_id)s")
             return asset_id
 
         return ""
@@ -463,10 +464,10 @@ class DataAssetRegistry:
 
                         discovered.append(asset_id)
 
-            logger.info(f"Discovered {len(discovered)} new assets")
+            logger.info("Discovered {len(discovered)} new assets")
 
         except Exception as e:
-            logger.error(f"Failed to discover assets: {e}")
+            logger.error("Failed to discover assets: %(e)s")
 
         return discovered
 
@@ -477,7 +478,7 @@ class DataAssetRegistry:
         Returns:
             Dictionary with access statistics
         """
-        stats = {
+        stats: Dict[str, Any] = {
             "total_assets": len(self._local_cache),
             "by_type": {},
             "top_accessed": [],

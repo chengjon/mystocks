@@ -293,7 +293,7 @@ const tableColumns = computed((): TableColumn[] => [
     label: '涨跌幅',
     width: 120,
     align: 'right',
-    colorClass: (_value: any, row: any) => getChangeColorClass(row.change_percent),
+    colorClass: (row: any) => getChangeColorClass(row.change_percent),
     formatter: (value: number) => formatPercent(value)
   },
   {

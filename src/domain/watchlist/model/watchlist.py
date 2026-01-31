@@ -6,11 +6,12 @@ Watchlist Aggregate Root
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from src.domain.watchlist.value_objects import WatchlistType, StockCode, StockName, WatchlistConfig, AlertCondition
+from src.domain.watchlist.value_objects import AlertCondition, WatchlistConfig, WatchlistType
+
 from .watchlist_stock import WatchlistStock
 
 

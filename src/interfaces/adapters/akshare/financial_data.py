@@ -1,3 +1,15 @@
+"""
+AkShare财务数据获取方法
+"""
+
+from typing import Dict, Any, List, Optional
+import pandas as pd
+import akshare as ak
+from loguru import logger
+
+from src.utils.symbol_utils import format_stock_code_for_source
+
+
 def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
     """获取财务数据-Akshare实现"""
     try:

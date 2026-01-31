@@ -7,11 +7,12 @@ Phase 6.3.5 - 核心功能重构测试验证
 """
 
 import asyncio
-import numpy as np
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import numpy as np
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -54,8 +55,8 @@ class OptimizedGPUCORETester:
         try:
             from src.gpu.core.kernels import TransformKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                TransformOperationType,
                 TransformConfig,
+                TransformOperationType,
             )
 
             kernel = TransformKernelEngine()
@@ -107,8 +108,8 @@ class OptimizedGPUCORETester:
         try:
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixConfig,
+                MatrixOperationType,
             )
 
             kernel = MatrixKernelEngine()
@@ -213,8 +214,8 @@ class OptimizedGPUCORETester:
 
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixConfig,
+                MatrixOperationType,
             )
 
             kernel = MatrixKernelEngine()
@@ -274,8 +275,8 @@ class OptimizedGPUCORETester:
             # 测试Transform操作
             from src.gpu.core.kernels import TransformKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                TransformOperationType,
                 TransformConfig,
+                TransformOperationType,
             )
 
             transform_kernel = TransformKernelEngine()
@@ -287,8 +288,8 @@ class OptimizedGPUCORETester:
             # 测试Matrix操作
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixConfig,
+                MatrixOperationType,
             )
 
             matrix_kernel = MatrixKernelEngine()

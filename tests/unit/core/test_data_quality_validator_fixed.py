@@ -10,10 +10,11 @@
 - 边界情况处理
 """
 
-import pandas as pd
-import numpy as np
-from unittest.mock import Mock, patch, MagicMock
 import sys
+from unittest.mock import MagicMock, Mock, patch
+
+import numpy as np
+import pandas as pd
 
 # Mock the monitoring dependencies to avoid import issues
 sys.modules["src.monitoring.data_quality_monitor"] = MagicMock()

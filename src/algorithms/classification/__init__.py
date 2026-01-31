@@ -8,17 +8,16 @@ prediction, and performance evaluation.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
 
-from src.algorithms.base import BaseAlgorithm, AlgorithmMetadata
-from src.algorithms.types import AlgorithmType
-from src.algorithms.classification.svm_algorithm import SVMAlgorithm
+from src.algorithms.base import AlgorithmMetadata, BaseAlgorithm
 from src.algorithms.classification.decision_tree_algorithm import DecisionTreeAlgorithm
 from src.algorithms.classification.naive_bayes_algorithm import NaiveBayesAlgorithm
-from src.algorithms.config import ClassificationConfig
-from src.algorithms.results import AlgorithmResult, AlgorithmMetrics
+from src.algorithms.classification.svm_algorithm import SVMAlgorithm
+from src.algorithms.types import AlgorithmType
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +85,7 @@ class ClassificationManager:
         self.algorithms[name] = algorithm
         self.performance_history[name] = []
 
-        logger.info(f"Created {algorithm_type.value} algorithm: {name}")
+        logger.info("Created {algorithm_type.value} algorithm: %(name)s")
         return name
 
     async def train_algorithm(self, algorithm_name: str, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -105,7 +104,7 @@ class ClassificationManager:
             raise ValueError(f"Algorithm '{algorithm_name}' not found")
 
         algorithm = self.algorithms[algorithm_name]
-        logger.info(f"Training algorithm: {algorithm_name}")
+        logger.info("Training algorithm: %(algorithm_name)s")
 
         # Train the algorithm
         training_result = await algorithm.train(data, config)
@@ -122,7 +121,7 @@ class ClassificationManager:
         }
         self.performance_history[algorithm_name].append(performance_record)
 
-        logger.info(f"Algorithm {algorithm_name} training completed")
+        logger.info("Algorithm %(algorithm_name)s training completed")
         return training_result
 
     async def predict_with_algorithm(
@@ -192,7 +191,7 @@ class ClassificationManager:
 
         for name in algorithm_names:
             if name not in self.algorithms:
-                logger.warning(f"Algorithm '{name}' not found, skipping")
+                logger.warning("Algorithm '%(name)s' not found, skipping")
                 continue
 
             try:
@@ -210,7 +209,7 @@ class ClassificationManager:
                 }
 
             except Exception as e:
-                logger.error(f"Failed to evaluate algorithm '{name}': {e}")
+                logger.error("Failed to evaluate algorithm '%(name)s': %(e)s")
                 results[name] = {"error": str(e)}
 
         return results
@@ -291,7 +290,7 @@ class ClassificationManager:
                 return success
 
         except Exception as e:
-            logger.error(f"Failed to load algorithm from {filepath}: {e}")
+            logger.error("Failed to load algorithm from %(filepath)s: %(e)s")
             return False
 
     def get_performance_history(self, algorithm_name: str) -> List[Dict[str, Any]]:

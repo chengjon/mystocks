@@ -9,8 +9,8 @@
 - optimization.py: 数据库优化
 """
 
-from .auth import router as auth_router
 from .audit import router as audit_router
+from .auth import router as auth_router
 from .optimization import router as optimization_router
 
 __all__ = ["auth_router", "audit_router", "optimization_router"]

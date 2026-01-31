@@ -26,10 +26,10 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 # 导入现有的数据库管理模块
+from src.storage.database.database_manager import DatabaseTableManager as OriginalDatabaseTableManager
 from src.storage.database.database_manager import (
-    DatabaseTableManager as OriginalDatabaseTableManager,
+    DatabaseType,
 )
-from src.storage.database.database_manager import DatabaseType
 
 # 配置日志
 logging.basicConfig(

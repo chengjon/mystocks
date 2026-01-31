@@ -13,8 +13,9 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Any
-from datetime import datetime, date
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
 
 
@@ -80,7 +81,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     @abstractmethod
     def get_kline_data(
@@ -127,7 +127,6 @@ class ITimeSeriesDataSource(ABC):
             DataSourceException: 数据源查询失败
             ValueError: interval参数无效
         """
-        pass
 
     @abstractmethod
     def get_intraday_chart(self, symbol: str, trade_date: Optional[date] = None) -> pd.DataFrame:
@@ -157,7 +156,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     # ==================== 资金流向相关 ====================
 
@@ -202,7 +200,6 @@ class ITimeSeriesDataSource(ABC):
             DataSourceException: 数据源查询失败
             ValueError: flow_type参数无效
         """
-        pass
 
     @abstractmethod
     def get_top_fund_flow_stocks(
@@ -245,7 +242,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     # ==================== 市场概览相关 ====================
 
@@ -283,7 +279,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     @abstractmethod
     def get_index_realtime(self, index_codes: Optional[List[str]] = None) -> List[Dict[str, Any]]:
@@ -321,7 +316,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     # ==================== 技术指标相关 ====================
 
@@ -357,7 +351,6 @@ class ITimeSeriesDataSource(ABC):
             DataSourceException: 数据源查询失败
             ValueError: 不支持的指标类型
         """
-        pass
 
     # ==================== 竞价和盘口相关 ====================
 
@@ -403,7 +396,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     # ==================== 数据质量和健康检查 ====================
 
@@ -438,7 +430,6 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     @abstractmethod
     def health_check(self) -> Dict[str, Any]:
@@ -465,4 +456,3 @@ class ITimeSeriesDataSource(ABC):
         Raises:
             DataSourceException: 健康检查失败
         """
-        pass

@@ -1,0 +1,449 @@
+// ============================================
+//   ART DECO QUANTITATIVE TRADING EXTENSION
+//   艺术装饰量化交易扩展令牌
+// ============================================
+//
+// Purpose: 扩展ArtDeco设计系统，添加量化交易专业特性
+// Principle: 基于现有ArtDeco令牌，不重复定义，仅扩展缺失部分
+// Created: 2026-01-20
+// Version: 1.0
+// ============================================
+
+// ============================================
+//   FONT IMPORTS - 技术字体导入
+//   ⚡ 性能优化: font-display: swap 避免阻塞渲染
+// ============================================
+
+// IBM Plex Sans - 技术数据字体 (开源，高可读性)
+// JetBrains Mono - 等宽数据字体 (数字对齐，技术感)
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+// ============================================
+//   EXTENDED TYPOGRAPHY - 扩展排版系统
+//   量化交易专用: 技术字体 + 数据字体
+// ============================================
+
+:root {
+  // Technical Fonts (量化交易专用)
+  --artdeco-font-technical: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  // 用途: 技术指标名称、策略标签、分析面板标题
+
+  --artdeco-font-data: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  // 用途: 数值显示、价格数据、技术指标数值、代码片段
+
+  // Financial Data Sizes (量化数据尺寸 - 更紧凑)
+  --artdeco-text-data-xs: 0.625rem;   // 10px - 极小数据
+  --artdeco-text-data-sm: 0.75rem;    // 12px - 小数据 (默认)
+  --artdeco-text-data-base: 0.875rem; // 14px - 基础数据
+  --artdeco-text-data-lg: 1rem;       // 16px - 大数据
+
+  // Tabular Numbers (等宽数字 - 交易终端必备)
+  --artdeco-font-variant-numeric: tabular-nums;
+  --artdeco-letter-spacing-data: 0.02em; // 数字间距优化
+}
+
+// ============================================
+//   QUANTITATIVE TRADING COLORS - 量化交易专用颜色
+//   基于 ArtDeco 金融颜色扩展，不重复定义
+// ============================================
+
+:root {
+  // ✅ 使用现有 ArtDeco 金融颜色 (不重复定义)
+  // --artdeco-up: #FF5252    (已在 artdeco-tokens.scss 定义)
+  // --artdeco-down: #00E676  (已在 artdeco-tokens.scss 定义)
+  // --artdeco-profit: #00E676 (已在 artdeco-tokens.scss 定义)
+  // --artdeco-loss: #FF5252  (已在 artdeco-tokens.scss 定义)
+
+  // 新增: 交易信号强度颜色
+  // ⚠️ 中国金融惯例: 红涨绿跌
+  // 买入信号→红色(预期涨), 卖出信号→绿色(预期跌)
+  --quant-signal-strong-buy: #D50000;      // 强买入 - 深红
+  --quant-signal-buy: var(--artdeco-up);   // 买入 - 红色 (复用涨色)
+  --quant-signal-neutral: #888888;         // 中性 - 灰色
+  --quant-signal-sell: var(--artdeco-down); // 卖出 - 绿色 (复用跌色)
+  --quant-signal-strong-sell: #00C853;     // 强卖出 - 深绿
+
+  // 新增: 技术指标颜色 (MACD, KDJ, RSI, BOLL)
+  --quant-indicator-macd-fast: #2962FF;   // MACD快线 - 蓝色
+  --quant-indicator-macd-slow: #FF6D00;   // MACD慢线 - 橙色
+  --quant-indicator-macd-histogram: var(--artdeco-gold-primary); // MACD柱状图 - 金色
+
+  --quant-indicator-kdj-k: #00BCD4;       // KDJ-K线 - 青色
+  --quant-indicator-kdj-d: #7C4DFF;       // KDJ-D线 - 紫色
+  --quant-indicator-kdj-j: #FF4081;       // KDJ-J线 - 粉色
+
+  --quant-indicator-rsi: #AA00FF;         // RSI指标 - 紫色
+  --quant-indicator-rsi-overbought: #FF5252; // RSI超买 - 红色
+  --quant-indicator-rsi-oversold: #00E676;  // RSI超卖 - 绿色
+
+  --quant-indicator-boll-upper: #FF5252;  // BOLL上轨 - 红色
+  --quant-indicator-boll-middle: #D4AF37; // BOLL中轨 - 金色
+  --quant-indicator-boll-lower: #00E676;  // BOLL下轨 - 绿色
+
+  // 新增: 深度行情 (DOM) 颜色
+  --quant-dom-bid: #00E676;               // 买盘 - 绿色
+  --quant-dom-ask: #FF5252;               // 卖盘 - 红色
+  --quant-dom-spread: #FFD700;            // 买卖价差 - 金色
+  --quant-dom-imbalance: #9C27B0;         // 失衡度 - 紫色
+
+  // 新增: 持仓盈亏语义颜色
+  --quant-position-unrealized-profit: #00E676; // 浮盈 - 绿色
+  --quant-position-unrealized-loss: #FF5252;   // 浮亏 - 红色
+  --quant-position-realized-profit: #00C853;   // 已实现盈利 - 深绿
+  --quant-position-realized-loss: #D50000;     // 已实现亏损 - 深红
+
+  // 新增: 风险等级颜色
+  --quant-risk-low: #00E676;              // 低风险 - 绿色
+  --quant-risk-medium: #FFD700;           // 中风险 - 金色
+  --quant-risk-high: #FF5252;             // 高风险 - 红色
+  --quant-risk-extreme: #D50000;          // 极高风险 - 深红
+}
+
+// ============================================
+//   DATA-DENSE SPACING - 数据密集间距
+//   量化终端专用: 压缩间距，提高信息密度
+// ============================================
+
+:root {
+  // 压缩间距系统 (基础4px，更激进)
+  --artdeco-dense-gap-xs: 0.25rem;   // 4px - 最小间距
+  --artdeco-dense-gap-sm: 0.5rem;    // 8px - 小间距 (默认)
+  --artdeco-dense-gap-md: 0.75rem;   // 12px - 中间距
+
+  // 压缩内边距系统
+  --artdeco-dense-padding-xs: 0.25rem;  // 4px - 最小内边距
+  --artdeco-dense-padding-sm: 0.5rem;   // 8px - 小内边距 (默认)
+  --artdeco-dense-padding-md: 0.75rem;  // 12px - 中内边距
+
+  // 表格专用间距
+  --artdeco-dense-table-cell-padding: 6px 12px; // 表格单元格内边距
+  --artdeco-dense-table-header-padding: 8px 16px; // 表头内边距
+
+  // 组件高度 (紧凑版)
+  --artdeco-dense-stat-card-height: 48px;    // 统计卡片高度 (原64px)
+  --artdeco-dense-button-height: 32px;       // 按钮高度 (原48px)
+  --artdeco-dense-input-height: 36px;        // 输入框高度 (原48px)
+}
+
+// ============================================
+//   QUANTITATIVE LAYOUT - 量化布局模式
+//   交易终端布局: 2-3列网格，最小白空间
+// ============================================
+
+:root {
+  // 网格布局
+  --quant-grid-gap: var(--artdeco-dense-gap-sm); // 8px 网格间距
+  --quant-grid-columns: repeat(12, 1fr);         // 12列网格系统
+
+  // 信息面板尺寸
+  --quant-panel-min-height: 200px;               // 面板最小高度
+  --quant-panel-max-height: 400px;               // 面板最大高度
+  --quant-panel-border-radius: var(--artdeco-radius-none); // 尖锐边角
+
+  // K线图表尺寸
+  --quant-kline-height: 400px;                   // K线图高度
+  --quant-kline-min-width: 600px;                // K线图最小宽度
+}
+
+// ============================================
+//   ANIMATION EXTENSIONS - 动画扩展
+//   实时数据更新动画
+// ============================================
+
+@keyframes quant-flash-up {
+  0% { background-color: rgba(0, 230, 118, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes quant-flash-down {
+  0% { background-color: rgba(255, 82, 82, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes quant-pulse-signal {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+// 数据更新闪烁工具类
+.quant-flash-up {
+  animation: quant-flash-up 0.5s ease-out;
+}
+
+.quant-flash-down {
+  animation: quant-flash-down 0.5s ease-out;
+}
+
+.quant-pulse {
+  animation: quant-pulse-signal 1.5s ease-in-out infinite;
+}
+
+// ============================================
+//   UTILITY CLASSES - 工具类
+//   量化交易常用样式模式
+// ============================================
+
+// 等宽数字显示 (交易终端必备)
+.quant-data-display {
+  font-family: var(--artdeco-font-data);
+  font-variant-numeric: var(--artdeco-font-variant-numeric);
+  letter-spacing: var(--artdeco-letter-spacing-data);
+}
+
+// 涨跌颜色 (复用ArtDeco金融颜色)
+.quant-up {
+  color: var(--artdeco-up);    // 红色
+}
+
+.quant-down {
+  color: var(--artdeco-down);  // 绿色
+}
+
+.quant-flat {
+  color: var(--artdeco-flat);  // 灰色
+}
+
+// 盈亏颜色 (语义化)
+.quant-profit {
+  color: var(--artdeco-profit); // 绿色
+}
+
+.quant-loss {
+  color: var(--artdeco-loss);   // 红色
+}
+
+// 背景色版本 (用于徽章、标签)
+.quant-bg-up {
+  background-color: rgba(255, 82, 82, 0.15);
+  color: var(--artdeco-up);
+}
+
+.quant-bg-down {
+  background-color: rgba(0, 230, 118, 0.15);
+  color: var(--artdeco-down);
+}
+
+// 信号强度标签
+.quant-signal-strong-buy {
+  color: var(--quant-signal-strong-buy);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.quant-signal-buy {
+  color: var(--quant-signal-buy);
+  font-weight: var(--artdeco-font-medium);
+}
+
+.quant-signal-strong-sell {
+  color: var(--quant-signal-strong-sell);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.quant-signal-sell {
+  color: var(--quant-signal-sell);
+  font-weight: var(--artdeco-font-medium);
+}
+
+// 技术指标线颜色
+.quant-indicator-macd-fast {
+  color: var(--quant-indicator-macd-fast);
+}
+
+.quant-indicator-macd-slow {
+  color: var(--quant-indicator-macd-slow);
+}
+
+.quant-indicator-kdj-k {
+  color: var(--quant-indicator-kdj-k);
+}
+
+.quant-indicator-kdj-d {
+  color: var(--quant-indicator-kdj-d);
+}
+
+.quant-indicator-rsi {
+  color: var(--quant-indicator-rsi);
+}
+
+// ============================================
+//   DATA-DENSE COMPONENTS - 数据密集组件
+//   量化终端专用组件样式
+// ============================================
+
+// 紧凑统计卡片
+.quant-stat-card-compact {
+  height: var(--artdeco-dense-stat-card-height);
+  padding: var(--artdeco-dense-padding-sm);
+  gap: var(--artdeco-dense-gap-sm);
+
+  // 标题紧凑化
+  .quant-stat-label {
+    font-size: var(--artdeco-text-data-sm);
+    color: var(--artdeco-fg-muted);
+    margin-bottom: 0;
+  }
+
+  // 数值突出显示
+  .quant-stat-value {
+    font-size: var(--artdeco-text-data-lg);
+    font-family: var(--artdeco-font-data);
+    font-variant-numeric: var(--artdeco-font-variant-numeric);
+    font-weight: var(--artdeco-font-semibold);
+    line-height: var(--artdeco-leading-tight);
+  }
+
+  // 涨跌紧凑显示
+  .quant-stat-change {
+    font-size: var(--artdeco-text-data-sm);
+    font-family: var(--artdeco-font-data);
+    font-variant-numeric: var(--artdeco-font-variant-numeric);
+  }
+}
+
+// 深度行情 (DOM) 组件
+.quant-dom-panel {
+  font-family: var(--artdeco-font-data);
+  font-variant-numeric: var(--artdeco-font-variant-numeric);
+  font-size: var(--artdeco-text-data-sm);
+
+  .quant-dom-row {
+    display: flex;
+    gap: var(--artdeco-dense-gap-xs);
+    padding: var(--artdeco-dense-padding-xs) 0;
+    border-bottom: 1px solid var(--artdeco-border-default);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .quant-dom-bid {
+    color: var(--quant-dom-bid);
+  }
+
+  .quant-dom-ask {
+    color: var(--quant-dom-ask);
+  }
+
+  .quant-dom-spread {
+    color: var(--quant-dom-spread);
+    font-weight: var(--artdeco-font-semibold);
+  }
+}
+
+// 技术指标面板
+.quant-indicator-panel {
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  padding: var(--artdeco-dense-padding-md);
+
+  .quant-indicator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--artdeco-dense-gap-sm);
+    padding-bottom: var(--artdeco-dense-padding-xs);
+    border-bottom: 1px solid var(--artdeco-border-default);
+
+    .quant-indicator-title {
+      font-size: var(--artdeco-text-data-base);
+      font-family: var(--artdeco-font-technical);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
+    }
+
+    .quant-indicator-value {
+      font-size: var(--artdeco-text-data-lg);
+      font-family: var(--artdeco-font-data);
+      font-variant-numeric: var(--artdeco-font-variant-numeric);
+      color: var(--artdeco-fg-primary);
+    }
+  }
+
+  .quant-indicator-body {
+    display: grid;
+    gap: var(--artdeco-dense-gap-xs);
+
+    .quant-indicator-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--artdeco-text-data-sm);
+      font-family: var(--artdeco-font-data);
+      font-variant-numeric: var(--artdeco-font-variant-numeric);
+
+      .quant-indicator-label {
+        color: var(--artdeco-fg-muted);
+      }
+
+      .quant-indicator-number {
+        color: var(--artdeco-fg-primary);
+      }
+    }
+  }
+}
+
+// ============================================
+//   RESPONSIVE - 响应式
+//   仅支持桌面端 (最小1280x720)
+// ============================================
+
+@media (min-width: 1280px) {
+  :root {
+    --quant-grid-gap: var(--artdeco-dense-gap-sm); // 保持紧凑间距
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --quant-grid-gap: var(--artdeco-dense-gap-md); // 大屏稍增加间距
+    --quant-kline-height: 500px; // 更大K线图
+  }
+}
+
+// ============================================
+//   ACCESSIBILITY - 可访问性
+//   符合WCAG 2.1 AA标准
+// ============================================
+
+// 屏幕阅读器专用
+.sr-quant-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// 高对比度模式支持
+@media (prefers-contrast: high) {
+  :root {
+    --quant-signal-strong-buy: #00FF00;
+    --quant-signal-strong-sell: #FF0000;
+    --quant-indicator-rsi: #DD00FF;
+  }
+}
+
+// ============================================
+//   PRINT STYLES - 打印样式
+//   优化量化报告打印
+// ============================================
+
+@media print {
+  .quant-flash-up,
+  .quant-flash-down,
+  .quant-pulse {
+    animation: none !important;
+  }
+
+  .quant-stat-card-compact,
+  .quant-indicator-panel {
+    break-inside: avoid;
+  }
+}

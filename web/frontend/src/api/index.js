@@ -12,21 +12,13 @@ const request = axios.create({
   }
 })
 
-// 请求拦截器 - 开发环境使用mock认证
+// 请求拦截器 - 从localStorage获取token
 request.interceptors.request.use(
   config => {
-    // 在开发环境中使用mock token
-    const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost'
-
-    if (isDevelopment) {
-      // 使用固定的开发环境token
-      config.headers['Authorization'] = 'Bearer dev-mock-token-for-development'
-    } else {
-      // 生产环境使用真实的token
-      const token = localStorage.getItem('token')
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`
-      }
+    // 从localStorage获取token（登录后由auth.ts保存）
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
     }
     return config
   },
@@ -47,8 +39,8 @@ request.interceptors.response.use(
         case 401:
           // Token过期或无效，清除session并跳转登录页
           ElMessage.error('登录已过期，请重新登录')
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
           // 保存当前路径，登录后返回
           sessionStorage.setItem('redirectPath', window.location.pathname)
           router.push('/login')

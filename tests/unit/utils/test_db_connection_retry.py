@@ -7,13 +7,14 @@ Database Connection Retry Test Suite
 测试模块: src.utils.db_connection_retry (177行)
 """
 
-import pytest
-import time
-from unittest.mock import patch, MagicMock
+import os
 
 # Import only the decorator function to avoid circular import
 import sys
-import os
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 

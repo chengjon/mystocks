@@ -5,21 +5,22 @@ CPU回退版本模块
 确保在GPU不可用时，系统仍能正常工作
 """
 
-import time
 import logging
+import time
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Tuple, Optional
-from dataclasses import dataclass
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso, LinearRegression, Ridge
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split as sklearn_train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from datetime import datetime, timedelta
+from sklearn.preprocessing import StandardScaler
 
 # 导入GPU模块中的数据类
-from .price_predictor_gpu import PredictionResult, ModelPerformance
+from .price_predictor_gpu import ModelPerformance, PredictionResult
 
 
 @dataclass

@@ -10,25 +10,26 @@
 """
 
 import logging
-from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
-from sqlalchemy.orm import Session
 import os
+from datetime import datetime
 
-from app.core.database import get_db, SessionLocal
-from app.services.wencai_service import WencaiService
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+
+from app.core.database import SessionLocal, get_db
+from app.mock.unified_mock_data import get_mock_data_manager
 from app.schemas.wencai_schemas import (
-    WencaiQueryRequest,
-    WencaiQueryResponse,
     WencaiCustomQueryRequest,
     WencaiCustomQueryResponse,
+    WencaiHistoryResponse,
     WencaiQueryInfo,
     WencaiQueryListResponse,
-    WencaiResultsResponse,
+    WencaiQueryRequest,
+    WencaiQueryResponse,
     WencaiRefreshResponse,
-    WencaiHistoryResponse,
+    WencaiResultsResponse,
 )
-from app.mock.unified_mock_data import get_mock_data_manager
+from app.services.wencai_service import WencaiService
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListRespo
             return WencaiQueryListResponse(queries=queries, total=len(queries))
 
     except Exception as e:
-        logger.error(f"Failed to get queries: {str(e)}", exc_info=True)
+        logger.error("Failed to get queries: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取查询列表失败: {str(e)}")
 
 
@@ -106,7 +107,7 @@ async def get_query_by_name(query_name: str, db: Session = Depends(get_db)) -> W
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get query {query_name}: {str(e)}", exc_info=True)
+        logger.error("Failed to get query {query_name}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取查询失败: {str(e)}")
 
 
@@ -130,7 +131,7 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
         查询执行结果统计
     """
     try:
-        logger.info(f"Executing query: {request.query_name}, pages={request.pages}")
+        logger.info("Executing query: {request.query_name}, pages={request.pages}"")
 
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -156,10 +157,10 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
             return WencaiQueryResponse(**result)
 
     except ValueError as e:
-        logger.warning(f"Validation error: {str(e)}")
+        logger.warning("Validation error: {str(e)}"")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to execute query: {str(e)}", exc_info=True)
+        logger.error("Failed to execute query: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"查询执行失败: {str(e)}")
 
 
@@ -195,7 +196,7 @@ async def get_query_results(
         return WencaiResultsResponse(**results)
 
     except Exception as e:
-        logger.error(f"Failed to get results for {query_name}: {str(e)}", exc_info=True)
+        logger.error("Failed to get results for {query_name}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取结果失败: {str(e)}")
 
 
@@ -235,7 +236,7 @@ async def refresh_query(
         # 添加后台任务
         background_tasks.add_task(_refresh_query_task, query_name=query_name, pages=pages)
 
-        logger.info(f"Background refresh task added for {query_name}")
+        logger.info("Background refresh task added for %(query_name)s"")
 
         return WencaiRefreshResponse(
             status="refreshing",
@@ -247,7 +248,7 @@ async def refresh_query(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to start refresh task: {str(e)}", exc_info=True)
+        logger.error("Failed to start refresh task: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"启动刷新任务失败: {str(e)}")
 
 
@@ -281,7 +282,7 @@ async def get_query_history(
         return WencaiHistoryResponse(**history)
 
     except Exception as e:
-        logger.error(f"Failed to get history for {query_name}: {str(e)}", exc_info=True)
+        logger.error("Failed to get history for {query_name}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取历史数据失败: {str(e)}")
 
 
@@ -307,7 +308,7 @@ async def execute_custom_query(
         查询结果（不保存到数据库）
     """
     try:
-        logger.info(f"Executing custom query: {request.query_text[:50]}..., pages={request.pages}")
+        logger.info("Executing custom query: {request.query_text[:50]}..., pages={request.pages}"")
 
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -368,10 +369,10 @@ async def execute_custom_query(
             )
 
     except ValueError as e:
-        logger.warning(f"Validation error: {str(e)}")
+        logger.warning("Validation error: {str(e)}"")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to execute custom query: {str(e)}", exc_info=True)
+        logger.error("Failed to execute custom query: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"自定义查询执行失败: {str(e)}")
 
 
@@ -404,15 +405,15 @@ async def _refresh_query_task(query_name: str, pages: int = 1):
     # 创建新的数据库会话
     db = SessionLocal()
     try:
-        logger.info(f"[Background] Starting refresh for {query_name}")
+        logger.info("[Background] Starting refresh for %(query_name)s"")
 
         service = WencaiService(db=db)
 
         result = service.fetch_and_save(query_name=query_name, pages=pages)
 
-        logger.info(f"[Background] Refresh completed for {query_name}: " f"{result['new_records']} new records")
+        logger.info("[Background] Refresh completed for {query_name}: " f"{result['new_records']} new records")
 
     except Exception as e:
-        logger.error(f"[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True)
+        logger.error("[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True)
     finally:
         db.close()

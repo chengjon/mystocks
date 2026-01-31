@@ -1,99 +1,69 @@
-<testsuites id="" name="" tests="30" failures="0" skipped="0" errors="0" time="29.557097000000002">
-<testsuite name="comprehensive-e2e-validation.spec.ts" timestamp="2026-01-19T00:15:45.632Z" hostname="chromium-desktop" tests="10" failures="0" skipped="0" time="5.455" errors="0">
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2前端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.282">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2后端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.311">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.06">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.069">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.018">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.008">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › DOM元素存在性验证" classname="comprehensive-e2e-validation.spec.ts" time="1.151">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › 控制台错误检测" classname="comprehensive-e2e-validation.spec.ts" time="2.934">
-</testcase>
-<testcase name="Phase 3: 前后端联动 (Frontend-Backend Integration) › 后端API健康检查" classname="comprehensive-e2e-validation.spec.ts" time="0.007">
-</testcase>
-<testcase name="Phase 4: 基础交互 (Basic Interactions) › 页面导航验证" classname="comprehensive-e2e-validation.spec.ts" time="0.615">
+<testsuites id="" name="" tests="4" failures="1" skipped="0" errors="0" time="15.334579">
+<testsuite name="chrome-devtools-basic.spec.ts" timestamp="2026-01-26T16:07:28.281Z" hostname="chrome-debug" tests="4" failures="1" skipped="0" time="32.237" errors="0">
+<testcase name="Chrome DevTools Basic Functionality Test › should load the main application" classname="chrome-devtools-basic.spec.ts" time="7.876">
 <system-out>
-<![CDATA[
-================================================================================
-MyStocks E2E Test Report Generated
-================================================================================
-Passed: 10, Failed: 0, Duration: 5.68s
-Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json
-================================================================================
-
+<![CDATA[Page title: MyStocks - Professional Stock Analysis
 ]]>
 </system-out>
 </testcase>
-</testsuite>
-<testsuite name="comprehensive-e2e-validation.spec.ts" timestamp="2026-01-19T00:15:45.632Z" hostname="firefox-desktop" tests="10" failures="0" skipped="0" time="10.978" errors="0">
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2前端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.274">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2后端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.269">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.061">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.05">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.02">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.005">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › DOM元素存在性验证" classname="comprehensive-e2e-validation.spec.ts" time="6.948">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › 控制台错误检测" classname="comprehensive-e2e-validation.spec.ts" time="2.522">
-</testcase>
-<testcase name="Phase 3: 前后端联动 (Frontend-Backend Integration) › 后端API健康检查" classname="comprehensive-e2e-validation.spec.ts" time="0.013">
-</testcase>
-<testcase name="Phase 4: 基础交互 (Basic Interactions) › 页面导航验证" classname="comprehensive-e2e-validation.spec.ts" time="0.816">
+<testcase name="Chrome DevTools Basic Functionality Test › should check browser console for errors" classname="chrome-devtools-basic.spec.ts" time="9.993">
 <system-out>
-<![CDATA[
-================================================================================
-MyStocks E2E Test Report Generated
-================================================================================
-Passed: 10, Failed: 0, Duration: 12.08s
-Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json
-================================================================================
-
+<![CDATA[Console [error]: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+Console [debug]: [vite] connecting...
+Console [debug]: [vite] connected.
+Console messages found: [
+  [32m'ERROR: Failed to load resource: the server responded with a status of 500 (Internal Server Error)'[39m
+]
 ]]>
 </system-out>
 </testcase>
-</testsuite>
-<testsuite name="comprehensive-e2e-validation.spec.ts" timestamp="2026-01-19T00:15:45.632Z" hostname="webkit-desktop" tests="10" failures="0" skipped="0" time="6.614" errors="0">
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2前端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.374">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › PM2后端服务进程状态验证" classname="comprehensive-e2e-validation.spec.ts" time="0.349">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.098">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端端口连通性验证" classname="comprehensive-e2e-validation.spec.ts" time="0.077">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 前端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.026">
-</testcase>
-<testcase name="Phase 1: 前置校验 (Preflight Checks) › 后端HTTP响应验证" classname="comprehensive-e2e-validation.spec.ts" time="0.013">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › DOM元素存在性验证" classname="comprehensive-e2e-validation.spec.ts" time="1.638">
-</testcase>
-<testcase name="Phase 2: 页面加载完整性 (Page Load Integrity) › 控制台错误检测" classname="comprehensive-e2e-validation.spec.ts" time="3.271">
-</testcase>
-<testcase name="Phase 3: 前后端联动 (Frontend-Backend Integration) › 后端API健康检查" classname="comprehensive-e2e-validation.spec.ts" time="0.009">
-</testcase>
-<testcase name="Phase 4: 基础交互 (Basic Interactions) › 页面导航验证" classname="comprehensive-e2e-validation.spec.ts" time="0.759">
+<testcase name="Chrome DevTools Basic Functionality Test › should check network requests" classname="chrome-devtools-basic.spec.ts" time="10.086">
 <system-out>
-<![CDATA[
-================================================================================
-MyStocks E2E Test Report Generated
-================================================================================
-Passed: 10, Failed: 0, Duration: 6.96s
-Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json
-================================================================================
+<![CDATA[Request: GET http://localhost:3020/src/api/unifiedApiClient.ts?t=1769443556690
+Request: GET http://localhost:3020/src/api/apiClient.ts
+Request: GET http://localhost:3020/src/api/index.js?t=1769443556690
+Request: GET http://localhost:3020/src/api/mockApiClient.ts
+Total requests captured: 4
+]]>
+</system-out>
+</testcase>
+<testcase name="Chrome DevTools Basic Functionality Test › should check page performance metrics" classname="chrome-devtools-basic.spec.ts" time="4.282">
+<failure message="chrome-devtools-basic.spec.ts:75:7 should check page performance metrics" type="FAILURE">
+<![CDATA[  [chrome-debug] › chrome-devtools-basic.spec.ts:75:7 › Chrome DevTools Basic Functionality Test › should check page performance metrics 
 
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 30000
+    Received:   NaN
+
+       96 |     
+       97 |     expect(loadTime).toBeLessThan(30000);
+    >  98 |     expect(performanceMetrics.totalTime).toBeLessThan(30000);
+          |                                          ^
+       99 |   });
+      100 | });
+        at /opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts:98:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[Page load time: 3491ms
+Performance metrics: { domContentLoaded: [33mNaN[39m, loadComplete: [33mNaN[39m, totalTime: [33mNaN[39m }
+
+[[ATTACHMENT|test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/video.webm]]
+
+[[ATTACHMENT|test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/error-context.md]]
 ]]>
 </system-out>
 </testcase>

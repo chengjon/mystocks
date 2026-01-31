@@ -8,27 +8,26 @@
 
 import asyncio
 import json
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Callable
-from dataclasses import dataclass, field
-from enum import Enum
-from concurrent.futures import ThreadPoolExecutor
 import logging
 from abc import ABC, abstractmethod
-
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
 from statistics import mean
+from typing import Any, Callable, Dict, List, Optional
 
 # 导入所有测试组件
 from .ai.test_intelligent_generator import TestDataGenerator as AITestDataGenerator
-from .contract.test_contract_validator import ContractTestValidator
-from .contract.test_contract_generator import APIContractGenerator
-from .contract.test_contract_executor import ContractTestExecutor
-from .performance.test_performance_suite import PerformanceTestSuite
 from .chaos.test_fault_injection import FaultInjectionSystem
 from .chaos.test_resilience import ResilienceTestingFramework
-from .security.test_security_vulnerabilities import SecurityVulnerabilityScanner
-from .security.test_security_compliance import SecurityComplianceTester
+from .contract.test_contract_executor import ContractTestExecutor
+from .contract.test_contract_generator import APIContractGenerator
+from .contract.test_contract_validator import ContractTestValidator
 from .data.test_data_manager import TestDataOptimizer
+from .performance.test_performance_suite import PerformanceTestSuite
+from .security.test_security_compliance import SecurityComplianceTester
+from .security.test_security_vulnerabilities import SecurityVulnerabilityScanner
 
 
 class TestType(Enum):

@@ -7,8 +7,8 @@
 
 import os
 import traceback
-from typing import Union
 from datetime import datetime, timezone
+from typing import Union
 
 from fastapi import Request
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -18,12 +18,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.error_codes import (
     ErrorCode,
-    get_http_status,
     get_error_message,
+    get_http_status,
     is_client_error,
 )
 from app.schemas.common_schemas import CommonError
-
 
 # ==================== 配置 ====================
 

@@ -3,17 +3,18 @@ GPU Data Processor with Memory Management Fix
 修复内存泄漏问题的GPU数据处理器
 """
 
-import time
-import pandas as pd
 import logging
-import sys
 import os
+import sys
+import time
+
+import pandas as pd
 import psutil
 
 # 延迟导入GPU模块，只有在需要时才导入
 try:
-    import cupy as cp
     import cudf
+    import cupy as cp
 
     CUML_AVAILABLE = True
 except ImportError:
@@ -22,9 +23,9 @@ except ImportError:
     cudf = None
 
 try:
-    from cuml.preprocessing import StandardScaler
-    from cuml.feature_selection import SelectKBest
     from cuml.decomposition import PCA
+    from cuml.feature_selection import SelectKBest
+    from cuml.preprocessing import StandardScaler
 
     CUML_FULL_AVAILABLE = True
 except ImportError:
@@ -35,13 +36,13 @@ except ImportError:
 
 # 添加内存管理模块
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from typing import Any, Dict, List
+
 from src.gpu.accelerated.memory_management_fix import (
     memory_cleanup_decorator,
-    optimize_dataframe_memory,
     memory_manager,
+    optimize_dataframe_memory,
 )
-
-from typing import Dict, Any, List
 from src.gpu.data_processing_interfaces import IDataProcessor
 
 logger = logging.getLogger(__name__)

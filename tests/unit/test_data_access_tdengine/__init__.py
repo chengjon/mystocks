@@ -1,1 +1,1 @@
-"""Unit tests for MyStocks.""
+"""Unit tests for MyStocks TDengine data access."""

@@ -1,3 +1,4 @@
+# pylint: disable=import-error,no-name-in-module
 """
 # 功能：股票日线数据适配器
 # 作者：MyStocks Project

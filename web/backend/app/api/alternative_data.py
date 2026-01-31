@@ -6,13 +6,14 @@ Alternative Data API - News and Social Media Sentiment Analysis
 Provides news collection, sentiment analysis, social media monitoring and other alternative data services.
 """
 
-from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Query, Path, BackgroundTasks
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
-from src.logging.audit_system import get_audit_manager, AuditEvent
+from src.logging.audit_system import AuditEvent, get_audit_manager
 
 router = APIRouter(prefix="/api/alternative-data", tags=["另类数据分析"])
 

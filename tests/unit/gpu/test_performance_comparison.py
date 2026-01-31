@@ -7,11 +7,12 @@ Phase 6.4.3 - 性能基准对比验证
 """
 
 import asyncio
-import numpy as np
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import numpy as np
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -47,8 +48,8 @@ class PerformanceBenchmarkComparison:
     async def run_optimized_benchmarks(self) -> Dict[str, Any]:
         """运行优化后的基准测试"""
         try:
-            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
             from src.gpu.core.hardware_abstraction.memory_pool import get_memory_pool
+            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
 
             results = {}
 
@@ -121,8 +122,8 @@ class PerformanceBenchmarkComparison:
 
                 for i in range(iterations):
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -186,8 +187,8 @@ class PerformanceBenchmarkComparison:
                 for i in range(iterations):
                     try:
                         from src.gpu.core.kernels.standardized_interface import (
-                            TransformOperationType,
                             TransformConfig,
+                            TransformOperationType,
                         )
 
                         operation_type = getattr(TransformOperationType, op_name.upper())
@@ -311,8 +312,8 @@ class PerformanceBenchmarkComparison:
                 # 步骤1: 计算收益率
                 try:
                     from src.gpu.core.kernels.standardized_interface import (
-                        TransformOperationType,
                         TransformConfig,
+                        TransformOperationType,
                     )
 
                     return_config = TransformConfig(operation_type=TransformOperationType.RETURN)
@@ -331,8 +332,8 @@ class PerformanceBenchmarkComparison:
                 # 步骤3: 风险计算
                 try:
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     risk_weights = np.random.random((asset_count, asset_count)).astype(np.float32)

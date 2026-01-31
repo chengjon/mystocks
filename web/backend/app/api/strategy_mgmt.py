@@ -8,28 +8,29 @@
 日期: 2025-11-21
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query, Path, BackgroundTasks
-from typing import Optional
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
+from app.core.database import get_db
 from app.models.strategy_schemas import (
-    StrategyConfig,
-    StrategyCreateRequest,
-    StrategyUpdateRequest,
-    StrategyListResponse,
+    BacktestExecuteRequest,
+    BacktestListResponse,
     BacktestRequest,
     BacktestResult,
     BacktestResultSummary,
-    BacktestListResponse,
-    BacktestExecuteRequest,
+    StrategyConfig,
+    StrategyCreateRequest,
+    StrategyListResponse,
     StrategyStatus,
+    StrategyUpdateRequest,
 )
-from app.repositories import StrategyRepository, BacktestRepository
-from app.core.database import get_db
-from src.data_sources import get_business_source
+from app.repositories import BacktestRepository, StrategyRepository
 from app.tasks.backtest_tasks import run_backtest_task
+from src.data_sources import get_business_source
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ def get_data_source():
     try:
         return get_business_source()
     except Exception as e:
-        logger.error(f"获取数据源失败: {str(e)}")
+        logger.error("获取数据源失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"数据源初始化失败: {str(e)}")
 
 
@@ -98,14 +99,14 @@ async def create_strategy(
         # 使用仓库创建策略
         strategy_config = strategy_repo.create_strategy(strategy)
 
-        logger.info(f"策略创建成功: strategy_id={strategy_config.strategy_id}, name={strategy_config.strategy_name}")
+        logger.info("策略创建成功: strategy_id={strategy_config.strategy_id}, name={strategy_config.strategy_name}"")
         return strategy_config
 
     except ValueError as e:
-        logger.error(f"参数验证失败: {str(e)}")
+        logger.error("参数验证失败: {str(e)}"")
         raise HTTPException(status_code=400, detail=f"参数验证失败: {str(e)}")
     except Exception as e:
-        logger.error(f"创建策略失败: {str(e)}", exc_info=True)
+        logger.error("创建策略失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"创建策略失败: {str(e)}")
 
 
@@ -140,12 +141,12 @@ async def list_strategies(
             user_id=user_id, status=status, page=page, page_size=page_size
         )
 
-        logger.info(f"获取策略列表成功: user_id={user_id}, count={total_count}")
+        logger.info("获取策略列表成功: user_id=%(user_id)s, count=%(total_count)s"")
 
         return StrategyListResponse(total_count=total_count, strategies=strategies, page=page, page_size=page_size)
 
     except Exception as e:
-        logger.error(f"获取策略列表失败: {str(e)}")
+        logger.error("获取策略列表失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
 
 
@@ -174,13 +175,13 @@ async def get_strategy(
         if strategy is None:
             raise HTTPException(status_code=404, detail=f"策略不存在: strategy_id={strategy_id}")
 
-        logger.info(f"获取策略详情成功: strategy_id={strategy_id}")
+        logger.info("获取策略详情成功: strategy_id=%(strategy_id)s"")
         return strategy
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取策略详情失败: {str(e)}")
+        logger.error("获取策略详情失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"获取策略详情失败: {str(e)}")
 
 
@@ -210,13 +211,13 @@ async def update_strategy(
         if strategy is None:
             raise HTTPException(status_code=404, detail=f"策略不存在: strategy_id={strategy_id}")
 
-        logger.info(f"策略更新成功: strategy_id={strategy_id}")
+        logger.info("策略更新成功: strategy_id=%(strategy_id)s"")
         return strategy
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"更新策略失败: {str(e)}")
+        logger.error("更新策略失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
 
 
@@ -240,12 +241,12 @@ async def delete_strategy(
         if not deleted:
             raise HTTPException(status_code=404, detail=f"策略不存在: strategy_id={strategy_id}")
 
-        logger.info(f"策略删除成功: strategy_id={strategy_id}")
+        logger.info("策略删除成功: strategy_id=%(strategy_id)s"")
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"删除策略失败: {str(e)}")
+        logger.error("删除策略失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
 
 
@@ -339,16 +340,16 @@ async def execute_backtest(
             backtest_config=backtest_config_dict,
         )
 
-        logger.info(f"回测任务已提交: backtest_id={backtest_result.backtest_id}, task_id={task.id}")
+        logger.info("回测任务已提交: backtest_id={backtest_result.backtest_id}, task_id={task.id}"")
         return backtest_result
 
     except HTTPException:
         raise
     except ValueError as e:
-        logger.error(f"回测参数验证失败: {str(e)}")
+        logger.error("回测参数验证失败: {str(e)}"")
         raise HTTPException(status_code=400, detail=f"回测参数验证失败: {str(e)}")
     except Exception as e:
-        logger.error(f"执行回测失败: {str(e)}", exc_info=True)
+        logger.error("执行回测失败: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"执行回测失败: {str(e)}")
 
 
@@ -377,13 +378,13 @@ async def get_backtest_result(
         if backtest_result is None:
             raise HTTPException(status_code=404, detail=f"回测结果不存在: backtest_id={backtest_id}")
 
-        logger.info(f"获取回测结果成功: backtest_id={backtest_id}")
+        logger.info("获取回测结果成功: backtest_id=%(backtest_id)s"")
         return backtest_result
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取回测结果失败: {str(e)}")
+        logger.error("获取回测结果失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
 
 
@@ -437,14 +438,14 @@ async def list_backtests(
             )
             backtest_summaries.append(summary)
 
-        logger.info(f"获取回测列表成功: user_id={user_id}, count={total_count}")
+        logger.info("获取回测列表成功: user_id=%(user_id)s, count=%(total_count)s"")
 
         return BacktestListResponse(
             total_count=total_count, backtests=backtest_summaries, page=page, page_size=page_size
         )
 
     except Exception as e:
-        logger.error(f"获取回测列表失败: {str(e)}")
+        logger.error("获取回测列表失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"获取回测列表失败: {str(e)}")
 
 
@@ -463,8 +464,8 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
         BacktestRepository(db)
 
         # 简单查询以验证数据库可用性
-        from app.repositories.strategy_repository import UserStrategyModel
         from app.repositories.backtest_repository import BacktestResultModel
+        from app.repositories.strategy_repository import UserStrategyModel
 
         strategies_count = db.query(UserStrategyModel).count()
         backtests_count = db.query(BacktestResultModel).count()
@@ -479,7 +480,7 @@ async def health_check(db: Session = Depends(get_db), data_source=Depends(get_da
             "timestamp": datetime.now(),
         }
     except Exception as e:
-        logger.error(f"健康检查失败: {str(e)}")
+        logger.error("健康检查失败: {str(e)}"")
         return {
             "status": "unhealthy",
             "service": "strategy-mgmt",
@@ -526,5 +527,5 @@ async def get_backtest_status(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取回测状态失败: {str(e)}")
+        logger.error("获取回测状态失败: {str(e)}"")
         raise HTTPException(status_code=500, detail=f"获取回测状态失败: {str(e)}")

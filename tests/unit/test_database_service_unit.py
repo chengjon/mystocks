@@ -3,9 +3,11 @@
 测试文件：tests/unit/test_database_service_unit.py
 """
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pandas as pd
+import pytest
+
 from src.database.database_service import DatabaseService
 
 

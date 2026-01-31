@@ -5,9 +5,10 @@
 
 import os
 from typing import Optional
-from src.interfaces.data_source_interface import DataSourceInterface
+
 from src.data_sources.mock_data_source import MockDataSource
 from src.data_sources.real_data_source import RealDataSource
+from src.interfaces.data_source_interface import DataSourceInterface
 
 
 class DataSourceFactory:

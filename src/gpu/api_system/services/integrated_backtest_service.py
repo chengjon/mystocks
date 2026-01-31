@@ -3,27 +3,27 @@
 Integrated Backtest Service
 """
 
-import logging
 import hashlib
-import time
-import threading
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
 import json
+import logging
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
-from src.gpu.api_system.utils.monitoring import MetricsCollector
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 try:
     from src.gpu.api_system.api_proto.backtest_pb2 import (
         BacktestRequest,
         BacktestResponse,
-        BacktestStatus,
         BacktestResult,
+        BacktestStatus,
         PerformanceMetrics,
     )
     from src.gpu.api_system.api_proto.backtest_pb2_grpc import BacktestServiceServicer

@@ -4,10 +4,11 @@
 提供新闻情感分析功能
 """
 
+from datetime import datetime
+from typing import List
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
-from typing import List
-from datetime import datetime
 
 router = APIRouter(
     prefix="/sentiment",

@@ -16,18 +16,19 @@ US3架构性能测试
 版本: US3 Performance Test
 """
 
+import json
 import sys
 import time
-import json
-import pandas as pd
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pandas as pd
 
 # 添加项目路径
 sys.path.append("/opt/claude/mystocks_spec")
 
-from src.core.data_manager import DataManager
 from src.core.data_classification import DataClassification
+from src.core.data_manager import DataManager
 
 
 class US3PerformanceTest:

@@ -53,6 +53,7 @@ def test_tdengine_connection(taos_module, module_name):
 
         # 从环境变量获取TDengine连接参数
         import os
+
         from dotenv import load_dotenv
 
         # 加载环境变量
@@ -61,7 +62,10 @@ def test_tdengine_connection(taos_module, module_name):
 
         tdengine_host = os.getenv("TDENGINE_HOST")
         tdengine_user = os.getenv("TDENGINE_USER", "root")
-        tdengine_password = os.getenv("TDENGINE_PASSWORD", "taosdata")
+        tdengine_password = os.getenv("TDENGINE_PASSWORD")
+        if not tdengine_password:
+            logger.error("TDENGINE_PASSWORD environment variable must be set")
+            return False
         tdengine_port = int(os.getenv("TDENGINE_PORT", "6041"))
 
         if not tdengine_host:

@@ -18,17 +18,18 @@ Features:
 
 import asyncio
 import logging
-import smtplib
 import os
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-from dataclasses import dataclass, asdict
-from enum import Enum
-from abc import ABC, abstractmethod
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import aiohttp
+import smtplib
 import sqlite3
+from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +110,6 @@ class NotificationProvider(ABC):
     @abstractmethod
     async def send(self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs) -> NotificationResult:
         """Send notification via this channel"""
-        pass
 
     async def send_with_retry(
         self, recipients: List[str], subject: str, body: str, alert: Alert, **kwargs
@@ -362,7 +362,7 @@ class SMSNotificationProvider(NotificationProvider):
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info(f"✅ SMS sent to {sent_count}/{len(recipients)} recipients ({delivery_time:.0f}ms)")
+                logger.info("✅ SMS sent to %(sent_count)s/{len(recipients)} recipients ({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.SMS,
                     alert_id=alert.alertname,
@@ -418,7 +418,7 @@ class WebhookNotificationProvider(NotificationProvider):
             delivery_time = (datetime.now() - start_time).total_seconds() * 1000
 
             if sent_count > 0:
-                logger.info(f"✅ Webhook sent to {sent_count}/{len(webhook_urls)} endpoints ({delivery_time:.0f}ms)")
+                logger.info("✅ Webhook sent to %(sent_count)s/{len(webhook_urls)} endpoints ({delivery_time:.0f}ms)")
                 return NotificationResult(
                     channel=NotificationChannel.WEBHOOK,
                     alert_id=alert.alertname,

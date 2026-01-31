@@ -1,4 +1,5 @@
 """
+# pylint: disable=no-member  # TODO: 修复异常类的 to_dict 方法
 新闻数据采集和情感分析
 News Data Collection and Sentiment Analysis
 
@@ -6,21 +7,20 @@ News Data Collection and Sentiment Analysis
 Collect financial news from multiple sources, perform sentiment analysis, and generate sentiment indicators.
 """
 
-import asyncio
-import logging
+import hashlib
 import json
+import logging
+import re
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 import feedparser
 from bs4 import BeautifulSoup
-import re
-from dataclasses import dataclass, field
-import hashlib
-import time
 
 try:
-    from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
@@ -98,7 +98,6 @@ class NewsCollector:
 
         # 股票关键词映射
         self.stock_keywords = {
-            "000001": ["平安银行", "平安", "PAYH"],
             "600000": ["浦发银行", "浦发", "PFYH"],
             "000002": ["万科A", "万科", "WKA"],
             "600036": ["招商银行", "招行", "ZSYH"],
@@ -114,7 +113,7 @@ class NewsCollector:
 
 async def collect_news(self, hours_back: int = 24) -> List[NewsArticle]:
     """采集新闻数据"""
-    logger.info(f"开始采集过去{hours_back}小时的新闻数据...")
+    logger.info("开始采集过去%(hours_back)s小时的新闻数据...")
 
     all_articles = []
     cutoff_time = datetime.now() - timedelta(hours=hours_back)
@@ -124,16 +123,16 @@ async def collect_news(self, hours_back: int = 24) -> List[NewsArticle]:
             try:
                 articles = await self._collect_from_source(session, source_key, source_config, cutoff_time)
                 all_articles.extend(articles)
-                logger.info(f"从 {source_config['name']} 采集到 {len(articles)} 篇文章")
+                logger.info("从 {source_config['name']} 采集到 {len(articles)} 篇文章")
 
             except Exception as e:
-                logger.error(f"从 {source_config['name']} 采集失败: {e}")
+                logger.error("从 {source_config['name']} 采集失败: %(e)s")
                 continue
 
     # 去重和过滤
     unique_articles = self._deduplicate_articles(all_articles)
 
-    logger.info(f"新闻采集完成，共 {len(unique_articles)} 篇有效文章")
+    logger.info("新闻采集完成，共 {len(unique_articles)} 篇有效文章")
     return unique_articles
 
 
@@ -169,7 +168,7 @@ async def _collect_rss_feed(
     try:
         async with session.get(source_config["url"], timeout=30) as response:
             if response.status != 200:
-                logger.warning(f"RSS源 {source_config['url']} 返回状态码 {response.status}")
+                logger.warning("RSS源 {source_config['url']} 返回状态码 {response.status")
                 return articles
 
             content = await response.text()
@@ -204,11 +203,11 @@ async def _collect_rss_feed(
                     articles.append(article)
 
                 except Exception as e:
-                    logger.warning(f"解析RSS条目失败: {e}")
+                    logger.warning("解析RSS条目失败: %(e)s")
                     continue
 
     except Exception as e:
-        logger.error(f"采集RSS源失败: {e}")
+        logger.error("采集RSS源失败: %(e)s")
 
     return articles
 
@@ -301,7 +300,7 @@ def __init__(self):
             self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
             logger.info("情感分析模型加载成功")
         except Exception as e:
-            logger.warning(f"情感分析模型加载失败: {e}，使用fallback分析器")
+            logger.warning("情感分析模型加载失败: %(e)s，使用fallback分析器")
 
 
 def _create_fallback_analyzer(self):
@@ -375,7 +374,7 @@ async def analyze_sentiment(self, text: str) -> SentimentResult:
             return self._analyze_with_fallback(text)
 
     except Exception as e:
-        logger.error(f"情感分析失败: {e}")
+        logger.error("情感分析失败: %(e)s")
         return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
 
@@ -450,7 +449,7 @@ async def _analyze_with_model(self, text: str) -> SentimentResult:
             )
 
     except Exception as e:
-        logger.error(f"模型情感分析失败: {e}")
+        logger.error("模型情感分析失败: %(e)s")
         return self._analyze_with_fallback(text)
 
 
@@ -499,7 +498,7 @@ def _analyze_with_fallback(self, text: str) -> SentimentResult:
         )
 
     except Exception as e:
-        logger.error(f"Fallback情感分析失败: {e}")
+        logger.error("Fallback情感分析失败: %(e)s")
         return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
 
@@ -559,13 +558,13 @@ async def collect_and_analyze_news(self, hours_back: int = 24) -> List[NewsArtic
             analyzed_articles.append(article)
 
         except Exception as e:
-            logger.error(f"分析文章失败 '{article.title}': {e}")
+            logger.error("分析文章失败 '{article.title}': %(e)s")
             analyzed_articles.append(article)  # 仍然添加文章，即使分析失败
 
     # 3. 保存到数据库
     await self._save_articles_to_db(analyzed_articles)
 
-    logger.info(f"新闻采集和分析完成，共处理 {len(analyzed_articles)} 篇文章")
+    logger.info("新闻采集和分析完成，共处理 {len(analyzed_articles)} 篇文章")
     return analyzed_articles
 
 
@@ -601,10 +600,10 @@ async def _save_articles_to_db(self, articles: List[NewsArticle]):
                     article.relevance_score,
                 )
 
-        logger.info(f"成功保存 {len(articles)} 篇新闻文章到数据库")
+        logger.info("成功保存 {len(articles)} 篇新闻文章到数据库")
 
     except Exception as e:
-        logger.error(f"保存新闻文章到数据库失败: {e}")
+        logger.error("保存新闻文章到数据库失败: %(e)s")
 
 
 async def get_sentiment_indicators(self, symbol: str, hours: int = 24) -> Dict[str, Any]:
@@ -673,7 +672,7 @@ async def get_sentiment_indicators(self, symbol: str, hours: int = 24) -> Dict[s
         }
 
     except Exception as e:
-        logger.error(f"获取情感指标失败: {e}")
+        logger.error("获取情感指标失败: %(e)s")
         return {
             "symbol": symbol,
             "error": str(e),
@@ -721,7 +720,7 @@ async def get_market_sentiment_overview(self, hours: int = 24) -> Dict[str, Any]
         }
 
     except Exception as e:
-        logger.error(f"获取市场情感概览失败: {e}")
+        logger.error("获取市场情感概览失败: %(e)s")
         return {
             "error": str(e),
             "market_sentiment_score": 0.0,

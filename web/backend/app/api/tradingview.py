@@ -3,13 +3,14 @@ TradingView Widget API
 提供 TradingView 图表和 widgets 配置
 """
 
-from fastapi import APIRouter, Query, HTTPException, Depends
-from typing import Dict, List
-from pydantic import BaseModel, Field
 import os
+from typing import Dict, List
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+
+from app.api.auth import User, get_current_user
 from app.services.tradingview_widget_service import get_tradingview_service
-from app.api.auth import get_current_user, User
 
 router = APIRouter()
 

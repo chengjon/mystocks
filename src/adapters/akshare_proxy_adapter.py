@@ -17,14 +17,15 @@ AkShare通用接口代理适配器
 注意：此适配器适合快速原型开发，生产环境建议使用专门的适配器
 """
 
-import pandas as pd
-import akshare as ak
-import sys
-import os
-import time
 import inspect
-from typing import Dict, List, Any, Union
+import os
+import sys
+import time
 from functools import wraps
+from typing import Any, Dict, List, Union
+
+import akshare as ak
+import pandas as pd
 
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

@@ -14,51 +14,46 @@ Features:
 """
 
 import logging
-import uuid
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import traceback
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.schemas.algorithm_schemas import (
-    AlgorithmType,
-    AlgorithmConfig,
-    AlgorithmTrainRequest,
-    AlgorithmPredictRequest,
-    AlgorithmInfoRequest,
-    # Add other algorithm-specific imports as needed
-)
 from app.repositories import AlgorithmModelRepository
+from app.schemas.algorithm_schemas import (  # Add other algorithm-specific imports as needed
+    AlgorithmConfig,
+    AlgorithmInfoRequest,
+    AlgorithmPredictRequest,
+    AlgorithmTrainRequest,
+    AlgorithmType,
+)
 
 # Define logger early for try/except block
 logger = logging.getLogger(__name__)
 
 # Import from src/algorithms
 try:
-    from src.algorithms.base import BaseAlgorithm, AlgorithmMetadata
-    from src.algorithms.types import AlgorithmType as SrcAlgorithmType
-    from src.algorithms.config import AlgorithmConfig as SrcAlgorithmConfig
-
     # Import concrete algorithm classes
-    from src.algorithms import (
-        DecisionTreeAlgorithm,
-        NaiveBayesAlgorithm,
-        BruteForceAlgorithm,
-        # KMPAlgorithm,  # TODO: Fix indentation
-        # BMHAlgorithm,  # TODO: Fix indentation
-        # AhoCorasickAlgorithm,  # TODO: Fix indentation
-        HMMAlgorithm,
+    from src.algorithms import (  # KMPAlgorithm,  # TODO: Fix indentation; BMHAlgorithm,  # TODO: Fix indentation; AhoCorasickAlgorithm,  # TODO: Fix indentation
         BayesianNetworkAlgorithm,
-        NGramAlgorithm,
+        BruteForceAlgorithm,
+        DecisionTreeAlgorithm,
+        HMMAlgorithm,
+        NaiveBayesAlgorithm,
         NeuralNetworkAlgorithm,
+        NGramAlgorithm,
     )
+    from src.algorithms.base import AlgorithmMetadata, BaseAlgorithm
+    from src.algorithms.config import AlgorithmConfig as SrcAlgorithmConfig
+    from src.algorithms.types import AlgorithmType as SrcAlgorithmType
 
     ALGORITHMS_AVAILABLE = True
     logger.info("Successfully imported all algorithm implementations")
 except ImportError as e:
-    logger.error(f"Failed to import algorithms: {e}")
+    logger.error("Failed to import algorithms: %(e)s"")
     # Fallback if src/algorithms not available yet
     ALGORITHMS_AVAILABLE = False
 
@@ -92,7 +87,7 @@ except ImportError as e:
 
 # Import GPU framework if available
 try:
-    from gpu_api_system.services import GPUBacktestService, GPURealtimeService
+    from gpu_api_system.services import GPUBacktestService
 
     GPU_AVAILABLE = True
 except ImportError:
@@ -116,7 +111,7 @@ class AlgorithmFactory:
                 self._gpu_service = GPUBacktestService()
                 logger.info("GPU acceleration service initialized")
             except Exception as e:
-                logger.warning(f"Failed to initialize GPU service: {e}")
+                logger.warning("Failed to initialize GPU service: %(e)s"")
 
     async def create_algorithm(self, algorithm_type: AlgorithmType, config: AlgorithmConfig) -> BaseAlgorithm:
         """
@@ -158,14 +153,14 @@ class AlgorithmFactory:
                 if config.enable_gpu and GPU_AVAILABLE and hasattr(algorithm, "gpu_enabled"):
                     await self._configure_gpu_algorithm(algorithm, config)
 
-                logger.info(f"Created algorithm: {algorithm_type.value}")
+                logger.info("Created algorithm: {algorithm_type.value}"")
                 return algorithm
 
             else:
                 raise RuntimeError("Algorithm framework not available")
 
         except Exception as e:
-            logger.error(f"Failed to create algorithm {algorithm_type.value}: {e}")
+            logger.error("Failed to create algorithm {algorithm_type.value}: %(e)s"")
             raise RuntimeError(f"Algorithm creation failed: {str(e)}")
 
     async def _get_algorithm_class(self, algorithm_type: AlgorithmType):
@@ -204,7 +199,7 @@ class AlgorithmFactory:
             logger.info("GPU context initialized for algorithm")
 
         except Exception as e:
-            logger.warning(f"GPU configuration failed, falling back to CPU: {e}")
+            logger.warning("GPU configuration failed, falling back to CPU: %(e)s"")
             await algorithm.fallback_to_cpu()
 
 
@@ -278,7 +273,7 @@ class AlgorithmService:
             HTTPException: If training fails
         """
         try:
-            logger.info(f"Starting training for algorithm: {request.algorithm_type.value}")
+            logger.info("Starting training for algorithm: {request.algorithm_type.value}"")
 
             # Create algorithm instance
             algorithm = await self.factory.create_algorithm(request.algorithm_type, request.config)
@@ -304,12 +299,12 @@ class AlgorithmService:
             if self.repository:
                 await self._persist_training_result(model_id, request, result, start_time, end_time)
 
-            logger.info(f"Training completed for {request.algorithm_type.value}, model_id: {model_id}")
+            logger.info("Training completed for {request.algorithm_type.value}, model_id: %(model_id)s"")
 
             return self.formatter.format_training_result(result, request.algorithm_type)
 
         except Exception as e:
-            logger.error(f"Training failed for {request.algorithm_type.value}: {traceback.format_exc()}")
+            logger.error("Training failed for {request.algorithm_type.value}: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Algorithm training failed: {str(e)}")
 
     async def predict_with_algorithm(self, request: AlgorithmPredictRequest) -> Dict[str, Any]:
@@ -326,7 +321,7 @@ class AlgorithmService:
             HTTPException: If prediction fails
         """
         try:
-            logger.info(f"Starting prediction for model: {request.model_id}")
+            logger.info("Starting prediction for model: {request.model_id}"")
 
             # Get algorithm instance
             algorithm = self._active_algorithms.get(request.model_id)
@@ -354,12 +349,12 @@ class AlgorithmService:
                     prediction_end_time,
                 )
 
-            logger.info(f"Prediction completed for model: {request.model_id}")
+            logger.info("Prediction completed for model: {request.model_id}"")
 
             return self.formatter.format_prediction_result(result, algorithm.algorithm_type)
 
         except Exception as e:
-            logger.error(f"Prediction failed for model {request.model_id}: {traceback.format_exc()}")
+            logger.error("Prediction failed for model {request.model_id}: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Algorithm prediction failed: {str(e)}")
 
     async def get_algorithm_info(self, request: AlgorithmInfoRequest) -> Dict[str, Any]:
@@ -386,7 +381,7 @@ class AlgorithmService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get algorithm info: {traceback.format_exc()}")
+            logger.error("Failed to get algorithm info: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Failed to get algorithm information: {str(e)}")
 
     async def list_active_models(self) -> List[Dict[str, Any]]:
@@ -420,13 +415,13 @@ class AlgorithmService:
             return models
 
         except Exception as e:
-            logger.error(f"Failed to list active models: {traceback.format_exc()}")
+            logger.error("Failed to list active models: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Failed to list active models: {str(e)}")
 
             return models
 
         except Exception as e:
-            logger.error(f"Failed to list active models: {traceback.format_exc()}")
+            logger.error("Failed to list active models: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Failed to list active models: {str(e)}")
 
     async def unload_model(self, model_id: str) -> Dict[str, Any]:
@@ -449,7 +444,7 @@ class AlgorithmService:
 
                 del self._active_algorithms[model_id]
 
-                logger.info(f"Unloaded model: {model_id}")
+                logger.info("Unloaded model: %(model_id)s"")
                 return {
                     "status": "success",
                     "model_id": model_id,
@@ -459,7 +454,7 @@ class AlgorithmService:
                 raise ValueError(f"Model {model_id} not found")
 
         except Exception as e:
-            logger.error(f"Failed to unload model {model_id}: {traceback.format_exc()}")
+            logger.error("Failed to unload model %(model_id)s: {traceback.format_exc()}"")
             raise HTTPException(status_code=500, detail=f"Failed to unload model: {str(e)}")
 
     async def _prepare_training_data(self, request: AlgorithmTrainRequest) -> Any:
@@ -610,7 +605,7 @@ class AlgorithmService:
             await self.repository.save_training_history(training_history_data)
 
         except Exception as e:
-            logger.error(f"Failed to persist training result: {e}")
+            logger.error("Failed to persist training result: %(e)s"")
             # Don't raise exception to avoid breaking the main flow
 
     async def _persist_prediction_result(
@@ -656,7 +651,7 @@ class AlgorithmService:
             await self.repository.save_prediction_history(prediction_history_data)
 
         except Exception as e:
-            logger.error(f"Failed to persist prediction result: {e}")
+            logger.error("Failed to persist prediction result: %(e)s"")
             # Don't raise exception to avoid breaking the main flow
 
     # ==================== 历史查询方法 ====================

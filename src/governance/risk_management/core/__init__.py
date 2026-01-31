@@ -8,9 +8,10 @@ Risk Management Core Module
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -93,22 +94,18 @@ class IRiskCalculator(ABC):
     @abstractmethod
     async def calculate_stock_risk(self, symbol: str) -> StockRiskMetrics:
         """计算个股风险指标"""
-        pass
 
     @abstractmethod
     async def calculate_portfolio_risk(self, portfolio_id: str) -> PortfolioRiskMetrics:
         """计算组合风险指标"""
-        pass
 
     @abstractmethod
     async def calculate_correlation_matrix(self, symbols: List[str]) -> np.ndarray:
         """计算相关性矩阵"""
-        pass
 
     @abstractmethod
     async def calculate_var(self, returns: np.ndarray, confidence: float = 0.95) -> float:
         """计算VaR"""
-        pass
 
 
 class IStopLossEngine(ABC):
@@ -117,19 +114,16 @@ class IStopLossEngine(ABC):
     @abstractmethod
     async def calculate_volatility_stop_loss(self, symbol: str, entry_price: float, k: float = 2.0) -> Dict[str, Any]:
         """计算波动率自适应止损"""
-        pass
 
     @abstractmethod
     async def calculate_trailing_stop_loss(
         self, symbol: str, highest_price: float, trailing_percentage: float = 0.08
     ) -> Dict[str, Any]:
         """计算跟踪止损"""
-        pass
 
     @abstractmethod
     async def check_stop_loss_trigger(self, symbol: str, current_price: float, stop_loss_price: float) -> bool:
         """检查是否触发止损"""
-        pass
 
 
 class IRiskAlertService(ABC):
@@ -138,17 +132,14 @@ class IRiskAlertService(ABC):
     @abstractmethod
     async def evaluate_risk_level(self, metrics: Dict) -> str:
         """评估风险等级"""
-        pass
 
     @abstractmethod
     async def generate_alerts(self, risk_metrics: Dict) -> List[RiskAlert]:
         """生成风险告警"""
-        pass
 
     @abstractmethod
     async def send_alerts(self, alerts: List[RiskAlert]) -> bool:
         """发送告警通知"""
-        pass
 
 
 class RiskManagementCore:
@@ -167,7 +158,6 @@ class RiskManagementCore:
         """初始化风险管理组件"""
         # 这里会动态导入具体的实现类
         # 基于配置选择CPU/GPU版本
-        pass
 
     async def calculate_stock_risk(self, symbol: str) -> StockRiskMetrics:
         """计算个股风险"""

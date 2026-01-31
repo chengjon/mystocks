@@ -15,10 +15,11 @@ Date: 2026-01-09
 
 import logging
 import threading
-from datetime import datetime
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -126,16 +127,16 @@ class ConfigManager:
 
             if config_data and "data_sources" in config_data:
                 self.config_cache = config_data["data_sources"]
-                logger.info(f"Loaded {len(self.config_cache)} data source configurations")
+                logger.info("Loaded {len(self.config_cache)} data source configurations")
             else:
-                logger.warning(f"No data sources found in {self.yaml_config_path}")
+                logger.warning("No data sources found in {self.yaml_config_path}")
                 self.config_cache = {}
 
         except FileNotFoundError:
-            logger.error(f"Configuration file not found: {self.yaml_config_path}")
+            logger.error("Configuration file not found: {self.yaml_config_path}")
             self.config_cache = {}
         except Exception as e:
-            logger.error(f"Failed to load configuration: {e}")
+            logger.error("Failed to load configuration: %(e)s")
             self.config_cache = {}
 
     def create_endpoint(
@@ -219,7 +220,7 @@ class ConfigManager:
                 endpoint_name=endpoint_name, action="create", actor=changed_by, request_body=config, response_status=201
             )
 
-            logger.info(f"Created endpoint: {endpoint_name}")
+            logger.info("Created endpoint: %(endpoint_name)s")
 
             return ConfigChangeResult(
                 success=True,
@@ -305,7 +306,7 @@ class ConfigManager:
                 metadata={"changed_fields": changed_fields},
             )
 
-            logger.info(f"Updated endpoint: {endpoint_name}, version: {next_version}")
+            logger.info("Updated endpoint: %(endpoint_name)s, version: %(next_version)s")
 
             return ConfigChangeResult(
                 success=True,
@@ -365,7 +366,7 @@ class ConfigManager:
                 response_status=204,
             )
 
-            logger.info(f"Deleted endpoint: {endpoint_name}")
+            logger.info("Deleted endpoint: %(endpoint_name)s")
 
             return ConfigChangeResult(
                 success=True,
@@ -490,7 +491,7 @@ class ConfigManager:
                 metadata={"restored_from_version": target_version},
             )
 
-            logger.info(f"Rolled back endpoint: {endpoint_name} to version {target_version}")
+            logger.info("Rolled back endpoint: %(endpoint_name)s to version %(target_version)s")
 
             return ConfigChangeResult(
                 success=True,
@@ -544,7 +545,7 @@ class ConfigManager:
                 try:
                     callback(self.config_cache)
                 except Exception as e:
-                    logger.error(f"Reload callback failed: {e}")
+                    logger.error("Reload callback failed: %(e)s")
 
             duration = (datetime.now() - start_time).total_seconds()
 
@@ -559,7 +560,7 @@ class ConfigManager:
                 metadata={"old_count": old_count, "new_count": len(self.config_cache), "duration_seconds": duration},
             )
 
-            logger.info(f"Configuration reloaded: {old_count} -> {len(self.config_cache)} endpoints")
+            logger.info("Configuration reloaded: %(old_count)s -> {len(self.config_cache)} endpoints")
 
             return {
                 "success": True,
@@ -578,7 +579,7 @@ class ConfigManager:
         """
         if callback not in self.reload_callbacks:
             self.reload_callbacks.append(callback)
-            logger.info(f"Registered reload callback: {callback.__name__}")
+            logger.info("Registered reload callback: {callback.__name__")
 
     # ========== Private Methods ==========
 
@@ -605,7 +606,7 @@ class ConfigManager:
             "FINANCIAL_DATA",
             "REFERENCE_DATA",
         ]:
-            logger.warning(f"Unknown data_category: {config.get('data_category')}")
+            logger.warning("Unknown data_category: {config.get('data_category')")
 
     def _save_to_yaml(self):
         """保存配置到YAML文件"""
@@ -618,9 +619,9 @@ class ConfigManager:
                     allow_unicode=True,
                     sort_keys=False,
                 )
-            logger.debug(f"Saved configuration to {self.yaml_config_path}")
+            logger.debug("Saved configuration to {self.yaml_config_path}")
         except Exception as e:
-            logger.error(f"Failed to save configuration: {e}")
+            logger.error("Failed to save configuration: %(e)s")
             raise
 
     def _record_version(
@@ -697,10 +698,10 @@ class ConfigManager:
                 ),
             )
 
-            logger.debug(f"Saved version to database: {version_info.endpoint_name} v{version_info.version}")
+            logger.debug("Saved version to database: {version_info.endpoint_name} v{version_info.version")
 
         except Exception as e:
-            logger.error(f"Failed to save version to database: {e}")
+            logger.error("Failed to save version to database: %(e)s")
             # 不抛出异常，允许继续操作
 
     def _record_audit_log(
@@ -757,8 +758,8 @@ class ConfigManager:
                     ),
                 )
 
-                logger.debug(f"Saved audit log: {action} on {endpoint_name}")
+                logger.debug("Saved audit log: %(action)s on %(endpoint_name)s")
 
             except Exception as e:
-                logger.error(f"Failed to save audit log: {e}")
+                logger.error("Failed to save audit log: %(e)s")
                 # 不抛出异常，允许继续操作

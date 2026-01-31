@@ -5,7 +5,8 @@
 
 import logging
 import time
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 try:
@@ -17,15 +18,15 @@ except ImportError:
     cp = None
     print("Warning: CuPy not available, falling back to NumPy")
 
+from .standardized_interface import MatrixConfig  # 别名
 from .standardized_interface import (
-    StandardizedKernelInterface,
-    MatrixOperationType,
-    MatrixOperationConfig,
-    TransformConfig,
     InferenceConfig,
-    KernelExecutionResult,
     KernelConfig,
-    MatrixConfig,  # 别名
+    KernelExecutionResult,
+    MatrixOperationConfig,
+    MatrixOperationType,
+    StandardizedKernelInterface,
+    TransformConfig,
 )
 
 logger = logging.getLogger(__name__)

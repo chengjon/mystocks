@@ -129,7 +129,7 @@
     import { ref, computed } from 'vue'
     import ArtDecoCard from '../base/ArtDecoCard.vue'
     import ArtDecoButton from '../base/ArtDecoButton.vue'
-    import ArtDecoLoader from './ArtDecoLoader.vue'
+    import ArtDecoLoader from '../trading/ArtDecoLoader.vue'
 
     // ============================================
     //   类型定义

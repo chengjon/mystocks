@@ -26,16 +26,17 @@ Contract Version: 1.0
 """
 
 import logging
-from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Query, Depends, Request
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field, validator
 
 # 导入统一响应格式
 from app.core.responses import (
-    UnifiedResponse,
     BusinessCode,
-    create_unified_success_response,
+    UnifiedResponse,
     create_unified_error_response,
+    create_unified_success_response,
     not_found,
 )
 
@@ -212,7 +213,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
         400: 配置验证失败
     """
     request_id = getattr(request.state, "request_id", None)
-    logger.info(f"Creating data source: {config.endpoint_name}", extra={"request_id": request_id})
+    logger.info("Creating data source: {config.endpoint_name}", extra={"request_id": request_id})
 
     try:
         manager = get_config_manager()
@@ -243,7 +244,7 @@ async def create_data_source(config: DataSourceCreate, request: Request, current
         )
 
     except Exception as e:
-        logger.error(f"Failed to create data source: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to create data source: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"创建数据源配置失败: {str(e)}",
@@ -275,7 +276,7 @@ async def update_data_source(
         400: 无有效更新字段
     """
     request_id = getattr(request.state, "request_id", None)
-    logger.info(f"Updating data source: {endpoint_name}", extra={"request_id": request_id})
+    logger.info("Updating data source: {endpoint_name}", extra={"request_id": request_id})
 
     try:
         manager = get_config_manager()
@@ -318,7 +319,7 @@ async def update_data_source(
         )
 
     except Exception as e:
-        logger.error(f"Failed to update data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to update data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"更新数据源配置失败: {str(e)}",
@@ -341,7 +342,7 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
         404: 端点不存在
     """
     request_id = getattr(request.state, "request_id", None)
-    logger.info(f"Deleting data source: {endpoint_name}", extra={"request_id": request_id})
+    logger.info("Deleting data source: {endpoint_name}", extra={"request_id": request_id})
 
     try:
         manager = get_config_manager()
@@ -361,7 +362,7 @@ async def delete_data_source(endpoint_name: str, request: Request, current_user:
         )
 
     except Exception as e:
-        logger.error(f"Failed to delete data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to delete data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"删除数据源配置失败: {str(e)}",
@@ -401,7 +402,7 @@ async def get_data_source(endpoint_name: str, request: Request):
         )
 
     except Exception as e:
-        logger.error(f"Failed to get data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to get data source {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"获取数据源配置失败: {str(e)}",
@@ -446,7 +447,7 @@ async def list_data_sources(
         )
 
     except Exception as e:
-        logger.error(f"Failed to list data sources: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to list data sources: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"列出数据源配置失败: {str(e)}",
@@ -471,7 +472,7 @@ async def batch_operations(
         400: 操作列表无效或超过50个
     """
     request_id = getattr(request.state, "request_id", None)
-    logger.info(f"Batch operations: {len(batch_request.operations)} items", extra={"request_id": request_id})
+    logger.info("Batch operations: {len(batch_request.operations)} items", extra={"request_id": request_id})
 
     try:
         manager = get_config_manager()
@@ -555,7 +556,7 @@ async def batch_operations(
         )
 
     except Exception as e:
-        logger.error(f"Failed to execute batch operations: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to execute batch operations: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"批量操作失败: {str(e)}",
@@ -618,7 +619,7 @@ async def get_version_history(
         )
 
     except Exception as e:
-        logger.error(f"Failed to get version history for {endpoint_name}: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to get version history for {endpoint_name}: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"获取版本历史失败: {str(e)}",
@@ -650,7 +651,7 @@ async def rollback_to_version(
         404: 端点或版本不存在
     """
     request_id = getattr(request.state, "request_id", None)
-    logger.info(f"Rolling back {endpoint_name} to version {version}", extra={"request_id": request_id})
+    logger.info("Rolling back {endpoint_name} to version {version}", extra={"request_id": request_id})
 
     try:
         manager = get_config_manager()
@@ -712,7 +713,7 @@ async def reload_config(request: Request, reload_req: ReloadRequest, current_use
         )
 
     except Exception as e:
-        logger.error(f"Failed to reload config: {str(e)}", extra={"request_id": request_id})
+        logger.error("Failed to reload config: {str(e)}", extra={"request_id": request_id})
         return create_unified_error_response(
             code=BusinessCode.INTERNAL_ERROR,
             message=f"配置热重载失败: {str(e)}",

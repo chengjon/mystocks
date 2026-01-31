@@ -3,8 +3,8 @@
 验证OpenAPI规范的正确性和完整性
 """
 
-from typing import List, Dict, Any
 import json
+from typing import Any, Dict, List
 
 try:
     from prance import BaseParser
@@ -15,8 +15,8 @@ except ImportError:
 
 
 from app.api.contract.schemas import (
-    ValidationResult,
     ContractValidateResponse,
+    ValidationResult,
 )
 
 
@@ -149,8 +149,8 @@ class ContractValidator:
 
         try:
             # 将spec写入临时文件
-            import tempfile
             import os
+            import tempfile
 
             with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
                 json.dump(spec, f)

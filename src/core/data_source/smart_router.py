@@ -5,9 +5,9 @@
 """
 
 import logging
-from typing import Dict, List, Optional, Any
-from collections import defaultdict
 import time
+from collections import defaultdict
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class SmartRouter:
 
         best_score, best_endpoint = scored_endpoints[0]
 
-        logger.debug(f"SmartRouter selected: {best_endpoint.get('endpoint_name')} " f"(score={best_score:.2f})")
+        logger.debug("SmartRouter selected: {best_endpoint.get('endpoint_name')} " f"(score={best_score:.2f})")
 
         return best_endpoint
 
@@ -296,7 +296,7 @@ class SmartRouter:
         # 增加负载计数
         self.current_load[endpoint_name] += 1
 
-        logger.debug(f"Recorded call: {endpoint_name}, latency={latency:.3f}s, success={success}")
+        logger.debug("Recorded call: %(endpoint_name)s, latency={latency:.3f}s, success=%(success)s")
 
     def record_call_complete(self, endpoint_name: str):
         """
@@ -376,4 +376,4 @@ class SmartRouter:
             self.performance_stats.clear()
             self.current_load.clear()
 
-        logger.info(f"Reset stats for: {endpoint_name or 'all endpoints'}")
+        logger.info("Reset stats for: {endpoint_name or 'all endpoints'")

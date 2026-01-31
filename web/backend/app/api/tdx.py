@@ -11,18 +11,19 @@ TDX数据API路由
 所有接口均需JWT认证
 """
 
-from fastapi import APIRouter, HTTPException, Query, Depends, status
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from app.core.security import User, get_current_active_user
 from app.schemas.tdx_schemas import (
-    RealTimeQuoteResponse,
-    KlineResponse,
     IndexQuoteResponse,
+    KlineResponse,
+    RealTimeQuoteResponse,
     TdxHealthResponse,
 )
-from app.services.tdx_service import get_tdx_service, TdxService
-from app.core.security import get_current_active_user, User
+from app.services.tdx_service import TdxService, get_tdx_service
 
 router = APIRouter()
 

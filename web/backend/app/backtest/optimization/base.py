@@ -4,12 +4,12 @@ Base Optimizer
 参数优化基类 - 定义优化器接口和通用功能
 """
 
+import copy
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional
 from datetime import datetime
-import logging
-import copy
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +180,7 @@ class BaseOptimizer(ABC):
         self._data_source = None
         self._market_data = None
 
-        logger.info(f"优化器初始化: 策略={strategy_type}, 目标={objective}, 参数数={len(parameter_spaces)}")
+        logger.info("优化器初始化: 策略=%(strategy_type)s, 目标=%(objective)s, 参数数={len(parameter_spaces)}"")
 
     def set_backtest_engine(self, engine):
         """设置回测引擎"""
@@ -243,9 +243,9 @@ class BaseOptimizer(ABC):
                 )
                 if df is not None and not df.empty:
                     market_data[symbol] = df
-                    logger.debug(f"加载{symbol}数据: {len(df)}条")
+                    logger.debug("加载%(symbol)s数据: {len(df)}条"")
             except Exception as e:
-                logger.error(f"加载{symbol}数据失败: {e}")
+                logger.error("加载%(symbol)s数据失败: %(e)s"")
 
         self._market_data = market_data
         return market_data
@@ -299,7 +299,7 @@ class BaseOptimizer(ABC):
             )
 
         except Exception as e:
-            logger.error(f"回测执行失败: {e}")
+            logger.error("回测执行失败: %(e)s"")
             result = OptimizationResult(
                 parameters=parameters,
                 optimization_time=time.time() - start_time,
@@ -336,7 +336,6 @@ class BaseOptimizer(ABC):
         Returns:
             所有优化结果列表
         """
-        pass
 
     def get_top_results(self, n: int = 10) -> List[OptimizationResult]:
         """
@@ -395,4 +394,4 @@ class BaseOptimizer(ABC):
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2, default=str)
 
-        logger.info(f"优化结果已导出: {filepath}")
+        logger.info("优化结果已导出: %(filepath)s"")

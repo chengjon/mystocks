@@ -1,3 +1,4 @@
+# pylint: disable=import-error,no-name-in-module
 """
 # 功能：股票日线数据适配器
 # 作者：MyStocks Project
@@ -7,7 +8,7 @@
 """
 
 import pandas as pd
-from typing import Tuple
+from typing import Dict, List, Tuple
 from datetime import datetime, timedelta
 from loguru import logger
 
@@ -258,3 +259,122 @@ class StockDailyAdapter(BaseFinancialAdapter):
     def get_financial_report(self, symbol: str, report_type: str, period: str) -> dict:
         """获取财务报告 - 此适配器不实现财务报告功能"""
         raise NotImplementedError("StockDailyAdapter 不支持财务报告获取")
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取指数日线数据
+
+        Args:
+            symbol: 指数代码
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 日线数据
+
+        Note:
+            StockDailyAdapter专注于股票日线数据，不支持指数数据
+        """
+        logger.warning("StockDailyAdapter不支持获取指数日线数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_stock_basic(self, symbol: str) -> Dict:
+        """
+        获取股票基本信息
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 股票基本信息
+
+        Note:
+            StockDailyAdapter专注于历史日线数据，建议使用其他数据源获取基本信息
+        """
+        logger.warning("StockDailyAdapter不支持获取股票基本信息: %s", symbol)
+        return {}
+
+    def get_index_components(self, symbol: str) -> List[str]:
+        """
+        获取指数成分股
+
+        Args:
+            symbol: 指数代码
+
+        Returns:
+            List[str]: 指数成分股代码列表
+
+        Note:
+            StockDailyAdapter专注于股票日线数据，不支持指数成分股
+        """
+        logger.warning("StockDailyAdapter不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_real_time_data(self, symbol: str) -> Dict:
+        """
+        获取实时数据
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 实时数据
+
+        Note:
+            StockDailyAdapter专注于历史日线数据，不支持实时数据
+        """
+        logger.warning("StockDailyAdapter不支持获取实时数据: %s", symbol)
+        return {}
+
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取交易日历
+
+        Args:
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 交易日历数据
+
+        Note:
+            StockDailyAdapter专注于股票日线数据，不支持交易日历
+        """
+        logger.warning("StockDailyAdapter不支持获取交易日历")
+        return pd.DataFrame()
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """
+        获取财务数据
+
+        Args:
+            symbol: 股票代码
+            period: 报告期间
+
+        Returns:
+            pd.DataFrame: 财务数据
+
+        Note:
+            StockDailyAdapter专注于股票日线数据，不支持财务数据
+        """
+        logger.warning("StockDailyAdapter不支持获取财务数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_news_data(self, symbol: str = None, limit: int = 10) -> List[Dict]:
+        """
+        获取新闻数据
+
+        Args:
+            symbol: 股票代码
+            limit: 返回数量限制
+
+        Returns:
+            List[Dict]: 新闻数据列表
+
+        Note:
+            StockDailyAdapter专注于股票日线数据，不支持新闻数据
+        """
+        logger.warning("StockDailyAdapter不支持获取新闻数据")
+        return []

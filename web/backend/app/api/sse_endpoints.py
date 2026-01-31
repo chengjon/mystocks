@@ -16,12 +16,13 @@ Usage (JavaScript):
     });
 """
 
-from fastapi import APIRouter, Request, Query
-from sse_starlette.sse import EventSourceResponse
-from typing import Optional
 import logging
+from typing import Optional
 
-from app.core.sse_manager import sse_event_generator, get_sse_manager
+from fastapi import APIRouter, Query, Request
+from sse_starlette.sse import EventSourceResponse
+
+from app.core.sse_manager import get_sse_manager, sse_event_generator
 
 logger = logging.getLogger(__name__)
 

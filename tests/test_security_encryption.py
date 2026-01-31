@@ -10,13 +10,14 @@ Tests for:
 - JWT secret protection
 """
 
-import pytest
 import os
-import tempfile
-from pathlib import Path
 
 # Add paths for imports
 import sys
+import tempfile
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "backend"))
@@ -235,8 +236,8 @@ class TestSecureConfig:
     def get_secure_config():
         """Get SecureConfig instance"""
         try:
-            from app.core.secure_config import SecureConfig
             from app.core.encryption import EncryptionManager
+            from app.core.secure_config import SecureConfig
 
             em = EncryptionManager(master_password="test-master-password-123")
             return SecureConfig(em)
@@ -380,8 +381,8 @@ class TestSecureConfig:
             assert config.save_to_file(temp_path) is True
 
             # Load into new config instance
-            from app.core.secure_config import SecureConfig
             from app.core.encryption import EncryptionManager
+            from app.core.secure_config import SecureConfig
 
             em = EncryptionManager(master_password="test-master-password-123")
             new_config = SecureConfig(em)
@@ -517,8 +518,8 @@ class TestEncryptionSecurityPractices:
     def test_file_permissions_restrictive(self):
         """Saved encrypted config file has restrictive permissions"""
         try:
-            from app.core.secure_config import SecureConfig
             from app.core.encryption import EncryptionManager
+            from app.core.secure_config import SecureConfig
         except ImportError:
             pytest.skip("SecureConfig not available")
 

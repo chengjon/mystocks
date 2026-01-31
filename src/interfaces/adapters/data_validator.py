@@ -4,10 +4,11 @@
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-import pandas as pd
 import re
 from datetime import datetime
 from typing import List
+
+import pandas as pd
 
 
 class DataValidator:
@@ -16,7 +17,6 @@ class DataValidator:
 
 def __init__(self):
     """初始化数据校验器"""
-    pass
 
 
 def validate_stock_symbol(self, symbol: str) -> bool:

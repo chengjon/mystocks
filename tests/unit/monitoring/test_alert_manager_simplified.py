@@ -7,11 +7,12 @@ Simplified Alert Manager Test Suite
 测试模块: src.monitoring.alert_manager (148行)
 """
 
-import pytest
 import logging
-from unittest.mock import patch, Mock
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
+
+import pytest
 
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

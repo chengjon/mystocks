@@ -7,13 +7,14 @@ Data Source Logger Test Suite
 测试模块: src.utils.data_source_logger (177行)
 """
 
-import pytest
 import logging
-import time
 import os
-import tempfile
 import shutil
-from unittest.mock import patch, MagicMock
+import tempfile
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from src.utils.data_source_logger import (
     DataSourceLogger,

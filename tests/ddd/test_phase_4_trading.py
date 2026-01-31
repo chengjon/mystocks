@@ -2,9 +2,11 @@
 Phase 4: Trading Context 验证测试
 """
 
-import pytest
 from datetime import datetime
-from src.domain.trading import Order, Position, OrderSide, OrderType, OrderStatus, OrderCreatedEvent, OrderFilledEvent
+
+import pytest
+
+from src.domain.trading import Order, OrderCreatedEvent, OrderFilledEvent, OrderSide, OrderStatus, OrderType, Position
 
 
 def test_order_creation():

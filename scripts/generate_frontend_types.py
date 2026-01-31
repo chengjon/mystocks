@@ -46,6 +46,7 @@ DIR_TO_DOMAIN = {
     "v1/analysis": "analysis",
     "schemas": "common",
     "schema": "common",
+    "models": "common", # Explicitly map models directory to common
 }
 
 
@@ -67,6 +68,7 @@ class TypeConverter:
         "dict": "Record<string, any>",
         "list": "any[]",
         "tuple": "any[]",
+        "date_type": "string",
     }
 
     @classmethod
@@ -114,6 +116,10 @@ class TypeConverter:
             # Convert to TypeScript union type
             return " | ".join(f"'{part}'" for part in parts)
 
+        # Fix any remaining list[...] patterns (not handled by List[...] above)
+        if "list[" in type_str:
+            type_str = type_str.replace("list[", "").replace("]", "[]")
+
         # Apply Python type name fixes at the end
         return cls._fix_python_type_names(type_str)
 
@@ -123,7 +129,8 @@ class TypeConverter:
         # First remove parentheses around types: (string, any) -> string, any
         type_str = re.sub(r"\(([^,]+),\s*([^)]+)\)", r"\1, \2", type_str)
 
-        # Then handle bare types with word boundaries
+        # Then handle bare types with word boundaries (but not in generic context)
+        # Use negative lookbehind to avoid replacing list when followed by [
         replacements = {
             r"\bstr\b": "string",
             r"\bint\b": "number",
@@ -131,6 +138,7 @@ class TypeConverter:
             r"\bbool\b": "boolean",
             r"\bAny\b": "any",
             r"\bdict\b": "Record<string, any>",
+            r"\blist(?!\[)": "Array<any>",  # Only replace 'list' when NOT followed by [
         }
         for py_type, ts_type in replacements.items():
             type_str = re.sub(py_type, ts_type, type_str)
@@ -226,8 +234,31 @@ class PydanticModelExtractor:
 
     def _add_or_merge_model(self, name: str, new_info: Dict, file_path: Path, domain: str) -> None:
         """Add new model or merge with existing one, detecting conflicts"""
+        new_info["source_file"] = str(file_path.relative_to(PROJECT_ROOT))
+        new_info["source_domain"] = domain
+        
         if name in self.models:
             existing_info = self.models[name]
+            existing_domain = existing_info.get("source_domain", "common")
+
+            # Prioritize specific domains over 'common'
+            if existing_domain == "common" and domain != "common":
+                # Reassign the model to the more specific domain
+                # Remove from common's domain_models if it was there
+                if name in self.domain_models["common"]:
+                    del self.domain_models["common"][name]
+                self.models[name] = new_info # Update model with the new info (which contains the specific domain)
+                self.domain_models[domain][name] = new_info
+                self.warnings.append(
+                    f"Reassigned model '{name}' from 'common' to '{domain}' due to more specific definition in {file_path}"
+                )
+                return # Successfully reassigned, no further merging/conflict checks needed for this instance
+            elif domain == "common" and existing_domain != "common":
+                # If current is common but existing is specific, keep the existing one
+                self.warnings.append(
+                    f"Ignoring 'common' definition for model '{name}' in {file_path}, keeping definition from '{existing_domain}'"
+                )
+                return
 
             # Check for type conflicts
             if existing_info.get("type") != new_info.get("type"):
@@ -509,21 +540,14 @@ class TypeScriptGenerator:
 
 
 def generate_index_file(domains: List[str]) -> str:
-    """Generate index.ts file with unified exports"""
+    """Generate index.ts file with unified exports (no duplicates)"""
     lines = [
         "// Auto-generated index file for TypeScript types",
         f"// Generated at: {datetime.now().isoformat()}",
         "",
     ]
 
-    # Export common types first
-    common_file = OUTPUT_DIR / "common.ts"
-    if common_file.exists():
-        lines.append("// Common types")
-        lines.append("export * from './common';")
-        lines.append("")
-
-    # Export domain types
+    # Export all domain types (including common) in one pass to avoid duplicates
     for domain in sorted(domains):
         domain_file = OUTPUT_DIR / f"{domain}.ts"
         if domain_file.exists():

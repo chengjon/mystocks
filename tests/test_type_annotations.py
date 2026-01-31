@@ -3,8 +3,10 @@
 测试类型注解的脚本
 """
 
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
+
 from src.core.data_classification import DataClassification
 
 

@@ -1,4 +1,5 @@
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 实时交易监控API
 Real-time Trading Monitoring API
 
@@ -6,13 +7,14 @@ Real-time Trading Monitoring API
 Provides real-time trading status monitoring, strategy performance tracking, risk metrics monitoring, etc.
 """
 
-from typing import Dict, List, Any, Optional
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from src.trading.realtime_strategy_executor import RealtimeStrategyExecutor
 from src.trading.live_trading_engine import LiveTradingConfig
+from src.trading.realtime_strategy_executor import RealtimeStrategyExecutor
 
 router = APIRouter(prefix="/api/trading", tags=["实时交易监控"])
 
@@ -256,9 +258,9 @@ async def add_strategy(strategy_name: str = Query(..., description="策略名称
         executor = get_trading_executor()
 
         # 根据策略名称创建策略实例
-        from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
         from src.ml_strategy.strategy.decision_tree_trading_strategy import DecisionTreeTradingStrategy
         from src.ml_strategy.strategy.naive_bayes_trading_strategy import NaiveBayesTradingStrategy
+        from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
 
         strategy_classes = {
             "SVMTradingStrategy": SVMTradingStrategy,

@@ -65,7 +65,7 @@ class SecurityTester:
                 logger.info("Admin login successful")
                 return token
             else:
-                logger.error(f"Admin login failed: {response.status}")
+                logger.error("Admin login failed: {response.status}")
                 return None
 
     async def login_user(self) -> str:
@@ -80,7 +80,7 @@ class SecurityTester:
                 logger.info("User login successful")
                 return token
             else:
-                logger.error(f"User login failed: {response.status}")
+                logger.error("User login failed: {response.status}")
                 return None
 
     def get_headers(self, token: str) -> Dict[str, str]:
@@ -97,7 +97,7 @@ class SecurityTester:
         }
         self.config.test_results.append(result)
         status = "✅ PASS" if passed else "❌ FAIL"
-        logger.info(f"{status}: {test_name} - {details}")
+        logger.info("%(status)s: %(test_name)s - %(details)s")
 
     # ==================== Metrics Tests ====================
 

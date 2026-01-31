@@ -5,12 +5,13 @@
 测试MyStocks系统中数据质量验证器的完整功能，包括质量检查、异常检测和监控集成
 """
 
-import pytest
-import sys
 import os
-import pandas as pd
-import numpy as np
+import sys
 from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))

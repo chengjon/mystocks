@@ -28,6 +28,21 @@ class MyStocksException(Exception):
         self.details = details or {}
         self.status_code = status_code
 
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        将异常转换为字典格式
+
+        Returns:
+            Dict[str, Any]: 包含异常信息的字典
+        """
+        return {
+            "error": self.__class__.__name__,
+            "message": self.message,
+            "error_code": self.error_code,
+            "details": self.details,
+            "status_code": self.status_code,
+        }
+
 
 class DataException(MyStocksException):
     """数据相关异常"""
@@ -189,6 +204,24 @@ class DataSourceConfigError(DataSourceException):
         super().__init__(message, error_code="DATA_SOURCE_CONFIG_ERROR", status_code=500, **kwargs)
 
 
+class DataSourceDataNotFound(DataSourceException):
+    """数据源数据不存在异常"""
+
+    def __init__(self, source_name: str, data_identifier: str, **kwargs):
+        message = f"Data not found in source '{source_name}': {data_identifier}"
+        super().__init__(message, error_code="DATA_SOURCE_DATA_NOT_FOUND", status_code=404, **kwargs)
+
+
+class DataSourceQueryError(DataSourceException):
+    """数据源查询异常"""
+
+    def __init__(self, source_name: str, query: str, details: str = "", **kwargs):
+        message = f"Query failed in source '{source_name}': {query}"
+        if details:
+            message += f" - {details}"
+        super().__init__(message, error_code="DATA_SOURCE_QUERY_ERROR", status_code=500, **kwargs)
+
+
 # 业务逻辑异常
 class InvalidParameterError(BusinessLogicException):
     """无效参数异常"""
@@ -220,7 +253,6 @@ __all__ = [
     "MyStocksException",
     "DataException",
     "DatabaseException",
-    "ConfigException",
     "NetworkException",
     "NetworkError",
     "ServiceError",
@@ -242,6 +274,8 @@ __all__ = [
     # 数据源异常
     "DataSourceConnectionError",
     "DataSourceConfigError",
+    "DataSourceDataNotFound",
+    "DataSourceQueryError",
     # 业务逻辑异常
     "InvalidParameterError",
     "InsufficientPermissionsError",

@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_news_data(self, symbol: str) -> pd.DataFrame:
     """
     获取股票新闻数据
@@ -8,6 +9,8 @@ def get_news_data(self, symbol: str) -> pd.DataFrame:
     Returns:
         DataFrame: 包含股票新闻数据的DataFrame
     """
+
+
     logger.info("尝试获取股票新闻数据: %s", symbol)
 
     # 参数验证

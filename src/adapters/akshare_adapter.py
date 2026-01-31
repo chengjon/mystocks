@@ -27,9 +27,21 @@
 """
 
 # 从子模块导入主类
+import akshare as ak
+
 from src.adapters.akshare import AkshareDataSource
+from src.adapters.akshare.base import logger
+from src.utils.column_mapper import ColumnMapper
+from src.utils.date_utils import normalize_date
+from src.utils.symbol_utils import format_index_code_for_source, format_stock_code_for_source
 
 # 向后兼容：重新导出所有旧接口
 __all__ = [
     "AkshareDataSource",
+    "ak",
+    "logger",
+    "ColumnMapper",
+    "normalize_date",
+    "format_index_code_for_source",
+    "format_stock_code_for_source",
 ]

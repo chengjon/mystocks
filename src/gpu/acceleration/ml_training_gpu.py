@@ -7,17 +7,18 @@
 # 说明：GPU加速的机器学习模型训练和预测引擎
 """
 
-import time
 import logging
-from typing import Dict, Any, Union
-import pandas as pd
+import time
+from typing import Any, Dict, Union
+
 import numpy as np
+import pandas as pd
 
 try:
-    import cupy as cp
     import cudf
+    import cupy as cp
     from cuml.ensemble import RandomForestRegressor
-    from cuml.linear_model import LinearRegression, Ridge, Lasso
+    from cuml.linear_model import Lasso, LinearRegression, Ridge
     from cuml.preprocessing import StandardScaler as GPUStandardScaler
 
     GPU_AVAILABLE = True
@@ -59,11 +60,9 @@ class MLTrainingGPU:
             logger.warning("GPU不可用，将使用CPU模式")
             # 导入CPU替代库
             from sklearn.ensemble import RandomForestRegressor as CPU_RandomForest
-            from sklearn.linear_model import (
-                LinearRegression as CPU_LinearRegression,
-                Ridge as CPU_Ridge,
-                Lasso as CPU_Lasso,
-            )
+            from sklearn.linear_model import Lasso as CPU_Lasso
+            from sklearn.linear_model import LinearRegression as CPU_LinearRegression
+            from sklearn.linear_model import Ridge as CPU_Ridge
             from sklearn.preprocessing import StandardScaler as CPU_StandardScaler
 
             self.LinearRegression = CPU_LinearRegression
@@ -336,8 +335,8 @@ class MLTrainingGPU:
                 r2 = 1 - (ss_res / (ss_tot + 1e-8))
             else:
                 from sklearn.metrics import (
-                    mean_squared_error,
                     mean_absolute_error,
+                    mean_squared_error,
                     r2_score,
                 )
 
@@ -493,7 +492,7 @@ class MLTrainingGPU:
                 predictions_cpu = predictions
 
             # 计算指标
-            from sklearn.metrics import mean_squared_error, mean_absolute_error
+            from sklearn.metrics import mean_absolute_error, mean_squared_error
 
             mse = mean_squared_error(y_val_cpu, predictions_cpu)
             mae = mean_absolute_error(y_val_cpu, predictions_cpu)

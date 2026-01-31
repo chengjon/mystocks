@@ -2,8 +2,8 @@
 统一错误处理工具测试文件
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -11,10 +11,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 import unittest
 
 from src.utils.error_handler import (
-    UnifiedErrorHandler,
-    safe_execute,
-    retry_on_failure,
     DataError,
+    UnifiedErrorHandler,
+    retry_on_failure,
+    safe_execute,
 )
 
 

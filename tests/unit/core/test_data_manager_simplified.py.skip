@@ -1,0 +1,311 @@
+#!/usr/bin/env python3
+"""
+DataManager简化源代码覆盖率测试
+专注于测试核心逻辑，避免数据库连接问题
+"""
+
+import os
+import sys
+from unittest.mock import Mock, patch
+
+import pytest
+
+# Add project root to path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+# Mock the problematic imports first
+sys.modules["src.storage.database.database_manager"] = Mock()
+sys.modules["src.data_access.interfaces"] = Mock()
+
+
+# Create mock classes to avoid import issues
+class MockDatabaseTableManager:
+    def __init__(self):
+        pass
+
+
+class MockDatabaseTarget:
+    TDENGINE = "TDENGINE"
+    POSTGRESQL = "POSTGRESQL"
+
+
+# Patch the imports before importing DataManager
+with patch.dict("sys.modules"):
+    with patch(
+        "src.storage.database.database_manager.DatabaseTableManager",
+        MockDatabaseTableManager,
+    ):
+        with patch("src.core.data_classification.DatabaseTarget", MockDatabaseTarget):
+            # Now import the actual module
+            from src.core.data_classification import DataClassification
+            from src.core.data_manager import DataManager, _NullMonitoring
+
+
+class TestDataManagerSimplified:
+    """DataManager简化测试 - 专注于核心逻辑"""
+
+    def test_null_monitoring_implementation(self):
+        """测试_NullMonitoring实现的完整性"""
+        monitor = _NullMonitoring()
+
+        # 测试所有接口方法
+        op_id = monitor.log_operation_start("test_op", {"key": "value"})
+        assert op_id == "null_operation_id"
+
+        result = monitor.log_operation_result(op_id, True, {"result": "success"})
+        assert result is True
+
+        result = monitor.log_operation("test_op", "INFO", {"data": "test"})
+        assert result is True
+
+        result = monitor.record_performance_metric("metric_name", 0.5, {"unit": "ms"})
+        assert result is True
+
+    @patch("src.storage.database.database_manager.DatabaseTableManager")
+    def test_data_manager_initialization(self, mock_db_class):
+        """测试DataManager初始化逻辑"""
+        mock_db = Mock()
+        mock_db_class.return_value = mock_db
+
+        # 测试默认初始化
+        dm = DataManager(enable_monitoring=False)
+
+        # 验证基本属性
+        assert dm.enable_monitoring is False
+        assert hasattr(dm, "_monitoring_db")
+        assert hasattr(dm, "_performance_monitor")
+        assert isinstance(dm._monitoring_db, _NullMonitoring)
+        assert isinstance(dm._performance_monitor, _NullMonitoring)
+
+        # 验证数据库管理器注入
+        assert dm._db_manager is None  # 默认情况下为None，按需创建
+
+    def test_routing_map_completeness(self):
+        """测试路由映射的完整性"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 验证路由映射存在且不为空
+        assert hasattr(dm, "_ROUTING_MAP")
+        assert len(dm._ROUTING_MAP) > 0
+
+        # 验证所有映射都是有效的DatabaseTarget
+        valid_targets = {"TDENGINE", "POSTGRESQL"}
+        for classification, target in dm._ROUTING_MAP.items():
+            assert target in valid_targets, f"Invalid target {target} for {classification}"
+
+    def test_route_database_performance(self):
+        """测试路由决策性能"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 创建测试数据分类
+        test_classifications = [
+            DataClassification.TICK_DATA,
+            DataClassification.DAILY_KLINE,
+            DataClassification.SYMBOLS_INFO,
+            DataClassification.TECHNICAL_INDICATORS,
+            DataClassification.ORDER_RECORDS,
+            DataClassification.DATA_SOURCE_STATUS,
+        ]
+
+        import time
+
+        # 性能测试 - 1000次路由决策应在5ms内完成
+        start_time = time.time()
+        for _ in range(1000):
+            for classification in test_classifications:
+                result = dm._route_database(classification)
+        end_time = time.time()
+
+        total_operations = 1000 * len(test_classifications)
+        avg_time_ms = (end_time - start_time) / total_operations * 1000
+
+        # 验证性能目标 (<5ms)
+        assert avg_time_ms < 5.0, f"平均路由时间 {avg_time_ms:.2f}ms 超过5ms目标"
+
+    def test_route_database_logic(self):
+        """测试路由逻辑的正确性"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试高频时序数据路由到TDengine
+        tdengine_classifications = [
+            DataClassification.TICK_DATA,
+            DataClassification.MINUTE_KLINE,
+            DataClassification.ORDER_BOOK_DEPTH,
+            DataClassification.LEVEL2_SNAPSHOT,
+            DataClassification.INDEX_QUOTES,
+        ]
+
+        for classification in tdengine_classifications:
+            target = dm._route_database(classification)
+            assert target == "TDENGINE", f"{classification} 应该路由到TDengine"
+
+        # 测试关系型数据路由到PostgreSQL
+        postgresql_classifications = [
+            DataClassification.DAILY_KLINE,
+            DataClassification.SYMBOLS_INFO,
+            DataClassification.TECHNICAL_INDICATORS,
+            DataClassification.ORDER_RECORDS,
+            DataClassification.DATA_SOURCE_STATUS,
+        ]
+
+        for classification in postgresql_classifications:
+            target = dm._route_database(classification)
+            assert target == "POSTGRESQL", f"{classification} 应该路由到PostgreSQL"
+
+    def test_database_name_mapping(self):
+        """测试数据库名称映射"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试时序数据库名称
+        tdengine_db = dm._get_database_name(DataClassification.TICK_DATA)
+        assert tdengine_db == "market_data"
+
+        # 测试关系型数据库名称
+        postgresql_db = dm._get_database_name(DataClassification.SYMBOLS_INFO)
+        assert postgresql_db == "mystocks"
+
+    def test_adapter_management(self):
+        """测试适配器管理功能"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试适配器字典初始化
+        assert hasattr(dm, "_adapters")
+        assert isinstance(dm._adapters, dict)
+
+        # 测试适配器注册
+        mock_adapter = Mock()
+        dm.register_adapter("test_adapter", mock_adapter)
+
+        assert "test_adapter" in dm._adapters
+        assert dm._adapters["test_adapter"] == mock_adapter
+
+    def test_error_handling_graceful_degradation(self):
+        """测试错误处理的优雅降级"""
+        # 测试监控初始化失败时的降级
+        with patch("src.core.data_manager.get_monitoring_database") as mock_get_mon:
+            mock_get_mon.side_effect = Exception("监控初始化失败")
+
+            dm = DataManager(enable_monitoring=True)
+
+            # 验证降级到null监控
+            assert dm.enable_monitoring is False
+            assert isinstance(dm._monitoring_db, _NullMonitoring)
+
+    def test_data_classification_coverage(self):
+        """测试数据分类覆盖性"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 验证所有数据分类都有路由映射
+        all_classifications = [attr for attr in dir(DataClassification) if not attr.startswith("_") and attr.isupper()]
+
+        for classification_name in all_classifications:
+            try:
+                classification = getattr(DataClassification, classification_name)
+                target = dm._route_database(classification)
+                assert target in ["TDENGINE", "POSTGRESQL"]
+            except AttributeError:
+                # 跳过非枚举属性
+                continue
+
+    def test_monitoring_integration(self):
+        """测试监控集成"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试监控调用不会抛出异常
+        dm._monitoring_db.log_operation_start("test", {})
+        dm._monitoring_db.log_operation_result("test", True, {})
+        dm._monitoring_db.record_performance_metric("test", 1.0, {})
+
+        # 验证null监控的行为
+        assert dm._monitoring_db.log_operation_start("test") == "null_operation_id"
+        assert dm._monitoring_db.log_operation_result("test", True, {}) is True
+
+    def test_thread_safety_basic(self):
+        """测试基本线程安全性"""
+        dm = DataManager(enable_monitoring=False)
+
+        import threading
+
+        results = []
+        errors = []
+
+        def worker():
+            try:
+                for i in range(10):
+                    target = dm._route_database(DataClassification.TICK_DATA)
+                    results.append(target)
+            except Exception as e:
+                errors.append(str(e))
+
+        # 启动多个线程
+        threads = [threading.Thread(target=worker) for _ in range(5)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        # 验证没有错误且结果一致
+        assert len(errors) == 0, f"线程安全测试失败: {errors}"
+        assert len(results) == 50
+        assert all(r == "TDENGINE" for r in results)
+
+    def test_memory_efficiency(self):
+        """测试内存效率"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试大量路由决策不会造成内存泄漏
+        initial_size = len(dm._ROUTING_MAP)
+
+        # 执行大量操作
+        for _ in range(10000):
+            dm._route_database(DataClassification.TICK_DATA)
+
+        # 验证内存使用没有异常增长
+        final_size = len(dm._ROUTING_MAP)
+        assert initial_size == final_size, "路由映射大小发生变化，可能存在内存泄漏"
+
+    def test_data_type_validation(self):
+        """测试数据类型验证"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试路由方法接受正确的参数类型
+        result = dm._route_database(DataClassification.TICK_DATA)
+        assert result in ["TDENGINE", "POSTGRESQL"]
+
+        # 测试数据库名称方法
+        db_name = dm._get_database_name(DataClassification.TICK_DATA)
+        assert isinstance(db_name, str)
+        assert len(db_name) > 0
+
+
+class TestDataManagerIntegrationSimplified:
+    """DataManager简化集成测试"""
+
+    @patch("src.storage.database.database_manager.DatabaseTableManager")
+    def test_integration_workflow(self, mock_db_class):
+        """测试集成工作流程"""
+        dm = DataManager(enable_monitoring=False)
+
+        # 测试完整的工作流程
+        classification = DataClassification.TICK_DATA
+        table_name = "tick_test"
+
+        # 1. 路由决策
+        target = dm._route_database(classification)
+        assert target == "TDENGINE"
+
+        # 2. 获取数据库名称
+        db_name = dm._get_database_name(classification)
+        assert db_name == "market_data"
+
+        # 3. 适配器管理
+        mock_adapter = Mock()
+        dm.register_adapter("test_adapter", mock_adapter)
+
+        assert "test_adapter" in dm._adapters
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

@@ -7,9 +7,9 @@
 版本: 1.0.0
 """
 
-import sqlite3
 import json
-from typing import Dict, Any
+import sqlite3
+from typing import Any, Dict
 
 
 class FailureRecoveryQueue:
@@ -106,3 +106,35 @@ class FailureRecoveryQueue:
         conn.close()
 
         return items
+
+    def add_failed_operation(
+        self,
+        operation_type: str,
+        classification: str,
+        data: Dict[str, Any],
+        table_name: str,
+        kwargs: Dict[str, Any],
+        error: str,
+    ):
+        """
+        添加失败的操作到队列
+
+        Args:
+            operation_type: 操作类型 (save/load)
+            classification: 数据分类
+            data: 数据内容
+            table_name: 表名
+            kwargs: 其他参数
+            error: 错误信息
+        """
+        return self.enqueue(
+            classification=classification,
+            target_database=kwargs.get("target_database", "unknown"),
+            data={
+                "operation_type": operation_type,
+                "data": data,
+                "table_name": table_name,
+                "kwargs": kwargs,
+                "error": error,
+            },
+        )

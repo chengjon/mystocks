@@ -5,9 +5,8 @@
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ class BatchProcessor:
         self.successful_requests = 0
         self.failed_requests = 0
 
-        logger.info(f"BatchProcessor initialized: max_workers={max_workers}, timeout={timeout}s")
+        logger.info("BatchProcessor initialized: max_workers=%(max_workers)s, timeout=%(timeout)ss")
 
     def fetch_batch_kline(
         self,
@@ -79,7 +78,7 @@ class BatchProcessor:
                 "stats": {...},
             }
         """
-        logger.info(f"Batch fetching K-line data for {len(symbols)} symbols")
+        logger.info("Batch fetching K-line data for {len(symbols)} symbols")
 
         # 按数据源分组
         grouped_requests = self._group_by_data_source(data_fetcher, symbols)
@@ -120,15 +119,15 @@ class BatchProcessor:
                     error = result.get("error", "Unknown error")
                     errors[symbol] = error
                     self.failed_requests += 1
-                    logger.warning(f"Failed to fetch {symbol}: {error}")
+                    logger.warning("Failed to fetch %(symbol)s: %(error)s")
 
             except Exception as e:
                 errors[symbol] = str(e)
                 self.failed_requests += 1
-                logger.error(f"Exception fetching {symbol}: {e}")
+                logger.error("Exception fetching %(symbol)s: %(e)s")
 
             if completed % 10 == 0:
-                logger.debug(f"Progress: {completed}/{total} completed")
+                logger.debug("Progress: %(completed)s/%(total)s completed")
 
         self.total_batches += 1
         self.total_requests += total
@@ -166,7 +165,7 @@ class BatchProcessor:
                 "stats": {...},
             }
         """
-        logger.info(f"Batch fetching realtime data for {len(symbols)} symbols")
+        logger.info("Batch fetching realtime data for {len(symbols)} symbols")
 
         results: Dict[str, Any] = {}
         errors: Dict[str, str] = {}
@@ -200,15 +199,15 @@ class BatchProcessor:
                     error = result.get("error", "Unknown error")
                     errors[symbol] = error
                     self.failed_requests += 1
-                    logger.warning(f"Failed to fetch {symbol}: {error}")
+                    logger.warning("Failed to fetch %(symbol)s: %(error)s")
 
             except Exception as e:
                 errors[symbol] = str(e)
                 self.failed_requests += 1
-                logger.error(f"Exception fetching {symbol}: {e}")
+                logger.error("Exception fetching %(symbol)s: %(e)s")
 
             if completed % 10 == 0:
-                logger.debug(f"Progress: {completed}/{total} completed")
+                logger.debug("Progress: %(completed)s/%(total)s completed")
 
         self.total_batches += 1
         self.total_requests += total
@@ -253,7 +252,7 @@ class BatchProcessor:
 
             grouped[data_source].append(symbol)
 
-        logger.debug(f"Grouped {len(symbols)} symbols into {len(grouped)} data sources")
+        logger.debug("Grouped {len(symbols)} symbols into {len(grouped)} data sources")
 
         return grouped
 

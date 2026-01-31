@@ -7,25 +7,23 @@ Provides unified management of multiple data sources including:
 - MultiSourceLoadBalancer: Load balancing and failover
 """
 
-from .registry import (
-    DataSourceRegistry,
-    DataSourceConfig,
-    DataSourceInfo,
-    DataSourceType,
-    HealthStatus,
-    HealthReport,
-)
-
 from .health import (
-    DataSourceHealthMonitor,
-    HealthCheckMixin,
-    DATASOURCE_REQUESTS_TOTAL,
-    DATASOURCE_LATENCY_SECONDS,
     DATASOURCE_HEALTH_STATUS,
     DATASOURCE_LATENCY_MS,
+    DATASOURCE_LATENCY_SECONDS,
+    DATASOURCE_REQUESTS_TOTAL,
+    DataSourceHealthMonitor,
+    HealthCheckMixin,
 )
-
-from .loadbalancer import MultiSourceLoadBalancer, LoadBalancerConfig
+from .loadbalancer import LoadBalancerConfig, MultiSourceLoadBalancer
+from .registry import (
+    DataSourceConfig,
+    DataSourceInfo,
+    DataSourceRegistry,
+    DataSourceType,
+    HealthReport,
+    HealthStatus,
+)
 
 __all__ = [
     "DataSourceRegistry",

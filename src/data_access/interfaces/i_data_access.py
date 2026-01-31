@@ -4,10 +4,10 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union, Callable, TypeVar
 from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -184,22 +184,18 @@ class Transaction(ABC):
     @abstractmethod
     def commit(self) -> bool:
         """提交事务"""
-        pass
 
     @abstractmethod
     def rollback(self) -> bool:
         """回滚事务"""
-        pass
 
     @abstractmethod
     def is_active(self) -> bool:
         """检查事务是否活跃"""
-        pass
 
     @abstractmethod
     def get_transaction_id(self) -> str:
         """获取事务ID"""
-        pass
 
 
 class IDataAccess(ABC):
@@ -208,52 +204,42 @@ class IDataAccess(ABC):
     @abstractmethod
     async def connect(self) -> bool:
         """建立数据库连接"""
-        pass
 
     @abstractmethod
     async def disconnect(self) -> bool:
         """断开数据库连接"""
-        pass
 
     @abstractmethod
     async def is_connected(self) -> bool:
         """检查连接状态"""
-        pass
 
     @abstractmethod
     async def execute_query(self, query: DataQuery) -> QueryResult:
         """执行单个查询"""
-        pass
 
     @abstractmethod
     async def execute_raw_query(self, sql: str, parameters: Optional[Dict[str, Any]] = None) -> QueryResult:
         """执行原生SQL查询"""
-        pass
 
     @abstractmethod
     async def fetch_data(self, query: DataQuery) -> QueryResult:
         """获取数据 (SELECT操作)"""
-        pass
 
     @abstractmethod
     async def save_data(self, records: List[DataRecord], options: Optional[SaveOptions] = None) -> SaveResult:
         """保存数据 (INSERT/UPDATE操作)"""
-        pass
 
     @abstractmethod
     async def update_data(self, criteria: QueryCriteria, updates: Dict[str, Any]) -> UpdateResult:
         """更新数据"""
-        pass
 
     @abstractmethod
     async def delete_data(self, criteria: QueryCriteria) -> DeleteResult:
         """删除数据"""
-        pass
 
     @abstractmethod
     async def batch_fetch(self, queries: List[DataQuery]) -> List[QueryResult]:
         """批量获取数据"""
-        pass
 
     @abstractmethod
     async def batch_save(
@@ -262,32 +248,26 @@ class IDataAccess(ABC):
         options: Optional[SaveOptions] = None,
     ) -> List[SaveResult]:
         """批量保存数据"""
-        pass
 
     @abstractmethod
     async def get_table_schema(self, table_name: str) -> TableSchema:
         """获取表结构信息"""
-        pass
 
     @abstractmethod
     async def get_database_info(self) -> DatabaseInfo:
         """获取数据库信息"""
-        pass
 
     @abstractmethod
     async def begin_transaction(self, isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED) -> Transaction:
         """开始事务"""
-        pass
 
     @abstractmethod
     async def commit_transaction(self, transaction: Transaction) -> bool:
         """提交事务"""
-        pass
 
     @abstractmethod
     async def rollback_transaction(self, transaction: Transaction) -> bool:
         """回滚事务"""
-        pass
 
     @abstractmethod
     async def execute_in_transaction(
@@ -296,37 +276,30 @@ class IDataAccess(ABC):
         isolation_level: IsolationLevel = IsolationLevel.READ_COMMITTED,
     ) -> List[Any]:
         """在事务中执行多个操作"""
-        pass
 
     @abstractmethod
     async def execute_query_with_stats(self, query: DataQuery) -> QueryResult:
         """执行查询并返回性能统计"""
-        pass
 
     @abstractmethod
     async def get_connection_pool_stats(self) -> PoolStats:
         """获取连接池统计信息"""
-        pass
 
     @abstractmethod
     async def health_check(self) -> bool:
         """健康检查"""
-        pass
 
     @abstractmethod
     def get_database_type(self) -> DatabaseType:
         """获取数据库类型"""
-        pass
 
     @abstractmethod
     def supports_feature(self, feature: str) -> bool:
         """检查是否支持特定功能"""
-        pass
 
     @abstractmethod
     def get_optimization_hints(self, query: DataQuery) -> Dict[str, Any]:
         """获取查询优化提示"""
-        pass
 
 
 class DatabaseCapabilities(ABC):
@@ -335,37 +308,30 @@ class DatabaseCapabilities(ABC):
     @abstractmethod
     def get_supported_operations(self) -> List[QueryOperation]:
         """获取支持的操作类型"""
-        pass
 
     @abstractmethod
     def get_supported_data_types(self) -> List[str]:
         """获取支持的数据类型"""
-        pass
 
     @abstractmethod
     def get_index_types(self) -> List[str]:
         """获取支持的索引类型"""
-        pass
 
     @abstractmethod
     def supports_transactions(self) -> bool:
         """是否支持事务"""
-        pass
 
     @abstractmethod
     def supports_concurrent_operations(self) -> bool:
         """是否支持并发操作"""
-        pass
 
     @abstractmethod
     def get_batch_size_recommendations(self) -> Dict[str, int]:
         """获取批处理大小建议"""
-        pass
 
     @abstractmethod
     def get_performance_characteristics(self) -> Dict[str, Any]:
         """获取性能特征"""
-        pass
 
 
 class IQueryRouter(ABC):
@@ -374,22 +340,18 @@ class IQueryRouter(ABC):
     @abstractmethod
     async def route_query(self, query: DataQuery) -> IDataAccess:
         """路由查询到合适的数据访问实例"""
-        pass
 
     @abstractmethod
     async def route_operation(self, operation: QueryOperation, table_name: str) -> IDataAccess:
         """路由操作到合适的数据库"""
-        pass
 
     @abstractmethod
     def add_routing_rule(self, rule: Callable[[DataQuery], bool], target: IDataAccess):
         """添加路由规则"""
-        pass
 
     @abstractmethod
     def remove_routing_rule(self, rule: Callable):
         """移除路由规则"""
-        pass
 
 
 class IQueryOptimizer(ABC):
@@ -398,22 +360,18 @@ class IQueryOptimizer(ABC):
     @abstractmethod
     async def optimize_query(self, query: DataQuery, target_database: DatabaseType) -> DataQuery:
         """优化查询"""
-        pass
 
     @abstractmethod
     async def analyze_query_plan(self, query: DataQuery, target_database: DatabaseType) -> Dict[str, Any]:
         """分析查询执行计划"""
-        pass
 
     @abstractmethod
     async def suggest_indexes(self, query: DataQuery, target_database: DatabaseType) -> List[Dict[str, Any]]:
         """建议索引"""
-        pass
 
     @abstractmethod
     async def estimate_query_cost(self, query: DataQuery, target_database: DatabaseType) -> float:
         """估算查询成本"""
-        pass
 
 
 class IDataMapper(ABC):
@@ -422,19 +380,15 @@ class IDataMapper(ABC):
     @abstractmethod
     def map_row(self, row: Union[List, Dict[str, Any]]) -> Dict[str, Any]:
         """映射单行数据"""
-        pass
 
     @abstractmethod
     def map_rows(self, rows: List[Union[List, Dict[str, Any]]]) -> List[Dict[str, Any]]:
         """映射多行数据"""
-        pass
 
     @abstractmethod
     def get_target_schema(self) -> Dict[str, Any]:
         """获取目标数据模式"""
-        pass
 
     @abstractmethod
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """验证数据"""
-        pass

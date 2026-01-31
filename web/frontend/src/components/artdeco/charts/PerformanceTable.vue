@@ -193,7 +193,7 @@
     import ArtDecoCard from '../base/ArtDecoCard.vue'
     import ArtDecoButton from '../base/ArtDecoButton.vue'
     import ArtDecoSelect from '../base/ArtDecoSelect.vue'
-    import ArtDecoLoader from './ArtDecoLoader.vue'
+    import ArtDecoLoader from '../trading/ArtDecoLoader.vue'
 
     // ============================================
     //   类型定义

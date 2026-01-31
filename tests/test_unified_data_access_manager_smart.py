@@ -6,15 +6,13 @@
 测试用例数: 10
 """
 
+import sys
 import unittest
 from pathlib import Path
-import sys
 
 # 导入被测试模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import unified_data_access_manager
-
-
 
     def test_unified_data_access_manager_execute_query_security(self):
         """安全测试 - execute_query"""

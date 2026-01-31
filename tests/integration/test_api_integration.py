@@ -3,11 +3,12 @@
 测试文件：tests/integration/test_api_integration.py
 """
 
-import pytest
-import requests
+import os
 import subprocess
 import time
-import os
+
+import pytest
+import requests
 
 
 class TestAPIIntegration:

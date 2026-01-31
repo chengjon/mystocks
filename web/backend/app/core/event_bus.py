@@ -13,10 +13,10 @@ Event Bus System - 事件总线系统
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Callable, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +189,7 @@ class EventBus:
         }
 
         self.subscribers[event_type].append(subscription)
-        logger.debug(f"Subscribed to {event_type} with ID: {subscription_id}")
+        logger.debug("Subscribed to %(event_type)s with ID: %(subscription_id)s"")
         return subscription_id
 
     def unsubscribe(self, event_type: str, subscription_id: str) -> bool:
@@ -210,7 +210,7 @@ class EventBus:
             if subscription["id"] == subscription_id:
                 subscription["active"] = False
                 self.subscribers[event_type].pop(i)
-                logger.debug(f"Unsubscribed from {event_type} with ID: {subscription_id}")
+                logger.debug("Unsubscribed from %(event_type)s with ID: %(subscription_id)s"")
                 return True
 
         return False
@@ -236,7 +236,7 @@ class EventBus:
                 self.event_history.pop(0)
 
         except Exception as e:
-            logger.error(f"Error publishing event {event.type}: {e}")
+            logger.error("Error publishing event {event.type}: %(e)s"")
 
     async def publish_data(
         self,
@@ -280,7 +280,7 @@ class EventBus:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error processing event: {e}")
+                logger.error("Error processing event: %(e)s"")
                 self.processing_errors += 1
 
     async def _dispatch_event(self, event: Event) -> None:
@@ -313,7 +313,7 @@ class EventBus:
 
         except Exception as e:
             subscription["errors"] += 1
-            logger.error(f"Error in event handler {subscription['id']}: {e}")
+            logger.error("Error in event handler {subscription['id']}: %(e)s"")
 
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""

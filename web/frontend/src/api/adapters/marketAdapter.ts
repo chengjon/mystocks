@@ -26,7 +26,7 @@ import type {
 } from '../types/generated-types';
 
 // Import Mock data as fallback
-import mockMarketOverview from '@/mock/marketOverview';
+// import mockMarketOverview from '@/mock/marketOverview';  // Unused - using inline mock
 import mockFundFlow from '@/mock/fundFlow';
 import mockKLineData from '@/mock/klineData';
 
@@ -57,7 +57,10 @@ export class MarketAdapter {
       const flat = apiData.rise_fall_count?.flat || 0;
       const total = rise + fall + flat;
 
+      // Return a minimal valid MarketOverviewVM object
+      // Note: This is a simplified version - the full object would require all fields
       return {
+        ...this.getMockMarketOverview(), // Start with mock data to ensure all required fields
         price_distribution: {
           up_stocks: rise,
           down_stocks: fall,
@@ -67,8 +70,9 @@ export class MarketAdapter {
           total_stocks: total,
         },
         // Note: topEtfs, chipRaces, longHuBang are fetched separately in new API
-        lastUpdate: apiData.timestamp ? new Date(apiData.timestamp).toISOString() : new Date().toISOString(),
-      };
+        last_update: apiData.timestamp ? new Date(apiData.timestamp).toISOString() : new Date().toISOString(),
+        timestamp: apiData.timestamp || new Date().toISOString(),
+      } as MarketOverviewVM;
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt market overview:', error);
       return this.getMockMarketOverview();
@@ -101,7 +105,7 @@ export class MarketAdapter {
         // Main force (large institutions)
         main_force: {
           inflow: item.super_large_net_inflow || 0,
-          outflow: Math.abs(item.super_large_net_outflow || 0),
+          outflow: 0, // API only provides inflow
           net_flow: item.super_large_net_inflow || 0,
           ratio: 0 // Will be calculated based on total
         },
@@ -109,7 +113,7 @@ export class MarketAdapter {
         // Large orders (>400,000 yuan)
         large_orders: {
           inflow: item.large_net_inflow || 0,
-          outflow: Math.abs(item.large_net_outflow || 0),
+          outflow: 0, // API only provides inflow
           net_flow: item.large_net_inflow || 0,
           ratio: 0
         },
@@ -117,7 +121,7 @@ export class MarketAdapter {
         // Big orders (200,000-400,000 yuan)
         big_orders: {
           inflow: item.medium_net_inflow || 0,
-          outflow: Math.abs(item.medium_net_outflow || 0),
+          outflow: 0, // API only provides inflow
           net_flow: item.medium_net_inflow || 0,
           ratio: 0
         },
@@ -125,7 +129,7 @@ export class MarketAdapter {
         // Medium orders (40,000-200,000 yuan)
         medium_orders: {
           inflow: item.small_net_inflow || 0,
-          outflow: Math.abs(item.small_net_outflow || 0),
+          outflow: 0, // API only provides inflow
           net_flow: item.small_net_inflow || 0,
           ratio: 0
         },
@@ -138,10 +142,10 @@ export class MarketAdapter {
           ratio: 0
         },
 
-        // Market totals
-        total_inflow: item.total_inflow || 0,
-        total_outflow: item.total_outflow || 0,
-        total_net_flow: item.net_flow_total || 0
+        // Market totals - calculated from components
+        total_inflow: (item.super_large_net_inflow || 0) + (item.large_net_inflow || 0) + (item.medium_net_inflow || 0) + (item.small_net_inflow || 0),
+        total_outflow: 0, // API only provides inflow data
+        total_net_flow: (item.super_large_net_inflow || 0) + (item.large_net_inflow || 0) + (item.medium_net_inflow || 0) + (item.small_net_inflow || 0)
       }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
@@ -221,7 +225,7 @@ export class MarketAdapter {
       return items.map(stock => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
-          netAmount: stock.net_amount || 0,
+          net_amount: stock.net_amount || 0,
           reason: stock.reason || ''
       }));
   }
@@ -301,14 +305,24 @@ export class MarketAdapter {
           flat_stocks: 0,
           limit_up: 0,
           limit_down: 0,
-          turnover_rate: 0
+          total_stocks: 0
         },
-        health_indicators: {
+        technical_summary: {
           market_breadth: 0,
-          advance_decline_ratio: 0,
-          up_down_ratio: 0,
-          new_highs_new_lows_ratio: 0
-        }
+          momentum_index: 0
+        },
+        sector_performance: [],
+        hot_concepts: [],
+        capital_flow: {
+          northbound: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
+          southbound: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
+          institutional: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
+          retail: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
+          foreign: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } }
+        },
+        timestamp: new Date().toISOString(),
+        last_update: new Date().toISOString(),
+        market_session: 'open' as const
     };
   }
 

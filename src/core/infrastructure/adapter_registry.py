@@ -1,5 +1,5 @@
-from typing import Dict, Any, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +15,15 @@ class AdapterRegistry:
     def register(self, name: str, adapter: Any):
         """注册适配器"""
         if name in self._adapters:
-            logger.warning(f"Adapter '{name}' already registered, overwriting.")
+            logger.warning("Adapter '%(name)s' already registered, overwriting.")
         self._adapters[name] = adapter
-        logger.info(f"Registered adapter: {name}")
+        logger.info("Registered adapter: %(name)s")
 
     def unregister(self, name: str) -> bool:
         """注销适配器"""
         if name in self._adapters:
             del self._adapters[name]
-            logger.info(f"Unregistered adapter: {name}")
+            logger.info("Unregistered adapter: %(name)s")
             return True
         return False
 

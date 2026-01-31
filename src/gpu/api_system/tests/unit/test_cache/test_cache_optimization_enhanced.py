@@ -5,11 +5,11 @@ Test Enhanced Cache Optimization
 测试目标: 验证缓存命中率从80%提升到90%+
 """
 
-import unittest
-import time
+import os
 import random
 import sys
-import os
+import time
+import unittest
 
 # 添加项目根目录到路径
 # File is at: src/gpu/api_system/tests/unit/test_cache/test_cache_optimization_enhanced.py
@@ -25,11 +25,11 @@ project_root = os.path.dirname(src_dir)  # mystocks_spec
 sys.path.insert(0, project_root)
 
 from src.gpu.api_system.utils.cache_optimization_enhanced import (
-    EnhancedCacheManager,
     AccessPatternLearner,
-    QueryResultCache,
-    NegativeCache,
     AdaptiveTTLManager,
+    EnhancedCacheManager,
+    NegativeCache,
+    QueryResultCache,
     SmartCompressor,
 )
 

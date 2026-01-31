@@ -17,12 +17,13 @@ Date: 2025-11-07
 """
 
 import re
-from typing import Dict, List, Optional, Any, Callable, Set, Union
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-import structlog
 from decimal import Decimal
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, Set, Union
+
+import structlog
 
 logger = structlog.get_logger()
 

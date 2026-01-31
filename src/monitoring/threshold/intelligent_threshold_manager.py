@@ -10,23 +10,23 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 # 导入模块化组件
 from .base_threshold_manager import (
-    ThresholdRule,
-    ThresholdAdjustment,
-    OptimizationResult,
     DataAnalyzer,
+    OptimizationResult,
+    ThresholdAdjustment,
+    ThresholdRule,
 )
+from .clustering_optimizer import ClusteringOptimizer
 from .statistical_optimizer import StatisticalOptimizer
 from .trend_optimizer import TrendOptimizer
-from .clustering_optimizer import ClusteringOptimizer
 
 # 监控组件导入
 try:
-    from ..performance_monitor import SystemMetrics
     from ..monitoring_database import get_monitoring_database
+    from ..performance_monitor import SystemMetrics
 except ImportError:
     # 兼容模式
     SystemMetrics = Any
@@ -281,7 +281,7 @@ class IntelligentThresholdManager:
                 await self._save_adjustment_to_db(adjustment)
             except Exception as e:
                 logger.error("保存调整记录到数据库失败: %s", e)
-                self.logger.info("智能阈值初始化完成")
+                logger.info("智能阈值初始化完成")
                 logger.info(
                     "阈值优化完成: {rule_name} {old_threshold} -> {optimization_result.recommended_threshold} "
                     f"(置信度: {optimization_result.confidence_score:.2f})"

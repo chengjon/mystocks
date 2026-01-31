@@ -1,5 +1,5 @@
 // Auto-generated types for market domain
-// Generated at: 2026-01-19T22:34:18.299047
+// Generated at: 2026-01-20T11:13:38.356310
 
 export interface MarketIndexItem {
   symbol?: string;

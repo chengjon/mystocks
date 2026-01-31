@@ -3,11 +3,12 @@ Financial适配器真实测试
 基于实际API结构测试FinancialDataSource类
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import patch
-import sys
 import os
+import sys
+from unittest.mock import patch
+
+import pandas as pd
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

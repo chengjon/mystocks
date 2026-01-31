@@ -12,10 +12,11 @@ Features:
 - 连接健康检查
 """
 
-import os
 import json
+import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
 import structlog
 
 # 支持从脚本导入：尝试相对导入
@@ -367,7 +368,7 @@ class TDengineManager:
             """
 
             self._execute(sql)
-            logger.info(f"✅ 已清理过期缓存 (保留 {days} 天)")
+            logger.info("✅ 已清理过期缓存 (保留 %(days)s 天)"")
             return 1
 
         except Exception as e:
@@ -495,7 +496,7 @@ class TDengineManager:
             """
             self._execute(sql)
         except Exception as e:
-            logger.debug(f"更新命中次数失败: {str(e)}")
+            logger.debug("更新命中次数失败: {str(e)}"")
 
     def close(self):
         """
@@ -544,7 +545,7 @@ def get_tdengine_manager() -> Optional[TDengineManager]:
                 logger.warning("⚠️ TDengine初始化失败 - 系统将在无TDengine模式下运行")
                 _tdengine_manager = None
         except Exception as e:
-            logger.error(f"❌ TDengine初始化异常: {e} - 系统将在无TDengine模式下运行")
+            logger.error("❌ TDengine初始化异常: %(e)s - 系统将在无TDengine模式下运行"")
             _tdengine_manager = None
 
     return _tdengine_manager

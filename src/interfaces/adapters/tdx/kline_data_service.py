@@ -6,9 +6,10 @@
 # 说明：专门处理TDX K线数据的获取和处理
 """
 
-import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Optional
+
+import pandas as pd
 from loguru import logger
 
 from .base_tdx_adapter import BaseTdxAdapter
@@ -65,7 +66,7 @@ def get_stock_daily(
         market_code = self._get_market_code(symbol)
 
         # 获取日线数据
-        logger.info(f"获取股票日线数据: {symbol} {start_date} ~ {end_date}")
+        logger.info("获取股票日线数据: %(symbol)s %(start_date)s ~ %(end_date)s")
         data = tdx_api.get_k_data(
             code=symbol,
             start_date=start_date,
@@ -111,11 +112,11 @@ def get_stock_daily(
         df["market"] = "上交所" if market_code == 1 else "深交所"
         df["adjust"] = adjust
 
-        logger.info(f"成功获取股票日线数据: {symbol}, 共 {len(df)} 条记录")
+        logger.info("成功获取股票日线数据: %(symbol)s, 共 {len(df)} 条记录")
         return df
 
     except Exception as e:
-        logger.error(f"获取股票日线数据失败: {e}")
+        logger.error("获取股票日线数据失败: %(e)s")
         raise
 
 
@@ -152,7 +153,7 @@ def get_index_daily(
         tdx_api = self._get_tdx_connection()
 
         # 获取指数日线数据
-        logger.info(f"获取指数日线数据: {index_code} {start_date} ~ {end_date}")
+        logger.info("获取指数日线数据: %(index_code)s %(start_date)s ~ %(end_date)s")
         data = tdx_api.get_k_data(
             code=index_code,
             start_date=start_date,
@@ -187,11 +188,11 @@ def get_index_daily(
         df["symbol"] = index_code
         df["security_type"] = "index"
 
-        logger.info(f"成功获取指数日线数据: {index_code}, 共 {len(df)} 条记录")
+        logger.info("成功获取指数日线数据: %(index_code)s, 共 {len(df)} 条记录")
         return df
 
     except Exception as e:
-        logger.error(f"获取指数日线数据失败: {e}")
+        logger.error("获取指数日线数据失败: %(e)s")
         raise
 
 
@@ -268,7 +269,7 @@ def get_stock_kline(
         return result
 
     except Exception as e:
-        logger.error(f"获取股票K线数据失败: {e}")
+        logger.error("获取股票K线数据失败: %(e)s")
         return {
             "symbol": symbol,
             "period": period,
@@ -347,7 +348,7 @@ def get_index_kline(
         return result
 
     except Exception as e:
-        logger.error(f"获取指数K线数据失败: {e}")
+        logger.error("获取指数K线数据失败: %(e)s")
         return {
             "index_code": index_code,
             "period": period,
@@ -397,7 +398,7 @@ def _resample_kline_data(self, df: pd.DataFrame, period: str) -> pd.DataFrame:
         return resampled
 
     except Exception as e:
-        logger.error(f"重新采样K线数据失败: {e}")
+        logger.error("重新采样K线数据失败: %(e)s")
         return pd.DataFrame()
 
 
@@ -436,7 +437,7 @@ def get_minute_kline(self, symbol: str, period: str = "1min", count: int = 240, 
 
         # 获取分钟线数据 (使用 get_history_minute_time_data)
         # 注意: TDX API 不支持按数量获取，这里获取最新日期的分钟数据
-        logger.info(f"获取股票分钟K线数据: {symbol} {period}")
+        logger.info("获取股票分钟K线数据: %(symbol)s %(period)s")
         data = tdx_api.get_history_minute_time_data(
             market=market_code,
             code=symbol,
@@ -474,9 +475,9 @@ def get_minute_kline(self, symbol: str, period: str = "1min", count: int = 240, 
         df["period"] = period
         df["adjust"] = adjust
 
-        logger.info(f"成功获取股票分钟K线数据: {symbol}, 共 {len(df)} 条记录")
+        logger.info("成功获取股票分钟K线数据: %(symbol)s, 共 {len(df)} 条记录")
         return df
 
     except Exception as e:
-        logger.error(f"获取股票分钟K线数据失败: {e}")
+        logger.error("获取股票分钟K线数据失败: %(e)s")
         raise

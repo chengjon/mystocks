@@ -11,9 +11,10 @@
 - 股票大宗交易
 """
 
-from fastapi import APIRouter, HTTPException, Query
-from typing import Optional
 from datetime import date, datetime
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
 

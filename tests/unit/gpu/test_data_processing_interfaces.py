@@ -7,12 +7,13 @@ Data Processing Interfaces Test Suite
 测试模块: src.gpu.data_processing_interfaces (43行)
 """
 
-import pytest
-import sys
 import os
+import sys
 from abc import ABC
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import pandas as pd
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
@@ -104,8 +105,9 @@ class TestIDataProcessingInterfaces:
 
     def test_process_batch_method_is_abstract(self):
         """测试process_batch方法是抽象方法"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证是抽象方法
         assert inspect.isfunction(IDataProcessor.process_batch)
@@ -113,8 +115,9 @@ class TestIDataProcessingInterfaces:
 
     def test_compute_features_method_is_abstract(self):
         """测试compute_features方法是抽象方法"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证是抽象方法
         assert inspect.isfunction(IDataProcessor.compute_features)
@@ -122,8 +125,9 @@ class TestIDataProcessingInterfaces:
 
     def test_load_and_preprocess_method_is_abstract(self):
         """测试load_and_preprocess方法是抽象方法"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 验证是抽象方法
         assert inspect.isfunction(IDataProcessor.load_and_preprocess)
@@ -153,8 +157,9 @@ class TestIDataProcessingInterfaces:
 
     def test_method_signatures(self):
         """测试方法签名"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import inspect
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 获取方法签名
         process_batch_sig = inspect.signature(IDataProcessor.process_batch)
@@ -208,8 +213,9 @@ class TestIDataProcessingInterfaces:
 
     def test_interface_method_annotations(self):
         """测试接口方法的类型注解"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         from typing import get_type_hints
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         # 检查process_batch的类型注解
         process_batch_hints = get_type_hints(IDataProcessor.process_batch)
@@ -218,7 +224,7 @@ class TestIDataProcessingInterfaces:
     def test_interface_imports(self):
         """测试接口模块导入"""
         from abc import ABC
-        from typing import Dict, List, Any
+        from typing import Any, Dict, List
 
         # 验证依赖导入
         assert ABC is not None
@@ -331,8 +337,9 @@ class TestMockDataProcessorImplementation:
 
     def test_load_and_preprocess_implementation(self):
         """测试load_and_preprocess实现"""
-        from src.gpu.data_processing_interfaces import IDataProcessor
         import pandas as pd
+
+        from src.gpu.data_processing_interfaces import IDataProcessor
 
         class TestProcessor(IDataProcessor):
             def process_batch(self, batch_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

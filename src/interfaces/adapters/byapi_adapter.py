@@ -13,11 +13,12 @@
 """
 
 import time
-import requests
-import pandas as pd
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List
+
+import pandas as pd
+import requests
 
 
 class DataSourceError(Exception):
@@ -31,33 +32,33 @@ class IDataSource(ABC):
 
     @property
     @abstractmethod
-def source_name(self) -> str:
+    def source_name(self) -> str:
         """数据源名称"""
         pass
 
     @property
     @abstractmethod
-def supported_markets(self) -> List[str]:
+    def supported_markets(self) -> List[str]:
         """支持的市场列表"""
         pass
 
     @abstractmethod
-def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
+    def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
         """获取K线数据"""
         pass
 
     @abstractmethod
-def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
+    def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
         """获取实时行情"""
         pass
 
     @abstractmethod
-def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
+    def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
         """获取财务数据"""
         pass
 
     @abstractmethod
-def get_stock_list(self) -> pd.DataFrame:
+    def get_stock_list(self) -> pd.DataFrame:
         """获取股票列表"""
         pass
 
@@ -78,7 +79,7 @@ class ByapiAdapter(IDataSource):
         min_interval: 最小请求间隔秒数 (默认: 0.2s, 对应300次/分钟)
     """
 
-def __init__(
+    def __init__(
         self,
         licence: str = "04C01BF1-7F2F-41A3-B470-1F81F14B1FC8",
         base_url: str = "http://api.biyingapi.com",
@@ -122,14 +123,14 @@ def __init__(
         }
 
     @property
-def source_name(self) -> str:
+    def source_name(self) -> str:
         return "Byapi"
 
     @property
-def supported_markets(self) -> List[str]:
+    def supported_markets(self) -> List[str]:
         return ["CN_A"]  # 仅支持A股市场
 
-def _standardize_symbol(self, symbol: str) -> str:
+    def _standardize_symbol(self, symbol: str) -> str:
         """
         标准化股票代码格式
 
@@ -150,7 +151,7 @@ def _standardize_symbol(self, symbol: str) -> str:
         else:
             raise ValueError(f"无法识别的股票代码: {symbol}")
 
-def _rate_limit(self):
+    def _rate_limit(self):
         """控制API请求频率"""
         current_time = time.time()
         elapsed = current_time - self.last_request_time
@@ -160,7 +161,7 @@ def _rate_limit(self):
 
         self.last_request_time = time.time()
 
-def _request(self, url: str, timeout: int = 30) -> Dict[Any, Any]:
+    def _request(self, url: str, timeout: int = 30) -> Dict[Any, Any]:
         """
         发送HTTP请求并返回JSON数据
 
@@ -185,7 +186,7 @@ def _request(self, url: str, timeout: int = 30) -> Dict[Any, Any]:
         except ValueError as e:
             raise DataSourceError(f"Byapi返回数据解析失败: {e}")
 
-def get_stock_list(self) -> pd.DataFrame:
+    def get_stock_list(self) -> pd.DataFrame:
         """
         获取股票列表
 
@@ -230,7 +231,7 @@ def get_stock_list(self) -> pd.DataFrame:
         except Exception as e:
             raise DataSourceError(f"获取股票列表失败: {e}")
 
-def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
+    def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency: str = "daily") -> pd.DataFrame:
         """
         获取K线数据
 
@@ -328,7 +329,7 @@ def get_kline_data(self, symbol: str, start_date: str, end_date: str, frequency:
         except Exception as e:
             raise DataSourceError(f"获取K线数据失败 [{symbol}]: {e}")
 
-def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
+    def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
         """
         获取实时行情
 
@@ -393,7 +394,7 @@ def get_realtime_quotes(self, symbols: List[str]) -> pd.DataFrame:
 
         return pd.DataFrame(result_list)
 
-def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
+    def get_fundamental_data(self, symbol: str, report_period: str, data_type: str = "income") -> pd.DataFrame:
         """
         获取财务数据
 
@@ -450,7 +451,7 @@ def get_fundamental_data(self, symbol: str, report_period: str, data_type: str =
         except Exception as e:
             raise DataSourceError(f"获取财务数据失败 [{symbol}, {data_type}]: {e}")
 
-def get_limit_up_stocks(self, trade_date: str) -> pd.DataFrame:
+    def get_limit_up_stocks(self, trade_date: str) -> pd.DataFrame:
         """
         获取涨停股池 (byapi特有功能)
 
@@ -478,7 +479,7 @@ def get_limit_up_stocks(self, trade_date: str) -> pd.DataFrame:
         except Exception as e:
             raise DataSourceError(f"获取涨停股池失败 [{trade_date}]: {e}")
 
-def get_limit_down_stocks(self, trade_date: str) -> pd.DataFrame:
+    def get_limit_down_stocks(self, trade_date: str) -> pd.DataFrame:
         """
         获取跌停股池 (byapi特有功能)
 
@@ -506,12 +507,12 @@ def get_limit_down_stocks(self, trade_date: str) -> pd.DataFrame:
         except Exception as e:
             raise DataSourceError(f"获取跌停股池失败 [{trade_date}]: {e}")
 
-def close(self):
+    def close(self):
         """关闭session"""
         if self.session is not None:
             self.session.close()
 
-def __del__(self):
+    def __del__(self):
         """析构函数"""
         self.close()
 

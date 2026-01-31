@@ -7,28 +7,29 @@ Monitoring Service Test Suite
 测试模块: src.monitoring.monitoring_service (1104行)
 """
 
-import pytest
+import os
+import sys
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
-import sys
-import os
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
+from src.core import ConfigDrivenTableManager, DataClassification
 from src.monitoring.monitoring_service import (
-    OperationMetrics,
-    AlertLevel,
     Alert,
-    MonitoringDatabase,
-    DataQualityMonitor,
-    PerformanceMonitor,
+    AlertLevel,
     AlertManager,
-    LogAlertChannel,
+    DataQualityMonitor,
     EmailAlertChannel,
+    LogAlertChannel,
+    MonitoringDatabase,
+    OperationMetrics,
+    PerformanceMonitor,
     WebhookAlertChannel,
 )
-from src.core import DataClassification, ConfigDrivenTableManager
 
 
 class TestOperationMetrics:

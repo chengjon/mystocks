@@ -20,17 +20,17 @@ import pandas as pd
 
 # 导入本地模块
 try:
-    from .vectorized_backtester import VectorizedBacktester, BacktestConfig
     from .performance_metrics import PerformanceMetrics
     from .risk_metrics import RiskMetrics
+    from .vectorized_backtester import BacktestConfig, VectorizedBacktester
 except ImportError:
-    import sys
     import os
+    import sys
 
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from backtest.vectorized_backtester import VectorizedBacktester, BacktestConfig
     from backtest.performance_metrics import PerformanceMetrics
     from backtest.risk_metrics import RiskMetrics
+    from backtest.vectorized_backtester import BacktestConfig, VectorizedBacktester
 
 
 class BacktestEngine:

@@ -5,8 +5,10 @@ Trading Context Domain Events
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+
 from src.domain.shared.event import DomainEvent
-from .value_objects import OrderSide, OrderType, OrderStatus
+
+from .value_objects import OrderSide, OrderType
 
 
 @dataclass

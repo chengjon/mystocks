@@ -7,10 +7,11 @@ Column Mapper Test Suite
 测试模块: src.utils.column_mapper (426行)
 """
 
-import pytest
-import sys
 import os
+import sys
+
 import pandas as pd
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

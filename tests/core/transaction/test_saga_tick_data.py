@@ -8,11 +8,12 @@ Saga 事务验证测试 - TICK_DATA (高频逐笔数据)
 3. 失败场景下的 Tick 数据批量失效补偿。
 """
 
-import sys
 import os
+import sys
+from datetime import datetime, timedelta
+
 import pandas as pd
 import pytest
-from datetime import datetime, timedelta
 
 # 添加项目根目录
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))

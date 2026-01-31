@@ -3,15 +3,16 @@ FastAPI routes for alert history and analytics
 Provides API endpoints for alert query, reporting, and analytics
 """
 
-from fastapi import APIRouter, Query, HTTPException, Depends
+import logging
 from datetime import datetime, timedelta
 from typing import Optional
-import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from src.monitoring.alert_history import (
     AlertHistoryDatabase,
-    get_alert_history_db,
     AlertHistoryRecord,
+    get_alert_history_db,
 )
 
 logger = logging.getLogger(__name__)

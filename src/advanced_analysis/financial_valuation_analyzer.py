@@ -10,20 +10,19 @@ This module provides comprehensive financial valuation analysis including:
 - Industry-relative valuation benchmarking
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+import numpy as np
+import pandas as pd
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
 
 # GPU acceleration support
 try:
-    import cudf
-    import cuml
+    pass
 
     GPU_AVAILABLE = True
 except ImportError:
@@ -755,7 +754,7 @@ def _calculate_valuation_consensus(
 
         return ValuationConsensus(
             dcf_valuation=dcf.intrinsic_value if dcf else current_price,
-            relative_valuation=relative_valuation if relative else current_price,
+            relative_valuation=relative_value if relative else current_price,
             market_price=current_price,
             consensus_value=consensus_value,
             valuation_gap=valuation_gap,

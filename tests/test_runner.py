@@ -14,14 +14,14 @@
 import asyncio
 import json
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 from .ai import create_ai_testing_session, run_ai_test_suite
+from .contract import ContractTestConfig, ContractTestExecutor, ContractTestSuite
 from .data import create_data_optimization_session
-from .contract import ContractTestExecutor, ContractTestConfig, ContractTestSuite
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ class EnhancedTestRunner:
             return summary
 
         except Exception as e:
-            logger.error(f"测试执行失败: {e}")
+            logger.error("测试执行失败: %s")
             return {
                 "status": "error",
                 "error": str(e),
@@ -145,7 +145,7 @@ class EnhancedTestRunner:
                 statistics = await optimizer.get_optimization_statistics()
                 print(f"数据统计: {statistics}")
         except Exception as e:
-            logger.warning(f"数据优化跳过: {e}")
+            logger.warning("数据优化跳过: %s")
 
     async def _run_ai_tests(self, project_context: Dict[str, Any]) -> TestExecutionResult:
         """运行AI辅助测试"""

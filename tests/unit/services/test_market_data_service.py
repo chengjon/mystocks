@@ -3,10 +3,11 @@
 测试web/backend/app/services/market_data_service.py的核心功能
 """
 
-import pytest
-from datetime import date, timedelta
-import sys
 import os
+import sys
+from datetime import date, timedelta
+
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../web/backend"))

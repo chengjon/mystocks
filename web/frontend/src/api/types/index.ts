@@ -1,8 +1,5 @@
 // Auto-generated index file for TypeScript types
-// Generated at: 2026-01-19T22:34:18.300110
-
-// Common types
-export * from './common';
+// Generated at: 2026-01-29T13:43:35.813684
 
 // Admin domain types
 export * from './admin';
@@ -12,9 +9,6 @@ export * from './analysis';
 
 // Common domain types
 export * from './common';
-
-// Market domain types
-export * from './market';
 
 // Strategy domain types
 export * from './strategy';

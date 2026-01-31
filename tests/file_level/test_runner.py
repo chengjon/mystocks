@@ -1,3 +1,4 @@
+'''
 # File-Level API Testing Framework
 
 This directory contains the comprehensive file-level API testing framework for MyStocks. The framework tests API endpoints by file boundaries rather than individual endpoints, providing efficient and maintainable testing for the entire API suite.
@@ -198,6 +199,7 @@ pytest tests/file_level/ --cov=web/backend/app --cov-report=html:htmlcov
 ## Current Implementation Status
 
 ### Phase 1: Foundation Setup ✅
+'''
 
 - [x] Test infrastructure setup
 - [x] Pytest-based file testing framework

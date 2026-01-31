@@ -13,10 +13,10 @@ Unified Stream Manager - 统一流管理器
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Set, Any, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, Set
 
 from src.core.unified_manager import MyStocksUnifiedManager
 
@@ -101,7 +101,7 @@ class StreamManager:
                     subscription = self.subscriptions[symbol]
                     subscription.subscribers.add(subscriber_id)
                     results[symbol] = True
-                    logger.debug(f"Added subscriber {subscriber_id} to existing stream {symbol}")
+                    logger.debug("Added subscriber %(subscriber_id)s to existing stream %(symbol)s"")
                     continue
 
                 subscription = StreamSubscription(symbol=symbol)
@@ -109,7 +109,7 @@ class StreamManager:
 
                 adapter_name = await self._resolve_adapter(symbol)
                 if not adapter_name:
-                    logger.warning(f"No adapter found for symbol {symbol}")
+                    logger.warning("No adapter found for symbol %(symbol)s"")
                     subscription.status = StreamStatus.ERROR
                     results[symbol] = False
                     continue
@@ -121,12 +121,12 @@ class StreamManager:
                 results[symbol] = success
 
                 if success:
-                    logger.info(f"Successfully subscribed to {symbol} via {adapter_name}")
+                    logger.info("Successfully subscribed to %(symbol)s via %(adapter_name)s"")
                 else:
-                    logger.error(f"Failed to start stream for {symbol}")
+                    logger.error("Failed to start stream for %(symbol)s"")
 
             except Exception as e:
-                logger.error(f"Error subscribing to {symbol}: {e}")
+                logger.error("Error subscribing to %(symbol)s: %(e)s"")
                 results[symbol] = False
 
         return results
@@ -156,12 +156,12 @@ class StreamManager:
                 if not subscription.subscribers:
                     await self._stop_stream(symbol)
                     del self.subscriptions[symbol]
-                    logger.info(f"Stopped stream for {symbol} - no more subscribers")
+                    logger.info("Stopped stream for %(symbol)s - no more subscribers"")
 
                 results[symbol] = True
 
             except Exception as e:
-                logger.error(f"Error unsubscribing from {symbol}: {e}")
+                logger.error("Error unsubscribing from %(symbol)s: %(e)s"")
                 results[symbol] = False
 
         return results
@@ -198,7 +198,7 @@ class StreamManager:
         if event_type not in self.event_handlers:
             self.event_handlers[event_type] = []
         self.event_handlers[event_type].append(handler)
-        logger.debug(f"Added event handler for {event_type}")
+        logger.debug("Added event handler for %(event_type)s"")
 
     async def _resolve_adapter(self, symbol: str) -> Optional[str]:
         """
@@ -221,7 +221,7 @@ class StreamManager:
                 return "sina_finance"
 
         except Exception as e:
-            logger.error(f"Error resolving adapter for {symbol}: {e}")
+            logger.error("Error resolving adapter for %(symbol)s: %(e)s"")
             return None
 
     async def _start_stream(self, symbol: str) -> bool:
@@ -240,17 +240,17 @@ class StreamManager:
 
             adapter = await self._get_websocket_adapter(adapter_name)
             if not adapter:
-                logger.error(f"No WebSocket adapter available for {adapter_name}")
+                logger.error("No WebSocket adapter available for %(adapter_name)s"")
                 return False
 
             success = await adapter.connect()
             if not success:
-                logger.error(f"Failed to connect WebSocket for {adapter_name}")
+                logger.error("Failed to connect WebSocket for %(adapter_name)s"")
                 return False
 
             success = await adapter.subscribe([symbol])
             if not success:
-                logger.error(f"Failed to subscribe {symbol} via {adapter_name}")
+                logger.error("Failed to subscribe %(symbol)s via %(adapter_name)s"")
                 return False
 
             await adapter.on_message(self._handle_stream_message)
@@ -260,11 +260,11 @@ class StreamManager:
 
             asyncio.create_task(self._heartbeat_monitor(symbol))
 
-            logger.info(f"Stream started for {symbol} via {adapter_name}")
+            logger.info("Stream started for %(symbol)s via %(adapter_name)s"")
             return True
 
         except Exception as e:
-            logger.error(f"Error starting stream for {symbol}: {e}")
+            logger.error("Error starting stream for %(symbol)s: %(e)s"")
             subscription.status = StreamStatus.ERROR
             return False
 
@@ -285,10 +285,10 @@ class StreamManager:
                 self.reconnect_tasks[symbol].cancel()
                 del self.reconnect_tasks[symbol]
 
-            logger.info(f"Stream stopped for {symbol}")
+            logger.info("Stream stopped for %(symbol)s"")
 
         except Exception as e:
-            logger.error(f"Error stopping stream for {symbol}: {e}")
+            logger.error("Error stopping stream for %(symbol)s: %(e)s"")
 
     async def _get_websocket_adapter(self, adapter_name: str) -> Optional[Any]:
         """
@@ -300,7 +300,7 @@ class StreamManager:
         Returns:
             WebSocket适配器实例
         """
-        logger.warning(f"WebSocket adapter {adapter_name} not implemented yet")
+        logger.warning("WebSocket adapter %(adapter_name)s not implemented yet"")
         return None
 
     async def _handle_stream_message(self, message: Dict[str, Any]) -> None:
@@ -325,7 +325,7 @@ class StreamManager:
                 self.subscriptions[symbol].last_update = datetime.now()
 
         except Exception as e:
-            logger.error(f"Error handling stream message: {e}")
+            logger.error("Error handling stream message: %(e)s"")
 
     async def _trigger_event(self, event_type: str, data: Dict[str, Any]) -> None:
         """
@@ -342,7 +342,7 @@ class StreamManager:
                 await asyncio.gather(*tasks, return_exceptions=True)
 
         except Exception as e:
-            logger.error(f"Error triggering event {event_type}: {e}")
+            logger.error("Error triggering event %(event_type)s: %(e)s"")
 
     async def _heartbeat_monitor(self, symbol: str) -> None:
         """
@@ -362,12 +362,12 @@ class StreamManager:
                 if subscription.last_update:
                     time_since_update = (datetime.now() - subscription.last_update).total_seconds()
                     if time_since_update > self.heartbeat_interval * 2:
-                        logger.warning(f"No data received for {symbol} in {time_since_update:.1f}s")
+                        logger.warning("No data received for %(symbol)s in {time_since_update:.1f}s"")
 
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in heartbeat monitor for {symbol}: {e}")
+                logger.error("Error in heartbeat monitor for %(symbol)s: %(e)s"")
 
     async def shutdown(self) -> None:
         """关闭管理器"""

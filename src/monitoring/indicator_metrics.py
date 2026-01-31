@@ -1,4 +1,4 @@
-from prometheus_client import Histogram, Counter, Gauge
+from prometheus_client import Counter, Histogram
 
 # Labels used: indicator_id, backend (cpu/numba/gpu)
 

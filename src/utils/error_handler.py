@@ -133,22 +133,14 @@ def retry_on_failure(
 class DataError(Exception):
     """数据相关错误"""
 
-    pass
-
 
 class ConnectionError(Exception):
     """连接相关错误"""
-
-    pass
 
 
 class ValidationError(Exception):
     """验证相关错误"""
 
-    pass
-
 
 class ProcessingError(Exception):
     """处理相关错误"""
-
-    pass

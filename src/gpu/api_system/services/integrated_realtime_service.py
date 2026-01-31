@@ -3,27 +3,28 @@
 Integrated Real-time Data Processing Service
 """
 
-import logging
-import time
-import threading
-from typing import Dict, List, Any, Iterator
-from datetime import datetime, timedelta
-from collections import deque
 import json
+import logging
+import threading
+import time
+from collections import deque
+from datetime import datetime, timedelta
+from typing import Any, Dict, Iterator, List
+
 import pandas as pd
 
-from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
-from src.gpu.api_system.utils.monitoring import MetricsCollector
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 try:
     from src.gpu.api_system.api_proto.realtime_pb2 import (
-        StreamDataRequest,
-        StreamDataResponse,
         FeatureRequest,
         FeatureResponse,
+        StreamDataRequest,
+        StreamDataResponse,
     )
     from src.gpu.api_system.api_proto.realtime_pb2_grpc import RealTimeServiceServicer
 except ImportError:

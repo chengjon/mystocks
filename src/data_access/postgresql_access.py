@@ -9,9 +9,9 @@ PostgreSQL数据访问层
 """
 
 import logging
+from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
-from contextlib import contextmanager
 
 import pandas as pd
 from psycopg2 import sql
@@ -117,11 +117,11 @@ class PostgreSQLDataAccess:
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
-            logger.info(f"Table created successfully: {table_name}")
+            logger.info("Table created successfully: %(table_name)s")
         except Exception as e:
             if conn:
                 conn.rollback()
-            logger.error(f"Failed to create table {table_name}: {e}")
+            logger.error("Failed to create table %(table_name)s: %(e)s")
             raise
         finally:
             # 确保cursor关闭（即使出错）
@@ -129,7 +129,7 @@ class PostgreSQLDataAccess:
                 try:
                     cursor.close()
                 except Exception as cursor_error:
-                    logger.error(f"Error closing cursor: {cursor_error}")
+                    logger.error("Error closing cursor: %(cursor_error)s")
             # 确保连接返回（即使cursor.close()失败）
             self._return_connection(conn)
 
@@ -157,11 +157,11 @@ class PostgreSQLDataAccess:
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
-            logger.info(f"Hypertable created successfully: {table_name}")
+            logger.info("Hypertable created successfully: %(table_name)s")
         except Exception as e:
             if conn:
                 conn.rollback()
-            logger.error(f"Failed to create hypertable {table_name}: {e}")
+            logger.error("Failed to create hypertable %(table_name)s: %(e)s")
             raise
         finally:
             # 确保cursor关闭
@@ -169,7 +169,7 @@ class PostgreSQLDataAccess:
                 try:
                     cursor.close()
                 except Exception as cursor_error:
-                    logger.error(f"Error closing cursor: {cursor_error}")
+                    logger.error("Error closing cursor: %(cursor_error)s")
             # 确保连接返回
             self._return_connection(conn)
 
@@ -444,6 +444,47 @@ class PostgreSQLDataAccess:
             return True
         except Exception:
             return False
+
+    def load_data_by_classification(
+        self,
+        classification,
+        filters: Optional[Dict[str, Any]] = None,
+        limit: int = 1000,
+    ) -> List[Dict[str, Any]]:
+        """
+        根据数据分类加载数据
+
+        Args:
+            classification: 数据分类
+            filters: 过滤条件字典
+            limit: 最大返回记录数
+
+        Returns:
+            数据列表
+        """
+        try:
+            # 根据分类获取表名
+            table_name = classification.value.lower() if hasattr(classification, 'value') else str(classification).lower()
+
+            # 构建查询条件
+            where_clauses = []
+            params = []
+            if filters:
+                for key, value in filters.items():
+                    where_clauses.append(f"{key} = %s")
+                    params.append(value)
+
+            where_str = " AND ".join(where_clauses) if where_clauses else "1=1"
+
+            sql = f"SELECT * FROM {table_name} WHERE {where_str} LIMIT {limit}"
+            result = self.query(sql, tuple(params) if params else None)
+
+            if result is not None and not result.empty:
+                return result.to_dict('records')
+            return []
+        except Exception as e:
+            logger.error("PostgreSQL按分类加载数据失败: %(e)s")
+            return []
 
     def close(self):
         """关闭所有连接"""

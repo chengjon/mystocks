@@ -13,15 +13,17 @@ T025: US2配置驱动表结构管理验收测试
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-import yaml
-import tempfile
 import shutil
+import tempfile
+
 import pytest
+import yaml
+
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 from src.storage.database.connection_manager import DatabaseConnectionManager
 

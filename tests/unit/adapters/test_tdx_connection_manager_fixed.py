@@ -8,11 +8,12 @@ TDX连接管理器测试套件 - 修复版本
 修复: 解决API匹配和缩进问题
 """
 
-import pytest
-from unittest.mock import patch
-import sys
 import os
+import sys
 import time
+from unittest.mock import patch
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 // import { useAuthStore } from '@/stores/auth'  // 已移除认证依赖
 
 /**
@@ -16,7 +16,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
  */
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/login',
@@ -25,10 +25,10 @@ const router = createRouter({
       meta: { requiresAuth: false }
     },
 
-    // ========== MainLayout Routes (仪表盘/分析/设置/通用页面) ==========
+    // ========== ArtDecoLayoutEnhanced Routes (量化交易管理中心) ==========
     {
       path: '/',
-      component: () => import('@/layouts/MainLayout.vue'),
+      component: () => import('@/layouts/ArtDecoLayoutEnhanced.vue'),
       redirect: '/dashboard',
       meta: { requiresAuth: false },
       children: [

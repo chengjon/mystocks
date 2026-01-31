@@ -137,6 +137,67 @@ class DataClassification(str, Enum):
     USER_CONFIG = "USER_CONFIG"
     """用户配置 - 自定义标的组合、看板设置,个性化,用户关联"""
 
+    # ==================== 向后兼容别名 ====================
+    # 为了兼容旧代码，添加一些常用别名
+
+    DEPTH_DATA = ORDER_BOOK_DEPTH
+    """深度数据别名 (ORDER_BOOK_DEPTH) - 向后兼容"""
+
+    QUANTITATIVE_FACTORS = QUANT_FACTORS
+    """量化因子别名 (QUANT_FACTORS) - 向后兼容"""
+
+    MODEL_OUTPUTS = MODEL_OUTPUT
+    """模型输出别名 (MODEL_OUTPUT) - 向后兼容"""
+
+    TRADING_SIGNALS = TRADE_SIGNALS
+    """交易信号别名 (TRADE_SIGNALS) - 向后兼容"""
+
+    TRANSACTION_RECORDS = TRADE_RECORDS
+    """交易记录别名 (TRADE_RECORDS) - 向后兼容"""
+
+    REFERENCE_DATA = SYMBOLS_INFO
+    """参考数据别名 (SYMBOLS_INFO) - 向后兼容"""
+
+    POSITION_RECORDS = POSITION_HISTORY
+    """持仓记录别名 (POSITION_HISTORY) - 向后兼容"""
+
+    # ==================== 向后兼容别名 (旧代码) ====================
+    # 这些是旧系统中使用的枚举名称,为了兼容性保留
+
+    ACCOUNT_FUNDS = REALTIME_ACCOUNT
+    """账户资金别名 (REALTIME_ACCOUNT) - 向后兼容旧代码"""
+
+    REALTIME_QUOTES = LEVEL2_SNAPSHOT
+    """实时行情别名 (LEVEL2_SNAPSHOT) - 向后兼容旧代码"""
+
+    STOCK_INFO = SYMBOLS_INFO
+    """股票信息别名 (SYMBOLS_INFO) - 向后兼容旧代码"""
+
+    FINANCIAL_REPORTS = FUNDAMENTAL_METRICS
+    """财务报告别名 (FUNDAMENTAL_METRICS) - 向后兼容旧代码"""
+
+    MARKET_DATA_DAILY = DAILY_KLINE
+    """日线市场数据别名 (DAILY_KLINE) - 向后兼容旧代码"""
+
+    MARKET_DATA_MIN5 = MINUTE_KLINE
+    """5分钟市场数据别名 (MINUTE_KLINE) - 向后兼容旧代码"""
+
+    MARKET_DATA_MIN1 = MINUTE_KLINE
+    """1分钟市场数据别名 (MINUTE_KLINE) - 向后兼容旧代码"""
+
+    # Category-level aliases (旧系统的分类级别枚举)
+    MARKET_DATA = TICK_DATA
+    """市场数据分类别名 (TICK_DATA) - 向后兼容旧代码"""
+
+    DERIVATIVE_DATA = TECHNICAL_INDICATORS
+    """衍生数据分类别名 (TECHNICAL_INDICATORS) - 向后兼容旧代码"""
+
+    TRADE_DATA = ORDER_RECORDS
+    """交易数据分类别名 (ORDER_RECORDS) - 向后兼容旧代码"""
+
+    METADATA = DATA_SOURCE_STATUS
+    """元数据分类别名 (DATA_SOURCE_STATUS) - 向后兼容旧代码"""
+
     @classmethod
     def get_all_classifications(cls) -> List[str]:
         """返回所有23个数据分类的列表"""

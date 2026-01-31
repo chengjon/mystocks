@@ -125,10 +125,10 @@ export interface TradingParametersVM {
   };
 
   // Entry rules
-  entry_rules?: TradeRule[];
+  entry_rules?: TradeRuleVM[];
 
   // Exit rules
-  exit_rules?: TradeRule[];
+  exit_rules?: TradeRuleVM[];
 
   // Stop loss settings
   stop_loss?: {
@@ -227,6 +227,13 @@ export interface BacktestRequestVM {
   end_date: string;
   initial_capital: number;
   parameters: Record<string, any>;
+  // Additional fields for backtest task tracking
+  status?: 'pending' | 'running' | 'completed' | 'failed';
+  created_at?: string;
+  progress?: number;
+  startTime?: string;
+  result?: BacktestResultVM;
+  symbols?: string[];
 }
 
 export interface BacktestTradeVM {

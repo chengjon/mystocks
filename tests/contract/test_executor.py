@@ -6,21 +6,22 @@
 """
 
 import asyncio
-import aiohttp
 import logging
 import time
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
+import aiohttp
+
+from .contract_validator import ContractValidator
 from .models import (
-    ContractTestSuite,
     ContractTestCase,
     ContractTestConfig,
+    ContractTestSuite,
     TestCategory,
-    TestStatus,
     TestExecutionResult,
+    TestStatus,
 )
-from .contract_validator import ContractValidator
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class ContractTestExecutor:
 
     async def _execute_parallel(self, suite: ContractTestSuite):
         """并行执行测试用例"""
-        logger.info(f"并行执行测试套件: {suite.name} (并发数: {suite.max_workers})")
+        logger.info("并行执行测试套件: {suite.name} (并发数: {suite.max_workers})")
 
         # 创建并发任务
         tasks = []
@@ -107,7 +108,7 @@ class ContractTestExecutor:
 
     async def _execute_sequential(self, suite: ContractTestSuite):
         """顺序执行测试用例"""
-        logger.info(f"顺序执行测试套件: {suite.name}")
+        logger.info("顺序执行测试套件: {suite.name}")
 
         for test_case in suite.test_cases:
             if test_case.enabled:
@@ -115,7 +116,7 @@ class ContractTestExecutor:
                     result = await self._execute_test_case_with_retry(test_case)
                     self.results.append(result)
                 except Exception as e:
-                    logger.error(f"执行测试用例 {test_case.name} 时发生异常: {e}")
+                    logger.error("执行测试用例 {test_case.name} 时发生异常: %(e)s")
                     error_result = TestExecutionResult(
                         test_case=test_case,
                         status=TestStatus.ERROR,
@@ -145,7 +146,7 @@ class ContractTestExecutor:
 
             except Exception as e:
                 last_error = str(e)
-                logger.warning(f"测试用例 {test_case.name} 第 {attempt + 1} 次执行失败: {e}")
+                logger.warning("测试用例 {test_case.name} 第 {attempt + 1} 次执行失败: %(e)s")
 
                 if attempt < self.config.max_retries:
                     await asyncio.sleep(self.config.retry_delay)
@@ -184,7 +185,7 @@ class ContractTestExecutor:
             validation_result = self.validator.validate_response_data(response_data, test_case)
 
             # 收集性能指标
-            performance_metrics = self._collect_performance_metrics(response, response_time, test_case)
+            performance_metrics = await self._collect_performance_metrics(response, response_time, test_case)
 
             # 确定测试状态
             if validation_result.is_valid():
@@ -221,7 +222,7 @@ class ContractTestExecutor:
 
         except Exception as e:
             duration = time.time() - start_time
-            logger.error(f"执行测试用例 {test_case.name} 时发生异常: {e}")
+            logger.error("执行测试用例 {test_case.name} 时发生异常: %(e)s")
 
             return TestExecutionResult(
                 test_case=test_case,
@@ -235,20 +236,20 @@ class ContractTestExecutor:
         # 检查跳过条件
         for condition in test_case.skip_conditions:
             if condition.lower() == "offline" and not await self._check_network_connectivity():
-                logger.info(f"跳过测试 {test_case.name}: 网络离线")
+                logger.info("跳过测试 {test_case.name}: 网络离线")
                 return True
 
             if condition.lower() == "maintenance" and await self._check_maintenance_mode():
-                logger.info(f"跳过测试 {test_case.name}: 维护模式")
+                logger.info("跳过测试 {test_case.name}: 维护模式")
                 return True
 
         # 检查特定类别的跳过条件
         if test_case.category == TestCategory.SECURITY and not self.config.enable_security_tests:
-            logger.info(f"跳过安全测试: {test_case.name}")
+            logger.info("跳过安全测试: {test_case.name}")
             return True
 
         if test_case.category == TestCategory.AUTHENTICATION and not self.config.enable_auth_tests:
-            logger.info(f"跳过认证测试: {test_case.name}")
+            logger.info("跳过认证测试: {test_case.name}")
             return True
 
         return False
@@ -363,14 +364,14 @@ class ContractTestExecutor:
                 }
 
         except Exception as e:
-            logger.error(f"解析响应失败: {e}")
+            logger.error("解析响应失败: %(e)s")
             return {
                 "status_code": response.status,
                 "error": str(e),
                 "headers": dict(response.headers),
             }
 
-    def _collect_performance_metrics(
+    async def _collect_performance_metrics(
         self,
         response: aiohttp.ClientResponse,
         response_time: float,
@@ -402,10 +403,10 @@ class ContractTestExecutor:
             if isinstance(result, TestExecutionResult):
                 results.append(result)
             elif isinstance(result, Exception):
-                logger.error(f"批次执行中发生异常: {result}")
+                logger.error("批次执行中发生异常: %(result)s")
                 # 可以创建一个错误结果或记录到日志
             else:
-                logger.warning(f"意外的结果类型: {type(result)}")
+                logger.warning("意外的结果类型: {type(result)}")
 
         return results
 

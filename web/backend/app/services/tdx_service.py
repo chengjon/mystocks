@@ -3,11 +3,11 @@ TDX数据服务
 提供对TDX适配器的封装和缓存支持
 """
 
-import sys
-import os
 import logging
-from typing import Dict
+import os
+import sys
 from datetime import datetime
+from typing import Dict
 
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
@@ -36,7 +36,7 @@ class TdxService:
             self.tdx_adapter = TdxDataSource(use_server_config=True)
             logger.info("TDX服务初始化成功")
         except Exception as e:
-            logger.error(f"TDX服务初始化失败: {e}")
+            logger.error("TDX服务初始化失败: %(e)s"")
             raise
 
     def get_real_time_quote(self, symbol: str) -> Dict:
@@ -55,7 +55,7 @@ class TdxService:
 
             # 如果返回的是字符串,说明出错了
             if isinstance(result, str):
-                logger.warning(f"获取实时行情失败: {result}")
+                logger.warning("获取实时行情失败: %(result)s"")
                 raise ValueError(result)
 
             # 计算涨跌额和涨跌幅
@@ -69,11 +69,11 @@ class TdxService:
                 result["change"] = 0.0
                 result["change_pct"] = 0.0
 
-            logger.info(f"获取实时行情成功: {symbol}")
+            logger.info("获取实时行情成功: %(symbol)s"")
             return result
 
         except Exception as e:
-            logger.error(f"获取实时行情异常: {symbol}, 错误: {e}")
+            logger.error("获取实时行情异常: %(symbol)s, 错误: %(e)s"")
             raise
 
     def get_stock_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
@@ -96,7 +96,7 @@ class TdxService:
             )
 
             if df.empty:
-                logger.warning(f"未获取到K线数据: {symbol}, {period}")
+                logger.warning("未获取到K线数据: %(symbol)s, %(period)s"")
                 return {"code": symbol, "period": period, "data": [], "count": 0}
 
             # 转换为字典列表
@@ -120,11 +120,11 @@ class TdxService:
                 "count": len(data_list),
             }
 
-            logger.info(f"获取K线成功: {symbol}, {period}, {len(data_list)}条")
+            logger.info("获取K线成功: %(symbol)s, %(period)s, {len(data_list)}条"")
             return result
 
         except Exception as e:
-            logger.error(f"获取K线异常: {symbol}, {period}, 错误: {e}")
+            logger.error("获取K线异常: %(symbol)s, %(period)s, 错误: %(e)s"")
             raise
 
     def get_index_quote(self, symbol: str) -> Dict:
@@ -142,7 +142,7 @@ class TdxService:
             result = self.tdx_adapter.get_real_time_data(symbol)
 
             if isinstance(result, str):
-                logger.warning(f"获取指数行情失败: {result}")
+                logger.warning("获取指数行情失败: %(result)s"")
                 raise ValueError(result)
 
             # 计算涨跌
@@ -156,11 +156,11 @@ class TdxService:
                 result["change"] = 0.0
                 result["change_pct"] = 0.0
 
-            logger.info(f"获取指数行情成功: {symbol}")
+            logger.info("获取指数行情成功: %(symbol)s"")
             return result
 
         except Exception as e:
-            logger.error(f"获取指数行情异常: {symbol}, 错误: {e}")
+            logger.error("获取指数行情异常: %(symbol)s, 错误: %(e)s"")
             raise
 
     def get_index_kline(self, symbol: str, start_date: str, end_date: str, period: str = "1d") -> Dict:
@@ -205,11 +205,11 @@ class TdxService:
                 "count": len(data_list),
             }
 
-            logger.info(f"获取指数K线成功: {symbol}, {period}, {len(data_list)}条")
+            logger.info("获取指数K线成功: %(symbol)s, %(period)s, {len(data_list)}条"")
             return result
 
         except Exception as e:
-            logger.error(f"获取指数K线异常: {symbol}, {period}, 错误: {e}")
+            logger.error("获取指数K线异常: %(symbol)s, %(period)s, 错误: %(e)s"")
             raise
 
     def check_connection(self) -> Dict:
@@ -242,7 +242,7 @@ class TdxService:
                 }
 
         except Exception as e:
-            logger.error(f"TDX连接检查失败: {e}")
+            logger.error("TDX连接检查失败: %(e)s"")
             return {
                 "status": "unhealthy",
                 "tdx_connected": False,

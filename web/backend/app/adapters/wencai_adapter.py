@@ -13,10 +13,10 @@
 创建日期: 2025-10-17
 """
 
+import logging
 import re
 import time
-import logging
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import pandas as pd
 import requests
@@ -52,7 +52,7 @@ class WencaiDataSource:
         self.retry_count = retry_count
         self.session = self._create_session()
 
-        logger.info(f"WencaiDataSource initialized: timeout={timeout}s, retry_count={retry_count}")
+        logger.info("WencaiDataSource initialized: timeout=%(timeout)ss, retry_count=%(retry_count)s"")
 
     def _create_session(self) -> requests.Session:
         """
@@ -92,7 +92,7 @@ class WencaiDataSource:
             requests.RequestException: 请求失败
             ValueError: 数据解析失败
         """
-        logger.info(f"Fetching Wencai data: query='{query}', pages={pages}")
+        logger.info("Fetching Wencai data: query='%(query)s', pages=%(pages)s"")
 
         all_data = pd.DataFrame()
 
@@ -101,25 +101,25 @@ class WencaiDataSource:
                 page_data = self._fetch_single_page(query, page)
 
                 if page_data.empty:
-                    logger.warning(f"Page {page} returned empty data")
+                    logger.warning("Page %(page)s returned empty data"")
                     continue
 
                 all_data = pd.concat([all_data, page_data], ignore_index=True)
-                logger.debug(f"Page {page}: fetched {len(page_data)} records")
+                logger.debug("Page %(page)s: fetched {len(page_data)} records"")
 
                 # 避免请求过快
                 if page < pages:
                     time.sleep(0.5)
 
             except Exception as e:
-                logger.error(f"Failed to fetch page {page}: {str(e)}")
+                logger.error("Failed to fetch page %(page)s: {str(e)}"")
                 # 继续处理其他页
                 continue
 
         if all_data.empty:
             logger.warning("No data fetched from Wencai API")
         else:
-            logger.info(f"Total fetched: {len(all_data)} records")
+            logger.info("Total fetched: {len(all_data)} records"")
 
         all_data.reset_index(drop=True, inplace=True)
         return all_data
@@ -197,10 +197,10 @@ class WencaiDataSource:
             return df
 
         except requests.RequestException as e:
-            logger.error(f"HTTP request failed: {str(e)}")
+            logger.error("HTTP request failed: {str(e)}"")
             raise
         except (ValueError, KeyError, IndexError) as e:
-            logger.error(f"Failed to parse response: {str(e)}")
+            logger.error("Failed to parse response: {str(e)}"")
             raise ValueError(f"Invalid response format: {str(e)}")
 
     def clean_data(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -216,7 +216,7 @@ class WencaiDataSource:
         if data.empty:
             return data
 
-        logger.info(f"Cleaning data: {len(data)} rows, {len(data.columns)} columns")
+        logger.info("Cleaning data: {len(data)} rows, {len(data.columns)} columns"")
 
         cleaned_data = data.copy()
         fetch_interval = None
@@ -249,7 +249,7 @@ class WencaiDataSource:
         # 再次处理可能的重复列名
         cleaned_data = self._handle_duplicate_columns(cleaned_data)
 
-        logger.info(f"Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns")
+        logger.info("Data cleaned: {len(cleaned_data)} rows, {len(cleaned_data.columns)} columns"")
 
         return cleaned_data
 
@@ -295,7 +295,7 @@ class WencaiDataSource:
 
         # 基本验证：长度检查
         if len(query) < 5 or len(query) > 500:
-            logger.warning(f"Query length invalid: {len(query)}")
+            logger.warning("Query length invalid: {len(query)}"")
             return False
 
         return True

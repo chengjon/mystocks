@@ -7,15 +7,16 @@ Stop Loss Strategy Historical Records and Analysis Service
 """
 
 import logging
-from typing import Dict, Any, Optional, List
-from datetime import datetime, timedelta
-from dataclasses import dataclass
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 # 复用现有的监控基础设施
 try:
-    from src.monitoring.signal_recorder import get_signal_recorder, SignalRecord
+    from src.monitoring.signal_recorder import get_signal_recorder
 
     MONITORING_AVAILABLE = True
 except ImportError:
@@ -150,7 +151,7 @@ class StopLossHistoryService:
             # 记录到监控系统
             await self._record_to_monitoring_system(record)
 
-            logger.info(f"✅ 止损执行记录成功: {record_id} {symbol} PnL: {pnl_percentage:.2f}%")
+            logger.info("✅ 止损执行记录成功: %(record_id)s %(symbol)s PnL: {pnl_percentage:.2f}%")
 
             # 清除分析缓存
             self.analysis_cache.clear()
@@ -158,7 +159,7 @@ class StopLossHistoryService:
             return record_id
 
         except Exception as e:
-            logger.error(f"记录止损执行失败 {symbol} {position_id}: {e}")
+            logger.error("记录止损执行失败 %(symbol)s %(position_id)s: %(e)s")
             raise
 
     async def get_strategy_performance(
@@ -262,7 +263,7 @@ class StopLossHistoryService:
             return result
 
         except Exception as e:
-            logger.error(f"获取策略性能分析失败: {e}")
+            logger.error("获取策略性能分析失败: %(e)s")
             return {
                 "error": str(e),
                 "total_trades": 0,
@@ -342,7 +343,7 @@ class StopLossHistoryService:
             }
 
         except Exception as e:
-            logger.error(f"获取策略建议失败 {strategy_type}: {e}")
+            logger.error("获取策略建议失败 %(strategy_type)s: %(e)s")
             return {
                 "error": str(e),
                 "recommendations": ["无法生成建议"],
@@ -435,7 +436,7 @@ class StopLossHistoryService:
                 }
 
         except Exception as e:
-            logger.error(f"策略回测失败 {strategy_type} {symbol}: {e}")
+            logger.error("策略回测失败 %(strategy_type)s %(symbol)s: %(e)s")
             return {"error": str(e)}
 
     def get_records_summary(self) -> Dict[str, Any]:
@@ -467,7 +468,7 @@ class StopLossHistoryService:
             }
 
         except Exception as e:
-            logger.error(f"获取记录汇总失败: {e}")
+            logger.error("获取记录汇总失败: %(e)s")
             return {"error": str(e)}
 
     # 私有方法
@@ -586,7 +587,7 @@ class StopLossHistoryService:
                     },
                 )
         except Exception as e:
-            logger.warning(f"记录到监控系统失败 {record.record_id}: {e}")
+            logger.warning("记录到监控系统失败 {record.record_id}: %(e)s")
 
     async def _simulate_stop_loss_check(
         self, strategy_type: str, symbol: str, entry_price: float, current_price: float, strategy_params: Dict[str, Any]
@@ -613,7 +614,7 @@ class StopLossHistoryService:
             return False
 
         except Exception as e:
-            logger.warning(f"模拟止损检查失败 {strategy_type} {symbol}: {e}")
+            logger.warning("模拟止损检查失败 %(strategy_type)s %(symbol)s: %(e)s")
             return False
 
 

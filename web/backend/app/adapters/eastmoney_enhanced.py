@@ -9,17 +9,18 @@ This adapter enhances the existing EastMoneyAdapter with BaseDataSourceAdapter f
 - Multi-source integration support
 """
 
+import logging
 import time
 from typing import List, Optional
+
 import pandas as pd
-import logging
 
 from app.adapters.base import (
     BaseDataSourceAdapter,
-    DataSourceType,
-    DataSourceStatus,
-    DataSourceConfig,
     DataCategory,
+    DataSourceConfig,
+    DataSourceStatus,
+    DataSourceType,
 )
 from app.adapters.eastmoney_adapter import EastMoneyAdapter
 
@@ -102,7 +103,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 self.update_health_status(DataSourceStatus.DEGRADED, "Returned empty data")
 
         except Exception as e:
-            logger.error(f"Failed to fetch realtime quote from EastMoney: {e}")
+            logger.error("Failed to fetch realtime quote from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -133,10 +134,10 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.warning(f"EastMoney returned empty fund flow data for {symbol}")
+                logger.warning("EastMoney returned empty fund flow data for %(symbol)s"")
 
         except Exception as e:
-            logger.error(f"Failed to fetch fund flow from EastMoney: {e}")
+            logger.error("Failed to fetch fund flow from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -166,10 +167,10 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.info(f"No dragon tiger data for {date_str}")
+                logger.info("No dragon tiger data for %(date_str)s"")
 
         except Exception as e:
-            logger.error(f"Failed to fetch dragon tiger from EastMoney: {e}")
+            logger.error("Failed to fetch dragon tiger from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -199,7 +200,7 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 logger.warning("EastMoney returned empty ETF data")
 
         except Exception as e:
-            logger.error(f"Failed to fetch ETF data from EastMoney: {e}")
+            logger.error("Failed to fetch ETF data from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -230,10 +231,10 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.warning(f"EastMoney returned empty sector data for {sector_type}")
+                logger.warning("EastMoney returned empty sector data for %(sector_type)s"")
 
         except Exception as e:
-            logger.error(f"Failed to fetch sector data from EastMoney: {e}")
+            logger.error("Failed to fetch sector data from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -263,10 +264,10 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.info(f"No dividend data for {symbol}")
+                logger.info("No dividend data for %(symbol)s"")
 
         except Exception as e:
-            logger.error(f"Failed to fetch dividend from EastMoney: {e}")
+            logger.error("Failed to fetch dividend from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -296,10 +297,10 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
                 success = True
                 self.update_health_status(DataSourceStatus.AVAILABLE)
             else:
-                logger.info(f"No block trade data for {date_str}")
+                logger.info("No block trade data for %(date_str)s"")
 
         except Exception as e:
-            logger.error(f"Failed to fetch block trade from EastMoney: {e}")
+            logger.error("Failed to fetch block trade from EastMoney: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:

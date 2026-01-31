@@ -4,9 +4,9 @@ TDX集成客户端 - 从 financial_adapter.py 拆分
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-from typing import Optional, Dict, Any
-import time
 import logging
+import time
+from typing import Any, Dict, Optional
 
 # 设置日志
 logger = logging.getLogger(__name__)

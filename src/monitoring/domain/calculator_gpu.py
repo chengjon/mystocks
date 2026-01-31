@@ -18,12 +18,11 @@ GPU健康度计算引擎
 """
 
 import logging
-import numpy as np
-import pandas as pd
-from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +70,9 @@ class GPUHealthChecker:
         try:
             self._gpu_available = True
             self._device_info = self._get_device_info()
-            logger.info(f"GPU检测成功: {self._device_info}")
+            logger.info("GPU检测成功: {self._device_info")
         except Exception as e:
-            logger.warning(f"GPU检测失败: {e}")
+            logger.warning("GPU检测失败: %(e)s")
             self._gpu_available = False
 
     def _get_device_info(self) -> Dict[str, Any]:
@@ -90,7 +89,7 @@ class GPUHealthChecker:
                 "compute_capability": device.compute_capability,
             }
         except Exception as e:
-            logger.error(f"获取GPU设备信息失败: {e}")
+            logger.error("获取GPU设备信息失败: %(e)s")
             return {"error": str(e)}
 
     @property
@@ -149,7 +148,7 @@ class GPUHealthChecker:
                 "memory_usage_percent": round(usage_ratio * 100, 1),
             }
         except Exception as e:
-            logger.error(f"GPU健康检查失败: {e}")
+            logger.error("GPU健康检查失败: %(e)s")
             return {
                 "available": False,
                 "reason": str(e),
@@ -195,7 +194,7 @@ class GPUHealthCalculator:
             try:
                 return self._calculate_on_gpu(inputs)
             except Exception as e:
-                logger.warning(f"GPU计算失败，降级到CPU: {e}")
+                logger.warning("GPU计算失败，降级到CPU: %(e)s")
                 return self._calculate_on_cpu(inputs)
         else:
             return self._calculate_on_cpu(inputs)
@@ -214,7 +213,7 @@ class GPUHealthCalculator:
         free_memory_gb = health_status.get("free_memory_gb", 0)
 
         if free_memory_gb < self.config.fallback_threshold_gb:
-            logger.warning(f"显存不足 ({free_memory_gb:.2f}GB)，降级到CPU")
+            logger.warning("显存不足 ({free_memory_gb:.2f}GB)，降级到CPU")
             return self._calculate_on_cpu(inputs)
 
         close_prices = np.array([inp.get("close", 100) for inp in inputs], dtype=np.float64)
@@ -264,7 +263,7 @@ class GPUHealthCalculator:
                 }
             )
 
-        logger.info(f"GPU计算 {len(inputs)} 只股票: {elapsed_ms:.2f}ms")
+        logger.info("GPU计算 {len(inputs)} 只股票: {elapsed_ms:.2f}ms")
         return results
 
     def _gpu_calculate_trend(self, prices: cp.ndarray) -> cp.ndarray:
@@ -348,7 +347,7 @@ class GPUHealthCalculator:
 
     def _calculate_on_cpu(self, inputs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """在CPU上计算（降级模式）"""
-        from .calculator_cpu import VectorizedHealthCalculator, HealthScoreInput
+        from .calculator_cpu import HealthScoreInput, VectorizedHealthCalculator
 
         cpu_calc = self._cpu_calculator
         if cpu_calc is None:

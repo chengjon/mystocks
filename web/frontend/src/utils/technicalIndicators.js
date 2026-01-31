@@ -223,7 +223,7 @@ export function calculateTechnicalIndicators(ohlcvData, indicators) {
       case 'RSI':
         result[`${abbreviation}_${period}`] = calculateRSI(closePrices, period);
         break;
-      case 'MACD':
+      case 'MACD': {
         const macdParams = parameters || {};
         const macdResult = calculateMACD(
           closePrices,
@@ -237,7 +237,8 @@ export function calculateTechnicalIndicators(ohlcvData, indicators) {
           'macd_histogram': macdResult.histogram
         });
         break;
-      case 'BBANDS':
+      }
+      case 'BBANDS': {
         const bbResult = calculateBollingerBands(closePrices, period);
         Object.assign(result, {
           'bb_upper': bbResult.upper,
@@ -245,6 +246,7 @@ export function calculateTechnicalIndicators(ohlcvData, indicators) {
           'bb_lower': bbResult.lower
         });
         break;
+      }
       default:
         // 其他不支持的指标，返回空数组
         result[abbreviation] = Array(length).fill(null);

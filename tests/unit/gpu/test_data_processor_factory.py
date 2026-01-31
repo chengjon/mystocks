@@ -7,10 +7,11 @@ Data Processor Factory Test Suite
 测试模块: src.gpu.data_processor_factory (58行)
 """
 
-import pytest
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

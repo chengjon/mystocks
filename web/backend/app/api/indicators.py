@@ -26,7 +26,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field, constr, validator
 
 from app.api.auth import get_current_active_user
-from app.core.exceptions import BusinessException, ValidationException, NotFoundException, ForbiddenException
+from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
@@ -402,7 +402,7 @@ async def get_indicators_by_category(category: str):
     except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Failed to get indicators for category {category}", exc_info=e)
+        logger.error("Failed to get indicators for category {category}", exc_info=e)
         raise BusinessException(
             detail=f"获取分类指标失败: {str(e)}", status_code=500, error_code="CATEGORY_INDICATORS_RETRIEVAL_FAILED"
         )

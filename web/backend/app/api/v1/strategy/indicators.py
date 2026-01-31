@@ -4,9 +4,10 @@
 提供各种技术指标的计算功能
 """
 
+from typing import Any, Dict, List
+
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
-from typing import List, Dict, Any
 
 router = APIRouter(
     prefix="/technical-indicators",

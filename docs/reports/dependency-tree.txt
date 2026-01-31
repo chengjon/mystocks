@@ -1,0 +1,100 @@
+/root/miniconda3/envs/stock/lib/python3.12/site-packages/pytdx/reader/block_reader.py:117: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  if code is not '':
+/root/miniconda3/envs/stock/lib/python3.12/site-packages/pytdx/reader/block_reader.py:128: SyntaxWarning: "is not" with 'str' literal. Did you mean "!="?
+  cc = [c[1:] for c in codes if c is not '']
+/root/miniconda3/envs/stock/lib/python3.12/site-packages/efinance/utils/__init__.py:62: SyntaxWarning: invalid escape sequence '\d'
+  if not re.findall("\d", str(o)):
+/root/miniconda3/envs/stock/lib/python3.12/site-packages/efinance/fund/getter.py:276: SyntaxWarning: invalid escape sequence '\d'
+  results = re.findall('"(\d{6}),(.*?),', response.text)
+{
+    "GPUtil": {
+        "bacon": 2,
+        "imported_by": [
+            "mystocks_spec.src.monitoring.ai_realtime_monitor"
+        ],
+        "imports": [
+            "GPUtil.GPUtil"
+        ],
+        "name": "GPUtil",
+        "path": "/root/miniconda3/envs/stock/lib/python3.12/site-packages/GPUtil/__init__.py"
+    },
+    "GPUtil.GPUtil": {
+        "bacon": 3,
+        "imported_by": [
+            "GPUtil"
+        ],
+        "name": "GPUtil.GPUtil",
+        "path": null
+    },
+    "IPython": {
+        "bacon": 2,
+        "imported_by": [
+            "IPython",
+            "IPython.core.application",
+            "IPython.core.getipython",
+            "IPython.core.interactiveshell",
+            "IPython.core.pylabtools",
+            "IPython.terminal.embed",
+            "IPython.terminal.ipapp",
+            "IPython.utils.sysinfo",
+            "PIL.Image",
+            "dotenv.ipython",
+            "ipykernel.embed",
+            "ipykernel.kernelapp",
+            "ipywidgets",
+            "matplotlib.backend_bases",
+            "matplotlib.pyplot",
+            "mlflow.utils",
+            "mystocks_spec.src.storage.database.init_db_monitor",
+            "tqdm.notebook"
+        ],
+        "imports": [
+            "IPython",
+            "IPython.core",
+            "IPython.core.application",
+            "IPython.core.getipython",
+            "IPython.core.interactiveshell",
+            "IPython.core.release",
+            "IPython.terminal",
+            "IPython.terminal.embed",
+            "IPython.terminal.ipapp",
+            "IPython.utils",
+            "IPython.utils.frame",
+            "IPython.utils.sysinfo",
+            "ipykernel",
+            "ipykernel.embed",
+            "ipykernel.kernelapp"
+        ],
+        "name": "IPython",
+        "path": "/root/miniconda3/envs/stock/lib/python3.12/site-packages/IPython/__init__.py"
+    },
+    "IPython.core": {
+        "bacon": 3,
+        "imported_by": [
+            "IPython",
+            "IPython.core.application",
+            "IPython.core.getipython",
+            "IPython.core.interactiveshell",
+            "IPython.core.pylabtools",
+            "IPython.terminal.embed",
+            "IPython.terminal.ipapp",
+            "IPython.utils.sysinfo",
+            "dotenv.ipython",
+            "ipykernel.kernelapp",
+            "matplotlib.backend_bases",
+            "matplotlib.pyplot"
+        ],
+        "name": "IPython.core",
+        "path": "/root/miniconda3/envs/stock/lib/python3.12/site-packages/IPython/core/__init__.py"
+    },
+    "IPython.core.application": {
+        "bacon": 3,
+        "imported_by": [
+            "IPython",
+            "IPython.terminal.ipapp",
+            "ipykernel.kernelapp"
+        ],
+        "imports": [
+            "IPython",
+            "IPython.core",
+            "IPython.core.release",

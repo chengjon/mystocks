@@ -1,624 +1,555 @@
 <template>
-  <div class="backtest-analysis artdeco-page">
+  <div class="backtest-analysis">
+    <div class="page-header">
+      <h1 class="page-title">BACKTEST ANALYSIS</h1>
+      <p class="page-subtitle">STRATEGY BACKTESTING | PERFORMANCE ANALYSIS | RISK METRICS</p>
+    </div>
 
-    <!-- Art Deco Header -->
-    <ArtDecoHeader
-      :title="'STRATEGY BACKTESTING'"
-      subtitle="QUANTITATIVE ANALYSIS | PERFORMANCE METRICS | RISK ASSESSMENT"
-      variant="gold-accent"
-    />
-
-      :strategies="strategies"
-      :default-capital="100000"
-      :show-advanced="true"
-      :loading="running"
-      @submit="handleBacktestSubmit"
-    /> -->
-
-    <!-- Art Deco Backtest Results -->
-    <ArtDecoCard variant="luxury" :decorated="true">
-      <template #header>
-        <div class="backtest-header">
-          <ArtDecoBadge variant="gold">BACKTEST RESULTS</ArtDecoBadge>
-          <ArtDecoButton
-            variant="primary"
-            :glow="true"
-            :loading="loading"
-            @click="loadResults"
-          >
-            <template #icon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 4v6h-6M1 20v-6h6"></path>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-              </svg>
-            </template>
-            REFRESH RESULTS
-          </ArtDecoButton>
-        </div>
-      </template>
-
-      <ArtDecoTable
-        :data="results"
-        :loading="loading"
-        gold-headers
-        striped
-        :sortable="true"
-      >
-        <template #columns>
-          <ArtDecoTableColumn prop="backtest_id" label="ID" width="120" sortable>
-            <template #default="{ row }">
-              <span class="artdeco-mono">{{ row.backtest_id }}</span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="strategy_code" label="STRATEGY" width="120" sortable>
-            <template #default="{ row }">
-              <ArtDecoBadge variant="warning">{{ row.strategy_code }}</ArtDecoBadge>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="period" label="PERIOD" width="180" sortable>
-            <template #default="{ row }">
-              <span class="artdeco-mono">{{ row.start_date }} ~ {{ row.end_date }}</span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="total_return" label="TOTAL RETURN" width="120" align="right" sortable>
-            <template #default="{ row }">
-              <span :class="getArtDecoReturnClass(row.total_return)">
-                {{ formatPercent(row.total_return) }}
-              </span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="annual_return" label="ANNUAL RETURN" width="130" align="right" sortable>
-            <template #default="{ row }">
-              <span :class="getArtDecoReturnClass(row.annual_return)">
-                {{ formatPercent(row.annual_return) }}
-              </span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="max_drawdown" label="MAX DRAWDOWN" width="130" align="right" sortable>
-            <template #default="{ row }">
-              <span class="artdeco-negative">{{ formatPercent(row.max_drawdown) }}</span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="sharpe_ratio" label="SHARPE RATIO" width="120" align="right" sortable>
-            <template #default="{ row }">
-              <span class="artdeco-info">{{ row.sharpe_ratio?.toFixed(2) || '-' }}</span>
-            </template>
-          </ArtDecoTableColumn>
-
-          <ArtDecoTableColumn prop="created_at" label="CREATED" width="150" sortable>
-            <template #default="{ row }">
-              <span class="artdeco-mono">{{ row.created_at }}</span>
-            </template>
-          </ArtDecoTableColumn>
+    <div class="analysis-controls">
+      <el-card class="control-card">
+        <template #header>
+          <div class="card-header">
+            <el-icon class="card-icon"><Setting /></el-icon>
+            <span>Backtest Configuration</span>
+          </div>
         </template>
 
-        <template #actions="{ row }">
-          <ArtDecoButton
-            variant="primary"
-            size="small"
-            @click="viewDetail(row)"
-          >
-            VIEW DETAILS
-          </ArtDecoButton>
+        <el-form :model="backtestConfig" label-width="120px">
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <el-form-item label="Strategy">
+                <el-select v-model="backtestConfig.strategy" placeholder="Select strategy">
+                  <el-option label="Moving Average Crossover" value="ma_cross" />
+                  <el-option label="RSI Strategy" value="rsi" />
+                  <el-option label="MACD Strategy" value="macd" />
+                  <el-option label="Bollinger Bands" value="bollinger" />
+                </el-select>
+              </el-form-item>
+            </el-col>
 
-          <ArtDecoButton
-            variant="outline"
-            size="small"
-            @click="exportResult(row)"
-          >
-            EXPORT
-          </ArtDecoButton>
+            <el-col :span="8">
+              <el-form-item label="Symbol">
+                <el-input v-model="backtestConfig.symbol" placeholder="e.g., 600000" />
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
+              <el-form-item label="Timeframe">
+                <el-select v-model="backtestConfig.timeframe">
+                  <el-option label="1 Day" value="1d" />
+                  <el-option label="1 Hour" value="1h" />
+                  <el-option label="30 Minutes" value="30m" />
+                  <el-option label="15 Minutes" value="15m" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <el-form-item label="Start Date">
+                <el-date-picker
+                  v-model="backtestConfig.startDate"
+                  type="date"
+                  placeholder="Start date"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
+                />
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
+              <el-form-item label="End Date">
+                <el-date-picker
+                  v-model="backtestConfig.endDate"
+                  type="date"
+                  placeholder="End date"
+                  format="YYYY-MM-DD"
+                  value-format="YYYY-MM-DD"
+                />
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
+              <el-form-item label="Initial Capital">
+                <el-input-number
+                  v-model="backtestConfig.initialCapital"
+                  :min="1000"
+                  :max="10000000"
+                  :step="1000"
+                  controls-position="right"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="24">
+              <el-form-item>
+                <el-button type="primary" :loading="running" @click="runBacktest">
+                  <el-icon><Play /></el-icon>
+                  Run Backtest
+                </el-button>
+                <el-button @click="resetConfig">Reset</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-card>
+    </div>
+
+    <!-- Results Section -->
+    <div v-if="backtestResult" class="results-section">
+      <el-card class="metrics-card">
+        <template #header>
+          <div class="card-header">
+            <el-icon class="card-icon"><DataAnalysis /></el-icon>
+            <span>Performance Metrics</span>
+          </div>
         </template>
-      </ArtDecoTable>
 
-      <!-- Art Deco Pagination -->
-      <template #footer>
-        <div class="pagination-section">
-          <ArtDecoPagination
-            v-model:current-page="pagination.page"
-            :total="totalResults"
-            :page-size="pagination.pageSize"
-            @page-change="handlePageChange"
-          />
-        </div>
-      </template>
-    </ArtDecoCard>
-
-    <!-- Art Deco Backtest Detail Dialog -->
-    <ArtDecoDialog
-      v-model="detailVisible"
-      title="STRATEGY BACKTEST ANALYSIS"
-      size="large"
-      :decorated="true"
-    >
-      <template #default>
-        <div v-if="selectedResult" class="backtest-detail-content">
-          <!-- Performance Metrics Grid -->
-          <div class="metrics-section">
-            <h4 class="section-title">PERFORMANCE METRICS</h4>
-            <div class="metrics-grid">
-              <ArtDecoStatCard
-                label="TOTAL RETURN"
-                :value="formatPercent(selectedResult.total_return)"
-                :variant="getReturnVariant(selectedResult.total_return)"
-                :animated="true"
-              />
-
-              <ArtDecoStatCard
-                label="ANNUAL RETURN"
-                :value="formatPercent(selectedResult.annual_return)"
-                :variant="getReturnVariant(selectedResult.annual_return)"
-                :animated="true"
-              />
-
-              <ArtDecoStatCard
-                label="MAX DRAWDOWN"
-                :value="formatPercent(selectedResult.max_drawdown)"
-                variant="danger"
-                :animated="true"
-              />
-
-              <ArtDecoStatCard
-                label="SHARPE RATIO"
-                :value="selectedResult.sharpe_ratio?.toFixed(2) || '--'"
-                variant="info"
-                :animated="true"
-              />
-            </div>
-          </div>
-
-          <!-- Strategy Details -->
-          <div class="details-section">
-            <h4 class="section-title">STRATEGY DETAILS</h4>
-            <div class="details-grid">
-              <div class="detail-item">
-                <span class="detail-label">STRATEGY CODE</span>
-                <ArtDecoBadge variant="warning">{{ selectedResult.strategy_code }}</ArtDecoBadge>
-              </div>
-
-              <div class="detail-item">
-                <span class="detail-label">BACKTEST PERIOD</span>
-                <span class="detail-value artdeco-mono">
-                  {{ selectedResult.start_date }} ~ {{ selectedResult.end_date }}
-                </span>
-              </div>
-
-              <div class="detail-item">
-                <span class="detail-label">CREATED AT</span>
-                <span class="detail-value artdeco-mono">{{ selectedResult.created_at }}</span>
-              </div>
-
-              <div class="detail-item">
-                <span class="detail-label">BACKTEST ID</span>
-                <span class="detail-value artdeco-mono">{{ selectedResult.backtest_id }}</span>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Total Return</div>
+              <div class="metric-value" :class="getReturnClass(backtestResult.totalReturn)">
+                {{ formatPercent(backtestResult.totalReturn) }}
               </div>
             </div>
-          </div>
-        </div>
-      </template>
+          </el-col>
 
-      <template #footer>
-        <div class="dialog-actions">
-          <ArtDecoButton
-            variant="outline"
-            @click="exportResult(selectedResult)"
-          >
-            EXPORT REPORT
-          </ArtDecoButton>
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Annual Return</div>
+              <div class="metric-value" :class="getReturnClass(backtestResult.annualReturn)">
+                {{ formatPercent(backtestResult.annualReturn) }}
+              </div>
+            </div>
+          </el-col>
 
-          <ArtDecoButton
-            variant="primary"
-            @click="detailVisible = false"
-          >
-            CLOSE
-          </ArtDecoButton>
-        </div>
-      </template>
-    </ArtDecoDialog>
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Max Drawdown</div>
+              <div class="metric-value negative">
+                {{ formatPercent(backtestResult.maxDrawdown) }}
+              </div>
             </div>
-            <div class="desc-item">
-              <span class="desc-label">SYMBOL</span>
-              <span class="desc-value text-mono">{{ selectedResult.symbol }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">INITIAL CAPITAL</span>
-              <span class="desc-value text-mono" style="color: var(--gold-primary)">{{ formatMoney(selectedResult.initial_capital) }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">FINAL CAPITAL</span>
-              <span class="desc-value text-mono" style="color: var(--gold-primary)">{{ formatMoney(selectedResult.final_capital) }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">TOTAL TRADES</span>
-              <span class="desc-value text-mono">{{ selectedResult.total_trades }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">WIN RATE</span>
-              <span class="desc-value text-mono">{{ formatPercent(selectedResult.win_rate) }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">PROFIT FACTOR</span>
-              <span class="desc-value text-mono">{{ selectedResult.profit_factor?.toFixed(2) || '-' }}</span>
-            </div>
-            <div class="desc-item">
-              <span class="desc-label">AVG HOLD DAYS</span>
-              <span class="desc-value text-mono">{{ selectedResult.avg_hold_days?.toFixed(1) || '-' }}</span>
-            </div>
-          </div>
+          </el-col>
 
-          <div v-if="chartData" class="chart-section">
-            <h4 class="chart-title">EQUITY CURVE</h4>
-            <div ref="chartRef" class="chart-container-inner"></div>
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Sharpe Ratio</div>
+              <div class="metric-value" :class="getSharpeClass(backtestResult.sharpeRatio)">
+                {{ backtestResult.sharpeRatio.toFixed(2) }}
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 20px;">
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Win Rate</div>
+              <div class="metric-value positive">
+                {{ formatPercent(backtestResult.winRate) }}
+              </div>
+            </div>
+          </el-col>
+
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Total Trades</div>
+              <div class="metric-value neutral">
+                {{ backtestResult.totalTrades }}
+              </div>
+            </div>
+          </el-col>
+
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Profit Factor</div>
+              <div class="metric-value" :class="getProfitFactorClass(backtestResult.profitFactor)">
+                {{ backtestResult.profitFactor.toFixed(2) }}
+              </div>
+            </div>
+          </el-col>
+
+          <el-col :span="6">
+            <div class="metric-item">
+              <div class="metric-label">Calmar Ratio</div>
+              <div class="metric-value" :class="getCalmarClass(backtestResult.calmarRatio)">
+                {{ backtestResult.calmarRatio.toFixed(2) }}
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+
+      <!-- Equity Curve Chart -->
+      <el-card class="chart-card" style="margin-top: 20px;">
+        <template #header>
+          <div class="card-header">
+            <el-icon class="card-icon"><TrendCharts /></el-icon>
+            <span>Equity Curve</span>
           </div>
+        </template>
+        <div class="chart-container">
+          <div id="equity-chart" class="chart"></div>
         </div>
-      </div>
+      </el-card>
+
+      <!-- Trade History -->
+      <el-card class="trades-card" style="margin-top: 20px;">
+        <template #header>
+          <div class="card-header">
+            <el-icon class="card-icon"><List /></el-icon>
+            <span>Trade History</span>
+          </div>
+        </template>
+
+        <el-table :data="backtestResult.trades" style="width: 100%">
+          <el-table-column prop="date" label="Date" width="120" />
+          <el-table-column prop="type" label="Type" width="80">
+            <template #default="scope">
+              <el-tag :type="scope.row.type === 'BUY' ? 'success' : 'danger'">
+                {{ scope.row.type }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="price" label="Price" width="100">
+            <template #default="scope">
+              {{ scope.row.price.toFixed(2) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="quantity" label="Quantity" width="100" />
+          <el-table-column prop="pnl" label="P&L" width="120">
+            <template #default="scope">
+              <span :class="scope.row.pnl >= 0 ? 'positive' : 'negative'">
+                {{ scope.row.pnl >= 0 ? '+' : '' }}{{ scope.row.pnl.toFixed(2) }}
+              </span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </div>
+
+    <!-- Loading State -->
+    <div v-else-if="running" class="loading-state">
+      <div class="spinner"></div>
+      <p>Running backtest analysis...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3>No Backtest Results</h3>
+      <p>Configure your strategy parameters and run a backtest to see results.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import * as echarts from 'echarts'
-import type { ECharts } from 'echarts'
-
-// Import Art Deco components
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import {
-  ArtDecoHeader,
-  ArtDecoCard,
-  ArtDecoTable,
-  ArtDecoTableColumn,
-  ArtDecoPagination,
-  ArtDecoButton,
-  ArtDecoBadge,
-  ArtDecoDialog,
-  ArtDecoStatCard
-} from '@/components/artdeco'
+  Setting,
+  VideoPlay as Play,
+  DataAnalysis,
+  TrendCharts,
+  List
+} from '@element-plus/icons-vue'
 
-interface Strategy { strategy_code: string; strategy_name_cn: string }
-interface Result {
-  backtest_id: string; strategy_code: string; symbol: string; start_date: string; end_date: string;
-  total_return?: number; annual_return?: number; sharpe_ratio?: number; max_drawdown?: number;
-  win_rate?: number; final_capital?: number; initial_capital?: number; total_trades?: number;
-  profit_factor?: number; avg_hold_days?: number; created_at?: string
-}
-interface Pagination { page: number; pageSize: number; total: number }
-
-const loading = ref(false); const running = ref(false)
-const strategies = ref<Strategy[]>([])
-const results = ref<Result[]>([])
-const detailVisible = ref(false); const selectedResult = ref<Result | null>(null)
-const chartData = ref<{ dates?: string[]; strategy_returns?: number[]; benchmark_returns?: number[] } | null>(null)
-const pagination = ref<Pagination>({ page: 1, pageSize: 10, total: 0 })
-const chartRef = ref<HTMLElement>()
-
-let chartInstance: ECharts | null = null
-
-const resultColumns = [
-  { key: 'backtest_id', label: 'ID' },
-  { key: 'strategy_code', label: 'STRATEGY' },
-  { key: 'symbol', label: 'SYMBOL' },
-  { key: 'period', label: 'PERIOD' },
-  { key: 'total_return', label: 'TOTAL RETURN' },
-  { key: 'annual_return', label: 'ANNUAL RETURN' },
-  { key: 'max_drawdown', label: 'MAX DRAWDOWN' },
-  { key: 'sharpe_ratio', label: 'SHARPE' },
-  { key: 'created_at', label: 'CREATED' },
-  { key: 'actions', label: 'ACTIONS' }
-]
-
-const totalPages = computed(() => Math.ceil(pagination.value.total / pagination.value.pageSize))
-
-const loadStrategies = async () => {
-  strategies.value = [
-    { strategy_code: 'ma_cross', strategy_name_cn: 'MA Crossover' },
-    { strategy_code: 'rsi_oversold', strategy_name_cn: 'RSI Oversold' },
-    { strategy_code: 'macd_cross', strategy_name_cn: 'MACD Cross' }
-  ]
+// Backtest configuration interface
+interface BacktestConfig {
+  strategy: string
+  symbol: string
+  timeframe: string
+  startDate: string
+  endDate: string
+  initialCapital: number
 }
 
-const loadResults = async () => {
-  loading.value = true
-  await new Promise(r => setTimeout(r, 500))
-  results.value = generateMockResults()
-  pagination.value.total = results.value.length
-  loading.value = false
+// Backtest configuration
+const backtestConfig = ref<BacktestConfig>({
+  strategy: '',
+  symbol: '',
+  timeframe: '1d',
+  startDate: '',
+  endDate: '',
+  initialCapital: 100000
+})
+
+// Backtest result interface
+interface BacktestResultData {
+  totalReturn: number
+  annualReturn: number
+  maxDrawdown: number
+  sharpeRatio: number
+  winRate: number
+  totalTrades: number
+  profitFactor: number
+  calmarRatio: number
+  trades: Array<{
+    date: string
+    type: string
+    price: number
+    quantity: number
+    pnl: number
+  }>
+  equityCurve: Array<{
+    date: string
+    equity: number
+    drawdown: number
+  }>
 }
 
-const generateMockResults = (): Result[] => {
-  const strats = ['ma_cross', 'rsi_oversold', 'macd_cross']
-  const symbols = ['600519', '000001', '000002']
-  return Array.from({ length: 5 }, (_, i) => ({
-    backtest_id: `BT${String(i + 1).padStart(4, '0')}`,
-    strategy_code: strats[i % strats.length],
-    symbol: symbols[i % symbols.length],
-    start_date: '2024-01-01', end_date: '2024-12-31',
-    total_return: (Math.random() * 40 - 10) / 100,
-    annual_return: (Math.random() * 30 - 5) / 100,
-    sharpe_ratio: 1.5 + Math.random() * 2,
-    max_drawdown: (Math.random() * 15 + 5) / 100,
-    win_rate: 0.4 + Math.random() * 0.3,
-    final_capital: 100000 * (1 + (Math.random() * 40 - 10) / 100),
-    initial_capital: 100000,
-    total_trades: Math.floor(Math.random() * 50 + 20),
-    profit_factor: 1.5 + Math.random(),
-    avg_hold_days: 5 + Math.random() * 15,
-    created_at: new Date().toISOString()
-  }))
-}
+// Backtest state
+const running = ref(false)
+const backtestResult = ref<BacktestResultData | null>(null)
 
-const handleBacktestSubmit = async (config: any) => {
+// Methods
+const runBacktest = async () => {
+  if (!validateConfig()) {
+    return
+  }
+
   running.value = true
-  await new Promise(r => setTimeout(r, 1000))
-  running.value = false
-}
+  backtestResult.value = null
 
-const viewDetail = async (row: Result) => {
-  selectedResult.value = row
-  detailVisible.value = true
-  chartData.value = generateMockChartData()
-  await nextTick()
-  renderChart()
-}
+  try {
+    // Mock API call - replace with actual API endpoint
+    const response = await mockRunBacktest(backtestConfig.value)
+    backtestResult.value = response
 
-const generateMockChartData = () => {
-  const dates: string[] = []
-  const strategyReturns: number[] = []
-  const benchmarkReturns: number[] = []
-  let s = 100, b = 100
-  for (let i = 0; i < 60; i++) {
-    const d = new Date(); d.setDate(d.getDate() - (60 - i))
-    dates.push(d.toISOString().split('T')[0])
-    s += (Math.random() - 0.45) * 2
-    b += (Math.random() - 0.48) * 1.5
-    strategyReturns.push(((s - 100) / 100) * 100)
-    benchmarkReturns.push(((b - 100) / 100) * 100)
+    // Initialize equity chart
+    setTimeout(() => {
+      initializeEquityChart()
+    }, 100)
+
+    ElMessage.success('Backtest completed successfully!')
+  } catch (error) {
+    console.error('Backtest failed:', error)
+    ElMessage.error('Backtest failed. Please try again.')
+  } finally {
+    running.value = false
   }
-  return { dates, strategy_returns: strategyReturns, benchmark_returns: benchmarkReturns }
 }
 
-const renderChart = () => {
-  if (!chartRef.value) return
-  if (chartInstance) chartInstance.dispose()
-  chartInstance = echarts.init(chartRef.value)
-  const opt = {
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis' },
-    legend: { data: ['STRATEGY', 'BENCHMARK'], textStyle: { color: '#D4AF37' } },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', boundaryGap: false, data: chartData.value?.dates || [],
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } },
-      axisLabel: { color: '#8B9BB4' } },
-    yAxis: { type: 'value', axisLabel: { formatter: '{value}%', color: '#8B9BB4' },
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } },
-      splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } } },
-    series: [
-      { name: 'STRATEGY', type: 'line', smooth: true, data: chartData.value?.strategy_returns || [],
-        itemStyle: { color: '#C94042' },
-        areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-          colorStops: [{ offset: 0, color: 'rgba(201, 64, 66, 0.3)' }, { offset: 1, color: 'rgba(201, 64, 66, 0.1)' }] } } },
-      { name: 'BENCHMARK', type: 'line', smooth: true, data: chartData.value?.benchmark_returns || [],
-        itemStyle: { color: '#00E676' }, lineStyle: { type: 'dashed' } }
-    ]
+const validateConfig = () => {
+  if (!backtestConfig.value.strategy) {
+    ElMessage.warning('Please select a strategy')
+    return false
   }
-  chartInstance.setOption(opt)
+
+  if (!backtestConfig.value.symbol) {
+    ElMessage.warning('Please enter a symbol')
+    return false
+  }
+
+  if (!backtestConfig.value.startDate || !backtestConfig.value.endDate) {
+    ElMessage.warning('Please select start and end dates')
+    return false
+  }
+
+  if (new Date(backtestConfig.value.startDate) >= new Date(backtestConfig.value.endDate)) {
+    ElMessage.warning('End date must be after start date')
+    return false
+  }
+
+  return true
 }
 
-const exportResult = (row: Result) => console.log('Export:', row)
-const formatPercent = (v: number | null | undefined) => v ? (v * 100).toFixed(2) + '%' : '-'
-const formatMoney = (v: number | null | undefined) => v ? '¥' + v.toLocaleString('zh-CN') : '-'
-const getReturnClass = (v: number | null | undefined) => !v ? '' : v > 0 ? 'data-rise' : v < 0 ? 'data-fall' : ''
-
-// Art Deco specific helper functions
-const getArtDecoReturnClass = (v: number | null | undefined) => {
-  if (!v) return ''
-  return v > 0 ? 'artdeco-positive' : v < 0 ? 'artdeco-negative' : ''
+const resetConfig = () => {
+  backtestConfig.value = {
+    strategy: '',
+    symbol: '',
+    timeframe: '1d',
+    startDate: '',
+    endDate: '',
+    initialCapital: 100000
+  }
 }
 
-const getReturnVariant = (v: number | null | undefined) => {
-  if (!v) return 'neutral'
-  return v > 0 ? 'success' : v < 0 ? 'danger' : 'neutral'
+const mockRunBacktest = async (config: BacktestConfig): Promise<BacktestResultData> => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 2000))
+
+  // Import mock data from dedicated module
+  const { getMockBacktestResult } = await import('@/mock/mockBacktest.js')
+
+  // Return mock backtest results
+  return getMockBacktestResult()
 }
 
-const totalResults = computed(() => results.value.length)
-const totalPages = computed(() => Math.ceil(totalResults.value / pagination.value.pageSize))
+const initializeEquityChart = () => {
+  // Simple chart initialization - replace with actual chart library
+  const chartContainer = document.getElementById('equity-chart')
+  if (chartContainer) {
+    chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Equity curve chart would be rendered here using a charting library like Chart.js or ECharts</div>'
+  }
+}
 
-const handlePageChange = (page: number) => {
-  pagination.value.page = page
-  loadResults()
+// Formatting methods
+const formatPercent = (value: number) => {
+  return (value * 100).toFixed(1) + '%'
+}
+
+const getReturnClass = (value: number) => {
+  return value >= 0 ? 'positive' : 'negative'
+}
+
+const getSharpeClass = (value: number) => {
+  return value >= 1 ? 'positive' : value >= 0.5 ? 'neutral' : 'negative'
+}
+
+const getProfitFactorClass = (value: number) => {
+  return value >= 1.5 ? 'positive' : value >= 1 ? 'neutral' : 'negative'
+}
+
+const getCalmarClass = (value: number) => {
+  return value >= 0.5 ? 'positive' : value >= 0 ? 'neutral' : 'negative'
 }
 
 onMounted(() => {
-  loadStrategies()
-  loadResults()
-  window.addEventListener('resize', () => chartInstance?.resize())
-})
+  // Set default dates (last 6 months)
+  const endDate = new Date()
+  const startDate = new Date()
+  startDate.setMonth(startDate.getMonth() - 6)
 
-onUnmounted(() => {
-  window.removeEventListener('resize', () => chartInstance?.resize())
-  chartInstance?.dispose()
+  backtestConfig.value.endDate = endDate.toISOString().split('T')[0]
+  backtestConfig.value.startDate = startDate.toISOString().split('T')[0]
 })
 </script>
 
-<style scoped lang="scss">
-// Art Deco Design System Integration
-@import '@/styles/artdeco-tokens.scss';
-
+<style scoped>
 .backtest-analysis {
-  @include artdeco-crosshatch-bg(); // Diagonal crosshatch background
-  min-height: 100vh;
-  padding: $artdeco-spacing-xl;
-
-  // Backtest header section
-  .backtest-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: $artdeco-spacing-lg;
-  }
-
-  // Pagination section
-  .pagination-section {
-    display: flex;
-    justify-content: center;
-    padding: $artdeco-spacing-lg;
-    border-top: 2px solid $artdeco-accent-gold;
-  }
-
-  // Backtest detail content
-  .backtest-detail-content {
-    .section-title {
-      font-family: 'Marcellus', serif;
-      font-size: $artdeco-font-size-lg;
-      font-weight: 600;
-      color: $artdeco-accent-gold;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      margin-bottom: $artdeco-spacing-lg;
-      text-align: center;
-    }
-
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: $artdeco-spacing-lg;
-      margin-bottom: $artdeco-spacing-xl;
-    }
-
-    .details-section {
-      .details-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: $artdeco-spacing-md;
-
-        .detail-item {
-          display: flex;
-          flex-direction: column;
-          gap: $artdeco-spacing-xs;
-
-          .detail-label {
-            font-family: 'Marcellus', serif;
-            font-size: $artdeco-font-size-sm;
-            font-weight: 600;
-            color: $artdeco-text-muted;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-          }
-
-          .detail-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: $artdeco-font-size-base;
-            font-weight: 500;
-            color: $artdeco-text-primary;
-          }
-        }
-      }
-    }
-  }
-
-  // Dialog actions
-  .dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: $artdeco-spacing-md;
-  }
-
-  // Art Deco specific styling
-  .artdeco-mono {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-  }
-
-  .artdeco-positive {
-    color: $artdeco-color-up;
-    font-weight: 600;
-  }
-
-  .artdeco-negative {
-    color: $artdeco-color-down;
-    font-weight: 600;
-  }
-
-  .artdeco-info {
-    color: #60A5FA;
-    font-weight: 600;
-  }
-
-// Art Deco responsive design
-@media (max-width: 768px) {
-  .backtest-analysis {
-    padding: $artdeco-spacing-lg;
-
-    .backtest-header {
-      flex-direction: column;
-      gap: $artdeco-spacing-md;
-      align-items: flex-start;
-    }
-
-    .backtest-detail-content {
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .details-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .dialog-actions {
-      flex-direction: column;
-
-      .artdeco-btn {
-        width: 100%;
-      }
-    }
-  }
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-// Art Deco animations
-@keyframes artdeco-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-@keyframes artdeco-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
-  }
+.page-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: 2px;
 }
-.modal-title { font-family: var(--font-display); font-size: 1.25rem; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.1em; margin: 0; }
-.modal-close { background: none; border: none; font-size: 1.5rem; color: var(--silver-muted); cursor: pointer; }
-.modal-close:hover { color: var(--gold-primary); }
-.modal-body { padding: var(--space-xl); }
 
-.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
-.metric-box { padding: var(--space-md); background: var(--bg-primary); border: 1px solid var(--gold-dim); text-align: center; }
-.metric-label { display: block; font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; color: var(--silver-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--space-sm); }
-.metric-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; display: block; }
+.page-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 10px 0 0 0;
+  letter-spacing: 1px;
+}
 
-.divider { height: 1px; background: var(--gold-dim); opacity: 0.3; margin: var(--space-lg) 0; }
+.analysis-controls {
+  margin-bottom: 30px;
+}
 
-.descriptions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
-.desc-item { display: flex; flex-direction: column; gap: var(--space-xs); }
-.desc-label { font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; color: var(--silver-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-.desc-value { font-family: var(--font-mono); font-size: 1rem; color: var(--silver-text); }
+.control-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
 
-.chart-section { margin-top: var(--space-lg); }
-.chart-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 var(--space-md) 0; }
-.chart-container-inner { height: 300px; width: 100%; }
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 18px;
+  color: #409eff;
+}
+
+.results-section {
+  margin-top: 30px;
+}
+
+.metrics-card, .chart-card, .trades-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metric-item {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.metric-value.positive {
+  color: #67c23a;
+}
+
+.metric-value.negative {
+  color: #f56c6c;
+}
+
+.metric-value.neutral {
+  color: #e6a23c;
+}
+
+.chart-container {
+  height: 400px;
+  position: relative;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #409eff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #999;
+}
 </style>

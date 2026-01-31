@@ -9,20 +9,21 @@ Multi-data Source Support
 - 公告分析和评分
 """
 
-from datetime import date, datetime
-from typing import List, Optional, Dict, Any
-import pandas as pd
-from sqlalchemy import create_engine, and_, desc
-from sqlalchemy.orm import sessionmaker, Session
 import logging
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
 
+import pandas as pd
+from sqlalchemy import and_, create_engine, desc
+from sqlalchemy.orm import Session, sessionmaker
+
+from app.adapters.base import DataSourceType
 from app.models.announcement import (
     Announcement,
-    AnnouncementMonitorRule,
     AnnouncementMonitorRecord,
+    AnnouncementMonitorRule,
 )
 from app.services.multi_source_manager import get_multi_source_manager
-from app.adapters.base import DataSourceType
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +131,7 @@ class AnnouncementService:
             # 保存到数据库
             saved_count, updated_count = self._save_announcements_to_db(df)
 
-            logger.info(f"Saved {saved_count} new announcements, updated {updated_count}")
+            logger.info("Saved %(saved_count)s new announcements, updated %(updated_count)s"")
 
             return {
                 "success": True,
@@ -141,7 +142,7 @@ class AnnouncementService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to fetch and save announcements: {e}")
+            logger.error("Failed to fetch and save announcements: %(e)s"")
             return {"success": False, "error": str(e)}
 
     def _save_announcements_to_db(self, df: pd.DataFrame) -> tuple:
@@ -202,7 +203,7 @@ class AnnouncementService:
 
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to save announcements to DB: {e}")
+            logger.error("Failed to save announcements to DB: %(e)s"")
             raise
 
         finally:
@@ -265,13 +266,13 @@ class AnnouncementService:
             # 获取所有活跃规则
             rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active is True).all()
 
-            logger.info(f"Evaluating {len(rules)} active monitor rules")
+            logger.info("Evaluating {len(rules)} active monitor rules"")
 
             # 获取今天的公告
             today = date.today()
             announcements = session.query(Announcement).filter(Announcement.publish_date == today).all()
 
-            logger.info(f"Found {len(announcements)} announcements for today")
+            logger.info("Found {len(announcements)} announcements for today"")
 
             # 评估每个规则
             for rule in rules:
@@ -288,7 +289,7 @@ class AnnouncementService:
 
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to evaluate monitor rules: {e}")
+            logger.error("Failed to evaluate monitor rules: %(e)s"")
             return {"success": False, "error": str(e)}
 
         finally:
@@ -346,7 +347,7 @@ class AnnouncementService:
             session.add(record)
             triggered_count += 1
 
-            logger.info(f"Rule '{rule.rule_name}' triggered for announcement {announcement.id}")
+            logger.info("Rule '{rule.rule_name}' triggered for announcement {announcement.id}"")
 
             # 发送通知（如果启用）
             if rule.notify_enabled:
@@ -493,7 +494,7 @@ class AnnouncementService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to query announcements: {e}")
+            logger.error("Failed to query announcements: %(e)s"")
             return {"success": False, "error": str(e)}
 
         finally:

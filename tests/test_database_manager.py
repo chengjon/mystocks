@@ -2,9 +2,10 @@
 测试DatabaseTableManager数据库管理器
 """
 
-import pytest
-from unittest.mock import patch, MagicMock, mock_open
 import sys
+from unittest.mock import MagicMock, mock_open, patch
+
+import pytest
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 

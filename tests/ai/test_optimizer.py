@@ -7,13 +7,13 @@
 import logging
 import random
 import time
-from datetime import datetime
-from typing import Dict, List, Any, Callable
-from dataclasses import dataclass, field
-from enum import Enum
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from collections import defaultdict, deque
 from abc import ABC, abstractmethod
+from collections import defaultdict, deque
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List
 
 import numpy as np
 import psutil
@@ -302,7 +302,7 @@ class TestOptimizer:
     def add_optimization_target(self, target: OptimizationTarget):
         """添加优化目标"""
         self.optimization_targets.append(target)
-        logger.info(f"添加优化目标: {target.name}")
+        logger.info("添加优化目标: {target.name}")
 
     def run_optimization(
         self,
@@ -311,12 +311,12 @@ class TestOptimizer:
         iterations: int = 3,
     ) -> Dict[str, Any]:
         """运行优化"""
-        logger.info(f"开始优化，策略: {strategy.value}")
+        logger.info("开始优化，策略: {strategy.value}")
 
         optimization_plan = self._create_optimization_plan(test_functions, strategy)
 
         for iteration in range(iterations):
-            logger.info(f"优化迭代 {iteration + 1}/{iterations}")
+            logger.info("优化迭代 {iteration + 1}/%(iterations)s")
 
             # 执行优化计划
             results = self._execute_optimization_plan(optimization_plan)
@@ -428,7 +428,7 @@ class TestOptimizer:
                     result = future.result(timeout=60)
                     results.append(result)
                 except Exception as e:
-                    logger.error(f"测试执行失败: {e}")
+                    logger.error("测试执行失败: %(e)s")
                     # 创建失败结果
                     result = TestExecutionResult(
                         test_name=str(item["test_func"].__name__),
@@ -584,7 +584,7 @@ class TestOptimizer:
         """应用调整"""
         for adjustment in adjustments:
             # 应用具体的调整逻辑
-            logger.info(f"应用调整: {adjustment}")
+            logger.info("应用调整: %(adjustment)s")
 
     def optimize_test_execution(
         self, test_functions: List[Callable], strategy: TestOptimizationStrategy = TestOptimizationStrategy.BALANCED

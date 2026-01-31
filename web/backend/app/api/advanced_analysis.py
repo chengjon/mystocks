@@ -1,4 +1,5 @@
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 FastAPI Integration for Advanced Quantitative Analysis
 A股量化分析平台高级分析功能API接口
 
@@ -6,11 +7,12 @@ This module provides RESTful API endpoints for accessing the advanced
 quantitative analysis features integrated with the existing MyStocks platform.
 """
 
+import asyncio
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-from datetime import datetime
-import asyncio
 
 from src.advanced_analysis import AdvancedAnalysisEngine, AnalysisType
 from src.core import MyStocksUnifiedManager

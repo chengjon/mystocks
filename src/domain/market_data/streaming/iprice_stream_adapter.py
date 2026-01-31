@@ -9,8 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Callable, List, Optional, Dict, Any
-from asyncio import Queue
+from typing import Any, Callable, Dict, List, Optional
 
 
 class StreamStatus(str, Enum):
@@ -101,14 +100,12 @@ class IPriceStreamAdapter(ABC):
         Raises:
             ConnectionError: 连接失败
         """
-        pass
 
     @abstractmethod
     async def disconnect(self) -> None:
         """
         断开连接
         """
-        pass
 
     @abstractmethod
     async def subscribe(self, tickers: List[str]) -> None:
@@ -122,7 +119,6 @@ class IPriceStreamAdapter(ABC):
             ValueError: 股票代码格式错误
             ConnectionError: 未连接
         """
-        pass
 
     @abstractmethod
     async def unsubscribe(self, tickers: List[str]) -> None:
@@ -132,7 +128,6 @@ class IPriceStreamAdapter(ABC):
         Args:
             tickers: 股票代码列表
         """
-        pass
 
     @abstractmethod
     def on_message(self, callback: Callable[[PriceUpdate], None]) -> None:
@@ -142,7 +137,6 @@ class IPriceStreamAdapter(ABC):
         Args:
             callback: 回调函数，接收 PriceUpdate 对象
         """
-        pass
 
     @abstractmethod
     def get_status(self) -> StreamStatus:
@@ -152,7 +146,6 @@ class IPriceStreamAdapter(ABC):
         Returns:
             StreamStatus: 流状态
         """
-        pass
 
     @abstractmethod
     def get_subscribed_tickers(self) -> List[str]:
@@ -162,7 +155,6 @@ class IPriceStreamAdapter(ABC):
         Returns:
             List[str]: 股票代码列表
         """
-        pass
 
     async def start(self) -> None:
         """

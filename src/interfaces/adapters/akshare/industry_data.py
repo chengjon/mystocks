@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_ths_industry_summary(self) -> pd.DataFrame:
     """获取同花顺行业一览表数据-Akshare实现
 
@@ -82,7 +83,7 @@ def get_ths_industry_stocks(self, industry_name: str) -> pd.DataFrame:
         >>> logger.info(str(bank_stocks.head()))
     """
     try:
-        logger.info("[Akshare] 开始获取行业'{industry_name}'的成分股数据...")
+        logger.info("[Akshare] 开始获取行业'%(industry_name)s'的成分股数据...")
 
         # 使用重试装饰器包装API调用
         @self._retry_api_call
@@ -94,10 +95,10 @@ def get_ths_industry_stocks(self, industry_name: str) -> pd.DataFrame:
         df = _get_industry_stocks()
 
         if df is None or df.empty:
-            logger.info("[Akshare] 未能获取到行业'{industry_name}'的成分股数据")
+            logger.info("[Akshare] 未能获取到行业'%(industry_name)s'的成分股数据")
             return pd.DataFrame()
 
-        logger.info("[Akshare] 成功获取行业'{industry_name}'成分股数据: {len(df)}行, 列名={df.columns.tolist()}")
+        logger.info("[Akshare] 成功获取行业'%(industry_name)s'成分股数据: {len(df)}行, 列名={df.columns.tolist()")
 
         # 添加行业信息和数据获取时间戳
         df["所属行业"] = industry_name
@@ -106,7 +107,7 @@ def get_ths_industry_stocks(self, industry_name: str) -> pd.DataFrame:
         return df
 
     except Exception:
-        logger.error("[Akshare] 获取行业'{industry_name}'成分股数据失败: {e}")
+        logger.error("[Akshare] 获取行业'%(industry_name)s'成分股数据失败: %(e)s")
         import traceback
 
         traceback.print_exc()

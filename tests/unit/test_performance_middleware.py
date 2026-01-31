@@ -9,11 +9,11 @@ from fastapi.testclient import TestClient
 from prometheus_client import REGISTRY
 
 from src.core.middleware.performance import (
-    metrics_endpoint,
-    get_endpoint_name,
+    ACTIVE_REQUESTS,
     REQUEST_COUNT,
     REQUEST_LATENCY,
-    ACTIVE_REQUESTS,
+    get_endpoint_name,
+    metrics_endpoint,
 )
 
 

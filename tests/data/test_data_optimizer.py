@@ -10,19 +10,20 @@
 - 数据生命周期管理
 """
 
-import json
-import hashlib
-import logging
 import asyncio
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
-from dataclasses import dataclass, field
-from collections import defaultdict, Counter
+import hashlib
+import json
+import logging
 import statistics
+from collections import Counter, defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
 import numpy as np
 
-from ..ai.test_data_manager import AITestDataManager
 from ..ai.test_data_analyzer import AITestDataAnalyzer
+from ..ai.test_data_manager import AITestDataManager
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ class TestDataOptimizer:
 
     async def optimize_test_data(self, profile_name: str) -> Dict[str, Any]:
         """优化测试数据"""
-        logger.info(f"开始优化测试数据档案: {profile_name}")
+        logger.info("开始优化测试数据档案: %(profile_name)s")
 
         start_time = datetime.now()
 
@@ -171,11 +172,11 @@ class TestDataOptimizer:
             # 保存优化历史
             self.optimization_history.append(optimization_report)
 
-            logger.info(f"测试数据优化完成: {profile_name}")
+            logger.info("测试数据优化完成: %(profile_name)s")
             return optimization_report
 
         except Exception as e:
-            logger.error(f"优化测试数据失败: {e}")
+            logger.error("优化测试数据失败: %(e)s")
             return {"profile_name": profile_name, "error": str(e), "status": "failed"}
 
     async def analyze_data_quality(self, profile_name: str) -> DataQualityMetrics:
@@ -245,7 +246,7 @@ class TestDataOptimizer:
             return metrics
 
         except Exception as e:
-            logger.error(f"分析数据质量失败: {e}")
+            logger.error("分析数据质量失败: %(e)s")
             return DataQualityMetrics()
 
     def _calculate_completeness_score(self, record: Dict[str, Any]) -> float:
@@ -351,7 +352,7 @@ class TestDataOptimizer:
                 }
 
         except Exception as e:
-            logger.error(f"执行策略 {strategy.name} 失败: {e}")
+            logger.error("执行策略 {strategy.name} 失败: %(e)s")
             return {"strategy": strategy.name, "status": "error", "error": str(e)}
 
     async def _remove_duplicates(self, profile_name: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -479,7 +480,7 @@ class TestDataOptimizer:
             }
 
         except Exception as e:
-            logger.error(f"数据压缩失败: {e}")
+            logger.error("数据压缩失败: %(e)s")
             return {"strategy": "data_compression", "status": "error", "error": str(e)}
 
     async def _enhance_data_quality(

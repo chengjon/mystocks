@@ -25,12 +25,13 @@ Architecture:
 import asyncio
 import json
 import time
-from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
-from dataclasses import dataclass, field
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import pytest
+from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import pytest
 
 
 class TestPriority(Enum):

@@ -18,23 +18,24 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List
-import pandas as pd
-import numpy as np
 import logging
 import pickle
+from typing import Dict, List
+
+import numpy as np
+import pandas as pd
 
 # Scikit-learn支持
 try:
-    from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-    from sklearn.model_selection import train_test_split, cross_val_score
+    from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+    from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+    from sklearn.model_selection import cross_val_score, train_test_split
     from sklearn.preprocessing import StandardScaler
-    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
     SKLEARN_AVAILABLE = True
 except ImportError:

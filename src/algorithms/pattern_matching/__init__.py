@@ -8,17 +8,19 @@ and performance evaluation for time series pattern detection.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Union, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import pandas as pd
 
-from .base import PatternMatchingAlgorithm, Pattern, PatternMatchResult
+from src.algorithms.base import AlgorithmMetadata
+from src.algorithms.types import AlgorithmType
+
+from .ac_algorithm import AhoCorasickAlgorithm
+from .base import Pattern, PatternMatchingAlgorithm, PatternMatchResult
+from .bmh_algorithm import BMHAlgorithm
 from .brute_force_algorithm import BruteForceAlgorithm
 from .kmp_algorithm import KMPAlgorithm
-from .bmh_algorithm import BMHAlgorithm
-from .ac_algorithm import AhoCorasickAlgorithm
-from src.algorithms.types import AlgorithmType
-from src.algorithms.base import AlgorithmMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,7 @@ class PatternMatchingManager:
         self.algorithms[name] = algorithm
         self.performance_history[name] = []
 
-        logger.info(f"Created {algorithm_type.value} algorithm: {name}")
+        logger.info("Created {algorithm_type.value} algorithm: %(name)s")
         return name
 
     def add_pattern_to_library(self, pattern: Pattern) -> bool:
@@ -96,9 +98,9 @@ class PatternMatchingManager:
             True if pattern was added successfully
         """
         if pattern.id in self.pattern_library:
-            logger.warning(f"Pattern {pattern.id} already exists, updating")
+            logger.warning("Pattern {pattern.id} already exists, updating")
         self.pattern_library[pattern.id] = pattern
-        logger.info(f"Added pattern to library: {pattern.id}")
+        logger.info("Added pattern to library: {pattern.id")
         return True
 
     def remove_pattern_from_library(self, pattern_id: str) -> bool:
@@ -113,7 +115,7 @@ class PatternMatchingManager:
         """
         if pattern_id in self.pattern_library:
             del self.pattern_library[pattern_id]
-            logger.info(f"Removed pattern from library: {pattern_id}")
+            logger.info("Removed pattern from library: %(pattern_id)s")
             return True
         return False
 
@@ -142,9 +144,9 @@ class PatternMatchingManager:
                 if success:
                     loaded_count += 1
             else:
-                logger.warning(f"Pattern {pattern_id} not found in library")
+                logger.warning("Pattern %(pattern_id)s not found in library")
 
-        logger.info(f"Loaded {loaded_count} patterns to algorithm {algorithm_name}")
+        logger.info("Loaded %(loaded_count)s patterns to algorithm %(algorithm_name)s")
         return loaded_count
 
     async def find_patterns(
@@ -218,7 +220,7 @@ class PatternMatchingManager:
 
             for name in algorithm_names:
                 if name not in self.algorithms:
-                    logger.warning(f"Algorithm '{name}' not found, skipping")
+                    logger.warning("Algorithm '%(name)s' not found, skipping")
                     continue
 
                 # Load patterns if specified
@@ -243,7 +245,7 @@ class PatternMatchingManager:
                     }
 
                 except Exception as e:
-                    logger.error(f"Failed to run algorithm '{name}': {e}")
+                    logger.error("Failed to run algorithm '%(name)s': %(e)s")
                     results[name] = {"error": str(e), "success": False}
 
             return results
@@ -353,11 +355,11 @@ class PatternMatchingManager:
             with open(filepath, "w") as f:
                 json.dump(patterns_data, f, indent=2, default=str)
 
-            logger.info(f"Exported {len(self.pattern_library)} patterns to {filepath}")
+            logger.info("Exported {len(self.pattern_library)} patterns to %(filepath)s")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to export patterns: {e}")
+            logger.error("Failed to export patterns: %(e)s")
             return False
 
     def import_patterns(self, filepath: str) -> int:
@@ -374,11 +376,11 @@ class PatternMatchingManager:
                 if self.add_pattern_to_library(pattern):
                     imported_count += 1
 
-            logger.info(f"Imported {imported_count} patterns from {filepath}")
+            logger.info("Imported %(imported_count)s patterns from %(filepath)s")
             return imported_count
 
         except Exception as e:
-            logger.error(f"Failed to import patterns: {e}")
+            logger.error("Failed to import patterns: %(e)s")
             return 0
 
     def cleanup(self):

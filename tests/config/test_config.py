@@ -5,9 +5,9 @@ MyStocks 统一测试配置系统
 集中管理所有测试相关的配置和常量
 """
 
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
-from dataclasses import dataclass
 
 
 # 测试环境配置
@@ -16,8 +16,8 @@ class TestEnvironment:
     """测试环境配置"""
 
     # 端口配置
-    FRONTEND_PORT_RANGE: List[int] = [3000, 3009]
-    BACKEND_PORT_RANGE: List[int] = [8000, 8009]
+    FRONTEND_PORT_RANGE: List[int] = field(default_factory=lambda: [3000, 3009])
+    BACKEND_PORT_RANGE: List[int] = field(default_factory=lambda: [8000, 8009])
     API_PORT: int = 8000
     FRONTEND_DEV_PORT: int = 3000
 
@@ -50,12 +50,14 @@ class TestStrategy:
     """测试策略配置"""
 
     # 覆盖率目标
-    COVERAGE_TARGET: Dict[str, float] = {
-        "unit": 80,
-        "integration": 75,
-        "e2e": 90,
-        "overall": 78,
-    }
+    COVERAGE_TARGET: Dict[str, float] = field(
+        default_factory=lambda: {
+            "unit": 80,
+            "integration": 75,
+            "e2e": 90,
+            "overall": 78,
+        }
+    )
 
     # 并发配置
     CONCURRENT_TESTS: int = 4
@@ -83,29 +85,35 @@ class TestData:
     DATA_VERSION: str = "v1.0.0"
 
     # 样本数据配置
-    SAMPLE_STOCK_CODES: List[str] = [
-        "600519",  # 贵州茅台
-        "600036",  # 招商银行
-        "000001",  # 平安银行
-        "000002",  # 万科A
-        "399300",  # 沪深300
-    ]
+    SAMPLE_STOCK_CODES: List[str] = field(
+        default_factory=lambda: [
+            "600519",  # 贵州茅台
+            "600036",  # 招商银行
+            "000001",  # 平安银行
+            "000002",  # 万科A
+            "399300",  # 沪深300
+        ]
+    )
 
-    SAMPLE_INDEX_CODES: List[str] = [
-        "399300",  # 沪深300
-        "000001",  # 上证指数
-        "399006",  # 创业板指
-        "000016",  # 上证50
-        "399911",  # 中证500
-    ]
+    SAMPLE_INDEX_CODES: List[str] = field(
+        default_factory=lambda: [
+            "399300",  # 沪深300
+            "000001",  # 上证指数
+            "399006",  # 创业板指
+            "000016",  # 上证50
+            "399911",  # 中证500
+        ]
+    )
 
     # 常见测试时间范围
-    COMMON_DATE_RANGES: Dict[str, Dict[str, str]] = {
-        "recent_30d": {"start_date": "2024-11-12", "end_date": "2024-12-12"},
-        "recent_90d": {"start_date": "2024-09-12", "end_date": "2024-12-12"},
-        "recent_180d": {"start_date": "2024-06-12", "end_date": "2024-12-12"},
-        "recent_1y": {"start_date": "2023-12-12", "end_date": "2024-12-12"},
-    }
+    COMMON_DATE_RANGES: Dict[str, Dict[str, str]] = field(
+        default_factory=lambda: {
+            "recent_30d": {"start_date": "2024-11-12", "end_date": "2024-12-12"},
+            "recent_90d": {"start_date": "2024-09-12", "end_date": "2024-12-12"},
+            "recent_180d": {"start_date": "2024-06-12", "end_date": "2024-12-12"},
+            "recent_1y": {"start_date": "2023-12-12", "end_date": "2024-12-12"},
+        }
+    )
 
 
 # AI测试配置
@@ -123,7 +131,7 @@ class AITestConfig:
     TEST_CASE_GENERATION_TIMEOUT: int = 60
 
     # 测试优化配置
-    OPTIMIZATION_TARGETS: List[str] = ["coverage", "performance", "maintainability"]
+    OPTIMIZATION_TARGETS: List[str] = field(default_factory=lambda: ["coverage", "performance", "maintainability"])
 
     # 智能重试配置
     SMART_RETRY_ENABLED: bool = True
@@ -161,26 +169,32 @@ class PerformanceBaseline:
     """性能基准配置"""
 
     # API性能基准
-    API_RESPONSE_TIME_THRESHOLD: Dict[str, int] = {
-        "market_data": 1000,  # 1秒
-        "kline_data": 2000,  # 2秒
-        "strategy_backtest": 30000,  # 30秒
-        "batch_analysis": 60000,  # 60秒
-    }
+    API_RESPONSE_TIME_THRESHOLD: Dict[str, int] = field(
+        default_factory=lambda: {
+            "market_data": 1000,  # 1秒
+            "kline_data": 2000,  # 2秒
+            "strategy_backtest": 30000,  # 30秒
+            "batch_analysis": 60000,  # 60秒
+        }
+    )
 
     # 数据库查询基准
-    DB_QUERY_TIME_THRESHOLD: Dict[str, int] = {
-        "simple_lookup": 100,  # 100ms
-        "complex_analysis": 5000,  # 5秒
-        "batch_insert": 500,  # 500ms per batch
-    }
+    DB_QUERY_TIME_THRESHOLD: Dict[str, int] = field(
+        default_factory=lambda: {
+            "simple_lookup": 100,  # 100ms
+            "complex_analysis": 5000,  # 5秒
+            "batch_insert": 500,  # 500ms per batch
+        }
+    )
 
     # 前端加载基准
-    FRONTEND_LOAD_TIME: Dict[str, int] = {
-        "dashboard": 2000,  # 2秒
-        "stock_detail": 3000,  # 3秒
-        "strategy_page": 4000,  # 4秒
-    }
+    FRONTEND_LOAD_TIME: Dict[str, int] = field(
+        default_factory=lambda: {
+            "dashboard": 2000,  # 2秒
+            "stock_detail": 3000,  # 3秒
+            "strategy_page": 4000,  # 4秒
+        }
+    )
 
 
 # 全局测试配置实例

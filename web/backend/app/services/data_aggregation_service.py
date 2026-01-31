@@ -15,12 +15,13 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, Optional, List, Tuple, Any
-from datetime import datetime
-from enum import Enum
 from dataclasses import dataclass, field
-import structlog
+from datetime import datetime
 from decimal import Decimal
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+
+import structlog
 
 logger = structlog.get_logger()
 

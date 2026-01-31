@@ -103,6 +103,7 @@
 <script setup>
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
+import { artDecoTheme } from '@/utils/echarts'
 import {
   SwapOutlined,
   DownloadOutlined
@@ -393,7 +394,7 @@ const initChart = () => {
     return
   }
 
-  chart = echarts.init(chartRef.value, null, {
+  chart = echarts.init(chartRef.value, artDecoTheme, {
     renderer: 'canvas',
     devicePixelRatio: window.devicePixelRatio
   })
@@ -414,7 +415,7 @@ const initChart = () => {
 
   // 响应式监听
   resizeObserver = new ResizeObserver(entries => {
-    for (let entry of entries) {
+    for (const entry of entries) {
       const { width, height } = entry.contentRect
       if (width > 0 && height > 0 && chart) {
         chart.resize()

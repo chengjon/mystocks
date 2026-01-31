@@ -4,17 +4,19 @@ Mock数据源实现类
 """
 
 from typing import Dict, List, Optional, Union
+
 import pandas as pd
+
+from src.database.mock_data_storage import mock_data_storage
 from src.interfaces.data_source_interface import DataSourceInterface
 from src.mock import (
-    mock_Stocks,
-    mock_TechnicalAnalysis,
-    mock_RealTimeMonitor,
-    mock_Wencai,
-    mock_StrategyManagement,
     mock_IndicatorLibrary,
+    mock_RealTimeMonitor,
+    mock_Stocks,
+    mock_StrategyManagement,
+    mock_TechnicalAnalysis,
+    mock_Wencai,
 )
-from src.database.mock_data_storage import mock_data_storage
 
 
 class MockDataSource(DataSourceInterface):
@@ -38,7 +40,8 @@ class MockDataSource(DataSourceInterface):
     def get_stock_detail(self, stock_code: str) -> Dict:
         """获取股票详细信息"""
         # Mock Stocks模块没有直接的get_stock_detail函数，使用get_real_time_quote作为替代
-        quote = mock_Stocks.get_real_time_quote(stock_code)
+        quotes = mock_Stocks.get_real_time_quote([stock_code])
+        quote = quotes[0] if quotes else {}
         result = {
             "symbol": quote.get("symbol", stock_code),
             "name": quote.get("name", f"股票{stock_code}"),
@@ -158,9 +161,14 @@ class MockDataSource(DataSourceInterface):
         """获取交易信号"""
         return mock_TechnicalAnalysis.get_trading_signals(stock_code)
 
-    def get_kline_data(self, stock_code: str) -> Dict:
+    def get_kline_data(self, stock_code: str, start_date: str = "", end_date: str = "") -> Dict:
         """获取K线历史数据"""
-        return mock_TechnicalAnalysis.get_kline_data(stock_code)
+        from datetime import datetime, timedelta
+        if not start_date:
+            start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        if not end_date:
+            end_date = datetime.now().strftime("%Y-%m-%d")
+        return mock_TechnicalAnalysis.get_kline_data(stock_code, start_date, end_date)
 
     def get_pattern_recognition(self, stock_code: str) -> Dict:
         """获取形态识别结果"""

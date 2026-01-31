@@ -7,15 +7,16 @@
 # 说明：GPU加速的金融特征计算和技术指标引擎
 """
 
-import time
 import logging
-from typing import Dict, Any, List, Union
+import time
+from typing import Any, Dict, List, Union
+
 import numpy as np
 import pandas as pd
 
 try:
-    import cupy as cp
     import cudf
+    import cupy as cp
 
     GPU_AVAILABLE = True
 except ImportError:

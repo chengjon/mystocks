@@ -12,9 +12,10 @@ AI优化建议数量: 2
 预计覆盖率提升: 95.0%
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # 添加项目路径
 project_root = Path(__file__).parent.parent.parent

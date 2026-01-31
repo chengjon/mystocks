@@ -18,14 +18,13 @@ import os
 from datetime import date, datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from pydantic import BaseModel, Field, ValidationError, field_validator
-
-from app.core.exceptions import BusinessException, ValidationException, NotFoundException
 
 from app.core.cache_utils import cache_response  # 导入缓存工具
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
-from app.core.responses import ErrorCodes, create_error_response, create_success_response
+from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+from app.core.responses import create_error_response, create_success_response
 from app.schemas.market_schemas import (
     ChipRaceResponse,
     ETFDataResponse,
@@ -184,7 +183,6 @@ async def get_fund_flow(
         #     end_date=dt_convert.strptime(end_date, "%Y-%m-%d") if end_date else dt_convert.now(),
         #     interval="daily",  # fund-flow使用daily间隔
         # )
-
         # Simple validation object for now
         class SimpleParams:
             def __init__(self, symbol, start_date, end_date):
@@ -230,7 +228,7 @@ async def get_fund_flow(
         except Exception as api_error:
             # API调用失败，记录失败并打开熔断器
             circuit_breaker.record_failure()
-            logger.error(f"❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            logger.error("❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"")
             raise
 
         # 转换为响应格式 - 修复数据结构以匹配前端期望
@@ -704,7 +702,7 @@ async def get_kline_data(
         except Exception as api_error:
             # API调用失败，记录失败
             circuit_breaker.record_failure()
-            logger.error(f"❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
+            logger.error("❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"")
             raise
 
         if result is None:

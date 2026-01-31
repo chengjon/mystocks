@@ -8,11 +8,11 @@ and evaluation methods.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
-import pandas as pd
-import numpy as np
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 from .types import AlgorithmType
 
@@ -43,8 +43,9 @@ class BaseAlgorithm(ABC):
     def __init__(self, metadata: AlgorithmMetadata):
         self.metadata = metadata
         self.is_trained = False
-        self.training_metrics = {}
+        self.training_metrics: Dict[str, Any] = {}
         self.gpu_context = None
+        self.gpu_memory_limit: Optional[int] = None
 
     @property
     def algorithm_type(self) -> AlgorithmType:
@@ -68,7 +69,6 @@ class BaseAlgorithm(ABC):
         Returns:
             Dictionary containing trained model and training metrics
         """
-        pass
 
     @abstractmethod
     async def predict(self, data: pd.DataFrame, model: Dict[str, Any]) -> Dict[str, Any]:
@@ -82,7 +82,6 @@ class BaseAlgorithm(ABC):
         Returns:
             Dictionary containing predictions and confidence scores
         """
-        pass
 
     @abstractmethod
     def evaluate(self, predictions: Dict[str, Any], actual: pd.DataFrame) -> Dict[str, float]:
@@ -96,7 +95,6 @@ class BaseAlgorithm(ABC):
         Returns:
             Dictionary containing evaluation metrics
         """
-        pass
 
     async def validate_input(self, data: pd.DataFrame) -> bool:
         """
@@ -145,11 +143,9 @@ class GPUAcceleratedAlgorithm(BaseAlgorithm):
     async def initialize_gpu_context(self):
         """Initialize GPU context for algorithm execution."""
         # Integration with existing GPU framework would go here
-        pass
 
     async def release_gpu_context(self):
         """Release GPU resources."""
-        pass
 
     def set_gpu_memory_limit(self, limit_mb: int):
         """Set GPU memory limit for this algorithm."""

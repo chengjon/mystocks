@@ -5,6 +5,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Union
+
 import pandas as pd
 
 
@@ -28,7 +29,6 @@ class DataSourceInterface(ABC):
         Returns:
             List[Dict]: 股票列表数据
         """
-        pass
 
     @abstractmethod
     def get_stock_detail(self, stock_code: str) -> Dict:
@@ -41,7 +41,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 股票详细信息
         """
-        pass
 
     @abstractmethod
     def get_real_time_quote(self, stock_code: str) -> Dict:
@@ -54,7 +53,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 实时行情数据
         """
-        pass
 
     @abstractmethod
     def get_history_profit(self, stock_code: str, days: int = 30) -> pd.DataFrame:
@@ -68,7 +66,6 @@ class DataSourceInterface(ABC):
         Returns:
             pd.DataFrame: 历史收益数据
         """
-        pass
 
     @abstractmethod
     def get_technical_indicators(self, stock_code: str, start_date: str, end_date: str) -> List[Dict]:
@@ -83,7 +80,6 @@ class DataSourceInterface(ABC):
         Returns:
             List[Dict]: 技术指标数据列表
         """
-        pass
 
     @abstractmethod
     def get_all_indicators(self, stock_code: str) -> Dict:
@@ -96,7 +92,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 所有技术指标数据
         """
-        pass
 
     @abstractmethod
     def get_trend_indicators(self, stock_code: str) -> Dict:
@@ -109,7 +104,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 趋势指标数据
         """
-        pass
 
     @abstractmethod
     def get_momentum_indicators(self, stock_code: str) -> Dict:
@@ -122,7 +116,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 动量指标数据
         """
-        pass
 
     @abstractmethod
     def get_volatility_indicators(self, stock_code: str) -> Dict:
@@ -135,7 +128,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 波动率指标数据
         """
-        pass
 
     @abstractmethod
     def get_volume_indicators(self, stock_code: str) -> Dict:
@@ -148,7 +140,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 成交量指标数据
         """
-        pass
 
     @abstractmethod
     def get_trading_signals(self, stock_code: str) -> Dict:
@@ -161,7 +152,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 交易信号数据
         """
-        pass
 
     @abstractmethod
     def get_kline_data(self, stock_code: str) -> Dict:
@@ -174,7 +164,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: K线历史数据
         """
-        pass
 
     @abstractmethod
     def get_pattern_recognition(self, stock_code: str) -> Dict:
@@ -187,7 +176,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 形态识别结果
         """
-        pass
 
     @abstractmethod
     def get_realtime_alerts(self, params: Optional[Dict] = None) -> List[Dict]:
@@ -203,7 +191,6 @@ class DataSourceInterface(ABC):
         Returns:
             List[Dict]: 实时告警数据
         """
-        pass
 
     @abstractmethod
     def get_monitoring_summary(self) -> Dict:
@@ -213,7 +200,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 监控摘要数据
         """
-        pass
 
     @abstractmethod
     def get_monitoring_status(self) -> Dict:
@@ -223,7 +209,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 监控状态信息
         """
-        pass
 
     @abstractmethod
     def get_market_monitoring(self) -> Dict:
@@ -233,7 +218,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 市场监控数据
         """
-        pass
 
     @abstractmethod
     def get_wencai_queries(self) -> Dict:
@@ -243,7 +227,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 预定义查询列表
         """
-        pass
 
     @abstractmethod
     def execute_query(self, request: Dict) -> Dict:
@@ -258,7 +241,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 查询执行结果
         """
-        pass
 
     @abstractmethod
     def execute_custom_query(self, request: Dict) -> Dict:
@@ -273,7 +255,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 自定义查询结果
         """
-        pass
 
     @abstractmethod
     def get_query_results(self, query_name: str, limit: int = 20, offset: int = 0) -> Dict:
@@ -288,7 +269,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 查询结果数据
         """
-        pass
 
     @abstractmethod
     def get_strategy_definitions(self) -> Dict:
@@ -298,7 +278,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 策略定义列表
         """
-        pass
 
     @abstractmethod
     def run_strategy_single(self, request: Dict) -> Dict:
@@ -314,7 +293,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 策略运行结果
         """
-        pass
 
     @abstractmethod
     def run_strategy_batch(self, request: Dict) -> Dict:
@@ -330,7 +308,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 批量策略运行结果
         """
-        pass
 
     @abstractmethod
     def get_strategy_results(self, request: Dict) -> Dict:
@@ -346,7 +323,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 策略结果数据
         """
-        pass
 
     @abstractmethod
     def get_matched_stocks(self, request: Dict) -> Dict:
@@ -361,7 +337,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 匹配股票数据
         """
-        pass
 
     @abstractmethod
     def get_strategy_stats(self) -> Dict:
@@ -371,7 +346,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 策略统计数据
         """
-        pass
 
     @abstractmethod
     def get_indicator_list(self, params: Optional[Dict] = None) -> List[Dict]:
@@ -387,7 +361,6 @@ class DataSourceInterface(ABC):
         Returns:
             List[Dict]: 指标列表
         """
-        pass
 
     @abstractmethod
     def get_indicator_detail(self, indicator_id: str) -> Dict:
@@ -400,7 +373,6 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 指标详情
         """
-        pass
 
     @abstractmethod
     def get_indicator_data(self, indicator_id: str, symbol: str, days: int = 30) -> pd.DataFrame:
@@ -415,7 +387,6 @@ class DataSourceInterface(ABC):
         Returns:
             pd.DataFrame: 指标数据表格
         """
-        pass
 
     @abstractmethod
     def get_data_from_adapter(self, adapter_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
@@ -430,7 +401,6 @@ class DataSourceInterface(ABC):
         Returns:
             Union[Dict, List[Dict], pd.DataFrame]: 适配器返回的数据
         """
-        pass
 
     @abstractmethod
     def get_data_with_failover(self, data_type: str, method: str, **kwargs) -> Union[Dict, List[Dict], pd.DataFrame]:
@@ -445,7 +415,6 @@ class DataSourceInterface(ABC):
         Returns:
             Union[Dict, List[Dict], pd.DataFrame]: 适配器返回的数据
         """
-        pass
 
     # 新增的方法定义
 
@@ -463,7 +432,6 @@ class DataSourceInterface(ABC):
         Returns:
             pd.DataFrame: 分钟K线数据
         """
-        pass
 
     @abstractmethod
     def get_industry_classify(self) -> pd.DataFrame:
@@ -473,7 +441,6 @@ class DataSourceInterface(ABC):
         Returns:
             pd.DataFrame: 行业分类数据
         """
-        pass
 
     @abstractmethod
     def get_concept_classify(self) -> pd.DataFrame:
@@ -483,7 +450,6 @@ class DataSourceInterface(ABC):
         Returns:
             pd.DataFrame: 概念分类数据
         """
-        pass
 
     @abstractmethod
     def get_stock_industry_concept(self, symbol: str) -> Dict:
@@ -496,4 +462,3 @@ class DataSourceInterface(ABC):
         Returns:
             Dict: 个股行业和概念信息
         """
-        pass

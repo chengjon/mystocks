@@ -8,11 +8,12 @@ Provides data quality detection capabilities measuring four core dimensions:
 - Consistency: Compare data across different sources
 """
 
+import logging
+import re
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class DataQualityChecker:
                 details={"error": "No data to check"},
             )
 
-        details = {}
+        details: Dict[str, Any] = {}
         total_missing = 0
         total_fields = len(data) * len(data[0]) if data else 0
 
@@ -90,7 +91,7 @@ class DataQualityChecker:
                 missing_per_record.append(len(missing))
                 total_missing += len(missing)
 
-            details["missing_fields"] = dict(zip(range(len(data)), missing_per_record))
+            details["missing_fields"] = {str(i): count for i, count in enumerate(missing_per_record)}
         else:
             for record in data:
                 for key, value in record.items():
@@ -200,7 +201,7 @@ class DataQualityChecker:
                                 record_violations.append(f"{field_name} < {rules['min']}")
                             if "max" in rules and value > rules["max"]:
                                 record_violations.append(f"{field_name} > {rules['max']}")
-                            if "pattern" in rules and not str(value).match(rules["pattern"]):
+                            if "pattern" in rules and not re.match(str(rules["pattern"]), str(value)):
                                 record_violations.append(f"{field_name} doesn't match pattern")
                 if record_violations:
                     violations.append({"record": i, "violations": record_violations})
@@ -239,7 +240,7 @@ class DataQualityChecker:
                 details={"info": "Only one source, consistency = 100%"},
             )
 
-        details = {}
+        details: Dict[str, Any] = {}
         inconsistencies = []
 
         # Get common keys from first source

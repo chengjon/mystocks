@@ -5,8 +5,9 @@ JWT Authentication Test Script
 """
 
 import asyncio
-import aiohttp
 from datetime import datetime
+
+import aiohttp
 
 BASE_URL = "http://localhost:8000"
 

@@ -6,11 +6,12 @@ FastAPI路由文件: Stocks
 生成时间: 2025-11-13
 """
 
-from fastapi import APIRouter, Query
-from typing import Dict, Optional
-import os
 import logging
+import os
 from datetime import datetime
+from typing import Dict, Optional
+
+from fastapi import APIRouter, Query
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -36,16 +37,16 @@ def get_stocks_mock_data():
         module: Mock数据模块
     """
     from src.mock.mock_Stocks import (
-        get_stock_list,
+        add_to_watchlist,
+        get_realtime_quotes,
+        get_stock_by_industry,
         get_stock_detail,
         get_stock_financial_data,
         get_stock_indicators,
-        get_realtime_quotes,
-        search_stocks,
-        get_stock_by_industry,
+        get_stock_list,
         get_watchlist,
-        add_to_watchlist,
         remove_from_watchlist,
+        search_stocks,
     )
 
     return {

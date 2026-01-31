@@ -3,10 +3,11 @@
 测试回测、实时处理和ML训练三大集成服务
 """
 
-import pytest
-import grpc
-from unittest.mock import Mock, patch
 import json
+from unittest.mock import Mock, patch
+
+import grpc
+import pytest
 
 
 class TestIntegratedBacktestService:

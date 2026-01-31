@@ -5,11 +5,10 @@ Data Sources Configuration Dynamic Loader
 支持从拆分后的多个YAML文件加载和合并数据源配置。
 """
 
-import os
+import logging
 import yaml
 from pathlib import Path
-from typing import Dict, Any, List
-import logging
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +41,7 @@ class DataSourcesLoader:
 
         # 2. 获取要加载的子文件列表
         load_sources = main_config.get("load_sources", [])
-        logger.info(f"将加载以下数据源: {load_sources}")
+        logger.info("将加载以下数据源: %s", load_sources)
 
         # 3. 加载所有子配置文件
         all_sources = {}
@@ -53,11 +52,11 @@ class DataSourcesLoader:
                 if source_config and "data_sources" in source_config:
                     sources_count = len(source_config["data_sources"])
                     all_sources.update(source_config["data_sources"])
-                    logger.info(f"✅ 加载 {source_name}: {sources_count} 个数据源")
+                    logger.info("加载 %s: %d 个数据源", source_name, sources_count)
                 else:
-                    logger.warning(f"⚠️ {source_name}.yaml 格式无效")
+                    logger.warning("%s.yaml 格式无效", source_name)
             else:
-                logger.warning(f"⚠️ 子配置文件不存在: {source_file}")
+                logger.warning("子配置文件不存在: %s", source_file)
 
         # 4. 合并配置
         merged_config = main_config.copy()
@@ -68,7 +67,7 @@ class DataSourcesLoader:
         self._apply_aliases(merged_config, aliases)
 
         total_sources = len(all_sources)
-        logger.info(f"✅ 总共加载了 {total_sources} 个数据源配置")
+        logger.info("总共加载了 %d 个数据源配置", total_sources)
         return merged_config
 
     def _load_yaml_file(self, file_path: Path) -> Dict[str, Any]:
@@ -76,8 +75,11 @@ class DataSourcesLoader:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
-        except Exception as e:
-            logger.error(f"加载YAML文件失败 {file_path}: {e}")
+        except OSError as e:
+            logger.error("加载YAML文件失败 %s: %s", file_path, e)
+            return {}
+        except yaml.YAMLError as e:
+            logger.error("解析YAML文件失败 %s: %s", file_path, e)
             return {}
 
     def _apply_aliases(self, config: Dict[str, Any], aliases: Dict[str, str]):
@@ -88,7 +90,7 @@ class DataSourcesLoader:
                 # 创建别名副本
                 data_sources[alias] = data_sources[endpoint_name].copy()
                 data_sources[alias]["endpoint_name"] = alias
-                logger.debug(f"创建别名: {endpoint_name} -> {alias}")
+                logger.debug("创建别名: %s -> %s", endpoint_name, alias)
 
 
 # 全局加载器实例

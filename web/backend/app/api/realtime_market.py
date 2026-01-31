@@ -9,24 +9,22 @@ Date: 2026-01-09
 Phase: 12.4 - Integrated with DDD Architecture
 """
 
-from typing import Dict, Any, List
-from datetime import datetime
-import structlog
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query, HTTPException
-from dataclasses import dataclass
-
-import sys
 import os
+import sys
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List
+
+import structlog
+from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.services.market_data_parser import get_market_data_parser
 
-# Phase 12.4: 使用新的 DDD 架构适配器
-from web.backend.app.api.realtime_mtm_adapter import MTMUpdate
-
 # 保留旧接口以兼容性
-from web.backend.app.api.realtime_mtm_adapter import get_mtm_engine
+# Phase 12.4: 使用新的 DDD 架构适配器
+from web.backend.app.api.realtime_mtm_adapter import MTMUpdate, get_mtm_engine
 
 logger = structlog.get_logger()
 
@@ -57,7 +55,7 @@ class WebSocketConnectionManager:
             "connected_at": datetime.now(),
             "subscriptions": set(),
         }
-        logger.info(f"WebSocket client connected: {client_id}")
+        logger.info("WebSocket client connected: %(client_id)s"")
 
     def disconnect(self, client_id: str):
         """断开连接"""
@@ -69,7 +67,7 @@ class WebSocketConnectionManager:
                     if not self.symbol_subscriptions[symbol]:
                         del self.symbol_subscriptions[symbol]
             del self.active_connections[client_id]
-            logger.info(f"WebSocket client disconnected: {client_id}")
+            logger.info("WebSocket client disconnected: %(client_id)s"")
 
     async def subscribe(self, client_id: str, symbol: str):
         """订阅行情"""
@@ -82,7 +80,7 @@ class WebSocketConnectionManager:
             self.symbol_subscriptions[symbol] = set()
         self.symbol_subscriptions[symbol].add(client_id)
 
-        logger.info(f"Client {client_id} subscribed to {symbol}")
+        logger.info("Client %(client_id)s subscribed to %(symbol)s"")
         return True
 
     async def unsubscribe(self, client_id: str, symbol: str):
@@ -97,7 +95,7 @@ class WebSocketConnectionManager:
             if not self.symbol_subscriptions[symbol]:
                 del self.symbol_subscriptions[symbol]
 
-        logger.info(f"Client {client_id} unsubscribed from {symbol}")
+        logger.info("Client %(client_id)s unsubscribed from %(symbol)s"")
         return True
 
     async def send_personal_message(self, message: Dict[str, Any], client_id: str):
@@ -202,7 +200,7 @@ async def websocket_market(websocket: WebSocket, client_id: str = Query(default=
     except WebSocketDisconnect:
         manager.disconnect(client_id)
     except Exception as e:
-        logger.error(f"WebSocket error: {e}")
+        logger.error("WebSocket error: %(e)s"")
         manager.disconnect(client_id)
 
 
@@ -293,7 +291,7 @@ async def websocket_portfolio(
     except WebSocketDisconnect:
         manager.disconnect(client_id)
     except Exception as e:
-        logger.error(f"Portfolio WebSocket error: {e}")
+        logger.error("Portfolio WebSocket error: %(e)s"")
         manager.disconnect(client_id)
 
 
@@ -328,12 +326,12 @@ async def get_realtime_quote(symbol: str):
                 }
                 return {"success": True, "data": data}
         except Exception as e:
-            logger.warning(f"Failed to fetch quote via akshare: {e}")
+            logger.warning("Failed to fetch quote via akshare: %(e)s"")
 
         return {"success": False, "error": "Failed to fetch quote"}
 
     except Exception as e:
-        logger.error(f"Error fetching quote: {e}")
+        logger.error("Error fetching quote: %(e)s"")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -362,12 +360,12 @@ async def get_realtime_quotes(symbols: str = Query(..., description="股票代�
                             "change_percent": r.get("涨跌幅", 0),
                         }
         except Exception as e:
-            logger.warning(f"Failed to fetch quotes via akshare: {e}")
+            logger.warning("Failed to fetch quotes via akshare: %(e)s"")
 
         return {"success": True, "data": results}
 
     except Exception as e:
-        logger.error(f"Error fetching quotes: {e}")
+        logger.error("Error fetching quotes: %(e)s"")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -386,7 +384,7 @@ async def get_portfolio_mtm(portfolio_id: str):
         return {"success": True, "data": _snapshot_to_dict(snapshot)}
 
     except Exception as e:
-        logger.error(f"Error getting portfolio MTM: {e}")
+        logger.error("Error getting portfolio MTM: %(e)s"")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -419,7 +417,7 @@ async def get_position_mtm(position_id: str):
         }
 
     except Exception as e:
-        logger.error(f"Error getting position MTM: {e}")
+        logger.error("Error getting position MTM: %(e)s"")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -438,7 +436,7 @@ async def get_mtm_stats():
             },
         }
     except Exception as e:
-        logger.error(f"Error getting MTM stats: {e}")
+        logger.error("Error getting MTM stats: %(e)s"")
         raise HTTPException(status_code=500, detail=str(e))
 
 

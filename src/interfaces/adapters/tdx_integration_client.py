@@ -4,9 +4,9 @@ TDX集成客户端 - 从 financial_adapter.py 拆分
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-from typing import Optional, Dict, Any
-import time
 import logging
+import time
+from typing import Any, Dict, Optional
 
 # 设置日志
 logger = logging.getLogger(__name__)
@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 class TDXIntegrationClient:
     """通达信集成客户端 - 专注于通达信数据源集成"""
 
-
-def __init__(self, host: str = "localhost", port: int = 7709):
+    def __init__(self, host: str = "localhost", port: int = 7709):
         """
         初始化TDX客户端
 
@@ -30,8 +29,7 @@ def __init__(self, host: str = "localhost", port: int = 7709):
         self._connected = False
         self._last_error = None
 
-
-def connect(self) -> bool:
+    def connect(self) -> bool:
         """
         建立连接
 
@@ -43,10 +41,7 @@ def connect(self) -> bool:
         """
         try:
             # 模拟连接过程
-            logger.info(
-    "Connecting to TDX server at %s:%s",
-    self.host,
-     self.port)
+            logger.info("Connecting to TDX server at %s:%s", self.host, self.port)
 
             # 在实际实现中，这里会创建真实的TDX客户端连接
             # 为了测试，我们模拟连接逻辑
@@ -63,8 +58,7 @@ def connect(self) -> bool:
             logger.error(error_msg)
             raise ConnectionError(error_msg)
 
-
-def disconnect(self):
+    def disconnect(self):
         """断开连接"""
         if self._client:
             try:
@@ -76,8 +70,7 @@ def disconnect(self):
             except Exception as e:
                 logger.error("Error during disconnect: %s", str(e))
 
-
-def is_connected(self) -> bool:
+    def is_connected(self) -> bool:
         """
         检查连接状态
 
@@ -86,8 +79,7 @@ def is_connected(self) -> bool:
         """
         return self._connected
 
-
-def reconnect(self, max_attempts: int = 3) -> bool:
+    def reconnect(self, max_attempts: int = 3) -> bool:
         """
         重连
 
@@ -99,27 +91,19 @@ def reconnect(self, max_attempts: int = 3) -> bool:
         """
         for attempt in range(max_attempts):
             try:
-                logger.info(
-    "Reconnection attempt %s/%s",
-    attempt + 1,
-     max_attempts)
+                logger.info("Reconnection attempt %s/%s", attempt + 1, max_attempts)
                 self.disconnect()
                 time.sleep(1)  # 等待1秒后重连
                 return self.connect()
             except Exception as e:
-                logger.error(
-    "Reconnection attempt %s failed: %s",
-    attempt + 1,
-     str(e))
+                logger.error("Reconnection attempt %s failed: %s", attempt + 1, str(e))
                 if attempt == max_attempts - 1:
                     logger.error("All reconnection attempts failed")
                     return False
 
         return False
 
-
-def get_tdx_stock_data(self, symbol: str, start_date: str,
-                       end_date: str) -> Dict[str, Any]:
+    def get_tdx_stock_data(self, symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """
         获取通达信股票数据
 
@@ -145,12 +129,7 @@ def get_tdx_stock_data(self, symbol: str, start_date: str,
             logger.error("Failed to get stock data: %s", str(e))
             raise
 
-
-def get_tdx_index_data(self,
-    index_code: str,
-    start_date: str,
-    end_date: str) -> Dict[str,
-     Any]:
+    def get_tdx_index_data(self, index_code: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """
         获取通达信指数数据
 
@@ -176,8 +155,7 @@ def get_tdx_index_data(self,
             logger.error("Failed to get index data: %s", str(e))
             raise
 
-
-def get_tdx_market_data(self, market_code: str = "1") -> Dict[str, Any]:
+    def get_tdx_market_data(self, market_code: str = "1") -> Dict[str, Any]:
         """
         获取通达信市场数据
 
@@ -201,8 +179,7 @@ def get_tdx_market_data(self, market_code: str = "1") -> Dict[str, Any]:
             logger.error("Failed to get market data: %s", str(e))
             raise
 
-
-def _simulate_connection(self):
+    def _simulate_connection(self):
         """模拟连接过程"""
         # 简单的连接模拟，在实际实现中会被真实的TDX连接逻辑替换
         if self.host == "localhost" and self.port == 7709:
@@ -211,9 +188,7 @@ def _simulate_connection(self):
         else:
             raise ConnectionError(f"Cannot connect to {self.host}:{self.port}")
 
-
-def _simulate_stock_data(self, symbol: str, start_date: str,
-                         end_date: str) -> Dict[str, Any]:
+    def _simulate_stock_data(self, symbol: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """模拟股票数据"""
         return {
             "symbol": symbol,
@@ -224,9 +199,7 @@ def _simulate_stock_data(self, symbol: str, start_date: str,
             "data": [],  # 实际数据会在这里
         }
 
-
-def _simulate_index_data(self, index_code: str,
-                         start_date: str, end_date: str) -> Dict[str, Any]:
+    def _simulate_index_data(self, index_code: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """模拟指数数据"""
         return {
             "index_code": index_code,
@@ -237,8 +210,7 @@ def _simulate_index_data(self, index_code: str,
             "data": [],  # 实际数据会在这里
         }
 
-
-def _simulate_market_data(self, market_code: str) -> Dict[str, Any]:
+    def _simulate_market_data(self, market_code: str) -> Dict[str, Any]:
         """模拟市场数据"""
         return {
             "market_code": market_code,
@@ -250,8 +222,7 @@ def _simulate_market_data(self, market_code: str) -> Dict[str, Any]:
             },
         }
 
-
-def _handle_tdx_error(self, error: Exception) -> None:
+    def _handle_tdx_error(self, error: Exception) -> None:
         """
         处理通达信错误
 
@@ -270,6 +241,6 @@ def _handle_tdx_error(self, error: Exception) -> None:
             logger.error("Unexpected TDX error: %s", str(error))
 
     @property
-def last_error(self) -> Optional[str]:
+    def last_error(self) -> Optional[str]:
         """获取最后一次错误信息"""
         return self._last_error

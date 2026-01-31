@@ -26,7 +26,7 @@ export class LoginPage {
   readonly userHint = () => this.page.getByTestId('user-account-hint');
   readonly tipsSection = () => this.page.getByTestId('test-account-tips');
 
-  constructor(page: Page, baseUrl: string = 'http://localhost:3000') {
+  constructor(page: Page, baseUrl: string = process.env.E2E_BASE_URL || 'http://localhost:3000') {
     this.page = page;
     this.url = `${baseUrl}/login`;
   }

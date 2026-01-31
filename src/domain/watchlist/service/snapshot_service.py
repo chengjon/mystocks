@@ -8,9 +8,10 @@ Snapshot Service (Optimized)
 """
 
 import logging
-from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
+from typing import Dict, List, Optional
 from uuid import uuid4
+
 import pandas as pd
 
 from src.domain.watchlist.value_objects import IndicatorSnapshot, IndicatorValue
@@ -47,7 +48,7 @@ class SnapshotService:
                 value = self._calculate_indicator(stock_code, ind_id, reference_days)
                 indicator_values[ind_id] = IndicatorValue(indicator_id=ind_id, value=value)
             except Exception as e:
-                logger.warning(f"Failed to calculate {ind_id} for {stock_code}: {e}")
+                logger.warning("Failed to calculate %(ind_id)s for %(stock_code)s: %(e)s")
 
         return IndicatorSnapshot(
             snapshot_id=str(uuid4()),
@@ -80,7 +81,7 @@ class SnapshotService:
                     "volume": int(row.get("volume", 0)),
                 }
         except Exception as e:
-            logger.debug(f"Could not get realtime price for {stock_code}: {e}")
+            logger.debug("Could not get realtime price for %(stock_code)s: %(e)s")
         return None
 
     def _calculate_indicator(self, stock_code: str, indicator_id: str, lookback_days: int) -> float:
@@ -110,7 +111,7 @@ class SnapshotService:
                     col = indicator_id.split(".")[0] if "." in indicator_id else result.columns[0]
                     return float(result[col].iloc[-1]) if not result.empty else 0.0
         except Exception as e:
-            logger.debug(f"Indicator calculation failed for {stock_code}/{indicator_id}: {e}")
+            logger.debug("Indicator calculation failed for %(stock_code)s/%(indicator_id)s: %(e)s")
 
         return 0.0
 

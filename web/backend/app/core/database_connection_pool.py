@@ -17,12 +17,13 @@ Date: 2025-11-12
 """
 
 import asyncio
-import structlog
-from typing import Dict, Optional, Any
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import time
+from typing import Any, Dict, Optional
+
+import structlog
 
 logger = structlog.get_logger()
 
@@ -311,7 +312,7 @@ class DatabaseConnectionPoolOptimizer:
         """
         try:
             if conn_id not in self.in_use_connections:
-                logger.warning(f"⚠️ Connection not found in use pool: {conn_id}")
+                logger.warning("⚠️ Connection not found in use pool: %(conn_id)s"")
                 return
 
             conn_metadata = self.in_use_connections.pop(conn_id)
@@ -319,7 +320,7 @@ class DatabaseConnectionPoolOptimizer:
             if error:
                 conn_metadata.error_count += 1
                 conn_metadata.state = ConnectionState.BROKEN
-                logger.warning(f"⚠️ Connection marked as broken: {conn_id}")
+                logger.warning("⚠️ Connection marked as broken: %(conn_id)s"")
             else:
                 conn_metadata.state = ConnectionState.IDLE
                 conn_metadata.latency_ms = latency_ms
@@ -329,7 +330,7 @@ class DatabaseConnectionPoolOptimizer:
             self.total_released += 1
 
         except Exception as e:
-            logger.error(f"❌ Error returning connection {conn_id}", error=str(e))
+            logger.error("❌ Error returning connection {conn_id}", error=str(e))
 
     def get_pool_size(self) -> Dict[str, int]:
         """获取连接池大小统计"""

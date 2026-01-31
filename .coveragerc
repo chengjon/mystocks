@@ -35,7 +35,7 @@ omit =
 include =
 
 # 动态分析上下文
-dynamic_context = test_function
+# dynamic_context = test_function  # 临时禁用：与pytest-cov冲突
 
 [report]
 # 精度

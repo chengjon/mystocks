@@ -6,8 +6,8 @@ Indicator Configuration Value Object
 """
 
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
 from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class IndicatorType(Enum):

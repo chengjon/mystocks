@@ -9,14 +9,14 @@ in financial time series data.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional, Union, Tuple
 from collections import deque
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
 
-from .base import PatternMatchingAlgorithm, Pattern, PatternMatch, PatternMatchResult
-from src.algorithms.types import AlgorithmType
-from src.algorithms.metadata import AlgorithmFingerprint
+
+from .base import Pattern, PatternMatch, PatternMatchingAlgorithm, PatternMatchResult
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +203,7 @@ class AhoCorasickAlgorithm(PatternMatchingAlgorithm):
             # Rebuild the entire automaton when patterns change
             await self._rebuild_automaton()
 
-            logger.info(f"Added pattern {pattern.id} and rebuilt automaton")
+            logger.info("Added pattern {pattern.id} and rebuilt automaton")
 
         return success
 
@@ -227,7 +227,7 @@ class AhoCorasickAlgorithm(PatternMatchingAlgorithm):
 
             asyncio.create_task(self._rebuild_automaton())
 
-            logger.info(f"Removed pattern {pattern_id} and rebuilt automaton")
+            logger.info("Removed pattern %(pattern_id)s and rebuilt automaton")
 
         return success
 
@@ -240,7 +240,7 @@ class AhoCorasickAlgorithm(PatternMatchingAlgorithm):
         self.root = self._build_trie(self.patterns)
         self._build_failure_links(self.root)
 
-        logger.info(f"Rebuilt Aho-Corasick automaton with {len(self.patterns)} patterns")
+        logger.info("Rebuilt Aho-Corasick automaton with {len(self.patterns)} patterns")
 
     async def find_patterns(
         self,
@@ -334,14 +334,14 @@ class AhoCorasickAlgorithm(PatternMatchingAlgorithm):
                 )
                 results.append(result)
 
-                logger.info(f"Found {len(matches)} matches for pattern {pattern_id} using AC")
+                logger.info("Found {len(matches)} matches for pattern %(pattern_id)s using AC")
 
         self.match_history.extend(results)
         return results
 
     def get_algorithm_info(self) -> Dict[str, Any]:
         """Get information about the Aho-Corasick algorithm."""
-        base_info = super().get_algorithm_info()
+        base_info = super().get_metadata()
         base_info.update(
             {
                 "algorithm_variant": "aho_corasick",

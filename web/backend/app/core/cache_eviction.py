@@ -16,14 +16,15 @@ Architecture:
 - EvictionScheduler: APScheduler集成
 """
 
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
 from collections import defaultdict
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
+
+import structlog
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-import structlog
 
-from app.core.cache_manager import get_cache_manager, CacheManager
+from app.core.cache_manager import CacheManager, get_cache_manager
 
 logger = structlog.get_logger()
 

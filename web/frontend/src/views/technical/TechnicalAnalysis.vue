@@ -266,6 +266,7 @@ import {
 import { technicalApi } from '@/api'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
+import { artDecoTheme } from '@/utils/echarts'
 
 // Type definitions
 interface SearchForm {
@@ -483,7 +484,7 @@ const renderChart = (): void => {
     chartInstance.value.dispose()
   }
 
-  chartInstance.value = echarts.init(chartContainer.value)
+  chartInstance.value = echarts.init(chartContainer.value, artDecoTheme)
 
   const dates: string[] = []
   const prices: string[] = []

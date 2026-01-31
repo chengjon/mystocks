@@ -12,7 +12,6 @@ Portfolio Valuation Service
 import logging
 from typing import Dict, List, Optional
 
-from src.domain.portfolio.model.portfolio import Portfolio
 from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository
 from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics
 from src.infrastructure.persistence.exceptions import ConcurrencyException
@@ -71,7 +70,7 @@ class PortfolioValuationService:
             # 1. 加载投资组合
             portfolio = self.portfolio_repo.find_by_id(portfolio_id)
             if not portfolio:
-                logger.error(f"Portfolio not found: {portfolio_id}")
+                logger.error("Portfolio not found: %(portfolio_id)s")
                 raise ValueError(f"Portfolio not found: {portfolio_id}")
 
             # 2. 更新持仓价格
@@ -108,11 +107,11 @@ class PortfolioValuationService:
 
         except ConcurrencyException as e:
             self.metrics["concurrency_conflicts"] += 1
-            logger.warning(f"⚠️ Concurrency conflict revaluating portfolio {portfolio_id}: {e}")
+            logger.warning("⚠️ Concurrency conflict revaluating portfolio %(portfolio_id)s: %(e)s")
             raise
 
         except Exception as e:
-            logger.error(f"❌ Failed to revaluate portfolio {portfolio_id}: {e}")
+            logger.error("❌ Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
             return None
 
     def batch_revaluate_portfolios(
@@ -135,7 +134,7 @@ class PortfolioValuationService:
                 performance = self.revaluate_portfolio(portfolio_id, prices)
                 results[portfolio_id] = performance
             except Exception as e:
-                logger.error(f"Failed to revaluate portfolio {portfolio_id}: {e}")
+                logger.error("Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
                 results[portfolio_id] = None
 
         logger.info(

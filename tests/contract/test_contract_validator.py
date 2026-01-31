@@ -8,18 +8,18 @@ import json
 import logging
 import os
 import time
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
-from urllib.parse import urljoin, urlparse
 from functools import lru_cache
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
+from urllib.parse import urljoin, urlparse
 
+import httpx
 import requests
 import yaml
-from jsonschema import validate, ValidationError, SchemaError
-import httpx
+from jsonschema import SchemaError, ValidationError, validate
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -508,10 +508,10 @@ class ContractValidator:
             # 缓存编译后的模式
             self._cache_schemas(spec)
 
-            logger.info(f"成功加载OpenAPI规范: {self.contract_spec.name} v{self.contract_spec.version}")
+            logger.info("成功加载OpenAPI规范: {self.contract_spec.name} v{self.contract_spec.version}")
 
         except Exception as e:
-            logger.error(f"加载OpenAPI规范失败: {e}")
+            logger.error("加载OpenAPI规范失败: %(e)s")
             raise
 
     def _cache_schemas(self, spec: Dict[str, Any]):
@@ -536,7 +536,7 @@ class ContractValidator:
                     test_cases = self._generate_test_cases_for_operation(path, method, operation)
                     tests.extend(test_cases)
 
-        logger.info(f"生成了 {len(tests)} 个契约测试用例")
+        logger.info("生成了 {len(tests)} 个契约测试用例")
         return tests
 
     def _generate_test_cases_for_operation(
@@ -773,7 +773,7 @@ class ContractValidator:
 
         except Exception as e:
             result["error"] = str(e)
-            logger.error(f"测试执行失败 {test.id}: {e}")
+            logger.error("测试执行失败 {test.id}: %(e)s")
 
         finally:
             result["end_time"] = datetime.now()
@@ -888,7 +888,7 @@ class ContractValidator:
         elif format == "markdown":
             self._generate_markdown_report(validation_result, output_path)
 
-        logger.info(f"验证报告已生成: {output_path}")
+        logger.info("验证报告已生成: %(output_path)s")
 
     def _generate_html_report(self, validation_result: ValidationResult, output_path: Path):
         """生成HTML报告"""

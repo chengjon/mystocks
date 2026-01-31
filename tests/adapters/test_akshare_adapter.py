@@ -28,13 +28,14 @@ Phase: 2 - Task 2.2.1
 Phase: 1 - Task 1.8 (添加市场总貌数据测试)
 """
 
+import asyncio
 import unittest
 from unittest.mock import patch, AsyncMock
-import pandas as pd
-import asyncio
 
+import pandas as pd
+
+from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
 from src.adapters.akshare_adapter import AkshareDataSource
-from src.adapters.akshare.market_data import AkshareMarketDataAdapter
 
 
 class TestAkshareDataSourceInit(unittest.TestCase):
@@ -55,7 +56,7 @@ class TestAkshareDataSourceInit(unittest.TestCase):
         self.assertEqual(adapter.api_timeout, 30)
         self.assertEqual(adapter.max_retries, 5)
 
-    @patch("src.adapters.akshare_adapter.logger")
+    @patch("src.adapters.akshare.base.logger")
     def test_init_logs_info(self, mock_logger):
         """测试初始化时记录日志"""
         adapter = AkshareDataSource(api_timeout=20, max_retries=4)
@@ -116,7 +117,7 @@ class TestAkshareDataSourceStockDaily(unittest.TestCase):
     @patch("src.adapters.akshare_adapter.normalize_date")
     @patch("src.adapters.akshare_adapter.ColumnMapper.to_english")
     def test_get_stock_daily_fallback_to_spot(
-        self, mock_mapper, mock_normalize, mock_format, mock_ak_spot, mock_ak_hist
+        self, mock_mapper, mock_normalize, mock_format, mock_ak_hist, mock_ak_spot
     ):
         """测试主要API失败后回退到spot API"""
         # Setup mocks
@@ -583,7 +584,7 @@ class TestAkshareDataSourceMinuteKline(unittest.TestCase):
         """测试前准备"""
         self.adapter = AkshareDataSource()
 
-    @patch("src.adapters.akshare_adapter.logger")
+    @patch("misc_data.logger", create=True)
     def test_get_minute_kline_returns_empty(self, mock_logger):
         """测试分钟K线返回空DataFrame"""
         # Execute
@@ -670,7 +671,7 @@ class TestAkshareDataSourceClassify(unittest.TestCase):
         self.assertEqual(len(result["concepts"]), 2)  # 金融科技,数字货币
 
 
-class TestAkshareMarketDataAdapter(unittest.TestCase):
+class TestAkshareMarketDataAdapter(unittest.IsolatedAsyncioTestCase):
     """测试AkShare市场总貌数据适配器"""
 
     def setUp(self):
@@ -682,7 +683,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIsNotNone(self.adapter)
         self.assertIsNotNone(self.adapter.logger)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_sse_summary")
+    @patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_sse_summary", create=True)
     async def test_get_market_overview_sse_success(self, mock_sse_summary):
         """测试成功获取上海证券交易所市场总貌"""
         # Setup mocks
@@ -711,7 +712,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("change_percent", result.columns)
         self.assertIn("query_timestamp", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_szse_summary")
+    @patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_summary", create=True)
     async def test_get_market_overview_szse_success(self, mock_szse_summary):
         """测试成功获取深圳证券交易所市场总貌"""
         # Setup mocks
@@ -738,7 +739,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("query_date", result.columns)
         self.assertIn("query_timestamp", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_szse_area_summary")
+    @patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_area_summary", create=True)
     async def test_get_szse_area_trading_success(self, mock_area_summary):
         """测试成功获取深圳地区交易排序数据"""
         # Setup mocks
@@ -764,7 +765,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("change_percent", result.columns)
         self.assertIn("query_date", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_szse_sector_summary")
+    @patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_sector_summary", create=True)
     async def test_get_szse_sector_trading_success(self, mock_sector_summary):
         """测试成功获取深圳行业成交数据"""
         # Setup mocks
@@ -791,7 +792,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("query_symbol", result.columns)
         self.assertIn("query_date", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_sse_deal_daily")
+    @patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_sse_deal_daily", create=True)
     async def test_get_sse_daily_deal_success(self, mock_sse_deal):
         """测试成功获取上海交易所每日概况"""
         # Setup mocks
@@ -819,7 +820,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_market_overview_sse_empty_data(self):
         """测试SSE市场总貌返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_sse_summary") as mock_sse:
+        with patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_sse_summary", create=True) as mock_sse:
             mock_sse.return_value = pd.DataFrame()
 
             # Execute
@@ -832,7 +833,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_market_overview_szse_empty_data(self):
         """测试SZSE市场总貌返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_szse_summary") as mock_szse:
+        with patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_summary", create=True) as mock_szse:
             mock_szse.return_value = pd.DataFrame()
 
             # Execute
@@ -845,7 +846,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_szse_area_trading_empty_data(self):
         """测试SZSE地区交易返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_szse_area_summary") as mock_area:
+        with patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_area_summary", create=True) as mock_area:
             mock_area.return_value = pd.DataFrame()
 
             # Execute
@@ -858,7 +859,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_szse_sector_trading_empty_data(self):
         """测试SZSE行业成交返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_szse_sector_summary") as mock_sector:
+        with patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_szse_sector_summary", create=True) as mock_sector:
             mock_sector.return_value = pd.DataFrame()
 
             # Execute
@@ -871,7 +872,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_sse_daily_deal_empty_data(self):
         """测试SSE每日概况返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_sse_deal_daily") as mock_deal:
+        with patch("src.adapters.akshare.market_adapter.market_overview.ak.stock_sse_deal_daily", create=True) as mock_deal:
             mock_deal.return_value = pd.DataFrame()
 
             # Execute
@@ -885,7 +886,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     # Phase 2: 个股信息数据测试
     # ============================================================================
 
-    @patch("src.adapters.akshare.market_data.ak.stock_individual_info_em")
+    @patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_individual_info_em", create=True)
     async def test_get_stock_individual_info_em_success(self, mock_individual_info):
         """测试成功获取个股信息查询-东财"""
         # Setup mocks
@@ -902,7 +903,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("query_timestamp", result)
         self.assertEqual(len([k for k in result.keys() if k not in ["symbol", "query_timestamp"]]), 3)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_individual_basic_info_xq")
+    @patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_individual_basic_info_xq", create=True)
     async def test_get_stock_individual_basic_info_xq_success(self, mock_basic_info_xq):
         """测试成功获取个股信息查询-雪球"""
         # Setup mocks
@@ -918,7 +919,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertEqual(result["symbol"], "SZ000001")
         self.assertIn("query_timestamp", result)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_zyjs_ths")
+    @patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_zyjs_ths", create=True)
     async def test_get_stock_zyjs_ths_success(self, mock_zyjs_ths):
         """测试成功获取主营介绍-同花顺"""
         # Setup mocks
@@ -934,7 +935,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertEqual(result["symbol"], "000001")
         self.assertIn("query_timestamp", result)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_zygc_em")
+    @patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_zygc_em", create=True)
     async def test_get_stock_zygc_em_success(self, mock_zygc_em):
         """测试成功获取主营构成-东财"""
         # Setup mocks
@@ -960,7 +961,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("business_segment", result.columns)
         self.assertIn("query_timestamp", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_comment_em")
+    @patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_comment_em", create=True)
     async def test_get_stock_comment_em_success(self, mock_comment_em):
         """测试成功获取千股千评"""
         # Setup mocks
@@ -990,7 +991,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("analyst_count", result.columns)
         self.assertIn("query_timestamp", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_comment_detail_zlkp_jgcyd_em")
+    @patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_comment_detail_zlkp_jgcyd_em", create=True)
     async def test_get_stock_comment_detail_em_success(self, mock_comment_detail):
         """测试成功获取千股千评详情"""
         # Setup mocks
@@ -1016,7 +1017,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("analyst_name", result.columns)
         self.assertIn("organization", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_news_em")
+    @patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_news_em", create=True)
     async def test_get_stock_news_em_success(self, mock_news_em):
         """测试成功获取个股新闻"""
         # Setup mocks
@@ -1041,7 +1042,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("title", result.columns)
         self.assertIn("content", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_bid_ask_em")
+    @patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_bid_ask_em", create=True)
     async def test_get_stock_bid_ask_em_success(self, mock_bid_ask):
         """测试成功获取行情报价"""
         # Setup mocks
@@ -1085,7 +1086,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_individual_info_em_empty_data(self):
         """测试个股信息查询-东财返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_individual_info_em") as mock_individual:
+        with patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_individual_info_em", create=True) as mock_individual:
             mock_individual.return_value = pd.DataFrame()
 
             # Execute
@@ -1099,7 +1100,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_zygc_em_empty_data(self):
         """测试主营构成-东财返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_zygc_em") as mock_zygc:
+        with patch("src.adapters.akshare.market_adapter.stock_profile.ak.stock_zygc_em", create=True) as mock_zygc:
             mock_zygc.return_value = pd.DataFrame()
 
             # Execute
@@ -1112,7 +1113,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_comment_em_empty_data(self):
         """测试千股千评返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_comment_em") as mock_comment:
+        with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_comment_em", create=True) as mock_comment:
             mock_comment.return_value = pd.DataFrame()
 
             # Execute
@@ -1125,7 +1126,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_news_em_empty_data(self):
         """测试个股新闻返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_news_em") as mock_news:
+        with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_news_em", create=True) as mock_news:
             mock_news.return_value = pd.DataFrame()
 
             # Execute
@@ -1138,7 +1139,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_bid_ask_em_empty_data(self):
         """测试行情报价返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_bid_ask_em") as mock_bid_ask:
+        with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_bid_ask_em", create=True) as mock_bid_ask:
             mock_bid_ask.return_value = pd.DataFrame()
 
             # Execute
@@ -1152,7 +1153,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     # Phase 3: 资金流向数据测试
     # ============================================================================
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_fund_flow_summary_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_fund_flow_summary_em", create=True)
     async def test_get_stock_hsgt_fund_flow_summary_em_success(self, mock_hsgt_summary):
         """测试成功获取沪深港通资金流向汇总"""
         # Setup mocks
@@ -1177,7 +1178,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("north_money", result.columns)
         self.assertIn("south_money", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_fund_flow_detail_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_fund_flow_detail_em", create=True)
     async def test_get_stock_hsgt_fund_flow_detail_em_success(self, mock_hsgt_detail):
         """测试成功获取沪深港通资金流向明细"""
         # Setup mocks
@@ -1203,7 +1204,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("market", result.columns)
         self.assertIn("direction", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_north_net_flow_in_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_north_net_flow_in_em", create=True)
     async def test_get_stock_hsgt_north_net_flow_in_em_success(self, mock_north_flow):
         """测试成功获取北向资金每日统计"""
         # Setup mocks
@@ -1228,7 +1229,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("fund_direction", result.columns)
         self.assertEqual(result["fund_direction"].iloc[0], "north")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_south_net_flow_in_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_south_net_flow_in_em", create=True)
     async def test_get_stock_hsgt_south_net_flow_in_em_success(self, mock_south_flow):
         """测试成功获取南向资金每日统计"""
         # Setup mocks
@@ -1251,7 +1252,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("fund_direction", result.columns)
         self.assertEqual(result["fund_direction"].iloc[0], "south")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_north_acc_flow_in_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_north_acc_flow_in_em", create=True)
     async def test_get_stock_hsgt_north_acc_flow_in_em_success(self, mock_north_stock):
         """测试成功获取北向资金个股统计"""
         # Setup mocks
@@ -1276,7 +1277,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("hold_amount", result.columns)
         self.assertIn("fund_direction", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_south_acc_flow_in_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_south_acc_flow_in_em", create=True)
     async def test_get_stock_hsgt_south_acc_flow_in_em_success(self, mock_south_stock):
         """测试成功获取南向资金个股统计"""
         # Setup mocks
@@ -1300,7 +1301,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("fund_direction", result.columns)
         self.assertEqual(result["fund_direction"].iloc[0], "south")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_hsgt_hold_stock_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_hold_stock_em", create=True)
     async def test_get_stock_hsgt_hold_stock_em_success(self, mock_hsgt_hold):
         """测试成功获取沪深港通持股明细"""
         # Setup mocks
@@ -1325,7 +1326,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("participant_name", result.columns)
         self.assertIn("hold_ratio", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_fund_flow_big_deal")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_fund_flow_big_deal", create=True)
     async def test_get_stock_fund_flow_big_deal_success(self, mock_big_deal):
         """测试成功获取资金流向大单统计"""
         # Setup mocks
@@ -1350,7 +1351,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("name", result.columns)
         self.assertIn("big_deal_amount", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_cyq_em")
+    @patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_cyq_em", create=True)
     async def test_get_stock_cyq_em_success(self, mock_cyq):
         """测试成功获取筹码分布数据"""
         # Setup mocks
@@ -1378,7 +1379,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_hsgt_fund_flow_summary_em_empty_data(self):
         """测试沪深港通资金流向汇总返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_hsgt_fund_flow_summary_em") as mock_hsgt_summary:
+        with patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_fund_flow_summary_em", create=True) as mock_hsgt_summary:
             mock_hsgt_summary.return_value = pd.DataFrame()
 
             # Execute
@@ -1391,7 +1392,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_hsgt_north_net_flow_in_em_empty_data(self):
         """测试北向资金每日统计返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_hsgt_north_net_flow_in_em") as mock_north_flow:
+        with patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_north_net_flow_in_em", create=True) as mock_north_flow:
             mock_north_flow.return_value = pd.DataFrame()
 
             # Execute
@@ -1404,7 +1405,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_hsgt_north_acc_flow_in_em_empty_data(self):
         """测试北向资金个股统计返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_hsgt_north_acc_flow_in_em") as mock_north_stock:
+        with patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_hsgt_north_acc_flow_in_em", create=True) as mock_north_stock:
             mock_north_stock.return_value = pd.DataFrame()
 
             # Execute
@@ -1417,7 +1418,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_fund_flow_big_deal_empty_data(self):
         """测试资金流向大单统计返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_fund_flow_big_deal") as mock_big_deal:
+        with patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_fund_flow_big_deal", create=True) as mock_big_deal:
             mock_big_deal.return_value = pd.DataFrame()
 
             # Execute
@@ -1430,7 +1431,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_cyq_em_empty_data(self):
         """测试筹码分布数据返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_cyq_em") as mock_cyq:
+        with patch("src.adapters.akshare.market_adapter.fund_flow.ak.stock_cyq_em", create=True) as mock_cyq:
             mock_cyq.return_value = pd.DataFrame()
 
             # Execute
@@ -1444,7 +1445,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     # Phase 4: 预测和分析数据测试
     # ============================================================================
 
-    @patch("src.adapters.akshare.market_data.ak.stock_profit_forecast_em")
+    @patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_profit_forecast_em", create=True)
     async def test_get_stock_profit_forecast_em_success(self, mock_profit_forecast):
         """测试成功获取盈利预测-东方财富"""
         # Setup mocks
@@ -1473,7 +1474,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("forecast_source", result.columns)
         self.assertEqual(result["forecast_source"].iloc[0], "em")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_profit_forecast_ths")
+    @patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_profit_forecast_ths", create=True)
     async def test_get_stock_profit_forecast_ths_success(self, mock_profit_forecast_ths):
         """测试成功获取盈利预测-同花顺"""
         # Setup mocks
@@ -1502,7 +1503,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("forecast_source", result.columns)
         self.assertEqual(result["forecast_source"].iloc[0], "ths")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_technical_indicator_em")
+    @patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_technical_indicator_em", create=True)
     async def test_get_stock_technical_indicator_em_success(self, mock_technical_indicator):
         """测试成功获取技术指标数据"""
         # Setup mocks
@@ -1541,7 +1542,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("rsi", result.columns)
         self.assertIn("boll_upper", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_account_statistics_em")
+    @patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_account_statistics_em", create=True)
     async def test_get_stock_account_statistics_em_success(self, mock_account_statistics):
         """测试成功获取股票账户统计月度"""
         # Setup mocks
@@ -1574,7 +1575,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_profit_forecast_em_empty_data(self):
         """测试盈利预测-东方财富返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_profit_forecast_em") as mock_profit:
+        with patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_profit_forecast_em", create=True) as mock_profit:
             mock_profit.return_value = pd.DataFrame()
 
             # Execute
@@ -1587,7 +1588,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_profit_forecast_ths_empty_data(self):
         """测试盈利预测-同花顺返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_profit_forecast_ths") as mock_profit_ths:
+        with patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_profit_forecast_ths", create=True) as mock_profit_ths:
             mock_profit_ths.return_value = pd.DataFrame()
 
             # Execute
@@ -1600,7 +1601,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_technical_indicator_em_empty_data(self):
         """测试技术指标数据返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_technical_indicator_em") as mock_technical:
+        with patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_technical_indicator_em", create=True) as mock_technical:
             mock_technical.return_value = pd.DataFrame()
 
             # Execute
@@ -1613,7 +1614,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_account_statistics_em_empty_data(self):
         """测试股票账户统计月度返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_account_statistics_em") as mock_account:
+        with patch("src.adapters.akshare.market_adapter.forecast_analysis.ak.stock_account_statistics_em", create=True) as mock_account:
             mock_account.return_value = pd.DataFrame()
 
             # Execute
@@ -1627,7 +1628,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     # Phase 5: 板块和行业数据测试
     # ============================================================================
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_concept_cons_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_concept_cons_em", create=True)
     async def test_get_stock_board_concept_cons_em_success(self, mock_concept_cons):
         """测试成功获取概念板块成分股"""
         # Setup mocks
@@ -1656,7 +1657,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("concept_code", result.columns)
         self.assertEqual(result["concept_code"].iloc[0], "BK0477")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_concept_hist_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_concept_hist_em", create=True)
     async def test_get_stock_board_concept_hist_em_success(self, mock_concept_hist):
         """测试成功获取概念板块行情"""
         # Setup mocks
@@ -1687,7 +1688,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("close", result.columns)
         self.assertIn("concept_code", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_concept_hist_min_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_concept_hist_min_em", create=True)
     async def test_get_stock_board_concept_hist_min_em_success(self, mock_concept_min):
         """测试成功获取概念板块分钟行情"""
         # Setup mocks
@@ -1705,7 +1706,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("price", result.columns)
         self.assertIn("concept_code", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_industry_cons_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_industry_cons_em", create=True)
     async def test_get_stock_board_industry_cons_em_success(self, mock_industry_cons):
         """测试成功获取行业板块成分股"""
         # Setup mocks
@@ -1733,7 +1734,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("industry_code", result.columns)
         self.assertEqual(result["industry_code"].iloc[0], "BK0477")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_industry_hist_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_industry_hist_em", create=True)
     async def test_get_stock_board_industry_hist_em_success(self, mock_industry_hist):
         """测试成功获取行业板块行情"""
         # Setup mocks
@@ -1762,7 +1763,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("industry_code", result.columns)
         self.assertEqual(result["industry_code"].iloc[0], "BK0477")
 
-    @patch("src.adapters.akshare.market_data.ak.stock_board_industry_hist_min_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_industry_hist_min_em", create=True)
     async def test_get_stock_board_industry_hist_min_em_success(self, mock_industry_min):
         """测试成功获取行业板块分钟行情"""
         # Setup mocks
@@ -1778,7 +1779,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn("industry_code", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_sector_spot_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_sector_spot_em", create=True)
     async def test_get_stock_sector_spot_em_success(self, mock_sector_spot):
         """测试成功获取热门行业排行"""
         # Setup mocks
@@ -1805,7 +1806,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
         self.assertIn("change_percent", result.columns)
         self.assertIn("rise_count", result.columns)
 
-    @patch("src.adapters.akshare.market_data.ak.stock_sector_fund_flow_rank_em")
+    @patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_sector_fund_flow_rank_em", create=True)
     async def test_get_stock_sector_fund_flow_rank_em_success(self, mock_sector_fund_flow):
         """测试成功获取行业资金流向"""
         # Setup mocks
@@ -1837,7 +1838,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_board_concept_cons_em_empty_data(self):
         """测试概念板块成分股返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_board_concept_cons_em") as mock_concept_cons:
+        with patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_concept_cons_em", create=True) as mock_concept_cons:
             mock_concept_cons.return_value = pd.DataFrame()
 
             # Execute
@@ -1850,7 +1851,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_board_concept_hist_em_empty_data(self):
         """测试概念板块行情返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_board_concept_hist_em") as mock_concept_hist:
+        with patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_concept_hist_em", create=True) as mock_concept_hist:
             mock_concept_hist.return_value = pd.DataFrame()
 
             # Execute
@@ -1863,7 +1864,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_board_industry_cons_em_empty_data(self):
         """测试行业板块成分股返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_board_industry_cons_em") as mock_industry_cons:
+        with patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_board_industry_cons_em", create=True) as mock_industry_cons:
             mock_industry_cons.return_value = pd.DataFrame()
 
             # Execute
@@ -1876,7 +1877,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_sector_spot_em_empty_data(self):
         """测试热门行业排行返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_sector_spot_em") as mock_sector_spot:
+        with patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_sector_spot_em", create=True) as mock_sector_spot:
             mock_sector_spot.return_value = pd.DataFrame()
 
             # Execute
@@ -1889,7 +1890,7 @@ class TestAkshareMarketDataAdapter(unittest.TestCase):
     async def test_get_stock_sector_fund_flow_rank_em_empty_data(self):
         """测试行业资金流向返回空数据"""
         # Setup mocks
-        with patch("src.adapters.akshare.market_data.ak.stock_sector_fund_flow_rank_em") as mock_sector_fund_flow:
+        with patch("src.adapters.akshare.market_adapter.board_sector.ak.stock_sector_fund_flow_rank_em", create=True) as mock_sector_fund_flow:
             mock_sector_fund_flow.return_value = pd.DataFrame()
 
             # Execute

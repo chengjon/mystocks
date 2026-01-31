@@ -15,12 +15,12 @@ Author: MyStocks Project
 """
 
 import json
-import pickle
 import logging
-from typing import Any, Optional, Dict, List
-from datetime import timedelta
-from app.core.redis_client import get_redis_client
+import pickle
+from typing import Any, Dict, List, Optional
+
 from app.core.config import settings
+from app.core.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +69,11 @@ class RedisCacheService:
                 serialized = pickle.dumps(value)
 
             self.redis.setex(cache_key, ttl, serialized)
-            logger.debug(f"Cache set: {key} (TTL: {ttl}s)")
+            logger.debug("Cache set: %(key)s (TTL: %(ttl)ss)"")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to set cache {key}: {e}")
+            logger.error("Failed to set cache %(key)s: %(e)s"")
             return False
 
     def get(self, key: str) -> Optional[Any]:
@@ -104,7 +104,7 @@ class RedisCacheService:
                     return cached.decode("utf-8")
 
         except Exception as e:
-            logger.error(f"Failed to get cache {key}: {e}")
+            logger.error("Failed to get cache %(key)s: %(e)s"")
             return None
 
     def delete(self, key: str) -> bool:
@@ -120,10 +120,10 @@ class RedisCacheService:
         try:
             cache_key = self._make_key(key)
             self.redis.delete(cache_key)
-            logger.debug(f"Cache deleted: {key}")
+            logger.debug("Cache deleted: %(key)s"")
             return True
         except Exception as e:
-            logger.error(f"Failed to delete cache {key}: {e}")
+            logger.error("Failed to delete cache %(key)s: %(e)s"")
             return False
 
     def exists(self, key: str) -> bool:
@@ -140,7 +140,7 @@ class RedisCacheService:
             cache_key = self._make_key(key)
             return self.redis.exists(cache_key) > 0
         except Exception as e:
-            logger.error(f"Failed to check cache {key}: {e}")
+            logger.error("Failed to check cache %(key)s: %(e)s"")
             return False
 
     def expire(self, key: str, ttl: int) -> bool:
@@ -158,7 +158,7 @@ class RedisCacheService:
             cache_key = self._make_key(key)
             return self.redis.expire(cache_key, ttl)
         except Exception as e:
-            logger.error(f"Failed to set expiry for {key}: {e}")
+            logger.error("Failed to set expiry for %(key)s: %(e)s"")
             return False
 
     # ========== 批量操作 ==========
@@ -189,7 +189,7 @@ class RedisCacheService:
                             result[key] = value.decode("utf-8")
 
         except Exception as e:
-            logger.error(f"Failed to mget cache: {e}")
+            logger.error("Failed to mget cache: %(e)s"")
 
         return result
 
@@ -217,11 +217,11 @@ class RedisCacheService:
                 pipe.setex(cache_key, ttl, serialized)
 
             pipe.execute()
-            logger.debug(f"Batch cache set: {len(mapping)} keys (TTL: {ttl}s)")
+            logger.debug("Batch cache set: {len(mapping)} keys (TTL: %(ttl)ss)"")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to mset cache: {e}")
+            logger.error("Failed to mset cache: %(e)s"")
             return False
 
     def delete_pattern(self, pattern: str) -> int:
@@ -241,7 +241,7 @@ class RedisCacheService:
                 return self.redis.delete(*keys)
             return 0
         except Exception as e:
-            logger.error(f"Failed to delete pattern {pattern}: {e}")
+            logger.error("Failed to delete pattern %(pattern)s: %(e)s"")
             return 0
 
     # ========== 指标缓存专用方法 ==========
@@ -356,7 +356,7 @@ class RedisCacheService:
                 / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1),
             }
         except Exception as e:
-            logger.error(f"Failed to get cache stats: {e}")
+            logger.error("Failed to get cache stats: %(e)s"")
             return {}
 
 

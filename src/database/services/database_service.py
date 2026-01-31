@@ -6,8 +6,9 @@
 # 说明：重构后的数据库服务统一入口
 """
 
-from typing import Dict, List, Optional
 from datetime import datetime
+from typing import Dict, List, Optional
+
 from loguru import logger
 
 from .base_database_service import BaseDatabaseService
@@ -208,7 +209,7 @@ class DatabaseService(BaseDatabaseService):
         def get_monitoring_summary(self) -> Dict:
             """获取监控摘要"""
             try:
-                from src.monitoring import AlertManager, PerformanceMonitor, DataQualityMonitor
+                from src.monitoring import AlertManager, DataQualityMonitor, PerformanceMonitor
                 from src.storage.database import get_monitoring_database
 
                 # 获取监控数据库连接

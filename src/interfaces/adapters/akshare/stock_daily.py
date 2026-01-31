@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """获取股票日线数据-Akshare实现"""
     try:
@@ -9,10 +10,10 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
         end_date = normalize_date(end_date)
 
         logger.info(
-            str(
-                f"Akshare尝试获取股票日线数据: 代码={stock_code}, 开始日期={
-            start_date}, 结束日期={end_date}"
-            )
+            "Akshare尝试获取股票日线数据: 代码=%s, 开始日期=%s, 结束日期=%s",
+            stock_code,
+            start_date,
+            end_date,
         )
 
         # 尝试多种API获取股票数据
@@ -33,10 +34,10 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
                 timeout=self.api_timeout,
             )
             logger.info(
-                str(
-                    f"主要API调用成功，参数: symbol={stock_code}, "
-                    f"start_date={start_date_fmt}, end_date={end_date_fmt}"
-                )
+                "主要API调用成功，参数: symbol=%s, start_date=%s, end_date=%s",
+                stock_code,
+                start_date_fmt,
+                end_date_fmt,
             )
         except Exception as e:
             logger.error("主要API调用失败: %s", e)

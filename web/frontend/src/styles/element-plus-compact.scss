@@ -1,72 +1,245 @@
 /**
- * Element Plus 紧凑主题覆盖
- * 目标: 数据密集型量化交易仪表板
+ * Element Plus ArtDeco V3.0 紧凑主题覆盖
+ * 目标: 数据密集型量化交易仪表板 + A股颜色规范
+ * ⭐ ArtDeco V3.0: 专家评估版，金色边框 + A股红涨绿跌
  */
 
-:root {
-  // ========== 字体大小（关键！紧凑） ==========
-  --el-font-size-extra-small: 10px;   // 微小文字
-  --el-font-size-small: 12px;         // 辅助文字
-  --el-font-size-base: 13px;          // 正文（紧凑！）
-  --el-font-size-medium: 14px;        // 标题
-  --el-font-size-large: 16px;         // 大标题
-  --el-font-size-extra-large: 18px;   // 页面标题
+@import './artdeco-tokens.scss';
 
-  // ========== 组件尺寸（关键！紧凑） ==========
+:root {
+  // ========== ArtDeco V3.0 字体大小（紧凑！Bloomberg标准） ==========
+  --el-font-size-extra-small: 10px;   // 微小文字
+  --el-font-size-small: 11px;         // 辅助文字
+  --el-font-size-base: 12px;          // 正文（Bloomberg标准！）
+  --el-font-size-medium: 13px;        // 标题
+  --el-font-size-large: 14px;         // 大标题
+  --el-font-size-extra-large: 16px;   // 页面标题
+
+  // ========== ArtDeco V3.0 组件尺寸（紧凑！32px行高） ==========
   --el-component-size-small: 28px;   // 小号
-  --el-component-size-base: 32px;    // 默认（紧凑！）
+  --el-component-size-base: 32px;    // 默认（Bloomberg标准！32px）
   --el-component-size-large: 36px;   // 大号
 
-  // ========== 表格样式（核心） ==========
-  --el-table-border-color: #1A1A1A;
-  --el-table-bg-color: #0A0A0A;
-  --el-table-header-bg-color: #141414;
-  --el-table-row-hover-bg-color: #0F0F0F;
-  --el-table-text-color: #E5E5E5;
-  --el-table-header-text-color: #E5E5E5;
-  --el-table-current-row-bg-color: #1A1A1A;
-  --el-table-border: 1px solid #1A1A1A;
-  --el-table-header-font-size: 12px;
-  --el-table-font-size: 12px;
+  // ========== ArtDeco V3.0 表格样式（核心！金色边框 + A股颜色） ==========
+  --el-table-border-color: var(--artdeco-border-gold);  // 金色边框
+  --el-table-bg-color: var(--artdeco-bg-card);           // 深色背景
+  --el-table-header-bg-color: var(--artdeco-bg-elevated);  // 抬升背景
+  --el-table-row-hover-bg-color: rgba(212, 175, 55, 0.1);  // 金色悬停
+  --el-table-text-color: var(--artdeco-fg-primary);    // 纯白文本
+  --el-table-header-text-color: var(--artdeco-gold-primary);  // 金色标题
+  --el-table-current-row-bg-color: rgba(212, 175, 55, 0.15);  // 金色激活行
+  --el-table-border: 1px solid var(--artdeco-border-gold);
+  --el-table-header-font-size: 12px;  // 紧凑字体
+  --el-table-font-size: 11px;  // Bloomberg标准字体
 
-  // ========== 卡片样式 ==========
-  --el-card-padding: 16px;           // 紧凑padding！
-  --el-card-border-color: #1A1A1A;
-  --el-card-bg-color: #0A0A0A;
-  --el-card-border-radius: 4px;
+  // ========== A股 V3.0 颜色系统（红涨绿跌） ==========
+  --artdeco-table-rise: var(--artdeco-rise);    // 绿色=上涨 (#00C853)
+  --artdeco-table-fall: var(--artdeco-down);    // 红色=下跌 (#FF1744)
+  --artdeco-table-flat: var(--artdeco-flat);    // 灰色=平 (#888888)
 
-  // ========== 按钮样式 ==========
-  --el-button-bg-color: #1A1A1A;
-  --el-button-border-color: #2A2A2A;
-  --el-button-text-color: #E5E5E5;
-  --el-button-hover-bg-color: #252525;
-  --el-button-hover-border-color: #3A3A3A;
-  --el-button-active-bg-color: #1A1A1A;
-  --el-button-active-border-color: #3B82F6;
+  // ========== ArtDeco V3.0 卡片样式（金色边框装饰） ==========
+  --el-card-padding: 12px;           // 紧凑padding！
+  --el-card-border-color: var(--artdeco-border-gold);  // 金色边框
+  --el-card-bg-color: var(--artdeco-bg-card);
+  --el-card-border-radius: 0;     // ArtDeco直角
+  --el-card-box-shadow: var(--artdeco-glow-subtle);  // 金色光晕
 
-  // ========== 输入框样式 ==========
-  --el-input-bg-color: #0A0A0A;
-  --el-input-border-color: #2A2A2A;
-  --el-input-text-color: #E5E5E5;
-  --el-input-placeholder-color: #666666;
-  --el-input-hover-border-color: #3A3A3A;
-  --el-input-focus-border-color: #3B82F6;
-  --el-input-clear-hover-color: #A0A0A0;
+  // ========== ArtDeco V3.0 按钮样式（金色CTA按钮） ==========
+  --el-button-bg-color: var(--artdeco-gold-primary);    // 金色背景
+  --el-button-border-color: var(--artdeco-border-gold);    // 金色边框
+  --el-button-text-color: var(--artdeco-bg-global);    // 黑色文本
+  --el-button-hover-bg-color: var(--artdeco-gold-light);   // 浅金色悬停
+  --el-button-hover-border-color: var(--artdeco-gold-light);
+  --el-button-active-bg-color: var(--artdeco-bronze);     // 青铜色激活
+  --el-button-active-border-color: var(--artdeco-bronze);
 
-  // ========== Tag样式 ==========
-  --el-tag-bg-color: #1A1A1A;
-  --el-tag-border-color: #2A2A2A;
-  --el-tag-text-color: #E5E5E5;
-  --el-tag-font-size: 12px;
+  // ========== ArtDeco V3.0 输入框样式 ==========
+  --el-input-bg-color: var(--artdeco-bg-elevated);
+  --el-input-border-color: var(--artdeco-border-default);
+  --el-input-text-color: var(--artdeco-fg-primary);
+  --el-input-placeholder-color: var(--artdeco-fg-muted);
+  --el-input-hover-border-color: var(--artdeco-gold-primary);  // 金色悬停
+  --el-input-focus-border-color: var(--artdeco-gold-primary);   // 金色聚焦
+  --el-input-clear-hover-color: var(--artdeco-gold-light);
 
-  // ========== 颜色系统 ==========
-  --el-color-primary: #3B82F6;       // 蓝色
-  --el-color-success: #00E676;       // 绿色（跌）
-  --el-color-warning: #FFC107;       // 黄色
-  --el-color-danger: #FF5252;        // 红色（涨）
-  --el-color-error: #FF5252;
-  --el-color-info: #3B82F6;          // 信息蓝
+  // ========== ArtDeco V3.0 Tag样式 ==========
+  --el-tag-bg-color: rgba(212, 175, 55, 0.1);     // 金色半透明
+  --el-tag-border-color: var(--artdeco-border-gold);
+  --el-tag-text-color: var(--artdeco-gold-primary);
+  --el-tag-font-size: 11px;
+  --el-tag-border-radius: var(--artdeco-radius-sm);
+
+  // ========== A股金融数据颜色（红涨绿跌） ==========
+  --el-color-primary: var(--artdeco-table-fall);    // 红色=上涨
+  --el-color-success: var(--artdeco-table-rise);    // 绿色=下跌
+  --el-color-warning: var(--artdeco-gold-primary);  // 金色=警告
+  --el-color-danger: var(--artdeco-table-fall);     // 红色=危险
+  --el-color-info: #3B82F6;      // 信息蓝
 }
+
+// ========== ArtDeco V3.0 特定组件覆盖 ==========
+
+// ArtDeco 紧凑表格（32px行高 - Bloomberg Terminal标准）
+.el-table {
+  font-family: var(--font-mono);  // JetBrains Mono数字字体
+  font-size: 11px;  // Bloomberg标准字体
+
+  // 表格单元格padding（32px行高）
+  .el-table__cell {
+    padding: 4px 8px;  // 32px行高 - 紧凑padding
+    height: 32px !important;  // Bloomberg Terminal标准行高
+    border-right: 1px solid var(--el-table-border-color);
+  }
+
+  // A股颜色支持（红涨绿跌）
+  .cell-rise {
+    color: var(--artdeco-table-rise);
+    font-weight: 500;
+  }
+
+  .cell-fall {
+    color: var(--artdeco-table-fall);
+    font-weight: 500;
+  }
+
+  .cell-flat {
+    color: var(--artdeco-table-flat);
+  }
+
+  // 悬停效果：金色光晕
+  tr.el-table__row:hover > td {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+  }
+
+  // 激活行：金色背景
+  tr.current-row > td {
+    background-color: rgba(212, 175, 55, 0.15) !important;
+  }
+}
+
+// 表头样式：金色字体 + 边框
+th.el-table__cell {
+  font-family: var(--font-display);  // Cinzel标题字体
+  font-weight: 600;
+  color: var(--el-table-header-text-color);  // 金色
+  background-color: var(--el-table-header-bg-color);
+  padding: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;  // ArtDeco宽字距
+  border-bottom: 2px solid var(--artdeco-border-gold);
+}
+
+// ========== ArtDeco V3.0 按钮紧凑模式 ==========
+.el-button--small {
+  padding: 4px 12px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.el-button {
+  padding: 6px 16px;
+  height: 32px;  // 紧凑！
+  font-size: 12px;
+  font-family: var(--font-display);  // Cinzel按钮字体
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--el-button-border-color);
+}
+
+.el-button--large {
+  padding: 8px 20px;
+  height: 36px;
+  font-size: 13px;
+}
+
+// 悬停效果：金色光晕
+.el-button:hover {
+  box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);
+  transform: translateY(-2px);
+  transition: all var(--artdeco-transition-base);
+}
+
+// ========== ArtDeco V3.0 卡片紧凑模式 ==========
+.el-card {
+  --el-card-padding: 12px;
+
+  .el-card__header {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--artdeco-border-gold);
+  }
+
+  .el-card__body {
+    padding: 12px;
+  }
+}
+
+// ========== ArtDeco V3.0 Tag紧凑模式 ==========
+.el-tag {
+  padding: 2px 10px;
+  font-size: 11px;
+  border: 1px solid var(--el-tag-border-color);
+  border-radius: var(--el-tag-border-radius);
+}
+
+.el-tag--small {
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+// ========== ArtDeco V3.0 输入框紧凑模式 ==========
+.el-input--small .el-input__wrapper {
+  padding: 4px 12px;
+  height: 28px;
+}
+
+.el-input .el-input__wrapper {
+  padding: 6px 12px;
+  height: 32px;  // 紧凑
+}
+
+.el-input--large .el-input__wrapper {
+  padding: 8px 12px;
+  height: 36px;
+}
+
+// ========== A股金融数据颜色应用 ==========
+// 价格涨跌（红涨绿跌）
+[data-type="price-rise"] {
+  color: var(--artdeco-table-rise) !important;
+  font-weight: 500;
+}
+
+[data-type="price-fall"] {
+  color: var(--artdeco-table-fall) !important;
+  font-weight: 500;
+}
+
+[data-type="price-flat"] {
+  color: var(--artdeco-table-flat) !important;
+}
+
+// 状态指示器
+[data-status="up"]::before {
+  content: '↑';
+  color: var(--artdeco-table-rise);
+}
+
+[data-status="down"]::before {
+  content: '↓';
+  color: var(--artdeco-table-fall);
+}
+
+[data-status="flat"]::before {
+  content: '−';
+  color: var(--artdeco-table-flat);
+}
+
 
 // ========== 特定组件覆盖 ==========
 

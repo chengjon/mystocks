@@ -6,8 +6,8 @@ Phase 5验证测试：投资组合上下文
 验证Portfolio Context的实现质量。
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
 
 # 添加项目根目录到路径
@@ -321,8 +321,8 @@ def test_rebalancer_service():
 
     try:
         from src.domain.portfolio.service.rebalancer_service import (
-            RebalancerService,
             RebalanceAction,
+            RebalancerService,
         )
 
         # 测试等权重计算

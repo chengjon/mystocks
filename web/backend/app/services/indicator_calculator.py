@@ -3,10 +3,11 @@ Indicator Calculator Service
 基于TA-Lib的技术指标计算服务
 """
 
+import logging
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import talib
-from typing import Dict, List, Any, Optional
-import logging
 
 from .indicator_registry import get_indicator_registry
 
@@ -16,13 +17,9 @@ logger = logging.getLogger(__name__)
 class InsufficientDataError(Exception):
     """数据点不足错误"""
 
-    pass
-
 
 class IndicatorCalculationError(Exception):
     """指标计算错误"""
-
-    pass
 
 
 class IndicatorCalculator:
@@ -91,7 +88,7 @@ class IndicatorCalculator:
             return result
 
         except Exception as e:
-            logger.error(f"计算指标 {abbreviation} 时出错: {e}")
+            logger.error("计算指标 %(abbreviation)s 时出错: %(e)s"")
             raise IndicatorCalculationError(f"计算指标 {abbreviation} 失败: {str(e)}")
 
     def _call_talib_function(
@@ -299,7 +296,7 @@ class IndicatorCalculator:
                 }
 
             except (InsufficientDataError, IndicatorCalculationError) as e:
-                logger.warning(f"跳过指标 {abbreviation}: {e}")
+                logger.warning("跳过指标 %(abbreviation)s: %(e)s"")
                 # 可以选择跳过失败的指标,或者抛出异常
                 # 这里选择记录警告并继续
                 result_key = f"{abbreviation}_{idx}"

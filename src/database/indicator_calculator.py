@@ -4,10 +4,11 @@
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-import pandas as pd
 import logging
-from typing import Dict, Any
 from datetime import datetime
+from typing import Any, Dict
+
+import pandas as pd
 
 # V2 Indicator Factory
 try:
@@ -34,7 +35,7 @@ class TechnicalIndicatorCalculator:
                 self.factory = IndicatorFactory()
                 logger.info("Initialized V2 IndicatorFactory in Legacy Calculator")
             except Exception as e:
-                logger.warning(f"Failed to initialize V2 IndicatorFactory: {e}")
+                logger.warning("Failed to initialize V2 IndicatorFactory: %(e)s")
 
     def calculate_technical_indicators(self, data: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -221,7 +222,7 @@ class TechnicalIndicatorCalculator:
                 result = self.factory.calculate(template_id, df, period=period)
                 return result
             except Exception as e:
-                logger.debug(f"V2 Factory SMA failed, falling back: {e}")
+                logger.debug("V2 Factory SMA failed, falling back: %(e)s")
 
         # Legacy Implementation
         return prices.rolling(window=period, min_periods=1).mean()
@@ -248,7 +249,7 @@ class TechnicalIndicatorCalculator:
                 # Legacy compatibility: fill NaN with 50 (V2 returns NaN)
                 return result.fillna(50)
             except Exception as e:
-                logger.debug(f"V2 Factory RSI failed, falling back: {e}")
+                logger.debug("V2 Factory RSI failed, falling back: %(e)s")
 
         # Legacy Implementation
         delta = prices.diff()

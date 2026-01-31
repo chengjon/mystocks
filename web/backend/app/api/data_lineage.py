@@ -15,19 +15,19 @@ Date: 2026-01-09
 """
 
 import logging
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from app.core.responses import (
-    UnifiedResponse,
-    BusinessCode,
-    create_unified_success_response,
-    create_unified_error_response,
-)
 from app.core.config import settings
+from app.core.responses import (
+    BusinessCode,
+    UnifiedResponse,
+    create_unified_error_response,
+    create_unified_success_response,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -186,8 +186,9 @@ async def get_lineage_tracker():
     """
     # TODO: 从依赖注入容器获取LineageTracker实例
     # 这里先创建一个简单的占位符实现
-    from src.data_governance.lineage import LineageTracker, LineageStorage
     import asyncpg
+
+    from src.data_governance.lineage import LineageStorage, LineageTracker
 
     try:
         conn = await asyncpg.connect(
@@ -201,7 +202,7 @@ async def get_lineage_tracker():
         tracker = LineageTracker(storage)
         return tracker, conn
     except Exception as e:
-        logger.error(f"Failed to create lineage tracker: {str(e)}")
+        logger.error("Failed to create lineage tracker: {str(e)}"")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to initialize lineage tracker: {str(e)}",
@@ -231,13 +232,13 @@ async def record_lineage(
         UnifiedResponse: 包含记录结果的统一响应
     """
     request_id = getattr(http_request.state, "request_id", None)
-    logger.info(f"Recording lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id})
+    logger.info("Recording lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id})
 
     try:
         tracker, conn = await get_lineage_tracker()
 
         # 使用tracker记录血缘关系
-        from src.data_governance.lineage import LineageNode, LineageEdge, NodeType, OperationType
+        from src.data_governance.lineage import LineageEdge, LineageNode, NodeType, OperationType
 
         # 创建源节点
         from_node = LineageNode(
@@ -284,7 +285,7 @@ async def record_lineage(
         )
 
     except Exception as e:
-        logger.error(f"Failed to record lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to record lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_lineage_error(str(e), request_id)
 
 
@@ -308,7 +309,7 @@ async def get_upstream_lineage(
         UnifiedResponse: 包含上游血缘的统一响应
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
-    logger.info(f"Querying upstream lineage for node: {node_id}", extra={"request_id": request_id})
+    logger.info("Querying upstream lineage for node: {node_id}", extra={"request_id": request_id})
 
     try:
         tracker, conn = await get_lineage_tracker()
@@ -378,7 +379,7 @@ async def get_upstream_lineage(
             for e in edges_to_include
         ]
 
-        logger.info(f"Found {len(nodes_response)} upstream nodes for {node_id}", extra={"request_id": request_id})
+        logger.info("Found {len(nodes_response)} upstream nodes for {node_id}", extra={"request_id": request_id})
 
         return create_unified_success_response(
             data={
@@ -394,7 +395,7 @@ async def get_upstream_lineage(
         )
 
     except Exception as e:
-        logger.error(f"Failed to query upstream lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to query upstream lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_lineage_error(str(e), request_id)
 
 
@@ -418,7 +419,7 @@ async def get_downstream_lineage(
         UnifiedResponse: 包含下游血缘的统一响应
     """
     request_id = getattr(http_request.state, "request_id", None) if http_request else None
-    logger.info(f"Querying downstream lineage for node: {node_id}", extra={"request_id": request_id})
+    logger.info("Querying downstream lineage for node: {node_id}", extra={"request_id": request_id})
 
     try:
         tracker, conn = await get_lineage_tracker()
@@ -465,7 +466,7 @@ async def get_downstream_lineage(
             for e in unique_edges.values()
         ]
 
-        logger.info(f"Found {len(nodes_response)} downstream nodes for {node_id}", extra={"request_id": request_id})
+        logger.info("Found {len(nodes_response)} downstream nodes for {node_id}", extra={"request_id": request_id})
 
         return create_unified_success_response(
             data={
@@ -481,7 +482,7 @@ async def get_downstream_lineage(
         )
 
     except Exception as e:
-        logger.error(f"Failed to query downstream lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to query downstream lineage: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_lineage_error(str(e), request_id)
 
 
@@ -597,7 +598,7 @@ async def get_lineage_graph(
         )
 
     except Exception as e:
-        logger.error(f"Failed to query lineage graph: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to query lineage graph: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_lineage_error(str(e), request_id)
 
 
@@ -715,5 +716,5 @@ async def analyze_impact(
         )
 
     except Exception as e:
-        logger.error(f"Failed to analyze impact: {str(e)}", extra={"request_id": request_id}, exc_info=True)
+        logger.error("Failed to analyze impact: {str(e)}", extra={"request_id": request_id}, exc_info=True)
         return handle_lineage_error(str(e), request_id)

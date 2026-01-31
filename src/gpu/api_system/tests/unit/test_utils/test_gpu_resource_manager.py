@@ -3,9 +3,10 @@ GPU资源管理器单元测试
 测试GPU资源分配、调度和监控
 """
 
-import pytest
-from unittest.mock import patch
 import time
+from unittest.mock import patch
+
+import pytest
 
 
 class TestGPUResourceManager:

@@ -5,25 +5,25 @@ Multi-data Source Support
 
 from datetime import date, datetime
 from typing import Optional
+
+from pydantic import BaseModel, Field
 from sqlalchemy import (
+    DECIMAL,
     Boolean,
     Column,
     Date,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
-    DECIMAL,
-    ForeignKey,
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, Field
 
 # 使用与monitoring.py相同的Base
 from app.models.monitoring import Base
-
 
 # ============================================================================
 # SQLAlchemy ORM Models
@@ -153,8 +153,6 @@ class AnnouncementBase(BaseModel):
 class AnnouncementCreate(AnnouncementBase):
     """创建公告请求"""
 
-    pass
-
 
 class AnnouncementResponse(AnnouncementBase):
     """公告响应"""
@@ -182,8 +180,6 @@ class AnnouncementMonitorRuleBase(BaseModel):
 
 class AnnouncementMonitorRuleCreate(AnnouncementMonitorRuleBase):
     """创建监控规则请求"""
-
-    pass
 
 
 class AnnouncementMonitorRuleUpdate(BaseModel):

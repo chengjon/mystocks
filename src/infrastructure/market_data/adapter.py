@@ -4,13 +4,13 @@ DataSourceV2 Adapter
 """
 
 import logging
-from typing import List
 from datetime import datetime
-import pandas as pd
+from typing import List
 
+
+from src.core.data_source_manager_v2 import DataSourceManagerV2
 from src.domain.market_data.repository import IMarketDataRepository
 from src.domain.market_data.value_objects import Bar, Quote
-from src.core.data_source_manager_v2 import DataSourceManagerV2
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class DataSourceV2Adapter(IMarketDataRepository):
             df = self.manager.get_stock_daily(symbol, start_date, end_date)
 
             if df is None or df.empty:
-                logger.warning(f"No kline data found for {symbol}")
+                logger.warning("No kline data found for %(symbol)s")
                 return []
 
             bars = []
@@ -63,7 +63,7 @@ class DataSourceV2Adapter(IMarketDataRepository):
             return bars
 
         except Exception as e:
-            logger.error(f"Failed to get history kline: {e}")
+            logger.error("Failed to get history kline: %(e)s")
             return []
 
     def get_realtime_quote(self, symbols: List[str]) -> List[Quote]:
@@ -100,7 +100,7 @@ class DataSourceV2Adapter(IMarketDataRepository):
             return quotes
 
         except Exception as e:
-            logger.error(f"Failed to get realtime quote: {e}")
+            logger.error("Failed to get realtime quote: %(e)s")
             return []
 
     def get_latest_price(self, symbol: str) -> float:

@@ -8,10 +8,10 @@ to support:
 3. Prometheus metrics export
 """
 
-import time
-from typing import Any, Dict, Optional
-from datetime import datetime
 import logging
+import time
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class LineageTrackerMixin:
 
             # In a real implementation, this would use a global tracker instance
             # For now, we just log to lineage event
-            logger.debug(f"Lineage event: {operation} -> {target_id} ({target_type})")
+            logger.debug("Lineage event: %(operation)s -> %(target_id)s (%(target_type)s)")
 
         except ImportError:
             logger.warning("Lineage tracking not available")

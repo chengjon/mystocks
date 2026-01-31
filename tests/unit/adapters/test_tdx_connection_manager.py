@@ -7,13 +7,14 @@ TDX连接管理器测试套件
 测试模块: src.adapters.tdx_connection_manager (158行)
 """
 
-import pytest
-from unittest.mock import Mock, MagicMock, patch
-import sys
 import os
+import sys
 import time
-from typing import Dict, Optional, Any, Callable
 from functools import wraps
+from typing import Any, Callable, Dict, Optional
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

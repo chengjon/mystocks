@@ -8,9 +8,10 @@ Data Source Manager Simple Test Suite
 测试重点: 基础功能，避开接口检查问题
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

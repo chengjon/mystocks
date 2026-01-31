@@ -15,22 +15,22 @@ Version: 0
 Author: MyStocks Project
 """
 
-import yaml
-import time
 import logging
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+import time
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 from .indicator_metadata import (
+    IndicatorCategory,
     IndicatorMetadata,
     IndicatorParameter,
-    IndicatorCategory,
+    IndicatorTemplate,
     PanelType,
     ParameterConstraint,
-    IndicatorTemplate,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -91,11 +91,11 @@ class IndicatorRegistry:
         abbr = metadata.abbreviation.upper()
 
         if abbr in self._registry:
-            logger.warning(f"指标 {abbr} 已存在，将被覆盖")
+            logger.warning("指标 %(abbr)s 已存在，将被覆盖"")
             self._registry[abbr].version
 
         self._registry[abbr] = metadata
-        logger.info(f"指标 {abbr} v{metadata.version} 注册成功")
+        logger.info("指标 %(abbr)s v{metadata.version} 注册成功"")
 
         return True
 
@@ -112,11 +112,11 @@ class IndicatorRegistry:
         abbr = abbreviation.upper()
 
         if abbr not in self._registry:
-            logger.warning(f"指标 {abbr} 不存在")
+            logger.warning("指标 %(abbr)s 不存在"")
             return False
 
         del self._registry[abbr]
-        logger.info(f"指标 {abbr} 已注销")
+        logger.info("指标 %(abbr)s 已注销"")
         return True
 
     def get(self, abbreviation: str) -> Optional[IndicatorMetadata]:
@@ -270,7 +270,7 @@ class IndicatorRegistry:
         """
         path = Path(config_path)
         if not path.exists():
-            logger.error(f"配置文件不存在: {config_path}")
+            logger.error("配置文件不存在: %(config_path)s"")
             return 0
 
         self._config_path = path
@@ -280,7 +280,7 @@ class IndicatorRegistry:
             config_data = yaml.safe_load(f)
 
         if not config_data or "indicators" not in config_data:
-            logger.warning(f"配置文件格式错误: {config_path}")
+            logger.warning("配置文件格式错误: %(config_path)s"")
             return 0
 
         count = 0
@@ -293,9 +293,9 @@ class IndicatorRegistry:
                 self.register(metadata)
                 count += 1
             except Exception as e:
-                logger.error(f"加载指标 {abbr} 失败: {e}")
+                logger.error("加载指标 %(abbr)s 失败: %(e)s"")
 
-        logger.info(f"从配置文件加载了 {count} 个指标")
+        logger.info("从配置文件加载了 %(count)s 个指标"")
         return count
 
     def _parse_indicator_config(self, abbr: str, ind_data: Dict[str, Any]) -> IndicatorMetadata:
@@ -371,9 +371,9 @@ class IndicatorRegistry:
                 )
                 count += 1
             except Exception as e:
-                logger.error(f"加载模板 {template_id} 失败: {e}")
+                logger.error("加载模板 %(template_id)s 失败: %(e)s"")
 
-        logger.info(f"加载了 {count} 个指标模板")
+        logger.info("加载了 %(count)s 个指标模板"")
         return count
 
     def get_template(self, template_id: str) -> Optional[IndicatorTemplate]:
@@ -401,7 +401,7 @@ class IndicatorRegistry:
         if self._templates:
             self.load_templates(str(self._config_path))
 
-        logger.info(f"重新加载了 {count} 个指标")
+        logger.info("重新加载了 %(count)s 个指标"")
         return count
 
     def get_stats(self) -> RegistryStats:

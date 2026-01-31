@@ -15,6 +15,7 @@
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import type { ECharts, EChartsOption } from 'echarts'
+import { artDecoTheme } from '@/utils/echarts'
 import { Loading, WarningFilled } from '@element-plus/icons-vue'
 
 interface Props {
@@ -86,7 +87,7 @@ const initChart = () => {
       chartInstance.dispose()
     }
 
-    chartInstance = echarts.init(chartRef.value)
+    chartInstance = echarts.init(chartRef.value, artDecoTheme)
     chartInstance.setOption(getChartOption(), props.notMerge)
   } catch (err) {
     console.error('Chart initialization error:', err)

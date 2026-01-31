@@ -47,7 +47,7 @@ content = content.replace(
 // Fix 5: Comment out duplicate StockSearchResult interface (line 3640+)
 // The second definition has market?: string while first has market?: string | null
 content = content.replace(
-  /\/\/ Stock search result\nexport interface StockSearchResult \{\n  symbol\?: string;\n  name\?: string;\n  market\?: string;\n  type\?: string;\n  current\?: number;\n  change\?: number;\n  changePercent\?: number;\n\}/,
+  /\/\/ Stock search result\nexport interface StockSearchResult \{\n {2}symbol\?: string;\n {2}name\?: string;\n {2}market\?: string;\n {2}type\?: string;\n {2}current\?: number;\n {2}change\?: number;\n {2}changePercent\?: number;\n\}/,
   `// Stock search result - DUPLICATE (commented out, see line 2669)
 // export interface StockSearchResult {
 //   symbol?: string;

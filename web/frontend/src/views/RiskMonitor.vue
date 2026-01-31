@@ -1,912 +1,441 @@
 <template>
-  <div class="risk-monitor artdeco-page">
-
-    <!-- Art Deco Header -->
-    <ArtDecoHeader
-      :title="'RISK MANAGEMENT DASHBOARD'"
-      subtitle="REAL-TIME RISK MONITORING | VaR | CVaR | BETA ANALYSIS"
-      variant="gold-accent"
-    />
-
-    <!-- Art Deco Risk Metrics Grid -->
-    <div class="metrics-grid">
-      <ArtDecoStatCard
-        :label="stats[0].title"
-        :value="stats[0].value"
-        variant="primary"
-        :animated="true"
-      />
-
-      <ArtDecoStatCard
-        :label="stats[1].title"
-        :value="stats[1].value"
-        variant="success"
-        :animated="true"
-      />
-
-      <ArtDecoStatCard
-        :label="stats[2].title"
-        :value="stats[2].value"
-        variant="warning"
-        :animated="true"
-      />
-
-      <ArtDecoStatCard
-        :label="stats[3].title"
-        :value="stats[3].value"
-        variant="danger"
-        :animated="true"
-      />
+  <div class="risk-monitor">
+    <div class="page-header">
+      <h1 class="page-title">RISK MONITOR</h1>
+      <p class="page-subtitle">PORTFOLIO RISK ANALYSIS | POSITION MONITORING | STRESS TESTING</p>
     </div>
 
-    <div class="content-grid">
-      <ArtDecoCard variant="luxury" :decorated="true">
-        <template #header>
-          <div class="risk-header">
-            <ArtDecoBadge variant="gold">RISK METRICS HISTORY</ArtDecoBadge>
-            <ArtDecoSelect
-              v-model="historyPeriod"
-              :options="[
-                { label: '7 DAYS', value: '7d' },
-                { label: '30 DAYS', value: '30d' },
-                { label: '90 DAYS', value: '90d' }
-              ]"
-              @change="loadMetricsHistory"
-            <ArtDecoButton
-              variant="primary"
-              size="small"
-              :loading="historyLoading"
-              @click="loadMetricsHistory"
-            >
-              REFRESH
-            </ArtDecoButton>
-          </div>
-        </template>
-
-        <!-- Risk Metrics Chart -->
-        <div class="chart-container">
-          <ChartContainer
-            ref="riskChartRef"
-            chart-type="line"
-            :data="chartData"
-            :options="chartOptions"
-            height="300px"
-            :loading="historyLoading"
-          />
-        </div>
-      </ArtDecoCard>
-      </div>
-
-      <div class="content-grid">
-        <ArtDecoCard variant="luxury" :decorated="true">
-          <template #header>
-            <div class="alerts-header">
-              <ArtDecoBadge variant="warning">RISK ALERTS</ArtDecoBadge>
-              <ArtDecoButton
-                variant="primary"
-                size="small"
-                @click="showCreateAlertDialog"
-              >
-                CREATE ALERT
-              </ArtDecoButton>
-            </div>
-          </template>
-
-          <div class="alerts-container">
-            <div v-if="alertsLoading" class="loading-container">
-              <div class="artdeco-loading">
-                <div class="loading-spinner"></div>
-                <span class="loading-text">LOADING ALERTS...</span>
-              </div>
-            </div>
-
-            <div v-else-if="alerts.length > 0" class="alerts-list">
-              <div v-for="alert in alerts" :key="alert.id" class="alert-item">
-                <div class="alert-header">
-                  <ArtDecoBadge :variant="getAlertBadgeVariant(alert.level)">
-                    {{ alert.level.toUpperCase() }}
-                  </ArtDecoBadge>
-                  <span class="alert-time artdeco-mono">{{ formatTime(alert.created_at) }}</span>
-                </div>
-                <div class="alert-content">
-                  <h4 class="alert-title">{{ alert.title }}</h4>
-                  <p class="alert-description">{{ alert.description }}</p>
-                </div>
-                <div class="alert-actions">
-                  <ArtDecoButton
-                    variant="outline"
-                    size="small"
-                    @click="viewAlertDetail(alert)"
-                  >
-                    VIEW DETAILS
-                  </ArtDecoButton>
+    <!-- Risk Summary Cards -->
+    <div class="risk-summary">
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <el-card class="risk-card">
+            <div class="risk-metric">
+              <div class="metric-icon">📊</div>
+              <div class="metric-content">
+                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-value">{{ formatCurrency(portfolioValue) }}</div>
+                <div class="metric-change" :class="portfolioChange >= 0 ? 'positive' : 'negative'">
+                  {{ formatPercent(portfolioChange) }}
                 </div>
               </div>
             </div>
+          </el-card>
+        </el-col>
 
-            <div v-else class="empty-state">
-              <div class="empty-icon">🔔</div>
-              <div class="empty-text">NO ACTIVE ALERTS</div>
+        <el-col :span="6">
+          <el-card class="risk-card">
+            <div class="risk-metric">
+              <div class="metric-icon">⚠️</div>
+              <div class="metric-content">
+                <div class="metric-label">VaR (95%)</div>
+                <div class="metric-value negative">{{ formatCurrency(var95) }}</div>
+                <div class="metric-subtitle">1-day loss potential</div>
+              </div>
             </div>
-          </div>
-        </ArtDecoCard>
-      </div>
+          </el-card>
+        </el-col>
 
-      <div class="content-grid-half">
-        <ArtDecoCard variant="luxury" :decorated="true">
-          <template #header>
-            <div class="var-header">
-              <ArtDecoBadge variant="danger">VaR RISK ANALYSIS</ArtDecoBadge>
-              <ArtDecoButton
-                variant="primary"
-                size="small"
-                :loading="varLoading"
-                @click="loadVarCvar"
-              >
-                REFRESH
-              </ArtDecoButton>
+        <el-col :span="6">
+          <el-card class="risk-card">
+            <div class="risk-metric">
+              <div class="metric-icon">📉</div>
+              <div class="metric-content">
+                <div class="metric-label">Max Drawdown</div>
+                <div class="metric-value negative">{{ formatPercent(maxDrawdown) }}</div>
+                <div class="metric-subtitle">Peak to trough</div>
+              </div>
             </div>
-          </template>
+          </el-card>
+        </el-col>
 
-          <ArtDecoTable
-            :data="varData"
-            :loading="varLoading"
-            gold-headers
-            striped
-          >
-            <template #columns>
-              <ArtDecoTableColumn prop="symbol" label="SYMBOL" width="100" sortable />
-              <ArtDecoTableColumn prop="confidence_level" label="CONFIDENCE" width="120" sortable>
-                <template #default="{ row }">
-                  {{ row.confidence_level }}%
-                </template>
-              </ArtDecoTableColumn>
-            :loading="varLoading"
-          >
-            <template #cell-confidence_level="{ row }">
-              {{ row.confidence_level }}%
-            </template>
-            <template #cell-var="{ row }">
-              <span :class="getRiskClass(row.var)">
-                {{ row.var?.toFixed(2) }}%
-              </span>
-            </template>
-            <template #cell-cvar="{ row }">
-              <span :class="getRiskClass(row.cvar)">
-                {{ row.cvar?.toFixed(2) }}%
-              </span>
-            </template>
-            <template #cell-risk_level="{ row }">
-              <el-tag :type="getRiskBadgeVariant(row.var)">
-                {{ getRiskLevel(row.var) }}
-              </el-tag>
-            </template>
-          </el-table>
-        </el-card>
+        <el-col :span="6">
+          <el-card class="risk-card">
+            <div class="risk-metric">
+              <div class="metric-icon">🔴</div>
+              <div class="metric-content">
+                <div class="metric-label">Risk Level</div>
+                <div class="metric-value" :class="getRiskLevelClass(riskLevel)">
+                  {{ riskLevel }}
+                </div>
+                <div class="metric-subtitle">Current assessment</div>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
 
-        <el-card title="IV. BETA COEFFICIENT" hoverable>
+    <!-- Risk Charts and Analysis -->
+    <el-row :gutter="20" style="margin-top: 30px;">
+      <!-- Portfolio Risk Distribution -->
+      <el-col :span="12">
+        <el-card class="analysis-card">
           <template #header>
             <div class="card-header">
-              <span>BETA COEFFICIENT</span>
-              <el-button type="info" size="small" @click="loadBeta">
-                REFRESH
-              </el-button>
+              <el-icon class="card-icon"><PieChart /></el-icon>
+              <span>Risk Distribution</span>
             </div>
           </template>
-
-          <el-table
-            :columns="betaColumns"
-            :data="betaData"
-            :loading="betaLoading"
-          >
-            <template #cell-beta="{ row }">
-              <span :class="getBetaClass(row.beta)">
-                {{ row.beta?.toFixed(3) }}
-              </span>
-            </template>
-            <template #cell-volatility="{ row }">
-              <el-tag :type="getBetaBadgeVariant(row.beta)">
-                {{ getBetaDescription(row.beta) }}
-              </el-tag>
-            </template>
-          </el-table>
+          <div class="chart-container">
+            <div id="risk-distribution-chart" class="chart"></div>
+          </div>
         </el-card>
-      </div>
+      </el-col>
 
-    <!-- 创建告警对话框 -->
-    <DetailDialog
-      v-model:visible="createAlertVisible"
-      title="CREATE RISK ALERT RULE"
-      :confirming="createAlertLoading"
-      @confirm="handleCreateAlert"
-    >
-      <el-form :model="alertForm" label-width="120px" label-position="top">
-        <el-form-item label="ALERT NAME">
-          <el-input v-model="alertForm.title" placeholder="ENTER ALERT NAME" />
-        </el-form-item>
-        <el-form-item label="METRIC TYPE">
-          <el-select v-model="alertForm.metric_type" class="select-full">
-            <el-option label="VaR (95%)" value="var_95" />
-            <el-option label="CVaR (95%)" value="cvar_95" />
-            <el-option label="Beta Coefficient" value="beta" />
-            <el-option label="Volatility" value="volatility" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="THRESHOLD">
-          <el-input-number v-model="alertForm.threshold" :precision="2" :step="0.1" class="input-number-full" />
-        </el-form-item>
-        <el-form-item label="ALERT LEVEL">
-          <el-select v-model="alertForm.level" class="select-full">
-            <el-option label="LOW" value="low" />
-            <el-option label="MEDIUM" value="medium" />
-            <el-option label="HIGH" value="high" />
-            <el-option label="CRITICAL" value="critical" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="DESCRIPTION">
-          <el-input
-            v-model="alertForm.description"
-            type="textarea"
-            :rows="3"
-            placeholder="ALERT RULE DESCRIPTION"
-          />
-        </el-form-item>
-      </el-form>
-    </DetailDialog>
+      <!-- VaR Over Time -->
+      <el-col :span="12">
+        <el-card class="analysis-card">
+          <template #header>
+            <div class="card-header">
+              <el-icon class="card-icon"><TrendCharts /></el-icon>
+              <span>VaR Trend (30 Days)</span>
+            </div>
+          </template>
+          <div class="chart-container">
+            <div id="var-trend-chart" class="chart"></div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- Position Risk Table -->
+    <el-card class="positions-card" style="margin-top: 30px;">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="card-icon"><List /></el-icon>
+          <span>Position Risk Details</span>
+        </div>
+      </template>
+
+      <el-table :data="positionRisks" style="width: 100%">
+        <el-table-column prop="symbol" label="Symbol" width="100" />
+        <el-table-column prop="position" label="Position" width="120">
+          <template #default="scope">
+            {{ scope.row.position.toLocaleString() }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="currentPrice" label="Current Price" width="120">
+          <template #default="scope">
+            {{ scope.row.currentPrice.toFixed(2) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="unrealizedPnL" label="Unrealized P&L" width="140">
+          <template #default="scope">
+            <span :class="scope.row.unrealizedPnL >= 0 ? 'positive' : 'negative'">
+              {{ formatCurrency(scope.row.unrealizedPnL) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="varContribution" label="VaR Contribution" width="140">
+          <template #default="scope">
+            <span class="negative">
+              {{ formatCurrency(scope.row.varContribution) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="beta" label="Beta" width="100">
+          <template #default="scope">
+            {{ scope.row.beta.toFixed(2) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="stressTest" label="Stress Test" width="120">
+          <template #default="scope">
+            <el-tag :type="getStressTestType(scope.row.stressTest)">
+              {{ formatPercent(scope.row.stressTest) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
+    <!-- Risk Alerts -->
+    <el-card class="alerts-card" style="margin-top: 30px;">
+      <template #header>
+        <div class="card-header">
+          <el-icon class="card-icon"><Warning /></el-icon>
+          <span>Risk Alerts</span>
+        </div>
+      </template>
+
+      <el-alert
+        v-for="alert in riskAlerts"
+        :key="alert.id"
+        :title="alert.title"
+        :description="alert.description"
+        :type="alert.type"
+        show-icon
+        style="margin-bottom: 10px;"
+      />
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, type Ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { riskApi } from '@/api'
-
-// Import Art Deco components
 import {
-  ArtDecoHeader,
-  ArtDecoCard,
-  ArtDecoStatCard,
-  ArtDecoTable,
-  ArtDecoTableColumn,
-  ArtDecoButton,
-  ArtDecoBadge,
-  ArtDecoDialog,
-  ArtDecoSelect,
-  ArtDecoInput,
-  ArtDecoRiskGauge
-} from '@/components/artdeco'
+  PieChart,
+  TrendCharts,
+  List,
+  Warning
+} from '@element-plus/icons-vue'
 
-interface RiskDashboard {
-  var_95: number
-  cvar_95: number
-  beta: number
-  alert_count: number
-}
-
-interface MetricsHistoryPoint {
-  date: string
-  var_95_hist?: number
-  cvar_95?: number
-  beta?: number
-}
-
-type AlertLevel = 'low' | 'medium' | 'high' | 'critical'
-
-interface Alert {
+// Alert type interface (using string as type for simplicity)
+interface RiskAlert {
   id: number
   title: string
-  metric_type: string
-  threshold: number
-  level: AlertLevel
   description: string
-  created_at?: string
-  triggered_at?: string
+  type: 'error' | 'success' | 'info' | 'warning' | 'primary'
 }
 
-interface VarCvarData {
-  symbol?: string
-  stock_name?: string
-  confidence_level?: number
-  var: number | null
-  cvar: number | null
-  date?: string
-}
-
-interface BetaData {
-  symbol: string
-  stock_name?: string
-  beta: number | null
-  date?: string
-}
-
-interface AlertForm {
-  title: string
-  metric_type: string
-  threshold: number
-  level: AlertLevel
-  description: string
-}
-
-const dashboard: Ref<RiskDashboard> = ref({
-  var_95: 0,
-  cvar_95: 0,
-  beta: 0,
-  alert_count: 0
-})
-
-const historyPeriod: Ref<string> = ref('30d')
-const historyLoading: Ref<boolean> = ref(false)
-const metricsHistory: Ref<MetricsHistoryPoint[]> = ref([])
-const alertsLoading: Ref<boolean> = ref(false)
-const alerts: Ref<Alert[]> = ref([])
-const varLoading: Ref<boolean> = ref(false)
-const varData: Ref<VarCvarData[]> = ref([])
-const betaLoading: Ref<boolean> = ref(false)
-const betaData: Ref<BetaData[]> = ref([])
-const createAlertVisible: Ref<boolean> = ref(false)
-const createAlertLoading: Ref<boolean> = ref(false)
-const alertForm: Ref<AlertForm> = ref({
-  title: '',
-  metric_type: 'var_95',
-  threshold: 5.0,
-  level: 'medium',
-  description: ''
-})
-
-// 统计卡片数据
-const stats = computed(() => [
+const riskAlerts = ref<RiskAlert[]>([
   {
-    title: 'VaR (95%)',
-    value: `${dashboard.value.var_95.toFixed(2)}%`,
-    icon: TrendCharts,
-    color: 'orange' as const,
-    description: 'Value at Risk'
+    id: 1,
+    title: 'High Concentration Risk',
+    description: 'Portfolio exposure to banking sector exceeds 40%',
+    type: 'warning'
   },
   {
-    title: 'CVaR (95%)',
-    value: `${dashboard.value.cvar_95.toFixed(2)}%`,
-    icon: Warning,
-    color: 'gold' as const,
-    description: 'Conditional VaR'
+    id: 2,
+    title: 'VaR Threshold Exceeded',
+    description: 'Daily VaR has exceeded the 5% threshold for 3 consecutive days',
+    type: 'error'
   },
   {
-    title: 'BETA COEFFICIENT',
-    value: dashboard.value.beta.toFixed(3),
-    icon: DataLine,
-    color: 'blue' as const,
-    description: 'Market Volatility'
-  },
-  {
-    title: 'ACTIVE ALERTS',
-    value: dashboard.value.alert_count.toString(),
-    icon: BellFilled,
-    color: 'green' as const,
-    description: 'Risk Warnings'
+    id: 3,
+    title: 'Market Volatility Alert',
+    description: 'Market volatility has increased 25% in the last week',
+    type: 'info'
   }
 ])
 
-// 图表数据（为 ChartContainer 准备）
-const chartData = computed(() => {
-  if (!metricsHistory.value || metricsHistory.value.length === 0) return []
+// Reactive data
+const portfolioValue = ref(1250000)
+const portfolioChange = ref(0.023) // 2.3%
+const var95 = ref(-45000) // -$45,000
+const maxDrawdown = ref(-0.156) // -15.6%
+const riskLevel = ref('Moderate')
 
-  const dates = metricsHistory.value.map(item => item.date)
-  const varValues = metricsHistory.value.map(item => item.var_95_hist || 0)
-  const cvarValues = metricsHistory.value.map(item => item.cvar_95 || 0)
-  const betaValues = metricsHistory.value.map(item => (item.beta || 0) * 10)
-
-  return [
-    { name: 'VaR (95%)', data: varValues.map((v, i) => ({ name: dates[i], value: v })) },
-    { name: 'CVaR (95%)', data: cvarValues.map((v, i) => ({ name: dates[i], value: v })) },
-    { name: 'Beta×10', data: betaValues.map((v, i) => ({ name: dates[i], value: v })) }
-  ]
-})
-
-const chartOptions = computed(() => ({
-  xAxis: {
-    type: 'category',
-    data: metricsHistory.value.map(item => item.date),
-    axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.5)' } },
-    axisLabel: { color: '#94A3B8' }
-  },
-  yAxis: {
-    type: 'value',
-    name: 'RISK VALUE (%)',
-    axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.5)' } },
-    axisLabel: { color: '#94A3B8' },
-    splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } }
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: { type: 'cross' },
-    backgroundColor: 'rgba(3, 3, 4, 0.95)',
-    borderColor: '#D4AF37',
-    textStyle: { color: '#F2F0E4' }
-  },
-  legend: {
-    data: ['VaR (95%)', 'CVaR (95%)', 'Beta×10'],
-    textStyle: { color: '#F2F0E4' }
-  }
-}))
-
-// Define columns for DataTable
-const varColumns = [
+const positionRisks = ref([
   {
-    key: 'confidence_level',
-    label: 'CONFIDENCE',
-    sortable: true
+    symbol: '600000',
+    position: 50000,
+    currentPrice: 10.50,
+    unrealizedPnL: 12500,
+    varContribution: -8500,
+    beta: 0.95,
+    stressTest: -0.12
   },
   {
-    key: 'var',
-    label: 'VaR',
-    sortable: true,
-    class: (row: VarCvarData) => getRiskClass(row.var)
+    symbol: '000001',
+    position: 30000,
+    currentPrice: 15.75,
+    unrealizedPnL: -2250,
+    varContribution: -6200,
+    beta: 1.12,
+    stressTest: -0.08
   },
   {
-    key: 'cvar',
-    label: 'CVaR',
-    sortable: true,
-    class: (row: VarCvarData) => getRiskClass(row.cvar)
-  },
-  {
-    key: 'risk_level',
-    label: 'RISK LEVEL'
+    symbol: '000002',
+    position: 25000,
+    currentPrice: 8.90,
+    unrealizedPnL: 8900,
+    varContribution: -4100,
+    beta: 0.87,
+    stressTest: -0.15
   }
-]
+])
 
-const betaColumns = [
-  {
-    key: 'symbol',
-    label: 'SYMBOL',
-    sortable: true
-  },
-  {
-    key: 'stock_name',
-    label: 'NAME',
-    sortable: true
-  },
-  {
-    key: 'beta',
-    label: 'BETA',
-    sortable: true,
-    class: (row: BetaData) => getBetaClass(row.beta)
-  },
-  {
-    key: 'volatility',
-    label: 'VOLATILITY'
-  }
-]
+// Methods
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(value)
+}
 
-const loadDashboard = async (): Promise<void> => {
-  try {
-    const response = await riskApi.getDashboard()
-    const data = response?.data || response
-    dashboard.value = {
-      var_95: data?.var_95 || data?.var95 || 0,
-      cvar_95: data?.cvar_95 || data?.cvar95 || 0,
-      beta: data?.beta || 0,
-      alert_count: data?.alert_count || data?.alertCount || 0
-    }
-  } catch (error) {
-    console.error('加载仪表板失败:', error)
-    dashboard.value = { var_95: 3.5, cvar_95: 5.2, beta: 1.1, alert_count: 2 }
+const formatPercent = (value: number) => {
+  return (value * 100).toFixed(1) + '%'
+}
+
+const getRiskLevelClass = (level: string) => {
+  switch (level.toLowerCase()) {
+    case 'low': return 'positive'
+    case 'moderate': return 'neutral'
+    case 'high': return 'negative'
+    default: return 'neutral'
   }
 }
 
-const loadMetricsHistory = async (): Promise<void> => {
-  historyLoading.value = true
-  try {
-    const response = await riskApi.getMetricsHistory({ period: historyPeriod.value })
-    const data = response?.data || response
-    metricsHistory.value = Array.isArray(data) ? data : (data?.history || data?.data || [])
-  } catch (error) {
-    console.error('加载历史数据失败:', error)
-    ElMessage.error('FAILED TO LOAD HISTORICAL DATA')
-    metricsHistory.value = generateMockHistoryData()
-  } finally {
-    historyLoading.value = false
-  }
-}
-
-const generateMockHistoryData = (): MetricsHistoryPoint[] => {
-  const data: MetricsHistoryPoint[] = []
-  const now = new Date()
-
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    data.push({
-      date: date.toISOString().split('T')[0],
-      var_95_hist: 2.5 + Math.random() * 2,
-      cvar_95: 3.5 + Math.random() * 2.5,
-      beta: 0.9 + Math.random() * 0.4
-    })
-  }
-  return data
-}
-
-const loadAlerts = async (): Promise<void> => {
-  alertsLoading.value = true
-  try {
-    const response = await riskApi.getAlerts({ limit: 10 })
-    const data = response?.data || response
-    alerts.value = Array.isArray(data) ? data : (data?.alerts || data?.data || [])
-  } catch (error) {
-    console.error('加载告警失败:', error)
-    alerts.value = generateMockAlerts()
-  } finally {
-    alertsLoading.value = false
-  }
-}
-
-const generateMockAlerts = (): Alert[] => {
-  return [
-    {
-      id: 1,
-      title: 'VaR超过阈值',
-      metric_type: 'var_95',
-      threshold: 5.0,
-      level: 'high',
-      description: '当前VaR值(5.2%)已超过设置的阈值(5.0%)',
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 2,
-      title: 'Beta系数异常',
-      metric_type: 'beta',
-      threshold: 1.5,
-      level: 'medium',
-      description: '投资组合Beta系数(1.45)接近阈值',
-      created_at: new Date(Date.now() - 3600000).toISOString()
-    }
-  ]
-}
-
-const loadVarCvar = async (): Promise<void> => {
-  varLoading.value = true
-  try {
-    const response = await riskApi.getVarCvar()
-    const data = response?.data || response
-    varData.value = Array.isArray(data) ? data : (data?.varCvar || data?.data || [])
-  } catch (error) {
-    console.error('加载VaR/CVaR失败:', error)
-    varData.value = [
-      { confidence_level: 90, var: 2.8, cvar: 4.0 },
-      { confidence_level: 95, var: 4.2, cvar: 5.8 },
-      { confidence_level: 99, var: 6.5, cvar: 8.2 }
-    ]
-  } finally {
-    varLoading.value = false
-  }
-}
-
-const loadBeta = async (): Promise<void> => {
-  betaLoading.value = true
-  try {
-    const response = await riskApi.getBeta()
-    const data = response?.data || response
-    betaData.value = Array.isArray(data) ? data : (data?.beta || data?.data || [])
-  } catch (error) {
-    console.error('加载Beta失败:', error)
-    betaData.value = [
-      { symbol: '600519', stock_name: '贵州茅台', beta: 1.25 },
-      { symbol: '000001', stock_name: '平安银行', beta: 0.95 },
-      { symbol: '000002', stock_name: '万科A', beta: 1.15 }
-    ]
-  } finally {
-    betaLoading.value = false
-  }
-}
-
-const showCreateAlertDialog = (): void => {
-  alertForm.value = {
-    title: '',
-    metric_type: 'var_95',
-    threshold: 5.0,
-    level: 'medium',
-    description: ''
-  }
-  createAlertVisible.value = true
-}
-
-const handleCreateAlert = async (): Promise<void> => {
-  if (!alertForm.value.title) {
-    ElMessage.warning('PLEASE ENTER ALERT NAME')
-    return
-  }
-
-  createAlertLoading.value = true
-  try {
-    const response = await riskApi.createAlert(alertForm.value)
-    const result = response?.data || response
-    if (result && result.id) {
-      ElMessage.success('ALERT CREATED SUCCESSFULLY')
-      createAlertVisible.value = false
-      loadAlerts()
-    } else {
-      ElMessage.error(result?.message || 'CREATION FAILED')
-    }
-  } catch (error: any) {
-    console.error('Failed to create alert:', error)
-    ElMessage.error('FAILED TO CREATE ALERT')
-  } finally {
-    createAlertLoading.value = false
-  }
-}
-
-const viewAlertDetail = (alert: Alert): void => {
-  ElMessage.info(`VIEWING ALERT DETAILS: ${alert.title}`)
-}
-
-const getAlertBadgeVariant = (level: AlertLevel): 'info' | 'warning' | 'danger' | 'success' => {
-  const variantMap: Record<AlertLevel, 'info' | 'warning' | 'danger' | 'success'> = {
-    low: 'info',
-    medium: 'warning',
-    high: 'danger',
-    critical: 'danger'
-  }
-  return variantMap[level] || 'info'
-}
-
-const getRiskBadgeVariant = (var95: number | null): 'info' | 'warning' | 'danger' | 'success' => {
-  if (!var95) return 'info'
-  if (var95 > 10) return 'danger'
-  if (var95 > 7) return 'warning'
-  if (var95 > 5) return 'info'
-  return 'success'
-}
-
-const getRiskLevel = (var95: number | null): string => {
-  if (!var95) return 'UNKNOWN'
-  if (var95 > 10) return 'CRITICAL'
-  if (var95 > 7) return 'HIGH'
-  if (var95 > 5) return 'MEDIUM'
-  return 'LOW'
-}
-
-const getRiskClass = (value: number | null): string => {
-  if (!value) return ''
-  if (value > 10) return 'risk-critical'
-  if (value > 7) return 'risk-high'
-  if (value > 5) return 'risk-medium'
-  return 'risk-low'
-}
-
-const getBetaBadgeVariant = (beta: number | null): 'info' | 'warning' | 'danger' | 'success' => {
-  if (!beta) return 'info'
-  if (beta > 1.5) return 'danger'
-  if (beta > 1.2) return 'warning'
-  if (beta < 0.8) return 'success'
+const getStressTestType = (value: number) => {
+  if (value < -0.15) return 'danger'
+  if (value < -0.10) return 'warning'
   return 'info'
 }
 
-const getBetaClass = (beta: number | null): string => {
-  if (!beta) return ''
-  if (beta > 1.5) return 'beta-high'
-  if (beta < 0.5) return 'beta-low'
-  return 'beta-normal'
+const initializeCharts = () => {
+  // Risk Distribution Chart
+  const riskDistContainer = document.getElementById('risk-distribution-chart')
+  if (riskDistContainer) {
+    riskDistContainer.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #666;">
+        Risk Distribution Chart<br/>
+        <small>Market Risk: 45% | Credit Risk: 25% | Liquidity Risk: 20% | Operational Risk: 10%</small>
+      </div>
+    `
+  }
+
+  // VaR Trend Chart
+  const varTrendContainer = document.getElementById('var-trend-chart')
+  if (varTrendContainer) {
+    varTrendContainer.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #666;">
+        VaR Trend Chart (30 Days)<br/>
+        <small>Historical VaR values over the past month</small>
+      </div>
+    `
+  }
 }
 
-const getBetaDescription = (beta: number | null): string => {
-  if (!beta) return 'UNKNOWN'
-  if (beta > 1.5) return 'HIGH VOLATILITY'
-  if (beta > 1.2) return 'MODERATE HIGH'
-  if (beta > 0.8) return 'NORMAL'
-  if (beta > 0.5) return 'LOW VOLATILITY'
-  return 'VERY LOW'
-}
+onMounted(() => {
+  // Initialize charts after component mounts
+  setTimeout(() => {
+    initializeCharts()
+  }, 100)
 
-const formatTime = (time: string | Date | undefined): string => {
-  if (!time) return '-'
-  const date = new Date(time)
-  return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
-}
-
-onMounted((): void => {
-  loadDashboard()
-  loadMetricsHistory()
-  loadAlerts()
-  loadVarCvar()
-  loadBeta()
+  // Simulate real-time updates
+  setInterval(() => {
+    // Update portfolio value slightly
+    const change = (Math.random() - 0.5) * 0.001
+    portfolioValue.value *= (1 + change)
+    portfolioChange.value = (portfolioValue.value - 1250000) / 1250000
+  }, 5000)
 })
 </script>
 
-<style scoped lang="scss">
-// Phase 3.3: Design Token Migration
-@import '@/styles/theme-tokens.scss';
-
-
+<style scoped>
 .risk-monitor {
-  min-height: 100vh;
-  padding: var(--space-section);
-  position: relative;
-  background: var(--bg-global);
-
-  .background-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: var(--z-bg-pattern);
-    opacity: 0.04;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        var(--gold-primary) 0px,
-        var(--gold-primary) 1px,
-          transparent 1px,
-          transparent 10px
-        ),
-        repeating-linear-gradient(
-          -45deg,
-          var(--gold-primary) 0px,
-          var(--gold-primary) 1px,
-          transparent 1px,
-          transparent 10px
-        );
-  }
-
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-section);
-    position: relative;
-    z-index: 1;
-  }
-
-  .content-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-    margin-bottom: var(--space-section);
-    position: relative;
-    z-index: 1;
-
-    @media (max-width: 1200px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .content-grid-half {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-    margin-bottom: var(--space-section);
-    position: relative;
-    z-index: 1;
-
-    @media (max-width: 1200px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-4);
-    width: 100%;
-
-    .header-actions {
-      display: flex;
-      gap: var(--space-2);
-      align-items: center;
-    }
-  }
-
-  .loading-container {
-    padding: var(--space-4);
-    text-align: center;
-  }
-
-  .chart-container {
-    width: 100%;
-    height: 300px;
-  }
-
-  #risk-chart {
-    width: 100%;
-    height: 100%;
-  }
-
-  .alerts-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-4);
-
-    .alert-item {
-      background: rgba(212, 175, 55, 0.05);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      padding: var(--space-3);
-      border-radius: var(--radius-sm);
-
-      .alert-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--space-2);
-
-        .alert-time {
-          font-size: var(--font-size-xs);
-          color: var(--silver-dim);
-        }
-      }
-
-      .alert-content {
-        margin-bottom: var(--space-2);
-
-        .alert-title {
-          font-family: var(--font-display);
-          font-size: var(--font-size-sm);
-          font-weight: 600;
-          color: var(--gold-primary);
-          margin: 0 0 var(--space-1) 0;
-        }
-
-        .alert-description {
-          font-size: var(--font-size-xs);
-          color: var(--silver-muted);
-          margin: 0;
-        }
-      }
-
-      .alert-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: var(--space-2);
-      }
-    }
-  }
-
-  .select {
-    width: 120px;
-  }
-
-  .select-full {
-    width: 100%;
-  }
-
-  .input-number-full {
-    width: 100%;
-  }
-
-  // Risk level colors
-  .risk-critical { color: #EF4444; }
-  .risk-high { color: #F97316; }
-  .risk-medium { color: #EAB308; }
-  .risk-low { color: #22C55E; }
-
-  // Beta level colors
-  .beta-high { color: #EF4444; }
-  .beta-normal { color: var(--gold-primary); }
-  .beta-low { color: #3B82F6; }
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .risk-monitor {
-    padding: var(--space-3);
-  }
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
 
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
+.page-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: 2px;
+}
 
-  .content-grid,
-  .content-grid-half {
-    grid-template-columns: 1fr;
-  }
+.page-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 10px 0 0 0;
+  letter-spacing: 1px;
+}
 
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
+.risk-summary {
+  margin-bottom: 20px;
+}
 
-    .header-actions {
-      width: 100%;
-      flex-direction: column;
-    }
-  }
+.risk-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.risk-card:hover {
+  transform: translateY(-2px);
+}
+
+.risk-metric {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.metric-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #303133;
+}
+
+.metric-value.positive {
+  color: #67c23a;
+}
+
+.metric-value.negative {
+  color: #f56c6c;
+}
+
+.metric-value.neutral {
+  color: #e6a23c;
+}
+
+.metric-change {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.metric-subtitle {
+  font-size: 0.75rem;
+  color: #909399;
+  margin-top: 2px;
+}
+
+.analysis-card, .positions-card, .alerts-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 18px;
+  color: #409eff;
+}
+
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+.positive {
+  color: #67c23a;
+}
+
+.negative {
+  color: #f56c6c;
 }
 </style>

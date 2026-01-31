@@ -214,6 +214,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import type { EChartsOption } from 'echarts'
+import { artDecoTheme } from '@/utils/echarts'
 import { ElCard } from 'element-plus'
 import { ElButton } from 'element-plus'
 import { ElTable, ElTableColumn } from 'element-plus'
@@ -377,13 +378,13 @@ function getAlertLevelVariant(level: string): 'warning' | 'danger' | 'info' | 's
 
 function initCharts() {
   if (indicesChartRef.value) {
-    indicesChart = echarts.init(indicesChartRef.value)
+    indicesChart = echarts.init(indicesChartRef.value, artDecoTheme)
   }
   if (distributionChartRef.value) {
-    distributionChart = echarts.init(distributionChartRef.value)
+    distributionChart = echarts.init(distributionChartRef.value, artDecoTheme)
   }
   if (portfolioChartRef.value) {
-    portfolioChart = echarts.init(portfolioChartRef.value)
+    portfolioChart = echarts.init(portfolioChartRef.value, artDecoTheme)
   }
 
   window.addEventListener('resize', () => {

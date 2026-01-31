@@ -4,50 +4,42 @@
 测试MyStocks系统中所有自定义异常类型
 """
 
-import pytest
 import sys
+
+import pytest
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
-from src.core.exceptions import (
-    # 基础异常
-    MyStocksException,
-    # 数据相关异常
-    DataException,
-    DataNotFoundException,
-    DataValidationError,
-    DataIntegrityException,
-    DataQualityException,
-    # 数据库相关异常
-    DatabaseException,
-    DatabaseConnectionError,
-    DatabaseQueryError,
-    DatabaseIntegrityError,
-    # 配置相关异常
-    ConfigException,
-    ConfigFileNotFound,
-    ConfigValueError,
-    ConfigValidationFailed,
-    # 网络相关异常
-    NetworkException,
-    NetworkConnectionError,
-    NetworkTimeoutError,
-    HTTPError,
-    # 安全相关异常
-    SecurityException,
+from src.core.exceptions import (  # 基础异常; 数据相关异常; 数据库相关异常; 配置相关异常; 网络相关异常; 安全相关异常; 处理相关异常; 业务逻辑异常; 装饰器
     AuthenticationError,
     AuthorizationError,
-    DataAccessError,
-    # 处理相关异常
     BatchProcessingError,
+    ConfigException,
+    ConfigFileNotFound,
+    ConfigValidationFailed,
+    ConfigValueError,
+    DataAccessError,
+    DatabaseConnectionError,
+    DatabaseException,
+    DatabaseIntegrityError,
+    DatabaseQueryError,
+    DataException,
     DataFormatError,
-    ValidationException,
-    # 业务逻辑异常
-    TradingRuleViolation,
+    DataIntegrityException,
+    DataNotFoundException,
+    DataQualityException,
+    DataValidationError,
+    HTTPError,
+    MyStocksException,
+    NetworkConnectionError,
+    NetworkException,
+    NetworkTimeoutError,
     RiskControlException,
+    SecurityException,
+    TradingRuleViolation,
     UnsupportedOperation,
-    # 装饰器
+    ValidationException,
     handle_exceptions,
 )
 

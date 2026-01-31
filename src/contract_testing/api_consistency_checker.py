@@ -8,9 +8,9 @@ Task 12.3 Implementation: API consistency verification
 """
 
 import logging
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict, List, Optional
 
 from .spec_validator import SpecificationValidator
 

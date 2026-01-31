@@ -34,7 +34,6 @@ class IStrategyRepository(ABC):
         Args:
             strategy: 策略聚合根
         """
-        pass
 
     @abstractmethod
     def find_by_id(self, strategy_id: StrategyId) -> Optional[Strategy]:
@@ -47,7 +46,6 @@ class IStrategyRepository(ABC):
         Returns:
             策略聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_by_name(self, name: str) -> Optional[Strategy]:
@@ -60,7 +58,6 @@ class IStrategyRepository(ABC):
         Returns:
             策略聚合根，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def find_all_active(self) -> List[Strategy]:
@@ -70,7 +67,6 @@ class IStrategyRepository(ABC):
         Returns:
             激活的策略列表
         """
-        pass
 
     @abstractmethod
     def find_all(self) -> List[Strategy]:
@@ -80,7 +76,6 @@ class IStrategyRepository(ABC):
         Returns:
             所有策略列表
         """
-        pass
 
     @abstractmethod
     def delete(self, strategy_id: StrategyId) -> None:
@@ -90,7 +85,6 @@ class IStrategyRepository(ABC):
         Args:
             strategy_id: 策略ID
         """
-        pass
 
     @abstractmethod
     def exists(self, strategy_id: StrategyId) -> bool:
@@ -103,7 +97,6 @@ class IStrategyRepository(ABC):
         Returns:
             如果存在返回True，否则返回False
         """
-        pass
 
     @abstractmethod
     def count_active(self) -> int:
@@ -113,4 +106,3 @@ class IStrategyRepository(ABC):
         Returns:
             激活的策略数量
         """
-        pass

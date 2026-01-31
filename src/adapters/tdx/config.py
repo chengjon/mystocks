@@ -8,10 +8,10 @@ TDX配置管理模块
 @created: 2026-01-02
 """
 
-import os
 import configparser
-from typing import Dict, List, Tuple
+import os
 from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 class TdxConfigManager:
@@ -50,7 +50,7 @@ class TdxConfigManager:
         if os.path.exists(self.config_file):
             self.config.read(self.config_file, encoding="utf-8")
         else:
-            logger.warning(f"配置文件不存在: {self.config_file}")
+            logger.warning("配置文件不存在: %s", self.config_file)
             self._create_default_config()
 
     def _create_default_config(self):
@@ -90,7 +90,7 @@ class TdxConfigManager:
         os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
         with open(self.config_file, "w", encoding="utf-8") as f:
             self.config.write(f)
-        logger.info(f"已创建默认配置文件: {self.config_file}")
+        logger.info("已创建默认配置文件: {self.config_file")
 
     def get(self, section: str, key: str, fallback=None):
         """获取配置值"""

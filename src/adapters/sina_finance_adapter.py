@@ -6,11 +6,12 @@ Sina Finance Data Source Adapter
 """
 
 import logging
-import pandas as pd
-from typing import Dict, Any, Optional, List
-from datetime import datetime
-import time
 import random
+import time
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
@@ -80,7 +81,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
                 soup = BeautifulSoup(response.text, "html.parser")
                 table = soup.find("table", class_="list_table")
                 if not table:
-                    logger.warning(f"未找到评级表格: {url}")
+                    logger.warning("未找到评级表格: %(url)s")
                     return pd.DataFrame()
 
                 table_data = []
@@ -114,32 +115,32 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
 
                 return pd.DataFrame(table_data)
             except Exception as e:
-                logger.error(f"爬取失败: {e}")
+                logger.error("爬取失败: %(e)s")
                 return pd.DataFrame()
 
         all_data = []
-        logger.info(f"开始爬取新浪财经股票评级数据，共{max_pages}页")
+        logger.info("开始爬取新浪财经股票评级数据，共%(max_pages)s页")
 
         for i in range(1, max_pages + 1):
             url = f"https://stock.finance.sina.com.cn/stock/go.php/vIR_RatingNewest/index.phtml?num=60&p={
                 i}"
-            logger.info(f"正在爬取第 {i} 页...")
+            logger.info("正在爬取第 %(i)s 页...")
 
             df = crawl_table(url)
             if df.empty:
-                logger.info(f"第 {i} 页未找到表格数据，停止爬取")
+                logger.info("第 %(i)s 页未找到表格数据，停止爬取")
                 break
 
             all_data.append(df)
 
             # 生成0-3秒的随机延迟，避免请求过于频繁
             sleep_time = round(random.uniform(0, 3), 3)
-            logger.debug(f"等待 {sleep_time} 秒后继续...")
+            logger.debug("等待 %(sleep_time)s 秒后继续...")
             time.sleep(sleep_time)
 
         if all_data:
             result_df = pd.concat(all_data, ignore_index=True)
-            logger.info(f"爬取完成！共获取 {len(result_df)} 条评级数据")
+            logger.info("爬取完成！共获取 {len(result_df)} 条评级数据")
 
             # 应用数据质量检查
             result_df = self._apply_quality_check(result_df, "ALL", "stock_ratings")
@@ -158,7 +159,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
         Sina Finance适配器主要专注于评级数据，此方法返回空DataFrame。
         如需日线数据，请使用其他适配器如akshare或tdx。
         """
-        logger.info(f"SinaFinanceAdapter不提供日线数据，请使用其他数据源获取股票 {symbol} 的日线数据")
+        logger.info("SinaFinanceAdapter不提供日线数据，请使用其他数据源获取股票 %(symbol)s 的日线数据")
         return pd.DataFrame()
 
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -168,17 +169,17 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
 
     def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
         """获取股票基本信息 - 不支持"""
-        logger.info(f"SinaFinanceAdapter不提供股票 {symbol} 的基本信息")
+        logger.info("SinaFinanceAdapter不提供股票 %(symbol)s 的基本信息")
         return {}
 
     def get_index_components(self, symbol: str) -> List[str]:
         """获取指数成分股 - 不支持"""
-        logger.info(f"SinaFinanceAdapter不提供指数 {symbol} 的成分股信息")
+        logger.info("SinaFinanceAdapter不提供指数 %(symbol)s 的成分股信息")
         return []
 
     def get_real_time_data(self, symbol: str) -> Optional[Dict[str, Any]]:
         """获取实时数据 - 不支持"""
-        logger.info(f"SinaFinanceAdapter不提供股票 {symbol} 的实时数据")
+        logger.info("SinaFinanceAdapter不提供股票 %(symbol)s 的实时数据")
         return None
 
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
@@ -188,7 +189,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
 
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
         """获取财务数据 - 不支持"""
-        logger.info(f"SinaFinanceAdapter不提供股票 {symbol} 的财务数据")
+        logger.info("SinaFinanceAdapter不提供股票 %(symbol)s 的财务数据")
         return pd.DataFrame()
 
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
@@ -259,7 +260,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
                 "source": self.source_name,
             }
         except Exception as e:
-            logger.error(f"SinaFinanceAdapter健康检查失败: {e}")
+            logger.error("SinaFinanceAdapter健康检查失败: %(e)s")
             return {
                 "status": "unhealthy",
                 "error": str(e),

@@ -207,7 +207,7 @@ const pagination = ref<Pagination>({
   total: 0
 })
 
-const filterConfig = computed((): FilterItem[] => [
+const filterConfig = computed((): any[] => [
   {
     type: 'select',
     key: 'strategy_code',
@@ -246,7 +246,7 @@ const filterConfig = computed((): FilterItem[] => [
   }
 ])
 
-const tableColumns = computed((): TableColumn[] => [
+const tableColumns = computed((): any[] => [
   {
     prop: 'check_date',
     label: '检查日期',

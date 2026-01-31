@@ -14,11 +14,12 @@
 """
 
 import logging
-import numpy as np
-import pandas as pd
-from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, Optional, Tuple
+
+import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -79,18 +80,18 @@ class MarketRegimeIdentifier:
     def _validate_config(self):
         """验证配置参数"""
         if not 0 < self.config.weight_ma_slope <= 1:
-            logger.warning(f"无效的MA斜率权重: {self.config.weight_ma_slope}，使用默认值0.4")
+            logger.warning("无效的MA斜率权重: {self.config.weight_ma_slope}，使用默认值0.4")
             self.config.weight_ma_slope = 0.4
         if not 0 < self.config.weight_breadth <= 1:
-            logger.warning(f"无效的市场广度权重: {self.config.weight_breadth}，使用默认值0.3")
+            logger.warning("无效的市场广度权重: {self.config.weight_breadth}，使用默认值0.3")
             self.config.weight_breadth = 0.3
         if not 0 < self.config.weight_volatility <= 1:
-            logger.warning(f"无效的波动率权重: {self.config.weight_volatility}，使用默认值0.3")
+            logger.warning("无效的波动率权重: {self.config.weight_volatility}，使用默认值0.3")
             self.config.weight_volatility = 0.3
 
         total_weight = self.config.weight_ma_slope + self.config.weight_breadth + self.config.weight_volatility
         if abs(total_weight - 1.0) > 0.001:
-            logger.warning(f"权重之和不为1: {total_weight}，将进行归一化")
+            logger.warning("权重之和不为1: %(total_weight)s，将进行归一化")
             self.config.weight_ma_slope /= total_weight
             self.config.weight_breadth /= total_weight
             self.config.weight_volatility /= total_weight
@@ -117,7 +118,7 @@ class MarketRegimeIdentifier:
 
             required_cols = ["close"]
             if not all(col in index_data.columns for col in required_cols):
-                logger.warning(f"指数数据缺少必要列: {required_cols}")
+                logger.warning("指数数据缺少必要列: %(required_cols)s")
                 return self._create_unknown_result("缺少数据列")
 
             ma_slope_score = self._calculate_ma_slope(index_data)
@@ -141,7 +142,7 @@ class MarketRegimeIdentifier:
                 "volatility_config": {"atr_window": self.config.atr_window},
             }
 
-            logger.info(f"市场体制识别: {regime.value}, 置信度: {confidence:.2f}, 综合评分: {composite_score:.2f}")
+            logger.info("市场体制识别: {regime.value}, 置信度: {confidence:.2f}, 综合评分: %(composite_score)s")
 
             return MarketRegimeResult(
                 regime=regime,
@@ -154,7 +155,7 @@ class MarketRegimeIdentifier:
             )
 
         except Exception as e:
-            logger.error(f"市场体制识别失败: {e}")
+            logger.error("市场体制识别失败: %(e)s")
             return self._create_unknown_result(f"识别错误: {str(e)}")
 
     def _calculate_ma_slope(self, data: pd.DataFrame) -> float:
@@ -171,7 +172,7 @@ class MarketRegimeIdentifier:
             closes = data["close"].dropna()
 
             if len(closes) < self.config.ma_long_window:
-                logger.warning(f"数据点不足: {len(closes)}, 需要至少 {self.config.ma_long_window}")
+                logger.warning("数据点不足: {len(closes)}, 需要至少 {self.config.ma_long_window")
                 return 0.0
 
             short_ma = closes.rolling(window=self.config.ma_short_window).mean()
@@ -187,12 +188,12 @@ class MarketRegimeIdentifier:
 
             score = np.clip(avg_slope / self.config.ma_slope_threshold * 50, -100, 100)
 
-            logger.debug(f"MA斜率计算: short={short_slope:.6f}, long={long_slope:.6f}, score={score:.2f}")
+            logger.debug("MA斜率计算: short={short_slope:.6f}, long={long_slope:.6f}, score=%(score)s")
 
             return float(score)
 
         except Exception as e:
-            logger.error(f"MA斜率计算失败: {e}")
+            logger.error("MA斜率计算失败: %(e)s")
             return 0.0
 
     def _calculate_market_breadth(
@@ -221,7 +222,7 @@ class MarketRegimeIdentifier:
             closes = index_data["close"].dropna()
 
             if len(closes) < self.config.breadthlookback_days + 1:
-                logger.warning(f"市场广度计算数据不足: {len(closes)}")
+                logger.warning("市场广度计算数据不足: %s")
                 return 0.0
 
             daily_returns = closes.pct_change().dropna()
@@ -240,12 +241,12 @@ class MarketRegimeIdentifier:
 
             score = (up_ratio - 0.5) * 200
 
-            logger.debug(f"市场广度计算: up={up_count}, down={down_count}, ratio={up_ratio:.2f}, score={score:.2f}")
+            logger.debug("市场广度计算: up=%(up_count)s, down=%(down_count)s, ratio={up_ratio:.2f}, score=%(score)s")
 
             return float(np.clip(score, -100, 100))
 
         except Exception as e:
-            logger.error(f"市场广度计算失败: {e}")
+            logger.error("市场广度计算失败: %(e)s")
             return 0.0
 
     def _calculate_regime_volatility(self, data: pd.DataFrame) -> float:
@@ -262,7 +263,7 @@ class MarketRegimeIdentifier:
             closes = data["close"].dropna()
 
             if len(closes) < self.config.atr_window + 1:
-                logger.warning(f"波动率计算数据不足: {len(closes)}")
+                logger.warning("波动率计算数据不足: %s")
                 return 50.0
 
             high = data.get("high", closes)
@@ -309,7 +310,7 @@ class MarketRegimeIdentifier:
             return float(np.clip(score, 0, 100))
 
         except Exception as e:
-            logger.error(f"波动率计算失败: {e}")
+            logger.error("波动率计算失败: %(e)s")
             return 50.0
 
     def _calculate_composite_score(self, ma_score: float, breadth_score: float, volatility_score: float) -> float:

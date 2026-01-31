@@ -9,16 +9,16 @@ unified_manager 模块单元测试
 - 监控统计和数据质量检查
 """
 
-import pytest
-import pandas as pd
+import os
+import sys
 from unittest.mock import Mock, patch
 
-import sys
-import os
+import pandas as pd
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))
 
-from src.core.data_classification import DataClassification, DatabaseTarget
+from src.core.data_classification import DatabaseTarget, DataClassification
 
 
 class TestUnifiedManagerInitialization:
@@ -306,8 +306,8 @@ class TestUnifiedManagerBatchOperations:
     @patch("src.core.unified_manager.PostgreSQLDataAccess")
     def test_save_data_batch_with_strategy(self, mock_pg, mock_td, mock_queue):
         """测试使用批量故障策略保存数据"""
-        from src.core.unified_manager import MyStocksUnifiedManager
         from src.core.batch_failure_strategy import BatchFailureStrategy
+        from src.core.unified_manager import MyStocksUnifiedManager
 
         # Mock PostgreSQL保存成功
         mock_pg_instance = mock_pg.return_value

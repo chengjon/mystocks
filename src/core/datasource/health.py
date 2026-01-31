@@ -6,11 +6,12 @@ and success rate with Prometheus metrics integration.
 """
 
 import asyncio
+import logging
 import time
 from datetime import datetime
 from typing import Callable, Dict, Optional
-from prometheus_client import Counter, Histogram, Gauge
-import logging
+
+from prometheus_client import Counter, Gauge, Histogram
 
 from .registry import DataSourceRegistry, HealthReport, HealthStatus
 
@@ -61,7 +62,7 @@ class DataSourceHealthMonitor:
             check_func: Async function that returns True if healthy
         """
         self._health_checks[source_type] = check_func
-        logger.info(f"Registered health check for {source_type}")
+        logger.info("Registered health check for %(source_type)s")
 
     async def check_health(self, source_id: str) -> HealthReport:
         """
@@ -190,7 +191,7 @@ class DataSourceHealthMonitor:
             try:
                 await self.check_all_sources()
             except Exception as e:
-                logger.error(f"Error during health check cycle: {e}")
+                logger.error("Error during health check cycle: %(e)s")
 
             await asyncio.sleep(self._check_interval)
 

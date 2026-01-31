@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-let testResults = {
+const testResults = {
   preflight: { passed: 0, failed: 0, details: [] as any[] },
   startTime: Date.now(),
   endTime: 0

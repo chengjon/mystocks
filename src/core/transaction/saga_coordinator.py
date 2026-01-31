@@ -1,5 +1,5 @@
-import uuid
 import logging
+import uuid
 from enum import Enum
 from typing import Any, Callable
 
@@ -49,12 +49,12 @@ class SagaCoordinator:
             bool: 事务是否成功
         """
         txn_id = str(uuid.uuid4())
-        logger.info(f"Starting Saga Transaction {txn_id} for {business_id}")
+        logger.info("Starting Saga Transaction %(txn_id)s for %(business_id)s")
 
         # 1. 预记录事务状态 (Best Effort)
         # 在实际生产中，这一步应该写入 PG 的 transaction_log 表。
         # 这里模拟日志记录。
-        logger.info(f"[TXN-LOG] {txn_id}: STARTED")
+        logger.info("[TXN-LOG] %(txn_id)s: STARTED")
 
         try:
             # 2. Step 1: 写入 TDengine
@@ -72,10 +72,10 @@ class SagaCoordinator:
             td_success = self.td.save_data(data_to_save, classification, table_name)
 
             if not td_success:
-                logger.error(f"[TXN-LOG] {txn_id}: TDengine write failed")
+                logger.error("[TXN-LOG] %(txn_id)s: TDengine write failed")
                 return False
 
-            logger.info(f"[TXN-LOG] {txn_id}: TDengine write SUCCESS")
+            logger.info("[TXN-LOG] %(txn_id)s: TDengine write SUCCESS")
 
             # 3. Step 2: 更新 PG 元数据
             # 开启 PG 事务
@@ -93,13 +93,13 @@ class SagaCoordinator:
                         # 在这里，我们也可以更新 PG 中的 transaction_log 表状态为 COMMITTED
 
                         # 提交 PG 事务 (session 退出时自动 commit)
-                        logger.info(f"[TXN-LOG] {txn_id}: PG commit SUCCESS. Transaction COMPLETED.")
+                        logger.info("[TXN-LOG] %(txn_id)s: PG commit SUCCESS. Transaction COMPLETED.")
                         return True
 
                     except Exception as e:
                         # PG 事务回滚，元数据未更新
                         # 但 TDengine 已经写入了，需要补偿
-                        logger.error(f"PG Update failed, triggering compensation for {txn_id}: {e}")
+                        logger.error("PG Update failed, triggering compensation for %(txn_id)s: %(e)s")
                         raise  # 抛出异常以触发外层 except 块进行补偿
             else:
                 # 如果没有显式的 transaction_scope，这是一个风险点
@@ -113,9 +113,9 @@ class SagaCoordinator:
 
         except Exception as e:
             # 4. 补偿流程 (Compensation)
-            logger.warning(f"Transaction {txn_id} failed with error: {e}, compensating...")
+            logger.warning("Transaction %(txn_id)s failed with error: %(e)s, compensating...")
             self._compensate_tdengine(txn_id, table_name)
-            logger.info(f"[TXN-LOG] {txn_id}: ROLLED_BACK")
+            logger.info("[TXN-LOG] %(txn_id)s: ROLLED_BACK")
             return False
 
     def _compensate_tdengine(self, txn_id: str, table_name: str):
@@ -131,8 +131,8 @@ class SagaCoordinator:
             if hasattr(self.td, "invalidate_data_by_txn_id"):
                 self.td.invalidate_data_by_txn_id(table_name, txn_id)
             else:
-                logger.error(f"TDengineDataAccess missing 'invalidate_data_by_txn_id'. Cannot compensate {txn_id}!")
+                logger.error("TDengineDataAccess missing 'invalidate_data_by_txn_id'. Cannot compensate %(txn_id)s!")
 
-            logger.info(f"Compensation successful for {txn_id}")
+            logger.info("Compensation successful for %(txn_id)s")
         except Exception as e:
-            logger.error(f"Compensation failed for {txn_id} (will be handled by cron): {e}")
+            logger.error("Compensation failed for %(txn_id)s (will be handled by cron): %(e)s")

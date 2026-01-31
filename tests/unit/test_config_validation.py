@@ -8,12 +8,13 @@ T024: 配置验证单元测试
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import pytest
+
 from src.core.config_driven_table_manager import ConfigDrivenTableManager
 from src.core.data_classification import DataClassification
 

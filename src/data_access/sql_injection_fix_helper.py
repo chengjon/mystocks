@@ -16,7 +16,7 @@ SQL注入安全修复辅助模块
 """
 
 import re
-from typing import List, Tuple, Any, Optional
+from typing import Any, List, Optional, Tuple
 
 
 def validate_identifier(identifier: str, identifier_type: str = "identifier") -> str:

@@ -3,10 +3,11 @@
 用于生成股票预测的滚动窗口特征
 """
 
+from queue import Queue
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Tuple
-from queue import Queue
 
 
 class FeatureEngineeringService:

@@ -10,10 +10,11 @@
 日期: 2025-11-21
 """
 
-import sys
 import os
-import pytest
+import sys
 from datetime import date, timedelta
+
+import pytest
 
 # 添加项目根目录到Python路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,6 +33,7 @@ class TestThreeLayerIntegration:
 
         # 重新导入以应用环境变量
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
@@ -144,9 +146,9 @@ class TestThreeLayerIntegration:
     def test_cross_layer_data_flow(self):
         """测试跨层数据流动"""
         from src.data_sources import (
-            get_timeseries_source,
-            get_relational_source,
             get_business_source,
+            get_relational_source,
+            get_timeseries_source,
         )
 
         ts_source = get_timeseries_source()
@@ -187,8 +189,9 @@ class TestThreeLayerIntegration:
 
     def test_composite_parallel_query_optimization(self):
         """测试Composite的并行查询优化"""
-        from src.data_sources import get_business_source
         import time
+
+        from src.data_sources import get_business_source
 
         biz_source = get_business_source()
 
@@ -239,9 +242,9 @@ class TestThreeLayerIntegration:
     def test_all_layers_health_check(self):
         """测试所有三层的健康检查"""
         from src.data_sources import (
-            get_timeseries_source,
-            get_relational_source,
             get_business_source,
+            get_relational_source,
+            get_timeseries_source,
         )
 
         ts_source = get_timeseries_source()

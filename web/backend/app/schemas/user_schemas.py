@@ -3,9 +3,10 @@ User, Watchlist and Notification Schemas for Frontend Compatibility
 These models match the expectations of the frontend adapters.
 """
 
-from typing import Optional, List, Any, Dict
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class UserPreferences(BaseModel):

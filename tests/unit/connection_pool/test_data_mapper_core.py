@@ -5,8 +5,8 @@
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # 添加项目根路径
 project_root = Path.cwd()
@@ -58,9 +58,9 @@ def test_business_mapper_integration():
 
     try:
         from src.data_sources.real.business_mappers import (
-            WatchlistMapper,
-            StrategyConfigMapper,
             RiskAlertMapper,
+            StrategyConfigMapper,
+            WatchlistMapper,
         )
 
         # 测试自选股映射器
@@ -142,10 +142,10 @@ def test_data_transformation():
 
     try:
         from src.data_sources.real.data_mapper import (
+            CommonTransformers,
             FieldMapping,
             FieldType,
             ResultSetMapper,
-            CommonTransformers,
         )
 
         # 测试复杂字段映射

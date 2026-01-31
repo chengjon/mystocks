@@ -9,11 +9,12 @@
 # 版权：MyStocks Project © 2025
 """
 
-import pandas as pd
-from typing import Dict, List, Optional, Union, cast, Any
-import sys
 import os
+import sys
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union, cast
+
+import pandas as pd
 
 # 将当前目录的父目录的父目录添加到模块搜索路径中
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -340,7 +341,6 @@ class CustomerDataSource(IDataSource):
                     except Exception:
                         # 如果market_snapshot不可用，尝试其他方法
                         print("[Customer] market_snapshot不可用，尝试其他方法")
-                        pass
 
                 else:
                     # 获取特定股票的实时数据

@@ -1,9 +1,11 @@
-import pandas as pd
-import numpy as np
 import logging
-from typing import Dict, List, Any, Tuple
-from src.gpu.data_processing_interfaces import IDataProcessor
 from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
+
+from src.gpu.data_processing_interfaces import IDataProcessor
 
 logger = logging.getLogger(__name__)
 

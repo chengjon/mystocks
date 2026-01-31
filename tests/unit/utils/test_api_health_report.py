@@ -2,9 +2,9 @@
 Regression tests for APIHealthChecker.generate_report
 """
 
-import sys
-import os
 import io
+import os
+import sys
 
 # Add source path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

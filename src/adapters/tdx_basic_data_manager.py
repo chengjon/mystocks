@@ -5,8 +5,8 @@ TDX基础数据管理器 - 从 tdx_adapter.py 拆分
 """
 
 import logging
-from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 # 设置日志
 logger = logging.getLogger(__name__)
@@ -242,8 +242,8 @@ class TdxBasicDataManager:
         logger.debug("Fetching trading calendar from %s to %s", start_date, end_date)
 
         # 模拟交易日历
-        from datetime import datetime
         import random
+        from datetime import datetime
 
         result = []
         current_date = datetime.strptime(start_date, "%Y-%m-%d")

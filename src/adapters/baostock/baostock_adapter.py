@@ -5,15 +5,14 @@ Baostock 数据源适配器
 将 baostock 接口集成到 DataSourceManagerV2 系统中。
 """
 
+import contextlib
 import logging
-import pandas as pd
-from typing import Dict, Any, Optional
+import os
 from datetime import datetime, timedelta
 from functools import wraps
 
 import baostock as bs
-import contextlib
-import os
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ def _logout():
 def _rs_to_df(rs, error_msg="查询失败"):
     """将 baostock rs 对象转换为 DataFrame"""
     if rs.error_code != "0":
-        logger.error(f"{error_msg}: {rs.error_msg}")
+        logger.error("%(error_msg)s: {rs.error_msg")
         return pd.DataFrame()
     data_list = []
     while rs.error_code == "0" and rs.next():
@@ -66,7 +65,7 @@ def with_baostock_login(func):
     def wrapper(*args, **kwargs):
         lg = _login()
         if hasattr(lg, "error_code") and lg.error_code != "0":
-            logger.error(f"Baostock登录失败: {lg.error_msg}")
+            logger.error("Baostock登录失败: {lg.error_msg")
             return pd.DataFrame()
         try:
             return func(*args, **kwargs)

@@ -21,12 +21,13 @@ CPU向量化健康度计算引擎
 
 import logging
 import time
-import numpy as np
-import pandas as pd
-from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import date
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +167,7 @@ class VectorizedHealthCalculator:
                 output = self._calculate_single(input_data)
                 results.append(output)
             except Exception as e:
-                logger.error(f"计算 {input_data.stock_code} 健康度失败: {e}")
+                logger.error("计算 {input_data.stock_code} 健康度失败: %(e)s")
                 results.append(
                     HealthScoreOutput(
                         stock_code=input_data.stock_code,
@@ -185,7 +186,7 @@ class VectorizedHealthCalculator:
                 )
 
         elapsed_ms = (time.time() - start_time) * 1000
-        logger.info(f"批量计算 {len(inputs)} 只股票健康度: {elapsed_ms:.2f}ms")
+        logger.info("批量计算 {len(inputs)} 只股票健康度: {elapsed_ms:.2f}ms")
 
         return results
 
@@ -311,7 +312,7 @@ class VectorizedHealthCalculator:
             return float(np.clip(trend_score, 0, 100))
 
         except Exception as e:
-            logger.error(f"趋势评分计算失败: {e}")
+            logger.error("趋势评分计算失败: %(e)s")
             return 50.0
 
     def _calculate_technical_score(self, df: pd.DataFrame) -> float:
@@ -359,7 +360,7 @@ class VectorizedHealthCalculator:
             return float(np.clip(technical_score, 0, 100))
 
         except Exception as e:
-            logger.error(f"技术评分计算失败: {e}")
+            logger.error("技术评分计算失败: %(e)s")
             return 50.0
 
     def _calculate_momentum_score(self, df: pd.DataFrame) -> float:
@@ -382,7 +383,7 @@ class VectorizedHealthCalculator:
             return float(np.clip(roc_avg, 0, 100))
 
         except Exception as e:
-            logger.error(f"动量评分计算失败: {e}")
+            logger.error("动量评分计算失败: %(e)s")
             return 50.0
 
     def _calculate_volatility_score(self, df: pd.DataFrame) -> float:
@@ -419,7 +420,7 @@ class VectorizedHealthCalculator:
             return float(np.clip(volatility_score, 0, 100))
 
         except Exception as e:
-            logger.error(f"波动率评分计算失败: {e}")
+            logger.error("波动率评分计算失败: %(e)s")
             return 50.0
 
     def _calculate_risk_score(self, df: pd.DataFrame) -> float:
@@ -451,7 +452,7 @@ class VectorizedHealthCalculator:
             return float(np.clip(risk_score, 0, 100))
 
         except Exception as e:
-            logger.error(f"风险评分计算失败: {e}")
+            logger.error("风险评分计算失败: %(e)s")
             return 50.0
 
     def _create_default_output(self, input_data: HealthScoreInput, start_time: float) -> HealthScoreOutput:

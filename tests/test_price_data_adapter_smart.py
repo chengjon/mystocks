@@ -6,15 +6,13 @@
 测试用例数: 2
 """
 
+import sys
 import unittest
 from pathlib import Path
-import sys
 
 # 导入被测试模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import price_data_adapter
-
-
 
     def test_price_data_adapter_bug_prevention_sql_injection(self):
         """Bug防护测试 - 存在SQL注入风险"""

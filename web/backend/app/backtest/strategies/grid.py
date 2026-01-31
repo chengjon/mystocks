@@ -4,10 +4,10 @@ Grid Strategy
 网格策略模板 - 区间震荡套利
 """
 
-from typing import Dict, Any, Optional, List
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class GridStrategy(BaseStrategy):

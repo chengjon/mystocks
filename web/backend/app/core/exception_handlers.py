@@ -33,9 +33,10 @@ Estimated Duplication Reduced: 200+ lines
 
 import functools
 import inspect
-from typing import Callable, Any, Dict
-from fastapi import HTTPException
+from typing import Any, Callable, Dict
+
 import structlog
+from fastapi import HTTPException
 
 logger = structlog.get_logger()
 
@@ -92,21 +93,21 @@ def handle_exceptions(
                 raise
 
             except ValueError as e:
-                logger.warning(f"Validation error in {f.__name__}", error=str(e))
+                logger.warning("Validation error in {f.__name__}", error=str(e))
                 return {
                     error_key: "Validation Error",
                     message_key: str(e),
                 }, 400
 
             except KeyError as e:
-                logger.warning(f"Missing required parameter in {f.__name__}", error=str(e))
+                logger.warning("Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
                     message_key: f"Required parameter not found: {str(e)}",
                 }, 400
 
             except PermissionError as e:
-                logger.warning(f"Permission denied in {f.__name__}", error=str(e))
+                logger.warning("Permission denied in {f.__name__}", error=str(e))
                 return {
                     error_key: "Permission Denied",
                     message_key: str(e),
@@ -143,21 +144,21 @@ def handle_exceptions(
                 raise
 
             except ValueError as e:
-                logger.warning(f"Validation error in {f.__name__}", error=str(e))
+                logger.warning("Validation error in {f.__name__}", error=str(e))
                 return {
                     error_key: "Validation Error",
                     message_key: str(e),
                 }, 400
 
             except KeyError as e:
-                logger.warning(f"Missing required parameter in {f.__name__}", error=str(e))
+                logger.warning("Missing required parameter in {f.__name__}", error=str(e))
                 return {
                     error_key: "Missing Required Parameter",
                     message_key: f"Required parameter not found: {str(e)}",
                 }, 400
 
             except PermissionError as e:
-                logger.warning(f"Permission denied in {f.__name__}", error=str(e))
+                logger.warning("Permission denied in {f.__name__}", error=str(e))
                 return {
                     error_key: "Permission Denied",
                     message_key: str(e),
@@ -217,7 +218,7 @@ def handle_validation_errors(func: Callable) -> Callable:
         try:
             return await func(*args, **kwargs)
         except (ValueError, KeyError) as e:
-            logger.warning(f"Validation error in {func.__name__}", error=str(e))
+            logger.warning("Validation error in {func.__name__}", error=str(e))
             return {"error": "Validation Error", "message": str(e)}, 400
 
     @functools.wraps(func)
@@ -225,7 +226,7 @@ def handle_validation_errors(func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except (ValueError, KeyError) as e:
-            logger.warning(f"Validation error in {func.__name__}", error=str(e))
+            logger.warning("Validation error in {func.__name__}", error=str(e))
             return {"error": "Validation Error", "message": str(e)}, 400
 
     if inspect.iscoroutinefunction(func):
@@ -256,7 +257,7 @@ def handle_database_errors(func: Callable) -> Callable:
         except Exception as e:
             error_msg = str(e).lower()
             if any(x in error_msg for x in ["database", "connection", "query", "sql"]):
-                logger.error(f"Database error in {func.__name__}", error=str(e))
+                logger.error("Database error in {func.__name__}", error=str(e))
                 return {
                     "error": "Database Error",
                     "message": "Database connection failed",
@@ -271,7 +272,7 @@ def handle_database_errors(func: Callable) -> Callable:
         except Exception as e:
             error_msg = str(e).lower()
             if any(x in error_msg for x in ["database", "connection", "query", "sql"]):
-                logger.error(f"Database error in {func.__name__}", error=str(e))
+                logger.error("Database error in {func.__name__}", error=str(e))
                 return {
                     "error": "Database Error",
                     "message": "Database connection failed",

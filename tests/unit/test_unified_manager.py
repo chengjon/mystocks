@@ -3,19 +3,21 @@ MyStocksUnifiedManager测试文件
 用于测试统一管理器功能
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pandas as pd
+
+from src.core.data_classification import DataClassification
 
 # 导入被测试的模块
 from src.core.unified_manager import MyStocksUnifiedManager
-from src.core.data_classification import DataClassification
 
 
 class TestMyStocksUnifiedManager(unittest.TestCase):

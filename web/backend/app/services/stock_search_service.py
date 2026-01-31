@@ -7,11 +7,12 @@
 迁移自 OpenStock 项目
 """
 
-import requests
 import json
-from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 from functools import lru_cache
+from typing import Dict, List, Optional
+
+import requests
 
 try:
     import akshare as ak
@@ -109,13 +110,9 @@ def normalize_stock_code(code: str, market: str = "cn") -> str:
 class StockSearchError(Exception):
     """股票搜索错误"""
 
-    pass
-
 
 class FinnhubAPIError(Exception):
     """Finnhub API 错误"""
-
-    pass
 
 
 class StockSearchService:

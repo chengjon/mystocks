@@ -15,13 +15,14 @@ Date: 2025-12-17
 
 import asyncio
 import time
-from typing import Dict, List, Optional, Any, Callable, Set
+from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from collections import deque
-import structlog
 from threading import Lock
+from typing import Any, Callable, Dict, List, Optional, Set
+
+import structlog
 
 logger = structlog.get_logger()
 
@@ -215,7 +216,6 @@ class MessageQueue:
     async def _send_batch(self, batch: List[Dict[str, Any]]):
         """发送消息批次"""
         # 这里应该由具体的实现类来重写
-        pass
 
     def get_stats(self) -> Dict[str, Any]:
         """获取队列统计"""
@@ -381,7 +381,7 @@ class WebSocketStabilityManager:
             flush_interval=self.config["message_queue"]["flush_interval"],
         )
 
-        logger.info(f"注册连接: {connection_id}")
+        logger.info("注册连接: %(connection_id)s"")
         return metrics
 
     def unregister_connection(self, connection_id: str):
@@ -391,7 +391,7 @@ class WebSocketStabilityManager:
         self.message_queues.pop(connection_id, None)
         self.health_check_results.pop(connection_id, None)
 
-        logger.info(f"注销连接: {connection_id}")
+        logger.info("注销连接: %(connection_id)s"")
 
     async def send_message_with_stability(
         self,
@@ -401,7 +401,7 @@ class WebSocketStabilityManager:
     ) -> bool:
         """通过稳定性机制发送消息"""
         if connection_id not in self.connections:
-            logger.warning(f"连接不存在: {connection_id}")
+            logger.warning("连接不存在: %(connection_id)s"")
             return False
 
         # 使用断路器保护
@@ -421,7 +421,7 @@ class WebSocketStabilityManager:
         except Exception as e:
             self.connections[connection_id].error_count += 1
             self.connections[connection_id].last_error = str(e)
-            logger.error(f"发送消息失败: {connection_id} - {e}")
+            logger.error("发送消息失败: %(connection_id)s - %(e)s"")
             return False
 
     async def _send_message_protected(self, connection_id: str, message: Dict[str, Any], priority: int) -> bool:
@@ -564,7 +564,7 @@ class WebSocketStabilityManager:
 
                 await asyncio.sleep(self.config["health_check"]["interval"])
             except Exception as e:
-                logger.error(f"健康检查循环异常: {e}")
+                logger.error("健康检查循环异常: %(e)s"")
                 await asyncio.sleep(5)
 
     async def _connection_cleanup_loop(self):
@@ -581,12 +581,12 @@ class WebSocketStabilityManager:
                         inactive_connections.append(connection_id)
 
                 for connection_id in inactive_connections:
-                    logger.info(f"清理非活动连接: {connection_id}")
+                    logger.info("清理非活动连接: %(connection_id)s"")
                     self.unregister_connection(connection_id)
 
                 await asyncio.sleep(60)  # 每分钟检查一次
             except Exception as e:
-                logger.error(f"连接清理循环异常: {e}")
+                logger.error("连接清理循环异常: %(e)s"")
                 await asyncio.sleep(10)
 
 

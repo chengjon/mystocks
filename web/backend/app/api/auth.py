@@ -10,13 +10,14 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2Pas
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.config import settings
+from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.core.responses import create_success_response
-from app.core.exceptions import UnauthorizedException, ForbiddenException
 from app.core.security import (
     User,
     authenticate_user,
     create_access_token,
     get_password_hash,
+    revoke_token,
     verify_token,
 )
 
@@ -180,11 +181,14 @@ async def login_for_access_token(
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+async def logout(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()), current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
     """
-    用户登出
+    用户登出 - 撤销当前token
     """
-    # 在实际应用中，可以将 token 加入黑名单
+    # 将当前token加入黑名单
+    revoke_token(credentials.credentials)
     return {"message": "登出成功", "success": True}
 
 
@@ -616,9 +620,10 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
     - 400: 令牌无效
     - 500: 服务器错误
     """
-    from app.core.security import verify_token
-    from app.core.database import get_postgresql_session
     from sqlalchemy import text
+
+    from app.core.database import get_postgresql_session
+    from app.core.security import verify_token
 
     session = None
     try:
@@ -704,10 +709,52 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             session.rollback()
         from app.core.exceptions import BusinessException
 
-        raise BusinessException(
-            detail=f"Failed to reset password: {str(e)}", status_code=500, error_code="PASSWORD_RESET_FAILED"
-        )
+        raise BusinessException(detail=f"Failed to reset password: {str(e)}", error_code="PASSWORD_RESET_FAILED")
 
     finally:
         if session:
             session.close()
+
+
+# ============================================================================
+# 兼容路由 - /api/auth/* (前端旧版本兼容)
+# ============================================================================
+from fastapi import APIRouter, Form
+from pydantic import BaseModel
+
+compat_router = APIRouter()  # 无前缀，直接使用 /login
+
+
+@compat_router.post("/login")
+async def compat_login(
+    username: str = Form(..., description="用户名"),
+    password: str = Form(..., description="密码"),
+):
+    """
+    兼容登录端点 - 支持前端 /api/auth/login 请求
+
+    此端点支持表单数据格式（application/x-www-form-urlencoded），
+    用于兼容使用 URLSearchParams 的前端请求。
+    """
+    # 验证用户身份
+    user = authenticate_user(username, password)
+    if not user:
+        raise UnauthorizedException(detail="用户名或密码错误")
+
+    # 创建访问令牌
+    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+    access_token = create_access_token(
+        data={"sub": user.username, "user_id": user.id, "role": user.role},
+        expires_delta=access_token_expires,
+    )
+
+    # 返回格式兼容前端期望
+    return create_success_response(
+        data={
+            "token": access_token,
+            "token_type": "bearer",
+            "expires_in": settings.access_token_expire_minutes * 60,
+            "user": {"username": user.username, "email": user.email, "role": user.role},
+        },
+        message="登录成功",
+    )

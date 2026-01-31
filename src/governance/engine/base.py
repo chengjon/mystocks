@@ -17,4 +17,3 @@ class BaseValidator(ABC):
         Returns:
             验证结果，包含异常行的索引或掩码
         """
-        pass

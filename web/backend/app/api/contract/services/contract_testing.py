@@ -4,10 +4,11 @@ Pytest-based Contract Testing Utilities
 Provides pytest fixtures and helpers for API contract testing.
 """
 
-import pytest
-import yaml
 import logging
 from typing import Any, Generator
+
+import pytest
+import yaml
 from fastapi.testclient import TestClient
 
 from .contract_validator import ContractValidator, ValidationResult

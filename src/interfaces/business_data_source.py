@@ -12,8 +12,8 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Any
 from datetime import date
+from typing import Any, Dict, List, Optional
 
 
 class IBusinessDataSource(ABC):
@@ -115,7 +115,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 数据获取失败
         """
-        pass
 
     @abstractmethod
     def get_sector_performance(
@@ -157,7 +156,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     # ==================== 策略回测相关 ====================
 
@@ -254,7 +252,6 @@ class IBusinessDataSource(ABC):
             PermissionError: 用户无权限
             ValueError: 参数无效
         """
-        pass
 
     @abstractmethod
     def get_backtest_results(
@@ -281,7 +278,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     # ==================== 风险管理相关 ====================
 
@@ -340,7 +336,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 计算失败
         """
-        pass
 
     @abstractmethod
     def check_risk_alerts(self, user_id: int) -> List[Dict[str, Any]]:
@@ -373,7 +368,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 检查失败
         """
-        pass
 
     # ==================== 交易管理相关 ====================
 
@@ -418,7 +412,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 分析失败
         """
-        pass
 
     @abstractmethod
     def get_portfolio_analysis(self, user_id: int, include_history: bool = False) -> Dict[str, Any]:
@@ -477,7 +470,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
@@ -535,7 +527,6 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 分析失败
         """
-        pass
 
     # ==================== 数据分析相关 ====================
 
@@ -592,7 +583,6 @@ class IBusinessDataSource(ABC):
             DataSourceException: 筛选失败
             ValueError: 筛选条件无效
         """
-        pass
 
     # ==================== 健康检查 ====================
 
@@ -623,4 +613,3 @@ class IBusinessDataSource(ABC):
         Raises:
             DataSourceException: 健康检查失败
         """
-        pass

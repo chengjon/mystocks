@@ -7,13 +7,13 @@
 import asyncio
 import os
 import sys
-import pytest
 import tempfile
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Generator, Any, Optional
+from typing import Any, Dict, Generator, Optional
 
+import pytest
 import pytest_asyncio
 from dotenv import load_dotenv
 
@@ -62,6 +62,33 @@ class TestConfig:
 def test_config() -> TestConfig:
     """测试配置夹具"""
     return TestConfig()
+
+
+@pytest.fixture
+def auth_headers(test_config: TestConfig) -> Dict[str, str]:
+    """API鉴权头部夹具"""
+    token = os.getenv("API_AUTH_TOKEN") or getattr(test_config, "API_AUTH_TOKEN", None)
+    if token:
+        return {"Authorization": f"Bearer {token}"}
+    return {}
+
+
+@pytest.fixture
+def client():
+    """FastAPI TestClient夹具"""
+    try:
+        from fastapi.testclient import TestClient
+        from web.backend.app.main import app
+
+        return TestClient(app)
+    except Exception as exc:
+        pytest.skip(f"FastAPI app not available for testing: {exc}")
+
+
+@pytest.fixture
+def test_user() -> Dict[str, str]:
+    """基础测试用户数据"""
+    return {"username": "test_user", "password": "test_password"}
 
 
 @pytest.fixture(scope="session")

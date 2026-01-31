@@ -12,9 +12,9 @@ Redis Services Module
 Version: 1.0.0
 """
 
-from .redis_cache import redis_cache, RedisCacheService
-from .redis_pubsub import redis_pubsub, RedisPubSubService
-from .redis_lock import redis_lock, RedisLockService
+from .redis_cache import RedisCacheService, redis_cache
+from .redis_lock import RedisLockService, redis_lock
+from .redis_pubsub import RedisPubSubService, redis_pubsub
 
 __all__ = [
     "redis_cache",

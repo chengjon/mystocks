@@ -23,7 +23,8 @@ service = ServiceFactory.get_service(MarketDataService)
 Estimated Duplication Reduced: 80+ lines
 """
 
-from typing import Dict, Type, TypeVar, Generic
+from typing import Dict, Generic, Type, TypeVar
+
 import structlog
 
 logger = structlog.get_logger()
@@ -73,7 +74,7 @@ class ServiceFactory(Generic[T]):
         PERFORMANCE: Service instantiated only once, then reused
         """
         if service_class not in ServiceFactory._instances:
-            logger.info(f"✅ Creating singleton instance of {service_class.__name__}")
+            logger.info("✅ Creating singleton instance of {service_class.__name__}"")
             ServiceFactory._instances[service_class] = service_class(*args, **kwargs)
 
         return ServiceFactory._instances[service_class]
@@ -94,13 +95,13 @@ class ServiceFactory(Generic[T]):
             service_class: Service class to reset
         """
         if service_class in ServiceFactory._instances:
-            logger.info(f"🔄 Resetting singleton instance of {service_class.__name__}")
+            logger.info("🔄 Resetting singleton instance of {service_class.__name__}"")
             del ServiceFactory._instances[service_class]
 
     @staticmethod
     def reset_all() -> None:
         """Reset all service instances (useful for testing)"""
-        logger.info(f"🔄 Resetting all {len(ServiceFactory._instances)} service instances")
+        logger.info("🔄 Resetting all {len(ServiceFactory._instances)} service instances"")
         ServiceFactory._instances.clear()
 
     @staticmethod

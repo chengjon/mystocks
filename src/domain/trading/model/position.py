@@ -7,9 +7,8 @@ Position Aggregate Root
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Any, List, Optional
 from uuid import uuid4
-from decimal import Decimal
 
 from ..value_objects.order_side import OrderSide
 

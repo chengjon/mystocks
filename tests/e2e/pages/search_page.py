@@ -2,8 +2,10 @@
 搜索页面对象 (Search Page Object)
 """
 
-from playwright.sync_api import Page
 from typing import List
+
+from playwright.sync_api import Page
+
 from .base_page import BasePage
 
 

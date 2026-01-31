@@ -8,14 +8,15 @@
 4. 批量扫描: 扫描全市场股票
 """
 
-from sqlalchemy import create_engine, and_, desc
-from sqlalchemy.orm import sessionmaker
-from datetime import date, datetime, timedelta
-from typing import List, Dict, Any
-import pandas as pd
 import logging
 import os
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, List
+
 import akshare as ak
+import pandas as pd
+from sqlalchemy import and_, create_engine, desc
+from sqlalchemy.orm import sessionmaker
 
 from app.models.strategy import StrategyDefinition, StrategyResult
 from app.strategies.stock_strategies import get_strategy
@@ -81,7 +82,7 @@ class StrategyService:
             )
 
             if df is None or df.empty:
-                logger.warning(f"未获取到股票{symbol}的历史数据")
+                logger.warning("未获取到股票%(symbol)s的历史数据"")
                 return pd.DataFrame()
 
             # 标准化列名
@@ -103,7 +104,7 @@ class StrategyService:
             # 确保有必需的列
             required_cols = ["date", "open", "high", "low", "close", "volume"]
             if not all(col in df.columns for col in required_cols):
-                logger.error(f"股票{symbol}数据缺少必需的列")
+                logger.error("股票%(symbol)s数据缺少必需的列"")
                 return pd.DataFrame()
 
             # 确保日期格式正确
@@ -112,7 +113,7 @@ class StrategyService:
             return df
 
         except Exception as e:
-            logger.error(f"获取股票{symbol}历史数据失败: {e}")
+            logger.error("获取股票%(symbol)s历史数据失败: %(e)s"")
             return pd.DataFrame()
 
     def get_stock_list(self, market: str = "A") -> List[Dict[str, str]]:
@@ -152,7 +153,7 @@ class StrategyService:
             return result
 
         except Exception as e:
-            logger.error(f"获取股票列表失败: {e}")
+            logger.error("获取股票列表失败: %(e)s"")
             return []
 
     # ==================== 策略执行 ====================
@@ -255,7 +256,7 @@ class StrategyService:
                 db.close()
 
         except Exception as e:
-            logger.error(f"运行策略{strategy_code}失败: {e}")
+            logger.error("运行策略%(strategy_code)s失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def run_strategy_batch(
@@ -296,12 +297,12 @@ class StrategyService:
             matched = 0
             failed = 0
 
-            logger.info(f"开始批量运行策略{strategy_code}, 共{total}只股票")
+            logger.info("开始批量运行策略%(strategy_code)s, 共%(total)s只股票"")
 
             # 2. 逐个运行策略
             for i, stock in enumerate(stock_list, 1):
                 if i % 100 == 0:
-                    logger.info(f"进度: {i}/{total}")
+                    logger.info("进度: %(i)s/%(total)s"")
 
                 result = self.run_strategy_for_stock(
                     strategy_code=strategy_code,
@@ -325,7 +326,7 @@ class StrategyService:
             }
 
         except Exception as e:
-            logger.error(f"批量运行策略失败: {e}")
+            logger.error("批量运行策略失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     # ==================== 查询方法 ====================

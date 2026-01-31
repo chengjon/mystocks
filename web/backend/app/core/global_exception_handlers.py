@@ -24,39 +24,39 @@ import uuid
 from typing import Optional
 
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # 导入新的统一响应格式
 from app.core.responses import (
-    UnifiedResponse,
-    ErrorDetail,
     BusinessCode,
     ErrorCodes,
+    ErrorDetail,
     ResponseMessages,
+    UnifiedResponse,
 )
 
 # 导入自定义异常类
 try:
     from src.core.exceptions import (
-        MyStocksException,
-        DataException,
-        DatabaseException,
-        ConfigException,
-        NetworkException,
-        ProcessingException,
-        BusinessLogicException,
-        DataSourceException,
-        DataSourceConnectionError,
-        DataSourceQueryError,
-        DataSourceDataNotFound,
-        DataSourceTimeout,
-        DataSourceConfigError,
-        DataSourceDataFormatError,
-        DataSourceUnavailable,
         AuthenticationError,
         AuthorizationError,
+        BusinessLogicException,
+        ConfigException,
+        DatabaseException,
+        DataException,
+        DataSourceConfigError,
+        DataSourceConnectionError,
+        DataSourceDataFormatError,
+        DataSourceDataNotFound,
+        DataSourceException,
+        DataSourceQueryError,
+        DataSourceTimeout,
+        DataSourceUnavailable,
+        MyStocksException,
+        NetworkException,
+        ProcessingException,
     )
 except ImportError:
     # 兼容性处理：如果导入失败，使用基础Exception
@@ -437,7 +437,7 @@ def register_global_exception_handlers(app: FastAPI) -> None:
         app.add_exception_handler(MyStocksException, mystocks_exception_handler)
         logger.info("MyStocks exception handlers registered (UnifiedResponse format)")
     except Exception as e:
-        logger.warning(f"Failed to register MyStocks exception handler: {e}")
+        logger.warning("Failed to register MyStocks exception handler: %(e)s"")
 
     # FastAPI内置异常
     app.add_exception_handler(RequestValidationError, request_validation_error_handler)

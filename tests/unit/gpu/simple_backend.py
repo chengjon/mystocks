@@ -6,10 +6,11 @@
 import os
 import sys
 import time
-from fastapi import FastAPI
+
 import uvicorn
-from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from fastapi import FastAPI
 from fastapi.responses import Response
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 # 设置项目路径
 project_root = os.path.dirname(os.path.abspath(__file__))

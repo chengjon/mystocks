@@ -6,11 +6,11 @@ Watchlist Stock Entity
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from src.domain.watchlist.value_objects import IndicatorSnapshot, PriceData, SnapshotTime, VolatilityMetrics
+from src.domain.watchlist.value_objects import IndicatorSnapshot, PriceData, VolatilityMetrics
 
 
 @dataclass

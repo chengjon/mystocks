@@ -6,8 +6,8 @@ DDD架构验证测试
 验证Phase 0-3实施的完整性和正确性。
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
 
 # 添加项目根目录到路径
@@ -98,8 +98,8 @@ def test_value_objects():
     failed = 0
 
     try:
-        from src.domain.strategy.value_objects.instrument_pool import InstrumentPool, AssetClass
         from src.domain.strategy.value_objects.indicator_config import IndicatorConfig
+        from src.domain.strategy.value_objects.instrument_pool import AssetClass, InstrumentPool
         from src.domain.strategy.value_objects.signal_definition import SignalDefinition, SignalStrength
 
         # 测试InstrumentPool
@@ -146,11 +146,11 @@ def test_domain_events():
 
     try:
         from src.domain.shared.domain_events import (
-            SignalGeneratedEvent,
             OrderCreatedEvent,
             OrderFilledEvent,
-            PositionClosedEvent,
             PortfolioRebalancedEvent,
+            PositionClosedEvent,
+            SignalGeneratedEvent,
         )
 
         # 测试SignalGeneratedEvent

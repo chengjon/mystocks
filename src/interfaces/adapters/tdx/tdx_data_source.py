@@ -6,9 +6,10 @@
 # 说明：TDX数据源的统一入口点，整合所有TDX相关功能
 """
 
-import pandas as pd
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 from loguru import logger
 
 # 导入MyStocks接口
@@ -471,4 +472,21 @@ def get_stock_list(self, market: int = 0) -> List[Dict]:
 
     except Exception as e:
         logger.error("获取股票列表失败: %s", e)
+        return []
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_index_components(self, symbol: str) -> List[str]:
+        """获取指数成分股"""
+        logger.warning("TDX数据源不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """获取财务数据"""
+        logger.warning("TDX数据源不支持获取财务数据: %s，请使用FinancialDataSource", symbol)
+        return pd.DataFrame()
+
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
+        """获取新闻数据"""
+        logger.warning("TDX数据源不支持获取新闻数据，返回空列表")
         return []

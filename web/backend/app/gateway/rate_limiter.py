@@ -10,9 +10,10 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
+import time
 from dataclasses import dataclass
 from typing import Dict, Optional, Tuple
-import time
+
 import structlog
 
 logger = structlog.get_logger()

@@ -10,8 +10,9 @@
 日期: 2025-11-21
 """
 
-import sys
 import os
+import sys
+
 import pytest
 
 # 添加项目根目录到Python路径
@@ -32,6 +33,7 @@ class TestDataSourceSwitching:
 
         # 重新导入以清除缓存
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
@@ -78,6 +80,7 @@ class TestDataSourceSwitching:
 
         # 重新导入
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
@@ -116,6 +119,7 @@ class TestDataSourceSwitching:
 
         # 重新导入
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
@@ -155,19 +159,20 @@ class TestDataSourceSwitching:
 
         # 重新导入
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
 
         from src.data_sources import (
-            get_timeseries_source,
-            get_relational_source,
             get_business_source,
+            get_relational_source,
+            get_timeseries_source,
         )
         from src.data_sources.mock import (
-            MockTimeSeriesDataSource,
-            MockRelationalDataSource,
             MockBusinessDataSource,
+            MockRelationalDataSource,
+            MockTimeSeriesDataSource,
         )
 
         ts_source = get_timeseries_source()
@@ -194,19 +199,20 @@ class TestDataSourceSwitching:
 
         # 重新导入
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
 
         from src.data_sources import (
-            get_timeseries_source,
-            get_relational_source,
             get_business_source,
+            get_relational_source,
+            get_timeseries_source,
         )
         from src.data_sources.real import (
-            TDengineTimeSeriesDataSource,
-            PostgreSQLRelationalDataSource,
             CompositeBusinessDataSource,
+            PostgreSQLRelationalDataSource,
+            TDengineTimeSeriesDataSource,
         )
 
         ts_source = get_timeseries_source()
@@ -239,18 +245,19 @@ class TestDataSourceSwitching:
 
         # 重新导入
         import importlib
+
         import src.data_sources
 
         importlib.reload(src.data_sources)
 
         from src.data_sources import (
-            get_timeseries_source,
-            get_relational_source,
             get_business_source,
+            get_relational_source,
+            get_timeseries_source,
         )
         from src.data_sources.mock import (
-            MockTimeSeriesDataSource,
             MockBusinessDataSource,
+            MockTimeSeriesDataSource,
         )
         from src.data_sources.real import PostgreSQLRelationalDataSource
 

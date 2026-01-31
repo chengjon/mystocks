@@ -4,11 +4,11 @@ Genetic Algorithm Optimizer
 遗传算法优化器 - 模拟生物进化的优化方法
 """
 
-from typing import Dict, Any, List, Optional, Tuple
-import random
 import copy
 import logging
+import random
 import time
+from typing import Any, Dict, List, Optional, Tuple
 
 from app.backtest.optimization.base import (
     BaseOptimizer,
@@ -410,7 +410,7 @@ class GeneticOptimizer(BaseOptimizer):
             }
         )
 
-        logger.info(f"第0代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}")
+        logger.info("第0代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}"")
 
         no_improvement_count = 0
         prev_best_fitness = best_ind.fitness
@@ -477,7 +477,7 @@ class GeneticOptimizer(BaseOptimizer):
                 progress_callback(generation, self.n_generations, best_ind.result)
 
             # 日志
-            logger.info(f"第{generation}代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}")
+            logger.info("第%(generation)s代: 最佳={best_ind.fitness:.4f}, 平均={avg_fitness:.4f}"")
 
             # 早停检查
             if early_stop:
@@ -487,7 +487,7 @@ class GeneticOptimizer(BaseOptimizer):
                     no_improvement_count = 0
 
                 if no_improvement_count >= patience:
-                    logger.info(f"早停触发: 连续{patience}代无改进")
+                    logger.info("早停触发: 连续%(patience)s代无改进"")
                     break
 
                 prev_best_fitness = best_ind.fitness

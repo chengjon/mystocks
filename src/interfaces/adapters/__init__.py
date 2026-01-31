@@ -8,14 +8,14 @@
 作者: JohnC& AI Dev Team (Claude, OpenCode, Gemini, IFLOW)
 """
 
-from src.adapters.tushare_adapter import TushareDataSource
-from src.adapters.efinance_adapter import EfinanceDataSource
-from src.adapters.data_validator import DataValidator
-from src.adapters.data_source_manager import DataSourceManager
-from src.adapters.customer_adapter import CustomerDataSource
-from src.adapters.byapi_adapter import ByapiAdapter
-from src.adapters.baostock_adapter import BaostockDataSource
 from src.adapters.akshare_proxy_adapter import AkshareProxyAdapter
+from src.adapters.baostock_adapter import BaostockDataSource
+from src.adapters.byapi_adapter import ByapiAdapter
+from src.adapters.customer_adapter import CustomerDataSource
+from src.adapters.data_source_manager import DataSourceManager
+from src.adapters.data_validator import DataValidator
+from src.adapters.efinance_adapter import EfinanceDataSource
+from src.adapters.tushare_adapter import TushareDataSource
 
 __version__ = "1.0.0"
 AUTHOR = "JohnC& AI Dev Team (Claude, OpenCode, Gemini, IFLOW)"

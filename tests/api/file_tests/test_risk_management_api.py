@@ -11,9 +11,11 @@ Priority: P0 (Contract-managed)
 Coverage: 100% functional + contract validation
 """
 
-import pytest
 import asyncio
-from tests.api.file_tests.conftest import assert_file_test_result, api_test_fixtures, mock_responses
+
+import pytest
+
+from tests.api.file_tests.conftest import api_test_fixtures, assert_file_test_result, mock_responses
 
 
 class TestRiskManagementAPIFile:

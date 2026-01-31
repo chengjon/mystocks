@@ -114,7 +114,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
         if not tickers:
             raise ValueError("Tickers list cannot be empty")
 
-        logger.info(f"📊 Subscribing to {len(tickers)} tickers: {tickers[:5]}...")
+        logger.info("📊 Subscribing to {len(tickers)} tickers: {tickers[:5]}...")
         self._status = StreamStatus.SUBSCRIBING
 
         # 模拟订阅延迟
@@ -128,7 +128,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
                 self._current_prices[ticker] = round(random.uniform(10, 100), 2)
 
         self._status = StreamStatus.SUBSCRIBED
-        logger.info(f"✅ Subscribed to {len(tickers)} tickers")
+        logger.info("✅ Subscribed to {len(tickers)} tickers")
 
         # 启动价格更新任务
         if not self._running:
@@ -141,20 +141,20 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
         if not tickers:
             return
 
-        logger.info(f"📊 Unsubscribing from {len(tickers)} tickers: {tickers[:5]}...")
+        logger.info("📊 Unsubscribing from {len(tickers)} tickers: {tickers[:5]}...")
 
         for ticker in tickers:
             if ticker in self._subscribed_tickers:
                 self._subscribed_tickers.remove(ticker)
                 self._current_prices.pop(ticker, None)
 
-        logger.info(f"✅ Unsubscribed from {len(tickers)} tickers")
+        logger.info("✅ Unsubscribed from {len(tickers)} tickers")
 
     def on_message(self, callback: Callable[[PriceUpdate], None]) -> None:
         """注册消息回调函数"""
         if callback not in self._message_callbacks:
             self._message_callbacks.append(callback)
-            logger.debug(f"✅ Registered message callback: {callback.__name__}")
+            logger.debug("✅ Registered message callback: {callback.__name__")
 
     def get_status(self) -> StreamStatus:
         """获取当前连接状态"""
@@ -199,7 +199,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
                             else:
                                 callback(update)
                         except Exception as e:
-                            logger.error(f"Error in message callback: {e}")
+                            logger.error("Error in message callback: %(e)s")
 
                 # 等待下一次更新
                 await asyncio.sleep(self.update_interval)
@@ -208,7 +208,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
                 logger.info("🛑 Price update loop cancelled")
                 break
             except Exception as e:
-                logger.error(f"Error in price update loop: {e}")
+                logger.error("Error in price update loop: %(e)s")
                 await asyncio.sleep(self.update_interval)
 
         logger.info("⏹️ Price update loop stopped")
@@ -231,7 +231,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
                 logger.info("🛑 Heartbeat loop cancelled")
                 break
             except Exception as e:
-                logger.error(f"Error in heartbeat loop: {e}")
+                logger.error("Error in heartbeat loop: %(e)s")
 
         logger.info("⏹️ Heartbeat loop stopped")
 

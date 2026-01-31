@@ -17,14 +17,15 @@ This module contains comprehensive tests for all advanced analysis modules:
 - Multidimensional Radar Analyzer
 """
 
-import pytest
-import pandas as pd
-import numpy as np
-from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
+from unittest.mock import Mock, patch
 
-from src.advanced_analysis import AnalysisType, AnalysisResult, AdvancedAnalysisEngine, MultidimensionalRadarAnalyzer
-from src.core import MyStocksUnifiedManager, DataClassification
+import numpy as np
+import pandas as pd
+import pytest
+
+from src.advanced_analysis import AdvancedAnalysisEngine, AnalysisResult, AnalysisType, MultidimensionalRadarAnalyzer
+from src.core import DataClassification, MyStocksUnifiedManager
 
 
 class TestMultidimensionalRadarAnalyzer:
@@ -287,18 +288,18 @@ class TestAdvancedAnalysisIntegration:
         """测试所有分析器可以正常导入"""
         # This test ensures all analyzer modules can be imported without errors
         from src.advanced_analysis import (
-            FundamentalAnalyzer,
-            TechnicalAnalyzer,
-            TradingSignalAnalyzer,
-            TimeSeriesAnalyzer,
-            MarketPanoramaAnalyzer,
+            AnomalyTrackingAnalyzer,
             CapitalFlowAnalyzer,
             ChipDistributionAnalyzer,
-            AnomalyTrackingAnalyzer,
-            FinancialValuationAnalyzer,
-            SentimentAnalyzer,
             DecisionModelsAnalyzer,
+            FinancialValuationAnalyzer,
+            FundamentalAnalyzer,
+            MarketPanoramaAnalyzer,
             MultidimensionalRadarAnalyzer,
+            SentimentAnalyzer,
+            TechnicalAnalyzer,
+            TimeSeriesAnalyzer,
+            TradingSignalAnalyzer,
         )
 
         # If we reach this point, all imports were successful

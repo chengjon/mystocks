@@ -6,17 +6,17 @@ Prometheus 监控指标模块
 
 import logging
 import time
-from typing import Dict, Any, Optional
 from functools import wraps
+from typing import Optional
 
 try:
     from prometheus_client import (
+        CONTENT_TYPE_LATEST,
+        CollectorRegistry,
         Counter,
         Gauge,
         Histogram,
-        CollectorRegistry,
         generate_latest,
-        CONTENT_TYPE_LATEST,
     )
 
     PROMETHEUS_AVAILABLE = True
@@ -154,7 +154,7 @@ class DataSourceMetrics:
         if cost > 0:
             self.api_cost_estimated.labels(endpoint=endpoint).set(cost)
 
-        logger.debug(f"Recorded API call: {endpoint}, latency={latency:.3f}s, " f"status={status}, cost={cost:.4f}")
+        logger.debug("Recorded API call: {endpoint}, latency={latency:.3f}s, " f"status={status}, cost={cost:.4f}")
 
     def record_cache_hit(self, endpoint: str):
         """
@@ -167,7 +167,7 @@ class DataSourceMetrics:
             return
 
         self.cache_hits_total.labels(endpoint=endpoint).inc()
-        logger.debug(f"Recorded cache hit: {endpoint}")
+        logger.debug("Recorded cache hit: %(endpoint)s")
 
     def record_cache_miss(self, endpoint: str):
         """
@@ -180,7 +180,7 @@ class DataSourceMetrics:
             return
 
         self.cache_misses_total.labels(endpoint=endpoint).inc()
-        logger.debug(f"Recorded cache miss: {endpoint}")
+        logger.debug("Recorded cache miss: %(endpoint)s")
 
     def record_data_quality(self, endpoint: str, check_type: str, quality_score: float):
         """
@@ -195,7 +195,7 @@ class DataSourceMetrics:
             return
 
         self.data_quality.labels(endpoint=endpoint, check_type=check_type).set(quality_score)
-        logger.debug(f"Recorded data quality: {endpoint}, {check_type}={quality_score:.1f}")
+        logger.debug("Recorded data quality: %(endpoint)s, %(check_type)s=%(quality_score)s")
 
     def record_circuit_breaker_state(self, endpoint: str, state: int):
         """
@@ -209,7 +209,7 @@ class DataSourceMetrics:
             return
 
         self.circuit_breaker_state.labels(endpoint=endpoint).set(state)
-        logger.debug(f"Recorded circuit breaker state: {endpoint}={state}")
+        logger.debug("Recorded circuit breaker state: %(endpoint)s=%(state)s")
 
     def get_cache_hit_rate(self, endpoint: str) -> float:
         """

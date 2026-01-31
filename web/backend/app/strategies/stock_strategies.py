@@ -16,10 +16,11 @@
 """
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Dict, Optional
+
 import pandas as pd
 import talib as tl
-from datetime import datetime
 
 
 class BaseStrategy(ABC):
@@ -58,7 +59,6 @@ class BaseStrategy(ABC):
         Returns:
             bool: True表示符合策略条件，False表示不符合
         """
-        pass
 
     def filter_date(self, data: pd.DataFrame, end_date: Optional[str] = None) -> pd.DataFrame:
         """过滤数据到指定日期"""

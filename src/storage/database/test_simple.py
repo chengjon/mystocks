@@ -5,8 +5,8 @@
 用于验证TDengine导入问题是否已解决
 """
 
-import logging
 import importlib.util
+import logging
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

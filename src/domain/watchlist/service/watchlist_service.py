@@ -6,12 +6,12 @@ Watchlist Domain Service
 """
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime
-import pandas as pd
+from typing import Any, Dict, List, Optional
+
 
 from src.domain.watchlist.model import Watchlist, WatchlistStock
-from src.domain.watchlist.value_objects import WatchlistType, IndicatorSnapshot, IndicatorValue, SnapshotTime, PriceData
+from src.domain.watchlist.value_objects import IndicatorSnapshot
+
 from .snapshot_service import SnapshotService
 
 logger = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class WatchlistDomainService:
             )
             stock.capture_entry_snapshot(snapshot)
 
-        logger.info(f"Added stock {stock_code} to watchlist {watchlist.name}")
+        logger.info("Added stock %(stock_code)s to watchlist {watchlist.name")
         return stock
 
     def capture_observation(
@@ -84,7 +84,7 @@ class WatchlistDomainService:
                 stock_code=stock_code, indicator_ids=capture_indicators
             )
             stock.capture_observation_snapshot(snapshot)
-            logger.info(f"Captured observation snapshot for {stock_code}")
+            logger.info("Captured observation snapshot for %(stock_code)s")
             return snapshot
         return None
 
@@ -219,7 +219,7 @@ class WatchlistDomainService:
                     stock.capture_timed_snapshot(snapshot)
                 results[code] = snapshot
             except Exception as e:
-                logger.error(f"Failed to capture snapshot for {code}: {e}")
+                logger.error("Failed to capture snapshot for %(code)s: %(e)s")
                 results[code] = None
 
         return results

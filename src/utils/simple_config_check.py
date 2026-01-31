@@ -6,8 +6,8 @@
 个人项目简化版 - 启动时提醒，不强制退出
 """
 
-import os
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ def check_config_strength():
     if issues:
         logger.warning("⚠️  配置安全性提醒:")
         for issue in issues:
-            logger.warning(f"  - {issue}")
+            logger.warning("  - %s", issue)
         logger.warning("")
         logger.warning("建议提升安全性:")
         logger.warning("  1. 使用 'openssl rand -hex 32' 生成强JWT密钥")

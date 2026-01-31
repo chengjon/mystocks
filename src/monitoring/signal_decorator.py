@@ -27,27 +27,24 @@ result = monitored_executor.execute(symbols)
 版本: 1.0.0
 """
 
-import time
 import logging
-from typing import List, Dict, Any, Optional, Callable
-from datetime import datetime
+import time
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 try:
     from src.monitoring.signal_metrics import (
+        record_push_latency,
         record_signal_generation,
         record_signal_latency,
         record_signal_push,
-        record_push_latency,
+        update_active_signals_count,
+        update_profit_ratio,
         update_signal_accuracy,
         update_signal_success_rate,
-        update_profit_ratio,
-        update_active_signals_count,
         update_strategy_health,
-        SIGNAL_GENERATION_TOTAL,
-        SIGNAL_PUSH_TOTAL,
     )
 except ImportError:
     logger.warning("Signal metrics module not available, monitoring disabled")
@@ -209,7 +206,7 @@ class MonitoredStrategyExecutor:
         except Exception as e:
             self._monitoring_context.errors.append(str(e))
             self._monitoring_context.update_gauges()
-            logger.error(f"策略执行监控错误: {e}")
+            logger.error("策略执行监控错误: %(e)s")
             raise
 
     def execute_symbol(self, symbol: str, data: Any = None, **kwargs) -> Any:
@@ -237,7 +234,7 @@ class MonitoredStrategyExecutor:
 
         except Exception as e:
             context.errors.append(str(e))
-            logger.error(f"单标的执行监控错误: {e}")
+            logger.error("单标的执行监控错误: %(e)s")
             raise
 
     def get_monitoring_summary(self) -> Dict[str, Any]:
@@ -296,250 +293,4 @@ def record_signal_result(
         profit_percent = 100.0 if profit_loss > 0 else 0.0
         update_profit_ratio(strategy_id, "1d", profit_percent)
 
-    logger.debug(f"信号结果记录: strategy={strategy_id}, signal={signal_id}, executed={executed}, profit={profit_loss}")
-
-
-class MonitoredStrategyExecutor:
-    """
-    监控包装器 - 复用原有执行器所有功能
-    """
-
-    def __init__(self, original_executor: Any, strategy_id: str = "default"):
-        self._executor = original_executor
-        self._strategy_id = strategy_id
-        self._monitoring_context: Optional[SignalMonitoringContext] = None
-
-        for attr_name in dir(original_executor):
-            if not attr_name.startswith("_") and attr_name != "execute":
-                try:
-                    attr = getattr(original_executor, attr_name)
-                    if not callable(attr):
-                        setattr(self, attr_name, attr)
-                except (AttributeError, TypeError):
-                    pass
-
-    def __getattr__(self, name: str):
-        return getattr(self._executor, name)
-
-    def execute(
-        self, symbols: List[str], start_date: Optional[str] = None, end_date: Optional[str] = None, **kwargs
-    ) -> Dict[str, Any]:
-        self._monitoring_context = SignalMonitoringContext(self._strategy_id)
-        start_time = time.time()
-
-        try:
-            result = self._executor.execute(symbols=symbols, start_date=start_date, end_date=end_date, **kwargs)
-
-            elapsed_ms = (time.time() - start_time) * 1000
-
-            if hasattr(result, "signals"):
-                signals = result.signals if isinstance(result.signals, list) else []
-                for signal in signals:
-                    signal_type = getattr(signal, "side", None)
-                    if signal_type:
-                        symbol = getattr(signal, "symbol", "unknown")
-                        signal_val = getattr(signal_type, "value", str(signal_type))
-                        self._monitoring_context.record_signal(signal_val, symbol)
-
-            if hasattr(self._executor, "_gpu_used") and self._executor._gpu_used:
-                self._monitoring_context.record_gpu_usage(elapsed_ms)
-
-            self._monitoring_context.update_gauges()
-
-            if isinstance(result, dict):
-                result["_monitoring"] = self._monitoring_context.get_summary()
-            elif hasattr(result, "_monitoring"):
-                result._monitoring = self._monitoring_context.get_summary()
-
-            logger.info(
-                f"策略执行监控: strategy={self._strategy_id}, "
-                f"信号数={self._monitoring_context.signals_generated}, "
-                f"耗时={elapsed_ms:.2f}ms"
-            )
-
-            return result
-
-        except Exception as e:
-            self._monitoring_context.errors.append(str(e))
-            self._monitoring_context.update_gauges()
-            logger.error(f"策略执行监控错误: {e}")
-            raise
-
-    def execute_symbol(self, symbol: str, data: Any = None, **kwargs) -> Any:
-        start_time = time.time()
-        context = SignalMonitoringContext(self._strategy_id)
-
-        try:
-            result = self._executor.execute_symbol(symbol, data, **kwargs)
-
-            if hasattr(result, "signals"):
-                for signal in result.signals:
-                    signal_type = getattr(signal, "side", "HOLD")
-                    symbol_name = getattr(signal, "symbol", symbol)
-                    context.record_signal(getattr(signal_type, "value", str(signal_type)), symbol_name)
-
-            latency_ms = (time.time() - start_time) * 1000
-            if record_signal_latency:
-                record_signal_latency(
-                    strategy_id=self._strategy_id, latency_seconds=latency_ms / 1000, indicator_count=1
-                )
-
-            context.update_gauges()
-
-            return result
-
-        except Exception as e:
-            context.errors.append(str(e))
-            logger.error(f"单标的执行监控错误: {e}")
-            raise
-
-    def get_monitoring_summary(self) -> Dict[str, Any]:
-        if self._monitoring_context:
-            return self._monitoring_context.get_summary()
-        return {"status": "no_execution", "strategy_id": self._strategy_id}
-
-    def record_push_result(self, channel: str, success: bool, latency_ms: float) -> None:
-        if self._monitoring_context:
-            self._monitoring_context.record_push(channel, success, latency_ms)
-
-
-class SignalMetricsCollector:
-    """
-    信号指标收集器 - 批量收集和更新指标
-
-    用于定时任务批量更新信号统计指标。
-    """
-
-    def __init__(self, strategy_id: str):
-        self.strategy_id = strategy_id
-        self._pending_signals: List[Dict[str, Any]] = []
-        self._push_results: List[Dict[str, Any]] = []
-
-    def add_signal(self, signal_data: Dict[str, Any]) -> None:
-        """添加待处理的信号"""
-        self._pending_signals.append(signal_data)
-
-    def add_push_result(self, push_data: Dict[str, Any]) -> None:
-        """添加推送结果"""
-        self._push_results.append(push_data)
-
-    def calculate_and_update(self) -> Dict[str, Any]:
-        """
-        计算并更新所有指标
-
-        Returns:
-            Dict: 计算结果摘要
-        """
-        if not self._pending_signals and not self._push_results:
-            return {"status": "no_data"}
-
-        # 计算信号统计
-        if self._pending_signals:
-            signal_types = {}
-            for sig in self._pending_signals:
-                st = sig.get("signal_type", "UNKNOWN")
-                signal_types[st] = signal_types.get(st, 0) + 1
-
-            # 更新指标
-            if update_signal_accuracy:
-                total = len(self._pending_signals)
-                for st, count in signal_types.items():
-                    accuracy = (count / total * 100) if total > 0 else 0
-                    update_signal_accuracy(self.strategy_id, st, accuracy)
-
-        # 统计推送结果
-        if self._push_results:
-            channel_stats = {}
-            for push in self._push_results:
-                ch = push.get("channel", "unknown")
-                success = push.get("success", False)
-                if ch not in channel_stats:
-                    channel_stats[ch] = {"success": 0, "failed": 0}
-                if success:
-                    channel_stats[ch]["success"] += 1
-                else:
-                    channel_stats[ch]["failed"] += 1
-
-        # 清空待处理列表
-        self._pending_signals.clear()
-        self._push_results.clear()
-
-        return {
-            "status": "updated",
-            "strategy_id": self.strategy_id,
-            "signals_processed": len(self._pending_signals),
-            "push_results_processed": len(self._push_results),
-        }
-
-
-# ============================================================================
-# 便捷函数
-# ============================================================================
-
-
-def create_monitored_executor(original_executor: Any, strategy_id: str = "default") -> MonitoredStrategyExecutor:
-    """
-    创建带监控的策略执行器
-
-    Args:
-        original_executor: 原始StrategyExecutor实例
-        strategy_id: 策略ID（用于指标Label）
-
-    Returns:
-        MonitoredStrategyExecutor实例
-    """
-    return MonitoredStrategyExecutor(original_executor, strategy_id)
-
-
-def monitor_signal_push(channel: str) -> Callable:
-    """
-    推送监控装饰器
-
-    用于监控推送服务的性能和成功率。
-
-    Example:
-        ```python
-        class PushService:
-            @monitor_signal_push("websocket")
-            async def send_signal(self, signal):
-                ...
-        ```
-    """
-
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        async def wrapper(*args, **kwargs):
-            start_time = time.time()
-            try:
-                result = await func(*args, **kwargs)
-                latency_ms = (time.time() - start_time) * 1000
-                if record_signal_push:
-                    record_signal_push(channel=channel, status="success")
-                if record_push_latency:
-                    record_push_latency(channel=channel, latency_seconds=latency_ms / 1000)
-                return result
-            except Exception as e:
-                latency_ms = (time.time() - start_time) * 1000
-                if record_signal_push:
-                    record_signal_push(channel=channel, status="failed")
-                logger.error(f"推送失败 [{channel}]: {e}")
-                raise
-
-        return wrapper
-
-    return decorator
-
-
-# ============================================================================
-# 导出
-# ============================================================================
-
-__all__ = [
-    "SignalMonitoringContext",
-    "monitored_strategy",
-    "MonitoredStrategyExecutor",
-    "create_monitored_executor",
-    "record_signal_result",
-    "SignalMetricsCollector",
-    "monitor_signal_push",
-]
+    logger.debug("信号结果记录: strategy=%(strategy_id)s, signal=%(signal_id)s, executed=%(executed)s, profit=%(profit_loss)s")

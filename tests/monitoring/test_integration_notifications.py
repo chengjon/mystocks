@@ -7,18 +7,19 @@
 import asyncio
 import json
 import logging
+import queue
+import threading
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable
-import threading
-import queue
-import uuid
+from typing import Any, Callable, Dict, List, Optional
 
 import aiohttp
 import requests
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+
 from ..ai.test_data_manager import DataManager as AIDataManager
 
 
@@ -134,8 +135,8 @@ class EmailNotificationChannel(NotificationChannel):
 
         try:
             import smtplib
-            from email.mime.text import MIMEText
             from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
 
             # 创建邮件
             msg = MIMEMultipart()

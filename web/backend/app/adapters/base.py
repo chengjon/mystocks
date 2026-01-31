@@ -9,13 +9,14 @@ This module provides the foundation for multi-source data integration with:
 - Standardized data format
 """
 
-from abc import ABC, abstractmethod
-from enum import Enum
-from typing import Dict, List, Optional, Any
-from datetime import datetime, date
-import pandas as pd
 import logging
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import date, datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,6 @@ class IDataSource(ABC):
         Returns:
             DataSourceType: 数据源类型
         """
-        pass
 
     @abstractmethod
     def get_supported_categories(self) -> List[DataCategory]:
@@ -113,7 +113,6 @@ class IDataSource(ABC):
         Returns:
             List[DataCategory]: 支持的数据类别列表
         """
-        pass
 
     @abstractmethod
     def check_health(self) -> DataSourceHealthStatus:
@@ -123,7 +122,6 @@ class IDataSource(ABC):
         Returns:
             DataSourceHealthStatus: 健康状态
         """
-        pass
 
     @abstractmethod
     def fetch_realtime_quote(self, symbols: Optional[List[str]] = None) -> pd.DataFrame:
@@ -136,7 +134,6 @@ class IDataSource(ABC):
         Returns:
             pd.DataFrame: 实时行情数据
         """
-        pass
 
     @abstractmethod
     def fetch_historical_quote(
@@ -158,7 +155,6 @@ class IDataSource(ABC):
         Returns:
             pd.DataFrame: 历史行情数据
         """
-        pass
 
 
 class BaseDataSourceAdapter(IDataSource):
@@ -190,7 +186,7 @@ class BaseDataSourceAdapter(IDataSource):
         self._error_count = 0
         self._total_response_time = 0.0
 
-        logger.info(f"Initialized {self.config.source_type.value} adapter " f"(priority={self.config.priority})")
+        logger.info("Initialized {self.config.source_type.value} adapter " f"(priority={self.config.priority})")
 
     def get_source_type(self) -> DataSourceType:
         """获取数据源类型"""
@@ -301,7 +297,6 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             List[DataCategory]: 支持的数据类别
         """
-        pass
 
     def fetch_realtime_quote(self, symbols: Optional[List[str]] = None) -> pd.DataFrame:
         """
@@ -313,7 +308,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 实时行情数据
         """
-        logger.warning(f"{self.config.source_type.value} does not support realtime_quote")
+        logger.warning("{self.config.source_type.value} does not support realtime_quote"")
         return pd.DataFrame()
 
     def fetch_historical_quote(
@@ -335,7 +330,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 历史行情数据
         """
-        logger.warning(f"{self.config.source_type.value} does not support historical_quote")
+        logger.warning("{self.config.source_type.value} does not support historical_quote"")
         return pd.DataFrame()
 
     def fetch_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> pd.DataFrame:
@@ -349,7 +344,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 资金流向数据
         """
-        logger.warning(f"{self.config.source_type.value} does not support fund_flow")
+        logger.warning("{self.config.source_type.value} does not support fund_flow"")
         return pd.DataFrame()
 
     def fetch_dragon_tiger(self, date_str: str) -> pd.DataFrame:
@@ -362,7 +357,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 龙虎榜数据
         """
-        logger.warning(f"{self.config.source_type.value} does not support dragon_tiger")
+        logger.warning("{self.config.source_type.value} does not support dragon_tiger"")
         return pd.DataFrame()
 
     def fetch_announcements(
@@ -384,7 +379,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 公告数据
         """
-        logger.warning(f"{self.config.source_type.value} does not support announcements")
+        logger.warning("{self.config.source_type.value} does not support announcements"")
         return pd.DataFrame()
 
 
@@ -441,7 +436,7 @@ class DataSourceFactory:
 
         if adapter:
             cls._instances[source_type] = adapter
-            logger.info(f"Created adapter for {source_type.value}")
+            logger.info("Created adapter for {source_type.value}"")
 
         return adapter
 

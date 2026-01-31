@@ -14,10 +14,11 @@
 版本: 1.0.0
 """
 
-import pandas as pd
-import numpy as np
-import sys
 import os
+import sys
+
+import numpy as np
+import pandas as pd
 
 # 添加父目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -26,8 +27,8 @@ from strategy.base_strategy import BaseStrategy
 
 # 导入您需要的技术指标
 from indicators.tdx_functions import (
-    MA,
     CROSS,
+    MA,
     RSI,
 )
 

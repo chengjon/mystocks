@@ -1,5 +1,5 @@
 // Auto-generated types for common domain
-// Generated at: 2026-01-19T22:34:18.293479
+// Generated at: 2026-01-29T13:43:35.808472
 
 export interface APIResponse {
   success?: boolean;
@@ -272,40 +272,6 @@ export interface BacktestListResponse {
   backtests?: BacktestResultSummary[];
   page?: number;
   page_size?: number;
-}
-
-export interface BacktestRequest {
-  strategy_name?: string;
-  symbols?: string[];
-  start_date?: string;
-  end_date?: string;
-  initial_capital?: number;
-  parameters?: Record<string, any>;
-  strategy_id?: number;
-  symbol?: string;
-  position_size?: number;
-  user_id?: number;
-  commission_rate?: number;
-  slippage_rate?: number;
-  benchmark?: string | null;
-  include_analysis?: boolean;
-}
-
-export interface BacktestResponse {
-  task_id?: string;
-  status?: string;
-  summary?: BacktestResultSummary | null;
-  equity_curve?: Record<string, any>[];
-  trades?: BacktestTrade[];
-  error_message?: string | null;
-  strategy_id?: string;
-  total_return?: number;
-  annualized_return?: number;
-  sharpe_ratio?: number;
-  max_drawdown?: number;
-  win_rate?: number;
-  total_trades?: number;
-  backtest_duration_ms?: number;
 }
 
 export interface BacktestResult {
@@ -731,6 +697,14 @@ export interface HMMTrainRequest {
   hmm_config?: HMMConfig;
 }
 
+export interface HealthCheckResponse {
+  status?: string;
+  version?: string;
+  uptime?: number;
+  timestamp?: string;
+  services?: Record<string, any> | null;
+}
+
 export interface HeatmapResponse {
   sector?: string;
   stocks?: HeatmapStock[];
@@ -1053,6 +1027,28 @@ export interface MarketDataQueryModel {
   interval?: string | null;
 }
 
+export interface MarketIndexItem {
+  symbol?: string;
+  name?: string;
+  current_price?: number;
+  change_percent?: number;
+  volume?: number | null;
+  turnover?: number | null;
+  update_time?: string | null;
+}
+
+export interface MarketOverview {
+  indices?: MarketIndexItem[];
+  up_count?: number;
+  down_count?: number;
+  flat_count?: number;
+  total_volume?: number | null;
+  total_turnover?: number | null;
+  top_gainers?: Record<string, any>[];
+  top_losers?: Record<string, any>[];
+  most_active?: Record<string, any>[];
+}
+
 export interface MarketOverviewDetailedResponse {
   market_stats?: MarketOverviewStats;
   top_etfs?: TopETFItem[];
@@ -1344,7 +1340,7 @@ export interface PagedResponse {
 }
 
 export interface PaginatedResponse {
-  items?: list[T];
+  items?: T[];
   total?: number;
   page?: number;
   page_size?: number;
@@ -1419,6 +1415,18 @@ export interface Position {
   profit_loss?: number;
   profit_loss_percent?: number;
   last_update?: string;
+}
+
+export interface PositionItem {
+  symbol?: string;
+  name?: string | null;
+  quantity?: number;
+  avg_cost?: number;
+  current_price?: number | null;
+  market_value?: number | null;
+  profit_loss?: number | null;
+  profit_loss_percent?: number | null;
+  position_percent?: number | null;
 }
 
 export interface PositionsResponse {
@@ -1579,7 +1587,7 @@ export interface RiskDashboardResponse {
 }
 
 export interface RiskHistoryPoint {
-  date?: date_type;
+  date?: string;
   var_95_hist?: number | null;
   cvar_95?: number | null;
   beta?: number | null;

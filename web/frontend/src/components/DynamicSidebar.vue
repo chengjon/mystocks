@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
     import { ref, computed, type Component } from 'vue'
-    import { MENU_CONFIG, getMenuConfig, getAvailableModules } from '@/utils/MenuConfig.js'
+    import { MENU_CONFIG, getMenuConfig, getAvailableModules } from '@/layouts/archive/MenuConfig'
     import type { MenuItem } from '@/types/common'
     import {
         TrendCharts,

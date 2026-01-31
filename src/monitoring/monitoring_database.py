@@ -9,12 +9,12 @@
 # 版权：MyStocks Project © 2025
 """
 
-import uuid
 import json
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
+import uuid
 from contextlib import contextmanager
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from src.storage.database.connection_manager import DatabaseConnectionManager
 
@@ -656,7 +656,7 @@ class MonitoringDatabase:
                 return [{"timestamp": r[0], "value": r[1]} for r in records]
 
         except Exception as e:
-            logger.error(f"获取指标历史数据失败: {e}")
+            logger.error("获取指标历史数据失败: %(e)s")
             return []
 
     async def save_threshold_adjustment(self, adjustment: Dict[str, Any]) -> bool:
@@ -704,7 +704,7 @@ class MonitoringDatabase:
             return True
 
         except Exception as e:
-            logger.error(f"保存阈值调整记录失败: {e}")
+            logger.error("保存阈值调整记录失败: %(e)s")
             return False
 
     def cleanup_old_records(self, days_to_keep: Optional[Dict[str, int]] = None) -> Dict[str, int]:

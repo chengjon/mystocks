@@ -246,7 +246,7 @@ class FinancialDataSource(IDataSource):
 
     def _validate_symbol(self, symbol: str) -> bool:
         """验证股票代码格式"""
-        return symbol_utils.is_valid_symbol(symbol)
+        return symbol_utils.is_valid_stock_code(symbol)
 
     def get_data_source_status(self) -> Dict:
         """
@@ -299,3 +299,128 @@ class FinancialDataSource(IDataSource):
         except Exception as e:
             logger.error("获取数据源状态失败: %s", e)
             return {"error": str(e)}
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取指数日线数据
+
+        Args:
+            symbol: 指数代码
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 日线数据
+
+        Note:
+            FinancialDataSource专注于财务数据，不支持指数日线
+        """
+        logger.warning("FinancialDataSource不支持获取指数日线数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_stock_basic(self, symbol: str) -> Dict:
+        """
+        获取股票基本信息
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 股票基本信息
+
+        Note:
+            FinancialDataSource专注于财务数据，建议使用其他数据源获取基本信息
+        """
+        logger.warning("FinancialDataSource不支持获取股票基本信息: %s", symbol)
+        return {}
+
+    def get_index_components(self, symbol: str) -> List[str]:
+        """
+        获取指数成分股
+
+        Args:
+            symbol: 指数代码
+
+        Returns:
+            List[str]: 指数成分股代码列表
+
+        Note:
+            FinancialDataSource专注于财务数据，不支持指数成分股
+        """
+        logger.warning("FinancialDataSource不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_real_time_data(self, symbol: str) -> Dict:
+        """
+        获取实时数据
+
+        Args:
+            symbol: 股票代码
+
+        Returns:
+            Dict: 实时数据
+
+        Note:
+            FinancialDataSource专注于历史财务数据，不支持实时数据
+        """
+        logger.warning("FinancialDataSource不支持获取实时数据: %s", symbol)
+        return {}
+
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取交易日历
+
+        Args:
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 交易日历数据
+
+        Note:
+            FinancialDataSource专注于财务数据，不支持交易日历
+        """
+        logger.warning("FinancialDataSource不支持获取交易日历")
+        return pd.DataFrame()
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """
+        获取财务数据
+
+        Args:
+            symbol: 股票代码
+            period: 报告期间
+
+        Returns:
+            pd.DataFrame: 财务数据
+
+        Note:
+            FinancialDataSource的主要功能是财务数据，但此方法用于IDataSource接口兼容
+        """
+        try:
+            # 使用get_comprehensive_financial_data作为后端实现
+            data = self.get_comprehensive_financial_data(symbol, period)
+            # 转换为DataFrame格式
+            return pd.DataFrame([data])
+        except Exception as e:
+            logger.error("获取财务数据失败: %s", e)
+            return pd.DataFrame()
+
+    def get_news_data(self, symbol: str = None, limit: int = 10) -> List[Dict]:
+        """
+        获取新闻数据
+
+        Args:
+            symbol: 股票代码
+            limit: 返回数量限制
+
+        Returns:
+            List[Dict]: 新闻数据列表
+
+        Note:
+            FinancialDataSource专注于财务数据，不支持新闻数据
+        """
+        logger.warning("FinancialDataSource不支持获取新闻数据")
+        return []

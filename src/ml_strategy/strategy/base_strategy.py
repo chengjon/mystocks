@@ -13,26 +13,29 @@
 版本: 1.0.0
 """
 
-import pandas as pd
-import numpy as np
 import hashlib
 import json
-from abc import ABC, abstractmethod
-from typing import Dict, List
-from datetime import date, datetime
 import logging
+import os
 
 # 导入技术指标库
 import sys
-import os
+from abc import ABC, abstractmethod
+from datetime import date, datetime
+from typing import Dict, List
+
+import numpy as np
+import pandas as pd
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from indicators.tdx_functions import (
-    MA,
+# pylint: disable=import-error,no-name-in-module
+from ...indicators.tdx_functions import (
     CROSS,
+    MA,
     RSI,
 )
+# pylint: enable=import-error,no-name-in-module
 
 
 class BaseStrategy(ABC):
@@ -129,7 +132,6 @@ class BaseStrategy(ABC):
             ...
             ...     return signals
         """
-        pass
 
     def validate_parameters(self) -> bool:
         """
@@ -313,7 +315,6 @@ class BaseStrategy(ABC):
             end_date: 结束日期
             **kwargs: 额外参数
         """
-        pass
 
     def on_after_execute(self, result: Dict):
         """
@@ -322,7 +323,6 @@ class BaseStrategy(ABC):
         参数:
             result: 执行结果字典
         """
-        pass
 
     def to_dict(self) -> Dict:
         """

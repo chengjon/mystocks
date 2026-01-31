@@ -14,20 +14,20 @@
 版本: 1.0.0
 """
 
-from src.algorithms.metadata import AlgorithmFingerprint
-from src.algorithms.classification.naive_bayes_algorithm import NaiveBayesAlgorithm
-from src.algorithms.classification.decision_tree_algorithm import DecisionTreeAlgorithm
-from src.algorithms.classification.svm_algorithm import SVMAlgorithm
-from src.ml_strategy.strategy.base_strategy import BaseStrategy
-import pandas as pd
-import numpy as np
-import asyncio
 import logging
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Tuple
-from datetime import datetime, timedelta
 import sys
-import os
+from abc import abstractmethod
+from datetime import datetime
+from typing import Any, Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
+
+from src.algorithms.classification.decision_tree_algorithm import DecisionTreeAlgorithm
+from src.algorithms.classification.naive_bayes_algorithm import NaiveBayesAlgorithm
+from src.algorithms.classification.svm_algorithm import SVMAlgorithm
+from src.algorithms.metadata import AlgorithmFingerprint
+from src.ml_strategy.strategy.base_strategy import BaseStrategy
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -273,7 +273,7 @@ class MLTradingStrategy(BaseStrategy):
         # ML特定的属性
         self.feature_engineer = MLFeatureEngineer()
 
-        logger.info(f"初始化ML交易策略: {strategy_name} (算法: {algorithm_type})")
+        logger.info("初始化ML交易策略: %(strategy_name)s (算法: %(algorithm_type)s)")
 
     async def prepare_features(self, data: pd.DataFrame) -> pd.DataFrame:
         """
@@ -289,7 +289,7 @@ class MLTradingStrategy(BaseStrategy):
 
     async def train_ml_model(self, data: pd.DataFrame) -> str:
         """训练ML模型"""
-        logger.info(f"开始训练{self.algorithm_type}模型...")
+        logger.info("开始训练{self.algorithm_type}模型...")
 
         # 准备特征
         prepared_data = await self.prepare_features(data)
@@ -300,7 +300,7 @@ class MLTradingStrategy(BaseStrategy):
         self.trained_model_key = model_key
         self.last_trained = datetime.now()
 
-        logger.info(f"ML模型训练完成: {model_key}")
+        logger.info("ML模型训练完成: %(model_key)s")
         return model_key
 
     async def should_retrain_model(self, current_date: datetime) -> bool:
@@ -334,7 +334,6 @@ class MLTradingStrategy(BaseStrategy):
         返回:
             包含交易信号的DataFrame
         """
-        pass
 
     async def generate_signals(self, data: pd.DataFrame) -> pd.DataFrame:
         """
@@ -351,11 +350,11 @@ class MLTradingStrategy(BaseStrategy):
             # 解释ML信号为交易信号
             signals_df = await self.interpret_ml_signals(ml_predictions, data)
 
-            logger.info(f"生成 {len(signals_df)} 个交易信号")
+            logger.info("生成 {len(signals_df)} 个交易信号")
             return signals_df
 
         except Exception as e:
-            logger.error(f"ML策略信号生成失败: {e}")
+            logger.error("ML策略信号生成失败: %(e)s")
             # 返回空信号DataFrame
             return pd.DataFrame(columns=["signal", "confidence", "timestamp"])
 
@@ -365,7 +364,7 @@ class MLTradingStrategy(BaseStrategy):
             # 验证算法类型
             supported_algorithms = ["svm", "decision_tree", "naive_bayes"]
             if self.algorithm_type not in supported_algorithms:
-                logger.error(f"不支持的算法类型: {self.algorithm_type}")
+                logger.error("不支持的算法类型: {self.algorithm_type")
                 return False
 
             # 验证配置参数
@@ -380,7 +379,7 @@ class MLTradingStrategy(BaseStrategy):
             return True
 
         except Exception as e:
-            logger.error(f"参数验证失败: {e}")
+            logger.error("参数验证失败: %(e)s")
             return False
 
     def get_strategy_info(self) -> Dict[str, Any]:

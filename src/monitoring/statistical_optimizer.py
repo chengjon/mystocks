@@ -5,8 +5,9 @@
 """
 
 import logging
+from typing import Any, Dict, List
+
 import numpy as np
-from typing import Dict, List, Any
 
 # 设置日志
 logger = logging.getLogger(__name__)

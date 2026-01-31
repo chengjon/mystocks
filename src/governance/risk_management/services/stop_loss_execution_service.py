@@ -7,18 +7,17 @@ Stop Loss Execution Service
 """
 
 import logging
-import asyncio
-from typing import Dict, Any, Optional, List
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, Optional
 
-from src.governance.risk_management.services.stop_loss_engine import get_stop_loss_engine, StopLossEngine
-from src.application.trading.order_mgmt_service import OrderManagementService
 from src.application.dto.trading_dto import CreateOrderRequest
+from src.application.trading.order_mgmt_service import OrderManagementService
+from src.governance.risk_management.services.stop_loss_engine import get_stop_loss_engine
 
 # 复用现有的监控基础设施
 try:
-    from src.monitoring.signal_recorder import get_signal_recorder, SignalRecord
+    from src.monitoring.signal_recorder import get_signal_recorder
 
     MONITORING_AVAILABLE = True
 except ImportError:
@@ -137,7 +136,7 @@ class StopLossExecutionService:
             # 记录到监控系统
             await self._record_position_added(position, stop_loss_config)
 
-            logger.info(f"✅ 添加止损监控: {symbol} {position_id} @ {stop_loss_price}")
+            logger.info("✅ 添加止损监控: %(symbol)s %(position_id)s @ %(stop_loss_price)s")
 
             return {
                 "success": True,
@@ -148,7 +147,7 @@ class StopLossExecutionService:
             }
 
         except Exception as e:
-            logger.error(f"添加止损监控失败 {symbol} {position_id}: {e}")
+            logger.error("添加止损监控失败 %(symbol)s %(position_id)s: %(e)s")
             return {
                 "success": False,
                 "error": str(e),
@@ -225,7 +224,7 @@ class StopLossExecutionService:
                 }
 
         except Exception as e:
-            logger.error(f"更新持仓价格失败 {position_id}: {e}")
+            logger.error("更新持仓价格失败 %(position_id)s: %(e)s")
             return {
                 "checked": False,
                 "error": str(e),
@@ -251,13 +250,13 @@ class StopLossExecutionService:
                 await self._record_position_removed(position, "manual_removal")
 
                 del self.monitored_positions[position_id]
-                logger.info(f"✅ 移除止损监控: {position_id}")
+                logger.info("✅ 移除止损监控: %(position_id)s")
                 return True
             else:
                 return False
 
         except Exception as e:
-            logger.error(f"移除止损监控失败 {position_id}: {e}")
+            logger.error("移除止损监控失败 %(position_id)s: %(e)s")
             return False
 
     async def get_monitoring_status(self, position_id: Optional[str] = None) -> Dict[str, Any]:
@@ -314,7 +313,7 @@ class StopLossExecutionService:
                 }
 
         except Exception as e:
-            logger.error(f"获取监控状态失败: {e}")
+            logger.error("获取监控状态失败: %(e)s")
             return {"error": str(e)}
 
     async def batch_update_prices(self, price_updates: Dict[str, float]) -> Dict[str, Any]:
@@ -354,7 +353,7 @@ class StopLossExecutionService:
             }
 
         except Exception as e:
-            logger.error(f"批量更新价格失败: {e}")
+            logger.error("批量更新价格失败: %(e)s")
             return {"error": str(e), "total_checked": 0}
 
     # 私有方法
@@ -382,7 +381,7 @@ class StopLossExecutionService:
                 }
 
         except Exception as e:
-            logger.warning(f"计算止损价格失败 {symbol}: {e}")
+            logger.warning("计算止损价格失败 %(symbol)s: %(e)s")
             return {
                 "stop_loss_price": entry_price * 0.95,
                 "fallback": True,
@@ -414,7 +413,7 @@ class StopLossExecutionService:
             # 记录到监控系统
             await self._record_stop_loss_execution(position, order_response, loss_amount, loss_percentage)
 
-            logger.info(f"✅ 止损订单执行成功: {position.symbol} {position.position_id} 损失: {loss_percentage:.2f}%")
+            logger.info("✅ 止损订单执行成功: {position.symbol} {position.position_id} 损失: {loss_percentage:.2f}%")
 
             return {
                 "success": True,
@@ -426,7 +425,7 @@ class StopLossExecutionService:
             }
 
         except Exception as e:
-            logger.error(f"执行止损订单失败 {position.symbol} {position.position_id}: {e}")
+            logger.error("执行止损订单失败 {position.symbol} {position.position_id}: %(e)s")
             self.execution_stats["failed_executions"] += 1
 
             return {
@@ -456,7 +455,7 @@ class StopLossExecutionService:
                     },
                 )
         except Exception as e:
-            logger.warning(f"记录持仓添加失败 {position.position_id}: {e}")
+            logger.warning("记录持仓添加失败 {position.position_id}: %(e)s")
 
     async def _record_position_removed(self, position: StopLossPosition, reason: str):
         """记录持仓移除事件"""
@@ -477,7 +476,7 @@ class StopLossExecutionService:
                     },
                 )
         except Exception as e:
-            logger.warning(f"记录持仓移除失败 {position.position_id}: {e}")
+            logger.warning("记录持仓移除失败 {position.position_id}: %(e)s")
 
     async def _record_stop_loss_execution(
         self, position: StopLossPosition, order_response: Any, loss_amount: float, loss_percentage: float
@@ -505,7 +504,7 @@ class StopLossExecutionService:
                     },
                 )
         except Exception as e:
-            logger.warning(f"记录止损执行失败 {position.position_id}: {e}")
+            logger.warning("记录止损执行失败 {position.position_id}: %(e)s")
 
 
 # 创建全局实例

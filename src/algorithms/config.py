@@ -6,9 +6,10 @@ prediction, and evaluation parameters. All configurations use Pydantic
 for validation and type safety.
 """
 
-from typing import Dict, List, Any, Optional, Union
-from pydantic import BaseModel, Field, validator
 from datetime import datetime
+from typing import Dict, List, Optional, Union
+
+from pydantic import BaseModel, Field
 
 from .types import AlgorithmType
 
@@ -120,7 +121,7 @@ class NeuralNetworkConfig(AlgorithmConfig):
     """Configuration for neural network algorithms."""
 
     architecture: str = Field(default="lstm", pattern=r"^(lstm|gru|rnn|cnn)$")
-    hidden_units: List[int] = Field(default=[64, 32], min_items=1)
+    hidden_units: List[int] = Field(default_factory=lambda: [64, 32])
     dropout_rate: float = Field(default=0.2, ge=0, le=1)
 
     # Training parameters

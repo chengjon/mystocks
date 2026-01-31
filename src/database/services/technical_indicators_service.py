@@ -7,6 +7,7 @@
 """
 
 from typing import Dict
+
 from loguru import logger
 
 from .base_database_service import BaseDatabaseService

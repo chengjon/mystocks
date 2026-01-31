@@ -1,0 +1,83 @@
+# ============================================
+# 临时诊断 / 测试文件（精准忽略）
+# ============================================
+
+# 1. 临时诊断脚本（按文件名精准忽略）
+e2e-test-runner.mjs
+test_realtime_sse.mjs
+console-error-diagnostic.mjs
+artdeco-page-structure-diagnostic.mjs
+web_test.mjs
+verify-artdeco-browser.mjs
+check-actual-content.mjs
+check-api.mjs
+check-artdeco-dom.mjs
+check-full-layout.mjs
+check-layout-classes.mjs
+check-menu.mjs
+check-page-errors.mjs
+comprehensive-diagnostic.mjs
+browser-diagnostic.mjs
+inspect-menu.mjs
+mainjs-check-detailed.mjs
+mainjs-check.mjs
+quick-check.mjs
+quick-page-check.mjs
+run-comprehensive-e2e.js
+
+# 2. 批量忽略诊断/测试目录和通配符
+scripts/diagnostics/
+tests/e2e/
+**/*.diagnostic.mjs
+**/*_test.mjs
+test_*.js
+test_*.mjs
+web_test*.mjs
+verify-*.mjs
+check-*.mjs
+
+# 3. Cypress E2E 测试
+cypress/**/*.js
+cypress/**/*.ts
+
+# ============================================
+# 源代码目录（务必保留检查，用 ! 取消忽略）
+# ============================================
+!src/
+
+# ============================================
+# 标准忽略项
+# ============================================
+# Distribution
+dist
+dist-ssr
+*.local
+
+# Production
+build
+
+# Dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.env.local
+.env.*.local

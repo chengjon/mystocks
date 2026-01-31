@@ -5,9 +5,9 @@
 """
 
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock, patch
-from datetime import datetime, timedelta
 
 # 添加项目根路径
 project_root = Path.cwd()
@@ -97,7 +97,7 @@ def test_pooled_connection():
     print("\n🧪 测试池化连接...")
 
     try:
-        from src.data_sources.real.connection_pool import PooledConnection, PoolConfig
+        from src.data_sources.real.connection_pool import PoolConfig, PooledConnection
 
         # 模拟PostgreSQL连接
         mock_connection = Mock()
@@ -152,8 +152,8 @@ def test_connection_pool_initialization():
 
     try:
         from src.data_sources.real.connection_pool import (
-            PostgreSQLConnectionPool,
             PoolConfig,
+            PostgreSQLConnectionPool,
         )
 
         # 使用模拟DSN
@@ -195,8 +195,8 @@ def test_connection_pool_executor():
 
     try:
         from src.data_sources.real.connection_pool import (
-            PostgreSQLConnectionPool,
             PoolConfig,
+            PostgreSQLConnectionPool,
         )
 
         test_dsn = "host=localhost port=5432 user=test dbname=test password=test"
@@ -463,11 +463,11 @@ def test_error_handling():
     print("\n🧪 测试错误处理...")
 
     try:
-        from src.data_sources.real.connection_pool import (
-            PostgreSQLConnectionPool,
-            PoolConfig,
-        )
         from src.data_sources.real.connection_adapter import PostgreSQLConnectionAdapter
+        from src.data_sources.real.connection_pool import (
+            PoolConfig,
+            PostgreSQLConnectionPool,
+        )
 
         test_dsn = "host=invalid port=9999 user=invalid dbname=invalid password=invalid"
         config = PoolConfig(min_connections=1, max_connections=2)

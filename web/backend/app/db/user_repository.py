@@ -16,19 +16,13 @@ from app.core.security import UserInDB
 class DatabaseConnectionError(Exception):
     """数据库连接错误"""
 
-    pass
-
 
 class DatabaseOperationError(Exception):
     """数据库操作错误"""
 
-    pass
-
 
 class DataValidationError(Exception):
     """数据验证错误"""
-
-    pass
 
 
 class UserRepository:

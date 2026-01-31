@@ -7,14 +7,14 @@ Integrates ML strategies with the live trading engine for real-time execution.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from src.trading.live_trading_engine import LiveTradingEngine, LiveTradingConfig
 from src.adapters.tdx_realtime_manager import TdxRealtimeManager
-from src.ml_strategy.strategy.ml_strategy_base import MLTradingStrategy
 from src.application.trading.order_mgmt_service import OrderManagementService
 from src.governance.risk_management.services.stop_loss_execution_service import StopLossExecutionService
+from src.ml_strategy.strategy.ml_strategy_base import MLTradingStrategy
+from src.trading.live_trading_engine import LiveTradingConfig, LiveTradingEngine
 
 logger = logging.getLogger(__name__)
 
@@ -223,9 +223,9 @@ async def create_realtime_executor(
     Returns:
         Configured RealtimeStrategyExecutor
     """
-    from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
     from src.ml_strategy.strategy.decision_tree_trading_strategy import DecisionTreeTradingStrategy
     from src.ml_strategy.strategy.naive_bayes_trading_strategy import NaiveBayesTradingStrategy
+    from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
 
     # Available strategies
     available_strategies = {

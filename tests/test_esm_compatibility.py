@@ -3,10 +3,11 @@ ESM兼容性专项测试用例
 验证前端ESM模块导入和后端API的ESM相关功能
 """
 
-import pytest
-import sys
 import os
+import sys
 from pathlib import Path
+
+import pytest
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent

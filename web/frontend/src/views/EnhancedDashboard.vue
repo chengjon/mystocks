@@ -370,9 +370,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick, reactive, watch } from 'vue'
-import { dataApi, watchlistApi } from '@/api'
+import { watchlistApi } from '@/api' // Keep watchlistApi as it's separate
+import { dashboardService } from '@/services/dashboardService' // Import new service
 import { ElMessage } from 'element-plus'
 import { Document, Money, PieChart, Grid } from '@element-plus/icons-vue'
+import type { WatchlistItem } from '@/api/types/common' // Import existing type
 
 // TypeScript 类型定义
 interface StockData {
@@ -401,7 +403,7 @@ interface ChartDataPoint {
 }
 
 interface ChartOptions {
-  [key: string]: any  // Allow any chart options (xAxis, yAxis, tooltip, legend, series, etc.)
+  [key: string]: any // Allow any chart options (xAxis, yAxis, tooltip, legend, series, etc.)
 }
 
 interface StatItem {
@@ -442,10 +444,10 @@ const industryOptions = ref<ChartOptions>({})
 
 // 页面数据
 const stats = ref<StatItem[]>([
-  { title: '总股票数', value: '0', icon: 'Document', color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
-  { title: '总市值', value: '0', icon: 'Money', color: '#67C23A', trend: '+0%', trendClass: 'up' },
-  { title: '市场分布', value: '0', icon: 'PieChart', color: '#E6A23C', trend: '+0%', trendClass: 'up' },
-  { title: '行业分布', value: '0', icon: 'Grid', color: '#F56C6C', trend: '+0%', trendClass: 'down' }
+  { title: '总股票数', value: '0', icon: Document, color: '#409EFF', trend: '+0%', trendClass: 'neutral' },
+  { title: '总市值', value: '0', icon: Money, color: '#67C23A', trend: '+0%', trendClass: 'up' },
+  { title: '市场分布', value: '0', icon: PieChart, color: '#E6A23C', trend: '+0%', trendClass: 'up' },
+  { title: '行业分布', value: '0', icon: Grid, color: '#F56C6C', trend: '+0%', trendClass: 'down' }
 ])
 
 const hotIndustries = ref<Array<{ industry_name: string; avg_change: number; stock_count: number }>>([])
@@ -462,14 +464,9 @@ const addForm = ref({
 })
 
 // 工具函数 - 图标组件映射
-const getIconComponent = (iconName: string): any => {
-  const iconMap: Record<string, any> = {
-    'Document': Document,
-    'Money': Money,
-    'PieChart': PieChart,
-    'Grid': Grid
-  }
-  return iconMap[iconName] || Document
+const getIconComponent = (iconComponent: any): any => {
+  // Directly return the imported component
+  return iconComponent
 }
 
 // 工具函数 - 颜色类型映射
@@ -511,30 +508,19 @@ const getSignalTagType = (signal: string): 'danger' | 'success' | 'info' => {
 const loadMarketOverview = async () => {
   loading.overview = true
   try {
-    const response = await dataApi.getMarketOverview()
+    const response = await dashboardService.getMarketOverview()
 
-    if (response && response.data) {
+    if (response.success && response.data) { // Access response.data directly
       const marketData = response.data
 
-      // 更新统计卡片数据
-      stats.value[0].value = marketData.total_stocks?.toString() || '0'
-      stats.value[1].value = marketData.total_stocks?.toString() || '0'
-
-      if (marketData.by_market) {
-        const marketEntries = Object.entries(marketData.by_market)
-        if (marketEntries.length > 0) {
-          const [market, count] = marketEntries[0]
-          stats.value[2].value = `${market}: ${count}`
-        }
-      }
-
-      if (marketData.by_industry) {
-        const industryEntries = Object.entries(marketData.by_industry)
-        if (industryEntries.length > 0) {
-          const [industry, count] = industryEntries[0]
-          stats.value[3].value = `${industry}: ${count}`
-        }
-      }
+      // 更新统计卡片数据 - 需要后端提供具体字段
+      const marketStats = marketData.market_stats
+      stats.value[0].value = marketStats?.total_stocks?.toString() || '0'
+      stats.value[1].value = marketStats?.avg_change_percent?.toFixed(2) || '0.00' // 使用平均涨跌幅
+      stats.value[2].value = `${marketStats?.rising_stocks || 0}涨 / ${marketStats?.falling_stocks || 0}跌`
+      stats.value[3].value = '加载中...' // 行业数据从其他接口获取
+    } else {
+      ElMessage.error(response.message || '加载市场概览失败')
     }
 
     // 加载涨跌分布
@@ -545,7 +531,6 @@ const loadMarketOverview = async () => {
       loadHotIndustries(),
       loadHotConcepts()
     ])
-
   } catch (error) {
     console.error('加载市场概览失败:', error)
     ElMessage.error('加载市场概览失败')
@@ -556,41 +541,48 @@ const loadMarketOverview = async () => {
 
 const loadPriceDistribution = async () => {
   try {
-    // 涨跌分布数据暂时模拟
-    const mockData = { '上涨': 120, '下跌': 80, '平盘': 50 }
-    updatePriceDistributionChart(mockData)
+    const response = await dashboardService.getPriceDistribution()
+    if (response.success && response.data) {
+      updatePriceDistributionChart(response.data)
+    } else {
+      ElMessage.error(response.message || '加载涨跌分布失败')
+    }
   } catch (error) {
     console.error('加载涨跌分布失败:', error)
+    ElMessage.error('加载涨跌分布失败')
   }
 }
 
 const loadHotIndustries = async () => {
   try {
-    // 模拟热门行业数据
-    hotIndustries.value = [
-      { industry_name: '半导体', avg_change: 5.2, stock_count: 45 },
-      { industry_name: '新能源车', avg_change: 4.8, stock_count: 38 },
-      { industry_name: '光伏', avg_change: 4.5, stock_count: 32 },
-      { industry_name: '医药', avg_change: 3.9, stock_count: 56 },
-      { industry_name: '白酒', avg_change: 3.6, stock_count: 18 }
-    ]
+    const response = await dashboardService.getHotIndustries()
+    if (response.success && response.data) {
+      hotIndustries.value = response.data as Array<{ industry_name: string; avg_change: number; stock_count: number }>
+    } else {
+      ElMessage.error(response.message || '加载热门行业失败')
+    }
   } catch (error) {
     console.error('加载热门行业失败:', error)
+    ElMessage.error('加载热门行业失败')
   }
 }
 
 const loadHotConcepts = async () => {
   try {
-    // 模拟热门概念数据
-    hotConcepts.value = [
-      { concept_name: '人工智能', avg_change: 6.2, stock_count: 62 },
-      { concept_name: '芯片', avg_change: 5.8, stock_count: 48 },
-      { concept_name: '锂电池', avg_change: 5.1, stock_count: 35 },
-      { concept_name: '碳中和', avg_change: 4.3, stock_count: 89 },
-      { concept_name: '元宇宙', avg_change: 3.9, stock_count: 27 }
-    ]
+    const response = await dashboardService.getHotConcepts()
+    if (response.success && response.data) {
+      // IndustryConceptData 使用 industry_name 字段（包括行业和概念）
+      hotConcepts.value = response.data.map(item => ({
+        concept_name: item.industry_name,
+        avg_change: item.avg_change,
+        stock_count: item.stock_count
+      }))
+    } else {
+      ElMessage.error(response.message || '加载热门概念失败')
+    }
   } catch (error) {
     console.error('加载热门概念失败:', error)
+    ElMessage.error('加载热门概念失败')
   }
 }
 
@@ -598,20 +590,25 @@ const loadWatchlist = async (): Promise<void> => {
   loading.watchlist = true
   try {
     const response = await watchlistApi.getWatchlist()
-    const data: any[] = response.data || []
-    if (data.length > 0) {
-      watchlistStocks.value = data.map((item: any): StockData => ({
-        symbol: item.symbol,
-        name: item.display_name || item.symbol,
-        price: 0,
-        change: 0,
-        volume: 0
+    // watchlistApi 返回的是 AxiosResponse，需要访问 response.data
+    const apiResponse = response.data as { success?: boolean; data?: any; message?: string }
+    if (apiResponse?.success && apiResponse.data) {
+      // Use WatchlistItem type instead of any
+      const data: WatchlistItem[] = apiResponse.data.items || apiResponse.data || []
+      watchlistStocks.value = data.map((item: WatchlistItem): StockData => ({
+        symbol: item.symbol || '',
+        name: item.name || item.symbol || '',
+        price: item.current_price || 0,
+        change: item.change_percent || 0,
+        volume: 0 // WatchlistItem 没有 volume 字段
       }))
     } else {
+      ElMessage.error(apiResponse?.message || '加载自选股失败')
       watchlistStocks.value = []
     }
   } catch (error) {
     console.error('加载自选股失败:', error)
+    ElMessage.error('加载自选股失败')
     watchlistStocks.value = []
   } finally {
     loading.watchlist = false
@@ -620,59 +617,48 @@ const loadWatchlist = async (): Promise<void> => {
 
 const loadFavoriteStocks = async () => {
   try {
-    // 这里应该从数据库或API加载自选股数据
-    // 暂时使用模拟数据
-    favoriteStocks.value = [
-      {
-        symbol: '000001',
-        name: '平安银行',
-        price: 12.50,
-        change: 2.1,
-        volume: 123456,
-        turnover: 1.2,
-        industry: '银行'
-      },
-      {
-        symbol: '600000',
-        name: '浦发银行',
-        price: 8.90,
-        change: -1.5,
-        volume: 234567,
-        turnover: 0.8,
-        industry: '银行'
-      }
-    ]
+    const response = await dashboardService.getMarketOverview()
+    if (response.success && response.data && response.data.top_etfs) {
+      // 使用 top_etfs 作为自选股占位数据
+      favoriteStocks.value = response.data.top_etfs.slice(0, 5).map((item: any): StockData => ({
+        symbol: item.symbol || 'ETF',
+        name: item.name || 'ETF基金',
+        price: item.latest_price || 0,
+        change: item.change_percent || 0,
+        volume: item.volume || 0,
+        turnover: item.turnover_rate || 0,
+        industry: 'ETF'
+      }))
+    } else {
+      ElMessage.error(response.message || '加载自选股失败')
+    }
   } catch (error) {
     console.error('加载自选股失败:', error)
+    ElMessage.error('加载自选股失败')
   }
 }
 
+
 const loadStrategyStocks = async () => {
   try {
-    // 这里应该从数据库或API加载策略选股数据
-    // 暂时使用模拟数据
-    strategyStocks.value = [
-      {
-        symbol: '300750',
-        name: '宁德时代',
-        price: 245.60,
-        change: 5.2,
-        strategy: '新能源策略',
-        score: 85,
-        signal: '买入'
-      },
-      {
-        symbol: '002415',
-        name: '海康威视',
-        price: 32.80,
-        change: -2.1,
-        strategy: 'AI策略',
-        score: 78,
-        signal: '持有'
-      }
-    ]
+    const response = await dashboardService.getMarketHeatChartData(); // Using another placeholder
+    if (response.success && response.data) {
+      // Assuming it returns data adaptable to StrategyStock
+      strategyStocks.value = response.data.map((item: any): StrategyStock => ({
+        symbol: item.name, // Assuming name is symbol
+        name: item.name,
+        price: 0, // Placeholder
+        change: 0, // Placeholder
+        strategy: '未知策略', // Placeholder
+        score: item.value, // Using value as score
+        signal: item.value > 80 ? '买入' : (item.value < 70 ? '卖出' : '持有') // Example signal
+      }));
+    } else {
+      ElMessage.error(response.message || '加载策略选股失败');
+    }
   } catch (error) {
-    console.error('加载策略选股失败:', error)
+    console.error('加载策略选股失败:', error);
+    ElMessage.error('加载策略选股失败');
   }
 }
 
@@ -693,14 +679,20 @@ const confirmAddToWatchlist = async () => {
 
   loading.addWatchlist = true
   try {
-    await watchlistApi.addToWatchlist({
+    const response = await watchlistApi.addToWatchlist({
       symbol: addForm.value.symbol.toUpperCase(),
       display_name: addForm.value.display_name
     })
 
-    ElMessage.success('添加自选股成功')
-    showAddDialog.value = false
-    await loadWatchlist()
+    // watchlistApi 返回的是 AxiosResponse，需要访问 response.data
+    const apiResponse = response.data as { success?: boolean; message?: string }
+    if (apiResponse?.success) {
+      ElMessage.success('添加自选股成功')
+      showAddDialog.value = false
+      await loadWatchlist()
+    } else {
+      ElMessage.error(apiResponse?.message || '添加自选股失败')
+    }
   } catch (error) {
     console.error('添加自选股失败:', error)
     ElMessage.error('添加自选股失败')
@@ -712,9 +704,15 @@ const confirmAddToWatchlist = async () => {
 const removeFromWatchlist = async (symbol: string): Promise<void> => {
   loading.removeWatchlist = true
   try {
-    await watchlistApi.removeFromWatchlist(symbol)
-    ElMessage.success('移除自选股成功')
-    await loadWatchlist()
+    const response = await watchlistApi.removeFromWatchlist(symbol)
+    // watchlistApi 返回的是 AxiosResponse，需要访问 response.data
+    const apiResponse = response.data as { success?: boolean; message?: string }
+    if (apiResponse?.success) {
+      ElMessage.success('移除自选股成功')
+      await loadWatchlist()
+    } else {
+      ElMessage.error(apiResponse?.message || '移除自选股失败')
+    }
   } catch (error) {
     console.error('移除自选股失败:', error)
     ElMessage.error('移除自选股失败')
@@ -765,222 +763,121 @@ const updatePriceDistributionChart = (distributionData: Record<string, number>):
   }
 }
 
+// Chart init functions, now calling dashboardService for data
 const initMarketHeatChart = async (): Promise<void> => {
-  const heatData: ChartDataPoint[] = [
-    { name: '上证指数', value: 95 },
-    { name: '深证成指', value: 88 },
-    { name: '创业板指', value: 82 },
-    { name: '沪深300', value: 91 },
-    { name: '中证500', value: 78 },
-    { name: '中证1000', value: 72 },
-    { name: '科创板', value: 85 },
-    { name: '新三板', value: 65 }
-  ]
-
-  marketHeatData.value = heatData
-  marketHeatOptions.value = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    xAxis: {
-      type: 'value',
-      name: '热度指数'
-    },
-    yAxis: {
-      type: 'category',
-      data: heatData.map((item: ChartDataPoint) => item.name)
-    },
-    series: [
-      {
-        name: '市场热度',
-        type: 'bar',
-        data: heatData.map((item: ChartDataPoint) => item.value)
-      }
-    ]
+  try {
+    const response = await dashboardService.getMarketHeatChartData();
+    if (response.success && response.data) {
+      marketHeatData.value = response.data;
+      marketHeatOptions.value = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        xAxis: { type: 'value', name: '热度指数' },
+        yAxis: { type: 'category', data: response.data.map((item: ChartDataPoint) => item.name) },
+        series: [{ name: '市场热度', type: 'bar', data: response.data.map((item: ChartDataPoint) => item.value) }]
+      };
+    } else {
+      ElMessage.error(response.message || '加载市场热度失败');
+    }
+  } catch (error) {
+    console.error('加载市场热度失败:', error);
+    ElMessage.error('加载市场热度失败');
   }
-}
+};
 
 const initLeadingSectorChart = async (): Promise<void> => {
-  const sectorData: ChartDataPoint[] = [
-    { name: '半导体', value: 5.2 },
-    { name: '新能源车', value: 4.8 },
-    { name: '光伏', value: 4.5 },
-    { name: '医药', value: 3.9 },
-    { name: '白酒', value: 3.6 },
-    { name: '银行', value: 2.8 },
-    { name: '保险', value: 2.5 },
-    { name: '证券', value: 2.1 }
-  ]
-
-  leadingSectorData.value = sectorData
-  leadingSectorOptions.value = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: '{b}: {c}%'
-    },
-    xAxis: {
-      type: 'value',
-      name: '涨幅(%)',
-      axisLabel: {
-        formatter: '{value}%'
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: sectorData.map((item: ChartDataPoint) => item.name)
-    },
-    series: [
-      {
-        name: '涨幅',
-        type: 'bar',
-        data: sectorData.map((item: ChartDataPoint) => item.value)
-      }
-    ]
+  try {
+    const response = await dashboardService.getLeadingSectorChartData();
+    if (response.success && response.data) {
+      leadingSectorData.value = response.data;
+      leadingSectorOptions.value = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}%' },
+        xAxis: { type: 'value', name: '涨幅(%)', axisLabel: { formatter: '{value}%' } },
+        yAxis: { type: 'category', data: response.data.map((item: ChartDataPoint) => item.name) },
+        series: [{ name: '涨幅', type: 'bar', data: response.data.map((item: ChartDataPoint) => item.value) }]
+      };
+    } else {
+      ElMessage.error(response.message || '加载领涨板块失败');
+    }
+  } catch (error) {
+    console.error('加载领涨板块失败:', error);
+    ElMessage.error('加载领涨板块失败');
   }
-}
+};
 
 const initCapitalFlowChart = async (): Promise<void> => {
-  const flowData: ChartDataPoint[] = [
-    { name: '主力资金', value: 120 },
-    { name: '散户资金', value: -80 },
-    { name: '机构资金', value: 90 },
-    { name: '北向资金', value: 60 },
-    { name: '南向资金', value: -30 },
-    { name: '融资融券', value: 40 }
-  ]
-
-  capitalFlowData.value = flowData
-  capitalFlowOptions.value = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: (params: any) => {
-        const value = params[0].value
-        const absValue = Math.abs(value)
-        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`
-      }
-    },
-    xAxis: {
-      type: 'value',
-      name: '资金流向(亿元)',
-      axisLabel: {
-        formatter: (value: number) => value > 0 ? `+${value}` : value
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: flowData.map((item: ChartDataPoint) => item.name)
-    },
-    series: [
-      {
-        name: '资金流向',
-        type: 'bar',
-        data: flowData.map((item: ChartDataPoint) => item.value)
-      }
-    ]
+  try {
+    const response = await dashboardService.getCapitalFlowChartData();
+    if (response.success && response.data) {
+      capitalFlowData.value = response.data;
+      capitalFlowOptions.value = {
+        tooltip: {
+          trigger: 'axis', axisPointer: { type: 'shadow' },
+          formatter: (params: any) => {
+            const value = params[0].value;
+            const absValue = Math.abs(value);
+            return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿 (${value > 0 ? '流入' : '流出'})`;
+          }
+        },
+        xAxis: { type: 'value', name: '资金流向(亿元)', axisLabel: { formatter: (value: number) => value > 0 ? `+${value}` : value } },
+        yAxis: { type: 'category', data: response.data.map((item: ChartDataPoint) => item.name) },
+        series: [{ name: '资金流向', type: 'bar', data: response.data.map((item: ChartDataPoint) => item.value) }]
+      };
+    } else {
+      ElMessage.error(response.message || '加载资金流向失败');
+    }
+  } catch (error) {
+    console.error('加载资金流向失败:', error);
+    ElMessage.error('加载资金流向失败');
   }
-}
+};
 
 const initCapitalFlowChart2 = async (): Promise<void> => {
-  const flowData: ChartDataPoint[] = [
-    { name: '主力资金', value: 150 },
-    { name: '散户资金', value: -90 },
-    { name: '机构资金', value: 110 }
-  ]
-
-  capitalFlowData2.value = flowData
-  capitalFlowOptions2.value = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: (params: any) => {
-        const value = params[0].value
-        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
-      }
-    },
-    xAxis: {
-      type: 'value',
-      name: '资金流向(亿元)'
-    },
-    yAxis: {
-      type: 'category',
-      data: flowData.map((item: ChartDataPoint) => item.name)
-    },
-    series: [
-      {
-        name: '资金流向',
-        type: 'bar',
-        data: flowData.map((item: ChartDataPoint) => item.value)
-      }
-    ]
+  try {
+    const response = await dashboardService.getCapitalFlowChartData(); // Reusing the same service call for simplicity, ideally a different endpoint
+    if (response.success && response.data) {
+      capitalFlowData2.value = response.data;
+      capitalFlowOptions2.value = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (params: any) => `${params[0].name}: ${params[0].value > 0 ? '+' : ''}${params[0].value}亿` },
+        xAxis: { type: 'value', name: '资金流向(亿元)' },
+        yAxis: { type: 'category', data: response.data.map((item: ChartDataPoint) => item.name) },
+        series: [{ name: '资金流向', type: 'bar', data: response.data.map((item: ChartDataPoint) => item.value) }]
+      };
+    } else {
+      ElMessage.error(response.message || '加载资金流向失败');
+    }
+  } catch (error) {
+    console.error('加载资金流向失败:', error);
+    ElMessage.error('加载资金流向失败');
   }
-}
+};
 
 const initIndustryChart = async (): Promise<void> => {
-  const mockData = {
-    categories: ['银行', '房地产', '医药生物', '食品饮料', '电子', '计算机', '机械', '化工', '汽车', '家电'],
-    values: [120, -50, 80, 65, -30, 90, 45, -20, 70, 55]
+  try {
+    const response = await dashboardService.getIndustryCapitalFlowChartData(industryStandard.value);
+    if (response.success && response.data) {
+      industryData.value = response.data;
+      industryOptions.value = {
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: (params: any) => `${params[0].name}: ${params[0].value > 0 ? '+' : ''}${params[0].value}亿` },
+        xAxis: { type: 'value', name: '资金流向(亿元)', axisLabel: { formatter: (value: number) => value > 0 ? `+${value}` : value } },
+        yAxis: { type: 'category', data: response.data.map((item: ChartDataPoint) => item.name), axisLabel: { interval: 0, fontSize: 11 } },
+        series: [{
+          name: '资金流向', type: 'bar', data: response.data.map((item: ChartDataPoint) => item.value),
+          label: {
+            show: true, position: 'right',
+            formatter: (params: any) => `${params.value > 0 ? '+' : ''}${params.value}亿`,
+            fontSize: 10
+          }
+        }]
+      };
+    } else {
+      ElMessage.error(response.message || '加载行业资金流向失败');
+    }
+  } catch (error) {
+    console.error('加载行业资金流向失败:', error);
+    ElMessage.error('加载行业资金流向失败');
   }
+};
 
-  industryData.value = mockData.categories.map((name, index): ChartDataPoint => ({
-    name,
-    value: mockData.values[index]
-  }))
-
-  industryOptions.value = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      },
-      formatter: (params: any) => {
-        const value = params[0].value
-        return `${params[0].name}: ${value > 0 ? '+' : ''}${value}亿`
-      }
-    },
-    xAxis: {
-      type: 'value',
-      name: '资金流向(亿元)',
-      axisLabel: {
-        formatter: (value: number) => value > 0 ? `+${value}` : value
-      }
-    },
-    yAxis: {
-      type: 'category',
-      data: mockData.categories,
-      axisLabel: {
-        interval: 0,
-        fontSize: 11
-      }
-    },
-    series: [
-      {
-        name: '资金流向',
-        type: 'bar',
-        data: mockData.values,
-        label: {
-          show: true,
-          position: 'right',
-          formatter: (params: any) => {
-            const value = params.value
-            return value > 0 ? `+${value}亿` : `${value}亿`
-          },
-          fontSize: 10
-        }
-      }
-    ]
-  }
-}
 
 const initCharts = async () => {
   await nextTick()
@@ -1033,6 +930,7 @@ const updateIndustryChart = async () => {
 watch(activeMarketTab, async () => {
   await nextTick()
   // ChartContainer 会自动处理 resize
+  // No direct data loading here, it's handled by individual chart init functions
 })
 
 watch(industryStandard, async () => {

@@ -1,3 +1,15 @@
+"""
+指数日线数据获取方法
+"""
+
+from typing import Dict
+import pandas as pd
+from loguru import logger
+import akshare as ak
+
+from src.utils import symbol_utils, date_utils
+
+
 def _rename_columns(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     重命名列名以匹配预期格式
@@ -52,10 +64,8 @@ def get_index_daily(self, index_code, start_date=None, end_date=None):
 
     # 使用date_utils标准化日期
     try:
-        normalized_start_date = date_utils.normalize_date(
-            start_date) if start_date else None
-        normalized_end_date = date_utils.normalize_date(
-            end_date) if end_date else None
+        normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
+        normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
     except ValueError as e:
         logger.error("日期格式错误: %s", e)
         return pd.DataFrame()
@@ -74,20 +84,13 @@ def get_index_daily(self, index_code, start_date=None, end_date=None):
         logger.info("使用格式化代码: %s", formatted_code)
 
         # 获取历史行情数据
-        logger.info(
-            "请求参数: code=%s, beg=%s, end=%s",
-            formatted_code,
-            normalized_start_date,
-            normalized_end_date)
+        logger.info("请求参数: code=%s, beg=%s, end=%s", formatted_code, normalized_start_date, normalized_end_date)
         if normalized_start_date and normalized_end_date:
-            data = self.ef.stock.get_quote_history(
-                formatted_code, beg=normalized_start_date, end=normalized_end_date)
+            data = self.ef.stock.get_quote_history(formatted_code, beg=normalized_start_date, end=normalized_end_date)
         elif normalized_start_date:
-            data = self.ef.stock.get_quote_history(
-                formatted_code, beg=normalized_start_date)
+            data = self.ef.stock.get_quote_history(formatted_code, beg=normalized_start_date)
         elif normalized_end_date:
-            data = self.ef.stock.get_quote_history(
-                formatted_code, end=normalized_end_date)
+            data = self.ef.stock.get_quote_history(formatted_code, end=normalized_end_date)
         else:
             data = self.ef.stock.get_quote_history(formatted_code)
 
@@ -101,16 +104,14 @@ def get_index_daily(self, index_code, start_date=None, end_date=None):
         ):
             logger.warning("使用日期参数未获取到数据，尝试获取全部数据并过滤...")
             data = self.ef.stock.get_quote_history(formatted_code)
-            if data is not None and isinstance(
-                    data, pd.DataFrame) and not data.empty:
+            if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
                 # 过滤日期范围
                 if normalized_start_date:
                     data = data[data["日期"] >= normalized_start_date]
                 if normalized_end_date:
                     data = data[data["日期"] <= normalized_end_date]
 
-        if data is not None and isinstance(
-                data, pd.DataFrame) and not data.empty:
+        if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
             logger.info("成功获取指数 %s 的日线数据，共 %s 条记录", index_code, len(data))
             # 验证和清洗数据
             cleaned_data = self._validate_and_clean_data(data, "index")
@@ -127,3 +128,9 @@ def get_index_daily(self, index_code, start_date=None, end_date=None):
 
 
 def get_stock_basic(self, symbol: str) -> Dict:
+    """获取股票基本信息"""
+    try:
+        return ak.stock_individual_info_em(symbol=symbol)
+    except Exception as e:
+        logger.error("获取股票 %s 基本信息失败: %s", symbol, str(e))
+        return {}

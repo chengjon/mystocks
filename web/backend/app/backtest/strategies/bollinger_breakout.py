@@ -4,10 +4,10 @@ Bollinger Bands Breakout Strategy
 布林带突破策略 - 波动率突破交易
 """
 
-from typing import Dict, Any, Optional, List
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class BollingerBreakoutStrategy(BaseStrategy):

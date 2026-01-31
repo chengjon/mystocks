@@ -5,13 +5,14 @@ Phase 8: Infrastructure Layer 验证测试
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.storage.database.database_manager import Base
-from src.infrastructure.persistence.models import StrategyModel, OrderModel, PortfolioModel
-from src.infrastructure.persistence.repository_impl import OrderRepositoryImpl
-from src.domain.trading.model.order import Order
-from src.domain.trading.value_objects import OrderSide, OrderType, OrderId, OrderStatus
-from src.infrastructure.messaging.local_event_bus import LocalEventBus
+
 from src.domain.shared.event import DomainEvent
+from src.domain.trading.model.order import Order
+from src.domain.trading.value_objects import OrderId, OrderSide, OrderStatus, OrderType
+from src.infrastructure.messaging.local_event_bus import LocalEventBus
+from src.infrastructure.persistence.models import OrderModel, PortfolioModel, StrategyModel
+from src.infrastructure.persistence.repository_impl import OrderRepositoryImpl
+from src.storage.database.database_manager import Base
 
 
 class TestInfrastructure:
@@ -62,8 +63,8 @@ class TestInfrastructure:
         assert args[0].data == "hello"
 
 
-from unittest.mock import MagicMock
 from dataclasses import dataclass
+from unittest.mock import MagicMock
 
 if __name__ == "__main__":
     pytest.main([__file__])

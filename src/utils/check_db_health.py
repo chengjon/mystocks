@@ -5,8 +5,8 @@
 验证4个数据库的连接状态，为修复Web页面问题做准备
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -20,6 +20,7 @@ def check_mysql_connection():
 
     try:
         import pymysql
+
         from web.backend.app.core.config import settings
 
         conn = pymysql.connect(
@@ -68,6 +69,7 @@ def check_postgresql_connection():
 
     try:
         import psycopg2
+
         from web.backend.app.core.config import settings
 
         # 测试mystocks数据库
@@ -162,6 +164,7 @@ def check_tdengine_connection():
 
     try:
         import taos
+
         from web.backend.app.core.config import settings
 
         conn = taos.connect(
@@ -226,6 +229,7 @@ def check_redis_connection():
     r = None
     try:
         import redis
+
         from web.backend.app.core.config import settings
 
         r = redis.Redis(

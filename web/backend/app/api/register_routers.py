@@ -1,5 +1,5 @@
-from fastapi import FastAPI
 import structlog
+from fastapi import FastAPI
 
 # 导入所有 API 路由模块
 from . import (

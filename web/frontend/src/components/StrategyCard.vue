@@ -12,24 +12,24 @@
 
       <div class="meta">
         <span class="type-badge">{{ typeLabel }}</span>
-        <span class="date">创建于 {{ strategy.createdAt ? formatDate(strategy.createdAt) : '未知' }}</span>
+        <span class="date">创建于 {{ strategy.created_at ? formatDate(new Date(strategy.created_at)) : '未知' }}</span>
       </div>
 
       <!-- 性能指标 -->
       <div v-if="strategy.performance" class="performance">
         <div class="metric">
           <span class="label">总收益</span>
-          <span class="value" :class="{ positive: (strategy.performance.totalReturn || 0) > 0, negative: (strategy.performance.totalReturn || 0) < 0 }">
-            {{ ((strategy.performance.totalReturn || 0) * 100).toFixed(2) }}%
+          <span class="value" :class="{ positive: (strategy.performance.total_return || 0) > 0, negative: (strategy.performance.total_return || 0) < 0 }">
+            {{ ((strategy.performance.total_return || 0) * 100).toFixed(2) }}%
           </span>
         </div>
         <div class="metric">
           <span class="label">夏普比率</span>
-          <span class="value">{{ (strategy.performance.sharpeRatio || 0).toFixed(2) }}</span>
+          <span class="value">{{ (strategy.performance.sharpe_ratio || 0).toFixed(2) }}</span>
         </div>
         <div class="metric">
           <span class="label">胜率</span>
-          <span class="value">{{ ((strategy.performance.winRate || 0) * 100).toFixed(2) }}%</span>
+          <span class="value">{{ ((strategy.performance.win_rate || 0) * 100).toFixed(2) }}%</span>
         </div>
       </div>
 

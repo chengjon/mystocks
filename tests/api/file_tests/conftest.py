@@ -1,8 +1,10 @@
 # API File-Level Testing Fixtures
 
 # Common test data for API file testing
-import pytest
 from pathlib import Path
+
+import pytest
+
 from tests.api.file_tests import FileTestRunner, TestDataManager
 
 
@@ -80,7 +82,7 @@ def assert_file_test_result(result, expected_status="passed", min_success_rate=8
 
 def create_mock_file_result(file_path, endpoint_count=10, passed_ratio=0.9):
     """Create mock file test result for testing"""
-    from tests.api.file_tests import FileTestResult, TestStatus, TestPriority
+    from tests.api.file_tests import FileTestResult, TestPriority, TestStatus
 
     passed = int(endpoint_count * passed_ratio)
     failed = endpoint_count - passed

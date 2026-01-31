@@ -5,9 +5,9 @@ Event Types for Event-Driven Backtesting
 """
 
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
-from decimal import Decimal
 
 
 class EventType(str, Enum):

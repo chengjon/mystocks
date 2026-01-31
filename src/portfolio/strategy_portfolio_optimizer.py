@@ -6,15 +6,14 @@ Strategy Portfolio Optimizer
 Implements multi-strategy portfolio construction, weight optimization, risk management, and performance tracking.
 """
 
+import logging
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-import logging
-
 from scipy.optimize import minimize
-from sklearn.covariance import LedoitWolf
 
 logger = logging.getLogger(__name__)
 

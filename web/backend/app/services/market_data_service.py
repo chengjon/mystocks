@@ -12,18 +12,19 @@
 - tqlex_adapter: 竞价抢筹数据
 """
 
-from sqlalchemy import create_engine, and_, or_
-from sqlalchemy.orm import sessionmaker
-from datetime import date, datetime
-from typing import List, Optional, Dict, Any
-import pandas as pd
 import logging
 import os
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
 
-from app.models.market_data import FundFlow, ETFData, ChipRaceOpenData, ChipRaceEndData, LongHuBangData
+import pandas as pd
+from sqlalchemy import and_, create_engine, or_
+from sqlalchemy.orm import sessionmaker
+
 from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
 from app.core.cache_integration import get_cache_integration
+from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
 
 logger = logging.getLogger(__name__)
 
@@ -49,13 +50,13 @@ class MarketDataService:
         try:
             self.tqlex = get_tqlex_adapter()
         except ValueError as e:
-            logger.warning(f"TQLEX适配器初始化失败(竞价抢筹功能将不可用): {e}")
+            logger.warning("TQLEX适配器初始化失败(竞价抢筹功能将不可用): %(e)s"")
             self.tqlex = None
 
         # 初始化缓存集成
         self.cache = get_cache_integration()
         self.use_cache = use_cache
-        logger.info(f"市场数据服务初始化完成 (缓存: {'启用' if use_cache else '禁用'})")
+        logger.info("市场数据服务初始化完成 (缓存: {'启用' if use_cache else '禁用'})"")
 
     def _build_db_url(self) -> str:
         """从环境变量构建数据库URL"""
@@ -120,11 +121,11 @@ class MarketDataService:
                     for key, value in data.items():
                         setattr(existing, key, value)
                     db.commit()
-                    logger.info(f"更新资金流向: {symbol} - {timeframe}天")
+                    logger.info("更新资金流向: %(symbol)s - %(timeframe)s天"")
                 else:
                     db.add(fund_flow)
                     db.commit()
-                    logger.info(f"新增资金流向: {symbol} - {timeframe}天")
+                    logger.info("新增资金流向: %(symbol)s - %(timeframe)s天"")
 
                 return data
 
@@ -151,7 +152,7 @@ class MarketDataService:
             }
 
         except Exception as e:
-            logger.error(f"获取资金流向失败: {e}")
+            logger.error("获取资金流向失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_fund_flow(self, symbol: str, timeframe: str = "1") -> Dict[str, Any]:
@@ -204,11 +205,11 @@ class MarketDataService:
                     for key, value in data.items():
                         setattr(existing, key, value)
                     db.commit()
-                    logger.info(f"更新资金流向: {symbol} - {timeframe}天")
+                    logger.info("更新资金流向: %(symbol)s - %(timeframe)s天"")
                 else:
                     db.add(fund_flow)
                     db.commit()
-                    logger.info(f"新增资金流向: {symbol} - {timeframe}天")
+                    logger.info("新增资金流向: %(symbol)s - %(timeframe)s天"")
 
                 return {
                     "success": True,
@@ -220,7 +221,7 @@ class MarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取资金流向失败: {e}")
+            logger.error("获取资金流向失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_fund_flow(
@@ -349,7 +350,7 @@ class MarketDataService:
                             saved_count += 1
 
                     db.commit()
-                    logger.info(f"保存ETF数据成功: {saved_count}条")
+                    logger.info("保存ETF数据成功: %(saved_count)s条"")
 
                 finally:
                     db.close()
@@ -363,7 +364,7 @@ class MarketDataService:
             }
 
         except Exception as e:
-            logger.error(f"获取ETF数据失败: {e}")
+            logger.error("获取ETF数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_etf_spot(self) -> Dict[str, Any]:
@@ -439,7 +440,7 @@ class MarketDataService:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存ETF数据成功: {saved_count}条")
+                logger.info("保存ETF数据成功: %(saved_count)s条"")
 
                 return {
                     "success": True,
@@ -452,7 +453,7 @@ class MarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取ETF数据失败: {e}")
+            logger.error("获取ETF数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_etf_spot(
@@ -585,7 +586,7 @@ class MarketDataService:
                             saved_count += 1
 
                     db.commit()
-                    logger.info(f"保存{race_type}抢筹数据成功: {saved_count}条")
+                    logger.info("保存%(race_type)s抢筹数据成功: %(saved_count)s条"")
 
                 finally:
                     db.close()
@@ -599,7 +600,7 @@ class MarketDataService:
             }
 
         except Exception as e:
-            logger.error(f"获取抢筹数据失败: {e}")
+            logger.error("获取抢筹数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def fetch_and_save_chip_race(self, race_type: str = "open", trade_date: Optional[str] = None) -> Dict[str, Any]:
@@ -661,7 +662,7 @@ class MarketDataService:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存{race_type}抢筹数据成功: {saved_count}条")
+                logger.info("保存%(race_type)s抢筹数据成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -669,7 +670,7 @@ class MarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取抢筹数据失败: {e}")
+            logger.error("获取抢筹数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_chip_race(
@@ -769,7 +770,7 @@ class MarketDataService:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存龙虎榜数据成功: {saved_count}条")
+                logger.info("保存龙虎榜数据成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -777,7 +778,7 @@ class MarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取龙虎榜数据失败: {e}")
+            logger.error("获取龙虎榜数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_lhb_detail(

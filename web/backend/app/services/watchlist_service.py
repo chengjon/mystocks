@@ -4,17 +4,16 @@
 迁移自 OpenStock 项目，适配 PostgreSQL 数据库
 """
 
-from typing import List, Dict, Optional
-from datetime import datetime, date
+import os
+from datetime import date, datetime
+from typing import Dict, List, Optional
+
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import os
 
 
 class WatchlistError(Exception):
     """自选股操作错误"""
-
-    pass
 
 
 def serialize_datetime(obj):

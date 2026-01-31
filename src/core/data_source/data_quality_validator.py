@@ -5,9 +5,9 @@
 """
 
 import logging
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-import numpy as np
+from typing import Any, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 

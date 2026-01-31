@@ -1,6 +1,6 @@
 {
   "config": {
-    "configFile": "/opt/claude/mystocks_spec/web/frontend/playwright.config.ts",
+    "configFile": "/opt/claude/mystocks_spec/web/frontend/playwright-simple.config.ts",
     "rootDir": "/opt/claude/mystocks_spec/web/frontend/tests",
     "forbidOnly": false,
     "fullyParallel": true,
@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "reporter": [
@@ -50,7 +50,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
@@ -59,103 +59,23 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 60000
       },
       {
         "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
-        "id": "firefox-desktop",
-        "name": "firefox-desktop",
+        "id": "chrome-debug",
+        "name": "chrome-debug",
         "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
         "testIgnore": [],
         "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+          "/.*chrome-devtools.*\\.spec\\.ts$/"
         ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "webkit-desktop",
-        "name": "webkit-desktop",
-        "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "visual-regression",
-        "name": "visual-regression",
-        "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "/.*\\.visual\\.test\\.ts/"
-        ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "bloomberg-style",
-        "name": "bloomberg-style",
-        "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "/.*\\.bloomberg\\.test\\.ts/"
-        ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "design-token",
-        "name": "design-token",
-        "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "/.*\\.token\\.test\\.ts/"
-        ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "/opt/claude/mystocks_spec/web/frontend/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 1
-        },
-        "id": "component-tests",
-        "name": "component-tests",
-        "testDir": "/opt/claude/mystocks_spec/web/frontend/tests",
-        "testIgnore": [],
-        "testMatch": [
-          "/.*\\.component\\.test\\.ts/"
-        ],
-        "timeout": 30000
+        "timeout": 60000
       }
     ],
     "shard": null,
@@ -163,1006 +83,49 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.57.0",
-    "workers": 1,
+    "workers": 4,
     "webServer": null
   },
   "suites": [
     {
-      "title": "comprehensive-e2e-validation.spec.ts",
-      "file": "comprehensive-e2e-validation.spec.ts",
+      "title": "chrome-devtools-basic.spec.ts",
+      "file": "chrome-devtools-basic.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Phase 1: 前置校验 (Preflight Checks)",
-          "file": "comprehensive-e2e-validation.spec.ts",
-          "line": 164,
+          "title": "Chrome DevTools Basic Functionality Test",
+          "file": "chrome-devtools-basic.spec.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "PM2前端服务进程状态验证",
+              "title": "should load the main application",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
+                  "projectId": "chrome-debug",
+                  "projectName": "chrome-debug",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 282,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:46.266Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-f0ea4a368cf3689222b7",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 165,
-              "column": 7
-            },
-            {
-              "title": "PM2后端服务进程状态验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 311,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:46.575Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-7ed3a4cd19077c8bd5ac",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 171,
-              "column": 7
-            },
-            {
-              "title": "前端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 60,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:46.900Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-356e5a9eedc5a0319f10",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 177,
-              "column": 7
-            },
-            {
-              "title": "后端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 69,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:46.979Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-3cb86520ec6db56aea1b",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 183,
-              "column": 7
-            },
-            {
-              "title": "前端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 18,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:47.056Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-55aa3075d230a3d2a2a7",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 189,
-              "column": 7
-            },
-            {
-              "title": "后端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:47.084Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-ecb6c7468fcf3b76b985",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 195,
-              "column": 7
-            },
-            {
-              "title": "PM2前端服务进程状态验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 274,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:52.599Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-99ae6ab4ca7986d930a7",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 165,
-              "column": 7
-            },
-            {
-              "title": "PM2后端服务进程状态验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 269,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:52.895Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-59d6e4375ac62250ce4d",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 171,
-              "column": 7
-            },
-            {
-              "title": "前端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 61,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:53.178Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-164a4c9b245fe8ec349a",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 177,
-              "column": 7
-            },
-            {
-              "title": "后端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 50,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:53.255Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-cab38b16f2794562d14f",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 183,
-              "column": 7
-            },
-            {
-              "title": "前端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 20,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:53.314Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-1095d40e45a7b7ce702f",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 189,
-              "column": 7
-            },
-            {
-              "title": "后端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:53.343Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-6624df99ff5cb48a6cf4",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 195,
-              "column": 7
-            },
-            {
-              "title": "PM2前端服务进程状态验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 374,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:08.154Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-1b15583fa466a898a26b",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 165,
-              "column": 7
-            },
-            {
-              "title": "PM2后端服务进程状态验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 349,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:08.568Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-cf5ea85dc5fa9ce70f18",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 171,
-              "column": 7
-            },
-            {
-              "title": "前端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 98,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:08.934Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-c8f552817778cb6c05f9",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 177,
-              "column": 7
-            },
-            {
-              "title": "后端端口连通性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 77,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:09.056Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-e206e4ca6b34650a05c8",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 183,
-              "column": 7
-            },
-            {
-              "title": "前端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 26,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:09.142Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-7e7540e7c6d09350d459",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 189,
-              "column": 7
-            },
-            {
-              "title": "后端HTTP响应验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 13,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:09.188Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-d95ea6d6e0420031aa66",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 195,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Phase 2: 页面加载完整性 (Page Load Integrity)",
-          "file": "comprehensive-e2e-validation.spec.ts",
-          "line": 202,
-          "column": 6,
-          "specs": [
-            {
-              "title": "DOM元素存在性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1151,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:47.106Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-3728c157a42f2b72e1c1",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 203,
-              "column": 7
-            },
-            {
-              "title": "控制台错误检测",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2934,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:48.333Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-f2a2dd3799c95d51e2c2",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 220,
-              "column": 7
-            },
-            {
-              "title": "DOM元素存在性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6948,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:53.362Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-4e264202b66775f2a614",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 203,
-              "column": 7
-            },
-            {
-              "title": "控制台错误检测",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2522,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:01.253Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-0ce8a264cf8301fdc129",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 220,
-              "column": 7
-            },
-            {
-              "title": "DOM元素存在性验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1638,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:09.214Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-d83e233095f30ab7cad5",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 203,
-              "column": 7
-            },
-            {
-              "title": "控制台错误检测",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3271,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:10.993Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-92828194ae0ca3c7703d",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 220,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Phase 3: 前后端联动 (Frontend-Backend Integration)",
-          "file": "comprehensive-e2e-validation.spec.ts",
-          "line": 230,
-          "column": 6,
-          "specs": [
-            {
-              "title": "后端API健康检查",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:15:51.279Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-74077faed73ddd142e31",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 231,
-              "column": 7
-            },
-            {
-              "title": "后端API健康检查",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 13,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:03.793Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-234a6b7f2153d8c3bbf2",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 231,
-              "column": 7
-            },
-            {
-              "title": "后端API健康检查",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-01-19T00:16:14.286Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "24130a067c50e183a994-f78d0fb9730760c1b4d5",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 231,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Phase 4: 基础交互 (Basic Interactions)",
-          "file": "comprehensive-e2e-validation.spec.ts",
-          "line": 242,
-          "column": 6,
-          "specs": [
-            {
-              "title": "页面导航验证",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 615,
+                      "duration": 7876,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n================================================================================\n"
-                        },
-                        {
-                          "text": "MyStocks E2E Test Report Generated\n"
-                        },
-                        {
-                          "text": "================================================================================\n"
-                        },
-                        {
-                          "text": "Passed: 10, Failed: 0, Duration: 5.68s\n"
-                        },
-                        {
-                          "text": "Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json\n"
-                        },
-                        {
-                          "text": "================================================================================\n\n"
+                          "text": "Page title: MyStocks - Professional Stock Analysis\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-19T00:15:51.296Z",
+                      "startTime": "2026-01-26T16:07:28.889Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1170,52 +133,46 @@
                   "status": "expected"
                 }
               ],
-              "id": "24130a067c50e183a994-54068963c15b3c3ad5a0",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 243,
+              "id": "ff57148e7f7e6ed9aae0-1c9b87a386eb94215b61",
+              "file": "chrome-devtools-basic.spec.ts",
+              "line": 6,
               "column": 7
             },
             {
-              "title": "页面导航验证",
+              "title": "should check browser console for errors",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
+                  "projectId": "chrome-debug",
+                  "projectName": "chrome-debug",
                   "results": [
                     {
                       "workerIndex": 1,
-                      "parallelIndex": 0,
+                      "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 816,
+                      "duration": 9993,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n================================================================================\n"
+                          "text": "Console [error]: Failed to load resource: the server responded with a status of 500 (Internal Server Error)\n"
                         },
                         {
-                          "text": "MyStocks E2E Test Report Generated\n"
+                          "text": "Console [debug]: [vite] connecting...\n"
                         },
                         {
-                          "text": "================================================================================\n"
+                          "text": "Console [debug]: [vite] connected.\n"
                         },
                         {
-                          "text": "Passed: 10, Failed: 0, Duration: 12.08s\n"
-                        },
-                        {
-                          "text": "Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json\n"
-                        },
-                        {
-                          "text": "================================================================================\n\n"
+                          "text": "Console messages found: [\n  \u001b[32m'ERROR: Failed to load resource: the server responded with a status of 500 (Internal Server Error)'\u001b[39m\n]\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-19T00:16:03.827Z",
+                      "startTime": "2026-01-26T16:07:28.877Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1223,52 +180,49 @@
                   "status": "expected"
                 }
               ],
-              "id": "24130a067c50e183a994-d33a088814bd8c13ef06",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 243,
+              "id": "ff57148e7f7e6ed9aae0-cd94fbfe9ed9f2db9228",
+              "file": "chrome-devtools-basic.spec.ts",
+              "line": 22,
               "column": 7
             },
             {
-              "title": "页面导航验证",
+              "title": "should check network requests",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "webkit-desktop",
-                  "projectName": "webkit-desktop",
+                  "projectId": "chrome-debug",
+                  "projectName": "chrome-debug",
                   "results": [
                     {
                       "workerIndex": 2,
-                      "parallelIndex": 0,
+                      "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 759,
+                      "duration": 10086,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n================================================================================\n"
+                          "text": "Request: GET http://localhost:3020/src/api/unifiedApiClient.ts?t=1769443556690\n"
                         },
                         {
-                          "text": "MyStocks E2E Test Report Generated\n"
+                          "text": "Request: GET http://localhost:3020/src/api/apiClient.ts\n"
                         },
                         {
-                          "text": "================================================================================\n"
+                          "text": "Request: GET http://localhost:3020/src/api/index.js?t=1769443556690\n"
                         },
                         {
-                          "text": "Passed: 10, Failed: 0, Duration: 6.96s\n"
+                          "text": "Request: GET http://localhost:3020/src/api/mockApiClient.ts\n"
                         },
                         {
-                          "text": "Detailed report: /opt/claude/mystocks_spec/web/frontend/test-results/e2e-test-report.json\n"
-                        },
-                        {
-                          "text": "================================================================================\n\n"
+                          "text": "Total requests captured: 4\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-19T00:16:14.311Z",
+                      "startTime": "2026-01-26T16:07:28.892Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1276,9 +230,90 @@
                   "status": "expected"
                 }
               ],
-              "id": "24130a067c50e183a994-14cc678b3aab94600729",
-              "file": "comprehensive-e2e-validation.spec.ts",
-              "line": 243,
+              "id": "ff57148e7f7e6ed9aae0-a7253106837af655cb1f",
+              "file": "chrome-devtools-basic.spec.ts",
+              "line": 52,
+              "column": 7
+            },
+            {
+              "title": "should check page performance metrics",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-debug",
+                  "projectName": "chrome-debug",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 4282,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m\n    at /opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts:98:42",
+                        "location": {
+                          "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
+                          "column": 42,
+                          "line": 98
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m     \n \u001b[90m  97 |\u001b[39m     expect(loadTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m     expect(performanceMetrics\u001b[33m.\u001b[39mtotalTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
+                            "column": 42,
+                            "line": 98
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31mNaN\u001b[39m\n\n\u001b[0m \u001b[90m  96 |\u001b[39m     \n \u001b[90m  97 |\u001b[39m     expect(loadTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m     expect(performanceMetrics\u001b[33m.\u001b[39mtotalTime)\u001b[33m.\u001b[39mtoBeLessThan(\u001b[35m30000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts:98:42\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Page load time: 3491ms\n"
+                        },
+                        {
+                          "text": "Performance metrics: { domContentLoaded: \u001b[33mNaN\u001b[39m, loadComplete: \u001b[33mNaN\u001b[39m, totalTime: \u001b[33mNaN\u001b[39m }\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-26T16:07:28.892Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/opt/claude/mystocks_spec/web/frontend/test-results/chrome-devtools-basic-Chro-23550-ck-page-performance-metrics-chrome-debug/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/opt/claude/mystocks_spec/web/frontend/tests/chrome-devtools-basic.spec.ts",
+                        "column": 42,
+                        "line": 98
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "ff57148e7f7e6ed9aae0-d65e4329aee57efc9d50",
+              "file": "chrome-devtools-basic.spec.ts",
+              "line": 75,
               "column": 7
             }
           ]
@@ -1288,11 +323,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-19T00:15:45.576Z",
-    "duration": 29557.097,
-    "expected": 30,
+    "startTime": "2026-01-26T16:07:28.257Z",
+    "duration": 15334.579,
+    "expected": 3,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }

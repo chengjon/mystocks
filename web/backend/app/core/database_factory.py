@@ -13,9 +13,10 @@ Estimated Duplication Reduced: 150+ lines
 
 import os
 from typing import Optional, Tuple
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+
 import structlog
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 logger = structlog.get_logger()
 
@@ -187,7 +188,7 @@ class DatabaseFactory:
         """Close all database engines and connections"""
         for db_type, engine in DatabaseFactory._engines.items():
             engine.dispose()
-            logger.info(f"✅ Closed {db_type} connection pool")
+            logger.info("✅ Closed %(db_type)s connection pool"")
 
         DatabaseFactory._engines.clear()
         DatabaseFactory._session_factories.clear()

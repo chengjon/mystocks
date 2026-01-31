@@ -6,10 +6,10 @@ Signal Result Tracker Service
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class SignalResultTracker:
                     return None
                 self._pg_pool = pg
             except Exception as e:
-                logger.error(f"无法获取监控数据库连接: {e}")
+                logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
 
@@ -141,11 +141,11 @@ class SignalResultTracker:
                 # 更新 Prometheus 指标
                 await self._update_prometheus_metrics(signal_id)
 
-                logger.info(f"记录执行结果成功: signal_id={signal_id}, executed={executed}")
+                logger.info("记录执行结果成功: signal_id=%(signal_id)s, executed=%(executed)s")
             return success
 
         except Exception as e:
-            logger.error(f"记录执行结果失败: {e}", exc_info=True)
+            logger.error("记录执行结果失败: {e}", exc_info=True)
             return False
 
     async def _update_prometheus_metrics(self, signal_id: int) -> None:
@@ -164,14 +164,13 @@ class SignalResultTracker:
             signal_type = signal["signal_type"]
 
             # 更新信号准确率（基于盈亏）
-            from src.monitoring.signal_metrics import update_signal_accuracy
 
             # 这里简化处理：盈亏为正则准确
             # 实际应该根据策略目标判断（例如：BUY信号应该价格上涨）
             await self._calculate_and_update_accuracy(strategy_id, signal_type)
 
         except Exception as e:
-            logger.warning(f"更新 Prometheus 指标失败: {e}")
+            logger.warning("更新 Prometheus 指标失败: %(e)s")
 
     async def _calculate_and_update_accuracy(
         self,
@@ -225,7 +224,7 @@ class SignalResultTracker:
                 )
 
         except Exception as e:
-            logger.warning(f"计算准确率失败: {e}")
+            logger.warning("计算准确率失败: %(e)s")
 
     async def calculate_profit_ratio(
         self,
@@ -277,7 +276,7 @@ class SignalResultTracker:
             return 0.0
 
         except Exception as e:
-            logger.error(f"计算盈利比率失败: {e}", exc_info=True)
+            logger.error("计算盈利比率失败: {e}", exc_info=True)
             return 0.0
 
     async def update_strategy_health_status(
@@ -363,7 +362,7 @@ class SignalResultTracker:
             }
 
         except Exception as e:
-            logger.error(f"更新策略健康状态失败: {e}", exc_info=True)
+            logger.error("更新策略健康状态失败: {e}", exc_info=True)
             return {}
 
     async def get_signal_performance_summary(
@@ -420,7 +419,7 @@ class SignalResultTracker:
             }
 
         except Exception as e:
-            logger.error(f"获取性能摘要失败: {e}", exc_info=True)
+            logger.error("获取性能摘要失败: {e}", exc_info=True)
             return {}
 
 

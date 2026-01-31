@@ -2,11 +2,11 @@
 Unit tests for Data Quality Checker
 """
 
-import pytest
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from src.data_governance import DataQualityChecker, QualityScore, QualityReport, QualityDimension
+import pytest
+
+from src.data_governance import DataQualityChecker, QualityDimension, QualityReport, QualityScore
 
 
 class TestDataQualityChecker:

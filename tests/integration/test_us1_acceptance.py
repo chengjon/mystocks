@@ -13,18 +13,21 @@ US1端到端验收测试
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-import pandas as pd
-import numpy as np
 import time
 from datetime import datetime
-from src.core.unified_manager import MyStocksUnifiedManager
-from src.core.data_classification import DataClassification
+
+import numpy as np
+import pandas as pd
+
 from src.core.batch_failure_strategy import BatchFailureStrategy
+from src.core.data_classification import DataClassification
+from src.core.data_manager import DataManager
+from src.core.unified_manager import MyStocksUnifiedManager
 
 print("\n" + "=" * 80)
 print("US1端到端验收测试")

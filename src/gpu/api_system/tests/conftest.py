@@ -3,10 +3,11 @@ Pytest配置文件
 定义共享的fixtures和测试配置
 """
 
-import pytest
-import sys
 import os
+import sys
 from pathlib import Path
+
+import pytest
 
 # 添加项目根目录到Python路径
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -100,9 +101,10 @@ def mock_metrics_collector():
 @pytest.fixture
 def sample_market_data():
     """生成样本市场数据"""
-    import pandas as pd
-    import numpy as np
     from datetime import datetime, timedelta
+
+    import numpy as np
+    import pandas as pd
 
     # 生成1000天的数据
     dates = [datetime(2024, 1, 1) + timedelta(days=i) for i in range(1000)]
@@ -135,8 +137,8 @@ def sample_strategy_config():
 @pytest.fixture
 def sample_ml_training_data():
     """生成ML训练样本数据"""
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     n_samples = 10000
 

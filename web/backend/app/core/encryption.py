@@ -15,15 +15,16 @@ Phase 3 Enhancements:
 - Automatic migration from old to new keys
 """
 
-import os
 import base64
 import json
-from typing import Union, Dict, Any, Optional
+import os
 from datetime import datetime
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from typing import Any, Dict, Optional, Union
+
 import structlog
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 logger = structlog.get_logger()
 
@@ -115,7 +116,7 @@ class EncryptionManager:
             "rotated_at": None,
         }
 
-        logger.debug(f"✅ Key derived for version {version}")
+        logger.debug("✅ Key derived for version %(version)s"")
 
     def add_old_key_version(self, version: int):
         """
@@ -129,7 +130,7 @@ class EncryptionManager:
         """
         if version not in self._cipher_keys:
             self._derive_key_for_version(version)
-            logger.info(f"✅ Old key version {version} added for decryption")
+            logger.info("✅ Old key version %(version)s added for decryption"")
 
     def rotate_key(self, new_version: int) -> bool:
         """
@@ -262,7 +263,7 @@ class EncryptionManager:
                         cipher = AESGCM(self._cipher_keys[version])
                         try:
                             plaintext = cipher.decrypt(nonce, ciphertext, None)
-                            logger.debug(f"✅ Decrypted with key version {version}")
+                            logger.debug("✅ Decrypted with key version %(version)s"")
                             return plaintext.decode("utf-8")
                         except Exception:
                             pass  # Fall through to try old format
@@ -332,7 +333,7 @@ class EncryptionManager:
                     # Remove encrypted key
                     del decrypted_data[key]
                 except ValueError as e:
-                    logger.error(f"❌ Failed to decrypt {original_key}", error=str(e))
+                    logger.error("❌ Failed to decrypt {original_key}", error=str(e))
                     # Keep encrypted value if decryption fails
                     decrypted_data[original_key] = encrypted_value
 
@@ -374,7 +375,7 @@ class EncryptionManager:
             self.current_key_version = original_version
             self._cipher_key = self._cipher_keys[original_version]
 
-        logger.debug(f"✅ Re-encrypted data with version {target_version or self.current_key_version}")
+        logger.debug("✅ Re-encrypted data with version {target_version or self.current_key_version}"")
         return new_encrypted
 
     def get_encrypted_version(self, encrypted_data: str) -> Optional[int]:
@@ -440,7 +441,7 @@ class SecretManager:
         """
         encrypted_value = self.encryption.encrypt(value)
         self.secrets[key] = encrypted_value
-        logger.info(f"✅ Secret stored: {key}")
+        logger.info("✅ Secret stored: %(key)s"")
 
     def retrieve_secret(self, key: str) -> str:
         """
@@ -456,7 +457,7 @@ class SecretManager:
             KeyError: If secret not found
         """
         if key not in self.secrets:
-            logger.error(f"❌ Secret not found: {key}")
+            logger.error("❌ Secret not found: %(key)s"")
             raise KeyError(f"Secret '{key}' not found")
 
         encrypted_value = self.secrets[key]
@@ -489,7 +490,7 @@ class SecretManager:
             json_str: JSON string containing encrypted secrets
         """
         self.secrets = json.loads(json_str)
-        logger.info(f"✅ Loaded {len(self.secrets)} encrypted secrets")
+        logger.info("✅ Loaded {len(self.secrets)} encrypted secrets"")
 
     def migrate_to_key_version(self, target_version: int) -> Dict[str, Any]:
         """
@@ -533,12 +534,12 @@ class SecretManager:
                 self.secrets[key] = new_encrypted
                 migration_report["migrated"] += 1
 
-                logger.debug(f"✅ Migrated secret: {key}")
+                logger.debug("✅ Migrated secret: %(key)s"")
 
             except Exception as e:
                 migration_report["failed"] += 1
                 migration_report["errors"].append({"key": key, "error": str(e)})
-                logger.error(f"❌ Failed to migrate {key}", error=str(e))
+                logger.error("❌ Failed to migrate {key}", error=str(e))
 
         migration_report["end_time"] = datetime.utcnow().isoformat()
 

@@ -4,11 +4,11 @@ Domain Event Base Class with Serialization
 """
 
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from uuid import uuid4
 from enum import Enum
 from typing import Any, Dict, Type, TypeVar
+from uuid import uuid4
 
 T = TypeVar("T", bound="DomainEvent")
 
@@ -55,6 +55,7 @@ class DomainEvent:
         data.pop("event_name", None)
 
         # 获取字段列表
+        # pylint: disable=no-member
         fields_dict = cls.__dataclass_fields__
         filtered_data = {}
 

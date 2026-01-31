@@ -1,0 +1,35 @@
+{
+  "check_interval": 60,
+  "alert_cooldown": 300,
+  "max_restart_attempts": 3,
+  "webhook_url": "",
+  "services": {
+    "mystocks-frontend": {
+      "url": "http://localhost:3002",
+      "timeout": 5000,
+      "expected_status": 200
+    },
+    "mystocks-backend": {
+      "url": "http://localhost:8000/api/health",
+      "timeout": 3000,
+      "expected_status": 200,
+      "database_check": {
+        "enabled": true,
+        "query": "SELECT 1",
+        "timeout": 5000,
+        "connection_pool_check": true
+      },
+      "endpoints_check": [
+        { "path": "/api/health", "method": "GET", "expected_status": 200 },
+        { "path": "/api/stocks", "method": "GET", "expected_status": 200 },
+        { "path": "/api/strategies", "method": "GET", "expected_status": 200 }
+      ]
+    }
+  },
+  "thresholds": {
+    "cpu": 80,
+    "memory": 85,
+    "disk": 90
+  },
+  "log_level": "info"
+}

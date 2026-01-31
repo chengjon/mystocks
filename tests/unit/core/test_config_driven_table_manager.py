@@ -4,13 +4,14 @@ ConfigDrivenTableManager单元测试
 测试配置驱动的表管理器核心功能
 """
 
+import os
+import sys
+import tempfile
+from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
 import yaml
-import tempfile
-import os
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
-import sys
 
 # 确保能导入src模块
 sys.path.insert(0, "/opt/claude/mystocks_spec")

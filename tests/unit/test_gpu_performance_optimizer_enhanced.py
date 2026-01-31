@@ -6,11 +6,13 @@ GPU性能优化器单元测试
 增强对GPU性能优化器的测试覆盖率。
 """
 
-import sys
 import os
+import sys
 import unittest
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import pytest
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))

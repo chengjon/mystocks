@@ -5,20 +5,20 @@ GPU Acceleration Engine
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from typing import Any, Dict, List, Union
+
+import cudf
+import cupy as cp
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Union
-from datetime import datetime
-import cupy as cp
-from cuml.linear_model import LinearRegression, Ridge, Lasso
 from cuml.ensemble import RandomForestRegressor
+from cuml.linear_model import Lasso, LinearRegression, Ridge
 from cuml.preprocessing import StandardScaler as GPUStandardScaler
-import cudf
-from concurrent.futures import ThreadPoolExecutor
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
 from src.gpu.api_system.utils.monitoring import MetricsCollector
-from src.gpu.api_system.utils.cache_optimization import CacheManager
 
 logger = logging.getLogger(__name__)
 

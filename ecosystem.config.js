@@ -22,7 +22,7 @@ module.exports = {
     },
     // 自动重启配置
     autorestart: true,
-    max_restarts: 5,
+    max_restarts: 30,
     min_uptime: '10s',
     // 日志配置
     log_file: '/tmp/pm2-mystocks-frontend.log',
