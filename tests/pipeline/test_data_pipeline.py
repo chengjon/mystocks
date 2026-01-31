@@ -10,13 +10,14 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
-import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import pandas as pd
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -321,9 +322,9 @@ class DataTransformer:
             if transformer:
                 try:
                     transformed_data = transformer(transformed_data, batch.metadata)
-                    logger.info(f"应用转换: {transform_name}")
+                    logger.info("应用转换: %(transform_name)s")
                 except Exception as e:
-                    logger.error(f"转换失败 {transform_name}: {str(e)}")
+                    logger.error("转换失败 %(transform_name)s: {str(e)}")
                     continue
 
         # 创建新的批次
@@ -500,7 +501,7 @@ class TestDataPipeline:
         self.storage_path = Path(config.storage_path)
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"初始化测试数据管道: {config.name}")
+        logger.info("初始化测试数据管道: {config.name}")
 
     async def ingest_data(
         self,
@@ -525,7 +526,7 @@ class TestDataPipeline:
         await self.processing_queue.put(batch)
         self.batches[batch_id] = batch
 
-        logger.info(f"数据已摄入: {batch_id} ({len(data)} 条记录)")
+        logger.info("数据已摄入: %(batch_id)s ({len(data)} 条记录)")
         return batch_id
 
     async def process_pipeline(self) -> List[str]:
@@ -544,10 +545,10 @@ class TestDataPipeline:
                 self.metrics.batches_processed += 1
                 self.metrics.processed_records += len(result_batch.data)
 
-                logger.info(f"批次处理完成: {batch.id}")
+                logger.info("批次处理完成: {batch.id}")
 
             except Exception as e:
-                logger.error(f"批次处理失败 {batch.id}: {str(e)}")
+                logger.error("批次处理失败 {batch.id}: {str(e)}")
                 self.metrics.failed_records += len(batch.data)
                 if self.config.fail_fast:
                     break
@@ -572,7 +573,7 @@ class TestDataPipeline:
                     passed, errors = self.validator.validate_batch(batch)
 
                 if not passed:
-                    logger.warning(f"批次验证失败 {batch.id}: {errors}")
+                    logger.warning("批次验证失败 {batch.id}: %(errors)s")
                     # 创建失败批次但继续处理
                     failed_batch = DataBatch(
                         id=f"{batch.id}_failed",
@@ -600,13 +601,13 @@ class TestDataPipeline:
             processing_time = time.time() - start_time
             self.metrics.total_duration += processing_time
 
-            logger.info(f"批次处理成功 {batch.id}: {processing_time:.2f}秒")
+            logger.info("批次处理成功 {batch.id}: {processing_time:.2f}秒")
 
             return batch
 
         except Exception as e:
             processing_time = time.time() - start_time
-            logger.error(f"批次处理异常 {batch.id}: {str(e)}")
+            logger.error("批次处理异常 {batch.id}: {str(e)}")
 
             # 创建错误批次
             error_batch = DataBatch(
@@ -652,7 +653,7 @@ class TestDataPipeline:
             quality_score=batch.quality_score,
         )
 
-        logger.info(f"自动修复批次: {batch.id} ({len(batch.data)} -> {len(repaired_data)})")
+        logger.info("自动修复批次: {batch.id} ({len(batch.data)} -> {len(repaired_data)})")
         return repaired_batch
 
     def _optimize_batch(self, batch: DataBatch):
@@ -668,7 +669,7 @@ class TestDataPipeline:
                 unique_data.append(record)
 
         batch.data = unique_data
-        logger.info(f"批次数据去重: {batch.id} ({len(batch.data)} 条唯一记录)")
+        logger.info("批次数据去重: {batch.id} ({len(batch.data)} 条唯一记录)")
 
     async def _store_batch(self, batch: DataBatch):
         """存储批次数据"""
@@ -685,10 +686,10 @@ class TestDataPipeline:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(serialized, f, indent=2, ensure_ascii=False)
 
-            logger.info(f"批次已存储: {filepath}")
+            logger.info("批次已存储: %(filepath)s")
 
         except Exception as e:
-            logger.error(f"批次存储失败 {batch.id}: {str(e)}")
+            logger.error("批次存储失败 {batch.id}: {str(e)}")
 
     async def export_data(self, batch_ids: List[str], output_path: str, format: str = "json") -> bool:
         """导出数据"""
@@ -720,14 +721,14 @@ class TestDataPipeline:
                 df.to_parquet(output_file)
 
             else:
-                logger.error(f"不支持的导出格式: {format}")
+                logger.error("不支持的导出格式: %(format)s")
                 return False
 
-            logger.info(f"数据导出完成: {output_file} ({len(export_data)} 条记录)")
+            logger.info("数据导出完成: %(output_file)s ({len(export_data)} 条记录)")
             return True
 
         except Exception as e:
-            logger.error(f"数据导出失败: {str(e)}")
+            logger.error("数据导出失败: {str(e)}")
             return False
 
     def get_metrics(self) -> PipelineMetrics:
@@ -754,7 +755,7 @@ class TestDataPipeline:
         for file_path in self.storage_path.glob("*.json"):
             if datetime.fromtimestamp(file_path.stat().st_mtime) < cutoff_time:
                 file_path.unlink()
-                logger.info(f"清理旧文件: {file_path}")
+                logger.info("清理旧文件: %(file_path)s")
 
         logger.info("缓存清理完成")
 

@@ -3,10 +3,11 @@ Database Manager 纯Mock测试
 完全避免数据库连接，仅测试逻辑
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../.."))
 

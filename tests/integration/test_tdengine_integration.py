@@ -8,19 +8,20 @@ TDengine集成测试
 修改: 2025-11-19 - 重构为 pytest 格式，修复 sys.exit() 问题
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-import pytest
-import pandas as pd
-import numpy as np
 from datetime import datetime
-from src.data_access.tdengine_access import TDengineDataAccess
+
+import numpy as np
+import pandas as pd
+import pytest
+
 from src.core.data_classification import DataClassification
 from src.core.unified_manager import MyStocksUnifiedManager
-
+from src.data_access.tdengine_access import TDengineDataAccess
 
 # 全局变量存储连接状态
 _tdengine_available = None

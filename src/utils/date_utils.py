@@ -129,3 +129,40 @@ def is_valid_date(date_str: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def get_trade_dates(start_date: str, end_date: str) -> list:
+    """
+    获取日期范围内的交易日列表（简化实现）
+
+    注意：这是一个简化实现，仅排除周末。
+    实际生产环境应使用 akshare 或其他数据源的交易日历API。
+
+    Args:
+        start_date: 开始日期 (YYYY-MM-DD格式)
+        end_date: 结束日期 (YYYY-MM-DD格式)
+
+    Returns:
+        list: 交易日日期字符串列表
+    """
+    import pandas as pd
+
+    # 标准化日期格式
+    start = normalize_date(start_date)
+    end = normalize_date(end_date)
+
+    # 生成日期范围
+    start_dt = datetime.datetime.strptime(start, "%Y-%m-%d")
+    end_dt = datetime.datetime.strptime(end, "%Y-%m-%d")
+
+    # 生成所有日期
+    dates = pd.date_range(start=start_dt, end=end_dt, freq="D")
+
+    # 过滤掉周末 (5=周六, 6=周日)
+    trade_dates = [
+        d.strftime("%Y-%m-%d")
+        for d in dates
+        if d.weekday() < 5  # 0-4 是周一到周五
+    ]
+
+    return trade_dates

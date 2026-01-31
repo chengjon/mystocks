@@ -9,11 +9,12 @@
 # 版权：MyStocks Project © 2025
 """
 
-import os
-import logging
 import configparser
-from typing import List, Optional, Tuple
+import logging
+import os
 import random
+from typing import List, Optional, Tuple
+
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env

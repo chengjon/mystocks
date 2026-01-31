@@ -5,8 +5,9 @@
 
 import asyncio
 import sys
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -49,8 +50,8 @@ async def test_matrix_kernel_basic():
     try:
         from src.gpu.core.kernels.matrix_kernels import MatrixKernelEngine
         from src.gpu.core.kernels.standardized_interface import (
-            MatrixOperationType,
             MatrixOperationConfig,
+            MatrixOperationType,
         )
 
         # 创建内核

@@ -44,7 +44,9 @@
         /// - secondary: Alias for outline
         /// - rise: Red border/text, red glow on hover (A股涨)
         /// - fall: Green border/text, green glow on hover (A股跌)
-        variant?: 'default' | 'solid' | 'outline' | 'secondary' | 'rise' | 'fall' | 'pulse'
+        /// - double-border: ArtDeco signature double frame style
+        /// - pulse: Pulsing gold border animation
+        variant?: 'default' | 'solid' | 'outline' | 'secondary' | 'rise' | 'fall' | 'double-border' | 'pulse'
 
         /// Button size
         /// - sm: 40px height
@@ -140,8 +142,12 @@
         font-weight: 600; // Increased from semibold for better contrast
         line-height: 1; // Perfect vertical centering
 
+        // UI Pro Max优化: 强制最小触摸目标（WCAG AA合规）
+        min-height: 44px;
+        min-width: 44px;
+
         // Theatrical transition - 使用更慢的过渡增加戏剧感
-        transition: all var(--artdeco-transition-slow) var(--artdeco-ease-in-out);
+        transition: all var(--artdeco-transition-base) var(--artdeco-ease-in-out);
 
         // Remove default button styles
         border: none;
@@ -356,15 +362,94 @@
     }
 
     // ============================================
+    //   VARIANT: DOUBLE BORDER - ArtDeco双线框
+    //   双重金色边框，ArtDeco标志性的装饰风格
+    //   Signature ArtDeco visual element
+    // ============================================
+
+    .artdeco-button--double-border {
+        background-color: transparent;
+        color: var(--artdeco-gold-primary);
+        border: none;
+        position: relative;
+        padding: 12px 24px;
+
+        // 内层边框
+        &::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border: 1px solid var(--artdeco-gold-primary);
+            pointer-events: none;
+            transition: all var(--artdeco-transition-base);
+            z-index: 1;
+        }
+
+        // 外层边框
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid var(--artdeco-gold-primary);
+            pointer-events: none;
+            transition: all var(--artdeco-transition-base);
+            z-index: 1;
+        }
+
+        // 文字内容需在边框之上
+        .artdeco-button__text,
+        .artdeco-button__icon {
+            position: relative;
+            z-index: 2;
+        }
+
+        &:hover:not(:disabled):not(&--disabled) {
+            color: var(--artdeco-gold-hover);
+
+            &::before {
+                border-color: var(--artdeco-gold-hover);
+                top: 2px;
+                left: 2px;
+                right: 2px;
+                bottom: 2px;
+            }
+
+            &::after {
+                border-color: var(--artdeco-gold-hover);
+                box-shadow: var(--artdeco-glow-intense);
+            }
+        }
+
+        &:active:not(:disabled):not(&--disabled) {
+            transform: translateY(0);
+
+            &::before,
+            &::after {
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+        }
+    }
+
+    // ============================================
     //   SIZE: SMALL - 小尺寸
     //   40px height, 12px font (Compact v3.1)
     // ============================================
 
     .artdeco-button--sm {
-        height: 40px;
+        height: 44px;  // UI Pro Max优化：从40px提升到44px（WCAG AA合规）
         padding: 0 var(--artdeco-spacing-4); // Vertical padding handled by height + flex
         font-size: var(--artdeco-font-size-sm); // 12px - 紧凑设计（原14px，-14%）
         min-width: 80px; // Ensure button doesn't get too small
+        letter-spacing: 0.15em; // UI Pro Max优化：智能字间距，小按钮用较窄字间距
     }
 
     // ============================================
@@ -373,10 +458,11 @@
     // ============================================
 
     .artdeco-button--md {
-        height: 48px;
+        height: 48px;  // ✅ 保持48px（符合WCAG和Material Design）
         padding: 0 var(--artdeco-spacing-6); // Vertical padding handled by height + flex
         font-size: var(--artdeco-font-size-base); // 14px - 紧凑设计（原16px，-12.5%）
         min-width: 120px; // Ensure button doesn't get too small
+        letter-spacing: 0.18em; // UI Pro Max优化：智能字间距，中等按钮
     }
 
     // ============================================
@@ -389,6 +475,7 @@
         padding: 0 var(--artdeco-spacing-8); // Vertical padding handled by height + flex
         font-size: var(--artdeco-font-size-base); // 14px - 紧凑设计（原18px，-22%）
         min-width: 160px; // Ensure button doesn't get too small
+        letter-spacing: 0.2em; // UI Pro Max优化：智能字间距，大按钮用最宽字间距（ArtDeco标准）
     }
 
     // ============================================

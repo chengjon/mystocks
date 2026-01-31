@@ -6,8 +6,8 @@ Phase 6验证测试：市场数据上下文
 验证Market Data Context的实现质量。
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
 
 # 添加项目根目录到路径

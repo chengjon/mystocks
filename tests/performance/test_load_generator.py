@@ -7,16 +7,18 @@ MyStocks 负载测试生成器
 """
 
 import asyncio
-import time
-import random
 import json
-from datetime import datetime
-from typing import Dict, List, Any
+import random
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List
+
 import aiohttp
-import psutil
 import numpy as np
+import psutil
+import pytest
 
 from tests.config.test_config import test_env
 

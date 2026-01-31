@@ -6,11 +6,11 @@
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 from .interfaces import IRealTimeExecutor, IStrategyContext
-
 
 logger = logging.getLogger(__name__)
 

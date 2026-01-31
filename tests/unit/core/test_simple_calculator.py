@@ -3,9 +3,10 @@
 简单计算器单元测试 - 演示实际源代码覆盖率
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))

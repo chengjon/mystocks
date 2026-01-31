@@ -3,8 +3,8 @@ Indicator Registry Service
 管理所有161个TA-Lib技术指标的元数据注册表
 """
 
-from typing import Dict, Optional, Any
 from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class IndicatorCategory(str, Enum):

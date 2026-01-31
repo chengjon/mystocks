@@ -107,13 +107,13 @@ def get_monitoring_db():
                             ),
                         )
                     except Exception as e:
-                        logger.debug(f"Monitoring log failed (non-critical): {e}")
+                        logger.debug("Monitoring log failed (non-critical): %(e)s"")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
         except Exception as e:
-            logger.warning(f"MonitoringDatabase initialization failed, using fallback: {e}")
+            logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s"")
 
             # 创建一个简单的fallback对象
             class MonitoringFallback:
@@ -203,7 +203,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
 
             except Exception as db_error:
                 # 数据库查询失败，记录错误并返回空结果
-                logger.error(f"数据库查询失败: {str(db_error)}")
+                logger.error("数据库查询失败: {str(db_error)}"")
                 items = []
                 total = 0
 
@@ -224,7 +224,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
     except Exception as e:
         # 如果使用Mock数据模式失败，降级到真实数据库
         if use_mock:
-            logger.warning(f"Mock数据获取失败，降级到真实数据库: {str(e)}")
+            logger.warning("Mock数据获取失败，降级到真实数据库: {str(e)}"")
             return await list_strategies(status=status, page=page, page_size=page_size)
 
         # 记录失败操作
@@ -706,7 +706,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
         strategy_type = config.get("strategy_type", "macd")
         use_gpu = config.get("use_gpu", True)
 
-        logger.info(f"回测任务 {backtest_id}: {strategy_type} 策略, GPU={use_gpu}")
+        logger.info("回测任务 %(backtest_id)s: %(strategy_type)s 策略, GPU=%(use_gpu)s"")
 
         # 获取回测数据（使用 Mock 数据源）
         from src.data_sources.factory import get_timeseries_source
@@ -761,10 +761,10 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
 
                 results["gpu_accelerated"] = True
                 results["backend"] = "GPU"
-                logger.info(f"✅ GPU回测完成: 总收益率={results.get('performance', {}).get('total_return', 0):.2%}")
+                logger.info("✅ GPU回测完成: 总收益率={results.get('performance', {}).get('total_return', 0):.2%}"")
 
             except Exception as gpu_error:
-                logger.warning(f"⚠️  GPU回测失败，使用模拟结果: {gpu_error}")
+                logger.warning("⚠️  GPU回测失败，使用模拟结果: %(gpu_error)s"")
                 results = {
                     "total_return": 0.15,
                     "sharpe_ratio": 1.5,
@@ -774,7 +774,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
                     "backend": "CPU (fallback)",
                 }
         else:
-            logger.info(f"📊 使用CPU回测模式 (GPU available: {GPU_BACKTEST_AVAILABLE})")
+            logger.info("📊 使用CPU回测模式 (GPU available: %(GPU_BACKTEST_AVAILABLE)s)"")
             results = {
                 "total_return": 0.15,
                 "sharpe_ratio": 1.5,

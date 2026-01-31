@@ -1,18 +1,47 @@
 <template>
   <div class="artdeco-layout">
-    <!-- Collapsible Sidebar -->
-    <ArtDecoCollapsibleSidebar :menus="enhancedMenus" />
+    <!-- Sidebar with Tree Menu -->
+    <aside class="artdeco-sidebar">
+      <TreeMenu />
+    </aside>
 
     <!-- Main Content Area -->
     <main class="artdeco-main">
       <!-- Top Bar -->
-      <ArtDecoTopBar
-        :menu-items="enhancedMenus"
-        @menu-toggle="handleMenuToggle"
-      />
+      <header class="artdeco-header">
+        <div class="header-left">
+          <h1 class="page-title">{{ pageTitle }}</h1>
+        </div>
+        <div class="header-right">
+          <!-- Global Search -->
+          <button class="search-trigger" @click="openCommandPalette" aria-label="Search">
+            <ArtDecoIcon name="Search" size="xs" />
+            <kbd>Ctrl+K</kbd>
+          </button>
+
+          <!-- Notifications -->
+          <button class="notification-btn" aria-label="Notifications">
+            <ArtDecoIcon name="Bell" size="sm" />
+            <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+          </button>
+
+          <!-- User Menu -->
+          <div class="user-menu">
+            <button class="user-btn">
+              <ArtDecoIcon name="User" size="sm" />
+              <span class="user-name">Admin</span>
+            </button>
+          </div>
+        </div>
+      </header>
 
       <!-- Breadcrumb Navigation -->
-      <ArtDecoBreadcrumb :breadcrumbs="breadcrumbItems" class="artdeco-breadcrumb" />
+      <ArtDecoBreadcrumb
+        class="artdeco-breadcrumb"
+        home-title="仪表盘"
+        home-path="/dashboard"
+        :show-icon="true"
+      />
 
       <!-- Content Container -->
       <div class="artdeco-content">
@@ -30,19 +59,21 @@
         <router-view v-else />
       </div>
     </main>
+
+    <!-- Command Palette -->
+    <CommandPalette ref="commandPaletteRef" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ArtDecoCollapsibleSidebar from '@/components/artdeco/trading/ArtDecoCollapsibleSidebar.vue'
-import ArtDecoTopBar from '@/components/artdeco/trading/ArtDecoTopBar.vue'
+import TreeMenu from '@/components/menu/TreeMenu.vue'
+import CommandPalette from '@/components/menu/CommandPalette.vue'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
-import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
-import ArtDecoAlert from '@/components/artdeco/base/ArtDecoAlert.vue'
+import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 import { ARTDECO_MENU_ENHANCED } from './MenuConfig.enhanced'
-import { getMenuApiEndpoints, getAllWebSocketChannels, getLiveUpdateMenus } from './MenuConfig.enhanced'
+import { getMenuApiEndpoints, getAllWebSocketChannels, findMenuItem } from './MenuConfig.enhanced'
 import { useMenuService } from '@/services/menuService'
 import type { MenuItem } from './MenuConfig.enhanced'
 
@@ -50,90 +81,23 @@ import type { MenuItem } from './MenuConfig.enhanced'
 const route = useRoute()
 const router = useRouter()
 
+// State
+const unreadCount = ref(0)
+const commandPaletteRef = ref<any>(null)
+
 // Menu Service
-const { loading, error, getMenuData, subscribeToLiveUpdates, getLiveUpdateMenus } =
-  useMenuService()
+const { loading, error, getMenuData, subscribeToLiveUpdates, getLiveUpdateMenus } = useMenuService()
 
-// Import the correct menu for current routes
-import { ARTDECO_MENU_ITEMS } from './MenuConfig'
+// Use ARTDECO_MENU_ENHANCED directly (6 main menus, 40+ submenus)
+const enhancedMenus = computed((): MenuItem[] => ARTDECO_MENU_ENHANCED)
 
-// Computed
-const enhancedMenus = computed((): MenuItem[] => {
-  // Convert flat ARTDECO_MENU_ITEMS to hierarchical structure
-  const groupedMenus: MenuItem[] = [
-    {
-      path: '/dashboard-group',
-      label: '仪表盘',
-      icon: '📊',
-      description: '数据概览和监控',
-      children: [
-        {
-          path: '/dashboard',
-          label: '数据概览',
-          icon: '📊',
-          description: '市场汇总信息'
-        },
-        {
-          path: '/stocks',
-          label: '股票管理',
-          icon: '📋',
-          description: '自选股、关注列表、策略选股'
-        }
-      ]
-    },
-    {
-      path: '/analysis-group',
-      label: '投资分析',
-      icon: '🔍',
-      description: '技术分析、基本面分析',
-      children: [
-        {
-          path: '/analysis',
-          label: '数据分析',
-          icon: '📊',
-          description: '技术分析、基本面分析、指标分析'
-        },
-        {
-          path: '/analysis/industry-concept',
-          label: '行业概念分析',
-          icon: '🏢',
-          description: '行业板块分析'
-        }
-      ]
-    }
-  ]
-  return groupedMenus
-})
-const isLoading = loading  // Already a Ref<boolean>
-const errorMessage = error  // Already a Ref<string | null>
+// Loading and error states
+const isLoading = loading
+const errorMessage = error
 
-// Breadcrumb items
-const breadcrumbItems = computed(() => {
-  const items: Array<{ title: string; path?: string; icon?: string }> = [
-    { title: 'Home', path: '/dashboard' },
-  ]
-
-  // Find current menu item
-  const currentPath = route.path
-  for (const menu of enhancedMenus.value) {
-    if (menu.path === currentPath) {
-      items.push({ title: menu.label })
-      break
-    }
-
-    if (menu.children) {
-      const child = menu.children.find(c => c.path === currentPath)
-      if (child) {
-        items.push(
-          { title: menu.label, path: menu.path },
-          { title: child.label }
-        )
-        break
-      }
-    }
-  }
-
-  return items
+// Page title from route meta
+const pageTitle = computed(() => {
+  return route.meta.title as string || 'MyStocks'
 })
 
 // Methods
@@ -143,7 +107,15 @@ const handleMenuToggle = () => {
 }
 
 const clearError = () => {
-  error.value = null
+  errorMessage.value = null
+}
+
+// Open command palette
+const openCommandPalette = () => {
+  console.log('[ArtDecoLayout] Command palette requested')
+  if (commandPaletteRef.value) {
+    commandPaletteRef.value.open()
+  }
 }
 
 // Load menu data for current route
@@ -233,6 +205,129 @@ watch(
   display: flex;
   min-height: 100vh;
   background: var(--artdeco-bg-global);
+}
+
+// Sidebar
+.artdeco-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--artdeco-bg-surface);
+  border-right: 2px solid var(--artdeco-border-primary);
+  overflow-y: auto;
+}
+
+// Main Content Area
+.artdeco-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--artdeco-bg-global);
+}
+
+// Header
+.artdeco-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
+  background: var(--artdeco-bg-elevated);
+  border-bottom: 1px solid var(--artdeco-border-default);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-4);
+}
+
+.page-title {
+  font-size: var(--artdeco-text-xl);
+  font-weight: var(--artdeco-font-semibold);
+  color: var(--artdeco-fg-primary);
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-4);
+}
+
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  background: var(--artdeco-bg-base);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-sm);
+  color: var(--artdeco-fg-muted);
+  cursor: pointer;
+  transition: all var(--artdeco-transition-base);
+
+  &:hover {
+    background: var(--artdeco-bg-elevated);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  kbd {
+    padding: 2px 6px;
+    background: var(--artdeco-bg-secondary);
+    border: 1px solid var(--artdeco-border-default);
+    border-radius: var(--artdeco-radius-sm);
+    font-size: var(--artdeco-text-xs);
+    font-family: var(--artdeco-font-mono);
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+.notification-btn {
+  position: relative;
+  padding: var(--artdeco-spacing-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--artdeco-fg-muted);
+
+  &:hover {
+    color: var(--artdeco-gold-hover);
+  }
+
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--artdeco-up);
+    border-radius: var(--artdeco-radius-full);
+    font-size: var(--artdeco-text-xs);
+    font-weight: var(--artdeco-font-semibold);
+    line-height: 16px;
+    text-align: center;
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+.user-menu .user-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  background: transparent;
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-sm);
+  color: var(--artdeco-fg-primary);
+  cursor: pointer;
+  transition: all var(--artdeco-transition-base);
+
+  &:hover {
+    background: var(--artdeco-bg-hover);
+    border-color: var(--artdeco-gold-primary);
+  }
 }
 
 // Sidebar (fixed positioning handled by component)

@@ -1,0 +1,1290 @@
+# 模块依赖分析与测试顺序推荐
+
+**生成时间**: 2026-01-25 17:49:36
+**分析模块数**: 1101
+**依赖关系数**: 0
+
+## 📊 模块分类统计
+
+| 分类 | 模块数 | 说明 |
+|------|--------|------|
+| Core | 144 | 核心业务逻辑 |
+| Data_access | 15 | 数据访问层 |
+| Adapters | 147 | 数据源适配器 |
+| Services | 89 | 业务服务 |
+| Monitoring | 109 | 监控系统 |
+| Storage | 25 | 存储层 |
+| Other | 572 | 其他模块 |
+
+## 🔍 循环依赖检查
+
+✅ **未检测到循环依赖** - 项目架构良好！
+
+## 🎯 测试层级推荐
+
+以下层级中的模块可以**并行测试**，但必须按层级顺序执行：
+
+### Layer 1 (1101个模块)
+
+**可并行测试的模块**:
+
+- `app`
+- `app.adapters`
+- `app.adapters.akshare_extension`
+- `app.adapters.base`
+- `app.adapters.cninfo_adapter`
+- `app.adapters.eastmoney_adapter`
+- `app.adapters.eastmoney_enhanced`
+- `app.adapters.tqlex_adapter`
+- `app.adapters.wencai_adapter`
+- `app.api`
+- `app.api.VERSION_MAPPING`
+- `app.api.advanced_analysis`
+- `app.api.advanced_analysis_api`
+- `app.api.akshare_market`
+- `app.api.algorithms`
+- `app.api.alternative_data`
+- `app.api.announcement`
+- `app.api.announcement.routes`
+- `app.api.auth`
+- `app.api.backtest_ws`
+- `app.api.backup_recovery`
+- `app.api.backup_recovery_secure`
+- `app.api.cache`
+- `app.api.contract`
+- `app.api.contract.models`
+- `app.api.contract.routes`
+- `app.api.contract.schemas`
+- `app.api.contract.services`
+- `app.api.contract.services.contract_registry`
+- `app.api.contract.services.contract_testing`
+- `app.api.contract.services.contract_validator`
+- `app.api.contract.services.diff_engine`
+- `app.api.contract.services.openapi_generator`
+- `app.api.contract.services.validator`
+- `app.api.contract.services.version_manager`
+- `app.api.dashboard`
+- `app.api.data`
+- `app.api.data_lineage`
+- `app.api.data_quality`
+- `app.api.data_source_config`
+- `app.api.data_source_config.old`
+- `app.api.data_source_registry`
+- `app.api.efinance`
+- `app.api.governance_dashboard`
+- `app.api.gpu_monitoring`
+- `app.api.health`
+- `app.api.indicator_registry`
+- `app.api.indicators`
+- `app.api.industry_concept_analysis`
+- `app.api.market`
+- `app.api.market_v2`
+- `app.api.metrics`
+- `app.api.ml`
+- `app.api.monitoring`
+- `app.api.monitoring_analysis`
+- `app.api.monitoring_old`
+- `app.api.monitoring_old.routes`
+- `app.api.monitoring_watchlists`
+- `app.api.multi_source`
+- `app.api.multi_source.routes`
+- `app.api.mystocks_api`
+- `app.api.mystocks_api.core`
+- `app.api.mystocks_api.dependencies`
+- `app.api.mystocks_api.main`
+- `app.api.mystocks_api.middleware`
+- `app.api.mystocks_api.models`
+- `app.api.mystocks_api.models.classification`
+- `app.api.mystocks_api.models.common`
+- `app.api.mystocks_api.routers`
+- `app.api.mystocks_api.routers.classification`
+- `app.api.mystocks_api.services`
+- `app.api.mystocks_api.services.classification`
+- `app.api.mystocks_complete`
+- `app.api.notification`
+- `app.api.prometheus_exporter`
+- `app.api.realtime_market`
+- `app.api.realtime_mtm_adapter`
+- `app.api.realtime_mtm_init`
+- `app.api.register_routers`
+- `app.api.risk_management`
+- `app.api.signal_monitoring`
+- `app.api.sse_endpoints`
+- `app.api.stock_ratings_api`
+- `app.api.stock_search`
+- `app.api.strategy`
+- `app.api.strategy_list_mock`
+- `app.api.strategy_management`
+- `app.api.strategy_mgmt`
+- `app.api.system`
+- `app.api.tasks`
+- `app.api.tdx`
+- `app.api.technical`
+- `app.api.technical.routes`
+- `app.api.technical_analysis`
+- `app.api.test_announcement_api`
+- `app.api.trade`
+- `app.api.trade.routes`
+- `app.api.trading_monitor`
+- `app.api.tradingview`
+- `app.api.v1.admin`
+- `app.api.v1.admin.audit`
+- `app.api.v1.admin.auth`
+- `app.api.v1.admin.optimization`
+- `app.api.v1.analysis`
+- `app.api.v1.analysis.backtest`
+- `app.api.v1.analysis.sentiment`
+- `app.api.v1.analysis.stress_test`
+- `app.api.v1.pool_monitoring`
+- `app.api.v1.risk`
+- `app.api.v1.risk.alerts`
+- `app.api.v1.risk.core`
+- `app.api.v1.risk.position`
+- `app.api.v1.risk.rules`
+- `app.api.v1.risk.stop_loss`
+- `app.api.v1.router`
+- `app.api.v1.strategy`
+- `app.api.v1.strategy.indicators`
+- `app.api.v1.strategy.machine_learning`
+- `app.api.v1.system`
+- `app.api.v1.system.health`
+- `app.api.v1.system.routing`
+- `app.api.v1.trading`
+- `app.api.v1.trading.positions`
+- `app.api.v1.trading.session`
+- `app.api.watchlist`
+- `app.api.websocket`
+- `app.api.wencai`
+- `app.app_factory`
+- `app.backtest`
+- `app.backtest.backtest_engine`
+- `app.backtest.events`
+- `app.backtest.execution_handler`
+- `app.backtest.optimization`
+- `app.backtest.optimization.base`
+- `app.backtest.optimization.genetic`
+- `app.backtest.optimization.grid_search`
+- `app.backtest.optimization.random_search`
+- `app.backtest.performance_metrics`
+- `app.backtest.portfolio_manager`
+- `app.backtest.risk_manager`
+- `app.backtest.strategies`
+- `app.backtest.strategies.adx`
+- `app.backtest.strategies.base`
+- `app.backtest.strategies.bollinger_breakout`
+- `app.backtest.strategies.breakout`
+- `app.backtest.strategies.cci`
+- `app.backtest.strategies.dual_ma`
+- `app.backtest.strategies.factory`
+- `app.backtest.strategies.grid`
+- `app.backtest.strategies.kdj`
+- `app.backtest.strategies.macd`
+- `app.backtest.strategies.mean_reversion`
+- `app.backtest.strategies.momentum`
+- `app.backtest.strategies.sar`
+- `app.backtest.strategies.turtle`
+- `app.core.adapter_factory`
+- `app.core.adapter_loader`
+- `app.core.api_monitoring`
+- `app.core.cache`
+- `app.core.cache.decorators`
+- `app.core.cache.multi_level`
+- `app.core.cache_eviction`
+- `app.core.cache_integration`
+- `app.core.cache_manager`
+- `app.core.cache_prewarming`
+- `app.core.cache_utils`
+- `app.core.casbin_manager`
+- `app.core.casbin_middleware`
+- `app.core.celery_app`
+- `app.core.circuit_breaker_manager`
+- `app.core.config`
+- `app.core.connection_lifecycle`
+- `app.core.data_formats`
+- `app.core.data_source_manager`
+- `app.core.data_validator`
+- `app.core.database`
+- `app.core.database_connection_pool`
+- `app.core.database_factory`
+- `app.core.database_metrics`
+- `app.core.database_performance`
+- `app.core.database_performance_monitor`
+- `app.core.database_query_batch`
+- `app.core.encryption`
+- `app.core.error_codes`
+- `app.core.error_handling`
+- `app.core.event_bus`
+- `app.core.exception_handler`
+- `app.core.exception_handlers`
+- `app.core.exceptions`
+- `app.core.global_exception_handlers`
+- `app.core.incremental_snapshot`
+- `app.core.logging`
+- `app.core.logging.structured`
+- `app.core.logging.tracing`
+- `app.core.middleware.performance`
+- `app.core.password_policy`
+- `app.core.reconnection_manager`
+- `app.core.redis_client`
+- `app.core.response_schemas`
+- `app.core.responses`
+- `app.core.room_manager`
+- `app.core.secure_config`
+- `app.core.security`
+- `app.core.service_factory`
+- `app.core.socketio_connection_pool`
+- `app.core.socketio_manager`
+- `app.core.socketio_memory_optimizer`
+- `app.core.socketio_message_batch`
+- `app.core.socketio_performance`
+- `app.core.sse_manager`
+- `app.core.sse_performance_optimizer`
+- `app.core.strategy_validator`
+- `app.core.sync_db_manager`
+- `app.core.sync_processor`
+- `app.core.tdengine_manager`
+- `app.core.tdengine_pool`
+- `app.core.unified_email_service`
+- `app.core.unified_market_data_service`
+- `app.core.user_experience_monitor`
+- `app.core.validation`
+- `app.core.validation_messages`
+- `app.core.validators`
+- `app.core.websocket_stability_manager`
+- `app.data_sources.base_websocket`
+- `app.db`
+- `app.db.user_repository`
+- `app.gateway`
+- `app.gateway.circuit_breaker`
+- `app.gateway.rate_limiter`
+- `app.gateway.request_router`
+- `app.gateway.request_transformer`
+- `app.main`
+- `app.middleware.monitoring_middleware`
+- `app.middleware.response_format`
+- `app.mock`
+- `app.mock.coverage_report`
+- `app.mock.simple_coverage_check`
+- `app.mock.unified_mock_data`
+- `app.models`
+- `app.models.announcement`
+- `app.models.backup_schemas`
+- `app.models.base`
+- `app.models.base_example`
+- `app.models.dashboard`
+- `app.models.event_models`
+- `app.models.indicator_config`
+- `app.models.indicator_data`
+- `app.models.market_data`
+- `app.models.monitoring`
+- `app.models.rbac`
+- `app.models.schemas`
+- `app.models.stock`
+- `app.models.strategy`
+- `app.models.strategy_schemas`
+- `app.models.sync_message`
+- `app.models.task`
+- `app.models.user`
+- `app.models.websocket_message`
+- `app.models.wencai_data`
+- `app.openapi_config`
+- `app.repositories`
+- `app.repositories.algorithm_model_repository`
+- `app.repositories.backtest_repository`
+- `app.repositories.indicator_repo`
+- `app.repositories.strategy_repository`
+- `app.routes.sse_monitoring`
+- `app.schema`
+- `app.schema.validation_models`
+- `app.schemas.algorithm_schemas`
+- `app.schemas.backtest_schemas`
+- `app.schemas.base_schemas`
+- `app.schemas.common_schemas`
+- `app.schemas.indicator_request`
+- `app.schemas.indicator_response`
+- `app.schemas.market_schemas`
+- `app.schemas.ml_schemas`
+- `app.schemas.pagination`
+- `app.schemas.risk_schemas`
+- `app.schemas.stock_ratings_schemas`
+- `app.schemas.tdx_schemas`
+- `app.schemas.technical_schemas`
+- `app.schemas.trade_schemas`
+- `app.schemas.user_schemas`
+- `app.schemas.wencai_schemas`
+- `app.services.advanced_analysis_service`
+- `app.services.aggregation_streaming_bridge`
+- `app.services.algorithm_service`
+- `app.services.announcement_service`
+- `app.services.backtest_engine`
+- `app.services.data_adapter`
+- `app.services.data_aggregation_service`
+- `app.services.data_quality_monitor`
+- `app.services.data_service`
+- `app.services.data_service_enhanced`
+- `app.services.data_source_factory`
+- `app.services.data_source_interface`
+- `app.services.email_notification_service`
+- `app.services.email_service`
+- `app.services.feature_engineering_service`
+- `app.services.filter_service`
+- `app.services.indicator_calculator`
+- `app.services.indicator_filter`
+- `app.services.indicator_registry`
+- `app.services.indicators`
+- `app.services.indicators.defaults`
+- `app.services.indicators.dependency_graph`
+- `app.services.indicators.gpu_adapter`
+- `app.services.indicators.indicator_interface`
+- `app.services.indicators.indicator_metadata`
+- `app.services.indicators.indicator_registry`
+- `app.services.indicators.jobs.daily_calculation`
+- `app.services.indicators.smart_scheduler`
+- `app.services.indicators.talib_adapter`
+- `app.services.market_data_adapter`
+- `app.services.market_data_service`
+- `app.services.market_data_service_v2`
+- `app.services.ml_prediction_service`
+- `app.services.monitoring_service`
+- `app.services.multi_source_manager`
+- `app.services.ohlcv_storage`
+- `app.services.realtime_streaming_service`
+- `app.services.redis`
+- `app.services.redis.redis_cache`
+- `app.services.redis.redis_lock`
+- `app.services.redis.redis_pubsub`
+- `app.services.room_broadcast_service`
+- `app.services.room_management`
+- `app.services.room_permission_service`
+- `app.services.room_socketio_adapter`
+- `app.services.signals.engine`
+- `app.services.signals.strategies.base_strategies`
+- `app.services.signals.strategies.registry`
+- `app.services.stock_search_service`
+- `app.services.strategy_service`
+- `app.services.streaming.stream_manager`
+- `app.services.subscription_storage`
+- `app.services.task_manager`
+- `app.services.task_scheduler`
+- `app.services.tdx_parser_service`
+- `app.services.tdx_service`
+- `app.services.technical_analysis_service`
+- `app.services.tradingview_widget_service`
+- `app.services.unified_data_service`
+- `app.services.watchlist_service`
+- `app.services.websocket_manager`
+- `app.services.wencai_service`
+- `app.strategies`
+- `app.strategies.stock_strategies`
+- `app.strategies.strategy_base`
+- `app.tasks`
+- `app.tasks.backtest_tasks`
+- `app.tasks.data_sync`
+- `app.tasks.indicator_tasks`
+- `app.tasks.market_data`
+- `app.tasks.wencai_tasks`
+- `src`
+- `src.adapters`
+- `src.adapters.adapter_mixins`
+- `src.adapters.akshare`
+- `src.adapters.akshare.adapter_base`
+- `src.adapters.akshare.base`
+- `src.adapters.akshare.financial_data`
+- `src.adapters.akshare.fund_flow`
+- `src.adapters.akshare.index_daily`
+- `src.adapters.akshare.industry_data`
+- `src.adapters.akshare.market_data`
+- `src.adapters.akshare.market_overview`
+- `src.adapters.akshare.misc_data`
+- `src.adapters.akshare.realtime_data`
+- `src.adapters.akshare.stock_basic`
+- `src.adapters.akshare.stock_daily`
+- `src.adapters.akshare.stock_info`
+- `src.adapters.akshare_adapter`
+- `src.adapters.akshare_proxy_adapter`
+- `src.adapters.baostock.baostock_adapter`
+- `src.adapters.baostock_adapter`
+- `src.adapters.base_adapter`
+- `src.adapters.byapi_adapter`
+- `src.adapters.customer_adapter`
+- `src.adapters.data_source_manager`
+- `src.adapters.data_validator`
+- `src.adapters.efinance_adapter`
+- `src.adapters.financial`
+- `src.adapters.financial.base`
+- `src.adapters.financial.base_financial_adapter`
+- `src.adapters.financial.financial_data`
+- `src.adapters.financial.financial_data_source`
+- `src.adapters.financial.financial_report_adapter`
+- `src.adapters.financial.index_components`
+- `src.adapters.financial.index_daily`
+- `src.adapters.financial.market_calendar`
+- `src.adapters.financial.news_data`
+- `src.adapters.financial.realtime_data`
+- `src.adapters.financial.stock_basic`
+- `src.adapters.financial.stock_daily`
+- `src.adapters.financial.stock_daily_adapter`
+- `src.adapters.financial_adapter`
+- `src.adapters.financial_adapter_example`
+- `src.adapters.legacy_adapter`
+- `src.adapters.new_market_data_adapter`
+- `src.adapters.price_data_adapter`
+- `src.adapters.sina_finance_adapter`
+- `src.adapters.tdx`
+- `src.adapters.tdx.base_tdx_adapter`
+- `src.adapters.tdx.config`
+- `src.adapters.tdx.kline_data_service`
+- `src.adapters.tdx.new_test_tdx`
+- `src.adapters.tdx.realtime_service`
+- `src.adapters.tdx.tdx_adapter`
+- `src.adapters.tdx.tdx_block_reader`
+- `src.adapters.tdx.tdx_data_source`
+- `src.adapters.tdx_basic_data_manager`
+- `src.adapters.tdx_connection_manager`
+- `src.adapters.tdx_data_parser`
+- `src.adapters.tdx_integration_client`
+- `src.adapters.tdx_kline_fetcher`
+- `src.adapters.tdx_realtime_manager`
+- `src.adapters.test_customer_adapter`
+- `src.adapters.test_financial_adapter`
+- `src.adapters.test_simple`
+- `src.adapters.tushare_adapter`
+- `src.adapters.volume_data_processor`
+- `src.adapters.webdata.webdata_adapter`
+- `src.advanced_analysis`
+- `src.advanced_analysis.anomaly_tracking_analyzer`
+- `src.advanced_analysis.capital_flow_analyzer`
+- `src.advanced_analysis.chip_distribution_analyzer`
+- `src.advanced_analysis.decision_models_analyzer`
+- `src.advanced_analysis.financial_valuation_analyzer`
+- `src.advanced_analysis.fundamental_analyzer`
+- `src.advanced_analysis.market_panorama_analyzer`
+- `src.advanced_analysis.multidimensional_radar`
+- `src.advanced_analysis.sentiment_analyzer`
+- `src.advanced_analysis.technical_analyzer`
+- `src.advanced_analysis.timeseries_analyzer`
+- `src.advanced_analysis.trading_signals_analyzer`
+- `src.algorithms`
+- `src.algorithms.base`
+- `src.algorithms.bayesian`
+- `src.algorithms.bayesian.bayesian_network_algorithm`
+- `src.algorithms.classification`
+- `src.algorithms.classification.decision_tree_algorithm`
+- `src.algorithms.classification.naive_bayes_algorithm`
+- `src.algorithms.classification.svm_algorithm`
+- `src.algorithms.config`
+- `src.algorithms.markov`
+- `src.algorithms.markov.hmm_algorithm`
+- `src.algorithms.metadata`
+- `src.algorithms.neural`
+- `src.algorithms.neural.neural_network_algorithm`
+- `src.algorithms.ngram`
+- `src.algorithms.ngram.ngram_algorithm`
+- `src.algorithms.pattern_matching`
+- `src.algorithms.pattern_matching.ac_algorithm`
+- `src.algorithms.pattern_matching.base`
+- `src.algorithms.pattern_matching.bmh_algorithm`
+- `src.algorithms.pattern_matching.brute_force_algorithm`
+- `src.algorithms.pattern_matching.kmp_algorithm`
+- `src.algorithms.results`
+- `src.algorithms.types`
+- `src.alternative_data.news_sentiment_analyzer`
+- `src.api.alert_history_routes`
+- `src.api.datasource`
+- `src.api.datasource.routes`
+- `src.api.governance`
+- `src.api.governance.routes`
+- `src.application`
+- `src.application.bootstrap`
+- `src.application.dto`
+- `src.application.dto.strategy_dto`
+- `src.application.dto.trading_dto`
+- `src.application.market_data`
+- `src.application.market_data.price_stream_processor`
+- `src.application.market_data.price_stream_processor_cached`
+- `src.application.portfolio`
+- `src.application.portfolio.model`
+- `src.application.portfolio.model.portfolio`
+- `src.application.portfolio.portfolio_app_service`
+- `src.application.portfolio.repository`
+- `src.application.strategy`
+- `src.application.strategy.backtest_service`
+- `src.application.trading`
+- `src.application.trading.order_mgmt_service`
+- `src.application.watchlist.watchlist_app_service`
+- `src.backtesting.advanced_backtest_engine`
+- `src.backup_recovery`
+- `src.backup_recovery.backup_manager`
+- `src.backup_recovery.backup_scheduler`
+- `src.backup_recovery.integrity_checker`
+- `src.backup_recovery.recovery_manager`
+- `src.contract_testing`
+- `src.contract_testing.api_consistency_checker`
+- `src.contract_testing.contract_engine`
+- `src.contract_testing.report_generator`
+- `src.contract_testing.spec_validator`
+- `src.contract_testing.test_hooks`
+- `src.core`
+- `src.core.batch_failure_strategy`
+- `src.core.cache`
+- `src.core.cache.decorators`
+- `src.core.cache.multi_level`
+- `src.core.config`
+- `src.core.config_driven_table_manager`
+- `src.core.config_loader`
+- `src.core.connection_pool_config`
+- `src.core.data_classification`
+- `src.core.data_manager`
+- `src.core.data_quality_validator`
+- `src.core.data_source`
+- `src.core.data_source.base`
+- `src.core.data_source.batch_processor`
+- `src.core.data_source.cache`
+- `src.core.data_source.circuit_breaker`
+- `src.core.data_source.config_manager`
+- `src.core.data_source.data_quality_validator`
+- `src.core.data_source.handler`
+- `src.core.data_source.health_check`
+- `src.core.data_source.lineage_integration`
+- `src.core.data_source.metrics`
+- `src.core.data_source.monitoring`
+- `src.core.data_source.registry`
+- `src.core.data_source.router`
+- `src.core.data_source.smart_cache`
+- `src.core.data_source.smart_router`
+- `src.core.data_source.validation`
+- `src.core.data_source_handlers_v2`
+- `src.core.data_source_manager_v2`
+- `src.core.data_storage_strategy`
+- `src.core.data_validator`
+- `src.core.database`
+- `src.core.database_metrics`
+- `src.core.database_pool`
+- `src.core.datasource`
+- `src.core.datasource.health`
+- `src.core.datasource.loadbalancer`
+- `src.core.datasource.registry`
+- `src.core.error_handling`
+- `src.core.exceptions`
+- `src.core.infrastructure.adapter_registry`
+- `src.core.infrastructure.data_router`
+- `src.core.infrastructure.event_bus`
+- `src.core.logging`
+- `src.core.logging.structured`
+- `src.core.logging.tracing`
+- `src.core.memory_manager`
+- `src.core.middleware.performance`
+- `src.core.models`
+- `src.core.monitoring`
+- `src.core.patterns`
+- `src.core.security`
+- `src.core.services`
+- `src.core.simple_calculator`
+- `src.core.transaction.saga_coordinator`
+- `src.core.unified_manager`
+- `src.cron.transaction_cleaner`
+- `src.data_access`
+- `src.data_access.capabilities`
+- `src.data_access.capabilities.database_detector`
+- `src.data_access.factory`
+- `src.data_access.interfaces`
+- `src.data_access.interfaces.i_data_access`
+- `src.data_access.optimizers`
+- `src.data_access.optimizers.query_optimizer`
+- `src.data_access.postgresql_access`
+- `src.data_access.routers`
+- `src.data_access.routers.query_router`
+- `src.data_access.sql_injection_fix_helper`
+- `src.data_access.tdengine_access`
+- `src.data_access.unified_data_access_manager`
+- `src.data_governance`
+- `src.data_governance.asset`
+- `src.data_governance.lineage`
+- `src.data_governance.quality`
+- `src.data_sources`
+- `src.data_sources.baostock_importer`
+- `src.data_sources.factory`
+- `src.data_sources.mock`
+- `src.data_sources.mock.business_mock`
+- `src.data_sources.mock.relational_mock`
+- `src.data_sources.mock.timeseries_mock`
+- `src.data_sources.mock_data_source`
+- `src.data_sources.real`
+- `src.data_sources.real.business_mappers`
+- `src.data_sources.real.composite_business`
+- `src.data_sources.real.connection_adapter`
+- `src.data_sources.real.connection_pool`
+- `src.data_sources.real.data_mapper`
+- `src.data_sources.real.enhanced_postgresql_relational`
+- `src.data_sources.real.postgresql_relational`
+- `src.data_sources.real.query_builder`
+- `src.data_sources.real.tdengine_timeseries`
+- `src.data_sources.real_data_source`
+- `src.data_sources.tdx.read_tdx_block`
+- `src.data_sources.tdx.read_tdx_day_file`
+- `src.data_sources.tdx_binary_parser`
+- `src.data_sources.tdx_importer`
+- `src.database.connection_manager`
+- `src.database.database_service`
+- `src.database.indicator_calculator`
+- `src.database.mock_data_storage`
+- `src.database.monitoring_data_manager`
+- `src.database.query_executor`
+- `src.database.services`
+- `src.database.services.base_database_service`
+- `src.database.services.database_service`
+- `src.database.services.stock_data_service`
+- `src.database.services.technical_indicators_service`
+- `src.database.stocks_db_service`
+- `src.database_optimization`
+- `src.database_optimization.performance_monitor`
+- `src.database_optimization.postgresql_index_optimizer`
+- `src.database_optimization.slow_query_analyzer`
+- `src.database_optimization.tdengine_index_optimizer`
+- `src.db_manager`
+- `src.domain`
+- `src.domain.market_data`
+- `src.domain.market_data.model`
+- `src.domain.market_data.model.bar`
+- `src.domain.market_data.repository`
+- `src.domain.market_data.repository.imarket_data_repository`
+- `src.domain.market_data.repository.market_data_repository`
+- `src.domain.market_data.streaming`
+- `src.domain.market_data.streaming.iprice_stream_adapter`
+- `src.domain.market_data.streaming.price_changed_event`
+- `src.domain.market_data.value_objects`
+- `src.domain.market_data.value_objects.bar`
+- `src.domain.market_data.value_objects.market_data`
+- `src.domain.market_data.value_objects.quote`
+- `src.domain.market_data.value_objects.tick`
+- `src.domain.monitoring`
+- `src.domain.monitoring.ai_alert_manager`
+- `src.domain.monitoring.ai_realtime_monitor`
+- `src.domain.monitoring.alert_history`
+- `src.domain.monitoring.alert_manager`
+- `src.domain.monitoring.alert_notifier`
+- `src.domain.monitoring.async_monitoring`
+- `src.domain.monitoring.async_monitoring_manager`
+- `src.domain.monitoring.clustering_analyzer`
+- `src.domain.monitoring.data_analyzer`
+- `src.domain.monitoring.data_quality_monitor`
+- `src.domain.monitoring.data_source_metrics`
+- `src.domain.monitoring.decoupled_monitoring`
+- `src.domain.monitoring.domain.calculator_cpu`
+- `src.domain.monitoring.domain.calculator_factory`
+- `src.domain.monitoring.domain.calculator_gpu`
+- `src.domain.monitoring.domain.market_regime`
+- `src.domain.monitoring.domain.portfolio_optimizer`
+- `src.domain.monitoring.domain.risk_metrics`
+- `src.domain.monitoring.gpu_integration_manager`
+- `src.domain.monitoring.gpu_performance_optimizer`
+- `src.domain.monitoring.indicator_metrics`
+- `src.domain.monitoring.infrastructure.init_db`
+- `src.domain.monitoring.infrastructure.postgresql_async`
+- `src.domain.monitoring.infrastructure.postgresql_async_v3`
+- `src.domain.monitoring.intelligent_threshold_manager`
+- `src.domain.monitoring.metrics_collector`
+- `src.domain.monitoring.model`
+- `src.domain.monitoring.monitoring_database`
+- `src.domain.monitoring.monitoring_service`
+- `src.domain.monitoring.multi_channel_alert_manager`
+- `src.domain.monitoring.performance_monitor`
+- `src.domain.monitoring.service`
+- `src.domain.monitoring.signal_aggregation_task`
+- `src.domain.monitoring.signal_decorator`
+- `src.domain.monitoring.signal_metrics`
+- `src.domain.monitoring.signal_push_integration`
+- `src.domain.monitoring.signal_recorder`
+- `src.domain.monitoring.signal_result_tracker`
+- `src.domain.monitoring.statistical_optimizer`
+- `src.domain.monitoring.threshold`
+- `src.domain.monitoring.threshold.base_threshold_manager`
+- `src.domain.monitoring.threshold.clustering_optimizer`
+- `src.domain.monitoring.threshold.intelligent_threshold_manager`
+- `src.domain.monitoring.threshold.statistical_optimizer`
+- `src.domain.monitoring.threshold.trend_optimizer`
+- `src.domain.monitoring.threshold_rule_manager`
+- `src.domain.monitoring.trend_analyzer`
+- `src.domain.monitoring.value_objects`
+- `src.domain.portfolio`
+- `src.domain.portfolio.model`
+- `src.domain.portfolio.model.portfolio`
+- `src.domain.portfolio.model.transaction`
+- `src.domain.portfolio.repository`
+- `src.domain.portfolio.repository.iportfolio_repository`
+- `src.domain.portfolio.repository.repository`
+- `src.domain.portfolio.service`
+- `src.domain.portfolio.service.portfolio_valuation_service`
+- `src.domain.portfolio.service.portfolio_valuation_service_optimized`
+- `src.domain.portfolio.service.rebalancer`
+- `src.domain.portfolio.service.rebalancer_service`
+- `src.domain.portfolio.value_objects`
+- `src.domain.portfolio.value_objects.performance_metrics`
+- `src.domain.prediction.prediction_service`
+- `src.domain.shared`
+- `src.domain.shared.domain_events`
+- `src.domain.shared.event`
+- `src.domain.shared.event_bus`
+- `src.domain.strategy`
+- `src.domain.strategy.model`
+- `src.domain.strategy.model.parameter`
+- `src.domain.strategy.model.rule`
+- `src.domain.strategy.model.signal`
+- `src.domain.strategy.model.strategy`
+- `src.domain.strategy.repository`
+- `src.domain.strategy.repository.istrategy_repository`
+- `src.domain.strategy.service`
+- `src.domain.strategy.service.indicator_calculator`
+- `src.domain.strategy.service.signal_generation_service`
+- `src.domain.strategy.value_objects`
+- `src.domain.strategy.value_objects.indicator_config`
+- `src.domain.strategy.value_objects.instrument_pool`
+- `src.domain.strategy.value_objects.signal_definition`
+- `src.domain.strategy.value_objects.strategy_id`
+- `src.domain.trading`
+- `src.domain.trading.events`
+- `src.domain.trading.model`
+- `src.domain.trading.model.order`
+- `src.domain.trading.model.order_status`
+- `src.domain.trading.model.position`
+- `src.domain.trading.repository`
+- `src.domain.trading.repository.iorder_repository`
+- `src.domain.trading.repository.iposition_repository`
+- `src.domain.trading.value_objects`
+- `src.domain.trading.value_objects.order_side`
+- `src.domain.trading.value_objects.order_type`
+- `src.domain.watchlist.model`
+- `src.domain.watchlist.model.watchlist`
+- `src.domain.watchlist.model.watchlist_stock`
+- `src.domain.watchlist.repository`
+- `src.domain.watchlist.service`
+- `src.domain.watchlist.service.snapshot_service`
+- `src.domain.watchlist.service.watchlist_service`
+- `src.domain.watchlist.value_objects`
+- `src.factories.data_source_factory`
+- `src.governance.core.fetcher_bridge`
+- `src.governance.engine.base`
+- `src.governance.engine.gpu_validator`
+- `src.governance.risk_management`
+- `src.governance.risk_management.calculators.gpu_calculator`
+- `src.governance.risk_management.core`
+- `src.governance.risk_management.services.alert_rule_engine`
+- `src.governance.risk_management.services.alert_service`
+- `src.governance.risk_management.services.risk_alert_notification_manager`
+- `src.governance.risk_management.services.stop_loss_engine`
+- `src.governance.risk_management.services.stop_loss_execution_service`
+- `src.governance.risk_management.services.stop_loss_history_service`
+- `src.governance.tests.test_fetcher_bridge`
+- `src.governance.tests.test_gpu_validator`
+- `src.gpu.accelerated.cpu_data_processor`
+- `src.gpu.accelerated.cpu_fallback`
+- `src.gpu.accelerated.data_processor_gpu`
+- `src.gpu.accelerated.data_processor_gpu_fixed`
+- `src.gpu.accelerated.feature_generator_gpu`
+- `src.gpu.accelerated.gpu_manager`
+- `src.gpu.accelerated.integration_interface`
+- `src.gpu.accelerated.memory_management_fix`
+- `src.gpu.accelerated.performance_benchmark`
+- `src.gpu.accelerated.price_predictor_gpu`
+- `src.gpu.accelerated.real_time_performance_monitor`
+- `src.gpu.acceleration`
+- `src.gpu.acceleration.backtest_engine_gpu`
+- `src.gpu.acceleration.feature_calculation_gpu`
+- `src.gpu.acceleration.gpu_acceleration_engine`
+- `src.gpu.acceleration.ml_training_gpu`
+- `src.gpu.acceleration.optimization_gpu`
+- `src.gpu.api_system.api_proto.backtest_pb2`
+- `src.gpu.api_system.api_proto.backtest_pb2_grpc`
+- `src.gpu.api_system.api_proto.ml_pb2`
+- `src.gpu.api_system.api_proto.ml_pb2_grpc`
+- `src.gpu.api_system.api_proto.realtime_pb2`
+- `src.gpu.api_system.api_proto.realtime_pb2_grpc`
+- `src.gpu.api_system.config.system_config`
+- `src.gpu.api_system.generate_test_report`
+- `src.gpu.api_system.main_server`
+- `src.gpu.api_system.services.backtest_service`
+- `src.gpu.api_system.services.gpu_api_server`
+- `src.gpu.api_system.services.integrated_backtest_service`
+- `src.gpu.api_system.services.integrated_ml_service`
+- `src.gpu.api_system.services.integrated_realtime_service`
+- `src.gpu.api_system.services.realtime_service`
+- `src.gpu.api_system.services.resource_scheduler`
+- `src.gpu.api_system.tests`
+- `src.gpu.api_system.tests.conftest`
+- `src.gpu.api_system.tests.integration.test_end_to_end`
+- `src.gpu.api_system.tests.performance.test_performance`
+- `src.gpu.api_system.tests.test_real_gpu`
+- `src.gpu.api_system.tests.unit.test_cache.test_cache_optimization`
+- `src.gpu.api_system.tests.unit.test_cache.test_cache_optimization_enhanced`
+- `src.gpu.api_system.tests.unit.test_gpu.test_acceleration_engine`
+- `src.gpu.api_system.tests.unit.test_services.test_integrated_services`
+- `src.gpu.api_system.tests.unit.test_utils.test_gpu_resource_manager`
+- `src.gpu.api_system.utils.cache_optimization`
+- `src.gpu.api_system.utils.cache_optimization_enhanced`
+- `src.gpu.api_system.utils.gpu_acceleration_engine`
+- `src.gpu.api_system.utils.gpu_utils`
+- `src.gpu.api_system.utils.monitoring`
+- `src.gpu.api_system.utils.redis_utils`
+- `src.gpu.api_system.wsl2_gpu_init`
+- `src.gpu.core.hardware_abstraction`
+- `src.gpu.core.hardware_abstraction.health_monitor`
+- `src.gpu.core.hardware_abstraction.interfaces`
+- `src.gpu.core.hardware_abstraction.memory_pool`
+- `src.gpu.core.hardware_abstraction.realtime_path`
+- `src.gpu.core.hardware_abstraction.resource_manager`
+- `src.gpu.core.hardware_abstraction.strategy_context`
+- `src.gpu.core.kernels`
+- `src.gpu.core.kernels.inference_kernels`
+- `src.gpu.core.kernels.kernel_executor`
+- `src.gpu.core.kernels.kernel_registry`
+- `src.gpu.core.kernels.matrix_kernels`
+- `src.gpu.core.kernels.standardized_interface`
+- `src.gpu.core.kernels.transform_kernels`
+- `src.gpu.data_processing_interfaces`
+- `src.gpu.data_processor_factory`
+- `src.gpu.resources`
+- `src.indicators.base`
+- `src.indicators.implementations.momentum`
+- `src.indicators.implementations.momentum.rsi`
+- `src.indicators.implementations.trend`
+- `src.indicators.implementations.trend.ema`
+- `src.indicators.implementations.trend.macd`
+- `src.indicators.implementations.trend.sma`
+- `src.indicators.indicator_factory`
+- `src.indicators.wrappers`
+- `src.infrastructure`
+- `src.infrastructure.cache`
+- `src.infrastructure.cache.redis_lock`
+- `src.infrastructure.calculation`
+- `src.infrastructure.calculation.gpu_calculator`
+- `src.infrastructure.data_access`
+- `src.infrastructure.logging`
+- `src.infrastructure.market_data`
+- `src.infrastructure.market_data.adapter`
+- `src.infrastructure.market_data.mock_repository`
+- `src.infrastructure.market_data.streaming`
+- `src.infrastructure.market_data.streaming.mock_price_stream_adapter`
+- `src.infrastructure.messaging`
+- `src.infrastructure.messaging.local_event_bus`
+- `src.infrastructure.messaging.redis_event_bus`
+- `src.infrastructure.persistence`
+- `src.infrastructure.persistence.exceptions`
+- `src.infrastructure.persistence.models`
+- `src.infrastructure.persistence.portfolio_repository_impl`
+- `src.infrastructure.persistence.repositories`
+- `src.infrastructure.persistence.repository_impl`
+- `src.infrastructure.persistence.watchlist_repository_impl`
+- `src.infrastructure.storage`
+- `src.interface`
+- `src.interface.api`
+- `src.interface.api.strategy_router`
+- `src.interface.api.trading_router`
+- `src.interface.websocket`
+- `src.interfaces`
+- `src.interfaces.adapters`
+- `src.interfaces.adapters.adapter_mixins`
+- `src.interfaces.adapters.akshare`
+- `src.interfaces.adapters.akshare.base`
+- `src.interfaces.adapters.akshare.financial_data`
+- `src.interfaces.adapters.akshare.index_daily`
+- `src.interfaces.adapters.akshare.industry_data`
+- `src.interfaces.adapters.akshare.market_data`
+- `src.interfaces.adapters.akshare.misc_data`
+- `src.interfaces.adapters.akshare.realtime_data`
+- `src.interfaces.adapters.akshare.stock_basic`
+- `src.interfaces.adapters.akshare.stock_daily`
+- `src.interfaces.adapters.akshare_adapter`
+- `src.interfaces.adapters.akshare_proxy_adapter`
+- `src.interfaces.adapters.baostock.baostock_adapter`
+- `src.interfaces.adapters.baostock_adapter`
+- `src.interfaces.adapters.base_adapter`
+- `src.interfaces.adapters.byapi_adapter`
+- `src.interfaces.adapters.customer_adapter`
+- `src.interfaces.adapters.data_source_manager`
+- `src.interfaces.adapters.data_validator`
+- `src.interfaces.adapters.efinance_adapter`
+- `src.interfaces.adapters.financial`
+- `src.interfaces.adapters.financial.base`
+- `src.interfaces.adapters.financial.base_financial_adapter`
+- `src.interfaces.adapters.financial.financial_data`
+- `src.interfaces.adapters.financial.financial_data_source`
+- `src.interfaces.adapters.financial.financial_report_adapter`
+- `src.interfaces.adapters.financial.index_components`
+- `src.interfaces.adapters.financial.index_daily`
+- `src.interfaces.adapters.financial.market_calendar`
+- `src.interfaces.adapters.financial.news_data`
+- `src.interfaces.adapters.financial.realtime_data`
+- `src.interfaces.adapters.financial.stock_basic`
+- `src.interfaces.adapters.financial.stock_daily`
+- `src.interfaces.adapters.financial.stock_daily_adapter`
+- `src.interfaces.adapters.financial_adapter`
+- `src.interfaces.adapters.financial_adapter_example`
+- `src.interfaces.adapters.legacy_adapter`
+- `src.interfaces.adapters.new_market_data_adapter`
+- `src.interfaces.adapters.price_data_adapter`
+- `src.interfaces.adapters.tdx`
+- `src.interfaces.adapters.tdx.base_tdx_adapter`
+- `src.interfaces.adapters.tdx.config`
+- `src.interfaces.adapters.tdx.kline_data_service`
+- `src.interfaces.adapters.tdx.new_test_tdx`
+- `src.interfaces.adapters.tdx.realtime_service`
+- `src.interfaces.adapters.tdx.tdx_adapter`
+- `src.interfaces.adapters.tdx.tdx_block_reader`
+- `src.interfaces.adapters.tdx.tdx_data_source`
+- `src.interfaces.adapters.tdx_basic_data_manager`
+- `src.interfaces.adapters.tdx_connection_manager`
+- `src.interfaces.adapters.tdx_data_parser`
+- `src.interfaces.adapters.tdx_integration_client`
+- `src.interfaces.adapters.tdx_kline_fetcher`
+- `src.interfaces.adapters.tdx_realtime_manager`
+- `src.interfaces.adapters.test_customer_adapter`
+- `src.interfaces.adapters.test_financial_adapter`
+- `src.interfaces.adapters.test_simple`
+- `src.interfaces.adapters.tushare_adapter`
+- `src.interfaces.adapters.volume_data_processor`
+- `src.interfaces.adapters.webdata.webdata_adapter`
+- `src.interfaces.api`
+- `src.interfaces.business_data_source`
+- `src.interfaces.cli`
+- `src.interfaces.data_source`
+- `src.interfaces.data_source_interface`
+- `src.interfaces.refactored_interfaces`
+- `src.interfaces.relational_data_source`
+- `src.interfaces.timeseries_data_source`
+- `src.logging.audit_system`
+- `src.ml_strategy`
+- `src.ml_strategy.automation`
+- `src.ml_strategy.automation.monitored_notification_manager`
+- `src.ml_strategy.automation.notification_manager`
+- `src.ml_strategy.automation.predefined_tasks`
+- `src.ml_strategy.automation.scheduler`
+- `src.ml_strategy.backtest`
+- `src.ml_strategy.backtest.backtest_engine`
+- `src.ml_strategy.backtest.ml_strategy_backtester`
+- `src.ml_strategy.backtest.performance_metrics`
+- `src.ml_strategy.backtest.risk_metrics`
+- `src.ml_strategy.backtest.vectorized_backtester`
+- `src.ml_strategy.backtesting`
+- `src.ml_strategy.feature_engineering`
+- `src.ml_strategy.indicators`
+- `src.ml_strategy.indicators.talib_wrapper`
+- `src.ml_strategy.indicators.tdx_functions`
+- `src.ml_strategy.ml_strategy`
+- `src.ml_strategy.models`
+- `src.ml_strategy.price_predictor`
+- `src.ml_strategy.realtime`
+- `src.ml_strategy.realtime.tick_receiver`
+- `src.ml_strategy.strategy`
+- `src.ml_strategy.strategy.base_strategy`
+- `src.ml_strategy.strategy.decision_tree_trading_strategy`
+- `src.ml_strategy.strategy.lstm_trading_strategy`
+- `src.ml_strategy.strategy.ml_strategy_base`
+- `src.ml_strategy.strategy.naive_bayes_trading_strategy`
+- `src.ml_strategy.strategy.signal_manager`
+- `src.ml_strategy.strategy.stock_screener`
+- `src.ml_strategy.strategy.strategy_executor`
+- `src.ml_strategy.strategy.svm_trading_strategy`
+- `src.ml_strategy.strategy.templates.custom_template`
+- `src.ml_strategy.strategy.templates.mean_reversion_template`
+- `src.ml_strategy.strategy.templates.momentum_template`
+- `src.ml_strategy.strategy.transformer_trading_strategy`
+- `src.ml_strategy.training`
+- `src.ml_strategy.validation.ml_strategy_validator`
+- `src.mock.mock_Analysis`
+- `src.mock.mock_BacktestAnalysis`
+- `src.mock.mock_Dashboard`
+- `src.mock.mock_IndicatorLibrary`
+- `src.mock.mock_Login`
+- `src.mock.mock_Market`
+- `src.mock.mock_MarketData`
+- `src.mock.mock_MarketDataView`
+- `src.mock.mock_RealTimeMonitor`
+- `src.mock.mock_RiskMonitor`
+- `src.mock.mock_Settings`
+- `src.mock.mock_StockSearch`
+- `src.mock.mock_Stocks`
+- `src.mock.mock_StrategyManagement`
+- `src.mock.mock_TaskManagement`
+- `src.mock.mock_TdxMarket`
+- `src.mock.mock_TechnicalAnalysis`
+- `src.mock.mock_TradeManagement`
+- `src.mock.mock_TradingView`
+- `src.mock.mock_Wencai`
+- `src.mock.mock_strategy_BatchScan`
+- `src.mock.mock_strategy_ResultsQuery`
+- `src.mock.mock_strategy_SingleRun`
+- `src.mock.mock_strategy_StatsAnalysis`
+- `src.mock.mock_strategy_StrategyList`
+- `src.mock.mock_system_Architecture`
+- `src.mock.mock_system_DatabaseMonitor`
+- `src.monitoring`
+- `src.monitoring.ai_alert_manager`
+- `src.monitoring.ai_realtime_monitor`
+- `src.monitoring.alert_history`
+- `src.monitoring.alert_manager`
+- `src.monitoring.alert_notifier`
+- `src.monitoring.async_monitoring`
+- `src.monitoring.async_monitoring_manager`
+- `src.monitoring.clustering_analyzer`
+- `src.monitoring.data_analyzer`
+- `src.monitoring.data_quality_monitor`
+- `src.monitoring.data_source_metrics`
+- `src.monitoring.decoupled_monitoring`
+- `src.monitoring.domain.calculator_cpu`
+- `src.monitoring.domain.calculator_factory`
+- `src.monitoring.domain.calculator_gpu`
+- `src.monitoring.domain.market_regime`
+- `src.monitoring.domain.portfolio_optimizer`
+- `src.monitoring.domain.risk_metrics`
+- `src.monitoring.gpu_integration_manager`
+- `src.monitoring.gpu_performance_optimizer`
+- `src.monitoring.indicator_metrics`
+- `src.monitoring.infrastructure.init_db`
+- `src.monitoring.infrastructure.postgresql_async`
+- `src.monitoring.infrastructure.postgresql_async_v3`
+- `src.monitoring.intelligent_threshold_manager`
+- `src.monitoring.metrics_collector`
+- `src.monitoring.monitoring_database`
+- `src.monitoring.monitoring_service`
+- `src.monitoring.multi_channel_alert_manager`
+- `src.monitoring.performance_monitor`
+- `src.monitoring.signal_aggregation_task`
+- `src.monitoring.signal_decorator`
+- `src.monitoring.signal_metrics`
+- `src.monitoring.signal_push_integration`
+- `src.monitoring.signal_recorder`
+- `src.monitoring.signal_result_tracker`
+- `src.monitoring.statistical_optimizer`
+- `src.monitoring.threshold`
+- `src.monitoring.threshold.base_threshold_manager`
+- `src.monitoring.threshold.clustering_optimizer`
+- `src.monitoring.threshold.intelligent_threshold_manager`
+- `src.monitoring.threshold.statistical_optimizer`
+- `src.monitoring.threshold.trend_optimizer`
+- `src.monitoring.threshold_rule_manager`
+- `src.monitoring.trend_analyzer`
+- `src.portfolio.strategy_portfolio_optimizer`
+- `src.reporting`
+- `src.reporting.pdf_generator`
+- `src.routes.dashboard_routes`
+- `src.routes.monitoring_routes`
+- `src.routes.stocks_routes`
+- `src.routes.strategy_routes`
+- `src.routes.technical_routes`
+- `src.routes.wencai_routes`
+- `src.services.market_data_parser`
+- `src.services.performance_optimizer`
+- `src.services.position_mtm_engine`
+- `src.storage`
+- `src.storage.database`
+- `src.storage.database.connection_context`
+- `src.storage.database.connection_manager`
+- `src.storage.database.database_manager`
+- `src.storage.database.db_utils`
+- `src.storage.database.df2sql`
+- `src.storage.database.execute_example`
+- `src.storage.database.execute_example_mysql_only`
+- `src.storage.database.fix_database_connections`
+- `src.storage.database.fixed_example`
+- `src.storage.database.init_db_monitor`
+- `src.storage.database.save_realtime_market_data`
+- `src.storage.database.save_realtime_market_data_offline`
+- `src.storage.database.save_realtime_market_data_simple`
+- `src.storage.database.security_check`
+- `src.storage.database.test_database_menu`
+- `src.storage.database.test_jupyter_compatibility`
+- `src.storage.database.test_multi_directory`
+- `src.storage.database.test_simple`
+- `src.storage.database.test_tdengine`
+- `src.storage.database.validate_mystocks_architecture`
+- `src.storage.models`
+- `src.trading.live_trading_engine`
+- `src.trading.realtime_strategy_executor`
+- `src.unified_manager`
+- `src.utils`
+- `src.utils.add_doc_metadata`
+- `src.utils.add_python_headers`
+- `src.utils.check_api_health`
+- `src.utils.check_api_health_v2`
+- `src.utils.check_db_health`
+- `src.utils.column_mapper`
+- `src.utils.converters`
+- `src.utils.data_format_converter`
+- `src.utils.data_source_logger`
+- `src.utils.data_source_validator`
+- `src.utils.date_utils`
+- `src.utils.db_connection_retry`
+- `src.utils.error_handler`
+- `src.utils.failure_recovery_queue`
+- `src.utils.helpers`
+- `src.utils.logging_config`
+- `src.utils.simple_config_check`
+- `src.utils.symbol_utils`
+- `src.utils.tdx_server_config`
+- `src.utils.test_logs_api`
+- `src.utils.validate_gitignore`
+- `src.utils.validate_test_naming`
+- `src.utils.validators`
+- `src.visualization`
+- `src.visualization.backtest_visualizer`
+- `src.visualization.chart_generator`
+- `src.visualization.complete_example`
+
+## 📋 按功能分类的测试顺序
+
+### Priority 1: Core (144个模块)
+
+**核心业务逻辑**
+
+- `app.api.mystocks_api.core` (无内部依赖)
+- `app.api.v1.risk.core` (无内部依赖)
+- `app.core.adapter_factory` (无内部依赖)
+- `app.core.adapter_loader` (无内部依赖)
+- `app.core.api_monitoring` (无内部依赖)
+- `app.core.cache` (无内部依赖)
+- `app.core.cache.decorators` (无内部依赖)
+- `app.core.cache.multi_level` (无内部依赖)
+- `app.core.cache_eviction` (无内部依赖)
+- `app.core.cache_integration` (无内部依赖)
+- ... 还有 134 个模块
+
+### Priority 2: Storage (25个模块)
+
+**存储层**
+
+- `src.database.mock_data_storage` (无内部依赖)
+- `src.infrastructure.storage` (无内部依赖)
+- `src.storage` (无内部依赖)
+- `src.storage.database` (无内部依赖)
+- `src.storage.database.connection_context` (无内部依赖)
+- `src.storage.database.connection_manager` (无内部依赖)
+- `src.storage.database.database_manager` (无内部依赖)
+- `src.storage.database.db_utils` (无内部依赖)
+- `src.storage.database.df2sql` (无内部依赖)
+- `src.storage.database.execute_example` (无内部依赖)
+- ... 还有 15 个模块
+
+### Priority 3: Data_access (15个模块)
+
+**数据访问层**
+
+- `src.data_access` (无内部依赖)
+- `src.data_access.capabilities` (无内部依赖)
+- `src.data_access.capabilities.database_detector` (无内部依赖)
+- `src.data_access.factory` (无内部依赖)
+- `src.data_access.interfaces` (无内部依赖)
+- `src.data_access.interfaces.i_data_access` (无内部依赖)
+- `src.data_access.optimizers` (无内部依赖)
+- `src.data_access.optimizers.query_optimizer` (无内部依赖)
+- `src.data_access.postgresql_access` (无内部依赖)
+- `src.data_access.routers` (无内部依赖)
+- ... 还有 5 个模块
+
+### Priority 4: Adapters (147个模块)
+
+**数据源适配器**
+
+- `app.adapters` (无内部依赖)
+- `app.adapters.akshare_extension` (无内部依赖)
+- `app.adapters.base` (无内部依赖)
+- `app.adapters.cninfo_adapter` (无内部依赖)
+- `app.adapters.eastmoney_adapter` (无内部依赖)
+- `app.adapters.eastmoney_enhanced` (无内部依赖)
+- `app.adapters.tqlex_adapter` (无内部依赖)
+- `app.adapters.wencai_adapter` (无内部依赖)
+- `app.api.realtime_mtm_adapter` (无内部依赖)
+- `app.services.data_adapter` (无内部依赖)
+- ... 还有 137 个模块
+
+### Priority 5: Services (89个模块)
+
+**业务服务**
+
+- `app.api.contract.services` (无内部依赖)
+- `app.api.contract.services.contract_registry` (无内部依赖)
+- `app.api.contract.services.contract_testing` (无内部依赖)
+- `app.api.contract.services.contract_validator` (无内部依赖)
+- `app.api.contract.services.diff_engine` (无内部依赖)
+- `app.api.contract.services.openapi_generator` (无内部依赖)
+- `app.api.contract.services.validator` (无内部依赖)
+- `app.api.contract.services.version_manager` (无内部依赖)
+- `app.api.mystocks_api.services` (无内部依赖)
+- `app.api.mystocks_api.services.classification` (无内部依赖)
+- ... 还有 79 个模块
+
+### Priority 7: Monitoring (109个模块)
+
+**监控系统**
+
+- `app.api.gpu_monitoring` (无内部依赖)
+- `app.api.monitoring` (无内部依赖)
+- `app.api.monitoring_analysis` (无内部依赖)
+- `app.api.monitoring_old` (无内部依赖)
+- `app.api.monitoring_old.routes` (无内部依赖)
+- `app.api.monitoring_watchlists` (无内部依赖)
+- `app.api.signal_monitoring` (无内部依赖)
+- `app.api.v1.pool_monitoring` (无内部依赖)
+- `app.middleware.monitoring_middleware` (无内部依赖)
+- `app.models.monitoring` (无内部依赖)
+- ... 还有 99 个模块
+
+### Priority 8: Other (572个模块)
+
+**其他模块**
+
+- `app` (无内部依赖)
+- `app.api` (无内部依赖)
+- `app.api.VERSION_MAPPING` (无内部依赖)
+- `app.api.advanced_analysis` (无内部依赖)
+- `app.api.advanced_analysis_api` (无内部依赖)
+- `app.api.akshare_market` (无内部依赖)
+- `app.api.algorithms` (无内部依赖)
+- `app.api.alternative_data` (无内部依赖)
+- `app.api.announcement` (无内部依赖)
+- `app.api.announcement.routes` (无内部依赖)
+- ... 还有 562 个模块
+
+## 🚀 测试实施建议
+
+### Phase 1: 核心模块测试 (Week 2)
+
+**优先测试核心模块**，因为它们是其他模块的依赖基础：
+
+- `app.api.mystocks_api.core`
+- `app.api.v1.risk.core`
+- `app.core.adapter_factory`
+- `app.core.adapter_loader`
+- `app.core.api_monitoring`
+
+### Phase 2: 数据访问层测试 (Week 3)
+
+**测试数据访问层**，验证与数据库的交互：
+
+- `src.data_access`
+- `src.data_access.capabilities`
+- `src.data_access.capabilities.database_detector`
+- `src.data_access.factory`
+- `src.data_access.interfaces`
+
+### Phase 3: 适配器测试 (Week 4)
+
+**测试数据源适配器**，使用Mock避免外部API调用：
+
+- `app.adapters`
+- `app.adapters.akshare_extension`
+- `app.adapters.base`
+- `app.adapters.cninfo_adapter`
+- `app.adapters.eastmoney_adapter`
+
+### Phase 4: API端点测试 (Week 5)
+
+**测试API端点**，验证完整的请求/响应周期：
+
+
+## ⚠️ 测试注意事项
+
+1. **依赖优先**: 先测试依赖项，再测试依赖它的模块
+2. **并行执行**: 同一层级的模块可以并行测试以提高效率
+3. **Mock外部依赖**: 对外部API和数据库使用Mock以提高测试速度
+4. **增量覆盖**: 每个模块目标覆盖率80%+
+5. **持续监控**: 使用覆盖率工具跟踪进度

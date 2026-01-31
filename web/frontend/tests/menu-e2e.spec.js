@@ -22,8 +22,8 @@ test.describe('菜单功能E2E测试', () => {
   })
 
   test('主导航存在', async ({ page }) => {
-    // 验证导航栏
-    const navbar = page.locator('.navbar')
+    // 验证ArtDeco导航栏
+    const navbar = page.locator('.artdeco-header')
     await expect(navbar).toBeVisible()
 
     // 验证logo
@@ -31,22 +31,30 @@ test.describe('菜单功能E2E测试', () => {
   })
 
   test('侧边栏存在', async ({ page }) => {
-    // 验证侧边栏
-    const sidebar = page.locator('.sidebar')
+    // 验证ArtDeco侧边栏
+    const sidebar = page.locator('.layout-sidebar')
     await expect(sidebar).toBeVisible()
 
-    // 验证菜单容器
-    await expect(page.locator('.el-menu')).toBeVisible()
+    // 验证菜单容器 (ArtDeco使用.nav-menu)
+    await expect(page.locator('.nav-menu')).toBeVisible()
   })
 
   test('菜单项可见性', async ({ page }) => {
     // 等待菜单加载
-    await page.waitForSelector('.el-menu-item', { state: 'visible', timeout: 5000 })
+    await page.waitForSelector('.nav-link', { state: 'visible', timeout: 5000 })
 
-    // 检查几个主要菜单项
-    const menuItems = ['仪表盘', '市场行情', '股票管理']
+    // 检查所有7个ArtDeco主要菜单项
+    const menuItems = [
+      '仪表盘',
+      '市场行情',
+      '股票管理',
+      '投资分析',
+      '风险管理',
+      '策略和交易管理',
+      '系统监控'
+    ]
     for (const item of menuItems) {
-      const element = page.locator(`text=${item}`)
+      const element = page.locator(`.nav-link:has-text("${item}")`)
       await expect(element).toBeVisible()
     }
   })
@@ -70,8 +78,8 @@ test.describe('菜单功能E2E测试', () => {
   })
 
   test('侧边栏折叠功能', async ({ page }) => {
-    // 获取初始侧边栏
-    const sidebar = page.locator('.el-aside')
+    // 获取初始侧边栏 (ArtDecoLayout使用.layout-sidebar)
+    const sidebar = page.locator('.layout-sidebar')
     const initialWidth = await sidebar.evaluate(el => el.offsetWidth)
 
     // 点击折叠按钮

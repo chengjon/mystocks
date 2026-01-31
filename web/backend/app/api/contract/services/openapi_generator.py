@@ -7,12 +7,12 @@ Enables Code-to-DB: Auto-generate OpenAPI spec from code routes.
 
 import json
 import logging
-from typing import Any, Dict, List, Optional, Type
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Type
 
 from fastapi import FastAPI
-from starlette.routing import Route
 from pydantic import BaseModel
+from starlette.routing import Route
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +106,7 @@ class OpenAPIGenerator:
             }
 
             self.endpoints.append(info)
-            logger.debug(f"Extracted endpoint: {method} {path}")
+            logger.debug("Extracted endpoint: %(method)s %(path)s"")
 
     def _extract_path_params(self, path: str) -> List[Dict[str, Any]]:
         """Extract path parameters from path format"""
@@ -318,7 +318,7 @@ Total endpoints: {len(self.endpoints)}
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(spec, f, ensure_ascii=False, indent=2)
 
-        logger.info(f"Saved OpenAPI spec to {path}")
+        logger.info("Saved OpenAPI spec to %(path)s"")
 
     def get_sync_report(self) -> Dict[str, Any]:
         """

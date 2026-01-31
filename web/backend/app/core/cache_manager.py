@@ -18,18 +18,19 @@ Features:
 """
 
 import asyncio
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-import structlog
 import time
-from threading import Lock
 from collections import defaultdict
+from datetime import datetime, timedelta
+from threading import Lock
+from typing import Any, Dict, List, Optional
+
+import structlog
 
 from app.core.tdengine_manager import TDengineManager, get_tdengine_manager
 
 # Redis多级缓存服务
 try:
-    from src.core.cache.multi_level import MultiLevelCache, CacheConfig
+    from src.core.cache.multi_level import CacheConfig, MultiLevelCache
 
     REDIS_CACHE_AVAILABLE = True
 except ImportError:
@@ -651,7 +652,7 @@ class CacheManager:
                             self._cache_stats["misses"] += 1
 
                     except Exception as e:
-                        logger.warning(f"批量读取单项失败 {symbol}:{data_type}", error=str(e))
+                        logger.warning("批量读取单项失败 {symbol}:{data_type}", error=str(e))
                         results[cache_key] = None
                         self._cache_stats["misses"] += 1
 
@@ -1021,7 +1022,7 @@ class CacheManager:
             )
             return result
         except Exception as e:
-            logger.warning(f"TDengine异步写入失败: {e}")
+            logger.warning("TDengine异步写入失败: %(e)s"")
             return False
 
     def _update_performance_stats(self, response_time: float, hit: bool) -> None:

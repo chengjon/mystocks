@@ -12,15 +12,14 @@ Author: Claude Code
 Date: 2026-01-09
 """
 
-from typing import Dict, Any, Optional, List, Callable
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-import structlog
 import asyncio
-from functools import lru_cache
-from collections import OrderedDict
 import hashlib
 import json
+from collections import OrderedDict
+from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional
+
+import structlog
 
 logger = structlog.get_logger()
 
@@ -272,7 +271,7 @@ class PerformanceMonitor:
             self.error_counts[operation] = 0
         self.error_counts[operation] += 1
 
-        logger.warning(f"Operation {operation} failed", error=str(error), count=self.error_counts[operation])
+        logger.warning("Operation {operation} failed", error=str(error), count=self.error_counts[operation])
 
     def get_avg_latency(self) -> float:
         """获取平均延迟"""

@@ -107,6 +107,7 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { artDecoTheme } from '@/utils/echarts'
 
 // 响应式数据
 const timeRange = ref('30d')
@@ -369,8 +370,8 @@ onMounted(async () => {
   await nextTick()
 
   // 初始化图表
-  portfolioRiskChartInstance = echarts.init(portfolioRiskChart.value)
-  riskDistributionChartInstance = echarts.init(riskDistributionChart.value)
+  portfolioRiskChartInstance = echarts.init(portfolioRiskChart.value, artDecoTheme)
+  riskDistributionChartInstance = echarts.init(riskDistributionChart.value, artDecoTheme)
 
   // 初始化图表
   initRiskDistributionChart()

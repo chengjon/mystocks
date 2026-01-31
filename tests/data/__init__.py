@@ -9,9 +9,9 @@
 """
 
 from .test_data_optimizer import (
-    DataQualityMetrics,
     CompressionResult,
     DataOptimizationStrategy,
+    DataQualityMetrics,
     TestDataOptimizer,
 )
 

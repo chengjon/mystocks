@@ -9,21 +9,20 @@ This module provides multi-level trading signals system including:
 - Risk-adjusted signal validation
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+import numpy as np
+import pandas as pd
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
 from src.indicators.indicator_factory import IndicatorFactory
 
 # GPU acceleration support
 try:
-    import cudf
-    import cuml
+    pass
 
     GPU_AVAILABLE = True
 except ImportError:

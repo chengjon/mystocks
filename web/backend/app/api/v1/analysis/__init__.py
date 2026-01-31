@@ -9,8 +9,8 @@
 - stress_test.py: 压力测试
 """
 
-from .sentiment import router as sentiment_router
 from .backtest import router as backtest_router
+from .sentiment import router as sentiment_router
 from .stress_test import router as stress_test_router
 
 __all__ = ["sentiment_router", "backtest_router", "stress_test_router"]

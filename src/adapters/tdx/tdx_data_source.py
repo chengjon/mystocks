@@ -6,9 +6,10 @@
 # 说明：TDX数据源的统一入口点，整合所有TDX相关功能
 """
 
-import pandas as pd
-from typing import Dict, List, Optional, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 from loguru import logger
 
 # 导入MyStocks接口
@@ -450,3 +451,55 @@ class TdxDataSource(BaseTdxAdapter, IDataSource):
         except Exception as e:
             logger.error("获取股票列表失败: %s", e)
             return []
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_index_components(self, symbol: str) -> List[str]:
+        """
+        获取指数成分股
+
+        Args:
+            symbol: 指数代码
+
+        Returns:
+            List[str]: 指数成分股代码列表
+
+        Note:
+            TDX不直接支持此功能，返回空列表
+        """
+        logger.warning("TDX数据源不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """
+        获取财务数据
+
+        Args:
+            symbol: 股票代码
+            period: 报告期间，"annual"或"quarterly"
+
+        Returns:
+            pd.DataFrame: 财务数据
+
+        Note:
+            TDX不直接支持此功能，建议使用FinancialDataSource
+        """
+        logger.warning("TDX数据源不支持获取财务数据: %s，请使用FinancialDataSource", symbol)
+        return pd.DataFrame()
+
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        获取新闻数据
+
+        Args:
+            symbol: 股票代码，为None时获取市场新闻
+            limit: 返回数量限制
+
+        Returns:
+            List[Dict[str, Any]]: 新闻数据列表
+
+        Note:
+            TDX不直接支持此功能，返回空列表
+        """
+        logger.warning("TDX数据源不支持获取新闻数据，返回空列表")
+        return []

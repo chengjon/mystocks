@@ -1,5 +1,5 @@
 // Auto-generated types for system domain
-// Generated at: 2026-01-19T22:34:18.299744
+// Generated at: 2026-01-29T13:43:35.813369
 
 export interface DataClassificationStats {
   description?: string;
@@ -29,12 +29,4 @@ export interface DatabaseHealthResponse {
   active_connections?: number;
   total_tables?: number;
   last_health_check?: string;
-}
-
-export interface HealthCheckResponse {
-  status?: string;
-  version?: string;
-  uptime?: number;
-  timestamp?: string;
-  services?: Record<string, any> | null;
 }

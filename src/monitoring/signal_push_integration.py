@@ -42,18 +42,17 @@ def update_metrics_task():
 ```
 """
 
-import time
 import logging
-from typing import List, Dict, Any, Optional, Callable
+import time
 from functools import wraps
-from datetime import datetime
+from typing import Any, Callable, Dict
 
 logger = logging.getLogger(__name__)
 
 try:
     from src.monitoring.signal_decorator import (
-        record_signal_push,
         record_push_latency,
+        record_signal_push,
         update_strategy_health,
     )
 except ImportError:

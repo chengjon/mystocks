@@ -15,18 +15,19 @@ MyStocks统一接口验证脚本
 日期: 2025-09-21
 """
 
+import logging
 import os
 import sys
-import logging
 from datetime import datetime
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from src.adapters.customer_adapter import CustomerDataSource
+from src.core import DatabaseTarget, DataClassification, DataManager
+
 # 导入MyStocks核心模块
 from unified_manager import MyStocksUnifiedManager
-from src.core import DataClassification, DataManager, DatabaseTarget
-from src.adapters.customer_adapter import CustomerDataSource
 
 
 def setup_logging():
@@ -58,10 +59,10 @@ def test_data_classification_strategy():
 
     # 验证路由是否符合设计原则
     expected_routing = {
-        DataClassification.REALTIME_POSITIONS: DatabaseTarget.REDIS,  # 实时数据 → Redis热数据
+        DataClassification.REALTIME_POSITIONS: DatabaseTarget.TDENGINE,  # 实时数据 → TDengine时序
         DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,  # Tick数据 → TDengine时序
         DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,  # 日线数据 → PostgreSQL分析
-        DataClassification.SYMBOLS_INFO: DatabaseTarget.MYSQL,  # 股票信息 → MySQL参考
+        DataClassification.SYMBOLS_INFO: DatabaseTarget.POSTGRESQL,  # 股票信息 → PostgreSQL参考
     }
 
     routing_correct = True
@@ -92,6 +93,7 @@ def test_unified_manager_initialization():
         logger.info("✅ 统一管理器创建成功")
 
         # 初始化系统
+        # pylint: disable=no-member
         init_result = unified_manager.initialize_system()
 
         if init_result["config_loaded"]:
@@ -117,6 +119,7 @@ def test_unified_manager_initialization():
 
         # 获取系统状态
         try:
+            # pylint: disable=no-member
             status = unified_manager.get_system_status()
             monitoring = status.get("monitoring", {})
             op_stats = monitoring.get("operation_statistics", {})
@@ -208,6 +211,7 @@ def test_unified_interface_save(unified_manager, sample_data):
 
         # 获取系统状态验证操作记录
         try:
+            # pylint: disable=no-member
             status = unified_manager.get_system_status()
             monitoring = status.get("monitoring", {})
             op_stats = monitoring.get("operation_statistics", {})
@@ -311,6 +315,7 @@ def main():
     # 清理资源
     if unified_manager:
         try:
+            # pylint: disable=no-member
             unified_manager.cleanup()
             logger.info("🧹 系统资源已清理")
         except Exception:

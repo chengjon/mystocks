@@ -6,8 +6,8 @@ Signal Definition Value Object
 """
 
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
 from enum import Enum
+from typing import Any, Dict
 
 
 class OrderSide(Enum):

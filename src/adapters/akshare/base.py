@@ -12,8 +12,10 @@
 import sys
 import os
 import importlib.util
+import inspect
 from functools import wraps
 from types import ModuleType
+import pandas as pd
 
 # 常量定义
 MAX_RETRIES = 3
@@ -39,6 +41,52 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
+
+
+def retry_api_call(max_retries: int = MAX_RETRIES, delay: int = RETRY_DELAY):
+    """API调用重试装饰器工厂函数
+
+    Args:
+        max_retries: 最大重试次数
+        delay: 重试间隔(秒)
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            retry_decorator = retry_on_failure(
+                max_retries=max_retries,
+                delay=delay,
+                backoff=1.0,
+                exceptions=(Exception,),
+                context=f"Akshare API调用: {func.__name__}",
+            )
+            return retry_decorator(func)(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+class BaseAkshareAdapter:
+    """AkShare适配器基类
+
+    提供通用的API调用重试机制和日志功能。
+    """
+
+    def __init__(self, max_retries: int = MAX_RETRIES, delay: int = RETRY_DELAY):
+        """初始化适配器
+
+        Args:
+            max_retries: 最大重试次数
+            delay: 重试间隔(秒)
+        """
+        self.max_retries = max_retries
+        self.delay = delay
+        logger.info("[BaseAkshareAdapter] 初始化完成 (重试: %s次, 间隔: %ss)", max_retries, delay)
+
+    def _add_timestamp(self, df) -> None:
+        """添加查询时间戳"""
+        import pandas as pd
+        if df is not None and not df.empty:
+            df["query_timestamp"] = pd.Timestamp.now()
 
 
 def _load_mixin_methods(cls):
@@ -67,19 +115,61 @@ def _load_mixin_methods(cls):
                 spec = importlib.util.spec_from_file_location(mixin_file, mixin_path)
                 if spec and spec.loader:
                     module = importlib.util.module_from_spec(spec)
+                    # 注册到 sys.modules，便于测试/补丁按模块名访问
+                    sys.modules.setdefault(spec.name, module)
+                    # 注入常用依赖，避免注解/运行时NameError
+                    try:
+                        from typing import Any, Dict, List, Optional
+                        import akshare as ak
+                        from src.utils.column_mapper import ColumnMapper
+                        from src.utils.symbol_utils import format_stock_code_for_source
+                        from src.utils.symbol_utils import format_index_code_for_source
+                        from src.utils.date_utils import normalize_date
+
+                        module.__dict__.setdefault("pd", pd)
+                        module.__dict__.setdefault("ak", ak)
+                        module.__dict__.setdefault("logger", logger)
+                        module.__dict__.setdefault("ColumnMapper", ColumnMapper)
+                        module.__dict__.setdefault("format_stock_code_for_source", format_stock_code_for_source)
+                        module.__dict__.setdefault("format_index_code_for_source", format_index_code_for_source)
+                        module.__dict__.setdefault("normalize_date", normalize_date)
+                        module.__dict__.setdefault("Dict", Dict)
+                        module.__dict__.setdefault("Any", Any)
+                        module.__dict__.setdefault("List", List)
+                        module.__dict__.setdefault("Optional", Optional)
+                    except Exception:
+                        # 注入失败时不阻断导入流程
+                        pass
+
                     spec.loader.exec_module(module)
 
                     # 将模块中的函数添加到类中
                     for attr_name in dir(module):
                         attr = getattr(module, attr_name)
-                        if callable(attr) and not attr_name.startswith("_"):
-                            # 只添加没有冲突的方法
-                            if not hasattr(cls, attr_name):
-                                setattr(cls, attr_name, attr)
-                                logger.debug(f"[Akshare] 加载混入方法: {attr_name} from {mixin_file}")
+                        if attr_name.startswith("_"):
+                            continue
+                        if not inspect.isfunction(attr):
+                            continue
+
+                        # 只混入显式声明 self 的实例方法，避免注入类或工具函数
+                        params = list(inspect.signature(attr).parameters.values())
+                        if not params or params[0].name != "self":
+                            continue
+
+                        # 只添加没有冲突的方法，或覆盖显式标记为“子类应重写”的基础实现
+                        existing = getattr(cls, attr_name, None)
+                        should_override = False
+                        if existing is not None and inspect.isfunction(existing):
+                            doc = existing.__doc__ or ""
+                            if "子类应重写" in doc:
+                                should_override = True
+
+                        if existing is None or should_override:
+                            setattr(cls, attr_name, attr)
+                            logger.debug("[Akshare] 加载混入方法: %s from %s", attr_name, mixin_file)
 
             except Exception as e:
-                logger.warning(f"[Akshare] 加载混入模块 {mixin_file} 失败: {e}")
+                logger.warning("[Akshare] 加载混入模块 %s 失败: %s", mixin_file, e)
                 continue
 
     logger.info("[Akshare] 混入方法加载完成")
@@ -159,7 +249,10 @@ class AkshareDataSource(IDataSource):
         """获取股指期货日线数据-Akshare实现"""
         try:
             logger.info(
-                r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s", symbol, start_date, end_date
+                r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s",
+                symbol,
+                start_date,
+                end_date,
             )
 
             # 使用重试装饰器包装API调用
@@ -316,7 +409,10 @@ class AkshareDataSource(IDataSource):
         """获取股指期货期现基差分析-Akshare实现"""
         try:
             logger.info(
-                r"[Akshare] 开始计算股指期货期现基差: symbol=%s, 开始日期=%s, 结束日期=%s", symbol, start_date, end_date
+                r"[Akshare] 开始计算股指期货期现基差: symbol=%s, 开始日期=%s, 结束日期=%s",
+                symbol,
+                start_date,
+                end_date,
             )
 
             # 获取期货数据
@@ -337,7 +433,7 @@ class AkshareDataSource(IDataSource):
             spot_symbol = spot_index_mapping.get(futures_type)
 
             if not spot_symbol:
-                logger.warning(f"无法确定期货 {symbol} 对应的现货指数")
+                logger.warning("无法确定期货 %s 对应的现货指数", symbol)
                 return pd.DataFrame()
 
             # 获取现货指数数据 (需要实现get_stock_daily方法)

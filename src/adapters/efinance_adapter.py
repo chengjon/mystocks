@@ -17,16 +17,16 @@
 #   - DataQualityValidator: 数据质量验证，多层检查
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Union
-from datetime import datetime, date
 import logging
-import efinance as ef
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from src.core.data_source.smart_cache import SmartCache
+import efinance as ef
+import pandas as pd
+
 from src.core.data_source.circuit_breaker import CircuitBreaker
 from src.core.data_source.data_quality_validator import DataQualityValidator
+from src.core.data_source.smart_cache import SmartCache
 from src.interfaces.data_source import IDataSource
 from src.utils.column_mapper import ColumnMapper
 
@@ -114,7 +114,7 @@ class EfinanceDataSource(IDataSource):
     def _apply_column_mapping(self, df: pd.DataFrame, mapping_type: str) -> pd.DataFrame:
         """应用列名映射"""
         if self.enable_column_mapping and self.column_mapper:
-            return self.column_mapper.map_columns(df, mapping_type)
+            return self.column_mapper.standardize_columns(df, mapping_type)
         return df
 
     def _validate_and_cache(self, method_name: str, data: Any, cache_key: str = None, **kwargs) -> Any:
@@ -201,7 +201,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "stock_daily")
 
             except Exception as e:
-                logger.error(f"Failed to get stock daily data for {symbol}: {e}")
+                logger.error("Failed to get stock daily data for %(symbol)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch)
@@ -248,7 +248,7 @@ class EfinanceDataSource(IDataSource):
                     "source": "efinance",
                 }
             except Exception as e:
-                logger.error(f"Failed to get stock basic info for {symbol}: {e}")
+                logger.error("Failed to get stock basic info for %(symbol)s: %(e)s")
                 return {}
 
         return self._get_cached_or_fetch(cache_key, _fetch)
@@ -269,10 +269,10 @@ class EfinanceDataSource(IDataSource):
             try:
                 # efinance没有直接的指数成分股API，返回空列表
                 # 在实际使用中，可能需要从其他数据源补充
-                logger.warning(f"Index components not available for {symbol} in efinance")
+                logger.warning("Index components not available for %(symbol)s in efinance")
                 return []
             except Exception as e:
-                logger.error(f"Failed to get index components for {symbol}: {e}")
+                logger.error("Failed to get index components for %(symbol)s: %(e)s")
                 return []
 
         return self._get_cached_or_fetch(cache_key, _fetch)
@@ -322,7 +322,7 @@ class EfinanceDataSource(IDataSource):
                 }
 
             except Exception as e:
-                logger.error(f"Failed to get real-time data for {symbol}: {e}")
+                logger.error("Failed to get real-time data for %(symbol)s: %(e)s")
                 return None
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=60)  # 实时数据缓存1分钟
@@ -360,7 +360,7 @@ class EfinanceDataSource(IDataSource):
                 return df
 
             except Exception as e:
-                logger.error(f"Failed to get market calendar: {e}")
+                logger.error("Failed to get market calendar: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 日历数据缓存1小时
@@ -413,7 +413,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(stock_data, "financial_data")
 
             except Exception as e:
-                logger.error(f"Failed to get financial data for {symbol}: {e}")
+                logger.error("Failed to get financial data for %(symbol)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=86400)  # 财务数据缓存1天
@@ -439,7 +439,7 @@ class EfinanceDataSource(IDataSource):
                 return []
 
             except Exception as e:
-                logger.error(f"Failed to get news data: {e}")
+                logger.error("Failed to get news data: %(e)s")
                 return []
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=1800)  # 新闻数据缓存30分钟
@@ -495,7 +495,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "dragon_tiger")
 
             except Exception as e:
-                logger.error(f"Failed to get dragon tiger list: {e}")
+                logger.error("Failed to get dragon tiger list: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 龙虎榜数据缓存1小时
@@ -542,7 +542,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "fund_flow")
 
             except Exception as e:
-                logger.error(f"Failed to get fund flow data for {symbol}: {e}")
+                logger.error("Failed to get fund flow data for %(symbol)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=1800)  # 资金流向缓存30分钟
@@ -582,7 +582,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "today_fund_flow")
 
             except Exception as e:
-                logger.error(f"Failed to get today fund flow data for {symbol}: {e}")
+                logger.error("Failed to get today fund flow data for %(symbol)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=300)  # 今日数据缓存5分钟
@@ -620,7 +620,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "fund_history")
 
             except Exception as e:
-                logger.error(f"Failed to get fund history for {fund_code}: {e}")
+                logger.error("Failed to get fund history for %(fund_code)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 基金净值缓存1小时
@@ -658,7 +658,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "fund_holdings")
 
             except Exception as e:
-                logger.error(f"Failed to get fund holdings for {fund_code}: {e}")
+                logger.error("Failed to get fund holdings for %(fund_code)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=86400)  # 持仓数据缓存1天
@@ -698,7 +698,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "fund_basic")
 
             except Exception as e:
-                logger.error(f"Failed to get fund basic info: {e}")
+                logger.error("Failed to get fund basic info: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 基本信息缓存1小时
@@ -745,7 +745,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "bond_quotes")
 
             except Exception as e:
-                logger.error(f"Failed to get bond realtime quotes: {e}")
+                logger.error("Failed to get bond realtime quotes: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=60)  # 实时数据缓存1分钟
@@ -786,7 +786,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "bond_basic")
 
             except Exception as e:
-                logger.error(f"Failed to get bond basic info: {e}")
+                logger.error("Failed to get bond basic info: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 基本信息缓存1小时
@@ -831,7 +831,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "bond_history")
 
             except Exception as e:
-                logger.error(f"Failed to get bond history for {bond_code}: {e}")
+                logger.error("Failed to get bond history for %(bond_code)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch)
@@ -866,7 +866,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "futures_basic")
 
             except Exception as e:
-                logger.error(f"Failed to get futures basic info: {e}")
+                logger.error("Failed to get futures basic info: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=3600)  # 基本信息缓存1小时
@@ -911,7 +911,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "futures_history")
 
             except Exception as e:
-                logger.error(f"Failed to get futures history for {quote_id}: {e}")
+                logger.error("Failed to get futures history for %(quote_id)s: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch)
@@ -948,7 +948,7 @@ class EfinanceDataSource(IDataSource):
                 return self._apply_column_mapping(df, "futures_quotes")
 
             except Exception as e:
-                logger.error(f"Failed to get futures realtime quotes: {e}")
+                logger.error("Failed to get futures realtime quotes: %(e)s")
                 return pd.DataFrame()
 
         return self._get_cached_or_fetch(cache_key, _fetch, cache_ttl=60)  # 实时数据缓存1分钟

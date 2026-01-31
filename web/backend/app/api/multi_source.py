@@ -6,11 +6,12 @@ Multi-data Source Support
 """
 
 from typing import List, Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
+from app.adapters.base import DataCategory, DataSourceType
 from app.services.multi_source_manager import get_multi_source_manager
-from app.adapters.base import DataSourceType, DataCategory
 
 router = APIRouter(prefix="/api/multi-source", tags=["multi-source"])
 

@@ -6,11 +6,12 @@ FastAPI路由文件: Wencai
 生成时间: 2025-11-13
 """
 
-from fastapi import APIRouter, Query
-from typing import Dict
-import os
 import logging
+import os
 from datetime import datetime
+from typing import Dict
+
+from fastapi import APIRouter, Query
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -36,10 +37,10 @@ def get_wencai_mock_data():
         module: Mock数据模块
     """
     from src.mock.mock_Wencai import (
-        get_wencai_queries,
-        execute_query,
         execute_custom_query,
+        execute_query,
         get_query_results,
+        get_wencai_queries,
     )
 
     return {

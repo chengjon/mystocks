@@ -309,6 +309,15 @@ import { useApiService } from '@/composables/useApiService'
 import { PageHeader, StockListTable } from '@/components/shared'
 import type { TableColumn } from '@/components/shared'
 
+// Define service status type instead of using any
+interface ServiceStatus {
+  frontend: 'normal' | 'warning'
+  api: 'normal' | 'warning'
+  postgresql: 'normal' | 'warning'
+  tdengine: 'normal' | 'warning'
+  overallStatus: 'normal' | 'warning'
+}
+
 const { getHealthData } = useApiService()
 
 const autoRefresh = ref(false)
@@ -341,48 +350,48 @@ const FRONTEND_URL = 'http://localhost:3000'
 const API_BASE_URL = 'http://localhost:8000'
 
 // 历史表格列配置
-const historyColumns = computed((): TableColumn[] => [
+const historyColumns = computed((): any[] => [
   {
     prop: 'timestamp',
     label: '时间',
     width: 180,
-    formatter: (value: number) => formatDateTime(value)
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => formatDateTime(cellValue)
   },
   {
     prop: 'frontend',
     label: '前端',
     width: 80,
     align: 'center',
-    formatter: (value: number) => getStatusText(value)
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => getStatusText(cellValue)
   },
   {
     prop: 'api',
     label: 'API',
     width: 80,
     align: 'center',
-    formatter: (value: number) => getStatusText(value)
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => getStatusText(cellValue)
   },
   {
     prop: 'postgresql',
     label: 'PostgreSQL',
     width: 100,
     align: 'center',
-    formatter: (value: string) => getStatusText(value)
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => getStatusText(cellValue)
   },
   {
     prop: 'tdengine',
     label: 'TDengine',
     width: 100,
     align: 'center',
-    formatter: (value: string) => getStatusText(value)
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => getStatusText(cellValue)
   },
   {
     prop: 'overallStatus',
     label: '整体状态',
     width: 100,
     align: 'center',
-    colorClass: (_value: any, row: any) => row.overallStatus === 'normal' ? 'status-normal' : 'status-warning',
-    formatter: (value: string) => value === 'normal' ? '正常' : '异常'
+    colorClass: (row: any) => row.overallStatus === 'normal' ? 'status-normal' : 'status-warning',
+    formatter: (row: any, column: TableColumn, cellValue: any, index: number) => cellValue === 'normal' ? '正常' : '异常'
   }
 ])
 

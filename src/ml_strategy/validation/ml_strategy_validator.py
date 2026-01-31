@@ -21,20 +21,16 @@ ML策略测试和验证框架 (ML Strategy Testing and Validation Framework)
 版本: 1.0.0
 """
 
-from src.ml_strategy.strategy.naive_bayes_trading_strategy import NaiveBayesTradingStrategy
-from src.ml_strategy.strategy.decision_tree_trading_strategy import DecisionTreeTradingStrategy
-from src.ml_strategy.strategy.svm_trading_strategy import SVMTradingStrategy
-from src.ml_strategy.backtest.ml_strategy_backtester import MLStrategyBacktester
-import pandas as pd
-import numpy as np
-import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Tuple
-from datetime import datetime, timedelta
-from dataclasses import dataclass
-from scipy import stats
 import sys
-import os
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+from src.ml_strategy.backtest.ml_strategy_backtester import MLStrategyBacktester
 
 # 添加项目根目录到路径
 project_root = "/opt/claude/mystocks_spec"
@@ -120,7 +116,7 @@ async def validate_strategy(
         验证结果
     """
     try:
-        logger.info(f"开始验证策略: {strategy.name}")
+        logger.info("开始验证策略: {strategy.name")
 
         # 多周期验证
         period_results = []
@@ -154,11 +150,11 @@ async def validate_strategy(
 
         self.validation_results[strategy.name] = validation_result
 
-        logger.info(f"策略验证完成: {strategy.name}")
+        logger.info("策略验证完成: {strategy.name")
         return validation_result
 
     except Exception as e:
-        logger.error(f"策略验证失败: {e}")
+        logger.error("策略验证失败: %(e)s")
         raise
 
 
@@ -180,7 +176,7 @@ async def compare_strategies(
         对比分析结果
     """
     try:
-        logger.info(f"开始策略对比: {len(strategies)} 个策略")
+        logger.info("开始策略对比: {len(strategies)} 个策略")
 
         # 验证所有策略
         validation_results = {}
@@ -189,7 +185,7 @@ async def compare_strategies(
                 result = await self.validate_strategy(strategy, market_data)
                 validation_results[strategy.name] = result
             except Exception as e:
-                logger.error(f"策略 {strategy.name} 验证失败: {e}")
+                logger.error("策略 {strategy.name} 验证失败: %(e)s")
                 validation_results[strategy.name] = None
 
         # 生成对比报告
@@ -210,7 +206,7 @@ async def compare_strategies(
         }
 
     except Exception as e:
-        logger.error(f"策略对比失败: {e}")
+        logger.error("策略对比失败: %(e)s")
         raise
 
 
@@ -277,7 +273,7 @@ def _aggregate_validation_results(self, strategy_name: str, period_results: List
         )
 
     except Exception as e:
-        logger.error(f"验证结果聚合失败: {e}")
+        logger.error("验证结果聚合失败: %(e)s")
         raise
 
 
@@ -327,7 +323,7 @@ def _generate_comparison_report(self, validation_results: Dict[str, ValidationRe
         }
 
     except Exception as e:
-        logger.error(f"对比报告生成失败: {e}")
+        logger.error("对比报告生成失败: %(e)s")
         return {"error": str(e)}
 
 
@@ -368,7 +364,7 @@ def _perform_statistical_tests(self, validation_results: Dict[str, ValidationRes
         }
 
     except Exception as e:
-        logger.error(f"统计检验执行失败: {e}")
+        logger.error("统计检验执行失败: %(e)s")
         return {"error": str(e)}
 
 
@@ -412,7 +408,7 @@ def _analyze_risk_adjusted_performance(self, validation_results: Dict[str, Valid
         }
 
     except Exception as e:
-        logger.error(f"风险调整分析失败: {e}")
+        logger.error("风险调整分析失败: %(e)s")
         return {"error": str(e)}
 
 
@@ -433,7 +429,7 @@ def _calculate_risk_adjusted_score(
         return max(0, min(1, score))  # 确保在[0,1]范围内
 
     except Exception as e:
-        logger.warning(f"风险调整分数计算失败: {e}")
+        logger.warning("风险调整分数计算失败: %(e)s")
         return 0.5
 
 
@@ -460,7 +456,7 @@ def _calculate_statistical_significance(self, returns: List[float]) -> float:
         return 1 - p_value  # 显著性水平
 
     except Exception as e:
-        logger.warning(f"统计显著性计算失败: {e}")
+        logger.warning("统计显著性计算失败: %(e)s")
         return 0.5
 
 
@@ -490,7 +486,7 @@ def _calculate_benchmark_comparison(
         return benchmark_comparison
 
     except Exception as e:
-        logger.warning(f"基准对比计算失败: {e}")
+        logger.warning("基准对比计算失败: %(e)s")
         return {"error": str(e)}
 
 
@@ -559,5 +555,5 @@ def generate_validation_report(self, comparison_results: Dict[str, Any]) -> str:
         return "\n".join(report)
 
     except Exception as e:
-        logger.error(f"验证报告生成失败: {e}")
+        logger.error("验证报告生成失败: %(e)s")
         return f"报告生成失败: {e}"

@@ -9,11 +9,11 @@
 - TradeHistory: 交易历史
 """
 
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
+from typing import List, Optional
 
+from pydantic import BaseModel, Field, field_validator
 
 # ==================== Order Request ====================
 

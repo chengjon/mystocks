@@ -1,51 +1,82 @@
-// Market Data Store - 专注于市场数据管理
-// 负责市场总览、市场分析等市场相关数据
+// Market Data Store - 基于标准模板的市场数据管理
+// 使用统一的Store模式和API调用规范
 
-import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { createBaseStore } from './baseStore'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type { MarketOverview } from '@/services/TradingApiManager'
-import { validateMarketState, validateInDevelopment, MarketStateSchema } from '@/utils/validation'
 
 interface MarketAnalysis {
-    trend?: string
-    sentiment?: number
-    volatility?: number
-    volume?: number
-    [key: string]: any
+  trend?: string
+  sentiment?: number
+  volatility?: number
+  volume?: number
+  [key: string]: any
 }
 
-interface MarketState {
-    marketOverview: MarketOverview | null
-    marketAnalysis: MarketAnalysis | null
-    lastUpdateTime: string
+interface MarketData {
+  marketOverview: MarketOverview | null
+  marketAnalysis: MarketAnalysis | null
+  lastUpdateTime?: string
 }
 
-export const useMarketStore = defineStore('market', () => {
-    const state = reactive<MarketState>({
-        marketOverview: null,
-        marketAnalysis: null,
-        lastUpdateTime: new Date().toLocaleTimeString('zh-CN')
-    })
-
-    const loadMarketOverview = async () => {
-        const data = await tradingApiManager.getMarketOverview()
-        state.marketOverview = data
-        state.lastUpdateTime = new Date().toLocaleTimeString('zh-CN')
-
-        // 运行时验证
-        validateInDevelopment(state, MarketStateSchema, 'MarketStore.loadMarketOverview')
-    }
-
-    const loadMarketAnalysis = async () => {
-        // 假设有一个获取市场分析的API
-        // const data = await tradingApiManager.getMarketAnalysis()
-        // state.marketAnalysis = data
-    }
-
-    return {
-        state,
-        loadMarketOverview,
-        loadMarketAnalysis
-    }
+// 使用标准Store模板
+export const useMarketStore = createBaseStore<MarketData>('market', {
+  marketOverview: null,
+  marketAnalysis: null
 })
+
+// 扩展市场特定的Actions
+export const useMarketStoreExtended = () => {
+  const baseStore = useMarketStore()
+
+  // 获取市场概览
+  const fetchOverview = async (forceRefresh = false) => {
+    return baseStore.executeApiCall(
+      () => tradingApiManager.getMarketOverview(),
+      {
+        cacheKey: 'market-overview',
+        forceRefresh,
+        errorContext: 'Market Overview'
+      }
+    ).then(result => {
+      // 更新最后更新时间（仅当result中有时）
+      if (baseStore.state.data && result?.lastUpdateTime) {
+        ;(baseStore.state.data as any).lastUpdateTime = result.lastUpdateTime
+      }
+      return result
+    })
+  }
+
+  // 获取市场分析
+  const fetchAnalysis = async (forceRefresh = false) => {
+    return baseStore.executeApiCall(
+      () => tradingApiManager.getMarketAnalysis(),
+      {
+        cacheKey: 'market-analysis',
+        forceRefresh,
+        errorContext: 'Market Analysis'
+      }
+    ).then(result => {
+      // 更新最后更新时间
+      if (baseStore.state.data && result?.lastUpdateTime) {
+        ;(baseStore.state.data as any).lastUpdateTime = result.lastUpdateTime
+      }
+      return result
+    })
+  }
+
+  // 刷新所有数据
+  const refresh = async () => {
+    await Promise.all([
+      fetchOverview(true),
+      fetchAnalysis(true)
+    ])
+  }
+
+  return {
+    ...baseStore,
+    fetchOverview,
+    fetchAnalysis,
+    refresh
+  }
+}

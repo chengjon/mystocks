@@ -7,10 +7,11 @@ Saga 事务完整性验证测试
 2. 失败场景: TDengine写入成功 + PG更新失败 → 事务ROLLED_BACK (补偿)
 """
 
-import sys
 import os
-import pandas as pd
+import sys
 from datetime import datetime
+
+import pandas as pd
 
 # 添加项目根目录
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

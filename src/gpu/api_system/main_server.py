@@ -8,15 +8,16 @@ import signal
 import sys
 import time
 from concurrent import futures
+
 import grpc
 
-from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
-from src.gpu.api_system.utils.monitoring import MetricsCollector
-from src.gpu.api_system.services.integrated_backtest_service import IntegratedBacktestService
-from src.gpu.api_system.services.integrated_realtime_service import IntegratedRealTimeService
-from src.gpu.api_system.services.integrated_ml_service import IntegratedMLService
 from src.gpu.api_system.config.system_config import SystemConfig
+from src.gpu.api_system.services.integrated_backtest_service import IntegratedBacktestService
+from src.gpu.api_system.services.integrated_ml_service import IntegratedMLService
+from src.gpu.api_system.services.integrated_realtime_service import IntegratedRealTimeService
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 # 配置日志
 logging.basicConfig(
@@ -148,8 +149,8 @@ class GPUAPIServer:
 
         try:
             from src.gpu.api_system.api_proto.backtest_pb2_grpc import add_BacktestServiceServicer_to_server
-            from src.gpu.api_system.api_proto.realtime_pb2_grpc import add_RealTimeServiceServicer_to_server
             from src.gpu.api_system.api_proto.ml_pb2_grpc import add_MLServiceServicer_to_server
+            from src.gpu.api_system.api_proto.realtime_pb2_grpc import add_RealTimeServiceServicer_to_server
 
             add_BacktestServiceServicer_to_server(self.backtest_service, self.server)
             add_RealTimeServiceServicer_to_server(self.realtime_service, self.server)
@@ -157,7 +158,6 @@ class GPUAPIServer:
         except ImportError as e:
             logger.error("Failed to import gRPC generated modules: %s", e)
             # Continue without registering if failed, to allow testing other parts
-            pass
 
         # 添加端口
         server_address = f"{self.config.grpc_config['host']}:{self.config.grpc_config['port']}"
@@ -218,7 +218,7 @@ class GPUAPIServer:
         logger.info("服务器配置:")
         logger.info("  - gRPC端口: %s", self.config.grpc_config["port"])
         logger.info("  - 最大工作线程: %s", self.config.grpc_config["max_workers"])
-        logger.info("  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']}")
+        logger.info("  - Redis地址: {self.config.redis_config['host']}:{self.config.redis_config['port']")
 
         logger.info("=" * 80)
 

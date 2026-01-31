@@ -3,10 +3,11 @@ DatabaseConnectionManager 修复版Mock测试
 正确处理模块内导入的Mock策略
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../../.."))
 
@@ -302,8 +303,8 @@ class TestDatabaseConnectionManagerFixed:
         try:
             from src.storage.database.connection_manager import (
                 DatabaseConnectionManager,
+                get_connection_manager,
             )
-            from src.storage.database.connection_manager import get_connection_manager
 
             # 验证类存在
             assert DatabaseConnectionManager is not None
@@ -391,10 +392,9 @@ class TestConnectionManagerIntegration:
     def test_global_instance_isolation(self):
         """测试全局实例隔离"""
         try:
-            from src.storage.database.connection_manager import get_connection_manager
-
             # 重置全局变量
             import src.storage.database.connection_manager as conn_module
+            from src.storage.database.connection_manager import get_connection_manager
 
             conn_module._connection_manager = None
 

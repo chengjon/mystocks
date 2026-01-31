@@ -61,7 +61,7 @@ async def get_sources_health():
         return create_success_response(data=health_summary, message="Data sources health status retrieved successfully")
 
     except Exception as e:
-        logger.error(f"Failed to get sources health: {str(e)}")
+        logger.error("Failed to get sources health: {str(e)}"")
         return create_error_response(
             error_code="HEALTH_CHECK_FAILED",
             message="Failed to retrieve data sources health status",
@@ -146,7 +146,7 @@ async def get_data_quality_metrics(source: Optional[str] = Query(None, descripti
     except NotFoundException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get data quality metrics: {str(e)}")
+        logger.error("Failed to get data quality metrics: {str(e)}"")
         return create_error_response(
             error_code="METRICS_RETRIEVAL_FAILED",
             message="Failed to retrieve data quality metrics",
@@ -201,7 +201,7 @@ async def get_active_alerts(
         return create_success_response(data=alerts_data, message="Active alerts retrieved successfully")
 
     except Exception as e:
-        logger.error(f"Failed to get active alerts: {str(e)}")
+        logger.error("Failed to get active alerts: {str(e)}"")
         return create_error_response(
             error_code="ALERTS_RETRIEVAL_FAILED", message="Failed to retrieve active alerts", details={"error": str(e)}
         )
@@ -228,7 +228,7 @@ async def acknowledge_alert(alert_id: str):
     except NotFoundException:
         raise
     except Exception as e:
-        logger.error(f"Failed to acknowledge alert: {str(e)}")
+        logger.error("Failed to acknowledge alert: {str(e)}"")
         return create_error_response(
             error_code="ALERT_ACKNOWLEDGE_FAILED", message="Failed to acknowledge alert", details={"error": str(e)}
         )
@@ -255,7 +255,7 @@ async def resolve_alert(alert_id: str):
     except NotFoundException:
         raise
     except Exception as e:
-        logger.error(f"Failed to resolve alert: {str(e)}")
+        logger.error("Failed to resolve alert: {str(e)}"")
         return create_error_response(
             error_code="ALERT_RESOLVE_FAILED", message="Failed to resolve alert", details={"error": str(e)}
         )
@@ -289,7 +289,7 @@ async def get_data_source_mode():
         )
 
     except Exception as e:
-        logger.error(f"Failed to get data source mode: {str(e)}")
+        logger.error("Failed to get data source mode: {str(e)}"")
         return create_error_response(
             error_code="MODE_RETRIEVAL_FAILED", message="Failed to retrieve data source mode", details={"error": str(e)}
         )
@@ -364,7 +364,7 @@ async def get_system_status_overview():
         return create_success_response(data=overview_data, message="System status overview retrieved successfully")
 
     except Exception as e:
-        logger.error(f"Failed to get system status overview: {str(e)}")
+        logger.error("Failed to get system status overview: {str(e)}"")
         return create_error_response(
             error_code="OVERVIEW_RETRIEVAL_FAILED",
             message="Failed to retrieve system status overview",
@@ -398,7 +398,7 @@ async def test_data_quality(
         return create_success_response(data=quality_result, message=f"Data quality test completed for '{source}'")
 
     except Exception as e:
-        logger.error(f"Failed to test data quality: {str(e)}")
+        logger.error("Failed to test data quality: {str(e)}"")
         return create_error_response(
             error_code="QUALITY_TEST_FAILED", message="Failed to test data quality", details={"error": str(e)}
         )
@@ -479,7 +479,7 @@ async def get_quality_trends(
     except NotFoundException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get quality trends: {str(e)}")
+        logger.error("Failed to get quality trends: {str(e)}"")
         return create_error_response(
             error_code="TRENDS_RETRIEVAL_FAILED", message="Failed to retrieve quality trends", details={"error": str(e)}
         )

@@ -6,14 +6,15 @@ MyStocks 安全漏洞测试套件
 提供全面的安全漏洞检测和测试功能，包括OWASP Top 10漏洞检测。
 """
 
-import pytest
 import asyncio
 import json
 import re
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
-from tests.conftest import test_config, mock_api_client
+import pytest
+
+from tests.conftest import mock_api_client, test_config
 
 
 class SecurityVulnerabilityScanner:

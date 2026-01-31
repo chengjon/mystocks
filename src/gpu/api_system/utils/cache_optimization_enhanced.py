@@ -17,26 +17,20 @@ Enhanced Cache Optimization Component - Achieving 90%+ Hit Rate
 目标: 从80%命中率提升到90-95%
 """
 
-import logging
-import time
-import threading
+import concurrent.futures
 import hashlib
 import json
+import logging
 import pickle
+import threading
+import time
 import zlib
-from typing import List, Optional, Any, Tuple
-from datetime import datetime
 from collections import defaultdict, deque
-import concurrent.futures
+from datetime import datetime
+from typing import Any, List, Optional, Tuple
+
 import numpy as np
 
-from src.gpu.api_system.utils.cache_optimization import (
-    CacheManager,
-    L1Cache,
-    L2Cache,
-    RedisCache,
-    CacheStrategy,
-)
 
 logger = logging.getLogger(__name__)
 

@@ -15,6 +15,7 @@ import os
 import importlib.util
 from functools import wraps
 from types import ModuleType
+import pandas as pd
 
 # 常量定义
 MAX_RETRIES = 3
@@ -76,10 +77,10 @@ def _load_mixin_methods(cls):
                             # 只添加没有冲突的方法
                             if not hasattr(cls, attr_name):
                                 setattr(cls, attr_name, attr)
-                                logger.debug(f"[Akshare] 加载混入方法: {attr_name} from {mixin_file}")
+                                logger.debug("[Akshare] 加载混入方法: %(attr_name)s from %(mixin_file)s")
 
             except Exception as e:
-                logger.warning(f"[Akshare] 加载混入模块 {mixin_file} 失败: {e}")
+                logger.warning("[Akshare] 加载混入模块 %(mixin_file)s 失败: %(e)s")
                 continue
 
     logger.info("[Akshare] 混入方法加载完成")
@@ -172,7 +173,10 @@ def get_futures_index_daily(self, symbol: str, start_date: str, end_date: str):
     """获取股指期货日线数据-Akshare实现"""
     try:
         logger.info(
-            r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s", symbol, start_date, end_date
+            r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s",
+            symbol,
+            start_date,
+            end_date,
         )
 
         # 使用重试装饰器包装API调用
@@ -353,7 +357,7 @@ def get_futures_basis_analysis(self, symbol: str, start_date: str, end_date: str
         spot_symbol = spot_index_mapping.get(futures_type)
 
         if not spot_symbol:
-            logger.warning(f"无法确定期货 {symbol} 对应的现货指数")
+            logger.warning("无法确定期货 %(symbol)s 对应的现货指数")
             return pd.DataFrame()
 
         # 获取现货指数数据 (需要实现get_stock_daily方法)

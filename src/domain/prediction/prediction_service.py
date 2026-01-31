@@ -6,10 +6,11 @@ Prediction Service
 """
 
 import logging
-from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
-import pandas as pd
+from typing import Any, Dict, List, Optional
+
 import numpy as np
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class PredictionService:
                 "created_at": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Price prediction failed for {stock_code}: {e}")
+            logger.error("Price prediction failed for %(stock_code)s: %(e)s")
             return {"error": str(e)}
 
     def predict_price_target(self, stock_code: str, lookback_days: int = 60, target_date: str = None) -> Dict[str, Any]:
@@ -108,7 +109,7 @@ class PredictionService:
                 "created_at": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Price target prediction failed for {stock_code}: {e}")
+            logger.error("Price target prediction failed for %(stock_code)s: %(e)s")
             return {"error": str(e)}
 
     def predict_indicator(self, stock_code: str, indicator_id: str, lookback_days: int = 30) -> Dict[str, Any]:
@@ -162,7 +163,7 @@ class PredictionService:
                 "created_at": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Indicator prediction failed for {stock_code}/{indicator_id}: {e}")
+            logger.error("Indicator prediction failed for %(stock_code)s/%(indicator_id)s: %(e)s")
             return {"error": str(e)}
 
     def predict_volatility(self, stock_code: str, period_days: int = 10) -> Dict[str, Any]:
@@ -202,7 +203,7 @@ class PredictionService:
                 "created_at": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Volatility prediction failed for {stock_code}: {e}")
+            logger.error("Volatility prediction failed for %(stock_code)s: %(e)s")
             return {"error": str(e)}
 
     def batch_predict(self, stock_codes: List[str], prediction_type: str = "price_direction") -> Dict[str, Any]:
@@ -239,7 +240,7 @@ class PredictionService:
                 if data is not None and not data.empty:
                     return data.tail(days)
         except Exception as e:
-            logger.debug(f"Could not get data for {stock_code}: {e}")
+            logger.debug("Could not get data for %(stock_code)s: %(e)s")
 
         return None
 

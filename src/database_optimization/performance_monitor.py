@@ -5,9 +5,9 @@
 """
 
 import logging
+from collections import defaultdict
 from datetime import datetime
 from typing import Dict
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 

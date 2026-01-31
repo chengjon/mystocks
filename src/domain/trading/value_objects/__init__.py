@@ -1,9 +1,15 @@
-from .order_side import OrderSide
+from dataclasses import dataclass
 
 # ... 其他导出 ...
 from enum import Enum, unique
-from dataclasses import dataclass
-from typing import Optional
+
+
+@unique
+class OrderSide(str, Enum):
+    """订单方向"""
+
+    BUY = "BUY"  # 买入
+    SELL = "SELL"  # 卖出
 
 
 @unique

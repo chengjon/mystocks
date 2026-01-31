@@ -4,11 +4,12 @@ Financial Adapter 综合测试
 测试财务数据适配器的核心功能和边界条件
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import patch
-import sys
 import os
+import sys
+from unittest.mock import patch
+
+import pandas as pd
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../"))

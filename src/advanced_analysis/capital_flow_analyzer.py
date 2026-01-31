@@ -10,29 +10,28 @@ This module provides comprehensive capital flow analysis including:
 - Smart money tracking and identification
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Tuple
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
+import numpy as np
+import pandas as pd
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
 
 # GPU acceleration support
 try:
     import cudf
-    import cuml
-    from cuml import KMeans, DBSCAN
+    from cuml import KMeans
 
     GPU_AVAILABLE = True
 except ImportError:
     GPU_AVAILABLE = False
     try:
-        from sklearn.cluster import KMeans, DBSCAN
-        from sklearn.preprocessing import StandardScaler
+        from sklearn.cluster import KMeans
         from sklearn.metrics import silhouette_score
+        from sklearn.preprocessing import StandardScaler
     except ImportError:
         warnings.warn("Neither GPU nor CPU clustering libraries available. Capital flow analysis will be limited.")
 

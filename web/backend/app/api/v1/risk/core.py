@@ -12,14 +12,15 @@ Version: 3.1.0
 Date: 2026-01-10
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
-import structlog
-import sys
 import os
+import sys
+from datetime import datetime, timedelta
+from typing import Any, Dict
+
+import numpy as np
+import pandas as pd
+import structlog
+from fastapi import APIRouter, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -27,9 +28,9 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
 from src.core import DataClassification  # noqa: E402
 from src.monitoring.monitoring_database import MonitoringDatabase  # noqa: E402
+from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
 
 try:
     from src.ml_strategy.backtest.risk_metrics import RiskMetrics
@@ -82,12 +83,12 @@ def get_monitoring_db():
                             ),
                         )
                     except Exception as e:
-                        logger.debug(f"Monitoring log failed: {e}")
+                        logger.debug("Monitoring log failed: %(e)s"")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
         except Exception as e:
-            logger.warning(f"MonitoringDB init failed: {e}")
+            logger.warning("MonitoringDB init failed: %(e)s"")
 
             class MonitoringFallback:
                 def log_operation(self, *args, **kwargs):
@@ -146,11 +147,11 @@ class RiskCalculator:
 
 
 from app.schemas.risk_schemas import (  # noqa: E402
-    VaRCVaRRequest,
-    VaRCVaRResult,
     BetaRequest,
     BetaResult,
     RiskDashboardResponse,
+    VaRCVaRRequest,
+    VaRCVaRResult,
 )
 
 
@@ -471,5 +472,5 @@ async def calculate_risk_metrics(request: Dict[str, Any]) -> Dict[str, Any]:
             }
 
     except Exception as e:
-        logger.error(f"计算风险指标失败: {e}", exc_info=True)
+        logger.error("计算风险指标失败: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"计算风险指标失败: {str(e)}")

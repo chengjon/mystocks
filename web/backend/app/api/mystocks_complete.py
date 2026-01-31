@@ -18,13 +18,15 @@ API Contract Management Compliant:
 - Automated Validation
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query, Body
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
+from loguru import logger
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, Field
 
 # Import Phase 1-5 modules (would be imported in actual implementation)
 # from src.core.database import DatabaseManager
@@ -1077,7 +1079,7 @@ async def advanced_strategy_backtest(request: AdvancedBacktestRequest):
         return response
 
     except Exception as e:
-        logger.error(f"Advanced backtest failed: {e}")
+        logger.error("Advanced backtest failed: %(e)s"")
         # 返回错误响应
         raise HTTPException(status_code=500, detail=f"Advanced backtest failed: {str(e)}")
 

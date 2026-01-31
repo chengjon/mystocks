@@ -5,12 +5,13 @@ Watchlist Repository Implementation
 
 import json
 import logging
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
+
 from sqlalchemy.orm import Session
 
 from src.domain.watchlist.model import Watchlist, WatchlistStock
 from src.domain.watchlist.repository import IWatchlistRepository, IWatchlistStockRepository
-from src.domain.watchlist.value_objects import WatchlistType, WatchlistConfig, IndicatorSnapshot, AlertCondition
+from src.domain.watchlist.value_objects import IndicatorSnapshot, WatchlistConfig, WatchlistType
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
             self.session.commit()
         except Exception as e:
             self.session.rollback()
-            logger.warning(f"Table creation warning: {e}")
+            logger.warning("Table creation warning: %(e)s")
 
     def save(self, watchlist: Watchlist) -> None:
         from sqlalchemy import text
@@ -195,7 +196,7 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
             self.session.commit()
         except Exception as e:
             self.session.rollback()
-            logger.warning(f"Table creation warning: {e}")
+            logger.warning("Table creation warning: %(e)s")
 
     def save(self, stock: WatchlistStock) -> None:
         from sqlalchemy import text
@@ -301,6 +302,6 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
                     price_data=entry_data["price_data"],
                 )
             except Exception as e:
-                logger.debug(f"Failed to parse entry snapshot: {e}")
+                logger.debug("Failed to parse entry snapshot: %(e)s")
 
         return stock

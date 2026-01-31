@@ -5,22 +5,22 @@ Backtest Engine
 """
 
 import logging
-from typing import Dict, Any, Optional, Callable
-from decimal import Decimal
-from datetime import datetime, timedelta
 from collections import deque
+from datetime import datetime, timedelta
+from decimal import Decimal
+from typing import Any, Callable, Dict, Optional
 
 from app.backtest.events import (
-    MarketEvent,
-    SignalEvent,
-    OrderEvent,
     FillEvent,
+    MarketEvent,
+    OrderEvent,
     ProgressEvent,
+    SignalEvent,
 )
-from app.backtest.portfolio_manager import PortfolioManager
-from app.backtest.risk_manager import RiskManager
 from app.backtest.execution_handler import ExecutionHandler
 from app.backtest.performance_metrics import PerformanceMetrics
+from app.backtest.portfolio_manager import PortfolioManager
+from app.backtest.risk_manager import RiskManager
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class BacktestEngine:
         self.total_days = 0
         self.current_day_index = 0
 
-        logger.info(f"回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}")
+        logger.info("回测引擎初始化完成: {len(self.symbols)}只股票, {self.start_date} 到 {self.end_date}"")
 
     def run(self) -> Dict[str, Any]:
         """
@@ -129,7 +129,7 @@ class BacktestEngine:
             return results
 
         except Exception as e:
-            logger.error(f"回测过程中发生错误: {str(e)}", exc_info=True)
+            logger.error("回测过程中发生错误: {str(e)}", exc_info=True)
             self._send_progress(0.0, self.current_date or self.start_date, f"回测失败: {str(e)}")
             raise
 
@@ -148,7 +148,7 @@ class BacktestEngine:
                 )
 
                 if df is None or df.empty:
-                    logger.warning(f"未找到 {symbol} 的历史数据")
+                    logger.warning("未找到 %(symbol)s 的历史数据"")
                     continue
 
                 # 转换为MarketEvent并缓存
@@ -170,10 +170,10 @@ class BacktestEngine:
                     )
                     self.market_data[symbol][trade_date] = market_event
 
-                logger.info(f"加载 {symbol} 数据: {len(self.market_data[symbol])} 条记录")
+                logger.info("加载 %(symbol)s 数据: {len(self.market_data[symbol])} 条记录"")
 
             except Exception as e:
-                logger.error(f"加载 {symbol} 数据失败: {str(e)}")
+                logger.error("加载 %(symbol)s 数据失败: {str(e)}"")
                 continue
 
         if not self.market_data:
@@ -185,7 +185,7 @@ class BacktestEngine:
             all_dates.update(symbol_data.keys())
         self.total_days = len(sorted(all_dates))
 
-        logger.info(f"市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日")
+        logger.info("市场数据加载完成: {len(self.market_data)} 只股票, {self.total_days} 个交易日"")
 
     def _run_backtest_loop(self):
         """执行回测主循环"""
@@ -195,7 +195,7 @@ class BacktestEngine:
             all_dates.update(symbol_data.keys())
         trading_dates = sorted(all_dates)
 
-        logger.info(f"开始事件循环: {len(trading_dates)} 个交易日")
+        logger.info("开始事件循环: {len(trading_dates)} 个交易日"")
 
         for day_index, trade_date in enumerate(trading_dates):
             self.current_date = trade_date
@@ -330,7 +330,7 @@ class BacktestEngine:
         current_price = self.portfolio.current_prices.get(symbol)
 
         if not current_price:
-            logger.warning(f"未找到 {symbol} 的当前价格")
+            logger.warning("未找到 %(symbol)s 的当前价格"")
             return
 
         # 计算仓位大小
@@ -379,14 +379,14 @@ class BacktestEngine:
         current_price = self.portfolio.current_prices.get(symbol)
 
         if not current_price:
-            logger.warning(f"未找到 {symbol} 的当前价格")
+            logger.warning("未找到 %(symbol)s 的当前价格"")
             return
 
         # 风险检查
         is_valid, reject_reason = self.risk_manager.validate_order(event, self.portfolio, current_price)
 
         if not is_valid:
-            logger.info(f"订单被拒绝: {symbol} {event.action} {event.quantity} - {reject_reason}")
+            logger.info("订单被拒绝: %(symbol)s {event.action} {event.quantity} - %(reject_reason)s"")
             return
 
         # 执行订单
@@ -403,9 +403,9 @@ class BacktestEngine:
         """
         success = self.portfolio.process_fill(event)
         if success:
-            logger.info(f"成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}")
+            logger.info("成交: {event.symbol} {event.action} {event.quantity}@{event.fill_price}"")
         else:
-            logger.warning(f"成交失败: {event}")
+            logger.warning("成交失败: %(event)s"")
 
     def _check_stop_loss_take_profit(self, trade_date: datetime):
         """检查所有持仓的止损止盈"""
@@ -421,7 +421,7 @@ class BacktestEngine:
             should_close, reason = self.risk_manager.should_force_close_position(symbol, position, current_price)
 
             if should_close:
-                logger.info(f"强制平仓: {symbol} - {reason}")
+                logger.info("强制平仓: %(symbol)s - %(reason)s"")
 
                 # 生成平仓订单
                 order = OrderEvent(
@@ -492,7 +492,7 @@ class BacktestEngine:
             try:
                 self.progress_callback(progress_event)
             except Exception as e:
-                logger.warning(f"发送进度更新失败: {str(e)}")
+                logger.warning("发送进度更新失败: {str(e)}"")
 
     def stop(self):
         """停止回测"""

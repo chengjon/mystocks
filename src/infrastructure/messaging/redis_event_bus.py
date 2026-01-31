@@ -6,8 +6,10 @@ Redis Event Bus Implementation
 import json
 import logging
 import threading
+from typing import Any, Callable, Dict, List, Optional, Type
+
 import redis
-from typing import Callable, Type, Dict, List, Any, Optional
+
 from src.domain.shared.event import DomainEvent
 from src.domain.shared.event_bus import IEventBus
 
@@ -45,7 +47,7 @@ class RedisEventBus(IEventBus):
         channel = f"{self.channel_prefix}{event.event_name()}"
         payload = event.to_json()
         self.redis_client.publish(channel, payload)
-        logger.debug(f"Event published to Redis: {channel}")
+        logger.debug("Event published to Redis: %(channel)s")
 
     def subscribe(self, event_type: Type[DomainEvent], handler: Callable):
         """订阅事件"""
@@ -64,7 +66,7 @@ class RedisEventBus(IEventBus):
         if self._pubsub:
             channel = f"{self.channel_prefix}{event_name}"
             self._pubsub.subscribe(channel)
-            logger.info(f"Subscribed to Redis channel: {channel}")
+            logger.info("Subscribed to Redis channel: %(channel)s")
 
     def _start_listening(self):
         """启动后台监听线程"""
@@ -82,7 +84,7 @@ class RedisEventBus(IEventBus):
                 if message:
                     self._handle_raw_message(message)
             except Exception as e:
-                logger.error(f"Error in Redis listen loop: {e}")
+                logger.error("Error in Redis listen loop: %(e)s")
 
     def _handle_raw_message(self, message: Dict[str, Any]):
         """处理原始 Redis 消息"""
@@ -105,7 +107,7 @@ class RedisEventBus(IEventBus):
                     for handler in self._handlers[event_name]:
                         handler(event)
             except Exception as e:
-                logger.error(f"Failed to handle event {event_name}: {e}")
+                logger.error("Failed to handle event %(event_name)s: %(e)s")
 
     def stop(self):
         """停止监听"""

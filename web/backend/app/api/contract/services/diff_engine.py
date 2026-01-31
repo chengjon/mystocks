@@ -3,7 +3,7 @@
 使用语义化对比检测OpenAPI规范的差异
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 try:
     from deepdiff import DeepDiff
@@ -14,8 +14,8 @@ except ImportError:
 
 
 from app.api.contract.schemas import (
-    DiffResult,
     ContractDiffResponse,
+    DiffResult,
 )
 
 

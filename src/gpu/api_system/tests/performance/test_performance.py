@@ -3,11 +3,12 @@
 测试GPU加速性能、吞吐量和延迟
 """
 
-import pytest
-import time
-import numpy as np
-from unittest.mock import Mock, patch
 import statistics
+import time
+from unittest.mock import Mock, patch
+
+import numpy as np
+import pytest
 
 
 class TestBacktestPerformance:

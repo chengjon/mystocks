@@ -6,9 +6,10 @@ Portfolio Repository Implementation
 import json
 import logging
 from typing import List, Optional
+
 from sqlalchemy.orm import Session
 
-from src.application.portfolio.model import Portfolio, Holding, Transaction
+from src.application.portfolio.model import Portfolio
 from src.application.portfolio.repository import IPortfolioRepository
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
             self.session.commit()
         except Exception as e:
             self.session.rollback()
-            logger.warning(f"Table creation warning: {e}")
+            logger.warning("Table creation warning: %(e)s")
 
     def save(self, portfolio: Portfolio) -> None:
         from sqlalchemy import text

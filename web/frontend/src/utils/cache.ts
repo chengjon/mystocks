@@ -424,14 +424,9 @@ export function cached<T extends (...args: any[]) => Promise<any>>(
       }
 
       // Execute and cache result
-      try {
-        const result = await method.apply(this, args)
-        cache.set(key, result, options)
-        return result
-      } catch (error) {
-        // Don't cache errors
-        throw error
-      }
+      const result = await method.apply(this, args)
+      cache.set(key, result, options)
+      return result
     } as T
 
     // Add cache control methods

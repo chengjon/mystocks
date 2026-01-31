@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
+# pylint: disable=import-error,no-name-in-module
 # -*- coding: utf-8 -*-
 """
 修复后的数据库管理示例
 只使用可用的数据库库进行测试
 """
 
-import os
 import logging
+import os
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

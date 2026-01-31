@@ -7,7 +7,8 @@
 """
 
 import re
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+
 import structlog
 
 logger = structlog.get_logger()

@@ -308,10 +308,8 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
             if df.empty:
                 raise DataSourceDataNotFound(
-                    message=f"未找到{symbol}的资金流向数据",
-                    source_type="tdengine",
-                    operation="get_fund_flow",
-                    query_params={"symbol": symbol},
+                    source_name="tdengine",
+                    data_identifier=f"fund_flow:{symbol}",
                 )
 
             row = df.iloc[0]
@@ -414,10 +412,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"获取资金流向排名失败: {str(e)}",
-                source_type="tdengine",
-                operation="get_top_fund_flow_stocks",
-                query_params={"trade_date": str(trade_date)},
+                source_name="tdengine",
+                query="get_top_fund_flow_stocks",
+                details=str(e),
             )
 
     def get_market_overview(self) -> Dict[str, Any]:
@@ -643,10 +640,8 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
             if df.empty:
                 raise DataSourceDataNotFound(
-                    message=f"未找到{symbol}在{trade_date}的{auction_type}竞价数据",
-                    source_type="tdengine",
-                    operation="get_auction_data",
-                    query_params={"symbol": symbol, "trade_date": str(trade_date)},
+                    source_name="tdengine",
+                    data_identifier=f"auction:{symbol}:{trade_date}:{auction_type}",
                 )
 
             # 返回最后一个快照（竞价结果）
@@ -762,14 +757,9 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
 
         except Exception as e:
             raise DataSourceQueryError(
-                message=f"检查数据质量失败: {str(e)}",
-                source_type="tdengine",
-                operation="check_data_quality",
-                query_params={
-                    "symbol": symbol,
-                    "start_date": str(start_date),
-                    "end_date": str(end_date),
-                },
+                source_name="tdengine",
+                query="check_data_quality",
+                details=str(e),
             )
 
     def health_check(self) -> Dict[str, Any]:
@@ -918,7 +908,6 @@ class TDengineTimeSeriesDataSource(ITimeSeriesDataSource):
                 table_name=table_name,
                 start_time=start_time,
                 end_time=end_time,
-                columns=["ts", "close"],
                 limit=1,
             )
 

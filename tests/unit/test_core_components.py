@@ -1,7 +1,8 @@
 """Unit tests for core data classification and storage strategy components."""
 
 import pytest
-from src.core.data_classification import DataClassification, DatabaseTarget
+
+from src.core.data_classification import DatabaseTarget, DataClassification
 from src.core.data_storage_strategy import DataStorageStrategy
 
 

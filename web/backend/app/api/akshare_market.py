@@ -15,13 +15,14 @@ AkShare Market Data API
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from fastapi import APIRouter, HTTPException, Query, Depends
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from app.core.responses import ErrorCodes, create_error_response, create_success_response
 from app.core.security import User, get_current_user
-from app.core.responses import create_success_response, create_error_response, ErrorCodes
-from src.adapters.akshare.market_data import AkshareMarketDataAdapter
+from src.adapters.akshare.market_adapter import AkshareMarketDataAdapter
 
 # 创建akshare市场数据适配器实例
 akshare_market_adapter = AkshareMarketDataAdapter()
@@ -512,7 +513,7 @@ async def get_stock_bid_ask_em(
             "provider": "em"
         }
 
-            return create_success_response(result)
+        return create_success_response(result)
 
     except Exception as e:
         return create_error_response(
@@ -855,7 +856,7 @@ async def get_chip_distribution(
             "provider": "em"
         }
 
-            return create_success_response(result)
+        return create_success_response(result)
 
     except Exception as e:
         return create_error_response(
@@ -1011,7 +1012,7 @@ async def get_account_statistics_em(
             "statistics_type": "account"
         }
 
-            return create_success_response(result)
+        return create_success_response(result)
 
     except Exception as e:
         return create_error_response(
@@ -1373,5 +1374,4 @@ async def get_sse_daily_deal(
         return create_error_response(
             ErrorCodes.INTERNAL_ERROR,
             f"Failed to get SSE daily deal data for {date}: {str(e)}"
-        )</content>
-<parameter name="filePath">web/backend/app/api/akshare_market.py
+        )

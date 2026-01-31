@@ -4,7 +4,8 @@ API契约管理 数据库模型
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, JSON, ForeignKey
+
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 
 from app.core.database import Base
 

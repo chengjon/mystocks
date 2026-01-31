@@ -4,10 +4,10 @@ Random Search Optimizer
 随机搜索优化器 - 随机采样参数组合
 """
 
-from typing import Dict, Any, List, Optional
-import random
 import logging
+import random
 import time
+from typing import Any, Dict, List, Optional
 
 from app.backtest.optimization.base import (
     BaseOptimizer,
@@ -58,7 +58,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         # 初始化随机数生成器
         self.rng = random.Random(random_seed)
 
-        logger.info(f"随机搜索优化器初始化: 迭代数={n_iterations}, 种子={random_seed}")
+        logger.info("随机搜索优化器初始化: 迭代数=%(n_iterations)s, 种子=%(random_seed)s"")
 
     def _generate_random_parameters(self) -> Dict[str, Any]:
         """
@@ -124,7 +124,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info(f"开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}")
+        logger.info("开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}"")
 
         start_time = time.time()
 
@@ -183,7 +183,7 @@ class RandomSearchOptimizer(BaseOptimizer):
                         no_improvement_count = 0
 
                     if no_improvement_count >= patience:
-                        logger.info(f"早停触发: 连续{patience}次无显著改进 " f"(阈值={min_improvement})")
+                        logger.info("早停触发: 连续{patience}次无显著改进 " f"(阈值={min_improvement})")
                         break
 
                 prev_best_score = best_score
@@ -233,7 +233,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
             self.rng = random.Random(new_seed)
 
-            logger.info(f"随机搜索重启 {restart + 1}/{n_restarts}, 种子={new_seed}")
+            logger.info("随机搜索重启 {restart + 1}/%(n_restarts)s, 种子=%(new_seed)s"")
 
             # 临时修改迭代次数
             original_iters = self.n_iterations

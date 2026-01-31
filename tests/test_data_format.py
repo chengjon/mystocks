@@ -8,12 +8,13 @@ import sys
 # 添加项目根目录到Python路径
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
+import pandas as pd
+
 # 导入数据格式转换模块
 from src.utils.data_format_converter import (
-    normalize_stock_data_format,
     normalize_api_response_format,
+    normalize_stock_data_format,
 )
-import pandas as pd
 
 
 def test_data_format_conversion():

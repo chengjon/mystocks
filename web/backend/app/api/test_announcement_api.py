@@ -10,7 +10,6 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.models.announcement import Base
 
-
 # 创建测试数据库
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_announcement.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})

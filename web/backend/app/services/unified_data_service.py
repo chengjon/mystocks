@@ -9,14 +9,14 @@
 """
 
 import logging
+import os
 import random
 from datetime import datetime
-from typing import Dict, List, Optional, Any
 from enum import Enum
-import os
+from typing import Any, Dict, List, Optional
 
-from app.core.database import db_service
 from app.core.cache_integration import get_cache_integration
+from app.core.database import db_service
 
 logger = logging.getLogger(__name__)
 
@@ -283,7 +283,7 @@ class UnifiedDataService:
         self.mock_generator = MockDataGenerator()
         self.cache = get_cache_integration() if self.config.enable_cache else None
 
-        logger.info(f"初始化统一数据服务 - 主数据源: {self.config.primary_source.value}")
+        logger.info("初始化统一数据服务 - 主数据源: {self.config.primary_source.value}"")
 
     async def get_stocks_basic(self, **params) -> Dict[str, Any]:
         """获取股票基本信息"""
@@ -432,7 +432,7 @@ class UnifiedDataService:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"数据库查询失败: {str(e)}")
+            logger.error("数据库查询失败: {str(e)}"")
             raise
 
     async def _get_stocks_industries_from_database(self) -> Dict[str, Any]:
@@ -463,7 +463,7 @@ class UnifiedDataService:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"数据库查询行业失败: {str(e)}")
+            logger.error("数据库查询行业失败: {str(e)}"")
             raise
 
     async def _get_stocks_concepts_from_database(self) -> Dict[str, Any]:
@@ -499,7 +499,7 @@ class UnifiedDataService:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"数据库查询市场概览失败: {str(e)}")
+            logger.error("数据库查询市场概览失败: {str(e)}"")
             raise
 
     async def _search_stocks_in_database(self, keyword: str) -> Dict[str, Any]:
@@ -528,7 +528,7 @@ class UnifiedDataService:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"数据库搜索失败: {str(e)}")
+            logger.error("数据库搜索失败: {str(e)}"")
             raise
 
     # 数据源故障转移方法
@@ -546,14 +546,14 @@ class UnifiedDataService:
                     result = await primary_func(*args, **kwargs)
                     return result
                 except Exception as e:
-                    logger.warning(f"主要数据源失败，切换到Mock: {str(e)}")
+                    logger.warning("主要数据源失败，切换到Mock: {str(e)}"")
                     # 切换到Mock数据源
                     if callable(fallback_func):
                         return await fallback_func(*args, **kwargs)
                     else:
                         return fallback_func
         except Exception as e:
-            logger.error(f"主要数据源和Mock数据源都失败: {str(e)}")
+            logger.error("主要数据源和Mock数据源都失败: {str(e)}"")
             # 如果所有数据源都失败，返回错误信息
             return {
                 "success": False,

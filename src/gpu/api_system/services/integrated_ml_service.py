@@ -3,32 +3,33 @@
 Integrated Machine Learning Training Service
 """
 
-import logging
-import time
-import threading
-import pickle
 import json
-from typing import Dict, Any, Tuple
-from datetime import datetime, timedelta
+import logging
+import pickle
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, Tuple
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
-from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
-from src.gpu.api_system.utils.monitoring import MetricsCollector
 from src.gpu.api_system.utils.cache_optimization import CacheManager
 from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
+from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 try:
     from src.gpu.api_system.api_proto.ml_pb2 import (
-        TrainModelRequest,
-        TrainModelResponse,
+        ModelMetrics,
         PredictRequest,
         PredictResponse,
-        ModelMetrics,
         TrainingStatus,
+        TrainModelRequest,
+        TrainModelResponse,
     )
     from src.gpu.api_system.api_proto.ml_pb2_grpc import MLServiceServicer
 except ImportError:
@@ -441,7 +442,7 @@ class IntegratedMLService(MLServiceServicer):
 
             if model_type in ["linear_regression", "ridge", "lasso", "random_forest"]:
                 # 回归指标
-                from cuml.metrics import r2_score, mean_squared_error
+                from cuml.metrics import mean_squared_error, r2_score
 
                 r2 = float(r2_score(y_gpu, y_pred))
                 mse = float(mean_squared_error(y_gpu, y_pred))
@@ -476,14 +477,14 @@ class IntegratedMLService(MLServiceServicer):
     def _train_model_cpu(self, X: pd.DataFrame, y: pd.Series, model_type: str, params: Dict) -> Tuple[Any, Dict]:
         """CPU训练模型"""
         try:
-            from sklearn.linear_model import (
-                LinearRegression,
-                Ridge,
-                Lasso,
-                LogisticRegression,
-            )
             from sklearn.ensemble import RandomForestRegressor
-            from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
+            from sklearn.linear_model import (
+                Lasso,
+                LinearRegression,
+                LogisticRegression,
+                Ridge,
+            )
+            from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
 
             # 选择模型
             if model_type == "linear_regression":

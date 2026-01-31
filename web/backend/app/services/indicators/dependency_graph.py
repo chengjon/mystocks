@@ -17,15 +17,15 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
-from collections import deque
-import networkx as nx
 import hashlib
 import json
 import logging
+from collections import deque
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +133,7 @@ class IndicatorDependencyGraph:
 
         # 如果节点已存在，更新信息
         if node_id in self._nodes:
-            logger.debug(f"节点 {node_id} 已存在，更新依赖")
+            logger.debug("节点 %(node_id)s 已存在，更新依赖"")
             existing_node = self._nodes[node_id]
             for dep in dependencies:
                 dep_id = self._get_node_id_with_params(dep, {})
@@ -158,7 +158,7 @@ class IndicatorDependencyGraph:
 
             self._edges.append(DependencyEdge(from_node=dep_id, to_node=node_id))
 
-        logger.debug(f"添加节点: {node_id}, 依赖: {dependencies}")
+        logger.debug("添加节点: %(node_id)s, 依赖: %(dependencies)s"")
         return node_id
 
     def _get_node_id_with_params(self, abbreviation: str, default_params: Dict) -> str:
@@ -184,15 +184,15 @@ class IndicatorDependencyGraph:
             是否添加成功
         """
         if from_node == to_node:
-            logger.warning(f"不能添加自环依赖: {from_node}")
+            logger.warning("不能添加自环依赖: %(from_node)s"")
             return False
 
         if not self._graph.has_node(from_node):
-            logger.warning(f"节点不存在: {from_node}")
+            logger.warning("节点不存在: %(from_node)s"")
             return False
 
         if not self._graph.has_node(to_node):
-            logger.warning(f"节点不存在: {to_node}")
+            logger.warning("节点不存在: %(to_node)s"")
             return False
 
         self._graph.add_edge(from_node, to_node, edge_type=edge_type)
@@ -220,7 +220,7 @@ class IndicatorDependencyGraph:
                 for cycle in cycles:
                     cycle_str = " -> ".join(cycle) + f" -> {cycle[0]}"
                     cycle_strs.append(cycle_str)
-                logger.warning(f"检测到循环依赖: {cycle_strs}")
+                logger.warning("检测到循环依赖: %(cycle_strs)s"")
                 return cycles
             return None
         except nx.NetworkXNoCycle:
@@ -319,7 +319,7 @@ class IndicatorDependencyGraph:
 
         def dfs(node: str):
             if node in stack:
-                logger.error(f"检测到循环: {node}")
+                logger.error("检测到循环: %(node)s"")
                 return
             if node in visited:
                 return

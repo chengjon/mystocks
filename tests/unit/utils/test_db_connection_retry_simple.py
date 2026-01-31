@@ -7,10 +7,11 @@ Database Connection Retry Simple Test Suite
 测试模块: src.utils.db_connection_retry (177行)
 """
 
-import pytest
-import time
 import functools
+import time
 from typing import Any, Callable
+
+import pytest
 
 
 # Since there are circular import issues, let's recreate the decorator logic here for testing

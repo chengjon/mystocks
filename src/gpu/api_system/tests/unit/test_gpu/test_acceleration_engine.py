@@ -3,10 +3,11 @@ GPU加速引擎单元测试
 测试GPU加速引擎的核心功能
 """
 
-import pytest
-import pandas as pd
+from unittest.mock import MagicMock, patch
+
 import numpy as np
-from unittest.mock import patch, MagicMock
+import pandas as pd
+import pytest
 
 
 class TestBacktestEngineGPU:
@@ -66,7 +67,6 @@ class TestBacktestEngineGPU:
 
         # 这里可以添加实际的性能测试
         # 比较CPU和GPU的执行时间
-        pass
 
 
 class TestMLTrainingGPU:

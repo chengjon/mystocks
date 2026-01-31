@@ -46,14 +46,14 @@ test.describe('Page Loading Diagnostics', () => {
     const html = await page.content();
     console.log('Page HTML length:', html.length);
 
-    // Check for specific elements
+    // Check for specific ArtDecoLayout elements
     const selectors = [
-      '.base-layout',
-      '.layout-sidebar',
-      '.nav-item',
-      '.sidebar-toggle',
-      '#app',
-      '.layout-header'
+      '.artdeco-dashboard',  // 主容器 (ArtDeco)
+      '.layout-sidebar',     // 侧边栏
+      '.nav-link',           // 菜单项
+      '.sidebar-toggle',     // 折叠按钮
+      '#app',                // 应用容器
+      '.artdeco-header'      // 顶部栏 (ArtDeco)
     ];
 
     for (const selector of selectors) {

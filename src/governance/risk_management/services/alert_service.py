@@ -7,29 +7,33 @@ Risk Alert Service Implementation
 """
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from src.governance.risk_management.core import IRiskAlertService, RiskAlert
 
 # 复用现有的通知基础设施
 try:
-    from src.governance.risk_management.services.risk_alert_notification_manager import (
-        RiskAlertNotificationManager,
-        NotificationConfig,
-        NotificationChannel,
+    from src.ml_strategy.automation.notification_manager import (
         NotificationLevel,
+    )
+    from src.governance.risk_management.services.risk_alert_notification_manager import (
+        NotificationChannel,
+        NotificationConfig,
+        RiskAlertNotificationManager,
     )
 
     NOTIFICATION_AVAILABLE = True
 except ImportError:
     # 回退到基础的MonitoredNotificationManager
     try:
+        from src.ml_strategy.automation.notification_manager import (
+            NotificationLevel,
+        )
         from src.ml_strategy.automation.monitored_notification_manager import (
             MonitoredNotificationManager,
-            NotificationConfig,
             NotificationChannel,
-            NotificationLevel,
+            NotificationConfig,
         )
 
         RiskAlertNotificationManager = MonitoredNotificationManager  # 兼容性别名
@@ -108,7 +112,7 @@ class RiskAlertService(IRiskAlertService):
             return self._map_score_to_level(max_score)
 
         except Exception as e:
-            logger.error(f"评估风险等级失败: {e}")
+            logger.error("评估风险等级失败: %(e)s")
             return "attention"  # 默认中等风险
 
     async def generate_alerts(self, risk_metrics: Dict) -> List[RiskAlert]:
@@ -155,7 +159,7 @@ class RiskAlertService(IRiskAlertService):
             return alerts
 
         except Exception as e:
-            logger.error(f"生成风险告警失败: {e}")
+            logger.error("生成风险告警失败: %(e)s")
             return []
 
     async def send_alerts(self, alerts: List[RiskAlert]) -> bool:
@@ -179,7 +183,7 @@ class RiskAlertService(IRiskAlertService):
                 return await self._send_basic_alerts(alerts)
 
         except Exception as e:
-            logger.error(f"发送告警通知失败: {e}")
+            logger.error("发送告警通知失败: %(e)s")
             return False
 
     async def _send_enhanced_alerts(self, alerts: List[RiskAlert]) -> bool:
@@ -222,24 +226,24 @@ class RiskAlertService(IRiskAlertService):
 
                     if result.get("sent", False):
                         success_count += 1
-                        logger.info(f"增强风险告警发送成功: {alert.symbol or alert.portfolio_id} - {alert.severity}")
+                        logger.info("增强风险告警发送成功: {alert.symbol or alert.portfolio_id} - {alert.severity")
                         if result.get("escalated"):
-                            logger.info(f"告警已升级: {result.get('severity')}")
+                            logger.info("告警已升级: {result.get('severity')")
                         if result.get("aggregated_count", 1) > 1:
-                            logger.info(f"告警已聚合: {result['aggregated_count']} 次")
+                            logger.info("告警已聚合: {result['aggregated_count']} 次")
                     else:
                         logger.warning(
                             f"增强风险告警发送失败: {alert.symbol or alert.portfolio_id} - {result.get('reason', 'unknown')}"
                         )
 
                 except Exception as e:
-                    logger.error(f"发送增强告警失败: {e}")
+                    logger.error("发送增强告警失败: %(e)s")
                     continue
 
             return success_count == len(alerts)
 
         except Exception as e:
-            logger.error(f"增强告警发送过程失败: {e}")
+            logger.error("增强告警发送过程失败: %(e)s")
             return False
 
     async def _send_basic_alerts(self, alerts: List[RiskAlert]) -> bool:
@@ -273,18 +277,18 @@ class RiskAlertService(IRiskAlertService):
 
                     if success:
                         success_count += 1
-                        logger.info(f"基础风险告警发送成功: {alert.symbol or alert.portfolio_id} - {alert.severity}")
+                        logger.info("基础风险告警发送成功: {alert.symbol or alert.portfolio_id} - {alert.severity")
                     else:
-                        logger.warning(f"基础风险告警发送失败: {alert.symbol or alert.portfolio_id}")
+                        logger.warning("基础风险告警发送失败: {alert.symbol or alert.portfolio_id")
 
                 except Exception as e:
-                    logger.error(f"发送基础告警失败: {e}")
+                    logger.error("发送基础告警失败: %(e)s")
                     continue
 
             return success_count == len(alerts)
 
         except Exception as e:
-            logger.error(f"基础告警发送过程失败: {e}")
+            logger.error("基础告警发送过程失败: %(e)s")
             return False
 
     # 私有辅助方法
@@ -397,7 +401,7 @@ class RiskAlertService(IRiskAlertService):
         # 检查是否在30分钟内已经发送过相同等级的告警
         for record in recent_history:
             if record["risk_level"] == risk_level:
-                logger.info(f"跳过重复告警: {alert_key} (30分钟内已发送)")
+                logger.info("跳过重复告警: %(alert_key)s (30分钟内已发送)")
                 return True
 
         return False

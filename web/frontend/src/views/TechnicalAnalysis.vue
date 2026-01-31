@@ -174,14 +174,14 @@ interface OHLCVData {
 interface IndicatorOutput {
   output_name: string
   values: (number | null)[]
-  display_name: string
+  displayName: string
 }
 
 interface ChartIndicator {
   abbreviation: string
   parameters: IndicatorParameters
   outputs: IndicatorOutput[]
-  panel_type: 'overlay' | 'separate'
+  panelType: 'overlay' | 'separate'
 }
 
 interface ChartData {
@@ -394,9 +394,9 @@ const fetchKlineData = async (): Promise<void> => {
           outputs: [{
             output_name: key,
             values: values,
-            display_name: key
+            displayName: key
           }],
-          panel_type: (key.toLowerCase().includes('rsi') || key.toLowerCase().includes('macd') ? 'separate' : 'overlay') as 'overlay' | 'separate'
+          panelType: (key.toLowerCase().includes('rsi') || key.toLowerCase().includes('macd') ? 'separate' : 'overlay') as 'overlay' | 'separate'
         }
       })
 

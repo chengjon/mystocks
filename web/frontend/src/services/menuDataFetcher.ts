@@ -11,7 +11,7 @@
 
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/apiClient'
-import type { MenuItem } from '@/layouts/MenuConfig'
+import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
 
 export interface MenuDataFetchOptions {
   timeout?: number // 超时时间（毫秒）
@@ -123,7 +123,7 @@ export async function fetchMenuItemData<T = any>(
     try {
       console.log(`[MenuDataFetcher] Fetching: ${method} ${item.apiEndpoint} (attempt ${attempt + 1}/${retries + 1})`)
 
-      const response = await executeWithTimeout<T>(
+      const response = await executeWithTimeout<UnifiedResponse<T>>(
         async () => {
           switch (method.toUpperCase()) {
             case 'GET':

@@ -1,0 +1,267 @@
+  41316 
+    133  {str(e)}') from e'
+     30 00",
+     27  str) -> pd.DataFrame
+     26  Exception
+     25 00"
+     24  {e}') from e'
+     16  0}
+     13  str) -> bool
+     13  bool) -> bool
+     10  str, end_date
+      9  {str(e)}').model_dump()) from e'
+      9  str, note
+      9  Optional[str] = None) -> bool
+      8 58",
+      8  str) -> List[Dict]
+      7  int = 0) -> Dict
+      6  str)
+      6  "sz"},
+      5  {str(e)}', code='DB_QUERY_FAILED', severity='HIGH', original_exception=e) from e'
+      5  {str(e)}', code='DB_CONNECTION_FAILED', severity='CRITICAL', original_exception=e) from e'
+      5  int = 30) -> pd.DataFrame
+      5  float) -> None
+      4  {str(e)}', status_code=500, error_code='WATCHLIST_RETRIEVAL_FAILED') from e'
+      4  {e}\n请检查配置
+      4  "sh"},
+      3  {threshold}%)"
+      3  {str(e)}', status_code=500, error_code='INTERNAL_SERVER_ERROR') from e'
+      3  {str(e)}', status_code=500, error_code='EXTERNAL_SERVICE_ERROR') from e'
+      3  {str(e)}', code='NETWORK_ERROR', severity='HIGH', original_exception=e) from e'
+      3  {source}') from exc'
+      3  str) -> float
+      3  str) -> Dict
+      3  str = "upper"
+      3  []}
+      3  Optional[Dict[str, Any]] = None
+      3  "深交所"},
+      2  {str(e)}', status_code=500, error_code='STOCK_ADDITION_FAILED') from e'
+      2  {str(e)}', field='date_range') from e'
+      2  {str(e)}', field='data_length') from e'
+      2  {correlation
+      2  str, source
+      2  str, period
+      2  str) -> str
+      2  str = "年报") -> Dict
+      2  str = "daily") -> pd.DataFrame
+      2  str
+      2  int, metadata
+      2  int) -> List[Dict]
+      2  int = 240, adjust
+      2  int = 1000) -> List[Dict[str, Any]]
+      2  float, side
+      2  Dict[str, Any]
+      2  (6, "月线")}
+      2  'round', "facecolor"
+      2  'gpu_performance_degradation', 'improvement_score'
+      2  "上交所"},
+      1 美股
+      1 沪深300 24
+      1 概念板块 13
+      1 可转债 33
+      1 创业板 52
+      1 上证主板 8
+      1 7709,119.147.212.81
+      1 55"
+      1 %S"),  # 当前时间戳
+      1 %M
+      1  {url}\n错误
+      1  {str(e)}', status_code=500, error_code='WATCHLIST_SYMBOLS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='WATCHLIST_DELETION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='WATCHLIST_CREATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='WATCHLIST_COUNT_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='WATCHLIST_CLEAR_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='VAR_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='USER_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_SUGGESTIONS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_STATUS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_PRICE_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_PERFORMANCE_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_OVERVIEW_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_MONITORING_REMOVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_MONITORING_ADDITION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_EXECUTION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOP_LOSS_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_SEARCH_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_REMOVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_MOVE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_DELETION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_CHECK_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STOCK_BASIC_INFO_QUERY_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='STATISTICS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='SENDING_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='RULE_STATISTICS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='RISK_METRICS_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='RISK_ALERT_SENDING_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='RISK_ALERT_GENERATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='REPORT_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='REGISTRATION_UNEXPECTED_ERROR') from e'
+      1  {str(e)}', status_code=500, error_code='REALTIME_RISK_METRICS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='PRICE_CHANGE_DISTRIBUTION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='POSITION_RISK_ASSESSMENT_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='PORTFOLIO_RISK_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='PASSWORD_RESET_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='NOTE_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='MARKET_OVERVIEW_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='INDIVIDUAL_STOCK_RISK_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='INDICATOR_REGISTRY_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='INDICATOR_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='INDICATOR_CALCULATION_ERROR') from e'
+      1  {str(e)}', status_code=500, error_code='HISTORICAL_DATA_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='HEATMAP_DATA_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='HEALTH_CHECK_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_VIEW_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_STOCKS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_LIST_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_DELETION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='GROUP_CREATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='FINANCIAL_DATA_QUERY_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='DATA_SOURCE_UNAVAILABLE') from e'
+      1  {str(e)}', status_code=500, error_code='DATABASE_ERROR') from e'
+      1  {str(e)}', status_code=500, error_code='DASHBOARD_DATA_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='DAILY_KLINE_DATA_QUERY_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CONFIG_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CONFIG_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CONFIG_LIST_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CONFIG_DELETION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CONFIG_CREATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CATEGORY_INDICATORS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CALCULATION_ERROR') from e'
+      1  {str(e)}', status_code=500, error_code='CACHE_STATS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='CACHE_CLEANUP_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='BROADCAST_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='BETA_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='BATCH_STOP_LOSS_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='BATCH_CALCULATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_STATISTICS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_UPDATE_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_REMOVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_EVALUATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_DELETION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_CREATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_RULE_ADDITION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_LIST_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ALERT_CONFIRMATION_FAILED') from e'
+      1  {str(e)}', status_code=500, error_code='ACTIVE_ALERTS_RETRIEVAL_FAILED') from e'
+      1  {str(e)}', source_type='tdengine', operation='get_top_fund_flow_stocks', query_params={'trade_date'
+      1  {str(e)}', source_type='tdengine', operation='get_realtime_quotes', query_params={'symbols'
+      1  {str(e)}', source_type='tdengine', operation='get_market_overview') from e'
+      1  {str(e)}', source_type='tdengine', operation='get_kline_data', query_params={'symbol'
+      1  {str(e)}', source_type='tdengine', operation='get_intraday_chart', query_params={'symbol'
+      1  {str(e)}', source_type='tdengine', operation='get_index_realtime', query_params={'index_codes'
+      1  {str(e)}', source_type='tdengine', operation='get_fund_flow', query_params={'symbol'
+      1  {str(e)}', source_type='tdengine', operation='get_auction_data', query_params={'symbol'
+      1  {str(e)}', source_type='tdengine', operation='check_data_quality', query_params={'symbol'
+      1  {str(e)}', source_type='tdengine', operation='calculate_technical_indicators', query_params={'symbol'
+      1  {str(e)}', code='USER_CREATION_FAILED', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='TUSHARE_FETCH_ERROR', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='QUERY_EXECUTION_FAILED', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='CONNECTION_POOL_INIT_FAILED', severity='CRITICAL', original_exception=e) from e'
+      1  {str(e)}', code='CONNECTION_ACQUISITION_FAILED', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='COMMAND_EXECUTION_FAILED', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='AKSHARE_FETCH_ERROR', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}', code='AKSHARE_ETF_ERROR', severity='HIGH', original_exception=e) from e'
+      1  {str(e)}"}
+      1  {start_date}，应为 YYYY-MM-DD', field='start_date') from exc'
+      1  {source_type}') from exc'
+      1  {end_date}，应为 YYYY-MM-DD', field='end_date') from exc'
+      1  {e.message if hasattr(e, 'message') else str(e)}", status_code=500, error_code='REGISTRATION_FAILED') from e'
+      1  {days} (类型
+      1  {date_str}, 错误
+      1  {category}. 有效分类
+      1  str, status
+      1  str, metadata
+      1  str, count
+      1  str, check_type
+      1  str) -> int
+      1  str) -> dict
+      1  str) -> Tuple[str, str, str]
+      1  str) -> Optional[pd.DataFrame]
+      1  str) -> Dict[str, Any]
+      1  str = None, adjust
+      1  str = None, **kwargs) -> Any
+      1  str = None) -> int
+      1  str = Depends(get_current_user))
+      1  rule_name}
+      1  request.description},
+      1  pip install tushare') from exc'
+      1  pip install taospy>=2.7.0') from exc'
+      1  pip install redis>=4.5.0') from exc'
+      1  pip install pytdx') from exc'
+      1  pip install pymysql>=1.0.2') from exc'
+      1  pip install psycopg2-binary>=2.9.5') from exc'
+      1  pip install baostock') from exc'
+      1  pip install akshare') from exc'
+      1  output_records}
+      1  int, pool_total
+      1  int = 3
+      1  int = 20
+      1  int = 1) -> None
+      1  int = 0, **kwargs
+      1  int = 0) -> int
+      1  getattr(self, "source_name", "unknown")}
+      1  float) -> str
+      1  float) -> float
+      1  float)
+      1  float = 10000.0) -> bool
+      1  float = 0.0) -> float
+      1  disable-file
+      1  date) -> Dict[str, Any]
+      1  bool = True)
+      1  bool = False) -> bool
+      1  [], "default"
+      1  Optional[str] = None) -> pd.DataFrame
+      1  None, "accuracy"
+      1  List[str]) -> str
+      1  List[str] = None, separator
+      1  False}
+      1  Any = None)
+      1  8.5}
+      1  70},
+      1  5.2}
+      1  45},
+      1  25}
+      1  2025-01-01T12
+      1  15.2, "volume"
+      1  12.8, "volume"
+      1  10.5, "volume"
+      1  1, "30min"
+      1  0.85}
+      1  0.0}
+      1  0, "details"
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.interfaces.adapters.tdx_integration_client, line 272)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.interfaces.adapters.tdx.base_tdx_adapter, line 77)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.interfaces.adapters.financial.base_financial_adapter, line 95)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.interfaces.adapters.akshare.market_data, line 43)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.signal_decorator, line 600)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.performance_monitor, line 54)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.multi_channel_alert_manager, line 1092)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.monitoring_database, line 48)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.intelligent_threshold_manager, line 1315)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.data_source_metrics, line 115)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.async_monitoring, line 46)'
+      1  'unindent does not match any outer indentation level (mystocks_spec.src.domain.monitoring.alert_notifier, line 111)'
+      1  'unexpected unindent (mystocks_spec.src.interfaces.adapters.byapi_adapter, line 34)'
+      1  'unexpected unindent (mystocks_spec.src.domain.monitoring.monitoring_service, line 1042)'
+      1  'unexpected unindent (mystocks_spec.src.domain.monitoring.decoupled_monitoring, line 59)'
+      1  'unexpected unindent (mystocks_spec.src.domain.monitoring.ai_realtime_monitor, line 86)'
+      1  'unexpected unindent (mystocks_spec.src.domain.monitoring.ai_alert_manager, line 110)'
+      1  'unexpected indent (mystocks_spec.web.backend.app.api.akshare_market, line 515)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.stock_daily, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.stock_basic, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.realtime_data, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.news_data, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.market_calendar, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.index_daily, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.index_components, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.financial.financial_data, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.akshare.stock_daily, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.akshare.stock_basic, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.akshare.realtime_data, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.akshare.industry_data, line 1)'
+      1  'unexpected indent (mystocks_spec.src.adapters.akshare.index_daily, line 1)'
+      1  'expected an indented block after function definition on line 183 (mystocks_spec.src.interfaces.adapters.financial.stock_daily, line 184)'
+      1  'expected an indented block after function definition on line 129 (mystocks_spec.src.interfaces.adapters.financial.index_daily, line 130)'
+      1  'expected an indented block after 'except' statement on line 50 (mystocks_spec.src.interfaces.adapters.baostock_adapter, line 54)'
+      1  'continuous'})

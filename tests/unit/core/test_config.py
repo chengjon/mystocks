@@ -5,9 +5,10 @@
 测试DatabaseConfig类的所有功能，包括环境变量管理和配置验证
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))

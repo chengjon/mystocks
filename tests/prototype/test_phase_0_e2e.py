@@ -6,17 +6,17 @@ Vertical Slice End-to-End Test
 测试完整流程：创建策略 -> 获取Mock数据 -> 生成信号 -> 创建订单
 """
 
-import sys
 import os
-from datetime import datetime
+import sys
 import time
+from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-from src.domain.strategy.model.strategy import Strategy
 from src.domain.strategy.model.rule import Rule
+from src.domain.strategy.model.strategy import Strategy
 from src.domain.trading.model.order import Order, OrderStatus
 from src.infrastructure.market_data.mock_repository import MockMarketDataRepository
 

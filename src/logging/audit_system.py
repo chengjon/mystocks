@@ -6,19 +6,20 @@ Unified Logging and Audit Management System
 Provides structured logging, audit trails, log rotation, security event monitoring, etc.
 """
 
-from src.core.database import DatabaseConnectionManager
+import asyncio
 import json
 import logging
 import logging.handlers
 import sys
-import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable
-from dataclasses import dataclass, field
-from pathlib import Path
-import structlog
-import asyncio
 from contextvars import ContextVar
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import structlog
+
+from src.core.database import DatabaseConnectionManager
 
 # Setup project path
 project_root = Path(__file__).parent.parent.parent.parent
@@ -288,7 +289,7 @@ async def _audit_worker(self):
                     await self._batch_insert_audit_events(events)
 
             except Exception as e:
-                logger.error(f"Audit worker error: {e}")
+                logger.error("Audit worker error: %(e)s")
 
     except asyncio.CancelledError:
         logger.info("Audit worker cancelled")
@@ -329,10 +330,10 @@ async def _batch_insert_audit_events(self, events: List[AuditEvent]):
                 values,
             )
 
-            logger.debug(f"Batch inserted {len(events)} audit events")
+            logger.debug("Batch inserted {len(events)} audit events")
 
     except Exception as e:
-        logger.error(f"Failed to batch insert audit events: {e}")
+        logger.error("Failed to batch insert audit events: %(e)s")
 
 
 async def get_audit_logs(
@@ -401,7 +402,7 @@ async def get_audit_logs(
             ]
 
     except Exception as e:
-        logger.error(f"Failed to get audit logs: {e}")
+        logger.error("Failed to get audit logs: %(e)s")
         return []
 
 
@@ -421,7 +422,7 @@ async def cleanup_old_audit_logs(self, days_to_keep: int = 90):
             return int(deleted_count)
 
     except Exception as e:
-        logger.error(f"Failed to cleanup audit logs: {e}")
+        logger.error("Failed to cleanup audit logs: %(e)s")
         return 0
 
 
@@ -468,7 +469,7 @@ def _detect_brute_force_attack(self, ip_address: str, username: str):
         }
     )
 
-    logger.warning(f"Brute force attack detected from IP {ip_address} targeting user {username}")
+    logger.warning("Brute force attack detected from IP %(ip_address)s targeting user %(username)s")
 
 
 def record_suspicious_activity(
@@ -489,7 +490,7 @@ def record_suspicious_activity(
         }
     )
 
-    logger.warning(f"Suspicious activity detected: {activity_type} from IP {ip_address}")
+    logger.warning("Suspicious activity detected: %(activity_type)s from IP %(ip_address)s")
 
 
 def get_security_report(self) -> Dict[str, Any]:

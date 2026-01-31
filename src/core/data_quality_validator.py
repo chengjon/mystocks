@@ -3,9 +3,10 @@
 为数据源适配器提供实时数据质量检查功能
 """
 
-import pandas as pd
-from typing import Dict, Any, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 
 from src.monitoring.data_quality_monitor import DataQualityMonitor, get_quality_monitor
 
@@ -396,7 +397,7 @@ class DataQualityValidator:
                     required_columns=self._get_required_columns(data_type),
                     threshold=self.thresholds["missing_rate_threshold"],
                 )
-                self.logger.info("数据质量验证完成")
+                logger.info("数据质量验证完成")
                 logger.info(
                     "质量检查完成: {symbol} {data_type} - "
                     f"得分: {quality_score:.1f}, 有效: {is_valid}, "

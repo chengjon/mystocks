@@ -1,10 +1,11 @@
+import contextlib
+import logging
+import os
+from datetime import datetime, timedelta
+from functools import wraps
+
 import baostock as bs
 import pandas as pd
-import logging
-from datetime import datetime, timedelta
-import os
-from functools import wraps
-import contextlib
 
 # 装饰器移到类外部
 

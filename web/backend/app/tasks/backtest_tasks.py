@@ -8,9 +8,9 @@ import logging
 from datetime import datetime
 from decimal import Decimal
 
-from app.core.celery_app import celery_app, get_progress_callback
 from app.backtest.backtest_engine import BacktestEngine
 from app.backtest.events import ProgressEvent
+from app.core.celery_app import celery_app, get_progress_callback
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
     Returns:
         回测结果字典
     """
-    logger.info(f"开始执行回测任务 {backtest_id}")
+    logger.info("开始执行回测任务 %(backtest_id)s"")
 
     try:
         # 更新任务状态
@@ -75,7 +75,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
                 try:
                     ws_callback(progress_event.to_dict())
                 except Exception as e:
-                    logger.warning(f"WebSocket推送失败: {e}")
+                    logger.warning("WebSocket推送失败: %(e)s"")
 
         # 创建回测引擎
         engine = BacktestEngine(
@@ -88,7 +88,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
         # 执行回测
         results = engine.run()
 
-        logger.info(f"回测任务 {backtest_id} 完成")
+        logger.info("回测任务 %(backtest_id)s 完成"")
 
         # 更新数据库中的回测结果
         _save_backtest_results(backtest_id, results)
@@ -96,7 +96,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
         return results
 
     except Exception as e:
-        logger.error(f"回测任务 {backtest_id} 失败: {str(e)}", exc_info=True)
+        logger.error("回测任务 {backtest_id} 失败: {str(e)}", exc_info=True)
 
         # 更新任务状态为失败
         self.update_state(
@@ -117,8 +117,8 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
 def _save_backtest_results(backtest_id: int, results: dict):
     """保存回测结果到数据库"""
     try:
-        from app.repositories.backtest_repository import BacktestRepository
         from app.core.database import SessionLocal
+        from app.repositories.backtest_repository import BacktestRepository
 
         db = SessionLocal()
         try:
@@ -165,21 +165,21 @@ def _save_backtest_results(backtest_id: int, results: dict):
                 repo.save_trades(backtest_id, trades)
 
             db.commit()
-            logger.info(f"回测结果已保存: backtest_id={backtest_id}")
+            logger.info("回测结果已保存: backtest_id=%(backtest_id)s"")
 
         finally:
             db.close()
 
     except Exception as e:
-        logger.error(f"保存回测结果失败: {str(e)}")
+        logger.error("保存回测结果失败: {str(e)}"")
         raise
 
 
 def _update_backtest_status(backtest_id: int, status: str, error_message: str = None):
     """更新回测状态"""
     try:
-        from app.repositories.backtest_repository import BacktestRepository
         from app.core.database import SessionLocal
+        from app.repositories.backtest_repository import BacktestRepository
 
         db = SessionLocal()
         try:
@@ -190,4 +190,4 @@ def _update_backtest_status(backtest_id: int, status: str, error_message: str = 
             db.close()
 
     except Exception as e:
-        logger.error(f"更新回测状态失败: {str(e)}")
+        logger.error("更新回测状态失败: {str(e)}"")

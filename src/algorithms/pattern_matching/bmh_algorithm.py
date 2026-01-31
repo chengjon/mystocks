@@ -8,13 +8,13 @@ by skipping portions of the text that cannot match the pattern.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
 
-from .base import PatternMatchingAlgorithm, Pattern, PatternMatch, PatternMatchResult
-from src.algorithms.types import AlgorithmType
-from src.algorithms.metadata import AlgorithmFingerprint
+
+from .base import Pattern, PatternMatch, PatternMatchingAlgorithm, PatternMatchResult
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ class BMHAlgorithm(PatternMatchingAlgorithm):
             bad_char_table = self._compute_bad_char_table(normalized_pattern)
             self.bad_char_tables[pattern.id] = bad_char_table
 
-            logger.info(f"Precomputed bad character table for pattern {pattern.id} (size: {len(bad_char_table)})")
+            logger.info("Precomputed bad character table for pattern {pattern.id} (size: {len(bad_char_table)})")
 
         return success
 
@@ -127,7 +127,7 @@ class BMHAlgorithm(PatternMatchingAlgorithm):
         success = super().remove_pattern(pattern_id)
         if success and pattern_id in self.bad_char_tables:
             del self.bad_char_tables[pattern_id]
-            logger.info(f"Removed bad character table for pattern {pattern_id}")
+            logger.info("Removed bad character table for pattern %(pattern_id)s")
 
         return success
 
@@ -183,7 +183,7 @@ class BMHAlgorithm(PatternMatchingAlgorithm):
 
         for pattern_id in target_patterns:
             if pattern_id not in self.patterns or pattern_id not in self.bad_char_tables:
-                logger.warning(f"Pattern {pattern_id} not found or not preprocessed")
+                logger.warning("Pattern %(pattern_id)s not found or not preprocessed")
                 continue
 
             pattern = self.patterns[pattern_id]
@@ -225,14 +225,14 @@ class BMHAlgorithm(PatternMatchingAlgorithm):
                 )
                 results.append(result)
 
-                logger.info(f"Found {len(matches)} matches for pattern {pattern_id} using BMH")
+                logger.info("Found {len(matches)} matches for pattern %(pattern_id)s using BMH")
 
         self.match_history.extend(results)
         return results
 
     def get_algorithm_info(self) -> Dict[str, Any]:
         """Get information about the BMH algorithm."""
-        base_info = super().get_algorithm_info()
+        base_info = super().get_metadata()
         base_info.update(
             {
                 "algorithm_variant": "boyer_moore_horspool",

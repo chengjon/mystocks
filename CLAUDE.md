@@ -33,11 +33,13 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 6. [文件组织规范](#文件组织规范)
 7. **[文档工作指引](#文档工作指引)** ⭐
 8. [代码质量保证](#代码质量保证)
-9. [监控系统](#监控系统)
-10. [技术指标管理](#技术指标管理)
-11. **[数据源管理工具](#数据源管理工具)** 🚨 **(含强制性开发指引)**
-12. [Task Master AI集成](#task-master-ai集成)
-13. [BUG登记](#bug登记)
+9. **[TypeScript 修复规范](#-typescript-修复规范---强制性要求)** ⚠️
+   - [TypeScript 修复三大核心原则](#-typescript-修复三大核心原则)
+10. [监控系统](#监控系统)
+11. [技术指标管理](#技术指标管理)
+12. **[数据源管理工具](#数据源管理工具)** 🚨 **(含强制性开发指引)**
+13. [Task Master AI集成](#task-master-ai集成)
+14. [BUG登记](#bug登记)
 
 ---
 
@@ -368,6 +370,96 @@ npm run dev -- --port 3002  # 前端服务2
 # 构建生产版本
 npm run build
 ```
+
+### Chrome DevTools 远程调试（WSL2 → Windows）
+
+**适用场景**: 在 WSL2 中运行的前端项目，需要从 Windows 侧使用 Chrome DevTools 调试。
+
+#### Windows 侧配置（首次设置）
+
+在 **Windows PowerShell (管理员)** 中执行：
+
+```powershell
+# 1. 定义 Chrome 路径（适配 32/64 位）
+$chromePath = if (Test-Path "C:\Program Files\Google\Chrome\Application\chrome.exe") {
+    "C:\Program Files\Google\Chrome\Application\chrome.exe"
+} else {
+    "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+}
+
+# 2. 创建独立配置目录
+$profileDir = "$env:USERPROFILE\ChromeProfiles\mcp"
+if (-not (Test-Path $profileDir)) {
+    New-Item -ItemType Directory -Path $profileDir | Out-Null
+}
+
+# 3. 启动 Chrome（监听所有网卡的调试端口，例如 9230）
+Start-Process -FilePath $chromePath -ArgumentList @(
+    "--user-data-dir=`"$profileDir`"",
+    "--remote-debugging-port=9230",
+    "--remote-debugging-address=0.0.0.0",
+    "--no-first-run",
+    "--no-default-browser-check"
+)
+
+# 4. 添加防火墙规则（允许端口 9230）
+New-NetFirewallRule -DisplayName "Chrome Remote Debugging 9230" `
+    -Direction Inbound `
+    -LocalPort 9230 `
+    -Protocol TCP `
+    -Action Allow `
+    -Profile Domain,Public,Private
+```
+
+#### WSL2 侧连接方法
+
+**关键发现**: 不同访问方式的连接性差异
+
+| 访问方式 | 结果 | 核心原因 |
+|----------|------|----------|
+| `10.255.255.254:9230` | ❌ 连接拒绝 | Windows 防火墙对 WSL2 的 NAT 网关网段（10.255.255.0/24）存在隐式深层拦截 |
+| `localhost:9230` | ❌ 连接拒绝 | WSL2 的 localhost 仅映射到自身回环，未默认映射到 Windows 的 localhost |
+| `192.168.123.74:9230` | ✅ **成功访问** | **直接访问 Windows 物理网卡 IP，绕开 NAT 网段拦截，端口转发规则正常生效** |
+
+**成功方法（推荐）**:
+
+```bash
+# 1. 在 Windows 侧获取物理网卡 IP（PowerShell）
+ipconfig | findstr "IPv4"
+
+# 示例输出: 192.168.123.74
+
+# 2. 在 WSL2 中测试连接
+curl http://192.168.123.74:9230/json
+
+# 3. 使用 Chrome DevTools MCP 或脚本访问
+# 获取所有页面列表
+curl -s http://192.168.123.74:9230/json | python3 -m json.tool
+```
+
+**为什么物理网卡 IP 可以访问？**
+- Windows 防火墙对物理网卡网段（如 192.168.123.0/24）的入站连接更为宽松
+- 绕过了 WSL2 NAT 网段的隐式拦截规则
+- Chrome 的 `--remote-debugging-address=0.0.0.0` 在物理网卡上正常生效
+
+#### DevTools Protocol API 示例
+
+```bash
+# 获取所有打开的页面
+curl http://192.168.123.74:9230/json
+
+# 获取版本信息
+curl http://192.168.123.74:9230/json/version
+
+# 打开新页面（需要 URL 编码）
+# curl "http://192.168.123.74:9230/json/new?url=http://localhost:3020"
+```
+
+**注意事项**:
+- ✅ 优先使用物理网卡 IP（如 192.168.123.74）
+- ❌ 避免使用 NAT 网关 IP（10.255.255.254）
+- ❌ 避免使用 localhost（WSL2 和 Windows 的 localhost 不互通）
+- ⚠️ 每次重启 Windows 后 IP 可能变化，需要重新确认
 
 ### 后端运行命令
 
@@ -915,6 +1007,177 @@ pylint --rcfile=.pylint.test.rc --output=report.html --output-format=html tests/
 - [TYPESCRIPT_FIX_REFLECTION.md](./docs/reports/TYPESCRIPT_FIX_REFLECTION.md) - 反思与经验总结
 
 **历史成果**: 1160→66错误 (94.3%修复率, 4小时完成)
+
+---
+
+## 🎯 TypeScript 修复三大核心原则
+
+修复TypeScript错误时，**必须**严格遵守以下3个原则：
+
+### 原则 1️⃣: 最小修改原则 (Minimal Changes)
+
+**定义**: 只修复类型错误，不改变业务逻辑
+
+**核心要求**:
+- ✅ **只修改类型相关的代码**（类型注解、接口、类型断言）
+- ❌ **不改变业务逻辑**（算法、数据处理、UI行为）
+- ❌ **不进行重构**（代码优化、性能改进、功能增强）
+
+**实践示例**:
+```typescript
+// ✅ 正确: 只修改类型
+interface Stock {
+  symbol: string
+  currentPrice?: number  // 添加可选类型
+}
+
+// ❌ 错误: 改变了业务逻辑
+interface Stock {
+  symbol: string
+  currentPrice: number  // 删除了可选性，改变了业务含义
+  formatPrice(): string  // 添加了新方法（超出范围）
+}
+```
+
+**实际案例**:
+- `Stocks.vue`: 只修改 `variant` 属性的类型从 `string` 为 `'up' | 'down' | 'flat'`
+- 不修改 `getMarketBadgeVariant` 函数的内部逻辑
+
+---
+
+### 原则 2️⃣: 显式优于隐式 (Explicit Over Implicit)
+
+**定义**: 使用显式类型注解和断言，而非依赖类型推断
+
+**核心要求**:
+- ✅ **为函数返回值添加类型注解**
+- ✅ **为复杂表达式添加类型断言**
+- ✅ **为API响应定义接口**
+- ❌ **避免 `any` 类型**（除非必要且注释原因）
+- ❌ **不依赖类型推断处理复杂情况**
+
+**实践示例**:
+```typescript
+// ✅ 正确: 显式返回类型
+function getMarketBadgeVariant(
+  changePercent: number
+): 'up' | 'down' | 'flat' {
+  if (changePercent > 0) return 'up'
+  if (changePercent < 0) return 'down'
+  return 'flat'
+}
+
+// ❌ 错误: 依赖类型推断
+function getMarketBadgeVariant(changePercent: number) {
+  if (changePercent > 0) return 'up'
+  if (changePercent < 0) return 'down'
+  return 'flat'
+  // TypeScript可能推断为 string 而非字面量类型
+}
+
+// ✅ 正确: 显式类型断言
+const response = await fetch('/api/stocks')
+const data = await response.json() as StockApiResponse
+
+// ❌ 错误: 依赖类型推断
+const response = await fetch('/api/stocks')
+const data = await response.json()
+// data 的类型是 any，容易引发后续错误
+```
+
+**实际案例**:
+- `getMarketBadgeVariant`: 添加返回类型 `'up' | 'down' | 'flat'`
+- API调用: 使用 `as ApiResponse` 显式断言而非 `any`
+
+---
+
+### 原则 3️⃣: 从源头修复 (Fix at Source)
+
+**定义**: 创建专门的Mock数据模块，而非在代码中硬编码临时数据
+
+**核心要求**:
+- ✅ **创建Mock数据模块** (`mockBacktest.js`, `mockMarketData.ts`)
+- ✅ **定义类型化的Mock数据接口**
+- ✅ **复用Mock数据**（多处使用同一数据源）
+- ❌ **禁止硬编码临时数据**（内联对象、直接返回常量）
+- ❌ **禁止修改现有Mock数据结构**（除非修复类型错误）
+
+**实践示例**:
+```typescript
+// ❌ 错误: 硬编码临时数据
+function getBacktestData(): BacktestResult {
+  return {
+    id: 'bt-001',
+    name: 'Strategy A',
+    totalReturn: 15.5,
+    // ... 临时硬编码数据
+  }
+}
+
+// ✅ 正确: 从Mock模块导入
+import { mockBacktestResults } from '@/mock/backtest'
+
+function getBacktestData(): BacktestResult {
+  return mockBacktestResults[0]  // 复用Mock数据
+}
+
+// ✅ 正确: 创建类型化的Mock模块
+// mock/backtest.ts
+import type { BacktestResult } from '@/types/backtest'
+
+export const mockBacktestResults: BacktestResult[] = [
+  {
+    id: 'bt-001',
+    name: 'Strategy A',
+    totalReturn: 15.5,
+    sharpeRatio: 1.8,
+    maxDrawdown: -8.5,
+    // ...
+  },
+  // ... more results
+]
+```
+
+**实际案例**:
+- `mockBacktest.js`: 专门的回测Mock数据模块
+- `mockMarketData.ts`: 市场数据Mock模块
+- 所有测试和开发环境复用同一Mock数据源
+
+---
+
+## 📊 三原则对比表
+
+| 原则 | 核心要求 | ✅ 正确做法 | ❌ 错误做法 |
+|------|---------|-----------|-----------|
+| **1. 最小修改** | 只改类型，不改逻辑 | 修改 `variant: string` 为 `variant: 'up'\|'down'` | 重构函数、优化算法、改变UI行为 |
+| **2. 显式优于隐式** | 类型注解要明确 | 添加返回类型注解、使用 `as` 断言 | 依赖类型推断、使用 `any` |
+| **3. 从源头修复** | 创建Mock模块 | 创建 `mockBacktest.js` 专门模块 | 硬编码临时数据、内联对象 |
+
+---
+
+## 🚨 修复前的检查清单
+
+每次修复TypeScript错误前，必须确认：
+
+- [ ] **修改范围仅限于类型相关代码**
+  - 不修改函数内部逻辑
+  - 不改变数据处理流程
+  - 不影响UI交互行为
+
+- [ ] **使用了显式类型注解**
+  - 函数返回值有类型注解
+  - 复杂表达式有类型断言
+  - 避免使用 `any`（必要时添加注释）
+
+- [ ] **从Mock模块获取数据**
+  - 创建了专门的Mock数据模块
+  - Mock数据有明确的类型定义
+  - 复用现有Mock数据而非硬编码
+
+- [ ] **参考了4个核心文档**
+  - 阅读了相关的最佳实践文档
+  - 查看了技术债务清单
+  - 理解了错误模式的修复方法
 
 ## 监控系统
 

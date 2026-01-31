@@ -18,9 +18,10 @@ Phase: 2 - Task 2.2.5
 """
 
 import unittest
-from unittest.mock import Mock, patch
-import pandas as pd
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import pandas as pd
 
 from src.adapters.customer_adapter import CustomerDataSource
 

@@ -6,15 +6,16 @@ GPU-Accelerated Risk Calculator
 复用现有的GPU基础设施和数据源。
 """
 
+import asyncio
 import logging
+import time
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
-import asyncio
-import time
 
-from src.governance.risk_management.core import IRiskCalculator, StockRiskMetrics, PortfolioRiskMetrics
+from src.governance.risk_management.core import IRiskCalculator, PortfolioRiskMetrics, StockRiskMetrics
 
 # 复用现有的GPU基础设施
 try:
@@ -81,14 +82,14 @@ class GPURiskCalculator(IRiskCalculator):
                     self.cache_manager = get_enhanced_cache_manager()
                     logger.info("✅ 风险缓存管理器初始化成功")
                 except Exception as e:
-                    logger.warning(f"⚠️ 缓存管理器初始化失败: {e}")
+                    logger.warning("⚠️ 缓存管理器初始化失败: %(e)s")
                     self.cache_manager = None
             else:
                 logger.warning("⚠️ 增强缓存系统不可用")
                 self.cache_manager = None
 
         except Exception as e:
-            logger.error(f"❌ GPU风险计算器初始化失败: {e}")
+            logger.error("❌ GPU风险计算器初始化失败: %(e)s")
             self.gpu_processor = None
             self.cache_manager = None
 
@@ -108,7 +109,7 @@ class GPURiskCalculator(IRiskCalculator):
             if cached_result:
                 self.risk_cache_stats["cache_hits"] += 1
                 self._update_cache_stats(cache_start, hit=True)
-                logger.debug(f"✅ 个股风险缓存命中: {symbol}")
+                logger.debug("✅ 个股风险缓存命中: %(symbol)s")
                 return cached_result
 
         self.risk_cache_stats["cache_misses"] += 1
@@ -150,7 +151,7 @@ class GPURiskCalculator(IRiskCalculator):
             return metrics
 
         except Exception as e:
-            logger.error(f"计算个股风险失败 {symbol}: {e}")
+            logger.error("计算个股风险失败 %(symbol)s: %(e)s")
             # 返回默认指标
             return StockRiskMetrics(symbol=symbol, timestamp=datetime.now())
 
@@ -221,7 +222,7 @@ class GPURiskCalculator(IRiskCalculator):
             return metrics
 
         except Exception as e:
-            logger.error(f"计算组合风险失败 {portfolio_id}: {e}")
+            logger.error("计算组合风险失败 %(portfolio_id)s: %(e)s")
             # 发布计算失败事件
             await self._publish_portfolio_event(
                 "portfolio_risk_calculation_failed", portfolio_id, {"error": str(e), "error_type": type(e).__name__}
@@ -251,7 +252,7 @@ class GPURiskCalculator(IRiskCalculator):
             return correlation_matrix
 
         except Exception as e:
-            logger.error(f"计算相关性矩阵失败: {e}")
+            logger.error("计算相关性矩阵失败: %(e)s")
             return np.eye(len(symbols))
 
     async def calculate_var(self, returns: np.ndarray, confidence: float = 0.95) -> float:
@@ -272,7 +273,7 @@ class GPURiskCalculator(IRiskCalculator):
             return var_value
 
         except Exception as e:
-            logger.error(f"计算VaR失败: {e}")
+            logger.error("计算VaR失败: %(e)s")
             # 返回保守的VaR估计
             return np.std(returns) * 2.0
 
@@ -336,7 +337,7 @@ class GPURiskCalculator(IRiskCalculator):
                 "volatility_percentile": volatility_percentile,
             }
         except Exception as e:
-            logger.error(f"计算波动率指标失败: {e}")
+            logger.error("计算波动率指标失败: %(e)s")
             return {"volatility_20d": 0.0, "atr_14": 0.0, "volatility_percentile": 50}
 
     async def _calculate_liquidity_metrics(self, symbol: str, data: pd.DataFrame) -> Dict[str, Any]:
@@ -361,7 +362,7 @@ class GPURiskCalculator(IRiskCalculator):
                 "liquidity_score": int(liquidity_score),
             }
         except Exception as e:
-            logger.error(f"计算流动性指标失败 {symbol}: {e}")
+            logger.error("计算流动性指标失败 %(symbol)s: %(e)s")
             return {"avg_daily_volume": 0.0, "bid_ask_spread": 0.0, "turnover_rate": 0.0, "liquidity_score": 50}
 
     async def _calculate_technical_metrics(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -396,7 +397,7 @@ class GPURiskCalculator(IRiskCalculator):
                 "bollinger_position": bollinger_position,
             }
         except Exception as e:
-            logger.error(f"计算技术指标失败: {e}")
+            logger.error("计算技术指标失败: %(e)s")
             return {"ma_trend": "neutral", "macd_signal": "neutral", "rsi": 50.0, "bollinger_position": "middle"}
 
     async def _calculate_overall_risk_score(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -427,7 +428,7 @@ class GPURiskCalculator(IRiskCalculator):
 
             return float(var_value)
         except Exception as e:
-            logger.error(f"计算组合VaR失败: {e}")
+            logger.error("计算组合VaR失败: %(e)s")
             return 0.05  # 5%的保守估计
 
     async def _calculate_portfolio_drawdown(self, symbols: List[str], weights: np.ndarray) -> float:
@@ -529,7 +530,7 @@ class GPURiskCalculator(IRiskCalculator):
                 event = {"event_type": event_type, "timestamp": datetime.now().isoformat(), "data": data}
                 await self.event_publisher.publish_event(event)
         except Exception as e:
-            logger.error(f"发布风险事件失败: {e}")
+            logger.error("发布风险事件失败: %(e)s")
 
     async def _publish_portfolio_risk_event(self, portfolio_id: str, metrics: PortfolioRiskMetrics):
         """发布组合风险更新事件"""
@@ -554,9 +555,9 @@ class GPURiskCalculator(IRiskCalculator):
                 }
 
                 await self._publish_risk_event("portfolio_risk_update", event_data)
-                logger.debug(f"✅ 组合风险事件已发布: {portfolio_id}")
+                logger.debug("✅ 组合风险事件已发布: %(portfolio_id)s")
         except Exception as e:
-            logger.error(f"发布组合风险事件失败 {portfolio_id}: {e}")
+            logger.error("发布组合风险事件失败 %(portfolio_id)s: %(e)s")
 
     async def _publish_portfolio_event(
         self, event_type: str, portfolio_id: str, additional_data: Dict[str, Any] = None
@@ -572,9 +573,9 @@ class GPURiskCalculator(IRiskCalculator):
                     event_data.update(additional_data)
 
                 await self._publish_risk_event(event_type, event_data)
-                logger.debug(f"✅ 组合事件已发布: {event_type} - {portfolio_id}")
+                logger.debug("✅ 组合事件已发布: %(event_type)s - %(portfolio_id)s")
         except Exception as e:
-            logger.error(f"发布组合事件失败 {event_type} {portfolio_id}: {e}")
+            logger.error("发布组合事件失败 %(event_type)s %(portfolio_id)s: %(e)s")
 
     async def _check_portfolio_alerts(self, portfolio_id: str, metrics: PortfolioRiskMetrics):
         """检查组合风险告警条件"""
@@ -652,10 +653,10 @@ class GPURiskCalculator(IRiskCalculator):
                         "timestamp": datetime.now().isoformat(),
                     },
                 )
-                logger.info(f"⚠️ 发布组合风险告警: {portfolio_id} - {len(alerts)} 个告警")
+                logger.info("⚠️ 发布组合风险告警: %(portfolio_id)s - {len(alerts)} 个告警")
 
         except Exception as e:
-            logger.error(f"检查组合告警失败 {portfolio_id}: {e}")
+            logger.error("检查组合告警失败 %(portfolio_id)s: %(e)s")
 
     async def calculate_portfolio_concentration_analysis(self, portfolio_id: str) -> Dict[str, Any]:
         """计算组合集中度分析并发布事件"""
@@ -682,11 +683,11 @@ class GPURiskCalculator(IRiskCalculator):
                 },
             )
 
-            logger.info(f"✅ 组合集中度分析完成并发布事件: {portfolio_id}")
+            logger.info("✅ 组合集中度分析完成并发布事件: %(portfolio_id)s")
             return concentration_results
 
         except Exception as e:
-            logger.error(f"组合集中度分析失败 {portfolio_id}: {e}")
+            logger.error("组合集中度分析失败 %(portfolio_id)s: %(e)s")
             await self._publish_risk_event(
                 "portfolio_concentration_analysis_failed",
                 {
@@ -732,7 +733,7 @@ class GPURiskCalculator(IRiskCalculator):
             }
 
         except Exception as e:
-            logger.error(f"CPU集中度计算失败: {e}")
+            logger.error("CPU集中度计算失败: %(e)s")
             return {
                 "error": str(e),
                 "hhi": 0.0,
@@ -802,7 +803,7 @@ class GPURiskCalculator(IRiskCalculator):
             return None
 
         except Exception as e:
-            logger.debug(f"缓存读取失败 {cache_key}: {e}")
+            logger.debug("缓存读取失败 %(cache_key)s: %(e)s")
             return None
 
     async def _cache_risk_metrics(self, cache_key: str, metrics: StockRiskMetrics, ttl: int = 300):
@@ -814,10 +815,10 @@ class GPURiskCalculator(IRiskCalculator):
             await self.cache_manager.put(cache_key, metrics, ttl=ttl)
             self.risk_cache_stats["cache_puts"] += 1
 
-            logger.debug(f"✅ 风险指标已缓存: {cache_key} (TTL: {ttl}s)")
+            logger.debug("✅ 风险指标已缓存: %(cache_key)s (TTL: %(ttl)ss)")
 
         except Exception as e:
-            logger.debug(f"缓存写入失败 {cache_key}: {e}")
+            logger.debug("缓存写入失败 %(cache_key)s: %(e)s")
 
     def _is_cache_data_valid(self, cached_data: Any) -> bool:
         """验证缓存数据的有效性"""
@@ -868,7 +869,7 @@ class GPURiskCalculator(IRiskCalculator):
             }
 
         except Exception as e:
-            logger.error(f"获取缓存性能统计失败: {e}")
+            logger.error("获取缓存性能统计失败: %(e)s")
             return {"error": str(e), "cache_enabled": bool(self.cache_manager)}
 
     async def clear_risk_cache(self, pattern: Optional[str] = None):
@@ -897,7 +898,7 @@ class GPURiskCalculator(IRiskCalculator):
             logger.info("✅ 风险缓存已清除")
 
         except Exception as e:
-            logger.error(f"清除风险缓存失败: {e}")
+            logger.error("清除风险缓存失败: %(e)s")
 
     async def warmup_risk_cache(self, symbols: List[str]):
         """预热风险缓存"""
@@ -905,7 +906,7 @@ class GPURiskCalculator(IRiskCalculator):
             if not self.cache_manager:
                 return
 
-            logger.info(f"开始预热风险缓存，共 {len(symbols)} 个股票")
+            logger.info("开始预热风险缓存，共 {len(symbols)} 个股票")
 
             # 并发预热风险计算
             tasks = []
@@ -919,7 +920,7 @@ class GPURiskCalculator(IRiskCalculator):
             logger.info("✅ 风险缓存预热完成")
 
         except Exception as e:
-            logger.error(f"风险缓存预热失败: {e}")
+            logger.error("风险缓存预热失败: %(e)s")
 
     async def monitor_risk_cache_health(self) -> Dict[str, Any]:
         """监控风险缓存健康状态"""
@@ -956,7 +957,7 @@ class GPURiskCalculator(IRiskCalculator):
             }
 
         except Exception as e:
-            logger.error(f"缓存健康监控失败: {e}")
+            logger.error("缓存健康监控失败: %(e)s")
             return {
                 "cache_enabled": bool(self.cache_manager),
                 "health_status": "error",

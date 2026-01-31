@@ -7,16 +7,13 @@ Risk Alert Notification Manager
 """
 
 import logging
-import time
-from typing import Dict, List, Any, Optional, Set
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from src.ml_strategy.automation.monitored_notification_manager import (
     MonitoredNotificationManager,
     NotificationConfig,
-    Notification,
-    NotificationChannel,
     NotificationLevel,
 )
 
@@ -118,7 +115,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             # 2. 检查是否应该升级告警
             escalated_severity = self._check_alert_escalation(alert_key, severity)
             if escalated_severity != severity:
-                logger.info(f"告警升级: {severity} -> {escalated_severity} ({alert_key})")
+                logger.info("告警升级: %(severity)s -> %(escalated_severity)s (%(alert_key)s)")
                 severity = escalated_severity
                 self.alert_stats[severity]["escalated"] += 1
 
@@ -153,7 +150,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             }
 
         except Exception as e:
-            logger.error(f"发送风险告警失败: {e}")
+            logger.error("发送风险告警失败: %(e)s")
             return {"sent": False, "error": str(e)}
 
     async def send_portfolio_risk_alert(
@@ -195,7 +192,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             return result
 
         except Exception as e:
-            logger.error(f"发送组合风险告警失败 {portfolio_id}: {e}")
+            logger.error("发送组合风险告警失败 %(portfolio_id)s: %(e)s")
             return {"sent": False, "error": str(e)}
 
     async def send_stock_risk_alert(
@@ -235,7 +232,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             return result
 
         except Exception as e:
-            logger.error(f"发送个股风险告警失败 {symbol}: {e}")
+            logger.error("发送个股风险告警失败 %(symbol)s: %(e)s")
             return {"sent": False, "error": str(e)}
 
     def get_alert_statistics(self) -> Dict[str, Any]:
@@ -262,7 +259,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             }
 
         except Exception as e:
-            logger.error(f"获取告警统计失败: {e}")
+            logger.error("获取告警统计失败: %(e)s")
             return {"error": str(e)}
 
     def clear_expired_suppressions(self):
@@ -275,10 +272,10 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
                 del self.suppressed_alerts[key]
 
             if expired_keys:
-                logger.info(f"清除 {len(expired_keys)} 个过期的告警抑制")
+                logger.info("清除 {len(expired_keys)} 个过期的告警抑制")
 
         except Exception as e:
-            logger.error(f"清除过期抑制失败: {e}")
+            logger.error("清除过期抑制失败: %(e)s")
 
     def reset_alert_statistics(self):
         """重置告警统计"""
@@ -292,7 +289,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             logger.info("告警统计已重置")
 
         except Exception as e:
-            logger.error(f"重置告警统计失败: {e}")
+            logger.error("重置告警统计失败: %(e)s")
 
     # 私有方法
 
@@ -439,7 +436,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             )
 
         except Exception as e:
-            logger.error(f"发送风险通知失败: {e}")
+            logger.error("发送风险通知失败: %(e)s")
             return False
 
     def _update_alert_history(self, alert_key: str, severity: str, alert_type: str):

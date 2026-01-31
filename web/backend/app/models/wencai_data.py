@@ -12,13 +12,13 @@
 from datetime import datetime
 
 from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
     Column,
+    Index,
     Integer,
     String,
     Text,
-    Boolean,
-    TIMESTAMP,
-    Index,
 )
 from sqlalchemy.orm import declared_attr
 

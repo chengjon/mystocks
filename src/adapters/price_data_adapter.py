@@ -4,11 +4,12 @@
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-import pandas as pd
-from datetime import datetime, timedelta
+import os
 import re
 import sys
-import os
+from datetime import datetime, timedelta
+
+import pandas as pd
 
 # 添加项目根路径以导入验证模块
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

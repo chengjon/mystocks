@@ -7,9 +7,9 @@
 """
 
 from .base_database_service import BaseDatabaseService
+from .database_service import DatabaseService
 from .stock_data_service import StockDataService
 from .technical_indicators_service import TechnicalIndicatorsService
-from .database_service import DatabaseService
 
 __all__ = [
     "BaseDatabaseService",

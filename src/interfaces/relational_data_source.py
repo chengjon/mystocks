@@ -13,7 +13,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Any
+from typing import Any, Dict, List, Optional
 
 
 class IRelationalDataSource(ABC):
@@ -77,7 +77,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 数据源查询失败
         """
-        pass
 
     @abstractmethod
     def add_to_watchlist(
@@ -115,7 +114,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 添加失败
             ValueError: 股票代码无效或已存在
         """
-        pass
 
     @abstractmethod
     def remove_from_watchlist(self, user_id: int, symbol: str, list_type: Optional[str] = None) -> bool:
@@ -135,7 +133,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 删除失败
         """
-        pass
 
     @abstractmethod
     def update_watchlist_note(self, user_id: int, symbol: str, list_type: str, note: str) -> bool:
@@ -156,7 +153,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 更新失败
         """
-        pass
 
     # ==================== 策略配置管理 ====================
 
@@ -210,7 +206,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def save_strategy_config(
@@ -240,7 +235,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 保存失败
             ValueError: 参数验证失败
         """
-        pass
 
     @abstractmethod
     def update_strategy_status(self, strategy_id: int, user_id: int, status: str) -> bool:
@@ -261,7 +255,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 更新失败
             PermissionError: 用户无权限
         """
-        pass
 
     @abstractmethod
     def delete_strategy_config(self, strategy_id: int, user_id: int) -> bool:
@@ -281,7 +274,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 删除失败
             PermissionError: 用户无权限
         """
-        pass
 
     # ==================== 风险管理配置 ====================
 
@@ -330,7 +322,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def save_risk_alert(
@@ -364,7 +355,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 保存失败
             ValueError: 参数验证失败
         """
-        pass
 
     @abstractmethod
     def toggle_risk_alert(self, alert_id: int, user_id: int, enabled: bool) -> bool:
@@ -385,7 +375,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 更新失败
             PermissionError: 用户无权限
         """
-        pass
 
     # ==================== 用户配置管理 ====================
 
@@ -425,7 +414,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def update_user_preferences(self, user_id: int, preferences: Dict[str, Any]) -> bool:
@@ -445,7 +433,6 @@ class IRelationalDataSource(ABC):
             DataSourceException: 更新失败
             ValueError: 设置格式无效
         """
-        pass
 
     # ==================== 股票基础信息 ====================
 
@@ -489,7 +476,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def search_stocks(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
@@ -520,7 +506,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 搜索失败
         """
-        pass
 
     # ==================== 行业概念板块 ====================
 
@@ -555,7 +540,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def get_concept_list(self) -> List[Dict[str, Any]]:
@@ -581,7 +565,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def get_stocks_by_industry(self, industry_code: str) -> List[str]:
@@ -599,7 +582,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     @abstractmethod
     def get_stocks_by_concept(self, concept_code: str) -> List[str]:
@@ -617,7 +599,6 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 查询失败
         """
-        pass
 
     # ==================== 数据库操作辅助 ====================
 
@@ -631,7 +612,6 @@ class IRelationalDataSource(ABC):
 
         用于需要原子性操作的场景，例如批量更新
         """
-        pass
 
     @abstractmethod
     def commit_transaction(self, transaction: Any) -> None:
@@ -641,7 +621,6 @@ class IRelationalDataSource(ABC):
         Args:
             transaction: 事务对象
         """
-        pass
 
     @abstractmethod
     def rollback_transaction(self, transaction: Any) -> None:
@@ -651,7 +630,6 @@ class IRelationalDataSource(ABC):
         Args:
             transaction: 事务对象
         """
-        pass
 
     @abstractmethod
     def health_check(self) -> Dict[str, Any]:
@@ -682,4 +660,3 @@ class IRelationalDataSource(ABC):
         Raises:
             DataSourceException: 健康检查失败
         """
-        pass

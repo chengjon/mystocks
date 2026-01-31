@@ -4,13 +4,14 @@
 演示如何使用真实GPU而不是Mock进行测试
 """
 
-import pytest
+import os
+import platform
+import sys
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
-import platform
-import os
-import sys
+import pytest
 
 # WSL2环境下需要先初始化GPU
 if "microsoft" in platform.uname().release.lower():
@@ -68,8 +69,8 @@ class TestRealGPUAcceleration:
     def test_real_gpu_ml_training(self):
         """测试真实GPU机器学习训练"""
         from cuml.ensemble import RandomForestClassifier as cuRF
-        from sklearn.ensemble import RandomForestClassifier as skRF
         from sklearn.datasets import make_classification
+        from sklearn.ensemble import RandomForestClassifier as skRF
 
         # 生成测试数据
         n_samples = 100000

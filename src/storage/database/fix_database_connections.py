@@ -5,9 +5,10 @@
 用于解决MyStocks项目中的数据库连接问题
 """
 
+import logging
 import os
 import sys
-import logging
+
 import psycopg2
 import pymysql
 

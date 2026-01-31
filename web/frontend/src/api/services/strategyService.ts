@@ -44,7 +44,7 @@ export class StrategyApiService {
    * @param params - Query parameters (page, pageSize, status, type)
    * @returns UnifiedResponse with strategy list
    */
-  async getStrategyList(params?: {
+  async getStrategyList(_params?: {
     page?: number;
     pageSize?: number;
     status?: string;

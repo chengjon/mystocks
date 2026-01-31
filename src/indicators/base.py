@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Union, Optional
+from typing import Any, Dict
+
 import pandas as pd
-import numpy as np
 
 
 class BaseIndicator(ABC):
@@ -36,7 +36,6 @@ class BatchIndicator(BaseIndicator):
             pd.Series: The calculated indicator values.
                        MUST align with the input DataFrame's index.
         """
-        pass
 
 
 class StreamingIndicator(BaseIndicator):
@@ -57,7 +56,6 @@ class StreamingIndicator(BaseIndicator):
         Returns:
             float: The latest calculated indicator value.
         """
-        pass
 
     @abstractmethod
     def snapshot(self) -> Dict[str, Any]:
@@ -68,7 +66,6 @@ class StreamingIndicator(BaseIndicator):
         Returns:
             Dict[str, Any]: Serializable state dictionary.
         """
-        pass
 
     @abstractmethod
     def load_snapshot(self, state: Dict[str, Any]):
@@ -78,4 +75,3 @@ class StreamingIndicator(BaseIndicator):
         Args:
             state (Dict[str, Any]): The state dictionary to restore.
         """
-        pass

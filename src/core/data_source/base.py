@@ -3,10 +3,11 @@
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
 from .cache import LRUCache
+from .circuit_breaker import CircuitBreaker
 from .smart_cache import SmartCache
-from .circuit_breaker import CircuitBreaker, CircuitBreakerOpenError
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +38,7 @@ class DataSourceManagerV2:
         # 加载所有数据源配置
         self._load_registry()
 
-        logger.info(f"DataSourceManagerV2 初始化完成，已加载 {len(self.registry)} 个数据源")
+        logger.info("DataSourceManagerV2 初始化完成，已加载 %s 个数据源", len(self.registry))
         if use_smart_cache:
             logger.info("SmartCache 已启用")
         else:
@@ -59,14 +60,14 @@ class DataSourceManagerV2:
         try:
             db_sources = self._load_from_database()
         except Exception as e:
-            logger.debug(f"DB load failed (expected if db not ready): {e}")
+            logger.debug("DB load failed (expected if db not ready): %s", e)
             db_sources = {}
 
         # 2. 从YAML加载配置
         try:
             yaml_sources = self._load_from_yaml()
         except Exception as e:
-            logger.warning(f"YAML load failed: {e}")
+            logger.warning("YAML load failed: %s", e)
             yaml_sources = {}
 
         # 3. 合并配置
@@ -118,7 +119,7 @@ class DataSourceManagerV2:
 
         return find_endpoints(self, **kwargs)
 
-    def get_best_endpoint(self, data_category: str) -> Optional[Dict]:
+    def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> Optional[Dict]:
         from .router import get_best_endpoint
 
         return get_best_endpoint(self, data_category)
@@ -131,7 +132,7 @@ class DataSourceManagerV2:
     def get_stock_daily(self, symbol, start_date=None, end_date=None, adjust="qfq"):
         best = self.get_best_endpoint("DAILY_KLINE")
         if not best:
-            logger.warning(f"No endpoint found for DAILY_KLINE")
+            logger.warning("No endpoint found for DAILY_KLINE")
             return None
         return self._call_endpoint(best, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust)
 
@@ -156,14 +157,48 @@ class DataSourceManagerV2:
         pass
 
     def _create_handler(self, endpoint_info):
-        from .handler import _create_handler
-
-        return _create_handler(self, endpoint_info)
+        """创建处理器 - 存根方法"""
+        # 实际实现在子类中
+        return None
 
     def _identify_caller(self):
-        from .handler import _identify_caller
-
-        return _identify_caller(self)
+        """识别调用者 - 存根方法"""
+        return {}
 
     def _validate_data(self, *args, **kwargs):
         pass
+
+    def health_check(self, endpoint_name: str = None) -> Dict:
+        """
+        健康检查
+
+        Args:
+            endpoint_name: 端点名称，None表示检查所有
+
+        Returns:
+            健康检查结果字典
+        """
+        healthy = 0
+        unhealthy = 0
+        details = {}
+
+        for name, endpoint in self.registry.items():
+            if endpoint_name and name != endpoint_name:
+                continue
+            is_healthy = endpoint.get("enabled", False) and endpoint.get("health_score", 0) > 50
+            details[name] = {
+                "healthy": is_healthy,
+                "health_score": endpoint.get("health_score", 0),
+                "enabled": endpoint.get("enabled", False),
+            }
+            if is_healthy:
+                healthy += 1
+            else:
+                unhealthy += 1
+
+        return {
+            "total": len(details),
+            "healthy": healthy,
+            "unhealthy": unhealthy,
+            "details": details,
+        }

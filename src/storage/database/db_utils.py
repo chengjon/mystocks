@@ -4,9 +4,10 @@
 """
 
 import os
+from typing import Dict, Optional
+
 import pymysql
 from dotenv import load_dotenv
-from typing import Dict, Optional
 
 
 def create_databases_safely() -> bool:

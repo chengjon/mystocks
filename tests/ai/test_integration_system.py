@@ -8,15 +8,15 @@ AI测试集成系统
 import asyncio
 import json
 import logging
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
+from ..contract.contract_engine import ContractTestEngine
 from .test_ai_assisted_testing import AITestGenerator
 from .test_data_analyzer import AITestDataAnalyzer
 from .test_data_manager import AITestDataManager
-from ..contract.contract_engine import ContractTestEngine
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +135,7 @@ class IntelligentTestPlanner:
             },
         )
 
-        logger.info(f"创建测试计划: {plan_name} (预估时间: {estimated_duration:.2f}s)")
+        logger.info("创建测试计划: %(plan_name)s (预估时间: {estimated_duration:.2f}s)")
         return plan
 
     def _analyze_project_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -310,7 +310,7 @@ class SmartTestExecutor:
         # 计算总执行时间
         total_duration = (datetime.now() - start_time).total_seconds()
 
-        logger.info(f"测试计划执行完成: {plan.name} (耗时: {total_duration:.2f}s)")
+        logger.info("测试计划执行完成: {plan.name} (耗时: {total_duration:.2f}s)")
         return self.execution_results
 
     async def _execute_planning_phase(self, plan: TestExecutionPlan):
@@ -369,7 +369,7 @@ class SmartTestExecutor:
             await asyncio.sleep(1)  # 模拟生成过程
             print(f"✓ 数据档案生成完成: {profile_name}")
         except Exception as e:
-            logger.error(f"数据档案 {profile_name} 生成失败: {e}")
+            logger.error("数据档案 %(profile_name)s 生成失败: %(e)s")
 
     async def _execute_execution_phase(self, plan: TestExecutionPlan, test_executors: Dict[str, Callable]):
         """执行测试阶段"""
@@ -684,7 +684,7 @@ class AITestIntegrationSystem:
             return final_report
 
         except Exception as e:
-            logger.error(f"智能测试执行失败: {e}")
+            logger.error("智能测试执行失败: %(e)s")
             return {"error": str(e), "status": "failed"}
 
     def analyze_test_results(self, execution_results: Dict[str, TestExecutionResult]) -> Dict[str, Any]:
@@ -814,10 +814,10 @@ class AITestIntegrationSystem:
                 latest_link.unlink()
             latest_link.symlink_to(filename)
 
-            logger.info(f"测试结果已保存: {filepath}")
+            logger.info("测试结果已保存: %(filepath)s")
 
         except Exception as e:
-            logger.error(f"保存测试结果失败: {e}")
+            logger.error("保存测试结果失败: %(e)s")
 
     async def auto_optimize_testing(self, execution_results: Dict[str, TestExecutionResult]):
         """自动优化测试"""
@@ -841,7 +841,7 @@ class AITestIntegrationSystem:
             logger.info("测试自动优化完成")
 
         except Exception as e:
-            logger.error(f"自动优化失败: {e}")
+            logger.error("自动优化失败: %(e)s")
 
     def get_system_status(self) -> Dict[str, Any]:
         """获取系统状态"""

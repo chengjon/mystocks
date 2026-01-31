@@ -3,12 +3,13 @@ Rebalancer Domain Service
 投资组合再平衡服务
 """
 
-from typing import Dict, List, Any
-from ..model.portfolio import Portfolio
-from src.domain.trading.value_objects import OrderSide
-
 # 简单的 DTO，用于描述再平衡建议
 from dataclasses import dataclass
+from typing import Dict, List
+
+from src.domain.trading.value_objects import OrderSide
+
+from ..model.portfolio import Portfolio
 
 
 @dataclass

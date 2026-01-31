@@ -4,8 +4,6 @@ LRU Cache类
 简单的LRU缓存实现，用于缓存数据源调用结果。
 """
 
-from collections import OrderedDict
-
 
 class LRUCache:
     """简单的LRU缓存实现"""

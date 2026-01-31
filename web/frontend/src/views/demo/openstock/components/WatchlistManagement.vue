@@ -47,7 +47,7 @@
                 <tbody>
                   <tr v-for="(row, index) in currentGroupStocks" :key="index">
                     <td><code>{{ row.symbol }}</code></td>
-                    <td>{{ row.display_name }}</td>
+                    <td>{{ row.displayName ?? row.displayName }}</td>
                     <td>
                       <span
                         class="badge"

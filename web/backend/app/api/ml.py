@@ -3,31 +3,32 @@
 提供模型训练、预测、评估等功能
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from typing import List
 import os
+from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.core.security import User, get_current_user
 from app.schemas.ml_schemas import (
-    TdxDataRequest,
-    TdxDataResponse,
     FeatureGenerationRequest,
     FeatureGenerationResponse,
-    ModelTrainRequest,
-    ModelTrainResponse,
-    ModelPredictRequest,
-    ModelPredictResponse,
-    ModelListResponse,
-    ModelDetailResponse,
-    ModelInfo,
     HyperparameterSearchRequest,
     HyperparameterSearchResponse,
+    ModelDetailResponse,
     ModelEvaluationRequest,
     ModelEvaluationResponse,
+    ModelInfo,
+    ModelListResponse,
+    ModelPredictRequest,
+    ModelPredictResponse,
+    ModelTrainRequest,
+    ModelTrainResponse,
+    TdxDataRequest,
+    TdxDataResponse,
 )
-from app.services.tdx_parser_service import TdxDataService
 from app.services.feature_engineering_service import FeatureEngineeringService
 from app.services.ml_prediction_service import MLPredictionService
-from app.core.security import get_current_user, User
+from app.services.tdx_parser_service import TdxDataService
 
 router = APIRouter(prefix="/ml", tags=["Machine Learning"])
 

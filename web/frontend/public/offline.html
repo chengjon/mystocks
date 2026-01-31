@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyStocks - 离线模式</title>
+  <meta name="description" content="MyStocks 离线模式 - 量化交易平台离线访问">
+
+  <!-- ArtDeco Design System Styles -->
+  <style>
+    :root {
+      --primary-gold: #D4AF37;
+      --background-dark: #0A0A0A;
+      --text-light: #FFFFFF;
+      --text-muted: #CCCCCC;
+      --border-color: #333333;
+      --shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background-dark);
+      color: var(--text-light);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      max-width: 600px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .offline-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .offline-title {
+      font-size: 2rem;
+      color: var(--primary-gold);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .offline-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .offline-message {
+      font-size: 1rem;
+      margin-bottom: 32px;
+      color: var(--text-light);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .feature-item {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      color: var(--primary-gold);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-light);
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary-gold);
+      color: var(--background-dark);
+    }
+
+    .btn-primary:hover {
+      background: #C4A027;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary-gold);
+      color: var(--primary-gold);
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .last-updated {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .offline-container {
+        padding: 24px;
+        margin: 16px;
+      }
+
+      .offline-title {
+        font-size: 1.6rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <!-- Status Indicator -->
+    <div class="status-indicator">
+      <span class="status-dot"></span>
+      <span>离线模式</span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="offline-icon">📊</div>
+
+    <h1 class="offline-title">MyStocks 离线模式</h1>
+
+    <p class="offline-subtitle">量化交易分析，随时随地</p>
+
+    <p class="offline-message">
+      您当前处于离线状态，但仍可以访问部分已缓存的市场数据和技术分析功能。
+      重新连接网络后，所有功能将完全恢复。
+    </p>
+
+    <!-- Available Features -->
+    <div class="features-grid">
+      <div class="feature-item">
+        <span class="feature-icon">📈</span>
+        <div class="feature-title">市场概览</div>
+        <div class="feature-desc">查看已缓存的市场数据和趋势</div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">📊</span>
+        <div class="feature-title">技术分析</div>
+        <div class="feature-desc">离线查看K线图和技术指标</div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">📰</span>
+        <div class="feature-title">公告监控</div>
+        <div class="feature-desc">浏览已缓存的公司公告</div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">⚙️</span>
+        <div class="feature-title">系统设置</div>
+        <div class="feature-desc">修改本地配置和偏好设置</div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="window.location.reload()">
+        🔄 重试连接
+      </button>
+
+      <button class="btn btn-secondary" onclick="checkConnection()">
+        📡 检查网络
+      </button>
+
+      <a href="/dashboard" class="btn btn-secondary">
+        📊 进入应用
+      </a>
+    </div>
+
+    <!-- Last Updated Info -->
+    <div class="last-updated">
+      最后更新: <span id="last-updated-time">-</span><br>
+      数据缓存将在网络恢复后自动同步
+    </div>
+  </div>
+
+  <script>
+    // Update last updated time
+    document.getElementById('last-updated-time').textContent =
+      new Date().toLocaleString('zh-CN');
+
+    // Check connection function
+    function checkConnection() {
+      if (navigator.onLine) {
+        alert('✅ 网络连接正常');
+        window.location.reload();
+      } else {
+        alert('❌ 网络连接不可用，请检查网络设置');
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', function() {
+      document.querySelector('.status-indicator').innerHTML =
+        '<span style="color: #51cf66;">●</span> <span>网络已恢复</span>';
+      setTimeout(() => window.location.reload(), 2000);
+    });
+
+    window.addEventListener('offline', function() {
+      document.querySelector('.status-indicator').innerHTML =
+        '<span style="color: #ff6b6b;">●</span> <span>网络连接断开</span>';
+    });
+
+    // Service Worker message handling
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'CACHE_UPDATED') {
+          console.log('📦 Cache updated:', event.data);
+          // Could show a notification that new content is available
+        }
+      });
+    }
+  </script>
+</body>
+</html>

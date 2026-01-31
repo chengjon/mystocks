@@ -1,10 +1,7 @@
-def get_stock_daily(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str) -> pd.DataFrame:
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
+def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """
-    获取股票日线数据
+        获取股票日线数据
 
     Args:
         symbol: 股票代码
@@ -29,10 +26,8 @@ def get_stock_daily(
 
     # 使用date_utils标准化日期
     try:
-        normalized_start_date = date_utils.normalize_date(
-            start_date) if start_date else None
-        normalized_end_date = date_utils.normalize_date(
-            end_date) if end_date else None
+        normalized_start_date = date_utils.normalize_date(start_date) if start_date else None
+        normalized_end_date = date_utils.normalize_date(end_date) if end_date else None
     except ValueError as e:
         logger.error("日期格式错误: %s", e)
         return pd.DataFrame()
@@ -46,10 +41,8 @@ def get_stock_daily(
             # 使用efinance获取股票日线数据
             logger.info("使用efinance获取股票日线数据")
             logger.info(
-                "请求参数: symbol=%s, beg=%s, end=%s",
-                normalized_symbol,
-                normalized_start_date,
-                normalized_end_date)
+                "请求参数: symbol=%s, beg=%s, end=%s", normalized_symbol, normalized_start_date, normalized_end_date
+            )
             data = self.ef.stock.get_quote_history(
                 normalized_symbol,
                 beg=normalized_start_date,
@@ -73,39 +66,33 @@ def get_stock_daily(
                     if all(col in data.columns for col in expected_columns):
                         logger.info("数据格式正确")
                         # 验证和清洗数据
-                        cleaned_data = self._validate_and_clean_data(
-                            data, "stock")
+                        cleaned_data = self._validate_and_clean_data(data, "stock")
                         return cleaned_data
                     else:
                         logger.warning("数据列名不匹配，实际列名: %s", list(data.columns))
                         # 尝试重命名列
                         renamed_data = self._rename_columns(data)
                         # 验证和清洗数据
-                        cleaned_data = self._validate_and_clean_data(
-                            renamed_data, "stock")
+                        cleaned_data = self._validate_and_clean_data(renamed_data, "stock")
                         return cleaned_data
                 else:
                     logger.warning("efinance返回空数据")
                     # 尝试更广泛的日期范围
                     logger.info("尝试更广泛的日期范围...")
-                    broader_data = self.ef.stock.get_quote_history(
-                        normalized_symbol, beg="2020-01-01", end="2024-12-31"
-                    )
+                    broader_data = self.ef.stock.get_quote_history(normalized_symbol, beg="2020-01-01", end="2024-12-31")
                     if not broader_data.empty:
                         logger.info("更广泛日期范围获取到%s行数据", len(broader_data))
                         # 过滤日期范围
                         broader_data["日期"] = pd.to_datetime(broader_data["日期"])
-                        start_date_dt = pd.to_datetime(
-                            date_utils.normalize_date(normalized_start_date))
-                        end_date_dt = pd.to_datetime(
-                            date_utils.normalize_date(normalized_end_date))
-                        filtered_data = broader_data[(broader_data["日期"] >= start_date_dt) & (
-                            broader_data["日期"] <= end_date_dt)]
+                        start_date_dt = pd.to_datetime(date_utils.normalize_date(normalized_start_date))
+                        end_date_dt = pd.to_datetime(date_utils.normalize_date(normalized_end_date))
+                        filtered_data = broader_data[
+                            (broader_data["日期"] >= start_date_dt) & (broader_data["日期"] <= end_date_dt)
+                        ]
                         if not filtered_data.empty:
                             logger.info("过滤后得到%s行数据", len(filtered_data))
                             # 验证和清洗数据
-                            cleaned_data = self._validate_and_clean_data(
-                                filtered_data, "stock")
+                            cleaned_data = self._validate_and_clean_data(filtered_data, "stock")
                             return cleaned_data
                         else:
                             logger.warning("过滤后数据为空")
@@ -165,8 +152,7 @@ def get_stock_daily(
                     if col not in df.columns:
                         df[col] = 0  # 默认值
                 # 验证和清洗数据
-                cleaned_data = self._validate_and_clean_data(
-                    df[expected_columns], "stock")  # 按预期顺序返回列
+                cleaned_data = self._validate_and_clean_data(df[expected_columns], "stock")  # 按预期顺序返回列
                 return cleaned_data
             else:
                 logger.warning("easyquotation未获取到股票数据")
@@ -181,3 +167,14 @@ def get_stock_daily(
 
 
 def _rename_columns(self, data: pd.DataFrame) -> pd.DataFrame:
+    """重命名列名"""
+    column_map = {
+        "日期": "trade_date",
+        "开盘": "open",
+        "收盘": "close",
+        "最高": "high",
+        "最低": "low",
+        "成交量": "volume",
+        "成交额": "amount",
+    }
+    return data.rename(columns=column_map)

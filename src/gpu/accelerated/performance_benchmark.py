@@ -5,31 +5,32 @@ GPU性能基准测试系统
 适用于MyStocks量化交易系统的GPU加速效果评估
 """
 
-import time
-import psutil
-import numpy as np
-import pandas as pd
+import json
 import logging
-from typing import Dict, List
-from dataclasses import dataclass
+import time
 import tracemalloc
 from contextlib import contextmanager
-import json
+from dataclasses import dataclass
+from typing import Dict, List
 
-# 导入GPU组件
-from .gpu_manager import GPUUnifiedManager
-from .cpu_fallback import (
-    ComponentSelector,
-    PricePredictorCPU,
-    DataProcessorCPU,
-    FeatureGeneratorCPU,
-)
-from .price_predictor_gpu import GPUPricePredictor
-from .feature_generator_gpu import GPUFeatureGenerator
-from .data_processor_gpu import GPUDataProcessor
+import numpy as np
+import pandas as pd
+import psutil
 
 # 导入原版组件
 from ..unified_manager import MyStocksUnifiedManager
+from .cpu_fallback import (
+    ComponentSelector,
+    DataProcessorCPU,
+    FeatureGeneratorCPU,
+    PricePredictorCPU,
+)
+from .data_processor_gpu import GPUDataProcessor
+from .feature_generator_gpu import GPUFeatureGenerator
+
+# 导入GPU组件
+from .gpu_manager import GPUUnifiedManager
+from .price_predictor_gpu import GPUPricePredictor
 
 
 @dataclass

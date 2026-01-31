@@ -7,7 +7,8 @@ Prevents "contract drift" by ensuring backend responses match the contract.
 
 import logging
 from typing import Any, Dict, List, Optional
-from jsonschema import validate, ValidationError, Draft7Validator
+
+from jsonschema import Draft7Validator, ValidationError, validate
 from jsonschema.exceptions import best_match
 
 logger = logging.getLogger(__name__)

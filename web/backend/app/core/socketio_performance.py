@@ -14,22 +14,23 @@ Author: Claude Code
 Date: 2025-11-12
 """
 
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import structlog
 
 from app.core.socketio_connection_pool import (
     get_connection_pool,
 )
+from app.core.socketio_memory_optimizer import (
+    MemoryPressureLevel,
+    get_memory_optimizer,
+)
 from app.core.socketio_message_batch import (
-    get_message_batcher,
     BatchMessage,
     BatchMessageType,
-)
-from app.core.socketio_memory_optimizer import (
-    get_memory_optimizer,
-    MemoryPressureLevel,
+    get_message_batcher,
 )
 
 logger = structlog.get_logger()

@@ -4,9 +4,10 @@
 遵循 TDD 原则：仅实现满足测试的最小功能
 """
 
-import pandas as pd
-import numpy as np
 from typing import List
+
+import numpy as np
+import pandas as pd
 
 
 class VolumeDataProcessor:
@@ -14,7 +15,6 @@ class VolumeDataProcessor:
 
     def __init__(self):
         """初始化成交量数据处理器"""
-        pass
 
     def calculate_volume_ma(self, data: pd.DataFrame, window: int = 3) -> pd.Series:
         """

@@ -308,8 +308,8 @@ const iconComponent = computed(() => {
   }
 
   // Stroke Linecap and Linejoin for Art Deco aesthetic
-  let strokeLinecap: 'round' | 'square' | 'butt' = 'square'
-  let strokeLinejoin: 'round' | 'miter' | 'bevel' = 'miter'
+  const strokeLinecap: 'round' | 'square' | 'butt' = 'square'
+  const strokeLinejoin: 'round' | 'miter' | 'bevel' = 'miter'
 
   // SVG filters for glow effect
   const filters: any[] = []

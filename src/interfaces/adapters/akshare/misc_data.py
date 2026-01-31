@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_ths_industry_names(self) -> pd.DataFrame:
     """获取同花顺行业名称列表-Akshare实现
 
@@ -131,11 +132,11 @@ def get_margin_detail_sse(self, date: str) -> pd.DataFrame:
 
         # 使用重试装饰器包装API调用
         @self._retry_api_call
-        def _get_margin_detail():
+        def _get_sse_margin_detail():
             return ak.stock_margin_detail_sse(date=date)
 
         # 调用akshare接口获取上证所融资融券明细
-        df = _get_margin_detail()
+        df = _get_sse_margin_detail()
 
         if df is None or df.empty:
             logger.info(r"[Akshare] 未能获取到上证所融资融券明细")
@@ -199,11 +200,11 @@ def get_margin_detail_szse(self, date: str) -> pd.DataFrame:
 
         # 使用重试装饰器包装API调用
         @self._retry_api_call
-        def _get_margin_detail():
+        def _get_szse_margin_detail():
             return ak.stock_margin_detail_szse(date=date)
 
         # 调用akshare接口获取深证所融资融券明细
-        df = _get_margin_detail()
+        df = _get_szse_margin_detail()
 
         if df is None or df.empty:
             logger.info(r"[Akshare] 未能获取到深证所融资融券明细")
@@ -266,11 +267,11 @@ def get_margin_summary_sse(self, start_date: str, end_date: str) -> pd.DataFrame
 
         # 使用重试装饰器包装API调用
         @self._retry_api_call
-        def _get_margin_summary():
+        def _get_sse_margin_summary():
             return ak.stock_margin_sse(start_date=start_date, end_date=end_date)
 
         # 调用akshare接口获取上证所融资融券汇总
-        df = _get_margin_summary()
+        df = _get_sse_margin_summary()
 
         if df is None or df.empty:
             logger.info(r"[Akshare] 未能获取到上证所融资融券汇总")
@@ -330,11 +331,11 @@ def get_margin_summary_szse(self, date: str) -> pd.DataFrame:
 
         # 使用重试装饰器包装API调用
         @self._retry_api_call
-        def _get_margin_summary():
+        def _get_szse_margin_summary():
             return ak.stock_margin_szse(date=date)
 
         # 调用akshare接口获取深证所融资融券汇总
-        df = _get_margin_summary()
+        df = _get_szse_margin_summary()
 
         if df is None or df.empty:
             logger.info(r"[Akshare] 未能获取到深证所融资融券汇总")
@@ -751,7 +752,10 @@ def get_futures_index_daily(self, symbol: str, start_date: str, end_date: str) -
     """
     try:
         logger.info(
-            r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s", symbol, start_date, end_date
+            r"[Akshare] 开始获取股指期货日线数据: symbol=%s, 开始日期=%s, 结束日期=%s",
+            symbol,
+            start_date,
+            end_date,
         )
 
         # 使用重试装饰器包装API调用
@@ -994,7 +998,7 @@ def get_futures_basis_analysis(self, symbol: str, start_date: str, end_date: str
         spot_symbol = spot_index_mapping.get(futures_type)
 
         if not spot_symbol:
-            logger.warning(f"无法确定期货 {symbol} 对应的现货指数")
+            logger.warning("无法确定期货 %(symbol)s 对应的现货指数")
             return pd.DataFrame()
 
         # 获取现货指数数据
@@ -1038,7 +1042,7 @@ def get_futures_basis_analysis(self, symbol: str, start_date: str, end_date: str
 
 def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: str) -> pd.DataFrame:
     """
-    获取分钟K线数据（通过TDX适配器获取，AkShare本身不直接支持分钟K线）
+        获取分钟K线数据（通过TDX适配器获取，AkShare本身不直接支持分钟K线）
 
     Args:
         symbol: str - 股票代码
@@ -1057,7 +1061,7 @@ def get_minute_kline(self, symbol: str, period: str, start_date: str, end_date: 
 
 def get_industry_classify(self) -> pd.DataFrame:
     """
-    获取行业分类数据
+        获取行业分类数据
 
     Returns:
         pd.DataFrame: 行业分类数据

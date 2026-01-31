@@ -16,14 +16,15 @@ MyStocks 内存管理器
 """
 
 import gc
-import psutil
+import logging
 import threading
 import time
 import weakref
-from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass
 from datetime import datetime
-import logging
+from typing import Any, Callable, Dict, List, Optional
+
+import psutil
 
 logger = logging.getLogger("MyStocksMemoryManager")
 
@@ -326,9 +327,7 @@ class MemoryMonitor:
         logger.info("紧急垃圾回收: 回收了 %s 个对象", collected)
 
         # 清理资源管理器中的资源
-        from src.core.memory_manager import resource_manager
-
-        resource_manager.cleanup_all()
+        _resource_manager.cleanup_all()
 
     def get_current_stats(self) -> MemoryStats:
         """获取当前统计信息"""

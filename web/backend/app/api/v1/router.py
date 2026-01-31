@@ -15,11 +15,12 @@ Usage:
 """
 
 from fastapi import APIRouter
+
+from .admin import audit_router, auth_router, optimization_router
+from .analysis import backtest_router, sentiment_router, stress_test_router
+from .strategy import indicators_router, ml_router
 from .system import health_router, routing_router
-from .strategy import ml_router, indicators_router
-from .trading import session_router, positions_router
-from .admin import auth_router, audit_router, optimization_router
-from .analysis import sentiment_router, backtest_router, stress_test_router
+from .trading import positions_router, session_router
 
 api_v1_router = APIRouter(
     prefix="/api/v1",

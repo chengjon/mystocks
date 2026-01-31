@@ -72,11 +72,11 @@
     // ============================================
 
     .artdeco-card {
-        // Art Deco signature: 阶梯角效果
-        @include artdeco-stepped-corners(8px);
+        // Art Deco signature: 锐利直角 (radius-none = 0px)
+        border-radius: var(--artdeco-radius-none);
 
         background: var(--artdeco-bg-card);
-        border: 1px solid var(--artdeco-border-default);
+        border: 2px solid var(--artdeco-border-default);  // UI Pro Max优化：从1px增加到2px，增强视觉层级
         padding: var(--artdeco-spacing-4);
         position: relative;
         overflow: hidden;

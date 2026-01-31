@@ -5,11 +5,11 @@ Strategy Templates Package
 """
 
 from app.backtest.strategies.base import BaseStrategy, StrategySignal
-from app.backtest.strategies.momentum import MomentumStrategy
-from app.backtest.strategies.mean_reversion import MeanReversionStrategy
 from app.backtest.strategies.breakout import BreakoutStrategy
-from app.backtest.strategies.grid import GridStrategy
 from app.backtest.strategies.factory import StrategyFactory
+from app.backtest.strategies.grid import GridStrategy
+from app.backtest.strategies.mean_reversion import MeanReversionStrategy
+from app.backtest.strategies.momentum import MomentumStrategy
 
 __all__ = [
     "BaseStrategy",

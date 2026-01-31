@@ -6,8 +6,9 @@ SQLAlchemy models for storing indicator calculation results and task history.
 Designed for PostgreSQL/TimescaleDB.
 """
 
-from sqlalchemy import Column, String, Float, DateTime, JSON, Integer, Text
+from sqlalchemy import JSON, Column, DateTime, Float, Integer, String, Text
 from sqlalchemy.sql import func
+
 from app.core.database import Base
 
 

@@ -7,39 +7,40 @@ All API schemas should inherit from these base classes to ensure consistency.
 Reference: docs/api/API_SPECIFICATION.md
 """
 
-from typing import Optional, List, Any, Dict
 from decimal import Decimal
-from pydantic import BaseModel, Field, validator, constr
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, constr, validator
 
 try:
     from app.core.data_formats import (
+        DateFormat,
+        StockSymbolFormat,
         get_current_iso_timestamp,
         get_current_ms_timestamp,
-        validate_price,
-        validate_percentage,
-        validate_volume,
         validate_currency,
-        StockSymbolFormat,
-        DateFormat,
+        validate_percentage,
+        validate_price,
+        validate_volume,
     )
 except (ImportError, ModuleNotFoundError):
     # Fallback for script execution
-    import sys
     import os
+    import sys
 
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
 
     from app.core.data_formats import (
+        DateFormat,
+        StockSymbolFormat,
         get_current_iso_timestamp,
         get_current_ms_timestamp,
-        validate_price,
-        validate_percentage,
-        validate_volume,
         validate_currency,
-        StockSymbolFormat,
-        DateFormat,
+        validate_percentage,
+        validate_price,
+        validate_volume,
     )
 
 

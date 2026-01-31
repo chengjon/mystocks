@@ -6,24 +6,25 @@
 
 import json
 import logging
+import queue
 import smtplib
+import statistics
+import threading
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable, Tuple
-import threading
-import queue
-import statistics
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from jinja2 import Template
-import requests
 import psutil
+import requests
+from jinja2 import Template
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
+
 from ..ai.test_data_manager import DataManager as AIDataManager
 
 

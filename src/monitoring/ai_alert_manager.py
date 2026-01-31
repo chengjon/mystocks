@@ -13,16 +13,17 @@ MyStocks AI告警管理器
 """
 
 import asyncio
-import logging
 import json
+import logging
 import smtplib
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from enum import Enum
-from typing import List, Dict, Any, Optional
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 
 from src.monitoring.monitoring_database import (
@@ -107,12 +108,10 @@ class IAlertHandler(ABC):
     @abstractmethod
     async def handle_alert(self, alert: Alert) -> bool:
         """处理告警"""
-        pass
 
     @abstractmethod
     async def test_connection(self) -> bool:
         """测试连接"""
-        pass
 
 
 @dataclass

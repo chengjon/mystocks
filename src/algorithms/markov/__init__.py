@@ -8,14 +8,15 @@ for complex probabilistic and sequential modeling.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Union, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
+
 import pandas as pd
 
-from src.algorithms.base import BaseAlgorithm, AlgorithmMetadata
-from src.algorithms.types import AlgorithmType
-from src.algorithms.markov.hmm_algorithm import HMMAlgorithm
+from src.algorithms.base import AlgorithmMetadata, BaseAlgorithm
 from src.algorithms.bayesian.bayesian_network_algorithm import BayesianNetworkAlgorithm
+from src.algorithms.markov.hmm_algorithm import HMMAlgorithm
+from src.algorithms.types import AlgorithmType
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,7 @@ class MarkovBayesianManager:
         self.algorithms[name] = algorithm
         self.performance_history[name] = []
 
-        logger.info(f"Created {algorithm_type.value} algorithm: {name}")
+        logger.info("Created {algorithm_type.value} algorithm: %(name)s")
         return name
 
     async def train_algorithm(self, algorithm_name: str, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -108,7 +109,7 @@ class MarkovBayesianManager:
         algorithm = self.algorithms[algorithm_name]
         start_time = datetime.now()
 
-        logger.info(f"Training advanced algorithm: {algorithm_name} ({algorithm.algorithm_type.value})")
+        logger.info("Training advanced algorithm: %(algorithm_name)s ({algorithm.algorithm_type.value})")
 
         # Train the algorithm
         if algorithm.algorithm_type == AlgorithmType.HIDDEN_MARKOV_MODEL:
@@ -129,7 +130,7 @@ class MarkovBayesianManager:
         }
         self.performance_history[algorithm_name].append(performance_record)
 
-        logger.info(f"Algorithm {algorithm_name} training completed in {execution_time:.2f}s")
+        logger.info("Algorithm %(algorithm_name)s training completed in {execution_time:.2f}s")
         return training_result
 
     async def predict_with_algorithm(
@@ -269,7 +270,7 @@ class MarkovBayesianManager:
 
             for name in algorithm_names:
                 if name not in self.algorithms:
-                    logger.warning(f"Algorithm '{name}' not found, skipping")
+                    logger.warning("Algorithm '%(name)s' not found, skipping")
                     continue
 
                 # Create analysis task
@@ -287,7 +288,7 @@ class MarkovBayesianManager:
                     }
 
                 except Exception as e:
-                    logger.error(f"Failed to analyze algorithm '{name}': {e}")
+                    logger.error("Failed to analyze algorithm '%(name)s': %(e)s")
                     results[name] = {"error": str(e), "success": False}
 
             return results
@@ -449,7 +450,7 @@ class MarkovBayesianManager:
             return success
 
         except Exception as e:
-            logger.error(f"Failed to load algorithm from {filepath}: {e}")
+            logger.error("Failed to load algorithm from %(filepath)s: %(e)s")
             return False
 
     def get_performance_history(self, algorithm_name: str) -> List[Dict[str, Any]]:

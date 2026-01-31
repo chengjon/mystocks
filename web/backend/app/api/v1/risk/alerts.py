@@ -12,11 +12,12 @@ Version: 3.1.0
 Date: 2026-01-10
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, List, Optional
-import structlog
-import sys
 import os
+import sys
+from typing import Any, Dict, List, Optional
+
+import structlog
+from fastapi import APIRouter, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -24,16 +25,16 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
 from src.core import DataClassification  # noqa: E402
+from unified_manager import MyStocksUnifiedManager as UM  # noqa: E402,F401
 
 try:
+    from src.governance.risk_management.services.alert_rule_engine import (
+        AlertContext,
+        get_alert_rule_engine,
+    )
     from src.governance.risk_management.services.risk_alert_notification_manager import (
         get_risk_alert_notification_manager,
-    )
-    from src.governance.risk_management.services.alert_rule_engine import (
-        get_alert_rule_engine,
-        AlertContext,
     )
 
     ENHANCED_RISK_FEATURES_AVAILABLE = True
@@ -47,8 +48,8 @@ router = APIRouter(prefix="/api/v1/risk/alerts", tags=["风险告警管理"])
 
 from app.schemas.risk_schemas import (  # noqa: E402
     RiskAlertCreate,
-    RiskAlertUpdate,
     RiskAlertResponse,
+    RiskAlertUpdate,
 )
 
 
@@ -210,7 +211,7 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"发送风险告警失败: {e}")
+        logger.error("发送风险告警失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"发送风险告警失败: {str(e)}")
 
 
@@ -231,5 +232,5 @@ async def get_alert_statistics() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取告警统计失败: {e}")
+        logger.error("获取告警统计失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取告警统计失败: {str(e)}")

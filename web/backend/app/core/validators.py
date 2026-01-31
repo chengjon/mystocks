@@ -5,16 +5,14 @@
 """
 
 from datetime import date, datetime
-from typing import Any, List, Optional
 from decimal import Decimal
-
+from typing import Any, List, Optional
 
 from app.core.validation_messages import (
     CommonMessages,
     MarketMessages,
     TechnicalMessages,
 )
-
 
 # ==================== 股票代码验证器 ====================
 

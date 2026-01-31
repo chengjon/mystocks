@@ -5,12 +5,13 @@ Establishes performance baselines and identifies slow endpoints
 """
 
 import asyncio
-import aiohttp
 import statistics
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 
 @dataclass

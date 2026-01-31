@@ -15,7 +15,7 @@
     >
       <template #actions>
         <ArtDecoButton
-          variant="primary"
+          variant="solid"
           :glow="true"
           :loading="loading"
           @click="handleRefresh"
@@ -33,7 +33,7 @@
     </ArtDecoFilterBar>
 
     <!-- Art Deco Portfolio Table -->
-    <ArtDecoCard variant="luxury" :decorated="true">
+    <ArtDecoCard variant="default" :decorated="true">
       <template #header>
         <div class="table-header-section">
           <ArtDecoBadge variant="gold">PORTFOLIO ASSETS</ArtDecoBadge>
@@ -102,15 +102,15 @@
         <template #actions="{ row }">
           <ArtDecoButton
             variant="outline"
-            size="small"
+            size="sm"
             @click="handleView(row)"
           >
             VIEW
           </ArtDecoButton>
 
           <ArtDecoButton
-            variant="gold"
-            size="small"
+            variant="solid"
+            size="sm"
             @click="handleAnalyze(row)"
           >
             ANALYZE
@@ -118,15 +118,16 @@
         </template>
       </ArtDecoTable>
 
-      <!-- Art Deco Pagination -->
+      <!-- Standard Pagination -->
       <template #footer>
         <div class="pagination-section">
-          <ArtDecoPagination
+          <ElPagination
             v-model:current-page="pagination.currentPage"
             v-model:page-size="pagination.pageSize"
             :total="total"
             :page-sizes="[10, 20, 50, 100]"
-            @page-change="handlePageChange"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handlePageChange"
             @size-change="handleSizeChange"
           />
         </div>
@@ -139,17 +140,18 @@ import { ref, onMounted, reactive, computed, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import type { FilterItem } from '@/components/shared/types'
 // Import Art Deco components
 import {
   ArtDecoHeader,
   ArtDecoFilterBar,
   ArtDecoTable,
-  ArtDecoTableColumn,
-  ArtDecoPagination,
   ArtDecoButton,
   ArtDecoBadge,
-  ArtDecoCard
+  ArtDecoCard,
+  ArtDecoStatCard
 } from '@/components/artdeco'
+import { ElPagination } from 'element-plus'
 
 const router = useRouter()
 const loading = ref(false)
@@ -174,7 +176,7 @@ const stocks = ref([])
 const total = ref(0)
 
 // FilterBar 配置
-const filterConfig = computed((): FilterItem[] => [
+const filterConfig = computed((): any[] => [
   {
     type: 'input',
     key: 'search',
@@ -186,38 +188,38 @@ const filterConfig = computed((): FilterItem[] => [
     key: 'industry',
     label: '行业',
     placeholder: '全部行业',
-    options: [
-      { value: '', label: '全部' },
-      ...industries.value.map(item => ({
-        value: item.industry_name || '',
-        label: item.industry_name || '未命名行业'
-      }))
-    ]
-  },
-  {
-    type: 'select',
-    key: 'concept',
-    label: '概念',
-    placeholder: '全部概念',
-    options: [
-      { value: '', label: '全部' },
-      ...concepts.value.map(item => ({
-        value: item.concept_name || '',
-        label: item.concept_name || '未命名概念'
-      }))
-    ]
-  },
-  {
-    type: 'select',
-    key: 'market',
-    label: '市场',
-    placeholder: '全部市场',
-    options: [
-      { value: '', label: '全部' },
-      { value: 'SH', label: '上海' },
-      { value: 'SZ', label: '深圳' }
-    ]
-  }
+     options: [
+       { value: '', label: '全部' },
+       ...industries.value.map(item => ({
+         value: item.industry_name || '',
+         label: item.industry_name || '未命名行业'
+       }))
+     ]
+   },
+   {
+     type: 'select',
+     key: 'concept',
+     label: '概念',
+     placeholder: '全部概念',
+     options: [
+       { value: '', label: '全部' },
+       ...concepts.value.map(item => ({
+         value: item.concept_name || '',
+         label: item.concept_name || '未命名概念'
+       }))
+     ]
+   },
+   {
+     type: 'select',
+     key: 'market',
+     label: '市场',
+     placeholder: '全部市场',
+     options: [
+       { value: '', label: '全部' },
+       { value: 'SH', label: '上海' },
+       { value: 'SZ', label: '深圳' }
+     ]
+   }
 ])
 
 // Table columns are now defined inline in template using ArtDecoTableColumn
@@ -357,8 +359,8 @@ const getArtDecoChangeClass = (value: number | string | null | undefined) => {
 }
 
 // Market badge variant function
-const getMarketBadgeVariant = (market: string) => {
-  return market.toLowerCase() === 'sh' ? 'success' : 'primary'
+const getMarketBadgeVariant = (market: string): 'success' | 'info' | 'warning' | 'gold' | 'rise' | 'fall' | 'danger' => {
+  return market.toLowerCase() === 'sh' ? 'success' : 'info'
 }
 
 const formatVolume = (volume: number | null | undefined) => {
@@ -376,203 +378,3 @@ onMounted(async () => {
   await loadData()
 })
 </script>
-
-<style scoped lang="scss">
-// Art Deco Design System Integration
-@import '@/styles/artdeco-tokens.scss';
-
-.stocks-page {
-  @include artdeco-crosshatch-bg(); // Diagonal crosshatch background
-  min-height: 100vh;
-  padding: $artdeco-spacing-xl;
-
-  .table-header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-
-    .portfolio-stats {
-      display: flex;
-      align-items: center;
-      gap: $artdeco-spacing-sm;
-      font-family: 'Marcellus', serif;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-size: $artdeco-font-size-sm;
-      color: $artdeco-text-muted;
-
-      .stat-label {
-        font-weight: 400;
-      }
-
-      .stat-value {
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-        color: $artdeco-accent-gold;
-        font-size: $artdeco-font-size-lg;
-      }
-    }
-  }
-
-  .pagination-section {
-    display: flex;
-    justify-content: center;
-    padding: $artdeco-spacing-lg;
-    border-top: 2px solid $artdeco-accent-gold;
-  }
-
-  // Art Deco specific styling
-  .artdeco-mono {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-  }
-
-  .artdeco-price {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    font-size: $artdeco-font-size-base;
-  }
-
-  .artdeco-positive {
-    color: $artdeco-color-up; // Red for gains
-    font-weight: 600;
-  }
-
-  .artdeco-negative {
-    color: $artdeco-color-down; // Green for losses
-    font-weight: 600;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: transparent;
-    border: 2px solid var(--color-border);
-    color: var(--color-accent);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 0;
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    &:hover:not(:disabled) {
-      background: var(--color-accent-alpha-90);
-      border-color: var(--color-accent);
-      box-shadow: 0 4px 12px var(--color-accent-alpha-80);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    &.button-primary {
-      background: var(--color-accent);
-      color: var(--color-bg-primary);
-      border-color: var(--color-accent);
-
-      &:hover:not(:disabled) {
-        background: var(--color-accent-hover);
-        box-shadow: 0 4px 12px var(--color-accent-alpha-70);
-      }
-    }
-
-    &.button-success {
-      border-color: var(--color-stock-up);
-      color: var(--color-stock-up);
-
-      &:hover:not(:disabled) {
-        background: var(--color-stock-up-alpha-90);
-        border-color: var(--color-stock-up);
-      }
-    }
-
-    &.loading {
-      position: relative;
-      pointer-events: none;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 14px;
-        height: 14px;
-        margin: -7px 0 0 -7px;
-        border: 2px solid transparent;
-        border-top-color: currentColor;
-        border-radius: 50%;
-        animation: spin 0.6s linear infinite;
-      }
-    }
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-}
-
-// Art Deco responsive design
-@media (max-width: 768px) {
-  .stocks-page {
-    padding: $artdeco-spacing-lg;
-
-    .table-header-section {
-      flex-direction: column;
-      gap: $artdeco-spacing-md;
-      align-items: flex-start;
-
-      .portfolio-stats {
-        font-size: $artdeco-font-size-xs;
-      }
-    }
-
-    .pagination-section {
-      padding: $artdeco-spacing-md;
-    }
-  }
-}
-
-// Art Deco animations
-@keyframes artdeco-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes artdeco-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
-  }
-}
-
-  .table-header {
-      padding: var(--spacing-md) var(--spacing-md);
-    }
-
-    .table-footer {
-      padding: var(--spacing-md) var(--spacing-md);
-    }
-  }
-</style>

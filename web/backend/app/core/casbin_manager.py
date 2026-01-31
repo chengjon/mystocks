@@ -14,10 +14,11 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, List, Optional, Any, Set
-from dataclasses import dataclass, field
-import structlog
 import os
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Set
+
+import structlog
 
 try:
     import casbin

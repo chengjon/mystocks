@@ -3,9 +3,11 @@ Infrastructure Layer - SQLAlchemy Models
 将领域实体映射到数据库表结构
 """
 
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, JSON, DateTime, DECIMAL, Boolean, Text
-from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import DECIMAL, JSON, Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
+
 from src.storage.database.database_manager import Base
 
 

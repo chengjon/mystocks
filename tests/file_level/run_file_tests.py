@@ -13,9 +13,9 @@ Author: MyStocks Testing Team
 Date: 2026-01-10
 """
 
+import argparse
 import asyncio
 import sys
-import argparse
 from pathlib import Path
 from typing import List, Optional
 

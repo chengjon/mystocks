@@ -5,9 +5,9 @@ Strategy Parameter Optimization Module
 """
 
 from app.backtest.optimization.base import BaseOptimizer, OptimizationResult
+from app.backtest.optimization.genetic import GeneticOptimizer
 from app.backtest.optimization.grid_search import GridSearchOptimizer
 from app.backtest.optimization.random_search import RandomSearchOptimizer
-from app.backtest.optimization.genetic import GeneticOptimizer
 
 __all__ = [
     "BaseOptimizer",

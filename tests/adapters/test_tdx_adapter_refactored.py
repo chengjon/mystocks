@@ -3,11 +3,12 @@ TDD测试框架 - TDX适配器重构
 遵循红-绿-重构循环，确保拆分后的功能完整性
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -304,8 +305,9 @@ class TestTdxKlineDataFetcher:
 
     def test_kline_data_performance(self):
         """测试：K线数据获取性能基准"""
-        from src.adapters.tdx_kline_fetcher import TdxKlineDataFetcher
         import time
+
+        from src.adapters.tdx_kline_fetcher import TdxKlineDataFetcher
 
         fetcher = TdxKlineDataFetcher()
 
@@ -384,8 +386,9 @@ class TestTdxRealtimeManager:
 
     def test_realtime_data_performance(self):
         """测试：实时数据获取性能基准"""
-        from src.adapters.tdx_realtime_manager import TdxRealtimeManager
         import time
+
+        from src.adapters.tdx_realtime_manager import TdxRealtimeManager
 
         manager = TdxRealtimeManager()
 

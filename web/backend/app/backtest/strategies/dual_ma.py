@@ -4,9 +4,9 @@ Dual Moving Average Strategy
 双均线策略 - 经典的趋势跟踪策略
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class DualMAStrategy(BaseStrategy):

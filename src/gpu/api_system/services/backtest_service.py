@@ -3,32 +3,33 @@
 Backtest Service
 """
 
-import logging
-import time
 import json
+import logging
+import queue
+import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from typing import Any, Dict, List
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any
-from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor
-import queue
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
 from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 try:
     from src.gpu.api_system.api_proto.backtest_pb2 import (
         BacktestRequest,
-        TaskResponse,
-        QueryRequest,
-        QueryResponse,
-        HistoryResponse,
         BatchRequest,
         BatchResponse,
-        PerformanceMetrics,
-        ParameterOptimizationRequest,
+        HistoryResponse,
         OptimizationResult,
+        ParameterOptimizationRequest,
+        PerformanceMetrics,
+        QueryRequest,
+        QueryResponse,
+        TaskResponse,
     )
     from src.gpu.api_system.api_proto.backtest_pb2_grpc import BacktestServiceServicer
 except ImportError:

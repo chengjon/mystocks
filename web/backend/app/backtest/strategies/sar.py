@@ -5,10 +5,10 @@ SAR抛物线转向策略 - 趋势跟踪与止损合一
 Parabolic Stop And Reverse
 """
 
-from typing import Dict, Any, Optional, List
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class SARStrategy(BaseStrategy):

@@ -3,16 +3,17 @@ IDataSource测试文件
 用于测试数据源接口定义
 """
 
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import unittest
 from abc import ABC
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
-from typing import Dict, List, Optional, Any
 
 # 导入被测试的模块
 from src.interfaces.data_source import IDataSource

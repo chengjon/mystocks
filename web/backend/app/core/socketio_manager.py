@@ -15,23 +15,24 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-from typing import Dict, List, Optional, Callable, Any, Set
 from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional, Set
+
 import structlog
 
 try:
-    from socketio import AsyncServer, AsyncNamespace
+    from socketio import AsyncNamespace, AsyncServer
 except ImportError:
     raise ImportError("python-socketio is not installed. Install it with: pip install python-socketio")
 
+from app.core.reconnection_manager import get_reconnection_manager
 from app.models.websocket_message import (
-    WebSocketRequestMessage,
     WebSocketErrorCode,
-    create_response_message,
+    WebSocketRequestMessage,
     create_error_message,
     create_pong_message,
+    create_response_message,
 )
-from app.core.reconnection_manager import get_reconnection_manager
 from app.services.realtime_streaming_service import (
     get_streaming_service,
 )
@@ -587,7 +588,7 @@ class MySocketIOManager:
     def register_request_handler(self, action: str, handler: Callable) -> None:
         """注册请求处理器"""
         self.request_handlers[action] = handler
-        logger.info(f"✅ 已注册请求处理器: {action}")
+        logger.info("✅ 已注册请求处理器: %(action)s"")
 
     async def emit_to_room(
         self,

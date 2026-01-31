@@ -1,3 +1,4 @@
+# pylint: disable=import-error,no-name-in-module
 """
 完整可视化示例 (Complete Visualization Example)
 
@@ -11,19 +12,20 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from backtest.backtest_engine import BacktestConfig, BacktestEngine
 
 # 导入策略和回测模块
 from strategy.templates.momentum_template import MomentumStrategy
-from backtest.backtest_engine import BacktestEngine, BacktestConfig
-from src.visualization.chart_generator import ChartGenerator
+
 from src.visualization.backtest_visualizer import BacktestVisualizer
+from src.visualization.chart_generator import ChartGenerator
 
 
 def generate_sample_data(n=252):

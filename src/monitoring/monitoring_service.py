@@ -15,23 +15,23 @@ MyStocks 量化交易数据管理系统 - 监控与自动化模块
 日期: 2025-09-21
 """
 
-import os
 import json
+import logging
+import os
 import time
-import pymysql
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from enum import Enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
-import logging
+import pymysql
 from dotenv import load_dotenv
 
 # 导入核心模块 (US3: 已移除DataStorageStrategy)
 from src.core import (
-    DataClassification,
     ConfigDrivenTableManager,
+    DataClassification,
 )
 
 logger = logging.getLogger("MyStocksMonitoring")
@@ -124,7 +124,7 @@ class MonitoringDatabase:
         # 初始化监控表结构
         self._ensure_monitoring_tables()
 
-        logger.info("监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']}")
+        logger.info("监控数据库初始化完成: {self.monitor_db_config['host']}:{self.monitor_db_config['port']")
 
     def _get_monitor_connection(self):
         """获取监控数据库连接"""
@@ -982,7 +982,6 @@ class AlertChannel(ABC):
     @abstractmethod
     def send_alert(self, alert: Alert):
         """发送告警"""
-        pass
 
 
 class LogAlertChannel(AlertChannel):

@@ -15,11 +15,11 @@ Signal Monitoring System Integration Tests
 """
 
 import os
-import pytest
-import pytest_asyncio
+import sys
 from datetime import datetime, timedelta
 
-import sys
+import pytest
+import pytest_asyncio
 
 sys.path.insert(0, ".")
 
@@ -420,14 +420,14 @@ class TestPrometheusMetrics:
     def test_signal_metrics_import(self):
         """测试信号监控指标模块导入"""
         from src.monitoring.signal_metrics import (
-            SIGNAL_GENERATION_TOTAL,
-            SIGNAL_ACCURACY_PERCENTAGE,
-            SIGNAL_LATENCY_SECONDS,
             ACTIVE_SIGNALS_COUNT,
-            SIGNAL_SUCCESS_RATE,
+            SIGNAL_ACCURACY_PERCENTAGE,
+            SIGNAL_GENERATION_TOTAL,
+            SIGNAL_LATENCY_SECONDS,
             SIGNAL_PROFIT_RATIO,
-            SIGNAL_PUSH_TOTAL,
             SIGNAL_PUSH_LATENCY_SECONDS,
+            SIGNAL_PUSH_TOTAL,
+            SIGNAL_SUCCESS_RATE,
             STRATEGY_HEALTH_STATUS,
         )
 

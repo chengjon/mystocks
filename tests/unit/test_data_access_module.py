@@ -7,11 +7,12 @@ Data Access Module Test Suite (Mock-based)
 版本: 1.0.0
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import MagicMock, patch
-import sys
 import os
+import sys
+from unittest.mock import MagicMock, patch
+
+import pandas as pd
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
 
@@ -24,7 +25,7 @@ class TestDataAccessModuleStructure:
     def test_module_imports(self, mock_data_manager, mock_conn_manager):
         """测试模块可以正常导入"""
         mock_conn_manager.return_value = MagicMock()
-        from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+        from src.data_access import PostgreSQLDataAccess, TDengineDataAccess
 
         assert TDengineDataAccess is not None
         assert PostgreSQLDataAccess is not None
@@ -149,8 +150,7 @@ class TestDataClassificationRouting:
     def test_timeseries_data_routes_to_tdengine(self, mock_data_manager, mock_conn_manager):
         """测试时序数据路由到TDengine"""
         mock_conn_manager.return_value = MagicMock()
-        from src.core import DataClassification, DatabaseTarget
-
+        from src.core import DatabaseTarget, DataClassification
         from src.core.data_manager import DataManager
 
         dm = DataManager(enable_monitoring=False)
@@ -166,8 +166,7 @@ class TestDataClassificationRouting:
     def test_relational_data_routes_to_postgresql(self, mock_data_manager, mock_conn_manager):
         """测试关系数据路由到PostgreSQL"""
         mock_conn_manager.return_value = MagicMock()
-        from src.core import DataClassification, DatabaseTarget
-
+        from src.core import DatabaseTarget, DataClassification
         from src.core.data_manager import DataManager
 
         dm = DataManager(enable_monitoring=False)
@@ -188,7 +187,7 @@ class TestDataAccessIntegration:
         """测试同时访问TDengine和PostgreSQL"""
         mock_conn_manager.return_value = MagicMock()
 
-        from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+        from src.data_access import PostgreSQLDataAccess, TDengineDataAccess
 
         td_access = TDengineDataAccess()
         pg_access = PostgreSQLDataAccess()

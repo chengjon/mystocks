@@ -5,8 +5,9 @@ TDX数据解析器 - 从 tdx_adapter.py 拆分
 """
 
 import logging
+from typing import Any, Dict, List
+
 import pandas as pd
-from typing import Dict, Any, List
 
 # 设置日志
 logger = logging.getLogger(__name__)

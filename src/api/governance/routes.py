@@ -5,11 +5,12 @@ RESTful API endpoints for data quality metrics, lineage tracking,
 and asset management.
 """
 
+import logging
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-import logging
 
 from src.data_governance import (
     AssetType,
@@ -254,7 +255,6 @@ async def update_asset(asset_id: str, request: AssetUpdateRequest) -> AssetRespo
 async def delete_asset(asset_id: str):
     """Delete an asset"""
     # This would delete the asset from the registry
-    pass
 
 
 @router.post("/assets/{asset_id}/access", response_model=Dict[str, str])

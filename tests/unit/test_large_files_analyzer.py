@@ -7,8 +7,9 @@ T0XX: 大文件分析脚本单元测试
 import os
 import sys
 from io import StringIO
-from unittest.mock import patch, MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 # 假设脚本在项目的scripts/dev目录下，需要调整路径使其可导入

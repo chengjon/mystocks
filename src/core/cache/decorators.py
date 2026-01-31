@@ -7,7 +7,7 @@ import functools
 import logging
 from typing import Callable, Optional
 
-from src.core.cache.multi_level import get_cache, generate_cache_key
+from src.core.cache.multi_level import generate_cache_key, get_cache
 
 logger = logging.getLogger(__name__)
 

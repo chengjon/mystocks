@@ -1,17 +1,18 @@
+import structlog
+import os
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError, HTTPException
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-import structlog
 
 # Import existing core components
 from app.core.error_codes import ErrorCode
+from app.core.exception_handler import database_exception_handler  # Import the config to apply production/dev settings
 from app.core.exception_handler import (
     global_exception_handler,
     http_exception_handler,
     validation_exception_handler,
-    database_exception_handler,  # Import the config to apply production/dev settings
 )
 
 # Initialize logger
@@ -65,11 +66,12 @@ async def health_check():
     )
 
 
+from datetime import datetime, timezone
+
 # --- Request ID Middleware (Example) ---
 # In a real project, a middleware would be responsible for setting request_id
 # For now, let's add a simple one here to ensure request_id is always present
 from uuid import uuid4
-from datetime import datetime, timezone
 
 
 @app.middleware("http")

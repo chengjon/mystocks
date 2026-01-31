@@ -1,5 +1,6 @@
-import requests
 import time
+
+import requests
 
 
 # 测试前端页面是否能正常加载

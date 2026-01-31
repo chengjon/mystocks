@@ -11,15 +11,14 @@
 5. 缓存统计
 """
 
-import time
-import threading
 import hashlib
-import pickle
-import zlib
-from typing import Any, Dict, List, Optional, Callable, TypeVar
-from dataclasses import dataclass
 import logging
-
+import pickle
+import threading
+import time
+import zlib
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 logger = logging.getLogger(__name__)
 

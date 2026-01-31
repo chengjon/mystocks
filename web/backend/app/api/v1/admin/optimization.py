@@ -4,9 +4,10 @@
 提供数据库优化和维护功能
 """
 
+from typing import Any, Dict
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Dict, Any
 
 router = APIRouter(
     prefix="/optimization",

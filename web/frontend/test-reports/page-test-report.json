@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-01-21T09:34:00.313Z",
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "successRate": "100.00%"
+  },
+  "results": [
+    {
+      "path": "/",
+      "name": "Home (重定向到Dashboard)",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/dashboard",
+      "name": "Dashboard 总览",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/market/data",
+      "name": "市场行情",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/market/quotes",
+      "name": "行情报价",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/stocks/management",
+      "name": "股票管理",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/analysis/data",
+      "name": "投资分析",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/risk/management",
+      "name": "风险管理",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/strategy/trading",
+      "name": "策略和交易管理",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/strategy/backtest",
+      "name": "策略回测",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    },
+    {
+      "path": "/system/monitoring",
+      "name": "系统监控",
+      "status": 200,
+      "hasError": false,
+      "error": null
+    }
+  ],
+  "issues": []
+}

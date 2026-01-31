@@ -9,11 +9,12 @@
 # 版权：MyStocks Project © 2025
 """
 
-import pandas as pd
-from typing import Dict, List
 import datetime
-import sys
 import os
+import sys
+from typing import Dict, List
+
+import pandas as pd
 
 # 将当前目录的父目录的父目录添加到模块搜索路径中
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -51,8 +52,8 @@ except ImportError:
 
 try:
     from src.utils.symbol_utils import (
-        format_stock_code_for_source,
         format_index_code_for_source,
+        format_stock_code_for_source,
     )
 except ImportError:
     # 如果无法导入，创建简单的格式化器

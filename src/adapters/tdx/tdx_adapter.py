@@ -678,10 +678,10 @@ class TdxDataSource(IDataSource):
             >>> df_all = tdx.get_block_data(block_type='all')
         """
         try:
-            from src.data_sources.tdx_block_reader import TdxBlockReader
-
             # 使用环境变量TDX_DATA_PATH
             import os
+
+            from .tdx_block_reader import TdxBlockReader
 
             tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:
@@ -733,9 +733,9 @@ class TdxDataSource(IDataSource):
             ...     print(f"{block['blockname']} ({block['block_type']})")
         """
         try:
-            from src.data_sources.tdx_block_reader import TdxBlockReader
-
             import os
+
+            from .tdx_block_reader import TdxBlockReader
 
             tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:
@@ -766,9 +766,9 @@ class TdxDataSource(IDataSource):
             >>> print(stocks[:10])  # 前10只股票
         """
         try:
-            from src.data_sources.tdx_block_reader import TdxBlockReader
-
             import os
+
+            from .tdx_block_reader import TdxBlockReader
 
             tdx_path = os.getenv("TDX_DATA_PATH")
             if not tdx_path:

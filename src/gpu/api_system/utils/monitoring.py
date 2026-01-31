@@ -4,11 +4,12 @@ Metrics Collector
 """
 
 import logging
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
-import psutil
 import threading
-from prometheus_client import Counter, Histogram, Gauge, Summary
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
+import psutil
+from prometheus_client import Counter, Gauge, Histogram, Summary
 
 logger = logging.getLogger(__name__)
 

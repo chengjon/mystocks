@@ -12,34 +12,34 @@ GPU性能优化管理器测试套件
 """
 
 import asyncio
-import pytest
 import logging
-from datetime import datetime
 import os
 import sys
+from datetime import datetime
+
+import pytest
 
 # Add project root to path
 sys.path.insert(0, os.getcwd())
 
+from src.monitoring.gpu_integration_manager import GPUOptimizationConfig as IntegrationGPUConfig
+from src.monitoring.gpu_integration_manager import (
+    get_gpu_health,
+    get_gpu_integration_status,
+    get_gpu_performance_report,
+    initialize_gpu_integration,
+    optimize_gpu_memory,
+    run_gpu_optimization,
+)
+
 # 导入待测试的模块
 from src.monitoring.gpu_performance_optimizer import (
-    GPUPerformanceOptimizer,
-    GPUOptimizationConfig,
     GPUMetrics,
+    GPUOptimizationConfig,
+    GPUPerformanceOptimizer,
     OptimizationResult,
     initialize_gpu_optimizer,
 )
-
-from src.monitoring.gpu_integration_manager import (
-    GPUOptimizationConfig as IntegrationGPUConfig,
-    initialize_gpu_integration,
-    get_gpu_integration_status,
-    run_gpu_optimization,
-    get_gpu_performance_report,
-    get_gpu_health,
-    optimize_gpu_memory,
-)
-
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)

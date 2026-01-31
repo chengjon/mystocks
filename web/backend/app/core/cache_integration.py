@@ -28,11 +28,12 @@ Usage:
 """
 
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, TypeVar
-import structlog
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 
-from app.core.cache_manager import get_cache_manager, CacheManager
+import structlog
+
+from app.core.cache_manager import CacheManager, get_cache_manager
 
 logger = structlog.get_logger()
 

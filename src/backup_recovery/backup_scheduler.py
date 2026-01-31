@@ -19,7 +19,6 @@ except ImportError:
 
 from .backup_manager import BackupManager
 
-
 logger = logging.getLogger(__name__)
 
 

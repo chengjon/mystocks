@@ -5,13 +5,13 @@ Provides intelligent load balancing and failover capabilities
 for selecting the optimal data source for requests.
 """
 
-import random
 import asyncio
-from typing import Dict, List, Optional, Tuple, Any, Callable, Awaitable
-from dataclasses import dataclass
 import logging
+import random
+from dataclasses import dataclass
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
-from .registry import DataSourceRegistry, DataSourceConfig, HealthStatus, DataSourceInfo
+from .registry import DataSourceConfig, DataSourceInfo, DataSourceRegistry, HealthStatus
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ class MultiSourceLoadBalancer:
             config, reason = await self.select_source(preferred_sources)
 
             if not config:
-                logger.error(f"[{operation}] No data source available")
+                logger.error("[%(operation)s] No data source available")
                 return None, False
 
             if config.source_id in sources_tried:
@@ -153,11 +153,11 @@ class MultiSourceLoadBalancer:
 
                 result = await execute_func(config)
 
-                logger.info(f"[{operation}] Success with {config.source_id}")
+                logger.info("[%(operation)s] Success with {config.source_id")
                 return result, True
 
             except Exception as e:
-                logger.warning(f"[{operation}] Failed with {config.source_id}: {e}")
+                logger.warning("[%(operation)s] Failed with {config.source_id}: %(e)s")
 
                 # Mark source as unhealthy temporarily
                 from .health import HealthReport, HealthStatus
@@ -172,7 +172,7 @@ class MultiSourceLoadBalancer:
                 if attempt < max_retries - 1:
                     await asyncio.sleep(self._config.retry_delay)
 
-        logger.error(f"[{operation}] All retries failed. Sources tried: {sources_tried}")
+        logger.error("[%(operation)s] All retries failed. Sources tried: %(sources_tried)s")
         return None, False
 
     async def get_source_stats(self) -> Dict[str, Dict[str, Any]]:

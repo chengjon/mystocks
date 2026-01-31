@@ -14,9 +14,10 @@
 创建日期: 2026-01-07
 """
 
-from typing import Dict, Any, List
-import pandas as pd
 import logging
+from typing import Any, Dict, List
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class DataValidator:
         if table_name not in self.rules:
             self.rules[table_name] = []
         self.rules[table_name].append(rule)
-        logger.debug(f"已为表 {table_name} 注册规则: {rule.get('type')}")
+        logger.debug("已为表 %(table_name)s 注册规则: {rule.get('type')")
 
     def validate(self, table_name: str, data: pd.DataFrame) -> Dict[str, Any]:
         """
@@ -67,7 +68,7 @@ class DataValidator:
 
         if table_name not in self.rules:
             # 没有规则，跳过验证
-            logger.debug(f"表 {table_name} 没有注册的验证规则")
+            logger.debug("表 %(table_name)s 没有注册的验证规则")
             return result
 
         # 按优先级排序并应用规则
@@ -116,10 +117,10 @@ class DataValidator:
             try:
                 return validator(data, rule)
             except Exception as e:
-                logger.error(f"应用规则 {rule_type} 失败: {e}")
+                logger.error("应用规则 %(rule_type)s 失败: %(e)s")
                 return {"is_valid": False, "errors": [f"规则 {rule_type} 执行失败: {str(e)}"], "warnings": []}
         else:
-            logger.warning(f"未知的规则类型: {rule_type}")
+            logger.warning("未知的规则类型: %(rule_type)s")
             return {"is_valid": True, "errors": [], "warnings": []}
 
     def _check_required_columns(self, data: pd.DataFrame, rule: Dict) -> Dict[str, Any]:
@@ -353,7 +354,7 @@ class DataValidator:
 
         self.register_rule("stock_tick", {"type": "value_range", "column": "volume", "min": 0, "priority": "MEDIUM"})
 
-        logger.info(f"已加载 {sum(len(rules) for rules in self.rules.values())} 个默认验证规则")
+        logger.info("已加载 {sum(len(rules) for rules in self.rules.values())} 个默认验证规则")
 
 
 # 全局验证器实例

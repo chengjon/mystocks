@@ -9,18 +9,15 @@
 # 版权：MyStocks Project © 2025
 """
 
-import pandas as pd
-from typing import Dict, List
 import datetime
-import sys
 import os
+import sys
+from typing import Dict, List
+
+import pandas as pd
 
 # 将当前目录的父目录的父目录添加到模块搜索路径中
-sys.path.append(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(
-                os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # 临时简化导入以支持测试
 try:
@@ -49,27 +46,22 @@ try:
     from src.utils.date_utils import normalize_date
 except ImportError:
     # 如果无法导入，创建一个简单的日期格式化器
-
-
-def normalize_date(date_str):
-    return str(date_str)
+    def normalize_date(date_str):
+        return str(date_str)
 
 
 try:
     from src.utils.symbol_utils import (
-        format_stock_code_for_source,
         format_index_code_for_source,
+        format_stock_code_for_source,
     )
 except ImportError:
     # 如果无法导入，创建简单的格式化器
+    def format_stock_code_for_source(code, source):
+        return code
 
-
-def format_stock_code_for_source(code, source):
-    return code
-
-
-def format_index_code_for_source(code, source):
-    return code
+    def format_index_code_for_source(code, source):
+        return code
 
 
 class BaostockDataSource(IDataSource):
@@ -104,11 +96,7 @@ def __del__(self) -> None:
         self.bs.logout()
 
 
-def get_stock_daily(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str) -> pd.DataFrame:
+def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """获取股票日线数据-Baostock实现"""
     try:
         # 使用专门的格式化函数处理股票代码
@@ -159,11 +147,7 @@ def get_stock_daily(
         return pd.DataFrame()
 
 
-def get_index_daily(
-        self,
-        symbol: str,
-        start_date: str,
-        end_date: str) -> pd.DataFrame:
+def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """获取指数日线数据-Baostock实现"""
     try:
         # 使用专门的格式化函数处理指数代码
@@ -260,9 +244,7 @@ def get_index_components(self, symbol: str) -> List[str]:
     try:
         # 获取指数成分股
         # pylint: disable=no-member
-        rs = self.bs.query_index_weight(
-            code=symbol, start_date=normalize_date(
-                datetime.datetime.now()))
+        rs = self.bs.query_index_weight(code=symbol, start_date=normalize_date(datetime.datetime.now()))
         if rs.error_code != "0":
             print(f"Baostock查询错误: {rs.error_msg}")
             return []
@@ -285,9 +267,7 @@ def get_real_time_data(self, symbol: str):
     """获取实时数据-Baostock实现"""
     try:
         # 使用stock_zh_a_spot接口获取股票实时数据
-        rs = self.bs.query_all_stock(
-            day=normalize_date(
-                datetime.datetime.now()))
+        rs = self.bs.query_all_stock(day=normalize_date(datetime.datetime.now()))
         if rs.error_code != "0":
             print(f"Baostock查询错误: {rs.error_msg}")
             return {}

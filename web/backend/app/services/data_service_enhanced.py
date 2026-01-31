@@ -74,7 +74,7 @@ try:
     logger.info("Akshare adapter imported successfully")
 except ImportError as e:
     AKSHARE_AVAILABLE = False
-    logger.warning(f"Akshare adapter not available: {e}")
+    logger.warning("Akshare adapter not available: %(e)s"")
 
 
 class EnhancedDataService:
@@ -104,7 +104,7 @@ class EnhancedDataService:
             self.unified_manager = MyStocksUnifiedManager(enable_monitoring=False)
             logger.info("Enhanced DataService initialized with MyStocksUnifiedManager")
         except Exception as e:
-            logger.warning(f"Failed to initialize MyStocksUnifiedManager: {e}")
+            logger.warning("Failed to initialize MyStocksUnifiedManager: %(e)s"")
             self.unified_manager = None
 
         # Initialize Akshare adapter if auto_fetch enabled
@@ -116,7 +116,7 @@ class EnhancedDataService:
                 self.akshare_adapter = AkshareDataSource()
                 logger.info("Akshare adapter initialized for automatic data fetching")
             except Exception as e:
-                logger.warning(f"Failed to initialize Akshare adapter: {e}")
+                logger.warning("Failed to initialize Akshare adapter: %(e)s"")
                 self.auto_fetch = False
 
         # Initialize cache integration
@@ -128,7 +128,7 @@ class EnhancedDataService:
                 self.cache = get_cache_integration()
                 logger.info("Cache integration initialized for Enhanced DataService")
             except Exception as e:
-                logger.warning(f"Failed to initialize cache integration: {e}")
+                logger.warning("Failed to initialize cache integration: %(e)s"")
                 self.use_cache = False
 
     @handle_errors(max_attempts=3, fallback_value=pd.DataFrame())
@@ -218,7 +218,7 @@ class EnhancedDataService:
                 self.metrics_collector.increment("data_ohlcv_errors_total")
                 self.metrics_collector.set_gauge("data_ohlcv_success_rate", 0.0)
 
-            logger.error(f"Failed to load daily OHLCV data: {e}")
+            logger.error("Failed to load daily OHLCV data: %(e)s"")
             raise
 
     def _load_data_with_retry(
@@ -238,7 +238,7 @@ class EnhancedDataService:
 
             # If data not found and auto_fetch enabled, fetch from Akshare
             if df.empty and self.auto_fetch:
-                logger.info(f"Data not found in database, fetching from Akshare for {symbol}")
+                logger.info("Data not found in database, fetching from Akshare for %(symbol)s"")
                 df = self._fetch_and_save_from_akshare(symbol, start_date, end_date)
 
             return df
@@ -360,7 +360,7 @@ class EnhancedDataService:
             missing_columns = [col for col in required_columns if col not in df.columns]
 
             if missing_columns:
-                logger.warning(f"Missing required columns: {missing_columns}")
+                logger.warning("Missing required columns: %(missing_columns)s"")
                 return pd.DataFrame()
 
             # Ensure trade_date is datetime type
@@ -372,7 +372,7 @@ class EnhancedDataService:
             return df
 
         except Exception as e:
-            logger.error(f"Failed to load from UnifiedManager: {e}")
+            logger.error("Failed to load from UnifiedManager: %(e)s"")
             raise DatabaseQueryError(f"数据库查询失败: {str(e)}")
 
     def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
@@ -383,7 +383,7 @@ class EnhancedDataService:
                 return pd.DataFrame()
 
             # Call Akshare adapter to fetch data
-            logger.info(f"Fetching data from Akshare: {symbol} from {start_date.date()} to {end_date.date()}")
+            logger.info("Fetching data from Akshare: %(symbol)s from {start_date.date()} to {end_date.date()}"")
 
             df = self.akshare_adapter.get_stock_daily(
                 symbol=symbol,
@@ -392,7 +392,7 @@ class EnhancedDataService:
             )
 
             if df.empty:
-                logger.warning(f"Akshare returned empty data for {symbol}")
+                logger.warning("Akshare returned empty data for %(symbol)s"")
                 return pd.DataFrame()
 
             # Normalize column names - Akshare adapter already returns English column names
@@ -413,7 +413,7 @@ class EnhancedDataService:
 
             # Save to database via UnifiedManager
             if self.unified_manager:
-                logger.info(f"Saving {len(df_save)} records to database for {symbol}")
+                logger.info("Saving {len(df_save)} records to database for %(symbol)s"")
 
                 result = self.unified_manager.save_data_by_classification(
                     classification=DataClassification.DAILY_KLINE,
@@ -421,7 +421,7 @@ class EnhancedDataService:
                     data=df_save,
                 )
 
-                logger.info(f"Data saved to database: {result}")
+                logger.info("Data saved to database: %(result)s"")
 
                 # Record save operation
                 if self.metrics_collector:
@@ -432,7 +432,7 @@ class EnhancedDataService:
             return df_save
 
         except Exception as e:
-            logger.error(f"Failed to fetch and save from Akshare: {e}")
+            logger.error("Failed to fetch and save from Akshare: %(e)s"")
             if self.metrics_collector:
                 self.metrics_collector.increment("data_akshare_errors_total")
             return pd.DataFrame()
@@ -445,7 +445,7 @@ class EnhancedDataService:
         base_price: float = 100.0,
     ) -> pd.DataFrame:
         """生成模拟数据 (用于开发测试)"""
-        logger.warning(f"Generating mock data for {symbol}")
+        logger.warning("Generating mock data for %(symbol)s"")
 
         # Generate date range (business days only)
         dates = pd.date_range(start=start_date, end=end_date, freq="B")
@@ -515,7 +515,7 @@ class EnhancedDataService:
                     return df.iloc[0]["name"]
 
         except Exception as e:
-            logger.warning(f"Failed to get symbol name: {e}")
+            logger.warning("Failed to get symbol name: %(e)s"")
 
         # Fallback to symbol itself
         return symbol
@@ -569,7 +569,7 @@ class EnhancedDataService:
             return (min_date.to_pydatetime(), max_date.to_pydatetime())
 
         except Exception as e:
-            logger.warning(f"Failed to get available date range: {e}")
+            logger.warning("Failed to get available date range: %(e)s"")
             return None
 
 

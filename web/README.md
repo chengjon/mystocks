@@ -9,10 +9,12 @@
 
 ## 技术栈
 - **后端**: FastAPI + Python 3.8+ + Uvicorn
-- **前端**: Vue.js 3 + Element Plus + klinecharts
+- **前端**: Vue.js 3 + Element Plus + klinecharts + Pinia + Vue Router
 - **数据源**: TDX (通达信) + Akshare + Baostock
 - **数据库**: MySQL/MariaDB (参考数据) + PostgreSQL+TimescaleDB (衍生数据) + TDengine (时序数据) + Redis (缓存)
-- **认证**: JWT Token
+- **认证**: JWT Token with localStorage persistence
+- **实时通信**: WebSocket with auto-reconnection
+- **状态管理**: Pinia with factory pattern
 - **部署**: Docker + Docker Compose
 
 ## 快速开始
@@ -71,7 +73,15 @@ docker-compose up -d
   - 用户名: `admin`
   - 密码: `admin123`
 
-## 功能特性
+## 核心特性
+
+### 现代化前端架构 (v2.1)
+- **🔐 认证系统**: JWT-based authentication with localStorage persistence and route guards
+- **🌐 路由系统**: Vue Router with automatic authentication protection and navigation guards
+- **📊 状态管理**: Pinia store factory pattern for standardized API data management
+- **🔄 实时通信**: WebSocket manager with auto-reconnection, heartbeat, and event-driven messaging
+- **⚡ API客户端**: Unified API client with intelligent caching, retry logic, and error handling
+- **🔧 数据适配器**: Standardized data transformation and validation between APIs and stores
 
 ### v2.1 新增功能 ⭐
 - 🎯 **TDX (通达信) 实时行情**: 完整的实时股票和指数行情监控
@@ -80,6 +90,10 @@ docker-compose up -d
 - 🔄 **自动刷新**: 可配置的5秒自动刷新功能
 - 🔌 **智能故障转移**: TDX服务器自动切换,确保数据稳定性
 - 🔒 **JWT认证**: 完整的用户认证和授权机制
+- 🌐 **路由优化**: Vue Router with authentication guards
+- ⚡ **状态管理**: Pinia store factory with caching
+- 🔄 **实时通信**: WebSocket with auto-reconnection and heartbeat
+- 📊 **API集成**: 标准化的API客户端 with retry and caching
 - ⚡ **高性能**: 实时行情<100ms, K线查询<150ms
 
 ### 基础功能

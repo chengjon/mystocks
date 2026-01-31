@@ -6,9 +6,10 @@ Redis Queue Utility Module
 import json
 import logging
 import time
-from typing import Dict, List, Optional, Any, Union
-import redis
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Union
+
+import redis
 
 logger = logging.getLogger(__name__)
 

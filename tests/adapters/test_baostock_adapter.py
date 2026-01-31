@@ -17,8 +17,9 @@ Phase: 2 - Task 2.2.2
 """
 
 import unittest
-from unittest.mock import Mock, patch
 from datetime import datetime
+from unittest.mock import Mock, patch
+
 import pandas as pd
 
 from src.adapters.baostock_adapter import BaostockDataSource

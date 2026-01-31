@@ -9,10 +9,11 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class EventType(str, Enum):

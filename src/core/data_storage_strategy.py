@@ -9,7 +9,8 @@
 """
 
 from typing import Dict
-from .data_classification import DataClassification, DatabaseTarget
+
+from .data_classification import DatabaseTarget, DataClassification
 
 
 class DataStorageStrategy:

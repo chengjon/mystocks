@@ -1,0 +1,387 @@
+// ============================================
+//   ART DECO GRID SYSTEM
+//   艺术装饰网格布局系统
+// ============================================
+//
+// Purpose: 提供统一的CSS Grid布局系统,对齐HTML源文件设计
+// Features: 5种Grid模式、响应式断点、复用ArtDeco令牌
+// Created: 2026-01-22
+// Version: 1.0
+// ============================================
+
+// ============================================
+//   BREAKPOINTS - 响应式断点
+//   基于HTML源文件的媒体查询
+// ============================================
+
+:root {
+  --artdeco-breakpoint-xs: 480px;   // 超小屏
+  --artdeco-breakpoint-sm: 640px;   // 小屏
+  --artdeco-breakpoint-md: 1024px;  // 中屏 (常见平板)
+  --artdeco-breakpoint-lg: 1280px;  // 大屏 (常见笔记本)
+  --artdeco-breakpoint-xl: 1536px;  // 超大屏 (桌面显示器)
+}
+
+// ============================================
+//   GRID MIXINS - 网格混入
+//   可复用的Grid布局模式
+// ============================================
+
+// 基础Grid容器 (复用ArtDeco间距令牌)
+@mixin artdeco-grid-container {
+  display: grid;
+  width: 100%;
+  max-width: 1800px;  // HTML源文件标准
+  margin: 0 auto;
+}
+
+// 3列等宽Grid (Dashboard图表区域)
+@mixin artdeco-grid-3-cols {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--artdeco-spacing-6);  // 24px
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--artdeco-spacing-4);  // 16px
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: var(--artdeco-spacing-4);  // 16px
+  }
+}
+
+// 4列等宽Grid (Dashboard统计卡片)
+@mixin artdeco-grid-4-cols {
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--artdeco-spacing-6);  // 24px
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--artdeco-spacing-4);  // 16px
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 2列等宽Grid (资金流、对比分析)
+@mixin artdeco-grid-2-cols {
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--artdeco-spacing-6);  // 24px
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: var(--artdeco-spacing-4);  // 16px
+  }
+}
+
+// 自适应Grid (热力图、板块矩阵)
+@mixin artdeco-grid-auto {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--artdeco-spacing-2);  // 8px (紧凑间距)
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);  // 移动端强制2列
+  }
+}
+
+// 大卡片Grid (股票池、回测列表)
+@mixin artdeco-grid-cards {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--artdeco-spacing-6);  // 24px
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;  // 移动端单列
+    gap: var(--artdeco-spacing-4);  // 16px
+  }
+}
+
+// ============================================
+//   GRID UTILITY CLASSES - 网格工具类
+//   直接使用的Grid布局类
+// ============================================
+
+// 3列Grid - Dashboard主图表区域
+.artdeco-grid-3 {
+  @include artdeco-grid-container;
+  @include artdeco-grid-3-cols;
+}
+
+// 4列Grid - 统计卡片区域
+.artdeco-grid-4 {
+  @include artdeco-grid-container;
+  @include artdeco-grid-4-cols;
+}
+
+// 2列Grid - 左右对比区域
+.artdeco-grid-2 {
+  @include artdeco-grid-container;
+  @include artdeco-grid-2-cols;
+}
+
+// 自适应Grid - 热力图、板块矩阵
+.artdeco-grid-auto {
+  @include artdeco-grid-container;
+  @include artdeco-grid-auto;
+}
+
+// 卡片Grid - 股票池、列表
+.artdeco-grid-cards {
+  @include artdeco-grid-container;
+  @include artdeco-grid-cards;
+}
+
+// ============================================
+//   SEMANTIC GRID CLASSES - 语义化Grid类
+//   基于HTML源文件的Grid区域
+// ============================================
+
+// Dashboard图表区域 (3列)
+.charts-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-3-cols;
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// Dashboard统计卡片 (4列)
+.summary-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-4-cols;
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// 板块热力图 (自适应)
+.heatmap-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-auto;
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// 资金流分析 (2列)
+.flow-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-2-cols;
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// 股票池/列表 (卡片Grid)
+.pool-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-cards;
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// 导航/快捷方式 (3列,较大间距)
+.nav-section {
+  @include artdeco-grid-container;
+  @include artdeco-grid-3-cols;
+  gap: var(--artdeco-spacing-8);  // 32px
+  margin-bottom: var(--artdeco-spacing-8);  // 32px
+}
+
+// ============================================
+//   SPECIAL GRIDS - 特殊Grid布局
+// ============================================
+
+// 不等宽Grid (侧边栏 + 主内容)
+.sidebar-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;  // 侧边栏240px,主内容自适应
+  gap: var(--artdeco-spacing-6);  // 24px
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;  // 移动端单列
+  }
+}
+
+// 可折叠侧边栏 (折叠后64px)
+.sidebar-collapsible {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--artdeco-spacing-6);  // 24px
+  transition: grid-template-columns var(--artdeco-transition-base);
+
+  &.collapsed {
+    grid-template-columns: 64px 1fr;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 表单Grid (标签 + 输入框)
+.form-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--artdeco-spacing-4);  // 16px
+  align-items: center;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;  // 移动端垂直布局
+    gap: var(--artdeco-spacing-2);  // 8px
+  }
+}
+
+// 数据表格Grid (固定列宽 + 自适应)
+.table-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 100px 80px;  // 5列固定
+  gap: var(--artdeco-spacing-3);  // 12px
+  align-items: center;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 60px 1fr 100px 80px 60px;  // 缩小列宽
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;  // 移动端单列
+  }
+}
+
+// ============================================
+//   RESPONSIVE HELPERS - 响应式辅助类
+// ============================================
+
+// 仅在移动端隐藏
+@media (max-width: 768px) {
+  .artdeco-hide-mobile {
+    display: none !important;
+  }
+}
+
+// 仅在桌面端隐藏
+@media (min-width: 769px) {
+  .artdeco-hide-desktop {
+    display: none !important;
+  }
+}
+
+// 仅在平板及以上显示
+@media (min-width: 769px) {
+  .artdeco-show-tablet {
+    display: block !important;
+  }
+}
+
+// 仅在桌面及以上显示
+@media (min-width: 1025px) {
+  .artdeco-show-desktop {
+    display: block !important;
+  }
+}
+
+// ============================================
+//   GRID GAP UTILITIES - Grid间距工具类
+// 复用ArtDeco间距令牌
+// ============================================
+
+.gap-xs { gap: var(--artdeco-spacing-2); }   // 8px
+.gap-sm { gap: var(--artdeco-spacing-3); }   // 12px
+.gap-md { gap: var(--artdeco-spacing-4); }   // 16px
+.gap-lg { gap: var(--artdeco-spacing-6); }   // 24px
+.gap-xl { gap: var(--artdeco-spacing-8); }   // 32px
+.gap-2xl { gap: var(--artdeco-spacing-10); } // 40px
+
+// 行间距 (row-gap)
+.row-gap-xs { row-gap: var(--artdeco-spacing-2); }
+.row-gap-sm { row-gap: var(--artdeco-spacing-3); }
+.row-gap-md { row-gap: var(--artdeco-spacing-4); }
+.row-gap-lg { row-gap: var(--artdeco-spacing-6); }
+.row-gap-xl { row-gap: var(--artdeco-spacing-8); }
+
+// 列间距 (column-gap)
+.col-gap-xs { column-gap: var(--artdeco-spacing-2); }
+.col-gap-sm { column-gap: var(--artdeco-spacing-3); }
+.col-gap-md { column-gap: var(--artdeco-spacing-4); }
+.col-gap-lg { column-gap: var(--artdeco-spacing-6); }
+.col-gap-xl { column-gap: var(--artdeco-spacing-8); }
+
+// ============================================
+//   GRID ALIGNMENT - Grid对齐工具类
+// ============================================
+
+// 水平对齐
+.justify-start { justify-content: start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+// 垂直对齐
+.items-start { align-items: start; }
+.items-center { align-items: center; }
+.items-end { align-items: end; }
+.items-stretch { align-items: stretch; }
+
+// 内容区域对齐
+.content-start { align-content: start; }
+.content-center { align-content: center; }
+.content-end { align-content: end; }
+.content-stretch { align-content: stretch; }
+
+// ============================================
+//   EXAMPLE USAGE - 使用示例
+// ============================================
+
+/*
+// 1. 使用工具类 (最简单)
+<div class="artdeco-grid-3">
+  <div>图表1</div>
+  <div>图表2</div>
+  <div>图表3</div>
+</div>
+
+// 2. 使用语义化类 (推荐)
+<section class="charts-section">
+  <ArtDecoCard />
+  <ArtDecoCard />
+  <ArtDecoCard />
+</section>
+
+// 3. 使用Mixin (最灵活)
+.my-custom-grid {
+  @include artdeco-grid-container;
+  grid-template-columns: repeat(3, 1fr) 200px;  // 自定义列宽
+  gap: var(--artdeco-spacing-6);
+}
+
+// 4. 响应式Grid
+<div class="summary-grid-4">
+  <StatCard />
+  <StatCard />
+  <StatCard />
+  <StatCard />
+</div>
+// 桌面端: 4列
+// 平板端: 3列
+// 手机端: 2列
+// 小屏:  1列
+
+// 5. 不等宽Grid
+<div class="sidebar-layout">
+  <aside>侧边栏 (240px)</aside>
+  <main>主内容 (自适应)</main>
+</div>
+
+// 6. 自适应Grid (热力图)
+<div class="heatmap-section">
+  <HeatmapTile v-for="item in items" :key="item.id" />
+</div>
+// 自动填充,每列最小120px
+*/

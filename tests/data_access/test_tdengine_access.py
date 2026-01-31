@@ -15,10 +15,11 @@ Phase: 2 - Task 2.1.1
 """
 
 import unittest
-from unittest.mock import Mock, patch
 from datetime import datetime
-import pandas as pd
+from unittest.mock import Mock, patch
+
 import numpy as np
+import pandas as pd
 
 from src.data_access.tdengine_access import TDengineDataAccess
 

@@ -15,12 +15,13 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, Optional, List, Any
-import structlog
-from decimal import Decimal
-import psycopg2
-from psycopg2.extras import execute_batch
 import os
+from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
+import psycopg2
+import structlog
+from psycopg2.extras import execute_batch
 
 from app.services.data_aggregation_service import OHLCV, Timeframe
 

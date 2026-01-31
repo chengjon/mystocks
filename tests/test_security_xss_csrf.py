@@ -7,11 +7,12 @@ Tests comprehensive XSS and CSRF protection mechanisms
 - Frontend HTTP client security features
 """
 
-import pytest
-import time
-import sys
 import os
+import sys
+import time
 from pathlib import Path
+
+import pytest
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -172,6 +173,7 @@ class TestCSRFMiddleware:
         """Create FastAPI test client with CSRF protection"""
         try:
             from fastapi.testclient import TestClient
+
             from app.main import app
 
             return TestClient(app)
@@ -441,6 +443,7 @@ class TestXSSCSRFIntegration:
         """Create FastAPI test client"""
         try:
             from fastapi.testclient import TestClient
+
             from app.main import app
 
             return TestClient(app)

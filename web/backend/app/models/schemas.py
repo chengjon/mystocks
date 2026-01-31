@@ -4,8 +4,9 @@
 定义行业/概念分析相关的响应数据结构
 """
 
-from typing import Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, Optional
+
 from pydantic import BaseModel, Field
 
 

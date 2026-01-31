@@ -3,8 +3,9 @@
 用于演示AI测试优化器在新功能开发中的应用
 """
 
-import pandas as pd
 from typing import Optional
+
+import pandas as pd
 
 
 class NewMarketDataAdapter:

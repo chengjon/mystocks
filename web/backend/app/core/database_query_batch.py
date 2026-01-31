@@ -17,12 +17,13 @@ Date: 2025-11-12
 """
 
 import asyncio
-import structlog
-from typing import Dict, List, Optional, Any
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import time
+from typing import Any, Dict, List, Optional
+
+import structlog
 
 logger = structlog.get_logger()
 
@@ -296,7 +297,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing insert buffer for {table_name}", error=str(e))
+            logger.error("❌ Error flushing insert buffer for {table_name}", error=str(e))
 
     async def _flush_update_buffer(self, table_name: str) -> None:
         """刷新UPDATE缓冲"""
@@ -316,7 +317,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing update buffer for {table_name}", error=str(e))
+            logger.error("❌ Error flushing update buffer for {table_name}", error=str(e))
 
     async def _flush_delete_buffer(self, table_name: str) -> None:
         """刷新DELETE缓冲"""
@@ -336,7 +337,7 @@ class DatabaseQueryBatcher:
             await self._execute_batch(batch_query)
 
         except Exception as e:
-            logger.error(f"❌ Error flushing delete buffer for {table_name}", error=str(e))
+            logger.error("❌ Error flushing delete buffer for {table_name}", error=str(e))
 
     async def _execute_batch(self, batch_query: BatchQuery) -> None:
         """执行批处理查询"""

@@ -16,9 +16,9 @@ test.describe('基础导航测试', () => {
     // 验证页面标题
     await expect(page).toHaveTitle(/MyStocks/)
 
-    // 验证主要元素存在
-    await expect(page.locator('.navbar')).toBeVisible()
-    await expect(page.locator('.sidebar')).toBeVisible()
+    // 验证主要元素存在 (ArtDecoLayout结构)
+    await expect(page.locator('.artdeco-header')).toBeVisible()
+    await expect(page.locator('.layout-sidebar')).toBeVisible()
     await expect(page.locator('.main-content')).toBeVisible()
   })
 
@@ -34,8 +34,8 @@ test.describe('基础导航测试', () => {
   })
 
   test('能够切换侧边栏', async ({ page }) => {
-    // 获取侧边栏
-    const sidebar = page.locator('.sidebar')
+    // 获取侧边栏 (ArtDecoLayout使用.layout-sidebar)
+    const sidebar = page.locator('.layout-sidebar')
 
     // 点击折叠按钮
     await page.click('.hamburger')

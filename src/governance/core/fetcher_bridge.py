@@ -8,10 +8,10 @@ Design Pattern: Bridge / Facade
 """
 
 import logging
-import pandas as pd
-from typing import Dict, List, Optional, Union
 from enum import Enum
-from datetime import datetime
+from typing import Dict, List, Optional
+
+import pandas as pd
 
 # 尝试导入 DataSourceManagerV2
 try:
@@ -105,10 +105,10 @@ class GovernanceDataFetcher:
                 if df is not None and not df.empty:
                     results[symbol] = df
                 else:
-                    logger.warning(f"获取数据为空: {symbol}")
+                    logger.warning("获取数据为空: %(symbol)s")
 
             except Exception as e:
-                logger.error(f"获取数据失败: {symbol}, 错误: {str(e)}")
+                logger.error("获取数据失败: %(symbol)s, 错误: %s")
                 # 记录失败，但不中断批量过程
                 continue
 
@@ -155,13 +155,13 @@ class GovernanceDataFetcher:
                 endpoint = endpoints[0]
 
         if not endpoint:
-            logger.warning(f"未找到可用的数据端点: category={data_category}, policy={policy}")
+            logger.warning("未找到可用的数据端点: category=%(data_category)s, policy=%(policy)s")
             return None
 
         # 调用 V2 的内部方法 _call_endpoint
         # 注意：这里我们访问了 protected method，这是为了实现高级路由
         # 在未来的重构中，应该在 DataSourceManagerV2 中暴露更灵活的接口
-        logger.info(f"使用端点: {endpoint['endpoint_name']} 获取 {symbol}")
+        logger.info("使用端点: {endpoint['endpoint_name']} 获取 %(symbol)s")
 
         try:
             return self.manager._call_endpoint(

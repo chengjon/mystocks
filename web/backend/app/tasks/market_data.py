@@ -53,7 +53,7 @@ def _fetch_stock_data_from_akshare() -> int:
             )
 
         count = len(stock_data)
-        logger.info(f"Successfully fetched {count} stocks from AkShare")
+        logger.info("Successfully fetched %(count)s stocks from AkShare"")
         return count
 
     except ImportError:
@@ -106,7 +106,7 @@ def _fetch_stock_data_from_tushare() -> int:
             )
 
         count = len(stock_data)
-        logger.info(f"Successfully fetched {count} stocks from TuShare")
+        logger.info("Successfully fetched %(count)s stocks from TuShare"")
         return count
 
     except ImportError:
@@ -172,7 +172,7 @@ def _fetch_stock_data_with_retry() -> int:
             except (DataFetchError, DataValidationError) as e:
                 # 数据错误，尝试下一个源而不重试
                 last_exception = e
-                logger.warning(f"Data error from {source}, trying next source: {str(e)}")
+                logger.warning("Data error from %(source)s, trying next source: {str(e)}"")
                 break
 
     # 所有数据源和重试都失败
@@ -217,7 +217,7 @@ def _fetch_etf_data_from_akshare() -> int:
             )
 
         count = len(etf_data)
-        logger.info(f"Successfully fetched {count} ETFs from AkShare")
+        logger.info("Successfully fetched %(count)s ETFs from AkShare"")
         return count
 
     except ImportError:
@@ -279,7 +279,7 @@ def _fetch_etf_data_with_retry() -> int:
 
             except (DataFetchError, DataValidationError) as e:
                 last_exception = e
-                logger.warning(f"Data error from {source} for ETF, trying next source: {str(e)}")
+                logger.warning("Data error from %(source)s for ETF, trying next source: {str(e)}"")
                 break
 
     if last_exception:
@@ -317,7 +317,7 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
             - data_sources: 实际使用的数据源列表
             - errors: 错误详情 (失败时)
     """
-    logger.info(f"Starting realtime market data fetch with params: {params}")
+    logger.info("Starting realtime market data fetch with params: %(params)s"")
 
     fetch_stocks = params.get("fetch_stocks", True)
     fetch_etfs = params.get("fetch_etfs", True)
@@ -339,7 +339,7 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
                 result["stocks_fetched"] = stocks_count
                 result["data_sources"].append(f"stocks: {STOCK_DATA_SOURCES[0]}")
             except DataFetchError as e:
-                logger.error(f"Failed to fetch stock data: {e.message}")
+                logger.error("Failed to fetch stock data: {e.message}"")
                 result["errors"].append(
                     {
                         "type": "stock_fetch_failed",
@@ -357,7 +357,7 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
                 result["etfs_fetched"] = etfs_count
                 result["data_sources"].append(f"etfs: {ETF_DATA_SOURCES[0]}")
             except DataFetchError as e:
-                logger.error(f"Failed to fetch ETF data: {e.message}")
+                logger.error("Failed to fetch ETF data: {e.message}"")
                 result["errors"].append(
                     {
                         "type": "etf_fetch_failed",
@@ -374,11 +374,11 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
         else:
             result["status"] = "success"
 
-        logger.info(f"Realtime market data fetch completed: {result}")
+        logger.info("Realtime market data fetch completed: %(result)s"")
         return result
 
     except Exception as e:
-        logger.error(f"Unexpected error during market data fetch: {str(e)}")
+        logger.error("Unexpected error during market data fetch: {str(e)}"")
         return {
             "status": "failed",
             "fetch_time": datetime.now().isoformat(),
@@ -389,7 +389,7 @@ def fetch_realtime_market_data(params: Dict[str, Any]) -> Dict[str, Any]:
 
 def fetch_longhubang_data(params: Dict[str, Any]) -> Dict[str, Any]:
     """获取龙虎榜数据"""
-    logger.info(f"Starting longhubang data fetch with params: {params}")
+    logger.info("Starting longhubang data fetch with params: %(params)s"")
 
     try:
         data_source = params.get("data_source", "akshare")
@@ -401,11 +401,11 @@ def fetch_longhubang_data(params: Dict[str, Any]) -> Dict[str, Any]:
             "records_fetched": 100,  # 示例数据
         }
 
-        logger.info(f"Longhubang data fetch completed: {result}")
+        logger.info("Longhubang data fetch completed: %(result)s"")
         return result
 
     except Exception as e:
-        logger.error(f"Failed to fetch longhubang data: {e}")
+        logger.error("Failed to fetch longhubang data: %(e)s"")
         return {
             "status": "failed",
             "error": str(e),
@@ -415,7 +415,7 @@ def fetch_longhubang_data(params: Dict[str, Any]) -> Dict[str, Any]:
 
 def fetch_capital_flow_data(params: Dict[str, Any]) -> Dict[str, Any]:
     """获取资金流向数据"""
-    logger.info(f"Starting capital flow data fetch with params: {params}")
+    logger.info("Starting capital flow data fetch with params: %(params)s"")
 
     try:
         data_source = params.get("data_source", "akshare")
@@ -429,11 +429,11 @@ def fetch_capital_flow_data(params: Dict[str, Any]) -> Dict[str, Any]:
             "records_fetched": len(flow_types) * 50,  # 示例数据
         }
 
-        logger.info(f"Capital flow data fetch completed: {result}")
+        logger.info("Capital flow data fetch completed: %(result)s"")
         return result
 
     except Exception as e:
-        logger.error(f"Failed to fetch capital flow data: {e}")
+        logger.error("Failed to fetch capital flow data: %(e)s"")
         return {
             "status": "failed",
             "error": str(e),

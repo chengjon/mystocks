@@ -22,9 +22,9 @@ Mock数据文件: Dashboard
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
 import datetime
 import random
+from typing import Dict, List
 
 
 def get_market_overview() -> Dict:

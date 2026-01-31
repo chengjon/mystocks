@@ -9,20 +9,20 @@ AI测试工具包
 """
 
 from .test_ai_assisted_testing import (
+    AITestAssistant,
     AITestGenerator,
     IntelligentTestOptimizer,
-    AITestAssistant,
 )
-from .test_data_analyzer import AITestDataAnalyzer, AnomalyDetection, TrendPrediction
-from .test_data_manager import AITestDataManager, TestDataProfile, DataGenerationRequest
+from .test_data_analyzer import AITestDataAnalyzer, AnomalyDetection, TrendAnalyzer
+from .test_data_manager import AITestDataManager, DataGenerationRequest, TestDataProfile
 from .test_integration_system import (
     AITestIntegrationSystem,
-    TestOrchestrationConfig,
-    TestExecutionPlan,
-    TestExecutionResult,
-    TestPhase,
     IntelligentTestPlanner,
     SmartTestExecutor,
+    TestExecutionPlan,
+    TestExecutionResult,
+    TestOrchestrationConfig,
+    TestPhase,
 )
 
 # 导出所有主要类和函数
@@ -41,7 +41,7 @@ __all__ = [
     "TestExecutionPlan",
     "TestExecutionResult",
     "AnomalyDetection",
-    "TrendPrediction",
+    "TrendAnalyzer",
     # 枚举
     "TestPhase",
     # 便捷函数

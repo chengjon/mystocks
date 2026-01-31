@@ -11,6 +11,7 @@ export { default as ArtDecoFundamentalAnalysis } from './ArtDecoFundamentalAnaly
 export { default as ArtDecoTechnicalAnalysis } from './ArtDecoTechnicalAnalysis.vue'
 export { default as ArtDecoRadarAnalysis } from './ArtDecoRadarAnalysis.vue'
 export { default as ArtDecoLoadingOverlay } from './ArtDecoLoadingOverlay.vue'
+export { default as ArtDecoLoading } from './ArtDecoLoading.vue'
 export { default as ArtDecoFooter } from './ArtDecoFooter.vue'
 export { default as ArtDecoBreadcrumb } from './ArtDecoBreadcrumb.vue'
 export { default as ArtDecoStatusIndicator } from './ArtDecoStatusIndicator.vue'

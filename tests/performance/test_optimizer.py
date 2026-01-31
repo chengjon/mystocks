@@ -11,17 +11,17 @@
 5. 内存优化
 """
 
-import gc
-import time
-import threading
 import functools
-from typing import Callable, Any, Dict, List, Optional, TypeVar
-from dataclasses import dataclass
-from contextlib import contextmanager
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import psutil
+import gc
 import os
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, TypeVar
 
+import psutil
 
 T = TypeVar("T")
 

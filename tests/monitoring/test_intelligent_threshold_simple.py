@@ -3,11 +3,12 @@
 避免循环导入问题，直接测试核心功能
 """
 
-import pytest
-import numpy as np
-from datetime import datetime
-import sys
 import os
+import sys
+from datetime import datetime
+
+import numpy as np
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,11 +16,11 @@ sys.path.insert(0, project_root)
 
 # 直接导入模块测试功能
 try:
+    from src.monitoring.clustering_analyzer import ClusteringAnalyzer
     from src.monitoring.data_analyzer import DataAnalyzer
     from src.monitoring.statistical_optimizer import StatisticalOptimizer
-    from src.monitoring.trend_analyzer import TrendAnalyzer
-    from src.monitoring.clustering_analyzer import ClusteringAnalyzer
     from src.monitoring.threshold_rule_manager import ThresholdRuleManager
+    from src.monitoring.trend_analyzer import TrendAnalyzer
 
     MODULES_AVAILABLE = True
 except ImportError as e:

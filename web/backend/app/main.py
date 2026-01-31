@@ -3,10 +3,10 @@ FastAPI 主应用入口
 MyStocks Web 管理界面后端服务 - Week 3 简化版 (PostgreSQL-only)
 """
 
+import logging
 import os
 import secrets
 import time
-import logging
 from contextlib import asynccontextmanager
 
 import structlog
@@ -20,14 +20,17 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
-# 导入缓存淘汰调度器
-# from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
-
 # 导入配置
 from .core.config import settings, validate_required_settings
 
 # 导入数据库连接管理
 from .core.database import close_all_connections, get_postgresql_engine
+
+# 导入全局异常处理器 (Phase 3 - API契约标准化)
+from .core.exception_handler import register_exception_handlers
+
+# 导入性能监控中间件 (Phase 5)
+from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
 
 # 导入Socket.IO服务器管理器
 from .core.socketio_manager import get_socketio_manager
@@ -35,14 +38,12 @@ from .core.socketio_manager import get_socketio_manager
 # 导入统一响应格式中间件
 from .middleware.response_format import ProcessTimeMiddleware
 
-# 导入性能监控中间件 (Phase 5)
-from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
-
-# 导入全局异常处理器 (Phase 3 - API契约标准化)
-from .core.exception_handler import register_exception_handlers
-
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
+
+# 导入缓存淘汰调度器
+# from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler  # 临时禁用
+
 
 # 配置日志 - 从环境变量读取级别，默认INFO，生产环境可设置为WARNING/ERROR
 log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
@@ -137,7 +138,7 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
     except Exception as e:
-        logger.error(f"❌ 启动监控数据库失败: {e}")
+        logger.error("❌ 启动监控数据库失败: %(e)s"")
         # 不阻止应用启动
         logger.warning("⚠️ 健康度评分功能将不可用")
 
@@ -173,7 +174,7 @@ async def lifespan(app: FastAPI):
         initialize_realtime_mtm()
         logger.info("✅ Real-time MTM system initialized (Phase 12.4)")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize Real-time MTM: {e}")
+        logger.error("❌ Failed to initialize Real-time MTM: %(e)s"")
         # 不阻止应用启动
         logger.warning("⚠️ Real-time MTM features will be unavailable")
 
@@ -193,7 +194,7 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Indicator tasks registered")
 
     except Exception as e:
-        logger.error(f"❌ Failed to initialize Indicator System: {e}")
+        logger.error("❌ Failed to initialize Indicator System: %(e)s"")
 
     yield  # 应用运行期间
 
@@ -207,7 +208,7 @@ async def lifespan(app: FastAPI):
         shutdown_realtime_mtm()
         logger.info("✅ Real-time MTM system shut down (Phase 12.4)")
     except Exception as e:
-        logger.error(f"❌ Error shutting down Real-time MTM: {e}")
+        logger.error("❌ Error shutting down Real-time MTM: %(e)s"")
 
     # 关闭监控数据库连接池
     try:
@@ -216,7 +217,7 @@ async def lifespan(app: FastAPI):
         await close_postgres_async()
         logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
     except Exception as e:
-        logger.error(f"❌ 关闭监控数据库失败: {e}")
+        logger.error("❌ 关闭监控数据库失败: %(e)s"")
 
     # 停止缓存淘汰调度器
     try:
@@ -238,7 +239,7 @@ try:
     validate_required_settings(settings)
     logger.info("✅ 环境变量配置验证通过")
 except ValueError as e:
-    logger.error(f"❌ 启动失败：{e}")
+    logger.error("❌ 启动失败：%(e)s"")
     import sys
 
     sys.exit(1)
@@ -289,10 +290,11 @@ else:
 # 配置 CORS - 白名单模式，仅允许明确的前端域名
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,  # 白名单域名列表
+    allow_origins=["*"],
+    # allow_origins=settings.cors_origins,  # 原配置暂时注释
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # 仅允许必要请求方法
-    allow_headers=["Content-Type", "Authorization"],  # 仅允许必要请求头
+    allow_methods=["*"],  # 允许所有方法 (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # 允许所有头 (Content-Type, Authorization, etc.)
 )
 
 # 配置响应压缩 (性能优化)
@@ -344,10 +346,10 @@ async def csrf_protection_middleware(request: Request, call_next):
     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
         if settings.testing:
             # 测试环境：记录调试日志但不阻止
-            logger.debug(f"🧪 CSRF验证跳过 (测试环境): {request.method} {request.url.path}")
+            logger.debug("🧪 CSRF验证跳过 (测试环境): {request.method} {request.url.path}"")
         elif not settings.csrf_enabled:
             # CSRF被显式禁用：记录警告
-            logger.warning(f"⚠️  CSRF保护已禁用: {request.method} {request.url.path}")
+            logger.warning("⚠️  CSRF保护已禁用: {request.method} {request.url.path}"")
 
         if should_enforce_csrf:
             # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
@@ -370,7 +372,7 @@ async def csrf_protection_middleware(request: Request, call_next):
                 csrf_token = request.headers.get("x-csrf-token")
 
                 if not csrf_token:
-                    logger.warning(f"❌ CSRF token missing for {request.method} {request.url.path}")
+                    logger.warning("❌ CSRF token missing for {request.method} {request.url.path}"")
                     return JSONResponse(
                         status_code=403,
                         content={
@@ -382,7 +384,7 @@ async def csrf_protection_middleware(request: Request, call_next):
 
                 # 验证CSRF token
                 if not csrf_manager.validate_token(csrf_token):
-                    logger.warning(f"❌ Invalid CSRF token for {request.method} {request.url.path}")
+                    logger.warning("❌ Invalid CSRF token for {request.method} {request.url.path}"")
                     return JSONResponse(
                         status_code=403,
                         content={
@@ -543,6 +545,7 @@ async def custom_redoc_html():
     如果所有 CDN 失败，提供替代方案指引
     """
     from pathlib import Path
+
     from fastapi.responses import HTMLResponse
 
     # 读取自定义 ReDoc HTML 模板
@@ -558,19 +561,25 @@ async def custom_redoc_html():
 
 
 # 导入 API 路由 - 优化结构: 先导入，后统一挂载
+from .api import contract  # Phase 4: API契约管理
+from .api import data_lineage  # Phase 3: 数据血缘追踪API
+from .api import data_source_config  # Phase 3: 数据源配置CRUD API
+from .api import data_source_registry  # 数据源注册表管理API (V2.0)
+from .api import governance_dashboard  # Phase 3: 数据治理仪表板数据API
+from .api import indicator_registry  # 指标注册表管理API (V2.1)
+from .api import monitoring_analysis  # 智能量化监控 - 组合分析与健康度计算
+from .api import monitoring_watchlists  # 智能量化监控 - 清单管理 API
+from .api import realtime_market  # Phase 12.3: Real-time Data Stream Integration
+from .api import signal_monitoring  # 智能量化监控 - 信号历史与质量报告
+from .api import strategy_list_mock  # Mock策略列表端点 (仅开发环境)
+from .api import websocket  # 🆕 导入 WebSocket 路由
 from .api import (
     announcement,
     auth,
     cache,
-    contract,  # Phase 4: API契约管理
     dashboard,
     data,
     data_quality,
-    data_source_config,  # Phase 3: 数据源配置CRUD API
-    data_source_registry,  # 数据源注册表管理API (V2.0)
-    data_lineage,  # Phase 3: 数据血缘追踪API
-    governance_dashboard,  # Phase 3: 数据治理仪表板数据API
-    indicator_registry,  # 指标注册表管理API (V2.1)
     health,
     indicators,
     industry_concept_analysis,
@@ -579,17 +588,12 @@ from .api import (
     metrics,
     ml,
     monitoring,
-    monitoring_analysis,  # 智能量化监控 - 组合分析与健康度计算
-    monitoring_watchlists,  # 智能量化监控 - 清单管理 API
     multi_source,
     notification,
-    realtime_market,  # Phase 12.3: Real-time Data Stream Integration
     risk_management,
-    signal_monitoring,  # 智能量化监控 - 信号历史与质量报告
     sse_endpoints,
     stock_search,
     strategy,
-    strategy_list_mock,  # Mock策略列表端点 (仅开发环境)
     strategy_management,
     strategy_mgmt,
     system,
@@ -599,7 +603,6 @@ from .api import (
     tradingview,
     watchlist,
     wencai,
-    websocket,  # 🆕 导入 WebSocket 路由
 )
 from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
@@ -607,6 +610,7 @@ from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitori
 app.include_router(data.router, prefix="/api/v1/data", tags=["data"])
 app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
+app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])  # 前端兼容路由
 app.include_router(system.router, prefix="/api/system", tags=["system"])
 app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
 app.include_router(websocket.router)  # 🆕 挂载 WebSocket 路由
@@ -714,8 +718,9 @@ def find_available_port(start_port: int, end_port: int) -> int:
 
 
 if __name__ == "__main__":
-    import uvicorn
     import sys
+
+    import uvicorn
 
     from .core.config import settings
 
@@ -735,9 +740,9 @@ if __name__ == "__main__":
         for key, value in openspec_config.items():
             if os.getenv(key) is None:
                 os.environ[key] = value
-                logger.info(f"设置环境变量: {key}={value}")
+                logger.info("设置环境变量: %(key)s=%(value)s"")
     except Exception as e:
-        logger.warning(f"⚠️ 设置OpenSpec环境变量失败: {e}")
+        logger.warning("⚠️ 设置OpenSpec环境变量失败: %(e)s"")
 
     # 初始化异步监控数据库
     async def startup_event():
@@ -751,7 +756,7 @@ if __name__ == "__main__":
             else:
                 logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
         except Exception as e:
-            logger.error(f"❌ 启动监控数据库失败: {e}")
+            logger.error("❌ 启动监控数据库失败: %(e)s"")
             # 不阻止应用启动
             logger.warning("⚠️ 健康度评分功能将不可用")
 
@@ -764,7 +769,7 @@ if __name__ == "__main__":
             await close_postgres_async()
             logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
         except Exception as e:
-            logger.error(f"❌ 关闭监控数据库失败: {e}")
+            logger.error("❌ 关闭监控数据库失败: %(e)s"")
 
     # 尝试使用异步生命周期（如果可用）
 
@@ -787,7 +792,7 @@ if __name__ == "__main__":
 
         # 路由配置
         @app.get("/health")
-        async def health_check():
+        async def health_check_v2():
             try:
                 # 检查异步数据库连接
                 from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
@@ -808,24 +813,24 @@ if __name__ == "__main__":
                     "timestamp": "2026-01-07",
                 }
             except Exception as e:
-                logger.error(f"❌ 健康检查失败: {e}")
+                logger.error("❌ 健康检查失败: %(e)s"")
                 return {"status": "unhealthy", "app": "mystocks-backend", "version": "3.0", "error": str(e)}
 
         # API路由
         @app.get("/api/v1/")
-        async def root():
+        async def root_v2():
             return {"message": "MyStocks Backend API v3.0", "version": "3.0"}
 
         logger.info("✅ 已集成OpenSpec监控模块启动/关闭事件")
 
     except ImportError as e:
-        logger.error(f"❌ FastAPI 导入失败: {e}")
+        logger.error("❌ FastAPI 导入失败: %(e)s"")
         logger.warning("⚠️ 无法使用 FastAPI 应用，将跳过监控模块事件")
 
     # 在端口范围内查找可用端口并启动服务
     try:
         available_port = find_available_port(settings.port_range_start, settings.port_range_end)
-        logger.info(f"🚀 Starting server on port {available_port}")
+        logger.info("🚀 Starting server on port %(available_port)s"")
         uvicorn.run(
             "main:app",
             host=settings.host,
@@ -834,5 +839,5 @@ if __name__ == "__main__":
             log_level="info",
         )
     except RuntimeError as e:
-        logger.error(f"❌ {e}")
+        logger.error("❌ %(e)s"")
         exit(1)

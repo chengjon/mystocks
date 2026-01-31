@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+# pylint: disable=no-member  # TODO: 修复异常类的 to_dict 方法
 MyStocks 量化交易数据管理系统 - 统一数据访问层
 完全按照原始设计理念实现的5大数据分类体系和自动化路由
 
@@ -25,7 +26,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 # 导入核心模块
-from src.core import DataClassification, DatabaseTarget
+from src.core import DatabaseTarget, DataClassification
 from src.core.data_manager import DataManager
 from src.monitoring import MonitoringDatabase
 

@@ -4,12 +4,12 @@
 实现线程安全的 LRU + TTL 缓存，支持后台预刷新和软过期策略。
 """
 
+import logging
 import threading
 import time
-import logging
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Optional, Callable
+from typing import Any, Callable, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class SmartCache:
             if is_expired:
                 if self.soft_expiry and entry["value"] is not None:
                     # 软过期: 返回旧数据，同时后台刷新
-                    logger.debug(f"Cache key {key} expired (soft expiry), returning stale data")
+                    logger.debug("Cache key %(key)s expired (soft expiry), returning stale data")
                     self._trigger_refresh(key, entry)
                     self.hits += 1
                     return entry["value"]
@@ -113,7 +113,7 @@ class SmartCache:
 
             if needs_refresh and key not in self.refreshing:
                 # 预刷新: 返回当前数据，同时后台刷新
-                logger.debug(f"Cache key {key} needs refresh, triggering background refresh")
+                logger.debug("Cache key %(key)s needs refresh, triggering background refresh")
                 self._trigger_refresh(key, entry)
                 self.hits += 1
                 return entry["value"]
@@ -169,9 +169,9 @@ class SmartCache:
             if len(self.cache) > self.maxsize:
                 oldest_key = next(iter(self.cache))
                 del self.cache[oldest_key]
-                logger.debug(f"LRU evicted key: {oldest_key}")
+                logger.debug("LRU evicted key: %(oldest_key)s")
 
-            logger.debug(f"Cache set: key={key}, ttl={ttl}s, expires_at={expires_at}")
+            logger.debug("Cache set: key=%(key)s, ttl=%(ttl)ss, expires_at=%(expires_at)s")
 
     def _trigger_refresh(self, key: Any, entry: dict) -> None:
         """
@@ -183,11 +183,11 @@ class SmartCache:
         """
         refresh_func = entry.get("refresh_func")
         if not refresh_func:
-            logger.debug(f"No refresh_func for key {key}, skipping refresh")
+            logger.debug("No refresh_func for key %(key)s, skipping refresh")
             return
 
         if key in self.refreshing:
-            logger.debug(f"Key {key} is already being refreshed, skipping")
+            logger.debug("Key %(key)s is already being refreshed, skipping")
             return
 
         # 标记为正在刷新
@@ -205,7 +205,7 @@ class SmartCache:
             refresh_func: 刷新函数
         """
         try:
-            logger.debug(f"Running background refresh for key {key}")
+            logger.debug("Running background refresh for key %(key)s")
             new_value = refresh_func()
 
             if new_value is not None:
@@ -220,13 +220,13 @@ class SmartCache:
                             refresh_func=old_entry.get("refresh_func"),
                         )
                         self.refreshes += 1
-                        logger.debug(f"Background refresh successful for key {key}")
+                        logger.debug("Background refresh successful for key %(key)s")
             else:
-                logger.warning(f"Background refresh returned None for key {key}")
+                logger.warning("Background refresh returned None for key %(key)s")
                 self.refresh_failures += 1
 
         except Exception as e:
-            logger.error(f"Background refresh failed for key {key}: {e}")
+            logger.error("Background refresh failed for key %(key)s: %(e)s")
             self.refresh_failures += 1
         finally:
             # 移除刷新标记
@@ -242,7 +242,7 @@ class SmartCache:
         with self.lock:
             if key in self.cache:
                 del self.cache[key]
-                logger.debug(f"Cache invalidated: key={key}")
+                logger.debug("Cache invalidated: key=%(key)s")
 
     def clear(self) -> None:
         """清空缓存"""
@@ -265,7 +265,7 @@ class SmartCache:
                 del self.cache[key]
 
             if expired_keys:
-                logger.debug(f"Cleaned up {len(expired_keys)} expired entries")
+                logger.debug("Cleaned up {len(expired_keys)} expired entries")
 
             return len(expired_keys)
 

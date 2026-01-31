@@ -10,11 +10,12 @@
 创建日期: 2026-01-07
 """
 
-import asyncpg
-import os
 import logging
-from typing import Optional, List, Dict, Any
+import os
 from contextlib import asynccontextmanager
+from typing import Any, Dict, List, Optional
+
+import asyncpg
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,9 @@ class PostgreSQLAsyncAccess:
         try:
             # 构建DSN
             user = os.getenv("POSTGRESQL_USER", "postgres")
-            password = os.getenv("POSTGRESQL_PASSWORD", "postgres")
+            password = os.getenv("POSTGRESQL_PASSWORD")
+            if not password:
+                raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
             host = os.getenv("POSTGRESQL_HOST", "localhost")
             port = os.getenv("POSTGRESQL_PORT", "5432")
             database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
@@ -48,7 +51,7 @@ class PostgreSQLAsyncAccess:
             self.pool = await asyncpg.create_pool(dsn=self._dsn, min_size=5, max_size=20, command_timeout=60)
             logger.info("✅ 异步PostgreSQL连接池已初始化")
         except Exception as e:
-            logger.error(f"❌ 初始化异步PostgreSQL连接池失败: {e}")
+            logger.error("❌ 初始化异步PostgreSQL连接池失败: %(e)s")
             raise
 
     async def close(self):
@@ -238,7 +241,6 @@ class PostgreSQLAsyncAccess:
         """批量保存基础指标 (v2.0 兼容)"""
         # 如果表存在，逻辑类似 batch_save_health_scores
         # 暂时预留
-        pass
 
 
 # 全局单例

@@ -7,14 +7,14 @@
 
 import json
 import logging
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
-from dataclasses import asdict
+from typing import Any, Dict, List
 
 from .models import (
-    ContractTestSuite,
     ContractTestReport,
+    ContractTestSuite,
     TestExecutionResult,
     TestStatus,
 )
@@ -36,7 +36,7 @@ class ContractTestReportGenerator:
         format: str = "json",
     ) -> str:
         """生成测试报告"""
-        logger.info(f"生成测试报告: {suite.name} (格式: {format})")
+        logger.info("生成测试报告: {suite.name} (格式: %(format)s)")
 
         # 创建报告对象
         report = ContractTestReport(suite=suite, results=results)
@@ -227,7 +227,7 @@ class ContractTestReportGenerator:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(report_dict, f, ensure_ascii=False, indent=2, default=str)
 
-        logger.info(f"JSON 报告已保存: {filepath}")
+        logger.info("JSON 报告已保存: %(filepath)s")
         return str(filepath)
 
     def _generate_html_report(self, report: ContractTestReport) -> str:
@@ -243,7 +243,7 @@ class ContractTestReportGenerator:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        logger.info(f"HTML 报告已保存: {filepath}")
+        logger.info("HTML 报告已保存: %(filepath)s")
         return str(filepath)
 
     def _generate_html_content(self, report: ContractTestReport) -> str:
@@ -566,7 +566,7 @@ class ContractTestReportGenerator:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(xml_content)
 
-        logger.info(f"XML 报告已保存: {filepath}")
+        logger.info("XML 报告已保存: %(filepath)s")
         return str(filepath)
 
     def _generate_xml_content(self, report: ContractTestReport) -> str:
@@ -670,7 +670,7 @@ class ContractTestReportGenerator:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(md_content)
 
-        logger.info(f"Markdown 报告已保存: {filepath}")
+        logger.info("Markdown 报告已保存: %(filepath)s")
         return str(filepath)
 
     def _generate_markdown_content(self, report: ContractTestReport) -> str:
@@ -784,5 +784,5 @@ class ContractTestReportGenerator:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(summary, f, ensure_ascii=False, indent=2, default=str)
 
-        logger.info(f"综合报告摘要已保存: {filepath}")
+        logger.info("综合报告摘要已保存: %(filepath)s")
         return str(filepath)

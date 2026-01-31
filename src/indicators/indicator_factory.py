@@ -1,14 +1,15 @@
-import yaml
 import importlib
 import logging
-import pandas as pd
 import time
-from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
+from typing import Dict, Optional, Union
+
+import pandas as pd
+import yaml
 
 from src.indicators.base import BatchIndicator, StreamingIndicator
 from src.indicators.wrappers import MonitoredStreamingIndicator
-from src.monitoring.indicator_metrics import CALCULATION_LATENCY, CALCULATION_REQUESTS, ALIGNMENT_ERRORS
+from src.monitoring.indicator_metrics import ALIGNMENT_ERRORS, CALCULATION_LATENCY, CALCULATION_REQUESTS
 
 # Configure Logger
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +38,7 @@ class IndicatorFactory:
         """Load indicator metadata from YAML."""
         path = Path(self.config_path)
         if not path.exists():
-            logger.warning(f"Config file not found: {path}")
+            logger.warning("Config file not found: %(path)s")
             return
 
         try:
@@ -51,11 +52,11 @@ class IndicatorFactory:
                     if ind_id:
                         self.registry[ind_id] = config
                     else:
-                        logger.warning(f"Indicator {key} missing indicator_id, skipping.")
+                        logger.warning("Indicator %(key)s missing indicator_id, skipping.")
 
-                logger.info(f"Loaded {len(self.registry)} indicators from registry.")
+                logger.info("Loaded {len(self.registry)} indicators from registry.")
         except Exception as e:
-            logger.error(f"Failed to load registry: {e}")
+            logger.error("Failed to load registry: %(e)s")
 
     def get_calculator(
         self, indicator_id: str, backend: Optional[str] = None, streaming: bool = False
@@ -106,7 +107,7 @@ class IndicatorFactory:
             try:
                 return self._create_implementation(config, mode="batch", backend=be)
             except Exception as e:
-                logger.warning(f"Failed to initialize {indicator_id} with backend={be}: {e}")
+                logger.warning("Failed to initialize %(indicator_id)s with backend=%(be)s: %(e)s")
                 last_error = e
                 continue
 
@@ -161,7 +162,7 @@ class IndicatorFactory:
 
             # 4. Strict Alignment Enforcement
             if not result.index.equals(data.index):
-                logger.warning(f"Indicator {indicator_id} result index mismatch. Reindexing to align with input.")
+                logger.warning("Indicator %(indicator_id)s result index mismatch. Reindexing to align with input.")
                 ALIGNMENT_ERRORS.labels(indicator_id=indicator_id).inc()
                 result = result.reindex(data.index)
 

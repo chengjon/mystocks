@@ -2,18 +2,19 @@
 Unit tests for Data Source Health Monitor
 """
 
-import pytest
 import asyncio
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from src.core.datasource import (
+    DataSourceConfig,
     DataSourceHealthMonitor,
     DataSourceRegistry,
-    DataSourceConfig,
     DataSourceType,
-    HealthStatus,
     HealthReport,
+    HealthStatus,
 )
 
 
@@ -158,10 +159,10 @@ class TestPrometheusMetrics:
     def test_metrics_are_defined(self):
         """Test that Prometheus metrics are properly defined"""
         from src.core.datasource import (
-            DATASOURCE_REQUESTS_TOTAL,
-            DATASOURCE_LATENCY_SECONDS,
             DATASOURCE_HEALTH_STATUS,
             DATASOURCE_LATENCY_MS,
+            DATASOURCE_LATENCY_SECONDS,
+            DATASOURCE_REQUESTS_TOTAL,
         )
 
         assert DATASOURCE_REQUESTS_TOTAL is not None
@@ -171,7 +172,7 @@ class TestPrometheusMetrics:
 
     def test_metrics_have_correct_labels(self):
         """Test that metrics have correct label names"""
-        from src.core.datasource import DATASOURCE_REQUESTS_TOTAL, DATASOURCE_LATENCY_SECONDS
+        from src.core.datasource import DATASOURCE_LATENCY_SECONDS, DATASOURCE_REQUESTS_TOTAL
 
         # Check label names
         assert "source_id" in DATASOURCE_REQUESTS_TOTAL._labelnames

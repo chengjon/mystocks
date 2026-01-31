@@ -1,0 +1,430 @@
+{
+  "generated_at": "2026-01-30T03:35:35",
+  "description": "重复代码相关测试文件状态基线",
+  "statistics": {
+    "total_files": 52,
+    "total_lines": 23355,
+    "broken_files": 8,
+    "broken_percentage": "15.4%"
+  },
+  "test_files": [
+    {
+      "path": "test_akshare_adapter.py",
+      "lines": 235,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "test_ai_monitoring_system.py",
+      "lines": 494,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "test_gpu_performance_optimizer.py",
+      "lines": 557,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "monitoring/test_intelligent_threshold_simple.py",
+      "lines": 173,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "monitoring/test_intelligent_threshold_refactored.py",
+      "lines": 378,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "monitoring/test_integration_notifications.py",
+      "lines": 793,
+      "broken": true,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "monitoring/test_monitoring_alerts.py",
+      "lines": 1489,
+      "broken": true,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "monitoring/__init__.py",
+      "lines": 86,
+      "broken": true,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "monitoring/test_metrics_analytics.py",
+      "lines": 642,
+      "broken": true,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "adapters/test_akshare_adapter.py",
+      "lines": 1905,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "acceptance/test_us3_monitoring.py",
+      "lines": 368,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "integration/test_performance_monitoring.py",
+      "lines": 204,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "api/test_signal_monitoring_file.py",
+      "lines": 325,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "api/test_akshare_market_file.py",
+      "lines": 372,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "api/test_monitoring_file.py",
+      "lines": 324,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "api/test_gpu_monitoring_file.py",
+      "lines": 277,
+      "broken": false,
+      "related_module": [
+        "monitoring",
+        "gpu"
+      ]
+    },
+    {
+      "path": "api/file_tests/test_signal_monitoring_api.py",
+      "lines": 300,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "api/file_tests/test_monitoring_analysis_api.py",
+      "lines": 329,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "api/file_tests/test_gpu_monitoring_api.py",
+      "lines": 131,
+      "broken": false,
+      "related_module": [
+        "monitoring",
+        "gpu"
+      ]
+    },
+    {
+      "path": "api/file_tests/test_akshare_market_api.py",
+      "lines": 471,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "api/file_tests/test_monitoring_api.py",
+      "lines": 143,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/test_signal_monitoring_integration.py",
+      "lines": 660,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/test_gpu_performance_optimizer_enhanced.py",
+      "lines": 289,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_alert_manager.py",
+      "lines": 375,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_monitoring_core.py",
+      "lines": 535,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_data_quality_monitor.py",
+      "lines": 459,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_alert_manager_comprehensive.py",
+      "lines": 394,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_alert_manager_simple.py",
+      "lines": 417,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_alert_manager_simplified.py",
+      "lines": 473,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_alert_manager_isolated.py",
+      "lines": 511,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/monitoring/test_monitoring_service.py",
+      "lines": 975,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/adapters/test_akshare_adapter.py",
+      "lines": 185,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "unit/adapters/test_akshare_adapter_real.py",
+      "lines": 349,
+      "broken": false,
+      "related_module": [
+        "akshare"
+      ]
+    },
+    {
+      "path": "unit/test_monitoring/test_signal_monitoring.py",
+      "lines": 283,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_data_processor_factory.py",
+      "lines": 373,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/simple_gpu_migrator.py",
+      "lines": 300,
+      "broken": true,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/simple_backend.py",
+      "lines": 116,
+      "broken": true,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_performance_comparison.py",
+      "lines": 791,
+      "broken": true,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_optimized_transform_kernel.py",
+      "lines": 433,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_gpu_kernel_layer.py",
+      "lines": 471,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_migrated_gpu_integration.py",
+      "lines": 211,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/simple_p2_test.py",
+      "lines": 200,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_phase4b_security_improvements.py",
+      "lines": 598,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/quick_transform_test.py",
+      "lines": 71,
+      "broken": true,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_data_processing_interfaces.py",
+      "lines": 459,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_optimized_gpu_core.py",
+      "lines": 388,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_data_processor_factory_simple.py",
+      "lines": 362,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_data_processing_interfaces_simple.py",
+      "lines": 410,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_kernel_simple.py",
+      "lines": 152,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_gpu_integration.py",
+      "lines": 682,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/gpu/test_gpu_hal_implementation.py",
+      "lines": 344,
+      "broken": false,
+      "related_module": [
+        "gpu"
+      ]
+    },
+    {
+      "path": "unit/core/test_monitoring.py",
+      "lines": 1093,
+      "broken": false,
+      "related_module": [
+        "monitoring"
+      ]
+    }
+  ]
+}

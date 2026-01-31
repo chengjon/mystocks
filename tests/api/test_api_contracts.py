@@ -351,8 +351,8 @@ class TestAPIPerformance:
     @pytest.mark.performance
     def test_concurrent_requests(self, client):
         """测试并发请求"""
-        import time
         import concurrent.futures
+        import time
 
         def fetch_quote(symbol):
             start = time.time()

@@ -16,10 +16,11 @@ Date: 2025-11-07
 """
 
 from typing import Callable
-from fastapi import HTTPException, status
-import structlog
 
-from app.core.casbin_manager import get_casbin_manager, CasbinManager
+import structlog
+from fastapi import HTTPException, status
+
+from app.core.casbin_manager import CasbinManager, get_casbin_manager
 
 logger = structlog.get_logger()
 

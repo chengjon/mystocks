@@ -6,12 +6,12 @@ Alert Rule Engine and Deduplication Mechanism
 支持规则组合、优先级管理和告警抑制。
 """
 
-import logging
-from typing import Dict, List, Any, Optional, Callable, Set
-from datetime import datetime, timedelta
-from dataclasses import dataclass, field
-from enum import Enum
 import json
+import logging
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -116,14 +116,14 @@ class AlertRuleEngine:
         """
         try:
             if rule.rule_id in self.rules:
-                logger.warning(f"规则已存在，将被覆盖: {rule.rule_id}")
+                logger.warning("规则已存在，将被覆盖: {rule.rule_id")
 
             self.rules[rule.rule_id] = rule
-            logger.info(f"✅ 告警规则已添加: {rule.rule_id} - {rule.name}")
+            logger.info("✅ 告警规则已添加: {rule.rule_id} - {rule.name")
             return True
 
         except Exception as e:
-            logger.error(f"添加告警规则失败 {rule.rule_id}: {e}")
+            logger.error("添加告警规则失败 {rule.rule_id}: %(e)s")
             return False
 
     def remove_rule(self, rule_id: str) -> bool:
@@ -142,14 +142,14 @@ class AlertRuleEngine:
                 # 清理相关历史数据
                 if rule_id in self.rule_execution_history:
                     del self.rule_execution_history[rule_id]
-                logger.info(f"✅ 告警规则已移除: {rule_id}")
+                logger.info("✅ 告警规则已移除: %(rule_id)s")
                 return True
             else:
-                logger.warning(f"规则不存在: {rule_id}")
+                logger.warning("规则不存在: %(rule_id)s")
                 return False
 
         except Exception as e:
-            logger.error(f"移除告警规则失败 {rule_id}: {e}")
+            logger.error("移除告警规则失败 %(rule_id)s: %(e)s")
             return False
 
     def evaluate_rules(self, context: AlertContext) -> List[AlertResult]:
@@ -192,11 +192,11 @@ class AlertRuleEngine:
             # 按优先级排序
             triggered_alerts.sort(key=lambda x: self.rules[x.rule_id].priority, reverse=True)
 
-            logger.debug(f"规则评估完成，触发告警: {len(triggered_alerts)} 个")
+            logger.debug("规则评估完成，触发告警: {len(triggered_alerts)} 个")
             return triggered_alerts
 
         except Exception as e:
-            logger.error(f"规则评估失败: {e}")
+            logger.error("规则评估失败: %(e)s")
             return []
 
     def create_rule_from_template(
@@ -216,7 +216,7 @@ class AlertRuleEngine:
         try:
             template = self._get_rule_template(template_name)
             if not template:
-                logger.error(f"模板不存在: {template_name}")
+                logger.error("模板不存在: %(template_name)s")
                 return None
 
             # 应用参数到模板
@@ -228,7 +228,7 @@ class AlertRuleEngine:
             return rule
 
         except Exception as e:
-            logger.error(f"从模板创建规则失败 {template_name}: {e}")
+            logger.error("从模板创建规则失败 %(template_name)s: %(e)s")
             return None
 
     def get_rule_statistics(self) -> Dict[str, Any]:
@@ -260,7 +260,7 @@ class AlertRuleEngine:
             }
 
         except Exception as e:
-            logger.error(f"获取规则统计失败: {e}")
+            logger.error("获取规则统计失败: %(e)s")
             return {"error": str(e)}
 
     def clear_expired_suppressions(self):
@@ -273,10 +273,10 @@ class AlertRuleEngine:
                 del self.active_suppressions[key]
 
             if expired_keys:
-                logger.info(f"清除 {len(expired_keys)} 个过期的告警抑制")
+                logger.info("清除 {len(expired_keys)} 个过期的告警抑制")
 
         except Exception as e:
-            logger.error(f"清除过期抑制失败: {e}")
+            logger.error("清除过期抑制失败: %(e)s")
 
     # 私有方法
 
@@ -340,7 +340,7 @@ class AlertRuleEngine:
             logger.info("✅ 内置告警规则加载完成")
 
         except Exception as e:
-            logger.error(f"加载内置规则失败: {e}")
+            logger.error("加载内置规则失败: %(e)s")
 
     def _evaluate_rule(self, rule: AlertRule, context: AlertContext) -> AlertResult:
         """评估单个规则"""
@@ -378,7 +378,7 @@ class AlertRuleEngine:
             return result
 
         except Exception as e:
-            logger.error(f"规则评估失败 {rule.rule_id}: {e}")
+            logger.error("规则评估失败 {rule.rule_id}: %(e)s")
             return AlertResult(
                 triggered=False,
                 rule_id=rule.rule_id,
@@ -419,11 +419,11 @@ class AlertRuleEngine:
             elif operator == "not_in":
                 return field_value not in value
             else:
-                logger.warning(f"不支持的运算符: {operator}")
+                logger.warning("不支持的运算符: %(operator)s")
                 return False
 
         except Exception as e:
-            logger.error(f"条件评估失败: {e}")
+            logger.error("条件评估失败: %(e)s")
             return False
 
     def _get_field_value(self, field: str, context: AlertContext) -> Any:
@@ -482,7 +482,7 @@ class AlertRuleEngine:
             return len(recent_executions) < rule.max_frequency
 
         except Exception as e:
-            logger.error(f"检查频率限制失败 {rule.rule_id}: {e}")
+            logger.error("检查频率限制失败 {rule.rule_id}: %(e)s")
             return True  # 出错时允许执行
 
     def _record_rule_execution(self, rule_id: str):
@@ -499,7 +499,7 @@ class AlertRuleEngine:
     def _apply_suppression(self, rule_id: str, duration: int):
         """应用抑制"""
         self.active_suppressions[rule_id] = datetime.now() + timedelta(seconds=duration)
-        logger.info(f"规则已抑制 {duration}秒: {rule_id}")
+        logger.info("规则已抑制 %(duration)s秒: %(rule_id)s")
 
     def _get_rule_template(self, template_name: str) -> Optional[Dict[str, Any]]:
         """获取规则模板"""
@@ -563,11 +563,11 @@ class AlertRuleEngine:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(rules_data, f, indent=2, ensure_ascii=False)
 
-            logger.info(f"✅ 规则已导出到: {filepath}")
+            logger.info("✅ 规则已导出到: %(filepath)s")
             return True
 
         except Exception as e:
-            logger.error(f"导出规则失败: {e}")
+            logger.error("导出规则失败: %(e)s")
             return False
 
     def import_rules(self, filepath: str) -> int:
@@ -589,14 +589,14 @@ class AlertRuleEngine:
                         imported_count += 1
 
                 except Exception as e:
-                    logger.error(f"导入规则失败 {rule_data.get('rule_id')}: {e}")
+                    logger.error("导入规则失败 {rule_data.get('rule_id')}: %(e)s")
                     continue
 
-            logger.info(f"✅ 成功导入 {imported_count} 个规则")
+            logger.info("✅ 成功导入 %(imported_count)s 个规则")
             return imported_count
 
         except Exception as e:
-            logger.error(f"导入规则失败: {e}")
+            logger.error("导入规则失败: %(e)s")
             return 0
 
 

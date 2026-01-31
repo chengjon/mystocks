@@ -12,7 +12,7 @@ import sys
 import time
 from datetime import datetime
 from functools import wraps
-from typing import Dict, Optional, Any, Callable
+from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
 
@@ -33,10 +33,7 @@ except ImportError:
     TdxHq_API = None
 
 
-def tdx_retry(
-    max_retries: int = 3,
-    retry_delay: int = 1,
-     api_timeout: int = 10):
+def tdx_retry(max_retries: int = 3, retry_delay: int = 1, api_timeout: int = 10):
     """
     TDX API重试装饰器
 
@@ -46,8 +43,7 @@ def tdx_retry(
         api_timeout: API超时时间
     """
 
-
-def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(self, *args, **kwargs):
             last_exception = None
@@ -59,13 +55,11 @@ def decorator(func: Callable) -> Callable:
                     last_exception = e
 
                     if attempt == max_retries:
-                        self.logger.error(
-    "TDX API调用失败 (尝试 %s/%s): %s", attempt + 1, max_retries + 1, e)
+                        self.logger.error("TDX API调用失败 (尝试 %s/%s): %s", attempt + 1, max_retries + 1, e)
                         raise
 
                     self.logger.warning(
-                        "TDX API调用失败，%s秒后重试 (尝试 %s/%s): %s", retry_delay, attempt +
-                                             1, max_retries + 1, e
+                        "TDX API调用失败，%s秒后重试 (尝试 %s/%s): %s", retry_delay, attempt + 1, max_retries + 1, e
                     )
                     time.sleep(retry_delay)
 
@@ -84,7 +78,7 @@ class BaseTdxAdapter(IDataSource):
     提供TDX数据访问的通用功能和接口
     """
 
-def __init__(self):
+    def __init__(self):
         """初始化基础TDX适配器"""
         # TDX配置
         self.max_retries = int(os.getenv("TDX_MAX_RETRIES", "3"))
@@ -112,14 +106,14 @@ def __init__(self):
         # 连接实例
         self._connection = None
 
-def _check_dependencies(self) -> None:
+    def _check_dependencies(self) -> None:
         """检查TDX依赖库的可用性"""
         if not PYTDX_AVAILABLE:
             raise ImportError("TDX库(pytdx)不可用。请安装pytdx: pip install pytdx")
 
         self.logger.info("TDX依赖库检查通过")
 
-def _init_server_config(self) -> None:
+    def _init_server_config(self) -> None:
         """初始化服务器配置"""
         if self.use_server_config:
             try:
@@ -136,14 +130,14 @@ def _init_server_config(self) -> None:
         if not self.tdx_host or not self.tdx_port:
             self._load_env_config()
 
-def _load_env_config(self) -> None:
+    def _load_env_config(self) -> None:
         """从环境变量加载配置"""
         self.tdx_host = os.getenv("TDX_SERVER_HOST", "119.147.212.81")
         self.tdx_port = int(os.getenv("TDX_SERVER_PORT", "7709"))
         self.logger.info("TDX适配器初始化: 使用环境变量配置")
         self.logger.info("服务器: %s:%s", self.tdx_host, self.tdx_port)
 
-def _get_tdx_connection(self) -> TdxHq_API:
+    def _get_tdx_connection(self) -> TdxHq_API:
         """获取TDX连接"""
         if self._connection is None:
             try:
@@ -161,7 +155,7 @@ def _get_tdx_connection(self) -> TdxHq_API:
 
         return self._connection
 
-def _get_market_code(self, symbol: str) -> int:
+    def _get_market_code(self, symbol: str) -> int:
         """获取市场代码"""
         if not symbol:
             raise ValueError("股票代码不能为空")
@@ -176,11 +170,11 @@ def _get_market_code(self, symbol: str) -> int:
             return 0
 
     @tdx_retry(max_retries=3, retry_delay=1)
-def _safe_api_call(self, func, *args, **kwargs):
+    def _safe_api_call(self, func, *args, **kwargs):
         """安全的API调用包装"""
         return func(*args, **kwargs)
 
-def _validate_kline_data(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _validate_kline_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """验证K线数据的完整性"""
         if df is None or df.empty:
             raise ValueError("K线数据为空")
@@ -225,7 +219,7 @@ def _validate_kline_data(self, df: pd.DataFrame) -> pd.DataFrame:
 
         return df
 
-def _standardize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _standardize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """标准化DataFrame格式"""
         if df is None or df.empty:
             return df
@@ -234,7 +228,7 @@ def _standardize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         df = self.column_mapper.standardize_columns(df)
         return df
 
-def _normalize_symbol(self, symbol: str) -> str:
+    def _normalize_symbol(self, symbol: str) -> str:
         """标准化股票代码格式"""
         if not symbol:
             return symbol
@@ -248,11 +242,11 @@ def _normalize_symbol(self, symbol: str) -> str:
         # 确保是6位数
         return symbol.zfill(6)
 
-def _normalize_date(self, date_str: str) -> str:
+    def _normalize_date(self, date_str: str) -> str:
         """标准化日期格式"""
         return normalize_date(date_str)
 
-def _build_success_response(self, data: Any, operation: str) -> Dict:
+    def _build_success_response(self, data: Any, operation: str) -> Dict:
         """构建成功响应"""
         return {
             "success": True,
@@ -262,7 +256,7 @@ def _build_success_response(self, data: Any, operation: str) -> Dict:
             "source": "tdx",
         }
 
-def _build_error_response(self, error: Exception, operation: str) -> Dict:
+    def _build_error_response(self, error: Exception, operation: str) -> Dict:
         """构建错误响应"""
         return {
             "success": False,
@@ -272,7 +266,7 @@ def _build_error_response(self, error: Exception, operation: str) -> Dict:
             "source": "tdx",
         }
 
-def disconnect(self) -> None:
+    def disconnect(self) -> None:
         """断开TDX连接"""
         if self._connection and hasattr(self._connection, "disconnect"):
             try:
@@ -282,6 +276,6 @@ def disconnect(self) -> None:
             except Exception as e:
                 self.logger.warning("断开TDX连接失败: %s", e)
 
-def __del__(self):
+    def __del__(self):
         """析构函数，确保连接被正确关闭"""
         self.disconnect()

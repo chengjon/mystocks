@@ -4,13 +4,13 @@ PostgreSQL连接适配器
 """
 
 import logging
-from typing import Optional, Any, Dict, List
 from contextlib import contextmanager
+from typing import Any, Dict, List, Optional
 
 from src.data_sources.real.connection_pool import (
-    PostgreSQLConnectionPool,
-    PoolConfig,
     ConnectionPoolManager,
+    PoolConfig,
+    PostgreSQLConnectionPool,
 )
 from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
 
@@ -235,7 +235,6 @@ class PostgreSQLConnectionAdapter:
         """
         # 连接池模式不需要手动返回连接
         # 这个方法是为了API兼容性保留的
-        pass
 
     def close(self):
         """关闭连接适配器"""
@@ -269,12 +268,12 @@ class EnhancedPostgreSQLRelationalDataSource:
             )
 
         # 原有初始化逻辑
+        from src.data_access import get_data_access_factory, initialize_data_access
+        from src.monitoring import MonitoringDatabase
         from src.storage.database.database_manager import (
             DatabaseTableManager,
             DatabaseType,
         )
-        from src.monitoring import MonitoringDatabase
-        from src.data_access import get_data_access_factory, initialize_data_access
 
         db_manager = DatabaseTableManager()
         monitoring_db = MonitoringDatabase()

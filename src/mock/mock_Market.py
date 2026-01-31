@@ -20,11 +20,12 @@ Mock数据文件: Market
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict, Optional
 import datetime
-import random
-import numpy as np
 import math
+import random
+from typing import Dict, List, Optional
+
+import numpy as np
 
 
 def _generate_realistic_stock_price(base_price: float, volatility: float = 0.02) -> float:

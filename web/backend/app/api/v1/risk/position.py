@@ -12,12 +12,13 @@ Version: 3.1.0
 Date: 2026-01-10
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-from datetime import datetime
-import structlog
-import sys
 import os
+import sys
+from datetime import datetime
+from typing import Any, Dict
+
+import structlog
+from fastapi import APIRouter, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -116,7 +117,7 @@ async def assess_position_risk(request: Dict[str, Any]) -> Dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"评估仓位风险失败: {e}", exc_info=True)
+        logger.error("评估仓位风险失败: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"评估仓位风险失败: {str(e)}")
 
 
@@ -182,5 +183,5 @@ async def generate_risk_alerts(request: Dict[str, Any]) -> Dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"生成风险告警失败: {e}", exc_info=True)
+        logger.error("生成风险告警失败: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"生成风险告警失败: {str(e)}")

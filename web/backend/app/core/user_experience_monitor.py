@@ -4,8 +4,9 @@
 """
 
 import time
+
 import psutil
-from prometheus_client import Gauge, Histogram, Counter, generate_latest
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
 
 # ==================== 用户体验核心指标 ====================
 

@@ -17,20 +17,21 @@ Architecture:
 - SyncScheduler: APScheduler定时任务调度
 """
 
-from typing import Optional, Dict, Any
-from datetime import datetime
 import time
+from datetime import datetime
+from typing import Any, Dict, Optional
+
 import structlog
 
-from app.models.sync_message import (
-    SyncMessage,
-    MessageStatus,
-    SyncDirection,
-    OperationType,
-)
-from app.core.sync_db_manager import SyncDatabaseManager, get_sync_db_manager
 from app.core.cache_manager import get_cache_manager
 from app.core.database import get_postgresql_engine
+from app.core.sync_db_manager import SyncDatabaseManager, get_sync_db_manager
+from app.models.sync_message import (
+    MessageStatus,
+    OperationType,
+    SyncDirection,
+    SyncMessage,
+)
 
 logger = structlog.get_logger()
 
@@ -366,7 +367,7 @@ class SyncProcessor:
                     "elapsed_seconds": 0,
                 }
 
-            logger.info(f"🔄 Processing {len(pending)} pending messages")
+            logger.info("🔄 Processing {len(pending)} pending messages"")
 
             succeeded = 0
             failed = 0
@@ -516,7 +517,7 @@ class SyncProcessor:
                     "moved_to_dlq": 0,
                 }
 
-            logger.info(f"🔄 Processing {len(retryable)} retryable messages")
+            logger.info("🔄 Processing {len(retryable)} retryable messages"")
 
             succeeded = 0
             failed = 0

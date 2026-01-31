@@ -3,8 +3,9 @@ Comprehensive Domain Layer Tests - Strategy
 """
 
 import pytest
-from src.domain.strategy.model.strategy import Strategy
+
 from src.domain.strategy.model.rule import Rule
+from src.domain.strategy.model.strategy import Strategy
 from src.domain.strategy.value_objects.strategy_id import StrategyId
 from src.domain.trading.value_objects import OrderSide
 

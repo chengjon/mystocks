@@ -12,23 +12,23 @@
 版本: 1.0.0
 """
 
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
 import structlog
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.responses import (
     UnifiedResponse,
-    ok,
     bad_request,
     not_found,
+    ok,
     server_error,
 )
-from app.core.security import get_current_user, User
+from app.core.security import User, get_current_user
 from app.schemas.algorithm_schemas import (
-    AlgorithmTrainRequest,
     AlgorithmPredictRequest,
+    AlgorithmTrainRequest,
     DecisionTreeTrainRequest,
 )
 from app.services.algorithm_service import algorithm_service

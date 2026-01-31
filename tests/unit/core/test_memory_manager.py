@@ -5,12 +5,13 @@
 测试MyStocks系统中完整的内存管理功能，包括监控、资源管理和泄漏检测
 """
 
-import pytest
-import sys
 import os
+import sys
 import threading
-from unittest.mock import Mock, patch
 from datetime import datetime
+from unittest.mock import Mock, patch
+
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
@@ -18,18 +19,18 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from src.core.memory_manager import (
-    MemoryStats,
     MemoryLimit,
-    ResourceManager,
     MemoryMonitor,
-    get_resource_manager,
-    get_memory_monitor,
-    initialize_memory_management,
-    shutdown_memory_management,
-    register_resource,
-    unregister_resource,
+    MemoryStats,
+    ResourceManager,
     cleanup_all_resources,
+    get_memory_monitor,
     get_memory_stats,
+    get_resource_manager,
+    initialize_memory_management,
+    register_resource,
+    shutdown_memory_management,
+    unregister_resource,
 )
 
 

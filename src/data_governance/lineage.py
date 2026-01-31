@@ -5,13 +5,13 @@ Tracks the complete data flow from sources to storage,
 supporting problem troubleshooting and impact analysis.
 """
 
-from datetime import datetime
-from enum import Enum
-from typing import Dict, List, Optional, Tuple, Any
-from dataclasses import dataclass, field
-from contextlib import contextmanager
 import json
 import logging
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,6 @@ class LineageStorage:
     async def init_tables(self) -> None:
         """Initialize database tables for lineage storage"""
         # Tables are created separately via migration scripts
-        pass
 
     async def save_node(self, node: LineageNode) -> None:
         """Save a lineage node to storage"""
@@ -103,7 +102,7 @@ class LineageStorage:
                     node.updated_at,
                 )
         except Exception as e:
-            logger.error(f"Failed to save node {node.node_id}: {e}")
+            logger.error("Failed to save node {node.node_id}: %(e)s")
 
     async def save_edge(self, edge: LineageEdge) -> None:
         """Save a lineage edge to storage"""
@@ -122,7 +121,7 @@ class LineageStorage:
                     json.dumps(edge.metadata),
                 )
         except Exception as e:
-            logger.error(f"Failed to save edge: {e}")
+            logger.error("Failed to save edge: %(e)s")
 
     async def get_lineage(self, node_id: str) -> Tuple[List[LineageNode], List[LineageEdge]]:
         """
@@ -211,7 +210,7 @@ class LineageStorage:
                         )
 
         except Exception as e:
-            logger.error(f"Failed to get lineage: {e}")
+            logger.error("Failed to get lineage: %(e)s")
 
         return nodes, edges
 
@@ -361,7 +360,7 @@ class LineageTracker:
         nodes, edges = await self._storage.get_lineage(node_id)
         return LineageGraph(nodes=nodes, edges=edges)
 
-    async def get_downstream_impact(self, node_id: str, max_levels: int = 3) -> List[LineageNode]:
+    async def get_downstream_impact(self, node_id: str, max_levels: int = 3) -> List[str]:
         """
         Get all downstream nodes impacted by a change.
 
@@ -370,9 +369,9 @@ class LineageTracker:
             max_levels: Maximum number of levels to traverse
 
         Returns:
-            List of impacted nodes
+            List of impacted node IDs
         """
-        impacted = []
+        impacted: List[str] = []
         visited = set()
         queue = [(node_id, 0)]
 

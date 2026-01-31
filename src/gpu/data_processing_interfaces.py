@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 import pandas as pd
 
 
@@ -18,7 +19,6 @@ class IDataProcessor(ABC):
         Returns:
             处理后的数据字典列表。
         """
-        pass
 
     @abstractmethod
     def compute_features(self, historical_data: List[Dict], feature_types: List[str]) -> Dict[str, float]:
@@ -30,7 +30,6 @@ class IDataProcessor(ABC):
         Returns:
             计算出的特征字典。
         """
-        pass
 
     @abstractmethod
     def load_and_preprocess(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -41,4 +40,3 @@ class IDataProcessor(ABC):
         Returns:
             包含处理后数据和相关元数据的字典。
         """
-        pass

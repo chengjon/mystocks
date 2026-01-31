@@ -1,4 +1,5 @@
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 N-gram Model Algorithm for Quantitative Trading.
 
 This module implements N-gram models for sequential pattern analysis in financial
@@ -7,21 +8,15 @@ price movements, volume sequences, and other market indicators.
 """
 
 import logging
-import time
-from typing import Dict, List, Any, Optional, Union, Tuple
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import GPUResourceManager
-
-from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
-from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import GPUResourceManager
+from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
 
 logger = logging.getLogger(__name__)
 
@@ -72,30 +67,31 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
                 await self.fallback_to_cpu()
                 return
 
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"ngram_{self.metadata.name}",
-                priority="medium",
-                memory_required=self.gpu_memory_limit or 512,  # 512MB default for N-gram
+            request = AllocationRequest(
+                strategy_id=f"ngram_{self.metadata.name}",
+                priority=StrategyPriority.MEDIUM,
+                required_memory=self.gpu_memory_limit or 512,
             )
+            gpu_id = self.gpu_manager.allocate_context(request)
 
             if gpu_id is not None:
-                logger.info(f"N-gram algorithm allocated GPU {gpu_id}")
+                logger.info("N-gram algorithm allocated GPU %(gpu_id)s")
             else:
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
         except Exception as e:
-            logger.error(f"GPU context initialization failed: {e}")
+            logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
     async def release_gpu_context(self):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"ngram_{self.metadata.name}")
+                self.gpu_manager.release_context(f"ngram_{self.metadata.name}")
                 logger.info("N-gram GPU resources released")
             except Exception as e:
-                logger.error(f"GPU resource release failed: {e}")
+                logger.error("GPU resource release failed: %(e)s")
 
     def _discretize_sequence(self, sequence: np.ndarray, bins: int = 10) -> List[str]:
         """
@@ -304,7 +300,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             return training_result
 
         except Exception as e:
-            logger.error(f"N-gram training failed: {e}")
+            logger.error("N-gram training failed: %(e)s")
             raise
 
     def _calculate_perplexity(self, sequences: List[List[str]]) -> float:
@@ -394,7 +390,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             }
 
         except Exception as e:
-            logger.error(f"N-gram prediction failed: {e}")
+            logger.error("N-gram prediction failed: %(e)s")
             raise
 
     def _predict_next_symbol(self, sequence: List[str], ngram_model: Dict, vocab: set, n: int) -> Dict[str, Any]:
@@ -454,7 +450,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             return metrics
 
         except Exception as e:
-            logger.error(f"N-gram evaluation failed: {e}")
+            logger.error("N-gram evaluation failed: %(e)s")
             raise
 
     def get_algorithm_info(self) -> Dict[str, Any]:
@@ -483,16 +479,3 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             "complexity_class": f"O(L * {n}) where L=data_length",
             "recommendation": f"Suitable for sequence prediction with vocabulary size {vocab_size}",
         }
-
-    # Required abstract method implementations
-    async def train(self, data, config):
-        """N-gram training is handled by the specialized train method."""
-        return await self.train(data, config)
-
-    async def predict(self, data, model):
-        """N-gram prediction is handled by the specialized predict method."""
-        return await self.predict(data, model)
-
-    def evaluate(self, predictions, actual):
-        """N-gram evaluation is handled by the specialized evaluate method."""
-        return self.evaluate(predictions, actual)

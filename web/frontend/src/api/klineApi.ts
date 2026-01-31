@@ -22,10 +22,10 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Helper function to get data directly (reflected by interceptor)
-async function apiGet<T>(url: string): Promise<T> {
-  return apiClient.get<T>(url) as Promise<T>;
-}
+// Helper function to get data directly (reflected by interceptor) - currently unused
+// async function apiGet<T>(url: string): Promise<T> {
+//   return apiClient.get<T>(url) as Promise<T>;
+// }
 
 apiClient.interceptors.request.use(
   config => {

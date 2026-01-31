@@ -7,7 +7,7 @@ Price Changed Domain Event
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 from src.domain.shared.event import DomainEvent
 

@@ -4,13 +4,13 @@ Portfolio Aggregate Root
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 from datetime import datetime
+from typing import Dict, List
 from uuid import uuid4
 
-from src.domain.shared.event import DomainEvent
 from src.domain.trading.events import OrderFilledEvent
 from src.domain.trading.value_objects import OrderSide
+
 from ..value_objects.performance_metrics import PerformanceMetrics, PositionInfo
 from .transaction import Transaction
 

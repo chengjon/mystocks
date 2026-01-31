@@ -7,8 +7,8 @@ MyStocks项目综合测试套件
     python run_all_tests.py
 """
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # 添加项目根目录到Python路径

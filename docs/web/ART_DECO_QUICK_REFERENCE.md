@@ -1,7 +1,19 @@
 # Art Deco Quick Reference Guide
 ## MyStocks 装饰艺术快速参考手册
 
-**Last Updated**: 2025-12-30
+**Last Updated**: 2026-01-20
+**Version**: 2.0 (Phase 2-4 Enhancements)
+
+---
+
+## 🆕 What's New in v2.0
+
+- ✨ **3 New Component Categories**: business (10), charts (8), trading (13)
+- ✨ **Double Border Button Variant**: Signature ArtDeco double-frame style
+- ✨ **Roman Numeral Input Labels**: Automatic numeral conversion
+- ✨ **60+ Financial Design Tokens**: Technical indicators, risk levels, GPU metrics
+- ✨ **Sharper Card Corners**: Fixed to 0px radius (perfectly sharp)
+- 📊 **66 Total Components**: Up from 64, better organized than ever
 
 ---
 
@@ -9,8 +21,21 @@
 
 ### Import Components
 
+**From Main Index (Recommended)**:
 ```typescript
 import { ArtDecoButton, ArtDecoCard, ArtDecoInput } from '@/components/artdeco'
+```
+
+**From Category Index (Tree-Shaking Friendly)**:
+```typescript
+// Business components
+import { ArtDecoDateRange, ArtDecoFilterBar } from '@/components/artdeco/business'
+
+// Chart components
+import { TimeSeriesChart, DrawdownChart } from '@/components/artdeco/charts'
+
+// Trading components
+import { ArtDecoOrderBook, ArtDecoTradeForm } from '@/components/artdeco/trading'
 ```
 
 ### Import Styles
@@ -130,6 +155,236 @@ color: var(--artdeco-accent-gold);            // Gold
 .section-header {
   @include artdeco-section-divider(96px, 1px);
 }
+```
+
+---
+
+## 🆕 Component API Reference (Phase 2 Enhancements)
+
+### ArtDecoButton ⭐ Enhanced
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| variant | `'default' \| 'solid' \| 'outline' \| 'secondary' \| 'rise' \| 'fall' \| **`'double-border'`** \| 'pulse'` | `'default'` | Button style |
+| size | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
+| disabled | `boolean` | `false` | Disabled state |
+| block | `boolean` | `false` | Full width |
+
+**🆕 NEW: Double Border Variant** (Signature ArtDeco Style)
+```vue
+<ArtDecoButton variant="double-border">
+  DOUBLE BORDER
+</ArtDecoButton>
+```
+
+**All Variants**:
+- `default` - Transparent bg, gold border
+- `solid` - Gold bg, black text
+- `outline` - Thin gold border
+- `secondary` - Alias for outline
+- `rise` - Red border (A股涨)
+- `fall` - Green border (A股跌)
+- **`double-border`** - ⭐ Double frame style (NEW)
+- `pulse` - Pulsing animation
+
+---
+
+### ArtDecoInput ⭐ Enhanced
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| modelValue | `string \| number` | `''` | Input value (v-model) |
+| label | `string` | `''` | Uppercase label |
+| **labelType** | **`'default' \| 'roman'`** | **`'default'`** | **Label style (NEW)** |
+| placeholder | `string` | `''` | Placeholder text |
+| type | `string` | `'text'` | Input type |
+| disabled | `boolean` | `false` | Disabled state |
+| required | `boolean` | `false` | Show asterisk |
+| errorMessage | `string` | `''` | Error message (red) |
+| helperText | `string` | `''` | Helper text (gray) |
+| variant | `'default' \| 'bordered'` | `'default'` | Input style |
+
+**🆕 NEW: Roman Numeral Labels**
+```vue
+<ArtDecoInput
+  v-model="username"
+  label="USERNAME 1"
+  label-type="roman"
+/>
+<!-- Displays: USERNAME Ⅰ -->
+
+<ArtDecoInput
+  label="EMAIL 2"
+  label-type="roman"
+/>
+<!-- Displays: EMAIL Ⅱ -->
+```
+
+**Features**:
+- Supports numbers 1-20 (Ⅰ, Ⅱ, Ⅲ, Ⅳ, Ⅴ, Ⅵ, Ⅶ, Ⅷ, Ⅸ, Ⅹ, Ⅺ, Ⅻ, Ⅼ, Ⅽ, Ⅾ, Ⅿ, ⅰ, ⅱ, ⅳ, Ⅹ)
+- Auto-detects trailing numbers
+- Falls back to appending "Ⅰ" if no number found
+
+---
+
+### ArtDecoCard ⭐ Enhanced
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| title | `string` | `''` | Card title (display font) |
+| subtitle | `string` | `''` | Card subtitle (muted) |
+| hoverable | `boolean` | `true` | Enable hover lift effect |
+| clickable | `boolean` | `false` | Make card clickable |
+| variant | `'default' \| 'stat' \| 'bordered' \| 'chart' \| 'form' \| 'elevated'` | `'default'` | Card style |
+
+**🆕 ENHANCED: Sharp Corners**
+```scss
+// Now uses 0px radius (perfectly sharp)
+border-radius: var(--artdeco-radius-none);
+```
+
+---
+
+## 🆕 Financial Design Tokens (Phase 1)
+
+### Technical Indicator Tokens
+
+```scss
+// MACD Indicator
+var(--artdeco-indicator-macd-positive)      // #00E676 - Bullish signal
+var(--artdeco-indicator-macd-negative)      // #FF5252 - Bearish signal
+var(--artdeco-indicator-macd-neutral)       // #B0B3B8 - Neutral
+
+// RSI Indicator
+var(--artdeco-indicator-rsi-overbought)     // #FF5252 - >70 overbought
+var(--artdeco-indicator-rsi-oversold)       // #00E676 - <30 oversold
+var(--artdeco-indicator-rsi-neutral)        // #FFD700 - 30-70 normal
+
+// Bollinger Bands
+var(--artdeco-indicator-bb-upper)           // #FF5252 - Upper band
+var(--artdeco-indicator-bb-lower)           // #00E676 - Lower band
+var(--artdeco-indicator-bb-middle)          // #D4AF37 - Middle band
+
+// Moving Averages
+var(--artdeco-indicator-ma-fast)            // #00E676 - Fast MA (e.g., MA5)
+var(--artdeco-indicator-ma-medium)          // #FFD700 - Medium MA (e.g., MA20)
+var(--artdeco-indicator-ma-slow)            // #FF5252 - Slow MA (e.g., MA60)
+```
+
+### Risk Level Tokens
+
+```scss
+// Risk Assessment Colors
+var(--artdeco-risk-low)                     // #00E676 - Low risk
+var(--artdeco-risk-medium)                  // #FFD700 - Medium risk
+var(--artdeco-risk-high)                    // #FF5252 - High risk
+var(--artdeco-risk-extreme)                 // #FF1744 - Extreme risk
+
+// Risk Score Indicators
+var(--artdeco-risk-score-0)                 // #00E676 - Score 0-20
+var(--artdeco-risk-score-1)                 // #76FF03 - Score 20-40
+var(--artdeco-risk-score-2)                 // #FFD700 - Score 40-60
+var(--artdeco-risk-score-3)                 // #FF5252 - Score 60-80
+var(--artdeco-risk-score-4)                 // #FF1744 - Score 80-100
+```
+
+### GPU Performance Tokens
+
+```scss
+// GPU Status Colors
+var(--artdeco-gpu-normal)                   // #00E676 - Normal load (<60%)
+var(--artdeco-gpu-busy)                     // #FFD700 - High load (60-85%)
+var(--artdeco-gpu-overload)                 // #FF5252 - Overload (>85%)
+var(--artdeco-gpu-error)                    // #FF1744 - Error state
+
+// GPU Metrics
+var(--artdeco-gpu-usage-low)                // #00E676 - 0-30% usage
+var(--artdeco-gpu-usage-medium)             // #FFD700 - 30-70% usage
+var(--artdeco-gpu-usage-high)               // #FF5252 - 70-100% usage
+
+// Memory Status
+var(--artdeco-memory-healthy)               // #00E676 - <80% used
+var(--artdeco-memory-warning)               // #FFD700 - 80-90% used
+var(--artdeco-memory-critical)              // #FF5252 - >90% used
+```
+
+### Market Data Tokens
+
+```scss
+// Price Change Indicators
+var(--artdeco-price-up-strong)              // #FF1744 - Strong gain (>5%)
+var(--artdeco-price-up-moderate)            // #FF5252 - Moderate gain (2-5%)
+var(--artdeco-price-down-strong)            // #00E676 - Strong drop (>5%)
+var(--artdeco-price-down-moderate)          // #4CAF50 - Moderate drop (2-5%)
+
+// Volume Indicators
+var(--artdeco-volume-high)                  // #FF5252 - High volume
+var(--artdeco-volume-normal)                // #FFD700 - Normal volume
+var(--artdeco-volume-low)                   // #00E676 - Low volume
+
+// Volatility Indicators
+var(--artdeco-volatility-low)               // #00E676 - Low volatility
+var(--artdeco-volatility-normal)            // #FFD700 - Normal volatility
+var(--artdeco-volatility-high)              // #FF5252 - High volatility
+```
+
+### Strategy Performance Tokens
+
+```sharp
+// Return Categories
+var(--artdeco-return-excellent)             // #00E676 - >20% return
+var(--artdeco-return-good)                  // #76FF03 - 10-20% return
+var(--artdeco-return-neutral)               // #FFD700 - 0-10% return
+var(--artdeco-return-poor)                  // #FF5252 - Negative return
+
+// Sharpe Ratio Indicators
+var(--artdeco-sharpe-excellent)             // #00E676 - Sharpe >2
+var(--artdeco-sharpe-good)                  // #FFD700 - Sharpe 1-2
+var(--artdeco-sharpe-poor)                  // #FF5252 - Sharpe <1
+
+// Maximum Drawdown Levels
+var(--artdeco-drawdown-low)                 // #00E676 - DD <5%
+var(--artdeco-drawdown-medium)              // #FFD700 - DD 5-15%
+var(--artdeco-drawdown-high)                // #FF5252 - DD >15%
+```
+
+### Usage Example
+
+```vue
+<template>
+  <div class="risk-indicator" :style="{ color: riskColor }">
+    Risk Level: {{ riskLabel }}
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = defineProps<{
+  riskScore: number // 0-100
+}>()
+
+const riskColor = computed(() => {
+  if (props.riskScore < 30) return 'var(--artdeco-risk-low)'
+  if (props.riskScore < 60) return 'var(--artdeco-risk-medium)'
+  if (props.riskScore < 80) return 'var(--artdeco-risk-high)'
+  return 'var(--artdeco-risk-extreme)'
+})
+
+const riskLabel = computed(() => {
+  if (props.riskScore < 30) return 'LOW'
+  if (props.riskScore < 60) return 'MEDIUM'
+  if (props.riskScore < 80) return 'HIGH'
+  return 'EXTREME'
+})
+</script>
+```
+
+**File Location**: `web/frontend/src/styles/artdeco-financial.scss`
+
+**Import**:
+```scss
+@import '@/styles/artdeco-financial.scss';
 ```
 
 ---

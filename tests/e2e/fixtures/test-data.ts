@@ -42,9 +42,9 @@ export const TEST_CREDENTIALS = {
 };
 
 export const TEST_URLS = {
-  frontend: process.env.BASE_URL || 'http://localhost:3000',
+  frontend: process.env.E2E_BASE_URL || process.env.BASE_URL || 'http://localhost:3000',
   backend: process.env.API_BASE_URL || 'http://localhost:8000',
-  login: `${process.env.BASE_URL || 'http://localhost:3000'}/login`,
+  login: `${process.env.E2E_BASE_URL || process.env.BASE_URL || 'http://localhost:3000'}/login`,
 };
 
 export const TIMEOUTS = {

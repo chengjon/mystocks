@@ -26,18 +26,18 @@ aggregator.run_daily()    # 每天执行
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
-import pandas as pd
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 
 logger = logging.getLogger(__name__)
 
 try:
     from src.monitoring.signal_metrics import (
+        update_profit_ratio,
         update_signal_accuracy,
         update_signal_success_rate,
-        update_profit_ratio,
         update_strategy_health,
     )
 
@@ -109,13 +109,13 @@ class SignalMetricsAggregator:
         except Exception as e:
             results["status"] = "failed"
             results["errors"].append(f"聚合任务失败: {e}")
-            logger.error(f"小时级聚合任务失败: {e}")
+            logger.error("小时级聚合任务失败: %(e)s")
 
         elapsed = (datetime.utcnow() - start_time).total_seconds()
         results["elapsed_seconds"] = elapsed
         results["end_time"] = datetime.utcnow().isoformat()
 
-        logger.info(f"小时级聚合完成: 处理 {results['strategies_processed']} 个策略, 耗时 {elapsed:.2f}秒")
+        logger.info("小时级聚合完成: 处理 {results['strategies_processed']} 个策略, 耗时 {elapsed:.2f}秒")
 
         return results
 
@@ -182,7 +182,7 @@ class SignalMetricsAggregator:
             metrics: 要计算的指标列表（None表示所有）
         """
         start_time = datetime.utcnow()
-        logger.info(f"开始按需聚合: 策略={strategy_ids}, 指标={metrics}")
+        logger.info("开始按需聚合: 策略=%(strategy_ids)s, 指标=%(metrics)s")
 
         results = {
             "task_type": "ondemand",
@@ -205,7 +205,7 @@ class SignalMetricsAggregator:
                     results["updates"] += updates
                     results["strategies_processed"] += 1
                 except Exception as e:
-                    logger.error(f"策略 {strategy.get('id')} 按需聚合失败: {e}")
+                    logger.error("策略 {strategy.get('id')} 按需聚合失败: %(e)s")
 
             results["status"] = "success"
         except Exception as e:
@@ -228,7 +228,7 @@ class SignalMetricsAggregator:
             stats = manager.get_manager_stats()
             return [{"id": "default", "name": "Default Strategy"}]
         except Exception as e:
-            logger.warning(f"获取活跃策略失败: {e}")
+            logger.warning("获取活跃策略失败: %(e)s")
             return []
 
     async def _get_strategies_by_ids(self, strategy_ids: List[str]) -> List[Dict[str, Any]]:
@@ -261,10 +261,10 @@ class SignalMetricsAggregator:
                         percentage = (count / total_signals) * 100
                         update_signal_accuracy(strategy_id, sig_type, percentage)
 
-            logger.debug(f"策略 {strategy_id} 小时聚合: BUY={signal_counts['BUY']}, SELL={signal_counts['SELL']}")
+            logger.debug("策略 %(strategy_id)s 小时聚合: BUY={signal_counts['BUY']}, SELL=%s")
 
         except Exception as e:
-            logger.error(f"策略 {strategy_id} 小时聚合失败: {e}")
+            logger.error("策略 %(strategy_id)s 小时聚合失败: %(e)s")
             raise
 
     async def _aggregate_daily(self, strategy: Dict[str, Any]) -> None:
@@ -296,10 +296,13 @@ class SignalMetricsAggregator:
                 update_signal_success_rate(strategy_id, "ALL", accuracy)
                 update_profit_ratio(strategy_id, "1d", profit_ratio)
 
-            logger.debug(f"策略 {strategy_id} 日聚合: 准确率={accuracy:.1f}%, 盈利比率={profit_ratio:.1f}%")
+            logger.debug(
+                "策略 %s 日聚合: 准确率=%.1f%%, 盈利比率=%.1f%%",
+                strategy_id, accuracy, profit_ratio
+            )
 
         except Exception as e:
-            logger.error(f"策略 {strategy_id} 日聚合失败: {e}")
+            logger.error("策略 %(strategy_id)s 日聚合失败: %(e)s")
             raise
 
     async def _aggregate_strategy(self, strategy: Dict[str, Any], metrics: Optional[List[str]] = None) -> int:
@@ -341,7 +344,7 @@ class SignalMetricsAggregator:
             return signals if isinstance(signals, list) else []
 
         except Exception as e:
-            logger.debug(f"获取信号数据失败: {e}")
+            logger.debug("获取信号数据失败: %(e)s")
             return []
 
     async def _get_completed_signals(self, strategy_id: str, hours: int, limit: int = 1000) -> List[Dict[str, Any]]:
@@ -399,7 +402,7 @@ class MetricsScheduler:
         self._hourly_task = SignalMetricsAggregator()
         self._daily_task = SignalMetricsAggregator()
 
-        logger.info(f"启动指标聚合调度器: 小时间隔={hourly_interval}s, 天级小时={daily_hour}")
+        logger.info("启动指标聚合调度器: 小时间隔=%(hourly_interval)ss, 天级小时=%(daily_hour)s")
 
         while self._running:
             try:
@@ -414,7 +417,7 @@ class MetricsScheduler:
                     await self._daily_task.run_daily()
 
             except Exception as e:
-                logger.error(f"调度任务执行失败: {e}")
+                logger.error("调度任务执行失败: %(e)s")
 
             await asyncio.sleep(60)  # 每分钟检查一次
 
@@ -455,7 +458,7 @@ class SignalStatisticsAggregator:
                     return None
                 self._pg_pool = pg
             except Exception as e:
-                logger.error(f"无法获取监控数据库连接: {e}")
+                logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
 
@@ -495,7 +498,7 @@ class SignalStatisticsAggregator:
                 )
 
             result["aggregated_count"] = aggregated_count or 0
-            logger.info(f"数据库统计聚合完成: {result['aggregated_count']} 条记录")
+            logger.info("数据库统计聚合完成: {result['aggregated_count']} 条记录")
 
             # 2. 清理旧数据（90天前）
             cleanup_count = await conn.fetchval("SELECT cleanup_old_signal_statistics()")
@@ -505,7 +508,7 @@ class SignalStatisticsAggregator:
             result["duration_seconds"] = (datetime.now() - start_time).total_seconds()
 
         except Exception as e:
-            logger.error(f"数据库统计聚合失败: {e}", exc_info=True)
+            logger.error("数据库统计聚合失败: {e}", exc_info=True)
             result["error"] = str(e)
 
         return result
@@ -540,7 +543,7 @@ class SignalStatisticsAggregator:
             return bool(success)
 
         except Exception as e:
-            logger.error(f"聚合策略 {strategy_id} 失败: {e}", exc_info=True)
+            logger.error("聚合策略 {strategy_id} 失败: {e}", exc_info=True)
             return False
 
     async def get_recent_statistics(
@@ -578,7 +581,7 @@ class SignalStatisticsAggregator:
             return [dict(row) for row in rows]
 
         except Exception as e:
-            logger.error(f"获取统计数据失败: {e}", exc_info=True)
+            logger.error("获取统计数据失败: {e}", exc_info=True)
             return []
 
 

@@ -8,7 +8,8 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from playwright.async_api import async_playwright, Page, Browser
+
+from playwright.async_api import Browser, Page, async_playwright
 
 
 class BaseTest:

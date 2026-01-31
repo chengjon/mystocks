@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_market_calendar(self) -> pd.DataFrame:
     """
     获取交易日历

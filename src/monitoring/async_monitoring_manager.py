@@ -12,8 +12,8 @@
 
 import logging
 import os
-from typing import Dict, List, Optional
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from .async_monitoring import (
     MonitoringEvent,
@@ -338,8 +338,8 @@ def shutdown_async_monitoring():
 
 if __name__ == "__main__":
     """测试异步监控管理器"""
-    import sys
     import os
+    import sys
     import time
 
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))

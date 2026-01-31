@@ -5,24 +5,25 @@
 测试MyStocks系统中统一数据管理器的完整功能，包括委托模式、故障恢复和监控集成
 """
 
-import pytest
-import sys
 import os
-import pandas as pd
+import sys
 from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.core.unified_manager import MyStocksUnifiedManager
-from src.core.data_classification import DataClassification
 from src.core.batch_failure_strategy import (
+    BatchFailureHandler,
     BatchFailureStrategy,
     BatchOperationResult,
-    BatchFailureHandler,
 )
+from src.core.data_classification import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 
 class TestMyStocksUnifiedManager:

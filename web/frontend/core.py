@@ -306,7 +306,7 @@ class EnhancedNiceGUIMonitoringDashboard:
     def _start_auto_refresh(self):
         """启动自动刷新"""
         self.refresh_task = ui.timer(self.dashboard_refresh_interval, self._refresh_data, active=True)
-        logger.info(f"⏱️ 自动刷新已启动，间隔: {self.dashboard_refresh_interval}秒")
+        logger.info("⏱️ 自动刷新已启动，间隔: {self.dashboard_refresh_interval}秒"")
 
     def _refresh_data(self):
         """刷新数据"""
@@ -336,11 +336,11 @@ class EnhancedNiceGUIMonitoringDashboard:
             self.performance_metrics['last_update_time'] = datetime.now()
             self.performance_metrics['error_count'] = 0
 
-            logger.info(f"✅ 监控数据已刷新 ({self.performance_metrics['update_count']})")
+            logger.info("✅ 监控数据已刷新 ({self.performance_metrics['update_count']})"")
 
         except Exception as e:
             self.performance_metrics['error_count'] += 1
-            logger.error(f"❌ 数据刷新错误: {e}")
+            logger.error("❌ 数据刷新错误: %(e)s"")
 
     def _update_performance_metrics(self):
         """更新性能指标"""

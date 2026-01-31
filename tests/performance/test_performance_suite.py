@@ -5,17 +5,18 @@ MyStocks 性能测试套件
 提供全面的性能测试、基准测试和回归测试
 """
 
-import pytest
 import asyncio
-import time
-import psutil
-import statistics
-from datetime import datetime
-from typing import Dict, List, Any
-import aiohttp
 import json
+import statistics
+import time
+from datetime import datetime
+from typing import Any, Dict, List
 
-from tests.config.test_config import test_env, performance_baseline
+import aiohttp
+import psutil
+import pytest
+
+from tests.config.test_config import performance_baseline, test_env
 
 
 class PerformanceTestSuite:

@@ -10,9 +10,10 @@ Date: 2026-01-09
 Phase: 12.4 - API Layer Integration
 """
 
-from typing import Dict, Any, Optional, List
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import structlog
 
 logger = structlog.get_logger()
@@ -108,7 +109,6 @@ class RealtimeMTMAdapter:
         """处理价格变更事件"""
         # 当价格变更时，重新计算相关投资组合
         # 这个方法由事件总线调用
-        pass
 
     def register_position(
         self, position_id: str, portfolio_id: str, symbol: str, quantity: int, avg_price: float
@@ -122,7 +122,7 @@ class RealtimeMTMAdapter:
         try:
             portfolio = self.portfolio_repo.find_by_id(portfolio_id)
             if not portfolio:
-                logger.warning(f"Portfolio not found: {portfolio_id}")
+                logger.warning("Portfolio not found: %(portfolio_id)s"")
                 return False
 
             # 如果持仓不存在，创建一个 mock 订单成交事件来添加持仓
@@ -139,16 +139,16 @@ class RealtimeMTMAdapter:
             portfolio.handle_order_filled(MockEvent())
             self.portfolio_repo.save(portfolio)
 
-            logger.info(f"✅ Registered position {position_id} for portfolio {portfolio_id}")
+            logger.info("✅ Registered position %(position_id)s for portfolio %(portfolio_id)s"")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to register position: {e}")
+            logger.error("Failed to register position: %(e)s"")
             return False
 
     def unregister_position(self, position_id: str) -> bool:
         """注销持仓（兼容旧接口）"""
-        logger.warning(f"unregister_position not implemented in DDD architecture: {position_id}")
+        logger.warning("unregister_position not implemented in DDD architecture: %(position_id)s"")
         return True
 
     def update_price(self, symbol: str, price: float) -> List[MTMUpdate]:
@@ -204,7 +204,7 @@ class RealtimeMTMAdapter:
             return updates
 
         except Exception as e:
-            logger.error(f"Failed to update price for {symbol}: {e}")
+            logger.error("Failed to update price for %(symbol)s: %(e)s"")
             return []
 
     def get_portfolio_snapshot(self, portfolio_id: str) -> Optional[PortfolioSnapshot]:
@@ -239,7 +239,7 @@ class RealtimeMTMAdapter:
             return snapshot
 
         except Exception as e:
-            logger.error(f"Failed to get portfolio snapshot {portfolio_id}: {e}")
+            logger.error("Failed to get portfolio snapshot %(portfolio_id)s: %(e)s"")
             return None
 
     def get_position_snapshot(self, position_id: str) -> Optional[PositionSnapshot]:
@@ -283,7 +283,7 @@ class RealtimeMTMAdapter:
             return snapshot
 
         except Exception as e:
-            logger.error(f"Failed to get position snapshot {position_id}: {e}")
+            logger.error("Failed to get position snapshot %(position_id)s: %(e)s"")
             return None
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -299,7 +299,7 @@ class RealtimeMTMAdapter:
                 "architecture": "DDD (Phase 12.3)",
             }
         except Exception as e:
-            logger.error(f"Failed to get metrics: {e}")
+            logger.error("Failed to get metrics: %(e)s"")
             return {}
 
     def _convert_to_snapshot(self, portfolio, performance) -> PortfolioSnapshot:
@@ -352,7 +352,7 @@ class RealtimeMTMAdapter:
                 snapshot = self._convert_to_snapshot(portfolio, performance)
                 self._portfolio_snapshots[portfolio_id] = snapshot
         except Exception as e:
-            logger.error(f"Failed to update cache for {portfolio_id}: {e}")
+            logger.error("Failed to update cache for %(portfolio_id)s: %(e)s"")
 
 
 # 全局适配器实例（延迟初始化）
@@ -383,8 +383,8 @@ def initialize_adapter(db_session, event_bus=None):
         return _adapter
 
     # 创建仓储和服务
-    from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
     from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
+    from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
 
     portfolio_repo = PortfolioRepositoryImpl(db_session)
     valuation_service = PortfolioValuationService(portfolio_repo)

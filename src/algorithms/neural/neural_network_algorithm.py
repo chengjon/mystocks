@@ -7,14 +7,14 @@ including LSTM, GRU, CNN, and hybrid models with GPU acceleration.
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import GPUResourceManager
+from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
 
 logger = logging.getLogger(__name__)
 
@@ -72,30 +72,31 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
                 await self.fallback_to_cpu()
                 return
 
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"nn_{self.metadata.name}",
-                priority="high",  # Neural networks need more resources
-                memory_required=self.gpu_memory_limit or 2048,  # 2GB default for NN
+            request = AllocationRequest(
+                strategy_id=f"nn_{self.metadata.name}",
+                priority=StrategyPriority.HIGH,
+                required_memory=self.gpu_memory_limit or 2048,
             )
+            gpu_id = self.gpu_manager.allocate_context(request)
 
             if gpu_id is not None:
-                logger.info(f"Neural Network algorithm allocated GPU {gpu_id}")
+                logger.info("Neural Network algorithm allocated GPU %(gpu_id)s")
             else:
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
         except Exception as e:
-            logger.error(f"GPU context initialization failed: {e}")
+            logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
     async def release_gpu_context(self):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"nn_{self.metadata.name}")
+                self.gpu_manager.release_context(f"nn_{self.metadata.name}")
                 logger.info("Neural Network GPU resources released")
             except Exception as e:
-                logger.error(f"GPU resource release failed: {e}")
+                logger.error("GPU resource release failed: %(e)s")
 
     def _prepare_sequences(self, data: pd.DataFrame, config: Dict[str, Any]) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -152,9 +153,8 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
         """Build LSTM neural network model."""
         try:
             # Try TensorFlow/Keras first
-            import tensorflow as tf
+            from tensorflow.keras.layers import LSTM, Bidirectional, Dense, Dropout
             from tensorflow.keras.models import Sequential
-            from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
 
             model = Sequential()
 
@@ -214,7 +214,6 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
         self, input_shape: Tuple[int, ...], output_shape: Tuple[int, ...], params: Dict[str, Any]
     ) -> Any:
         """Build LSTM model with PyTorch."""
-        import torch
         import torch.nn as nn
 
         class LSTMModel(nn.Module):
@@ -281,7 +280,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
 
             def fit(self, X, y, epochs=10, batch_size=32):
                 # Dummy training
-                logger.info(f"Training simplified LSTM for {epochs} epochs")
+                logger.info("Training simplified LSTM for %(epochs)s epochs")
                 return {"loss": np.random.rand()}
 
         model = SimpleLSTM(input_shape, output_shape, params)
@@ -293,20 +292,32 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
         optimizer_name = params.get("optimizer", "adam")
 
         if optimizer_name == "adam":
-            import tensorflow as tf
-
+            try:
+                import tensorflow as tf  # pylint: disable=import-error
+            except ImportError:
+                logger.warning("TensorFlow not available, using mock optimizer")
+                return None
             return tf.keras.optimizers.Adam(learning_rate=params.get("learning_rate", 0.001))
         elif optimizer_name == "rmsprop":
-            import tensorflow as tf
-
+            try:
+                import tensorflow as tf  # pylint: disable=import-error
+            except ImportError:
+                logger.warning("TensorFlow not available, using mock optimizer")
+                return None
             return tf.keras.optimizers.RMSprop(learning_rate=params.get("learning_rate", 0.001))
         elif optimizer_name == "sgd":
-            import tensorflow as tf
-
+            try:
+                import tensorflow as tf  # pylint: disable=import-error
+            except ImportError:
+                logger.warning("TensorFlow not available, using mock optimizer")
+                return None
             return tf.keras.optimizers.SGD(learning_rate=params.get("learning_rate", 0.01))
         else:
-            import tensorflow as tf
-
+            try:
+                import tensorflow as tf  # pylint: disable=import-error
+            except ImportError:
+                logger.warning("TensorFlow not available, using mock optimizer")
+                return None
             return tf.keras.optimizers.Adam(learning_rate=params.get("learning_rate", 0.001))
 
     def _get_loss_function(self, params: Dict[str, Any]):
@@ -318,8 +329,11 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
         elif loss_name == "mae":
             return "mean_absolute_error"
         elif loss_name == "huber":
-            import tensorflow as tf
-
+            try:
+                import tensorflow as tf  # pylint: disable=import-error
+            except ImportError:
+                logger.warning("TensorFlow not available, using mse fallback")
+                return "mean_squared_error"
             return tf.keras.losses.Huber()
         else:
             return "mean_squared_error"
@@ -356,7 +370,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             self.output_shape = y.shape[1:] if len(y.shape) > 1 else (1,)
 
             # Feature scaling
-            from sklearn.preprocessing import StandardScaler, MinMaxScaler
+            from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
             if nn_params.get("feature_scaling", "standard") == "standard":
                 self.scaler = StandardScaler()
@@ -436,11 +450,11 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             self.is_trained = True
             self.update_metadata(last_trained=pd.Timestamp.now())
 
-            logger.info(f"Neural Network training completed - {self.architecture} model, loss: {training_loss:.4f}")
+            logger.info("Neural Network training completed - {self.architecture} model, loss: %(training_loss)s")
             return training_result
 
         except Exception as e:
-            logger.error(f"Neural Network training failed: {e}")
+            logger.error("Neural Network training failed: %(e)s")
             raise
 
     async def predict(self, data: pd.DataFrame, model: Dict[str, Any]) -> Dict[str, Any]:
@@ -513,7 +527,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             }
 
         except Exception as e:
-            logger.error(f"Neural Network prediction failed: {e}")
+            logger.error("Neural Network prediction failed: %(e)s")
             raise
 
     def evaluate(self, predictions: Dict[str, Any], actual: pd.DataFrame) -> Dict[str, float]:
@@ -570,7 +584,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             return metrics
 
         except Exception as e:
-            logger.error(f"Neural Network evaluation failed: {e}")
+            logger.error("Neural Network evaluation failed: %(e)s")
             raise
 
     def get_algorithm_info(self) -> Dict[str, Any]:
@@ -609,16 +623,3 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             "complexity_class": f"O(T * S * P) where T={data_length}, S={sequence_length}, P={total_params}",
             "recommendation": f"Suitable for time series with {len(hidden_units)} LSTM layers",
         }
-
-    # Required abstract method implementations
-    async def train(self, data, config):
-        """NN training is handled by the specialized train method."""
-        return await self.train(data, config)
-
-    async def predict(self, data, model):
-        """NN prediction is handled by the specialized predict method."""
-        return await self.predict(data, model)
-
-    def evaluate(self, predictions, actual):
-        """NN evaluation is handled by the specialized evaluate method."""
-        return self.evaluate(predictions, actual)

@@ -14,9 +14,10 @@ Critical vulnerabilities identified in data_access.py:
 Risk Level: CRITICAL - Allows arbitrary SQL injection through user-controlled values
 """
 
-import pytest
-import sys
 import os
+import sys
+
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

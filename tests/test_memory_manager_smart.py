@@ -6,15 +6,13 @@
 测试用例数: 3
 """
 
+import sys
 import unittest
 from pathlib import Path
-import sys
 
 # 导入被测试模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import memory_manager
-
-
 
     def test_memory_manager_bug_prevention_sql_injection(self):
         """Bug防护测试 - 存在SQL注入风险"""

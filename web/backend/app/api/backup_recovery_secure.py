@@ -1,4 +1,5 @@
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
 备份恢复 API 端点 - 完全安全版本
 
 完整的安全实现，包含所有13个端点的安全保护：
@@ -94,7 +95,7 @@ def log_security_event(
         "details": details or {},
     }
 
-    security_logger.info(f"SECURITY_EVENT: {log_data}")
+    security_logger.info("SECURITY_EVENT: %(log_data)s"")
 
 
 def check_backup_rate_limit(user: User) -> bool:

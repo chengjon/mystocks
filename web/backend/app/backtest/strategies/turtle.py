@@ -5,10 +5,10 @@ Turtle Trading Strategy
 基于Richard Dennis和William Eckhardt的传奇交易策略
 """
 
-from typing import Dict, Any, Optional, List
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class TurtleStrategy(BaseStrategy):

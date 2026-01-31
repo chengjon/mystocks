@@ -4,24 +4,25 @@ API契约管理 API路由
 """
 
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
 from app.api.contract.schemas import (
-    ContractVersionCreate,
-    ContractVersionUpdate,
-    ContractVersionResponse,
-    ContractListResponse,
     ContractDiffRequest,
     ContractDiffResponse,
+    ContractListResponse,
+    ContractSyncRequest,
     ContractValidateRequest,
     ContractValidateResponse,
-    ContractSyncRequest,
+    ContractVersionCreate,
+    ContractVersionResponse,
+    ContractVersionUpdate,
 )
-from app.api.contract.services.version_manager import VersionManager
 from app.api.contract.services.diff_engine import DiffEngine
 from app.api.contract.services.validator import ContractValidator
+from app.api.contract.services.version_manager import VersionManager
+from app.core.database import get_db
 
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
@@ -228,8 +229,8 @@ async def get_sync_report(db: Session = Depends(get_db)):
 
     返回当前可以同步的端点信息
     """
-    from app.main import app as fastapi_app
     from app.api.contract.services.openapi_generator import OpenAPIGenerator
+    from app.main import app as fastapi_app
 
     generator = OpenAPIGenerator()
     generator.scan_app(fastapi_app)

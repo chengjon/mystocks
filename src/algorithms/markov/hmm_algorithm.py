@@ -1,4 +1,6 @@
 """
+# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
+# pylint: disable=function-redefined  # TODO: 重构代码结构，消除重复定义
 Hidden Markov Model (HMM) Algorithm for Quantitative Trading.
 
 This module implements Hidden Markov Model for market regime detection,
@@ -8,15 +10,14 @@ bear, sideways) and predicting regime transitions.
 """
 
 import logging
-import time
-from typing import Dict, List, Any, Optional, Union, Tuple
+from typing import Any, Dict, Optional
+
 import numpy as np
 import pandas as pd
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import GPUResourceManager
+from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
 
 logger = logging.getLogger(__name__)
 
@@ -79,30 +80,31 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
                 await self.fallback_to_cpu()
                 return
 
-            gpu_id = self.gpu_manager.allocate_gpu(
-                task_id=f"hmm_{self.metadata.name}",
-                priority="medium",
-                memory_required=self.gpu_memory_limit or 2048,  # 2GB default for HMM
+            request = AllocationRequest(
+                strategy_id=f"hmm_{self.metadata.name}",
+                priority=StrategyPriority.MEDIUM,
+                required_memory=self.gpu_memory_limit or 2048,
             )
+            gpu_id = self.gpu_manager.allocate_context(request)
 
             if gpu_id is not None:
-                logger.info(f"HMM algorithm allocated GPU {gpu_id}")
+                logger.info("HMM algorithm allocated GPU %(gpu_id)s")
             else:
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
         except Exception as e:
-            logger.error(f"GPU context initialization failed: {e}")
+            logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
     async def release_gpu_context(self):
         """Release GPU resources."""
         if self.gpu_manager and not self.gpu_enabled:
             try:
-                self.gpu_manager.release_gpu(f"hmm_{self.metadata.name}")
+                self.gpu_manager.release_context(f"hmm_{self.metadata.name}")
                 logger.info("HMM GPU resources released")
             except Exception as e:
-                logger.error(f"GPU resource release failed: {e}")
+                logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -199,11 +201,11 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             self.is_trained = True
             self.update_metadata(last_trained=pd.Timestamp.now())
 
-            logger.info(f"HMM training completed - {self.n_states} states, {n_regime_changes} regime changes")
+            logger.info("HMM training completed - {self.n_states} states, %(n_regime_changes)s regime changes")
             return training_result
 
         except Exception as e:
-            logger.error(f"HMM training failed: {e}")
+            logger.error("HMM training failed: %(e)s")
             raise
 
     async def _train_cpu_hmm(self, X: np.ndarray, params: Dict[str, Any]):
@@ -322,7 +324,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             }
 
         except Exception as e:
-            logger.error(f"HMM prediction failed: {e}")
+            logger.error("HMM prediction failed: %(e)s")
             raise
 
     def evaluate(self, predictions: Dict[str, Any], actual: pd.DataFrame) -> Dict[str, float]:
@@ -351,7 +353,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             return metrics
 
         except Exception as e:
-            logger.error(f"HMM evaluation failed: {e}")
+            logger.error("HMM evaluation failed: %(e)s")
             raise
 
     def _count_regime_changes(self, regimes: np.ndarray) -> int:
@@ -383,7 +385,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
 
     def get_algorithm_info(self) -> Dict[str, Any]:
         """Get information about the HMM algorithm."""
-        base_info = super().get_algorithm_info()
+        base_info = super().get_metadata()
         base_info.update(
             {
                 "algorithm_variant": "hidden_markov_model",
@@ -408,28 +410,3 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             "complexity_class": f"O(n * k^2) where k={n_states}",
             "recommendation": f"Excellent for regime detection with {n_states} market states",
         }
-
-    def get_algorithm_info(self) -> Dict[str, Any]:
-        """Get information about the HMM algorithm."""
-        return {
-            "algorithm_type": self.algorithm_type.value,
-            "is_trained": self.is_trained,
-            "n_states": self.n_states,
-            "regime_labels": self.regime_labels,
-            "gpu_enabled": self.gpu_enabled,
-            "model_params": self.default_params,
-            "metadata": self.metadata.__dict__,
-        }
-
-    # Required abstract method implementations
-    async def train(self, data, config):
-        """HMM training is handled by the specialized train method."""
-        return await self.train(data, config)
-
-    async def predict(self, data, model):
-        """HMM prediction is handled by the specialized predict method."""
-        return await self.predict(data, model)
-
-    def evaluate(self, predictions, actual):
-        """HMM evaluation is handled by the specialized evaluate method."""
-        return self.evaluate(predictions, actual)

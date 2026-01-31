@@ -8,10 +8,12 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
-import redis
 import logging
-from typing import Optional
 from contextlib import contextmanager
+from typing import Optional
+
+import redis
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -58,9 +60,9 @@ class RedisManager:
             )
             # 测试连接
             self._redis_client.ping()
-            logger.info(f"✅ Redis connected: {settings.redis_host}:{settings.redis_port}/{settings.redis_db}")
+            logger.info("✅ Redis connected: {settings.redis_host}:{settings.redis_port}/{settings.redis_db}"")
         except Exception as e:
-            logger.error(f"❌ Redis connection failed: {e}")
+            logger.error("❌ Redis connection failed: %(e)s"")
             self._redis_client = None
 
     @property
@@ -85,7 +87,7 @@ class RedisManager:
         try:
             yield conn
         except Exception as e:
-            logger.error(f"Redis operation failed: {e}")
+            logger.error("Redis operation failed: %(e)s"")
             raise
 
     def health_check(self) -> bool:
@@ -99,7 +101,7 @@ class RedisManager:
             self.client.ping()
             return True
         except Exception as e:
-            logger.warning(f"Redis health check failed: {e}")
+            logger.warning("Redis health check failed: %(e)s"")
             return False
 
     def close(self):
@@ -118,9 +120,9 @@ class RedisManager:
         """
         try:
             self.client.flushdb(asynchronous=asynchronous)
-            logger.warning(f"Redis DB {settings.redis_db} flushed")
+            logger.warning("Redis DB {settings.redis_db} flushed"")
         except Exception as e:
-            logger.error(f"Failed to flush Redis DB: {e}")
+            logger.error("Failed to flush Redis DB: %(e)s"")
 
 
 # 全局单例实例

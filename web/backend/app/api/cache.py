@@ -15,22 +15,23 @@ Endpoints:
 - DELETE /cache                   - 清除所有缓存
 """
 
-from fastapi import APIRouter, Query, Depends
 from datetime import datetime
-from typing import Dict, Any, Optional
-import structlog
+from typing import Any, Dict, Optional
 
-from app.core.cache_manager import get_cache_manager
-from app.core.exceptions import BusinessException
+import structlog
+from fastapi import APIRouter, Depends, Query
+
 from app.core.cache_eviction import (
-    get_eviction_strategy,
     get_eviction_scheduler,
+    get_eviction_strategy,
 )
+from app.core.cache_manager import get_cache_manager
 from app.core.cache_prewarming import (
     get_cache_monitor,
     get_prewarming_strategy,
 )
-from app.core.security import get_current_user, User
+from app.core.exceptions import BusinessException
+from app.core.security import User, get_current_user
 
 logger = structlog.get_logger()
 

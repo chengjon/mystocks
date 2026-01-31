@@ -8,13 +8,13 @@
 
 import asyncio
 import json
-import time
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
-from enum import Enum
 import logging
+import time
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -290,7 +290,7 @@ class TaskExecutor:
         try:
             # 开始执行
             execution.start_time = datetime.now()
-            logger.info(f"开始执行任务: {task.name} ({task.id})")
+            logger.info("开始执行任务: {task.name} ({task.id})")
 
             # 监控资源使用
             resource_task = asyncio.create_task(self.resource_monitor.monitor_resources(task.id, task.timeout))
@@ -324,7 +324,7 @@ class TaskExecutor:
                 "cpu_usage": self.resource_monitor.get_cpu_usage(task.id),
             }
 
-            logger.info(f"任务执行完成: {task.name} ({execution.duration:.2f}秒)")
+            logger.info("任务执行完成: {task.name} ({execution.duration:.2f}秒)")
 
         except Exception as e:
             # 处理异常
@@ -333,7 +333,7 @@ class TaskExecutor:
             execution.status = "failed"
             execution.error_message = str(e)
 
-            logger.error(f"任务执行失败: {task.name} - {str(e)}")
+            logger.error("任务执行失败: {task.name} - {str(e)}")
 
         finally:
             # 从活动执行中移除
@@ -416,11 +416,11 @@ class TaskExecutor:
                     return execution
                 else:
                     last_error = execution.error_message
-                    logger.warning(f"任务 {task.name} 第{attempt}次执行失败")
+                    logger.warning("任务 {task.name} 第%(attempt)s次执行失败")
 
             except Exception as e:
                 last_error = str(e)
-                logger.warning(f"任务 {task.name} 第{attempt}次执行异常: {str(e)}")
+                logger.warning("任务 {task.name} 第%(attempt)s次执行异常: {str(e)}")
 
         # 所有重试都失败
         execution = TestExecution(
@@ -504,7 +504,7 @@ class TestOrchestrator:
         execution_levels = self.dependency_resolver.resolve_dependencies()
         plan = self.dependency_resolver.get_execution_plan()
 
-        logger.info(f"执行计划: {plan}")
+        logger.info("执行计划: %(plan)s")
 
         # 启动监控任务
         monitor_task = asyncio.create_task(self._monitor_execution())
@@ -512,7 +512,7 @@ class TestOrchestrator:
         # 按层级执行
         all_executions = []
         for level_idx, level in enumerate(execution_levels):
-            logger.info(f"执行第 {level_idx + 1} 层任务: {len(level)} 个任务")
+            logger.info("执行第 {level_idx + 1} 层任务: {len(level)} 个任务")
 
             if level and self.config.enable_parallel:
                 # 并行执行同一层级的任务
@@ -536,7 +536,7 @@ class TestOrchestrator:
         # 保存执行历史
         self.execution_history.extend(all_executions)
 
-        logger.info(f"所有任务执行完成，共执行 {len(all_executions)} 个任务")
+        logger.info("所有任务执行完成，共执行 {len(all_executions)} 个任务")
         return report
 
     async def _execute_level_parallel(self, task_ids: List[str]) -> List[TestExecution]:
@@ -566,7 +566,7 @@ class TestOrchestrator:
             if isinstance(execution, TestExecution):
                 valid_executions.append(execution)
             else:
-                logger.error(f"任务执行异常: {execution}")
+                logger.error("任务执行异常: %(execution)s")
 
         return valid_executions
 
@@ -580,7 +580,7 @@ class TestOrchestrator:
                 execution = await self.task_executor.execute_with_retry(task)
                 executions.append(execution)
             else:
-                logger.error(f"任务不存在: {task_id}")
+                logger.error("任务不存在: %(task_id)s")
 
         return executions
 
@@ -591,7 +591,7 @@ class TestOrchestrator:
             active_count = len(self.task_executor.active_executions)
             completed_count = len(self.task_executor.completed_executions)
 
-            logger.info(f"执行统计 - 活跃任务: {active_count}, 已完成: {completed_count}")
+            logger.info("执行统计 - 活跃任务: %(active_count)s, 已完成: %(completed_count)s")
 
             # 检查是否有长时间运行的任务
             current_time = datetime.now()
@@ -599,7 +599,7 @@ class TestOrchestrator:
                 if execution.start_time:
                     duration = (current_time - execution.start_time).total_seconds()
                     if duration > execution.task.timeout * 1.5:
-                        logger.warning(f"任务 {execution.task_name} 执行超时")
+                        logger.warning("任务 {execution.task_name} 执行超时")
 
             await asyncio.sleep(self.config.task_timeout // 10)
 
@@ -642,14 +642,14 @@ class TestOrchestrator:
         try:
             checkpoint = await self.checkpoint_manager.load_latest_checkpoint()
             if checkpoint:
-                logger.info(f"从检查点恢复: {checkpoint['timestamp']}")
+                logger.info("从检查点恢复: {checkpoint['timestamp']}")
                 self.execution_history.extend(checkpoint["executions"])
                 return checkpoint
             else:
                 logger.warning("未找到检查点")
                 return {"executions": [], "timestamp": None}
         except Exception as e:
-            logger.error(f"检查点恢复失败: {str(e)}")
+            logger.error("检查点恢复失败: {str(e)}")
             return {"executions": [], "timestamp": None}
 
 
@@ -674,9 +674,9 @@ class CheckpointManager:
         try:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(checkpoint, f, indent=2, ensure_ascii=False)
-            logger.info(f"检查点已保存: {filepath}")
+            logger.info("检查点已保存: %(filepath)s")
         except Exception as e:
-            logger.error(f"检查点保存失败: {str(e)}")
+            logger.error("检查点保存失败: {str(e)}")
 
     async def load_latest_checkpoint(self) -> Optional[Dict[str, Any]]:
         """加载最新的检查点"""
@@ -690,10 +690,10 @@ class CheckpointManager:
         try:
             with open(latest_file, "r", encoding="utf-8") as f:
                 checkpoint = json.load(f)
-            logger.info(f"加载检查点: {latest_file}")
+            logger.info("加载检查点: %(latest_file)s")
             return checkpoint
         except Exception as e:
-            logger.error(f"检查点加载失败: {str(e)}")
+            logger.error("检查点加载失败: {str(e)}")
             return None
 
     def list_checkpoints(self) -> List[Dict[str, Any]]:
@@ -711,7 +711,7 @@ class CheckpointManager:
                     }
                 )
             except Exception as e:
-                logger.error(f"读取检查点失败 {checkpoint_file}: {str(e)}")
+                logger.error("读取检查点失败 %(checkpoint_file)s: {str(e)}")
 
         return sorted(checkpoints, key=lambda x: x["timestamp"], reverse=True)
 
@@ -837,6 +837,7 @@ async def demo_orchestration():
 if __name__ == "__main__":
     # 运行演示
     import random
+
     import psutil
 
     asyncio.run(demo_orchestration())

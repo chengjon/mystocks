@@ -4,9 +4,9 @@ API契约管理 Pydantic模型
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
 
+from pydantic import BaseModel, Field
 
 # ==================== 契约版本管理 ====================
 

@@ -6,7 +6,8 @@ Indicator Calculator Interface
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
 import pandas as pd
 
 
@@ -36,7 +37,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             RSI值序列
         """
-        pass
 
     @abstractmethod
     def calculate_macd(
@@ -58,7 +58,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             包含 'macd', 'signal', 'histogram' 的字典
         """
-        pass
 
     @abstractmethod
     def calculate_ma(self, data: pd.DataFrame, period: int = 20, ma_type: str = "SMA") -> pd.Series:
@@ -73,7 +72,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             MA值序列
         """
-        pass
 
     @abstractmethod
     def calculate_bollinger_bands(
@@ -90,7 +88,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             包含 'upper', 'middle', 'lower' 的字典
         """
-        pass
 
     @abstractmethod
     def calculate_atr(self, data: pd.DataFrame, period: int = 14) -> pd.Series:
@@ -104,7 +101,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             ATR值序列
         """
-        pass
 
     @abstractmethod
     def calculate_stochastic(
@@ -124,7 +120,6 @@ class IIndicatorCalculator(ABC):
         Returns:
             包含 'k', 'd' 的字典
         """
-        pass
 
     @abstractmethod
     def batch_calculate(self, data: pd.DataFrame, indicators: List[Dict[str, Any]]) -> Dict[str, pd.Series]:
@@ -141,4 +136,3 @@ class IIndicatorCalculator(ABC):
         Returns:
             指标值字典 {indicator_name: pd.Series}
         """
-        pass

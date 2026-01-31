@@ -330,7 +330,7 @@ export interface WSErrorMessageVM extends WSMessageVM {
 /**
  * WebSocket subscription message
  */
-export interface WSSubscription extends WSMessage {
+export interface WSSubscription extends WSMessageVM {
   type: 'subscribe' | 'unsubscribe';
   channel: string;
   params?: Record<string, any>;
@@ -339,7 +339,7 @@ export interface WSSubscription extends WSMessage {
 /**
  * WebSocket data message
  */
-export interface WSDataMessage<T = any> extends WSMessage {
+export interface WSDataMessage<T = any> extends WSMessageVM {
   type: 'data';
   channel: string;
   data: T;

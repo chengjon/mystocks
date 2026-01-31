@@ -5,10 +5,11 @@
 测试MyStocks系统中数据库连接池的配置管理功能
 """
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
@@ -17,12 +18,12 @@ if project_root not in sys.path:
 
 from src.core.connection_pool_config import (
     ConnectionPoolConfig,
-    get_pool_config,
-    get_optimal_pool_size,
-    get_production_pool_config,
-    get_development_pool_config,
-    get_test_pool_config,
     get_config_for_environment,
+    get_development_pool_config,
+    get_optimal_pool_size,
+    get_pool_config,
+    get_production_pool_config,
+    get_test_pool_config,
 )
 
 

@@ -8,13 +8,13 @@ prefix table that allows efficient skipping during the search process.
 
 import logging
 import time
-from typing import Dict, List, Any, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
 
-from .base import PatternMatchingAlgorithm, Pattern, PatternMatch, PatternMatchResult
-from src.algorithms.types import AlgorithmType
-from src.algorithms.metadata import AlgorithmFingerprint
+
+from .base import Pattern, PatternMatch, PatternMatchingAlgorithm, PatternMatchResult
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ class KMPAlgorithm(PatternMatchingAlgorithm):
             prefix_table = self._compute_prefix_table(normalized_pattern)
             self.prefix_tables[pattern.id] = prefix_table
 
-            logger.info(f"Precomputed prefix table for pattern {pattern.id} (length: {len(prefix_table)})")
+            logger.info("Precomputed prefix table for pattern {pattern.id} (length: {len(prefix_table)})")
 
         return success
 
@@ -131,7 +131,7 @@ class KMPAlgorithm(PatternMatchingAlgorithm):
         success = super().remove_pattern(pattern_id)
         if success and pattern_id in self.prefix_tables:
             del self.prefix_tables[pattern_id]
-            logger.info(f"Removed prefix table for pattern {pattern_id}")
+            logger.info("Removed prefix table for pattern %(pattern_id)s")
 
         return success
 
@@ -187,7 +187,7 @@ class KMPAlgorithm(PatternMatchingAlgorithm):
 
         for pattern_id in target_patterns:
             if pattern_id not in self.patterns or pattern_id not in self.prefix_tables:
-                logger.warning(f"Pattern {pattern_id} not found or not preprocessed")
+                logger.warning("Pattern %(pattern_id)s not found or not preprocessed")
                 continue
 
             pattern = self.patterns[pattern_id]
@@ -229,14 +229,14 @@ class KMPAlgorithm(PatternMatchingAlgorithm):
                 )
                 results.append(result)
 
-                logger.info(f"Found {len(matches)} matches for pattern {pattern_id} using KMP")
+                logger.info("Found {len(matches)} matches for pattern %(pattern_id)s using KMP")
 
         self.match_history.extend(results)
         return results
 
     def get_algorithm_info(self) -> Dict[str, Any]:
         """Get information about the KMP algorithm."""
-        base_info = super().get_algorithm_info()
+        base_info = super().get_metadata()
         base_info.update(
             {
                 "algorithm_variant": "knuth_morris_pratt",

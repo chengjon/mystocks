@@ -3,11 +3,12 @@ Simplified Validation Model Tests
 Test Pydantic validation models in isolation
 """
 
-import pytest
-from datetime import date, datetime
-from pydantic import BaseModel, Field, field_validator, ValidationError
 import re
-from typing import Dict, List, Optional, Any
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
+
+import pytest
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 
 # Inline validation models for testing

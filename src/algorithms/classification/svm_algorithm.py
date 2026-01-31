@@ -24,7 +24,7 @@ except ImportError:
 
 from src.algorithms.base import AlgorithmMetadata, GPUAcceleratedAlgorithm
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import GPUResourceManager
+from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             return
 
         try:
-            from src.gpu.core.hardware_abstraction import GPUResourceManager
+            from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
 
             self.gpu_manager = GPUResourceManager()
 
@@ -72,18 +72,24 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
                 return
 
             # Allocate GPU memory for model
-            gpu_id = self.gpu_manager.allocate_context(
-                strategy_id=f"svm_{self.metadata.name}", priority="medium", memory_required=self.gpu_memory_limit or 1024
+            gpu_id = await self.gpu_manager.allocate_context(
+                request=AllocationRequest(
+                    strategy_id=f"svm_{self.metadata.name}",
+                    priority=StrategyPriority.MEDIUM,
+                    required_memory=self.gpu_memory_limit or 1024,
+                    required_compute_streams=1,
+                    performance_profile=None,
+                ),
             )
 
             if gpu_id is not None:
-                logger.info(f"SVM algorithm allocated GPU {gpu_id}")
+                logger.info("SVM algorithm allocated GPU %(gpu_id)s")
             else:
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
         except Exception as e:
-            logger.error(f"GPU context initialization failed: {e}")
+            logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
     async def release_gpu_context(self):
@@ -93,7 +99,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
                 self.gpu_manager.release_context(f"svm_{self.metadata.name}")
                 logger.info("SVM GPU resources released")
             except Exception as e:
-                logger.error(f"GPU resource release failed: {e}")
+                logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -150,7 +156,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             # Train SVM model
             if self.gpu_enabled and CUMl_AVAILABLE:
                 # GPU training
-                self.model = SVC(**svm_params)
+                self.model = SVC(**svm_params)  # pylint: disable=used-before-assignment
                 self.model.fit(X_scaled, y)
                 logger.info("SVM model trained on GPU")
             else:
@@ -195,11 +201,11 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             self.is_trained = True
             self.update_metadata(last_trained=datetime.now())
 
-            logger.info(f"SVM training completed - Accuracy: {accuracy:.4f}")
+            logger.info("SVM training completed - Accuracy: %(accuracy)s")
             return training_result
 
         except Exception as e:
-            logger.error(f"SVM training failed: {e}")
+            logger.error("SVM training failed: %(e)s")
             raise
 
     async def predict(self, data: pd.DataFrame, model: Dict[str, Any]) -> Dict[str, Any]:
@@ -263,7 +269,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             return prediction_result
 
         except Exception as e:
-            logger.error(f"SVM prediction failed: {e}")
+            logger.error("SVM prediction failed: %(e)s")
             raise
 
     def evaluate(self, predictions: Dict[str, Any], actual: pd.DataFrame) -> Dict[str, float]:
@@ -300,16 +306,16 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
 
             metrics = {
                 "accuracy": accuracy,
-                "precision": precision if not self.gpu_enabled else accuracy,  # Fallback for GPU
-                "recall": recall if not self.gpu_enabled else accuracy,  # Fallback for GPU
-                "f1_score": f1 if not self.gpu_enabled else accuracy,  # Fallback for GPU
+                "precision": precision if not self.gpu_enabled else accuracy,  # pylint: disable=possibly-used-before-assignment
+                "recall": recall if not self.gpu_enabled else accuracy,  # pylint: disable=possibly-used-before-assignment
+                "f1_score": f1 if not self.gpu_enabled else accuracy,  # pylint: disable=possibly-used-before-assignment
                 "n_samples": len(pred_values),
             }
 
             return metrics
 
         except Exception as e:
-            logger.error(f"SVM evaluation failed: {e}")
+            logger.error("SVM evaluation failed: %(e)s")
             raise
 
     def get_model_info(self) -> Dict[str, Any]:
@@ -343,11 +349,11 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             }
 
             joblib.dump(model_data, filepath)
-            logger.info(f"SVM model saved to {filepath}")
+            logger.info("SVM model saved to %(filepath)s")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to save SVM model: {e}")
+            logger.error("Failed to save SVM model: %(e)s")
             return False
 
     def load_model(self, filepath: str) -> bool:
@@ -364,9 +370,9 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             self.gpu_enabled = model_data.get("gpu_enabled", False)
             self.is_trained = True
 
-            logger.info(f"SVM model loaded from {filepath}")
+            logger.info("SVM model loaded from %(filepath)s")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to load SVM model: {e}")
+            logger.error("Failed to load SVM model: %(e)s")
             return False

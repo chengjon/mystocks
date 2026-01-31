@@ -3,11 +3,12 @@ TDD测试框架 - 数据库服务重构
 遵循红-绿-重构循环，确保拆分后的功能完整性
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import Mock, patch
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -180,8 +181,9 @@ class TestDatabaseQueryExecutor:
 
     def test_query_performance_benchmark(self):
         """测试：查询性能基准"""
-        from src.database.query_executor import DatabaseQueryExecutor
         import time
+
+        from src.database.query_executor import DatabaseQueryExecutor
 
         executor = DatabaseQueryExecutor()
 
@@ -338,8 +340,9 @@ class TestMonitoringDataManager:
 
     def test_monitoring_data_performance(self):
         """测试：监控数据查询性能"""
-        from src.database.monitoring_data_manager import MonitoringDataManager
         import time
+
+        from src.database.monitoring_data_manager import MonitoringDataManager
 
         manager = MonitoringDataManager()
 

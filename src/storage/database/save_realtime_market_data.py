@@ -22,22 +22,24 @@
 修正: 使用efinance接口并保存到PostgreSQL
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
-import pandas as pd
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict, Optional
+
+import pandas as pd
 from dotenv import load_dotenv
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from src.adapters.customer_adapter import CustomerDataSource
+from src.core import DataClassification
+
 # 导入MyStocks统一接口
 from unified_manager import MyStocksUnifiedManager
-from src.core import DataClassification
-from src.adapters.customer_adapter import CustomerDataSource
 
 
 class RealtimeMarketDataSaver:
@@ -123,12 +125,14 @@ class RealtimeMarketDataSaver:
             self.unified_manager = MyStocksUnifiedManager()
 
             # 初始化系统
+            # pylint: disable=no-member
             init_result = self.unified_manager.initialize_system()
 
             if init_result["config_loaded"]:
                 self.logger.info("✅ MyStocks统一管理器初始化成功")
 
                 # 显示系统状态
+                # pylint: disable=no-member
                 status = self.unified_manager.get_system_status()
                 monitoring = status.get("monitoring", {})
                 op_stats = monitoring.get("operation_statistics", {})
@@ -519,6 +523,7 @@ class RealtimeMarketDataSaver:
 
                 # 获取并显示系统状态
                 try:
+                    # pylint: disable=no-member
                     status = self.unified_manager.get_system_status()
                     monitoring = status.get("monitoring", {})
                     op_stats = monitoring.get("operation_statistics", {})
@@ -538,6 +543,7 @@ class RealtimeMarketDataSaver:
         finally:
             # 清理资源
             if self.unified_manager:
+                # pylint: disable=no-member
                 self.unified_manager.cleanup()
                 self.logger.info("🧹 系统资源已清理")
 

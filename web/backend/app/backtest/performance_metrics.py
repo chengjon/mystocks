@@ -4,10 +4,11 @@ Performance Metrics Calculator
 计算回测性能指标，包括夏普比率、最大回撤、收益率等
 """
 
-import numpy as np
-from typing import List, Dict, Any, Optional
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 
 class PerformanceMetrics:

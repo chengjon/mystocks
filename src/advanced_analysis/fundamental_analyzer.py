@@ -9,22 +9,18 @@ This module provides comprehensive fundamental analysis capabilities including:
 - Valuation metrics and scoring
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
-from src.core import DataClassification
-from src.data_sources.factory import get_relational_source
-from src.monitoring import AlertManager
+import numpy as np
+import pandas as pd
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
 
 try:
-    import cudf
-    import cuml
+    pass
 
     GPU_AVAILABLE = True
 except ImportError:
@@ -47,9 +43,8 @@ class FinancialRatios:
     # 现金流质量
     cashflow: Dict[str, float] = None
 
-
-def to_dict(self) -> Dict[str, Any]:
-    return asdict(self)
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -82,9 +77,8 @@ class ValuationMetrics:
     pe_vs_industry: Optional[float] = None
     pb_vs_industry: Optional[float] = None
 
-
-def to_dict(self) -> Dict[str, Any]:
-    return asdict(self)
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 class FundamentalAnalyzer(BaseAnalyzer):
@@ -131,6 +125,15 @@ def analyze(self, stock_code: str, **kwargs) -> AnalysisResult:
     include_comparison = kwargs.get("include_comparison", True)
 
     try:
+        # 获取财务数据
+        financial_data = self._get_financial_data(stock_code, periods)
+
+        # 计算财务比率
+        ratios = self._calculate_financial_ratios(financial_data)
+
+        # 计算基本面分数
+        fundamental_score = self._calculate_fundamental_score(ratios, stock_code)
+
         scores = {
             "fundamental_score": fundamental_score.overall_score,
             "dimension_scores": fundamental_score.dimension_scores,
@@ -201,9 +204,8 @@ def _get_financial_data(self, stock_code: str, periods: int) -> pd.DataFrame:
         from src.data_sources.factory import get_timeseries_source
 
         timeseries_source = get_timeseries_source(source_type="mock")
+        # TODO: 实现从timeseries_source获取财务数据的逻辑
         return pd.DataFrame()
-
-        return financial_data
 
     except Exception as e:
         print(f"Error fetching financial data for {stock_code}: {e}")
@@ -215,6 +217,10 @@ def _calculate_financial_ratios(self, financial_data: pd.DataFrame) -> Financial
     if financial_data.empty:
         return FinancialRatios()
 
+    profitability = self._calculate_profitability_ratios(financial_data)
+    solvency = self._calculate_solvency_ratios(financial_data)
+    operation = self._calculate_operation_ratios(financial_data)
+    growth = self._calculate_growth_ratios(financial_data)
     cashflow = self._calculate_cashflow_ratios(financial_data)
 
     return FinancialRatios(
@@ -299,6 +305,27 @@ def _calculate_cashflow_ratios(self, data: pd.DataFrame) -> Dict[str, float]:
 def _calculate_fundamental_score(self, ratios: FinancialRatios, stock_code: str) -> FundamentalScore:
     """计算基本面综合评分"""
     dimension_scores = {}
+
+    # 计算各维度评分
+    if ratios.profitability:
+        dimension_scores["profitability"] = self._score_profitability(ratios.profitability)
+    if ratios.solvency:
+        dimension_scores["solvency"] = self._score_solvency(ratios.solvency)
+    if ratios.operation:
+        dimension_scores["operation"] = self._score_operation(ratios.operation)
+    if ratios.growth:
+        dimension_scores["growth"] = self._score_growth(ratios.growth)
+    if ratios.cashflow:
+        dimension_scores["cashflow"] = self._score_cashflow(ratios.cashflow)
+
+    # 计算总分
+    overall_score = self._calculate_overall_score(dimension_scores)
+
+    # 确定评级
+    rating = self._determine_rating(overall_score)
+
+    # 计算行业百分位
+    industry_percentile = self._calculate_industry_percentile(overall_score, stock_code)
 
     red_flags, strengths, weaknesses = self._identify_flags_and_strengths(ratios, dimension_scores)
 
@@ -621,8 +648,13 @@ def _identify_flags_and_strengths(
 def _analyze_valuation(self, stock_code: str, financial_data: pd.DataFrame) -> ValuationMetrics:
     """估值分析"""
     try:
+        # 获取当前股价
+        current_price = self._get_current_price(stock_code)
+
         pe_ratio = None
         pb_ratio = None
+        pe_percentile = None
+        pb_percentile = None
 
         if not financial_data.empty and "eps" in financial_data.columns:
             latest_eps = financial_data["eps"].iloc[-1]
@@ -636,6 +668,12 @@ def _analyze_valuation(self, stock_code: str, financial_data: pd.DataFrame) -> V
 
         pe_vs_industry = self._compare_with_industry_valuation(stock_code, "pe", pe_ratio)
         pb_vs_industry = self._compare_with_industry_valuation(stock_code, "pb", pb_ratio)
+
+        # 计算行业百分位
+        if pe_ratio is not None:
+            pe_percentile = self._calculate_valuation_percentile(stock_code, "pe", pe_ratio)
+        if pb_ratio is not None:
+            pb_percentile = self._calculate_valuation_percentile(stock_code, "pb", pb_ratio)
 
         return ValuationMetrics(
             pe_ratio=pe_ratio,

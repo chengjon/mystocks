@@ -6,9 +6,10 @@
 验证SQL注入防护和配置检查功能
 """
 
-import pytest
 import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestTDengineSymbolValidation:
@@ -137,8 +138,9 @@ class TestConfigCheck:
 
     def test_missing_password_warning(self, caplog):
         """测试缺失密码警告"""
-        from src.utils.simple_config_check import check_config_strength
         import os
+
+        from src.utils.simple_config_check import check_config_strength
 
         # 清空所有密码
         env = {
@@ -156,8 +158,9 @@ class TestConfigCheck:
 
     def test_strong_config_pass(self, caplog):
         """测试强配置通过检查"""
-        from src.utils.simple_config_check import check_config_strength
         import os
+
+        from src.utils.simple_config_check import check_config_strength
 
         # 模拟强配置
         env = {
@@ -175,7 +178,7 @@ class TestConfigCheck:
 
     def test_generate_secrets(self):
         """测试密钥生成功能"""
-        from src.utils.simple_config_check import generate_strong_jwt_secret, generate_strong_db_password
+        from src.utils.simple_config_check import generate_strong_db_password, generate_strong_jwt_secret
 
         # 生成JWT密钥
         jwt_secret = generate_strong_jwt_secret()

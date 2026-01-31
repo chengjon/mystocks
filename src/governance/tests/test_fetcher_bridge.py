@@ -1,7 +1,9 @@
-import pytest
+from unittest.mock import patch
+
 import pandas as pd
-from unittest.mock import MagicMock, patch
-from src.governance.core.fetcher_bridge import GovernanceDataFetcher, RoutePolicy, TimeFrame
+import pytest
+
+from src.governance.core.fetcher_bridge import GovernanceDataFetcher, RoutePolicy
 
 
 class TestGovernanceDataFetcher:

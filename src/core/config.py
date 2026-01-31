@@ -14,14 +14,18 @@ class DatabaseConfig:
         self.postgresql_host = os.getenv("DB_POSTGRESQL_HOST", "localhost")
         self.postgresql_port = int(os.getenv("DB_POSTGRESQL_PORT", "5432"))
         self.postgresql_username = os.getenv("DB_POSTGRESQL_USERNAME", "postgres")
-        self.postgresql_password = os.getenv("DB_POSTGRESQL_PASSWORD", "postgres")
+        self.postgresql_password = os.getenv("DB_POSTGRESQL_PASSWORD")
+        if not self.postgresql_password:
+            raise ValueError("DB_POSTGRESQL_PASSWORD environment variable must be set")
         self.postgresql_database = os.getenv("DB_POSTGRESQL_DATABASE", "mystocks")
 
         # TDengine配置
         self.tdengine_host = os.getenv("DB_TDENGINE_HOST", "localhost")
         self.tdengine_port = int(os.getenv("DB_TDENGINE_PORT", "6030"))
         self.tdengine_username = os.getenv("DB_TDENGINE_USERNAME", "root")
-        self.tdengine_password = os.getenv("DB_TDENGINE_PASSWORD", "taosdata")
+        self.tdengine_password = os.getenv("DB_TDENGINE_PASSWORD")
+        if not self.tdengine_password:
+            raise ValueError("DB_TDENGINE_PASSWORD environment variable must be set")
         self.tdengine_database = os.getenv("DB_TDENGINE_DATABASE", "mystocks")
 
     def get_postgresql_url(self) -> str:
@@ -37,13 +41,7 @@ class DatabaseConfig:
 
     def get_tdengine_url(self) -> str:
         """获取TDengine连接字符串"""
-        return (
-            f"taosws://"
-            f"{self.tdengine_username}:"
-            f"{self.tdengine_password}@"
-            f"{self.tdengine_host}:"
-            f"{self.tdengine_port}/"
-        )
+        return f"taosws://{self.tdengine_username}:{self.tdengine_password}@{self.tdengine_host}:{self.tdengine_port}/"
 
     def validate_config(self) -> bool:
         """验证配置是否有效"""

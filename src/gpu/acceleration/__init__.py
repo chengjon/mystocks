@@ -7,10 +7,10 @@
 """
 
 from .backtest_engine_gpu import BacktestEngineGPU
-from .ml_training_gpu import MLTrainingGPU
 from .feature_calculation_gpu import FeatureCalculationGPU
+from src.gpu.api_system.utils.gpu_acceleration_engine import GPUAccelerationEngine
+from .ml_training_gpu import MLTrainingGPU
 from .optimization_gpu import OptimizationGPU
-from .gpu_acceleration_engine import GPUAccelerationEngine
 
 __all__ = [
     "BacktestEngineGPU",

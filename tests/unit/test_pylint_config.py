@@ -8,8 +8,9 @@ T0XX: Pylint配置验证单元测试
 版本: 1.0.0
 """
 
-import os
 import configparser
+import os
+
 import pytest
 
 

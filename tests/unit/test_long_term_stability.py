@@ -7,15 +7,16 @@ Phase 6.4.4 - 长期稳定性测试
 """
 
 import asyncio
-import numpy as np
+import gc
 import sys
 import time
-import gc
-import psutil
-from pathlib import Path
-from typing import Dict, Any
 import tracemalloc
 import weakref
+from pathlib import Path
+from typing import Any, Dict
+
+import numpy as np
+import psutil
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -115,8 +116,8 @@ class LongTermStabilityTester:
                     matrix_b = np.random.random((size, size)).astype(np.float32)
 
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -129,8 +130,8 @@ class LongTermStabilityTester:
                     test_data = np.random.random(data_size).astype(np.float32)
 
                     from src.gpu.core.kernels.standardized_interface import (
-                        TransformOperationType,
                         TransformConfig,
+                        TransformOperationType,
                     )
 
                     config = TransformConfig(operation_type=TransformOperationType.NORMALIZE)
@@ -189,8 +190,8 @@ class LongTermStabilityTester:
     async def test_memory_leak_detection(self) -> Dict[str, Any]:
         """测试内存泄漏检测"""
         try:
-            from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.hardware_abstraction.memory_pool import get_memory_pool
+            from src.gpu.core.kernels import MatrixKernelEngine
 
             # 初始化组件
             matrix_kernel = MatrixKernelEngine()
@@ -226,8 +227,8 @@ class LongTermStabilityTester:
 
                 # 执行GPU操作
                 from src.gpu.core.kernels.standardized_interface import (
-                    MatrixOperationType,
                     MatrixConfig,
+                    MatrixOperationType,
                 )
 
                 config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -304,8 +305,8 @@ class LongTermStabilityTester:
     async def test_resource_cleanup(self) -> Dict[str, Any]:
         """测试资源清理"""
         try:
-            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
             from src.gpu.core.hardware_abstraction.memory_pool import get_memory_pool
+            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
 
             cleanup_results = []
 
@@ -317,8 +318,8 @@ class LongTermStabilityTester:
                 # 执行一些操作
                 matrix = np.random.random((256, 256)).astype(np.float32)
                 from src.gpu.core.kernels.standardized_interface import (
-                    MatrixOperationType,
                     MatrixConfig,
+                    MatrixOperationType,
                 )
 
                 config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -391,8 +392,8 @@ class LongTermStabilityTester:
                     # 故意触发错误
                     invalid_data = np.array([])
                     from src.gpu.core.kernels.standardized_interface import (
-                        TransformOperationType,
                         TransformConfig,
+                        TransformOperationType,
                     )
 
                     config = TransformConfig(operation_type=TransformOperationType.NORMALIZE)
@@ -462,8 +463,8 @@ class LongTermStabilityTester:
                     matrix_b = np.random.random((matrix_size, matrix_size)).astype(np.float32)
 
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -578,8 +579,8 @@ class LongTermStabilityTester:
                 for invalid_input in invalid_inputs:
                     try:
                         from src.gpu.core.kernels.standardized_interface import (
-                            MatrixOperationType,
                             MatrixConfig,
+                            MatrixOperationType,
                         )
 
                         config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -612,8 +613,8 @@ class LongTermStabilityTester:
                     huge_array = np.random.random(1000000).astype(np.float32)  # 1M元素
 
                     from src.gpu.core.kernels.standardized_interface import (
-                        TransformOperationType,
                         TransformConfig,
+                        TransformOperationType,
                     )
 
                     config = TransformConfig(operation_type=TransformOperationType.NORMALIZE)
@@ -650,8 +651,8 @@ class LongTermStabilityTester:
                 try:
                     matrix = np.random.random((128, 128)).astype(np.float32)
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)

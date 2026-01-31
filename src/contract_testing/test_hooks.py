@@ -7,12 +7,12 @@ Similar to Dredd's hook system.
 Task 12.2 Implementation: Test hooks for data preparation and cleanup
 """
 
-import logging
 import json
-from typing import Callable, Dict, List
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Callable, Dict, List
 
 logger = logging.getLogger(__name__)
 

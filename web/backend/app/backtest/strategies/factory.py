@@ -4,22 +4,22 @@ Strategy Factory
 策略工厂 - 统一创建和管理策略实例
 """
 
-from typing import Dict, Any, Type, List, Optional
 import logging
+from typing import Any, Dict, List, Optional, Type
 
-from app.backtest.strategies.base import BaseStrategy
-from app.backtest.strategies.momentum import MomentumStrategy
-from app.backtest.strategies.mean_reversion import MeanReversionStrategy
-from app.backtest.strategies.breakout import BreakoutStrategy
-from app.backtest.strategies.grid import GridStrategy
-from app.backtest.strategies.dual_ma import DualMAStrategy
-from app.backtest.strategies.turtle import TurtleStrategy
-from app.backtest.strategies.macd import MACDStrategy
-from app.backtest.strategies.bollinger_breakout import BollingerBreakoutStrategy
-from app.backtest.strategies.kdj import KDJStrategy
-from app.backtest.strategies.cci import CCIStrategy
 from app.backtest.strategies.adx import ADXStrategy
+from app.backtest.strategies.base import BaseStrategy
+from app.backtest.strategies.bollinger_breakout import BollingerBreakoutStrategy
+from app.backtest.strategies.breakout import BreakoutStrategy
+from app.backtest.strategies.cci import CCIStrategy
+from app.backtest.strategies.dual_ma import DualMAStrategy
+from app.backtest.strategies.grid import GridStrategy
+from app.backtest.strategies.kdj import KDJStrategy
+from app.backtest.strategies.macd import MACDStrategy
+from app.backtest.strategies.mean_reversion import MeanReversionStrategy
+from app.backtest.strategies.momentum import MomentumStrategy
 from app.backtest.strategies.sar import SARStrategy
+from app.backtest.strategies.turtle import TurtleStrategy
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class StrategyFactory:
             strategy_class: 策略类
         """
         cls._strategies[name] = strategy_class
-        logger.info(f"策略已注册: {name} -> {strategy_class.__name__}")
+        logger.info("策略已注册: %(name)s -> {strategy_class.__name__}"")
 
     @classmethod
     def create_strategy(cls, strategy_type: str, parameters: Dict[str, Any] = None) -> BaseStrategy:
@@ -67,7 +67,7 @@ class StrategyFactory:
         strategy_class = cls._strategies[strategy_type]
         strategy = strategy_class(parameters=parameters)
 
-        logger.info(f"策略实例已创建: {strategy_type} with {len(parameters or {})} parameters")
+        logger.info("策略实例已创建: %(strategy_type)s with {len(parameters or {})} parameters"")
         return strategy
 
     @classmethod
@@ -191,4 +191,4 @@ StrategyFactory.register_strategy("cci", CCIStrategy)
 StrategyFactory.register_strategy("adx", ADXStrategy)
 StrategyFactory.register_strategy("sar", SARStrategy)
 
-logger.info(f"策略工厂初始化完成，已注册 {len(StrategyFactory._strategies)} 个策略")
+logger.info("策略工厂初始化完成，已注册 {len(StrategyFactory._strategies)} 个策略"")

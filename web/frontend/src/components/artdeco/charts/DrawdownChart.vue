@@ -93,7 +93,7 @@
 <script setup lang="ts">
     import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
     import ArtDecoCard from '../base/ArtDecoCard.vue'
-    import ArtDecoLoader from './ArtDecoLoader.vue'
+    import ArtDecoLoader from '../trading/ArtDecoLoader.vue'
 
     // ============================================
     //   类型定义

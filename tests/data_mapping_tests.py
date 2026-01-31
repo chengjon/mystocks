@@ -8,9 +8,10 @@
 4. 业务逻辑转换的完整性测试
 """
 
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
+
 import pytest
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, asdict
 
 
 # 定义Python类型（替代TypeScript前端类型）

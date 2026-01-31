@@ -4,19 +4,17 @@
 迁移自 OpenStock 项目
 """
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
-from typing import List, Dict
-from datetime import datetime
 import os
+import smtplib
+from datetime import datetime
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import Dict, List
 
 
 class EmailServiceError(Exception):
     """邮件服务错误"""
-
-    pass
 
 
 class EmailNotificationService:

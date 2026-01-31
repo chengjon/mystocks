@@ -1,13 +1,14 @@
 # 正常执行（不删除已有表）：python execute_sql_with_env.py
 # 强制删除并重建表：python execute_sql_with_env.py --drop-existing
 
-import sqlalchemy
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
 import argparse
 import os
 import time
+
+import sqlalchemy
 from loguru import logger
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 # 配置 loguru 日志
 logger.remove()  # 移除默认处理器
@@ -151,7 +152,7 @@ def load_env_config(env_file=None):
 
         load_time = time.time() - start_time
         logger.success(f"✓ 环境配置加载成功! 耗时: {load_time:.3f}s")
-        logger.info("🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:{config['MYSQL_PORT']}")
+        logger.info("🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:%s")
 
         return db_config
 
@@ -268,7 +269,7 @@ def create_database_and_tables(drop_existing=False):
             f"charset={db_config['charset']}"
         )
 
-        logger.info("🔗 连接数据库: {db_config['user']}@{db_config['host']}:{db_config['port']}")
+        logger.info("🔗 连接数据库: {db_config['user']}@{db_config['host']}:%s")
 
         # 建立数据库连接
         engine = sqlalchemy.create_engine(connection_str)

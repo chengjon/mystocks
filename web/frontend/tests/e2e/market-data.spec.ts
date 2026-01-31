@@ -106,8 +106,8 @@ test.describe('Market Data Module - E2E Tests', () => {
         const mainContent = page.locator('main, .main-content, [role="main"]');
         await expect(mainContent).toBeInViewport();
 
-        // Check sidebar is visible (if present)
-        const sidebar = page.locator('.sidebar, aside, [data-testid="sidebar"]');
+        // Check sidebar is visible (if present) - ArtDecoLayout uses .layout-sidebar
+        const sidebar = page.locator('.layout-sidebar, aside, [data-testid="sidebar"]');
         const sidebarCount = await sidebar.count();
         if (sidebarCount > 0) {
           await expect(sidebar.first()).toBeVisible();
@@ -176,8 +176,8 @@ test.describe('Market Data Module - E2E Tests', () => {
     test('should navigate using sidebar menu', async ({ page }) => {
       await page.goto(`${BASE_URL}/dashboard`);
 
-      // Find sidebar menu item
-      const sidebarMenu = page.locator('.sidebar, aside, [data-testid="sidebar"]');
+      // Find sidebar menu item (ArtDecoLayout uses .layout-sidebar)
+      const sidebarMenu = page.locator('.layout-sidebar, aside, [data-testid="sidebar"]');
       const menuCount = await sidebarMenu.count();
 
       if (menuCount > 0) {

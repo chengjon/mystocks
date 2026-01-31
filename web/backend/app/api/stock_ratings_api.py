@@ -5,23 +5,21 @@ Stock Ratings API Router
 提供新浪财经股票评级数据的REST API接口。
 """
 
+import logging
 from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from app.core.responses import UnifiedResponse, ok, bad_request, server_error
+from app.core.responses import UnifiedResponse, bad_request, ok, server_error
 from app.core.security import User, get_current_user
 from app.schemas.stock_ratings_schemas import (
+    StockRatingsHealthResponse,
     StockRatingsRequest,
     StockRatingsResponse,
     StockRatingsSummary,
-    StockRatingsHealthResponse,
 )
-
 from src.adapters.sina_finance_adapter import SinaFinanceAdapter
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +43,7 @@ async def get_stock_ratings(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info(f"API调用: 股票评级数据, 用户={current_user.username}, 页数={max_pages}")
+        logger.info("API调用: 股票评级数据, 用户={current_user.username}, 页数=%(max_pages)s"")
 
         # 获取评级数据
         df = sina_adapter.get_sina_stock_ratings(max_pages=max_pages)
@@ -66,7 +64,7 @@ async def get_stock_ratings(
             source="sina_finance",
         )
 
-        logger.info(f"成功返回 {len(ratings_data)} 条股票评级数据")
+        logger.info("成功返回 {len(ratings_data)} 条股票评级数据"")
 
         return ok(
             data=response_data.dict(),
@@ -79,7 +77,7 @@ async def get_stock_ratings(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取股票评级数据API异常: {str(e)}", exc_info=True)
+        logger.error("获取股票评级数据API异常: {str(e)}", exc_info=True)
         return server_error(message=f"获取股票评级数据失败: {str(e)}")
 
 
@@ -93,7 +91,7 @@ async def get_ratings_summary(
     提供评级数据的统计信息，包括总评级数量、机构数量、行业分布等。
     """
     try:
-        logger.info(f"API调用: 评级数据汇总, 用户={current_user.username}")
+        logger.info("API调用: 评级数据汇总, 用户={current_user.username}"")
 
         # 获取汇总统计
         summary_data = sina_adapter.get_ratings_summary()
@@ -111,7 +109,7 @@ async def get_ratings_summary(
         )
 
     except Exception as e:
-        logger.error(f"获取评级汇总API异常: {str(e)}", exc_info=True)
+        logger.error("获取评级汇总API异常: {str(e)}", exc_info=True)
         return server_error(message=f"获取评级汇总失败: {str(e)}")
 
 
@@ -142,7 +140,7 @@ async def health_check() -> Dict[str, Any]:
             return server_error(message="股票评级服务异常", details=health_response.dict())
 
     except Exception as e:
-        logger.error(f"健康检查API异常: {str(e)}", exc_info=True)
+        logger.error("健康检查API异常: {str(e)}", exc_info=True)
         return server_error(message=f"健康检查失败: {str(e)}")
 
 
@@ -159,7 +157,7 @@ async def refresh_ratings_cache(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info(f"API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}")
+        logger.info("API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}"")
 
         # 重新获取数据（这会自动应用数据质量检查）
         df = sina_adapter.get_sina_stock_ratings(max_pages=request.max_pages)
@@ -182,5 +180,5 @@ async def refresh_ratings_cache(
         )
 
     except Exception as e:
-        logger.error(f"刷新评级缓存API异常: {str(e)}", exc_info=True)
+        logger.error("刷新评级缓存API异常: {str(e)}", exc_info=True)
         return server_error(message=f"刷新评级缓存失败: {str(e)}")

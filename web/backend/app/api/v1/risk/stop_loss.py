@@ -12,12 +12,13 @@ Version: 3.1.0
 Date: 2026-01-10
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, Optional
-from datetime import datetime, timedelta
-import structlog
-import sys
 import os
+import sys
+from datetime import datetime, timedelta
+from typing import Any, Dict, Optional
+
+import structlog
+from fastapi import APIRouter, HTTPException
 
 logger = structlog.get_logger(__name__)
 
@@ -70,7 +71,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"添加止损监控失败: {e}")
+        logger.error("添加止损监控失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"添加止损监控失败: {str(e)}")
 
 
@@ -95,7 +96,7 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"更新止损价格失败: {e}")
+        logger.error("更新止损价格失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"更新止损价格失败: {str(e)}")
 
 
@@ -124,7 +125,7 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"移除止损监控失败: {e}")
+        logger.error("移除止损监控失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"移除止损监控失败: {str(e)}")
 
 
@@ -149,7 +150,7 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取止损状态失败: {e}")
+        logger.error("获取止损状态失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取止损状态失败: {str(e)}")
 
 
@@ -170,7 +171,7 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取止损总览失败: {e}")
+        logger.error("获取止损总览失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取止损总览失败: {str(e)}")
 
 
@@ -195,7 +196,7 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"批量更新止损价格失败: {e}")
+        logger.error("批量更新止损价格失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"批量更新止损价格失败: {str(e)}")
 
 
@@ -225,7 +226,7 @@ async def get_stop_loss_performance(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取止损表现失败: {e}")
+        logger.error("获取止损表现失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取止损表现失败: {str(e)}")
 
 
@@ -246,5 +247,5 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取止损建议失败: {e}")
+        logger.error("获取止损建议失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取止损建议失败: {str(e)}")

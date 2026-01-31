@@ -6,8 +6,9 @@ Web API健康检查脚本
 """
 
 import sys
+from typing import Dict, Optional, Tuple
+
 import requests
-from typing import Dict, Tuple, Optional
 
 BASE_URL = "http://localhost:8000"
 TIMEOUT = 5  # 秒

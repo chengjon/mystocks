@@ -3,23 +3,24 @@
 集成查询构建器、连接池和数据映射器，完全消除技术债务
 """
 
-from typing import List, Dict, Optional, Any
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from src.interfaces.relational_data_source import IRelationalDataSource
-from .query_builder import QueryExecutor
-from .connection_adapter import PostgreSQLConnectionAdapter
+
 from .business_mappers import (
+    ConceptInfoMapper,
+    IndustryInfoMapper,
+    RiskAlertMapper,
+    StockBasicInfoMapper,
+    StrategyConfigMapper,
+    UserConfigMapper,
     WatchlistMapper,
     WatchlistSimpleMapper,
-    StrategyConfigMapper,
-    RiskAlertMapper,
-    UserConfigMapper,
-    StockBasicInfoMapper,
-    IndustryInfoMapper,
-    ConceptInfoMapper,
 )
+from .connection_adapter import PostgreSQLConnectionAdapter
+from .query_builder import QueryExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +43,12 @@ class EnhancedPostgreSQLRelationalDataSource(IRelationalDataSource):
         Args:
             connection_pool_size: 连接池大小
         """
+        from src.data_access import get_data_access_factory, initialize_data_access
+        from src.monitoring import MonitoringDatabase
         from src.storage.database.database_manager import (
             DatabaseTableManager,
             DatabaseType,
         )
-        from src.monitoring import MonitoringDatabase
-        from src.data_access import get_data_access_factory, initialize_data_access
 
         # 初始化数据库管理器和监控数据库
         db_manager = DatabaseTableManager()

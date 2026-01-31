@@ -3,9 +3,6 @@ Portfolio Context
 投资组合上下文
 """
 
-# Value Objects
-from .value_objects.performance_metrics import PerformanceMetrics, PositionInfo
-
 # Model
 from .model.portfolio import Portfolio
 from .model.transaction import Transaction
@@ -18,9 +15,12 @@ from .repository.iportfolio_repository import (
 
 # Service
 from .service.rebalancer_service import (
-    RebalancerService,
     RebalanceAction,
+    RebalancerService,
 )
+
+# Value Objects
+from .value_objects.performance_metrics import PerformanceMetrics, PositionInfo
 
 __all__ = [
     # Value Objects

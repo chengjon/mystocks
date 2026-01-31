@@ -6,13 +6,12 @@ Watchlist Application Service
 """
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from src.domain.watchlist.model import Watchlist, WatchlistStock
-from src.domain.watchlist.value_objects import WatchlistType, WatchlistConfig
-from src.domain.watchlist.service import WatchlistDomainService, SnapshotService
+from src.domain.watchlist.model import Watchlist
 from src.domain.watchlist.repository import IWatchlistRepository, IWatchlistStockRepository
+from src.domain.watchlist.service import SnapshotService, WatchlistDomainService
+from src.domain.watchlist.value_objects import WatchlistConfig, WatchlistType
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class WatchlistApplicationService:
             watchlist.update_config(WatchlistConfig(**config))
 
         self.watchlist_repo.save(watchlist)
-        logger.info(f"Created watchlist: {watchlist.id}")
+        logger.info("Created watchlist: {watchlist.id")
         return watchlist.to_dict()
 
     def get_watchlist(self, watchlist_id: str) -> Optional[Dict[str, Any]]:
@@ -77,7 +76,7 @@ class WatchlistApplicationService:
         if not watchlist:
             return False
         self.watchlist_repo.delete(watchlist_id)
-        logger.info(f"Deleted watchlist: {watchlist_id}")
+        logger.info("Deleted watchlist: %(watchlist_id)s")
         return True
 
     def add_stock(
@@ -108,7 +107,7 @@ class WatchlistApplicationService:
         self.watchlist_repo.save(watchlist)
         self.stock_repo.save(stock)
 
-        logger.info(f"Added stock {stock_code} to watchlist {watchlist_id}")
+        logger.info("Added stock %(stock_code)s to watchlist %(watchlist_id)s")
         return stock.to_dict()
 
     def remove_stock(self, watchlist_id: str, stock_code: str) -> bool:
@@ -119,7 +118,7 @@ class WatchlistApplicationService:
 
         if watchlist.remove_stock(stock_code):
             self.watchlist_repo.save(watchlist)
-            logger.info(f"Removed stock {stock_code} from watchlist {watchlist_id}")
+            logger.info("Removed stock %(stock_code)s from watchlist %(watchlist_id)s")
             return True
         return False
 

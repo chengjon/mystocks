@@ -1,0 +1,4 @@
+  if code is not '':
+  cc = [c[1:] for c in codes if c is not '']
+  if not re.findall("\d", str(o)):
+  results = re.findall('"(\d{6}),(.*?),', response.text)

@@ -16,7 +16,9 @@ Author: MyStocks Project
 
 import logging
 from typing import Optional
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+
 from app.services.websocket_manager import manager
 
 logger = logging.getLogger(__name__)
@@ -63,7 +65,7 @@ async def websocket_events(
         subscribe_channels=subscribe_channels,
     )
 
-    logger.info(f"WebSocket client connected: {connection_id}, channels: {subscribe_channels}")
+    logger.info("WebSocket client connected: %(connection_id)s, channels: %(subscribe_channels)s"")
 
     try:
         # Keep connection alive and handle incoming messages
@@ -95,12 +97,12 @@ async def websocket_events(
                 await manager.send_personal_message({"type": "pong"}, connection_id)
 
             else:
-                logger.warning(f"Unknown message type: {message_type}")
+                logger.warning("Unknown message type: %(message_type)s"")
 
     except WebSocketDisconnect:
-        logger.info(f"WebSocket client disconnected: {connection_id}")
+        logger.info("WebSocket client disconnected: %(connection_id)s"")
     except Exception as e:
-        logger.error(f"WebSocket error for {connection_id}: {e}")
+        logger.error("WebSocket error for %(connection_id)s: %(e)s"")
     finally:
         manager.disconnect(connection_id)
 

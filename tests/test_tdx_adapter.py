@@ -2,10 +2,11 @@
 测试TDXDataSource适配器
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import patch, MagicMock
 import sys
+from unittest.mock import MagicMock, patch
+
+import pandas as pd
+import pytest
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 

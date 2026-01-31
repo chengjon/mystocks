@@ -4,9 +4,10 @@
 修改: 2025-11-19 - 更新为双数据库架构 (PostgreSQL + TDengine)
 """
 
-import pytest
-from unittest.mock import patch, MagicMock
 import sys
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 

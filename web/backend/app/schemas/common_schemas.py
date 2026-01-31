@@ -9,10 +9,11 @@
 3. 类型安全 - 利用Pydantic的强类型校验
 """
 
-from typing import Generic, TypeVar, Optional, Any
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Any, Generic, Optional, TypeVar
 from uuid import uuid4
+
+from pydantic import BaseModel, Field
 
 # 定义泛型类型变量
 T = TypeVar("T")

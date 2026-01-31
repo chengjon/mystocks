@@ -3,11 +3,10 @@ Backtest Application Service
 回测应用服务
 """
 
-from typing import List
-from src.domain.strategy.repository import IStrategyRepository
-from src.domain.market_data.repository import IMarketDataRepository
-from src.domain.strategy.service import SignalGenerationService
 from src.application.dto.strategy_dto import BacktestRequest, BacktestResultDTO
+from src.domain.market_data.repository import IMarketDataRepository
+from src.domain.strategy.repository import IStrategyRepository
+from src.domain.strategy.service import SignalGenerationService
 
 
 class BacktestApplicationService:

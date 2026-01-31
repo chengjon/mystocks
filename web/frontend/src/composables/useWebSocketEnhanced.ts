@@ -133,7 +133,7 @@ export function useWebSocket(config: WebSocketConfig = {}) {
         scheduleReconnect()
       }
 
-      globalState.ws.onclose = () => {
+      globalState.value.ws.onclose = () => {
         console.log('[WebSocket] Disconnected')
         globalState.value.connectionState = 'disconnected'
         globalState.value.ws = null

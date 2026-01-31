@@ -4,12 +4,13 @@ PostgreSQL数据访问功能测试
 使用Mock测试数据库操作逻辑，避开复杂的导入问题
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import MagicMock
-from datetime import datetime
-import sys
 import os
+import sys
+from datetime import datetime
+from unittest.mock import MagicMock
+
+import pandas as pd
+import pytest
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))

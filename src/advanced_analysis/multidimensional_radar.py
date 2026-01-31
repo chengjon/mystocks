@@ -21,31 +21,28 @@ The radar analysis provides:
 - Comprehensive investment decision support
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from abc import ABC, abstractmethod
 import warnings
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List
 
-from src.advanced_analysis import BaseAnalyzer, AnalysisResult, AnalysisType
-from src.core import DataClassification
+import numpy as np
+
+from src.advanced_analysis import AnalysisResult, AnalysisType, BaseAnalyzer
+from src.advanced_analysis.anomaly_tracking_analyzer import AnomalyTrackingAnalyzer
+from src.advanced_analysis.capital_flow_analyzer import CapitalFlowAnalyzer
+from src.advanced_analysis.chip_distribution_analyzer import ChipDistributionAnalyzer
 
 # Import all analysis modules
 from src.advanced_analysis.fundamental_analyzer import FundamentalAnalyzer
-from src.advanced_analysis.technical_analyzer import TechnicalAnalyzer
-from src.advanced_analysis.trading_signals_analyzer import TradingSignalAnalyzer
-from src.advanced_analysis.timeseries_analyzer import TimeSeriesAnalyzer
 from src.advanced_analysis.market_panorama_analyzer import MarketPanoramaAnalyzer
-from src.advanced_analysis.capital_flow_analyzer import CapitalFlowAnalyzer
-from src.advanced_analysis.chip_distribution_analyzer import ChipDistributionAnalyzer
-from src.advanced_analysis.anomaly_tracking_analyzer import AnomalyTrackingAnalyzer
+from src.advanced_analysis.technical_analyzer import TechnicalAnalyzer
+from src.advanced_analysis.timeseries_analyzer import TimeSeriesAnalyzer
+from src.advanced_analysis.trading_signals_analyzer import TradingSignalAnalyzer
 
 # GPU acceleration support
 try:
-    import cudf
-    import cuml
+    pass
 
     GPU_AVAILABLE = True
 except ImportError:
@@ -91,6 +88,7 @@ class MultidimensionalRadarAnalyzer(BaseAnalyzer):
     """
 
 
+# pylint: disable=abstract-class-instantiated
 def __init__(self, data_manager, gpu_manager=None):
     super().__init__(data_manager, gpu_manager)
 
@@ -359,7 +357,6 @@ def _calculate_overall_score(self, dimensions: List[RadarDimension]) -> float:
 def _calculate_overall_score_gpu(self, dimensions: List[RadarDimension]) -> float:
     """GPU加速的综合评分计算"""
     import cudf
-    import numpy as np
 
     # 将维度数据转换为GPU DataFrame
     scores = cudf.Series([dim.score for dim in dimensions])
@@ -496,7 +493,6 @@ def _generate_radar_chart_data(self, dimensions: List[RadarDimension]) -> Dict[s
 def _generate_radar_chart_data_gpu(self, dimensions: List[RadarDimension]) -> Dict[str, Any]:
     """GPU加速的雷达图数据生成"""
     import cudf
-    import numpy as np
 
     # 将数据转换为GPU DataFrame进行排序优化
     df = cudf.DataFrame(

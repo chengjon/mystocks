@@ -14,13 +14,14 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from typing import Dict, List, Optional, Any, Callable
+import uuid
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
+
 import structlog
-from collections import defaultdict
-import uuid
 
 logger = structlog.get_logger()
 

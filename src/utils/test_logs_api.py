@@ -4,8 +4,9 @@
 验证日志查询和筛选功能
 """
 
-import requests
 from datetime import datetime
+
+import requests
 
 # Backend API基础URL
 BASE_URL = "http://localhost:8000"

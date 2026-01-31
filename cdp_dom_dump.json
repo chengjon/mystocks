@@ -1,0 +1,1555 @@
+{
+  "id": 3,
+  "result": {
+    "root": {
+      "nodeId": 1,
+      "backendNodeId": 12,
+      "nodeType": 9,
+      "nodeName": "#document",
+      "localName": "",
+      "nodeValue": "",
+      "childNodeCount": 2,
+      "children": [
+        {
+          "nodeId": 2,
+          "parentId": 1,
+          "backendNodeId": 21,
+          "nodeType": 10,
+          "nodeName": "html",
+          "localName": "",
+          "nodeValue": "",
+          "publicId": "",
+          "systemId": ""
+        },
+        {
+          "nodeId": 3,
+          "parentId": 1,
+          "backendNodeId": 22,
+          "nodeType": 1,
+          "nodeName": "HTML",
+          "localName": "html",
+          "nodeValue": "",
+          "childNodeCount": 2,
+          "children": [
+            {
+              "nodeId": 4,
+              "parentId": 3,
+              "backendNodeId": 23,
+              "nodeType": 1,
+              "nodeName": "HEAD",
+              "localName": "head",
+              "nodeValue": "",
+              "childNodeCount": 42,
+              "children": [
+                {
+                  "nodeId": 5,
+                  "parentId": 4,
+                  "backendNodeId": 24,
+                  "nodeType": 1,
+                  "nodeName": "SCRIPT",
+                  "localName": "script",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "type",
+                    "module",
+                    "src",
+                    "/@vite/client"
+                  ]
+                },
+                {
+                  "nodeId": 6,
+                  "parentId": 4,
+                  "backendNodeId": 25,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "charset",
+                    "UTF-8"
+                  ]
+                },
+                {
+                  "nodeId": 7,
+                  "parentId": 4,
+                  "backendNodeId": 26,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "rel",
+                    "icon",
+                    "type",
+                    "image/svg+xml",
+                    "href",
+                    "/vite.svg"
+                  ]
+                },
+                {
+                  "nodeId": 8,
+                  "parentId": 4,
+                  "backendNodeId": 27,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "viewport",
+                    "content",
+                    "width=device-width, initial-scale=1.0"
+                  ]
+                },
+                {
+                  "nodeId": 9,
+                  "parentId": 4,
+                  "backendNodeId": 28,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " PWA Manifest and Meta Tags "
+                },
+                {
+                  "nodeId": 10,
+                  "parentId": 4,
+                  "backendNodeId": 29,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "rel",
+                    "manifest",
+                    "href",
+                    "/manifest.json"
+                  ]
+                },
+                {
+                  "nodeId": 11,
+                  "parentId": 4,
+                  "backendNodeId": 30,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "theme-color",
+                    "content",
+                    "#D4AF37"
+                  ]
+                },
+                {
+                  "nodeId": 12,
+                  "parentId": 4,
+                  "backendNodeId": 31,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "apple-mobile-web-app-capable",
+                    "content",
+                    "yes"
+                  ]
+                },
+                {
+                  "nodeId": 13,
+                  "parentId": 4,
+                  "backendNodeId": 32,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "apple-mobile-web-app-status-bar-style",
+                    "content",
+                    "black-translucent"
+                  ]
+                },
+                {
+                  "nodeId": 14,
+                  "parentId": 4,
+                  "backendNodeId": 33,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "apple-mobile-web-app-title",
+                    "content",
+                    "MyStocks"
+                  ]
+                },
+                {
+                  "nodeId": 15,
+                  "parentId": 4,
+                  "backendNodeId": 34,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "rel",
+                    "apple-touch-icon",
+                    "href",
+                    "/icons/icon-192.png"
+                  ]
+                },
+                {
+                  "nodeId": 16,
+                  "parentId": 4,
+                  "backendNodeId": 35,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "msapplication-TileColor",
+                    "content",
+                    "#D4AF37"
+                  ]
+                },
+                {
+                  "nodeId": 17,
+                  "parentId": 4,
+                  "backendNodeId": 36,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "msapplication-config",
+                    "content",
+                    "/browserconfig.xml"
+                  ]
+                },
+                {
+                  "nodeId": 18,
+                  "parentId": 4,
+                  "backendNodeId": 37,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " Element Plus Fonts "
+                },
+                {
+                  "nodeId": 19,
+                  "parentId": 4,
+                  "backendNodeId": 38,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "rel",
+                    "preconnect",
+                    "href",
+                    "https://fonts.googleapis.com"
+                  ]
+                },
+                {
+                  "nodeId": 20,
+                  "parentId": 4,
+                  "backendNodeId": 39,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "rel",
+                    "preconnect",
+                    "href",
+                    "https://fonts.gstatic.com",
+                    "crossorigin",
+                    ""
+                  ]
+                },
+                {
+                  "nodeId": 21,
+                  "parentId": 4,
+                  "backendNodeId": 40,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "href",
+                    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+                    "rel",
+                    "stylesheet"
+                  ]
+                },
+                {
+                  "nodeId": 22,
+                  "parentId": 4,
+                  "backendNodeId": 41,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " PRO FINTECH OPTIMIZATION: Professional Financial Fonts "
+                },
+                {
+                  "nodeId": 23,
+                  "parentId": 4,
+                  "backendNodeId": 42,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "href",
+                    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap",
+                    "rel",
+                    "stylesheet"
+                  ]
+                },
+                {
+                  "nodeId": 24,
+                  "parentId": 4,
+                  "backendNodeId": 43,
+                  "nodeType": 1,
+                  "nodeName": "LINK",
+                  "localName": "link",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "href",
+                    "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap",
+                    "rel",
+                    "stylesheet"
+                  ]
+                },
+                {
+                  "nodeId": 25,
+                  "parentId": 4,
+                  "backendNodeId": 44,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " CSP temporarily disabled for debugging "
+                },
+                {
+                  "nodeId": 26,
+                  "parentId": 4,
+                  "backendNodeId": 45,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": "\n    <meta http-equiv=\"Content-Security-Policy\"\n          content=\"default-src 'self';\n                   script-src 'self' 'unsafe-inline' 'unsafe-eval';\n                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;\n                   img-src 'self' data: https: blob:;\n                   font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com data:;\n                   connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 ws://localhost:8000;\n                   form-action 'self';\n                   base-uri 'self';\" />\n    "
+                },
+                {
+                  "nodeId": 27,
+                  "parentId": 4,
+                  "backendNodeId": 46,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " Prevent clickjacking attacks "
+                },
+                {
+                  "nodeId": 28,
+                  "parentId": 4,
+                  "backendNodeId": 47,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "http-equiv",
+                    "X-UA-Compatible",
+                    "content",
+                    "ie=edge"
+                  ]
+                },
+                {
+                  "nodeId": 29,
+                  "parentId": 4,
+                  "backendNodeId": 48,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "referrer",
+                    "content",
+                    "strict-origin-when-cross-origin"
+                  ]
+                },
+                {
+                  "nodeId": 30,
+                  "parentId": 4,
+                  "backendNodeId": 49,
+                  "nodeType": 8,
+                  "nodeName": "#comment",
+                  "localName": "",
+                  "nodeValue": " CSRF Token meta tag for frontend to use "
+                },
+                {
+                  "nodeId": 31,
+                  "parentId": 4,
+                  "backendNodeId": 50,
+                  "nodeType": 1,
+                  "nodeName": "META",
+                  "localName": "meta",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "name",
+                    "csrf-token",
+                    "content",
+                    ""
+                  ]
+                },
+                {
+                  "nodeId": 32,
+                  "parentId": 4,
+                  "backendNodeId": 51,
+                  "nodeType": 1,
+                  "nodeName": "TITLE",
+                  "localName": "title",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 33,
+                      "parentId": 32,
+                      "backendNodeId": 52,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "Login - MyStocks Platform"
+                    }
+                  ],
+                  "attributes": []
+                },
+                {
+                  "nodeId": 34,
+                  "parentId": 4,
+                  "backendNodeId": 53,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 35,
+                      "parentId": 34,
+                      "backendNodeId": 54,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "\n.app-container[data-v-7a7a37b1] {\n  min-height: 100vh;\n  width: 100%;\n}\n"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/App.vue?vue&type=style&index=0&scoped=7a7a37b1&lang.css"
+                  ]
+                },
+                {
+                  "nodeId": 36,
+                  "parentId": 4,
+                  "backendNodeId": 55,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 37,
+                      "parentId": 36,
+                      "backendNodeId": 56,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";:root{--el-color-white:#ffffff;--el-color-black:#000000;--el-color-primary-rgb:64,158,255;--el-color-success-rgb:103,194,58;--el-color-warning-rgb:230,162,60;--el-color-danger-rgb:245,108,108;--el-color-error-rgb:245,108,108;--el-color-info-rgb:144,147,153;--el-font-size-extra-large:20px;--el-font-size-large:18px;--el-font-size-medium:16px;--el-font-size-base:14px;--el-font-size-small:13px;--el-font-size-extra-small:12px;--el-font-family:\"Helvetica Neue\",Helvetica,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"\u5fae\u8f6f\u96c5\u9ed1\",Arial,sans-serif;--el-font-weight-primary:500;--el-font-line-height-primary:24px;--el-index-normal:1;--el-index-top:1000;--el-index-popper:2000;--el-border-radius-base:4px;--el-border-radius-small:2px;--el-border-radius-round:20px;--el-border-radius-circle:100%;--el-transition-duration:0.3s;--el-transition-duration-fast:0.2s;--el-transition-function-ease-in-out-bezier:cubic-bezier(0.645,0.045,0.355,1);--el-transition-function-fast-bezier:cubic-bezier(0.23,1,0.32,1);--el-transition-all:all var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);--el-transition-fade:opacity var(--el-transition-duration) var(--el-transition-function-fast-bezier);--el-transition-md-fade:transform var(--el-transition-duration) var(--el-transition-function-fast-bezier),opacity var(--el-transition-duration) var(--el-transition-function-fast-bezier);--el-transition-fade-linear:opacity var(--el-transition-duration-fast) linear;--el-transition-border:border-color var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);--el-transition-box-shadow:box-shadow var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);--el-transition-color:color var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);--el-component-size-large:40px;--el-component-size:32px;--el-component-size-small:24px;color-scheme:light;--el-color-primary:#409eff;--el-color-primary-light-3:rgb(121,187,255);--el-color-primary-light-5:rgb(160,207,255);--el-color-primary-light-7:rgb(198,226,255);--el-color-primary-light-8:rgb(217,236,255);--el-color-primary-light-9:rgb(236,245,255);--el-color-primary-dark-2:rgb(51,126,204);--el-color-success:#67c23a;--el-color-success-light-3:rgb(149,212,117);--el-color-success-light-5:rgb(179,225,157);--el-color-success-light-7:rgb(209,237,196);--el-color-success-light-8:rgb(225,243,216);--el-color-success-light-9:rgb(240,249,235);--el-color-success-dark-2:rgb(82,155,46);--el-color-warning:#e6a23c;--el-color-warning-light-3:rgb(238,190,119);--el-color-warning-light-5:rgb(243,209,158);--el-color-warning-light-7:rgb(248,227,197);--el-color-warning-light-8:rgb(250,236,216);--el-color-warning-light-9:rgb(253,246,236);--el-color-warning-dark-2:rgb(184,130,48);--el-color-danger:#f56c6c;--el-color-danger-light-3:rgb(248,152,152);--el-color-danger-light-5:rgb(250,182,182);--el-color-danger-light-7:rgb(252,211,211);--el-color-danger-light-8:rgb(253,226,226);--el-color-danger-light-9:rgb(254,240,240);--el-color-danger-dark-2:rgb(196,86,86);--el-color-error:#f56c6c;--el-color-error-light-3:rgb(248,152,152);--el-color-error-light-5:rgb(250,182,182);--el-color-error-light-7:rgb(252,211,211);--el-color-error-light-8:rgb(253,226,226);--el-color-error-light-9:rgb(254,240,240);--el-color-error-dark-2:rgb(196,86,86);--el-color-info:#909399;--el-color-info-light-3:rgb(177,179,184);--el-color-info-light-5:rgb(200,201,204);--el-color-info-light-7:rgb(222,223,224);--el-color-info-light-8:rgb(233,233,235);--el-color-info-light-9:rgb(244,244,245);--el-color-info-dark-2:rgb(115,118,122);--el-bg-color:#ffffff;--el-bg-color-page:#f2f3f5;--el-bg-color-overlay:#ffffff;--el-text-color-primary:#303133;--el-text-color-regular:#606266;--el-text-color-secondary:#909399;--el-text-color-placeholder:#a8abb2;--el-text-color-disabled:#c0c4cc;--el-border-color:#dcdfe6;--el-border-color-light:#e4e7ed;--el-border-color-lighter:#ebeef5;--el-border-color-extra-light:#f2f6fc;--el-border-color-dark:#d4d7de;--el-border-color-darker:#cdd0d6;--el-fill-color:#f0f2f5;--el-fill-color-light:#f5f7fa;--el-fill-color-lighter:#fafafa;--el-fill-color-extra-light:#fafcff;--el-fill-color-dark:#ebedf0;--el-fill-color-darker:#e6e8eb;--el-fill-color-blank:#ffffff;--el-box-shadow:0px 12px 32px 4px rgba(0,0,0,0.04),0px 8px 20px rgba(0,0,0,0.08);--el-box-shadow-light:0px 0px 12px rgba(0,0,0,0.12);--el-box-shadow-lighter:0px 0px 6px rgba(0,0,0,0.12);--el-box-shadow-dark:0px 16px 48px 16px rgba(0,0,0,0.08),0px 12px 32px rgba(0,0,0,0.12),0px 8px 16px -8px rgba(0,0,0,0.16);--el-disabled-bg-color:var(--el-fill-color-light);--el-disabled-text-color:var(--el-text-color-placeholder);--el-disabled-border-color:var(--el-border-color-light);--el-overlay-color:rgba(0,0,0,0.8);--el-overlay-color-light:rgba(0,0,0,0.7);--el-overlay-color-lighter:rgba(0,0,0,0.5);--el-mask-color:rgba(255,255,255,0.9);--el-mask-color-extra-light:rgba(255,255,255,0.3);--el-border-width:1px;--el-border-style:solid;--el-border-color-hover:var(--el-text-color-disabled);--el-border:var(--el-border-width) var(--el-border-style) var(--el-border-color);--el-svg-monochrome-grey:var(--el-border-color)}.fade-in-linear-enter-active,.fade-in-linear-leave-active{transition:var(--el-transition-fade-linear)}.fade-in-linear-enter-from,.fade-in-linear-leave-to{opacity:0}.el-fade-in-linear-enter-active,.el-fade-in-linear-leave-active{transition:var(--el-transition-fade-linear)}.el-fade-in-linear-enter-from,.el-fade-in-linear-leave-to{opacity:0}.el-fade-in-enter-active,.el-fade-in-leave-active{transition:all var(--el-transition-duration) cubic-bezier(.55,0,.1,1)}.el-fade-in-enter-from,.el-fade-in-leave-active{opacity:0}.el-zoom-in-center-enter-active,.el-zoom-in-center-leave-active{transition:all var(--el-transition-duration) cubic-bezier(.55,0,.1,1)}.el-zoom-in-center-enter-from,.el-zoom-in-center-leave-active{opacity:0;transform:scaleX(0)}.el-zoom-in-top-enter-active,.el-zoom-in-top-leave-active{opacity:1;transform:scaleY(1);transform-origin:center top;transition:var(--el-transition-md-fade)}.el-zoom-in-top-enter-active[data-popper-placement^=top],.el-zoom-in-top-leave-active[data-popper-placement^=top]{transform-origin:center bottom}.el-zoom-in-top-enter-from,.el-zoom-in-top-leave-active{opacity:0;transform:scaleY(0)}.el-zoom-in-bottom-enter-active,.el-zoom-in-bottom-leave-active{opacity:1;transform:scaleY(1);transform-origin:center bottom;transition:var(--el-transition-md-fade)}.el-zoom-in-bottom-enter-from,.el-zoom-in-bottom-leave-active{opacity:0;transform:scaleY(0)}.el-zoom-in-left-enter-active,.el-zoom-in-left-leave-active{opacity:1;transform:scale(1);transform-origin:top left;transition:var(--el-transition-md-fade)}.el-zoom-in-left-enter-from,.el-zoom-in-left-leave-active{opacity:0;transform:scale(.45)}.collapse-transition{transition:var(--el-transition-duration) height ease-in-out,var(--el-transition-duration) padding-top ease-in-out,var(--el-transition-duration) padding-bottom ease-in-out}.el-collapse-transition-enter-active,.el-collapse-transition-leave-active{transition:var(--el-transition-duration) max-height ease-in-out,var(--el-transition-duration) padding-top ease-in-out,var(--el-transition-duration) padding-bottom ease-in-out}.horizontal-collapse-transition{transition:var(--el-transition-duration) width ease-in-out,var(--el-transition-duration) padding-left ease-in-out,var(--el-transition-duration) padding-right ease-in-out}.el-list-enter-active,.el-list-leave-active{transition:all 1s}.el-list-enter-from,.el-list-leave-to{opacity:0;transform:translateY(-30px)}.el-list-leave-active{position:absolute!important}.el-opacity-transition{transition:opacity var(--el-transition-duration) cubic-bezier(.55,0,.1,1)}.el-icon--right{margin-left:5px}.el-icon--left{margin-right:5px}@keyframes rotating{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.el-icon{--color:inherit;align-items:center;color:var(--color);display:inline-flex;fill:currentColor;font-size:inherit;height:1em;justify-content:center;line-height:1em;position:relative;width:1em}.el-icon.is-loading{animation:rotating 2s linear infinite}.el-icon svg{height:1em;width:1em}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/node_modules/element-plus/theme-chalk/base.css"
+                  ]
+                },
+                {
+                  "nodeId": 38,
+                  "parentId": 4,
+                  "backendNodeId": 57,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 39,
+                      "parentId": 38,
+                      "backendNodeId": 58,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": ".el-badge{--el-badge-bg-color:var(--el-color-danger);--el-badge-radius:10px;--el-badge-font-size:12px;--el-badge-padding:6px;--el-badge-size:18px;display:inline-block;position:relative;vertical-align:middle;width:-moz-fit-content;width:fit-content}.el-badge__content{align-items:center;background-color:var(--el-badge-bg-color);border:1px solid var(--el-bg-color);border-radius:var(--el-badge-radius);color:var(--el-color-white);display:inline-flex;font-size:var(--el-badge-font-size);height:var(--el-badge-size);justify-content:center;padding:0 var(--el-badge-padding);white-space:nowrap}.el-badge__content.is-fixed{position:absolute;right:calc(1px + var(--el-badge-size)/2);top:0;transform:translateY(-50%) translateX(100%);z-index:var(--el-index-normal)}.el-badge__content.is-fixed.is-dot{right:5px}.el-badge__content.is-dot{border-radius:50%;height:8px;padding:0;right:0;width:8px}.el-badge__content.is-hide-zero{display:none}.el-badge__content--primary{background-color:var(--el-color-primary)}.el-badge__content--success{background-color:var(--el-color-success)}.el-badge__content--warning{background-color:var(--el-color-warning)}.el-badge__content--info{background-color:var(--el-color-info)}.el-badge__content--danger{background-color:var(--el-color-danger)}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/node_modules/element-plus/theme-chalk/el-badge.css"
+                  ]
+                },
+                {
+                  "nodeId": 40,
+                  "parentId": 4,
+                  "backendNodeId": 59,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 41,
+                      "parentId": 40,
+                      "backendNodeId": 60,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": ".el-message{--el-message-bg-color:var(--el-color-info-light-9);--el-message-border-color:var(--el-border-color-lighter);--el-message-padding:11px 15px;--el-message-close-size:16px;--el-message-close-icon-color:var(--el-text-color-placeholder);--el-message-close-hover-color:var(--el-text-color-secondary);align-items:center;background-color:var(--el-message-bg-color);border-color:var(--el-message-border-color);border-radius:var(--el-border-radius-base);border-style:var(--el-border-style);border-width:var(--el-border-width);box-sizing:border-box;display:flex;gap:8px;max-width:calc(100% - 32px);padding:var(--el-message-padding);position:fixed;transition:opacity var(--el-transition-duration),transform .4s,top .4s,bottom .4s;width:-moz-fit-content;width:fit-content}.el-message.is-left{left:16px}.el-message.is-right{right:16px}.el-message.is-center{left:0;margin:0 auto;right:0}.el-message.is-plain{background-color:var(--el-bg-color-overlay);border-color:var(--el-bg-color-overlay);box-shadow:var(--el-box-shadow-light)}.el-message p{margin:0}.el-message--primary{--el-message-bg-color:var(--el-color-primary-light-9);--el-message-border-color:var(--el-color-primary-light-8);--el-message-text-color:var(--el-color-primary)}.el-message--primary .el-message__content{color:var(--el-message-text-color);overflow-wrap:break-word}.el-message .el-message-icon--primary{color:var(--el-message-text-color)}.el-message--success{--el-message-bg-color:var(--el-color-success-light-9);--el-message-border-color:var(--el-color-success-light-8);--el-message-text-color:var(--el-color-success)}.el-message--success .el-message__content{color:var(--el-message-text-color);overflow-wrap:break-word}.el-message .el-message-icon--success{color:var(--el-message-text-color)}.el-message--info{--el-message-bg-color:var(--el-color-info-light-9);--el-message-border-color:var(--el-color-info-light-8);--el-message-text-color:var(--el-color-info)}.el-message--info .el-message__content{color:var(--el-message-text-color);overflow-wrap:break-word}.el-message .el-message-icon--info{color:var(--el-message-text-color)}.el-message--warning{--el-message-bg-color:var(--el-color-warning-light-9);--el-message-border-color:var(--el-color-warning-light-8);--el-message-text-color:var(--el-color-warning)}.el-message--warning .el-message__content{color:var(--el-message-text-color);overflow-wrap:break-word}.el-message .el-message-icon--warning{color:var(--el-message-text-color)}.el-message--error{--el-message-bg-color:var(--el-color-error-light-9);--el-message-border-color:var(--el-color-error-light-8);--el-message-text-color:var(--el-color-error)}.el-message--error .el-message__content{color:var(--el-message-text-color);overflow-wrap:break-word}.el-message .el-message-icon--error{color:var(--el-message-text-color)}.el-message .el-message__badge{position:absolute;right:-8px;top:-8px}.el-message__content{font-size:14px;line-height:1;padding:0}.el-message__content:focus{outline-width:0}.el-message .el-message__closeBtn{color:var(--el-message-close-icon-color);cursor:pointer;font-size:var(--el-message-close-size)}.el-message .el-message__closeBtn:focus{outline-width:0}.el-message .el-message__closeBtn:hover{color:var(--el-message-close-hover-color)}.el-message-fade-enter-from,.el-message-fade-leave-to{opacity:0;transform:translateY(-100%)}.el-message-fade-enter-from.is-bottom,.el-message-fade-leave-to.is-bottom{transform:translateY(100%)}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/node_modules/element-plus/theme-chalk/el-message.css"
+                  ]
+                },
+                {
+                  "nodeId": 42,
+                  "parentId": 4,
+                  "backendNodeId": 61,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 43,
+                      "parentId": 42,
+                      "backendNodeId": 62,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n/* \u5168\u5c40\u6837\u5f0f */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nhtml,\nbody,\n#app {\n  height: 100%;\n  font-family: \"Helvetica Neue\", Helvetica, \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", Arial, sans-serif;\n}\n\n/* \u6eda\u52a8\u6761\u6837\u5f0f */\n::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n}\n\n::-webkit-scrollbar-track {\n  background: #f1f1f1;\n}\n\n::-webkit-scrollbar-thumb {\n  background: #888;\n  border-radius: 4px;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background: #555;\n}\n\n/* \u5de5\u5177\u7c7b */\n.flex-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.flex-between {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n.text-center {\n  text-align: center;\n}\n\n.text-right {\n  text-align: right;\n}\n\n/* \u54cd\u5e94\u5f0f */\n@media (max-width: 768px) {\n  .hide-on-mobile {\n    display: none !important;\n  }\n}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/index.scss"
+                  ]
+                },
+                {
+                  "nodeId": 44,
+                  "parentId": 4,
+                  "backendNodeId": 63,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 45,
+                      "parentId": 44,
+                      "backendNodeId": 64,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n@import url(\"https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap\");\n:root {\n  --artdeco-bg-global: #0A0A0A;\n  --artdeco-bg-base: #141414;\n  --artdeco-bg-card: #141414;\n  --artdeco-bg-elevated: #1a1a1a;\n  --artdeco-fg-primary: #F2F0E4;\n  --artdeco-fg-muted: #A0A0A0;\n  --artdeco-fg-subtle: rgba(255,255,255,0.6);\n  --artdeco-gold-primary: #D4AF37;\n  --artdeco-gold-light: #F0E68C;\n  --artdeco-bronze: #CD7F32;\n  --artdeco-champagne: #F7E7CE;\n  --artdeco-gold-dim: #8B7355;\n  --artdeco-border-default: rgba(212, 175, 55, 0.3);\n  --artdeco-border-hover: rgba(212, 175, 55, 1);\n  --artdeco-border-accent: rgba(212, 175, 55, 0.8);\n  --artdeco-border-gold: #D4AF37;\n  --artdeco-rise: #FF5252;\n  --artdeco-down: #00E676;\n  --artdeco-flat: #B0B3B8;\n  --artdeco-profit: var(--artdeco-rise);\n  --artdeco-loss: var(--artdeco-down);\n  --artdeco-warning: #D4AF37;\n  --artdeco-info: #4FC3F7;\n  --artdeco-success: var(--artdeco-rise);\n  --artdeco-error: var(--artdeco-down);\n}\n:root :root {\n  --font-display: 'Cinzel', 'Playfair Display', serif;\n  --font-body: 'Barlow', 'Inter', sans-serif;\n  --font-mono: 'JetBrains Mono', 'Consolas', monospace;\n  --artdeco-text-xs: 0.75rem;\n  --artdeco-text-sm: 0.875rem;\n  --artdeco-text-base: 1rem;\n  --artdeco-text-lg: 1.25rem;\n  --artdeco-text-xl: 1.5rem;\n  --artdeco-text-2xl: 1.875rem;\n  --artdeco-text-3xl: 2.25rem;\n  --artdeco-text-4xl: 2.75rem;\n  --artdeco-text-5xl: 3.5rem;\n  --artdeco-text-6xl: 4rem;\n  --artdeco-font-light: 400;\n  --artdeco-font-normal: 400;\n  --artdeco-font-medium: 500;\n  --artdeco-font-semibold: 600;\n  --artdeco-font-bold: 700;\n  --artdeco-leading-none: 1;\n  --artdeco-leading-tight: 1.25;\n  --artdeco-leading-normal: 1.5;\n  --artdeco-leading-relaxed: 1.625;\n  --artdeco-leading-loose: 2;\n  --artdeco-tracking-tighter: -0.05em;\n  --artdeco-tracking-tight: -0.025em;\n  --artdeco-tracking-normal: 0em;\n  --artdeco-tracking-wide: 0.025em;\n  --artdeco-tracking-wider: 0.05em;\n  --artdeco-tracking-widest: 0.1em;\n}\n:root h1, :root h2, :root h3, :root .logo, :root .section-title {\n  font-family: var(--font-display);\n  font-weight: var(--artdeco-font-semibold);\n  letter-spacing: 0.05em;\n  text-transform: uppercase;\n}\n:root body, :root p, :root span, :root .body-text {\n  font-family: var(--font-body);\n  font-weight: var(--artdeco-font-normal);\n}\n:root .price, :root .percentage, :root .volume, :root .code {\n  font-family: var(--font-mono);\n  font-weight: var(--artdeco-font-medium);\n  font-variant-numeric: tabular-nums;\n}\n:root {\n  --artdeco-font-size-xs: var(--artdeco-text-xs);\n  --artdeco-font-size-sm: var(--artdeco-text-sm);\n  --artdeco-font-size-base: var(--artdeco-text-base);\n  --artdeco-font-size-md: var(--artdeco-text-lg);\n  --artdeco-font-size-lg: var(--artdeco-text-xl);\n  --artdeco-font-display: var(--artdeco-font-heading);\n  --artdeco-font-mono: var(--artdeco-font-accent);\n  --artdeco-accent-gold: var(--artdeco-gold-primary);\n  --artdeco-silver-dim: var(--artdeco-fg-muted);\n  --artdeco-silver-light: var(--artdeco-fg-primary);\n  --artdeco-gold-border: var(--artdeco-border-gold);\n  --artdeco-gold-dim: var(--artdeco-gold-dim);\n  --artdeco-gold-border: var(--artdeco-border-gold);\n}\n@keyframes artdeco-page-load {\n  0% {\n    opacity: 0;\n    transform: translateY(20px);\n  }\n  100% {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n.page-enter {\n  animation: artdeco-page-load 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);\n}\n.artdeco-button {\n  position: relative;\n  overflow: hidden;\n  transition: all 0.3s ease;\n}\n.artdeco-button::before {\n  content: \"\";\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 0;\n  height: 0;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);\n  transform: translate(-50%, -50%);\n  transition: width 0.6s, height 0.6s;\n}\n.artdeco-button:hover::before {\n  width: 300px;\n  height: 300px;\n}\n.artdeco-card {\n  transition: all 0.3s ease;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n.artdeco-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 175, 55, 0.3);\n  border-color: var(--artdeco-gold-light);\n}\n@keyframes data-update-flash {\n  0%, 100% {\n    background-color: transparent;\n  }\n  50% {\n    background-color: rgba(212, 175, 55, 0.2);\n  }\n}\n.data-updated {\n  animation: data-update-flash 0.8s ease;\n}\n.tab-bar {\n  position: relative;\n}\n.tab-bar::after {\n  content: \"\";\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  height: 3px;\n  background: var(--artdeco-gold);\n  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);\n}\n@keyframes artdeco-spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.artdeco-loader {\n  width: 60px;\n  height: 60px;\n  border: 4px solid rgba(212, 175, 55, 0.2);\n  border-top: 4px solid var(--artdeco-gold);\n  border-radius: 0;\n  animation: artdeco-spin 1.2s linear infinite;\n}\n:root {\n  --artdeco-spacing-px: 1px;\n  --artdeco-spacing-0: 0;\n  --artdeco-spacing-1: 0.25rem;\n  --artdeco-spacing-2: 0.5rem;\n  --artdeco-spacing-3: 0.75rem;\n  --artdeco-spacing-4: 1rem;\n  --artdeco-spacing-5: 1.25rem;\n  --artdeco-spacing-6: 1.5rem;\n  --artdeco-spacing-8: 2rem;\n  --artdeco-spacing-10: 2.5rem;\n  --artdeco-spacing-12: 3rem;\n  --artdeco-spacing-16: 4rem;\n  --artdeco-spacing-20: 5rem;\n  --artdeco-spacing-24: 6rem;\n  --artdeco-spacing-32: 8rem;\n  --artdeco-spacing-sm: var(--artdeco-spacing-2);\n  --artdeco-spacing-md: var(--artdeco-spacing-4);\n  --artdeco-spacing-lg: var(--artdeco-spacing-6);\n  --artdeco-spacing-xl: var(--artdeco-spacing-8);\n  --artdeco-spacing-compact-xs: 0.25rem;\n  --artdeco-spacing-compact-sm: 0.5rem;\n  --artdeco-spacing-compact-md: 0.75rem;\n  --artdeco-spacing-compact-lg: 1rem;\n  --artdeco-text-compact-xs: 0.6875rem;\n  --artdeco-text-compact-sm: 0.75rem;\n  --artdeco-text-compact-base: 0.875rem;\n  --artdeco-text-compact-md: 1rem;\n  --artdeco-text-compact-lg: 1.125rem;\n}\n:root {\n  --artdeco-radius-none: 0px;\n  --artdeco-radius-sm: 2px;\n  --artdeco-radius-md: 8px;\n  --artdeco-radius-lg: 12px;\n  --artdeco-radius-xl: 16px;\n  --artdeco-radius-full: 9999px;\n}\n:root {\n  --artdeco-shadow-none: 0 0 #0000;\n  --artdeco-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);\n  --artdeco-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n  --artdeco-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  --artdeco-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  --artdeco-glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);\n  --artdeco-glow-intense: 0 0 20px rgba(212, 175, 55, 0.4);\n  --artdeco-glow-max: 0 0 30px rgba(212, 175, 55, 0.6);\n}\n:root {\n  --artdeco-transition-quick: 200ms;\n  --artdeco-transition-base: 400ms;\n  --artdeco-transition-slow: 600ms;\n  --artdeco-transition-dramatic: 800ms;\n  --artdeco-ease-linear: linear;\n  --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);\n  --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);\n  --artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);\n}\n:root {\n  --artdeco-breakpoint-xs: 480px;\n  --artdeco-breakpoint-sm: 640px;\n  --artdeco-breakpoint-md: 1024px;\n  --artdeco-breakpoint-lg: 1280px;\n  --artdeco-breakpoint-xl: 1536px;\n}\n:root {\n  --artdeco-z-auto: auto;\n  --artdeco-z-0: 0;\n  --artdeco-z-10: 10;\n  --artdeco-z-20: 20;\n  --artdeco-z-30: 30;\n  --artdeco-z-40: 40;\n  --artdeco-z-50: 50;\n}\n:root {\n  --artdeco-font-technical: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  --artdeco-font-data: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;\n  --artdeco-text-data-xs: 0.625rem;\n  --artdeco-text-data-sm: 0.75rem;\n  --artdeco-text-data-base: 0.875rem;\n  --artdeco-text-data-lg: 1rem;\n  --artdeco-font-variant-numeric: tabular-nums;\n  --artdeco-letter-spacing-data: 0.02em;\n}\n:root {\n  --quant-signal-strong-buy: #D50000;\n  --quant-signal-buy: var(--artdeco-up);\n  --quant-signal-neutral: #888888;\n  --quant-signal-sell: var(--artdeco-down);\n  --quant-signal-strong-sell: #00C853;\n  --quant-indicator-macd-fast: #2962FF;\n  --quant-indicator-macd-slow: #FF6D00;\n  --quant-indicator-macd-histogram: var(--artdeco-gold-primary);\n  --quant-indicator-kdj-k: #00BCD4;\n  --quant-indicator-kdj-d: #7C4DFF;\n  --quant-indicator-kdj-j: #FF4081;\n  --quant-indicator-rsi: #AA00FF;\n  --quant-indicator-rsi-overbought: #FF5252;\n  --quant-indicator-rsi-oversold: #00E676;\n  --quant-indicator-boll-upper: #FF5252;\n  --quant-indicator-boll-middle: #D4AF37;\n  --quant-indicator-boll-lower: #00E676;\n  --quant-dom-bid: #00E676;\n  --quant-dom-ask: #FF5252;\n  --quant-dom-spread: #FFD700;\n  --quant-dom-imbalance: #9C27B0;\n  --quant-position-unrealized-profit: #00E676;\n  --quant-position-unrealized-loss: #FF5252;\n  --quant-position-realized-profit: #00C853;\n  --quant-position-realized-loss: #D50000;\n  --quant-risk-low: #00E676;\n  --quant-risk-medium: #FFD700;\n  --quant-risk-high: #FF5252;\n  --quant-risk-extreme: #D50000;\n}\n:root {\n  --artdeco-dense-gap-xs: 0.25rem;\n  --artdeco-dense-gap-sm: 0.5rem;\n  --artdeco-dense-gap-md: 0.75rem;\n  --artdeco-dense-padding-xs: 0.25rem;\n  --artdeco-dense-padding-sm: 0.5rem;\n  --artdeco-dense-padding-md: 0.75rem;\n  --artdeco-dense-table-cell-padding: 6px 12px;\n  --artdeco-dense-table-header-padding: 8px 16px;\n  --artdeco-dense-stat-card-height: 48px;\n  --artdeco-dense-button-height: 32px;\n  --artdeco-dense-input-height: 36px;\n}\n:root {\n  --quant-grid-gap: var(--artdeco-dense-gap-sm);\n  --quant-grid-columns: repeat(12, 1fr);\n  --quant-panel-min-height: 200px;\n  --quant-pane\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/artdeco-global.scss"
+                  ]
+                },
+                {
+                  "nodeId": 46,
+                  "parentId": 4,
+                  "backendNodeId": 65,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 47,
+                      "parentId": 46,
+                      "backendNodeId": 66,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": ":root {\n  --artdeco-indicator-macd-positive: #00E676;\n  --artdeco-indicator-macd-negative: #FF5252;\n  --artdeco-indicator-macd-histogram-up: #00E676;\n  --artdeco-indicator-macd-histogram-down: #FF5252;\n  --artdeco-indicator-macd-signal-line: #FFD700;\n  --artdeco-indicator-rsi-overbought: #FF5252;\n  --artdeco-indicator-rsi-oversold: #00E676;\n  --artdeco-indicator-rsi-neutral: #D4AF37;\n  --artdeco-indicator-rsi-range: rgba(212, 175, 55, 0.2);\n  --artdeco-indicator-kdj-golden-cross: #D4AF37;\n  --artdeco-indicator-kdj-death-cross: #FF5252;\n  --artdeco-indicator-kdj-k-line: #4FC3F7;\n  --artdeco-indicator-kdj-d-line: #FFD700;\n  --artdeco-indicator-kdj-j-line: #00E676;\n  --artdeco-indicator-bb-upper: #FF5252;\n  --artdeco-indicator-bb-middle: #D4AF37;\n  --artdeco-indicator-bb-lower: #00E676;\n  --artdeco-indicator-bb-squeeze: #FFD700;\n  --artdeco-indicator-bb-expand: #4FC3F7;\n  --artdeco-indicator-ma-short: #D4AF37;\n  --artdeco-indicator-ma-medium: #4FC3F7;\n  --artdeco-indicator-ma-long: #9C27B0;\n  --artdeco-indicator-ema: #00BCD4;\n  --artdeco-risk-none: #00E676;\n  --artdeco-risk-low: #00C853;\n  --artdeco-risk-medium-low: #64DD17;\n  --artdeco-risk-medium: #FFD700;\n  --artdeco-risk-medium-high: #FFAB00;\n  --artdeco-risk-high: #FF5252;\n  --artdeco-risk-extreme: #8B0000;\n  --artdeco-var-safe: #00E676;\n  --artdeco-var-caution: #FFD700;\n  --artdeco-var-warning: #FF5252;\n  --artdeco-var-danger: #8B0000;\n  --artdeco-volatility-low: #00E676;\n  --artdeco-volatility-normal: #4FC3F7;\n  --artdeco-volatility-high: #FFD700;\n  --artdeco-volatility-extreme: #FF5252;\n  --artdeco-quality-excellent: #00E676;\n  --artdeco-quality-good: #4FC3F7;\n  --artdeco-quality-fair: #FFD700;\n  --artdeco-quality-poor: #FF5252;\n  --artdeco-quality-missing: #888888;\n  --artdeco-freshness-realtime: #D4AF37;\n  --artdeco-freshness-minute: #00E676;\n  --artdeco-freshness-hour: #4FC3F7;\n  --artdeco-freshness-day: #FFD700;\n  --artdeco-freshness-stale: #888888;\n  --artdeco-accuracy-verified: #00E676;\n  --artdeco-accuracy-estimated: #FFD700;\n  --artdeco-accuracy-uncertain: #FF5252;\n  --artdeco-gpu-idle: #888888;\n  --artdeco-gpu-light: #4FC3F7;\n  --artdeco-gpu-normal: #00E676;\n  --artdeco-gpu-busy: #FFD700;\n  --artdeco-gpu-overload: #FF5252;\n  --artdeco-gpu-error: #8B0000;\n  --artdeco-temp-cold: #4FC3F7;\n  --artdeco-temp-normal: #00E676;\n  --artdeco-temp-warm: #FFD700;\n  --artdeco-temp-hot: #FF5252;\n  --artdeco-memory-low: #00E676;\n  --artdeco-memory-medium: #FFD700;\n  --artdeco-memory-high: #FF5252;\n  --artdeco-return-catastrophic: #8B0000;\n  --artdeco-return-terrible: #FF0000;\n  --artdeco-return-negative: #FF5252;\n  --artdeco-return-flat: #888888;\n  --artdeco-return-positive: #00E676;\n  --artdeco-return-good: #4FC3F7;\n  --artdeco-return-excellent: #D4AF37;\n  --artdeco-return-phenomenal: #FFD700;\n  --artdeco-sharpe-poor: #FF5252;\n  --artdeco-sharpe-fair: #FFD700;\n  --artdeco-sharpe-good: #4FC3F7;\n  --artdeco-sharpe-excellent: #00E676;\n  --artdeco-sentiment-extreme-fear: #8B0000;\n  --artdeco-sentiment-fear: #FF5252;\n  --artdeco-sentiment-neutral: #888888;\n  --artdeco-sentiment-greed: #00E676;\n  --artdeco-sentiment-extreme-greed: #D4AF37;\n  --artdeco-strength-weak: #FF5252;\n  --artdeco-strength-neutral: #888888;\n  --artdeco-strength-strong: #00E676;\n  --artdeco-signal-strong-buy: #00E676;\n  --artdeco-signal-buy: #64DD17;\n  --artdeco-signal-hold: #FFD700;\n  --artdeco-signal-sell: #FF5252;\n  --artdeco-signal-strong-sell: #8B0000;\n  --artdeco-confidence-low: #FF5252;\n  --artdeco-confidence-medium: #FFD700;\n  --artdeco-confidence-high: #00E676;\n  --artdeco-liquidity-high: #00E676;\n  --artdeco-liquidity-medium: #FFD700;\n  --artdeco-liquidity-low: #FF5252;\n  --artdeco-liquidity-illiquid: #8B0000;\n  --artdeco-position-long: #00E676;\n  --artdeco-position-short: #FF5252;\n  --artdeco-position-flat: #888888;\n  --artdeco-position-partial: #FFD700;\n  --artdeco-position-profit: #00E676;\n  --artdeco-position-loss: #FF5252;\n  --artdeco-position-breakeven: #888888;\n  --artdeco-order-pending: #FFD700;\n  --artdeco-order-partial: #4FC3F7;\n  --artdeco-order-filled: #00E676;\n  --artdeco-order-cancelled: #888888;\n  --artdeco-order-rejected: #FF5252;\n}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/artdeco-financial.scss"
+                  ]
+                },
+                {
+                  "nodeId": 48,
+                  "parentId": 4,
+                  "backendNodeId": 67,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 49,
+                      "parentId": 48,
+                      "backendNodeId": 68,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n/**\n * \ud83c\udfa8 \u91d1\u878d\u6570\u636e\u7ec8\u7aef\u8bbe\u8ba1\u7cfb\u7edf v2.0\n * \u7f8e\u5b66\u65b9\u5411: Bloomberg Terminal + TradingView + \u73b0\u4ee3Fintech\n * \u6838\u5fc3\u7279\u8d28: \u9ad8\u5bc6\u5ea6\u6570\u636e\u5c55\u793a\u3001\u6df1\u8272\u4e3b\u9898\u3001\u9ad8\u5bf9\u6bd4\u5ea6\u3001\u7cbe\u786e\u7f51\u683c\n */\n/* ========================================\n   1. CSS\u53d8\u91cf\u5b9a\u4e49 - \u8bbe\u8ba1\u4ee4\u724c\n   ======================================== */\n:root {\n  /* \ud83c\udfa8 \u4e3b\u8272\u8c03\u7cfb\u7edf */\n  --fintech-bg-primary: #0a0e27; /* \u6df1\u84dd\u9ed1 - \u4e3b\u80cc\u666f */\n  --fintech-bg-secondary: #131829; /* \u6b21\u7ea7\u80cc\u666f */\n  --fintech-bg-tertiary: #1a1f38; /* \u4e09\u7ea7\u80cc\u666f */\n  --fintech-bg-elevated: #232946; /* \u6d6e\u5c42\u80cc\u666f */\n  /* \ud83c\udf08 \u5f3a\u8c03\u8272\u7cfb\u7edf */\n  --fintech-accent-primary: #1890ff; /* \u79d1\u6280\u84dd - \u4e3b\u5f3a\u8c03 */\n  --fintech-accent-success: #52c41a; /* \u8dcc\u7eff\uff08\u4e2d\u56fd\u4e60\u60ef\uff09 */\n  --fintech-accent-danger: #f5222d; /* \u6da8\u7ea2\uff08\u4e2d\u56fd\u4e60\u60ef\uff09 */\n  --fintech-accent-warning: #faad14; /* \u8b66\u544a\u9ec4 */\n  --fintech-accent-info: #13c2c2; /* \u4fe1\u606f\u9752 */\n  /* \u26ab \u9ed1\u767d\u7070\u5ea6\u7cfb\u7edf\uff0810\u7ea7\u7cbe\u786e\u7070\u5ea6\uff09 */\n  --fintech-gray-1: #ffffff; /* \u7eaf\u767d */\n  --fintech-gray-2: #f0f0f0;\n  --fintech-gray-3: #d9d9d9;\n  --fintech-gray-4: #bfbfbf;\n  --fintech-gray-5: #8c8c8c;\n  --fintech-gray-6: #595959;\n  --fintech-gray-7: #434343;\n  --fintech-gray-8: #262626;\n  --fintech-gray-9: #1f1f1f;\n  --fintech-gray-10: #000000; /* \u7eaf\u9ed1 */\n  /* \ud83d\udccf \u6587\u5b57\u989c\u8272\u7cfb\u7edf */\n  --fintech-text-primary: rgba(255, 255, 255, 0.95);\n  --fintech-text-secondary: rgba(255, 255, 255, 0.75);\n  --fintech-text-tertiary: rgba(255, 255, 255, 0.55);\n  --fintech-text-disabled: rgba(255, 255, 255, 0.35);\n  /* \ud83d\udd32 \u8fb9\u6846\u989c\u8272\u7cfb\u7edf */\n  --fintech-border-light: rgba(255, 255, 255, 0.15);\n  --fintech-border-base: rgba(255, 255, 255, 0.10);\n  --fintech-border-dark: rgba(255, 255, 255, 0.05);\n  /* \ud83c\udf0a \u9634\u5f71\u7cfb\u7edf\uff08\u591a\u5c42\u6b21\u6df1\u5ea6\uff09 */\n  --fintech-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);\n  --fintech-shadow-base: 0 2px 8px 0 rgba(0, 0, 0, 0.4);\n  --fintech-shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.5);\n  --fintech-shadow-lg: 0 8px 24px 0 rgba(0, 0, 0, 0.6);\n  --fintech-shadow-xl: 0 16px 48px 0 rgba(0, 0, 0, 0.7);\n  /* \ud83c\udfaf \u5706\u89d2\u7cfb\u7edf\uff08\u4e13\u4e1a\u5fae\u5706\u89d2\uff09 */\n  --fintech-radius-none: 0;\n  --fintech-radius-sm: 2px;\n  --fintech-radius-base: 4px;\n  --fintech-radius-md: 6px;\n  --fintech-radius-lg: 8px;\n  /* \ud83d\udcd0 \u95f4\u8ddd\u7cfb\u7edf\uff084px\u57fa\u51c6\u7f51\u683c\uff09 */\n  --fintech-space-0: 0;\n  --fintech-space-1: 4px;\n  --fintech-space-2: 8px;\n  --fintech-space-3: 12px;\n  --fintech-space-4: 16px;\n  --fintech-space-5: 20px;\n  --fintech-space-6: 24px;\n  --fintech-space-8: 32px;\n  --fintech-space-10: 40px;\n  --fintech-space-12: 48px;\n  /* \u26a1 \u5b57\u4f53\u7cfb\u7edf */\n  --fintech-font-family-data: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;\n  --fintech-font-family-ui: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\n  --fintech-font-family-number: 'Roboto Mono', 'Courier New', monospace;\n  /* \ud83d\udccf \u5b57\u4f53\u5927\u5c0f */\n  --fintech-font-size-xs: 11px;\n  --fintech-font-size-sm: 12px;\n  --fintech-font-size-base: 13px;\n  --fintech-font-size-md: 14px;\n  --fintech-font-size-lg: 16px;\n  --fintech-font-size-xl: 18px;\n  --fintech-font-size-2xl: 20px;\n  --fintech-font-size-3xl: 24px;\n  /* \ud83d\udd04 \u8fc7\u6e21\u52a8\u753b */\n  --fintech-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);\n  --fintech-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);\n  --fintech-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);\n}\n\n/* ========================================\n   2. \u5168\u5c40\u57fa\u7840\u6837\u5f0f\u91cd\u7f6e\n   ======================================== */\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nhtml,\nbody {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  /* \u6df1\u8272\u4e3b\u9898\u80cc\u666f */\n  background-color: var(--fintech-bg-primary);\n  color: var(--fintech-text-primary);\n  /* \u5b57\u4f53\u7cfb\u7edf */\n  font-family: var(--fintech-font-family-ui);\n  font-size: var(--fintech-font-size-base);\n  line-height: 1.5;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n#app {\n  width: 100%;\n  height: 100%;\n}\n\n/* ========================================\n   3. \u6eda\u52a8\u6761\u6837\u5f0f\uff08\u4e13\u4e1a\u7ec8\u7aef\u98ce\u683c\uff09\n   ======================================== */\n::-webkit-scrollbar {\n  width: 8px;\n  height: 8px;\n}\n\n::-webkit-scrollbar-track {\n  background: var(--fintech-bg-secondary);\n}\n\n::-webkit-scrollbar-thumb {\n  background: var(--fintech-gray-6);\n  border-radius: var(--fintech-radius-sm);\n}\n::-webkit-scrollbar-thumb:hover {\n  background: var(--fintech-gray-5);\n}\n\n::-webkit-scrollbar-corner {\n  background: var(--fintech-bg-secondary);\n}\n\n/* ========================================\n   4. \u6587\u5b57\u6837\u5f0f\uff08\u8bed\u4e49\u5316\uff09\n   ======================================== */\n.fintech-text-primary {\n  color: var(--fintech-text-primary);\n}\n.fintech-text-secondary {\n  color: var(--fintech-text-secondary);\n}\n.fintech-text-tertiary {\n  color: var(--fintech-text-tertiary);\n}\n.fintech-text-disabled {\n  color: var(--fintech-text-disabled);\n}\n.fintech-text {\n  /* \u6da8\u8dcc\u989c\u8272\uff08\u4e2d\u56fd\u4e60\u60ef\uff1a\u7ea2\u6da8\u7eff\u8dcc\uff09 */\n}\n.fintech-text-up {\n  color: var(--fintech-accent-danger);\n  font-weight: 500;\n}\n.fintech-text-down {\n  color: var(--fintech-accent-success);\n  font-weight: 500;\n}\n.fintech-text-flat {\n  color: var(--fintech-text-secondary);\n}\n.fintech-text {\n  /* \u6570\u636e\u5b57\u4f53\uff08\u7b49\u5bbd\u5b57\u4f53\u4f18\u5316\u5bf9\u9f50\uff09 */\n}\n.fintech-text-data {\n  font-family: var(--fintech-font-family-data);\n  font-feature-settings: \"tnum\";\n  letter-spacing: 0.02em;\n}\n\n/* ========================================\n   5. \u80cc\u666f\u6837\u5f0f\n   ======================================== */\n.fintech-bg-primary {\n  background-color: var(--fintech-bg-primary);\n}\n.fintech-bg-secondary {\n  background-color: var(--fintech-bg-secondary);\n}\n.fintech-bg-tertiary {\n  background-color: var(--fintech-bg-tertiary);\n}\n.fintech-bg-elevated {\n  background-color: var(--fintech-bg-elevated);\n}\n\n/* ========================================\n   6. \u5361\u7247\u6837\u5f0f\uff08\u591a\u5c42\u6b21\u6df1\u5ea6\uff09\n   ======================================== */\n.fintech-card {\n  background-color: var(--fintech-bg-secondary);\n  border: 1px solid var(--fintech-border-base);\n  border-radius: var(--fintech-radius-base);\n  box-shadow: var(--fintech-shadow-sm);\n  padding: var(--fintech-space-4);\n}\n.fintech-card.elevated {\n  background-color: var(--fintech-bg-elevated);\n  box-shadow: var(--fintech-shadow-base);\n}\n.fintech-card.interactive {\n  transition: all var(--fintech-transition-base);\n}\n.fintech-card.interactive:hover {\n  box-shadow: var(--fintech-shadow-md);\n  transform: translateY(-1px);\n}\n\n/* ========================================\n   7. \u6309\u94ae\u6837\u5f0f\uff08\u4e13\u4e1a\u7ec8\u7aef\u98ce\u683c\uff09\n   ======================================== */\n.fintech-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--fintech-space-2);\n  padding: var(--fintech-space-2) var(--fintech-space-4);\n  font-size: var(--fintech-font-size-base);\n  font-weight: 400;\n  border: 1px solid var(--fintech-border-base);\n  border-radius: var(--fintech-radius-sm);\n  background-color: var(--fintech-bg-tertiary);\n  color: var(--fintech-text-primary);\n  cursor: pointer;\n  transition: all var(--fintech-transition-fast);\n  user-select: none;\n}\n.fintech-btn:hover {\n  background-color: var(--fintech-bg-elevated);\n  border-color: var(--fintech-border-light);\n}\n.fintech-btn:active {\n  transform: translateY(1px);\n}\n.fintech-btn.primary {\n  background-color: var(--fintech-accent-primary);\n  border-color: var(--fintech-accent-primary);\n  color: #fff;\n}\n.fintech-btn.primary:hover {\n  background-color: #40a9ff;\n  border-color: #40a9ff;\n}\n.fintech-btn.danger {\n  background-color: var(--fintech-accent-danger);\n  border-color: var(--fintech-accent-danger);\n  color: #fff;\n}\n.fintech-btn.danger:hover {\n  background-color: #ff4d4f;\n  border-color: #ff4d4f;\n}\n.fintech-btn.success {\n  background-color: var(--fintech-accent-success);\n  border-color: var(--fintech-accent-success);\n  color: #fff;\n}\n.fintech-btn.success:hover {\n  background-color: #73d13d;\n  border-color: #73d13d;\n}\n\n/* ========================================\n   8. \u6570\u636e\u8868\u683c\u6837\u5f0f\uff08\u9ad8\u5bc6\u5ea6\u5c55\u793a\uff09\n   ======================================== */\n.fintech-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: var(--fintech-font-size-sm);\n  font-family: var(--fintech-font-family-data);\n}\n.fintech-table th {\n  padding: var(--fintech-space-2) var(--fintech-space-3);\n  text-align: left;\n  font-weight: 500;\n  color: var(--fintech-text-secondary);\n  border-bottom: 1px solid var(--fintech-border-base);\n  background-color: var(--fintech-bg-tertiary);\n  white-space: nowrap;\n}\n.fintech-table td {\n  padding: var(--fintech-space-2) var(--fintech-space-3);\n  color: var(--fintech-text-primary);\n  border-bottom: 1px solid var(--fintech-border-dark);\n}\n.fintech-table tr {\n  transition: background-color var(--fintech-transition-fast);\n}\n.fintech-table tr:hover {\n  background-color: var(--fintech-bg-secondary);\n}\n\n/* ========================================\n   9. \u5fae\u52a8\u6548\u7cfb\u7edf\n   ======================================== */\n@keyframes fintech-fade-in {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@keyframes fintech-slide-up {\n  from {\n    opacity: 0;\n    transform: translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n.fintech-animate-fade-in {\n  animation: fintech-fade-in var(--fintech-transition-slow) ease-out;\n}\n.fintech-animate-slide-up {\n  animation: fintech-slide-up var(--fintech-transition-slow) ease-out;\n}\n\n/* ========================================\n   10. \u54cd\u5e94\u5f0f\u5de5\u5177\u7c7b\n   ======================================== */\n/* \u4ec5\u684c\u9762\u7aef\uff08\u9879\u76ee\u660e\u786e\u4e0d\u652f\u6301\u79fb\u52a8\u7aef\uff09 */\n@media (max-width: 1280px) {\n  :root {\n    --fintech-font-size-base: 12px;\n  }\n}\n/* \u9ad8\u5206\u8fa8\u7387\u4f18\u5316 */\n@media (min-width: 1920px) {\n  :root {\n    --fintech-font-size-base: 14px;\n  }\n}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/fintech-design-system.scss"
+                  ]
+                },
+                {
+                  "nodeId": 50,
+                  "parentId": 4,
+                  "backendNodeId": 69,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 51,
+                      "parentId": 50,
+                      "backendNodeId": 70,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "/**\n * Element Plus Theme Override using Design Tokens\n *\n * Maps Bloomberg Terminal Design Tokens to Element Plus CSS variables\n * Ensures consistent styling across custom and Element Plus components\n *\n * @version 1.0\n * @author Claude Code (Main CLI)\n * @date 2026-01-10\n */\n/**\n * Bloomberg Terminal Design Token System\n *\n * Complete CSS variable system for MyStocks professional trading interface\n * Based on Bloomberg Terminal/Wind financial terminal aesthetics\n *\n * @version 1.0\n * @author Claude Code (Main CLI)\n * @date 2026-01-09\n */\n:root {\n  --color-bg-primary: #1a1a1a;\n  --color-bg-secondary: #2d2d2d;\n  --color-bg-tertiary: #3a3a3a;\n  --color-bg-elevated: #4a4a4a;\n  --color-text-primary: #ffffff;\n  --color-text-secondary: #d0d0d0;\n  --color-text-tertiary: #a0a0a0;\n  --color-text-disabled: #505050;\n  --color-accent: #D4AF37;\n  --color-accent-hover: #E5C349;\n  --color-accent-active: #C9A32F;\n  --color-success: #00d924;\n  --color-warning: #ffc107;\n  --color-danger: #ff4757;\n  --color-info: #2196f3;\n  --color-stock-up: #ff4757;\n  --color-stock-down: #00d924;\n  --color-stock-flat: #b0b0b0;\n  --color-border: #404040;\n  --color-border-light: #505050;\n  --color-border-dark: #303030;\n  --color-border-hover: #D4AF37;\n  --color-accent-alpha-90: rgba(212, 175, 55, 0.1);\n  --color-accent-alpha-80: rgba(212, 175, 55, 0.2);\n  --color-accent-alpha-70: rgba(212, 175, 55, 0.3);\n  --color-accent-alpha-50: rgba(212, 175, 55, 0.5);\n  --color-stock-up-alpha-90: rgba(255, 71, 87, 0.1);\n  --color-stock-up-alpha-80: rgba(255, 71, 87, 0.2);\n  --color-stock-down-alpha-90: rgba(0, 217, 36, 0.1);\n  --color-stock-down-alpha-80: rgba(0, 217, 36, 0.2);\n  --color-bg-elevated-alpha-80: rgba(74, 74, 74, 0.2);\n  --color-bg-elevated-hover: #4e4e4e;\n  --spacing-xs: 4px;\n  --spacing-sm: 8px;\n  --spacing-md: 16px;\n  --spacing-lg: 24px;\n  --spacing-xl: 32px;\n  --spacing-2xl: 48px;\n  --spacing-3xl: 64px;\n  --font-family-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;\n  --font-family-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n  --font-family-numbers: 'Roboto Mono', 'Consolas', monospace;\n  --font-size-xs: 12px;\n  --font-size-sm: 14px;\n  --font-size-base: 16px;\n  --font-size-lg: 18px;\n  --font-size-xl: 20px;\n  --font-size-2xl: 24px;\n  --font-size-3xl: 30px;\n  --font-weight-light: 300;\n  --font-weight-normal: 400;\n  --font-weight-medium: 500;\n  --font-weight-semibold: 600;\n  --font-weight-bold: 700;\n  --line-height-tight: 1.25;\n  --line-height-normal: 1.5;\n  --line-height-relaxed: 1.75;\n  --radius-none: 0;\n  --radius-sm: 1px;\n  --radius-md: 2px;\n  --radius-lg: 2px;\n  --radius-xl: 2px;\n  --radius-full: 9999px;\n  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);\n  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);\n  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);\n  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);\n  --transition-instant: 100ms cubic-bezier(0.4, 0, 0.2, 1);\n  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);\n  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);\n  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);\n  --z-dropdown: 1000;\n  --z-sticky: 1020;\n  --z-fixed: 1030;\n  --z-modal-backdrop: 1040;\n  --z-modal: 1050;\n  --z-popover: 1060;\n  --z-tooltip: 1070;\n  --chart-up-color: var(--color-stock-up);\n  --chart-down-color: var(--color-stock-down);\n  --chart-up-border-color: #ff0000;\n  --chart-down-border-color: #00ff00;\n  --chart-up-wick-color: var(--chart-up-color);\n  --chart-down-wick-color: var(--chart-down-color);\n  --chart-up-fill-color: rgba(255, 71, 87, 0.2);\n  --chart-down-fill-color: rgba(0, 217, 36, 0.2);\n  --chart-grid-color: rgba(255, 255, 255, 0.1);\n  --chart-axis-color: rgba(255, 255, 255, 0.3);\n  --chart-crosshair-color: rgba(255, 255, 255, 0.5);\n  --chart-tooltip-bg: rgba(26, 26, 26, 0.95);\n  --chart-tooltip-border: rgba(255, 255, 255, 0.1);\n  --chart-indicator-ma: #f39c12;\n  --chart-indicator-ema: #3498db;\n  --chart-indicator-boll: #9b59b6;\n  --chart-indicator-macd: #e74c3c;\n  --chart-indicator-rsi: #1abc9c;\n  --chart-indicator-kdj: #e67e22;\n  --button-height-sm: 32px;\n  --button-height-md: 40px;\n  --button-height-lg: 48px;\n  --button-padding-sm: var(--spacing-xs) var(--spacing-sm);\n  --button-padding-md: var(--spacing-sm) var(--spacing-md);\n  --button-padding-lg: var(--spacing-md) var(--spacing-lg);\n  --input-height: 40px;\n  --input-padding: var(--spacing-sm) var(--spacing-md);\n  --input-border-width: 1px;\n  --input-border-radius: var(--radius-sm);\n  --card-padding: var(--spacing-md);\n  --card-border-radius: var(--radius-md);\n  --card-shadow: var(--shadow-sm);\n  --table-header-bg: var(--color-bg-secondary);\n  --table-row-hover-bg: var(--color-bg-tertiary);\n  --table-border-color: var(--color-border);\n  --breakpoint-sm: 1280px;\n  --breakpoint-md: 1440px;\n  --breakpoint-lg: 1920px;\n  --breakpoint-xl: 2560px;\n}\n:root {\n  --el-color-primary: var(--color-accent);\n  --el-color-primary-light-3: var(--color-accent-hover);\n  --el-color-primary-light-5: color.adjust(var(--color-accent), $lightness: 20%);\n  --el-color-primary-light-7: color.adjust(var(--color-accent), $lightness: 30%);\n  --el-color-primary-light-8: color.adjust(var(--color-accent), $lightness: 35%);\n  --el-color-primary-light-9: color.adjust(var(--color-accent), $lightness: 40%);\n  --el-color-primary-dark-2: var(--color-accent-active);\n  --el-color-success: var(--color-success);\n  --el-color-success-light-3: color.adjust(var(--color-success), $lightness: 20%);\n  --el-color-success-light-5: color.adjust(var(--color-success), $lightness: 30%);\n  --el-color-success-light-7: color.adjust(var(--color-success), $lightness: 40%);\n  --el-color-success-light-8: color.adjust(var(--color-success), $lightness: 45%);\n  --el-color-success-light-9: color.adjust(var(--color-success), $lightness: 50%);\n  --el-color-success-dark-2: color.adjust(var(--color-success), $lightness: -10%);\n  --el-color-warning: var(--color-warning);\n  --el-color-warning-light-3: color.adjust(var(--color-warning), $lightness: 20%);\n  --el-color-warning-light-5: color.adjust(var(--color-warning), $lightness: 30%);\n  --el-color-warning-light-7: color.adjust(var(--color-warning), $lightness: 40%);\n  --el-color-warning-light-8: color.adjust(var(--color-warning), $lightness: 45%);\n  --el-color-warning-light-9: color.adjust(var(--color-warning), $lightness: 50%);\n  --el-color-warning-dark-2: color.adjust(var(--color-warning), $lightness: -10%);\n  --el-color-danger: var(--color-danger);\n  --el-color-danger-light-3: color.adjust(var(--color-danger), $lightness: 20%);\n  --el-color-danger-light-5: color.adjust(var(--color-danger), $lightness: 30%);\n  --el-color-danger-light-7: color.adjust(var(--color-danger), $lightness: 40%);\n  --el-color-danger-light-8: color.adjust(var(--color-danger), $lightness: 45%);\n  --el-color-danger-light-9: color.adjust(var(--color-danger), $lightness: 50%);\n  --el-color-danger-dark-2: color.adjust(var(--color-danger), $lightness: -10%);\n  --el-color-error: var(--color-danger);\n  --el-color-error-light-3: color.adjust(var(--color-danger), $lightness: 20%);\n  --el-color-error-light-5: color.adjust(var(--color-danger), $lightness: 30%);\n  --el-color-error-light-7: color.adjust(var(--color-danger), $lightness: 40%);\n  --el-color-error-light-8: color.adjust(var(--color-danger), $lightness: 45%);\n  --el-color-error-light-9: color.adjust(var(--color-danger), $lightness: 50%);\n  --el-color-error-dark-2: color.adjust(var(--color-danger), $lightness: -10%);\n  --el-color-info: var(--color-info);\n  --el-color-info-light-3: color.adjust(var(--color-info), $lightness: 20%);\n  --el-color-info-light-5: color.adjust(var(--color-info), $lightness: 30%);\n  --el-color-info-light-7: color.adjust(var(--color-info), $lightness: 40%);\n  --el-color-info-light-8: color.adjust(var(--color-info), $lightness: 45%);\n  --el-color-info-light-9: color.adjust(var(--color-info), $lightness: 50%);\n  --el-color-info-dark-2: color.adjust(var(--color-info), $lightness: -10%);\n  --el-bg-color: var(--color-bg-primary);\n  --el-bg-color-page: var(--color-bg-primary);\n  --el-bg-color-overlay: #000000;\n  --el-text-color-primary: var(--color-text-primary);\n  --el-text-color-regular: var(--color-text-secondary);\n  --el-text-color-secondary: var(--color-text-tertiary);\n  --el-text-color-placeholder: var(--color-text-disabled);\n  --el-text-color-disabled: var(--color-text-disabled);\n  --el-border-color: var(--color-border);\n  --el-border-color-light: var(--color-border-light);\n  --el-border-color-lighter: color.adjust(var(--color-border), $lightness: 10%);\n  --el-border-color-extra-light: color.adjust(var(--color-border), $lightness: 20%);\n  --el-border-color-dark: var(--color-border-dark);\n  --el-border-color-darker: color.adjust(var(--color-border-dark), $lightness: -10%);\n  --el-fill-color: var(--color-bg-tertiary);\n  --el-fill-color-light: var(--color-bg-elevated);\n  --el-fill-color-lighter: color.adjust(var(--color-bg-tertiary), $lightness: 10%);\n  --el-fill-color-extra-light: color.adjust(var(--color-bg-tertiary), $lightness: 20%);\n  --el-fill-color-dark: var(--color-bg-secondary);\n  --el-fill-color-darker: var(--color-bg-primary);\n  --el-font-size-extra-small: var(--font-size-xs);\n  --el-font-size-small: var(--font-size-sm);\n  --el-font-size-base: var(--font-size-base);\n  --el-font-size-medium: var(--font-size-lg);\n  --el-font-size-large: var(--font-size-xl);\n  --el-font-size-extra-large: var(--font-size-2xl);\n  --el-font-family: var(--font-family-sans);\n  --el-font-family-primary: var(--font-family-sans);\n  --el-font-family-mono: var(--font-family-mono);\n  --el-border-radius-base: 1px;\n  --el-border-radius-small: 1px;\n  --el-border-radius-round: 2px;\n  --el-border-radius-circle: 9999px;\n  --el-box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.3);\n  --el-box-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.5);\n  --el-box-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.2);\n  --el-component-size-small: 28px;\n  --el-component-size-base: 32px;\n  --el-component-size-large: 36px\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/element-plus-override.scss"
+                  ]
+                },
+                {
+                  "nodeId": 52,
+                  "parentId": 4,
+                  "backendNodeId": 71,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 53,
+                      "parentId": 52,
+                      "backendNodeId": 72,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n/**\n * MyStocks Visual Optimization - Unified Component Styles\n * MyStocks \u7edf\u4e00\u89c6\u89c9\u4f18\u5316 - \u7ec4\u4ef6\u6837\u5f0f\u89c4\u8303\n *\n * Purpose: \u89e3\u51b33\u5927\u6838\u5fc3\u89c6\u89c9\u95ee\u9898\n *          1. \u5361\u7247\u6bd4\u4f8b\u5931\u8c03 (Card proportion inconsistency)\n *          2. \u6309\u94ae\u6587\u5b57\u5bf9\u9f50 (Button text misalignment)\n *          3. \u7ec4\u4ef6\u95f4\u8ddd\u6df7\u4e71 (Component spacing chaos)\n *\n * Version: 2.0\n * Created: 2026-01-08\n * Priority: P0 - Button Alignment > P1 - Card Proportion > P2 - Spacing\n *\n * Usage: \u5728 main.js \u4e2d\u5bfc\u5165\u6b64\u6587\u4ef6\n *        import '@/styles/visual-optimization.scss'\n *\n * ============================================\n * \u6838\u5fc3\u539f\u5219 (Core Principles)\n * ============================================\n * 1. 8px Grid System - \u6240\u6709\u95f4\u8ddd\u5fc5\u987b\u662f8\u7684\u500d\u6570\n * 2. \u6587\u5b57\u5fc5\u987b\u6c34\u5e73\u5c45\u4e2d+\u5782\u76f4\u5c45\u4e2d\n * 3. \u5361\u7247\u5706\u89d2\u3001\u8fb9\u6846\u3001\u9634\u5f71\u7edf\u4e00\n * 4. \u54cd\u5e94\u5f0f\u9002\u914d 1366x768 / 1920x1080\n */\n/* ============================================\n   1. \u6309\u94ae\u6587\u5b57\u5bf9\u9f50\u89c4\u8303 (P0 - \u6700\u9ad8\u4f18\u5148\u7ea7)\n   Button Text Alignment Specification\n   ============================================ */\n/**\n * \u95ee\u9898: \u6309\u94ae\u6587\u5b57\u504f\u79fb\uff0cpadding\u6df7\u4e71\n * \u89e3\u51b3: \u5f3a\u5236\u6240\u6709\u6309\u94ae\u4f7f\u7528\u7edf\u4e00\u7684padding\u548c\u5bf9\u9f50\u65b9\u5f0f\n */\nbutton,\n.el-button,\n.btn,\n[class*=btn-],\n[class*=button] {\n  display: inline-flex !important;\n  align-items: center !important;\n  justify-content: center !important;\n  text-align: center !important;\n  line-height: 1 !important;\n  padding: 0 var(--spacing-md) !important;\n  height: 40px !important;\n  min-width: 100px !important;\n  font-size: var(--font-size-base) !important;\n  font-weight: var(--font-weight-normal) !important;\n  border-radius: var(--radius-md) !important;\n  transition: all var(--transition-base) !important;\n  box-sizing: border-box !important;\n}\n\n.el-button--small,\n.btn-small,\n[class*=btn-sm],\n[class*=button-small] {\n  height: 32px !important;\n  padding: 0 var(--spacing-sm) !important;\n  min-width: 80px !important;\n  font-size: var(--font-size-sm) !important;\n}\n\n.el-button--large,\n.btn-large,\n[class*=btn-lg],\n[class*=button-large] {\n  height: 48px !important;\n  padding: 0 var(--spacing-xl) !important;\n  min-width: 140px !important;\n  font-size: var(--font-size-md) !important;\n}\n\n.el-button.is-circle,\n.btn-icon,\n[class*=btn-icon] {\n  width: 36px !important;\n  height: 36px !important;\n  padding: 0 !important;\n  min-width: auto !important;\n  border-radius: var(--radius-round) !important;\n}\n.el-button.is-circle svg,\n.btn-icon svg,\n[class*=btn-icon] svg {\n  width: 18px !important;\n  height: 18px !important;\n}\n\n.el-button-group {\n  display: inline-flex !important;\n  gap: var(--spacing-xs) !important;\n}\n.el-button-group .el-button {\n  margin: 0 !important;\n}\n\n.el-button .el-icon,\n.btn .btn-icon {\n  margin-right: var(--spacing-sm) !important;\n}\n.el-button .el-icon + span,\n.btn .btn-icon + span {\n  margin-left: var(--spacing-sm) !important;\n}\n\n/* ============================================\n   2. \u5361\u7247\u6bd4\u4f8b\u89c4\u8303 (P1 - \u6b21\u4f18\u5148\u7ea7)\n   Card Proportion Specification\n   ============================================ */\n/**\n * \u95ee\u9898: \u5361\u7247padding\u3001\u5706\u89d2\u3001\u8fb9\u6846\u4e0d\u7edf\u4e00\n * \u89e3\u51b3: \u5b9a\u4e494\u79cd\u6807\u51c6\u5361\u7247\u7c7b\u578b\uff0c\u5f3a\u5236\u7edf\u4e00\u6837\u5f0f\n */\n.el-card {\n  background-color: var(--bg-card) !important;\n  border: 1px solid var(--border-base) !important;\n  border-radius: var(--radius-lg) !important;\n  box-shadow: var(--shadow-1) !important;\n}\n.el-card .el-card__header {\n  background-color: var(--bg-secondary) !important;\n  border-bottom: 1px solid var(--border-base) !important;\n  padding: var(--spacing-md) !important;\n  color: var(--text-primary) !important;\n  font-weight: var(--font-weight-semibold) !important;\n  font-size: var(--font-size-lg) !important;\n}\n.el-card .el-card__body {\n  padding: var(--spacing-md) !important;\n  color: var(--text-secondary) !important;\n}\n.el-card:hover {\n  border-color: var(--border-light) !important;\n  box-shadow: var(--shadow-2) !important;\n}\n\n.card-data,\n.stat-card,\n[class*=stat-card],\n[class*=data-card] {\n  width: 100%;\n  min-height: 120px;\n  padding: var(--spacing-md) !important;\n  border-radius: var(--radius-lg) !important;\n  border: 1px solid var(--border-base) !important;\n  box-shadow: var(--shadow-1) !important;\n  background: var(--bg-card) !important;\n  transition: all var(--transition-base) !important;\n}\n.card-data:hover,\n.stat-card:hover,\n[class*=stat-card]:hover,\n[class*=data-card]:hover {\n  border-color: var(--border-light) !important;\n  box-shadow: var(--shadow-2) !important;\n}\n\n.card-content,\n[class*=content-card],\n[class*=chart-card],\n[class*=table-card] {\n  width: 100%;\n  min-height: 300px;\n  padding: var(--spacing-lg) !important;\n  border-radius: var(--radius-lg) !important;\n  border: 1px solid var(--border-base) !important;\n  box-shadow: var(--shadow-1) !important;\n  background: var(--bg-card) !important;\n}\n\n.card-action,\n[class*=action-card],\n[class*=quick-card] {\n  width: 100%;\n  min-height: 80px;\n  aspect-ratio: 6/1;\n  padding: var(--spacing-sm) var(--spacing-md) !important;\n  border-radius: var(--radius-md) !important;\n  border: 1px solid var(--border-base) !important;\n  box-shadow: var(--shadow-1) !important;\n  background: var(--bg-card) !important;\n  cursor: pointer !important;\n}\n.card-action:hover,\n[class*=action-card]:hover,\n[class*=quick-card]:hover {\n  border-color: var(--color-primary) !important;\n  box-shadow: var(--shadow-glow) !important;\n}\n\n@media (max-width: 1366px) {\n  .card-data,\n  .stat-card {\n    min-height: 100px !important;\n    padding: var(--spacing-sm) !important;\n  }\n  .card-content {\n    min-height: 250px !important;\n    padding: var(--spacing-md) !important;\n  }\n}\n/* ============================================\n   3. \u7ec4\u4ef6\u95f4\u8ddd\u89c4\u8303 (P2 - \u6807\u51c6\u4f18\u5148\u7ea7)\n   Component Spacing Specification\n   ============================================ */\n/**\n * \u95ee\u9898: \u95f4\u8ddd\u6df7\u4e71\uff0c\u4e0d\u9075\u5faa8px\u7f51\u683c\u7cfb\u7edf\n * \u89e3\u51b3: \u5b9a\u4e49\u95f4\u8ddd\u5c42\u7ea7\uff0c\u5f3a\u5236\u4f7f\u75288\u7684\u500d\u6570\n */\n.page-container,\n.dashboard-container,\n.market-container,\n.analysis-container,\n[class*=-container] {\n  padding: var(--spacing-lg) !important;\n}\n@media (max-width: 1366px) {\n  .page-container,\n  .dashboard-container,\n  .market-container,\n  .analysis-container,\n  [class*=-container] {\n    padding: var(--spacing-md) !important;\n  }\n}\n\n.stats-grid,\n.cards-grid,\n.card-grid,\n[class*=grid] {\n  display: grid !important;\n  gap: var(--spacing-md) !important;\n}\n.stats-grid.flex-grid,\n.cards-grid.flex-grid,\n.card-grid.flex-grid,\n[class*=grid].flex-grid {\n  display: flex !important;\n  flex-wrap: wrap !important;\n}\n.stats-grid.flex-grid > *,\n.cards-grid.flex-grid > *,\n.card-grid.flex-grid > *,\n[class*=grid].flex-grid > * {\n  margin-right: var(--spacing-md) !important;\n  margin-bottom: var(--spacing-md) !important;\n}\n\n.page-header,\n.section-header,\n[class*=-header] {\n  margin-bottom: var(--spacing-xl) !important;\n}\n.page-header.compact,\n.section-header.compact,\n[class*=-header].compact {\n  margin-bottom: var(--spacing-lg) !important;\n}\n\n.module-section + .module-section,\n.module-section + .content-section,\n.module-section + [class*=-section],\n.content-section + .module-section,\n.content-section + .content-section,\n.content-section + [class*=-section],\n[class*=-section] + .module-section,\n[class*=-section] + .content-section,\n[class*=-section] + [class*=-section] {\n  margin-top: var(--spacing-xxl) !important;\n}\n\n.form-group .el-form-item,\n.el-form .el-form-item {\n  margin-bottom: var(--spacing-md) !important;\n}\n.form-group .form-label,\n.form-group .el-form-item__label,\n.el-form .form-label,\n.el-form .el-form-item__label {\n  margin-bottom: var(--spacing-sm) !important;\n}\n\n.el-table {\n  margin-bottom: var(--spacing-lg) !important;\n}\n.el-table th,\n.el-table td {\n  padding: var(--spacing-sm) var(--spacing-md) !important;\n}\n\n.el-pagination {\n  margin-top: var(--spacing-md) !important;\n}\n\n.card-actions,\n.button-group,\n[class*=-actions] {\n  display: flex !important;\n  gap: var(--spacing-sm) !important;\n  margin-top: var(--spacing-md) !important;\n}\n\n.tab-content,\n.el-tab-pane {\n  padding: var(--spacing-md) 0 !important;\n}\n\n/* ============================================\n   4. \u95f4\u8ddd\u5de5\u5177\u7c7b (Spacing Utilities)\n   ============================================ */\n.m-0 {\n  margin: 0 !important;\n}\n\n.m-1 {\n  margin: var(--spacing-xs) !important;\n}\n\n.m-2 {\n  margin: var(--spacing-sm) !important;\n}\n\n.m-3 {\n  margin: var(--spacing-md) !important;\n}\n\n.m-4 {\n  margin: var(--spacing-lg) !important;\n}\n\n.m-5 {\n  margin: var(--spacing-xl) !important;\n}\n\n.m-6 {\n  margin: var(--spacing-xxl) !important;\n}\n\n.mx-0 {\n  margin-left: 0 !important;\n  margin-right: 0 !important;\n}\n\n.mx-1 {\n  margin-left: var(--spacing-xs) !important;\n  margin-right: var(--spacing-xs) !important;\n}\n\n.mx-2 {\n  margin-left: var(--spacing-sm) !important;\n  margin-right: var(--spacing-sm) !important;\n}\n\n.mx-3 {\n  margin-left: var(--spacing-md) !important;\n  margin-right: var(--spacing-md) !important;\n}\n\n.my-0 {\n  margin-top: 0 !important;\n  margin-bottom: 0 !important;\n}\n\n.my-1 {\n  margin-top: var(--spacing-xs) !important;\n  margin-bottom: var(--spacing-xs) !important;\n}\n\n.my-2 {\n  margin-top: var(--spacing-sm) !important;\n  margin-bottom: var(--spacing-sm) !important;\n}\n\n.my-3 {\n  margin-top: var(--spacing-md) !important;\n  margin-bottom: var(--spacing-md) !important;\n}\n\n.mt-0 {\n  margin-top: 0 !important;\n}\n\n.mt-1 {\n  margin-top: var(--spacing-xs) !important;\n}\n\n.mt-2 {\n  margin-top: var(--spacing-sm) !important;\n}\n\n.mt-3 {\n  margin-top: var(--spacing-md) !important;\n}\n\n.mt-4 {\n  margin-top: var(--spacing-lg) !important;\n}\n\n.mt-5 {\n  margin-top: var(--spacing-xl) !important;\n}\n\n.mb-0 {\n  margin-bottom: 0 !important;\n}\n\n.mb-1 {\n  margin-bottom: var(--spacing-xs) !important;\n}\n\n.mb-2 {\n  margin-bottom: var(--spacing-sm) !important;\n}\n\n.mb-3 {\n  margin-bottom: var(--spacing-md) !important;\n}\n\n.mb-4 {\n  margin-bottom: var(--spacing-lg) !important;\n}\n\n.mb-5 {\n  margin-bottom: var(--spacing-xl) !important;\n}\n\n.p-0 {\n  padding: 0 !important;\n}\n\n.p-1 {\n  padding: var(--spacing-xs) !important;\n}\n\n.p-2 {\n  padding: var(--spacing-sm) !important;\n}\n\n.p-3 {\n  padding: var(--spacing-md) !important;\n}\n\n.p-4 {\n  padding: var(--spacing-lg) !important;\n}\n\n.p-5 {\n  padding: var(--spacing-xl) !important;\n}\n\n.px-0 {\n  padding-left: 0 !important;\n  padding-right: 0 !important;\n}\n\n.px-1 {\n  padding-left: var(--spacing-xs) !important;\n  padding-right: var(--spacing-xs) !important;\n}\n\n.px-2 {\n  padding-left: var(--spac\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/visual-optimization.scss"
+                  ]
+                },
+                {
+                  "nodeId": 54,
+                  "parentId": 4,
+                  "backendNodeId": 73,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 55,
+                      "parentId": 54,
+                      "backendNodeId": 74,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n/**\n * MyStocks Professional Fintech UI Optimization\n * MyStocks \u4e13\u4e1a\u91d1\u878d\u7ec8\u7aef\u754c\u9762\u4f18\u5316\n *\n * \u57fa\u4e8e UI/UX Pro Max \u6700\u4f73\u5b9e\u8df5\n * Design Philosophy: Bloomberg Terminal + Modern Trading Platform\n *\n * \u6838\u5fc3\u6539\u8fdb:\n * 1. OLED-optimized dark colors\n * 2. Data-dense layout system\n * 3. Professional typography\n * 4. Enhanced visual hierarchy\n * 5. Micro-interactions & animations\n *\n * Author: Claude (UI/UX Pro Max)\n * Created: 2026-01-08\n */\n/* ============================================\n   PRO FINTECH COLOR SYSTEM\n   \u4e13\u4e1a\u91d1\u878d\u914d\u8272\u7cfb\u7edf\n   ============================================ */\n:root {\n  /* ------------------------------------------\n     OLED-Optimized Background Colors\n     OLED\u4f18\u5316\u7684\u6df1\u8272\u80cc\u666f (\u66f4\u6df1\u7684\u7eaf\u9ed1)\n     ------------------------------------------ */\n  --bg-primary: #000000;\n  --bg-secondary: #0A0A0A;\n  --bg-card: #0F1115;\n  --bg-elevated: #14171C;\n  --bg-hover: #1A1D24;\n  --bg-active: #22262E;\n  --bg-overlay: rgba(0, 0, 0, 0.90);\n  /* ------------------------------------------\n     A-Share Market Colors (CRITICAL - \u4fdd\u6301\u4e0d\u53d8)\n     A\u80a1\u5e02\u573a\u989c\u8272 - \u7ea2\u6da8\u7eff\u8dcc\n     ------------------------------------------ */\n  --color-up: #FF3B30;\n  --color-up-bg: rgba(255, 59, 48, 0.20);\n  --color-up-hover: #FF5252;\n  --color-down: #00E676;\n  --color-down-bg: rgba(0, 230, 118, 0.20);\n  --color-down-hover: #00FA9A;\n  --color-flat: #989B9E;\n  --color-flat-bg: rgba(152, 155, 158, 0.15);\n  /* ------------------------------------------\n     Professional Accent Colors\n     \u4e13\u4e1a\u5f3a\u8c03\u8272 - \u4f18\u5316\u5bf9\u6bd4\u5ea6\n     ------------------------------------------ */\n  --color-primary: #0080FF;\n  --color-primary-hover: #3395FF;\n  --color-primary-active: #0066CC;\n  --color-success: #22C55E;\n  --color-warning: #F59E0B;\n  --color-error: #EF4444;\n  --color-info: #06B6D4;\n  /* ------------------------------------------\n     Text Colors (\u4f18\u5316\u5bf9\u6bd4\u5ea6)\n     \u6587\u672c\u989c\u8272 - \u7b26\u5408WCAG AAA\u6807\u51c6\n     ------------------------------------------ */\n  --text-primary: #F8FAFC;\n  --text-secondary: #CBD5E0;\n  --text-tertiary: #94A3B8;\n  --text-muted: #64748B;\n  --text-inverted: #FFFFFF;\n  /* ------------------------------------------\n     Border & Divider Colors\n     \u8fb9\u6846\u548c\u5206\u5272\u7ebf\u989c\u8272\n     ------------------------------------------ */\n  --border-default: #1E293B;\n  --border-light: #334155;\n  --border-accent: #0080FF;\n  --border-divider: #1E293B;\n  /* ------------------------------------------\n     Data-Dense Spacing System\n     \u6570\u636e\u5bc6\u96c6\u578b\u95f4\u8ddd\u7cfb\u7edf (6px\u57fa\u7840\u5355\u4f4d)\n     \u66f4\u7d27\u51d1\u7684\u5e03\u5c40\uff0c\u9002\u5408\u6570\u636e\u5bc6\u96c6\u578b\u5e94\u7528\n     ------------------------------------------ */\n  --spacing-xs: 3px;\n  --spacing-sm: 6px;\n  --spacing-md: 12px;\n  --spacing-lg: 18px;\n  --spacing-xl: 24px;\n  --spacing-xxl: 36px;\n  /* ------------------------------------------\n     Professional Typography\n     \u4e13\u4e1a\u5b57\u4f53\u7cfb\u7edf\n     ------------------------------------------ */\n  --font-family-base: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  --font-family-mono: 'Fira Code', 'Roboto Mono', 'SF Mono', 'Monaco', 'Courier New', monospace;\n  --font-size-xs: 11px;\n  --font-size-sm: 12px;\n  --font-size-base: 13px;\n  --font-size-md: 14px;\n  --font-size-lg: 16px;\n  --font-size-xl: 20px;\n  --font-size-2xl: 24px;\n  --font-weight-light: 300;\n  --font-weight-normal: 400;\n  --font-weight-medium: 500;\n  --font-weight-semibold: 600;\n  --font-weight-bold: 700;\n  --line-height-tight: 1.25;\n  --line-height-normal: 1.5;\n  --line-height-relaxed: 1.75;\n  /* ------------------------------------------\n     Shadows & Elevation\n     \u9634\u5f71\u548c\u5c42\u6b21 (\u5fae\u5999\u7684\u4e13\u4e1a\u611f)\n     ------------------------------------------ */\n  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);\n  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);\n  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);\n  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);\n  --shadow-glow-primary: 0 0 20px rgba(0, 128, 255, 0.3);\n  --shadow-glow-success: 0 0 20px rgba(34, 197, 94, 0.3);\n  --shadow-glow-error: 0 0 20px rgba(239, 68, 68, 0.3);\n  /* ------------------------------------------\n     Border Radius\n     \u5706\u89d2 - \u66f4\u9510\u5229\u7684\u91d1\u878d\u7ec8\u7aef\u98ce\u683c\n     ------------------------------------------ */\n  --radius-sm: 2px;\n  --radius-md: 4px;\n  --radius-lg: 6px;\n  --radius-xl: 8px;\n  --radius-full: 9999px;\n  /* ------------------------------------------\n     Transitions\n     \u8fc7\u6e21\u52a8\u753b - \u4e13\u4e1a\u4e14\u6d41\u7545\n     ------------------------------------------ */\n  --transition-fast: 150ms ease;\n  --transition-base: 200ms ease;\n  --transition-slow: 300ms ease;\n  /* ------------------------------------------\n     Z-Index Scale\n     \u5c42\u7ea7\u7ba1\u7406\n     ------------------------------------------ */\n  --z-dropdown: 1000;\n  --z-sticky: 1020;\n  --z-fixed: 1030;\n  --z-modal-backdrop: 1040;\n  --z-modal: 1050;\n  --z-popover: 1060;\n  --z-tooltip: 1070;\n}\n\n/* ============================================\n   GLOBAL APPLICATION\n   \u5168\u5c40\u5e94\u7528\n   ============================================ */\n* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n  padding: 0;\n  font-family: var(--font-family-base);\n  font-size: var(--font-size-base);\n  line-height: var(--line-height-normal);\n  color: var(--text-primary);\n  background-color: var(--bg-primary);\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n/* ============================================\n   DATA-DENSE LAYOUT UTILITIES\n   \u6570\u636e\u5bc6\u96c6\u578b\u5e03\u5c40\u5de5\u5177\u7c7b\n   ============================================ */\n.data-dense {\n  --spacing-base: 6px; /* \u7d27\u51d1\u95f4\u8ddd */\n}\n\n.data-dense .el-card {\n  margin-bottom: var(--spacing-sm);\n}\n\n.data-dense .el-table {\n  font-size: var(--font-size-sm);\n}\n\n.data-dense .el-table th,\n.data-dense .el-table td {\n  padding: var(--spacing-xs) var(--spacing-sm);\n}\n\n/* ============================================\n   PROFESSIONAL CARD STYLES\n   \u4e13\u4e1a\u5361\u7247\u6837\u5f0f\n   ============================================ */\n.el-card {\n  background-color: var(--bg-card) !important;\n  border: 1px solid var(--border-default) !important;\n  border-radius: var(--radius-md) !important;\n  box-shadow: var(--shadow-sm) !important;\n  transition: all var(--transition-base) ease !important;\n}\n\n.el-card:hover {\n  border-color: var(--border-light) !important;\n  box-shadow: var(--shadow-md) !important;\n}\n\n.el-card__header {\n  background-color: var(--bg-elevated) !important;\n  border-bottom: 1px solid var(--border-default) !important;\n  padding: var(--spacing-sm) var(--spacing-md) !important;\n  font-weight: var(--font-weight-semibold) !important;\n  font-size: var(--font-size-md) !important;\n  color: var(--text-primary) !important;\n}\n\n.el-card__body {\n  padding: var(--spacing-md) !important;\n  color: var(--text-secondary) !important;\n}\n\n/* ============================================\n   DATA TABLE OPTIMIZATION\n   \u6570\u636e\u8868\u683c\u4f18\u5316\n   ============================================ */\n.el-table {\n  background-color: var(--bg-card) !important;\n  border: 1px solid var(--border-default) !important;\n}\n\n.el-table th.el-table__cell {\n  background-color: var(--bg-elevated) !important;\n  color: var(--text-primary) !important;\n  font-weight: var(--font-weight-semibold) !important;\n  font-size: var(--font-size-sm) !important;\n  border-bottom: 1px solid var(--border-light) !important;\n}\n\n.el-table td.el-table__cell {\n  color: var(--text-secondary) !important;\n  border-bottom: 1px solid var(--border-default) !important;\n}\n\n.el-table--enable-row-hover .el-table__body tr:hover > td {\n  background-color: var(--bg-hover) !important;\n}\n\n/* \u6570\u636e\u989c\u8272\u5e94\u7528 */\n.text-up {\n  color: var(--color-up) !important;\n}\n\n.text-down {\n  color: var(--color-down) !important;\n}\n\n.text-flat {\n  color: var(--color-flat) !important;\n}\n\n.bg-up {\n  background-color: var(--color-up-bg) !important;\n}\n\n.bg-down {\n  background-color: var(--color-down-bg) !important;\n}\n\n/* ============================================\n   BUTTON ENHANCEMENTS\n   \u6309\u94ae\u589e\u5f3a\n   ============================================ */\n.el-button {\n  font-family: var(--font-family-base) !important;\n  font-weight: var(--font-weight-medium) !important;\n  border-radius: var(--radius-sm) !important;\n  transition: all var(--transition-base) ease !important;\n}\n\n.el-button--primary {\n  background-color: var(--color-primary) !important;\n  border-color: var(--color-primary) !important;\n}\n\n.el-button--primary:hover {\n  background-color: var(--color-primary-hover) !important;\n  box-shadow: var(--shadow-glow-primary) !important;\n}\n\n/* \u6da8\u8dcc\u6309\u94ae */\n.el-button--success {\n  background-color: var(--color-down) !important; /* \u7eff=\u8dcc\uff0c\u4f46\u5728\u4e70\u5165\u8bed\u5883\u7528\u7eff */\n  border-color: var(--color-down) !important;\n}\n\n.el-button--danger {\n  background-color: var(--color-up) !important; /* \u7ea2=\u6da8\uff0c\u4f46\u5728\u5356\u51fa\u8bed\u5883\u7528\u7ea2 */\n  border-color: var(--color-up) !important;\n}\n\n/* ============================================\n   INPUT & FORM ELEMENTS\n   \u8f93\u5165\u548c\u8868\u5355\u5143\u7d20\n   ============================================ */\n.el-input__wrapper {\n  background-color: var(--bg-elevated) !important;\n  border: 1px solid var(--border-default) !important;\n  border-radius: var(--radius-sm) !important;\n  transition: all var(--transition-base) ease !important;\n}\n\n.el-input__wrapper:hover {\n  border-color: var(--border-light) !important;\n}\n\n.el-input__wrapper.is-focus {\n  border-color: var(--color-primary) !important;\n  box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1) !important;\n}\n\n.el-input__inner {\n  color: var(--text-primary) !important;\n  font-family: var(--font-family-mono) !important; /* \u6570\u5b57\u7528\u7b49\u5bbd\u5b57\u4f53 */\n}\n\n/* ============================================\n   NAVIGATION OPTIMIZATION\n   \u5bfc\u822a\u4f18\u5316\n   ============================================ */\n.el-menu {\n  background-color: var(--bg-secondary) !important;\n  border-right: 1px solid var(--border-default) !important;\n}\n\n.el-menu-item {\n  color: var(--text-secondary) !important;\n  transition: all var(--transition-base) ease !important;\n}\n\n.el-menu-item:hover {\n  background-color: var(--bg-hover) !important;\n  color: var(--text-primary) !important;\n}\n\n.el-menu-item.is-active {\n  background-color: var(--bg-active) !important;\n  color: var(--color-primary) !important;\n  border-right: 2px solid var(--color-primary) !important;\n}\n\n/* ============================================\n   STAT CARD & METRIC DISPLAY\n   \u7edf\u8ba1\u5361\u7247\u548c\u6307\u6807\u663e\u793a\n   ============================================ */\n.stat-card {\n  background: linear-gradient(135deg, var(-\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/pro-fintech-optimization.scss"
+                  ]
+                },
+                {
+                  "nodeId": 56,
+                  "parentId": 4,
+                  "backendNodeId": 75,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 57,
+                      "parentId": 56,
+                      "backendNodeId": 76,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@charset \"UTF-8\";\n/**\n * \ud83c\udfa8 MyStocks Bloomberg-Level Terminal UI\n * Bloomberg\u7ea7\u522b\u91d1\u878d\u7ec8\u7aef\u754c\u9762 - \u5f3a\u5236\u5e94\u7528\u7248\u672c\n *\n * \u26a0\ufe0f  CRITICAL: \u4f7f\u7528 !important \u786e\u4fdd\u6837\u5f0f\u4f18\u5148\u7ea7\n * \u89e3\u51b3\u95ee\u9898: \u754c\u9762\"\u592a\u4e11\"\u3001\u7f3a\u4e4f\u4e13\u4e1a\u611f\u3001\u989c\u8272\u4e0d\u591f\u6df1\u9083\n *\n * \u521b\u5efa\u65f6\u95f4: 2026-01-08\n * \u57fa\u4e8e: UI/UX Pro Max + Bloomberg Terminal + TradingView\n */\n/* ============================================\n   \u5f3a\u5236\u5e94\u7528OLED\u6df1\u8272\u80cc\u666f\n   ============================================ */\n:root {\n  /* \u7eaf\u9ed1OLED\u80cc\u666f - \u66f4\u6df1\u3001\u66f4\u4e13\u4e1a */\n  --el-bg-color: #000000 !important;\n  --el-fill-color-light: #0A0E27 !important;\n  --el-fill-color-lighter: #141824 !important;\n  --el-fill-color-extra-light: #1A1F2E !important;\n  --el-fill-color-blank: #000000 !important;\n  --el-fill-color: #0A0E27 !important;\n  /* \u6587\u5b57\u989c\u8272 - \u9ad8\u5bf9\u6bd4\u5ea6 */\n  --el-text-color-primary: #FFFFFF !important;\n  --el-text-color-regular: #E2E8F0 !important;\n  --el-text-color-secondary: #94A3B8 !important;\n  --el-text-color-placeholder: #64748B !important;\n  /* \u8fb9\u6846\u989c\u8272 - \u5fae\u5999\u4f46\u53ef\u89c1 */\n  --el-border-color: #1E293B !important;\n  --el-border-color-light: #334155 !important;\n  --el-border-color-lighter: #475569 !important;\n  --el-border-color-extra-light: #64748B !important;\n  /* \u4e13\u4e1a\u7684\u91d1\u878d\u84dd\u8272 */\n  --el-color-primary: #0080FF !important;\n  --el-color-primary-light-3: #3395FF !important;\n  --el-color-primary-light-5: #66B3FF !important;\n  --el-color-primary-light-7: #99D1FF !important;\n  --el-color-primary-light-8: #B3DEFF !important;\n  --el-color-primary-light-9: #CCE7FF !important;\n  --el-color-primary-dark-2: #0066CC !important;\n  /* \u6210\u529f\u8272 - \u7eff\u8272\uff08\u4e2d\u56fd\u4e60\u60ef\uff1a\u6da8\uff09 */\n  --el-color-success: #22C55E !important;\n  --el-color-success-light-3: #4ADE80 !important;\n  --el-color-success-light-5: #86EFAC !important;\n  --el-color-success-light-7: #BBF7D0 !important;\n  --el-color-success-dark-2: #16A34A !important;\n  /* \u8b66\u544a\u8272 - \u6a59\u8272 */\n  --el-color-warning: #F59E0B !important;\n  --el-color-warning-light-3: #FBBF24 !important;\n  --el-color-warning-light-5: #FCD34D !important;\n  --el-color-warning-dark-2: #D97706 !important;\n  /* \u9519\u8bef\u8272 - \u7ea2\u8272\uff08\u4e2d\u56fd\u4e60\u60ef\uff1a\u8dcc\uff09 */\n  --el-color-danger: #EF4444 !important;\n  --el-color-danger-light-3: #F87171 !important;\n  --el-color-danger-light-5: #FCA5A5 !important;\n  --el-color-danger-dark-2: #DC2626 !important;\n  /* \u4fe1\u606f\u8272 - \u9752\u8272 */\n  --el-color-info: #06B6D4 !important;\n  --el-color-info-light-3: #67E8F9 !important;\n  --el-color-info-light-5: #A5F3FC !important;\n  --el-color-info-dark-2: #0891B2 !important;\n}\n\n/* ============================================\n   \u5168\u5c40\u80cc\u666f\u5f3a\u5236\u5e94\u7528\n   ============================================ */\nbody,\n#app {\n  background-color: #000000 !important;\n  background-image: none !important;\n}\n\n/* \u4e3b\u5bb9\u5668\u80cc\u666f */\n.el-container,\n.el-main,\n.app-main,\n.app-container,\n.page-container,\n.view-container {\n  background-color: #000000 !important;\n  background-image: none !important;\n}\n\n/* ============================================\n   \u4fa7\u8fb9\u680f\u4f18\u5316 - \u6df1\u9083\u4e13\u4e1a\n   ============================================ */\n.el-aside,\n.el-menu,\n.el-menu-vertical,\n.sidebar,\naside {\n  background: linear-gradient(180deg, #000000 0%, #0A0E27 100%) !important;\n  border-right: 1px solid #1E293B !important;\n}\n\n.el-menu-item {\n  color: #94A3B8 !important;\n  transition: all 200ms ease !important;\n}\n\n.el-menu-item:hover {\n  background-color: #1A1F2E !important;\n  color: #FFFFFF !important;\n}\n\n.el-menu-item.is-active {\n  background-color: #0F172A !important;\n  color: #0080FF !important;\n  border-right: 2px solid #0080FF !important;\n}\n\n/* ============================================\n   \u5361\u7247\u7ec4\u4ef6 - \u4e13\u4e1a\u6df1\u9083\n   ============================================ */\n.el-card {\n  background: #0F1115 !important;\n  border: 1px solid #1E293B !important;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;\n  transition: all 200ms ease !important;\n}\n\n.el-card:hover {\n  border-color: #334155 !important;\n  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8) !important;\n  transform: translateY(-2px) !important;\n}\n\n.el-card__header {\n  background: linear-gradient(135deg, #14171C 0%, #1A1F2E 100%) !important;\n  border-bottom: 1px solid #1E293B !important;\n  color: #F8FAFC !important;\n  font-weight: 600 !important;\n  padding: 12px 16px !important;\n}\n\n.el-card__body {\n  background-color: #0F1115 !important;\n  color: #CBD5E0 !important;\n  padding: 16px !important;\n}\n\n/* ============================================\n   \u8868\u683c\u7ec4\u4ef6 - \u6570\u636e\u5bc6\u96c6\u578b\n   ============================================ */\n.el-table {\n  background-color: #0F1115 !important;\n  border: 1px solid #1E293B !important;\n}\n\n.el-table th.el-table__cell {\n  background: linear-gradient(180deg, #1A1F2E 0%, #14181F 100%) !important;\n  color: #F8FAFC !important;\n  font-weight: 600 !important;\n  border-bottom: 1px solid #334155 !important;\n  padding: 8px 0 !important;\n}\n\n.el-table td.el-table__cell {\n  color: #CBD5E0 !important;\n  border-bottom: 1px solid #1E293B !important;\n  padding: 8px 0 !important;\n}\n\n.el-table--enable-row-hover .el-table__body tr:hover > td {\n  background-color: #1A1F2E !important;\n}\n\n/* \u6570\u636e\u989c\u8272\u7c7b */\n.text-up {\n  color: #FF3B30 !important;\n  font-weight: 600;\n}\n\n.text-down {\n  color: #00E676 !important;\n  font-weight: 600;\n}\n\n.text-flat {\n  color: #989B9E !important;\n}\n\n.bg-up {\n  background-color: rgba(255, 59, 48, 0.15) !important;\n}\n\n.bg-down {\n  background-color: rgba(0, 230, 118, 0.15) !important;\n}\n\n/* ============================================\n   \u6309\u94ae\u7ec4\u4ef6 - \u4e13\u4e1a\u4ea4\u4e92\n   ============================================ */\n.el-button {\n  font-weight: 500 !important;\n  transition: all 200ms ease !important;\n}\n\n.el-button--primary {\n  background: linear-gradient(135deg, #0080FF 0%, #0066CC 100%) !important;\n  border: none !important;\n  box-shadow: 0 2px 8px rgba(0, 128, 255, 0.3) !important;\n}\n\n.el-button--primary:hover {\n  background: linear-gradient(135deg, #3395FF 0%, #0080FF 100%) !important;\n  box-shadow: 0 4px 16px rgba(0, 128, 255, 0.5) !important;\n  transform: translateY(-1px) !important;\n}\n\n.el-button--success {\n  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important;\n  border: none !important;\n}\n\n.el-button--danger {\n  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;\n  border: none !important;\n}\n\n/* ============================================\n   \u8f93\u5165\u6846\u7ec4\u4ef6\n   ============================================ */\n.el-input__wrapper {\n  background-color: #0A0E27 !important;\n  border: 1px solid #1E293B !important;\n  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;\n  transition: all 200ms ease !important;\n}\n\n.el-input__wrapper:hover {\n  border-color: #334155 !important;\n}\n\n.el-input__wrapper.is-focus {\n  border-color: #0080FF !important;\n  box-shadow: 0 0 0 3px rgba(0, 128, 255, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;\n}\n\n.el-input__inner {\n  color: #F8FAFC !important;\n  font-family: \"Roboto Mono\", \"Courier New\", monospace !important;\n}\n\n/* ============================================\n   \u7edf\u8ba1\u5361\u7247 - \u6570\u636e\u5c55\u793a\u4f18\u5316\n   ============================================ */\n.stat-card,\n.stats-card,\n.metric-card {\n  background: linear-gradient(135deg, #0F1115 0%, #141A24 100%) !important;\n  border: 1px solid #1E293B !important;\n  border-radius: 6px !important;\n  padding: 16px !important;\n  transition: all 200ms ease !important;\n}\n\n.stat-card:hover,\n.stats-card:hover,\n.metric-card:hover {\n  border-color: #0080FF !important;\n  box-shadow: 0 0 20px rgba(0, 128, 255, 0.2) !important;\n  transform: translateY(-2px) !important;\n}\n\n.stat-value {\n  font-family: \"Roboto Mono\", \"Courier New\", monospace !important;\n  font-size: 24px !important;\n  font-weight: 700 !important;\n  color: #FFFFFF !important;\n  line-height: 1.2 !important;\n}\n\n.stat-label {\n  font-size: 12px !important;\n  color: #94A3B8 !important;\n  text-transform: uppercase !important;\n  letter-spacing: 0.5px !important;\n  margin-bottom: 8px !important;\n}\n\n/* ============================================\n   \u6da8\u8dcc\u989c\u8272 - A\u80a1\u6807\u51c6\uff08\u7ea2\u6da8\u7eff\u8dcc\uff09\n   ============================================ */\n.price-up {\n  color: #FF3B30 !important;\n}\n\n.price-down {\n  color: #00E676 !important;\n}\n\n.price-flat {\n  color: #989B9E !important;\n}\n\n.change-up {\n  color: #FF3B30 !important;\n  background: rgba(255, 59, 48, 0.15) !important;\n  padding: 2px 6px !important;\n  border-radius: 2px !important;\n}\n\n.change-down {\n  color: #00E676 !important;\n  background: rgba(0, 230, 118, 0.15) !important;\n  padding: 2px 6px !important;\n  border-radius: 2px !important;\n}\n\n/* ============================================\n   \u56fe\u8868\u5bb9\u5668\u4f18\u5316\n   ============================================ */\n.chart-container,\n.kline-container {\n  background: #000000 !important;\n  border: 1px solid #1E293B !important;\n  border-radius: 6px !important;\n  padding: 16px !important;\n}\n\n/* ============================================\n   \u6807\u7b7e\u9875\u7ec4\u4ef6\n   ============================================ */\n.el-tabs__nav-wrap::after {\n  background-color: #1E293B !important;\n}\n\n.el-tabs__item {\n  color: #94A3B8 !important;\n}\n\n.el-tabs__item:hover {\n  color: #F8FAFC !important;\n}\n\n.el-tabs__item.is-active {\n  color: #0080FF !important;\n}\n\n.el-tabs__active-bar {\n  background-color: #0080FF !important;\n}\n\n/* ============================================\n   \u4e0b\u62c9\u83dc\u5355\n   ============================================ */\n.el-dropdown-menu {\n  background-color: #0F1115 !important;\n  border: 1px solid #1E293B !important;\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;\n}\n\n.el-dropdown-menu__item:hover {\n  background-color: #1A1F2E !important;\n  color: #FFFFFF !important;\n}\n\n/* ============================================\n   \u5bf9\u8bdd\u6846\n   ============================================ */\n.el-dialog {\n  background-color: #0F1115 !important;\n  border: 1px solid #1E293B !important;\n}\n\n.el-dialog__header {\n  background: linear-gradient(135deg, #14171C 0%, #1A1F2E 100%) !important;\n  border-bottom: 1px solid #1E293B !important;\n}\n\n/* ============================================\n   \u8fdb\u5ea6\u6761\n   ============================================ */\n.el-progress-bar__inner {\n  background: linear-gradient(90deg, #0080FF 0%, #0066CC 100%) !important;\n}\n\n/* ============================================\n   \u5f00\u5173\n   ============================================ */\n.el-switch.is-checked .el-switch__core {\n  background-c\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/styles/bloomberg-terminal-override.scss"
+                  ]
+                },
+                {
+                  "nodeId": 58,
+                  "parentId": 4,
+                  "backendNodeId": 77,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 59,
+                      "parentId": 58,
+                      "backendNodeId": 78,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": "@import url(\"https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap\");\n@import url(\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap\");\n[data-v-db1bb8a8]:root {\n  --artdeco-bg-global: #0A0A0A;\n  --artdeco-bg-base: #141414;\n  --artdeco-bg-card: #141414;\n  --artdeco-bg-elevated: #1a1a1a;\n  --artdeco-fg-primary: #F2F0E4;\n  --artdeco-fg-muted: #A0A0A0;\n  --artdeco-fg-subtle: rgba(255,255,255,0.6);\n  --artdeco-gold-primary: #D4AF37;\n  --artdeco-gold-light: #F0E68C;\n  --artdeco-bronze: #CD7F32;\n  --artdeco-champagne: #F7E7CE;\n  --artdeco-gold-dim: #8B7355;\n  --artdeco-border-default: rgba(212, 175, 55, 0.3);\n  --artdeco-border-hover: rgba(212, 175, 55, 1);\n  --artdeco-border-accent: rgba(212, 175, 55, 0.8);\n  --artdeco-border-gold: #D4AF37;\n  --artdeco-rise: #FF5252;\n  --artdeco-down: #00E676;\n  --artdeco-flat: #B0B3B8;\n  --artdeco-profit: var(--artdeco-rise);\n  --artdeco-loss: var(--artdeco-down);\n  --artdeco-warning: #D4AF37;\n  --artdeco-info: #4FC3F7;\n  --artdeco-success: var(--artdeco-rise);\n  --artdeco-error: var(--artdeco-down);\n}\n[data-v-db1bb8a8]:root :root {\n  --font-display: 'Cinzel', 'Playfair Display', serif;\n  --font-body: 'Barlow', 'Inter', sans-serif;\n  --font-mono: 'JetBrains Mono', 'Consolas', monospace;\n  --artdeco-text-xs: 0.75rem;\n  --artdeco-text-sm: 0.875rem;\n  --artdeco-text-base: 1rem;\n  --artdeco-text-lg: 1.25rem;\n  --artdeco-text-xl: 1.5rem;\n  --artdeco-text-2xl: 1.875rem;\n  --artdeco-text-3xl: 2.25rem;\n  --artdeco-text-4xl: 2.75rem;\n  --artdeco-text-5xl: 3.5rem;\n  --artdeco-text-6xl: 4rem;\n  --artdeco-font-light: 400;\n  --artdeco-font-normal: 400;\n  --artdeco-font-medium: 500;\n  --artdeco-font-semibold: 600;\n  --artdeco-font-bold: 700;\n  --artdeco-leading-none: 1;\n  --artdeco-leading-tight: 1.25;\n  --artdeco-leading-normal: 1.5;\n  --artdeco-leading-relaxed: 1.625;\n  --artdeco-leading-loose: 2;\n  --artdeco-tracking-tighter: -0.05em;\n  --artdeco-tracking-tight: -0.025em;\n  --artdeco-tracking-normal: 0em;\n  --artdeco-tracking-wide: 0.025em;\n  --artdeco-tracking-wider: 0.05em;\n  --artdeco-tracking-widest: 0.1em;\n}\n:root h1[data-v-db1bb8a8], :root h2[data-v-db1bb8a8], :root h3[data-v-db1bb8a8], :root .logo[data-v-db1bb8a8], :root .section-title[data-v-db1bb8a8] {\n  font-family: var(--font-display);\n  font-weight: var(--artdeco-font-semibold);\n  letter-spacing: 0.05em;\n  text-transform: uppercase;\n}\n:root body[data-v-db1bb8a8], :root p[data-v-db1bb8a8], :root span[data-v-db1bb8a8], :root .body-text[data-v-db1bb8a8] {\n  font-family: var(--font-body);\n  font-weight: var(--artdeco-font-normal);\n}\n:root .price[data-v-db1bb8a8], :root .percentage[data-v-db1bb8a8], :root .volume[data-v-db1bb8a8], :root .code[data-v-db1bb8a8] {\n  font-family: var(--font-mono);\n  font-weight: var(--artdeco-font-medium);\n  font-variant-numeric: tabular-nums;\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-font-size-xs: var(--artdeco-text-xs);\n  --artdeco-font-size-sm: var(--artdeco-text-sm);\n  --artdeco-font-size-base: var(--artdeco-text-base);\n  --artdeco-font-size-md: var(--artdeco-text-lg);\n  --artdeco-font-size-lg: var(--artdeco-text-xl);\n  --artdeco-font-display: var(--artdeco-font-heading);\n  --artdeco-font-mono: var(--artdeco-font-accent);\n  --artdeco-accent-gold: var(--artdeco-gold-primary);\n  --artdeco-silver-dim: var(--artdeco-fg-muted);\n  --artdeco-silver-light: var(--artdeco-fg-primary);\n  --artdeco-gold-border: var(--artdeco-border-gold);\n  --artdeco-gold-dim: var(--artdeco-gold-dim);\n  --artdeco-gold-border: var(--artdeco-border-gold);\n}\n@keyframes artdeco-page-load-db1bb8a8 {\n0% {\n    opacity: 0;\n    transform: translateY(20px);\n}\n100% {\n    opacity: 1;\n    transform: translateY(0);\n}\n}\n.page-enter[data-v-db1bb8a8] {\n  animation: artdeco-page-load-db1bb8a8 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);\n}\n.artdeco-button[data-v-db1bb8a8] {\n  position: relative;\n  overflow: hidden;\n  transition: all 0.3s ease;\n}\n.artdeco-button[data-v-db1bb8a8]::before {\n  content: \"\";\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 0;\n  height: 0;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);\n  transform: translate(-50%, -50%);\n  transition: width 0.6s, height 0.6s;\n}\n.artdeco-button[data-v-db1bb8a8]:hover::before {\n  width: 300px;\n  height: 300px;\n}\n.artdeco-card[data-v-db1bb8a8] {\n  transition: all 0.3s ease;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n.artdeco-card[data-v-db1bb8a8]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 175, 55, 0.3);\n  border-color: var(--artdeco-gold-light);\n}\n@keyframes data-update-flash-db1bb8a8 {\n0%, 100% {\n    background-color: transparent;\n}\n50% {\n    background-color: rgba(212, 175, 55, 0.2);\n}\n}\n.data-updated[data-v-db1bb8a8] {\n  animation: data-update-flash-db1bb8a8 0.8s ease;\n}\n.tab-bar[data-v-db1bb8a8] {\n  position: relative;\n}\n.tab-bar[data-v-db1bb8a8]::after {\n  content: \"\";\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  height: 3px;\n  background: var(--artdeco-gold);\n  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);\n}\n@keyframes artdeco-spin-db1bb8a8 {\n0% {\n    transform: rotate(0deg);\n}\n100% {\n    transform: rotate(360deg);\n}\n}\n.artdeco-loader[data-v-db1bb8a8] {\n  width: 60px;\n  height: 60px;\n  border: 4px solid rgba(212, 175, 55, 0.2);\n  border-top: 4px solid var(--artdeco-gold);\n  border-radius: 0;\n  animation: artdeco-spin-db1bb8a8 1.2s linear infinite;\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-spacing-px: 1px;\n  --artdeco-spacing-0: 0;\n  --artdeco-spacing-1: 0.25rem;\n  --artdeco-spacing-2: 0.5rem;\n  --artdeco-spacing-3: 0.75rem;\n  --artdeco-spacing-4: 1rem;\n  --artdeco-spacing-5: 1.25rem;\n  --artdeco-spacing-6: 1.5rem;\n  --artdeco-spacing-8: 2rem;\n  --artdeco-spacing-10: 2.5rem;\n  --artdeco-spacing-12: 3rem;\n  --artdeco-spacing-16: 4rem;\n  --artdeco-spacing-20: 5rem;\n  --artdeco-spacing-24: 6rem;\n  --artdeco-spacing-32: 8rem;\n  --artdeco-spacing-sm: var(--artdeco-spacing-2);\n  --artdeco-spacing-md: var(--artdeco-spacing-4);\n  --artdeco-spacing-lg: var(--artdeco-spacing-6);\n  --artdeco-spacing-xl: var(--artdeco-spacing-8);\n  --artdeco-spacing-compact-xs: 0.25rem;\n  --artdeco-spacing-compact-sm: 0.5rem;\n  --artdeco-spacing-compact-md: 0.75rem;\n  --artdeco-spacing-compact-lg: 1rem;\n  --artdeco-text-compact-xs: 0.6875rem;\n  --artdeco-text-compact-sm: 0.75rem;\n  --artdeco-text-compact-base: 0.875rem;\n  --artdeco-text-compact-md: 1rem;\n  --artdeco-text-compact-lg: 1.125rem;\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-radius-none: 0px;\n  --artdeco-radius-sm: 2px;\n  --artdeco-radius-md: 8px;\n  --artdeco-radius-lg: 12px;\n  --artdeco-radius-xl: 16px;\n  --artdeco-radius-full: 9999px;\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-shadow-none: 0 0 #0000;\n  --artdeco-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);\n  --artdeco-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n  --artdeco-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  --artdeco-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  --artdeco-glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);\n  --artdeco-glow-intense: 0 0 20px rgba(212, 175, 55, 0.4);\n  --artdeco-glow-max: 0 0 30px rgba(212, 175, 55, 0.6);\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-transition-quick: 200ms;\n  --artdeco-transition-base: 400ms;\n  --artdeco-transition-slow: 600ms;\n  --artdeco-transition-dramatic: 800ms;\n  --artdeco-ease-linear: linear;\n  --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);\n  --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);\n  --artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-breakpoint-xs: 480px;\n  --artdeco-breakpoint-sm: 640px;\n  --artdeco-breakpoint-md: 1024px;\n  --artdeco-breakpoint-lg: 1280px;\n  --artdeco-breakpoint-xl: 1536px;\n}\n[data-v-db1bb8a8]:root {\n  --artdeco-z-auto: auto;\n  --artdeco-z-0: 0;\n  --artdeco-z-10: 10;\n  --artdeco-z-20: 20;\n  --artdeco-z-30: 30;\n  --artdeco-z-40: 40;\n  --artdeco-z-50: 50;\n}\n.artdeco-card-compact[data-v-db1bb8a8] {\n  border-radius: 0;\n  background: var(--artdeco-bg-card);\n  border: 1px solid var(--artdeco-border-default);\n  padding: var(--artdeco-spacing-3);\n  position: relative;\n  transition: border-color 0.2s ease;\n}\n.artdeco-card-compact__accent-line[data-v-db1bb8a8] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  height: 2px;\n  background: linear-gradient(90deg, transparent 0%, var(--artdeco-gold-primary) 50%, transparent 100%);\n}\n.artdeco-card-compact--hoverable[data-v-db1bb8a8]:hover {\n  border-color: var(--artdeco-gold-primary);\n  box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);\n  cursor: pointer;\n  transform: translateY(-4px);\n  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);\n}\n.artdeco-card-compact--hoverable:hover .artdeco-card-compact__accent-line[data-v-db1bb8a8] {\n  background: linear-gradient(90deg, transparent 0%, var(--artdeco-gold-light) 40%, var(--artdeco-gold-primary) 50%, var(--artdeco-gold-light) 60%, transparent 100%);\n  height: 3px;\n}\n.artdeco-card-compact--clickable[data-v-db1bb8a8] {\n  cursor: pointer;\n}\n.artdeco-card-compact__header[data-v-db1bb8a8] {\n  margin-bottom: var(--artdeco-spacing-2);\n  padding-bottom: var(--artdeco-spacing-2);\n  border-bottom: 1px solid var(--artdeco-border-default);\n}\n.artdeco-card-compact__header h3[data-v-db1bb8a8] {\n  font-family: var(--artdeco-font-heading);\n  font-size: var(--artdeco-text-base);\n  font-weight: 600;\n  color: var(--artdeco-gold-primary);\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  margin: 0;\n}\n.artdeco-card-compact__header .subtitle[data-v-db1bb8a8] {\n  font-size: var(--artdeco-text-xs);\n  color: var(--artdeco-fg-muted);\n  margin: 4px 0 0 0;\n}\n.artdeco-card-compact__body[data-v-db1bb8a8] {\n  font-family: var(--artdeco-font-body);\n  font-size: var(--artdeco-text-sm);\n  col\u2026"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/components/artdeco/base/ArtDecoCardCompact.vue?vue&type=style&index=0&scoped=db1bb8a8&lang.scss"
+                  ]
+                },
+                {
+                  "nodeId": 60,
+                  "parentId": 4,
+                  "backendNodeId": 79,
+                  "nodeType": 1,
+                  "nodeName": "STYLE",
+                  "localName": "style",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 61,
+                      "parentId": 60,
+                      "backendNodeId": 80,
+                      "nodeType": 3,
+                      "nodeName": "#text",
+                      "localName": "",
+                      "nodeValue": ".login[data-v-08aaad4e] {\n  min-height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  background: var(--bg-primary);\n  overflow: hidden;\n}\n.background-pattern[data-v-08aaad4e] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  pointer-events: none;\n  z-index: 0;\n  opacity: 0.04;\n  background-image: repeating-linear-gradient(45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px), repeating-linear-gradient(-45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px);\n}\n.login-card[data-v-08aaad4e] {\n  position: relative;\n  width: 480px;\n  background: var(--bg-card);\n  border: 1px solid var(--accent-gold);\n  border-radius: var(--radius-none);\n  padding: var(--spacing-8);\n  box-shadow: 0 0 40px rgba(212, 175, 55, 0.1);\n  z-index: 1;\n  transition: all var(--transition-base);\n}\n.corner-decoration[data-v-08aaad4e] {\n  position: absolute;\n  width: 24px;\n  height: 24px;\n  pointer-events: none;\n  opacity: 0.6;\n}\n.corner-tl[data-v-08aaad4e] {\n  top: 12px;\n  left: 12px;\n  border-top: 3px solid var(--accent-gold);\n  border-left: 3px solid var(--accent-gold);\n}\n.corner-br[data-v-08aaad4e] {\n  bottom: 12px;\n  right: 12px;\n  border-bottom: 3px solid var(--accent-gold);\n  border-right: 3px solid var(--accent-gold);\n}\n.login-header[data-v-08aaad4e] {\n  text-align: center;\n  margin-bottom: var(--spacing-6);\n}\n.login-header .logo-container[data-v-08aaad4e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-4);\n  margin-bottom: var(--spacing-4);\n}\n.login-header .logo-container[data-v-08aaad4e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-4);\n  margin-bottom: var(--spacing-4);\n}\n.login-header .logo-container[data-v-08aaad4e]::before, .login-header .logo-container[data-v-08aaad4e]::after {\n  content: \"\";\n  flex: 1;\n  height: 1px;\n  background: linear-gradient(to right, transparent, var(--accent-gold), transparent);\n  opacity: 0.5;\n}\n.login-header .logo-text[data-v-08aaad4e] {\n  font-family: var(--font-display);\n  font-size: var(--font-size-small);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-widest);\n  color: var(--accent-gold);\n  padding: 0 var(--spacing-4);\n}\n.login-header .login-title[data-v-08aaad4e] {\n  font-family: var(--font-display);\n  font-size: var(--font-size-h2);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-widest);\n  color: var(--accent-gold);\n  margin: var(--spacing-3) 0 var(--spacing-2) 0;\n}\n.login-header .login-subtitle[data-v-08aaad4e] {\n  font-family: var(--font-body);\n  font-size: var(--font-size-small);\n  color: var(--fg-muted);\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-wider);\n  margin: 0;\n}\n.login-form[data-v-08aaad4e] {\n  margin-bottom: var(--spacing-6);\n}\n.login-form .form-group[data-v-08aaad4e] {\n  margin-bottom: var(--spacing-4);\n}\n.login-form .form-group .form-label[data-v-08aaad4e] {\n  display: block;\n}\n.login-form .form-group .form-label .login-form[data-v-08aaad4e] {\n  margin-bottom: var(--spacing-6);\n}\n.login-form .form-group .form-label .login-form .form-group[data-v-08aaad4e] {\n  margin-bottom: var(--spacing-4);\n  display: block;\n  font-family: var(--font-display);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-wider);\n  color: var(--accent-gold);\n  margin-bottom: var(--spacing-1);\n}\n.login-form .form-group .form-label .login-form .input[data-v-08aaad4e] {\n  width: 100%;\n  padding: var(--spacing-2) var(--spacing-3);\n  font-family: var(--font-body);\n  font-size: var(--font-size-body);\n  color: var(--fg-primary);\n  background: transparent;\n  border: none;\n  border-bottom: 2px solid var(--accent-gold);\n  border-radius: var(--radius-none);\n  transition: all var(--transition-base);\n}\n.login-form .form-group .form-label .login-form .input[data-v-08aaad4e]::placeholder {\n  color: var(--fg-muted);\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-normal);\n}\n.login-form .form-group .form-label .login-form .input[data-v-08aaad4e]:focus {\n  outline: none;\n  border-bottom-color: var(--accent-gold-light);\n  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);\n}\n.login-form .form-group .form-label .btn-login[data-v-08aaad4e] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  padding: var(--spacing-3) var(--spacing-6);\n  font-family: var(--font-display);\n  font-size: var(--font-size-body);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-widest);\n  border: 2px solid var(--accent-gold);\n  border-radius: var(--radius-none);\n  cursor: pointer;\n  transition: all var(--transition-base);\n  margin-top: var(--spacing-4);\n}\n.login-form .form-group .form-label .btn-login[data-v-08aaad4e]:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n.login-form .form-group .form-label .btn-login .spinner[data-v-08aaad4e] {\n  display: inline-block;\n  width: 20px;\n  height: 20px;\n  border: 2px solid rgba(0, 0, 0, 0.1);\n  border-top-color: currentColor;\n  border-radius: 50%;\n  animation: spin-08aaad4e 0.6s linear infinite;\n}\n@keyframes spin-08aaad4e {\nto {\n    transform: rotate(360deg);\n}\n}\n.login-form .form-group .form-label .btn-login-primary[data-v-08aaad4e] {\n  background: var(--accent-gold);\n  color: var(--bg-primary);\n}\n.login-form .form-group .form-label .btn-login-primary[data-v-08aaad4e]:hover:not(:disabled) {\n  background: var(--accent-gold-light);\n  box-shadow: var(--glow-medium);\n}\n.login-form .form-group .test-accounts[data-v-08aaad4e] {\n  text-align: center;\n  padding-top: var(--spacing-4);\n  border-top: 1px solid rgba(212, 175, 55, 0.2);\n}\n.login-form .form-group .test-accounts .account-buttons[data-v-08aaad4e] {\n  display: flex;\n  align-items: center;\n  gap: var(--spacing-4);\n  margin-bottom: var(--spacing-3);\n}\n.login-form .form-group .test-accounts .account-buttons[data-v-08aaad4e]::before, .login-form .form-group .test-accounts .account-buttons[data-v-08aaad4e]::after {\n  content: \"\";\n  flex: 1;\n  height: 1px;\n  background: linear-gradient(to right, transparent, var(--accent-gold), transparent);\n  opacity: 0.3;\n}\n.login-form .form-group .test-accounts .account-buttons[data-v-08aaad4e] {\n  font-family: var(--font-display);\n  font-size: var(--font-size-xs);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-widest);\n  color: var(--fg-muted);\n  padding: 0 var(--spacing-2);\n}\n.login-form .form-group .account-row[data-v-08aaad4e] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: var(--spacing-2) 0;\n  font-family: var(--font-body);\n}\n.login-form .form-group .account-row .account-label[data-v-08aaad4e] {\n  font-size: var(--font-size-small);\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: var(--tracking-wider);\n  color: var(--fg-muted);\n}\n.login-form .form-group .account-row .account-value[data-v-08aaad4e] {\n  font-size: var(--font-size-small);\n  font-family: var(--font-body);\n  color: var(--fg-secondary);\n  letter-spacing: var(--tracking-normal);\n}"
+                    }
+                  ],
+                  "attributes": [
+                    "type",
+                    "text/css",
+                    "data-vite-dev-id",
+                    "/opt/claude/mystocks_spec/web/frontend/src/views/Login.vue?vue&type=style&index=0&scoped=08aaad4e&lang.scss"
+                  ]
+                }
+              ],
+              "attributes": []
+            },
+            {
+              "nodeId": 62,
+              "parentId": 3,
+              "backendNodeId": 13,
+              "nodeType": 1,
+              "nodeName": "BODY",
+              "localName": "body",
+              "nodeValue": "",
+              "childNodeCount": 2,
+              "children": [
+                {
+                  "nodeId": 63,
+                  "parentId": 62,
+                  "backendNodeId": 81,
+                  "nodeType": 1,
+                  "nodeName": "DIV",
+                  "localName": "div",
+                  "nodeValue": "",
+                  "childNodeCount": 1,
+                  "children": [
+                    {
+                      "nodeId": 64,
+                      "parentId": 63,
+                      "backendNodeId": 14,
+                      "nodeType": 1,
+                      "nodeName": "DIV",
+                      "localName": "div",
+                      "nodeValue": "",
+                      "childNodeCount": 1,
+                      "children": [
+                        {
+                          "nodeId": 65,
+                          "parentId": 64,
+                          "backendNodeId": 82,
+                          "nodeType": 1,
+                          "nodeName": "DIV",
+                          "localName": "div",
+                          "nodeValue": "",
+                          "childNodeCount": 1,
+                          "children": [
+                            {
+                              "nodeId": 66,
+                              "parentId": 65,
+                              "backendNodeId": 83,
+                              "nodeType": 1,
+                              "nodeName": "DIV",
+                              "localName": "div",
+                              "nodeValue": "",
+                              "childNodeCount": 5,
+                              "children": [
+                                {
+                                  "nodeId": 67,
+                                  "parentId": 66,
+                                  "backendNodeId": 84,
+                                  "nodeType": 1,
+                                  "nodeName": "DIV",
+                                  "localName": "div",
+                                  "nodeValue": "",
+                                  "childNodeCount": 0,
+                                  "children": [],
+                                  "attributes": [
+                                    "class",
+                                    "corner-tl",
+                                    "data-v-08aaad4e",
+                                    ""
+                                  ]
+                                },
+                                {
+                                  "nodeId": 68,
+                                  "parentId": 66,
+                                  "backendNodeId": 85,
+                                  "nodeType": 1,
+                                  "nodeName": "DIV",
+                                  "localName": "div",
+                                  "nodeValue": "",
+                                  "childNodeCount": 0,
+                                  "children": [],
+                                  "attributes": [
+                                    "class",
+                                    "corner-br",
+                                    "data-v-08aaad4e",
+                                    ""
+                                  ]
+                                },
+                                {
+                                  "nodeId": 69,
+                                  "parentId": 66,
+                                  "backendNodeId": 86,
+                                  "nodeType": 1,
+                                  "nodeName": "DIV",
+                                  "localName": "div",
+                                  "nodeValue": "",
+                                  "childNodeCount": 3,
+                                  "children": [
+                                    {
+                                      "nodeId": 70,
+                                      "parentId": 69,
+                                      "backendNodeId": 87,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 1,
+                                      "children": [
+                                        {
+                                          "nodeId": 71,
+                                          "parentId": 70,
+                                          "backendNodeId": 88,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 72,
+                                              "parentId": 71,
+                                              "backendNodeId": 89,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "MYSTOCKS"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "divider-text",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "divider",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 73,
+                                      "parentId": 69,
+                                      "backendNodeId": 90,
+                                      "nodeType": 1,
+                                      "nodeName": "H1",
+                                      "localName": "h1",
+                                      "nodeValue": "",
+                                      "childNodeCount": 1,
+                                      "children": [
+                                        {
+                                          "nodeId": 74,
+                                          "parentId": 73,
+                                          "backendNodeId": 91,
+                                          "nodeType": 3,
+                                          "nodeName": "#text",
+                                          "localName": "",
+                                          "nodeValue": "LOGIN"
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "title",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 75,
+                                      "parentId": 69,
+                                      "backendNodeId": 92,
+                                      "nodeType": 1,
+                                      "nodeName": "P",
+                                      "localName": "p",
+                                      "nodeValue": "",
+                                      "childNodeCount": 1,
+                                      "children": [
+                                        {
+                                          "nodeId": 76,
+                                          "parentId": 75,
+                                          "backendNodeId": 93,
+                                          "nodeType": 3,
+                                          "nodeName": "#text",
+                                          "localName": "",
+                                          "nodeValue": "QUANTITATIVE TRADING MANAGEMENT SYSTEM"
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "subtitle",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    }
+                                  ],
+                                  "attributes": [
+                                    "class",
+                                    "login-header",
+                                    "data-v-08aaad4e",
+                                    ""
+                                  ]
+                                },
+                                {
+                                  "nodeId": 77,
+                                  "parentId": 66,
+                                  "backendNodeId": 16,
+                                  "nodeType": 1,
+                                  "nodeName": "FORM",
+                                  "localName": "form",
+                                  "nodeValue": "",
+                                  "childNodeCount": 3,
+                                  "children": [
+                                    {
+                                      "nodeId": 78,
+                                      "parentId": 77,
+                                      "backendNodeId": 94,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 2,
+                                      "children": [
+                                        {
+                                          "nodeId": 79,
+                                          "parentId": 78,
+                                          "backendNodeId": 19,
+                                          "nodeType": 1,
+                                          "nodeName": "LABEL",
+                                          "localName": "label",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 80,
+                                              "parentId": 79,
+                                              "backendNodeId": 95,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "USERNAME"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "data-v-08aaad4e",
+                                            "",
+                                            "class",
+                                            "label"
+                                          ]
+                                        },
+                                        {
+                                          "nodeId": 81,
+                                          "parentId": 78,
+                                          "backendNodeId": 17,
+                                          "nodeType": 1,
+                                          "nodeName": "INPUT",
+                                          "localName": "input",
+                                          "nodeValue": "",
+                                          "childNodeCount": 0,
+                                          "children": [],
+                                          "attributes": [
+                                            "data-v-08aaad4e",
+                                            "",
+                                            "type",
+                                            "text",
+                                            "class",
+                                            "input",
+                                            "placeholder",
+                                            "ENTER USERNAME",
+                                            "data-testid",
+                                            "username-input"
+                                          ],
+                                          "shadowRoots": [
+                                            {
+                                              "nodeId": 82,
+                                              "backendNodeId": 96,
+                                              "nodeType": 11,
+                                              "nodeName": "#document-fragment",
+                                              "localName": "",
+                                              "nodeValue": "",
+                                              "childNodeCount": 2,
+                                              "shadowRootType": "user-agent"
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "data-v-08aaad4e",
+                                        "",
+                                        "class",
+                                        "form-group"
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 83,
+                                      "parentId": 77,
+                                      "backendNodeId": 97,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 2,
+                                      "children": [
+                                        {
+                                          "nodeId": 84,
+                                          "parentId": 83,
+                                          "backendNodeId": 20,
+                                          "nodeType": 1,
+                                          "nodeName": "LABEL",
+                                          "localName": "label",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 85,
+                                              "parentId": 84,
+                                              "backendNodeId": 98,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "PASSWORD"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "data-v-08aaad4e",
+                                            "",
+                                            "class",
+                                            "label"
+                                          ]
+                                        },
+                                        {
+                                          "nodeId": 86,
+                                          "parentId": 83,
+                                          "backendNodeId": 15,
+                                          "nodeType": 1,
+                                          "nodeName": "INPUT",
+                                          "localName": "input",
+                                          "nodeValue": "",
+                                          "childNodeCount": 0,
+                                          "children": [],
+                                          "attributes": [
+                                            "data-v-08aaad4e",
+                                            "",
+                                            "type",
+                                            "password",
+                                            "class",
+                                            "input",
+                                            "placeholder",
+                                            "ENTER PASSWORD",
+                                            "data-testid",
+                                            "password-input"
+                                          ],
+                                          "shadowRoots": [
+                                            {
+                                              "nodeId": 87,
+                                              "backendNodeId": 99,
+                                              "nodeType": 11,
+                                              "nodeName": "#document-fragment",
+                                              "localName": "",
+                                              "nodeValue": "",
+                                              "childNodeCount": 2,
+                                              "shadowRootType": "user-agent"
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "data-v-08aaad4e",
+                                        "",
+                                        "class",
+                                        "form-group"
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 88,
+                                      "parentId": 77,
+                                      "backendNodeId": 18,
+                                      "nodeType": 1,
+                                      "nodeName": "BUTTON",
+                                      "localName": "button",
+                                      "nodeValue": "",
+                                      "childNodeCount": 1,
+                                      "children": [
+                                        {
+                                          "nodeId": 89,
+                                          "parentId": 88,
+                                          "backendNodeId": 100,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 90,
+                                              "parentId": 89,
+                                              "backendNodeId": 101,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "SIGN IN"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "data-v-08aaad4e",
+                                        "",
+                                        "type",
+                                        "submit",
+                                        "data-testid",
+                                        "login-button"
+                                      ]
+                                    }
+                                  ],
+                                  "attributes": [
+                                    "data-v-08aaad4e",
+                                    "",
+                                    "class",
+                                    "login-form"
+                                  ]
+                                },
+                                {
+                                  "nodeId": 91,
+                                  "parentId": 66,
+                                  "backendNodeId": 102,
+                                  "nodeType": 1,
+                                  "nodeName": "DIV",
+                                  "localName": "div",
+                                  "nodeValue": "",
+                                  "childNodeCount": 3,
+                                  "children": [
+                                    {
+                                      "nodeId": 92,
+                                      "parentId": 91,
+                                      "backendNodeId": 103,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 1,
+                                      "children": [
+                                        {
+                                          "nodeId": 93,
+                                          "parentId": 92,
+                                          "backendNodeId": 104,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 94,
+                                              "parentId": 93,
+                                              "backendNodeId": 105,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "TEST ACCOUNTS"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "divider-text",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "divider",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 95,
+                                      "parentId": 91,
+                                      "backendNodeId": 106,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 2,
+                                      "children": [
+                                        {
+                                          "nodeId": 96,
+                                          "parentId": 95,
+                                          "backendNodeId": 107,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 97,
+                                              "parentId": 96,
+                                              "backendNodeId": 108,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "ADMIN"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "account-label",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        },
+                                        {
+                                          "nodeId": 98,
+                                          "parentId": 95,
+                                          "backendNodeId": 109,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 99,
+                                              "parentId": 98,
+                                              "backendNodeId": 110,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "admin / admin123"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "account-value",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "account-row",
+                                        "data-testid",
+                                        "admin-account-hint",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    },
+                                    {
+                                      "nodeId": 100,
+                                      "parentId": 91,
+                                      "backendNodeId": 111,
+                                      "nodeType": 1,
+                                      "nodeName": "DIV",
+                                      "localName": "div",
+                                      "nodeValue": "",
+                                      "childNodeCount": 2,
+                                      "children": [
+                                        {
+                                          "nodeId": 101,
+                                          "parentId": 100,
+                                          "backendNodeId": 112,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 102,
+                                              "parentId": 101,
+                                              "backendNodeId": 113,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "USER"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "account-label",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        },
+                                        {
+                                          "nodeId": 103,
+                                          "parentId": 100,
+                                          "backendNodeId": 114,
+                                          "nodeType": 1,
+                                          "nodeName": "SPAN",
+                                          "localName": "span",
+                                          "nodeValue": "",
+                                          "childNodeCount": 1,
+                                          "children": [
+                                            {
+                                              "nodeId": 104,
+                                              "parentId": 103,
+                                              "backendNodeId": 115,
+                                              "nodeType": 3,
+                                              "nodeName": "#text",
+                                              "localName": "",
+                                              "nodeValue": "user / user123"
+                                            }
+                                          ],
+                                          "attributes": [
+                                            "class",
+                                            "account-value",
+                                            "data-v-08aaad4e",
+                                            ""
+                                          ]
+                                        }
+                                      ],
+                                      "attributes": [
+                                        "class",
+                                        "account-row",
+                                        "data-testid",
+                                        "user-account-hint",
+                                        "data-v-08aaad4e",
+                                        ""
+                                      ]
+                                    }
+                                  ],
+                                  "attributes": [
+                                    "class",
+                                    "test-accounts",
+                                    "data-v-08aaad4e",
+                                    ""
+                                  ]
+                                }
+                              ],
+                              "attributes": [
+                                "data-v-08aaad4e",
+                                "",
+                                "class",
+                                "login-card"
+                              ]
+                            }
+                          ],
+                          "attributes": [
+                            "data-v-08aaad4e",
+                            "",
+                            "data-v-7a7a37b1",
+                            "",
+                            "class",
+                            "login-container"
+                          ]
+                        }
+                      ],
+                      "attributes": [
+                        "data-v-7a7a37b1",
+                        "",
+                        "class",
+                        "app-container"
+                      ]
+                    }
+                  ],
+                  "attributes": [
+                    "id",
+                    "app",
+                    "data-v-app",
+                    ""
+                  ]
+                },
+                {
+                  "nodeId": 105,
+                  "parentId": 62,
+                  "backendNodeId": 116,
+                  "nodeType": 1,
+                  "nodeName": "SCRIPT",
+                  "localName": "script",
+                  "nodeValue": "",
+                  "childNodeCount": 0,
+                  "children": [],
+                  "attributes": [
+                    "type",
+                    "module",
+                    "src",
+                    "/src/main.js"
+                  ]
+                }
+              ],
+              "attributes": []
+            }
+          ],
+          "attributes": [
+            "lang",
+            "zh-CN"
+          ],
+          "frameId": "01F8BCC862BBB2512B978CB38E17F98F"
+        }
+      ],
+      "documentURL": "http://localhost:3001/login?redirect=/dashboard",
+      "baseURL": "http://localhost:3001/login?redirect=/dashboard",
+      "xmlVersion": "",
+      "compatibilityMode": "NoQuirksMode"
+    }
+  }
+}

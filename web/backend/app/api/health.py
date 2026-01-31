@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import psycopg2
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
 from app.core.exceptions import BusinessException, NotFoundException
@@ -18,7 +18,7 @@ from app.core.responses import (
     create_error_response,
     create_health_response,
 )
-from app.core.security import get_current_user, User
+from app.core.security import User, get_current_user
 
 router = APIRouter(tags=["health"])
 

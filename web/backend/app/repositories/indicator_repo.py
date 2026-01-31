@@ -6,13 +6,14 @@ Data access layer for Indicator System.
 Handles persistence of calculation results and task status.
 """
 
-from typing import List, Optional, Dict, Union
 from datetime import datetime
+from typing import Dict, List, Optional, Union
+
 import numpy as np
 import pandas as pd
-from sqlalchemy.orm import Session
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.orm import Session
 
 from app.core.database import get_postgresql_session
 from app.models.indicator_data import IndicatorData, IndicatorTaskModel

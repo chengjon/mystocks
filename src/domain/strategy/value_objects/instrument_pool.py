@@ -5,9 +5,9 @@ Instrument Pool Value Object
 表示策略可交易的金融标的集合。
 """
 
-from dataclasses import dataclass, field
-from typing import List, Set, FrozenSet
+from dataclasses import dataclass
 from enum import Enum
+from typing import List
 
 
 class AssetClass(Enum):

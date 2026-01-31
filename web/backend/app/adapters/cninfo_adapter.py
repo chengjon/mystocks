@@ -12,19 +12,20 @@ Multi-data Source Support
 - 支持多种公告类型（年报、重大事项、业绩预告等）
 """
 
-import time
-import requests
-from typing import List, Optional, Dict, Any
-from datetime import date, timedelta
-import pandas as pd
 import logging
+import time
+from datetime import date, timedelta
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+import requests
 
 from app.adapters.base import (
     BaseDataSourceAdapter,
-    DataSourceType,
-    DataSourceStatus,
-    DataSourceConfig,
     DataCategory,
+    DataSourceConfig,
+    DataSourceStatus,
+    DataSourceType,
 )
 
 logger = logging.getLogger(__name__)
@@ -175,7 +176,7 @@ class CninfoAdapter(BaseDataSourceAdapter):
             announcements = result.get("announcements", [])
 
             if not announcements:
-                logger.info(f"No announcements found for {symbol or 'all'} " f"from {start_date} to {end_date}")
+                logger.info("No announcements found for {symbol or 'all'} " f"from {start_date} to {end_date}")
                 success = True  # 空结果也算成功
                 self.update_health_status(DataSourceStatus.AVAILABLE)
                 return data
@@ -215,14 +216,14 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
             success = True
             self.update_health_status(DataSourceStatus.AVAILABLE)
-            logger.info(f"Fetched {len(data)} announcements from Cninfo")
+            logger.info("Fetched {len(data)} announcements from Cninfo"")
 
         except requests.RequestException as e:
-            logger.error(f"HTTP request failed: {e}")
+            logger.error("HTTP request failed: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         except Exception as e:
-            logger.error(f"Failed to fetch announcements from Cninfo: {e}")
+            logger.error("Failed to fetch announcements from Cninfo: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -290,13 +291,13 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 data["data_source"] = "cninfo"
                 data["search_keywords"] = keywords
 
-                logger.info(f"Found {len(data)} announcements matching '{keywords}'")
+                logger.info("Found {len(data)} announcements matching '%(keywords)s'"")
 
             success = True
             self.update_health_status(DataSourceStatus.AVAILABLE)
 
         except Exception as e:
-            logger.error(f"Failed to search announcements: {e}")
+            logger.error("Failed to search announcements: %(e)s"")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:

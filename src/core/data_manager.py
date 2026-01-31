@@ -16,20 +16,21 @@ DataManager - 重构后的核心数据协调器 (Refactored for Decoupling & Sag
 修改日期: 2026-01-03
 """
 
-import pandas as pd
-import time
 import logging
+import time
 import traceback
-from typing import Dict, List, Optional, Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
-from src.core.data_classification import DataClassification, DatabaseTarget
-from src.storage.database.database_manager import DatabaseTableManager
+import pandas as pd
+
+from src.core.data_classification import DatabaseTarget, DataClassification
+from src.core.infrastructure.adapter_registry import AdapterRegistry
 
 # 引入新组件
 from src.core.infrastructure.data_router import DataRouter
-from src.core.infrastructure.adapter_registry import AdapterRegistry
 from src.core.infrastructure.event_bus import EventBus
 from src.core.transaction.saga_coordinator import SagaCoordinator
+from src.storage.database.database_manager import DatabaseTableManager
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +43,11 @@ class DataManager:
     def __init__(
         self,
         enable_monitoring: bool = False,
-        db_manager: DatabaseTableManager = None,
+        db_manager: Optional[DatabaseTableManager] = None,
         # 依赖注入参数 (可选，为了向后兼容默认为 None)
-        router: DataRouter = None,
-        registry: AdapterRegistry = None,
-        event_bus: EventBus = None,
+        router: Optional[DataRouter] = None,
+        registry: Optional[AdapterRegistry] = None,
+        event_bus: Optional[EventBus] = None,
         td_access=None,
         pg_access=None,
     ):
@@ -75,12 +76,12 @@ class DataManager:
         # 如果未注入访问层，则按传统方式创建 (向后兼容)
         if not td_access or not pg_access:
             # 延迟导入以避免循环依赖
-            from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
+            from src.data_access import PostgreSQLDataAccess, TDengineDataAccess
 
             # 这里的 monitoring_db 参数是旧架构的遗留，新架构建议使用 EventBus
             # 但为了兼容 DataAccess 层的现有签名，我们可能仍需传递它
             # 在完全重构 DataAccess 之前，我们保持这种混合状态
-            monitoring_db = None
+            monitoring_db: Optional[Any] = None
             if enable_monitoring:
                 try:
                     from src.monitoring.monitoring_database import get_monitoring_database
@@ -158,7 +159,7 @@ class DataManager:
         data: pd.DataFrame,
         table_name: str,
         use_saga: bool = False,  # 新增参数：是否启用 Saga 事务
-        metadata_callback: Callable = None,  # 新增参数：元数据更新回调 (用于 Saga)
+        metadata_callback: Optional[Callable] = None,  # 新增参数：元数据更新回调 (用于 Saga)
         **kwargs,
     ) -> bool:
         """
@@ -211,19 +212,19 @@ class DataManager:
             )
 
             if success:
-                logger.debug(f"Save success: {classification.value} -> {target_db.value}")
+                logger.debug("Save success: {classification.value} -> {target_db.value")
 
             return success
 
         except Exception as e:
-            logger.error(f"Save failed: {classification.value} - {str(e)}")
+            logger.error("Save failed: %s - %s", classification.value, str(e))
             logger.debug(traceback.format_exc())
             return False
 
     def load_data(self, classification: DataClassification, table_name: str, **filters) -> Optional[pd.DataFrame]:
         """加载数据"""
         start_time = time.time()
-        data = None
+        data: Optional[pd.DataFrame] = None
         target_db = DatabaseTarget.POSTGRESQL
 
         try:
@@ -254,7 +255,7 @@ class DataManager:
             return data
 
         except Exception as e:
-            logger.error(f"Load failed: {classification.value} - {str(e)}")
+            logger.error("Load failed: %s - %s", classification.value, str(e))
             return None
 
     def health_check(self) -> Dict[str, Any]:

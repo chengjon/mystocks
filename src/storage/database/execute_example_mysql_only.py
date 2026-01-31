@@ -1,7 +1,9 @@
-from database_manager import DatabaseTableManager, DatabaseType
+# pylint: disable=import-error,no-name-in-module
 import os
-from dotenv import load_dotenv
+
+from database_manager import DatabaseTableManager, DatabaseType
 from db_utils import create_databases_safely
+from dotenv import load_dotenv
 
 # 确保加载正确路径的.env文件
 env_path = os.path.join(os.path.dirname(__file__), "..", ".env")

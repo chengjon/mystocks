@@ -12,7 +12,7 @@
 版本: 1.0.0
 """
 
-from .tick_receiver import TickReceiver, TickData, DataSourceType
+from .tick_receiver import DataSourceType, TickData, TickReceiver
 
 __all__ = ["TickReceiver", "TickData", "DataSourceType"]
 

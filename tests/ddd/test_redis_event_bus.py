@@ -3,9 +3,10 @@ Verification Script for Redis Event Bus
 验证 Redis 事件总线的异步分发与反序列化
 """
 
-import sys
 import os
+import sys
 import time
+
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
@@ -13,12 +14,13 @@ from sqlalchemy.orm import sessionmaker
 # 确保项目根目录在 path 中
 sys.path.append(os.getcwd())
 
-from src.storage.database.database_manager import Base
+from datetime import datetime
+
 from src.application.bootstrap import bootstrap_app
+from src.domain.portfolio.model.portfolio import Portfolio
 from src.domain.trading.events import OrderFilledEvent
 from src.domain.trading.value_objects import OrderSide
-from src.domain.portfolio.model.portfolio import Portfolio
-from datetime import datetime
+from src.storage.database.database_manager import Base
 
 
 def test_redis_integration():

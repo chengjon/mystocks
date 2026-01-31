@@ -5,19 +5,20 @@ Indicator Defaults Loader
 Migrates metadata from Legacy Registry to V2 Registry on startup.
 """
 
-from app.services.indicator_registry import IndicatorRegistry as LegacyRegistry
-from app.services.indicators.indicator_registry import get_indicator_registry
-from app.services.indicators.indicator_metadata import (
-    IndicatorMetadata,
-    IndicatorParameter,
-    IndicatorOutput,
-    IndicatorCategory,
-    PanelType,
-    ParameterType,
-    ParameterConstraint,
-)
-from app.services.indicators.talib_adapter import register_all_talib_indicators
 import logging
+
+from app.services.indicator_registry import IndicatorRegistry as LegacyRegistry
+from app.services.indicators.indicator_metadata import (
+    IndicatorCategory,
+    IndicatorMetadata,
+    IndicatorOutput,
+    IndicatorParameter,
+    PanelType,
+    ParameterConstraint,
+    ParameterType,
+)
+from app.services.indicators.indicator_registry import get_indicator_registry
+from app.services.indicators.talib_adapter import register_all_talib_indicators
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,6 @@ def load_default_indicators():
             count += 1
 
         except Exception as e:
-            logger.error(f"Failed to migrate {abbr}: {e}")
+            logger.error("Failed to migrate %(abbr)s: %(e)s"")
 
-    logger.info(f"Successfully loaded {count} default indicators")
+    logger.info("Successfully loaded %(count)s default indicators"")

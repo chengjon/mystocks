@@ -8,10 +8,11 @@ Data Processor Factory Simple Test Suite
 测试重点: 基础功能，避免复杂依赖Mocking
 """
 
-import pytest
-from unittest.mock import patch
-import sys
 import os
+import sys
+from unittest.mock import patch
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
@@ -33,8 +34,9 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_method_signature(self):
         """测试get_processor方法签名"""
-        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
+
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 获取方法签名
         sig = inspect.signature(DataProcessorFactory.get_processor)
@@ -45,8 +47,9 @@ class TestDataProcessorFactorySimple:
 
     def test_get_processor_type_method_signature(self):
         """测试get_processor_type方法签名"""
-        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
+
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 获取方法签名
         sig = inspect.signature(DataProcessorFactory.get_processor_type)
@@ -165,8 +168,9 @@ class TestDataProcessorFactorySimple:
 
     def test_factory_static_methods(self):
         """测试工厂方法是静态方法"""
-        from src.gpu.data_processor_factory import DataProcessorFactory
         import inspect
+
+        from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 验证是静态方法
         assert isinstance(inspect.getattr_static(DataProcessorFactory, "get_processor"), staticmethod)
@@ -271,6 +275,7 @@ class TestDataProcessorFactoryIntegrationSimple:
     def test_environment_variable_handling(self):
         """测试环境变量处理"""
         import os
+
         from src.gpu.data_processor_factory import DataProcessorFactory
 
         # 备份原始环境变量

@@ -271,7 +271,7 @@ const ruleForm = reactive<RuleForm>({
   is_active: true
 })
 
-const tableColumns = computed((): TableColumn[] => [
+const tableColumns = computed((): any[] => [
   {
     prop: 'rule_name',
     label: '规则名称',

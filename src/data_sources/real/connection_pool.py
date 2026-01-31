@@ -4,16 +4,17 @@ PostgreSQL连接池管理器
 """
 
 import logging
-import time
-import threading
 import queue
+import threading
+import time
 from contextlib import contextmanager
-from typing import Dict, Optional, Any, List
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import psycopg2
-from psycopg2 import OperationalError, InterfaceError
 import psycopg2.extensions
+from psycopg2 import InterfaceError, OperationalError
 
 logger = logging.getLogger(__name__)
 

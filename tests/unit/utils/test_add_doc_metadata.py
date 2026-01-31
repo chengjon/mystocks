@@ -7,17 +7,18 @@ Add Document Metadata Test Suite
 测试模块: src.utils.add_doc_metadata (206行)
 """
 
-import pytest
 import os
-import tempfile
 import shutil
-from unittest.mock import patch
 import sys
+import tempfile
+from unittest.mock import patch
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
-from src.utils.add_doc_metadata import add_metadata, batch_add_metadata, METADATA_TEMPLATE
+from src.utils.add_doc_metadata import METADATA_TEMPLATE, add_metadata, batch_add_metadata
 
 
 class TestAddMetadata:

@@ -2,7 +2,7 @@
     <div :class="wrapperClasses">
         <!-- Label (Optional) -->
         <label v-if="label" :for="inputId" class="artdeco-input__label">
-            {{ label }}
+            {{ displayLabel }}
             <span v-if="required" class="artdeco-input__required">*</span>
         </label>
 
@@ -75,6 +75,11 @@
         /// Input label (uppercase, small font size)
         label?: string
 
+        /// Label type style
+        /// - default: Standard uppercase label
+        /// - roman: Roman numeral suffix (e.g., "INPUT I", "INPUT II")
+        labelType?: 'default' | 'roman'
+
         /// Placeholder text (muted gray)
         placeholder?: string
 
@@ -114,6 +119,7 @@
     const props = withDefaults(defineProps<Props>(), {
         modelValue: '',
         label: '',
+        labelType: 'default',
         placeholder: '',
         type: 'text',
         disabled: false,
@@ -186,6 +192,40 @@
                 'artdeco-input__field--has-suffix': !!slots.suffix
             }
         ]
+    })
+
+    /**
+     * Convert label to Roman numeral format
+     * 将标签转换为罗马数字格式
+     * Example: "USERNAME" → "USERNAME Ⅰ" (if labelType='roman')
+     */
+    const displayLabel = computed(() => {
+        if (!props.label) return ''
+
+        if (props.labelType === 'roman') {
+            // Roman numeral conversion map (1-20)
+            const romanNumerals: Record<number, string> = {
+                1: 'Ⅰ', 2: 'Ⅱ', 3: 'Ⅲ', 4: 'Ⅳ', 5: 'Ⅴ',
+                6: 'Ⅵ', 7: 'Ⅶ', 8: 'Ⅷ', 9: 'Ⅸ', 10: 'Ⅹ',
+                11: 'Ⅺ', 12: 'Ⅻ', 13: 'ⅩⅢ', 14: 'ⅩⅣ', 15: 'ⅩⅤ',
+                16: 'ⅩⅥ', 17: 'ⅩⅦ', 18: 'ⅩⅧ', 19: 'ⅩⅨ', 20: 'ⅩⅩ'
+            }
+
+            // Try to extract a number from the label and convert to Roman
+            const match = props.label.match(/(\d+)$/)
+            if (match) {
+                const num = parseInt(match[1], 10)
+                if (num >= 1 && num <= 20) {
+                    const baseLabel = props.label.replace(/\d+$/, '').trim()
+                    return `${baseLabel} ${romanNumerals[num]}`
+                }
+            }
+
+            // If no number found, append Roman numeral I
+            return `${props.label} Ⅰ`
+        }
+
+        return props.label
     })
 
     // ============================================

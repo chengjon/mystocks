@@ -2,13 +2,14 @@
 Phase 6: Market Data Context 验证测试
 """
 
-import pytest
-import pandas as pd
-from unittest.mock import MagicMock, patch
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
-from src.infrastructure.market_data.adapter import DataSourceV2Adapter
+import pandas as pd
+import pytest
+
 from src.domain.market_data.value_objects import Bar, Quote
+from src.infrastructure.market_data.adapter import DataSourceV2Adapter
 
 
 class TestDataSourceV2Adapter:

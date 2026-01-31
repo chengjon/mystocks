@@ -5,8 +5,8 @@
 """
 
 import asyncio
-import sys
 import os
+import sys
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -140,8 +140,8 @@ async def test_basic_gpu_operations():
         try:
             from src.gpu.core.kernels import MatrixKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixOperationConfig,
+                MatrixOperationType,
             )
 
             kernel = MatrixKernelEngine()

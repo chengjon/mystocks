@@ -10,11 +10,12 @@
 版本: 1.0.0
 """
 
-from enum import Enum
-from typing import List, Dict, Any, Optional, Callable
-from dataclasses import dataclass
-import pandas as pd
 import time
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
+
+import pandas as pd
 
 
 class BatchFailureStrategy(str, Enum):
@@ -63,7 +64,7 @@ class BatchOperationResult:
     """失败记录的索引列表"""
 
     error_messages: Optional[Dict[int, str]] = None
-    """失败记录的错误消息 {index: error_message}"""
+    """失败记录的错误消息"""
 
     retry_count: int = 0
     """重试次数"""
@@ -350,6 +351,49 @@ class BatchFailureHandler:
             error_messages=all_error_messages,
             retry_count=total_retries,
         )
+
+    def record_batch_result(self, batch_index: int, success: bool, row_count: int):
+        """
+        记录批次处理结果
+
+        Args:
+            batch_index: 批次索引
+            success: 是否成功
+            row_count: 行数
+        """
+        if not hasattr(self, "_batch_results"):
+            self._batch_results = []
+        self._batch_results.append({
+            "batch_index": batch_index,
+            "success": success,
+            "row_count": row_count,
+        })
+
+    def get_result(self) -> Dict[str, Any]:
+        """
+        获取批量操作结果
+
+        Returns:
+            批量操作结果字典
+        """
+        if not hasattr(self, "_batch_results"):
+            return {"total_batches": 0, "successful_batches": 0, "failed_batches": 0}
+
+        total = len(self._batch_results)
+        successful = sum(1 for r in self._batch_results if r["success"])
+        failed = total - successful
+        total_rows = sum(r["row_count"] for r in self._batch_results)
+        successful_rows = sum(r["row_count"] for r in self._batch_results if r["success"])
+
+        return {
+            "total_batches": total,
+            "successful_batches": successful,
+            "failed_batches": failed,
+            "total_rows": total_rows,
+            "successful_rows": successful_rows,
+            "failed_rows": total_rows - successful_rows,
+            "success_rate": successful / total if total > 0 else 0.0,
+        }
 
 
 if __name__ == "__main__":

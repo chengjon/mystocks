@@ -5,14 +5,15 @@ Financial适配器使用示例
 展示如何使用FinancialDataSource类获取各种金融数据
 """
 
-import pandas as pd
-import sys
 import os
+import sys
 
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.adapters.financial import FinancialDataSource  # noqa: E402
+import pandas as pd
+
+from src.interfaces.adapters.financial import FinancialDataSource  # noqa: E402
 
 
 def main():
@@ -25,6 +26,7 @@ def main():
     # 检查数据源是否初始化成功
     print("数据源初始化状态:")
     print(f"  - efinance可用: {financial_ds.efinance_available}")
+    # pylint: disable=no-member
     print(f"  - easyquotation可用: {financial_ds.easyquotation_available}")
 
     # 示例1: 获取股票日线数据
@@ -34,7 +36,7 @@ def main():
     end_date = "2023-12-31"
 
     daily_data = financial_ds.get_stock_daily(symbol, start_date, end_date)
-    if not daily_data.empty:
+    if isinstance(daily_data, pd.DataFrame) and not daily_data.empty:
         print(f"成功获取到{len(daily_data)}行日线数据")
         print("数据列名:", list(daily_data.columns))
         print("前3行数据:")
@@ -45,29 +47,29 @@ def main():
     # 示例2: 获取股票基本信息
     print("\n--- 示例2: 获取股票基本信息 ---")
     basic_info = financial_ds.get_stock_basic(symbol)
-    if isinstance(basic_info, pd.DataFrame) and not basic_info.empty:
+    if isinstance(basic_info, pd.DataFrame) and not basic_info.empty:  # pylint: disable=no-member
         print("股票基本信息:")
-        print(basic_info)
+        print(basic_info.head())  # pylint: disable=no-member
     else:
         print("未能获取到股票基本信息")
 
     # 示例3: 获取特定股票实时数据
     print("\n--- 示例3: 获取特定股票实时数据 ---")
     real_time_data = financial_ds.get_real_time_data(symbol)
-    if isinstance(real_time_data, pd.DataFrame) and not real_time_data.empty:
+    if isinstance(real_time_data, pd.DataFrame) and not real_time_data.empty:  # pylint: disable=no-member
         print("特定股票实时数据:")
-        print(real_time_data)
+        print(real_time_data.head())  # pylint: disable=no-member
     else:
         print("未能获取到特定股票实时数据")
 
     # 示例4: 获取市场快照数据
     print("\n--- 示例4: 获取市场快照数据 ---")
     market_snapshot = financial_ds.get_real_time_data(market="CN")
-    if isinstance(market_snapshot, pd.DataFrame) and not market_snapshot.empty:
+    if isinstance(market_snapshot, pd.DataFrame) and not market_snapshot.empty:  # pylint: disable=no-member
         print(f"获取到{len(market_snapshot)}只股票的市场快照数据")
-        print("市场快照数据列名:", list(market_snapshot.columns))
+        print("市场快照数据列名:", list(market_snapshot.columns))  # pylint: disable=no-member
         print("前3行数据:")
-        print(market_snapshot.head(3))
+        print(market_snapshot.head(3))  # pylint: disable=no-member
     else:
         print("未能获取到市场快照数据")
 
@@ -75,7 +77,7 @@ def main():
     print("\n--- 示例5: 获取指数日线数据 ---")
     index_symbol = "000300"  # 沪深300
     index_data = financial_ds.get_index_daily(index_symbol, start_date, end_date)
-    if not index_data.empty:
+    if isinstance(index_data, pd.DataFrame) and not index_data.empty:
         print(f"成功获取到{len(index_data)}行指数日线数据")
         print("指数数据列名:", list(index_data.columns))
         print("前3行数据:")
@@ -86,21 +88,21 @@ def main():
     # 示例6: 获取指数成分股
     print("\n--- 示例6: 获取指数成分股 ---")
     components = financial_ds.get_index_components(index_symbol)  # 也可以使用指数名称如"沪深300"
-    if not components.empty:
+    if isinstance(components, pd.DataFrame) and not components.empty:  # pylint: disable=no-member
         print(f"成功获取到{len(components)}个指数成分股")
         print("前10个成分股:")
-        print(components.head(10))
+        print(components.head(10))  # pylint: disable=no-member
     else:
         print("未能获取到指数成分股")
 
     # 示例7: 获取财务数据
     print("\n--- 示例7: 获取财务数据 ---")
     financial_data = financial_ds.get_financial_data(symbol)
-    if not financial_data.empty:
+    if isinstance(financial_data, pd.DataFrame) and not financial_data.empty:  # pylint: disable=no-member
         print(f"成功获取到{len(financial_data)}行财务数据")
-        print("财务数据列名:", list(financial_data.columns))
+        print("财务数据列名:", list(financial_data.columns))  # pylint: disable=no-member
         print("前3行数据:")
-        print(financial_data.head(3))
+        print(financial_data.head(3))  # pylint: disable=no-member
     else:
         print("未能获取到财务数据")
 

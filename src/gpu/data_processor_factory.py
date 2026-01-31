@@ -1,8 +1,9 @@
 import os
 from typing import Type
-from src.gpu.data_processing_interfaces import IDataProcessor
+
 from src.gpu.accelerated.cpu_data_processor import CPUDataProcessor
 from src.gpu.accelerated.data_processor_gpu_fixed import GPUDataProcessorFixed
+from src.gpu.data_processing_interfaces import IDataProcessor
 
 
 class DataProcessorFactory:

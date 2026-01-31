@@ -14,18 +14,19 @@ Prometheus Exporter - Enhanced Version
 """
 
 import logging
-import time
-import psutil
 import os
+import time
 from datetime import datetime
+
+import psutil
 from fastapi import APIRouter, Response
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    generate_latest,
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
 )
 
 # 导入自定义指标收集器
@@ -284,7 +285,7 @@ def update_system_metrics():
 
         logger.debug("✅ System metrics updated")
     except Exception as e:
-        logger.warning(f"⚠️  Failed to update system metrics: {e}")
+        logger.warning("⚠️  Failed to update system metrics: %(e)s"")
 
 
 def update_database_metrics():
@@ -305,7 +306,7 @@ def update_database_metrics():
 
         logger.debug("✅ Database metrics updated")
     except Exception as e:
-        logger.warning(f"⚠️  Failed to update database metrics: {e}")
+        logger.warning("⚠️  Failed to update database metrics: %(e)s"")
 
 
 def update_cache_metrics():
@@ -320,7 +321,7 @@ def update_cache_metrics():
 
         logger.debug("✅ Cache metrics updated")
     except Exception as e:
-        logger.warning(f"⚠️  Failed to update cache metrics: {e}")
+        logger.warning("⚠️  Failed to update cache metrics: %(e)s"")
 
 
 def update_health_metrics():
@@ -344,7 +345,7 @@ def update_health_metrics():
 
         logger.debug("✅ Health metrics updated")
     except Exception as e:
-        logger.warning(f"⚠️  Failed to update health metrics: {e}")
+        logger.warning("⚠️  Failed to update health metrics: %(e)s"")
 
 
 # ==================== API 端点 ====================
@@ -373,7 +374,7 @@ async def metrics():
         return Response(content=metrics_data, media_type=CONTENT_TYPE_LATEST)
 
     except Exception as e:
-        logger.error(f"❌ Error generating metrics: {e}")
+        logger.error("❌ Error generating metrics: %(e)s"")
         return Response(content=f"# ERROR: {str(e)}\n", media_type=CONTENT_TYPE_LATEST, status_code=500)
 
 
@@ -439,7 +440,7 @@ async def metrics_list():
                 if metric_info not in metrics_info:
                     metrics_info.append(metric_info)
     except Exception as e:
-        logger.warning(f"⚠️  Failed to collect metrics info: {e}")
+        logger.warning("⚠️  Failed to collect metrics info: %(e)s"")
 
     return {
         "total": len(metrics_info),
@@ -499,4 +500,4 @@ def record_db_query(
 if __name__ == "__main__":
     """测试Prometheus Exporter"""
     logger.info("✅ Prometheus Exporter Initialized")
-    logger.info(f"Total metrics registered: {len(prometheus_registry._collector_to_names)}")
+    logger.info("Total metrics registered: {len(prometheus_registry._collector_to_names)}"")

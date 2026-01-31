@@ -55,7 +55,7 @@ def _get_or_create_metric(metric_class, name, documentation, labelnames=None, re
             if hasattr(registry, "_names_to_collectors") and name in registry._names_to_collectors:
                 return registry._names_to_collectors[name]
             else:
-                logger.warning(f"Cannot access existing metric {name}, creating new registry")
+                logger.warning("Cannot access existing metric %(name)s, creating new registry"")
                 # Create a new registry if we can't access the existing one
                 new_registry = CollectorRegistry()
                 if labelnames:
@@ -165,7 +165,7 @@ def update_database_metrics():
         datasource_availability.labels(datasource="baostock").set(1)
 
     except Exception as e:
-        logger.error(f"Failed to update database metrics: {e}")
+        logger.error("Failed to update database metrics: %(e)s"")
         # 发生错误时标记服务不健康
         api_health_status.labels(service="backend").set(0)
 
@@ -191,7 +191,7 @@ async def health_check() -> Dict[str, Any]:
 
         return {"status": "healthy", "timestamp": time.time(), "version": "1.0.0"}
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
+        logger.error("Health check failed: %(e)s"")
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
@@ -216,7 +216,7 @@ async def basic_status() -> APIResponse:
             message="系统运行正常",
         )
     except Exception as e:
-        logger.error(f"Status check failed: {e}")
+        logger.error("Status check failed: %(e)s"")
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
@@ -254,14 +254,14 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
             "uptime": time.time(),
         }
 
-        logger.info(f"Basic metrics accessed by user: {current_user.username}")
+        logger.info("Basic metrics accessed by user: {current_user.username}"")
 
         return APIResponse(success=True, data=basic_data, message="基础监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Basic metrics failed for user {current_user.username}: {e}")
+        logger.error("Basic metrics failed for user {current_user.username}: %(e)s"")
         raise BusinessException(
             detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED"
         )
@@ -297,14 +297,14 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
             "memory_usage": 0.60,
         }
 
-        logger.info(f"Performance metrics accessed by user: {current_user.username}")
+        logger.info("Performance metrics accessed by user: {current_user.username}"")
 
         return APIResponse(success=True, data=performance_data, message="性能监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Performance metrics failed for user {current_user.username}: {e}")
+        logger.error("Performance metrics failed for user {current_user.username}: %(e)s"")
         raise BusinessException(
             detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED"
         )
@@ -329,7 +329,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(f"Unauthorized metrics access attempt by user: {current_user.username}")
+            logger.warning("Unauthorized metrics access attempt by user: {current_user.username}"")
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 检查访问频率限制（更严格的限制）
@@ -342,7 +342,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         update_database_metrics()
 
         # 记录管理员访问
-        logger.info(f"Prometheus metrics accessed by admin: {current_user.username}")
+        logger.info("Prometheus metrics accessed by admin: {current_user.username}"")
 
         # 生成Prometheus格式的metrics
         return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
@@ -350,7 +350,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
     except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Prometheus metrics failed for admin {current_user.username}: {e}")
+        logger.error("Prometheus metrics failed for admin {current_user.username}: %(e)s"")
         raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
 
@@ -370,7 +370,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(f"Unauthorized detailed metrics access attempt by user: {current_user.username}")
+            logger.warning("Unauthorized detailed metrics access attempt by user: {current_user.username}"")
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 检查访问频率限制
@@ -394,14 +394,14 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
             "system_info": {"uptime": time.time(), "version": "1.0.0", "environment": "production"},
         }
 
-        logger.info(f"Detailed metrics accessed by admin: {current_user.username}")
+        logger.info("Detailed metrics accessed by admin: {current_user.username}"")
 
         return APIResponse(success=True, data=detailed_data, message="详细监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Detailed metrics failed for admin {current_user.username}: {e}")
+        logger.error("Detailed metrics failed for admin {current_user.username}: %(e)s"")
         raise BusinessException(
             detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED"
         )
@@ -422,21 +422,21 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning(f"Unauthorized metrics reset attempt by user: {current_user.username}")
+            logger.warning("Unauthorized metrics reset attempt by user: {current_user.username}"")
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 清理访问频率限制数据
         global metrics_access_count
         metrics_access_count.clear()
 
-        logger.info(f"Metrics reset by admin: {current_user.username}")
+        logger.info("Metrics reset by admin: {current_user.username}"")
 
         return APIResponse(success=True, data={"reset_count": len(metrics_access_count)}, message="监控指标已重置")
 
     except (BusinessException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error(f"Metrics reset failed for admin {current_user.username}: {e}")
+        logger.error("Metrics reset failed for admin {current_user.username}: %(e)s"")
         raise BusinessException(detail="重置监控指标失败", status_code=500, error_code="METRICS_RESET_FAILED")
 
 

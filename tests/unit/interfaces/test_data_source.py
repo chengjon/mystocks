@@ -7,10 +7,11 @@ Data Source Interface Test Suite
 测试模块: src.interfaces.data_source (142行)
 """
 
-import pytest
-import pandas as pd
-from typing import Dict, List, Optional, Any
 import inspect
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+import pytest
 
 from src.interfaces.data_source import IDataSource
 

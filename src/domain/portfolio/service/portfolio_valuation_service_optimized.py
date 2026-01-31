@@ -10,15 +10,15 @@ Phase: 12.5 - Performance Optimization Integration
 """
 
 import logging
-from typing import Dict, List, Optional
 from collections import defaultdict
+from typing import Dict, List, Optional
 
-from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
-from src.services.performance_optimizer import IncrementalCalculator
 from src.domain.portfolio.model.portfolio import Portfolio
 from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository
+from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
 from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics
 from src.infrastructure.persistence.exceptions import ConcurrencyException
+from src.services.performance_optimizer import IncrementalCalculator
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
             }
         )
 
-        logger.info(f"✅ Optimized Portfolio Valuation Service initialized " f"(incremental={enable_incremental})")
+        logger.info("✅ Optimized Portfolio Valuation Service initialized " f"(incremental={enable_incremental})")
 
     def revaluate_portfolio(
         self, portfolio_id: str, prices: Dict[str, float], force_save: bool = True
@@ -80,7 +80,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
             # 1. 加载投资组合
             portfolio = self.portfolio_repo.find_by_id(portfolio_id)
             if not portfolio:
-                logger.error(f"Portfolio not found: {portfolio_id}")
+                logger.error("Portfolio not found: %(portfolio_id)s")
                 raise ValueError(f"Portfolio not found: {portfolio_id}")
 
             # 2. 记录价格历史
@@ -122,11 +122,11 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
 
         except ConcurrencyException as e:
             self.metrics["concurrency_conflicts"] += 1
-            logger.warning(f"⚠️ Concurrency conflict revaluating portfolio {portfolio_id}: {e}")
+            logger.warning("⚠️ Concurrency conflict revaluating portfolio %(portfolio_id)s: %(e)s")
             raise
 
         except Exception as e:
-            logger.error(f"❌ Failed to revaluate portfolio {portfolio_id}: {e}")
+            logger.error("❌ Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
             return None
 
     def _has_incremental_calculator(self, portfolio_id: str) -> bool:
@@ -145,7 +145,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
         calculator = IncrementalCalculator(initial_value=performance.holdings_value + performance.cash_balance)
         self.incremental_calculators[portfolio_id] = calculator
 
-        logger.debug(f"📊 Initialized incremental calculator for {portfolio_id}: {performance.holdings_value:.2f}")
+        logger.debug("📊 Initialized incremental calculator for %(portfolio_id)s: {performance.holdings_value:.2f")
 
     def _revaluate_incremental(self, portfolio: Portfolio, prices: Dict[str, float]) -> PerformanceMetrics:
         """

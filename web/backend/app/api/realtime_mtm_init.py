@@ -9,10 +9,11 @@ Date: 2026-01-09
 Phase: 12.4 - API Layer Integration
 """
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
+
 import structlog
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 logger = structlog.get_logger()
 
@@ -36,7 +37,7 @@ def get_database_session() -> Session:
         SessionLocal = sessionmaker(bind=_engine)
         _db_session = SessionLocal()
 
-        logger.info(f"✅ Database session created: {database_url}")
+        logger.info("✅ Database session created: %(database_url)s"")
 
     return _db_session
 
@@ -59,7 +60,7 @@ def initialize_realtime_mtm():
             event_bus = RedisEventBus(host="localhost", port=6379, db=0)
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
         except Exception as e:
-            logger.warning(f"⚠️ Redis not available for Real-time MTM: {e}")
+            logger.warning("⚠️ Redis not available for Real-time MTM: %(e)s"")
 
         # 初始化适配器
         from web.backend.app.api.realtime_mtm_adapter import initialize_adapter
@@ -70,7 +71,7 @@ def initialize_realtime_mtm():
         return adapter
 
     except Exception as e:
-        logger.error(f"❌ Failed to initialize Real-time MTM: {e}")
+        logger.error("❌ Failed to initialize Real-time MTM: %(e)s"")
         raise
 
 
@@ -102,7 +103,7 @@ def shutdown_realtime_mtm():
             logger.info("✅ Database engine disposed")
 
     except Exception as e:
-        logger.error(f"❌ Error shutting down Real-time MTM: {e}")
+        logger.error("❌ Error shutting down Real-time MTM: %(e)s"")
 
 
 # FastAPI 生命周期事件处理器

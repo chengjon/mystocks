@@ -5,8 +5,8 @@ GPU资源管理器
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Set, Any
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Set
 
 try:
     import pynvml
@@ -17,16 +17,15 @@ except ImportError:
     print("Warning: pynvml not available, GPU detection will be simulated")
 
 from .interfaces import (
+    AllocationRequest,
+    GPUDeviceInfo,
     IGPUResourceProvider,
     IStrategyContext,
-    StrategyPriority,
-    GPUDeviceInfo,
-    AllocationRequest,
     PerformanceProfile,
+    StrategyPriority,
 )
 from .memory_pool import MemoryPool
 from .strategy_context import StrategyGPUContext
-
 
 logger = logging.getLogger(__name__)
 

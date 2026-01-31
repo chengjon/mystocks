@@ -7,19 +7,19 @@
 import { request } from '@/utils/request'
 import { StrategyAdapter } from '@/utils/strategy-adapters'
 import type {
-  BacktestRequest,
-  BacktestResponse
+  BacktestRequest
+// BacktestResponse  // Currently unused
 } from '@/api/types/strategy'
 import type {
   StrategyListItemVM,
   StrategyConfigVM,
-  BacktestResultVM,
-  TechnicalIndicatorVM
+  BacktestResultVM
+// TechnicalIndicatorVM  // Currently unused
 } from '@/utils/strategy-adapters'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type StrategyConfigResponse = any
+// type StrategyConfigResponse = any  // Currently unused
 
 class StrategyApiService {
   private baseUrl = '/api/strategy'

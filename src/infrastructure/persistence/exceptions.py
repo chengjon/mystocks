@@ -41,8 +41,6 @@ class RepositoryException(Exception):
     用于所有仓储操作相关的异常。
     """
 
-    pass
-
 
 class EntityNotFoundException(RepositoryException):
     """

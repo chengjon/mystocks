@@ -12,13 +12,14 @@
 - 内存泄漏检测
 """
 
-import pytest
 import asyncio
-import time
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
 
 # Mock the dependencies to avoid import issues
 import sys
+import time
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
+import pytest
 
 sys.modules["asyncpg"] = MagicMock()
 sys.modules["structlog"] = MagicMock()
@@ -27,10 +28,10 @@ sys.modules["src.core.exceptions"] = MagicMock()
 sys.modules["src.core.memory_manager"] = MagicMock()
 
 from src.core.database_pool import (
-    DatabaseConnectionPool,
     DatabaseConnectionManager,
-    get_connection_pool,
+    DatabaseConnectionPool,
     close_connection_pool,
+    get_connection_pool,
     get_db_manager,
 )
 

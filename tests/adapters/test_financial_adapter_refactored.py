@@ -3,10 +3,11 @@ TDD测试框架 - 财务适配器重构
 遵循红-绿-重构循环，确保拆分后的功能完整性
 """
 
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -195,8 +196,9 @@ class TestPerformanceBenchmarks:
     def test_get_stock_daily_performance(self):
         """测试：股票日线数据获取性能基准"""
         # TODO: 重构前应该失败
-        from src.adapters.price_data_adapter import PriceDataAdapter
         import time
+
+        from src.adapters.price_data_adapter import PriceDataAdapter
 
         adapter = PriceDataAdapter()
         symbol = "000001"

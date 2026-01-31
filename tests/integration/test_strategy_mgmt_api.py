@@ -16,8 +16,9 @@
 日期: 2025-11-21
 """
 
-import sys
 import os
+import sys
+
 import pytest
 from fastapi.testclient import TestClient
 

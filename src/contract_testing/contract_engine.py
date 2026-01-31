@@ -7,15 +7,15 @@ Coordinates specification validation, test execution, and reporting.
 Task 12.1 Implementation: Contract testing engine
 """
 
+import json
 import logging
-from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass
 from datetime import datetime
-import json
+from typing import Any, Callable, Dict, List, Optional
 
-from .spec_validator import SpecificationValidator, APIEndpoint
-from .test_hooks import TestHooksManager, HookContext, HookType
 from .api_consistency_checker import APIConsistencyChecker
+from .spec_validator import APIEndpoint, SpecificationValidator
+from .test_hooks import HookContext, HookType, TestHooksManager
 
 logger = logging.getLogger(__name__)
 

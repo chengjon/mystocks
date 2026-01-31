@@ -9,9 +9,11 @@ Efinance Data Source Adapter Tests
 - 缓存和熔断器功能
 """
 
-import pytest
-import pandas as pd
 from unittest.mock import Mock, patch
+
+import pandas as pd
+import pytest
+
 from src.adapters.efinance_adapter import EfinanceDataSource
 
 

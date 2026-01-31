@@ -15,9 +15,9 @@ Mock数据文件: RealTimeMonitor
 生成时间: 2025-11-15
 """
 
-from typing import List, Dict, Optional
 import datetime
 import random
+from typing import Dict, List, Optional
 
 
 def get_realtime_alerts(params: Optional[Dict] = None) -> List[Dict]:

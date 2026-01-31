@@ -17,8 +17,14 @@ export * from './core'
 // 高级分析组件
 export * from './advanced'
 
-// 专用功能组件
-export * from './specialized'
+// 业务组件 (NEW - Phase 3 reorganization)
+export * from './business'
+
+// 图表组件 (NEW - Phase 3 reorganization)
+export * from './charts'
+
+// 交易组件 (NEW - Phase 3 reorganization)
+export * from './trading'
 
 // 样式常量
 export const ARTDECO_STYLES = {

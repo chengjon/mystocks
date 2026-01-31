@@ -7,13 +7,13 @@
 
 from enum import IntEnum
 from typing import Dict
+
 from app.core.validation_messages import (
     CommonMessages,
     MarketMessages,
     TechnicalMessages,
     TradeMessages,
 )
-
 
 # ==================== 错误码枚举定义 ====================
 

@@ -16,10 +16,11 @@ from datetime import datetime
 from typing import Dict, List, Optional, Set
 
 from redis import Redis
-from src.domain.market_data.streaming import IPriceStreamAdapter, PriceUpdate, PriceChangedEvent
+
+from src.domain.market_data.streaming import IPriceStreamAdapter, PriceChangedEvent, PriceUpdate
+from src.domain.portfolio.service import PortfolioValuationService
 from src.domain.shared.event_bus import IEventBus
 from src.infrastructure.cache.redis_lock import RedisDistributedLock
-from src.domain.portfolio.service import PortfolioValuationService
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,7 @@ class PriceStreamProcessor:
     def add_stream_adapter(self, adapter: IPriceStreamAdapter) -> None:
         """添加行情流适配器"""
         self._stream_adapters.append(adapter)
-        logger.info(f"✅ Added stream adapter: {adapter.__class__.__name__}")
+        logger.info("✅ Added stream adapter: {adapter.__class__.__name__")
 
     def register_portfolio_symbols(self, portfolio_id: str, symbols: Set[str]) -> None:
         """
@@ -143,7 +144,7 @@ class PriceStreamProcessor:
             symbols: 股票代码集合
         """
         self._portfolio_symbols[portfolio_id] = symbols
-        logger.info(f"✅ Registered portfolio {portfolio_id} with {len(symbols)} symbols")
+        logger.info("✅ Registered portfolio %(portfolio_id)s with {len(symbols)} symbols")
 
     def unregister_portfolio_symbols(self, portfolio_id: str) -> None:
         """
@@ -154,7 +155,7 @@ class PriceStreamProcessor:
         """
         if portfolio_id in self._portfolio_symbols:
             symbols = self._portfolio_symbols.pop(portfolio_id)
-            logger.info(f"✅ Unregistered portfolio {portfolio_id} with {len(symbols)} symbols")
+            logger.info("✅ Unregistered portfolio %(portfolio_id)s with {len(symbols)} symbols")
 
     def _on_price_update(self, update: PriceUpdate) -> None:
         """
@@ -194,7 +195,7 @@ class PriceStreamProcessor:
                 logger.info("🛑 Batch processing loop cancelled")
                 break
             except Exception as e:
-                logger.error(f"Error in batch processing loop: {e}")
+                logger.error("Error in batch processing loop: %s", e)
 
         logger.info("⏹️ Batch processing loop stopped")
 
@@ -208,7 +209,7 @@ class PriceStreamProcessor:
         self._update_queue.clear()
         self._last_flush = datetime.now()
 
-        logger.debug(f"🔄 Flushing {len(updates)} price updates...")
+        logger.debug("🔄 Flushing %s price updates...", len(updates))
 
         # 按投资组合分组
         portfolio_updates: Dict[str, Dict[str, float]] = defaultdict(dict)
@@ -231,7 +232,7 @@ class PriceStreamProcessor:
                     self.event_bus.publish(event)
                     self.metrics["events_published"] += 1
                 except Exception as e:
-                    logger.error(f"Failed to publish PriceChangedEvent: {e}")
+                    logger.error("Failed to publish PriceChangedEvent: %(e)s")
 
             # 更新价格缓存
             self._price_cache.update(all_prices)
@@ -260,19 +261,19 @@ class PriceStreamProcessor:
                                 )
                                 self.metrics["portfolio_revaluations"] += 1
                             else:
-                                logger.warning(f"⚠️ Failed to revaluate portfolio {portfolio_id}")
+                                logger.warning("⚠️ Failed to revaluate portfolio %(portfolio_id)s")
 
                         finally:
                             if identifier and self._lock_manager:
                                 self._lock_manager.release(lock_name, identifier)
                     else:
-                        logger.warning(f"⚠️ Could not acquire lock for portfolio {portfolio_id}")
+                        logger.warning("⚠️ Could not acquire lock for portfolio %(portfolio_id)s")
 
                 except Exception as e:
-                    logger.error(f"Failed to revaluate portfolio {portfolio_id}: {e}")
+                    logger.error("Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
 
         self.metrics["batches_processed"] += 1
-        logger.debug(f"✅ Flushed {len(updates)} price updates")
+        logger.debug("✅ Flushed {len(updates)} price updates")
 
     def get_metrics(self) -> dict:
         """获取处理器指标"""

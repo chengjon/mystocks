@@ -5,10 +5,11 @@ Phase 6.2.3 计算内核层测试
 """
 
 import asyncio
-import sys
-import numpy as np
 import logging
+import sys
 from pathlib import Path
+
+import numpy as np
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -63,8 +64,8 @@ async def test_matrix_kernels():
     try:
         from src.gpu.core.kernels.matrix_kernels import MatrixKernelEngine
         from src.gpu.core.kernels.standardized_interface import (
-            MatrixOperationType,
             MatrixOperationConfig,
+            MatrixOperationType,
         )
 
         # 创建矩阵内核引擎
@@ -130,11 +131,11 @@ async def test_transform_kernels():
     print("🔄 测试变换内核...")
 
     try:
-        from src.gpu.core.kernels.transform_kernels import TransformKernelEngine
         from src.gpu.core.kernels.standardized_interface import (
-            TransformOperationType,
             TransformConfig,
+            TransformOperationType,
         )
+        from src.gpu.core.kernels.transform_kernels import TransformKernelEngine
 
         # 创建变换内核引擎
         kernel = TransformKernelEngine()
@@ -192,8 +193,8 @@ async def test_inference_kernels():
     try:
         from src.gpu.core.kernels.inference_kernels import InferenceKernelEngine
         from src.gpu.core.kernels.standardized_interface import (
-            InferenceOperationType,
             InferenceConfig,
+            InferenceOperationType,
         )
 
         # 创建推理内核引擎
@@ -258,9 +259,9 @@ async def test_kernel_executor():
 
     try:
         from src.gpu.core.kernels.kernel_executor import (
-            KernelExecutor,
-            ExecutionMode,
             BatchExecutionConfig,
+            ExecutionMode,
+            KernelExecutor,
         )
         from src.gpu.core.kernels.standardized_interface import (
             MatrixOperationConfig,
@@ -351,8 +352,8 @@ async def test_integration_workflow():
     print("🔗 测试集成工作流...")
 
     try:
-        from src.gpu.core.kernels.kernel_registry import get_kernel_registry
         from src.gpu.core.kernels.kernel_executor import get_kernel_executor
+        from src.gpu.core.kernels.kernel_registry import get_kernel_registry
         from src.gpu.core.kernels.standardized_interface import TransformOperationType
 
         # 获取注册中心和执行器

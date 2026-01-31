@@ -3,6 +3,7 @@
 """
 
 import pytest
+
 from src.core.data_source.smart_router import SmartRouter
 
 

@@ -4,9 +4,10 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 
 
@@ -131,17 +132,14 @@ class StandardizedKernelInterface(ABC):
         config: Optional[MatrixOperationConfig] = None,
     ) -> KernelExecutionResult:
         """执行矩阵运算"""
-        pass
 
     @abstractmethod
     async def execute_transform_operation(self, data: np.ndarray, config: TransformConfig) -> KernelExecutionResult:
         """执行数据变换"""
-        pass
 
     @abstractmethod
     async def execute_inference_operation(self, data: np.ndarray, config: InferenceConfig) -> KernelExecutionResult:
         """执行机器学习推理"""
-        pass
 
     @abstractmethod
     async def batch_execute(
@@ -150,22 +148,18 @@ class StandardizedKernelInterface(ABC):
         config: Optional[KernelConfig] = None,
     ) -> List[KernelExecutionResult]:
         """批量执行多个操作"""
-        pass
 
     @abstractmethod
     def get_supported_operations(self) -> Dict[str, List[str]]:
         """获取支持的操作类型"""
-        pass
 
     @abstractmethod
     def get_kernel_info(self, operation_name: str) -> Dict[str, Any]:
         """获取内核信息"""
-        pass
 
     @abstractmethod
     def optimize_for_data_size(self, data_shape: Tuple[int, ...]) -> KernelConfig:
         """根据数据大小优化内核配置"""
-        pass
 
     def validate_matrix_input(self, data: np.ndarray, operation: MatrixOperationType) -> bool:
         """验证矩阵输入"""
@@ -300,4 +294,3 @@ def get_kernel_registry() -> KernelRegistry:
 def register_standard_kernels():
     """注册标准内核"""
     # 这里将在内核实现模块中被调用
-    pass

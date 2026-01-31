@@ -4,16 +4,18 @@
 展示如何在 FastAPI 路由中使用 base.py 的响应模型
 """
 
-from typing import List, Dict
+from typing import Dict, List
+
 from fastapi import APIRouter, Query
+
 from app.models.base import (
     BaseResponse,
-    PagedResponse,
+    ErrorCode,
     HealthCheckResponse,
-    success_response,
+    PagedResponse,
     error_response,
     paged_response,
-    ErrorCode,
+    success_response,
 )
 
 # 创建示例路由

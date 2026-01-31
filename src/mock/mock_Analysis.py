@@ -15,10 +15,11 @@ Mock数据文件: Analysis
 生成时间: 2025-11-13
 """
 
-from typing import List, Dict
-import pandas as pd
 import datetime
 import random
+from typing import Dict, List
+
+import pandas as pd
 
 
 def get_data_list() -> List[Dict]:
@@ -113,19 +114,10 @@ if __name__ == "__main__":
     result1 = get_data_list()
     print(f"返回数据: {result1}")
 
-    print(
-        """
-get_data_detail() 调用测试:"""
-    )
+    print("get_data_detail() 调用测试:")
     result2 = get_data_detail()
     print(f"返回数据: {result2}")
 
-    print(
-        """
-get_data_table() 调用测试:"""
-    )
+    print("get_data_table() 调用测试:")
     result3 = get_data_table()
-    print(
-        f"""返回数据:
-{result3}"""
-    )
+    print(f"返回数据:\n{result3}")

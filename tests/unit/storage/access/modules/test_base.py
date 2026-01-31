@@ -7,19 +7,21 @@ Data Access Base Module Test Suite
 测试模块: src.storage.access.modules.base (167行)
 """
 
-import pytest
-import pandas as pd
-import numpy as np
 from unittest.mock import Mock, patch
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from src.core import DataClassification
 
 # Test target imports
 from src.storage.access.modules.base import (
     IDataAccessLayer,
+    get_database_name_from_classification,
     normalize_dataframe,
     validate_time_series_data,
-    get_database_name_from_classification,
 )
-from src.core import DataClassification
 
 
 class TestIDataAccessLayer:

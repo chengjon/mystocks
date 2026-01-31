@@ -3,6 +3,7 @@ Login Page Object for E2E Tests
 """
 
 from playwright.sync_api import Page
+
 from .base_page import BasePage
 
 

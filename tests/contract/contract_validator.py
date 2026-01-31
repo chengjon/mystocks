@@ -8,14 +8,14 @@
 import json
 import logging
 import re
-from typing import Dict, List, Any
 from datetime import datetime
+from typing import Any, Dict, List
 from urllib.parse import urlparse
 
 from .models import (
-    ContractTestSuite,
     ContractTestCase,
     ContractTestConfig,
+    ContractTestSuite,
     TestCategory,
 )
 
@@ -89,7 +89,7 @@ class ContractValidator:
             result.add_warning("CPU 使用率阈值应大于 0")
 
         if not result.is_valid():
-            logger.error(f"配置验证失败: {result.errors}")
+            logger.error("配置验证失败: result.errors")
 
     def validate_suite(self, suite: ContractTestSuite) -> ContractValidationResult:
         """验证测试套件"""
@@ -118,7 +118,7 @@ class ContractValidator:
         if result.is_valid():
             result.add_info(f"测试套件验证通过: {suite.name} ({len(suite.test_cases)} 个测试用例)")
         else:
-            logger.error(f"测试套件 {suite.name} 验证失败")
+            logger.error("测试套件 suite.name 验证失败")
 
         return result
 

@@ -3,9 +3,10 @@
 为数据库连接操作添加重试逻辑，提高连接稳定性
 """
 
-import time
 import functools
-from typing import Callable, Any
+import time
+from typing import Any, Callable
+
 import structlog
 
 logger = structlog.get_logger()

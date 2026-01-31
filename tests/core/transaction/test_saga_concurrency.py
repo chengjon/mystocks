@@ -8,14 +8,15 @@ Saga 事务并发压力测试
 3. 验证并发回滚时的补偿逻辑是否正确（是否存在 Race Condition）。
 """
 
-import sys
 import os
-import pytest
-import pandas as pd
 import random
+import sys
 import time
-from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta
+
+import pandas as pd
+import pytest
 
 # 添加项目根目录
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))

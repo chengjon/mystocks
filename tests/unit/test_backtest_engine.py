@@ -4,9 +4,10 @@ Backtest Engine Unit Tests
 回测引擎单元测试
 """
 
-import pytest
 from datetime import datetime
 from decimal import Decimal
+
+import pytest
 
 
 # 测试 PerformanceMetrics
@@ -15,8 +16,8 @@ class TestPerformanceMetrics:
 
     def test_calculate_total_return(self):
         """测试总收益率计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -31,8 +32,8 @@ class TestPerformanceMetrics:
 
     def test_calculate_max_drawdown(self):
         """测试最大回撤计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -52,8 +53,8 @@ class TestPerformanceMetrics:
 
     def test_calculate_sharpe_ratio(self):
         """测试夏普比率计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -69,8 +70,8 @@ class TestPerformanceMetrics:
 
     def test_calculate_trade_metrics(self):
         """测试交易指标计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -92,8 +93,8 @@ class TestPerformanceMetrics:
 
     def test_empty_metrics(self):
         """测试空数据返回"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -112,8 +113,8 @@ class TestPortfolioManager:
 
     def test_initialization(self):
         """测试初始化"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -131,8 +132,8 @@ class TestPortfolioManager:
 
     def test_calculate_position_size(self):
         """测试仓位计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -157,8 +158,8 @@ class TestExecutionHandler:
 
     def test_calculate_commission(self):
         """测试手续费计算"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -183,13 +184,13 @@ class TestRiskManager:
 
     def test_check_stop_loss(self):
         """测试止损检查"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
-        from app.backtest.risk_manager import RiskManager
         from app.backtest.portfolio_manager import Position
+        from app.backtest.risk_manager import RiskManager
 
         rm = RiskManager(stop_loss_pct=0.05)
 
@@ -206,13 +207,13 @@ class TestRiskManager:
 
     def test_check_take_profit(self):
         """测试止盈检查"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
-        from app.backtest.risk_manager import RiskManager
         from app.backtest.portfolio_manager import Position
+        from app.backtest.risk_manager import RiskManager
 
         rm = RiskManager(take_profit_pct=0.10)
 
@@ -234,8 +235,8 @@ class TestEvents:
 
     def test_market_event(self):
         """测试市场数据事件"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 
@@ -256,8 +257,8 @@ class TestEvents:
 
     def test_fill_event(self):
         """测试成交事件"""
-        import sys
         import os
+        import sys
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../web/backend"))
 

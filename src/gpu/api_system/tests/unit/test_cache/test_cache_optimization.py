@@ -1,8 +1,9 @@
-import pytest
-import time
-import sys
 import os
+import sys
+import time
 from unittest.mock import patch
+
+import pytest
 
 # Add project root to path
 # File is at: src/gpu/api_system/tests/unit/test_cache/test_cache_optimization.py

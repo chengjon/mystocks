@@ -8,14 +8,15 @@ Symbol Utils Test Suite
 """
 
 import pytest
+
 from src.utils.symbol_utils import (
-    normalize_stock_code,
-    get_stock_exchange,
-    format_stock_code_for_source,
-    format_stock_code,
-    is_valid_stock_code,
     format_index_code_for_source,
+    format_stock_code,
+    format_stock_code_for_source,
+    get_stock_exchange,
+    is_valid_stock_code,
     normalize_index_code,
+    normalize_stock_code,
 )
 
 

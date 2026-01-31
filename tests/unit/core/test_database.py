@@ -15,18 +15,18 @@
 - 查询参数化
 """
 
-import pytest
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
-
 # Mock the dependencies to avoid import issues
 import sys
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
+import pytest
 
 sys.modules["structlog"] = MagicMock()
 sys.modules["src.core.database_pool"] = MagicMock()
 sys.modules["src.core.exceptions"] = MagicMock()
 sys.modules["src.core.config"] = MagicMock()
 
-from src.core.database import get_db_manager, get_postgresql_session, DatabaseHelper
+from src.core.database import DatabaseHelper, get_db_manager, get_postgresql_session
 
 
 class TestDatabaseManager:

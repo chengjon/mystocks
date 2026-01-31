@@ -11,9 +11,9 @@ Saga 事务清理任务 (Transaction Cleaner)
 调度建议: 每 5-10 分钟运行一次。
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import datetime, timedelta
 
 # 添加项目根目录到 path
@@ -43,11 +43,11 @@ class TransactionCleaner:
             purge_invalid_data: 是否物理删除无效数据（默认False）
         """
         logger.info("Starting Transaction Cleanup Job")
-        logger.info(f"Purge invalid data: {purge_invalid_data}")
+        logger.info("Purge invalid data: %(purge_invalid_data)s")
 
         # 1. 检查并处理僵尸事务
         zombie_count = self.check_zombie_transactions()
-        logger.info(f"Processed {zombie_count} zombie transactions")
+        logger.info("Processed %(zombie_count)s zombie transactions")
 
         # 2. 清理无效数据（可选）
         if purge_invalid_data:
@@ -88,7 +88,7 @@ class TransactionCleaner:
             # 目前先使用模拟逻辑，实际部署需要根据DataClassification调整
 
             logger.info("Scanning for zombie transactions...")
-            logger.info(f"Timeout threshold: {timeout_threshold}")
+            logger.info("Timeout threshold: %(timeout_threshold)s")
 
             # --- 模拟逻辑开始 ---
             # 在实际部署时，这里应该查询真实的transaction_log表
@@ -102,7 +102,7 @@ class TransactionCleaner:
                 logger.info("No zombie transactions found.")
                 return 0
 
-            logger.info(f"Found {len(pending_txns)} zombie transactions")
+            logger.info("Found {len(pending_txns)} zombie transactions")
 
             processed_count = 0
             for txn in pending_txns:
@@ -110,12 +110,12 @@ class TransactionCleaner:
                     self.process_zombie(txn)
                     processed_count += 1
                 except Exception as e:
-                    logger.error(f"Failed to process zombie transaction {txn.get('transaction_id', 'unknown')}: {e}")
+                    logger.error("Failed to process zombie transaction {txn.get('transaction_id', 'unknown')}: %(e)s")
 
             return processed_count
 
         except Exception as e:
-            logger.error(f"Error scanning zombie transactions: {e}")
+            logger.error("Error scanning zombie transactions: %(e)s")
             return 0
 
     def process_zombie(self, txn: dict):
@@ -130,14 +130,14 @@ class TransactionCleaner:
         td_status = txn.get("td_status", "UNKNOWN")
         pg_status = txn.get("pg_status", "UNKNOWN")
 
-        logger.info(f"Processing zombie transaction {txn_id}...")
-        logger.info(f"  TD Status: {td_status}, PG Status: {pg_status}")
+        logger.info("Processing zombie transaction %(txn_id)s...")
+        logger.info("  TD Status: %(td_status)s, PG Status: %(pg_status)s")
 
         # 逻辑分支
         if td_status == "SUCCESS" and pg_status != "SUCCESS":
             # 中间态: TD 写了，PG 没写/未知
             # 策略: 优先回滚 (标记 TD 无效)
-            logger.info(f"  Compensating {txn_id} (TD=Success, PG=Fail)")
+            logger.info("  Compensating %(txn_id)s (TD=Success, PG=Fail)")
             self.coordinator._compensate_tdengine(txn_id, self._extract_table_name(business_id))
 
             # 更新状态为 ROLLED_BACK
@@ -145,7 +145,7 @@ class TransactionCleaner:
 
         elif td_status != "SUCCESS":
             # TD 都没成功，直接标记回滚
-            logger.info(f"  Marking {txn_id} as ROLLED_BACK (TD not successful)")
+            logger.info("  Marking %(txn_id)s as ROLLED_BACK (TD not successful)")
             self.update_txn_status(txn_id, TransactionStatus.ROLLED_BACK.value)
 
     def _extract_table_name(self, business_id: str) -> str:
@@ -178,10 +178,10 @@ class TransactionCleaner:
             # sql = "UPDATE transaction_log SET final_status = %s, updated_at = NOW() WHERE transaction_id = %s"
             # self.pg.execute_update(sql, (status, txn_id))
 
-            logger.info(f"  Updated {txn_id} to {status}")
+            logger.info("  Updated %(txn_id)s to %(status)s")
 
         except Exception as e:
-            logger.error(f"Failed to update txn status {txn_id}: {e}")
+            logger.error("Failed to update txn status %(txn_id)s: %(e)s")
 
     def cleanup_invalid_data(self):
         """
@@ -215,22 +215,22 @@ class TransactionCleaner:
                     invalid_count = 0  # 实际应该是查询结果
 
                     if invalid_count > 0:
-                        logger.info(f"  Table {table}: {invalid_count} invalid records")
+                        logger.info("  Table %(table)s: %(invalid_count)s invalid records")
 
                         # 物理删除
                         # delete_sql = f"DELETE FROM {table} WHERE is_valid=false"
                         # self.td.execute_sql(delete_sql)
 
                         # total_deleted += invalid_count
-                        logger.info(f"    Deleted {invalid_count} records from {table}")
+                        logger.info("    Deleted %(invalid_count)s records from %(table)s")
 
                 except Exception as e:
-                    logger.error(f"  Failed to cleanup table {table}: {e}")
+                    logger.error("  Failed to cleanup table %(table)s: %(e)s")
 
-            logger.info(f"Total deleted records: {total_deleted}")
+            logger.info("Total deleted records: %(total_deleted)s")
 
         except Exception as e:
-            logger.error(f"Error during invalid data cleanup: {e}")
+            logger.error("Error during invalid data cleanup: %(e)s")
 
 
 def main():
@@ -258,7 +258,7 @@ def main():
         return 0
 
     except Exception as e:
-        logger.error(f"❌ Transaction cleaner failed: {e}")
+        logger.error("❌ Transaction cleaner failed: %(e)s")
         return 1
 
 

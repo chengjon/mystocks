@@ -1,6 +1,6 @@
-from typing import Dict
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from typing import Dict
 
 
 def _create_handler(self, endpoint_info: Dict):
@@ -10,11 +10,11 @@ def _create_handler(self, endpoint_info: Dict):
     # 延迟导入（避免循环依赖）
     from src.core.data_source_handlers_v2 import (
         AkshareHandler,
-        TushareHandler,
         BaostockHandler,
-        TdxHandler,
-        WebCrawlerHandler,
         MockHandler,
+        TdxHandler,
+        TushareHandler,
+        WebCrawlerHandler,
     )
 
     handler_map = {

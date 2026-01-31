@@ -10,15 +10,74 @@
         :default-active="activeMenu"
         :collapse="isCollapse"
         :router="false"
-        background-color="#304156"
-        text-color="#bfcbd9"
-        active-text-color="#409eff"
+        background-color="transparent"
+        text-color="#B8B8B8"
+        active-text-color="#D4AF37"
         @select="handleMenuSelect"
+        class="artdeco-menu"
       >
-        <el-menu-item index="/dashboard">
-          <el-icon><Odometer /></el-icon>
-          <template #title>仪表盘</template>
-        </el-menu-item>
+        <!-- 3 Core Workflows - Phase 1 Optimization -->
+        <!-- Workflow 1: Trading (交易决策) -->
+        <el-sub-menu index="/trading">
+          <template #title>
+            <el-icon><Tickets /></el-icon>
+            <span>交易决策</span>
+          </template>
+          <el-menu-item index="/trade">
+            <template #title>交易执行</template>
+          </el-menu-item>
+          <el-menu-item index="/strategy">
+            <template #title>策略管理</template>
+          </el-menu-item>
+          <el-menu-item index="/risk">
+            <template #title>风险监控</template>
+          </el-menu-item>
+         </el-sub-menu>
+
+         <!-- ArtDeco Gold Divider -->
+         <div class="artdeco-gold-divider"></div>
+
+         <!-- Workflow 2: Analysis (分析与回测) -->
+        <el-sub-menu index="/analysis">
+          <template #title>
+            <el-icon><DataAnalysis /></el-icon>
+            <span>分析研究</span>
+          </template>
+          <el-menu-item index="/backtest">
+            <template #title>策略回测</template>
+          </el-menu-item>
+          <el-menu-item index="/technical">
+            <template #title>技术分析</template>
+          </el-menu-item>
+          <el-menu-item index="/indicators">
+            <template #title>指标库</template>
+          </el-menu-item>
+          <el-menu-item index="/analysis">
+            <template #title>数据分析</template>
+          </el-menu-item>
+         </el-sub-menu>
+
+         <!-- ArtDeco Gold Divider -->
+         <div class="artdeco-gold-divider"></div>
+
+         <!-- Workflow 3: Portfolio (持仓与表现) -->
+        <el-sub-menu index="/portfolio">
+          <template #title>
+            <el-icon><Grid /></el-icon>
+            <span>投资组合</span>
+          </template>
+          <el-menu-item index="/dashboard">
+            <template #title>市场概览</template>
+          </el-menu-item>
+          <el-menu-item index="/stocks">
+            <template #title>自选股</template>
+          </el-menu-item>
+          <el-menu-item index="/market-data">
+            <template #title>市场数据</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <!-- Market Data Quick Access -->
         <el-sub-menu index="/market">
           <template #title>
             <el-icon><TrendCharts /></el-icon>
@@ -31,64 +90,8 @@
             <template #title>TDX行情</template>
           </el-menu-item>
         </el-sub-menu>
-        <el-sub-menu index="/market-data">
-          <template #title>
-            <el-icon><DataLine /></el-icon>
-            <span>市场数据</span>
-          </template>
-          <el-menu-item index="/market-data/fund-flow">
-            <el-icon><Money /></el-icon>
-            <template #title>资金流向</template>
-          </el-menu-item>
-          <el-menu-item index="/market-data/etf">
-            <el-icon><TrendCharts /></el-icon>
-            <template #title>ETF行情</template>
-          </el-menu-item>
-          <el-menu-item index="/market-data/chip-race">
-            <el-icon><ShoppingCart /></el-icon>
-            <template #title>竞价抢筹</template>
-          </el-menu-item>
-          <el-menu-item index="/market-data/lhb">
-            <el-icon><Flag /></el-icon>
-            <template #title>龙虎榜</template>
-          </el-menu-item>
-          <el-menu-item index="/market-data/wencai">
-            <el-icon><Search /></el-icon>
-            <template #title>问财筛选</template>
-          </el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="/stocks">
-          <el-icon><Grid /></el-icon>
-          <template #title>股票管理</template>
-        </el-menu-item>
-        <el-menu-item index="/analysis">
-          <el-icon><DataAnalysis /></el-icon>
-          <template #title>数据分析</template>
-        </el-menu-item>
-        <el-menu-item index="/technical">
-          <el-icon><DataLine /></el-icon>
-          <template #title>技术分析</template>
-        </el-menu-item>
-        <el-menu-item index="/indicators">
-          <el-icon><Grid /></el-icon>
-          <template #title>指标库</template>
-        </el-menu-item>
-        <el-menu-item index="/risk">
-          <el-icon><Warning /></el-icon>
-          <template #title>风险监控</template>
-        </el-menu-item>
-        <el-menu-item index="/trade">
-          <el-icon><Tickets /></el-icon>
-          <template #title>交易管理</template>
-        </el-menu-item>
-        <el-menu-item index="/strategy">
-          <el-icon><Management /></el-icon>
-          <template #title>策略管理</template>
-        </el-menu-item>
-        <el-menu-item index="/backtest">
-          <el-icon><Histogram /></el-icon>
-          <template #title>回测分析</template>
-        </el-menu-item>
+
+        <!-- Demo (功能演示) -->
         <el-sub-menu index="/demo">
           <template #title>
             <el-icon><Operation /></el-icon>
@@ -96,9 +99,6 @@
           </template>
           <el-menu-item index="/demo/openstock">
             <template #title>OpenStock</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/pyprofiling">
-            <template #title>PyProfiling</template>
           </el-menu-item>
           <el-menu-item index="/demo/freqtrade">
             <template #title>Freqtrade</template>
@@ -116,6 +116,8 @@
             <template #title>Wencai</template>
           </el-menu-item>
         </el-sub-menu>
+
+        <!-- Settings (系统设置) -->
         <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
           <template #title>系统设置</template>
@@ -204,76 +206,120 @@ const handleCommand = (command) => {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/artdeco-tokens.scss';
+
 .layout-container {
   height: 100%;
+  background-color: var(--artdeco-bg-global);
 
   .sidebar {
-    background-color: #304156;
-    transition: width 0.3s;
+    background-color: var(--artdeco-bg-base);  // ArtDeco深炭灰
+    transition: width var(--artdeco-transition-base);
+    border-right: 1px solid var(--artdeco-border-gold);  // ArtDeco金色边框
 
     .logo {
       height: 50px;
       line-height: 50px;
-      color: #fff;
+      color: var(--artdeco-gold-primary);  // ArtDeco金色Logo
+      font-family: var(--font-display);  // Cinzel字体
       font-size: 20px;
-      font-weight: bold;
+      font-weight: 600;
       text-align: center;
-      background-color: #2b3a4d;
-      transition: all 0.3s;
+      background-color: var(--artdeco-bg-elevated);
+      letter-spacing: 0.05em;  // ArtDeco宽字距
+      transition: all var(--artdeco-transition-base);
 
       &.collapse {
         font-size: 18px;
       }
     }
 
+    // Element Plus 菜单组件 ArtDeco 主题
     .el-menu {
       border-right: none;
-    }
-  }
+      background-color: var(--artdeco-bg-base);
 
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-
-    .left {
-      .hamburger {
-        font-size: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
+      // 菜单项悬停状态
+      .el-menu-item {
+        color: var(--artdeco-fg-muted);
+        transition: all var(--artdeco-transition-base);
 
         &:hover {
-          color: #409eff;
+          background-color: rgba(212, 175, 55, 0.1);  // 金色半透明背景
+          color: var(--artdeco-gold-primary);
+        }
+
+        &.is-active {
+          background-color: rgba(212, 175, 55, 0.15);  // 金色半透明背景
+          color: var(--artdeco-gold-primary);  // 金色文本
+          position: relative;
+
+          // ArtDeco金色左边框指示器
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background-color: var(--artdeco-gold-primary);
+          }
         }
       }
-    }
 
-    .right {
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        padding: 0 12px;
-        height: 100%;
+      // 菜单组标题
+      .el-sub-menu__title {
+        color: var(--artdeco-fg-muted);
+        transition: all var(--artdeco-transition-base);
 
         &:hover {
-          background-color: #f5f7fa;
-        }
+          color: var(--artdeco-gold-primary);
+         }
+       }
+     }
+   }
 
-        .username {
-          font-size: 14px;
-        }
-      }
-    }
-  }
-
-  .main-content {
-    background-color: #f0f2f5;
-    padding: 20px;
-    overflow-y: auto;
-  }
-}
-</style>
+   // ArtDeco 金色分隔线（用于分隔不同工作流区域）
+   .artdeco-gold-divider {
+     height: 2px;
+     background: linear-gradient(90deg, 
+       transparent 0%, 
+       var(--artdeco-border-gold) 20%, 
+       transparent 20%, 
+       transparent 40%, 
+       var(--artdeco-border-gold) 50%, 
+       var(--artdeco-border-gold) 60%, 
+       transparent 80%, 
+       transparent 100%
+     );
+     margin: var(--artdeco-spacing-3) 0;
+     border-radius: var(--artdeco-radius-sm);
+     
+     // ArtDeco 装饰元素（金色微边框 + 阴影）
+     &::before {
+       content: '';
+       position: absolute;
+       width: 6px;
+       height: 6px;
+       left: 50%;
+       top: -2px;
+       border-radius: 50%;
+       background: var(--artdeco-gold-primary);
+       box-shadow: 0 0 2px rgba(212, 175, 55, 0.3);
+     }
+     
+     // 装饰点动画
+     &::after {
+       content: '';
+       position: absolute;
+       width: 6px;
+       height: 6px;
+       right: 50%;
+       top: -2px;
+       border-radius: 50%;
+       background: var(--artdeco-gold-primary);
+       box-shadow: 0 0 2px rgba(212, 175, 55, 0.3);
+     }
+   }
+ </style>

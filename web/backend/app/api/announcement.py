@@ -10,8 +10,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Path, Query
 
-from app.core.exceptions import BusinessException, ValidationException, NotFoundException
-
+from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.models.announcement import (
     Announcement,
     AnnouncementMonitorRecord,

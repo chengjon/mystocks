@@ -9,13 +9,14 @@
 
 import logging
 import time
+from typing import Any, Dict, List
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any
 
 try:
-    import cupy as cp
     import cudf
+    import cupy as cp
 
     CUPY_AVAILABLE = True
 except ImportError:

@@ -14,9 +14,9 @@ DatabaseConnectionManager测试
 Phase: 2 - Task 2.1.3
 """
 
+import os
 import unittest
 from unittest.mock import Mock, patch
-import os
 
 from src.storage.database.connection_manager import DatabaseConnectionManager, get_connection_manager
 

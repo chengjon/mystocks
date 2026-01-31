@@ -5,16 +5,17 @@ AI测试数据管理器
 提供智能的测试数据生成、管理和优化功能
 """
 
+import hashlib
 import json
 import logging
 import random
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import numpy as np
-from dataclasses import dataclass, field
-import hashlib
 
 from .test_ai_assisted_testing import AITestGenerator, IntelligentTestOptimizer
 from .test_data_analyzer import AITestDataAnalyzer
@@ -90,7 +91,7 @@ class IntelligentDataGenerator:
             return constrained_data
 
         except Exception as e:
-            logger.error(f"数据生成失败: {e}")
+            logger.error("数据生成失败: %(e)s")
             return self._generate_fallback_data(request)
 
     def _generate_ai_enhanced_data(self, request: DataGenerationRequest) -> Dict[str, Any]:
@@ -386,7 +387,7 @@ class IntelligentDataOptimizer:
         )
 
         # 记录优化历史
-        logger.info(f"数据档案 {profile.name} 已优化: {suggestions}")
+        logger.info("数据档案 {profile.name} 已优化: %(suggestions)s")
 
         return optimized_profile
 
@@ -464,7 +465,7 @@ class AITestDataManager:
         )
 
         self.profiles[name] = profile
-        logger.info(f"创建数据档案: {name}")
+        logger.info("创建数据档案: %(name)s")
         return profile
 
     def generate_test_data(
@@ -517,10 +518,10 @@ class AITestDataManager:
                 latest_link.unlink()
             latest_link.symlink_to(filename)
 
-            logger.info(f"测试数据已保存: {filepath}")
+            logger.info("测试数据已保存: %(filepath)s")
 
         except Exception as e:
-            logger.error(f"保存测试数据失败: {e}")
+            logger.error("保存测试数据失败: %(e)s")
 
     def load_test_data(self, profile_name: str, timestamp: str = None) -> Dict[str, Any]:
         """加载测试数据"""
@@ -538,11 +539,11 @@ class AITestDataManager:
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            logger.info(f"加载测试数据: {filepath}")
+            logger.info("加载测试数据: %(filepath)s")
             return data
 
         except Exception as e:
-            logger.error(f"加载测试数据失败: {e}")
+            logger.error("加载测试数据失败: %(e)s")
             raise
 
     def analyze_data_quality(self, profile_name: str) -> Dict[str, Any]:
@@ -613,10 +614,10 @@ class AITestDataManager:
                 # 检查文件修改时间
                 if datetime.fromtimestamp(filepath.stat().st_mtime) < cutoff_time:
                     filepath.unlink()
-                    logger.info(f"删除过期数据: {filepath.name}")
+                    logger.info("删除过期数据: {filepath.name}")
 
             except Exception as e:
-                logger.error(f"清理过期数据失败: {e}")
+                logger.error("清理过期数据失败: %(e)s")
 
     def _generate_optimization_report(self):
         """生成优化报告"""
@@ -643,10 +644,10 @@ class AITestDataManager:
             with open(report_path, "w", encoding="utf-8") as f:
                 json.dump(report, f, ensure_ascii=False, indent=2)
 
-            logger.info(f"优化报告已生成: {report_path}")
+            logger.info("优化报告已生成: %(report_path)s")
 
         except Exception as e:
-            logger.error(f"生成优化报告失败: {e}")
+            logger.error("生成优化报告失败: %(e)s")
 
     def _calculate_storage_usage(self) -> float:
         """计算存储使用量"""

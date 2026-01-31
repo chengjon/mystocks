@@ -1,6 +1,10 @@
 [MASTER]
+# Python path 配置 - 添加项目根目录到 sys.path
+init-hook="import sys; from pathlib import Path; sys.path.insert(0, str(Path.cwd()))"
+
 # 忽略的模块（C扩展动态成员）
-extension-pkg-whitelist=talib,baostock,efinance,cupy,cudf,cuml,taospy
+# Pylint 4.0+ 使用 extension-pkg-allow-list 替代 extension-pkg-whitelist
+extension-pkg-allow-list=talib,baostock,efinance,cupy,cudf,cuml,taospy
 
 # 忽略的路径
 ignore=temp,__pycache__,.git,venv,node_modules,.archive
@@ -62,7 +66,9 @@ disable=
     R0915,  # too-many-statements
     E0401,  # import-error (路径问题单独处理)
 
-[TYPECHECK:src/data_sources/real/enhanced_postgresql_relational.py]
-disable-file=src/data_sources/real/enhanced_postgresql_relational.py
-    W1203,  # logging-fstring-interpolation
-    W1201,  # logging-not-lazy
+# 注释掉不支持的 disable-file 选项（Pylint 4.0+ 不支持）
+# 如需忽略特定文件，请在 [MASTER] section 的 ignore 中添加
+# [TYPECHECK:src/data_sources/real/enhanced_postgresql_relational.py]
+# disable-file=src/data_sources/real/enhanced_postgresql_relational.py
+#     W1203,  # logging-fstring-interpolation
+#     W1201,  # logging-not-lazy

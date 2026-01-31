@@ -4,12 +4,13 @@
 提供稳定高效的数据获取服务
 """
 
+import logging
 import math
 import time
+from typing import Optional
+
 import pandas as pd
 import requests
-from typing import Optional
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -154,7 +155,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取资金流向数据失败: {e}")
+            logger.error("获取资金流向数据失败: %(e)s"")
             return pd.DataFrame()
 
     # ==================== ETF数据 ====================
@@ -272,7 +273,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取ETF数据失败: {e}")
+            logger.error("获取ETF数据失败: %(e)s"")
             return pd.DataFrame()
 
     # ==================== 龙虎榜数据 ====================
@@ -362,7 +363,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取龙虎榜数据失败: {e}")
+            logger.error("获取龙虎榜数据失败: %(e)s"")
             return pd.DataFrame()
 
     # ==================== 竞价抢筹数据 ====================
@@ -460,7 +461,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取板块资金流向失败: {e}")
+            logger.error("获取板块资金流向失败: %(e)s"")
             return pd.DataFrame()
 
     # ==================== 股票分红配送 ====================
@@ -517,7 +518,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取分红配送数据失败: {e}")
+            logger.error("获取分红配送数据失败: %(e)s"")
             return pd.DataFrame()
 
     # ==================== 股票大宗交易 ====================
@@ -590,7 +591,7 @@ class EastMoneyAdapter:
             return temp_df
 
         except Exception as e:
-            logger.error(f"获取大宗交易数据失败: {e}")
+            logger.error("获取大宗交易数据失败: %(e)s"")
             return pd.DataFrame()
 
 

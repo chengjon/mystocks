@@ -2,7 +2,7 @@
 Dummy AI Test Data Generator for testing purposes.
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 class TestDataGenerator:

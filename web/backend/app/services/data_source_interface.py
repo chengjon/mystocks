@@ -52,14 +52,11 @@ class IDataSource(ABC):
     @abstractmethod
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取数据"""
-        pass
 
     @abstractmethod
     async def health_check(self) -> HealthStatus:
         """健康检查"""
-        pass
 
     @abstractmethod
     def get_metrics(self) -> Dict[str, Any]:
         """获取性能指标"""
-        pass

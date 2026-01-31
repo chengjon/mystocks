@@ -366,8 +366,8 @@ test.describe('Strategy Management Module - E2E Tests', () => {
     test('should navigate using sidebar menu', async ({ page }) => {
       await page.goto(`${BASE_URL}/dashboard`);
 
-      // Find sidebar
-      const sidebar = page.locator('.sidebar, aside, [data-testid="sidebar"]');
+      // Find sidebar (ArtDecoLayout uses .layout-sidebar)
+      const sidebar = page.locator('.layout-sidebar, aside, [data-testid="sidebar"]');
       const sidebarCount = await sidebar.count();
 
       if (sidebarCount > 0) {

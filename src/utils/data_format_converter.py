@@ -3,7 +3,8 @@ Data Format Converter Middleware
 Unify Mock data and real database data format to ensure field names and data structure consistency
 """
 
-from typing import Dict, Any, List
+from typing import Any, Dict, List
+
 import pandas as pd
 import structlog
 

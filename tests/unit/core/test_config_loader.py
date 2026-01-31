@@ -8,8 +8,9 @@ config_loader 模块单元测试
 - 处理空文件和空配置
 """
 
-import pytest
 import sys
+
+import pytest
 import yaml
 
 # 确保能导入src模块

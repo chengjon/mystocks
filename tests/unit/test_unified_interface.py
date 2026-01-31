@@ -4,10 +4,10 @@
 验证统一数据访问管理器、路由器和优化器功能
 """
 
-import sys
 import asyncio
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # 添加项目根路径
 project_root = Path(__file__).parent
@@ -21,9 +21,9 @@ def test_unified_interface_basics():
     try:
         from src.data_access.interfaces.i_data_access import (
             DataQuery,
-            QueryOperation,
             DataRecord,
             QueryCriteria,
+            QueryOperation,
         )
 
         # 测试数据查询对象创建
@@ -107,8 +107,8 @@ def test_query_router():
     print("\n🧪 测试查询路由器...")
 
     try:
-        from src.data_access.routers.query_router import QueryRouter, RoutingStrategy
         from src.data_access.interfaces.i_data_access import DataQuery, QueryOperation
+        from src.data_access.routers.query_router import QueryRouter, RoutingStrategy
 
         router = QueryRouter()
 
@@ -151,12 +151,12 @@ def test_query_optimizer():
     print("\n🧪 测试查询优化器...")
 
     try:
-        from src.data_access.optimizers.query_optimizer import (
-            QueryOptimizer,
-            OptimizationType,
-            OptimizationPriority,
-        )
         from src.data_access.interfaces.i_data_access import DataQuery, QueryOperation
+        from src.data_access.optimizers.query_optimizer import (
+            OptimizationPriority,
+            OptimizationType,
+            QueryOptimizer,
+        )
 
         optimizer = QueryOptimizer()
 
@@ -213,12 +213,12 @@ async def test_unified_data_access_manager():
     print("\n🧪 测试统一数据访问管理器...")
 
     try:
+        from src.data_access.interfaces.i_data_access import DataQuery, QueryOperation
         from src.data_access.unified_data_access_manager import (
-            UnifiedDataAccessManager,
             DataAccessConfig,
             DataAccessMode,
+            UnifiedDataAccessManager,
         )
-        from src.data_access.interfaces.i_data_access import DataQuery, QueryOperation
 
         # 创建配置
         config = DataAccessConfig(
@@ -275,13 +275,13 @@ async def test_integration_scenario():
     print("\n🧪 测试集成场景...")
 
     try:
-        from src.data_access.unified_data_access_manager import UnifiedDataAccessManager
         from src.data_access.interfaces.i_data_access import (
-            DataQuery,
-            QueryOperation,
-            DataRecord,
             DatabaseType,
+            DataQuery,
+            DataRecord,
+            QueryOperation,
         )
+        from src.data_access.unified_data_access_manager import UnifiedDataAccessManager
 
         # 创建管理器实例
         manager = UnifiedDataAccessManager()
@@ -358,8 +358,8 @@ def test_error_handling():
     print("\n🧪 测试错误处理...")
 
     try:
-        from src.data_access.unified_data_access_manager import UnifiedDataAccessManager
         from src.data_access.interfaces.i_data_access import DataQuery, QueryOperation
+        from src.data_access.unified_data_access_manager import UnifiedDataAccessManager
 
         manager = UnifiedDataAccessManager()
 

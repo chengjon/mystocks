@@ -7,17 +7,20 @@ Data Access Interface Test Suite
 测试模块: src.data_access.interfaces.i_data_access (398行)
 """
 
-import pytest
-from datetime import datetime, date
-from unittest.mock import Mock
-import sys
 import os
+import sys
+from pathlib import Path
+from datetime import date, datetime
+from unittest.mock import Mock
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 直接从文件导入，避免循环导入
-exec(open("src/data_access/interfaces/i_data_access.py").read())
+module_path = Path(__file__).resolve().parents[2] / "src" / "data_access" / "interfaces" / "i_data_access.py"
+exec(module_path.read_text(encoding="utf-8"), globals())
 
 
 class TestDatabaseType:

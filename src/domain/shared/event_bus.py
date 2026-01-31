@@ -6,7 +6,7 @@ Event Bus Interface
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Type
 
 if TYPE_CHECKING:
     from .event import DomainEvent
@@ -30,7 +30,6 @@ class IEventBus(ABC):
         Args:
             event: 领域事件实例
         """
-        pass
 
     @abstractmethod
     def subscribe(self, event_type: Type["DomainEvent"], handler: Callable[["DomainEvent"], None]) -> None:
@@ -41,4 +40,3 @@ class IEventBus(ABC):
             event_type: 事件类型（类）
             handler: 事件处理函数
         """
-        pass

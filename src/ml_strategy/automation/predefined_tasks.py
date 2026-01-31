@@ -15,14 +15,14 @@
 版本: 1.0.0
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from typing import Dict, List, Optional, TYPE_CHECKING
-from datetime import date, datetime
 import logging
+from datetime import date, datetime
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 if TYPE_CHECKING:
     from .scheduler import TaskConfig
@@ -167,7 +167,8 @@ class PredefinedTasks:
 
         try:
             # 动态导入
-            from strategy.stock_screener import StockScreener
+            # pylint: disable=import-error
+            from ...strategy.stock_screener import StockScreener
 
             # 创建筛选器
             screener = StockScreener(**screener_config)
@@ -371,7 +372,7 @@ def create_daily_update_task(market: str = "sh", hour: int = 16, minute: int = 0
     返回:
         TaskConfig: 任务配置
     """
-    from automation import TaskConfig, TaskPriority
+    from .automation import TaskConfig, TaskPriority
 
     return TaskConfig(
         name=f"daily_data_update_{market}",
@@ -397,7 +398,7 @@ def create_strategy_execution_task(strategy_name: str, hour: int = 9, minute: in
     返回:
         TaskConfig: 任务配置
     """
-    from automation import TaskConfig, TaskPriority
+    from .automation import TaskConfig, TaskPriority
 
     return TaskConfig(
         name=f"execute_{strategy_name}",
@@ -422,7 +423,7 @@ def create_health_check_task(interval_minutes: int = 30) -> "TaskConfig":
     返回:
         TaskConfig: 任务配置
     """
-    from automation import TaskConfig, TaskPriority
+    from .automation import TaskConfig, TaskPriority
 
     return TaskConfig(
         name="system_health_check",

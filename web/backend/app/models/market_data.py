@@ -11,17 +11,18 @@
 - StockBlockTrade: 股票大宗交易
 """
 
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Date,
     DECIMAL,
-    BigInteger,
     TIMESTAMP,
+    BigInteger,
+    Column,
+    Date,
     Index,
+    String,
 )
 from sqlalchemy.orm import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 

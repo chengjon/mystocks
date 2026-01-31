@@ -7,16 +7,14 @@ identify recurring patterns in financial time series data.
 """
 
 import logging
-from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Union, Tuple
+from abc import abstractmethod
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
-from src.algorithms.types import AlgorithmType
-from src.algorithms.metadata import AlgorithmFingerprint
 
 logger = logging.getLogger(__name__)
 
@@ -90,12 +88,12 @@ class PatternMatchingAlgorithm(GPUAcceleratedAlgorithm):
         """
         try:
             if pattern.id in self.patterns:
-                logger.warning(f"Pattern {pattern.id} already exists, updating")
+                logger.warning("Pattern {pattern.id} already exists, updating")
             self.patterns[pattern.id] = pattern
-            logger.info(f"Added pattern: {pattern.id} ({pattern.name})")
+            logger.info("Added pattern: {pattern.id} ({pattern.name})")
             return True
         except Exception as e:
-            logger.error(f"Failed to add pattern {pattern.id}: {e}")
+            logger.error("Failed to add pattern {pattern.id}: %(e)s")
             return False
 
     def remove_pattern(self, pattern_id: str) -> bool:
@@ -110,7 +108,7 @@ class PatternMatchingAlgorithm(GPUAcceleratedAlgorithm):
         """
         if pattern_id in self.patterns:
             del self.patterns[pattern_id]
-            logger.info(f"Removed pattern: {pattern_id}")
+            logger.info("Removed pattern: %(pattern_id)s")
             return True
         return False
 
@@ -152,7 +150,6 @@ class PatternMatchingAlgorithm(GPUAcceleratedAlgorithm):
         Returns:
             List of pattern match results
         """
-        pass
 
     async def validate_input(self, data: Union[List[float], np.ndarray, pd.Series]) -> bool:
         """Validate input data for pattern matching."""

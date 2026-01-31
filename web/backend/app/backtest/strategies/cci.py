@@ -5,9 +5,9 @@ CCI顺势指标策略 - 捕捉趋势拐点
 Commodity Channel Index
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class CCIStrategy(BaseStrategy):

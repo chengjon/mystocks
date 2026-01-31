@@ -12,11 +12,12 @@ Author: MyStocks Testing Team
 Date: 2026-01-10
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from typing import Dict, Any, List
 import json
 from datetime import datetime, timedelta
+from typing import Any, Dict, List
+
+import pytest
+from fastapi.testclient import TestClient
 
 from tests.file_level.fixtures import TestDataFactory, assert_api_response_format, assert_market_data_format
 

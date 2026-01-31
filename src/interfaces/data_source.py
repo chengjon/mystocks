@@ -10,8 +10,9 @@
 """
 
 import abc
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
-from typing import Dict, List, Optional, Any
 
 
 class IDataSource(abc.ABC):
@@ -31,7 +32,6 @@ class IDataSource(abc.ABC):
             DataFrame: 包含股票日线数据的DataFrame
                 列包括: date, open, high, low, close, volume
         """
-        pass
 
     @abc.abstractmethod
     def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -47,7 +47,6 @@ class IDataSource(abc.ABC):
             DataFrame: 包含指数日线数据的DataFrame
                 列包括: date, open, high, low, close, volume
         """
-        pass
 
     @abc.abstractmethod
     def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
@@ -61,7 +60,6 @@ class IDataSource(abc.ABC):
             Dict[str, Any]: 包含股票基本信息的字典
                 键包括: symbol, name, industry, market, list_date等
         """
-        pass
 
     @abc.abstractmethod
     def get_index_components(self, symbol: str) -> List[str]:
@@ -74,7 +72,6 @@ class IDataSource(abc.ABC):
         Returns:
             List[str]: 包含指数成分股代码的列表
         """
-        pass
 
     @abc.abstractmethod
     def get_real_time_data(self, symbol: str) -> Optional[Dict[str, Any]]:
@@ -88,7 +85,6 @@ class IDataSource(abc.ABC):
             Optional[Dict[str, Any]]: 实时数据字典或None
                 键包括: symbol, price, volume, timestamp等
         """
-        pass
 
     @abc.abstractmethod
     def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
@@ -103,7 +99,6 @@ class IDataSource(abc.ABC):
             pd.DataFrame: 交易日历数据
                 列包括: date, is_trading_day, market
         """
-        pass
 
     @abc.abstractmethod
     def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
@@ -118,7 +113,6 @@ class IDataSource(abc.ABC):
             pd.DataFrame: 财务数据
                 列包括: symbol, end_date, revenue, net_profit等
         """
-        pass
 
     @abc.abstractmethod
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
@@ -133,4 +127,3 @@ class IDataSource(abc.ABC):
             List[Dict[str, Any]]: 新闻数据列表
                 每个字典包含: title, content, timestamp, source等
         """
-        pass

@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ..value_objects.strategy_id import StrategyId
 from ...trading.value_objects.order_side import OrderSide
+from ..value_objects.strategy_id import StrategyId
 
 
 @dataclass

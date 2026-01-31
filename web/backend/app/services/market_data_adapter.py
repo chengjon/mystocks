@@ -115,7 +115,7 @@ class MarketDataSourceAdapter(IDataSource):
         except Exception as e:
             self.error_count += 1
             response_time = time.time() - start_time
-            logger.error(f"Market data fetch failed for {endpoint}: {str(e)}")
+            logger.error("Market data fetch failed for %(endpoint)s: {str(e)}"")
 
             # 更新监控指标
             self._update_metrics(success=False, response_time=response_time * 1000, error=str(e))
@@ -172,7 +172,7 @@ class MarketDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            logger.error(f"Mock data fetch failed for {endpoint}: {str(e)}")
+            logger.error("Mock data fetch failed for %(endpoint)s: {str(e)}"")
             return {
                 "status": "error",
                 "message": f"Failed to fetch mock data: {str(e)}",
@@ -333,7 +333,7 @@ class MarketDataSourceAdapter(IDataSource):
                 success=success,
             )
         except Exception as e:
-            logger.warning(f"Failed to trigger quality monitoring: {str(e)}")
+            logger.warning("Failed to trigger quality monitoring: {str(e)}"")
 
     def _serialize_fund_flow(self, fund_flow) -> Dict[str, Any]:
         """序列化资金流向数据"""

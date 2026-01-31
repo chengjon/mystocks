@@ -12,25 +12,26 @@ Author: MyStocks Project
 
 import logging
 import time
-from typing import Dict, Any, List
 from datetime import datetime
+from typing import Any, Dict, List
+
 import pandas as pd
 
 from app.core.database import db_service
-from app.services.indicators import create_scheduler, CalculationMode, OHLCVData
-from app.services.indicators.defaults import load_default_indicators
 from app.repositories.indicator_repo import IndicatorRepository
+from app.services.indicators import CalculationMode, OHLCVData, create_scheduler
+from app.services.indicators.defaults import load_default_indicators
 
 # Phase 3: Event publishing
 try:
-    from app.services.redis import redis_pubsub
     from app.models.event_models import (
-        create_task_progress_event,
+        EventChannels,
+        TaskStatus,
         create_stock_indicators_completed_event,
         create_task_completed_event,
-        TaskStatus,
-        EventChannels,
+        create_task_progress_event,
     )
+    from app.services.redis import redis_pubsub
 
     REDIS_PUBSUB_AVAILABLE = True
     logger.info("Redis Pub/Sub enabled for daily_calculation")
@@ -75,7 +76,7 @@ async def _publish_task_progress(
         await redis_pubsub.async_publish(EventChannels.task_channel(job_id), event.model_dump())
 
     except Exception as e:
-        logger.error(f"Failed to publish task progress event: {e}")
+        logger.error("Failed to publish task progress event: %(e)s"")
 
 
 async def _publish_stock_completed(
@@ -104,7 +105,7 @@ async def _publish_stock_completed(
         await redis_pubsub.async_publish(EventChannels.INDICATORS_ALL, event.model_dump())
 
     except Exception as e:
-        logger.error(f"Failed to publish stock completed event: {e}")
+        logger.error("Failed to publish stock completed event: %(e)s"")
 
 
 async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatus, duration_seconds: float, **result):
@@ -122,7 +123,7 @@ async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatu
         await redis_pubsub.async_publish(EventChannels.task_channel(job_id), event.model_dump())
 
     except Exception as e:
-        logger.error(f"Failed to publish task completed event: {e}")
+        logger.error("Failed to publish task completed event: %(e)s"")
 
 
 # ========== Main Calculation Function ==========
@@ -150,7 +151,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
     # Start timing
     job_start_time = time.time()
 
-    logger.info(f"Starting daily calculation job {job_id} for {target_date}")
+    logger.info("Starting daily calculation job %(job_id)s for %(target_date)s"")
 
     # Phase 3: Publish task started event
     await _publish_task_progress(
@@ -213,7 +214,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 return
             stock_codes = df_stocks["symbol"].tolist()
         except Exception as e:
-            logger.error(f"Failed to fetch stock list: {e}")
+            logger.error("Failed to fetch stock list: %(e)s"")
             await _publish_task_progress(
                 job_id=job_id,
                 task_type="batch_daily",
@@ -224,14 +225,14 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
             return
 
     total_stocks = len(stock_codes)
-    logger.info(f"Processing {total_stocks} stocks...")
+    logger.info("Processing %(total_stocks)s stocks..."")
 
     # Create task record
     try:
         repo.create_task(job_id, "batch_daily", params)
         repo.update_task(job_id, "running", 0.0)
     except Exception as e:
-        logger.error(f"Failed to create task record: {e}")
+        logger.error("Failed to create task record: %(e)s"")
 
     # 5. Process Batch with event publishing
     success_count = 0
@@ -262,7 +263,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                     timestamps=pd.to_datetime(df_kline["date"]).to_pydatetime(),
                 )
             except Exception as e:
-                logger.warning(f"Data conversion failed for {code}: {e}")
+                logger.warning("Data conversion failed for %(code)s: %(e)s"")
                 continue
 
             # Calculate indicators
@@ -302,7 +303,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
             )
 
         except Exception as e:
-            logger.error(f"Failed to process {code}: {e}")
+            logger.error("Failed to process %(code)s: %(e)s"")
             fail_count += 1
 
         # Phase 3: Throttled progress updates (every 1% or 50 stocks)

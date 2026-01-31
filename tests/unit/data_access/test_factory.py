@@ -7,10 +7,11 @@ Data Access Factory Test Suite
 测试模块: src.data_access.factory (278行)
 """
 
-import pytest
-from unittest.mock import Mock
-import sys
 import os
+import sys
+from unittest.mock import Mock
+
+import pytest
 
 # 添加src路径到导入路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

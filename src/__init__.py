@@ -1,4 +1,4 @@
-from .algorithms import BaseAlgorithm, AlgorithmType, AlgorithmConfig, AlgorithmResult, AlgorithmMetrics
+from .algorithms import AlgorithmConfig, AlgorithmMetrics, AlgorithmResult, AlgorithmType, BaseAlgorithm
 
 __all__ = [
     "BaseAlgorithm",

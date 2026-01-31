@@ -6,15 +6,13 @@
 测试用例数: 4
 """
 
+import sys
 import unittest
 from pathlib import Path
-import sys
 
 # 导入被测试模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import data_validator
-
-
 
     def test_data_validator_validate_price_data_security(self):
         """安全测试 - validate_price_data"""

@@ -6,11 +6,12 @@ FastAPI路由文件：Dashboard相关API
 生成时间: 2025-11-13
 """
 
-from typing import Optional
-import os
-from fastapi import APIRouter, Query, HTTPException
-from fastapi.responses import JSONResponse
 import logging
+import os
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import JSONResponse
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -26,16 +27,16 @@ logger.info("数据源模式: %s", "Mock数据" if USE_MOCK_DATA else "真实数
 # 导入Mock数据或真实数据
 if USE_MOCK_DATA:
     from src.mock.mock_Dashboard import (
-        get_market_stats,
-        get_market_heat_data,
-        get_leading_sectors,
-        get_price_distribution,
         get_capital_flow_data,
-        get_industry_fund_flow,
-        get_favorite_stocks,
-        get_strategy_stocks,
-        get_industry_stocks,
         get_concept_stocks,
+        get_favorite_stocks,
+        get_industry_fund_flow,
+        get_industry_stocks,
+        get_leading_sectors,
+        get_market_heat_data,
+        get_market_stats,
+        get_price_distribution,
+        get_strategy_stocks,
     )
 
     logger.info("已加载Dashboard Mock数据模块")

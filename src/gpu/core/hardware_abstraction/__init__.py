@@ -5,16 +5,17 @@ GPU硬件抽象层 (Hardware Abstraction Layer)
 Phase 6.2 GPU加速引擎架构重构
 """
 
-from .resource_manager import GPUResourceManager
-from .strategy_context import StrategyGPUContext
-from .realtime_path import RealTimeGPUPath
 from .health_monitor import DeviceHealthMonitor, PerformanceThreshold
-from .memory_pool import MemoryPool
 from .interfaces import (
+    AllocationRequest,
     IGPUResourceProvider,
     IStrategyContext,
     StrategyPriority,
 )
+from .memory_pool import MemoryPool
+from .realtime_path import RealTimeGPUPath
+from .resource_manager import GPUResourceManager
+from .strategy_context import StrategyGPUContext
 
 
 def get_gpu_resource_manager():
@@ -55,6 +56,7 @@ __all__ = [
     # 内存管理
     "MemoryPool",
     # 接口定义
+    "AllocationRequest",
     "IGPUResourceProvider",
     "IStrategyContext",
     # 便捷函数

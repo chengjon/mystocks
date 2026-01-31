@@ -1,3 +1,4 @@
+# pylint: disable=no-member
 """
 AkShare股票信息模块
 
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class StockInfoAdapter(BaseAkshareAdapter):
     """股票信息适配器"""
-    self.logger = logging.getLogger(__name__)
     # 日志记录器
+    pass
     @retry_api_call(max_retries=3, delay=1)
     async def get_concept_classify(self) -> pd.DataFrame:
         """
@@ -39,8 +40,11 @@ class StockInfoAdapter(BaseAkshareAdapter):
                 - stock_count: 成分股数量
                 - leader_stock: 领涨股
         """
-                - leader_stock: 领涨股
-        """
+        try:
+            self.logger.info("[Akshare] 开始获取概念分类数据...")
+
+            df = ak.stock_concept_classify()
+
             if df is None or df.empty:
                 self.logger.info("[Akshare] 未能获取到概念分类数据")
                 return pd.DataFrame()
@@ -72,7 +76,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取概念分类数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取概念分类数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -128,7 +132,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取行业分类数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取行业分类数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -143,22 +147,22 @@ class StockInfoAdapter(BaseAkshareAdapter):
             pd.DataFrame: 股票基本信息
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取股票 {symbol} 的信息...")
+            self.logger.info("[Akshare] 开始获取股票 %s 的信息...", symbol)
 
             df = ak.stock_info_a_code_name()
 
             if df is None or df.empty:
-                self.logger.warning(f"[Akshare] 未能获取到股票 {symbol} 的信息")
+                self.logger.warning("[Akshare] 未能获取到股票 %s 的信息", symbol)
                 return None
 
             # 筛选指定股票
             df = df[df["code"] == symbol]
 
             if df.empty:
-                self.logger.warning(f"[Akshare] 未找到股票 {symbol}")
+                self.logger.warning("[Akshare] 未找到股票 %(symbol)s")
                 return None
 
-            self.logger.info(f"[Akshare] 成功获取股票 {symbol} 的信息")
+            self.logger.info("[Akshare] 成功获取股票 %s 的信息", symbol)
 
             # 标准化列名
             df = df.rename(
@@ -175,7 +179,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取股票 {symbol} 信息失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取股票 {symbol} 信息失败: {str(e)}", exc_info=True)
             return None
 
     @retry_api_call(max_retries=3, delay=1)
@@ -190,7 +194,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             pd.DataFrame: 上海交易所每日概况数据
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取上海交易所每日概况数据，日期: {date}")
+            self.logger.info("[Akshare] 开始获取上海交易所每日概况数据，日期: %(date)s")
 
             # pylint: disable=no-member
             if date:
@@ -222,5 +226,5 @@ class StockInfoAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取上海交易所每日概况数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取上海交易所每日概况数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()

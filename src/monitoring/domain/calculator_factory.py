@@ -19,15 +19,15 @@
 
 import logging
 import time
-from typing import Dict, Any, List, Optional, TypeVar, Union
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, TypeVar, Union
 
 import pandas as pd
 
-from .market_regime import MarketRegimeIdentifier, MarketRegimeConfig, MarketRegimeResult
-from .calculator_cpu import VectorizedHealthCalculator, CalculatorConfig, HealthScoreInput
-from .calculator_gpu import GPUHealthCalculator, GPUCalculatorConfig
+from .calculator_cpu import CalculatorConfig, HealthScoreInput, VectorizedHealthCalculator
+from .calculator_gpu import GPUCalculatorConfig, GPUHealthCalculator
+from .market_regime import MarketRegimeConfig, MarketRegimeIdentifier, MarketRegimeResult
 from .risk_metrics import AdvancedRiskCalculator, RiskMetricsConfig, RiskMetricsInput
 
 logger = logging.getLogger(__name__)
@@ -311,7 +311,7 @@ class HealthCalculatorFactory:
         self._switch_history.append(decision)
 
         if self.config.log_switch_decisions:
-            logger.info(f"引擎切换决策: {requested.value} → {actual.value} ({reason})")
+            logger.info("引擎切换决策: {requested.value} → {actual.value} (%(reason)s)")
 
     def get_switch_history(self) -> List[Dict[str, Any]]:
         """获取切换历史"""

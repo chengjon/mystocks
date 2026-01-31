@@ -5,10 +5,10 @@ MACD策略 - 趋势和动量双重确认
 Moving Average Convergence Divergence
 """
 
-from typing import Dict, Any, Optional, List
 from decimal import Decimal
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class MACDStrategy(BaseStrategy):

@@ -11,16 +11,16 @@ from pydantic import BaseModel
 
 from app.core.responses import (
     APIResponse,
-    create_success_response,
-    create_error_response,
     ErrorCodes,
+    create_error_response,
+    create_success_response,
 )
 from app.schemas.trade_schemas import (
     AccountInfo,
     Position,
     PositionsResponse,
-    TradeHistoryResponse,
     TradeHistoryItem,
+    TradeHistoryResponse,
 )
 
 router = APIRouter()
@@ -55,8 +55,8 @@ async def get_portfolio():
     try:
         # TODO: 实际应从数据库查询
         # 返回模拟数据用于演示
-        from decimal import Decimal
         from datetime import datetime
+        from decimal import Decimal
 
         account_data = AccountInfo(
             account_id="ACC_DEMO_001",
@@ -92,8 +92,8 @@ async def get_positions():
     返回用户当前所有持仓的详细信息，包括股票代码、数量、成本价、当前价、盈亏等
     """
     try:
-        from decimal import Decimal
         from datetime import datetime
+        from decimal import Decimal
 
         # TODO: 实际应从数据库查询
         # 返回模拟数据用于演示
@@ -171,8 +171,8 @@ async def get_trades(
     支持按股票代码、日期范围过滤，返回分页的交易历史记录
     """
     try:
-        from decimal import Decimal
         from datetime import datetime
+        from decimal import Decimal
 
         # TODO: 实际应从数据库按过滤条件查询
         # 返回模拟数据用于演示
@@ -306,8 +306,8 @@ async def execute_trade(order: dict):
         APIResponse: 包含交易执行结果的响应
     """
     try:
-        from datetime import datetime
         import uuid
+        from datetime import datetime
 
         # 验证必填字段
         required_fields = ["direction", "symbol", "quantity"]

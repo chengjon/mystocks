@@ -14,10 +14,10 @@ API缓存工具 - 减少数据库查询压力
 
 import hashlib
 import json
-from functools import wraps
-from typing import Optional, Dict, Any, Callable
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
+from functools import wraps
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +78,10 @@ class CacheManager:
         # 检查是否过期
         if expires_at and datetime.now() > expires_at:
             del _memory_cache[cache_key]
-            logger.debug(f"🗑️  Cache expired: {cache_key}")
+            logger.debug("🗑️  Cache expired: %(cache_key)s"")
             return None
 
-        logger.debug(f"✅ Cache hit: {cache_key}")
+        logger.debug("✅ Cache hit: %(cache_key)s"")
         return cache_entry.get("data")
 
     @classmethod
@@ -93,7 +93,7 @@ class CacheManager:
             "expires_at": expires_at,
             "created_at": datetime.now(),
         }
-        logger.debug(f"💾 Cache set: {cache_key} (TTL: {ttl}s)")
+        logger.debug("💾 Cache set: %(cache_key)s (TTL: %(ttl)ss)"")
 
     @classmethod
     def clear_cache(cls, prefix: Optional[str] = None):
@@ -102,7 +102,7 @@ class CacheManager:
             keys_to_delete = [k for k in _memory_cache.keys() if k.startswith(f"api:{prefix}:")]
             for key in keys_to_delete:
                 del _memory_cache[key]
-            logger.info(f"🗑️  Cleared cache: {prefix}* ({len(keys_to_delete)} keys)")
+            logger.info("🗑️  Cleared cache: %(prefix)s* ({len(keys_to_delete)} keys)"")
         else:
             _memory_cache.clear()
             logger.info("🗑️  Cleared all cache")

@@ -3,8 +3,8 @@ Trading Router
 DDD 架构下的交易相关 API
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from src.application.trading.order_mgmt_service import OrderManagementService
+from fastapi import APIRouter, HTTPException
+
 from src.application.dto.trading_dto import CreateOrderRequest, OrderResponse
 
 router = APIRouter(prefix="/api/v1/ddd/trading", tags=["DDD Trading"])

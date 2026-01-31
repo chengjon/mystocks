@@ -14,13 +14,14 @@ API 端点:
 """
 
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime, date
-from pydantic import BaseModel, Field
-from fastapi import APIRouter, HTTPException, Query, Path
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
 
-from app.core.responses import UnifiedResponse
+from fastapi import APIRouter, HTTPException, Path, Query
+from pydantic import BaseModel, Field
+
 from app.core.exception_handlers import handle_exceptions
+from app.core.responses import UnifiedResponse
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ async def calculate_health_score(
     - **market_regime**: 市场体制 (自动识别时可省略)
     """
     try:
-        from src.monitoring.domain.calculator_factory import get_calculator_factory, EngineType
+        from src.monitoring.domain.calculator_factory import EngineType, get_calculator_factory
 
         factory = get_calculator_factory()
 
@@ -161,7 +162,7 @@ async def calculate_health_score(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"计算健康度失败: {e}")
+        logger.error("计算健康度失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
 
 
@@ -178,7 +179,7 @@ async def batch_calculate_health_scores(
     - **include_risk_metrics**: 是否包含高级风险指标
     """
     try:
-        from src.monitoring.domain.calculator_factory import get_calculator_factory, EngineType
+        from src.monitoring.domain.calculator_factory import EngineType, get_calculator_factory
 
         factory = get_calculator_factory()
 
@@ -231,7 +232,7 @@ async def batch_calculate_health_scores(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"批量计算健康度失败: {e}")
+        logger.error("批量计算健康度失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
 
 
@@ -287,7 +288,7 @@ async def get_health_score_history(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取健康度历史失败: {e}")
+        logger.error("获取健康度历史失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -406,7 +407,7 @@ async def analyze_portfolio(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"组合分析失败: {e}")
+        logger.error("组合分析失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"分析失败: {str(e)}")
 
 
@@ -421,9 +422,10 @@ async def identify_market_regime(
     - **index_code**: 指数代码 (000001.SH: 上证指数, 399001.SZ: 深证成指)
     """
     try:
-        from src.monitoring.domain.calculator_factory import get_calculator_factory
-        import pandas as pd
         import numpy as np
+        import pandas as pd
+
+        from src.monitoring.domain.calculator_factory import get_calculator_factory
 
         factory = get_calculator_factory()
 
@@ -447,7 +449,7 @@ async def identify_market_regime(
         return UnifiedResponse(data=response, message="市场体制识别成功")
 
     except Exception as e:
-        logger.error(f"市场体制识别失败: {e}")
+        logger.error("市场体制识别失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"识别失败: {str(e)}")
 
 
@@ -466,7 +468,7 @@ async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
         return UnifiedResponse(data=status, message="获取引擎状态成功")
 
     except Exception as e:
-        logger.error(f"获取引擎状态失败: {e}")
+        logger.error("获取引擎状态失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -521,9 +523,9 @@ async def get_portfolio_summary(
     获取组合分析摘要
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
         from src.monitoring.domain.calculator_factory import get_calculator_factory
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
         postgres_async = get_postgres_async()
         factory = get_calculator_factory()
@@ -573,7 +575,7 @@ async def get_portfolio_summary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取组合摘要失败: {e}")
+        logger.error("获取组合摘要失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -588,9 +590,9 @@ async def get_portfolio_alerts(
     获取组合预警列表
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
         from src.monitoring.domain.calculator_factory import get_calculator_factory
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
         postgres_async = get_postgres_async()
         factory = get_calculator_factory()
@@ -641,7 +643,7 @@ async def get_portfolio_alerts(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取预警列表失败: {e}")
+        logger.error("获取预警列表失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -655,9 +657,9 @@ async def get_rebalance_suggestions(
     获取再平衡建议
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
         from src.monitoring.domain.calculator_factory import get_calculator_factory
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
+        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
         postgres_async = get_postgres_async()
         factory = get_calculator_factory()
@@ -707,5 +709,5 @@ async def get_rebalance_suggestions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"获取再平衡建议失败: {e}")
+        logger.error("获取再平衡建议失败: %(e)s"")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")

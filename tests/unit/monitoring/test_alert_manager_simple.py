@@ -7,10 +7,11 @@ Simple Alert Manager Test Suite
 测试模块: src.monitoring.alert_manager (148行)
 """
 
-import pytest
-from unittest.mock import MagicMock, Mock
-from typing import Dict, Any, Optional
 import enum
+from typing import Any, Dict, Optional
+from unittest.mock import MagicMock, Mock
+
+import pytest
 
 
 class AlertLevel(str, enum.Enum):

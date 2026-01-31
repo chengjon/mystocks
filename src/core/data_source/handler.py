@@ -1,6 +1,7 @@
 import logging
 import time
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
+
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ def get_stock_daily(
     if not best_endpoint:
         raise ValueError("没有可用的日线数据接口")
 
-    logger.info(f"使用接口: {best_endpoint['endpoint_name']}")
+    logger.info("使用接口: %s", best_endpoint.get('name', 'unknown'))
 
     # 调用接口（根据数据源类型适配参数）
     return self._call_endpoint(best_endpoint, symbol=symbol, start_date=start_date, end_date=end_date, adjust=adjust)
@@ -184,5 +185,5 @@ def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> pd.DataFrame:
         error_msg = str(e)
         self._record_failure(endpoint_name, response_time, error_msg, caller)
 
-        logger.error(f"调用接口失败: {endpoint_name}, 错误: {error_msg}")
+        logger.error("调用接口失败: %(endpoint_name)s, 错误: %(error_msg)s")
         raise

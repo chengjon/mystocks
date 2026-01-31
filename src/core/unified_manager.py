@@ -8,26 +8,27 @@ MyStocks统一数据管理器 - 简化版本 (US3 Architecture Simplification)
 创建日期: 2025-10-25
 """
 
-import pandas as pd
 import logging
-from typing import Optional, Dict, Any, Union
 from datetime import datetime
+from typing import Any, Dict, Optional, Union
 
-from src.core.data_classification import DataClassification
-from src.core.data_manager import DataManager
+import pandas as pd
+
 from src.core.batch_failure_strategy import (
-    BatchFailureStrategy,
     BatchFailureHandler,
+    BatchFailureStrategy,
     BatchOperationResult,
 )
+from src.core.data_classification import DataClassification
+from src.core.data_manager import DataManager
 from src.utils.failure_recovery_queue import FailureRecoveryQueue
 
 # 监控组件 (可选)
 try:
+    from src.monitoring.alert_manager import get_alert_manager
+    from src.monitoring.data_quality_monitor import get_quality_monitor
     from src.monitoring.monitoring_database import get_monitoring_database
     from src.monitoring.performance_monitor import get_performance_monitor
-    from src.monitoring.data_quality_monitor import get_quality_monitor
-    from src.monitoring.alert_manager import get_alert_manager
 
     MONITORING_AVAILABLE = True
 except ImportError:
@@ -255,7 +256,7 @@ class MyStocksUnifiedManager:
 
         if self.enable_monitoring and self.performance_monitor:
             try:
-                stats["performance"] = self.performance_monitor.get_statistics()
+                stats["performance"] = self.performance_monitor.get_performance_summary()
             except Exception:
                 pass
 

@@ -6,11 +6,12 @@ FastAPI路由文件: Technical
 生成时间: 2025-11-13
 """
 
-from fastapi import APIRouter
-from typing import Dict
-import os
 import logging
+import os
 from datetime import datetime
+from typing import Dict
+
+from fastapi import APIRouter
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -37,13 +38,13 @@ def get_technical_mock_data():
     """
     from src.mock.mock_TechnicalAnalysis import (
         get_all_indicators,
-        get_trend_indicators,
+        get_kline_data,
         get_momentum_indicators,
+        get_pattern_recognition,
+        get_trading_signals,
+        get_trend_indicators,
         get_volatility_indicators,
         get_volume_indicators,
-        get_trading_signals,
-        get_kline_data,
-        get_pattern_recognition,
     )
 
     return {

@@ -9,10 +9,11 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
+import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Optional, Any, Dict
-import time
+from typing import Any, Callable, Dict, Optional
+
 import structlog
 
 logger = structlog.get_logger()

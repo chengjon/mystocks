@@ -6,9 +6,10 @@
 # 说明：专门处理TDX实时行情数据的服务
 """
 
-import pandas as pd
-from typing import Dict, Optional, List
 from datetime import datetime
+from typing import Dict, List, Optional
+
+import pandas as pd
 from loguru import logger
 
 from .base_tdx_adapter import BaseTdxAdapter
@@ -308,3 +309,108 @@ class RealtimeService(BaseTdxAdapter):
         except Exception as e:
             logger.error("批量获取实时行情数据失败: %s", e)
             return []
+
+    # ==================== IDataSource接口实现（补全） ====================
+
+    def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取股票日线数据
+
+        Args:
+            symbol: 股票代码
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 日线数据
+
+        Note:
+            RealtimeService专注于实时数据，不支持历史K线
+        """
+        logger.warning("RealtimeService不支持获取历史日线数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_index_daily(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取指数日线数据
+
+        Args:
+            symbol: 指数代码
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 日线数据
+
+        Note:
+            RealtimeService专注于实时数据，不支持历史K线
+        """
+        logger.warning("RealtimeService不支持获取历史指数数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_index_components(self, symbol: str) -> list:
+        """
+        获取指数成分股
+
+        Args:
+            symbol: 指数代码
+
+        Returns:
+            list: 指数成分股代码列表
+
+        Note:
+            RealtimeService专注于实时数据，暂不支持指数成分股
+        """
+        logger.warning("RealtimeService不支持获取指数成分股: %s", symbol)
+        return []
+
+    def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        获取交易日历
+
+        Args:
+            start_date: 开始日期
+            end_date: 结束日期
+
+        Returns:
+            pd.DataFrame: 交易日历数据
+
+        Note:
+            RealtimeService专注于实时数据，不支持交易日历
+        """
+        logger.warning("RealtimeService不支持获取交易日历")
+        return pd.DataFrame()
+
+    def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFrame:
+        """
+        获取财务数据
+
+        Args:
+            symbol: 股票代码
+            period: 报告期间
+
+        Returns:
+            pd.DataFrame: 财务数据
+
+        Note:
+            RealtimeService专注于实时数据，不支持财务数据
+        """
+        logger.warning("RealtimeService不支持获取财务数据: %s", symbol)
+        return pd.DataFrame()
+
+    def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> list:
+        """
+        获取新闻数据
+
+        Args:
+            symbol: 股票代码
+            limit: 返回数量限制
+
+        Returns:
+            list: 新闻数据列表
+
+        Note:
+            RealtimeService专注于实时行情，不支持新闻数据
+        """
+        logger.warning("RealtimeService不支持获取新闻数据")
+        return []

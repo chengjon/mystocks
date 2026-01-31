@@ -11,14 +11,13 @@ GPU Indicator Adapter - GPU指标适配器
 日期: 2026-01-14
 """
 
-import logging
-from typing import Dict, Any, List, Optional
-from abc import ABC, abstractmethod
-import time
-import numpy as np
-
-from typing import Dict, Any, Optional, List
 import dataclasses
+import logging
+import time
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 
 # Simple indicator configuration
@@ -57,7 +56,7 @@ except ImportError:
     logger.warning("⚠️ GPU libraries not available, falling back to CPU")
 
 try:
-    from numba import jit, cuda
+    pass
 
     NUMBA_CUDA_AVAILABLE = True
     logger.info("✅ Numba CUDA acceleration available")
@@ -91,7 +90,7 @@ class GPUResourceManager:
 
                 logger.info(".1f.1f.1f")
             except Exception as e:
-                logger.warning(f"Failed to get GPU memory info: {e}")
+                logger.warning("Failed to get GPU memory info: %(e)s"")
                 self.available_memory = 1024 * 1024 * 1024  # 1GB 默认
         else:
             self.available_memory = 0
@@ -166,7 +165,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
         self.memory_usage = []
         self.batch_sizes = []
 
-        logger.info(f"✅ GPU Indicator Adapter initialized (GPU: {self.use_gpu})")
+        logger.info("✅ GPU Indicator Adapter initialized (GPU: {self.use_gpu})"")
 
     def _should_use_gpu(self) -> bool:
         """判断是否应该使用GPU"""
@@ -229,10 +228,10 @@ class GPUIndicatorAdapter(IndicatorInterface):
             )
 
         except Exception as e:
-            logger.error(f"Error calculating {self.config.name}: {e}")
+            logger.error("Error calculating {self.config.name}: %(e)s"")
             # 回退到CPU计算
             if self.use_gpu:
-                logger.info(f"Falling back to CPU calculation for {self.config.name}")
+                logger.info("Falling back to CPU calculation for {self.config.name}"")
                 self.use_gpu = False
                 return self.calculate(data, parameters)
 
@@ -250,7 +249,6 @@ class GPUIndicatorAdapter(IndicatorInterface):
         Returns:
             计算结果
         """
-        pass
 
     @abstractmethod
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -264,7 +262,6 @@ class GPUIndicatorAdapter(IndicatorInterface):
         Returns:
             计算结果
         """
-        pass
 
     def get_performance_stats(self) -> Dict[str, Any]:
         """获取性能统计"""
@@ -321,7 +318,7 @@ class GPUMACDIndicator(GPUIndicatorAdapter):
             }
 
         except Exception as e:
-            logger.error(f"GPU MACD calculation failed: {e}")
+            logger.error("GPU MACD calculation failed: %(e)s"")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -397,7 +394,7 @@ class GPURSIIndicator(GPUIndicatorAdapter):
             return {"rsi": rsi.to_pandas().fillna(50).values}  # RSI默认50
 
         except Exception as e:
-            logger.error(f"GPU RSI calculation failed: {e}")
+            logger.error("GPU RSI calculation failed: %(e)s"")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -459,7 +456,7 @@ class GPUBollingerBandsIndicator(GPUIndicatorAdapter):
             }
 
         except Exception as e:
-            logger.error(f"GPU Bollinger Bands calculation failed: {e}")
+            logger.error("GPU Bollinger Bands calculation failed: %(e)s"")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:

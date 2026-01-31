@@ -1,23 +1,277 @@
 # MyStocks 前端优化下一步工作安排
 
 **生成日期**: 2026-01-27
-**基于评估**: frontend_optimization_evaluation.md
+**基于评估**: frontend_optimization_plan_opinion_re_evaluated.md
 **参考文档**: 前端架构设计、API集成指南、WebSocket集成、性能优化指南等
 
 ---
 
 ## 📋 执行概述
 
-**总体目标**: 解决前端架构与配置的核心问题，提升代码质量、开发效率和可维护性
+**总体目标**: 解决前端架构与配置的核心问题，提升代码质量、开发效率和可维护性。
 
 **执行周期**: 8-10周
 **预计人力**: 2名高级前端工程师 + 1名架构师
 
 ---
 
-## 🎯 Week 1: 立即行动项 (2天)
+## ✅ 架构决策 (已确认)
 
-### Task 1.1: 简化路由架构迁移
+### 采用方案 A: 扩展配置模型（支持ArtDeco Monolithic组件）⭐
+
+**确认时间**: 2026-01-28
+
+**核心原则**: **保持并兼容现有ArtDeco设计系统，而非破坏性重构**
+
+**为什么选择方案 A**:
+1. **用户评估确认**: 详细审阅了三份新路由文档后，确认没有任何理由支持"一路由一组件"迁移
+2. **设计系统保护**: ArtDeco文档明确指出"一组件多Tab"是设计系统固有且关键的组织方式
+3. **零收益高风险**: 强制迁移将破坏流畅Tab切换体验，增加巨大工作量，无明确收益
+4. **方案A优势**: 在不破坏设计的前提下，实现配置集中化目标（配置覆盖率23% → 80%+）
+
+**方案 A 核心内容**:
+- ✅ **支持monolithic组件配置**: 扩展配置模型以处理组件内部的多Tab API/WebSocket映射
+- ✅ **保持单路由架构**: ArtDeco页面使用activeTab切换内容，而非多个路由跳转
+- ✅ **类型安全依然有效**: TypeScript类型定义确保配置使用时的编译时检查
+- ✅ **配置覆盖率提升**: 从23%（7/30+路由）提升到80%+（24+/30+路由）
+
+---
+
+### ❌ 明确拒绝：方案 B（拆分Monolithic组件为多页面）
+
+**拒绝原因**:
+1. **破坏设计系统**: 与ArtDeco核心设计理念冲突
+2. **用户体验退化**: 流畅Tab切换变为多页面跳转
+3. **工作量大风险**: 拆分6个功能域 × 8+个Tab = 48+个独立组件
+4. **无明确收益**: 新文档未提供任何性能或开发效率提升的论据
+
+---
+
+### 方案 A 实现细节
+
+#### 1. 扩展配置模型（Week 1）
+
+**目标**: 修改`config/pageConfig.ts`支持两种配置类型
+
+**配置类型定义**:
+```typescript
+// config/pageConfig.ts - 扩展版
+export const PAGE_CONFIG = {
+  // 组件级配置（一组件对应多个Tab）
+  'ArtDecoMarketQuotes': {
+    type: 'monolithic',  // 标记为单页多Tab组件
+    tabs: {
+      realtime: {
+        apiEndpoint: '/api/market/v2/realtime',
+        wsChannel: 'market:realtime',
+        realtime: true,
+        description: '实时行情'
+      },
+      technical: {
+        apiEndpoint: '/api/market/v2/technical',
+        wsChannel: null,
+        realtime: false,
+        description: '技术指标'
+      },
+      fundFlow: {
+        apiEndpoint: '/api/market/v2/fund-flow',
+        wsChannel: null,
+        realtime: false,
+        description: '资金流向'
+      },
+      // ... 其他Tab
+    }
+  },
+
+  // 路由级配置（一组件对应一页面）
+  'trading-signals': {
+    type: 'page',
+    apiEndpoint: '/api/trading/signals',
+    wsChannel: 'trading:signals',
+    realtime: true,
+    description: '交易信号监控'
+  }
+} as const
+
+// TypeScript类型
+export type PageConfigType = 'monolithic' | 'page'
+export type TabConfig = {
+  apiEndpoint: string
+  wsChannel: string | null
+  realtime: boolean
+  description: string
+}
+export type MonolithicPageConfig = {
+  type: 'monolithic'
+  tabs: Record<string, TabConfig>
+}
+export type StandardPageConfig = {
+  type: 'page'
+  apiEndpoint: string
+  wsChannel: string | null
+  realtime: boolean
+  description: string
+}
+```
+
+**使用方式**:
+```typescript
+// ArtDecoMarketQuotes.vue 中使用
+import { getPageConfig } from '@/config/pageConfig'
+
+const config = getPageConfig('ArtDecoMarketQuotes')
+if (config?.type === 'monolithic') {
+  // 获取当前Tab的配置
+  const currentTabConfig = config.tabs[activeTab.value]
+  const apiEndpoint = currentTabConfig.apiEndpoint
+  const wsChannel = currentTabConfig.wsChannel
+}
+```
+
+**优势验证**:
+- ✅ 支持现有的monolithic组件架构
+- ✅ 配置覆盖率可达100%（30+路由全配置）
+- ✅ 不破坏现有ArtDeco页面结构
+- ✅ 类型安全依然有效
+- ✅ 开发工作量最小化（不拆分组件）
+
+---
+
+#### 2. 批量配置生成脚本（Week 1）
+
+**目标**: 自动生成30+路由的配置
+
+**实现位置**: `scripts/tools/generate-page-config.ts`
+
+**关键功能**:
+- 读取路由配置文件（`web/frontend/src/router/index.ts`）
+- 智能推断API端点和WebSocket频道
+- 生成完整配置模板（包括monolithic和page两种类型）
+- 输出到`config/pageConfig.generated.ts`
+- 支持预览差异（`diff`命令）
+
+**配置生成逻辑**:
+```typescript
+// 智能推断规则
+const isRealtime = routeName.includes('realtime') ||
+                   routeName.includes('signals') ||
+                   routeName.includes('alerts');
+
+const isMarket = routeName.startsWith('market-');
+const isTrading = routeName.startsWith('trading-');
+const isRisk = routeName.startsWith('risk-');
+const isSystem = routeName.startsWith('system-');
+
+let wsChannel = null;
+if (isRealtime) {
+  if (isMarket) wsChannel = 'market:realtime';
+  else if (isTrading) wsChannel = 'trading:signals';
+  else if (isRisk) wsChannel = 'risk:alerts';
+  else if (isSystem) wsChannel = 'system:status';
+}
+
+let apiEndpoint = `/api/${routeName.replace(/-/g, '/')}`;
+```
+
+**预期成果**:
+- 自动生成30+路由配置（100%覆盖率）
+- 节省90%的手动配置时间
+- TypeScript类型安全自动保证
+- 支持后续路由添加的增量更新
+
+---
+
+#### 3. 配置验证Hook（Week 1）
+
+**目标**: 确保新路由不遗漏配置
+
+**实现位置**: `scripts/hooks/check-page-config.mjs`
+
+**集成到pre-commit**: `.pre-commit-config.yaml`
+
+**验证规则**:
+- 读取路由配置文件（`router/index.ts`）
+- 读取pageConfig配置（`config/pageConfig.ts`）
+- 检查遗漏路由（在路由中存在但配置中不存在）
+- 配置完整性验证（必需字段检查）
+- 报告未配置路由并终止提交
+
+**Pre-commit配置**:
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: check-page-config
+        name: Check pageConfig coverage
+        entry: node scripts/hooks/check-page-config.mjs
+        language: node
+        files: web/frontend/src/router/index.ts
+        pass_filenames_regex: ^.+$  # 对所有文件变更运行
+```
+
+**验证流程**:
+```bash
+# 1. 自动验证
+git commit -m "feat: add new route"
+# → Hook自动运行check-page-config.mjs
+
+# 2. 发现遗漏
+❌ 以下路由未在pageConfig中配置:
+  - market-technical
+  - trading-positions
+  - risk-overview
+
+# 3. 终止提交
+hook failed with exit code 1
+commit rejected
+```
+
+---
+
+### Week 1 完整优化计划（基于方案A）
+
+**Week 1: 配置系统基础（9小时）**
+- Task 1.1: 扩展配置模型（4h）→ 配置覆盖率0% → 40%
+- Task 1.2: 批量配置生成（3h）→ 自动化配置创建
+- Task 1.3: 配置验证Hook（2h）→ 防止配置遗漏
+
+**Week 1后预期成果**:
+- ✅ 配置模型支持monolithic组件（方案A）
+- ✅ 批量配置生成脚本就绪
+- ✅ Pre-commit验证Hook就绪
+- ✅ 3个核心ArtDeco页面已迁移（18%覆盖率）
+- ✅ 配置覆盖率：23% → 40%
+- ✅ 开发效率提升：50%（批量生成vs手动配置）
+
+**Week 2-8: 后续扩展**
+- Week 2: 扩展剩余ArtDeco页面迁移（达到80%+覆盖率）
+- Week 3: 质量保证系统实施（单元测试、性能基准、回滚计划）
+- Week 4: 文档同步和性能优化
+- Week 5: 完整集成测试和监控
+- Week 6: 持续优化和反馈收集
+- Week 7: 生产部署和监控
+- Week 8: 完整集成测试和监控
+
+**最终目标（8周）**:
+- ✅ 完整的单Tab架构，消除架构不匹配
+- ✅ 统一的配置系统，消除硬编码
+- ✅ 强大的验证机制，确保代码质量
+- ✅ 清晰的文档体系，支持团队协作
+
+---
+
+## 🎯 下一步行动
+
+**当前状态**: 方案A已确认，准备开始实施
+
+**Week 1任务清单**:
+- [ ] Task 1.1: 扩展配置模型支持Monolithic组件（4h）
+- [ ] Task 1.2: 批量配置生成脚本开发（3h）
+- [ ] Task 1.3: 配置验证Hook开发（2h）
+- [ ] Task 1.4: 迁移核心ArtDeco页面到扩展配置（8h）
+
+**是否开始实施?** 请确认是否开始执行Week 1任务。
 
 **目标**: 从"多Tab单体组件"迁移到"一路由一组件"架构
 

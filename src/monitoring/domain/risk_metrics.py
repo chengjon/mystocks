@@ -14,11 +14,11 @@
 """
 
 import logging
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
-from datetime import date, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ class AdvancedRiskCalculator:
                 output = self._calculate_single(input_data)
                 results.append(output)
             except Exception as e:
-                logger.error(f"计算 {input_data.stock_code} 风险指标失败: {e}")
+                logger.error("计算 {input_data.stock_code} 风险指标失败: %(e)s")
                 results.append(
                     RiskMetricsOutput(
                         stock_code=input_data.stock_code,
@@ -133,7 +133,7 @@ class AdvancedRiskCalculator:
         closes = np.array(input_data.close_prices)
 
         if len(closes) < self.config.min_data_points:
-            logger.warning(f"数据点不足: {len(closes)}, 需要至少 {self.config.min_data_points}")
+            logger.warning("数据点不足: {len(closes)}, 需要至少 {self.config.min_data_points")
             return RiskMetricsOutput(
                 stock_code=input_data.stock_code,
                 sortino_ratio=None,

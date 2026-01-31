@@ -15,10 +15,11 @@ import type {
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type SystemStatusResponse = any
-type MonitoringAlertResponse = any
-type LogEntryResponse = any
-type DataQualityResponse = any
+// Type aliases currently unused - comment out to avoid ESLint error
+// type SystemStatusResponse = any
+// type MonitoringAlertResponse = any
+// type LogEntryResponse = any
+// type DataQualityResponse = any
 
 class MonitoringApiService {
   private baseUrl = '/api/monitoring'

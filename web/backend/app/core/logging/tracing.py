@@ -4,17 +4,17 @@ Integration with Grafana Tempo for trace collection and analysis
 """
 
 import logging
+import os
 import uuid
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any, Dict, Optional
 
-import os
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatioBasedSampler
 from opentelemetry.semconv.resource import ResourceAttributes
 
@@ -97,7 +97,6 @@ class TracingMiddleware:
 
     async def app(self, scope, receive, send):
         """ASGI app"""
-        pass
 
 
 class TracingClient:

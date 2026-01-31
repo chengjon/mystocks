@@ -1,22 +1,10 @@
 // Auto-generated types for trading domain
-// Generated at: 2026-01-19T22:34:18.299925
+// Generated at: 2026-01-29T13:43:35.813526
 
 export interface PositionCreate {
   symbol?: string;
   quantity?: number;
   price?: number;
-}
-
-export interface PositionItem {
-  symbol?: string;
-  name?: string | null;
-  quantity?: number;
-  avg_cost?: number;
-  current_price?: number | null;
-  market_value?: number | null;
-  profit_loss?: number | null;
-  profit_loss_percent?: number | null;
-  position_percent?: number | null;
 }
 
 export interface PositionResponse {

@@ -6,8 +6,8 @@ Phase 4验证测试：交易上下文
 验证Trading Context的实现质量。
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
 
 # 添加项目根目录到路径
@@ -369,9 +369,9 @@ def test_domain_events_completeness():
 
     try:
         from src.domain.trading.model.position import (
-            PositionOpenedEvent,
-            PositionIncreasedEvent,
             PositionDecreasedEvent,
+            PositionIncreasedEvent,
+            PositionOpenedEvent,
             StopLossTriggeredEvent,
         )
 

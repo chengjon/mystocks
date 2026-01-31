@@ -3,9 +3,10 @@ E2E测试：完整E2E流程测试（用户场景）
 测试文件：tests/e2e/test_web_e2e.py
 """
 
+import os
+
 import pytest
 from playwright.sync_api import sync_playwright
-import os
 
 
 class TestWebE2E:

@@ -7,21 +7,22 @@
 
 import json
 import logging
-import yaml
-from datetime import datetime
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 from dataclasses import asdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
+import yaml
+
+from .contract_validator import ContractValidator
 from .models import (
-    ContractTestSuite,
     ContractTestCase,
     ContractTestConfig,
-    TestCategory,
+    ContractTestSuite,
     ContractType,
+    TestCategory,
     TestStatus,
 )
-from .contract_validator import ContractValidator
 from .test_executor import ContractTestExecutor
 
 logger = logging.getLogger(__name__)
@@ -65,11 +66,11 @@ class ContractTestEngine:
                         self.openapi_spec = json.load(f)
                     else:
                         self.openapi_spec = yaml.safe_load(f)
-                logger.info(f"成功加载 OpenAPI 规范: {spec_path}")
+                logger.info("成功加载 OpenAPI 规范: %(spec_path)s")
             else:
-                logger.warning(f"OpenAPI 规范文件不存在: {spec_path}")
+                logger.warning("OpenAPI 规范文件不存在: %(spec_path)s")
         except Exception as e:
-            logger.error(f"加载 OpenAPI 规范失败: {e}")
+            logger.error("加载 OpenAPI 规范失败: %(e)s")
 
     def discover_tests_from_openapi(self) -> List[ContractTestCase]:
         """从 OpenAPI 规范发现测试用例"""
@@ -88,9 +89,9 @@ class ContractTestEngine:
                         if test_case:
                             test_cases.append(test_case)
 
-            logger.info(f"从 OpenAPI 规范自动发现 {len(test_cases)} 个测试用例")
+            logger.info("从 OpenAPI 规范自动发现 {len(test_cases)} 个测试用例")
         except Exception as e:
-            logger.error(f"从 OpenAPI 规范发现测试用例失败: {e}")
+            logger.error("从 OpenAPI 规范发现测试用例失败: %(e)s")
 
         return test_cases
 
@@ -138,7 +139,7 @@ class ContractTestEngine:
             return test_case
 
         except Exception as e:
-            logger.error(f"创建测试用例失败: {e}")
+            logger.error("创建测试用例失败: %(e)s")
             return None
 
     def _determine_category(self, path: str, method: str) -> TestCategory:
@@ -222,7 +223,7 @@ class ContractTestEngine:
         try:
             path = Path(file_path)
             if not path.exists():
-                logger.error(f"测试套件文件不存在: {file_path}")
+                logger.error("测试套件文件不存在: %(file_path)s")
                 return None
 
             with open(path, "r", encoding="utf-8") as f:
@@ -259,11 +260,11 @@ class ContractTestEngine:
                 )
                 suite.test_cases.append(test_case)
 
-            logger.info(f"成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)")
+            logger.info("成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)")
             return suite
 
         except Exception as e:
-            logger.error(f"加载测试套件失败: {e}")
+            logger.error("加载测试套件失败: %(e)s")
             return None
 
     def save_test_suite_to_file(self, suite: ContractTestSuite, file_path: str):
@@ -284,10 +285,10 @@ class ContractTestEngine:
                 else:
                     yaml.dump(suite_dict, f, default_flow_style=False, allow_unicode=True)
 
-            logger.info(f"保存测试套件成功: {file_path}")
+            logger.info("保存测试套件成功: %(file_path)s")
 
         except Exception as e:
-            logger.error(f"保存测试套件失败: {e}")
+            logger.error("保存测试套件失败: %(e)s")
 
     def create_default_suite(self) -> ContractTestSuite:
         """创建默认测试套件"""
@@ -400,7 +401,7 @@ class ContractTestEngine:
 
     async def execute_test_suite(self, suite: ContractTestSuite) -> ContractTestSuite:
         """执行测试套件"""
-        logger.info(f"开始执行测试套件: {suite.name}")
+        logger.info("开始执行测试套件: {suite.name}")
 
         suite.start_time = datetime.now()
         suite.status = TestStatus.RUNNING
@@ -410,7 +411,7 @@ class ContractTestEngine:
             # 验证测试套件
             validation_result = self.validator.validate_suite(suite)
             if not validation_result.valid:
-                logger.error(f"测试套件验证失败: {validation_result.errors}")
+                logger.error("测试套件验证失败: {validation_result.errors}")
                 suite.status = TestStatus.ERROR
                 return suite
 
@@ -432,14 +433,14 @@ class ContractTestEngine:
             else:
                 suite.status = TestStatus.FAILED
 
-            logger.info(f"测试套件执行完成: {suite.name}")
+            logger.info("测试套件执行完成: {suite.name}")
             logger.info(
                 f"结果统计: {suite.passed_cases} 通过, {suite.failed_cases} 失败, "
                 f"{suite.skipped_cases} 跳过, {suite.error_cases} 错误"
             )
 
         except Exception as e:
-            logger.error(f"执行测试套件失败: {e}")
+            logger.error("执行测试套件失败: %(e)s")
             suite.status = TestStatus.ERROR
             suite.end_time = datetime.now()
             suite.error_message = str(e)
@@ -477,5 +478,5 @@ class ContractTestEngine:
                 suite_name = test_file.stem
                 suites[suite_name] = await self.execute_test_suite(suite)
 
-        logger.info(f"完成所有契约测试执行，共处理 {len(suites)} 个测试套件")
+        logger.info("完成所有契约测试执行，共处理 {len(suites)} 个测试套件")
         return suites

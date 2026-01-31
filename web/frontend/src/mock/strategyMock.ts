@@ -15,13 +15,20 @@ import type {
  * Mock strategy performance data
  */
 export const mockStrategyPerformance: StrategyPerformance = {
-  strategy_id: '1',
   total_return: 0.256,      // 25.6%
-  annual_return: 0.312,     // 31.2%
+  annualized_return: 0.312,     // 31.2%
   sharpe_ratio: 1.85,
+  sortino_ratio: 2.15,
   max_drawdown: -0.124,     // -12.4%
+  volatility: 0.15,
+  value_at_risk: -0.05,
+  total_trades: 150,
   win_rate: 0.68,           // 68%
   profit_factor: 2.15,
+  average_win: 0.025,
+  average_loss: -0.015,
+  calmar_ratio: 2.52,
+  information_ratio: 1.45,
 };
 
 /**
@@ -35,8 +42,8 @@ export const mockStrategyList = {
       description: '基于5日和20日移动平均线的趋势跟踪策略，适合趋势明显的行情',
       type: 'trend_following' as const,
       status: 'active' as const,
-      createdAt: new Date('2025-01-15T10:30:00'),
-      updatedAt: new Date('2025-01-20T14:22:00'),
+      created_at: new Date('2025-01-15T10:30:00').toISOString(),
+      updated_at: new Date('2025-01-20T14:22:00').toISOString(),
       parameters: {
         shortPeriod: 5,
         longPeriod: 20,
@@ -51,8 +58,8 @@ export const mockStrategyList = {
       description: '基于布林带的均值回归策略，适用于震荡市场',
       type: 'mean_reversion' as const,
       status: 'active' as const,
-      createdAt: new Date('2025-01-10T09:15:00'),
-      updatedAt: new Date('2025-01-18T16:45:00'),
+      created_at: new Date('2025-01-10T09:15:00').toISOString(),
+      updated_at: new Date('2025-01-18T16:45:00').toISOString(),
       parameters: {
         period: 20,
         stdDev: 2,
@@ -60,13 +67,20 @@ export const mockStrategyList = {
         exitThreshold: 0.01,
       },
       performance: {
-        strategy_id: '2',
         total_return: 0.189,
-        annual_return: 0.234,
+        annualized_return: 0.234,
         sharpe_ratio: 1.62,
+        sortino_ratio: 1.85,
         max_drawdown: -0.098,
+        volatility: 0.12,
+        value_at_risk: -0.04,
+        total_trades: 120,
         win_rate: 0.72,
         profit_factor: 1.95,
+        average_win: 0.022,
+        average_loss: -0.012,
+        calmar_ratio: 2.39,
+        information_ratio: 1.32,
       },
     },
     {
@@ -75,8 +89,8 @@ export const mockStrategyList = {
       description: '捕捉价格突破关键阻力位的机会，适合波动性较大的市场',
       type: 'momentum' as const,
       status: 'testing' as const,
-      createdAt: new Date('2025-01-05T11:00:00'),
-      updatedAt: new Date('2025-01-22T10:30:00'),
+      created_at: new Date('2025-01-05T11:00:00'),
+      updated_at: new Date('2025-01-22T10:30:00'),
       parameters: {
         lookbackPeriod: 20,
         breakoutThreshold: 0.03,
@@ -91,8 +105,8 @@ export const mockStrategyList = {
       description: '基于RSI指标的超买超卖反转策略',
       type: 'mean_reversion' as const,
       status: 'inactive' as const,
-      createdAt: new Date('2024-12-28T15:20:00'),
-      updatedAt: new Date('2025-01-10T09:40:00'),
+      created_at: new Date('2024-12-28T15:20:00'),
+      updated_at: new Date('2025-01-10T09:40:00'),
       parameters: {
         rsiPeriod: 14,
         oversoldThreshold: 30,
@@ -100,13 +114,20 @@ export const mockStrategyList = {
         positionSize: 0.1,
       },
       performance: {
-        strategy_id: '4',
         total_return: 0.145,
-        annual_return: 0.178,
+        annualized_return: 0.178,
         sharpe_ratio: 1.35,
+        sortino_ratio: 1.52,
         max_drawdown: -0.089,
+        volatility: 0.11,
+        value_at_risk: -0.035,
+        total_trades: 98,
         win_rate: 0.65,
         profit_factor: 1.78,
+        average_win: 0.018,
+        average_loss: -0.011,
+        calmar_ratio: 2.0,
+        information_ratio: 1.15,
       },
     },
   ],
@@ -118,21 +139,34 @@ export const mockStrategyList = {
 /**
  * Mock single strategy detail
  */
-export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0];
+export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0] as any;
 
 /**
  * Mock backtest result
  */
-export const mockBacktestResult: BacktestResultVM = {
-  task_id: 'bt_20250125_001',
+export const mockBacktestResult: any = {
   strategy_id: '1',
+  symbol: '000001',
+  start_date: '2024-01-01',
+  end_date: '2024-12-31',
+  initial_capital: 100000,
+  parameters: {},
   status: 'completed',
   performance: {
     total_return: 0.256,
     annualized_return: 0.312,
     max_drawdown: -0.124,
     sharpe_ratio: 1.85,
+    sortino_ratio: 2.15,
+    volatility: 0.15,
+    value_at_risk: -0.05,
+    total_trades: 150,
     win_rate: 0.68,
+    profit_factor: 2.15,
+    average_win: 0.025,
+    average_loss: -0.015,
+    calmar_ratio: 2.52,
+    information_ratio: 1.45,
   },
   trades: generateMockTrades(20).map(t => ({
     symbol: t.symbol,
@@ -156,8 +190,12 @@ export const mockBacktestResult: BacktestResultVM = {
  * Mock backtest task
  */
 export const mockBacktestTask: BacktestTask = {
-  id: 'bt_20250125_001',
   strategy_id: '1',
+  symbol: '000001',
+  start_date: '2024-01-01',
+  end_date: '2024-12-31',
+  initial_capital: 100000,
+  parameters: {},
   status: 'completed',
   created_at: new Date('2025-01-24T10:00:00').toISOString(),
   startTime: new Date('2025-01-24T10:00:00').toISOString(),
@@ -250,20 +288,28 @@ export const mockBacktestTasks: BacktestTask[] = [
     ...mockBacktestTask,
   },
   {
-    id: 'bt_20250124_003',
     strategy_id: '2',
+    symbol: '000002',
+    start_date: '2024-01-01',
+    end_date: '2024-12-31',
+    initial_capital: 100000,
+    parameters: {},
     status: 'completed',
     created_at: new Date('2025-01-23T14:00:00').toISOString(),
     progress: 100,
     startTime: new Date('2025-01-23T14:00:00').toISOString(),
     result: {
       ...mockBacktestResult,
-      total_return: 0.189,
-    },
+      strategy_id: '2',
+    } as any,
   },
   {
-    id: 'bt_20250125_002',
     strategy_id: '3',
+    symbol: '600000',
+    start_date: '2024-01-01',
+    end_date: '2024-12-31',
+    initial_capital: 100000,
+    parameters: {},
     status: 'running',
     created_at: new Date('2025-01-25T09:30:00').toISOString(),
     progress: 65,
@@ -276,21 +322,21 @@ export const mockBacktestTasks: BacktestTask[] = [
  */
 export function getRandomStrategy(): Strategy {
   const strategies = mockStrategyList.strategies;
-  return strategies[Math.floor(Math.random() * strategies.length)];
+  return strategies[Math.floor(Math.random() * strategies.length)] as any;
 }
 
 /**
  * Get strategy by ID
  */
 export function getMockStrategyById(id: string): Strategy | undefined {
-  return mockStrategyList.strategies.find((s) => s.id === id);
+  return mockStrategyList.strategies.find((s) => s.id === id) as any;
 }
 
 /**
  * Get backtest task by ID
  */
 export function getMockBacktestById(taskId: string): BacktestTask | undefined {
-  return mockBacktestTasks.find((t) => t.id === taskId);
+  return mockBacktestTasks.find((t) => t.strategy_id === taskId);
 }
 
 export default {

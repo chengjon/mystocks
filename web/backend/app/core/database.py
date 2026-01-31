@@ -5,10 +5,10 @@
 """
 
 import functools
-from typing import Optional
 
 # 添加重试逻辑
 import time
+from typing import Optional
 
 import pandas as pd
 import structlog
@@ -57,8 +57,10 @@ def db_retry(max_retries: int = 3, delay: float = 1.0, backoff: float = 2.0):
                         if retries < max_retries:
                             logger.warning(
                                 f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
-                                function=func.__name__,
-                                error=str(e),
+                                 logger.warning(
+                                    f"数据库连接失败，{current_delay}秒后重试 ({retries}/{max_retries})",
+                                    error=str(e)
+                                 )
                             )
                             time.sleep(current_delay)
                             current_delay *= backoff
@@ -150,13 +152,17 @@ def close_all_connections():
     """关闭所有数据库连接"""
     for name, engine in engines.items():
         engine.dispose()
-        logger.info(f"{name} connection closed")
+        logger.info("%s connection closed", name=name)
 
 
 # 复用现有 MyStocks 数据访问逻辑 (可选，如果环境变量不完整则跳过)
 try:
     import os
-    import sys
+def close_all_connections():
+    """关闭所有数据库连接"""
+    for name, engine in engines.items():
+        engine.dispose()
+        logger.info("%s connection closed", name=name)  # ✅ Fixed
 
     # 添加项目根目录到 Python 路径
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
@@ -196,7 +202,6 @@ class DatabaseService:
     def set_cache_data(self, cache_key: str, data, ttl: int = 600):
         """设置缓存数据 - 临时实现"""
         # 临时空实现
-        pass
 
     @db_retry(max_retries=3, delay=1.0)
     def query_stocks_basic(self, limit: int = 100, search: Optional[str] = None) -> pd.DataFrame:
@@ -204,7 +209,7 @@ class DatabaseService:
         try:
             # 参数验证
             if limit <= 0 or limit > 10000:
-                logger.warning(f"Invalid limit parameter: {limit}, using default 100")
+                logger.warning("Invalid limit parameter: %(limit)s, using default 100"")
                 limit = 100
 
             if postgresql_access:
@@ -220,7 +225,7 @@ class DatabaseService:
 
                 result = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
                 if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-                    logger.warning(f"Empty result from PostgreSQL access, search={search}")
+                    logger.warning("Empty result from PostgreSQL access, search=%(search)s"")
                     return pd.DataFrame()
                 return result
             else:
@@ -246,9 +251,9 @@ class DatabaseService:
                     result = session.execute(query, query_params)
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning(f"Empty stocks_basic result from database, limit={limit}, search={search}")
+                        logger.warning("Empty stocks_basic result from database, limit=%(limit)s, search=%(search)s"")
                     else:
-                        logger.info(f"Successfully fetched {len(df)} stocks from database")
+                        logger.info("Successfully fetched {len(df)} stocks from database"")
                     return df
                 except Exception as e:
                     logger.error(
@@ -260,7 +265,7 @@ class DatabaseService:
                     if session:
                         session.close()
         except Exception as e:
-            logger.error(f"Failed to query stocks basic: {str(e)}", exc_info=True)
+            logger.error("Failed to query stocks basic: {str(e)}", exc_info=True)
             raise
 
     @db_retry(max_retries=3, delay=1.0)
@@ -300,7 +305,7 @@ class DatabaseService:
                     )
                     return pd.DataFrame(result.fetchall(), columns=result.keys())
         except Exception as e:
-            logger.error(f"Failed to query daily kline: {e}")
+            logger.error("Failed to query daily kline: %(e)s"")
             return pd.DataFrame()
 
     @db_retry(max_retries=3, delay=1.0)
@@ -328,9 +333,9 @@ class DatabaseService:
                     result = session.execute(query, {"limit": limit})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning(f"Empty concepts result from database, limit={limit}")
+                        logger.warning("Empty concepts result from database, limit=%(limit)s"")
                     else:
-                        logger.info(f"Successfully fetched {len(df)} concepts from database")
+                        logger.info("Successfully fetched {len(df)} concepts from database"")
                     return df
                 except Exception as e:
                     logger.error(
@@ -342,7 +347,7 @@ class DatabaseService:
                     if session:
                         session.close()
         except Exception as e:
-            logger.error(f"Failed to query concepts: {str(e)}", exc_info=True)
+            logger.error("Failed to query concepts: {str(e)}", exc_info=True)
             raise
 
 

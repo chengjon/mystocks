@@ -6,10 +6,11 @@ FastAPI路由文件: Monitoring
 生成时间: 2025-11-13
 """
 
-from fastapi import APIRouter
-import os
 import logging
+import os
 from datetime import datetime
+
+from fastapi import APIRouter
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -35,11 +36,11 @@ def get_monitoring_mock_data():
         module: Mock数据模块
     """
     from src.mock.mock_Dashboard import (
+        get_dragon_tiger_data,
+        get_market_heat,
         get_market_overview,
         get_market_stats,
-        get_market_heat,
         get_realtime_alerts,
-        get_dragon_tiger_data,
     )
 
     return {

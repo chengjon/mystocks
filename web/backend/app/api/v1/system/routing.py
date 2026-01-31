@@ -4,9 +4,10 @@
 提供智能数据路由选择功能
 """
 
+from typing import Dict, Optional
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
 
 router = APIRouter(
     prefix="/data",

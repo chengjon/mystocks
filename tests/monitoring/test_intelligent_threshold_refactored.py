@@ -3,10 +3,11 @@ TDD测试框架 - 智能阈值管理器重构
 遵循红-绿-重构循环，确保拆分后的功能完整性
 """
 
-import pytest
-from datetime import datetime
-import sys
 import os
+import sys
+from datetime import datetime
+
+import pytest
 
 # 添加项目根路径
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -348,8 +349,9 @@ class TestThresholdRuleManager:
 
     def test_performance_benchmark(self):
         """测试：性能基准"""
-        from src.monitoring.threshold_rule_manager import ThresholdRuleManager
         import time
+
+        from src.monitoring.threshold_rule_manager import ThresholdRuleManager
 
         manager = ThresholdRuleManager()
 

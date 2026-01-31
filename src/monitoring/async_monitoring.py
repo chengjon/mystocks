@@ -14,10 +14,10 @@ import json
 import logging
 import threading
 import time
-from typing import Dict, Any, Optional, List
-from datetime import datetime
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -75,10 +75,10 @@ class MonitoringEventPublisher:
         """获取Redis客户端（延迟连接）"""
         if self._redis_client is None:
             try:
-                import redis
-
                 # 尝试从环境变量读取Redis配置
                 import os
+
+                import redis
 
                 redis_host = os.getenv("REDIS_HOST", "localhost")
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
@@ -208,8 +208,9 @@ class MonitoringEventWorker:
         """获取Redis客户端"""
         if self._redis_client is None:
             try:
-                import redis
                 import os
+
+                import redis
 
                 redis_host = os.getenv("REDIS_HOST", "localhost")
                 redis_port = int(os.getenv("REDIS_PORT", 6379))
@@ -275,6 +276,16 @@ class MonitoringEventWorker:
             except Exception as e:
                 logger.warning("⚠️ 关闭Worker Redis连接失败: %s", e)
 
+    def _fetch_events(self):
+        """从Redis获取事件"""
+        events = []
+        try:
+            # 简化版本，实际应该从Redis队列获取
+            pass
+        except Exception as e:
+            logger.error("❌ 获取事件失败: %(e)s")
+        return events
+
     def _worker_loop(self):
         """Worker主循环"""
         logger.info("🔄 Worker循环已启动")
@@ -291,7 +302,7 @@ class MonitoringEventWorker:
 
             loop.run_until_complete(postgres_async.initialize())
         except Exception as e:
-            logger.error(f"❌ 初始化异步DB失败: {e}")
+            logger.error("❌ 初始化异步DB失败: %(e)s")
 
         while self._running:
             try:
@@ -322,7 +333,7 @@ class MonitoringEventWorker:
             loop.run_until_complete(postgres_async.close())
             loop.close()
         except Exception as e:
-            logger.error(f"❌ 关闭循环失败: {e}")
+            logger.error("❌ 关闭循环失败: %(e)s")
 
     async def _flush_events_async(self):
         """异步批量刷新事件"""
@@ -331,8 +342,8 @@ class MonitoringEventWorker:
 
         try:
             # 导入监控数据库（延迟导入避免循环依赖）
-            from src.monitoring.monitoring_database import get_monitoring_database
             from src.monitoring.infrastructure.postgresql_async import postgres_async
+            from src.monitoring.monitoring_database import get_monitoring_database
 
             monitoring_db = get_monitoring_database()
 
@@ -354,12 +365,12 @@ class MonitoringEventWorker:
                         postgres_async = get_postgres_async()
                         await postgres_async.batch_save_health_scores(scores_data)
                         success_count += len(events)
-                        logger.info(f"✅ 批量写入健康度评分: {len(events)} 条 (含高级风险指标)")
+                        logger.info("✅ 批量写入健康度评分: {len(events)} 条 (含高级风险指标)")
                     except ImportError:
                         logger.warning("⚠️ postgres_async_v3 不可用，跳过 metric_update 处理")
                         failed_count += len(events)
                     except Exception as e:
-                        logger.warning(f"⚠️ 批量写入健康度评分失败: {e}")
+                        logger.warning("⚠️ 批量写入健康度评分失败: %(e)s")
                         failed_count += len(events)
                 else:
                     # 处理传统同步事件
@@ -397,7 +408,6 @@ class MonitoringEventWorker:
 
     def _flush_events(self):
         """保留同步接口以兼容（实际逻辑已移至 _flush_events_async）"""
-        pass
 
     def _group_events_by_type(self) -> Dict[str, List[MonitoringEvent]]:
         """按事件类型分组"""
@@ -446,8 +456,8 @@ def stop_async_monitoring():
 
 if __name__ == "__main__":
     """测试异步监控模块"""
-    import sys
     import os
+    import sys
 
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 

@@ -1,5 +1,7 @@
-from typing import Dict, Any, Union
+from typing import Any, Dict
+
 import pandas as pd
+
 from src.indicators.base import BatchIndicator, StreamingIndicator
 from src.indicators.implementations.trend.ema import EMAIndicator
 

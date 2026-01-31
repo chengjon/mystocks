@@ -13,8 +13,10 @@ Date: 2026-01-09
 """
 
 import logging
-from typing import Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from .base import DataSourceManagerV2
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +57,12 @@ class LineageIntegrationMixin:
             return
 
         try:
-            import asyncpg
-            from src.data_governance.lineage import LineageTracker, LineageStorage
-
             # 创建数据库连接
             import asyncio
+
+            import asyncpg
+
+            from src.data_governance.lineage import LineageStorage, LineageTracker
 
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -84,7 +87,7 @@ class LineageIntegrationMixin:
             logger.info("✅ Lineage tracker initialized successfully")
 
         except Exception as e:
-            logger.warning(f"⚠️ Failed to initialize lineage tracker: {e}")
+            logger.warning("⚠️ Failed to initialize lineage tracker: %(e)s")
             logger.warning("⚠️ Lineage tracking will be disabled")
             self.enable_lineage = False
 
@@ -134,7 +137,7 @@ class LineageIntegrationMixin:
             import asyncio
 
             async def record():
-                from src.data_governance.lineage import LineageNode, LineageEdge, NodeType, OperationType
+                from src.data_governance.lineage import LineageEdge, LineageNode, NodeType, OperationType
 
                 # 创建节点和边
                 source_node = LineageNode(
@@ -168,10 +171,10 @@ class LineageIntegrationMixin:
             loop.run_until_complete(record())
             loop.close()
 
-            logger.debug(f"📊 Recorded fetch lineage: {from_node} -> {to_node}")
+            logger.debug("📊 Recorded fetch lineage: %(from_node)s -> %(to_node)s")
 
         except Exception as e:
-            logger.warning(f"⚠️ Failed to record fetch lineage: {e}")
+            logger.warning("⚠️ Failed to record fetch lineage: %(e)s")
 
     def _record_lineage_store(
         self,
@@ -204,7 +207,7 @@ class LineageIntegrationMixin:
             import asyncio
 
             async def record():
-                from src.data_governance.lineage import LineageNode, LineageEdge, NodeType, OperationType
+                from src.data_governance.lineage import LineageEdge, LineageNode, NodeType, OperationType
 
                 # 创建节点和边
                 source_node = LineageNode(
@@ -241,10 +244,10 @@ class LineageIntegrationMixin:
             loop.run_until_complete(record())
             loop.close()
 
-            logger.debug(f"📊 Recorded store lineage: {from_node} -> {to_node}")
+            logger.debug("📊 Recorded store lineage: %(from_node)s -> %(to_node)s")
 
         except Exception as e:
-            logger.warning(f"⚠️ Failed to record store lineage: {e}")
+            logger.warning("⚠️ Failed to record store lineage: %(e)s")
 
     def _record_lineage_transform(
         self,
@@ -277,7 +280,7 @@ class LineageIntegrationMixin:
             import asyncio
 
             async def record():
-                from src.data_governance.lineage import LineageNode, LineageEdge, NodeType, OperationType
+                from src.data_governance.lineage import LineageEdge, LineageNode, NodeType, OperationType
 
                 # 创建节点和边
                 source_node = LineageNode(
@@ -314,10 +317,10 @@ class LineageIntegrationMixin:
             loop.run_until_complete(record())
             loop.close()
 
-            logger.debug(f"📊 Recorded transform lineage: {from_node} -> {to_node}")
+            logger.debug("📊 Recorded transform lineage: %(from_node)s -> %(to_node)s")
 
         except Exception as e:
-            logger.warning(f"⚠️ Failed to record transform lineage: {e}")
+            logger.warning("⚠️ Failed to record transform lineage: %(e)s")
 
     def shutdown_lineage_tracker(self):
         """
@@ -340,12 +343,12 @@ class LineageIntegrationMixin:
                 logger.info("✅ Lineage tracker shutdown successfully")
 
             except Exception as e:
-                logger.warning(f"⚠️ Error shutting down lineage tracker: {e}")
+                logger.warning("⚠️ Error shutting down lineage tracker: %(e)s")
 
             self._lineage_initialized = False
 
 
-class LineageEnabledDataSourceManager(LineageIntegrationMixin, object):
+class LineageEnabledDataSourceManager(DataSourceManagerV2, LineageIntegrationMixin):
     """
     血缘追踪增强的数据源管理器
 
@@ -367,13 +370,11 @@ class LineageEnabledDataSourceManager(LineageIntegrationMixin, object):
             lineage_tracker: 自定义LineageTracker（可选）
             **kwargs: 其他DataSourceManagerV2参数
         """
-        # 先初始化LineageIntegrationMixin
+        # 先初始化DataSourceManagerV2
+        super().__init__(*args, **kwargs)
+
+        # 初始化LineageIntegrationMixin
         LineageIntegrationMixin.__init__(self, *args, **kwargs)
-
-        # 导入并继承DataSourceManagerV2
-        from .base import DataSourceManagerV2
-
-        DataSourceManagerV2.__init__(self, *args, **kwargs)
 
         logger.info("✅ LineageEnabledDataSourceManager initialized")
 

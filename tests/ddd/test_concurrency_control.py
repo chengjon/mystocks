@@ -3,8 +3,9 @@ Concurrency Control Verification Test
 验证乐观锁 (Versioning) 是否能防止数据覆盖冲突
 """
 
-import sys
 import os
+import sys
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,10 +14,10 @@ from sqlalchemy.orm.exc import StaleDataError
 # 确保项目根目录在 path 中
 sys.path.append(os.getcwd())
 
-from src.storage.database.database_manager import Base
-from src.infrastructure.persistence.models import PortfolioModel
-from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl, ConcurrencyException
 from src.domain.portfolio.model.portfolio import Portfolio
+from src.infrastructure.persistence.models import PortfolioModel
+from src.infrastructure.persistence.repository_impl import ConcurrencyException, PortfolioRepositoryImpl
+from src.storage.database.database_manager import Base
 
 
 def test_optimistic_locking():

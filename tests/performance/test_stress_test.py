@@ -7,16 +7,18 @@ MyStocks 压力测试套件
 """
 
 import asyncio
-import time
 import json
-from datetime import datetime
-from typing import Dict, List, Any
-from dataclasses import dataclass
-from enum import Enum
-import aiohttp
-import psutil
-import numpy as np
 import threading
+import time
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List
+
+import aiohttp
+import numpy as np
+import psutil
+import pytest
 
 from tests.config.test_config import test_env
 

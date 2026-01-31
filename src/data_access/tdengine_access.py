@@ -8,11 +8,12 @@ TDengine 数据访问层 (统一重构版)
 修改日期: 2026-01-03
 """
 
-import pandas as pd
 import logging
+import re
 from datetime import datetime
 from typing import Optional
-import re
+
+import pandas as pd
 
 # 导入核心定义
 from src.core.data_classification import DataClassification
@@ -43,7 +44,7 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
     # 检查是否只包含安全字符
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", identifier):
         raise ValueError(
-            f"Invalid {identifier_type}: '{identifier}'. " f"Only alphanumeric characters and underscores are allowed."
+            f"Invalid {identifier_type}: '{identifier}'. Only alphanumeric characters and underscores are allowed."
         )
 
     return identifier
@@ -111,7 +112,7 @@ class TDengineDataAccess:
         self,
         data: pd.DataFrame,
         classification: DataClassification,
-        table_name: str = None,
+        table_name: Optional[str] = None,
         **kwargs,
     ) -> bool:
         """保存数据"""
@@ -136,7 +137,7 @@ class TDengineDataAccess:
             return success
 
         except Exception as e:
-            logger.error(f"TDengine 保存失败: {e}")
+            logger.error("TDengine 保存失败: %(e)s")
             return False
 
     def _insert_tick_data(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -200,7 +201,7 @@ class TDengineDataAccess:
                 cursor.execute(sql)
             return True
         except Exception as e:
-            logger.error(f"Tick 插入错误: {e}")
+            logger.error("Tick 插入错误: %(e)s")
             return False
 
     def _insert_minute_kline(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -266,7 +267,7 @@ class TDengineDataAccess:
                 cursor.execute(sql)
             return True
         except Exception as e:
-            logger.error(f"K线插入错误: {e}")
+            logger.error("K线插入错误: %(e)s")
             return False
 
     def _insert_realtime_quotes(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -339,7 +340,7 @@ class TDengineDataAccess:
                 cursor.execute(sql)
             return True
         except Exception as e:
-            logger.error(f"实时行情插入错误: {e}")
+            logger.error("实时行情插入错误: %(e)s")
             return False
 
     def _insert_generic_timeseries(self, cursor, data: pd.DataFrame, table_name: str) -> bool:
@@ -352,29 +353,28 @@ class TDengineDataAccess:
             cursor.executemany(sql, data.values.tolist())
             return True
         except Exception as e:
-            logger.error(f"通用插入错误: {e}")
+            logger.error("通用插入错误: %(e)s")
             return False
 
     def invalidate_data_by_txn_id(self, table_name: str, txn_id: str) -> bool:
         """
-        Saga 补偿操作: 标记数据为无效（防止SQL注入）
+        Saga 补偿操作: 标记数据为无效（使用参数化查询防止SQL注入）
 
         安全措施：
-        - 验证表名
-        - 转义txn_id
+        - 验证表名和参数
+        - 使用参数化查询
         """
         try:
             # 验证表名
             safe_table_name = validate_table_name(table_name)
 
-            # 转义txn_id
+            # 验证txn_id
             if not txn_id:
                 raise ValueError("txn_id cannot be empty")
-            safe_txn_id = str(txn_id).replace("'", "''")
 
             conn = self.db_manager.get_connection(self.db_type, "market_data")
-            select_sql = f"SELECT * FROM {safe_table_name} WHERE txn_id = '{safe_txn_id}'"
-            df = pd.read_sql(select_sql, conn)
+            select_sql = f"SELECT * FROM {safe_table_name} WHERE txn_id = ?"
+            df = pd.read_sql(select_sql, conn, params=[txn_id])
 
             if df.empty:
                 return True
@@ -385,19 +385,26 @@ class TDengineDataAccess:
             )
             return self.save_data(df, classification, table_name)
         except Exception as e:
-            logger.error(f"补偿操作失败: {e}")
+            logger.error("补偿操作失败: %(e)s")
             return False
 
     def load_data(self, table_name: str, **filters) -> Optional[pd.DataFrame]:
-        """加载数据"""
+        """加载数据（使用参数化查询防止SQL注入）"""
         try:
+            # 验证表名
+            safe_table_name = validate_table_name(table_name)
+
             conn = self.db_manager.get_connection(self.db_type, "market_data")
-            sql = f"SELECT * FROM {table_name}"
+            sql = f"SELECT * FROM {safe_table_name}"
+            params = []
             conditions = []
+
             if "start_time" in filters:
-                conditions.append(f"ts >= '{filters['start_time']}'")
+                conditions.append("ts >= ?")
+                params.append(filters["start_time"])
             if "end_time" in filters:
-                conditions.append(f"ts <= '{filters['end_time']}'")
+                conditions.append("ts <= ?")
+                params.append(filters["end_time"])
             if "symbol" in filters:
                 conditions.append(f"symbol = '{filters['symbol']}'")
             if filters.get("include_invalid") is not True:
@@ -411,7 +418,7 @@ class TDengineDataAccess:
                 sql += " LIMIT 1000"
             return pd.read_sql(sql, conn)
         except Exception as e:
-            logger.error(f"加载数据失败: {e}")
+            logger.error("加载数据失败: %(e)s")
             return None
 
     def _get_default_table_name(self, classification: DataClassification) -> str:
@@ -448,7 +455,7 @@ class TDengineDataAccess:
 
             return result
         except Exception as e:
-            logger.error(f"执行SQL失败: {e}")
+            logger.error("执行SQL失败: %(e)s")
             return None
 
     def query_sql(self, sql: str) -> pd.DataFrame:
@@ -457,7 +464,7 @@ class TDengineDataAccess:
             conn = self.db_manager.get_connection(self.db_type, "market_data")
             return pd.read_sql(sql, conn)
         except Exception as e:
-            logger.error(f"TDengine SQL 查询失败: {e}")
+            logger.error("TDengine SQL 查询失败: %(e)s")
             return pd.DataFrame()
 
     def execute_update(self, sql: str) -> bool:
@@ -468,7 +475,7 @@ class TDengineDataAccess:
             cursor.execute(sql)
             return True
         except Exception as e:
-            logger.error(f"TDengine SQL 执行失败: {e}")
+            logger.error("TDengine SQL 执行失败: %(e)s")
             return False
 
     def close(self):
@@ -486,14 +493,61 @@ class TDengineDataAccess:
             self._connection.execute_sql("SELECT 1")
             return True
         except Exception as e:
-            logger.error(f"TDengine连接检查失败: {e}")
+            logger.error("TDengine连接检查失败: %(e)s")
             return False
+
+    def connect(self):
+        """建立连接"""
+        try:
+            self._connection = self._get_connection()
+            return True
+        except Exception as e:
+            logger.error("TDengine连接失败: %(e)s")
+            return False
+
+    def query_all(self, table_name: str, limit: int = 1000) -> pd.DataFrame:
+        """
+        查询表中的所有数据
+
+        Args:
+            table_name: 表名
+            limit: 最大返回记录数
+
+        Returns:
+            查询结果DataFrame
+        """
+        try:
+            sql = f"SELECT * FROM {table_name} LIMIT {limit}"
+            return self.query_sql(sql)
+        except Exception as e:
+            logger.error("TDengine查询所有数据失败: %(e)s")
+            return pd.DataFrame()
+
+    def query_count(self, table_name: str) -> int:
+        """
+        查询表中的记录数
+
+        Args:
+            table_name: 表名
+
+        Returns:
+            记录数
+        """
+        try:
+            sql = f"SELECT COUNT(*) as count FROM {table_name}"
+            result = self.query_sql(sql)
+            if not result.empty:
+                return int(result.iloc[0, 0])
+            return 0
+        except Exception as e:
+            logger.error("TDengine查询记录数失败: %(e)s")
+            return 0
 
     def create_stable(
         self,
         stable_name: str,
         schema: dict,
-        tags: dict = None,
+        tags: Optional[dict] = None,
     ) -> bool:
         """创建超表"""
         try:
@@ -510,14 +564,14 @@ class TDengineDataAccess:
             result = self.execute_sql(sql)
             return result is not None
         except Exception as e:
-            logger.error(f"创建超表失败: {e}")
+            logger.error("创建超表失败: %(e)s")
             return False
 
     def create_table(
         self,
         table_name: str,
         stable_name: str,
-        tag_values: dict = None,
+        tag_values: Optional[dict] = None,
     ) -> bool:
         """创建子表"""
         try:
@@ -536,7 +590,7 @@ class TDengineDataAccess:
             result = self.execute_sql(sql)
             return result is not None
         except Exception as e:
-            logger.error(f"创建表失败: {e}")
+            logger.error("创建表失败: %(e)s")
             return False
 
     def insert_dataframe(
@@ -559,7 +613,7 @@ class TDengineDataAccess:
             conn.close()
             return True
         except Exception as e:
-            logger.error(f"插入DataFrame失败: {e}")
+            logger.error("插入DataFrame失败: %(e)s")
             return False
 
     def query_by_time_range(
@@ -582,13 +636,13 @@ class TDengineDataAccess:
             conn.close()
             return df
         except Exception as e:
-            logger.error(f"时间范围查询失败: {e}")
+            logger.error("时间范围查询失败: %(e)s")
             return None
 
     def query_latest(
         self,
         table_name: str,
-        symbol: str = None,
+        symbol: Optional[str] = None,
         limit: int = 1,
     ) -> Optional[pd.DataFrame]:
         """查询最新数据"""
@@ -602,7 +656,7 @@ class TDengineDataAccess:
             conn.close()
             return df
         except Exception as e:
-            logger.error(f"查询最新数据失败: {e}")
+            logger.error("查询最新数据失败: %(e)s")
             return None
 
     def delete_by_time_range(
@@ -620,15 +674,15 @@ class TDengineDataAccess:
             result = self.execute_sql(sql)
             return result is not None
         except Exception as e:
-            logger.error(f"删除数据失败: {e}")
+            logger.error("删除数据失败: %(e)s")
             return False
 
     def aggregate_to_kline(
         self,
         table_name: str,
         frequency: str = "1m",
-        start_time: datetime = None,
-        end_time: datetime = None,
+        start_time: Optional[datetime] = None,
+        end_time: Optional[datetime] = None,
     ) -> Optional[pd.DataFrame]:
         """聚合数据到K线"""
         try:
@@ -655,7 +709,7 @@ class TDengineDataAccess:
             conn.close()
             return df
         except Exception as e:
-            logger.error(f"聚合到K线失败: {e}")
+            logger.error("聚合到K线失败: %(e)s")
             return None
 
     def get_table_info(self, table_name: str) -> dict:
@@ -682,5 +736,5 @@ class TDengineDataAccess:
                 "row_count": row_count,
             }
         except Exception as e:
-            logger.error(f"获取表信息失败: {e}")
+            logger.error("获取表信息失败: %(e)s")
             return {"table_name": table_name, "columns": [], "row_count": 0}

@@ -1,0 +1,435 @@
+// ============================================
+//   ART DECO FINANCIAL TOKENS
+//   金融量化专用设计令牌
+// ============================================
+//
+// Purpose: 为MyStocks量化交易平台提供ArtDeco风格的金融专用视觉令牌
+// Coverage: 技术指标、风险等级、数据质量、GPU性能、回测收益率等
+// Created: 2026-01-20
+// Version: 1.0
+// ============================================
+
+:root {
+  // ============================================
+  //   TECHNICAL INDICATORS - 技术指标颜色
+  //   基于A股标准和技术分析常用配色
+  // ============================================
+
+  // MACD指标 (Moving Average Convergence Divergence)
+  --artdeco-indicator-macd-positive: #00E676;      // MACD金叉 - 绿色
+  --artdeco-indicator-macd-negative: #FF5252;      // MACD死叉 - 红色
+  --artdeco-indicator-macd-histogram-up: #00E676; // 柱状图上涨 - 绿色
+  --artdeco-indicator-macd-histogram-down: #FF5252;// 柱状图下跌 - 红色
+  --artdeco-indicator-macd-signal-line: #FFD700;   // 信号线 - 金色
+
+  // RSI指标 (Relative Strength Index)
+  --artdeco-indicator-rsi-overbought: #FF5252;    // >70 超买 - 红色
+  --artdeco-indicator-rsi-oversold: #00E676;      // <30 超卖 - 绿色
+  --artdeco-indicator-rsi-neutral: #D4AF37;        // 30-70 中性 - 金色
+  --artdeco-indicator-rsi-range: rgba(212, 175, 55, 0.2); // RSI范围背景
+
+  // KDJ指标 (Stochastic Oscillator)
+  --artdeco-indicator-kdj-golden-cross: #D4AF37;  // 金叉 - 金色
+  --artdeco-indicator-kdj-death-cross: #FF5252;    // 死叉 - 红色
+  --artdeco-indicator-kdj-k-line: #4FC3F7;         // K线 - 蓝色
+  --artdeco-indicator-kdj-d-line: #FFD700;         // D线 - 金色
+  --artdeco-indicator-kdj-j-line: #00E676;         // J线 - 绿色
+
+  // Bollinger Bands (布林带)
+  --artdeco-indicator-bb-upper: #FF5252;           // 上轨 - 红色
+  --artdeco-indicator-bb-middle: #D4AF37;          // 中轨 - 金色
+  --artdeco-indicator-bb-lower: #00E676;           // 下轨 - 绿色
+  --artdeco-indicator-bb-squeeze: #FFD700;         // 收口 - 金色
+  --artdeco-indicator-bb-expand: #4FC3F7;           // 扩口 - 蓝色
+
+  // 移动平均线 (Moving Averages)
+  --artdeco-indicator-ma-short: #D4AF37;           // 短期MA(5/10日) - 金色
+  --artdeco-indicator-ma-medium: #4FC3F7;           // 中期MA(20/30日) - 蓝色
+  --artdeco-indicator-ma-long: #9C27B0;             // 长期MA(60/120日) - 紫色
+  --artdeco-indicator-ema: #00BCD4;                // 指数移动平均 - 青色
+
+  // ============================================
+  //   RISK LEVELS - 风险等级颜色
+  //   基于VaR (Value at Risk) 和波动率
+  // ============================================
+
+  --artdeco-risk-none: #00E676;         // 无风险 - 绿色
+  --artdeco-risk-low: #00C853;          // 低风险 - 浅绿
+  --artdeco-risk-medium-low: #64DD17;   // 中低风险 - 黄绿
+  --artdeco-risk-medium: #FFD700;        // 中等风险 - 金色
+  --artdeco-risk-medium-high: #FFAB00;   // 中高风险 - 橙色
+  --artdeco-risk-high: #FF5252;          // 高风险 - 红色
+  --artdeco-risk-extreme: #8B0000;       // 极端风险 - 深红
+
+  // VaR (Value at Risk) 渐变
+  --artdeco-var-safe: #00E676;          // 安全
+  --artdeco-var-caution: #FFD700;        // 警告
+  --artdeco-var-warning: #FF5252;        // 危险
+  --artdeco-var-danger: #8B0000;         // 极险
+
+  // 波动率 (Volatility) 指示
+  --artdeco-volatility-low: #00E676;     // 低波动
+  --artdeco-volatility-normal: #4FC3F7;   // 正常波动
+  --artdeco-volatility-high: #FFD700;     // 高波动
+  --artdeco-volatility-extreme: #FF5252; // 极端波动
+
+  // ============================================
+  //   DATA QUALITY - 数据质量颜色
+  //   用于数据完整性、准确性、新鲜度指示
+  // ============================================
+
+  // 数据完整性等级
+  --artdeco-quality-excellent: #00E676;   // 优秀 95-100% - 绿色
+  --artdeco-quality-good: #4FC3F7;         // 良好 85-94% - 蓝色
+  --artdeco-quality-fair: #FFD700;         // 一般 70-84% - 金色
+  --artdeco-quality-poor: #FF5252;         // 差 <70% - 红色
+  --artdeco-quality-missing: #888888;      // 缺失 - 灰色
+
+  // 数据新鲜度 (实时性)
+  --artdeco-freshness-realtime: #D4AF37;   // 实时 - 金色
+  --artdeco-freshness-minute: #00E676;     // 1分钟内 - 绿色
+  --artdeco-freshness-hour: #4FC3F7;        // 1小时内 - 蓝色
+  --artdeco-freshness-day: #FFD700;        // 1天内 - 金色
+  --artdeco-freshness-stale: #888888;      // >1天 - 灰色
+
+  // 数据准确性
+  --artdeco-accuracy-verified: #00E676;   // 已验证
+  --artdeco-accuracy-estimated: #FFD700;   // 估算值
+  --artdeco-accuracy-uncertain: #FF5252;   // 不确定
+
+  // ============================================
+  //   GPU PERFORMANCE - GPU性能状态
+  //   用于GPU加速计算和性能监控
+  // ============================================
+
+  // GPU利用率状态
+  --artdeco-gpu-idle: #888888;            // 空闲 - 灰色
+  --artdeco-gpu-light: #4FC3F7;            // 轻载 <30% - 蓝色
+  --artdeco-gpu-normal: #00E676;           // 正常 30-70% - 绿色
+  --artdeco-gpu-busy: #FFD700;             // 忙碌 70-90% - 金色
+  --artdeco-gpu-overload: #FF5252;         // 过载 >90% - 红色
+  --artdeco-gpu-error: #8B0000;            // 错误 - 深红
+
+  // GPU温度梯度 (基于安全范围)
+  --artdeco-temp-cold: #4FC3F7;            // <40°C 寒冷 - 蓝色
+  --artdeco-temp-normal: #00E676;          // 40-70°C 正常 - 绿色
+  --artdeco-temp-warm: #FFD700;            // 70-80°C 温热 - 金色
+  --artdeco-temp-hot: #FF5252;             // >80°C 过热 - 红色
+
+  // GPU内存使用
+  --artdeco-memory-low: #00E676;          // <50%
+  --artdeco-memory-medium: #FFD700;        // 50-80%
+  --artdeco-memory-high: #FF5252;          // >80%
+
+  // ============================================
+  //   BACKTEST RETURNS - 回测收益率梯度
+  //   用于策略回测结果可视化
+  // ============================================
+
+  --artdeco-return-catastrophic: #8B0000;   // <-50% 灾难性 - 深红
+  --artdeco-return-terrible: #FF0000;       // -50%~-20% 极差 - 红色
+  --artdeco-return-negative: #FF5252;       // -20%~0% 负收益 - 浅红
+  --artdeco-return-flat: #888888;           // 0% 平盘 - 灰色
+  --artdeco-return-positive: #00E676;       // 0%~10% 正收益 - 绿色
+  --artdeco-return-good: #4FC3F7;           // 10%~20% 良好 - 蓝色
+  --artdeco-return-excellent: #D4AF37;      // 20%~50% 优秀 - 金色
+  --artdeco-return-phenomenal: #FFD700;     // >50% 现象级 - 亮金
+
+  // Sharpe Ratio (夏普比率)
+  --artdeco-sharpe-poor: #FF5252;          // <0.5 差
+  --artdeco-sharpe-fair: #FFD700;          // 0.5-1 一般
+  --artdeco-sharpe-good: #4FC3F7;          // 1-2 良好
+  --artdeco-sharpe-excellent: #00E676;     // >2 优秀
+
+  // ============================================
+  //   MARKET SENTIMENT - 市场情绪颜色
+  //   基于恐惧贪婪指数 (Fear & Greed Index)
+  // ============================================
+
+  --artdeco-sentiment-extreme-fear: #8B0000;  // 极度恐惧 - 深红
+  --artdeco-sentiment-fear: #FF5252;          // 恐惧 - 红色
+  --artdeco-sentiment-neutral: #888888;        // 中性 - 灰色
+  --artdeco-sentiment-greed: #00E676;         // 贪婪 - 绿色
+  --artdeco-sentiment-extreme-greed: #D4AF37; // 极度贪婪 - 金色
+
+  // 市场强度
+  --artdeco-strength-weak: #FF5252;           // 弱势
+  --artdeco-strength-neutral: #888888;        // 中性
+  --artdeco-strength-strong: #00E676;         // 强势
+
+  // ============================================
+  //   TRADING SIGNALS - 交易信号强度
+  //   用于量化策略信号可视化
+  // ============================================
+
+  --artdeco-signal-strong-buy: #00E676;      // 强烈买入 - 绿色
+  --artdeco-signal-buy: #64DD17;             // 买入 - 浅绿
+  --artdeco-signal-hold: #FFD700;            // 持有 - 金色
+  --artdeco-signal-sell: #FF5252;            // 卖出 - 红色
+  --artdeco-signal-strong-sell: #8B0000;     // 强烈卖出 - 深红
+
+  // 信号置信度
+  --artdeco-confidence-low: #FF5252;         // 低置信度
+  --artdeco-confidence-medium: #FFD700;      // 中置信度
+  --artdeco-confidence-high: #00E676;       // 高置信度
+
+  // ============================================
+  //   LIQUIDITY - 流动性等级
+  //   用于市场流动性分析
+  // ============================================
+
+  --artdeco-liquidity-high: #00E676;         // 高流动性 - 绿色
+  --artdeco-liquidity-medium: #FFD700;        // 中等流动性 - 金色
+  --artdeco-liquidity-low: #FF5252;          // 低流动性 - 红色
+  --artdeco-liquidity-illiquid: #8B0000;     // 流动性不足 - 深红
+
+  // ============================================
+  //   POSITION STATUS - 持仓状态
+  //   用于交易持仓管理
+  // ============================================
+
+  --artdeco-position-long: #00E676;          // 多头持仓 - 绿色
+  --artdeco-position-short: #FF5252;          // 空头持仓 - 红色
+  --artdeco-position-flat: #888888;           // 平仓 - 灰色
+  --artdeco-position-partial: #FFD700;        // 部分平仓 - 金色
+
+  // 持仓盈亏
+  --artdeco-position-profit: #00E676;         // 盈利 - 绿色
+  --artdeco-position-loss: #FF5252;           // 亏损 - 红色
+  --artdeco-position-breakeven: #888888;      // 盈亏平衡 - 灰色
+
+  // ============================================
+  //   ORDER STATUS - 订单状态
+  //   用于交易订单管理
+  // ============================================
+
+  --artdeco-order-pending: #FFD700;           // 待成交 - 金色
+  --artdeco-order-partial: #4FC3F7;           // 部分成交 - 蓝色
+  --artdeco-order-filled: #00E676;            // 完全成交 - 绿色
+  --artdeco-order-cancelled: #888888;         // 已撤销 - 灰色
+  --artdeco-order-rejected: #FF5252;           // 被拒绝 - 红色
+}
+
+// ============================================
+//   FINANCIAL MIXINS - 金融专用混入
+//   可复用的样式模式
+// ============================================
+
+// 技术指标图例
+@mixin artdeco-indicator-legend($color: var(--artdeco-gold-primary)) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+
+  &::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: $color;
+    border-radius: var(--artdeco-radius-none);
+    border: 1px solid $color;
+  }
+
+  font-size: var(--artdeco-text-xs);
+  color: var(--artdeco-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+// 数据质量标签
+@mixin artdeco-quality-badge($quality: 'good') {
+  $bg-color: var(--artdeco-quality-good);
+  $text-color: var(--artdeco-bg-global);
+
+  @if $quality == 'excellent' {
+    $bg-color: var(--artdeco-quality-excellent);
+  } @else if $quality == 'fair' {
+    $bg-color: var(--artdeco-quality-fair);
+  } @else if $quality == 'poor' {
+    $bg-color: var(--artdeco-quality-poor);
+  } @else if $quality == 'missing' {
+    $bg-color: var(--artdeco-quality-missing);
+  }
+
+  background: $bg-color;
+  color: $text-color;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
+  font-size: var(--artdeco-text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  font-weight: var(--artdeco-font-semibold);
+  border-radius: var(--artdeco-radius-none);
+}
+
+// 风险等级指示器
+@mixin artdeco-risk-indicator($level: 'medium') {
+  $border-color: var(--artdeco-risk-medium);
+  $text-color: var(--artdeco-risk-medium);
+
+  @if $level == 'low' {
+    $border-color: var(--artdeco-risk-low);
+    $text-color: var(--artdeco-risk-low);
+  } @else if $level == 'high' {
+    $border-color: var(--artdeco-risk-high);
+    $text-color: var(--artdeco-risk-high);
+  } @else if $level == 'extreme' {
+    $border-color: var(--artdeco-risk-extreme);
+    $text-color: var(--artdeco-risk-extreme);
+  }
+
+  border: 2px solid $border-color;
+  color: $text-color;
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  font-weight: var(--artdeco-font-semibold);
+  transition: all var(--artdeco-transition-base);
+
+  &:hover {
+    background: $border-color;
+    color: var(--artdeco-bg-global);
+  }
+}
+
+// GPU利用率进度条
+@mixin artdeco-gpu-progress($utilization: 50%) {
+  background: var(--artdeco-bg-elevated);
+  height: 8px;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--artdeco-radius-none);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: $utilization;
+    background: linear-gradient(
+      90deg,
+      var(--artdeco-gpu-normal) 0%,
+      var(--artdeco-gpu-busy) 70%,
+      var(--artdeco-gpu-overload) 90%
+    );
+    transition: width var(--artdeco-transition-base) var(--artdeco-ease-out);
+  }
+
+  &::after {
+    content: '#{$utilization}';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--artdeco-text-xs);
+    font-weight: var(--artdeco-font-bold);
+    color: var(--artdeco-bg-global);
+    z-index: 1;
+  }
+}
+
+// 回测收益率徽章
+@mixin artdeco-return-badge($return: 0) {
+  @if $return < -50 {
+    background: var(--artdeco-return-catastrophic);
+  } @else if $return < -20 {
+    background: var(--artdeco-return-terrible);
+  } @else if $return < 0 {
+    background: var(--artdeco-return-negative);
+  } @else if $return == 0 {
+    background: var(--artdeco-return-flat);
+  } @else if $return < 10 {
+    background: var(--artdeco-return-positive);
+  } @else if $return < 20 {
+    background: var(--artdeco-return-good);
+  } @else if $return < 50 {
+    background: var(--artdeco-return-excellent);
+  } @else {
+    background: var(--artdeco-return-phenomenal);
+  }
+
+  color: var(--artdeco-bg-global);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  font-weight: var(--artdeco-font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  border-radius: var(--artdeco-radius-none);
+
+  &::before {
+    content: '#{$return}';
+    margin-right: var(--artdeco-spacing-2);
+  }
+}
+
+// 市场情绪指示器
+@mixin artdeco-sentiment-meter($sentiment: 'neutral') {
+  $bg-color: var(--artdeco-sentiment-neutral);
+  $label: '中性';
+
+  @if $sentiment == 'extreme-fear' {
+    $bg-color: var(--artdeco-sentiment-extreme-fear);
+    $label: '极度恐惧';
+  } @else if $sentiment == 'fear' {
+    $bg-color: var(--artdeco-sentiment-fear);
+    $label: '恐惧';
+  } @else if $sentiment == 'greed' {
+    $bg-color: var(--artdeco-sentiment-greed);
+    $label: '贪婪';
+  } @else if $sentiment == 'extreme-greed' {
+    $bg-color: var(--artdeco-sentiment-extreme-greed);
+    $label: '极度贪婪';
+  }
+
+  background: $bg-color;
+  color: var(--artdeco-bg-global);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
+  font-size: var(--artdeco-text-sm);
+  font-weight: var(--artdeco-font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  border-radius: var(--artdeco-radius-none);
+
+  &::before {
+    content: $label;
+  }
+}
+
+// 交易信号按钮
+@mixin artdeco-signal-button($signal: 'hold') {
+  $bg-color: var(--artdeco-signal-hold);
+  $hover-glow: var(--artdeco-glow-subtle);
+
+  @if $signal == 'strong-buy' {
+    $bg-color: var(--artdeco-signal-strong-buy);
+    $hover-glow: 0 0 20px rgba(0, 230, 118, 0.4);
+  } @else if $signal == 'buy' {
+    $bg-color: var(--artdeco-signal-buy);
+    $hover-glow: 0 0 20px rgba(100, 221, 23, 0.4);
+  } @else if $signal == 'sell' {
+    $bg-color: var(--artdeco-signal-sell);
+    $hover-glow: 0 0 20px rgba(255, 82, 82, 0.4);
+  } @else if $signal == 'strong-sell' {
+    $bg-color: var(--artdeco-signal-strong-sell);
+    $hover-glow: 0 0 20px rgba(139, 0, 0, 0.4);
+  }
+
+  background: $bg-color;
+  color: var(--artdeco-bg-global);
+  border: 2px solid $bg-color;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
+  font-weight: var(--artdeco-font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  border-radius: var(--artdeco-radius-none);
+  cursor: pointer;
+  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    box-shadow: $hover-glow;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}

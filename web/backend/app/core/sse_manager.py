@@ -20,11 +20,11 @@ Architecture:
 
 import asyncio
 import logging
-from datetime import datetime
-from typing import Dict, Set, Optional, Any, AsyncGenerator
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-import uuid
+from datetime import datetime
+from typing import Any, AsyncGenerator, Dict, Optional, Set
 
 from fastapi import Request
 
@@ -79,7 +79,7 @@ class SSEConnectionManager:
 
         self.max_queue_size = max_queue_size
 
-        logger.info(f"✅ SSEConnectionManager initialized (max_queue_size={max_queue_size})")
+        logger.info("✅ SSEConnectionManager initialized (max_queue_size=%(max_queue_size)s)"")
 
     async def connect(self, channel: str, client_id: Optional[str] = None) -> tuple[str, asyncio.Queue]:
         """
@@ -160,7 +160,7 @@ class SSEConnectionManager:
             event: SSE event to broadcast
         """
         if channel not in self._connections:
-            logger.debug(f"No clients connected to channel: {channel}")
+            logger.debug("No clients connected to channel: %(channel)s"")
             return
 
         client_count = 0
@@ -172,10 +172,10 @@ class SSEConnectionManager:
                 await asyncio.wait_for(queue.put(event), timeout=1.0)
                 client_count += 1
             except asyncio.TimeoutError:
-                logger.warning(f"Client queue full: {client_id}")
+                logger.warning("Client queue full: %(client_id)s"")
                 failed_clients.append(client_id)
             except Exception as e:
-                logger.error(f"Failed to queue event for client {client_id}: {e}")
+                logger.error("Failed to queue event for client %(client_id)s: %(e)s"")
                 failed_clients.append(client_id)
 
         # Clean up failed clients
@@ -183,7 +183,7 @@ class SSEConnectionManager:
             await self.disconnect(channel, client_id)
 
         if client_count > 0:
-            logger.debug(f"📡 Broadcasted {event.event} to {client_count} clients on {channel} channel")
+            logger.debug("📡 Broadcasted {event.event} to %(client_count)s clients on %(channel)s channel"")
 
     async def send_to_client(self, channel: str, client_id: str, event: SSEEvent):
         """
@@ -198,12 +198,12 @@ class SSEConnectionManager:
             queue = self._connections[channel][client_id]
             try:
                 await asyncio.wait_for(queue.put(event), timeout=1.0)
-                logger.debug(f"📤 Sent {event.event} to client {client_id}")
+                logger.debug("📤 Sent {event.event} to client %(client_id)s"")
             except asyncio.TimeoutError:
-                logger.warning(f"Client queue full: {client_id}")
+                logger.warning("Client queue full: %(client_id)s"")
                 await self.disconnect(channel, client_id)
             except Exception as e:
-                logger.error(f"Failed to send event to client {client_id}: {e}")
+                logger.error("Failed to send event to client %(client_id)s: %(e)s"")
 
     def get_connection_count(self, channel: Optional[str] = None) -> int:
         """

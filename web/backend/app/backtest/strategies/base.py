@@ -5,10 +5,10 @@ Strategy Base Class
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-from decimal import Decimal
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class SignalType(str, Enum):
@@ -63,7 +63,6 @@ class BaseStrategy(ABC):
     @abstractmethod
     def _init_parameters(self):
         """初始化策略参数（子类实现）"""
-        pass
 
     @abstractmethod
     def generate_signal(
@@ -83,7 +82,6 @@ class BaseStrategy(ABC):
         Returns:
             交易信号或None
         """
-        pass
 
     def update_history(self, symbol: str, data: Dict[str, Any]):
         """

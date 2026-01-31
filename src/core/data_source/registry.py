@@ -1,9 +1,10 @@
-from typing import Dict, List, Any, Optional
 import json
+import logging
+from pathlib import Path
+from typing import Dict
+
 import pandas as pd
 import yaml
-from pathlib import Path
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ def _load_from_database(self) -> Dict:
 
         return sources
     except Exception as e:
-        # logger.error(f"从数据库加载失败: {e}")
+        # logger.error("从数据库加载失败: %(e)s")
         return {}
 
 

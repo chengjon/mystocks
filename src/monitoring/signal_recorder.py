@@ -7,9 +7,9 @@ Signal Recorder Service
 """
 
 import logging
-from datetime import datetime
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ class SignalRecorder:
                     return None
                 self._pg_pool = pg
             except Exception as e:
-                logger.error(f"无法获取监控数据库连接: {e}")
+                logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
 
@@ -159,7 +159,7 @@ class SignalRecorder:
             return signal_id
 
         except Exception as e:
-            logger.error(f"记录信号失败: {e}", exc_info=True)
+            logger.error("记录信号失败: {e}", exc_info=True)
             return None
 
     async def record_signal_batch(
@@ -204,11 +204,11 @@ class SignalRecorder:
                         )
                         signal_ids.append(signal_id)
 
-            logger.info(f"批量记录 {len(signal_ids)} 个信号")
+            logger.info("批量记录 {len(signal_ids)} 个信号")
             return signal_ids
 
         except Exception as e:
-            logger.error(f"批量记录信号失败: {e}", exc_info=True)
+            logger.error("批量记录信号失败: {e}", exc_info=True)
             return []
 
     async def record_execution(
@@ -261,11 +261,11 @@ class SignalRecorder:
                     mfe,
                 )
 
-            logger.debug(f"记录执行结果: signal_id={signal_id}, executed={executed}")
+            logger.debug("记录执行结果: signal_id=%(signal_id)s, executed=%(executed)s")
             return True
 
         except Exception as e:
-            logger.error(f"记录执行结果失败: {e}", exc_info=True)
+            logger.error("记录执行结果失败: {e}", exc_info=True)
             return False
 
     async def record_push(
@@ -311,11 +311,11 @@ class SignalRecorder:
                     error_message,
                 )
 
-            logger.debug(f"记录推送日志: signal_id={signal_id}, channel={channel}, status={status}")
+            logger.debug("记录推送日志: signal_id=%(signal_id)s, channel=%(channel)s, status=%(status)s")
             return True
 
         except Exception as e:
-            logger.error(f"记录推送日志失败: {e}", exc_info=True)
+            logger.error("记录推送日志失败: {e}", exc_info=True)
             return False
 
     async def update_signal_status(
@@ -345,11 +345,11 @@ class SignalRecorder:
                     signal_id,
                 )
 
-            logger.debug(f"更新信号状态: signal_id={signal_id}, status={status}")
+            logger.debug("更新信号状态: signal_id=%(signal_id)s, status=%(status)s")
             return True
 
         except Exception as e:
-            logger.error(f"更新信号状态失败: {e}", exc_info=True)
+            logger.error("更新信号状态失败: {e}", exc_info=True)
             return False
 
     async def get_signal_by_id(
@@ -382,7 +382,7 @@ class SignalRecorder:
             return dict(record) if record else None
 
         except Exception as e:
-            logger.error(f"查询信号失败: {e}", exc_info=True)
+            logger.error("查询信号失败: {e}", exc_info=True)
             return None
 
 

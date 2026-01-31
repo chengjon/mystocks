@@ -5,6 +5,7 @@ Celery Application Configuration
 """
 
 from celery import Celery
+
 from app.core.config import settings
 
 # 创建 Celery 应用

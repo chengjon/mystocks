@@ -1,7 +1,8 @@
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Dict, List, Optional, Any
-import pandas as pd
 
 from src.indicators.indicator_factory import IndicatorFactory
 

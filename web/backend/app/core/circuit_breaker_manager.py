@@ -104,7 +104,7 @@ class CircuitBreakerManager:
             ValueError: 如果服务名称不存在
         """
         if service_name not in self._circuit_breakers:
-            logger.warning(f"⚠️ Circuit breaker for '{service_name}' not found, using external_api")
+            logger.warning("⚠️ Circuit breaker for '%(service_name)s' not found, using external_api"")
             return self._circuit_breakers["external_api"]
 
         return self._circuit_breakers[service_name]
@@ -133,10 +133,10 @@ class CircuitBreakerManager:
             cb.failure_count = 0
             cb.success_count = 0
             cb.state = cb.state.__class__.CLOSED
-            logger.info(f"🔄 Circuit breaker '{service_name}' reset to CLOSED")
+            logger.info("🔄 Circuit breaker '%(service_name)s' reset to CLOSED"")
             return True
 
-        logger.warning(f"⚠️ Circuit breaker '{service_name}' not found")
+        logger.warning("⚠️ Circuit breaker '%(service_name)s' not found"")
         return False
 
     def reset_all_circuit_breakers(self) -> int:
@@ -151,7 +151,7 @@ class CircuitBreakerManager:
             if self.reset_circuit_breaker(service_name):
                 count += 1
 
-        logger.info(f"🔄 Reset {count} circuit breakers")
+        logger.info("🔄 Reset %(count)s circuit breakers"")
         return count
 
 

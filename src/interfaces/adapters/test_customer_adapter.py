@@ -6,10 +6,12 @@ Customer 数据源适配器测试脚本
     >>> python test_customer_adapter.py
 """
 
-from src.adapters.customer_adapter import CustomerDataSource
-import sys
 import os
+import sys
+
 import pandas as pd
+
+from src.adapters.customer_adapter import CustomerDataSource
 
 # 将项目根目录添加到模块搜索路径中
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +73,7 @@ def test_customer_data_source():
     try:
         # 以平安银行(000001)为例，获取最近一个月的数据
         from datetime import datetime, timedelta
+
         from src.utils.date_utils import normalize_date
 
         end_date = normalize_date(datetime.now())

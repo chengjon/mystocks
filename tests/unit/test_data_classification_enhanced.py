@@ -6,10 +6,9 @@
 增强对data_classification.py模块的测试覆盖率，重点测试边缘情况和高级功能。
 """
 
-import sys
 import os
+import sys
 import unittest
-
 
 # 添加项目根目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))

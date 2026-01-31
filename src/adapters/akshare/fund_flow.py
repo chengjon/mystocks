@@ -9,7 +9,7 @@ from typing import Optional
 import pandas as pd
 import akshare as ak
 
-from .base import BaseAkshareAdapter, retry_api_call
+from .adapter_base import BaseAkshareAdapter, retry_api_call
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +37,16 @@ class FundFlowAdapter(BaseAkshareAdapter):
                 - main_ratio: 主力占比
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取股票 {symbol} 的资金流向数据，近 {days} 天...")
+            self.logger.info("[Akshare] 开始获取股票 %s 的资金流向数据，近 %s 天...", symbol, days)
 
+            # pylint: disable=no-member
             df = ak.stock_fund_flow_summary(symbol=symbol)
 
             if df is None or df.empty:
-                self.logger.warning(f"[Akshare] 未能获取到股票 {symbol} 的资金流向数据")
+                self.logger.warning("[Akshare] 未能获取到股票 %s 的资金流向数据", symbol)
                 return pd.DataFrame()
 
-            self.logger.info(f"[Akshare] 成功获取股票 {symbol} 的资金流向数据，共 {len(df)} 条记录")
+            self.logger.info("[Akshare] 成功获取股票 %s 的资金流向数据，共 %s 条记录", symbol, len(df))
 
             # 标准化列名
             df = df.rename(
@@ -92,8 +93,9 @@ class FundFlowAdapter(BaseAkshareAdapter):
                 - turnover_rate: 换手率
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取资金流向热门股票数据，市场: {market}")
+            self.logger.info("[Akshare] 开始获取资金流向热门股票数据，市场: %(market)s")
 
+            # pylint: disable=no-member
             if market == "sh":
                 df = ak.stock_fund_flow_rank(indicator="sh")
             elif market == "sz":
@@ -105,7 +107,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
                 self.logger.warning("[Akshare] 未能获取到资金流向热门股票数据")
                 return pd.DataFrame()
 
-            self.logger.info(f"[Akshare] 成功获取资金流向热门股票数据，共 {len(df)} 条记录")
+            self.logger.info("[Akshare] 成功获取资金流向热门股票数据，共 %s 条记录", len(df))
 
             # 标准化列名
             df = df.rename(
@@ -123,7 +125,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取资金流向热门股票数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取资金流向热门股票数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -146,7 +148,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
                 self.logger.warning("[Akshare] 未能获取到市场整体资金流向数据")
                 return pd.DataFrame()
 
-            self.logger.info(f"[Akshare] 成功获取市场整体资金流向数据，共 {len(df)} 条记录")
+            self.logger.info("[Akshare] 成功获取市场整体资金流向数据，共 %s 条记录", len(df))
 
             # 标准化列名
             df = df.rename(
@@ -161,7 +163,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取市场整体资金流向数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取市场整体资金流向数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -176,15 +178,16 @@ class FundFlowAdapter(BaseAkshareAdapter):
             pd.DataFrame: 板块资金流向数据
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取板块资金流向数据，股票: {symbol}")
+            self.logger.info("[Akshare] 开始获取板块资金流向数据，股票: %(symbol)s")
 
+            # pylint: disable=no-member
             df = ak.stock_sector_fund_flow(symbol=symbol)
 
             if df is None or df.empty:
                 self.logger.warning("[Akshare] 未能获取到板块资金流向数据")
                 return pd.DataFrame()
 
-            self.logger.info(f"[Akshare] 成功获取板块资金流向数据，共 {len(df)} 条记录")
+            self.logger.info("[Akshare] 成功获取板块资金流向数据，共 %s 条记录", len(df))
 
             # 标准化列名
             df = df.rename(
@@ -200,5 +203,5 @@ class FundFlowAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取板块资金流向数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取板块资金流向数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()

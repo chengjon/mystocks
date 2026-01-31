@@ -7,8 +7,8 @@
 import { request } from '@/utils/request'
 import { TradeAdapter } from '@/utils/trade-adapters'
 import type {
-  OrderRequest,
-  OrderResponse
+  OrderRequest
+// OrderResponse  // Currently unused
 } from '@/api/types/additional-types'
 import type {
   OrderVM,

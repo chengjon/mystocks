@@ -4,16 +4,16 @@ Resource Scheduler
 """
 
 import logging
-import time
-import threading
-from typing import Dict, List, Optional, Any, Union
-from datetime import datetime, timedelta
 import queue
+import threading
+import time
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Union
 
 from src.gpu.api_system.utils.gpu_utils import GPUResourceManager
-from src.gpu.api_system.utils.redis_utils import RedisQueue
 from src.gpu.api_system.utils.monitoring import MetricsCollector
+from src.gpu.api_system.utils.redis_utils import RedisQueue
 
 logger = logging.getLogger(__name__)
 

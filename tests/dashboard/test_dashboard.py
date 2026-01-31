@@ -6,19 +6,19 @@
 提供实时测试监控、可视化界面和交互式控制面板
 """
 
-import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass, field
-from enum import Enum
 import threading
+import time
 import webbrowser
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
-import psutil
-from flask import Flask, render_template, jsonify, request
-from flask_socketio import SocketIO, emit
 import plotly.graph_objects as go
+import psutil
+from flask import Flask, jsonify, render_template, request
+from flask_socketio import SocketIO, emit
 
 
 class DashboardWidgetType(Enum):

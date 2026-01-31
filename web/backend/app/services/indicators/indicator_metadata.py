@@ -15,11 +15,12 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
-from enum import Enum
-from pydantic import BaseModel, Field
 import time
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class IndicatorCategory(str, Enum):

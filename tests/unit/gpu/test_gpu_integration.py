@@ -7,11 +7,12 @@ Phase 6.4.2 - GPU加速引擎集成测试
 """
 
 import asyncio
-import numpy as np
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import numpy as np
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -92,8 +93,8 @@ class GPUEngineIntegrationTester:
             # 测试资源分配
             from src.gpu.core.hardware_abstraction.interfaces import (
                 AllocationRequest,
-                StrategyPriority,
                 PerformanceProfile,
+                StrategyPriority,
             )
 
             request = AllocationRequest(
@@ -121,10 +122,10 @@ class GPUEngineIntegrationTester:
         try:
             from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixConfig,
-                TransformOperationType,
+                MatrixOperationType,
                 TransformConfig,
+                TransformOperationType,
             )
 
             # 初始化内核
@@ -231,8 +232,8 @@ class GPUEngineIntegrationTester:
         """测试端到端工作流"""
         try:
             # 模拟完整的量化交易工作流
-            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
             from src.gpu.core.hardware_abstraction import get_memory_pool
+            from src.gpu.core.kernels import MatrixKernelEngine, TransformKernelEngine
 
             # 初始化组件
             matrix_kernel = MatrixKernelEngine()
@@ -248,8 +249,8 @@ class GPUEngineIntegrationTester:
 
             # 步骤2: 计算收益率（变换操作）
             from src.gpu.core.kernels.standardized_interface import (
-                TransformOperationType,
                 TransformConfig,
+                TransformOperationType,
             )
 
             return_config = TransformConfig(operation_type=TransformOperationType.RETURN)
@@ -274,8 +275,8 @@ class GPUEngineIntegrationTester:
 
             # 步骤5: 风险计算（矩阵运算）
             from src.gpu.core.kernels.standardized_interface import (
-                MatrixOperationType,
                 MatrixConfig,
+                MatrixOperationType,
             )
 
             risk_config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -333,8 +334,8 @@ class GPUEngineIntegrationTester:
 
                 # 执行矩阵乘法
                 from src.gpu.core.kernels.standardized_interface import (
-                    MatrixOperationType,
                     MatrixConfig,
+                    MatrixOperationType,
                 )
 
                 config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)
@@ -409,8 +410,8 @@ class GPUEngineIntegrationTester:
             # 测试1: 不兼容的矩阵维度
             try:
                 from src.gpu.core.kernels.standardized_interface import (
-                    MatrixOperationType,
                     MatrixConfig,
+                    MatrixOperationType,
                 )
 
                 matrix_a = np.random.random((100, 200)).astype(np.float32)
@@ -436,8 +437,8 @@ class GPUEngineIntegrationTester:
             # 测试2: 无效的变换操作
             try:
                 from src.gpu.core.kernels.standardized_interface import (
-                    TransformOperationType,
                     TransformConfig,
+                    TransformOperationType,
                 )
 
                 invalid_data = np.array([])  # 空数组
@@ -517,8 +518,8 @@ class GPUEngineIntegrationTester:
                     matrix_b = np.random.random((matrix_size, matrix_size)).astype(np.float32)
 
                     from src.gpu.core.kernels.standardized_interface import (
-                        MatrixOperationType,
                         MatrixConfig,
+                        MatrixOperationType,
                     )
 
                     config = MatrixConfig(operation_type=MatrixOperationType.MULTIPLY)

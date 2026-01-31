@@ -13,9 +13,10 @@
 """
 
 import importlib
-from typing import Dict, Any
-import pandas as pd
 import logging
+from typing import Any, Dict
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class MockHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """生成Mock数据"""
-        logger.info(f"生成Mock数据: {self.endpoint_name}")
+        logger.info("生成Mock数据: {self.endpoint_name")
 
         # 根据endpoint_name生成不同类型的Mock数据
         if "daily_kline" in self.endpoint_name:
@@ -90,8 +91,9 @@ class MockHandler(BaseDataSourceHandler):
         self, symbol: str, period: str = "daily", start_date: str = None, end_date: str = None, **kwargs
     ) -> pd.DataFrame:
         """生成Mock日线数据"""
-        import numpy as np
         from datetime import datetime, timedelta
+
+        import numpy as np
 
         # 默认生成最近100天的数据
         if not end_date:
@@ -132,8 +134,9 @@ class MockHandler(BaseDataSourceHandler):
 
     def _generate_mock_realtime(self, symbols: list, **kwargs) -> pd.DataFrame:
         """生成Mock实时行情"""
-        import numpy as np
         from datetime import datetime
+
+        import numpy as np
 
         data = []
         for symbol in symbols:
@@ -170,7 +173,7 @@ class AkshareHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用AKShare接口"""
-        logger.info(f"调用AKShare接口: {self.endpoint_name}")
+        logger.info("调用AKShare接口: {self.endpoint_name")
 
         try:
             # 延迟导入akshare
@@ -192,7 +195,7 @@ class AkshareHandler(BaseDataSourceHandler):
         except ImportError:
             raise ImportError("AKShare未安装: pip install akshare")
         except Exception as e:
-            logger.error(f"AKShare接口调用失败: {self.endpoint_name}, 错误: {e}")
+            logger.error("AKShare接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 
     def _standardize_columns(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -227,7 +230,7 @@ class TushareHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用TuShare接口"""
-        logger.info(f"调用TuShare接口: {self.endpoint_name}")
+        logger.info("调用TuShare接口: {self.endpoint_name")
 
         try:
             # 获取token
@@ -256,7 +259,7 @@ class TushareHandler(BaseDataSourceHandler):
         except ImportError:
             raise ImportError("TuShare未安装: pip install tushare")
         except Exception as e:
-            logger.error(f"TuShare接口调用失败: {self.endpoint_name}, 错误: {e}")
+            logger.error("TuShare接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 
 
@@ -270,7 +273,7 @@ class BaostockHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用BaoStock接口"""
-        logger.info(f"调用BaoStock接口: {self.endpoint_name}")
+        logger.info("调用BaoStock接口: {self.endpoint_name")
 
         try:
             # 延迟导入
@@ -294,6 +297,7 @@ class BaostockHandler(BaseDataSourceHandler):
             if fields:
                 mapped_args["fields"] = fields
 
+            # pylint: disable=no-member
             rs = self.bs.query_stock_k_data_plus(**mapped_args)
 
             # 转换为DataFrame
@@ -312,7 +316,7 @@ class BaostockHandler(BaseDataSourceHandler):
         except ImportError:
             raise ImportError("BaoStock未安装: pip install baostock")
         except Exception as e:
-            logger.error(f"BaoStock接口调用失败: {self.endpoint_name}, 错误: {e}")
+            logger.error("BaoStock接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             self._logout()
             raise
 
@@ -344,7 +348,7 @@ class TdxHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用通达信接口"""
-        logger.info(f"调用通达信接口: {self.endpoint_name}")
+        logger.info("调用通达信接口: {self.endpoint_name")
 
         try:
             # 延迟导入
@@ -367,7 +371,7 @@ class TdxHandler(BaseDataSourceHandler):
         except ImportError:
             raise ImportError("PyTdx未安装: pip install pytdx")
         except Exception as e:
-            logger.error(f"通达信接口调用失败: {self.endpoint_name}, 错误: {e}")
+            logger.error("通达信接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 
     def _get_security_quotes(self, symbols: list, **kwargs) -> pd.DataFrame:
@@ -423,7 +427,7 @@ class WebCrawlerHandler(BaseDataSourceHandler):
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用爬虫接口"""
-        logger.info(f"调用爬虫接口: {self.endpoint_name}")
+        logger.info("调用爬虫接口: {self.endpoint_name")
 
         # 构建请求
         url = self.endpoint_url

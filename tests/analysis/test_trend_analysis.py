@@ -6,16 +6,17 @@
 提供测试数据的时间序列分析、趋势预测和模式识别功能
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from scipy import stats
-from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from scipy import stats
+from sklearn.linear_model import LinearRegression
 
 
 class TrendDirection(Enum):

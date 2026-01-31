@@ -10,8 +10,8 @@
 """
 
 import logging
-from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 from src.monitoring.monitoring_database import (
     MonitoringDatabase,
@@ -119,7 +119,7 @@ class DataQualityMonitor:
                 metrics={"missing_rate": missing_rate, "threshold": threshold},
             )
 
-        logger.info("✓ 完整性检查: %s - %s (%s%)", table_name, check_status, missing_rate)
+        logger.info("✓ 完整性检查: %s - %s (%.2f%%)", table_name, check_status, missing_rate)
 
         return {
             "check_status": check_status,
@@ -275,7 +275,7 @@ class DataQualityMonitor:
                 metrics={"invalid_rate": invalid_rate, "threshold": threshold},
             )
 
-        logger.info("✓ 准确性检查: %s - %s (%s%)", table_name, check_status, invalid_rate)
+        logger.info("✓ 准确性检查: %s - %s (%.2f%%)", table_name, check_status, invalid_rate)
 
         return {
             "check_status": check_status,

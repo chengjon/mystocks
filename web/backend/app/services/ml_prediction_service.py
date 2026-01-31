@@ -3,16 +3,16 @@
 使用 LightGBM 进行股票价格预测
 """
 
-import pickle
 import json
+import pickle
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import GridSearchCV, train_test_split
 
 try:
     from lightgbm import LGBMRegressor

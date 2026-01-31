@@ -10,8 +10,8 @@ import sys
 sys.path.insert(0, "/opt/claude/mystocks_spec")
 
 from src.core.data_classification import (
-    DataClassification,
     DatabaseTarget,
+    DataClassification,
     DeduplicationStrategy,
 )
 
@@ -281,7 +281,7 @@ class TestEnumStringBehavior:
         """测试DatabaseTarget枚举可作为字符串使用"""
         target = DatabaseTarget.TDENGINE
         assert target.value == "tdengine"
-        assert str(target) == "DatabaseTarget.TDENGINE"
+        assert str(target) == "tdengine"  # 修复：__str__() 返回 value 而非 name
 
     def test_data_classification_equality(self):
         """测试DataClassification枚举相等性"""

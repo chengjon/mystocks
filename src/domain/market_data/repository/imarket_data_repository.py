@@ -6,12 +6,12 @@ Market Data Repository Interface
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
 
 from ..value_objects.bar import Bar
-from ..value_objects.tick import Tick
 from ..value_objects.quote import Quote
+from ..value_objects.tick import Tick
 
 
 class IMarketDataRepository(ABC):
@@ -50,7 +50,6 @@ class IMarketDataRepository(ABC):
         Returns:
             K线数据列表，按时间升序排列
         """
-        pass
 
     @abstractmethod
     def get_latest_bar(
@@ -68,7 +67,6 @@ class IMarketDataRepository(ABC):
         Returns:
             最新K线数据，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def save_bars(self, bars: List[Bar]) -> None:
@@ -78,7 +76,6 @@ class IMarketDataRepository(ABC):
         Args:
             bars: K线数据列表
         """
-        pass
 
     # ========== 分笔数据查询 ==========
 
@@ -102,7 +99,6 @@ class IMarketDataRepository(ABC):
         Returns:
             分笔数据列表，按时间升序排列
         """
-        pass
 
     @abstractmethod
     def save_ticks(self, ticks: List[Tick]) -> None:
@@ -112,7 +108,6 @@ class IMarketDataRepository(ABC):
         Args:
             ticks: 分笔数据列表
         """
-        pass
 
     # ========== 实时报价查询 ==========
 
@@ -127,7 +122,6 @@ class IMarketDataRepository(ABC):
         Returns:
             实时报价，如果不存在返回None
         """
-        pass
 
     @abstractmethod
     def get_quotes(self, symbols: List[str]) -> List[Quote]:
@@ -140,7 +134,6 @@ class IMarketDataRepository(ABC):
         Returns:
             实时报价列表
         """
-        pass
 
     @abstractmethod
     def save_quote(self, quote: Quote) -> None:
@@ -150,7 +143,6 @@ class IMarketDataRepository(ABC):
         Args:
             quote: 实时报价
         """
-        pass
 
     # ========== 数据可用性检查 ==========
 
@@ -174,7 +166,6 @@ class IMarketDataRepository(ABC):
         Returns:
             如果有数据返回True，否则返回False
         """
-        pass
 
     @abstractmethod
     def has_ticks(
@@ -194,4 +185,3 @@ class IMarketDataRepository(ABC):
         Returns:
             如果有数据返回True，否则返回False
         """
-        pass

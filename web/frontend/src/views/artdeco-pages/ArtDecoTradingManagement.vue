@@ -1,73 +1,107 @@
 <template>
-    <ArtDecoLayout>
-        <div class="artdeco-trading-management">
-            <!-- ArtDeco 页面头部 -->
-            <ArtDecoHeader
-                title="量化交易管理中心"
-                subtitle="智能交易执行、风险控制与订单管理"
-                :show-status="true"
-                :status-text="connectionStatus"
-                :status-type="connectionStatusType"
+    <div class="artdeco-trading-management">
+        <!-- ArtDeco 页面头部 -->
+        <ArtDecoHeader
+            title="量化交易管理中心"
+            subtitle="智能交易执行、风险控制与订单管理"
+            :show-status="true"
+            :status-text="connectionStatus"
+            :status-type="connectionStatusType"
+        >
+            <template #actions>
+                <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
+                    <template #icon>
+                        <ArtDecoIcon name="refresh" />
+                    </template>
+                    刷新数据
+                </ArtDecoButton>
+
+                <ArtDecoButton variant="default" size="sm" @click="openSettings">
+                    <template #icon>
+                        <ArtDecoIcon name="settings" />
+                    </template>
+                    系统设置
+                </ArtDecoButton>
+            </template>
+        </ArtDecoHeader>
+
+        <!-- Main Tabs -->
+        <nav class="main-tabs">
+            <button
+                v-for="tab in mainTabs"
+                :key="tab.key"
+                class="main-tab"
+                :class="{ active: activeTab === tab.key }"
+                @click="switchTab(tab.key)"
             >
-                <template #actions>
-                    <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
-                        <template #icon>
-                            <ArtDecoIcon name="refresh" />
-                        </template>
-                        刷新数据
-                    </ArtDecoButton>
+                <span class="tab-icon">{{ tab.icon }}</span>
+                <span class="tab-label">{{ tab.label }}</span>
+            </button>
+        </nav>
 
-                    <ArtDecoButton variant="default" size="sm" @click="openSettings">
-                        <template #icon>
-                            <ArtDecoIcon name="settings" />
-                        </template>
-                        系统设置
-                    </ArtDecoButton>
-                </template>
-            </ArtDecoHeader>
+        <!-- 主内容区域 -->
+        <div class="trading-management-content">
+            <!-- 实时状态栏 - 仅在概览显示 -->
+            <div v-if="activeTab === 'overview'" class="status-bar">
+                <ArtDecoStatCard
+                    label="市场状态"
+                    :value="marketStatus"
+                    :trend="marketTrend"
+                    :variant="marketStatusColor"
+                />
+                <ArtDecoStatCard
+                    label="活跃信号"
+                    :value="activeSignalsCount"
+                    :variant="'gold'"
+                />
+                <ArtDecoStatCard
+                    label="今日盈亏"
+                    :value="todayPnL"
+                    :trend="todayPnLTrend"
+                    :variant="todayPnLColor"
+                />
+            </div>
 
-            <!-- 主内容区域 -->
-            <div class="trading-management-content">
-                <!-- 实时状态栏 -->
-                <div class="status-bar">
-                    <ArtDecoStatCard
-                        label="市场状态"
-                        :value="marketStatus"
-                        :trend="marketTrend"
-                        :variant="marketStatusColor"
-                    />
-                    <ArtDecoStatCard
-                        label="活跃信号"
-                        :value="activeSignalsCount"
-                        :variant="'gold'"
-                    />
-                    <ArtDecoStatCard
-                        label="今日盈亏"
-                        :value="todayPnL"
-                        :trend="todayPnLTrend"
-                        :variant="todayPnLColor"
-                    />
+            <!-- 核心功能区域 -->
+            <div class="tab-content">
+                <!-- 交易概览 -->
+                <div v-if="activeTab === 'overview'" class="tab-panel overview-panel">
+                    <div class="artdeco-content-grid">
+                        <ArtDecoCard class="overview-card">
+                            <template #header>
+                                <div class="card-header">
+                                    <ArtDecoIcon name="bar-chart" />
+                                    <h3>交易概览</h3>
+                                </div>
+                            </template>
+                            <ArtDecoTradingStats :stats="tradingStats" />
+                        </ArtDecoCard>
+
+                        <ArtDecoCard class="attribution-card" variant="elevated" gradient>
+                            <template #header>
+                                <div class="card-header">
+                                    <ArtDecoIcon name="pie-chart" />
+                                    <h3>收益归因分析</h3>
+                                </div>
+                            </template>
+                            <div class="attribution-content">
+                                <ArtDecoAttributionAnalysis
+                                    :strategy-breakdown="strategyBreakdown"
+                                    :stock-breakdown="stockBreakdown"
+                                    :loading="attributionLoading"
+                                />
+                            </div>
+                        </ArtDecoCard>
+                    </div>
                 </div>
 
-                <!-- 核心功能网格 -->
-                <div class="artdeco-content-grid">
-                    <!-- 交易概览卡片 -->
-                    <ArtDecoCard class="overview-card">
-                        <template #header>
-                            <div class="card-header">
-                                <ArtDecoIcon name="bar-chart" />
-                                <h3>交易概览</h3>
-                            </div>
-                        </template>
-                        <ArtDecoTradingStats :stats="tradingStats" />
-                    </ArtDecoCard>
-
-                    <!-- 交易控制面板 -->
+                <!-- 交易信号 -->
+                <div v-if="activeTab === 'signals'" class="tab-panel">
                     <ArtDecoCard class="controls-card" variant="bordered">
                         <template #header>
                             <div class="card-header">
                                 <ArtDecoIcon name="sliders" />
-                                <h3>交易控制</h3>
+                                <h3>信号过滤</h3>
                             </div>
                         </template>
                         <ArtDecoTradingSignalsControls
@@ -78,57 +112,50 @@
                         />
                     </ArtDecoCard>
 
-                    <!-- 实时交易面板 -->
                     <ArtDecoCard class="realtime-panel" gradient>
                         <template #header>
                             <div class="card-header dramatic">
                                 <div class="header-icon">
-                                    <ArtDecoIcon name="activity" />
+                                    <ArtDecoIcon name="zap" />
                                 </div>
                                 <div class="header-content">
-                                    <h3>实时交易</h3>
-                                    <p>活跃持仓与交易信号</p>
-                                </div>
-                                <div class="header-actions">
-                                    <ArtDecoBadge :variant="realtimeStatusColor" pulse>
-                                        {{ realtimeStatus }}
-                                    </ArtDecoBadge>
+                                    <h3>实时信号</h3>
+                                    <p>基于策略生成的最新交易机会</p>
                                 </div>
                             </div>
                         </template>
-
-                        <div class="panel-grid">
-                            <!-- 活跃持仓 -->
-                            <div class="panel-section">
-                                <div class="section-header">
-                                    <ArtDecoIcon name="briefcase" />
-                                    <h4>活跃持仓</h4>
-                                    <span class="count-badge">{{ activePositions.length }}</span>
-                                </div>
-                                <ArtDecoTradingPositions
-                                    :positions="activePositions"
-                                    @close-position="handleClosePosition"
-                                    @adjust-position="handleAdjustPosition"
-                                />
-                            </div>
-
-                            <!-- 交易信号 -->
-                            <div class="panel-section">
-                                <div class="section-header">
-                                    <ArtDecoIcon name="zap" />
-                                    <h4>交易信号</h4>
-                                    <span class="count-badge">{{ tradingSignals.length }}</span>
-                                </div>
-                                <ArtDecoTradingSignals
-                                    :signals="tradingSignals"
-                                    @execute-signal="handleExecuteSignal"
-                                    @cancel-signal="handleCancelSignal"
-                                />
-                            </div>
-                        </div>
+                        <ArtDecoTradingSignals
+                            :signals="tradingSignals"
+                            @execute-signal="handleExecuteSignal"
+                            @cancel-signal="handleCancelSignal"
+                        />
                     </ArtDecoCard>
+                </div>
 
-                    <!-- 历史分析面板 -->
+                <!-- 持仓监控 -->
+                <div v-if="activeTab === 'positions'" class="tab-panel">
+                    <ArtDecoCard class="realtime-panel" gradient>
+                        <template #header>
+                            <div class="card-header dramatic">
+                                <div class="header-icon">
+                                    <ArtDecoIcon name="briefcase" />
+                                </div>
+                                <div class="header-content">
+                                    <h3>活跃持仓</h3>
+                                    <p>实时持仓盈亏与仓位分配</p>
+                                </div>
+                            </div>
+                        </template>
+                        <ArtDecoTradingPositions
+                            :positions="activePositions"
+                            @close-position="handleClosePosition"
+                            @adjust-position="handleAdjustPosition"
+                        />
+                    </ArtDecoCard>
+                </div>
+
+                <!-- 交易历史 -->
+                <div v-if="activeTab === 'history'" class="tab-panel">
                     <ArtDecoCard class="history-panel" variant="bordered">
                         <template #header>
                             <div class="card-header elegant">
@@ -142,7 +169,6 @@
                             </div>
                         </template>
 
-                        <!-- 历史控制区域 -->
                         <div class="history-controls">
                             <ArtDecoTradingHistoryControls
                                 :symbol-options="symbolOptions"
@@ -159,7 +185,6 @@
                             />
                         </div>
 
-                        <!-- 历史数据区域 -->
                         <div class="history-data">
                             <ArtDecoTradingHistory
                                 :history="tradingHistory"
@@ -168,13 +193,15 @@
                             />
                         </div>
                     </ArtDecoCard>
+                </div>
 
-                    <!-- 收益归因分析 - 从HTML功能扩展 -->
+                <!-- 绩效分析 -->
+                <div v-if="activeTab === 'attribution'" class="tab-panel">
                     <ArtDecoCard class="attribution-card" variant="elevated" gradient>
                         <template #header>
                             <div class="card-header">
                                 <ArtDecoIcon name="pie-chart" />
-                                <h3>收益归因分析</h3>
+                                <h3>绩效归因</h3>
                             </div>
                         </template>
 
@@ -199,26 +226,101 @@
                 </div>
             </div>
         </div>
-    </ArtDecoLayout>
+    </div>
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted } from 'vue'
-    import ArtDecoLayout from '@/layouts/ArtDecoLayout.vue'
+    import { ref, computed, onMounted, watch } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
     import ArtDecoHeader from '@/components/artdeco/core/ArtDecoHeader.vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-    import ArtDecoTradingStats from './components/ArtDecoTradingStats.vue'
-    import ArtDecoTradingSignalsControls from './components/ArtDecoTradingSignalsControls.vue'
-    import ArtDecoTradingPositions from './components/ArtDecoTradingPositions.vue'
-    import ArtDecoTradingSignals from './components/ArtDecoTradingSignals.vue'
-    import ArtDecoTradingHistoryControls from './components/ArtDecoTradingHistoryControls.vue'
-    import ArtDecoTradingHistory from './components/ArtDecoTradingHistory.vue'
-    import ArtDecoAttributionControls from './components/ArtDecoAttributionControls.vue'
-    import ArtDecoAttributionAnalysis from './components/ArtDecoAttributionAnalysis.vue'
+    
+     // ========== 配置系统集成 ==========
+     import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
+     import type { MarketOverviewResponse, FundFlowAPIResponse } from '@/api/types/generated-types'
+     import marketService from '@/api/services/marketService'
+     import strategyService from '@/api/services/strategyService'
+     import type { Strategy, BacktestRequest, BacktestTask } from '@/api/types/generated-types'
+    
+     // Router instance
+     const route = useRoute()
+     const router = useRouter()
+
+    // 根据当前路由名称获取配置
+    const currentRouteName = computed(() => {
+        return route.name as string || 'trading-signals'
+    })
+
+    // 当前页面配置
+    const currentPageConfig = computed(() => {
+        if (!isRouteName(currentRouteName.value)) {
+            console.warn('未知路由名称:', currentRouteName.value)
+            return null
+        }
+        return getPageConfig(currentRouteName.value)
+    })
+
+    // 验证是否为 monolithic 配置
+    const isMonolithic = computed(() => {
+        return currentPageConfig.value !== null && isMonolithicConfig(currentPageConfig.value)
+    })
+
+    // Tab 配置
+    const mainTabs = computed(() => {
+        if (!isMonolithic.value) {
+            // 对于非 monolithic，使用硬编码的 tabs（与路由的 activeTab 一致）
+            return [
+                { key: 'overview', label: '交易概览', icon: '📊' },
+                { key: 'signals', label: '交易信号', icon: '📡' },
+                { key: 'positions', label: '持仓监控', icon: '💼' },
+                { key: 'history', label: '历史订单', icon: '📋' },
+                { key: 'attribution', label: '绩效归因', icon: '📈' }
+            ]
+        }
+        const config = currentPageConfig.value as MonolithicPageConfig
+        return config.tabs || []
+    })
+
+    // 当前 Tab 配置
+    const currentTabConfig = computed((): TabConfig | undefined => {
+        if (!isMonolithic.value) return undefined
+        const config = currentPageConfig.value as MonolithicPageConfig
+        return getTabConfig(currentRouteName.value, activeTab.value)
+    })
+
+    // API 端点
+    const apiEndpoint = computed(() => {
+        return currentTabConfig.value?.apiEndpoint || currentPageConfig.value?.apiEndpoint || ''
+    })
+
+    // WebSocket 频道
+    const wsChannel = computed(() => {
+        return currentTabConfig.value?.wsChannel || currentPageConfig.value?.wsChannel || ''
+    })
+
+    const switchTab = (tabKey: string) => {
+        activeTab.value = tabKey
+        // Optional: update URL when tab changes internally
+        const targetPath = `/trading/${tabKey === 'overview' ? 'signals' : tabKey}` // Simple mapping
+        if (route.path !== targetPath) {
+            // router.push(targetPath)
+        }
+    }
+
+    // Watch route meta to sync activeTab
+    watch(
+        () => route.meta.activeTab,
+        (newTab) => {
+            if (newTab && typeof newTab === 'string') {
+                activeTab.value = newTab
+            }
+        },
+        { immediate: true }
+    )
 
     // 交易统计数据
     const tradingStats = ref({
@@ -387,14 +489,16 @@
         // TODO: 实现批量执行逻辑
     }
 
-    const refreshData = async () => {
-        refreshing.value = true
-        try {
-            // TODO: 实现数据刷新逻辑
-            await new Promise(resolve => setTimeout(resolve, 1500))
-        } finally {
+     const refreshData = async () => {
+        if (!apiEndpoint.value) {
+            console.warn('未配置的API端点:', currentRouteName.value)
             refreshing.value = false
+            return
         }
+        
+        console.log('刷新数据 - API端点:', apiEndpoint.value)
+        // TODO: 使用 apiEndpoint 调用 API
+        refreshing.value = false
     }
 
     const openSettings = () => {

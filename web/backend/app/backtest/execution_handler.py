@@ -4,10 +4,10 @@ Execution Handler
 订单执行处理器，模拟真实市场的订单执行、滑点和手续费
 """
 
-from typing import Optional
 from decimal import Decimal
+from typing import Optional
 
-from app.backtest.events import OrderEvent, FillEvent
+from app.backtest.events import FillEvent, OrderEvent
 
 
 class ExecutionHandler:

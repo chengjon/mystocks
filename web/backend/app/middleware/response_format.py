@@ -27,10 +27,10 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.responses import (
-    ErrorCodes,
-    ResponseMessages,
     BusinessCode,
+    ErrorCodes,
     ErrorDetail,
+    ResponseMessages,
     UnifiedResponse,
     create_unified_error_response,
     create_validation_error_response,
@@ -102,7 +102,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             # 处理未捕获的异常
-            logger.error(f"未处理的异常 [request_id={request_id}]: {str(e)}", exc_info=True)
+            logger.error("未处理的异常 [request_id={request_id}]: {str(e)}", exc_info=True)
 
             error_response = create_unified_error_response(
                 code=BusinessCode.INTERNAL_ERROR,

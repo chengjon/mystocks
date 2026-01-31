@@ -1,19 +1,41 @@
 # ArtDeco 组件展示
+## ArtDeco Component Showcase
 
-**版本**: v1.1
-**更新日期**: 2026-01-18
+**版本**: v2.0 (Phase 2-4 Enhancements)
+**更新日期**: 2026-01-20
+**组件总数**: 66 (从 v1.1 的 64 个增加)
 **适用范围**: MyStocks 量化交易平台前端
+
+---
+
+## 🆕 What's New in v2.0
+
+### Phase 2 Enhancements (2026-01-20)
+- ✨ **ArtDecoButton**: 新增 `double-border` 变体 (装饰艺术双线框风格)
+- ✨ **ArtDecoInput**: 新增 `labelType="roman"` 罗马数字标签
+- ✨ **ArtDecoCard**: 修复为完美锐角 (0px 圆角)
+
+### Phase 3 Reorganization (2026-01-20)
+- 📂 **business/** (10组件) - 业务逻辑组件
+- 📂 **charts/** (8组件) - 图表可视化组件
+- 📂 **trading/** (13组件) - 交易UI组件
+
+### Phase 4 Documentation Update (2026-01-20)
+- 📚 更新所有文档以反映新结构
+- 📚 添加金融设计令牌文档 (60+ tokens)
 
 ---
 
 ## 📋 目录
 
-1. [基础组件展示](#基础组件展示)
-2. [专用组件展示](#专用组件展示)
-3. [高级组件展示](#高级组件展示)
-4. [核心组件展示](#核心组件展示)
-5. [页面级示例](#页面级示例)
-6. [交互效果演示](#交互效果演示)
+1. [基础组件展示](#基础组件展示) (13组件)
+2. [业务组件展示](#业务组件展示) (10组件) ⭐ NEW
+3. [图表组件展示](#图表组件展示) (8组件) ⭐ NEW
+4. [交易组件展示](#交易组件展示) (13组件) ⭐ NEW
+5. [高级组件展示](#高级组件展示) (10组件)
+6. [核心组件展示](#核心组件展示) (12组件)
+7. [页面级示例](#页面级示例)
+8. [交互效果演示](#交互效果演示)
 
 ---
 
@@ -121,6 +143,86 @@ const handleOutline = () => console.log('Outline clicked')
 }
 </style>
 ```
+
+#### 🆕 Phase 2: 双线框按钮 (Double Border Variant)
+
+```vue
+<template>
+  <div class="double-border-demo">
+    <h3>Double Border Button (Phase 2 Enhancement)</h3>
+
+    <!-- ArtDeco signature style -->
+    <ArtDecoButton variant="double-border" size="large">
+      DOUBLE BORDER
+    </ArtDecoButton>
+
+    <!-- Different sizes -->
+    <div class="size-examples">
+      <ArtDecoButton variant="double-border" size="small">
+        SMALL
+      </ArtDecoButton>
+
+      <ArtDecoButton variant="double-border" size="medium">
+        MEDIUM
+      </ArtDecoButton>
+
+      <ArtDecoButton variant="double-border" size="large">
+        LARGE
+      </ArtDecoButton>
+    </div>
+
+    <!-- With hover effect demonstration -->
+    <p class="note">
+      <strong>Note:</strong> Hover over the buttons to see the animated border contraction effect (4px → 2px offset)
+    </p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ArtDecoButton } from '@/components/artdeco'
+</script>
+
+<style scoped lang="scss">
+.double-border-demo {
+  padding: 24px;
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 24px;
+  }
+
+  .size-examples {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .note {
+    margin-top: 24px;
+    padding: 12px;
+    background: rgba(212, 175, 55, 0.05);
+    border-left: 2px solid var(--artdeco-accent-gold);
+    color: var(--artdeco-fg-muted);
+    font-size: 14px;
+  }
+}
+</style>
+```
+
+**Features**:
+- Double-frame style (outer 2px + inner 1px gold borders)
+- Perfectly sharp corners (0px radius)
+- Smooth hover animation (borders contract from 4px to 2px offset)
+- Gold glow effect on hover
+- ArtDeco signature visual element
+
+
 
 ### ArtDecoCard - 卡片组件
 
@@ -347,9 +449,681 @@ const successValue = ref('')
 </script>
 ```
 
+#### 🆕 Phase 2: 罗马数字标签 (Roman Numeral Labels)
+
+```vue
+<template>
+  <div class="roman-numeral-demo">
+    <h3>Roman Numeral Input Labels (Phase 2 Enhancement)</h3>
+
+    <div class="form-grid">
+      <!-- Auto-detects trailing numbers -->
+      <ArtDecoInput
+        v-model="username"
+        label="USERNAME 1"
+        label-type="roman"
+        placeholder="Enter username..."
+      />
+      <!-- Displays: USERNAME Ⅰ -->
+
+      <ArtDecoInput
+        v-model="email"
+        label="EMAIL 2"
+        label-type="roman"
+        type="email"
+        placeholder="Enter email..."
+      />
+      <!-- Displays: EMAIL Ⅱ -->
+
+      <ArtDecoInput
+        v-model="password"
+        label="PASSWORD 3"
+        label-type="roman"
+        type="password"
+        placeholder="Enter password..."
+      />
+      <!-- Displays: PASSWORD Ⅲ -->
+
+      <ArtDecoInput
+        v-model="confirmPassword"
+        label="CONFIRM PASSWORD 4"
+        label-type="roman"
+        type="password"
+        placeholder="Confirm password..."
+      />
+      <!-- Displays: CONFIRM PASSWORD Ⅳ -->
+
+      <!-- Higher numbers -->
+      <ArtDecoInput
+        v-model="phone"
+        label="PHONE 5"
+        label-type="roman"
+        placeholder="Enter phone..."
+      />
+      <!-- Displays: PHONE Ⅴ -->
+
+      <ArtDecoInput
+        v-model="address"
+        label="ADDRESS 10"
+        label-type="roman"
+        placeholder="Enter address..."
+      />
+      <!-- Displays: ADDRESS Ⅹ -->
+    </div>
+
+    <p class="note">
+      <strong>Feature:</strong> Automatically converts trailing numbers to Roman numerals (Ⅰ-Ⅹ supported).
+      Falls back to appending "Ⅰ" if no number is detected.
+    </p>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoInput } from '@/components/artdeco'
+
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const phone = ref('')
+const address = ref('')
+</script>
+
+<style scoped lang="scss">
+.roman-numeral-demo {
+  padding: 24px;
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-gold-subtle);
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 24px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .note {
+    padding: 12px;
+    background: rgba(212, 175, 55, 0.05);
+    border-left: 2px solid var(--artdeco-accent-gold);
+    color: var(--artdeco-fg-muted);
+    font-size: 14px;
+  }
+}
+</style>
+```
+
+**Supported Numbers**: 1-20 (Ⅰ, Ⅱ, Ⅲ, Ⅳ, Ⅴ, Ⅵ, Ⅶ, Ⅷ, Ⅸ, Ⅹ, Ⅺ, Ⅻ, Ⅼ, Ⅽ, Ⅾ, Ⅿ, ⅰ, ⅱ, ⅳ, Ⅹ)
+
+**Features**:
+- Auto-detects trailing numbers in labels
+- Preserves original label casing
+- Adds decorative ArtDeco flair to forms
+- Perfect for multi-step forms or sequences
+
+
+
 ---
 
-## 🔧 专用组件展示
+## 📊 业务组件展示 (Business Components)
+
+### ArtDecoDateRange - 日期范围选择器
+
+```vue
+<template>
+  <div class="date-range-demo">
+    <h3>Backtest Date Range</h3>
+
+    <ArtDecoDateRange
+      v-model:start-date="startDate"
+      v-model:end-date="endDate"
+      label="DATE RANGE"
+      :max-range="365"
+      :min-date="minDate"
+      :max-date="maxDate"
+    />
+
+    <div class="selected-info">
+      <p>Start: {{ startDate }}</p>
+      <p>End: {{ endDate }}</p>
+      <p>Days: {{ dayCount }}</p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { ArtDecoDateRange } from '@/components/artdeco/business'
+
+const startDate = ref('2024-01-01')
+const endDate = ref('2024-12-31')
+const minDate = ref('2020-01-01')
+const maxDate = ref(new Date().toISOString().split('T')[0])
+
+const dayCount = computed(() => {
+  const start = new Date(startDate.value)
+  const end = new Date(endDate.value)
+  return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+})
+</script>
+
+<style scoped lang="scss">
+.date-range-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+
+  .selected-info {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+
+    p {
+      color: var(--artdeco-fg-primary);
+      margin: 4px 0;
+      font-family: var(--artdeco-font-body);
+    }
+  }
+}
+</style>
+```
+
+### ArtDecoFilterBar - 筛选栏
+
+```vue
+<template>
+  <div class="filter-bar-demo">
+    <h3>Market Data Filters</h3>
+
+    <ArtDecoFilterBar
+      :filters="[
+        { key: 'symbol', label: 'SYMBOL', type: 'input', placeholder: 'Search symbol...' },
+        { key: 'sector', label: 'SECTOR', type: 'select', options: ['All', 'Technology', 'Healthcare', 'Finance'] },
+        { key: 'marketCap', label: 'MARKET CAP', type: 'select', options: ['All', 'Large', 'Medium', 'Small'] },
+        { key: 'dateRange', label: 'DATE RANGE', type: 'daterange' }
+      ]"
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ArtDecoFilterBar } from '@/components/artdeco/business'
+
+const handleFilterChange = (filters) => {
+  console.log('Filters changed:', filters)
+  // Apply filters to data
+}
+
+const handleFilterReset = () => {
+  console.log('Filters reset')
+  // Reset all filters
+}
+</script>
+
+<style scoped lang="scss">
+.filter-bar-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+}
+</style>
+```
+
+### ArtDecoSlider - 滑块控制
+
+```vue
+<template>
+  <div class="slider-demo">
+    <h3>Risk Tolerance</h3>
+
+    <ArtDecoSlider
+      v-model="riskLevel"
+      :min="0"
+      :max="100"
+      :step="5"
+      label="RISK LEVEL"
+      :marks="{ 0: 'Conservative', 50: 'Moderate', 100: 'Aggressive' }"
+      :show-value="true"
+    />
+
+    <div class="risk-info">
+      <p :style="{ color: riskColor }">
+        Risk Level: {{ riskLabel }}
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { ArtDecoSlider } from '@/components/artdeco/business'
+
+const riskLevel = ref(50)
+
+const riskLabel = computed(() => {
+  if (riskLevel.value < 30) return 'Conservative'
+  if (riskLevel.value < 70) return 'Moderate'
+  return 'Aggressive'
+})
+
+const riskColor = computed(() => {
+  if (riskLevel.value < 30) return 'var(--artdeco-risk-low)'
+  if (riskLevel.value < 70) return 'var(--artdeco-risk-medium)'
+  return 'var(--artdeco-risk-high)'
+})
+</script>
+
+<style scoped lang="scss">
+.slider-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+
+  .risk-info {
+    margin-top: 16px;
+
+    p {
+      font-family: var(--artdeco-font-display);
+      font-size: var(--artdeco-text-lg);
+      text-transform: uppercase;
+    }
+  }
+}
+</style>
+```
+
+---
+
+## 📈 图表组件展示 (Chart Components)
+
+### TimeSeriesChart - 时序图
+
+```vue
+<template>
+  <div class="timeseries-demo">
+    <h3>Price Chart</h3>
+
+    <ArtDecoCard variant="chart">
+      <template #header>
+        <h4>600519 - 贵州茅台</h4>
+      </template>
+
+      <TimeSeriesChart
+        :data="priceData"
+        :indicators="['MA5', 'MA20', 'MA60']"
+        :timeframe="timeframe"
+        height="400px"
+        @indicator-change="handleIndicatorChange"
+        @timeframe-change="handleTimeframeChange"
+      />
+    </ArtDecoCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoCard } from '@/components/artdeco'
+import { TimeSeriesChart } from '@/components/artdeco/charts'
+
+const timeframe = ref('1D')
+
+const priceData = ref([
+  { timestamp: '2024-01-01', open: 1800, high: 1850, low: 1790, close: 1840, volume: 125000 },
+  { timestamp: '2024-01-02', open: 1840, high: 1860, low: 1830, close: 1850, volume: 130000 },
+  // ... more data
+])
+
+const handleIndicatorChange = (indicators) => {
+  console.log('Indicators changed:', indicators)
+}
+
+const handleTimeframeChange = (newTimeframe) => {
+  timeframe.value = newTimeframe
+}
+</script>
+
+<style scoped lang="scss">
+.timeseries-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+
+  h4 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+    margin: 0;
+  }
+}
+</style>
+```
+
+### DrawdownChart - 回撤图
+
+```vue
+<template>
+  <div class="drawdown-demo">
+    <h3>Strategy Drawdown</h3>
+
+    <ArtDecoCard variant="chart">
+      <template #header>
+        <h4>DRAWDOWN ANALYSIS</h4>
+      </template>
+
+      <DrawdownChart
+        :data="drawdownData"
+        :benchmark="benchmarkData"
+        height="300px"
+        :show-tooltip="true"
+      />
+    </ArtDecoCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoCard } from '@/components/artdeco'
+import { DrawdownChart } from '@/components/artdeco/charts'
+
+const drawdownData = ref([
+  { date: '2024-01', value: -5.2 },
+  { date: '2024-02', value: -8.5 },
+  { date: '2024-03', value: -3.1 },
+  // ... more data
+])
+
+const benchmarkData = ref([
+  { date: '2024-01', value: -2.1 },
+  { date: '2024-02', value: -4.5 },
+  { date: '2024-03', value: -1.8 },
+  // ... more data
+])
+</script>
+
+<style scoped lang="scss">
+.drawdown-demo {
+  padding: 24px;
+
+  h3, h4 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+
+  h4 {
+    font-size: var(--artdeco-text-xl);
+  }
+}
+</style>
+```
+
+### HeatmapCard - 热力图
+
+```vue
+<template>
+  <div class="heatmap-demo">
+    <h3>Sector Performance</h3>
+
+    <ArtDecoCard variant="chart">
+      <template #header>
+        <h4>MARKET HEATMAP</h4>
+      </template>
+
+      <HeatmapCard
+        :data="heatmapData"
+        :color-scale="['#00E676', '#FFD700', '#FF5252']"
+        height="350px"
+        @cell-click="handleCellClick"
+      />
+    </ArtDecoCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoCard } from '@/components/artdeco'
+import { HeatmapCard } from '@/components/artdeco/charts'
+
+const heatmapData = ref([
+  { sector: 'Technology', change: 2.15, cap: 5000000000000 },
+  { sector: 'Healthcare', change: -0.85, cap: 3500000000000 },
+  { sector: 'Finance', change: 1.35, cap: 4200000000000 },
+  { sector: 'Energy', change: 3.20, cap: 2800000000000 },
+  // ... more sectors
+])
+
+const handleCellClick = (cell) => {
+  console.log('Cell clicked:', cell)
+  // Navigate to sector detail
+}
+</script>
+
+<style scoped lang="scss">
+.heatmap-demo {
+  padding: 24px;
+
+  h3, h4 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+}
+</style>
+```
+
+---
+
+## 💹 交易组件展示 (Trading Components)
+
+### ArtDecoOrderBook - 订单簿
+
+```vue
+<template>
+  <div class="orderbook-demo">
+    <h3>Order Book</h3>
+
+    <ArtDecoOrderBook
+      :bids="bidData"
+      :asks="askData"
+      :max-rows="10"
+      :show-total="true"
+      @price-click="handlePriceClick"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoOrderBook } from '@/components/artdeco/trading'
+
+const bidData = ref([
+  { price: 1850.50, quantity: 1200, total: 10 },
+  { price: 1850.00, quantity: 2500, total: 25 },
+  { price: 1849.50, quantity: 1800, total: 18 },
+  // ... more bids
+])
+
+const askData = ref([
+  { price: 1851.00, quantity: 900, total: 9 },
+  { price: 1851.50, quantity: 2100, total: 21 },
+  { price: 1852.00, quantity: 1600, total: 16 },
+  // ... more asks
+])
+
+const handlePriceClick = (price) => {
+  console.log('Price clicked:', price)
+  // Set order price
+}
+</script>
+
+<style scoped lang="scss">
+.orderbook-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+}
+</style>
+```
+
+### ArtDecoTradeForm - 交易表单
+
+```vue
+<template>
+  <div class="trade-form-demo">
+    <h3>Place Order</h3>
+
+    <ArtDecoCard>
+      <ArtDecoTradeForm
+        v-model:symbol="orderSymbol"
+        v-model:side="orderSide"
+        v-model:quantity="orderQuantity"
+        v-model:price="orderPrice"
+        v-model:order-type="orderType"
+        :available-quantity="availableQuantity"
+        :current-price="currentPrice"
+        @submit="handleSubmit"
+        @cancel="handleCancel"
+      />
+    </ArtDecoCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoCard, ArtDecoTradeForm } from '@/components/artdeco'
+
+const orderSymbol = ref('600519')
+const orderSide = ref('buy')
+const orderQuantity = ref(100)
+const orderPrice = ref(1850.50)
+const orderType = ref('limit')
+const availableQuantity = ref(10000)
+const currentPrice = ref(1850.50)
+
+const handleSubmit = (order) => {
+  console.log('Submit order:', order)
+  // Submit order to backend
+}
+
+const handleCancel = () => {
+  console.log('Order cancelled')
+  // Reset form
+}
+</script>
+
+<style scoped lang="scss">
+.trade-form-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+}
+</style>
+```
+
+### ArtDecoTicker - 行情显示
+
+```vue
+<template>
+  <div class="ticker-demo">
+    <h3>Market Ticker</h3>
+
+    <ArtDecoTicker
+      :symbols="tickerData"
+      :update-interval="3000"
+      :flash-changes="true"
+      @symbol-click="handleSymbolClick"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ArtDecoTicker } from '@/components/artdeco/trading'
+
+const tickerData = ref([
+  { symbol: '600519', name: '贵州茅台', price: 1850.50, change: 12.50, changePercent: 0.68 },
+  { symbol: '000001', name: '平安银行', price: 12.45, change: -0.15, changePercent: -1.19 },
+  { symbol: '000002', name: '万科A', price: 8.90, change: 0.05, changePercent: 0.56 },
+  // ... more symbols
+])
+
+const handleSymbolClick = (symbol) => {
+  console.log('Symbol clicked:', symbol)
+  // Navigate to symbol detail
+}
+</script>
+
+<style scoped lang="scss">
+.ticker-demo {
+  padding: 24px;
+
+  h3 {
+    font-family: var(--artdeco-font-display);
+    color: var(--artdeco-accent-gold);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-widest);
+    margin-bottom: 16px;
+  }
+}
+</style>
+```
+
+---
+
+## 🔧 专用组件展示 (Archived - Moved to New Categories)
 
 ### 金融专用组件
 

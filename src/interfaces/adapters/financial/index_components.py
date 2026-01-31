@@ -1,3 +1,4 @@
+# pylint: disable=undefined-variable  # 混入模块使用动态类型
 def get_index_components(self, index_code):
     """
     获取指数的成分股数据
@@ -8,6 +9,8 @@ def get_index_components(self, index_code):
     Returns:
         pd.DataFrame: 指数成分股数据
     """
+
+
     logger.info("尝试获取指数 %s 的成分股数据...", index_code)
 
     # 参数验证

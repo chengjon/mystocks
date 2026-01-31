@@ -3,10 +3,11 @@ Akshare适配器单元测试
 测试akshare_adapter.py的核心功能
 """
 
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

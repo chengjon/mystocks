@@ -1,5 +1,6 @@
-from typing import Dict
-from src.core.data_classification import DataClassification, DatabaseTarget
+from typing import Dict, Optional
+
+from src.core.data_classification import DatabaseTarget, DataClassification
 
 
 class DataRouter:
@@ -51,7 +52,7 @@ class DataRouter:
         DataClassification.USER_CONFIG: DatabaseTarget.POSTGRESQL,
     }
 
-    def __init__(self, custom_mapping: Dict[DataClassification, DatabaseTarget] = None):
+    def __init__(self, custom_mapping: Optional[Dict[DataClassification, DatabaseTarget]] = None):
         self._routing_map = self._DEFAULT_ROUTING_MAP.copy()
         if custom_mapping:
             self._routing_map.update(custom_mapping)

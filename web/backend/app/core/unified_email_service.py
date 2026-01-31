@@ -28,15 +28,16 @@ result = email.send(to_addresses, subject, content)
 Estimated Duplication Reduced: 150+ lines
 """
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email.header import Header
-from email import encoders
-from typing import List, Dict, Optional, Union, Any
-from datetime import datetime
 import os
+import smtplib
+from datetime import datetime
+from email import encoders
+from email.header import Header
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import Any, Dict, List, Optional, Union
+
 import structlog
 
 logger = structlog.get_logger()
@@ -44,8 +45,6 @@ logger = structlog.get_logger()
 
 class EmailServiceError(Exception):
     """Email service error"""
-
-    pass
 
 
 class UnifiedEmailService:
@@ -331,10 +330,10 @@ class UnifiedEmailService:
             part.add_header("Content-Disposition", f"attachment; filename= {filename}")
             msg.attach(part)
 
-            logger.info(f"✅ Added attachment: {filename}")
+            logger.info("✅ Added attachment: %(filename)s"")
 
         except Exception as e:
-            logger.error(f"❌ Failed to add attachment {file_path}: {str(e)}")
+            logger.error("❌ Failed to add attachment %(file_path)s: {str(e)}"")
             raise
 
     def _send_smtp(

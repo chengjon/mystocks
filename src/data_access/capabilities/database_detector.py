@@ -1,13 +1,14 @@
+# pylint: disable=no-name-in-module
 """
 数据库特性检测器
 动态检测和适配不同数据库的特性
 """
 
-from typing import Dict, List, Any, Optional, Set
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
-from ..interfaces.i_data_access import DatabaseType, IDataAccess
+from ..interfaces import DatabaseType, IDataAccess
 
 
 class FeatureType(Enum):

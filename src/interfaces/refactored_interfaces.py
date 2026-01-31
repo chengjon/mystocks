@@ -8,10 +8,10 @@ MyStocks重构版接口定义 - 接口分离和简化
 """
 
 import abc
-import pandas as pd
-from typing import Dict, List, Union, Optional, Any
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Union
 
+import pandas as pd
 
 # =============================================================================
 # 标准化响应格式
@@ -80,7 +80,6 @@ class IPriceDataSource(abc.ABC):
                   ['date', 'symbol', 'open', 'high', 'low', 'close', 'volume', 'amount']的DataFrame
                 - success=False时，error包含错误信息
         """
-        pass
 
     @abc.abstractmethod
     def get_real_time_data(self, symbol: str) -> DataResponse:
@@ -94,7 +93,6 @@ class IPriceDataSource(abc.ABC):
                 - success=True时，data为包含最新价格、成交量等信息的字典
                 - success=False时，error包含错误信息
         """
-        pass
 
 
 # =============================================================================
@@ -121,7 +119,6 @@ class IIndexDataSource(abc.ABC):
         Returns:
             DataResponse: 包含指数日线数据的响应
         """
-        pass
 
     @abc.abstractmethod
     def get_index_components(self, symbol: str) -> DataResponse:
@@ -135,7 +132,6 @@ class IIndexDataSource(abc.ABC):
                 - success=True时，data为包含股票代码的List[str]
                 - success=False时，error包含错误信息
         """
-        pass
 
 
 # =============================================================================
@@ -162,7 +158,6 @@ class IBasicInfoSource(abc.ABC):
                 - success=True时，data为包含['code', 'name', 'industry', 'area']等信息的字典
                 - success=False时，error包含错误信息
         """
-        pass
 
     @abc.abstractmethod
     def get_market_calendar(self, start_date: str, end_date: str) -> DataResponse:
@@ -177,7 +172,6 @@ class IBasicInfoSource(abc.ABC):
                 - success=True时，data为包含交易日信息的DataFrame
                 - success=False时，error包含错误信息
         """
-        pass
 
 
 # =============================================================================
@@ -205,7 +199,6 @@ class IAdvancedDataSource(abc.ABC):
                 - success=True时，data为包含财务指标的DataFrame
                 - success=False时，error包含错误信息
         """
-        pass
 
     @abc.abstractmethod
     def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> DataResponse:
@@ -220,7 +213,6 @@ class IAdvancedDataSource(abc.ABC):
                 - success=True时，data为包含新闻信息的List[Dict]
                 - success=False时，error包含错误信息
         """
-        pass
 
 
 # =============================================================================
@@ -237,8 +229,6 @@ class IDataSource(IPriceDataSource, IIndexDataSource, IBasicInfoSource, IAdvance
     注意: 实现这个接口需要实现所有8个方法。
     建议新开发的数据源实现相应的特化接口。
     """
-
-    pass
 
 
 # =============================================================================

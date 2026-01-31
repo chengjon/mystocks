@@ -3,10 +3,10 @@ GPU工具模块
 GPU Utility Module
 """
 
+import importlib.util
 import logging
 import time
-from typing import Dict, List, Optional, Any
-import importlib.util
+from typing import Any, Dict, List, Optional
 
 try:
     import pynvml

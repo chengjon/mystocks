@@ -258,7 +258,7 @@
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-    import ArtDecoSlider from '@/components/artdeco/specialized/ArtDecoSlider.vue'
+    import ArtDecoSlider from '@/components/artdeco/business/ArtDecoSlider.vue'
 
     interface Props {
         data: any

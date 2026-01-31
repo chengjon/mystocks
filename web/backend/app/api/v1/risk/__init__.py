@@ -14,7 +14,8 @@ Date: 2026-01-10
 """
 
 from fastapi import APIRouter
-from . import core, stop_loss, alerts, rules, position
+
+from . import alerts, core, position, rules, stop_loss
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理"])
 

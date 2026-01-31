@@ -6,12 +6,10 @@ Portfolio Application Service
 """
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from src.application.portfolio.model import Portfolio, Holding, Transaction
+from src.application.portfolio.model import Portfolio, Transaction
 from src.application.portfolio.repository import IPortfolioRepository
-from src.domain.portfolio.value_objects import PerformanceMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +46,7 @@ class PortfolioApplicationService:
             benchmark_index=benchmark_index,
         )
         self.portfolio_repo.save(portfolio)
-        logger.info(f"Created portfolio: {portfolio.id}")
+        logger.info("Created portfolio: {portfolio.id")
         return portfolio.to_dict()
 
     def get_portfolio(self, portfolio_id: str) -> Optional[Dict[str, Any]]:
@@ -71,7 +69,7 @@ class PortfolioApplicationService:
         if not portfolio:
             return False
         self.portfolio_repo.delete(portfolio_id)
-        logger.info(f"Deleted portfolio: {portfolio_id}")
+        logger.info("Deleted portfolio: %(portfolio_id)s")
         return True
 
     def add_position(
@@ -87,7 +85,7 @@ class PortfolioApplicationService:
 
         self._record_transaction(portfolio, symbol, side, quantity, price)
 
-        logger.info(f"Added position {symbol} to portfolio {portfolio_id}")
+        logger.info("Added position %(symbol)s to portfolio %(portfolio_id)s")
         return holding.to_dict()
 
     def adjust_position(
@@ -104,7 +102,7 @@ class PortfolioApplicationService:
             self._record_transaction(
                 portfolio, symbol, side if quantity_change > 0 else "SELL", abs(quantity_change), price
             )
-            logger.info(f"Adjusted position {symbol} in portfolio {portfolio_id}")
+            logger.info("Adjusted position %(symbol)s in portfolio %(portfolio_id)s")
         return holding.to_dict() if holding else None
 
     def close_position(self, portfolio_id: str, symbol: str, price: float) -> bool:
@@ -120,7 +118,7 @@ class PortfolioApplicationService:
         self._record_transaction(portfolio, symbol, "SELL", holding.quantity, price)
         portfolio.remove_holding(symbol)
         self.portfolio_repo.save(portfolio)
-        logger.info(f"Closed position {symbol} in portfolio {portfolio_id}")
+        logger.info("Closed position %(symbol)s in portfolio %(portfolio_id)s")
         return True
 
     def update_prices(self, portfolio_id: str, prices: Dict[str, float]) -> None:
@@ -135,7 +133,7 @@ class PortfolioApplicationService:
                 holding.update_price(price)
 
         self.portfolio_repo.save(portfolio)
-        logger.info(f"Updated prices for portfolio {portfolio_id}")
+        logger.info("Updated prices for portfolio %(portfolio_id)s")
 
     def get_performance(self, portfolio_id: str) -> Optional[Dict[str, Any]]:
         """获取绩效指标"""

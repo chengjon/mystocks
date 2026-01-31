@@ -6,30 +6,27 @@ Webdata 数据源适配器
 """
 
 import logging
-import pandas as pd
-from typing import Dict, Any, Optional, List
-from datetime import datetime
-
 import sys
-import os
+from typing import Dict, List
+
+import pandas as pd
 
 sys.path.insert(0, "/opt/iflow/webdata")
 
 from stock_api_functions import (
-    get_sina_kline_data,
-    get_sina_qfq_data,
     get_sina_hfq_data,
-    get_sina_price_history,
     get_sina_keyword_search,
+    get_sina_kline_data,
+    get_sina_price_history,
+    get_sina_qfq_data,
+    get_tencent_5day_minute_chart,
     get_tencent_daily_kline,
     get_tencent_minute_chart,
-    get_tencent_5day_minute_chart,
-    get_tencent_yearly_daily_kline,
-    get_tencent_weekly_kline,
     get_tencent_monthly_kline,
     get_tencent_realtime_volume,
+    get_tencent_weekly_kline,
+    get_tencent_yearly_daily_kline,
     parse_sina_kline_data,
-    parse_tencent_daily_data,
 )
 
 logger = logging.getLogger(__name__)

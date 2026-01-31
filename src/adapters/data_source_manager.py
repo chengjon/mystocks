@@ -10,16 +10,17 @@
 """
 
 import logging
-from typing import Dict, List, Optional, Union
 from datetime import datetime
+from typing import Dict, List, Optional, Union
+
 import pandas as pd
 
-from src.interfaces.data_source import IDataSource
-from src.adapters.tdx import TdxDataSource
 from src.adapters.akshare import AkshareDataSource
+from src.adapters.tdx import TdxDataSource
 
 # V2 管理器导入（Phase 3: 手术式替换）
 from src.core.data_source import DataSourceManagerV2
+from src.interfaces.data_source import IDataSource
 
 
 class DataSourceManager:
@@ -73,7 +74,7 @@ class DataSourceManager:
                 self._v2_manager = DataSourceManagerV2()
                 self.logger.info("✓ V2管理器初始化成功（智能路由已启用）")
             except Exception as e:
-                self.logger.warning(f"V2管理器初始化失败，将使用旧版方式: {e}")
+                self.logger.warning("V2管理器初始化失败，将使用旧版方式: %(e)s")
                 self._use_v2 = False
 
         self.logger.info("数据源管理器初始化完成")
@@ -179,7 +180,7 @@ class DataSourceManager:
                     self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
 
             except Exception as e:
-                self.logger.warning(f"V2智能路由失败，尝试旧版方式: {e}")
+                self.logger.warning("V2智能路由失败，尝试旧版方式: %(e)s")
 
         # 旧版方式：硬编码优先级（向后兼容）
         if source:
@@ -239,7 +240,7 @@ class DataSourceManager:
                     self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
 
             except Exception as e:
-                self.logger.warning(f"V2智能路由失败，尝试旧版方式: {e}")
+                self.logger.warning("V2智能路由失败，尝试旧版方式: %(e)s")
 
         # 旧版方式：硬编码优先级（向后兼容）
         if source:
@@ -478,6 +479,7 @@ def get_default_manager() -> DataSourceManager:
 
     # 注册TDX数据源
     try:
+        # pylint: disable=abstract-class-instantiated
         tdx = TdxDataSource()
         manager.register_source("tdx", tdx)
     except Exception as e:

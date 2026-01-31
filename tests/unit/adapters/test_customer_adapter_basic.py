@@ -3,10 +3,11 @@ Customer适配器基础测试
 专注于提升Customer适配器覆盖率（268行代码）
 """
 
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
+import pytest
 
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))

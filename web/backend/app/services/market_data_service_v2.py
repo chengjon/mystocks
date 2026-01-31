@@ -9,23 +9,24 @@
 4. 数据刷新: 定时更新最新数据
 """
 
-from sqlalchemy import create_engine, and_, or_
-from sqlalchemy.orm import sessionmaker
-from datetime import date, datetime
-from typing import List, Optional, Dict, Any
-import pandas as pd
 import logging
 import os
+from datetime import date, datetime
+from typing import Any, Dict, List, Optional
 
+import pandas as pd
+from sqlalchemy import and_, create_engine, or_
+from sqlalchemy.orm import sessionmaker
+
+from app.adapters.eastmoney_adapter import get_eastmoney_adapter
 from app.models.market_data import (
-    FundFlow,
     ETFData,
+    FundFlow,
     LongHuBangData,
     SectorFundFlow,
-    StockDividend,
     StockBlockTrade,
+    StockDividend,
 )
-from app.adapters.eastmoney_adapter import get_eastmoney_adapter
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class MarketDataServiceV2:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存资金流向数据成功: {saved_count}条")
+                logger.info("保存资金流向数据成功: %(saved_count)s条"")
 
                 return {
                     "success": True,
@@ -125,7 +126,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取资金流向失败: {e}")
+            logger.error("获取资金流向失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_fund_flow(
@@ -204,7 +205,7 @@ class MarketDataServiceV2:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存ETF数据成功: {saved_count}条")
+                logger.info("保存ETF数据成功: %(saved_count)s条"")
 
                 return {
                     "success": True,
@@ -217,7 +218,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取ETF数据失败: {e}")
+            logger.error("获取ETF数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_etf_spot(
@@ -304,7 +305,7 @@ class MarketDataServiceV2:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存龙虎榜数据成功: {saved_count}条")
+                logger.info("保存龙虎榜数据成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -312,7 +313,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取龙虎榜数据失败: {e}")
+            logger.error("获取龙虎榜数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_lhb_detail(
@@ -403,7 +404,7 @@ class MarketDataServiceV2:
                         saved_count += 1
 
                 db.commit()
-                logger.info(f"保存{sector_type}资金流向成功: {saved_count}条")
+                logger.info("保存%(sector_type)s资金流向成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -411,7 +412,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取板块资金流向失败: {e}")
+            logger.error("获取板块资金流向失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_sector_fund_flow(
@@ -495,7 +496,7 @@ class MarketDataServiceV2:
                     saved_count += 1
 
                 db.commit()
-                logger.info(f"保存分红配送数据成功: {saved_count}条")
+                logger.info("保存分红配送数据成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -503,7 +504,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取分红配送数据失败: {e}")
+            logger.error("获取分红配送数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_stock_dividend(self, symbol: str, limit: int = 50) -> List[Dict]:
@@ -558,7 +559,7 @@ class MarketDataServiceV2:
                     saved_count += 1
 
                 db.commit()
-                logger.info(f"保存大宗交易数据成功: {saved_count}条")
+                logger.info("保存大宗交易数据成功: %(saved_count)s条"")
 
                 return {"success": True, "message": f"保存成功: {saved_count}条"}
 
@@ -566,7 +567,7 @@ class MarketDataServiceV2:
                 db.close()
 
         except Exception as e:
-            logger.error(f"获取大宗交易数据失败: {e}")
+            logger.error("获取大宗交易数据失败: %(e)s"")
             return {"success": False, "message": str(e)}
 
     def query_blocktrade(

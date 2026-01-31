@@ -8,8 +8,9 @@
 """
 
 import logging
-import numpy as np
 from typing import List
+
+import numpy as np
 
 from .base_threshold_manager import OptimizationResult
 

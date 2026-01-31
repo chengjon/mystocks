@@ -3,7 +3,7 @@ SQLAlchemy Model for Indicator Configurations
 指标配置的数据库模型
 """
 
-from sqlalchemy import Column, Integer, String, JSON, TIMESTAMP, Index, text
+from sqlalchemy import JSON, TIMESTAMP, Column, Index, Integer, String, text
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()

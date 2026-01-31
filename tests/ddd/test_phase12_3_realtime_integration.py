@@ -10,13 +10,14 @@ Phase 12.3: Real-time Market Data Integration Test
 5. 端到端实时数据流测试
 """
 
-import sys
-import os
 import asyncio
-import pytest
+import os
+import sys
 import time
 from datetime import datetime
 from typing import Dict
+
+import pytest
 
 # 确保项目根目录在 path 中
 sys.path.append(os.getcwd())
@@ -25,16 +26,16 @@ sys.path.insert(0, os.path.join(os.getcwd()))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.storage.database.database_manager import Base
+from src.application.market_data.price_stream_processor import PriceStreamProcessor
+from src.domain.market_data.streaming import PriceChangedEvent
+from src.domain.portfolio.model.portfolio import Portfolio
+from src.domain.portfolio.service import PortfolioValuationService
+from src.domain.trading.value_objects import OrderSide
+from src.infrastructure.market_data.streaming import MockPriceStreamAdapter
+from src.infrastructure.messaging.redis_event_bus import RedisEventBus
 from src.infrastructure.persistence.models import PortfolioModel
 from src.infrastructure.persistence.repository_impl import PortfolioRepositoryImpl
-from src.infrastructure.messaging.redis_event_bus import RedisEventBus
-from src.infrastructure.market_data.streaming import MockPriceStreamAdapter
-from src.domain.market_data.streaming import PriceChangedEvent
-from src.application.market_data.price_stream_processor import PriceStreamProcessor
-from src.domain.portfolio.service import PortfolioValuationService
-from src.domain.portfolio.model.portfolio import Portfolio
-from src.domain.trading.value_objects import OrderSide
+from src.storage.database.database_manager import Base
 
 
 class TestRealtimeMarketIntegration:

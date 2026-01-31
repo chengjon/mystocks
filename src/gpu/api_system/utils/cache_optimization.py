@@ -3,15 +3,16 @@
 Cache Optimization Component
 """
 
-import logging
-import time
-import threading
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import hashlib
 import json
+import logging
 import pickle
+import threading
+import time
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import psutil
 import redis
 
@@ -239,7 +240,7 @@ class RedisCache:
         try:
             self.client = redis.Redis(host=self.host, port=self.port, db=self.db, decode_responses=True)
         except Exception as e:
-            logger.error(f"Redis connection failed: {e}")
+            logger.error("Redis connection failed: %(e)s")
 
     def ping(self):
         if self.client:

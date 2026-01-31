@@ -1,7 +1,7 @@
-from typing import Dict, Any, Deque
 from collections import deque
+from typing import Any, Deque, Dict
+
 import pandas as pd
-import numpy as np
 
 from src.indicators.base import BatchIndicator, StreamingIndicator
 

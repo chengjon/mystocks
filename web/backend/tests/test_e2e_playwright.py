@@ -135,7 +135,7 @@ def test_data_manager():
 
         async def cleanup(self):
             """Clean up all created resources"""
-            logger.info(f"Cleaning up {len(self.created_resources)} test resources")
+            logger.info("Cleaning up {len(self.created_resources)} test resources"")
             # In real scenario, would delete from database
             self.created_resources.clear()
 
@@ -348,11 +348,11 @@ class TestSubscriptionFlow:
                 if confirmation:
                     message = await confirmation.text_content()
                     assert "subscribed" in message.lower() or "added" in message.lower()
-                    logger.info(f"✅ Successfully subscribed to {symbol}")
+                    logger.info("✅ Successfully subscribed to %(symbol)s"")
                 else:
                     logger.warning("⚠️  Subscription confirmation not found")
             else:
-                logger.warning(f"⚠️  Subscribe button not found for {symbol}")
+                logger.warning("⚠️  Subscribe button not found for %(symbol)s"")
         else:
             logger.warning("⚠️  Symbol search input not found")
 
@@ -404,13 +404,13 @@ class TestSubscriptionFlow:
                     if data_table:
                         rows = await data_table.query_selector_all("tr")
                         assert len(rows) > 0, "No data rows found"
-                        logger.info(f"✅ Market data query returned {len(rows)} rows")
+                        logger.info("✅ Market data query returned {len(rows)} rows"")
                     else:
                         logger.warning("⚠️  Data table not found")
                 else:
                     logger.warning("⚠️  Query button not found")
             else:
-                logger.warning(f"⚠️  Symbol option not found for {test_symbols[0]}")
+                logger.warning("⚠️  Symbol option not found for {test_symbols[0]}"")
         else:
             logger.warning("⚠️  Symbol selector not found")
 
@@ -483,7 +483,7 @@ class TestDataManagement:
         assert report["total_resources_created"] == 2
         assert len(report["resources"]) == 2
 
-        logger.info(f"✅ Test report generated: {report}")
+        logger.info("✅ Test report generated: %(report)s"")
 
     async def test_data_isolation(self, page, test_data_manager):
         """
@@ -559,7 +559,7 @@ class TestCompleteWorkflows:
             logger.info("✅ Complete user journey test passed")
 
         except Exception as e:
-            logger.error(f"❌ Complete user journey test failed: {e}")
+            logger.error("❌ Complete user journey test failed: %(e)s"")
             # Don't fail test if UI elements don't exist (API may not be running)
             pytest.skip(f"UI elements not available: {e}")
 
@@ -587,7 +587,7 @@ class TestPerformanceAndErrors:
         await page.goto(f"{base_url}/", wait_until="networkidle")
         elapsed = time.time() - start
 
-        logger.info(f"Page load time: {elapsed:.2f}s")
+        logger.info("Page load time: {elapsed:.2f}s"")
 
         # Performance assertion (reasonable threshold)
         assert elapsed < 10, f"Page load took {elapsed:.2f}s (should be < 10s)"

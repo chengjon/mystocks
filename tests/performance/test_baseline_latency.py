@@ -14,14 +14,15 @@
 优化目标: 1000条记录保存 ≤80ms (提升33%)
 """
 
+import json
 import os
 import sys
 import time
-import json
 from datetime import datetime, timedelta
-from typing import Dict, Any
-import psycopg2
+from typing import Any, Dict
+
 import pandas as pd
+import psycopg2
 from dotenv import load_dotenv
 
 # 加载环境变量

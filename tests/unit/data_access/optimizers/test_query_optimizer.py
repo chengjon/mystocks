@@ -7,18 +7,19 @@ Query Optimizer Test Suite
 测试模块: src.data_access.optimizers.query_optimizer (587行)
 """
 
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Test target imports
 from src.data_access.optimizers.query_optimizer import (
-    QueryOptimizer,
-    OptimizationType,
-    OptimizationPriority,
-    OptimizationRule,
-    OptimizationResult,
     ExecutionPlan,
     IndexRecommendation,
+    OptimizationPriority,
+    OptimizationResult,
+    OptimizationRule,
+    OptimizationType,
+    QueryOptimizer,
 )
 
 

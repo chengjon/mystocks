@@ -66,7 +66,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取上海证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取上海证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -90,12 +90,12 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
                 - query_timestamp: 查询时间戳
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取深圳证券交易所市场总貌数据，日期: {date}")
+            self.logger.info("[Akshare] 开始获取深圳证券交易所市场总貌数据，日期: %(date)s")
 
             df = ak.stock_szse_summary(date=date)
 
             if df is None or df.empty:
-                self.logger.warning(f"[Akshare] 未能获取到深圳证券交易所市场总貌数据，日期: {date}")
+                self.logger.warning("[Akshare] 未能获取到深圳证券交易所市场总貌数据，日期: %(date)s")
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取深圳证券交易所市场总貌数据，共 %s 条记录", len(df))
@@ -118,7 +118,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取深圳证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取深圳证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -142,12 +142,12 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
                 - query_timestamp: 查询时间戳
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取深圳地区交易排序数据，日期: {date}")
+            self.logger.info("[Akshare] 开始获取深圳地区交易排序数据，日期: %(date)s")
 
             df = ak.stock_szse_area_summary(date=date)
 
             if df is None or df.empty:
-                self.logger.warning(f"[Akshare] 未能获取到深圳地区交易排序数据，日期: {date}")
+                self.logger.warning("[Akshare] 未能获取到深圳地区交易排序数据，日期: %(date)s")
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取深圳地区交易排序数据，共 %s 条记录", len(df))
@@ -170,7 +170,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取深圳地区交易排序数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取深圳地区交易排序数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     @retry_api_call(max_retries=3, delay=1)
@@ -194,13 +194,13 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
                 - query_timestamp: 查询时间戳
         """
         try:
-            self.logger.info(f"[Akshare] 开始获取深圳行业成交数据，日期: {date}")
+            self.logger.info("[Akshare] 开始获取深圳行业成交数据，日期: %(date)s")
 
             # pylint: disable=no-member
             df = ak.stock_szse_industry_summary(date=date)
 
             if df is None or df.empty:
-                self.logger.warning(f"[Akshare] 未能获取到深圳行业成交数据，日期: {date}")
+                self.logger.warning("[Akshare] 未能获取到深圳行业成交数据，日期: %(date)s")
                 return pd.DataFrame()
 
             self.logger.info("[Akshare] 成功获取深圳行业成交数据，共 %s 条记录", len(df))
@@ -223,7 +223,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             return df
 
         except Exception as e:
-            self.logger.error(f"[Akshare] 获取深圳行业成交数据失败: {str(e)}", exc_info=True)
+            self.logger.error("[Akshare] 获取深圳行业成交数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
     async def get_market_overview(self, market: str = "sse", date: Optional[str] = None) -> pd.DataFrame:

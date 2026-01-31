@@ -7,13 +7,14 @@ PostgreSQLDataAccess._build_analytical_query 方法的回归测试
 
 import os
 import sys
-from unittest.mock import Mock, patch
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 # 添加项目根目录到sys.path
 sys.path.insert(0, os.getcwd())
 
 import pytest
+
 from src.storage.access.base import DataClassification
 
 # 添加源码路径

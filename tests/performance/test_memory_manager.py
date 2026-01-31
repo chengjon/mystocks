@@ -12,16 +12,17 @@
 """
 
 import gc
+import os
 import sys
+import threading
 import time
 import traceback
-import threading
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, field
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import psutil
-import os
 
 
 @dataclass

@@ -9,6 +9,8 @@ from typing import Dict, Any, Optional, List
 import pandas as pd
 import akshare as ak
 
+from src.utils.symbol_utils import format_stock_code_for_source
+
 logger = logging.getLogger(__name__)
 
 

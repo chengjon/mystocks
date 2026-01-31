@@ -4,9 +4,9 @@ KDJ Strategy
 KDJ随机指标策略 - 超买超卖与金叉死叉结合
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
-from app.backtest.strategies.base import BaseStrategy, StrategySignal, SignalType
+from app.backtest.strategies.base import BaseStrategy, SignalType, StrategySignal
 
 
 class KDJStrategy(BaseStrategy):

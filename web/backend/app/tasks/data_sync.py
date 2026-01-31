@@ -4,14 +4,14 @@
 """
 
 import logging
-from typing import Dict, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict
 
-from src.core.unified_manager import MyStocksUnifiedManager
-from src.core.data_classification import DataClassification
 from src.adapters.akshare_adapter import AkshareDataSource
 from src.adapters.baostock_adapter import BaostockDataSource
 from src.adapters.financial_adapter import FinancialDataSource
+from src.core.data_classification import DataClassification
+from src.core.unified_manager import MyStocksUnifiedManager
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         执行结果字典
     """
-    logger.info(f"Starting daily stock data sync with params: {params}")
+    logger.info("Starting daily stock data sync with params: %(params)s"")
 
     try:
         data_source_name = params.get("data_source", "akshare")
@@ -89,15 +89,15 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
             try:
                 stock_list_df = data_source.get_stock_list()
                 symbols = stock_list_df["symbol"].tolist()[:100]  # 限制前100只股票避免超时
-                logger.info(f"Found {len(symbols)} stocks to sync")
+                logger.info("Found {len(symbols)} stocks to sync"")
             except Exception as e:
-                logger.error(f"Failed to fetch stock list: {e}")
+                logger.error("Failed to fetch stock list: %(e)s"")
                 result["errors"].append(f"Stock list fetch error: {str(e)}")
                 symbols = []
 
         # 同步基础数据
         if include_basic and symbols:
-            logger.info(f"Syncing basic stock info for {len(symbols)} stocks...")
+            logger.info("Syncing basic stock info for {len(symbols)} stocks..."")
             try:
                 for symbol in symbols:
                     try:
@@ -112,15 +112,15 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                             )
                             result["records_synced"] += len(basic_info)
                     except Exception as e:
-                        logger.warning(f"Failed to sync basic info for {symbol}: {e}")
+                        logger.warning("Failed to sync basic info for %(symbol)s: %(e)s"")
                         result["errors"].append(f"{symbol} basic: {str(e)}")
             except Exception as e:
-                logger.error(f"Basic data sync error: {e}")
+                logger.error("Basic data sync error: %(e)s"")
                 result["errors"].append(f"Basic sync error: {str(e)}")
 
         # 同步K线数据
         if include_kline and symbols:
-            logger.info(f"Syncing daily K-line data for {len(symbols)} stocks...")
+            logger.info("Syncing daily K-line data for {len(symbols)} stocks..."")
             try:
                 for symbol in symbols:
                     try:
@@ -135,13 +135,13 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
                             )
                             result["records_synced"] += len(kline_df)
                     except Exception as e:
-                        logger.warning(f"Failed to sync K-line for {symbol}: {e}")
+                        logger.warning("Failed to sync K-line for %(symbol)s: %(e)s"")
                         result["errors"].append(f"{symbol} kline: {str(e)}")
             except Exception as e:
-                logger.error(f"K-line data sync error: {e}")
+                logger.error("K-line data sync error: %(e)s"")
                 result["errors"].append(f"K-line sync error: {str(e)}")
 
-        logger.info(f"Daily stock data sync completed: {result['records_synced']} records")
+        logger.info("Daily stock data sync completed: {result['records_synced']} records"")
 
         # 如果有错误但成功同步了部分数据，标记为partial_success
         if result["errors"] and result["records_synced"] > 0:
@@ -152,7 +152,7 @@ def sync_daily_stock_data(params: Dict[str, Any]) -> Dict[str, Any]:
         return result
 
     except Exception as e:
-        logger.error(f"Failed to sync daily stock data: {e}", exc_info=True)
+        logger.error("Failed to sync daily stock data: {e}", exc_info=True)
         return {
             "status": "failed",
             "error": str(e),
@@ -174,7 +174,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         执行结果字典
     """
-    logger.info(f"Starting basic stock info sync with params: {params}")
+    logger.info("Starting basic stock info sync with params: %(params)s"")
 
     try:
         data_source_name = params.get("data_source", "akshare")
@@ -196,7 +196,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
         }
 
         # 获取股票列表
-        logger.info(f"Fetching {market}-share stock list...")
+        logger.info("Fetching %(market)s-share stock list..."")
         try:
             stock_list_df = data_source.get_stock_list()
 
@@ -213,11 +213,11 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
                 )
 
                 result["stocks_synced"] = len(stock_list_df)
-                logger.info(f"Synced {result['stocks_synced']} stock records")
+                logger.info("Synced {result['stocks_synced']} stock records"")
 
                 # 同步每只股票的详细信息（批量操作，限制数量避免超时）
                 symbols_to_sync = stock_list_df["symbol"].tolist()[:50]  # 限制50只
-                logger.info(f"Syncing detailed info for {len(symbols_to_sync)} stocks...")
+                logger.info("Syncing detailed info for {len(symbols_to_sync)} stocks..."")
 
                 for symbol in symbols_to_sync:
                     try:
@@ -229,7 +229,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
                                 table_name="stock_info_detail",
                             )
                     except Exception as e:
-                        logger.warning(f"Failed to sync detailed info for {symbol}: {e}")
+                        logger.warning("Failed to sync detailed info for %(symbol)s: %(e)s"")
                         result["errors"].append(f"{symbol}: {str(e)}")
 
             else:
@@ -238,11 +238,11 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
                 result["errors"].append("Empty stock list returned")
 
         except Exception as e:
-            logger.error(f"Failed to fetch stock list: {e}", exc_info=True)
+            logger.error("Failed to fetch stock list: {e}", exc_info=True)
             result["status"] = "failed"
             result["errors"].append(f"Stock list error: {str(e)}")
 
-        logger.info(f"Basic stock info sync completed: {result}")
+        logger.info("Basic stock info sync completed: %(result)s"")
 
         # 如果有错误但成功同步了部分数据，标记为partial_success
         if result["errors"] and result["stocks_synced"] > 0:
@@ -251,7 +251,7 @@ def sync_basic_stock_info(params: Dict[str, Any]) -> Dict[str, Any]:
         return result
 
     except Exception as e:
-        logger.error(f"Failed to sync basic stock info: {e}", exc_info=True)
+        logger.error("Failed to sync basic stock info: {e}", exc_info=True)
         return {
             "status": "failed",
             "error": str(e),
@@ -274,7 +274,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         执行结果字典
     """
-    logger.info(f"Starting financial statements sync with params: {params}")
+    logger.info("Starting financial statements sync with params: %(params)s"")
 
     try:
         data_source_name = params.get("data_source", "financial")
@@ -303,15 +303,15 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                 akshare_source = _get_data_source("akshare")
                 stock_list_df = akshare_source.get_stock_list()
                 symbols = stock_list_df["symbol"].tolist()[:20]  # 限制20只避免超时
-                logger.info(f"Found {len(symbols)} stocks for financial sync")
+                logger.info("Found {len(symbols)} stocks for financial sync"")
             except Exception as e:
-                logger.error(f"Failed to fetch stock list: {e}")
+                logger.error("Failed to fetch stock list: %(e)s"")
                 result["errors"].append(f"Stock list error: {str(e)}")
                 symbols = []
 
         # 同步各类财务报表
         for report_type in report_types:
-            logger.info(f"Syncing {report_type} statements for {len(symbols)} stocks...")
+            logger.info("Syncing %(report_type)s statements for {len(symbols)} stocks..."")
 
             for symbol in symbols:
                 try:
@@ -331,7 +331,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                         financial_data = data_source.get_cashflow_statement(symbol, report_date)
                         table_name = "cashflow_statement"
                     else:
-                        logger.warning(f"Unknown report type: {report_type}")
+                        logger.warning("Unknown report type: %(report_type)s"")
                         result["errors"].append(f"Unknown report type: {report_type}")
                         continue
 
@@ -346,13 +346,13 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
 
                 except AttributeError as e:
                     # 如果方法不存在，记录警告
-                    logger.warning(f"Financial adapter missing method for {report_type}: {e}")
+                    logger.warning("Financial adapter missing method for %(report_type)s: %(e)s"")
                     result["errors"].append(f"{symbol} {report_type}: method not implemented")
                 except Exception as e:
-                    logger.warning(f"Failed to sync {report_type} for {symbol}: {e}")
+                    logger.warning("Failed to sync %(report_type)s for %(symbol)s: %(e)s"")
                     result["errors"].append(f"{symbol} {report_type}: {str(e)}")
 
-        logger.info(f"Financial statements sync completed: {result['records_synced']} records")
+        logger.info("Financial statements sync completed: {result['records_synced']} records"")
 
         # 如果有错误但成功同步了部分数据，标记为partial_success
         if result["errors"] and result["records_synced"] > 0:
@@ -363,7 +363,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
         return result
 
     except Exception as e:
-        logger.error(f"Failed to sync financial statements: {e}", exc_info=True)
+        logger.error("Failed to sync financial statements: {e}", exc_info=True)
         return {
             "status": "failed",
             "error": str(e),

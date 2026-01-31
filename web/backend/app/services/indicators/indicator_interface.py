@@ -14,13 +14,13 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
+import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from enum import Enum
-import numpy as np
-import logging
+from typing import Any, Dict, List, Optional
 
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +172,6 @@ class IndicatorInterface(ABC):
         Returns:
             IndicatorResult: 计算结果
         """
-        pass
 
     def validate_data(self, data: OHLCVData, min_required: int) -> None:
         """
@@ -275,7 +274,7 @@ class IndicatorPluginFactory:
     def register(cls, abbreviation: str, plugin_class: type):
         """注册指标插件"""
         cls._plugins[abbreviation.upper()] = plugin_class
-        logger.info(f"注册指标插件: {abbreviation}")
+        logger.info("注册指标插件: %(abbreviation)s"")
 
     @classmethod
     def get_plugin(cls, abbreviation: str) -> Optional[type]:

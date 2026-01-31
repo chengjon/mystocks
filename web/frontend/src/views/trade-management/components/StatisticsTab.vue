@@ -49,6 +49,7 @@
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
+import { artDecoTheme } from '@/utils/echarts'
 import { tradeApi } from '@/api/trade'
 
 interface Statistics {
@@ -106,7 +107,7 @@ const renderAssetsChart = () => {
   if (!assetsChartRef.value) return
 
   if (!assetsChartInstance) {
-    assetsChartInstance = echarts.init(assetsChartRef.value)
+    assetsChartInstance = echarts.init(assetsChartRef.value, artDecoTheme)
   }
 
   const dates: string[] = []
@@ -176,7 +177,7 @@ const renderProfitChart = () => {
   if (!profitChartRef.value) return
 
   if (!profitChartInstance) {
-    profitChartInstance = echarts.init(profitChartRef.value)
+    profitChartInstance = echarts.init(profitChartRef.value, artDecoTheme)
   }
 
   const option = {

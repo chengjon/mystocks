@@ -9,16 +9,17 @@ Version: 1.0.0
 Author: MyStocks Project
 """
 
+import logging
+from typing import Any, Dict
+
 import numpy as np
 import talib
-from typing import Dict, Any
-import logging
 
 from .indicator_interface import (
     IndicatorInterface,
+    IndicatorPluginFactory,
     IndicatorResult,
     OHLCVData,
-    IndicatorPluginFactory,
 )
 from .indicator_registry import get_indicator_registry
 
@@ -95,7 +96,7 @@ class TalibGenericIndicator(IndicatorInterface):
             values = self._call_talib(data, parameters)
             return self._create_success_result(parameters, values)
         except Exception as e:
-            logger.error(f"Calculation failed for {self.ABBREVIATION}: {e}")
+            logger.error("Calculation failed for {self.ABBREVIATION}: %(e)s"")
             return self._create_error_result(parameters, f"TA-Lib calculation failed: {str(e)}")
 
     def _call_talib(self, data: OHLCVData, parameters: Dict[str, Any]) -> Dict[str, np.ndarray]:
@@ -274,4 +275,4 @@ def register_all_talib_indicators():
         IndicatorPluginFactory.register(abbr, DynamicClass)
         count += 1
 
-    logger.info(f"Registered {count} TA-Lib indicators via Generic Adapter")
+    logger.info("Registered %(count)s TA-Lib indicators via Generic Adapter"")
