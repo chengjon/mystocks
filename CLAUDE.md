@@ -17,105 +17,72 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
 
-# CLAUDE.md - MyStocks AI Development Guide (Claude/OpenCode)
+# 项目 Claude AI 集成指南 (Project Claude AI Integration Guide)
 
-本文件是给 AI coding agent/CLI 的“项目工作手册”。目标是让 Agent 在 MyStocks 仓库里稳定、高质量地完成任务：知道该看什么、该改哪里、怎么验证、哪些是硬性约束。
+**本指南说明 MyStocks 中 Claude/OpenCode 的使用方式、开发约束与协作规范。它与 `AGENTS.md`、`docs/` 文档共同构成 AI 工作手册。**
 
-如果你是人类开发者：这里也可以作为快速上手的索引，但不替代 `README.md`、`docs/` 的产品/架构文档。
+## 1. 项目基础认知：Claude AI 集成总览 (Project Basic Cognition: Claude AI Integration Overview)
 
----
+### 1.1 项目定位与Claude核心功能 (Project Positioning and Core Claude Functions)
 
-## 0. Read This First (必读)
+MyStocks 使用 Claude/OpenCode 作为交互式开发助手，协助完成代码修改、验证与文档维护。Claude 在本仓库的核心工作包括：
 
-1. **命令与代码风格的权威来源**: `AGENTS.md`
-   - 测试/质量命令、导入规范、目录结构等都在 `AGENTS.md`
-2. **遇到“计划/提案/架构调整”**: 先打开 `openspec/AGENTS.md`
-   - 按 OpenSpec 流程写变更提案，再实现
-3. **不要在 `/tmp` 存放正式文件**
-   - 正式文档 -> `docs/`；脚本 -> `scripts/`；配置 -> `config/`
+- 快速定位代码与文档，理解现有实现
+- 执行最小变更，保持与仓库规范一致
+- 运行必要的验证命令并汇报结果
+- 更新文档与索引，保持信息一致
 
----
+权威来源（冲突时以此为准）：
 
-## 1. Project Overview (项目概览)
+- `AGENTS.md`：命令、风格、目录结构等硬性规则
+- `openspec/AGENTS.md`：计划/提案流程与变更规范
+- `docs/`：详细指南与参考文档
 
-MyStocks 是量化交易数据管理系统，核心特点：
+平台支持策略（重要）：
 
-- **双数据库架构**: TDengine (高频时序) + PostgreSQL/TimescaleDB (其他数据)
-- **配置驱动表管理**: 通过 YAML 配置自动创建/验证表结构
-- **统一访问入口**: `MyStocksUnifiedManager` 负责路由、读写、维护
-- **可观测性**: LGTM Stack (Loki/Grafana/Tempo/Prometheus) + 独立监控数据库
-- **GPU 加速系统**(可选): `gpu_api_system/` 与 `src/gpu/`
+- 仅支持桌面端 Web（最小分辨率 1280x720）
+- 禁止移动端/平板适配，禁止添加 `@media (max-width: ...)` 等响应式规则
 
----
+### 1.2 技术栈与 Claude 依赖 (Technology Stack and Claude Dependencies)
 
-## 2. Non-Negotiables (硬性规则)
+核心技术栈：
 
-- **最小变更**: 只改与任务直接相关的代码/文档；不要顺手重构。
-- **不要回滚用户已有改动**: 除非用户明确要求。
-- **证据优先**: 声称“已修复/已通过”前，先运行对应命令并确认输出。
-- **避免泄露敏感信息**: 不要提交 `.env`、私钥、token、账号口令。
+- Python 3.12+ / FastAPI 0.114+ / Vue 3.4+
+- TDengine 3.3+（高频时序）/ PostgreSQL 17+ + TimescaleDB（其他数据）
+- GPU 加速可选：`gpu_api_system/` 与 `src/gpu/`
 
-### Web 平台支持策略 (重要)
+仓库速查：
 
-本项目仅支持 Web 桌面端：
+- `src/`：Python 核心业务代码
+- `web/backend/`：FastAPI 后端
+- `web/frontend/`：Vue 3 前端
+- `config/`：配置文件
+- `scripts/`：可执行脚本
+- `docs/`：项目文档
+- `monitoring-stack/`：监控栈
 
-- ✅ 桌面浏览器 (Chrome/Firefox/Safari/Edge)
-- ✅ 最小分辨率 1280x720
-- ❌ 不做移动端/平板端适配
-- ❌ 禁止加入移动端响应式样式：不要写 `@media (max-width: ...)` 之类规则
+Claude 依赖说明：
 
----
+- 本仓库不包含 Claude API/SDK 直接集成（N/A）。
+- 如需引入 Claude 服务端调用，视为架构变更，需先走 OpenSpec 流程。
 
-## 3. Repository Map (目录速查)
+### 1.3 Claude 相关版本与更新记录 (Claude-related Version and Update Records)
 
-- `src/`: Python 核心业务代码
-- `web/backend/`: FastAPI 后端
-- `web/frontend/`: Vue 3 前端
-- `config/`: 配置文件（YAML/TOML/INI/compose 等）
-- `scripts/`: 可执行脚本（runtime/tests/database/dev 分类）
-- `docs/`: 项目文档（指南/报告/架构/API 等）
-- `gpu_api_system/`: GPU API 系统（可选）
-- `monitoring-stack/`: 监控栈 (Prometheus/Grafana/Loki/Tempo)
-
-常用入口点：
-
-- `src/core/unified_manager.py`: `MyStocksUnifiedManager`（统一数据入口）
-- `src/adapters/`: 外部数据源适配器
-- `src/data_access/`: TDengine / PostgreSQL 数据访问层
+- 2026-02-01：按模板重写 CLAUDE.md，历史版本已归档到 `docs/archive/CLAUDE.md.2026-02-01.md` 与 `docs/archive/CLAUDE.md.2026-02-01.v2.md`
 
 ---
 
-## 4. Architecture Cheat Sheet (架构速记)
+## 2. Claude 集成开发与高级配置 (Claude Integration Development and Advanced Configuration)
 
-### 4.1 Dual-DB Routing (双库路由)
+### 2.1 Claude 相关环境搭建 (Claude-related Environment Setup)
 
-- TDengine: tick / 分钟级等高频时序数据
-- PostgreSQL(+TimescaleDB): 日线、参考、衍生、交易、元数据等
-- 统一入口负责“按分类路由”，不要在业务里直接硬编码“写哪个库”
+- 本仓库默认不需要 Claude API Key/SDK 配置。
+- 本地环境变量与数据库配置参见 `docs/standards/LOCAL_ENV_SETUP.md`。
+- 双数据库连接由环境变量驱动（TDengine + PostgreSQL），监控配置在 `monitoring-stack/`。
 
-### 4.2 Key Import Patterns (推荐导入)
+### 2.2 核心 Claude 使用示例 (Core Claude Usage Examples)
 
-```python
-from src.core import ConfigDrivenTableManager, DataClassification
-from src.core.unified_manager import MyStocksUnifiedManager
-
-from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
-from src.adapters.akshare_adapter import AkshareDataSource
-```
-
-兼容入口（历史原因仍可用）：
-
-```python
-from unified_manager import MyStocksUnifiedManager
-```
-
----
-
-## 5. Daily Workflows (常用工作流)
-
-命令以 `AGENTS.md` 为准；这里仅给“最短路径”。
-
-### 5.1 Tests / Lint / Type Check
+#### 2.2.1 常用质量检查
 
 ```bash
 pytest
@@ -124,129 +91,96 @@ black --check .
 mypy src/ --no-error-summary
 ```
 
-### 5.2 Run Web Backend (FastAPI)
+#### 2.2.2 运行服务与演示
 
 ```bash
 cd web/backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
 
-### 5.3 Run Web Frontend (Vue)
-
-```bash
 cd web/frontend
 npm install
 npm run dev -- --port 3001
-```
 
-### 5.4 Initialize / Demo
-
-```bash
 python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedManager().initialize_system()"
-python scripts/runtime/system_demo.py
 ```
 
-### 5.5 Monitoring Stack
+### 2.3 Claude 相关配置说明 (Claude-related Configuration Description)
 
-```bash
-cd monitoring-stack
-docker-compose up -d
-```
-
----
-
-## 6. Coding Conventions (编码规范)
-
-以 `AGENTS.md` 为权威，这里强调最常踩坑：
-
-- **导入**: 使用 `from src.*` 的绝对导入；标准库/三方/本地分组
-- **格式化**: Black；行长默认 120
-- **类型**: 函数参数/返回值加类型；必要时用 Pydantic model
-- **异常**: 捕获具体异常；日志带上下文；外部调用考虑重试
+- 通用配置集中在 `config/`（例如 `config/data_sources_registry.yaml`）。
+- 后端 CORS 配置在 `web/backend/app/core/config.py`。
+- 监控与可观测性配置在 `monitoring-stack/`。
+- 计划/提案与规范更新遵循 `openspec/AGENTS.md`。
+- Claude API/SDK 配置：本仓库默认不使用（N/A）。
 
 ---
 
-## 7. Documentation Workflow (文档工作流)
+## 3. Claude 驱动的协作与维护 (Claude-driven Collaboration and Maintenance)
 
-新增/更新文档时：
+### 3.1 开发工作流指引 (Development Workflow Guidance)
 
-- **放置位置**: `docs/{guides,api,architecture,operations,testing,reports,archive}/`
-- **命名**: 英文 `kebab-case.md`（小写+连字符）
-- **更新索引**: `python scripts/tools/docs_indexer.py --categories`
+本仓库没有固定的 QNEW/QPLAN 等快捷指令，建议流程：
 
-严禁：
+1. 读取 `AGENTS.md` 与相关 `docs/`，确认约束与现有实现
+2. 以最小修改完成需求，避免顺手重构
+3. 运行必要的验证命令并记录结果
+4. 汇总变更与下一步建议
 
-- 将正式文档放到 `/tmp`
-- 在根目录堆放临时 `*.md`（除非是 `README.md`/`CLAUDE.md`/`CHANGELOG.md` 等约定文件）
+遇到“计划/提案/架构调整”类需求时，先打开 `openspec/AGENTS.md`。
 
-相关指南：
+### 3.2 编码与协作规范 (Coding and Collaboration Specifications)
 
-- `docs/guides/DOCUMENTATION_WORKFLOW_GUIDE.md`
-- `docs/standards/FILE_ORGANIZATION_RULES.md`
+#### 编码与架构要点
 
----
+- 使用 `from src.*` 的绝对导入，按标准库/三方/本地分组
+- 函数参数与返回值使用类型提示；必要时使用 Pydantic
+- 数据读写通过 `MyStocksUnifiedManager` 按分类路由
+- 记录上下文的异常日志，外部调用考虑重试
 
-## 8. Data Source Management Tools (数据源管理工具)
+#### 文档与维护工作流
 
-定位：只负责“端点注册/配置/测试/监控/搜索”，不负责真实业务拉取与存储。
+- 文档放在 `docs/{guides,api,architecture,operations,testing,reports,archive}/`，命名使用 `kebab-case`
+- 运行索引更新：`python scripts/tools/docs_indexer.py --categories`
+- TypeScript 修复遵循三原则，并参考：
+  - `docs/reports/TYPESCRIPT_FIX_BEST_PRACTICES.md`
+  - `docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md`
+  - `docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md`
+  - `docs/reports/TYPESCRIPT_FIX_REFLECTION.md`
+- BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
+- 多 CLI/Worktree 协作遵循：
+  - `docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+  - `docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
 
-- 注册表: `config/data_sources_registry.yaml`
-- CLI 测试工具: `scripts/tools/manual_data_source_tester.py`
-- 后端 API: `web/backend/app/api/data_source_registry.py`
+### 3.3 Claude 问题排查指南 (Claude Troubleshooting Guide)
 
-强制指引（新增数据源/新 API 必读）：
+- 测试失败：先运行 `AGENTS.md` 中对应命令，确认失败输出再修复
+- 导入问题：检查是否使用 `from src.*` 与正确的 `__init__.py` 导出
+- CORS 问题：检查 `web/backend/app/core/config.py` 的端口白名单
+- 新数据源/新 API：先读 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
 
-- `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+### 3.4 Claude 相关扩展与二次开发指引 (Claude-related Extension and Secondary Development Guide)
 
----
-
-## 9. TypeScript Fix Policy (TypeScript 修复规范)
-
-当任务是“修 TypeScript 报错”，遵循三原则：
-
-- **最小修改**: 只修类型，不改业务逻辑
-- **显式优于隐式**: 明确返回类型/断言，避免无意义的 `any`
-- **从源头修复**: 需要 mock 时建立 mock 模块，不要在业务里硬编码临时数据
-
-参考文档：
-
-- `docs/reports/TYPESCRIPT_FIX_BEST_PRACTICES.md`
-- `docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md`
-- `docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md`
-- `docs/reports/TYPESCRIPT_FIX_REFLECTION.md`
-
----
-
-## 10. Bug Reporting (BUG 登记)
-
-当用户要求“登记BUG/记BUG”，按模板生成报告并更新索引：
-
-- 模板: `docs/standards/bug-report-template.json`
-- 输出目录: `docs/quality/bugs/`
-- 经验教训索引: `docs/guides/BUG_LESSONS_LEARNED.md`
+- 新增数据源或 API 接口必须遵循 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+- 架构级变更、性能/安全大改动须走 OpenSpec（`openspec/AGENTS.md`）
+- GPU 相关工作参照 `gpu_api_system/` 与 `src/gpu/`
+- 监控扩展遵循 `monitoring-stack/` 现有结构与配置
 
 ---
 
-## 11. Multi-CLI / Worktree (多 CLI 协作)
+## 4. Claude 使用合规与风险 (Claude Usage Compliance and Risks)
 
-使用 Git worktree 多 CLI 并行时，遵循“主 CLI 指导、worker CLI 执行”。
+### 4.1 Claude API 使用权限与合规要求 (Claude API Usage Permissions and Compliance Requirements)
 
-- `docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
-- `docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+- 本仓库不直接集成 Claude API/SDK；若引入需先走 OpenSpec 变更流程
+- `.env` 仅用于本地，禁止提交；新增环境变量需同步 `.env.example`（如存在）
+- 正式文件不得放入 `/tmp`，应按 `docs/`/`scripts/`/`config/` 归档
+
+### 4.2 Claude 相关风险提示 (Claude-related Risk Warnings)
+
+- Claude 输出可能不准确，所有关键修改需通过实际命令验证
+- 声称“已修复/已通过”前必须有可复现的命令输出
+- 保持最小变更，不做未请求的重构或回滚用户改动
+- Web 仅桌面端支持，避免加入移动端响应式样式
 
 ---
-
-## 12. Security & Secrets (安全与密钥)
-
-- `.env` 仅用于本地；不要提交
-- 新增环境变量时同步更新 `.env.example`（如仓库约定存在）
-- 遇到鉴权/密钥相关变更，优先使用仓库已有脚本与文档（例如 JWT 相关脚本在 `scripts/`）
-
----
-
-## 13. Maintenance Notes (维护信息)
-
-- 本文件仅包含“AI 在本仓库如何工作”的要点；过长的教程应迁移到 `docs/` 并在此处链接。
-- 旧版 CLAUDE.md 已备份到: `docs/archive/CLAUDE.md.2026-02-01.md`
 
 **Last updated**: 2026-02-01
