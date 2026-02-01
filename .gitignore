@@ -244,6 +244,9 @@ docs/test_reports/
 docs/reports/*.json
 !docs/reports/bugs/manual-bug-template.json
 
+# Compliance reports (CI artifacts)
+reports/compliance/*.json
+
 # HTML Reports (auto-generated dashboards)
 docs/reports/*.html
 

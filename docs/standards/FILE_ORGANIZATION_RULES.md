@@ -1,8 +1,12 @@
 # 文件组织规则 (File Organization Rules)
 
-> **版本**: 1.2
-> **最后更新**: 2025-12-26
+> **版本**: 1.3
+> **最后更新**: 2026-02-01
 > **状态**: 生效中
+
+**v1.3 更新**:
+- ✅ 根目录规则调整为 allowlist（兼容当前 monorepo 工具链：Python + Node + OpenSpec + Web）
+- ✅ 明确：README 文件永不移动（保持 v1.2）
 
 **v1.2 更新**:
 - ✅ 新增 README.md 特殊文件名排除规则
@@ -22,22 +26,36 @@
 
 ## 🗂️ 根目录标准
 
-### 只允许这5个核心文件在根目录
+### 根目录 allowlist（允许的根目录文件清单）
 
-```
-/
-├── README.md           # 项目概述和主要文档
-├── CLAUDE.md          # Claude Code 集成指南
-├── CHANGELOG.md       # 版本历史和变更记录
-├── requirements.txt   # Python 依赖
-└── .mcp.json         # MCP 服务器配置
-```
+根目录必须保持“最小但可用”。本仓库是 monorepo（Python + Node + OpenSpec + Web），因此允许一组**工具链/入口点**文件留在根目录（allowlist）。
 
-**所有其他文件必须组织到子目录中**。
+允许留在根目录的常见文件类型（示例，不要求一应俱全）：
+
+- **项目入口/说明**: `README.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `IFLOW.md`, `LICENSE`
+- **Git / 开发工具**: `.gitignore`, `.gitattributes`, `.coveragerc`, `.env.example`, `.pre-commit-config.yaml`, `.pre-commit-hooks.yaml`, `.pylintrc`, `.pylint.test.rc`
+- **Python 工具链**: `pyproject.toml`, `requirements*.txt`, `pytest.ini`, `mypy.ini`, `conftest.py`
+- **Node / E2E 工具链**: `package.json`, `package-lock.json`, `tsconfig*.json`, `vitest.config.*`, `playwright.config.*`
+- **进程/部署配置**: `pm2.config.js`, `ecosystem*.config.js`, `docker-compose*.yml`, `monitoring-stack.yml`
+- **OpenSpec / OpenCode**: `opencode.json`, `.mcp.json`
+- **兼容入口点**（如需）: `core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`
+
+除 allowlist 外，**不应在根目录新增与业务无关的临时文件、报告、脚本、备份**。这类文件应放入 `docs/`, `scripts/`, `reports/`（或项目约定的 artifacts 目录）并通过 `.gitignore` 防止回流。
+
+通用禁则（全仓库范围）：禁止提交常见生成物/临时文件，例如 `*.log`, `*.tmp`, `*.bak`, `*~`, `*.swp`，以及敏感/二进制大文件（如 `*.key`, `*.pem`, `*.p12`, `*.db`, `*.sqlite`, `*.zip`）。同时禁止提交常见生成目录/缓存目录（如 `node_modules/`, `__pycache__/`, `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`）。
 
 ---
 
 ## 📁 目录结构和规则
+
+### 顶层系统目录（特殊）
+
+以下顶层目录属于“系统/工具链保留目录”，允许存在并可以新增文件，但需要遵循更严格的约束：
+
+- `.github/`: GitHub Actions、CI 配置、Issue/PR 模板等。允许按 GitHub 规范组织。
+- `.claude/`: AI 工具与本地工作流相关目录。**默认应视为本地目录**，仅允许提交明确的 allowlist 文件（例如 `.claude/settings.json`, `.claude/build-checker-python.json`, `.claude/skill-rules.json`）以及 `.claude/hooks/*.sh`。
+
+说明：为了避免误提交本地痕迹/机密信息，目录合规检查对 `.claude/` 的“新文件”执行更严格的 allowlist 策略。
 
 ### 1. **scripts/** - 所有可执行脚本
 
