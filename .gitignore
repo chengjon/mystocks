@@ -124,6 +124,7 @@ Thumbs.db
 /temp_docs/
 /opencodetmp/
 /downloads/
+.worktrees/
 
 # Logging and Debug Files
 *.log
