@@ -57,7 +57,7 @@ class AdapterRegistry:
             lazy_load: Whether to instantiate on-demand (True) or at registration (False)
         """
         AdapterRegistry._adapter_classes[name] = adapter_class
-        logger.info("✅ Registered adapter: %(name)s (lazy_load=%(lazy_load)s)"")
+        logger.info("✅ Registered adapter: %(name)s (lazy_load=%(lazy_load)s)")
 
         if not lazy_load:
             AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(name)
@@ -84,7 +84,7 @@ class AdapterRegistry:
             )
 
         if name not in AdapterRegistry._adapters:
-            logger.info("📦 Instantiating adapter: %(name)s"")
+            logger.info("📦 Instantiating adapter: %(name)s")
             AdapterRegistry._adapters[name] = AdapterRegistry._instantiate(name, *args, **kwargs)
 
         return AdapterRegistry._adapters[name]
@@ -105,20 +105,20 @@ class AdapterRegistry:
                 # It's a class
                 return adapter_class(*args, **kwargs)
         except Exception as e:
-            logger.error("❌ Failed to instantiate adapter '%(name)s': {str(e)}"")
+            logger.error("❌ Failed to instantiate adapter '%(name)s': {str(e)}")
             raise
 
     @staticmethod
     def reset_adapter(name: str):
         """Reset/reload an adapter instance"""
         if name in AdapterRegistry._adapters:
-            logger.info("🔄 Resetting adapter: %(name)s"")
+            logger.info("🔄 Resetting adapter: %(name)s")
             del AdapterRegistry._adapters[name]
 
     @staticmethod
     def reset_all():
         """Reset all adapter instances"""
-        logger.info("🔄 Resetting all {len(AdapterRegistry._adapters)} adapters"")
+        logger.info("🔄 Resetting all {len(AdapterRegistry._adapters)} adapters")
         AdapterRegistry._adapters.clear()
 
     @staticmethod

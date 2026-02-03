@@ -27,7 +27,6 @@ class TestDatabaseManagerPureMock:
             assert DatabaseType is not None
             assert hasattr(DatabaseType, "POSTGRESQL")
             assert hasattr(DatabaseType, "TDENGINE")
-            assert hasattr(DatabaseType, "MYSQL")
         except ImportError:
             pytest.skip("DatabaseTableManager not available")
 
@@ -35,9 +34,7 @@ class TestDatabaseManagerPureMock:
         """测试DatabaseType枚举值"""
         assert DatabaseType.POSTGRESQL is not None
         assert DatabaseType.TDENGINE is not None
-        assert DatabaseType.MYSQL is not None
         assert DatabaseType.REDIS is not None
-        assert DatabaseType.MARIADB is not None
 
     @patch("src.storage.database.database_manager.create_engine")
     @patch("src.storage.database.database_manager.Base.metadata")
@@ -64,7 +61,6 @@ class TestDatabaseManagerPureMock:
             env_vars = {
                 "TDENGINE_HOST": "localhost",
                 "POSTGRESQL_HOST": "localhost",
-                "MYSQL_HOST": "localhost",
                 "REDIS_HOST": "localhost",
             }
             return env_vars.get(key, default)
@@ -175,9 +171,7 @@ class TestDatabaseManagerPureMock:
         enum_values = [
             DatabaseType.POSTGRESQL,
             DatabaseType.TDENGINE,
-            DatabaseType.MYSQL,
             DatabaseType.REDIS,
-            DatabaseType.MARIADB,
         ]
 
         # 确保它们都是不同的值
@@ -186,8 +180,7 @@ class TestDatabaseManagerPureMock:
     def test_database_type_comparison(self):
         """测试数据库类型比较"""
         assert DatabaseType.POSTGRESQL != DatabaseType.TDENGINE
-        assert DatabaseType.MYSQL != DatabaseType.POSTGRESQL
-        assert DatabaseType.REDIS != DatabaseType.MARIADB
+        assert DatabaseType.REDIS != DatabaseType.POSTGRESQL
 
     @patch("src.storage.database.database_manager.create_engine")
     def test_mock_dependencies_called(self, mock_create_engine):
@@ -266,7 +259,6 @@ class TestDatabaseManagerMethodsMock:
         """测试DDL生成方法（模拟）"""
         self.manager._generate_postgresql_ddl = Mock(return_value="test_ddl")
         self.manager._generate_tdengine_ddl = Mock(return_value="test_ddl")
-        self.manager._generate_mysql_ddl = Mock(return_value="test_ddl")
         self.manager._generate_column_definition = Mock(return_value="test_col_def")
 
         # 测试各种DDL生成
@@ -274,17 +266,14 @@ class TestDatabaseManagerMethodsMock:
 
         result1 = self.manager._generate_postgresql_ddl(col_def)
         result2 = self.manager._generate_tdengine_ddl(col_def)
-        result3 = self.manager._generate_mysql_ddl(col_def)
-        result4 = self.manager._generate_column_definition(col_def)
+        result3 = self.manager._generate_column_definition(col_def)
 
         assert result1 == "test_ddl"
         assert result2 == "test_ddl"
-        assert result3 == "test_ddl"
-        assert result4 == "test_col_def"
+        assert result3 == "test_col_def"
 
         self.manager._generate_postgresql_ddl.assert_called_once_with(col_def)
         self.manager._generate_tdengine_ddl.assert_called_once_with(col_def)
-        self.manager._generate_mysql_ddl.assert_called_once_with(col_def)
         self.manager._generate_column_definition.assert_called_once_with(col_def)
 
 

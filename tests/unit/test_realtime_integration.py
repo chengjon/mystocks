@@ -27,7 +27,7 @@ class TestMarketDataParser:
 
     def setup_method(self):
         """测试初始化"""
-        from src.services.market_data_parser import MarketDataParser
+        from src.application.services.market_data_parser import MarketDataParser
 
         self.parser = MarketDataParser()
 
@@ -118,7 +118,7 @@ class TestPositionMTMEngine:
 
     def setup_method(self):
         """测试初始化"""
-        from src.services.position_mtm_engine import PositionMTMEngine
+        from src.application.services.position_mtm_engine import PositionMTMEngine
 
         self.engine = PositionMTMEngine()
 
@@ -248,7 +248,7 @@ class TestPositionMTMEngine:
 
     def test_listener_notification(self):
         """测试监听器通知"""
-        from src.services.position_mtm_engine import PositionMTMEngine
+        from src.application.services.position_mtm_engine import PositionMTMEngine
 
         engine = PositionMTMEngine(enable_batching=False)
 
@@ -278,7 +278,7 @@ class TestPerformanceOptimizer:
 
     def setup_method(self):
         """测试初始化"""
-        from src.services.performance_optimizer import (
+        from src.application.services.performance_optimizer import (
             BatchProcessor,
             CacheKeyGenerator,
             IncrementalCalculator,
@@ -327,7 +327,7 @@ class TestPerformanceOptimizer:
 
     def test_incremental_calculator(self):
         """测试增量计算器"""
-        from src.services.performance_optimizer import IncrementalCalculator
+        from src.application.services.performance_optimizer import IncrementalCalculator
 
         calc = IncrementalCalculator(initial_value=100.0)
 
@@ -341,7 +341,7 @@ class TestPerformanceOptimizer:
 
     def test_cache_key_generator(self):
         """测试缓存键生成器"""
-        from src.services.performance_optimizer import CacheKeyGenerator
+        from src.application.services.performance_optimizer import CacheKeyGenerator
 
         key1 = CacheKeyGenerator.position_key("600519", 100, 1800.00)
         key2 = CacheKeyGenerator.position_key("600519", 100, 1800.00)
@@ -356,8 +356,8 @@ class TestIntegration:
 
     def test_full_mtm_flow(self):
         """测试完整的 MTM 计算流程"""
-        from src.services.market_data_parser import MarketDataParser
-        from src.services.position_mtm_engine import PositionMTMEngine
+        from src.application.services.market_data_parser import MarketDataParser
+        from src.application.services.position_mtm_engine import PositionMTMEngine
 
         parser = MarketDataParser()
         engine = PositionMTMEngine()

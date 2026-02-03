@@ -128,7 +128,7 @@ class RiskBase:
         n = len(returns)
         mean_return = sum(returns) / n
         
-        variance = sum((r - mean_return) ** 2 for r in returns) / n)
+        variance = sum((r - mean_return) ** 2 for r in returns) / n
         
         logger.debug(f"计算方差: {variance:.6f}")
         return variance
@@ -142,7 +142,7 @@ class RiskBase:
         mean_return = sum(returns) / n
         risk_adjustment = 1 + risk_free_rate
         
-        variance = sum((r - mean_return * risk_adjustment) ** 2 for r in returns) / n)
+        variance = sum((r - mean_return * risk_adjustment) ** 2 for r in returns) / n
         
         logger.debug(f"计算调整后方差: {variance:.6f}")
         return variance
@@ -156,7 +156,7 @@ class RiskBase:
         mean_return = sum(returns) / n
         
         excess_returns = [max(r - mean_return, 0) for r in returns]
-        cvar = sum(e ** 2 for e in excess_returns) / n)
+        cvar = sum(e ** 2 for e in excess_returns) / n
         
         logger.debug(f"计算C-VaR: {cvar:.6f}")
         return cvar

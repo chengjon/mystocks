@@ -5,8 +5,8 @@ Dashboard 页面完整测试
 """
 
 import pytest
-from pages.dashboard_page import DashboardPage
-from pages.login_page import LoginPage
+from .pages.dashboard_page import DashboardPage
+from .pages.login_page import LoginPage
 from playwright.sync_api import Page
 
 

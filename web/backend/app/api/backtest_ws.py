@@ -36,7 +36,7 @@ class ConnectionManager:
         # 注册进度回调
         register_progress_callback(backtest_id, lambda data: self._sync_broadcast(backtest_id, data))
 
-        logger.info("WebSocket连接建立: backtest_id=%(backtest_id)s"")
+        logger.info("WebSocket连接建立: backtest_id=%(backtest_id)s")
 
     def disconnect(self, websocket: WebSocket, backtest_id: str):
         """断开 WebSocket 连接"""
@@ -48,14 +48,14 @@ class ConnectionManager:
                 del self.connections[backtest_id]
                 unregister_progress_callback(backtest_id)
 
-        logger.info("WebSocket连接断开: backtest_id=%(backtest_id)s"")
+        logger.info("WebSocket连接断开: backtest_id=%(backtest_id)s")
 
     async def send_personal_message(self, message: str, websocket: WebSocket):
         """发送个人消息"""
         try:
             await websocket.send_text(message)
         except Exception as e:
-            logger.error("发送WebSocket消息失败: %(e)s"")
+            logger.error("发送WebSocket消息失败: %(e)s")
 
     async def broadcast(self, backtest_id: str, message: dict):
         """向所有订阅该 backtest_id 的连接广播消息"""
@@ -69,7 +69,7 @@ class ConnectionManager:
             try:
                 await connection.send_text(message_json)
             except Exception as e:
-                logger.warning("广播消息失败: %(e)s"")
+                logger.warning("广播消息失败: %(e)s")
                 disconnected.add(connection)
 
         # 清理断开的连接
@@ -94,7 +94,7 @@ class ConnectionManager:
                 else:
                     asyncio.run(connection.send_text(message_json))
             except Exception as e:
-                logger.warning("同步广播失败: %(e)s"")
+                logger.warning("同步广播失败: %(e)s")
 
 
 # 创建全局连接管理器
@@ -138,9 +138,9 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
                 logger.warning("收到无效的JSON消息")
 
     except WebSocketDisconnect:
-        logger.info("WebSocket客户端断开: backtest_id=%(backtest_id)s"")
+        logger.info("WebSocket客户端断开: backtest_id=%(backtest_id)s")
     except Exception as e:
-        logger.error("WebSocket错误: %(e)s"")
+        logger.error("WebSocket错误: %(e)s")
     finally:
         manager.disconnect(websocket, backtest_id)
 

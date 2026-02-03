@@ -75,7 +75,7 @@ def cached(
 
             cached_value, found, level = await cache.get(cache_key)
             if found:
-                logger.debug("Cache hit: %(cache_key)s (%(level)s)"")
+                logger.debug("Cache hit: %(cache_key)s (%(level)s)")
                 return cached_value
 
             result = await func(*args, **kwargs)
@@ -86,7 +86,7 @@ def cached(
                 else:
                     await cache.set(cache_key, result, ttl=ttl)
 
-                logger.debug("Cached: %(cache_key)s"")
+                logger.debug("Cached: %(cache_key)s")
 
             return result
 
@@ -204,7 +204,7 @@ def create_cache_middleware(
 
         cached_value, found, level = await cache.get(cache_key)
         if found:
-            logger.debug("HTTP cache hit: %(cache_key)s"")
+            logger.debug("HTTP cache hit: %(cache_key)s")
             return cached_value
 
         response = await call_next(request)

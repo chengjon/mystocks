@@ -216,14 +216,14 @@ class CninfoAdapter(BaseDataSourceAdapter):
 
             success = True
             self.update_health_status(DataSourceStatus.AVAILABLE)
-            logger.info("Fetched {len(data)} announcements from Cninfo"")
+            logger.info("Fetched {len(data)} announcements from Cninfo")
 
         except requests.RequestException as e:
-            logger.error("HTTP request failed: %(e)s"")
+            logger.error("HTTP request failed: %(e)s")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         except Exception as e:
-            logger.error("Failed to fetch announcements from Cninfo: %(e)s"")
+            logger.error("Failed to fetch announcements from Cninfo: %(e)s")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:
@@ -291,13 +291,13 @@ class CninfoAdapter(BaseDataSourceAdapter):
                 data["data_source"] = "cninfo"
                 data["search_keywords"] = keywords
 
-                logger.info("Found {len(data)} announcements matching '%(keywords)s'"")
+                logger.info("Found {len(data)} announcements matching '%(keywords)s'")
 
             success = True
             self.update_health_status(DataSourceStatus.AVAILABLE)
 
         except Exception as e:
-            logger.error("Failed to search announcements: %(e)s"")
+            logger.error("Failed to search announcements: %(e)s")
             self.update_health_status(DataSourceStatus.ERROR, str(e))
 
         finally:

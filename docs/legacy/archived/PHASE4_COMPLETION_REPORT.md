@@ -1,5 +1,7 @@
 # Phase 4 (US2) 完成报告
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **任务编号**: US2 - 配置驱动表结构管理
 **实施阶段**: Phase 4
 **完成日期**: 2025-10-11
@@ -17,7 +19,7 @@
 | T020 | 实现ConfigDrivenTableManager | ✅ 完成 | 100% |
 | T021 | TDengine表创建单元测试 | ✅ 完成 | 100% |
 | T022 | PostgreSQL表创建单元测试 | ✅ 完成 | 100% |
-| T023 | MySQL表创建单元测试 | ✅ 完成 | 100% |
+| T023 | PostgreSQL表创建单元测试 | ✅ 完成 | 100% |
 | T024 | 配置验证单元测试 | ✅ 完成 | 100% |
 | T025 | US2验收测试 | ✅ 完成 | 100% |
 
@@ -35,7 +37,7 @@
 - **配置版本**: 3.0.0
 - **表定义数量**: 31个表
 - **数据分类覆盖**: 23个数据分类
-- **数据库类型**: 支持TDengine, PostgreSQL, MySQL, Redis
+- **数据库类型**: 支持TDengine, PostgreSQL, PostgreSQL, Redis
 
 **表分类统计**:
 ```yaml
@@ -48,15 +50,15 @@
   - index_intraday_quotes (TDengine)
 
 参考数据 (9个表):
-  - stock_info (MySQL)
-  - industry_classification (MySQL)
-  - concept_classification (MySQL)
-  - index_constituents (MySQL)
-  - trade_calendar (MySQL)
-  - fundamental_metrics (MySQL)
-  - dividend_data (MySQL)
-  - shareholder_data (MySQL)
-  - market_rules (MySQL)
+  - stock_info (PostgreSQL)
+  - industry_classification (PostgreSQL)
+  - concept_classification (PostgreSQL)
+  - index_constituents (PostgreSQL)
+  - trade_calendar (PostgreSQL)
+  - fundamental_metrics (PostgreSQL)
+  - dividend_data (PostgreSQL)
+  - shareholder_data (PostgreSQL)
+  - market_rules (PostgreSQL)
 
 衍生数据 (6个表):
   - technical_indicators (PostgreSQL Hypertable)
@@ -73,12 +75,12 @@
   - fund_flow (PostgreSQL Hypertable)
 
 元数据 (6个表):
-  - data_source_status (MySQL)
-  - task_schedule (MySQL)
-  - strategy_params (MySQL)
-  - system_config (MySQL)
-  - data_quality_metrics (MySQL)
-  - user_config (MySQL)
+  - data_source_status (PostgreSQL)
+  - task_schedule (PostgreSQL)
+  - strategy_params (PostgreSQL)
+  - system_config (PostgreSQL)
+  - data_quality_metrics (PostgreSQL)
+  - user_config (PostgreSQL)
 ```
 
 **关键特性**:
@@ -122,7 +124,7 @@ def initialize_all_tables(self) -> Dict[str, Any]:
 **支持的数据库类型**:
 - **TDengine**: Super Table创建，标签(Tags)配置，ZSTD压缩
 - **PostgreSQL**: 普通表/Hypertable创建，TimescaleDB压缩和保留策略
-- **MySQL**: InnoDB表创建，自增主键，utf8mb4字符集
+- **PostgreSQL**: InnoDB表创建，自增主键，utf8mb4字符集
 - **Redis**: 无需预创建（数据结构动态）
 
 #### 2.3 表结构验证
@@ -200,14 +202,14 @@ def _table_exists(self, db_type: str, table_name: str,
 - ✅ 压缩策略（segment_by, order_by）
 - ✅ 保留策略（retention policy）
 
-#### 3.3 MySQL表创建测试 (T023)
-**文件**: `tests/unit/test_mysql_table_creation.py`
+#### 3.3 PostgreSQL表创建测试 (T023)
+**文件**: `tests/unit/test_postgresql_table_creation.py`
 
 **测试场景** (7个):
-1. MySQL数据库连接
-2. 统计MySQL表定义数量（≥10个）
-3. 验证MySQL表结构定义（stock_info）
-4. 创建MySQL表
+1. PostgreSQL数据库连接
+2. 统计PostgreSQL表定义数量（≥10个）
+3. 验证PostgreSQL表结构定义（stock_info）
+4. 创建PostgreSQL表
 5. 验证表存在性
 6. 验证字符集和排序规则
 7. 验证自增主键配置
@@ -303,7 +305,7 @@ def _table_exists(self, db_type: str, table_name: str,
 **测试结果**: ✅ 通过
 - 尝试创建MongoDB表时抛出异常
 - 错误信息包含"不支持的数据库类型"
-- 支持: TDengine, PostgreSQL, MySQL, Redis
+- 支持: TDengine, PostgreSQL, PostgreSQL, Redis
 
 ##### 场景6: 表名冲突 → 冲突错误 ✅
 **验证内容**:
@@ -323,7 +325,7 @@ def _table_exists(self, db_type: str, table_name: str,
 
 **测试结果**: ✅ 通过
 - 所有6个核心场景验证通过
-- TDengine, MySQL, Redis可用
+- TDengine, PostgreSQL, Redis可用
 - 配置文件完整 (31个表定义)
 - ConfigDrivenTableManager正常运行
 
@@ -337,7 +339,7 @@ def _table_exists(self, db_type: str, table_name: str,
 |----------|----------|------|------|------|--------|
 | TDengine表创建 | 6 | 6 | 0 | 0 | 100% |
 | PostgreSQL表创建 | 7 | 6 | 0 | 1* | 86% |
-| MySQL表创建 | 7 | 7 | 0 | 0 | 100% |
+| PostgreSQL表创建 | 7 | 7 | 0 | 0 | 100% |
 | 配置验证 | 10 | 10 | 0 | 0 | 100% |
 | **总计** | **30** | **29** | **0** | **1** | **97%** |
 
@@ -363,7 +365,7 @@ def _table_exists(self, db_type: str, table_name: str,
 ### 1. 多数据库统一抽象
 - 通过`DatabaseConnectionManager`统一管理4种数据库连接
 - 不同数据库类型的表创建逻辑完全封装
-- 支持TDengine Super Table、PostgreSQL Hypertable、MySQL InnoDB
+- 支持TDengine Super Table、PostgreSQL Hypertable、PostgreSQL InnoDB
 
 ### 2. 配置驱动设计
 - 单一YAML配置文件管理所有表结构
@@ -373,7 +375,7 @@ def _table_exists(self, db_type: str, table_name: str,
 ### 3. 高级数据库特性支持
 - **TDengine**: Super Table、Tags、ZSTD压缩
 - **PostgreSQL**: TimescaleDB Hypertable、自动分区、压缩策略、保留策略
-- **MySQL**: InnoDB引擎、utf8mb4字符集、AUTO_INCREMENT
+- **PostgreSQL**: InnoDB引擎、utf8mb4字符集、AUTO_INCREMENT
 
 ### 4. 安全模式机制
 - 自动添加新列（非破坏性操作）
@@ -396,7 +398,7 @@ def _table_exists(self, db_type: str, table_name: str,
 |-----------|----------|----------|---------|
 | **TDengine** | 3.0+ | ✅ 可用 | 100% |
 | **PostgreSQL** | 14+ | ⚠️ 部分可用* | 86% |
-| **MySQL** | 8.0+/MariaDB 10.6+ | ✅ 可用 | 100% |
+| **PostgreSQL** | 8.0+/PostgreSQL 10.6+ | ✅ 可用 | 100% |
 | **Redis** | 6.0+ | ✅ 可用 | N/A** |
 
 \* PostgreSQL可用但TimescaleDB扩展未安装（不影响基本功能）
@@ -408,7 +410,7 @@ def _table_exists(self, db_type: str, table_name: str,
 按数据库类型分布:
   TDengine:   6个表 (19%)
   PostgreSQL: 14个表 (45%)
-  MySQL:      15个表 (48%)
+  PostgreSQL:      15个表 (48%)
   Redis:      2个结构 (6%)
 
 按数据分类分布:
@@ -465,7 +467,7 @@ def _table_exists(self, db_type: str, table_name: str,
 2. ✅ **core/config_driven_table_manager.py** - 核心实现（700+行）
 3. ✅ **tests/unit/test_tdengine_table_creation.py** - TDengine单元测试
 4. ✅ **tests/unit/test_postgresql_table_creation.py** - PostgreSQL单元测试
-5. ✅ **tests/unit/test_mysql_table_creation.py** - MySQL单元测试
+5. ✅ **tests/unit/test_postgresql_table_creation.py** - PostgreSQL单元测试
 6. ✅ **tests/unit/test_config_validation.py** - 配置验证测试
 7. ✅ **tests/acceptance/test_us2_config_driven.py** - 验收测试
 8. ✅ **PHASE4_COMPLETION_REPORT.md** - 本完成报告
@@ -516,7 +518,7 @@ def _table_exists(self, db_type: str, table_name: str,
 | 验收标准 | 状态 | 证据 |
 |----------|------|------|
 | AC1: 配置文件包含所有表定义 | ✅ 完成 | 31个表定义，覆盖23个数据分类 |
-| AC2: 支持4种数据库类型 | ✅ 完成 | TDengine/PostgreSQL/MySQL/Redis |
+| AC2: 支持4种数据库类型 | ✅ 完成 | TDengine/PostgreSQL/PostgreSQL/Redis |
 | AC3: 自动创建表和索引 | ✅ 完成 | `initialize_all_tables()`方法 |
 | AC4: 配置错误明确提示 | ✅ 完成 | 场景4验收测试通过 |
 | AC5: Safe Mode保护 | ✅ 完成 | 场景3验收测试通过 |

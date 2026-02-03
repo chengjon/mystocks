@@ -305,7 +305,7 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
  */
 export function transformContract<T extends Record<string, any>>(
   backendContract: T
-): { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K] } {
+): { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K]) } {
   const result = {} as any;
   
   // 遍历所有字段，检查是否需要转换
@@ -332,7 +332,7 @@ export function transformContract<T extends Record<string, any>>(
     }
   }
   
-  return result as { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K] };
+  return result as { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K]) };
 }
 
 /**
@@ -355,7 +355,7 @@ export function transformFieldName(backendFieldName: string): string {
  */
 export function transformContractArray<T extends Record<string, any>>(
   backendArray: T[]
-): Array<{ [K in keyof T]: (T[K] extends string ? FrontendContractField<T, K> : T[K] }> {
+): Array<{ [K in keyof T]: (T[K] extends string ? FrontendContractField<T, K> : T[K]) }> {
   return backendArray.map(item => transformContract(item));
 }
 
@@ -403,6 +403,10 @@ export function transformFieldNames(backendFieldNames: string[]): string[] {
  * getFieldMapping('full_name') → { original: 'full_name', transformed: 'fullName' }
  */
 export function getFieldMapping(backendFieldName: string): {
+  original: string;
+  transformed: string;
+  needsTransform: boolean;
+} {
   if (needsTransformation(backendFieldName)) {
     return {
       original: backendFieldName,
@@ -410,7 +414,7 @@ export function getFieldMapping(backendFieldName: string): {
       needsTransform: true
     };
   }
-  
+
   return {
     original: backendFieldName,
     transformed: backendFieldName,

@@ -23,6 +23,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import psutil
 import requests
 from jinja2 import Template
+from pydantic import BaseModel, Field
 from prometheus_client import Counter, Gauge, Histogram, start_http_server
 
 from ..ai.test_data_manager import DataManager as AIDataManager

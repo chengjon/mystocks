@@ -381,7 +381,6 @@ class TestQueryOptimizer:
             database_types = [
                 DatabaseType.POSTGRESQL,
                 DatabaseType.TDENGINE,
-                DatabaseType.MYSQL,
             ]
 
             for db_type in database_types:

@@ -180,7 +180,7 @@ class BaseOptimizer(ABC):
         self._data_source = None
         self._market_data = None
 
-        logger.info("优化器初始化: 策略=%(strategy_type)s, 目标=%(objective)s, 参数数={len(parameter_spaces)}"")
+        logger.info("优化器初始化: 策略=%(strategy_type)s, 目标=%(objective)s, 参数数={len(parameter_spaces)}")
 
     def set_backtest_engine(self, engine):
         """设置回测引擎"""
@@ -243,9 +243,9 @@ class BaseOptimizer(ABC):
                 )
                 if df is not None and not df.empty:
                     market_data[symbol] = df
-                    logger.debug("加载%(symbol)s数据: {len(df)}条"")
+                    logger.debug("加载%(symbol)s数据: {len(df)}条")
             except Exception as e:
-                logger.error("加载%(symbol)s数据失败: %(e)s"")
+                logger.error("加载%(symbol)s数据失败: %(e)s")
 
         self._market_data = market_data
         return market_data
@@ -299,7 +299,7 @@ class BaseOptimizer(ABC):
             )
 
         except Exception as e:
-            logger.error("回测执行失败: %(e)s"")
+            logger.error("回测执行失败: %(e)s")
             result = OptimizationResult(
                 parameters=parameters,
                 optimization_time=time.time() - start_time,
@@ -394,4 +394,4 @@ class BaseOptimizer(ABC):
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2, default=str)
 
-        logger.info("优化结果已导出: %(filepath)s"")
+        logger.info("优化结果已导出: %(filepath)s")

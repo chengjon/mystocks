@@ -299,7 +299,7 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
     """
     try:
         # 执行健康检查脚本
-        health_script = "/opt/claude/mystocks_spec/scripts/automation/health_check_simple.sh"
+        health_script = "/opt/claude/mystocks_spec/scripts/dev/automation/health_check_simple.sh"
 
         if os.path.exists(health_script):
             # 设置脚本可执行权限

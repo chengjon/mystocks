@@ -269,13 +269,13 @@ async def get_signal_history(
         # 转换为响应模型
         results = [SignalHistoryResponse(**dict(row)) for row in rows]
 
-        logger.info("查询信号历史: 返回 {len(results)} 条记录"")
+        logger.info("查询信号历史: 返回 {len(results)} 条记录")
         return results
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("查询信号历史失败: %(e)s"")
+        logger.error("查询信号历史失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
@@ -460,13 +460,13 @@ async def get_signal_quality_report(
             win_rate=round(win_rate, 2),
         )
 
-        logger.info("生成信号质量报告: strategy=%(strategy_id)s, period=%(period_days)s天"")
+        logger.info("生成信号质量报告: strategy=%(strategy_id)s, period=%(period_days)s天")
         return report
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("生成信号质量报告失败: %(e)s"")
+        logger.error("生成信号质量报告失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
@@ -638,13 +638,13 @@ async def get_strategy_realtime_monitoring(
             recent_signals=recent_signals,
         )
 
-        logger.info("查询策略实时监控: strategy=%(strategy_id)s"")
+        logger.info("查询策略实时监控: strategy=%(strategy_id)s")
         return monitoring_data
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("查询策略实时监控失败: %(e)s"")
+        logger.error("查询策略实时监控失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
@@ -693,7 +693,7 @@ async def health_check():
         }
 
     except Exception as e:
-        logger.error("健康检查失败: %(e)s"")
+        logger.error("健康检查失败: %(e)s")
         return {
             "status": "unhealthy",
             "service": "signal-monitoring-api",
@@ -907,13 +907,13 @@ async def get_signal_statistics(
             for row in rows
         ]
 
-        logger.info("查询信号统计: strategy=%(strategy_id)s, hours=%(hours)s, count={len(statistics)}"")
+        logger.info("查询信号统计: strategy=%(strategy_id)s, hours=%(hours)s, count={len(statistics)}")
         return statistics
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("查询信号统计失败: %(e)s"")
+        logger.error("查询信号统计失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
@@ -1041,13 +1041,13 @@ async def get_active_signals(
             signals=signals,
         )
 
-        logger.info("查询活跃信号: strategy=%(strategy_id)s, count={len(signals)}/%(total_count)s"")
+        logger.info("查询活跃信号: strategy=%(strategy_id)s, count={len(signals)}/%(total_count)s")
         return response
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("查询活跃信号失败: %(e)s"")
+        logger.error("查询活跃信号失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
 
 
@@ -1162,11 +1162,11 @@ async def get_strategy_detailed_health(
             alerts=alerts,
         )
 
-        logger.info("查询策略详细健康状态: strategy=%(strategy_id)s, status={health_data['status_text']}"")
+        logger.info("查询策略详细健康状态: strategy=%(strategy_id)s, status={health_data['status_text']}")
         return response
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("查询策略详细健康状态失败: %(e)s"")
+        logger.error("查询策略详细健康状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")

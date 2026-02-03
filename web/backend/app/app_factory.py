@@ -253,7 +253,7 @@ def create_app() -> FastAPI:
 
                 # 验证CSRF token
                 if not csrf_manager.validate_token(csrf_token):
-                    logger.warning("❌ Invalid CSRF token for {request.method} {request.url.path}"")
+                    logger.warning("❌ Invalid CSRF token for {request.method} {request.url.path}")
                     request_id = getattr(request.state, "request_id", None)
                     unified_response = UnifiedResponse(
                         success=False,

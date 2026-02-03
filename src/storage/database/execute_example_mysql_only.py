@@ -17,10 +17,10 @@ print("管理器初始化完成")
 # 使用安全的数据库创建函数
 create_databases_safely()
 
-# 创建仅包含MySQL的配置
-mysql_only_config = """
+# 创建仅包含PostgreSQL的配置
+postgres_only_config = """
 tables:
-  - database_type: "MySQL"
+  - database_type: "PostgreSQL"
     database_name: "test_db"
     table_name: "test_table"
     columns:
@@ -39,12 +39,12 @@ tables:
 """
 
 # 写入临时配置文件
-temp_config_file = os.path.join(os.path.dirname(__file__), "mysql_only_config.yaml")
+temp_config_file = os.path.join(os.path.dirname(__file__), "postgres_only_config.yaml")
 with open(temp_config_file, "w", encoding="utf-8") as f:
-    f.write(mysql_only_config)
+    f.write(postgres_only_config)
 
-# 测试批量创建（仅MySQL）
-print(f"正在读取MySQL配置文件: {temp_config_file}")
+# 测试批量创建（仅PostgreSQL）
+print(f"正在读取PostgreSQL配置文件: {temp_config_file}")
 results = manager.batch_create_tables(temp_config_file)
 print("批量创建结果:", results)
 
@@ -56,19 +56,19 @@ columns = [
 ]
 
 print("开始创建表...")
-success = manager.create_table(DatabaseType.MYSQL, "test_db", "my_table", columns)
+success = manager.create_table(DatabaseType.POSTGRESQL, "test_db", "my_table", columns)
 print(f"创建表结果: {success}")
 
 # 修改表结构
 print("\n=== 修改表结构测试 ===")
 alterations = [{"operation": "ADD", "name": "new_col", "type": "INT", "nullable": True}]
 
-success = manager.alter_table(DatabaseType.MYSQL, "test_db", "my_table", alterations)
+success = manager.alter_table(DatabaseType.POSTGRESQL, "test_db", "my_table", alterations)
 print(f"修改表结果: {success}")
 
 # 删除表
 print("\n=== 删除表测试 ===")
-success = manager.drop_table(DatabaseType.MYSQL, "test_db", "my_table")
+success = manager.drop_table(DatabaseType.POSTGRESQL, "test_db", "my_table")
 print(f"删除表结果: {success}")
 
 # 关闭所有连接

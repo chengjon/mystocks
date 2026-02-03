@@ -327,6 +327,5 @@ class TestEfinanceDataSource:
 
         result = adapter._apply_column_mapping(df, 'test_type')
 
-        adapter.column_mapper.map_columns.assert_called_once_with(df, 'test_type')
-        assert 'new_col' in result.columns</content>
-<parameter name="filePath">tests/test_efinance_adapter.py
+        adapter.column_mapper.map_columns.assert_called_once_with(df, "test_type")
+        assert "new_col" in result.columns

@@ -11,9 +11,15 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import unified_data_access_manager
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.data_access import unified_data_access_manager
 
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
+
+
+class TestUnifiedDataAccessManagerSmart(unittest.TestCase):
     def test_unified_data_access_manager_execute_query_security(self):
         """安全测试 - execute_query"""
         # 测试恶意输入
@@ -203,11 +209,10 @@ import unified_data_access_manager
     def test_unified_data_access_manager_basic_functionality(self):
         """基本功能测试"""
         # 测试模块导入
-        import unified_data_access_manager
-        self.assertTrue(hasattr(unified_data_access_manager, '__name__'))
+        self.assertTrue(hasattr(unified_data_access_manager, "__name__"))
 
         # 测试是否有公共函数
-        public_funcs = [f for f in dir(unified_data_access_manager) if not f.startswith('_')]
+        public_funcs = [f for f in dir(unified_data_access_manager) if not f.startswith("_")]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
 
 

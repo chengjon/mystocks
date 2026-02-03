@@ -142,7 +142,7 @@ class TestTdxConnectionManager:
         assert result == mock_connection
         assert manager.connection == mock_connection
 
-  def test_create_connection_with_retry_failure(self):
+    def test_create_connection_with_retry_failure(self):
         """测试创建连接失败重试机制"""
         from src.adapters.tdx_connection_manager import TdxConnectionManager
 

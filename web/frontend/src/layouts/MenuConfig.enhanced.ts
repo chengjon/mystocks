@@ -133,6 +133,24 @@ export const MARKET_DOMAIN_MENU: MenuItem = {
       badge: 'LIVE',
     },
     {
+      path: '/market/overview',
+      label: '市场概览',
+      icon: ARTDECO_ICONS.CHART,
+      businessKey: 'market.overview',
+    },
+    {
+      path: '/market/analysis',
+      label: '市场分析',
+      icon: ARTDECO_ICONS.TECHNICAL,
+      businessKey: 'market.analysis',
+    },
+    {
+      path: '/market/industry',
+      label: '行业分析',
+      icon: ARTDECO_ICONS.INDUSTRY,
+      businessKey: 'market.industry',
+    },
+    {
       path: '/market/technical',
       label: '技术指标',
       icon: ARTDECO_ICONS.TECHNICAL,
@@ -244,6 +262,12 @@ export const TRADING_DOMAIN_MENU: MenuItem = {
       label: '持仓监控',
       icon: ARTDECO_ICONS.POSITIONS,
       businessKey: 'trading.positions',
+    },
+    {
+      path: '/trading/performance',
+      label: '绩效分析',
+      icon: ARTDECO_ICONS.INDICATOR,
+      businessKey: 'trading.performance',
     },
     {
       path: '/trading/attribution',

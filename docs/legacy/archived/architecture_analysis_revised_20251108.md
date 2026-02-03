@@ -1,5 +1,7 @@
 # MyStocks 架构分析修订报告 - 基于用户需求重新评估
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **日期**: 2025-11-08
 **修订版本**: v2.0
 **修订原因**: 原报告忽略了关键业务需求，进行深度重新评估
@@ -1148,7 +1150,7 @@ vi docs/guides/MONITORING.md  # 新增Grafana指南
 #### ✅ 原报告正确的部分
 1. **识别了过度工程问题** - 确实存在50%+冗余代码
 2. **双数据库架构正确** - TDengine + PostgreSQL策略有效
-3. **Week 3简化正确** - 删除MySQL和Redis是正确决策
+3. **Week 3简化正确** - 删除PostgreSQL和Redis是正确决策
 4. **删除未使用策略正确** - 4种去重策略→1种,删除复杂告警系统
 
 #### ❌ 原报告错误的部分

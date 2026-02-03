@@ -1,3 +1,5 @@
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 问题：你是股票研究专家和量化专家，
 本项目作为A股量化分析管理平台，想要扩充以下功能：
 1，股票基本面分析，
@@ -28,7 +30,7 @@
 数据清洗：去除停牌数据、异常值（乌龙指、大宗交易）、缺失值补全（历史均值 / 行业均值）。
 工程架构选型：
 采用「微服务架构」，将 12 项功能拆分为独立服务（如「基本面分析服务」「量化模型服务」「舆情分析服务」），便于迭代和扩容。
-技术栈：数据处理（Python/Pandas/Spark）、算法建模（Scikit-learn/TensorFlow/PyTorch）、可视化（ECharts/Plotly/Tableau）、API 服务（FastAPI）、数据库（MySQL/PostgreSQL 存储结构化数据，Redis 缓存实时数据，Elasticsearch 存储舆情文本数据）。
+技术栈：数据处理（Python/Pandas/Spark）、算法建模（Scikit-learn/TensorFlow/PyTorch）、可视化（ECharts/Plotly/Tableau）、API 服务（FastAPI）、数据库（PostgreSQL 存储结构化数据，Redis 缓存实时数据，Elasticsearch 存储舆情文本数据）。
 分项功能：拓展思路与实现路径
 1. 股票基本面分析
 核心拓展思路

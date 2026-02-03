@@ -401,7 +401,7 @@ class RealtimeStreamingService:
             self.event_callbacks[event_type] = []
 
         self.event_callbacks[event_type].append(handler)
-        logger.info("✅ Registered streaming event handler: %(event_type)s"")
+        logger.info("✅ Registered streaming event handler: %(event_type)s")
 
     def _trigger_event(self, event_type: StreamEventType, data: Dict[str, Any]) -> None:
         """触发事件"""

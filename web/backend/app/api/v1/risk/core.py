@@ -83,12 +83,12 @@ def get_monitoring_db():
                             ),
                         )
                     except Exception as e:
-                        logger.debug("Monitoring log failed: %(e)s"")
+                        logger.debug("Monitoring log failed: %(e)s")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
         except Exception as e:
-            logger.warning("MonitoringDB init failed: %(e)s"")
+            logger.warning("MonitoringDB init failed: %(e)s")
 
             class MonitoringFallback:
                 def log_operation(self, *args, **kwargs):

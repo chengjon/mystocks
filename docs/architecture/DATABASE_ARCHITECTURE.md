@@ -199,7 +199,7 @@ The system defines 5 data classes with automatic routing:
 ### 3. Connection Management
 
 **DatabaseConnectionManager** (`src/storage/database/connection_manager.py`):
-- Manages connections for TDengine, PostgreSQL, MySQL, and Redis
+- Manages connections for TDengine, PostgreSQL, and Redis (MySQL removed; compatibility only)
 - Connection validation from environment variables
 - Error handling and connection pooling
 - Lazy initialization
@@ -220,13 +220,6 @@ POSTGRESQL_PORT=5432
 POSTGRESQL_USER=
 POSTGRESQL_PASSWORD=
 POSTGRESQL_DATABASE=quant_research
-
-# MySQL (Metadata) - Optional
-MYSQL_HOST=
-MYSQL_PORT=3306
-MYSQL_USER=
-MYSQL_PASSWORD=
-MYSQL_DATABASE=quant_research
 
 # Monitoring
 MONITOR_DB_URL=postgresql://...
@@ -339,7 +332,7 @@ Core responsibilities:
 - DDL operations: CREATE TABLE, ALTER TABLE, DROP TABLE
 - Batch table creation from YAML configuration
 - Table structure validation
-- Multi-database support (TDengine, PostgreSQL, MySQL, Redis)
+- Multi-database support (TDengine, PostgreSQL, Redis)
 
 **Key Methods**:
 ```python
@@ -436,7 +429,7 @@ class MonitoringDatabase:
     def log_operation(
         operation_type,  # SAVE/LOAD/DELETE/UPDATE
         classification,  # Data class
-        target_database,  # TDengine/PostgreSQL/MySQL
+        target_database,  # TDengine/PostgreSQL
         table_name,
         record_count,
         operation_status,  # SUCCESS/FAILED/PARTIAL
@@ -564,13 +557,6 @@ POSTGRESQL_PORT=5432
 POSTGRESQL_USER=postgres
 POSTGRESQL_PASSWORD=password
 POSTGRESQL_DATABASE=quant_research
-
-# MySQL Configuration (Optional)
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=password
-MYSQL_DATABASE=quant_research
 
 # Redis Configuration (Optional)
 REDIS_HOST=localhost

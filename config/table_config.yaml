@@ -19,12 +19,6 @@ databases:
     user: '${POSTGRESQL_USER}'
     password: '${POSTGRESQL_PASSWORD}'
     description: '历史数据仓库+TimescaleDB'
-  mysql:
-    host: '${MYSQL_HOST}'
-    port: '${MYSQL_PORT}'
-    user: '${MYSQL_USER}'
-    password: '${MYSQL_PASSWORD}'
-    description: '元数据与参考数据仓库'
   redis:
     host: '${REDIS_HOST}'
     port: '${REDIS_PORT}'
@@ -251,9 +245,9 @@ tables:
         columns: ['symbol']
 
   # =====================================
-  # 第2类：参考数据（Reference Data） - MySQL
+  # 第2类：参考数据（Reference Data） - PostgreSQL
   # =====================================
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'symbols'
     classification: 'symbols_info'
@@ -321,7 +315,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_symbols_symbol'
@@ -334,7 +328,7 @@ tables:
       - name: 'idx_symbols_active'
         columns: ['is_active']
 
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'constituents'
     classification: 'constituent_info'
@@ -376,7 +370,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_constituents_index_symbol'
@@ -387,7 +381,7 @@ tables:
       - name: 'idx_constituents_symbol'
         columns: ['symbol']
 
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'trade_calendar'
     classification: 'trade_calendar'
@@ -1059,9 +1053,9 @@ tables:
         columns: ['record_date']
 
   # =====================================
-  # 第5类：元数据（Meta Data） - MySQL
+  # 第5类：元数据（Meta Data） - PostgreSQL
   # =====================================
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'data_sources'
     classification: 'data_source_status'
@@ -1116,7 +1110,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_data_sources_name'
@@ -1127,7 +1121,7 @@ tables:
       - name: 'idx_data_sources_active'
         columns: ['is_active']
 
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'task_schedules'
     classification: 'task_schedules'
@@ -1192,7 +1186,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_task_schedules_name'
@@ -1205,7 +1199,7 @@ tables:
       - name: 'idx_task_schedules_next_run'
         columns: ['next_run_time']
 
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'strategy_parameters'
     classification: 'strategy_parameters'
@@ -1254,7 +1248,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_strategy_params_strategy_name'
@@ -1263,7 +1257,7 @@ tables:
       - name: 'idx_strategy_params_strategy'
         columns: ['strategy_id']
 
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     database_name: 'quant_research'
     table_name: 'system_config'
     classification: 'system_config'
@@ -1311,7 +1305,7 @@ tables:
         comment: '创建时间'
       - name: 'updated_at'
         type: 'TIMESTAMP'
-        default: 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+        default: 'CURRENT_TIMESTAMP'
         comment: '更新时间'
     indexes:
       - name: 'uk_system_config_group_key'

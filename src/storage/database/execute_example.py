@@ -32,7 +32,7 @@ columns = [
 # 使用环境变量中配置的数据库，移除硬编码的连接参数
 print("开始创建表...")
 success = manager.create_table(
-    DatabaseType.MYSQL,
+    DatabaseType.POSTGRESQL,
     "test_db",  # 使用与table_config.yaml一致的数据库名
     "my_table",
     columns,
@@ -43,7 +43,7 @@ print(f"创建表结果: {success}")
 alterations = [{"operation": "ADD", "name": "new_col", "type": "INT", "nullable": True}]
 
 success = manager.alter_table(
-    DatabaseType.MYSQL,
+    DatabaseType.POSTGRESQL,
     "test_db",  # 使用与table_config.yaml一致的数据库名
     "my_table",
     alterations,
@@ -51,7 +51,7 @@ success = manager.alter_table(
 
 # 删除表
 success = manager.drop_table(
-    DatabaseType.MYSQL,
+    DatabaseType.POSTGRESQL,
     "test_db",
     "my_table",  # 使用与table_config.yaml一致的数据库名
 )

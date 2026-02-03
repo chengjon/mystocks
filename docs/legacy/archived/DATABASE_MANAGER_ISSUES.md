@@ -1,5 +1,7 @@
 # DatabaseTableManager 问题记录
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **日期**: 2025-10-24
 **发现者**: Claude (Day 5 Validation)
 **优先级**: P0 (阻塞 100% 架构合规)
@@ -143,11 +145,11 @@ class ColumnDefinitionLog(Base):
 ### 错误信息
 ```
 ERROR:DatabaseTableManager:Failed to connect to TDengine database market_data: Connection refused
-ERROR:DatabaseTableManager:Failed to connect to MySQL database mystocks_reference: Access denied
+ERROR:DatabaseTableManager:Failed to connect to PostgreSQL database mystocks_reference: Access denied
 ```
 
 ### 根本原因
-Week 3 简化架构后，TDengine 和 MySQL 已不再使用，但 `table_config.yaml` 中仍包含这些表的定义。
+Week 3 简化架构后，TDengine 和 PostgreSQL 已不再使用，但 `table_config.yaml` 中仍包含这些表的定义。
 
 ### 修复策略
 - Week 2 任务：清理 table_config.yaml 中不再使用的表定义
@@ -167,7 +169,7 @@ P2 (不影响 Web 层表创建)
 4. ⏳ 验证所有 6 张表创建成功
 
 ### Week 2 优化（P1）
-1. 清理 table_config.yaml 中不再使用的 TDengine/MySQL 表定义
+1. 清理 table_config.yaml 中不再使用的 TDengine/PostgreSQL 表定义
 2. 增强 DatabaseTableManager 的错误处理
 3. 分离业务表创建和监控日志记录逻辑
 

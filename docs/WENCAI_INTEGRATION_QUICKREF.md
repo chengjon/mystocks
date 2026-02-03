@@ -13,7 +13,7 @@
 - ✅ 9个预定义查询语句（技术面、资金流、热度排行等）
 - ✅ 问财API数据获取
 - ✅ 智能数据清理和去重
-- ✅ MySQL存储
+- ✅ PostgreSQL存储
 - ✅ RESTful API接口
 - ✅ 后台任务调度（每日9:00自动刷新）
 
@@ -91,7 +91,7 @@ web/backend/migrations/
 
 ### 1. 执行数据库迁移
 ```bash
-mysql -u root -p wencai < web/backend/migrations/wencai_init.sql
+psql -d wencai -f web/backend/migrations/wencai_init.sql
 ```
 
 ### 2. 添加环境变量
@@ -132,7 +132,7 @@ curl -X POST http://localhost:8000/api/market/wencai/query \
 ```
 前端 → API路由 → 服务层 → 适配器 → 问财API
                     ↓
-                 MySQL数据库
+                 PostgreSQL数据库
                     ↓
                 Celery任务调度
 ```

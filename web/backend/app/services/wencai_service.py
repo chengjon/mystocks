@@ -97,7 +97,7 @@ class WencaiService:
             queries = self.db.query(WencaiQuery).all()
             return [q.to_dict() for q in queries]
         except Exception as e:
-            logger.error("Failed to get queries: {str(e)}"")
+            logger.error("Failed to get queries: {str(e)}")
             raise
 
     def get_query_by_name(self, query_name: str) -> Optional[Dict[str, Any]]:
@@ -114,7 +114,7 @@ class WencaiService:
             query = self.db.query(WencaiQuery).filter(WencaiQuery.query_name == query_name).first()
             return query.to_dict() if query else None
         except Exception as e:
-            logger.error("Failed to get query %(query_name)s: {str(e)}"")
+            logger.error("Failed to get query %(query_name)s: {str(e)}")
             return None
 
     def fetch_and_save(self, query_name: str, pages: int = 1) -> Dict[str, Any]:
@@ -132,7 +132,7 @@ class WencaiService:
             ValueError: 查询不存在或参数无效
             Exception: 数据获取或保存失败
         """
-        logger.info("=== Starting fetch_and_save: %(query_name)s, pages=%(pages)s ==="")
+        logger.info("=== Starting fetch_and_save: %(query_name)s, pages=%(pages)s ===")
 
         # 1. 验证查询是否存在
         query_info = self.get_query_by_name(query_name)
@@ -143,7 +143,7 @@ class WencaiService:
             raise ValueError(f"Query '{query_name}' is not active")
 
         query_text = query_info.get("query_text")
-        logger.info("Query text: %(query_text)s"")
+        logger.info("Query text: %(query_text)s")
 
         # 2. 调用适配器获取数据
         try:
@@ -158,7 +158,7 @@ class WencaiService:
                     "duplicate_records": 0,
                 }
 
-            logger.info("Fetched {len(raw_data)} records from Wencai"")
+            logger.info("Fetched {len(raw_data)} records from Wencai")
 
         except Exception as e:
             logger.error("Failed to fetch data: {str(e)}", exc_info=True)
@@ -167,7 +167,7 @@ class WencaiService:
         # 3. 清理数据
         try:
             cleaned_data = self.adapter.clean_data(raw_data)
-            logger.info("Data cleaned: {len(cleaned_data)} rows"")
+            logger.info("Data cleaned: {len(cleaned_data)} rows")
         except Exception as e:
             logger.error("Failed to clean data: {str(e)}", exc_info=True)
             raise
@@ -175,7 +175,7 @@ class WencaiService:
         # 4. 去重并保存
         try:
             save_result = self._save_to_database(cleaned_data, query_name)
-            logger.info("Save result: %(save_result)s"")
+            logger.info("Save result: %(save_result)s")
 
             return {
                 "success": True,
@@ -205,7 +205,7 @@ class WencaiService:
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
-        logger.info("Saving to table: %(table_name)s"")
+        logger.info("Saving to table: %(table_name)s")
 
         # 使用复用的 MySQL 引擎
         inspector = inspect(self.engine)
@@ -213,7 +213,7 @@ class WencaiService:
         try:
             # 查重逻辑
             if inspector.has_table(table_name):
-                logger.info("Table %(table_name)s exists, checking for duplicates..."")
+                logger.info("Table %(table_name)s exists, checking for duplicates...")
 
                 try:
                     # 读取现有数据（排除fetch_time列）
@@ -234,11 +234,11 @@ class WencaiService:
                     )
 
                 except Exception as e:
-                    logger.warning("Deduplication failed: {str(e)}, saving all data"")
+                    logger.warning("Deduplication failed: {str(e)}, saving all data")
                     data_to_save = data.copy()
                     duplicate_count = 0
             else:
-                logger.info("Table %(table_name)s does not exist, creating..."")
+                logger.info("Table %(table_name)s does not exist, creating...")
                 data_to_save = data.copy()
                 duplicate_count = 0
 
@@ -251,7 +251,7 @@ class WencaiService:
                     index=False,
                     chunksize=1000,
                 )
-                logger.info("✅ Saved {len(data_to_save)} records to %(table_name)s"")
+                logger.info("✅ Saved {len(data_to_save)} records to %(table_name)s")
             else:
                 logger.info("⚠️ No new records to save")
 
@@ -262,10 +262,10 @@ class WencaiService:
             }
 
         except sqlalchemy_exc.SQLAlchemyError as e:
-            logger.error("Database error: {str(e)}"")
+            logger.error("Database error: {str(e)}")
             raise
         except Exception as e:
-            logger.error("Unexpected error while saving: {str(e)}"")
+            logger.error("Unexpected error while saving: {str(e)}")
             raise
 
     def get_query_results(self, query_name: str, limit: int = 100, offset: int = 0) -> Dict[str, Any]:
@@ -282,7 +282,7 @@ class WencaiService:
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
-        logger.info("Getting results from %(table_name)s, limit=%(limit)s, offset=%(offset)s"")
+        logger.info("Getting results from %(table_name)s, limit=%(limit)s, offset=%(offset)s")
 
         try:
             inspector = inspect(self.engine)
@@ -323,7 +323,7 @@ class WencaiService:
             }
 
         except Exception as e:
-            logger.error("Failed to get results: {str(e)}"")
+            logger.error("Failed to get results: {str(e)}")
             raise
 
     def get_query_history(self, query_name: str, days: int = 7) -> Dict[str, Any]:
@@ -339,7 +339,7 @@ class WencaiService:
         """
         # 使用白名单获取安全的表名
         table_name = self._get_safe_table_name(query_name)
-        logger.info("Getting history for %(table_name)s, days=%(days)s"")
+        logger.info("Getting history for %(table_name)s, days=%(days)s")
 
         try:
             inspector = inspect(self.engine)
@@ -394,7 +394,7 @@ class WencaiService:
             }
 
         except Exception as e:
-            logger.error("Failed to get history: {str(e)}"")
+            logger.error("Failed to get history: {str(e)}")
             raise
 
     def close(self):

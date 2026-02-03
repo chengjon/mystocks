@@ -202,7 +202,7 @@ async def get_lineage_tracker():
         tracker = LineageTracker(storage)
         return tracker, conn
     except Exception as e:
-        logger.error("Failed to create lineage tracker: {str(e)}"")
+        logger.error("Failed to create lineage tracker: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to initialize lineage tracker: {str(e)}",

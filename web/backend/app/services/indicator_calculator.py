@@ -88,7 +88,7 @@ class IndicatorCalculator:
             return result
 
         except Exception as e:
-            logger.error("计算指标 %(abbreviation)s 时出错: %(e)s"")
+            logger.error("计算指标 %(abbreviation)s 时出错: %(e)s")
             raise IndicatorCalculationError(f"计算指标 {abbreviation} 失败: {str(e)}")
 
     def _call_talib_function(
@@ -296,7 +296,7 @@ class IndicatorCalculator:
                 }
 
             except (InsufficientDataError, IndicatorCalculationError) as e:
-                logger.warning("跳过指标 %(abbreviation)s: %(e)s"")
+                logger.warning("跳过指标 %(abbreviation)s: %(e)s")
                 # 可以选择跳过失败的指标,或者抛出异常
                 # 这里选择记录警告并继续
                 result_key = f"{abbreviation}_{idx}"

@@ -320,14 +320,14 @@ if (config) {
 
 | 脚本 | 路径 |
 |------|------|
-| 配置生成 | `scripts/tools/generate-page-config.js` |
+| 配置生成 | `scripts/dev/tools/generate-page-config.js` |
 | 配置验证 | `scripts/hooks/check-page-config.mjs` |
 
 ### 直接运行
 
 ```bash
 # 生成配置
-node scripts/tools/generate-page-config.js --dry-run
+node scripts/dev/tools/generate-page-config.js --dry-run
 
 # 验证配置
 node scripts/hooks/check-page-config.mjs --fail --verbose
@@ -352,7 +352,7 @@ node scripts/hooks/check-page-config.mjs --fail --verbose
 
 ### 3. 添加新单体组件时
 
-1. 在 `scripts/tools/generate-page-config.js` 的 `CONFIG.routeConfigMap` 中添加配置
+1. 在 `scripts/dev/tools/generate-page-config.js` 的 `CONFIG.routeConfigMap` 中添加配置
 2. 在 `CONFIG.monolithicTabs` 中添加 Tab 配置
 3. 生成并验证配置
 

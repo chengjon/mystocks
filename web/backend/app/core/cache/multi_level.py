@@ -198,7 +198,7 @@ class CircuitBreaker:
 
             if self._failure_count >= self._failure_threshold:
                 self._circuit_open = True
-                logger.warning("Circuit breaker opened after {self._failure_count} failures"")
+                logger.warning("Circuit breaker opened after {self._failure_count} failures")
 
             raise
 
@@ -239,7 +239,7 @@ class MultiLevelCache:
                 self._redis_connected = True
                 logger.info("Redis connection established")
             except Exception as e:
-                logger.warning("Failed to connect to Redis: %(e)s"")
+                logger.warning("Failed to connect to Redis: %(e)s")
                 self._redis_connected = False
                 self._redis = None
 
@@ -281,7 +281,7 @@ class MultiLevelCache:
             return None, False, "none"
 
         except Exception as e:
-            logger.error("Cache get error: %(e)s"")
+            logger.error("Cache get error: %(e)s")
             CACHE_MISSES.labels(level="error").inc()
             return None, False, "none"
 
@@ -294,9 +294,9 @@ class MultiLevelCache:
         except RuntimeError:
             pass
         except json.JSONDecodeError:
-            logger.warning("Failed to decode cached value for key: %(key)s"")
+            logger.warning("Failed to decode cached value for key: %(key)s")
         except Exception as e:
-            logger.error("Redis get error: %(e)s"")
+            logger.error("Redis get error: %(e)s")
         return None
 
     async def set(
@@ -326,7 +326,7 @@ class MultiLevelCache:
             except RuntimeError:
                 pass
             except Exception as e:
-                logger.error("Redis set error: %(e)s"")
+                logger.error("Redis set error: %(e)s")
 
     async def delete(self, key: str) -> None:
         """删除缓存值"""
@@ -339,7 +339,7 @@ class MultiLevelCache:
             except RuntimeError:
                 pass
             except Exception as e:
-                logger.error("Redis delete error: %(e)s"")
+                logger.error("Redis delete error: %(e)s")
 
     async def delete_pattern(self, pattern: str) -> int:
         """删除匹配模式的所有缓存键"""
@@ -360,7 +360,7 @@ class MultiLevelCache:
             except RuntimeError:
                 pass
             except Exception as e:
-                logger.error("Redis delete pattern error: %(e)s"")
+                logger.error("Redis delete pattern error: %(e)s")
 
         return count
 
@@ -377,7 +377,7 @@ class MultiLevelCache:
             except RuntimeError:
                 pass
             except Exception as e:
-                logger.error("Redis clear error: %(e)s"")
+                logger.error("Redis clear error: %(e)s")
 
     def get_stats(self) -> dict:
         """获取缓存统计"""

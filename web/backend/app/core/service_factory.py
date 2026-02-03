@@ -74,7 +74,7 @@ class ServiceFactory(Generic[T]):
         PERFORMANCE: Service instantiated only once, then reused
         """
         if service_class not in ServiceFactory._instances:
-            logger.info("✅ Creating singleton instance of {service_class.__name__}"")
+            logger.info("✅ Creating singleton instance of {service_class.__name__}")
             ServiceFactory._instances[service_class] = service_class(*args, **kwargs)
 
         return ServiceFactory._instances[service_class]
@@ -95,13 +95,13 @@ class ServiceFactory(Generic[T]):
             service_class: Service class to reset
         """
         if service_class in ServiceFactory._instances:
-            logger.info("🔄 Resetting singleton instance of {service_class.__name__}"")
+            logger.info("🔄 Resetting singleton instance of {service_class.__name__}")
             del ServiceFactory._instances[service_class]
 
     @staticmethod
     def reset_all() -> None:
         """Reset all service instances (useful for testing)"""
-        logger.info("🔄 Resetting all {len(ServiceFactory._instances)} service instances"")
+        logger.info("🔄 Resetting all {len(ServiceFactory._instances)} service instances")
         ServiceFactory._instances.clear()
 
     @staticmethod

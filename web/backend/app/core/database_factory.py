@@ -188,7 +188,7 @@ class DatabaseFactory:
         """Close all database engines and connections"""
         for db_type, engine in DatabaseFactory._engines.items():
             engine.dispose()
-            logger.info("✅ Closed %(db_type)s connection pool"")
+            logger.info("✅ Closed %(db_type)s connection pool")
 
         DatabaseFactory._engines.clear()
         DatabaseFactory._session_factories.clear()

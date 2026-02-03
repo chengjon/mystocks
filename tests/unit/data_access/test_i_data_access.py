@@ -19,7 +19,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 
 # 直接从文件导入，避免循环导入
-module_path = Path(__file__).resolve().parents[2] / "src" / "data_access" / "interfaces" / "i_data_access.py"
+module_path = Path(__file__).resolve().parents[3] / "src" / "data_access" / "interfaces" / "i_data_access.py"
 exec(module_path.read_text(encoding="utf-8"), globals())
 
 
@@ -30,16 +30,14 @@ class TestDatabaseType:
         """测试数据库类型枚举值"""
         assert DatabaseType.POSTGRESQL.value == "postgresql"
         assert DatabaseType.TDENGINE.value == "tdengine"
-        assert DatabaseType.MYSQL.value == "mysql"
         assert DatabaseType.MONGODB.value == "mongodb"
 
     def test_database_type_count(self):
         """测试数据库类型数量"""
-        assert len(DatabaseType) == 4
+        assert len(DatabaseType) == 3
         assert set(db_type.value for db_type in DatabaseType) == {
             "postgresql",
             "tdengine",
-            "mysql",
             "mongodb",
         }
 

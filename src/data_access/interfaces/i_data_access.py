@@ -17,7 +17,6 @@ class DatabaseType(Enum):
 
     POSTGRESQL = "postgresql"
     TDENGINE = "tdengine"
-    MYSQL = "mysql"
     MONGODB = "mongodb"
 
 

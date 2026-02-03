@@ -42,7 +42,7 @@ class UnifiedMockDataManager:
         self._cache_timestamp = {}
         self._cache_ttl = 300  # 5分钟缓存
 
-        logger.info("初始化Mock数据管理器，使用Mock数据: {self.use_mock_data}"")
+        logger.info("初始化Mock数据管理器，使用Mock数据: {self.use_mock_data}")
 
     def get_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
         """
@@ -59,7 +59,7 @@ class UnifiedMockDataManager:
 
         # 检查缓存
         if self._is_cache_valid(cache_key):
-            logger.debug("从缓存获取数据: %(data_type)s"")
+            logger.debug("从缓存获取数据: %(data_type)s")
             return self._data_cache[cache_key]
 
         try:
@@ -79,7 +79,7 @@ class UnifiedMockDataManager:
             logger.error("获取数据失败 {data_type}: {str(e)}", exc_info=True)
             # 如果是真实数据获取失败，可以降级到Mock数据
             if not self.use_mock_data:
-                logger.warning("降级到Mock数据: %(data_type)s"")
+                logger.warning("降级到Mock数据: %(data_type)s")
                 return self._get_mock_data(data_type, **kwargs)
             else:
                 raise
@@ -141,7 +141,7 @@ class UnifiedMockDataManager:
                         get_volume_indicators,
                     )
                 except ImportError as e:
-                    logger.error("导入Mock模块失败: %(e)s"")
+                    logger.error("导入Mock模块失败: %(e)s")
 
                     # 降级到默认实现
                     def get_all_indicators(symbol):
@@ -746,7 +746,7 @@ class UnifiedMockDataManager:
                 raise ValueError(f"不支持的数据类型: {data_type}")
 
         except ImportError as e:
-            logger.error("导入Mock模块失败: {str(e)}"")
+            logger.error("导入Mock模块失败: {str(e)}")
             # 返回默认数据而不是抛出异常
             return self._get_default_data(data_type, **kwargs)
         except Exception as e:
@@ -1052,13 +1052,13 @@ class UnifiedMockDataManager:
                     "timestamp": datetime.now().isoformat(),
                 }
         except Exception as e:
-            logger.error("获取技术指标失败: %(e)s"")
+            logger.error("获取技术指标失败: %(e)s")
             return None
 
     def set_mock_mode(self, enabled: bool) -> None:
         """设置Mock模式"""
         self.use_mock_data = enabled
-        logger.info("设置Mock模式: %(enabled)s"")
+        logger.info("设置Mock模式: %(enabled)s")
 
         # 切换模式时清除缓存
         self.clear_cache()
@@ -1105,10 +1105,10 @@ class UnifiedMockDataManager:
                     dates.append(current_dt.strftime("%Y-%m-%d"))
                     current_dt += timedelta(days=1)
 
-                logger.info("使用指定日期范围: %(start_date)s 到 %(end_date)s, 共 {len(dates)} 天"")
+                logger.info("使用指定日期范围: %(start_date)s 到 %(end_date)s, 共 {len(dates)} 天")
 
             except ValueError as e:
-                logger.warning("日期格式错误，使用默认时间维度: %(e)s"")
+                logger.warning("日期格式错误，使用默认时间维度: %(e)s")
                 # 回退到默认时间维度逻辑
                 for i in range(timeframe_days):
                     date = datetime.now() - timedelta(days=i)
@@ -1119,7 +1119,7 @@ class UnifiedMockDataManager:
                 date = datetime.now() - timedelta(days=i)
                 dates.append(date.strftime("%Y-%m-%d"))
 
-            logger.info("使用时间维度 %(timeframe)s, 共 {len(dates)} 天"")
+            logger.info("使用时间维度 %(timeframe)s, 共 {len(dates)} 天")
 
         # 生成资金流向数据
         fund_flow_data = []
@@ -1259,7 +1259,7 @@ def data_source_toggle(func):
             return func(*args, **kwargs)
         except NotImplementedError:
             # 如果真实数据不可用，降级到Mock数据
-            logger.warning("数据源切换: {func.__name__} 降级到Mock数据"")
+            logger.warning("数据源切换: {func.__name__} 降级到Mock数据")
             mock_manager = get_mock_data_manager()
             mock_manager.set_mock_mode(True)
 

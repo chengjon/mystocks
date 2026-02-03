@@ -1,5 +1,7 @@
 # 项目文件清理计划
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **生成时间**: 2025-10-12
 **目的**: 识别并移动与当前项目功能实现无关或因功能改变而关联降低的文件
 
@@ -116,7 +118,7 @@
 - ✅ `system_demo.py` - 系统演示（正式版）
 
 #### **数据库管理**
-- ✅ `check_mysql_tables.py` - MySQL表检查工具
+- ✅ `check_postgresql_tables.py` - PostgreSQL表检查工具
 - ✅ `check_tdengine_tables.py` - TDengine表检查工具
 - ✅ `create_realtime_quotes_table.py` - 实时行情表创建
 - ✅ `run_realtime_market_saver.py` - 实时市场数据保存器
@@ -255,7 +257,7 @@ python -c "from core import ConfigDrivenTableManager; print('Core module OK')"
 python test_comprehensive.py
 
 # 3. 验证数据库连接
-python check_mysql_tables.py
+python check_postgresql_tables.py
 python check_tdengine_tables.py
 
 # 4. 测试统一管理器

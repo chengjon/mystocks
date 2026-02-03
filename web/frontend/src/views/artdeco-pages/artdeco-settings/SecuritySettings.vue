@@ -460,8 +460,8 @@ const getDeviceIcon = (type: string) => {
   const icons = {
     desktop: '🖥️',
     mobile: '📱',
-    tablet: '📲'
-    laptop: '💻'
+    tablet: '📲',
+    laptop: '💻',
     unknown: '🔌'
   }
   return icons[type] || '🔌'

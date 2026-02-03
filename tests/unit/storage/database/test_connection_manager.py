@@ -74,15 +74,6 @@ class TestSrcStorageDatabaseConnection_Manager:
         # 异常情况:
         assert True  # 占位符
 
-    def test_databaseconnectionmanager_get_mysql_connection(self):
-        """测试 DatabaseConnectionManager.get_mysql_connection"""
-        # TODO: 实现 get_mysql_connection 的测试
-        # 测试输入:
-        # 预期输出:
-        # 边界条件:
-        # 异常情况:
-        assert True  # 占位符
-
     def test_databaseconnectionmanager_get_redis_connection(self):
         """测试 DatabaseConnectionManager.get_redis_connection"""
         # TODO: 实现 get_redis_connection 的测试
@@ -288,37 +279,6 @@ class TestSrcStorageDatabaseConnection_Manager:
     @pytest.mark.benchmark
     def test__return_postgresql_connection_performance(self):
         """测试 _return_postgresql_connection 性能基准"""
-        # TODO: 实现性能测试
-        import time
-
-        start_time = time.time()
-        # 调用函数
-        end_time = time.time()
-        assert (end_time - start_time) < 1.0  # 应在1秒内完成
-
-    # ========================
-    # get_mysql_connection 函数测试
-    # ========================
-
-    def test_get_mysql_connection_normal_case(self):
-        """测试 get_mysql_connection 正常情况"""
-        # TODO: 实现正常情况测试
-        # 函数签名: get_mysql_connection(self)
-        assert True  # 占位符
-
-    def test_get_mysql_connection_edge_case(self):
-        """测试 get_mysql_connection 边界条件"""
-        # TODO: 实现边界条件测试
-        assert True  # 占位符
-
-    def test_get_mysql_connection_error_case(self):
-        """测试 get_mysql_connection 异常处理"""
-        # TODO: 实现异常情况测试
-        assert True  # 占位符
-
-    @pytest.mark.benchmark
-    def test_get_mysql_connection_performance(self):
-        """测试 get_mysql_connection 性能基准"""
         # TODO: 实现性能测试
         import time
 

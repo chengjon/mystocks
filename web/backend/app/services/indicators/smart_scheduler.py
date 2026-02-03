@@ -357,7 +357,7 @@ class SmartScheduler:
                             self._dependency_graph.mark_failed(node_id, error)
 
                     except Exception as e:
-                        logger.error("计算 {ind['abbreviation']} 失败: %(e)s"")
+                        logger.error("计算 {ind['abbreviation']} 失败: %(e)s")
                         results.append(
                             ScheduleResult(
                                 node_id=node_id,
@@ -473,7 +473,7 @@ class SmartScheduler:
                 lock_acquired = lock_token is not None
 
                 if lock_acquired:
-                    logger.debug("Acquired distributed lock for %(node_id)s"")
+                    logger.debug("Acquired distributed lock for %(node_id)s")
 
                     # 第三次检查: 获取锁后再次检查缓存 (防止等待期间其他实例已计算)
                     cached_result = self._check_local_cache(node_id, use_cache)
@@ -512,14 +512,14 @@ class SmartScheduler:
                     return result
                 else:
                     # 获取锁失败: 等待并尝试读取缓存
-                    logger.debug("Lock busy for %(node_id)s, waiting for calculation result..."")
+                    logger.debug("Lock busy for %(node_id)s, waiting for calculation result...")
                     time.sleep(0.5)  # 短暂等待
 
                     # 重试读取缓存 (最多3次)
                     for attempt in range(3):
                         cached_result = self._check_local_cache(node_id, use_cache)
                         if cached_result is not None:
-                            logger.debug("Found cached result for %(node_id)s after lock wait (attempt {attempt + 1})"")
+                            logger.debug("Found cached result for %(node_id)s after lock wait (attempt {attempt + 1})")
                             return cached_result
 
                         if REDIS_LOCK_AVAILABLE:
@@ -540,14 +540,14 @@ class SmartScheduler:
                         time.sleep(0.5)
 
                     # 仍未找到缓存，回退到直接计算
-                    logger.warning("Lock wait timeout for %(node_id)s, falling back to direct calculation"")
+                    logger.warning("Lock wait timeout for %(node_id)s, falling back to direct calculation")
                     return self._perform_calculation(ind, ohlcv, use_cache)
             else:
                 # 分布式锁未启用，直接计算
                 return self._perform_calculation(ind, ohlcv, use_cache)
 
         except Exception as e:
-            logger.error("Error in _calculate_single_with_lock for %(node_id)s: %(e)s"")
+            logger.error("Error in _calculate_single_with_lock for %(node_id)s: %(e)s")
             # 异常时回退到普通计算
             return self._perform_calculation(ind, ohlcv, use_cache)
         finally:
@@ -557,7 +557,7 @@ class SmartScheduler:
                     # 这里token可能已经在上面的try块中被释放，所以是幂等的
                     pass
                 except Exception as e:
-                    logger.warning("Failed to release lock for %(node_id)s: %(e)s"")
+                    logger.warning("Failed to release lock for %(node_id)s: %(e)s")
 
     def _generate_cache_key(self, node_id: str, params: Dict) -> str:
         """生成缓存键"""

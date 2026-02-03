@@ -53,7 +53,7 @@ try:
     logger.info("Akshare adapter imported successfully")
 except ImportError as e:
     AKSHARE_AVAILABLE = False
-    logger.warning("Akshare adapter not available: %(e)s"")
+    logger.warning("Akshare adapter not available: %(e)s")
 
 
 class StockDataNotFoundError(Exception):
@@ -83,7 +83,7 @@ class DataService:
             self.unified_manager = MyStocksUnifiedManager(enable_monitoring=False)
             logger.info("DataService initialized with MyStocksUnifiedManager")
         except Exception as e:
-            logger.warning("Failed to initialize MyStocksUnifiedManager: %(e)s"")
+            logger.warning("Failed to initialize MyStocksUnifiedManager: %(e)s")
             self.unified_manager = None
 
         # Initialize Akshare adapter if auto_fetch enabled
@@ -95,7 +95,7 @@ class DataService:
                 self.akshare_adapter = AkshareDataSource()
                 logger.info("Akshare adapter initialized for automatic data fetching")
             except Exception as e:
-                logger.warning("Failed to initialize Akshare adapter: %(e)s"")
+                logger.warning("Failed to initialize Akshare adapter: %(e)s")
                 self.auto_fetch = False
 
         # Initialize cache integration
@@ -107,7 +107,7 @@ class DataService:
                 self.cache = get_cache_integration()
                 logger.info("Cache integration initialized for DataService")
             except Exception as e:
-                logger.warning("Failed to initialize cache integration: %(e)s"")
+                logger.warning("Failed to initialize cache integration: %(e)s")
                 self.use_cache = False
 
     def get_daily_ohlcv(
@@ -148,7 +148,7 @@ class DataService:
 
             # If data not found and auto_fetch enabled, fetch from Akshare
             if df.empty and self.auto_fetch:
-                logger.info("Data not found in database, fetching from Akshare for %(symbol)s"")
+                logger.info("Data not found in database, fetching from Akshare for %(symbol)s")
                 df = self._fetch_and_save_from_akshare(symbol, start_date, end_date)
 
             if df.empty:
@@ -164,7 +164,7 @@ class DataService:
         except (InvalidDateRangeError, StockDataNotFoundError):
             raise
         except Exception as e:
-            logger.error("Failed to load daily OHLCV data: %(e)s"")
+            logger.error("Failed to load daily OHLCV data: %(e)s")
             raise RuntimeError(f"加载股票数据失败: {str(e)}")
 
     def _fetch_and_save_from_akshare(self, symbol: str, start_date: datetime, end_date: datetime) -> pd.DataFrame:
@@ -185,7 +185,7 @@ class DataService:
                 return pd.DataFrame()
 
             # Call Akshare adapter to fetch data
-            logger.info("Fetching data from Akshare: %(symbol)s from {start_date.date()} to {end_date.date()}"")
+            logger.info("Fetching data from Akshare: %(symbol)s from {start_date.date()} to {end_date.date()}")
 
             df = self.akshare_adapter.get_stock_daily(
                 symbol=symbol,
@@ -194,7 +194,7 @@ class DataService:
             )
 
             if df.empty:
-                logger.warning("Akshare returned empty data for %(symbol)s"")
+                logger.warning("Akshare returned empty data for %(symbol)s")
                 return pd.DataFrame()
 
             # Normalize column names - Akshare adapter already returns English column names
@@ -215,7 +215,7 @@ class DataService:
 
             # Save to database via UnifiedManager
             if self.unified_manager:
-                logger.info("Saving {len(df_save)} records to database for %(symbol)s"")
+                logger.info("Saving {len(df_save)} records to database for %(symbol)s")
 
                 result = self.unified_manager.save_data_by_classification(
                     classification=DataClassification.DAILY_KLINE,
@@ -223,13 +223,13 @@ class DataService:
                     data=df_save,
                 )
 
-                logger.info("Data saved to database: %(result)s"")
+                logger.info("Data saved to database: %(result)s")
 
             # Return with proper column name for trade_date
             return df_save
 
         except Exception as e:
-            logger.error("Failed to fetch and save from Akshare: %(e)s"")
+            logger.error("Failed to fetch and save from Akshare: %(e)s")
             import traceback
 
             traceback.print_exc()
@@ -263,7 +263,7 @@ class DataService:
             missing_columns = [col for col in required_columns if col not in df.columns]
 
             if missing_columns:
-                logger.warning("Missing required columns: %(missing_columns)s"")
+                logger.warning("Missing required columns: %(missing_columns)s")
                 return pd.DataFrame()
 
             # Ensure trade_date is datetime type
@@ -275,7 +275,7 @@ class DataService:
             return df
 
         except Exception as e:
-            logger.error("Failed to load from UnifiedManager: %(e)s"")
+            logger.error("Failed to load from UnifiedManager: %(e)s")
             return pd.DataFrame()
 
     def _generate_mock_data(
@@ -297,7 +297,7 @@ class DataService:
         Returns:
             pd.DataFrame: 模拟的日线数据
         """
-        logger.warning("Generating mock data for %(symbol)s"")
+        logger.warning("Generating mock data for %(symbol)s")
 
         # Generate date range (business days only)
         dates = pd.date_range(start=start_date, end=end_date, freq="B")
@@ -383,7 +383,7 @@ class DataService:
                     return df.iloc[0]["name"]
 
         except Exception as e:
-            logger.warning("Failed to get symbol name: %(e)s"")
+            logger.warning("Failed to get symbol name: %(e)s")
 
         # Fallback to symbol itself
         return symbol
@@ -456,7 +456,7 @@ class DataService:
             return (min_date.to_pydatetime(), max_date.to_pydatetime())
 
         except Exception as e:
-            logger.warning("Failed to get available date range: %(e)s"")
+            logger.warning("Failed to get available date range: %(e)s")
             return None
 
 

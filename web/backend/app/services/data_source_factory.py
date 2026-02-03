@@ -282,7 +282,7 @@ class MockDataSource(BaseDataSource):
             response_time = (time.time() - start_time) * 1000
             self.update_metrics(True, response_time)
 
-            logger.debug("Mock data returned for endpoint: %(endpoint)s"")
+            logger.debug("Mock data returned for endpoint: %(endpoint)s")
             return data
 
         except Exception as e:
@@ -338,7 +338,7 @@ class RealDataSource(BaseDataSource):
 
         for attempt in range(self.config_obj.retry_count + 1):
             try:
-                logger.debug("Fetching data from %(url)s (attempt {attempt + 1})"")
+                logger.debug("Fetching data from %(url)s (attempt {attempt + 1})")
 
                 async with self._session.get(url, params=params) as response:
                     if response.status == 200:
@@ -346,7 +346,7 @@ class RealDataSource(BaseDataSource):
                         response_time = (time.time() - start_time) * 1000
                         self.update_metrics(True, response_time)
 
-                        logger.debug("Successfully fetched data from %(url)s"")
+                        logger.debug("Successfully fetched data from %(url)s")
                         return data
                     else:
                         error_msg = f"HTTP {response.status}: {await response.text()}"
@@ -357,11 +357,11 @@ class RealDataSource(BaseDataSource):
                 error_msg = f"Request failed (attempt {attempt + 1}): {str(e)}"
 
                 if attempt < self.config_obj.retry_count:
-                    logger.warning("%(error_msg)s, retrying in {self.config_obj.retry_delay}s..."")
+                    logger.warning("%(error_msg)s, retrying in {self.config_obj.retry_delay}s...")
                     await asyncio.sleep(self.config_obj.retry_delay)
                 else:
                     self.update_metrics(False, response_time, error_msg)
-                    logger.error("All retries failed for %(url)s: %(error_msg)s"")
+                    logger.error("All retries failed for %(url)s: %(error_msg)s")
                     raise
 
     async def health_check(self) -> HealthStatus:
@@ -429,12 +429,12 @@ class HybridDataSource(BaseDataSource):
 
         try:
             # 首先尝试真实数据源
-            logger.debug("Trying real data source for endpoint: %(endpoint)s"")
+            logger.debug("Trying real data source for endpoint: %(endpoint)s")
             data = await self.real_source.get_data(endpoint, params)
 
             # 重置fallback计数器
             if self._fallback_count > 0:
-                logger.info("Real data source recovered for {self.config_obj.name}"")
+                logger.info("Real data source recovered for {self.config_obj.name}")
                 self._fallback_count = 0
                 self._last_fallback_time = None
 
@@ -448,11 +448,11 @@ class HybridDataSource(BaseDataSource):
             return data
 
         except Exception as real_error:
-            logger.warning("Real data source failed for %(endpoint)s: {str(real_error)}"")
+            logger.warning("Real data source failed for %(endpoint)s: {str(real_error)}")
 
             # Fallback到Mock数据源
             try:
-                logger.debug("Falling back to mock data source for endpoint: %(endpoint)s"")
+                logger.debug("Falling back to mock data source for endpoint: %(endpoint)s")
                 data = await self.mock_source.get_data(endpoint, params)
 
                 # 更新fallback统计
@@ -462,7 +462,7 @@ class HybridDataSource(BaseDataSource):
                 response_time = (time.time() - start_time) * 1000
                 self.update_metrics(True, response_time, f"Fallback used: {str(real_error)}")
 
-                logger.info("Fallback successful for %(endpoint)s (fallback count: {self._fallback_count})"")
+                logger.info("Fallback successful for %(endpoint)s (fallback count: {self._fallback_count})")
 
                 # 添加数据源标识
                 if isinstance(data, dict):
@@ -540,7 +540,7 @@ class DynamicConfigManager:
         """加载配置文件"""
         try:
             if not self.config_file.exists():
-                logger.warning("Config file {self.config_file} not found, creating default config"")
+                logger.warning("Config file {self.config_file} not found, creating default config")
                 await self._create_default_config()
 
             async with aiofiles.open(self.config_file, "r", encoding="utf-8") as f:
@@ -552,11 +552,11 @@ class DynamicConfigManager:
                     self._config_data = json.loads(content) if content else {}
 
             self._last_modified = self.config_file.stat().st_mtime
-            logger.info("Configuration loaded from {self.config_file}"")
+            logger.info("Configuration loaded from {self.config_file}")
             return self._config_data
 
         except Exception as e:
-            logger.error("Failed to load config from {self.config_file}: %(e)s"")
+            logger.error("Failed to load config from {self.config_file}: %(e)s")
             # 返回默认配置
             return await self._get_default_config()
 
@@ -576,12 +576,12 @@ class DynamicConfigManager:
                             try:
                                 await self._safe_call_watcher(watcher, old_config, self._config_data)
                             except Exception as e:
-                                logger.error("Config change notification failed: %(e)s"")
+                                logger.error("Config change notification failed: %(e)s")
 
                 await asyncio.sleep(5)  # 每5秒检查一次
 
             except Exception as e:
-                logger.error("Config watching error: %(e)s"")
+                logger.error("Config watching error: %(e)s")
                 await asyncio.sleep(10)  # 出错时等待更长时间
 
     def add_watcher(self, callback: Callable[[Dict[str, Any]], None]):
@@ -613,7 +613,7 @@ class DynamicConfigManager:
             else:
                 await f.write(json.dumps(default_config, indent=2, ensure_ascii=False))
 
-        logger.info("Default configuration created at {self.config_file}"")
+        logger.info("Default configuration created at {self.config_file}")
 
     async def _get_default_config(self) -> Dict[str, Any]:
         """获取默认配置"""
@@ -723,17 +723,17 @@ class DataSourceFactory:
                 self._source_configs[source_name] = config
 
                 if not config.enabled:
-                    logger.info("Data source '%(source_name)s' is disabled, skipping"")
+                    logger.info("Data source '%(source_name)s' is disabled, skipping")
                     continue
 
                 # 创建数据源实例
                 data_source = await self._create_single_data_source(config)
                 self._data_sources[source_name] = data_source
 
-                logger.info("Data source '%(source_name)s' created successfully (mode: {config.mode})"")
+                logger.info("Data source '%(source_name)s' created successfully (mode: {config.mode})")
 
             except Exception as e:
-                logger.error("Failed to create data source '%(source_name)s': %(e)s"")
+                logger.error("Failed to create data source '%(source_name)s': %(e)s")
 
     async def _create_single_data_source(self, config: DataSourceConfig) -> IDataSource:
         """创建单个数据源实例"""
@@ -802,14 +802,14 @@ class DataSourceFactory:
         try:
             return await self.get_data(source_name, endpoint, params)
         except Exception as e:
-            logger.warning("Primary data source '%(source_name)s' failed: %(e)s"")
+            logger.warning("Primary data source '%(source_name)s' failed: %(e)s")
 
             # 尝试找到Mock数据源作为fallback
             mock_source_name = f"{source_name}_mock"
             mock_source = await self.get_data_source(mock_source_name)
 
             if mock_source:
-                logger.info("Using fallback data source '%(mock_source_name)s'"")
+                logger.info("Using fallback data source '%(mock_source_name)s'")
                 return await mock_source.get_data(endpoint, params)
             else:
                 raise e
@@ -835,7 +835,7 @@ class DataSourceFactory:
             try:
                 health_results[source_name] = await data_source.health_check()
             except Exception as e:
-                logger.error("Health check failed for '%(source_name)s': %(e)s"")
+                logger.error("Health check failed for '%(source_name)s': %(e)s")
                 health_results[source_name] = HealthStatus(
                     status=HealthStatusEnum.FAILED,
                     response_time=0,
@@ -855,10 +855,10 @@ class DataSourceFactory:
                 # 记录不健康的数据源
                 for source_name, health in health_results.items():
                     if health.status != HealthStatusEnum.HEALTHY:
-                        logger.warning("Data source '%(source_name)s' is {health.status.value}: {health.message}"")
+                        logger.warning("Data source '%(source_name)s' is {health.status.value}: {health.message}")
 
             except Exception as e:
-                logger.error("Health check loop error: %(e)s"")
+                logger.error("Health check loop error: %(e)s")
 
     async def _on_config_changed(self, old_config: Dict[str, Any], new_config: Dict[str, Any]):
         """配置变化处理器"""
@@ -874,16 +874,16 @@ class DataSourceFactory:
             logger.info("Data sources recreated successfully")
 
         except Exception as e:
-            logger.error("Failed to recreate data sources: %(e)s"")
+            logger.error("Failed to recreate data sources: %(e)s")
 
     async def _cleanup_data_sources(self):
         """清理数据源"""
         for source_name, data_source in self._data_sources.items():
             try:
                 await data_source.cleanup()
-                logger.debug("Data source '%(source_name)s' cleaned up"")
+                logger.debug("Data source '%(source_name)s' cleaned up")
             except Exception as e:
-                logger.error("Failed to cleanup data source '%(source_name)s': %(e)s"")
+                logger.error("Failed to cleanup data source '%(source_name)s': %(e)s")
 
         self._data_sources.clear()
         self._source_configs.clear()

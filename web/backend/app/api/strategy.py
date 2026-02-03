@@ -208,7 +208,7 @@ async def get_strategy_definitions():
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取策略定义失败: %(e)s"")
+        logger.error("获取策略定义失败: %(e)s")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -262,7 +262,7 @@ async def run_strategy_single(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("运行单只股票策略失败: %(e)s"")
+        logger.error("运行单只股票策略失败: %(e)s")
         raise HTTPException(
             status_code=500,
             detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}").model_dump(),
@@ -327,7 +327,7 @@ async def run_strategy_batch(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("批量运行策略失败: %(e)s"")
+        logger.error("批量运行策略失败: %(e)s")
         raise HTTPException(
             status_code=500,
             detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}").model_dump(),
@@ -394,7 +394,7 @@ async def query_strategy_results(
         )
 
     except Exception as e:
-        logger.error("查询策略结果失败: %(e)s"")
+        logger.error("查询策略结果失败: %(e)s")
         raise HTTPException(
             status_code=500,
             detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}").model_dump(),
@@ -436,7 +436,7 @@ async def get_matched_stocks(
         }
 
     except Exception as e:
-        logger.error("获取匹配股票失败: %(e)s"")
+        logger.error("获取匹配股票失败: %(e)s")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -499,7 +499,7 @@ async def get_strategy_summary(
         )
 
     except Exception as e:
-        logger.error("获取策略统计失败: %(e)s"")
+        logger.error("获取策略统计失败: %(e)s")
         raise HTTPException(
             status_code=500,
             detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}").model_dump(),

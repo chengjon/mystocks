@@ -209,7 +209,7 @@ function isRouteName(name: string): name is keyof typeof PAGE_CONFIG
 
 ### 配置生成
 
-**脚本**: `scripts/tools/generate-page-config.js`
+**脚本**: `scripts/dev/tools/generate-page-config.js`
 
 ```bash
 # 预览生成
@@ -365,7 +365,7 @@ function useMarketWebSocket(routeName: string) {
 
 ### 2. 修改 API 端点
 
-1. 更新 `scripts/tools/generate-page-config.js` 中的 `CONFIG.routeConfigMap`
+1. 更新 `scripts/dev/tools/generate-page-config.js` 中的 `CONFIG.routeConfigMap`
 2. 重新生成配置
 3. 验证
 
@@ -390,7 +390,7 @@ A: 确保路由的 `meta.activeTab` 正确定义，并在组件中使用它来�
 ### Q: 验证失败怎么办？
 
 A: 1. 运行 `npm run generate-page-config` 重新生成
-2. 检查 `scripts/tools/generate-page-config.js` 中的配置映射
+2. 检查 `scripts/dev/tools/generate-page-config.js` 中的配置映射
 3. 手动补充缺失配置
 
 ---
@@ -399,7 +399,7 @@ A: 1. 运行 `npm run generate-page-config` 重新生成
 
 - [使用指南](../guides/PAGE_CONFIG_USAGE_GUIDE.md)
 - [路由配置](../guides/ROUTER_SIMPLIFICATION_EXPLANATION.md)
-- [配置生成脚本](../../scripts/tools/generate-page-config.js)
+- [配置生成脚本](../../scripts/dev/tools/generate-page-config.js)
 - [验证脚本](../../scripts/hooks/check-page-config.mjs)
 
 ---

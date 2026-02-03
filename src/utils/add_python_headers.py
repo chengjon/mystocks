@@ -228,7 +228,7 @@ def batch_add_headers():
         # 其他核心文件
         (
             "data_access.py",
-            "数据访问层，封装4种数据库(TDengine/PostgreSQL/MySQL/Redis)的操作",
+            "数据访问层，封装TDengine/PostgreSQL/Redis的操作",
         ),
         (
             "db_manager/database_manager.py",

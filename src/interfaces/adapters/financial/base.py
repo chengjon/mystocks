@@ -19,7 +19,7 @@ class FinancialDataSource(IDataSource):
     财务数据适配器 - 参考数据/基本面数据统一门户
 
     数据分类: DataClassification.FUNDAMENTAL_METRICS (第2类-参考数据-基本面数据)
-    存储目标: MySQL/MariaDB
+    存储目标: PostgreSQL
     数据特性: 低频、结构化、关系型
 
     多数据源整合:

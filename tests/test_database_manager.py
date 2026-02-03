@@ -23,41 +23,7 @@ class TestDatabaseManager:
     def test_manager_initialization(self):
         """测试管理器初始化"""
         assert self.manager is not None
-        assert hasattr(self.manager, "get_mysql_connection")
         assert hasattr(self.manager, "get_postgresql_connection")
-
-    @patch("src.storage.database.database_manager.pymysql.connect")
-    def test_get_mysql_connection_success(self, mock_connect):
-        """测试获取MySQL连接成功"""
-        # Mock连接
-        mock_conn = MagicMock()
-        mock_connect.return_value = mock_conn
-
-        # 调用方法
-        with patch.dict(
-            "os.environ",
-            {
-                "MYSQL_HOST": "localhost",
-                "MYSQL_USER": "root",
-                "MYSQL_PASSWORD": "password",
-                "MYSQL_DATABASE": "test_db",
-            },
-        ):
-            result = self.manager.get_mysql_connection()
-
-            # 验证
-            assert result is not None
-            mock_connect.assert_called_once()
-
-    @patch("src.storage.database.database_manager.pymysql.connect")
-    def test_get_mysql_connection_failure(self, mock_connect):
-        """测试MySQL连接失败"""
-        # Mock连接失败
-        mock_connect.side_effect = Exception("Connection failed")
-
-        # 调用方法应该返回None或抛出异常
-        with pytest.raises(Exception):
-            self.manager.get_mysql_connection()
 
     @patch("src.storage.database.database_manager.psycopg2.connect")
     def test_get_postgresql_connection_success(self, mock_connect):
@@ -126,7 +92,7 @@ class TestDatabaseManager:
         # Mock YAML配置
         mock_yaml.return_value = {
             "version": "2.0",
-            "tables": [{"name": "test_table", "database": "mysql", "columns": []}],
+            "tables": [{"name": "test_table", "database": "postgresql", "columns": []}],
         }
 
         # 调用方法
@@ -145,8 +111,8 @@ class TestDatabaseManager:
         """测试连接池管理"""
         # 测试连接池是否正确管理
         try:
-            conn1 = self.manager.get_mysql_connection()
-            conn2 = self.manager.get_mysql_connection()
+            conn1 = self.manager.get_postgresql_connection()
+            conn2 = self.manager.get_postgresql_connection()
 
             # 验证返回的是连接对象
             if conn1 is not None and conn2 is not None:
@@ -162,14 +128,14 @@ class TestDatabaseManager:
         with patch.dict(
             "os.environ",
             {
-                "MYSQL_HOST": "invalid_host",
-                "MYSQL_USER": "invalid_user",
-                "MYSQL_PASSWORD": "invalid_password",
+                "POSTGRESQL_HOST": "invalid_host",
+                "POSTGRESQL_USER": "invalid_user",
+                "POSTGRESQL_PASSWORD": "invalid_password",
             },
         ):
             # 应该返回None或抛出异常，但不应该崩溃
             try:
-                result = self.manager.get_mysql_connection()
+                result = self.manager.get_postgresql_connection()
                 # 允许返回None
                 assert result is None or result is not None
             except Exception:
@@ -180,22 +146,20 @@ class TestDatabaseManager:
 class TestDatabaseOperations:
     """数据库操作测试"""
 
-    @patch("src.storage.database.database_manager.pymysql.connect")
-    def test_execute_query(self, mock_connect):
+    def test_execute_query(self):
         """测试执行查询"""
         # Mock连接和cursor
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [("test",)]
         mock_conn = MagicMock()
         mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
 
         manager = DatabaseTableManager()
 
         # 测试查询
         try:
-            with patch.object(manager, "get_mysql_connection", return_value=mock_conn):
-                conn = manager.get_mysql_connection()
+            with patch.object(manager, "get_postgresql_connection", return_value=mock_conn):
+                conn = manager.get_postgresql_connection()
                 cursor = conn.cursor()
                 cursor.execute("SELECT * FROM test_table")
                 result = cursor.fetchall()
@@ -206,18 +170,16 @@ class TestDatabaseOperations:
             # 方法可能不存在
             pass
 
-    @patch("src.storage.database.database_manager.pymysql.connect")
-    def test_transaction_management(self, mock_connect):
+    def test_transaction_management(self):
         """测试事务管理"""
         # Mock连接
         mock_conn = MagicMock()
-        mock_connect.return_value = mock_conn
 
         manager = DatabaseTableManager()
 
         try:
-            with patch.object(manager, "get_mysql_connection", return_value=mock_conn):
-                conn = manager.get_mysql_connection()
+            with patch.object(manager, "get_postgresql_connection", return_value=mock_conn):
+                conn = manager.get_postgresql_connection()
 
                 # 测试commit
                 conn.commit()
@@ -232,24 +194,6 @@ class TestDatabaseOperations:
 
 class TestDatabaseManagerIntegration:
     """集成测试（需要真实数据库连接）"""
-
-    @pytest.mark.integration
-    @pytest.mark.slow
-    def test_real_mysql_connection(self):
-        """测试真实MySQL连接（可选）"""
-        try:
-            manager = DatabaseTableManager()
-            conn = manager.get_mysql_connection()
-
-            if conn is not None:
-                cursor = conn.cursor()
-                cursor.execute("SELECT 1")
-                result = cursor.fetchone()
-                assert result == (1,)
-                cursor.close()
-                conn.close()
-        except Exception as e:
-            pytest.skip(f"MySQL connection failed: {str(e)}")
 
     @pytest.mark.integration
     @pytest.mark.slow

@@ -228,7 +228,7 @@ async def get_fund_flow(
         except Exception as api_error:
             # API调用失败，记录失败并打开熔断器
             circuit_breaker.record_failure()
-            logger.error("❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"")
+            logger.error("❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
             raise
 
         # 转换为响应格式 - 修复数据结构以匹配前端期望
@@ -702,7 +702,7 @@ async def get_kline_data(
         except Exception as api_error:
             # API调用失败，记录失败
             circuit_breaker.record_failure()
-            logger.error("❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}"")
+            logger.error("❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
             raise
 
         if result is None:

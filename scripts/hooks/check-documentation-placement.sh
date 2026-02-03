@@ -150,7 +150,9 @@ if [ -n "$DOCS_ROOT_MD" ]; then
 fi
 
 # 检测中文文件名
-CHINESE_FILENAME=$(find docs/ -name "*[\u4e00-\u9fa5]*.md" -type f 2>/dev/null || true)
+CHINESE_FILENAME=$(find docs/ -name "*[\u4e00-\u9fa5]*.md" -type f \
+    ! -path "docs/*/legacy-cn/*" \
+    2>/dev/null || true)
 if [ -n "$CHINESE_FILENAME" ]; then
     echo -e "${YELLOW}⚠️  发现中文文件名（建议使用英文或拼音）：${NC}"
     echo "$CHINESE_FILENAME" | while read file; do

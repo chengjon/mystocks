@@ -58,7 +58,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         # 初始化随机数生成器
         self.rng = random.Random(random_seed)
 
-        logger.info("随机搜索优化器初始化: 迭代数=%(n_iterations)s, 种子=%(random_seed)s"")
+        logger.info("随机搜索优化器初始化: 迭代数=%(n_iterations)s, 种子=%(random_seed)s")
 
     def _generate_random_parameters(self) -> Dict[str, Any]:
         """
@@ -124,7 +124,7 @@ class RandomSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info("开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}"")
+        logger.info("开始随机搜索优化: 策略={self.strategy_type}, 迭代={self.n_iterations}")
 
         start_time = time.time()
 
@@ -233,7 +233,7 @@ class RandomSearchOptimizer(BaseOptimizer):
 
             self.rng = random.Random(new_seed)
 
-            logger.info("随机搜索重启 {restart + 1}/%(n_restarts)s, 种子=%(new_seed)s"")
+            logger.info("随机搜索重启 {restart + 1}/%(n_restarts)s, 种子=%(new_seed)s")
 
             # 临时修改迭代次数
             original_iters = self.n_iterations

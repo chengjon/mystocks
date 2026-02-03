@@ -162,7 +162,7 @@ async def calculate_health_score(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("计算健康度失败: %(e)s"")
+        logger.error("计算健康度失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
 
 
@@ -232,7 +232,7 @@ async def batch_calculate_health_scores(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("批量计算健康度失败: %(e)s"")
+        logger.error("批量计算健康度失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"计算失败: {str(e)}")
 
 
@@ -288,7 +288,7 @@ async def get_health_score_history(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取健康度历史失败: %(e)s"")
+        logger.error("获取健康度历史失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -407,7 +407,7 @@ async def analyze_portfolio(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("组合分析失败: %(e)s"")
+        logger.error("组合分析失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"分析失败: {str(e)}")
 
 
@@ -449,7 +449,7 @@ async def identify_market_regime(
         return UnifiedResponse(data=response, message="市场体制识别成功")
 
     except Exception as e:
-        logger.error("市场体制识别失败: %(e)s"")
+        logger.error("市场体制识别失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"识别失败: {str(e)}")
 
 
@@ -468,7 +468,7 @@ async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
         return UnifiedResponse(data=status, message="获取引擎状态成功")
 
     except Exception as e:
-        logger.error("获取引擎状态失败: %(e)s"")
+        logger.error("获取引擎状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -575,7 +575,7 @@ async def get_portfolio_summary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取组合摘要失败: %(e)s"")
+        logger.error("获取组合摘要失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -643,7 +643,7 @@ async def get_portfolio_alerts(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取预警列表失败: %(e)s"")
+        logger.error("获取预警列表失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")
 
 
@@ -709,5 +709,5 @@ async def get_rebalance_suggestions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取再平衡建议失败: %(e)s"")
+        logger.error("获取再平衡建议失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取失败: {str(e)}")

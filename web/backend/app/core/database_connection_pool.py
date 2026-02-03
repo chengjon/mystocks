@@ -312,7 +312,7 @@ class DatabaseConnectionPoolOptimizer:
         """
         try:
             if conn_id not in self.in_use_connections:
-                logger.warning("⚠️ Connection not found in use pool: %(conn_id)s"")
+                logger.warning("⚠️ Connection not found in use pool: %(conn_id)s")
                 return
 
             conn_metadata = self.in_use_connections.pop(conn_id)
@@ -320,7 +320,7 @@ class DatabaseConnectionPoolOptimizer:
             if error:
                 conn_metadata.error_count += 1
                 conn_metadata.state = ConnectionState.BROKEN
-                logger.warning("⚠️ Connection marked as broken: %(conn_id)s"")
+                logger.warning("⚠️ Connection marked as broken: %(conn_id)s")
             else:
                 conn_metadata.state = ConnectionState.IDLE
                 conn_metadata.latency_ms = latency_ms

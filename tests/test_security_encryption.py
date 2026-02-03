@@ -290,27 +290,6 @@ class TestSecureConfig:
         assert "db.example.com:5432" in conn_str
         assert "testdb" in conn_str
 
-    def test_build_mysql_connection_string(self):
-        """Build MySQL connection string from encrypted credentials"""
-        config = self.get_secure_config()
-        if not config:
-            pytest.skip("SecureConfig not available")
-
-        config.set_database_credentials(
-            db_type="mysql",
-            host="mysql.example.com",
-            port=3306,
-            user="mysqluser",
-            password="mysqlpass",
-            database="mydb",
-        )
-
-        conn_str = config.build_connection_string("mysql")
-
-        assert "mysql+pymysql://" in conn_str
-        assert "mysqluser:mysqlpass" in conn_str
-        assert "mysql.example.com:3306" in conn_str
-
     def test_build_tdengine_connection_string(self):
         """Build TDengine connection string from encrypted credentials"""
         config = self.get_secure_config()

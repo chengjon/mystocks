@@ -1,5 +1,7 @@
 # 沪深市场A股实时数据保存系统使用指南
 
+**Note**: MySQL has been removed; use PostgreSQL. This legacy guide is kept for reference.
+
 ## 📋 概述
 
 本系统按照db_manager工作原理设计，实现将customer接口中`stock.get_realtime_quotes()`获取的沪深市场A股最新状况数据保存到本地数据库的完整功能。
@@ -29,7 +31,7 @@
 
 ```bash
 # 基础依赖
-pip install pandas numpy sqlalchemy pymysql psycopg2-binary
+pip install pandas numpy sqlalchemy psycopg2-binary
 
 # 数据源库
 pip install efinance easyquotation
@@ -43,20 +45,15 @@ pip install ujson numba
 在项目根目录创建`.env`文件：
 
 ```bash
-# MySQL配置（主数据库）
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USER=your_user
-MYSQL_PASSWORD=your_password
+# PostgreSQL配置（主数据库）
+POSTGRESQL_HOST=localhost
+POSTGRESQL_PORT=5432
+POSTGRESQL_USER=your_user
+POSTGRESQL_PASSWORD=your_password
+POSTGRESQL_DATABASE=market_data
 
 # 监控数据库配置（必需）
-MONITOR_DB_URL=mysql+pymysql://user:password@host:port/db_monitor
-
-# 可选：其他数据库配置
-POSTGRESQL_HOST=localhost
-POSTGRESQL_PORT=5433
-POSTGRESQL_USER=postgres
-POSTGRESQL_PASSWORD=your_password
+MONITOR_DB_URL=postgresql://user:password@host:port/db_monitor
 
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -99,7 +96,7 @@ python save_realtime_stock_data_v2.py --config my_config.env
 
 ```python
 # 修改以下参数
-TARGET_DATABASE_TYPE = DatabaseType.MYSQL
+TARGET_DATABASE_TYPE = DatabaseType.POSTGRESQL
 TARGET_DATABASE_NAME = "your_database"
 TARGET_TABLE_NAME = "your_table"
 MARKET_SYMBOL = "hs"  # 'hs'=沪深, 'sh'=上海, 'sz'=深圳
@@ -110,8 +107,8 @@ MARKET_SYMBOL = "hs"  # 'hs'=沪深, 'sh'=上海, 'sz'=深圳
 ### 数据库配置
 
 ```bash
-# 目标数据库类型：MYSQL, POSTGRESQL, MARIADB
-TARGET_DATABASE_TYPE=MYSQL
+# 目标数据库类型：POSTGRESQL
+TARGET_DATABASE_TYPE=POSTGRESQL
 
 # 数据库名称（需要预先创建）
 TARGET_DATABASE_NAME=market_data
@@ -140,11 +137,7 @@ DATA_SOURCE_TIMEOUT=30
 # 常见列名：'股票代码', 'code', 'symbol'
 PRIMARY_KEY_COLUMN=股票代码
 
-# MySQL存储引擎
-TABLE_ENGINE=InnoDB
-
-# 表字符集（支持中文）
-TABLE_CHARSET=utf8mb4
+# PostgreSQL不使用存储引擎/字符集参数（忽略即可）
 
 # 是否添加时间戳列
 ADD_TIMESTAMP_COLUMN=true

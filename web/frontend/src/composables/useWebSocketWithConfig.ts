@@ -27,7 +27,7 @@ import { useWebSocket } from './useWebSocketEnhanced'
 import {
   PAGE_CONFIG,
   getPageConfig,
-  isRouteName
+  isRouteName,
   getWebSocketRoutes,
   type RouteName
 } from '@/config/pageConfig'

@@ -54,6 +54,11 @@ class ConfigDrivenTableManager:
 
         return dict(config) if config else {}
 
+    def _normalize_db_type(self, db_type: str) -> str:
+        if db_type in {"MySQL", "MariaDB"}:
+            raise ValueError("MySQL/MariaDB已移除，请使用PostgreSQL")
+        return db_type
+
     def initialize_tables(self) -> Dict[str, Any]:
         """根据配置初始化所有表"""
         config = self.load_config()
@@ -100,7 +105,7 @@ class ConfigDrivenTableManager:
         Returns:
             True表示创建成功,False表示表已存在
         """
-        db_type = table_def["database_type"]
+        db_type = self._normalize_db_type(table_def["database_type"])
         table_name = table_def["table_name"]
 
         # 检查表是否已存在
@@ -112,8 +117,6 @@ class ConfigDrivenTableManager:
             return self._create_tdengine_super_table(table_def)
         elif db_type == "PostgreSQL":
             return self._create_postgresql_table(table_def)
-        elif db_type == "MySQL":
-            return self._create_mysql_table(table_def)
         elif db_type == "Redis":
             # Redis不需要预先创建表结构
             logger.info("Redis数据结构 %s 无需预创建", table_name)
@@ -124,6 +127,7 @@ class ConfigDrivenTableManager:
     def _table_exists(self, db_type: str, table_name: str, database_name: Optional[str] = None) -> bool:
         """检查表是否存在"""
         try:
+            db_type = self._normalize_db_type(db_type)
             if db_type == "TDengine":
                 conn = self.conn_manager.get_tdengine_connection()
                 cursor = conn.cursor()
@@ -154,25 +158,6 @@ class ConfigDrivenTableManager:
                 exists = cursor.fetchone()[0]
                 cursor.close()
                 self.conn_manager._return_postgresql_connection(conn)
-                return bool(exists)
-
-            elif db_type == "MySQL":
-                conn = self.conn_manager.get_mysql_connection()
-                cursor = conn.cursor()
-                cursor.execute(
-                    """
-                    SELECT COUNT(*)
-                    FROM information_schema.tables
-                    WHERE table_schema = %s AND table_name = %s
-                """,
-                    (
-                        database_name or self.config["databases"]["mysql"]["database"],
-                        table_name,
-                    ),
-                )
-                exists = cursor.fetchone()[0] > 0
-                cursor.close()
-                conn.close()
                 return bool(exists)
 
             else:
@@ -337,89 +322,9 @@ class ConfigDrivenTableManager:
             self.conn_manager._return_postgresql_connection(conn)
             raise RuntimeError(f"创建PostgreSQL表失败: {e}")
 
-    def _create_mysql_table(self, table_def: Dict[str, Any]) -> bool:
-        """创建MySQL表"""
-        conn = self.conn_manager.get_mysql_connection()
-        cursor = conn.cursor()
-
-        try:
-            table_name = table_def["table_name"]
-            columns = table_def["columns"]
-            indexes = table_def.get("indexes", [])
-
-            # 构建列定义
-            col_defs = []
-            primary_keys = []
-
-            for col in columns:
-                col_type = col["type"]
-                if "length" in col and "VARCHAR" in col_type:
-                    col_type = f"VARCHAR({col['length']})"
-                elif "precision" in col and "scale" in col:
-                    col_type = f"NUMERIC({col['precision']},{col['scale']})"
-
-                nullable = "" if col.get("nullable", True) else " NOT NULL"
-
-                # 处理默认值
-                default = ""
-                if "default" in col:
-                    default_val = col["default"]
-                    if isinstance(default_val, str):
-                        default = f" DEFAULT '{default_val}'"
-                    else:
-                        default = f" DEFAULT {default_val}"
-
-                auto_inc = " AUTO_INCREMENT" if col.get("auto_increment") else ""
-
-                col_defs.append(f"{col['name']} {col_type}{nullable}{default}{auto_inc}")
-
-                if col.get("primary_key"):
-                    primary_keys.append(col["name"])
-
-            # 添加主键约束
-            if primary_keys:
-                col_defs.append(f"PRIMARY KEY ({', '.join(primary_keys)})")
-
-            # 构建CREATE语句
-            create_sql = f"""
-                CREATE TABLE IF NOT EXISTS {table_name} (
-                    {", ".join(col_defs)}
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-            """
-
-            cursor.execute(create_sql)
-
-            # 创建索引
-            for idx in indexes:
-                idx_name = idx.get("name", f"idx_{table_name}_{idx['columns'][0]}")
-                idx_columns = idx["columns"]
-                is_unique = idx.get("unique", False)
-
-                if is_unique:
-                    idx_sql = f"CREATE UNIQUE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
-                else:
-                    idx_sql = f"CREATE INDEX {idx_name} ON {table_name} ({', '.join(idx_columns)})"
-
-                try:
-                    cursor.execute(idx_sql)
-                    logger.info("✅ 创建索引: %s", idx_name)
-                except Exception as e:
-                    logger.warning("创建索引时出错 (%s): %s", idx_name, e)
-
-            cursor.close()
-            conn.commit()
-            conn.close()
-            return True
-
-        except Exception as e:
-            cursor.close()
-            conn.rollback()
-            conn.close()
-            raise RuntimeError(f"创建MySQL表失败: {e}")
-
     def validate_table_structure(self, table_def: Dict[str, Any]) -> bool:
         """验证表结构是否符合配置"""
-        db_type = table_def["database_type"]
+        db_type = self._normalize_db_type(table_def["database_type"])
         table_name = table_def["table_name"]
 
         try:
@@ -480,6 +385,7 @@ class ConfigDrivenTableManager:
     def _get_table_structure(self, db_type: str, table_name: str) -> Optional[List[Dict]]:
         """获取表结构信息"""
         try:
+            db_type = self._normalize_db_type(db_type)
             if db_type == "PostgreSQL":
                 conn = self.conn_manager.get_postgresql_connection()
                 cursor = conn.cursor()
@@ -504,16 +410,6 @@ class ConfigDrivenTableManager:
                 cursor.execute(f"DESCRIBE {table_name}")
                 result = cursor.fetchall()
                 cursor.close()
-
-                return [{"name": row[0], "type": row[1]} for row in result]
-
-            elif db_type == "MySQL":
-                conn = self.conn_manager.get_mysql_connection()
-                cursor = conn.cursor()
-                cursor.execute(f"DESCRIBE {table_name}")
-                result = cursor.fetchall()
-                cursor.close()
-                conn.close()
 
                 return [{"name": row[0], "type": row[1]} for row in result]
 

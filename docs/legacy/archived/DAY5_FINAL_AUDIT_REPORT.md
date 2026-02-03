@@ -1,5 +1,7 @@
 # Day 5 最终架构合规审计报告
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **审计时间**: 2025-10-24
 **审计范围**: MyStocks Web Integration (Week 1 Day 1-5)
 **审计结果**: ✅ **100% 架构合规达成**
@@ -485,7 +487,7 @@ Day 5:   100% ██████████████████████
 5. ✅ 完整的知识沉淀和文档更新
 
 **下一步建议**:
-- Week 2: 清理 table_config.yaml 中不再使用的 TDengine/MySQL 表定义
+- Week 2: 清理 table_config.yaml 中不再使用的 TDengine/PostgreSQL 表定义
 - Week 2: 实现 SSE 增强（ROI: 13.3，按 architect 建议）
 - Week 2: 完成剩余 5 个前端组件
 

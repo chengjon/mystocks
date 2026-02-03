@@ -137,7 +137,7 @@ class StrategyRepository:
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error(f"创建策略失败: {str(e)}"")
+            logger.error(f"创建策略失败: {str(e)}")
             raise
 
     def get_strategy(self, strategy_id: int) -> Optional[StrategyConfig]:
@@ -153,13 +153,13 @@ class StrategyRepository:
             strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
 
             if strategy_orm is None:
-                logger.warning("策略不存在: strategy_id=%(strategy_id)s"")
+                logger.warning("策略不存在: strategy_id=%(strategy_id)s")
                 return None
 
             return self._orm_to_pydantic(strategy_orm)
 
         except SQLAlchemyError as e:
-            logger.error("查询策略失败: strategy_id=%(strategy_id)s, error={str(e)}"")
+            logger.error("查询策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
 
     def list_strategies(
@@ -210,7 +210,7 @@ class StrategyRepository:
             return strategies, total_count
 
         except SQLAlchemyError as e:
-            logger.error("查询策略列表失败: user_id=%(user_id)s, error={str(e)}"")
+            logger.error("查询策略列表失败: user_id=%(user_id)s, error={str(e)}")
             raise
 
     def update_strategy(self, strategy_id: int, request: StrategyUpdateRequest) -> Optional[StrategyConfig]:
@@ -230,7 +230,7 @@ class StrategyRepository:
             strategy_orm = self.db.query(UserStrategyModel).filter(UserStrategyModel.strategy_id == strategy_id).first()
 
             if strategy_orm is None:
-                logger.warning("策略不存在: strategy_id=%(strategy_id)s"")
+                logger.warning("策略不存在: strategy_id=%(strategy_id)s")
                 return None
 
             # 仅更新非None字段
@@ -256,13 +256,13 @@ class StrategyRepository:
             self.db.commit()
             self.db.refresh(strategy_orm)
 
-            logger.info("更新策略成功: strategy_id=%(strategy_id)s, updated_fields={list(update_data.keys())}"")
+            logger.info("更新策略成功: strategy_id=%(strategy_id)s, updated_fields={list(update_data.keys())}")
 
             return self._orm_to_pydantic(strategy_orm)
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("更新策略失败: strategy_id=%(strategy_id)s, error={str(e)}"")
+            logger.error("更新策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
 
     def delete_strategy(self, strategy_id: int) -> bool:
@@ -283,15 +283,15 @@ class StrategyRepository:
             self.db.commit()
 
             if result > 0:
-                logger.info("删除策略成功: strategy_id=%(strategy_id)s"")
+                logger.info("删除策略成功: strategy_id=%(strategy_id)s")
                 return True
             else:
-                logger.warning("策略不存在: strategy_id=%(strategy_id)s"")
+                logger.warning("策略不存在: strategy_id=%(strategy_id)s")
                 return False
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("删除策略失败: strategy_id=%(strategy_id)s, error={str(e)}"")
+            logger.error("删除策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
 
     def get_strategies_by_status(self, user_id: int, status: StrategyStatus) -> List[StrategyConfig]:
@@ -318,7 +318,7 @@ class StrategyRepository:
             return [self._orm_to_pydantic(s) for s in strategies_orm]
 
         except SQLAlchemyError as e:
-            logger.error("查询策略失败: user_id=%(user_id)s, status=%(status)s, error={str(e)}"")
+            logger.error("查询策略失败: user_id=%(user_id)s, status=%(status)s, error={str(e)}")
             raise
 
     # ============================================================

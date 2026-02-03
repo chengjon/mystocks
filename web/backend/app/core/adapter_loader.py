@@ -53,7 +53,7 @@ class AdapterLoader:
                 }
                 logger.info("✅ AkShare adapter loaded successfully")
             except Exception as e:
-                logger.error("❌ Failed to load AkShare adapter: %(e)s"")
+                logger.error("❌ Failed to load AkShare adapter: %(e)s")
                 cls._health_status["akshare"] = {
                     "healthy": False,
                     "status": "failed",
@@ -74,7 +74,7 @@ class AdapterLoader:
                 cls._health_status["tdx"] = {"healthy": True, "status": "initialized"}
                 logger.info("✅ TDX adapter loaded successfully")
             except Exception as e:
-                logger.error("❌ Failed to load TDX adapter: %(e)s"")
+                logger.error("❌ Failed to load TDX adapter: %(e)s")
                 cls._health_status["tdx"] = {
                     "healthy": False,
                     "status": "failed",
@@ -98,7 +98,7 @@ class AdapterLoader:
                 }
                 logger.info("✅ Financial adapter loaded successfully")
             except Exception as e:
-                logger.error("❌ Failed to load Financial adapter: %(e)s"")
+                logger.error("❌ Failed to load Financial adapter: %(e)s")
                 cls._health_status["financial"] = {
                     "healthy": False,
                     "status": "failed",
@@ -134,7 +134,7 @@ class AdapterLoader:
             # 默认：如果能加载就认为健康
             return True
         except Exception as e:
-            logger.error("❌ Health check failed for %(adapter_name)s: %(e)s"")
+            logger.error("❌ Health check failed for %(adapter_name)s: %(e)s")
             return False
 
 
@@ -169,5 +169,5 @@ def check_all_adapters() -> Dict[str, bool]:
 
 
 # 初始化日志
-logger.info("📁 Project root: %(PROJECT_ROOT)s"")
-logger.info("📁 Adapters directory: {PROJECT_ROOT / 'adapters'}"")
+logger.info("📁 Project root: %(PROJECT_ROOT)s")
+logger.info("📁 Adapters directory: {PROJECT_ROOT / 'adapters'}")

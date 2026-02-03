@@ -79,7 +79,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("评估告警规则失败: %(e)s"")
+        logger.error("评估告警规则失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"评估告警规则失败: {str(e)}")
 
 
@@ -112,7 +112,7 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("添加告警规则失败: %(e)s"")
+        logger.error("添加告警规则失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"添加告警规则失败: {str(e)}")
 
 
@@ -135,7 +135,7 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("移除告警规则失败: %(e)s"")
+        logger.error("移除告警规则失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"移除告警规则失败: {str(e)}")
 
 
@@ -156,7 +156,7 @@ async def get_rule_statistics() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取规则统计失败: %(e)s"")
+        logger.error("获取规则统计失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取规则统计失败: {str(e)}")
 
 
@@ -180,5 +180,5 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取实时风险指标失败 %(symbol)s: %(e)s"")
+        logger.error("获取实时风险指标失败 %(symbol)s: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取实时风险指标失败: {str(e)}")

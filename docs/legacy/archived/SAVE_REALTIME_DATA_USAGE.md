@@ -1,5 +1,7 @@
 # save_realtime_data.py 完善版使用说明
 
+**Note**: MySQL has been removed; use PostgreSQL. This legacy guide is kept for reference.
+
 ## 概述
 
 基于mystocks项目的db_manager工作原理，完善后的`save_realtime_data.py`提供了完整的股票实时数据保存解决方案。
@@ -43,7 +45,7 @@ from db_manager.database_manager import DatabaseType
 # 单次保存数据
 success = save_realtime_data_to_db(
     market_symbol='hs',           # 市场代码
-    database_type=DatabaseType.MYSQL,
+    database_type=DatabaseType.POSTGRESQL,
     database_name='stock_db',
     table_name='realtime_quotes',
     update_mode='replace'         # 更新模式
@@ -58,7 +60,7 @@ from db_manager.database_manager import DatabaseType
 
 # 创建保存器实例
 saver = RealtimeDataSaver(
-    database_type=DatabaseType.MYSQL,
+    database_type=DatabaseType.POSTGRESQL,
     database_name='stock_db',
     table_name='realtime_quotes',
     update_mode='append'
@@ -82,7 +84,7 @@ from save_realtime_data import save_realtime_data_continuous
 save_realtime_data_continuous(
     market_symbol='hs',
     interval_minutes=5,
-    database_type=DatabaseType.MYSQL,
+    database_type=DatabaseType.POSTGRESQL,
     database_name='stock_db',
     table_name='realtime_quotes'
 )
@@ -111,20 +113,14 @@ python save_realtime_data.py --market hs --db_type PostgreSQL
 确保在`.env`文件中配置数据库连接信息：
 
 ```
-# MySQL配置
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=your_password
-MYSQL_PORT=3306
-
-# PostgreSQL配置（如果使用）
+# PostgreSQL配置
 POSTGRESQL_HOST=localhost
 POSTGRESQL_USER=postgres
 POSTGRESQL_PASSWORD=your_password
 POSTGRESQL_PORT=5432
 
 # 监控数据库URL
-MONITOR_DB_URL=mysql+pymysql://user:password@localhost/db_monitor
+MONITOR_DB_URL=postgresql://user:password@localhost/db_monitor
 ```
 
 ### 参数说明
@@ -132,7 +128,7 @@ MONITOR_DB_URL=mysql+pymysql://user:password@localhost/db_monitor
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | market_symbol | str | 'hs' | 市场代码（hs=沪深，sh=上海，sz=深圳） |
-| database_type | DatabaseType | MYSQL | 数据库类型 |
+| database_type | DatabaseType | POSTGRESQL | 数据库类型 |
 | database_name | str | 'test_db' | 数据库名称 |
 | table_name | str | 'stock_realtime_data' | 表名 |
 | update_mode | str | 'replace' | 更新模式（replace/append/ignore） |

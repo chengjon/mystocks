@@ -65,7 +65,7 @@ async def websocket_events(
         subscribe_channels=subscribe_channels,
     )
 
-    logger.info("WebSocket client connected: %(connection_id)s, channels: %(subscribe_channels)s"")
+    logger.info("WebSocket client connected: %(connection_id)s, channels: %(subscribe_channels)s")
 
     try:
         # Keep connection alive and handle incoming messages
@@ -97,12 +97,12 @@ async def websocket_events(
                 await manager.send_personal_message({"type": "pong"}, connection_id)
 
             else:
-                logger.warning("Unknown message type: %(message_type)s"")
+                logger.warning("Unknown message type: %(message_type)s")
 
     except WebSocketDisconnect:
-        logger.info("WebSocket client disconnected: %(connection_id)s"")
+        logger.info("WebSocket client disconnected: %(connection_id)s")
     except Exception as e:
-        logger.error("WebSocket error for %(connection_id)s: %(e)s"")
+        logger.error("WebSocket error for %(connection_id)s: %(e)s")
     finally:
         manager.disconnect(connection_id)
 
