@@ -9,7 +9,7 @@
 # Purpose: 自动验证新文档位置是否符合项目文件组织规则,并提供建议
 #
 # MyStocks 文件组织哲学:
-#   - 根目录只允许5个核心文件 (README, CLAUDE, CHANGELOG, requirements.txt, .mcp.json)
+#   - 根目录保持最小，但允许 toolchain allowlist（本仓库是 monorepo）
 #   - 所有其他文件必须按功能分类到子目录
 #   - 文档文件必须放在 docs/ 的正确子目录中
 #
@@ -62,7 +62,7 @@
 # Timeout 建议: 5 秒 (快速路径检查)
 #
 # MyStocks 项目特定规则:
-#   - 根目录只允许5个核心文件
+#   - 根目录使用 allowlist（见 docs/standards/FILE_ORGANIZATION_RULES.md）
 #   - 所有文档必须在 docs/ 子目录中
 #   - 配置文件必须在 config/
 #   - 脚本文件必须在 scripts/ 的正确子目录
@@ -79,13 +79,14 @@ set -euo pipefail
 DEBUG_MODE="${DOC_ORGANIZER_DEBUG:-false}"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-.}"
 
-# 允许在根目录的5个核心文件
+# 允许在根目录的常见入口/说明文件（文档 organizer 只对“文档文件”生效）
 ALLOWED_ROOT_FILES=(
     "README.md"
+    "AGENTS.md"
     "CLAUDE.md"
-    "CHANGELOG.md"
-    "requirements.txt"
-    ".mcp.json"
+    "GEMINI.md"
+    "IFLOW.md"
+    "LICENSE"
 )
 
 # ===== 调试日志函数 =====
@@ -384,8 +385,8 @@ CONTEXT_MESSAGE="📁 DOCUMENT ORGANIZATION SUGGESTION
 📖 MyStocks 文件组织规则:
 
 根目录规则:
-  只允许5个核心文件: README.md, CLAUDE.md, CHANGELOG.md, requirements.txt, .mcp.json
-  所有其他文件必须组织到子目录
+  根目录使用 allowlist（monorepo 工具链所需的入口/配置文件允许保留在根目录）
+  其余文档文件不要放根目录
 
 文档分类规则:
   docs/guides/       - 用户指南、教程 (QUICKSTART.md, IFLOW.md)

@@ -30,12 +30,6 @@ def test_other_databases():
     """测试其他数据库库的导入"""
     print("\n开始测试其他数据库库...")
 
-    # 测试MySQL
-    if importlib.util.find_spec("pymysql"):
-        print("✓ PyMySQL导入成功")
-    else:
-        print("✗ PyMySQL导入失败")
-
     # 测试PostgreSQL
     if importlib.util.find_spec("psycopg2"):
         print("✓ psycopg2导入成功")

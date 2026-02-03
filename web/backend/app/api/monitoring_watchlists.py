@@ -163,7 +163,7 @@ async def create_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("创建监控清单失败: %(e)s"")
+        logger.error("创建监控清单失败: %(e)s")
         raise BusinessException(detail=f"创建失败: {str(e)}", status_code=500, error_code="WATCHLIST_CREATION_FAILED")
 
 
@@ -207,7 +207,7 @@ async def list_watchlists(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取监控清单列表失败: %(e)s"")
+        logger.error("获取监控清单列表失败: %(e)s")
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
@@ -253,7 +253,7 @@ async def get_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取监控清单失败: %(e)s"")
+        logger.error("获取监控清单失败: %(e)s")
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
@@ -304,7 +304,7 @@ async def delete_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("删除监控清单失败: %(e)s"")
+        logger.error("删除监控清单失败: %(e)s")
         raise BusinessException(detail=f"删除失败: {str(e)}", status_code=500, error_code="WATCHLIST_DELETION_FAILED")
 
 
@@ -365,7 +365,7 @@ async def add_stock_to_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("添加股票到清单失败: %(e)s"")
+        logger.error("添加股票到清单失败: %(e)s")
         raise BusinessException(detail=f"添加失败: {str(e)}", status_code=500, error_code="STOCK_ADDITION_FAILED")
 
 
@@ -416,7 +416,7 @@ async def list_watchlist_stocks(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取清单股票列表失败: %(e)s"")
+        logger.error("获取清单股票列表失败: %(e)s")
         raise BusinessException(detail=f"获取失败: {str(e)}", status_code=500, error_code="WATCHLIST_RETRIEVAL_FAILED")
 
 
@@ -442,5 +442,5 @@ async def remove_stock_from_watchlist(
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("从清单移除股票失败: %(e)s"")
+        logger.error("从清单移除股票失败: %(e)s")
         raise BusinessException(detail=f"移除失败: {str(e)}", status_code=500, error_code="STOCK_REMOVAL_FAILED")

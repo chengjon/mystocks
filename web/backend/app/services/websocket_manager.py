@@ -98,7 +98,7 @@ class ConnectionManager:
             for channel in subscribe_channels:
                 self.subscribe(connection_id, channel)
 
-        logger.info("WebSocket connected: %(connection_id)s (user: %(user_id)s)"")
+        logger.info("WebSocket connected: %(connection_id)s (user: %(user_id)s)")
 
         # Send welcome message
         await self.send_personal_message(
@@ -141,7 +141,7 @@ class ConnectionManager:
         if connection_id in self.connection_metadata:
             del self.connection_metadata[connection_id]
 
-        logger.info("WebSocket disconnected: %(connection_id)s (user: %(user_id)s)"")
+        logger.info("WebSocket disconnected: %(connection_id)s (user: %(user_id)s)")
 
     def subscribe(self, connection_id: str, channel: str):
         """
@@ -152,14 +152,14 @@ class ConnectionManager:
             channel: Channel name
         """
         if connection_id not in self.active_connections:
-            logger.warning("Cannot subscribe %(connection_id)s to %(channel)s: connection not found"")
+            logger.warning("Cannot subscribe %(connection_id)s to %(channel)s: connection not found")
             return
 
         if channel not in self.channel_subscriptions:
             self.channel_subscriptions[channel] = set()
 
         self.channel_subscriptions[channel].add(connection_id)
-        logger.debug("Connection %(connection_id)s subscribed to %(channel)s"")
+        logger.debug("Connection %(connection_id)s subscribed to %(channel)s")
 
     def unsubscribe(self, connection_id: str, channel: str):
         """
@@ -173,7 +173,7 @@ class ConnectionManager:
             self.channel_subscriptions[channel].discard(connection_id)
             if not self.channel_subscriptions[channel]:
                 del self.channel_subscriptions[channel]
-            logger.debug("Connection %(connection_id)s unsubscribed from %(channel)s"")
+            logger.debug("Connection %(connection_id)s unsubscribed from %(channel)s")
 
     async def send_personal_message(self, message: dict, connection_id: str):
         """
@@ -188,10 +188,10 @@ class ConnectionManager:
                 websocket = self.active_connections[connection_id]
                 await websocket.send_json(message)
             except Exception as e:
-                logger.error("Failed to send message to %(connection_id)s: %(e)s"")
+                logger.error("Failed to send message to %(connection_id)s: %(e)s")
                 self.disconnect(connection_id)
         else:
-            logger.warning("Cannot send message to %(connection_id)s: connection not found"")
+            logger.warning("Cannot send message to %(connection_id)s: connection not found")
 
     async def broadcast(self, message: dict, channel: str):
         """
@@ -202,7 +202,7 @@ class ConnectionManager:
             channel: Channel name
         """
         if channel not in self.channel_subscriptions:
-            logger.debug("No subscribers for channel %(channel)s"")
+            logger.debug("No subscribers for channel %(channel)s")
             return
 
         # Get subscribers
@@ -221,7 +221,7 @@ class ConnectionManager:
                 websocket = self.active_connections[connection_id]
                 await websocket.send_json(message)
             except Exception as e:
-                logger.error("Failed to broadcast to %(connection_id)s: %(e)s"")
+                logger.error("Failed to broadcast to %(connection_id)s: %(e)s")
                 failed_connections.append(connection_id)
 
         # Clean up failed connections
@@ -237,7 +237,7 @@ class ConnectionManager:
             user_id: User identifier
         """
         if user_id not in self.user_connections:
-            logger.debug("No connections for user %(user_id)s"")
+            logger.debug("No connections for user %(user_id)s")
             return
 
         connections = self.user_connections[user_id].copy()
@@ -281,7 +281,7 @@ class ConnectionManager:
 
                 # Disconnect stale connections
                 for connection_id in stale_connections:
-                    logger.warning("Disconnecting stale connection: %(connection_id)s"")
+                    logger.warning("Disconnecting stale connection: %(connection_id)s")
                     self.disconnect(connection_id)
 
                 # Sleep until next check
@@ -291,7 +291,7 @@ class ConnectionManager:
                 logger.info("Heartbeat checker task cancelled")
                 break
             except Exception as e:
-                logger.error("Error in heartbeat checker: %(e)s"")
+                logger.error("Error in heartbeat checker: %(e)s")
                 await asyncio.sleep(self.heartbeat_interval)
 
         # Task completed (no active connections)

@@ -32,7 +32,7 @@ async def get_performance_stats():
         stats = manager.get_performance_stats()
         return {"success": True, "data": stats, "message": "SSE性能统计获取成功"}
     except Exception as e:
-        logger.error("获取SSE性能统计失败: %(e)s"")
+        logger.error("获取SSE性能统计失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取性能统计失败: {str(e)}")
 
 
@@ -54,7 +54,7 @@ async def get_connection_metrics(
         metrics = manager.get_connection_metrics(client_id)
         return {"success": True, "data": metrics, "message": "连接指标获取成功"}
     except Exception as e:
-        logger.error("获取连接指标失败: %(e)s"")
+        logger.error("获取连接指标失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取连接指标失败: {str(e)}")
 
 
@@ -78,7 +78,7 @@ async def get_channel_health(channel: str):
             "message": f"频道 {channel} 健康状态获取成功",
         }
     except Exception as e:
-        logger.error("获取频道健康状态失败: %(e)s"")
+        logger.error("获取频道健康状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取频道健康状态失败: {str(e)}")
 
 
@@ -95,7 +95,7 @@ async def get_system_health():
         health = manager.get_system_health()
         return {"success": True, "data": health, "message": "系统健康状态获取成功"}
     except Exception as e:
-        logger.error("获取系统健康状态失败: %(e)s"")
+        logger.error("获取系统健康状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取系统健康状态失败: {str(e)}")
 
 
@@ -129,7 +129,7 @@ async def get_active_channels():
             "message": "活跃频道列表获取成功",
         }
     except Exception as e:
-        logger.error("获取活跃频道列表失败: %(e)s"")
+        logger.error("获取活跃频道列表失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取频道列表失败: {str(e)}")
 
 
@@ -158,7 +158,7 @@ async def reset_metrics():
                 "timestamp": datetime.now().isoformat(),
             }
     except Exception as e:
-        logger.error("重置性能指标失败: %(e)s"")
+        logger.error("重置性能指标失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"重置性能指标失败: {str(e)}")
 
 
@@ -200,7 +200,7 @@ async def get_sse_status():
             "message": "SSE服务状态获取成功",
         }
     except Exception as e:
-        logger.error("获取SSE服务状态失败: %(e)s"")
+        logger.error("获取SSE服务状态失败: %(e)s")
         return {
             "success": False,
             "data": {
@@ -249,7 +249,7 @@ async def get_optimizer_stats():
                 "message": "性能优化器未启用",
             }
     except Exception as e:
-        logger.error("获取性能优化器统计失败: %(e)s"")
+        logger.error("获取性能优化器统计失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取性能优化器统计失败: {str(e)}")
 
 
@@ -260,7 +260,7 @@ async def ensure_sse_manager():
         get_sse_manager()
         return True
     except Exception as e:
-        logger.error("SSE管理器未初始化: %(e)s"")
+        logger.error("SSE管理器未初始化: %(e)s")
         raise HTTPException(status_code=503, detail="SSE服务不可用")
 
 

@@ -9,7 +9,7 @@ TDX数据增量导入器 (TDX Incremental Importer)
 
 数据路由策略:
 - 日线/分钟线数据 → TDengine (时序数据库)
-- 导入记录元数据 → MySQL (元数据库)
+- 导入记录元数据 → PostgreSQL (元数据库)
 
 作者: MyStocks量化交易团队
 创建时间: 2025-10-18

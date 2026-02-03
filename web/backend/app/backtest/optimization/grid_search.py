@@ -56,7 +56,7 @@ class GridSearchOptimizer(BaseOptimizer):
 
         # 预计算网格大小
         self._grid_size = self._calculate_grid_size()
-        logger.info("网格搜索优化器初始化: 网格大小={self._grid_size}"")
+        logger.info("网格搜索优化器初始化: 网格大小={self._grid_size}")
 
     def _calculate_grid_size(self) -> int:
         """计算网格总大小"""
@@ -109,7 +109,7 @@ class GridSearchOptimizer(BaseOptimizer):
         Returns:
             所有优化结果
         """
-        logger.info("开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}"")
+        logger.info("开始网格搜索优化: 策略={self.strategy_type}, 组合数={self._grid_size}")
 
         start_time = time.time()
 
@@ -152,10 +152,10 @@ class GridSearchOptimizer(BaseOptimizer):
                 if self.best_result:
                     best_score = self.best_result.get_score(self.objective)
                     if self.maximize and best_score >= early_stop_threshold:
-                        logger.info("早停触发: 已达到目标 {best_score:.4f} >= %(early_stop_threshold)s"")
+                        logger.info("早停触发: 已达到目标 {best_score:.4f} >= %(early_stop_threshold)s")
                         break
                     elif not self.maximize and best_score <= early_stop_threshold:
-                        logger.info("早停触发: 已达到目标 {best_score:.4f} <= %(early_stop_threshold)s"")
+                        logger.info("早停触发: 已达到目标 {best_score:.4f} <= %(early_stop_threshold)s")
                         break
 
         total_time = time.time() - start_time

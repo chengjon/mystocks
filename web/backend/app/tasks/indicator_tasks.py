@@ -24,7 +24,7 @@ async def batch_calculate_indicators(params: Dict[str, Any]) -> Dict[str, Any]:
             - stocks: List[str] (optional)
             - indicators: List[Dict] (optional)
     """
-    logger.info("Starting batch_calculate_indicators task with params: %(params)s"")
+    logger.info("Starting batch_calculate_indicators task with params: %(params)s")
     try:
         result = await run_daily_calculation(params)
         return result if result else {"status": "success"}

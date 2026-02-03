@@ -65,7 +65,7 @@ class TqlexDataSource:
                     return func(*args, **kwargs)
                 except Exception as e:
                     last_exception = e
-                    logger.warning("[TQLEX] 第%(attempt)s次尝试失败: {str(e)}"")
+                    logger.warning("[TQLEX] 第%(attempt)s次尝试失败: {str(e)}")
                     if attempt < self.MAX_RETRIES:
                         time.sleep(self.RETRY_DELAY * attempt)
             raise last_exception if last_exception else Exception("未知错误")
@@ -296,7 +296,7 @@ class TqlexDataSource:
             return df_combined
 
         except Exception as e:
-            logger.error("获取竞价抢筹数据失败: %(e)s"")
+            logger.error("获取竞价抢筹数据失败: %(e)s")
             return pd.DataFrame()
 
 

@@ -45,7 +45,7 @@ export function createBaseStore(
       const { skipCache = false, forceRefresh = false, errorContext = storeId } = options
 
       if (!skipCache && !forceRefresh && canUseCache.value) {
-        console.log(\`📦 使用缓存数据: \${storeId}\`)
+        console.log(`📦 使用缓存数据: ${storeId}`)
         return state.data as R
       }
 
@@ -60,7 +60,7 @@ export function createBaseStore(
         state.cacheValid = true
         state.loading = false
 
-        console.log(\`✅ API调用成功: \${storeId}\`)
+        console.log(`✅ API调用成功: ${storeId}`)
         return result
 
       } catch (error) {
@@ -69,7 +69,7 @@ export function createBaseStore(
         const errorMessage = handleApiError(error, errorContext)
         state.error = errorMessage
 
-        console.error(\`❌ API调用失败: \${storeId}\`, error)
+        console.error(`❌ API调用失败: ${storeId}`, error)
         throw error
       }
     }
@@ -98,7 +98,7 @@ export function createBaseStore(
 }
 
 function handleApiError(error: any, context: string): string {
-  console.error(\`API Error in \${context}:\`, error)
+  console.error(`API Error in ${context}:`, error)
 
   if (error.response) {
     const status = error.response.status

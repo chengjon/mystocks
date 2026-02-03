@@ -11,9 +11,15 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import data_validator
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.adapters import data_validator
 
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
+
+
+class TestDataValidatorSmart(unittest.TestCase):
     def test_data_validator_validate_price_data_security(self):
         """安全测试 - validate_price_data"""
         # 测试恶意输入
@@ -79,7 +85,6 @@ import data_validator
     def test_data_validator_basic_functionality(self):
         """基本功能测试"""
         # 测试模块导入
-        import data_validator
         self.assertTrue(hasattr(data_validator, '__name__'))
 
         # 测试是否有公共函数

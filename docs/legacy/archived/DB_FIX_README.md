@@ -1,12 +1,13 @@
 # MyStocks 数据库问题修复指南
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 ## 问题分析
 
 在运行 MyStocks 系统时，可能会遇到以下数据库相关错误：
 
 1. **TDengine 错误**: `Database not specified`
 2. **PostgreSQL 错误**: `function create_hypertable(unknown, unknown) does not exist`
-3. **MySQL 错误**: 连接或权限问题
 
 ## 解决方案
 
@@ -83,12 +84,6 @@ export POSTGRESQL_PORT=5432
 export POSTGRESQL_USER=postgres
 export POSTGRESQL_PASSWORD=your_password
 
-# MySQL 配置
-export MYSQL_HOST=localhost
-export MYSQL_PORT=3306
-export MYSQL_USER=root
-export MYSQL_PASSWORD=your_password
-
 # Redis 配置
 export REDIS_HOST=localhost
 export REDIS_PORT=6379
@@ -133,10 +128,6 @@ A: 可以使用简化版运行模式，该模式不依赖TimescaleDB。
 ### Q: 如何手动创建数据库？
 A: 使用以下命令：
 ```sql
--- MySQL
-CREATE DATABASE IF NOT EXISTS market_data;
-CREATE DATABASE IF NOT EXISTS quant_research;
-
 -- PostgreSQL
 CREATE DATABASE quant_research;
 ```

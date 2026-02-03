@@ -42,7 +42,7 @@ class DataClassification(str, Enum):
     """指数行情 - 指数分时和日线数据,分时高频+日线中频"""
 
     # ==================== 第2类: 参考数据 (9项) ====================
-    # 相对静态的描述性数据 → MySQL/MariaDB
+    # 相对静态的描述性数据 → PostgreSQL
 
     SYMBOLS_INFO = "SYMBOLS_INFO"
     """股票信息 - 代码、名称、上市日期等基础属性,静态"""

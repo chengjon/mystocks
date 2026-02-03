@@ -36,7 +36,7 @@ class BusinessException(HTTPException):
         self.error_code = error_code or f"HTTP_{status_code}"
 
         # 统一记录异常日志
-        logger.error("业务异常：%(detail)s（状态码：%(status_code)s, 错误码：{self.error_code}）"")
+        logger.error("业务异常：%(detail)s（状态码：%(status_code)s, 错误码：{self.error_code}）")
 
 
 # 数据验证异常
@@ -84,7 +84,7 @@ class ConfigurationException(Exception):
 
     def __init__(self, detail: str):
         super().__init__(detail)
-        logger.error("配置异常：%(detail)s"")
+        logger.error("配置异常：%(detail)s")
 
 
 # 全局通用异常处理（挂载到FastAPI app）

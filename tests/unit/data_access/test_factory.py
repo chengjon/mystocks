@@ -22,7 +22,6 @@ class MockDatabaseType:
     POSTGRESQL = "postgresql"
     TDENGINE = "tdengine"
     MONGODB = "mongodb"
-    MYSQL = "mysql"
 
 
 class MockDataAccessLayer:

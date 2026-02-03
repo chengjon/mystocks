@@ -131,7 +131,7 @@ class AnnouncementService:
             # 保存到数据库
             saved_count, updated_count = self._save_announcements_to_db(df)
 
-            logger.info("Saved %(saved_count)s new announcements, updated %(updated_count)s"")
+            logger.info("Saved %(saved_count)s new announcements, updated %(updated_count)s")
 
             return {
                 "success": True,
@@ -142,7 +142,7 @@ class AnnouncementService:
             }
 
         except Exception as e:
-            logger.error("Failed to fetch and save announcements: %(e)s"")
+            logger.error("Failed to fetch and save announcements: %(e)s")
             return {"success": False, "error": str(e)}
 
     def _save_announcements_to_db(self, df: pd.DataFrame) -> tuple:
@@ -203,7 +203,7 @@ class AnnouncementService:
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to save announcements to DB: %(e)s"")
+            logger.error("Failed to save announcements to DB: %(e)s")
             raise
 
         finally:
@@ -266,13 +266,13 @@ class AnnouncementService:
             # 获取所有活跃规则
             rules = session.query(AnnouncementMonitorRule).filter(AnnouncementMonitorRule.is_active is True).all()
 
-            logger.info("Evaluating {len(rules)} active monitor rules"")
+            logger.info("Evaluating {len(rules)} active monitor rules")
 
             # 获取今天的公告
             today = date.today()
             announcements = session.query(Announcement).filter(Announcement.publish_date == today).all()
 
-            logger.info("Found {len(announcements)} announcements for today"")
+            logger.info("Found {len(announcements)} announcements for today")
 
             # 评估每个规则
             for rule in rules:
@@ -289,7 +289,7 @@ class AnnouncementService:
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to evaluate monitor rules: %(e)s"")
+            logger.error("Failed to evaluate monitor rules: %(e)s")
             return {"success": False, "error": str(e)}
 
         finally:
@@ -347,7 +347,7 @@ class AnnouncementService:
             session.add(record)
             triggered_count += 1
 
-            logger.info("Rule '{rule.rule_name}' triggered for announcement {announcement.id}"")
+            logger.info("Rule '{rule.rule_name}' triggered for announcement {announcement.id}")
 
             # 发送通知（如果启用）
             if rule.notify_enabled:
@@ -494,7 +494,7 @@ class AnnouncementService:
             }
 
         except Exception as e:
-            logger.error("Failed to query announcements: %(e)s"")
+            logger.error("Failed to query announcements: %(e)s")
             return {"success": False, "error": str(e)}
 
         finally:

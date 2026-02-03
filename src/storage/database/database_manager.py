@@ -17,7 +17,6 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-import pymysql
 import redis
 import sqlalchemy as sa
 import yaml
@@ -78,8 +77,27 @@ if TAOS_AVAILABLE:
 else:
     logger.warning("TDengine client library not available")
 
-# 从环境变量获取监控数据库连接
-MONITOR_DB_URL = os.getenv("MONITOR_DB_URL", "mysql+pymysql://user:password@localhost/db_monitor")
+# 从环境变量获取监控数据库连接（默认切换为 PostgreSQL）
+def _build_monitor_db_url() -> str:
+    monitor_url = os.getenv("MONITOR_DB_URL")
+    if monitor_url:
+        return monitor_url
+
+    host = os.getenv("MONITOR_DB_HOST") or os.getenv("POSTGRESQL_HOST", "localhost")
+    port = os.getenv("MONITOR_DB_PORT") or os.getenv("POSTGRESQL_PORT", "5432")
+    user = os.getenv("MONITOR_DB_USER") or os.getenv("POSTGRESQL_USER", "postgres")
+    password = os.getenv("MONITOR_DB_PASSWORD") or os.getenv("POSTGRESQL_PASSWORD", "")
+    database = os.getenv("MONITOR_DB_DATABASE") or os.getenv("POSTGRESQL_DATABASE", "mystocks")
+
+    if password:
+        auth = f"{user}:{password}"
+    else:
+        auth = user
+
+    return f"postgresql+psycopg2://{auth}@{host}:{port}/{database}"
+
+
+MONITOR_DB_URL = _build_monitor_db_url()
 
 Base: Any = declarative_base()
 
@@ -88,8 +106,6 @@ class DatabaseType(Enum):
     TDENGINE = "TDengine"
     POSTGRESQL = "PostgreSQL"
     REDIS = "Redis"
-    MYSQL = "MySQL"
-    MARIADB = "MariaDB"
 
 
 # ORM模型
@@ -157,11 +173,18 @@ class TableValidationLog(Base):
 
 class DatabaseTableManager:
     def __init__(self) -> None:
-        # 初始化监控数据库连接
-        self.monitor_engine = create_engine(MONITOR_DB_URL)
-        Base.metadata.create_all(self.monitor_engine)
-        Session = sessionmaker(bind=self.monitor_engine)
-        self.monitor_session = Session()
+        # 初始化监控数据库连接（优先 PostgreSQL，失败则回退到 SQLite）
+        try:
+            self.monitor_engine = create_engine(MONITOR_DB_URL)
+            Base.metadata.create_all(self.monitor_engine)
+            Session = sessionmaker(bind=self.monitor_engine)
+            self.monitor_session = Session()
+        except Exception as e:
+            logger.warning("Monitoring DB unavailable, falling back to SQLite: %s", e)
+            self.monitor_engine = create_engine("sqlite:///:memory:")
+            Base.metadata.create_all(self.monitor_engine)
+            Session = sessionmaker(bind=self.monitor_engine)
+            self.monitor_session = Session()
 
         # 从环境变量加载各数据库连接配置，不提供默认值以确保安全性
         self.db_configs = {
@@ -182,18 +205,6 @@ class DatabaseTableManager:
                 "port": int(os.getenv("REDIS_PORT", "6379")),
                 "password": os.getenv("REDIS_PASSWORD"),
                 "db": int(os.getenv("REDIS_DB", "0")),
-            },
-            DatabaseType.MYSQL: {
-                "host": os.getenv("MYSQL_HOST"),
-                "user": os.getenv("MYSQL_USER"),
-                "password": os.getenv("MYSQL_PASSWORD"),
-                "port": int(os.getenv("MYSQL_PORT", "3306")),
-            },
-            DatabaseType.MARIADB: {
-                "host": os.getenv("MARIADB_HOST"),
-                "user": os.getenv("MARIADB_USER"),
-                "password": os.getenv("MARIADB_PASSWORD"),
-                "port": int(os.getenv("MARIADB_PORT", "3307")),
             },
         }
 
@@ -269,16 +280,6 @@ class DatabaseTableManager:
                     password=str(config.get("password")) if config.get("password") else None,
                     decode_responses=True,
                 )
-            elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
-                # MySQL/MariaDB连接
-                conn = pymysql.connect(
-                    host=config["host"],
-                    user=config["user"],
-                    password=config["password"],
-                    port=config["port"],
-                    database=db_name,
-                    charset="utf8mb4",
-                )
             else:
                 raise ValueError(f"Unsupported database type: {db_type}")
 
@@ -345,11 +346,6 @@ class DatabaseTableManager:
                 cursor.execute(ddl)
             elif db_type == DatabaseType.POSTGRESQL:
                 ddl = self._generate_postgresql_ddl(table_name, columns, **kwargs)
-                cursor = conn.cursor()
-                cursor.execute(ddl)
-                conn.commit()
-            elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
-                ddl = self._generate_mysql_ddl(table_name, columns, **kwargs)
                 cursor = conn.cursor()
                 cursor.execute(ddl)
                 conn.commit()
@@ -524,8 +520,6 @@ class DatabaseTableManager:
                 ddl = f"DROP TABLE IF EXISTS {table_name}"
             elif db_type == DatabaseType.POSTGRESQL:
                 ddl = f"DROP TABLE IF EXISTS {table_name} CASCADE"
-            elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
-                ddl = f"DROP TABLE IF EXISTS {table_name}"
             elif db_type == DatabaseType.REDIS:
                 # Redis没有表的概念，删除相关的所有键
                 ddl = f"Redis keys deletion for pattern: {table_name}:*"
@@ -739,7 +733,7 @@ class DatabaseTableManager:
 
         return definition
 
-    # 其他方法 (_generate_tdengine_ddl, _generate_postgresql_ddl, _generate_mysql_ddl,
+    # 其他方法 (_generate_tdengine_ddl, _generate_postgresql_ddl,
     # _initialize_redis_structure, get_table_info, close_all_connections) 保持不变
     # 但需要更新以使用新的列名 (col_length, col_precision, col_scale)
     def _generate_tdengine_ddl(self, table_name: str, columns: List[Dict], tags: List[Dict], **kwargs) -> str:
@@ -822,58 +816,6 @@ class DatabaseTableManager:
 
         return ddl
 
-    def _generate_mysql_ddl(self, table_name: str, columns: List[Dict], **kwargs) -> str:
-        """生成MySQL的DDL语句"""
-        col_defs = []
-        primary_keys = []
-
-        for col in columns:
-            col_def = f"{col['name']} {col['type']}"
-
-            # 处理长度/精度
-            if col.get("length") and col["type"].lower() in ["varchar", "char"]:
-                col_def += f"({col['length']})"
-            elif col.get("precision") and col["type"].lower() in ["numeric", "decimal"]:
-                if col.get("scale"):
-                    col_def += f"({col['precision']}, {col['scale']})"
-                else:
-                    col_def += f"({col['precision']})"
-
-            # 处理约束
-            if not col.get("nullable", True):
-                col_def += " NOT NULL"
-
-            if col.get("primary_key", False):
-                primary_keys.append(col["name"])
-
-            if col.get("default") is not None:
-                col_def += f" DEFAULT {col['default']}"
-
-            if col.get("comment"):
-                col_def += f" COMMENT '{col['comment']}'"
-
-            col_defs.append(col_def)
-
-        # 添加主键约束
-        if primary_keys:
-            col_defs.append(f"PRIMARY KEY ({', '.join(primary_keys)})")
-
-        ddl = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(col_defs)})"
-
-        # 添加表注释
-        if kwargs.get("comment"):
-            ddl += f" COMMENT='{kwargs['comment']}'"
-
-        # 添加存储引擎设置
-        engine = kwargs.get("engine", "InnoDB")
-        ddl += f" ENGINE={engine}"
-
-        # 添加字符集设置
-        charset = kwargs.get("charset", "utf8mb4")
-        ddl += f" DEFAULT CHARSET={charset}"
-
-        return ddl
-
     def _initialize_redis_structure(self, conn, key_prefix: str, columns: List[Dict]):
         """初始化Redis数据结构"""
         # 这里可以根据列定义创建一些初始的Redis结构
@@ -936,31 +878,6 @@ class DatabaseTableManager:
                         "precision": row[5],
                         "scale": row[6],
                     }
-                    columns.append(col_info)
-
-            elif db_type in [DatabaseType.MYSQL, DatabaseType.MARIADB]:
-                cursor.execute(f"SHOW FULL COLUMNS FROM {table_name}")
-                result = cursor.fetchall()
-                for row in result:
-                    col_info = {
-                        "name": row[0],
-                        "type": row[1],
-                        "nullable": row[2] == "YES",
-                        "default": row[4],
-                        "comment": row[8],
-                    }
-
-                    # 解析类型中的长度和精度信息
-                    type_str = row[1]
-                    if "(" in type_str and ")" in type_str:
-                        params = type_str[type_str.find("(") + 1 : type_str.find(")")]
-                        if "," in params:
-                            parts = params.split(",")
-                            col_info["precision"] = int(parts[0])
-                            col_info["scale"] = int(parts[1])
-                        else:
-                            col_info["length"] = int(params)
-
                     columns.append(col_info)
 
             else:
@@ -1038,7 +955,7 @@ if __name__ == "__main__":
     ]
 
     success = manager.alter_table(
-        DatabaseType.MYSQL,
+        DatabaseType.POSTGRESQL,
         "test_db",
         "test_table",
         alterations,
@@ -1050,7 +967,7 @@ if __name__ == "__main__":
 
     # 删除表示例 - 所有连接参数从环境变量自动获取
     success = manager.drop_table(
-        DatabaseType.MYSQL,
+        DatabaseType.POSTGRESQL,
         "test_db",
         "test_table",
         # 注意：不再传递host, user, password等参数

@@ -81,7 +81,7 @@ class MonitoringDatabase:
         Args:
             operation_type: 操作类型 (SAVE/LOAD/DELETE/UPDATE)
             classification: 数据分类
-            target_database: 目标数据库 (TDengine/PostgreSQL/MySQL/Redis)
+            target_database: 目标数据库 (TDengine/PostgreSQL/Redis)
             table_name: 目标表名
             record_count: 影响记录数
             operation_status: 状态 (SUCCESS/FAILED/PARTIAL)

@@ -15,10 +15,10 @@
       "connection": "✗ 连接失败",
       "message": "'PostgreSQLDataAccess' object has no attribute 'execute'"
     },
-    "mysql": {
+    "postgresql": {
       "status": "error",
       "connection": "✗ 连接失败",
-      "message": "'MySQLDataAccess' object has no attribute 'execute'"
+      "message": "'PostgreSQLDataAccess' object has no attribute 'execute'"
     },
     "redis": {
       "status": "error",

@@ -53,7 +53,7 @@ class SQLInjectionPattern:
         text_lower = text.lower()
         for pattern in cls.PATTERNS:
             if re.search(pattern, text_lower):
-                logger.warning("检测到SQL注入模式: %(pattern)s 在输入: {text[:50]}..."")
+                logger.warning("检测到SQL注入模式: %(pattern)s 在输入: {text[:50]}...")
                 return True
         return False
 
@@ -87,7 +87,7 @@ class XSSPattern:
         text_lower = text.lower()
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, text_lower):
-                logger.warning("检测到XSS攻击模式: %(pattern)s 在输入: {text[:50]}..."")
+                logger.warning("检测到XSS攻击模式: %(pattern)s 在输入: {text[:50]}...")
                 return True
         return False
 
@@ -238,7 +238,7 @@ async def request_middleware(request: Request, call_next):
     对所有请求进行基本的安全检查
     """
     # 记录请求信息（不记录敏感数据）
-    logger.info("Request: {request.method} {request.url}"")
+    logger.info("Request: {request.method} {request.url}")
 
     # 检查请求头中的潜在攻击
     headers = dict(request.headers)

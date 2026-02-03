@@ -743,3 +743,7 @@ class AITestDataManager:
             recommendations.append(f"存储使用量较高 ({storage_usage:.2f}MB)，建议清理")
 
         return recommendations
+
+
+# Compatibility alias for monitoring tests.
+DataManager = AITestDataManager

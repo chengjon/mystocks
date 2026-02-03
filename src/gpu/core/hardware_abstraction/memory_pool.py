@@ -43,11 +43,33 @@ class MemoryBlock:
     pool_id: Optional[str] = None
 
 
+@dataclass
+class MemoryPoolConfig:
+    """内存池配置"""
+
+    pool_size_mb: int = 1024
+    device_id: int = 0
+    strategy_id: Optional[str] = None
+    min_block_size: int = 1024
+    max_block_size: int = 100 * 1024 * 1024
+    cleanup_threshold: float = 0.8
+
+
 class MemoryPool:
     """GPU内存池"""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        self.config = config or {}
+    def __init__(self, config: Optional[Dict[str, Any] | MemoryPoolConfig] = None):
+        if isinstance(config, MemoryPoolConfig):
+            self.config = {
+                "max_pool_size": config.pool_size_mb * 1024 * 1024,
+                "min_block_size": config.min_block_size,
+                "max_block_size": config.max_block_size,
+                "cleanup_threshold": config.cleanup_threshold,
+                "device_id": config.device_id,
+                "strategy_id": config.strategy_id,
+            }
+        else:
+            self.config = config or {}
         self.is_initialized = False
 
         # 内存块管理

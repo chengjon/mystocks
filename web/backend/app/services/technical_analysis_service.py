@@ -81,7 +81,7 @@ class TechnicalAnalysisService:
             if cache_key in self._cache:
                 cached_data, cached_time = self._cache[cache_key]
                 if (datetime.now() - cached_time).seconds < self._cache_ttl:
-                    logger.info("Using cached data for %(symbol)s"")
+                    logger.info("Using cached data for %(symbol)s")
                     return cached_data
 
             # 设置默认日期范围
@@ -105,7 +105,7 @@ class TechnicalAnalysisService:
             )
 
             if df.empty:
-                logger.warning("No data for %(symbol)s"")
+                logger.warning("No data for %(symbol)s")
                 return pd.DataFrame()
 
             # 重命名列
@@ -139,11 +139,11 @@ class TechnicalAnalysisService:
             # 缓存数据
             self._cache[cache_key] = (df, datetime.now())
 
-            logger.info("Fetched {len(df)} records for %(symbol)s"")
+            logger.info("Fetched {len(df)} records for %(symbol)s")
             return df
 
         except Exception as e:
-            logger.error("Failed to get stock history for %(symbol)s: %(e)s"")
+            logger.error("Failed to get stock history for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
     # ========================================================================
@@ -206,11 +206,11 @@ class TechnicalAnalysisService:
                 sar = talib.SAR(high, low, acceleration=0.02, maximum=0.2)
                 indicators["sar"] = float(sar[-1])
 
-            logger.info("Calculated {len(indicators)} trend indicators"")
+            logger.info("Calculated {len(indicators)} trend indicators")
             return indicators
 
         except Exception as e:
-            logger.error("Failed to calculate trend indicators: %(e)s"")
+            logger.error("Failed to calculate trend indicators: %(e)s")
             return {}
 
     # ========================================================================
@@ -282,11 +282,11 @@ class TechnicalAnalysisService:
                 roc = talib.ROC(close, timeperiod=12)
                 indicators["roc"] = float(roc[-1])
 
-            logger.info("Calculated {len(indicators)} momentum indicators"")
+            logger.info("Calculated {len(indicators)} momentum indicators")
             return indicators
 
         except Exception as e:
-            logger.error("Failed to calculate momentum indicators: %(e)s"")
+            logger.error("Failed to calculate momentum indicators: %(e)s")
             return {}
 
     # ========================================================================
@@ -346,11 +346,11 @@ class TechnicalAnalysisService:
                 stddev = talib.STDDEV(close, timeperiod=20, nbdev=1)
                 indicators["stddev"] = float(stddev[-1])
 
-            logger.info("Calculated {len(indicators)} volatility indicators"")
+            logger.info("Calculated {len(indicators)} volatility indicators")
             return indicators
 
         except Exception as e:
-            logger.error("Failed to calculate volatility indicators: %(e)s"")
+            logger.error("Failed to calculate volatility indicators: %(e)s")
             return {}
 
     # ========================================================================
@@ -407,11 +407,11 @@ class TechnicalAnalysisService:
                 if vol_ma5[-2] > 0:  # 使用昨天的均量
                     indicators["volume_ratio"] = float(volume[-1] / vol_ma5[-2])
 
-            logger.info("Calculated {len(indicators)} volume indicators"")
+            logger.info("Calculated {len(indicators)} volume indicators")
             return indicators
 
         except Exception as e:
-            logger.error("Failed to calculate volume indicators: %(e)s"")
+            logger.error("Failed to calculate volume indicators: %(e)s")
             return {}
 
     # ========================================================================
@@ -464,11 +464,11 @@ class TechnicalAnalysisService:
             )
             result["total_indicators"] = total_indicators
 
-            logger.info("Calculated %(total_indicators)s indicators for %(symbol)s"")
+            logger.info("Calculated %(total_indicators)s indicators for %(symbol)s")
             return result
 
         except Exception as e:
-            logger.error("Failed to calculate all indicators: %(e)s"")
+            logger.error("Failed to calculate all indicators: %(e)s")
             return {"error": str(e)}
 
     # ========================================================================
@@ -514,7 +514,7 @@ class TechnicalAnalysisService:
             }
 
         except Exception as e:
-            logger.error("Failed to get indicator series: %(e)s"")
+            logger.error("Failed to get indicator series: %(e)s")
             return {"error": str(e)}
 
     # ========================================================================
@@ -602,7 +602,7 @@ class TechnicalAnalysisService:
             }
 
         except Exception as e:
-            logger.error("Failed to generate trading signals: %(e)s"")
+            logger.error("Failed to generate trading signals: %(e)s")
             return {"error": str(e)}
 
 

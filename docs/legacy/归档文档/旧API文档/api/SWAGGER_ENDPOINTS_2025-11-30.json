@@ -1515,7 +1515,7 @@
     "method": "GET",
     "path": "/architecture",
     "function": "get_system_architecture",
-    "docstring": "获取系统架构信息 (Week 3简化后 - 双数据库架构)\n\n返回完整的系统架构信息，包括:\n- 数据库架构 (TDengine + PostgreSQL)\n- 数据分类路由策略\n- 架构简化指标\n- 技术栈信息\n- MySQL/Redis移除详情\n\n用于架构可视化页面展示",
+    "docstring": "获取系统架构信息 (Week 3简化后 - 双数据库架构)\n\n返回完整的系统架构信息，包括:\n- 数据库架构 (TDengine + PostgreSQL)\n- 数据分类路由策略\n- 架构简化指标\n- 技术栈信息\n- PostgreSQL/Redis移除详情\n\n用于架构可视化页面展示",
     "file": "system.py",
     "module": "system"
   },

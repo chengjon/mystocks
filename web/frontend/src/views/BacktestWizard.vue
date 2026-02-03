@@ -462,22 +462,9 @@ interface BacktestComparison {
 }
 
 const comparisonData = computed<BacktestComparison>(() => {
-
-  if (!bt1 || !bt2) {
-    return []
-  }
-
-  return [
-    {
-      param: '短期MA周期',
-      value1: bt1?.params.shortMA || 0,
-      value2: bt2?.params.shortMA || 0,
-      difference: (bt1?.params.shortMA || 0) - (bt2?.params.shortMA || 0),
-      highlight: bt1?.params.shortMA !== bt2?.params.shortMA
-    },
   if (!selectedBacktest1.value || !selectedBacktest2.value) {
     return []
-  };
+  }
 
   const bt1 = backtestHistory.value.find(bt => bt.id === selectedBacktest1.value)
   const bt2 = backtestHistory.value.find(bt => bt.id === selectedBacktest2.value)

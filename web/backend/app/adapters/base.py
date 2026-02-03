@@ -308,7 +308,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 实时行情数据
         """
-        logger.warning("{self.config.source_type.value} does not support realtime_quote"")
+        logger.warning("{self.config.source_type.value} does not support realtime_quote")
         return pd.DataFrame()
 
     def fetch_historical_quote(
@@ -330,7 +330,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 历史行情数据
         """
-        logger.warning("{self.config.source_type.value} does not support historical_quote"")
+        logger.warning("{self.config.source_type.value} does not support historical_quote")
         return pd.DataFrame()
 
     def fetch_fund_flow(self, symbol: Optional[str] = None, timeframe: str = "今日") -> pd.DataFrame:
@@ -344,7 +344,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 资金流向数据
         """
-        logger.warning("{self.config.source_type.value} does not support fund_flow"")
+        logger.warning("{self.config.source_type.value} does not support fund_flow")
         return pd.DataFrame()
 
     def fetch_dragon_tiger(self, date_str: str) -> pd.DataFrame:
@@ -357,7 +357,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 龙虎榜数据
         """
-        logger.warning("{self.config.source_type.value} does not support dragon_tiger"")
+        logger.warning("{self.config.source_type.value} does not support dragon_tiger")
         return pd.DataFrame()
 
     def fetch_announcements(
@@ -379,7 +379,7 @@ class BaseDataSourceAdapter(IDataSource):
         Returns:
             pd.DataFrame: 公告数据
         """
-        logger.warning("{self.config.source_type.value} does not support announcements"")
+        logger.warning("{self.config.source_type.value} does not support announcements")
         return pd.DataFrame()
 
 
@@ -436,7 +436,7 @@ class DataSourceFactory:
 
         if adapter:
             cls._instances[source_type] = adapter
-            logger.info("Created adapter for {source_type.value}"")
+            logger.info("Created adapter for {source_type.value}")
 
         return adapter
 

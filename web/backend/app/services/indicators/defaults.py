@@ -115,6 +115,6 @@ def load_default_indicators():
             count += 1
 
         except Exception as e:
-            logger.error("Failed to migrate %(abbr)s: %(e)s"")
+            logger.error("Failed to migrate %(abbr)s: %(e)s")
 
-    logger.info("Successfully loaded %(count)s default indicators"")
+    logger.info("Successfully loaded %(count)s default indicators")

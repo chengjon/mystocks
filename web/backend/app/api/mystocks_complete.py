@@ -32,7 +32,7 @@ from pydantic import BaseModel, Field
 # from src.core.database import DatabaseManager
 # from src.ml_strategy import SVMTradingStrategy, DecisionTreeTradingStrategy
 # from src.trading.live_trading_engine import LiveTradingEngine
-# from src.logging.audit_system import AuditManager
+# from src.infrastructure.logging.audit_system import AuditManager
 # from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
 # etc.
 
@@ -1079,7 +1079,7 @@ async def advanced_strategy_backtest(request: AdvancedBacktestRequest):
         return response
 
     except Exception as e:
-        logger.error("Advanced backtest failed: %(e)s"")
+        logger.error("Advanced backtest failed: %(e)s")
         # 返回错误响应
         raise HTTPException(status_code=500, detail=f"Advanced backtest failed: {str(e)}")
 

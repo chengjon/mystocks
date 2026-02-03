@@ -408,7 +408,7 @@ class LightGBMModel(BaseModel):
 - 额外依赖：
   - `pip install mlflow` (20MB+)
   - 需要运行MLflow tracking server
-  - 需要数据库后端（SQLite/PostgreSQL/MySQL）
+  - 需要数据库后端（SQLite/PostgreSQL）
   - Web UI端口管理
 
 **效益分析**:

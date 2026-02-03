@@ -588,7 +588,7 @@ class MySocketIOManager:
     def register_request_handler(self, action: str, handler: Callable) -> None:
         """注册请求处理器"""
         self.request_handlers[action] = handler
-        logger.info("✅ 已注册请求处理器: %(action)s"")
+        logger.info("✅ 已注册请求处理器: %s", action)
 
     async def emit_to_room(
         self,

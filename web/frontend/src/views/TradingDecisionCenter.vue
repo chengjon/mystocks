@@ -386,7 +386,7 @@ const handleQuickAction = (action: string) => {
   }
 }
 
-
+const handleQuickBuy = () => {
   if (!orderForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -426,11 +426,7 @@ const getStatusVariant = (status: string) => {
 const marketDataRef = ref<HTMLElement>()
 let marketDataChart: any = null
 
-        </div>
-      </div>
-    </div>
-
-    <!-- Positions Tab -->
+onMounted(() => {
   if (marketDataRef.value) {
     const option = {
       backgroundColor: 'transparent',
@@ -499,13 +495,12 @@ let marketDataChart: any = null
             }
           }
         ]
-      ]
-    }
-    
+      }
+
     marketDataChart = echarts.init(marketDataRef.value, artDecoTheme)
-      marketDataChart.setOption(option)
+    marketDataChart.setOption(option)
   }
-}
+})
 
 const toggleAutoRefresh = () => {
   autoRefreshEnabled.value = !autoRefreshEnabled.value

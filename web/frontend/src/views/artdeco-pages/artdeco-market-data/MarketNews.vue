@@ -377,7 +377,7 @@ const getNewsTypeName = (type: string) => {
     market: '市场',
     policy: '政策',
     company: '公司',
-    sector: '行业'
+    sector: '行业',
     other: '其他'
   }
   return names[type] || '其他'

@@ -10,6 +10,7 @@ from .interfaces import (
     AllocationRequest,
     IGPUResourceProvider,
     IStrategyContext,
+    PerformanceProfile,
     StrategyPriority,
 )
 from .memory_pool import MemoryPool
@@ -59,6 +60,7 @@ __all__ = [
     "AllocationRequest",
     "IGPUResourceProvider",
     "IStrategyContext",
+    "PerformanceProfile",
     # 便捷函数
     "get_gpu_resource_manager",
     "get_strategy_context",

@@ -1,5 +1,7 @@
 # MyStocks MVP US1 实施完成报告
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **实施日期**: 2025-10-11
 **版本**: 1.0.0 (MVP)
 **状态**: ✅ 全部完成
@@ -11,7 +13,7 @@
 成功完成 MyStocks 量化交易数据管理系统 MVP 的实施，实现了 **US1: 统一数据接口访问** 的所有核心功能。系统现已支持：
 
 - ✅ **34个数据分类**的智能自动路由
-- ✅ **4种数据库**协同工作 (TDengine/PostgreSQL/MySQL/Redis)
+- ✅ **4种数据库**协同工作 (TDengine/PostgreSQL/PostgreSQL/Redis)
 - ✅ **2-3行代码**完成数据保存和查询
 - ✅ **10万条记录**批量操作支持
 - ✅ **故障恢复机制**保证数据不丢失
@@ -76,7 +78,7 @@
 | T008: DataStorageStrategy | core/data_storage_strategy.py | 330 | ✅ |
 | T009: TDengine访问层 | data_access/tdengine_access.py | 380 | ✅ |
 | T010: PostgreSQL访问层 | data_access/postgresql_access.py | 370 | ✅ |
-| T011: MySQL访问层 | data_access/mysql_access.py | 400 | ✅ |
+| T011: PostgreSQL访问层 | data_access/postgresql_access.py | 400 | ✅ |
 | T012: Redis访问层 | data_access/redis_access.py | 450 | ✅ |
 | T013: UnifiedManager | unified_manager.py | 495 | ✅ |
 | T014: 批量失败策略 | core/batch_failure_strategy.py | 450 | ✅ |
@@ -97,7 +99,7 @@
 |------|---------|------|
 | T015: TDengine集成测试 | 连接/路由/性能 | ✅ 5/5通过 |
 | T016: PostgreSQL集成测试 | 连接/路由/策略 | ✅ 6/6通过 |
-| T017: MySQL/Redis集成测试 | 连接/路由/操作 | ✅ 10/10通过 |
+| T017: PostgreSQL/Redis集成测试 | 连接/路由/操作 | ✅ 10/10通过 |
 | T018: US1验收测试 | 6个验收场景 | ✅ 6/6通过 |
 
 **测试总计**: **27个测试用例全部通过** ✅
@@ -115,7 +117,7 @@
                         ↓ 智能路由
         ┌───────────────┼───────────────┬──────────────┐
         ↓               ↓               ↓              ↓
-   TDengine(5)    PostgreSQL(11)    MySQL(15)    Redis(3)
+   TDengine(5)    PostgreSQL(11)    PostgreSQL(15)    Redis(3)
     21.7%            47.8%           65.2%        13.0%
 ```
 
@@ -136,7 +138,7 @@
 └──────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────┬────────────────┬──────────────┬───────────┐
-│ TDengine    │  PostgreSQL    │    MySQL     │   Redis   │
+│ TDengine    │  PostgreSQL    │    PostgreSQL     │   Redis   │
 │ Access      │  Access        │    Access    │   Access  │
 │             │                │              │           │
 │ - Tick      │ - 日线         │ - 股票信息    │ - 实时    │
@@ -176,7 +178,7 @@ manager.save_data_by_classification(
     DataClassification.DAILY_KLINE, daily_df, 'daily_kline'
 )
 
-# 股票信息 → MySQL (参考数据)
+# 股票信息 → PostgreSQL (参考数据)
 manager.save_data_by_classification(
     DataClassification.SYMBOLS_INFO, symbols_df, 'stock_info'
 )
@@ -283,7 +285,7 @@ CREATE TABLE outbox_queue (
 - 复杂时序查询
 - Upsert支持
 
-**MySQL/MariaDB** - 参考数据
+**PostgreSQL** - 参考数据
 - 表和索引管理
 - ON DUPLICATE KEY UPDATE
 - 复杂JOIN查询
@@ -307,7 +309,7 @@ CREATE TABLE outbox_queue (
 | 失败策略 | core/batch_failure_strategy.py | 450 | ROLLBACK/CONTINUE/RETRY |
 | TDengine访问 | data_access/tdengine_access.py | 380 | 时序数据CRUD |
 | PostgreSQL访问 | data_access/postgresql_access.py | 370 | 历史数据CRUD |
-| MySQL访问 | data_access/mysql_access.py | 400 | 参考数据CRUD |
+| PostgreSQL访问 | data_access/postgresql_access.py | 400 | 参考数据CRUD |
 | Redis访问 | data_access/redis_access.py | 450 | 热数据CRUD |
 | 统一管理器 | unified_manager.py | 495 | 系统核心入口 |
 | **总计** | **7个文件** | **2,875行** | **完整实现** |
@@ -327,7 +329,7 @@ CREATE TABLE outbox_queue (
 |------|------|--------|
 | TDengine集成测试 | tests/integration/test_tdengine_integration.py | 5 |
 | PostgreSQL集成测试 | tests/integration/test_postgresql_integration.py | 6 |
-| MySQL/Redis集成测试 | tests/integration/test_mysql_redis_integration.py | 10 |
+| PostgreSQL/Redis集成测试 | tests/integration/test_postgresql_redis_integration.py | 10 |
 | US1验收测试 | tests/integration/test_us1_acceptance.py | 6 |
 | **总计** | **4个测试文件** | **27个用例** |
 

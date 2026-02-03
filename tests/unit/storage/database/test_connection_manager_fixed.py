@@ -165,14 +165,12 @@ class TestDatabaseConnectionManagerFixed:
                 # 模拟各种类型的连接
                 mock_tdengine = Mock()
                 mock_postgresql = Mock()
-                mock_mysql = Mock()
                 mock_redis = Mock()
 
                 # 设置连接
                 manager._connections = {
                     "tdengine": mock_tdengine,
                     "postgresql": mock_postgresql,
-                    "mysql": mock_mysql,
                     "redis": mock_redis,
                 }
 
@@ -182,7 +180,6 @@ class TestDatabaseConnectionManagerFixed:
                 # 验证各种关闭方法被调用
                 mock_tdengine.close.assert_called_once()
                 mock_postgresql.closeall.assert_called_once()
-                mock_mysql.close.assert_called_once()
                 mock_redis.close.assert_called_once()
 
                 # 验证连接字典被清空
@@ -321,7 +318,6 @@ class TestDatabaseConnectionManagerFixed:
                 "get_tdengine_connection",
                 "get_postgresql_connection",
                 "_return_postgresql_connection",
-                "get_mysql_connection",
                 "get_redis_connection",
                 "close_all_connections",
                 "test_all_connections",

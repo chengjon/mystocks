@@ -43,7 +43,7 @@ async def get_stock_ratings(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info("API调用: 股票评级数据, 用户={current_user.username}, 页数=%(max_pages)s"")
+        logger.info("API调用: 股票评级数据, 用户={current_user.username}, 页数=%(max_pages)s")
 
         # 获取评级数据
         df = sina_adapter.get_sina_stock_ratings(max_pages=max_pages)
@@ -64,7 +64,7 @@ async def get_stock_ratings(
             source="sina_finance",
         )
 
-        logger.info("成功返回 {len(ratings_data)} 条股票评级数据"")
+        logger.info("成功返回 {len(ratings_data)} 条股票评级数据")
 
         return ok(
             data=response_data.dict(),
@@ -91,7 +91,7 @@ async def get_ratings_summary(
     提供评级数据的统计信息，包括总评级数量、机构数量、行业分布等。
     """
     try:
-        logger.info("API调用: 评级数据汇总, 用户={current_user.username}"")
+        logger.info("API调用: 评级数据汇总, 用户={current_user.username}")
 
         # 获取汇总统计
         summary_data = sina_adapter.get_ratings_summary()
@@ -157,7 +157,7 @@ async def refresh_ratings_cache(
     - **max_pages**: 最大爬取页数 (1-10)
     """
     try:
-        logger.info("API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}"")
+        logger.info("API调用: 刷新评级缓存, 用户={current_user.username}, 参数={request.dict()}")
 
         # 重新获取数据（这会自动应用数据质量检查）
         df = sina_adapter.get_sina_stock_ratings(max_pages=request.max_pages)

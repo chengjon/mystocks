@@ -18,7 +18,7 @@ from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepo
 from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
 from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics
 from src.infrastructure.persistence.exceptions import ConcurrencyException
-from src.services.performance_optimizer import IncrementalCalculator
+from src.application.services.performance_optimizer import IncrementalCalculator
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
             }
         )
 
-        logger.info("✅ Optimized Portfolio Valuation Service initialized " f"(incremental={enable_incremental})")
+        logger.info(f"✅ Optimized Portfolio Valuation Service initialized (incremental={enable_incremental})")
 
     def revaluate_portfolio(
         self, portfolio_id: str, prices: Dict[str, float], force_save: bool = True
@@ -196,8 +196,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
         self.metrics["calculation_time_saved_ms"] += max(0, time_saved_ms)
 
         logger.debug(
-            f"📊 Incremental revaluation for {portfolio_id}: "
-            f"{len(prices)} symbols, time_saved={time_saved_ms:.2f}ms"
+            f"📊 Incremental revaluation for {portfolio_id}: {len(prices)} symbols, time_saved={time_saved_ms:.2f}ms"
         )
 
         return performance

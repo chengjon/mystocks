@@ -90,11 +90,11 @@ class MonitoringService:
             session.add(rule)
             session.commit()
             session.refresh(rule)
-            logger.info("Created alert rule: {rule.rule_name}"")
+            logger.info("Created alert rule: {rule.rule_name}")
             return rule
         except Exception as e:
             session.rollback()
-            logger.error("Failed to create alert rule: %(e)s"")
+            logger.error("Failed to create alert rule: %(e)s")
             raise
         finally:
             session.close()
@@ -130,11 +130,11 @@ class MonitoringService:
             rule.updated_at = datetime.now()
             session.commit()
             session.refresh(rule)
-            logger.info("Updated alert rule: {rule.rule_name}"")
+            logger.info("Updated alert rule: {rule.rule_name}")
             return rule
         except Exception as e:
             session.rollback()
-            logger.error("Failed to update alert rule: %(e)s"")
+            logger.error("Failed to update alert rule: %(e)s")
             raise
         finally:
             session.close()
@@ -149,11 +149,11 @@ class MonitoringService:
 
             session.delete(rule)
             session.commit()
-            logger.info("Deleted alert rule: {rule.rule_name}"")
+            logger.info("Deleted alert rule: {rule.rule_name}")
             return True
         except Exception as e:
             session.rollback()
-            logger.error("Failed to delete alert rule: %(e)s"")
+            logger.error("Failed to delete alert rule: %(e)s")
             raise
         finally:
             session.close()
@@ -195,11 +195,11 @@ class MonitoringService:
                 }
             )
 
-            logger.info("Fetched {len(df)} stocks realtime data"")
+            logger.info("Fetched {len(df)} stocks realtime data")
             return df
 
         except Exception as e:
-            logger.error("Failed to fetch realtime data: %(e)s"")
+            logger.error("Failed to fetch realtime data: %(e)s")
             return pd.DataFrame()
 
     def save_realtime_data(self, df: pd.DataFrame) -> int:
@@ -252,12 +252,12 @@ class MonitoringService:
                 count += 1
 
             session.commit()
-            logger.info("Saved %(count)s realtime monitoring records"")
+            logger.info("Saved %(count)s realtime monitoring records")
             return count
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to save realtime data: %(e)s"")
+            logger.error("Failed to save realtime data: %(e)s")
             return 0
         finally:
             session.close()
@@ -284,12 +284,12 @@ class MonitoringService:
                 alerts = self._evaluate_single_rule(rule, df)
                 triggered_alerts.extend(alerts)
             except Exception as e:
-                logger.error("Failed to evaluate rule {rule.rule_name}: %(e)s"")
+                logger.error("Failed to evaluate rule {rule.rule_name}: %(e)s")
 
         # 保存告警记录
         if triggered_alerts:
             self._save_alert_records(triggered_alerts)
-            logger.info("Triggered {len(triggered_alerts)} alerts"")
+            logger.info("Triggered {len(triggered_alerts)} alerts")
 
         return triggered_alerts
 
@@ -451,7 +451,7 @@ class MonitoringService:
             return count
         except Exception as e:
             session.rollback()
-            logger.error("Failed to save alert records: %(e)s"")
+            logger.error("Failed to save alert records: %(e)s")
             return 0
         finally:
             session.close()
@@ -513,7 +513,7 @@ class MonitoringService:
             return True
         except Exception as e:
             session.rollback()
-            logger.error("Failed to mark alert read: %(e)s"")
+            logger.error("Failed to mark alert read: %(e)s")
             return False
         finally:
             session.close()
@@ -532,14 +532,14 @@ class MonitoringService:
             df = ak.stock_lhb_detail_daily_sina(date=date_str)
 
             if df.empty:
-                logger.info("No dragon tiger data for %(date_str)s"")
+                logger.info("No dragon tiger data for %(date_str)s")
                 return pd.DataFrame()
 
-            logger.info("Fetched {len(df)} dragon tiger records for %(date_str)s"")
+            logger.info("Fetched {len(df)} dragon tiger records for %(date_str)s")
             return df
 
         except Exception as e:
-            logger.error("Failed to fetch dragon tiger list: %(e)s"")
+            logger.error("Failed to fetch dragon tiger list: %(e)s")
             return pd.DataFrame()
 
     def save_dragon_tiger_data(self, df: pd.DataFrame, trade_date: date) -> int:
@@ -580,12 +580,12 @@ class MonitoringService:
                 count += 1
 
             session.commit()
-            logger.info("Saved %(count)s dragon tiger records"")
+            logger.info("Saved %(count)s dragon tiger records")
             return count
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to save dragon tiger data: %(e)s"")
+            logger.error("Failed to save dragon tiger data: %(e)s")
             return 0
         finally:
             session.close()
@@ -648,7 +648,7 @@ class MonitoringService:
         self.is_monitoring = True
         self.monitored_symbols = symbols or []
 
-        logger.info("Starting monitoring with interval %(interval)ss"")
+        logger.info("Starting monitoring with interval %(interval)ss")
 
         while self.is_monitoring:
             try:
@@ -668,13 +668,13 @@ class MonitoringService:
                         # 评估告警规则
                         self.evaluate_alert_rules(df)
                 else:
-                    logger.info("Market closed. Current time: %(current_time)s"")
+                    logger.info("Market closed. Current time: %(current_time)s")
 
                 # 等待下一次更新
                 await asyncio.sleep(interval)
 
             except Exception as e:
-                logger.error("Monitoring error: %(e)s"")
+                logger.error("Monitoring error: %(e)s")
                 await asyncio.sleep(interval)
 
     def stop_monitoring(self):

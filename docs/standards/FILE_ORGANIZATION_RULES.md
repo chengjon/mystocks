@@ -102,10 +102,11 @@
 - **文件**: `QUICKSTART.md`, `IFLOW.md`, 教程文档
 - **用途**: 快速入门指南、工作流文档
 
-#### **docs/archived/** - 已废弃文档
+#### **docs/legacy/** - 已废弃/历史文档
 - **文件**: `START_HERE.md`, `TASKMASTER_START_HERE.md`（保留供历史参考）
 - **用途**: 保留旧文档但不影响当前文档
 - **规则**: 归档时在文件顶部添加废弃通知
+- **说明**: 中文遗留文档统一放入 `docs/*/legacy-cn/` 或 `docs/legacy/legacy-cn/`
 
 #### **docs/architecture/** - 架构设计文档
 - **用途**: 系统设计、技术架构文档
