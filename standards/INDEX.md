@@ -1,14 +1,17 @@
 # Standards
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 30
+**文档数量**: 31
 
 
 ---
 
 - [00-DESIGN_OVERVIEW](standards/00-DESIGN_OVERVIEW.md)
   - *MyStocks 设计总览*
+
+- [API_FILE_TESTING_STANDARDS](standards/API_FILE_TESTING_STANDARDS.md)
+  - *API File-Level Testing Standards*
 
 - [API_RESPONSE_STANDARDIZATION](standards/API_RESPONSE_STANDARDIZATION.md)
   - *API 响应格式标准化规范*

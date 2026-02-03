@@ -1,0 +1,3490 @@
+docs/
+├── 02-架构与设计文档
+│   ├── A股量化分析平台功能扩展方案.md
+│   ├── A股量化分析平台扩展方案-豆包.md
+│   ├── README.md
+│   ├── RISK_MANAGEMENT_ARCHITECTURE_V2.md
+│   ├── vue组件开发注意事项.md
+│   ├── web页面结构详细描述.md
+│   ├── 股票指标计算体系.md
+│   ├── 股票监控功能设计方案1.md
+│   ├── 设计令牌的核心作用.md
+│   ├── 页面结构优化方案v2.md
+│   └── 风险管理方案.md
+├── 03-API与功能文档
+│   ├── API契约同步组件实现方案.md
+│   ├── README.md
+│   └── env.md
+├── 04-测试
+│   ├── ChromeDevTools使用说明.md
+│   ├── ESLint问题.md
+│   ├── PM2测试web方案.md
+│   ├── typescript源头去重.md
+│   ├── 一般typescript问题解决.md
+│   └── 测试流程.md
+├── 06-项目管理与报告
+│   ├── README.md
+│   └── 历史指南
+│       ├── AI_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md
+│       ├── APIFOX_INTEGRATION_COMPLETE.md
+│       ├── APIFOX_MCP_SETUP.md
+│       ├── ARCHITECTURE_REVIEW_SUMMARY_2025-12-04.md
+│       ├── CLAUDE_CODE_TOOLS_GUIDE.md
+│       ├── CONTRACT_TESTING_GUIDE.md
+│       ├── DAY_1_COMPLETION_REPORT.md
+│       ├── DB_LEAK_FIX_REPORT.md
+│       ├── DEPLOYMENT_GUIDE.md
+│       ├── DEV_ENVIRONMENT_COMPLETION_REPORT.md
+│       ├── DEV_ENVIRONMENT_SETUP_COMPLETION.md
+│       ├── DEV_TOOLCHAIN_GUIDE.md
+│       ├── DOCUMENTATION_GUIDE.md
+│       ├── DOCUMENT_REORGANIZATION_PLAN.md
+│       ├── FRONTEND_BACKEND_DATA_FLOW_REPORT.md
+│       ├── HOOKS_CONFIGURATION_DETAILED.md
+│       ├── HOOKS_MIGRATION_GUIDE.md
+│       ├── HOOKS_QUICK_REFERENCE.md
+│       ├── IFLOW.md
+│       ├── IMPLEMENTATION_GUIDE.md
+│       ├── INDEX.md
+│       ├── INSTOCK_MIGRATION_REPORT.md
+│       ├── INTEGRATION_TESTS_GUIDE.md
+│       ├── LEGACY_CODE_ANALYSIS.md
+│       ├── MODULAR_CODE_SPLIT_REPORT.md
+│       ├── MODULAR_CODE_USAGE_GUIDE.md
+│       ├── MONITORING_DOCUMENTATION_INDEX.md
+│       ├── OPENSTOCK_DEMO_PAGE_GUIDE.md
+│       ├── OPENSTOCK_MIGRATION_GUIDE.md
+│       ├── OPENSTOCK_MIGRATION_SUMMARY.md
+│       ├── OPENSTOCK_QUICKSTART.md
+│       ├── OPENSTOCK_UPGRADE_STATUS.md
+│       ├── P0_IMPLEMENTATION_PLAN_2025-12-04.md
+│       ├── P0_IMPLEMENTATION_STATUS_2025-12-04.md
+│       ├── P0_QUICK_REFERENCE.md
+│       ├── P0_TASK2_COMPLETION_REPORT_2025-12-04.md
+│       ├── P0_TASK2_VALIDATION_IMPLEMENTATION.md
+│       ├── P0_TASK3_COMPLETION_REPORT_2025-12-04.md
+│       ├── P0_TASK4_TEST_COVERAGE_COMPLETION_REPORT.md
+│       ├── P1_API_INTEGRATION_TEST_COMPLETION_REPORT.md
+│       ├── P2_API_INTEGRATION_TEMPLATE.md
+│       ├── P2_MODULE_MIGRATION_COMPLETION_REPORT.md
+│       ├── PHASE0_CREDENTIAL_ROTATION_GUIDE.md
+│       ├── PHASE10_FINAL_REPORT.md
+│       ├── PHASE1_3_IMPLEMENTATION_PLAN.md
+│       ├── PHASE1_COMPLETION_REPORT_20251130.md
+│       ├── PHASE1_EXCEPTION_HIERARCHY.md
+│       ├── PHASE1_SECURITY_BRIEFING_20251130.md
+│       ├── PHASE2_E2E_TESTING_PLAN.md
+│       ├── PHASE2_FRAMEWORK_SETUP_REPORT.md
+│       ├── PHASE3_ADVANCED_TESTING_IMPLEMENTATION.md
+│       ├── PHASE3_COMPLETION_SUMMARY.md
+│       ├── PHASE3_FINAL_COMPLETION_REPORT.md
+│       ├── PHASE3_MILESTONE2_API_INTEGRATION_GUIDE.md
+│       ├── PHASE3_MILESTONE5_COVERAGE_REPORTING.md
+│       ├── PHASE4_ADVANCED_TESTING_PLAN.md
+│       ├── PHASE4_MILESTONE1_WEBSOCKET_TESTING.md
+│       ├── PHASE_10_ROADMAP.md
+│       ├── PHASE_9_COMPLETION.md
+│       ├── PHASE_COMPLETION_REPORT.md
+│       ├── PIXSO_MCP_9tootls.md
+│       ├── PIXSO_MCP_NEXT_STEPS.md
+│       ├── PIXSO_MCP_TROUBLESHOOTING.md
+│       ├── PLAYWRIGHT_EXPANSION_REPORT.md
+│       ├── PLAYWRIGHT_QUICKSTART.md
+│       ├── PORT_ALLOCATION_GUIDE.md
+│       ├── PROJECT_DIRECTORY_STANDARD.md
+│       ├── QUICKSTART.md
+│       ├── QUICK_START.md
+│       ├── QUICK_START_目录管理.md
+│       ├── README_UPDATED.md
+│       ├── SECURITY_DOCUMENTATION_INDEX.md
+│       ├── SWAGGER_UI_CDN_SOLUTION.md
+│       ├── SWAGGER_UI_FINAL_SOLUTION.md
+│       ├── SWAGGER_UI_LOCAL_SOLUTION_SUCCESS.md
+│       ├── SWAGGER_UI_QUICK_REFERENCE.md
+│       ├── TDENGINE_QUICK_REFERENCE.md
+│       ├── TEAM_CONFIGURATION_SUMMARY.md
+│       ├── TECHNICAL_DEBT_ASSESSMENT_2025-12-05.md
+│       ├── TECHNICAL_DEBT_FIX_PROGRESS.md
+│       ├── TECHNICAL_DEBT_STATUS.md
+│       ├── TECH_DEBT_ACTION_PLAN.md
+│       ├── TECH_DEBT_ANALYSIS_2025.md
+│       ├── TECH_DEBT_COVERAGE_FINAL_REPORT.md
+│       ├── TECH_DEBT_METRICS.md
+│       ├── TECH_DEBT_REMEDIATION_PLAN_2025.md
+│       ├── TECH_DEBT_TEST_COVERAGE_UPDATE.md
+│       ├── TEST_COVERAGE_IMPROVEMENT_REPORT.md
+│       ├── TOOLCHAIN_IMPLEMENTATION_SUMMARY.md
+│       ├── TOOLCHAIN_TROUBLESHOOT.md
+│       ├── UI_UX_OPTIMIZATION_COMPLETION_REPORT.md
+│       ├── VUE_IMPLEMENTATION_GUIDE.md
+│       ├── Vue_FastAPI_AI_Strategy_Implementation_Guide.md
+│       ├── Vue_FastAPI_Code_Reference_Guide.md
+│       ├── Vue_FastAPI_Deployment_Implementation_Guide.md
+│       ├── Vue_FastAPI_GPU_System_Implementation_Guide.md
+│       ├── Vue_FastAPI_Implementation_Master_Guide.md
+│       ├── Vue_FastAPI_Monitoring_Implementation_Guide.md
+│       ├── WEBSOCKET_QUICK_REFERENCE.md
+│       ├── WEB_USABILITY_TESTING_GUIDE.md
+│       ├── WEEK1_IMPLEMENTATION_STATUS.md
+│       ├── WEEK1_OPTIMIZATION_GUIDE.md
+│       ├── 关键经验和成功做法.md
+│       ├── 根目录混乱问题分析与解决方案.md
+│       ├── 目录管理解决方案总结.md
+│       ├── 端口配置更新报告.md
+│       └── 系统状态报告.md
+├── AGENTS_1.md
+├── CLAUDE.md
+├── CLAUDE_1.md
+├── CODE_OPTIMIZATION_PLAN.md
+├── CONNECTION_LEAK_ANALYSIS.md
+├── CONNECTION_LEAK_VERIFICATION_REPORT.md
+├── CURRENT_STATUS.md
+├── FILE_CLEANUP_COMPLETION_REPORT.md
+├── FILE_CLEANUP_TASK.md
+├── HTML5_MIGRATION_WEB_WORKERS_SUMMARY.md
+├── IFLOW.md
+├── IFLOW_1.md
+├── INDEX.md
+├── INDICATOR_CALCULATION_SYSTEM_ANALYSIS.md
+├── INDICATOR_SYSTEM_OPTIMIZATION_V2.md
+├── LNAV_INTEGRATION_GUIDE.md
+├── MD_PY_CLEANUP_COMPLETION_REPORT.md
+├── MD_PY_CLEANUP_TASK.md
+├── ML_INTEGRATION_PROGRESS.md
+├── MYSTOCKS_MONITORING_SYSTEM_OVERVIEW.md
+├── PERFORMANCE_BASELINE.md
+├── PHASE3_CI_CD_INTEGRATION_PLAN.md
+├── PORT_CONFIGURATION.md
+├── PRODUCTION_INFO.md
+├── PROJECT_FULL_DOC.md
+├── PYPROF_INTEGRATION_ROADMAP.md
+├── ROOT_FILES_CLEANUP_COMPLETION_REPORT.md
+├── ROOT_FILES_CLEANUP_TASK.md
+├── SYSTEM_OPTIMIZATION_PLAN.md
+├── TEST_ENVIRONMENT_REQUIREMENTS.md
+├── US2_DATABASE_ARCHITECTURE_CLARIFICATION.md
+├── US3_ARCHITECTURE_SIMPLIFICATION_PLAN.md
+├── US3_QUICK_REFERENCE.md
+├── WEB_AUTOMATION_TEST_PLAN.md
+├── WEB_PAGES_DOCUMENTATION.md
+├── WENCAI_INTEGRATION_INDEX.md
+├── WENCAI_INTEGRATION_PLAN.md
+├── WENCAI_INTEGRATION_QUICKREF.md
+├── WENCAI_PHASE1_COMPLETED.md
+├── ai_tools
+├── api
+│   ├── AGENTS_AUDIT_REPORT.md
+│   ├── AGENTS_QUICK_REFERENCE.md
+│   ├── AGENTS_SKILLS_AVAILABILITY_REPORT.md
+│   ├── AKSHARE_INTERFACE_MAPPING.md
+│   ├── ALERTING_CONFIGURATION_GUIDE.md
+│   ├── APIFOX_BEGINNER_GUIDE.md
+│   ├── APIFOX_IMPORT_GUIDE.md
+│   ├── APIFOX_IMPORT_SUCCESS.md
+│   ├── APIFOX_QUICK_START.md
+│   ├── API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md
+│   ├── API_ARCHITECTURE_DATA_2025-11-30.json
+│   ├── API_CONTRACT_ARCHITECTURE_ANALYSIS.md
+│   ├── API_CONTRACT_PLATFORM_DEPLOYMENT_REPORT.md
+│   ├── API_CONTRACT_PLATFORM_NEXT_STEPS.md
+│   ├── API_CSRF_PROTECTION_GUIDE_2025-11-30.md
+│   ├── API_DECISION_FLOWCHART.md
+│   ├── API_DECISION_SUMMARY.md
+│   ├── API_DOCUMENTATION_2025-11-30.md
+│   ├── API_DOCUMENTATION_CLEANUP_COMPLETION_REPORT.md
+│   ├── API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md
+│   ├── API_DOC_REFERENCE.md
+│   ├── API_ECOSYSTEM_OPTIMIZATION_PLAN_PRAGMATIC_2026.md
+│   ├── API_ECOSYSTEM_OPTIMIZATION_REPORT_2026.md
+│   ├── API_ENDPOINT_DOCUMENTATION.md
+│   ├── API_ENHANCEMENT_PLAN.md
+│   ├── API_FILE_LEVEL_TESTING_IMPLEMENTATION_REPORT.md
+│   ├── API_FIXES_SUMMARY.md
+│   ├── API_INDEX.md
+│   ├── API_INTEGRATION_GUIDE.md
+│   ├── API_INTERFACE_REVIEW_REPORT.md
+│   ├── API_INVENTORY.md
+│   ├── API_Interface_Document_Draft.md
+│   ├── API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md
+│   ├── API_OPTIMIZATION_REPORT_2025-12-01.md
+│   ├── API_QUICK_REFERENCE_2025-11-30.txt
+│   ├── API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md
+│   ├── API_SECURITY_FIXES_SUMMARY_2025-11-30.md
+│   ├── API_WEB_INTEGRATION_STRATEGY.md
+│   ├── API与Web组件丝滑结合指南.md
+│   ├── API与Web组件最终对齐方案.md
+│   ├── API与web组件对齐方案.md
+│   ├── API优化建议.md
+│   ├── API列表文档.md
+│   ├── API契约同步基础.md
+│   ├── API契约同步组件实现方案.md
+│   ├── API开发.md
+│   ├── API接口对齐报告.md
+│   ├── ARTDECO_TRADING_CENTER_API_MAPPING.md
+│   ├── ARTDECO_TRADING_CENTER_DESIGN.md
+│   ├── ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md
+│   ├── ARTDECO_TRADING_CENTER_OPTIMIZED_V3.md
+│   ├── ArtDeco_System_Architecture_Summary.md
+│   ├── BACKUP_RECOVERY_GUIDE.md
+│   ├── CI_CD_INTEGRATION_GUIDE.md
+│   ├── CI_CD_Validation_Extension_Guide.md
+│   ├── CLI_TOOL_GUIDE.md
+│   ├── CODEBASE_EXPLORATION_REPORT.md
+│   ├── CONTRACT_MANAGEMENT_API.md
+│   ├── CONTRACT_TESTING_API.md
+│   ├── CURRENT_STATUS_AND_DEVELOPMENT_ROADMAP.md
+│   ├── DATABASE_INDEX_OPTIMIZATION_REPORT.md
+│   ├── DATABASE_OPTIMIZATION_GUIDE.md
+│   ├── DATA_MODELS.md
+│   ├── DEEP_FIXES_REPORT.md
+│   ├── DEPLOYMENT_ACCEPTANCE_REPORT.md
+│   ├── DEPLOYMENT_CHECKLIST.md
+│   ├── ERROR_CODES.md
+│   ├── FINAL_AGENTS_CLEANUP_REPORT.md
+│   ├── FRONTEND_CODE_DESIGN_VALIDATION_REPORT.md
+│   ├── FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN.md
+│   ├── FastAPI应用开发指南.md
+│   ├── GPU开发经验总结.md
+│   ├── IMPLEMENTATION_COMPLETE_REPORT.md
+│   ├── IMPLEMENTATION_INDEX.md
+│   ├── IMPLEMENTATION_SUMMARY.md
+│   ├── IMPROVEMENT_PLAN_EXECUTOR.md
+│   ├── INDEX.md
+│   ├── LLMS_API_DOCUMENTATION.md
+│   ├── MONITORING_METRICS_DEFINITION.md
+│   ├── MYSTOCKS_E2E_USABILITY_TEST_REPORT.md
+│   ├── MyStocks_API_Mapping_Document.md
+│   ├── NEXT_DEVELOPMENT_PHASES.md
+│   ├── NEXT_PHASES_EXECUTIVE_SUMMARY.md
+│   ├── P2_SIMPLIFIED_TEST_REPORT.json
+│   ├── PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md
+│   ├── PHASE1-2_ACCEPTANCE_REPORT.md
+│   ├── PHASE11_COMPLETION.md
+│   ├── PHASE11_FINAL_VERIFICATION_REPORT.md
+│   ├── PHASE11_VERIFICATION_REPORT_2025-12-02.md
+│   ├── PHASE2_DATA_ACCESS_TEST_COVERAGE_ACHIEVEMENT_REPORT.md
+│   ├── PHASE2_STRATEGY_INTEGRATION_PLAN.md
+│   ├── PHASE4_2_INTEGRATION_REPORT.md
+│   ├── PHASE4_DOT_1_PROGRESS_REPORT.md
+│   ├── PHASE4_DOT_1_PROGRESS_REPORT_CONTINUED.md
+│   ├── PHASE7_CSRF_RESOLUTION_REPORT.md
+│   ├── PHASE7_DAY2_AUTH_BLOCKER_REPORT.md
+│   ├── PHASE7_E2E_FINAL_REPORT.md
+│   ├── PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md
+│   ├── PINIA_API_STANDARDIZATION.md
+│   ├── POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md
+│   ├── Phase_6_4_GPU加速引擎集成与测试_完成报告.md
+│   ├── QUANTITATIVE_TRADING_ALGORITHMS_API_SPEC.md
+│   ├── README.md
+│   ├── REAL_DATA_BACKTEST_VERIFICATION_REPORT.md
+│   ├── ROUTING_OPTIMIZATION_SOLUTION.md
+│   ├── STOCK_CODES_FETCH_GUIDE.md
+│   ├── SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md
+│   ├── SWAGGER_DOCUMENTATION_STATUS_2025-11-30.md
+│   ├── SWAGGER_ENDPOINTS_2025-11-30.json
+│   ├── SWAGGER_EXTRACTION_SUMMARY_2025-11-30.md
+│   ├── SWAGGER_UI_GUIDE.md
+│   ├── SYSTEM_FIX_EXPERIENCE_REPORT.md
+│   ├── TASK-REPORT.md
+│   ├── TASK_11_COMPLETION_SUMMARY.md
+│   ├── TASK_12_COMPLETION_SUMMARY.md
+│   ├── TASK_13_COMPLETION_SUMMARY.md
+│   ├── TASK_14_COMPLETION_SUMMARY.md
+│   ├── TASK_15_ALERT_AGGREGATION_SUPPRESSION.md
+│   ├── TASK_15_ALERT_ESCALATION_DESIGN.md
+│   ├── TASK_15_ALERT_HISTORY_ANALYTICS.md
+│   ├── TASK_15_ALERT_NOTIFICATION_SYSTEM.md
+│   ├── TASK_15_COMPLETION_SUMMARY.md
+│   ├── TASK_8_COMPLETION_VERIFICATION.md
+│   ├── TASK_PLAN.md
+│   ├── TDX_DATA_CAPABILITIES.md
+│   ├── TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md
+│   ├── TYPESCRIPT_GENERATION_GUIDE.md
+│   ├── WEBSOCKET_DOCUMENTATION_INDEX.md
+│   ├── WEBSOCKET_OPTIMIZATION_GUIDE.md
+│   ├── WEB_PAGES_API_MAPPING.md
+│   ├── WEB_READINESS_REPORT.md
+│   ├── WEEK3_PRODUCTION_VERIFICATION_REPORT.md
+│   ├── WENCAI实施完成报告.md
+│   ├── Web访问指南.md
+│   ├── api_documentation_cleanup_plan.md
+│   ├── apifox_mcp_playwright使用.md
+│   ├── contracts
+│   │   └── market_api.yaml
+│   ├── guides
+│   │   ├── development
+│   │   │   ├── api_development_checklist.md
+│   │   │   ├── api_development_guidelines.md
+│   │   │   ├── api_examples.md
+│   │   │   ├── api_quick_start_template.md
+│   │   │   └── api_usage_guide.md
+│   │   └── integration
+│   │       ├── api_frontend_mapping.md
+│   │       ├── api_integration_implementation_status.md
+│   │       └── api_integration_optimization_plan.md
+│   ├── mystocks_complete_api.json
+│   ├── notes.md
+│   ├── openapi
+│   │   ├── CONTRACT_REGISTRY.md
+│   │   ├── market-data-api-full.json
+│   │   ├── market-data-api.yaml
+│   │   ├── risk-management-api-contract.yaml
+│   │   ├── strategy-management-api-contract.yaml
+│   │   ├── strategy-management-api.yaml
+│   │   ├── technical-analysis-api.yaml
+│   │   └── trading-api.yaml
+│   ├── openapi.json
+│   ├── openapi.yaml
+│   ├── openapi_akshare.yaml
+│   ├── openapi_template.yaml
+│   ├── plugin_list.md
+│   ├── quantitative-analysis-implementation-plan.md
+│   ├── reports
+│   │   ├── analysis
+│   │   │   ├── ADVANCED_ANALYSIS_IMPLEMENTATION_REPORT.md
+│   │   │   ├── API_ARCHITECTURE_ANALYSIS_2025-11-30.md
+│   │   │   ├── API_WEB_ALIGNMENT_ANALYSIS.md
+│   │   │   ├── PHASE4_REMAINING_FILES_ANALYSIS.md
+│   │   │   ├── README.md
+│   │   │   └── api_endpoints_statistics_report.md
+│   │   ├── archives
+│   │   │   ├── COMPLETION_SUMMARY.md
+│   │   │   ├── E2E_PHASE3_COMPLETION_SUMMARY.md
+│   │   │   ├── E2E_QUICK_FIX_GUIDE.md
+│   │   │   ├── E2E_TEST_COMMANDS.md
+│   │   │   ├── E2E_TEST_EXECUTION_GUIDE.md
+│   │   │   ├── E2E_TEST_EXECUTION_REPORT.md
+│   │   │   ├── E2E_TEST_EXECUTION_SUMMARY.md
+│   │   │   ├── E2E_TEST_FINAL_REPORT.md
+│   │   │   ├── E2E_TEST_RESULTS.md
+│   │   │   ├── E2E_TEST_STATUS_REPORT.md
+│   │   │   ├── critical_backups_20260119_125339
+│   │   │   │   ├── API_CONTRACT_ARCHITECTURE_ANALYSIS.md
+│   │   │   │   ├── API_ENDPOINTS_STATISTICS_REPORT.md
+│   │   │   │   └── NEW_API_SOURCE_INTEGRATION_GUIDE.md
+│   │   │   └── merged_readmes
+│   │   │       ├── README_COMPLIANCE_TESTING.md
+│   │   │       └── README_PLATFORM.md
+│   │   └── milestones
+│   │       ├── API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md
+│   │       ├── E2E_TEST_COMPLETION_REPORT.md
+│   │       ├── E2E_TEST_EXTENSION_COMPLETION_REPORT.md
+│   │       ├── INTEGRATION_COMPLETION_REPORT.md
+│   │       ├── P0_INTEGRATION_COMPLETION_REPORT.md
+│   │       ├── PHASE11_1_COMPLETION_REPORT.md
+│   │       ├── PHASE2_COMPLETION_REPORT.md
+│   │       ├── PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md
+│   │       ├── PHASE4C_COMPLETION_REPORT.md
+│   │       ├── PHASE4_COMPLETION_REPORT.md
+│   │       ├── PHASE4_DOT_1_COMPLETION_REPORT.md
+│   │       ├── README.md
+│   │       ├── SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md
+│   │       ├── TEST_CLI_COMPLETION_REPORT.md
+│   │       ├── WORK_COMPLETION_REPORT_2025-11-30.md
+│   │       └── api_compliance_test_completion_report.md
+│   ├── requirements-unified.txt
+│   ├── specifications
+│   │   └── core
+│   │       └── api_specification.md
+│   ├── swagger.json
+│   ├── task_plan.md
+│   ├── task_plan_signal_monitoring_phase2_extended.md
+│   ├── technical_debt_analysis_report.md
+│   ├── technical_debt_comprehensive_analysis.md
+│   ├── testing
+│   │   └── compliance
+│   │       ├── api_acceptance_standards.md
+│   │       ├── api_compliance_improvements.md
+│   │       ├── api_compliance_report.md
+│   │       └── api_compliance_testing_framework.md
+│   ├── web契约开发方案.md
+│   ├── web路由+契约开发.md
+│   └── 指标管理系统设计文档.md
+├── architecture
+│   ├── ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md
+│   ├── ADAPTER_EXTENSION_GUIDE.md
+│   ├── ADAPTER_FUNCTION_SURVEY.md
+│   ├── ADAPTER_ROUTING_GUIDE.md
+│   ├── ADAPTER_SIMPLIFICATION_ANALYSIS.md
+│   ├── ADAPTER_SIMPLIFICATION_COMPLETE_GUIDE.md
+│   ├── ADAPTER_SIMPLIFICATION_PRESENTATION.md
+│   ├── ARCHITECTURE_COMPARISON.md
+│   ├── ARCHITECTURE_EVALUATION_REPORT_2025.md
+│   ├── ARCHITECTURE_OPTIMIZATION_SUMMARY.md
+│   ├── ARCHITECTURE_REVIEW_FIRST_PRINCIPLES.md
+│   ├── ARCHITECTURE_REVIEW_INDEX.md
+│   ├── ARCHITECTURE_REVIEW_REPORT_2025-12-04.md
+│   ├── DATABASE_ARCHITECTURE.md
+│   ├── DATASOURCE_AND_DATABASE_ARCHITECTURE.md
+│   ├── DATASOURCE_ARCHITECTURE_FIRST_PRINCIPLES_ANALYSIS.md
+│   ├── DATA_SOURCE_MANAGEMENT_V2.md
+│   ├── DDD_ARCHITECTURE_NOTES.md
+│   ├── DDD_IMPLEMENTATION_PLAN.md
+│   ├── DDD_OPTIMIZATION_SUMMARY.md
+│   ├── DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md
+│   ├── FIRST_PRINCIPLES_ARCHITECTURE_REVIEW.md
+│   ├── FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md
+│   ├── INDEX.md
+│   ├── ML集成完成报告.md
+│   ├── MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md
+│   ├── Mock数据系统指南.md
+│   ├── NEXT_DEV_PLAN.md
+│   ├── PAGE_CONFIG_MODEL.md
+│   ├── PAGE_CONFIG_USAGE_GUIDE.md
+│   ├── PHASE3_COMPLETION_SUMMARY.md
+│   ├── PHASE6_ADD_DOC_METADATA_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_ALERT_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_COLUMN_MAPPER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_ACCESS_FACTORY_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_ACCESS_INTERFACE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_SOURCE_INTERFACE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_SOURCE_LOGGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_SOURCE_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATA_VALIDATOR_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DB_CONNECTION_RETRY_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_ERROR_HANDLER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_FAILURE_RECOVERY_QUEUE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_GPU_DATA_PROCESSING_INTERFACES_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_GPU_DATA_PROCESSOR_FACTORY_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_LOGGING_CONFIG_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_MONITORING_SERVICE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_PERFORMANCE_MONITOR_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_PRICE_DATA_ADAPTER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_STORAGE_BASE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_TDX_CONNECTION_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_UTILS_MODULES_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_VOLUME_DATA_PROCESSOR_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE_6_TESTING_COVERAGE_SUCCESS_REPORT.md
+│   ├── Phase1_完成报告.md
+│   ├── Phase2_Day1_完成报告.md
+│   ├── Phase2_完成报告.md
+│   ├── Phase3_Day1_完成报告.md
+│   ├── Phase3_完成报告.md
+│   ├── Phase3_验证总结.md
+│   ├── Phase4_Day1_Dashboard_API完成报告.md
+│   ├── Phase4_Day2_Strategy_Management_API完成报告.md
+│   ├── Phase4_Day3_Frontend_Integration完成报告.md
+│   ├── Phase4_Day4-5_Database_Persistence完成报告.md
+│   ├── Phase4_Day6-7_BacktestEngine_Completion.md
+│   ├── Phase_6_2_5_测试验证和性能基准_完成报告.md
+│   ├── PostgreSQL_Schema_Design.md
+│   ├── QLIB_ARCHITECTURE_REVIEW_REPORT.md
+│   ├── README.md
+│   ├── README_TypeScript_Quality_System.md
+│   ├── README_审批指南.md
+│   ├── ROUTER_SIMPLIFICATION_EXPLANATION.md
+│   ├── STOCK_INDICATOR_CALCULATION_SYSTEM.md
+│   ├── Strategy_Templates_Completion.md
+│   ├── Strategy_Templates_Expansion.md
+│   ├── TDengine_Schema_Design.md
+│   ├── WEBSOCKET_ARCHITECTURE_ANALYSIS.md
+│   ├── interface_refactoring_proposal.md
+│   ├── typescript_documentation.md
+│   ├── typescript_hooks_system.md
+│   ├── typescript_implementation_plan.md
+│   ├── typescript_monitoring_system.md
+│   ├── typescript_prevention_system.md
+│   ├── typescript_quality_notes.md
+│   ├── typescript_quality_system_plan.md
+│   ├── 备份策略架构优化.md
+│   ├── 如何添加数据分类.md
+│   ├── 数据源架构优化-执行摘要.md
+│   ├── 数据源架构优化实施方案_v1.0.md
+│   ├── 数据源架构设计.md
+│   ├── 数据源管理.md
+│   └── 适配器的原理图.puml
+├── archive
+│   ├── 2025
+│   │   └── Q4
+│   │       ├── 2025_Q4_INDEX.md
+│   │       ├── CODE_COMPLETENESS_REPORT.md
+│   │       ├── CODE_SIZE_OPTIMIZATION_REPORT.md
+│   │       ├── DIALOGUE_SUMMARY.md
+│   │       ├── HOOKS_STANDARDIZATION_REPORT.md
+│   │       ├── PHASE_3_CODE_OPTIMIZATION_REPORT.md
+│   │       ├── PYPROF_INTEGRATION_ANALYSIS.md
+│   │       ├── PYPROF_INTEGRATION_SUMMARY.md
+│   │       ├── TECHNICAL_DEBT_ANALYSIS_REPORT.md
+│   │       ├── TEST_COVERAGE_SUMMARY.md
+│   │       ├── TMUX_TOOLCHAIN_DEBUG_REPORT.md
+│   │       ├── US1_DOCUMENTATION_ALIGNMENT_COMPLETION.md
+│   │       ├── US2_SIMPLIFIED_DATABASE_ARCHITECTURE_COMPLETION.md
+│   │       ├── US3_ARCHITECTURE_COMPLETION_REPORT.md
+│   │       ├── US3_CORE_REFACTORING_COMPLETION.md
+│   │       ├── US3_PHASE1_2_COMPLETION.md
+│   │       └── WENCAI_INTEGRATION_SUMMARY.md
+│   ├── CLAUDE.md.2026-02-01.md
+│   ├── CLAUDE.md.2026-02-01.v2.md
+│   ├── CONTRACT_DRIVEN_DEVELOPMENT_IMPROVEMENT_PLAN.md
+│   ├── DECISION_WORKSHEET.md
+│   ├── DIRECTORY_CLEANUP_PLAN.md
+│   ├── DIRECTORY_REORGANIZATION_PLAN.md
+│   ├── DISCUSSION_AGENDA.md
+│   ├── DISCUSSION_FAQ.md
+│   ├── DISCUSSION_MATERIALS_GUIDE.md
+│   ├── DISCUSSION_MATERIALS_README.md
+│   ├── FEATURE_ENHANCEMENTS.md
+│   ├── MYSTOCKS_PROJECT_STATUS.md
+│   ├── PYPROFILING_INTEGRATION_COMPLETE.md
+│   ├── QLIB_INSPIRED_IMPROVEMENT_PLAN.md
+│   ├── QUICK_ACTION_PLAN.md
+│   ├── REVIEW_CHECKLIST.md
+│   ├── REVIEW_GUIDE.md
+│   ├── SESSION_SUMMARY.md
+│   ├── SIMPLIFICATION_DECISION_MATRIX.md
+│   ├── T037_COMPLETION_SUMMARY.md
+│   ├── WORK_SESSION_SUMMARY_2025-10-16.md
+│   ├── mongodb建议.md
+│   └── webpage_advice.md
+├── archived
+│   ├── AKSHARE_FULL_INTEGRATION_GUIDE.md
+│   ├── ANALYSIS_COMPLETE.md
+│   ├── CODE_RULES_UPDATE_LOG.md
+│   ├── COMPLIANCE_AUDIT_AND_OPTIMIZATION_REPORT.md
+│   ├── DATABASE_MANAGER_FIX_SUCCESS.md
+│   ├── DATABASE_MANAGER_ISSUES.md
+│   ├── DATA_ROUTING_EXPLANATION.md
+│   ├── DAY5_FINAL_AUDIT_REPORT.md
+│   ├── DAY5_TESTING_PLAN.md
+│   ├── DB_FIX_README.md
+│   ├── FILE_CLEANUP_PLAN.md
+│   ├── GRAFANA_DEPLOYMENT_SUMMARY.md
+│   ├── IMPLEMENTATION_PLAN.md
+│   ├── IMPLEMENTATION_STATUS.md
+│   ├── INDEX.md
+│   ├── MULTI_CLI_MIGRATION_NOTICE.md
+│   ├── MVP_COMPLETION_REPORT.md
+│   ├── MVP_IMPLEMENTATION_SUMMARY.md
+│   ├── PHASE1_COMPLETION_REPORT.md
+│   ├── PHASE4_COMPLETION_REPORT.md
+│   ├── PHASE5_US3_COMPLETION_REPORT.md
+│   ├── PLAN_A0_IMPLEMENTATION_GUIDE.md
+│   ├── PROJECT_REORGANIZATION_PLAN.md
+│   ├── QUANT_DATA_MANAGEMENT_GUIDE.md
+│   ├── QUICK_COMPARISON.md
+│   ├── README.md
+│   ├── README_realtime_stock_saver.md
+│   ├── REALTIME_MARKET_SAVER.md
+│   ├── REORGANIZATION_GUIDE.md
+│   ├── SAVE_REALTIME_DATA_USAGE.md
+│   ├── START_HERE.md
+│   ├── TASKMASTER_START_HERE.md
+│   ├── THS_INDUSTRY_README.md
+│   ├── US2_COMPLETION_REPORT.md
+│   ├── US4_COMPLETION_REPORT.md
+│   ├── US4_SUMMARY.md
+│   ├── WEEK1_COMPLETE_SUMMARY.md
+│   ├── WEEK1_PROGRESS_SUMMARY.md
+│   ├── WEEK2_DAY1_COMPLETION_SUMMARY.md
+│   ├── WEEK2_DAY2_E2E_TESTING_COMPLETION.md
+│   ├── WEEK5_COMPLETION_SUMMARY.md
+│   ├── WENCAI_INTEGRATION_FILES.txt
+│   ├── architecture_analysis_20251108.md
+│   ├── architecture_analysis_revised_20251108.md
+│   ├── database_assessment_20251019_165817.json
+│   ├── dump_result.txt
+│   ├── query_patterns_analysis.txt
+│   ├── web_implementation_summary.md
+│   ├── web_integration_audit_report.md
+│   ├── web_integration_audit_summary.md
+│   ├── web_integration_comparison.md
+│   ├── web_integration_day34_completion.md
+│   ├── web_integration_fixes_summary.md
+│   ├── web_menu_integration_plan.md
+│   ├── 改进意见0.md
+│   └── 改进意见1.md
+├── ci-cd
+│   └── MYSTOCKS_CI_CD_OPTIMIZATION_SYSTEM.md
+├── cli_reports
+│   ├── CLI_2_URGENT_FIX_PRIORITY.md
+│   ├── CLI_2_WORK_GUIDANCE.md
+│   ├── CLI_2_WORK_GUIDANCE_UPDATED.md
+│   └── CLI_3_FRONTEND_PROGRESS.md
+├── code_quality
+│   ├── backend_code_quality_final_summary.md
+│   ├── backend_code_quality_phase_summary.md
+│   ├── coverage_fix_report.md
+│   ├── phase2_execution_plan.md
+│   ├── phase2_task2.1.1_progress_report.md
+│   ├── phase2_task2.1.1_summary.md
+│   ├── phase3_completion_report.md
+│   ├── phase3_final_completion_report.md
+│   ├── phase3_refactored_plan.md
+│   ├── phase3_task3.1_report.md
+│   ├── phase3_task3.2_3.3_report.md
+│   ├── ruff_fix_report.md
+│   ├── test_coverage_investigation.md
+│   └── test_status_report.md
+├── code_refactoring_plan.md
+├── completion_reports
+│   ├── DOCUMENTATION_COMPLETION_REPORT.md
+│   ├── IMPLEMENTATION_REPORT.md
+│   └── PHASE6_COMPLETION_SUMMARY.md
+├── deployment
+│   ├── README.md
+│   └── SETUP_GRAFANA.md
+├── design
+│   ├── 20251121-spec优化建议.md
+│   ├── ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL.md
+│   ├── AUTOMATION_GUIDE.md
+│   ├── COMPONENT_LIBRARY_SPECIFICATION.md
+│   ├── FIGMA_QUICK_START.md
+│   ├── MYSTOCKS_DESIGN_SPECIFICATION.md
+│   ├── PIXSO_IMPORT_GUIDE.md
+│   ├── README.md
+│   ├── SKETCH_MANUAL_GUIDE.md
+│   ├── design-tokens.json
+│   ├── figma-automation-script.js
+│   ├── html_sample
+│   │   ├── 01-current-web3-dashboard.html
+│   │   ├── 01_Dashboard.html
+│   │   ├── 01_Dashboard_UIUX_ProMax.html
+│   │   ├── 02_StockDetail.html
+│   │   ├── 03_StrategyManagement.html
+│   │   ├── 04_BacktestAnalysis.html
+│   │   ├── 05_RiskMonitor.html
+│   │   ├── 06_Market.html
+│   │   ├── 07_TechnicalAnalysis.html
+│   │   ├── 08_Login.html
+│   │   ├── A股策略回测原型.html
+│   │   ├── A股财务数据原型.html
+│   │   ├── A股风险管理原型.html
+│   │   ├── README.md
+│   │   └── a-stock-dashboard-bundle.html
+│   ├── new
+│   │   ├── 01_dashboard.md
+│   │   ├── 02_market_center.md
+│   │   ├── 03_stock_screener.md
+│   │   ├── 04_data_analysis.md
+│   │   ├── 05_strategy_lab.md
+│   │   ├── 06_backtest_arena.md
+│   │   ├── 07_trade_station.md
+│   │   ├── 08_risk_center.md
+│   │   ├── 09_system_settings.md
+│   │   └── index.md
+│   └── update
+│       ├── Web功能优化四阶段实施计划.md
+│       ├── 执行摘要_四阶段优化方案.md
+│       ├── 技术实施指南_第一阶段.md
+│       ├── 技术实施指南_第三阶段.md
+│       ├── 技术实施指南_第二阶段.md
+│       └── 技术实施指南_第四阶段.md
+├── design-references
+│   └── artdeco-system-guide.md
+├── directory-structure-report.txt
+├── docs
+│   └── web-dev
+│       └── GUIDE.md
+├── e2e
+│   └── README.md
+├── e2e-testing-ci-cd-architecture.md
+├── examples
+│   └── REDIS_SERVICES_USAGE_EXAMPLES.py
+├── features
+│   ├── STOCK_HEATMAP_IMPLEMENTATION.md
+│   ├── TRADINGVIEW_FIX_SUMMARY.md
+│   ├── TRADINGVIEW_TROUBLESHOOTING.md
+│   ├── WATCHLIST_GROUP_IMPLEMENTATION.md
+│   └── WENCAI_MENU_FIX.md
+├── file-organization-report.txt
+├── flake8_report.txt
+├── frontend
+│   └── SERVICE_ADAPTER_GUIDE.md
+├── function-classification-manual
+│   ├── 01-core-functions.md
+│   ├── 02-auxiliary-functions.md
+│   ├── 03-infrastructure-functions.md
+│   ├── 04-monitoring-functions.md
+│   ├── 05-utility-functions.md
+│   ├── 06-duplication-analysis.md
+│   ├── 07-optimization-roadmap.md
+│   ├── 08-consolidation-guide.md
+│   ├── 09-data-flow-maps.md
+│   ├── README.md
+│   ├── duplication-summary.md
+│   └── metadata
+│       ├── consolidation-guide.json
+│       ├── duplication-index.json
+│       ├── module-inventory.json
+│       └── optimization-roadmap.json
+├── guides
+│   ├── 2026-01-23-html5-migration-experience-optimization.md
+│   ├── AGENTS.md
+│   ├── AGENTS_CLEANUP_COMPLETION_SUMMARY.md
+│   ├── AGENTS_CLEANUP_FINAL_STATUS.md
+│   ├── AGENTS_DOCUMENTATION_INDEX.md
+│   ├── AI_TEST_OPTIMIZER_TRAINING.md
+│   ├── AI_TEST_OPTIMIZER_USER_GUIDE.md
+│   ├── API_CONTRACT_VERIFICATION_PLAN.md
+│   ├── API_ENDPOINTS_STATISTICS_REPORT.md
+│   ├── API_STANDARDIZATION_MASTER_PLAN.md
+│   ├── API_VERIFICATION_EXECUTION_PLAN.md
+│   ├── API对齐方案.md
+│   ├── API对齐核心流程.md
+│   ├── ARTDECO_COMPONENT_GUIDE.md
+│   ├── ARTDECO_GRID_QUICK_REFERENCE.md
+│   ├── ARTDECO_GRID_QUICK_START.md
+│   ├── ARTDECO_MENU_API_MAPPING.md
+│   ├── ARTDECO_MENU_DATA_FETCHING_IMPLEMENTATION_GUIDE.md
+│   ├── ARTDECO_MENU_STRUCTURE_REFACTOR_PLAN.md
+│   ├── ARTDECO_MENU_USER_TESTING_GUIDE.md
+│   ├── ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md
+│   ├── ASYNC_MONITORING_GUIDE.md
+│   ├── A_STOCK_DASHBOARD_USER_GUIDE.md
+│   ├── BACKUP_GUIDE.md
+│   ├── BLOOMBERG_TERMINAL_COMPONENT_GUIDE.md
+│   ├── BRANCH_STRATEGY.md
+│   ├── BUG_LESSONS_LEARNED.md
+│   ├── B项目接入指南.md
+│   ├── CHART_SYSTEM_USER_GUIDE.md
+│   ├── CHROME_DEVTOOLS_MCP_FIX_GUIDE.md
+│   ├── CHROME_DEVTOOLS_MCP_GUIDE.md
+│   ├── CHROME_DEVTOOLS_MCP_SOLUTION.md
+│   ├── CICD_CONTINUOUS_OPTIMIZATION.md
+│   ├── CICD_TYPE_CHECK_INTEGRATION_GUIDE.md
+│   ├── CICD_TYPE_CHECK_QUICK_REFERENCE.md
+│   ├── CLAUDE.md
+│   ├── CLAUDE_AGENTS_SUMMARY.md
+│   ├── CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md
+│   ├── CLI_REGISTRATION_GUIDE.md
+│   ├── CLI_ROLES_REFERENCE.md
+│   ├── CONFIG_SPLITTING_GUIDE.md
+│   ├── CONFIG_SYSTEM_GUIDE.md
+│   ├── DASHBOARD_API_ENRICHMENT_GUIDE.md
+│   ├── DASHBOARD_API_INTEGRATION_GUIDE.md
+│   ├── DATABASE_SERVICE_TDD_REFACTORING_REPORT.md
+│   ├── DATA_CLEANING_QUICK_START.md
+│   ├── DATA_INTERFACE_SCANNER_GUIDE.md
+│   ├── DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md
+│   ├── DATA_SOURCE_EXPANSION_STRATEGY.md
+│   ├── DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md
+│   ├── DATA_SOURCE_MONITORING_GUIDE.md
+│   ├── DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md
+│   ├── DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md
+│   ├── DATA_SOURCE_TOOLS_QUICK_REFERENCE.md
+│   ├── DEPLOYMENT.md
+│   ├── DEVELOPER_GUIDE.md
+│   ├── DIRECTORY_ORGANIZATION_PLAN.md
+│   ├── DIRECTORY_ORGANIZATION_PLAN_OPTIMIZED.md
+│   ├── DIRECTORY_ORGANIZATION_PLAN_REVIEW_SUGGESTIONS.md
+│   ├── DOCUMENTATION_WORKFLOW_GUIDE.md
+│   ├── E2E_TEST_DEBUG_METHODS.md
+│   ├── ERROR_CODE_GUIDE.md
+│   ├── EXCEPTION_HANDLER_GUIDE.md
+│   ├── FRONTEND_ROUTING_OPTIMIZATION_GUIDE.md
+│   ├── GEMINI.md
+│   ├── GIT_WORKTREE_MAIN_CLI_MANUAL.md
+│   ├── HANDOVER_TASK.md
+│   ├── HTML_TO_ARTDECO_VUE_CONVERSION_OPTIMIZED_PLAN.md
+│   ├── HTML_TO_ARTDECO_VUE_CONVERSION_PLAN.md
+│   ├── HTML_TO_ARTDECO_VUE_GUIDE.md
+│   ├── HTML_TO_ARTDECO_VUE_MERGE_PLAN.md
+│   ├── INDEX.md
+│   ├── INFRASTRUCTURE_CHECKLIST.md
+│   ├── INITIALIZATION_PROMPT.md
+│   ├── LINEAR_THEME_GUIDE.md
+│   ├── LOCAL_CI_INTEGRATION.md
+│   ├── MOCK_DATA_USAGE_RULES.md
+│   ├── MOCK_REAL_DATA_INDEX.md
+│   ├── MOCK_REAL_DATA_SWITCHING_GUIDE.md
+│   ├── MULTI_CLI_COLLABORATION_METHOD.md
+│   ├── MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md
+│   ├── MULTI_CLI_OPTIMIZATION_PROPOSAL.md
+│   ├── MULTI_CLI_PROMPT_STRATEGIES.md
+│   ├── MULTI_CLI_WORKTREE_MANAGEMENT.md
+│   ├── MYSTOCKS_CI_CD_DAILY_APPLICATION.md
+│   ├── MYSTOCKS_CI_CD_OPTIMIZATION_SYSTEM.md
+│   ├── MYSTOCKS_HTML_TO_VUE_CONVERSION_STRATEGY.md
+│   ├── MYSTOCKS_HTML_VUE_CONVERSION_SUMMARY.md
+│   ├── MYSTOCKS_MONITORING_OPTIMIZATION_DEPLOYMENT.md
+│   ├── MYSTOCKS_WEB_STARTUP_EXPERIENCE.md
+│   ├── MYSTOCKS_WORKTREE_MANAGEMENT.md
+│   ├── NEW_API_SOURCE_INTEGRATION_GUIDE.md
+│   ├── NEXT_WORK_TASKS.md
+│   ├── P1_TESTING_COMPLETION_REPORT.md
+│   ├── PAGE_CONFIG_USAGE_GUIDE.md
+│   ├── PHASE12_3_REALTIME_INTEGRATION.md
+│   ├── PHASE1_UI_UX_FOUNDATION_COMPLETION_REPORT.md
+│   ├── PHASE4_API_INTEGRATION_REPORT.md
+│   ├── PHASE6_E2E_STATUS_SUMMARY.md
+│   ├── PHASE6_E2E_TEST_TASK_COMPLETION.md
+│   ├── PHASE6_SERVER_RECOVERY_TEST_PROCEDURE.md
+│   ├── PHASE_2_REAL_DATA_INTEGRATION_PLAN.md
+│   ├── PHASE_6_METHODOLOGY_GUIDE.md
+│   ├── PM2_PLAYWRIGHT_TESTING_GUIDE.md
+│   ├── PM2_PLAYWRIGHT_TESTING_GUIDE_REVIEW.md
+│   ├── PM2_QUICK_START_GUIDE.md
+│   ├── PM2_TMUX_LNV_COLLABORATION_GUIDE.md
+│   ├── PYTHON_QUALITY_ASSURANCE_WORKFLOW.md
+│   ├── PYTHON_QUALITY_TOOLS_IMPLEMENTATION_SUMMARY.md
+│   ├── PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md
+│   ├── QUALITY_GATE_MANAGEMENT.md
+│   ├── README.md
+│   ├── README_INTEGRATION.md
+│   ├── README_MOCK_DATA.md
+│   ├── REAL_DATA_INTEGRATION_PRINCIPLES.md
+│   ├── REAL_DATA_INTEGRATION_ROADMAP.md
+│   ├── REAL_STATUS_REPORT.md
+│   ├── SASS_DEPRECATION_FIX.md
+│   ├── SECURE_CODING_QUICK_REFERENCE.md
+│   ├── SECURITY_CI_CD_INTEGRATION.md
+│   ├── SECURITY_CODING_STANDARDS.md
+│   ├── SECURITY_TESTING_GUIDELINES.md
+│   ├── SIGNAL_MONITORING_METRICS_DESIGN.md
+│   ├── SPLIT_DATA_ACCESS_PLAN.md
+│   ├── STOCKS_SPEC_COMMAND_GUIDE.md
+│   ├── TASK.md
+│   ├── TASK_POOL_USAGE_GUIDE.md
+│   ├── TDD_REFACTORING_COMPLETION_REPORT.md
+│   ├── TECHNICAL_DEBT_MANAGEMENT.md
+│   ├── TECHNICAL_DEBT_PHASE_3_COMPLETION_REPORT.md
+│   ├── TECHSTYLE_THEME_GUIDE.md
+│   ├── TMUX_LNAV_ADAPTER_MONITORING.md
+│   ├── TROUBLESHOOTING.md
+│   ├── TROUBLESHOOTING_QUICK_REFERENCE.md
+│   ├── TYPESCRIPT_ERROR_FIXING_GUIDE.md
+│   ├── TYPESCRIPT_ERROR_FIX_REPORT.md
+│   ├── TYPESCRIPT_EXTENSION_SYSTEM_BALANCED_PLAN.md
+│   ├── TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN.md
+│   ├── TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN_V3.md
+│   ├── TYPESCRIPT_FIX_FINAL_REPORT.md
+│   ├── TYPESCRIPT_QUALITY_GATE_FIX_REPORT.md
+│   ├── TYPESCRIPT_SOURCE_FIX_GUIDE.md
+│   ├── TYPEScript_EXTENSION_SYSTEM_PROPOSAL.md
+│   ├── TYPE_CHECKING_INTEGRATION.md
+│   ├── TypeScript_优化修复方案.md
+│   ├── TypeScript_快速修复指南.md
+│   ├── Typescript_API_REFERENCE.md
+│   ├── Typescript_BEST_PRACTICES.md
+│   ├── Typescript_CONFIG_REFERENCE.md
+│   ├── Typescript_QUICKSTART.md
+│   ├── Typescript_TRAINING_ADVANCED.md
+│   ├── Typescript_TRAINING_BEGINNER.md
+│   ├── Typescript_TROUBLESHOOTING.md
+│   ├── Typescript_USER_GUIDE.md
+│   ├── UNIFIED_INTERFACE_GUIDE.md
+│   ├── USER_GUIDE.md
+│   ├── VALIDATION_GUIDE.md
+│   ├── VISUAL_REGRESSION_TEST_PLAN.md
+│   ├── VUE_TAB_DESIGN_GUIDELINES.md
+│   ├── WEBSOCKET_PERFORMANCE_OPTIMIZATION_GUIDE.md
+│   ├── WEB_CLIENT_OPERATION_PLAN.md
+│   ├── WEB_DEV_HOOKS_GUIDE.md
+│   ├── WEB_E2E_TEST_QUICK_REFERENCE.md
+│   ├── WEB_E2E_TEST_QUICK_REFERENCE_V2.md
+│   ├── WEB_FRAMEWORK_INCREMENTAL_OPTIMIZATION_PLAN.md
+│   ├── WEB_FRAMEWORK_INTEGRATION_PLAN.md
+│   ├── WEB_FRONTEND_STARTUP_GUIDE.md
+│   ├── WEB_HTML_SAMPLES_GUIDE.md
+│   ├── WEB_ROUTER_MIGRATION_RECORD.md
+│   ├── WEB_TESTING_TOOLS_SETUP.md
+│   ├── advanced_algorithms_usage_guide.md
+│   ├── algorithm_system_usage_guide.md
+│   ├── api-data-fetching-pattern-standardization-task.md
+│   ├── chrome-devtools-wsl2-guide.md
+│   ├── claude_code_lsp_guide.md
+│   ├── claude_code_plugin_marketplace_fix.md
+│   ├── command-template.md
+│   ├── data-visualization-enhancement-task.md
+│   ├── database_indexes_report.md
+│   ├── database_service_refactoring_analysis.md
+│   ├── dayjs修复指南.md
+│   ├── dayjs新手指南.md
+│   ├── deliverable.md
+│   ├── enhanced-ui-ux-guide.md
+│   ├── error-handling-implementation-task.md
+│   ├── financial_adapter_method_analysis.md
+│   ├── frontend-auth-guard-enablement-task.md
+│   ├── frontend-routing-history-migration-task.md
+│   ├── frontend_optimization_next_steps.md
+│   ├── history-mode-deployment-guide.md
+│   ├── hook-analysis-report.md
+│   ├── hook-optimization-summary.md
+│   ├── hooks使用指南.md
+│   ├── hooks详细说明.md
+│   ├── hooks错误处理方法.md
+│   ├── implementation-guide.md
+│   ├── multi-cli-tasks
+│   │   ├── CLI-1_PHASE3_TASKS.md
+│   │   ├── CLI-2_API_CONTRACT_TASKS.md
+│   │   ├── CLI-3_PHASE4_COMPLETE_TASKS.md
+│   │   ├── CLI-4_PHASE5_AI_SCREENING_TASKS.md
+│   │   ├── CLI-5_PHASE6_GPU_MONITORING_TASKS.md
+│   │   ├── CLI-6_QUALITY_ASSURANCE_TASKS.md
+│   │   ├── CLI_WORKFLOW_GUIDE.md
+│   │   ├── GIT_REMOTE_NAME_STANDARD.md
+│   │   ├── GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md
+│   │   ├── MAIN_CLI_WORKFLOW_STANDARDS.md
+│   │   ├── PROGRESS_MONITORING_AND_MILESTONES.md
+│   │   └── TASK_TEMPLATE.md
+│   ├── mystocks-artdeco-available-components.md
+│   ├── mystocks-artdeco-integration-fix.md
+│   ├── mystocks-chromedevtools-testing-guide.md
+│   ├── neural_algorithms_usage_guide.md
+│   ├── page-title-management-dynamic-options-task.md
+│   ├── post_tool_use_hook_error_diagnosis.md
+│   ├── pre_commit_hook_setup_guide.md
+│   ├── quantitative_trading_implementation.md
+│   ├── quick-start.md
+│   ├── risk_management_system_plan.md
+│   ├── router_analysis_report_corrected.md
+│   ├── task_plan.md
+│   ├── tdx_adapter_refactoring_analysis.md
+│   ├── web-dev-hooks-guide.md
+│   ├── web测试方法论.md
+│   ├── 前后端整合与部署完整方案.md
+│   ├── 告警规则设置方法.md
+│   ├── 客户端连接指南.md
+│   ├── 客户端集成指南.md
+│   └── 超长文档拆分办法.md
+├── legacy
+│   └── 归档文档
+│       ├── README.md
+│       ├── 旧API文档
+│       │   └── api
+│       │       ├── API_ARCHITECTURE_DATA_2025-11-30.json
+│       │       ├── API_QUICK_REFERENCE_2025-11-30.txt
+│       │       ├── P2_SIMPLIFIED_TEST_REPORT.json
+│       │       ├── PHASE2_COMPLETION_REPORT.md
+│       │       ├── PHASE3_COMPLETION_REPORT.md
+│       │       ├── PHASE3_IMPLEMENTATION_GUIDE.md
+│       │       ├── README.md
+│       │       ├── SWAGGER_ENDPOINTS_2025-11-30.json
+│       │       ├── openapi.json
+│       │       ├── openapi.yaml
+│       │       └── swagger.json
+│       ├── 旧报告文档
+│       │   └── reports
+│       │       ├── PHASE11_WEEK1_RUN3_RESULTS.log
+│       │       ├── PHASE11_WEEK1_RUN4_RESULTS.log
+│       │       ├── PHASE11_WEEK1_RUN5_RESULTS.log
+│       │       ├── TRACK_A_T2_BUGER_TEST_FINAL.log
+│       │       └── TRACK_A_T2_BUGER_TEST_RESULTS.log
+│       └── 旧标准文档
+│           ├── FILE_ORGANIZATION_RULES.md
+│           ├── LOCAL_ENV_SETUP.md
+│           └── README.md
+├── monitoring
+│   └── MONITORING_GUIDE.md
+├── monitoring_reports
+│   ├── CLAUDE_MONITORING.md
+│   └── MONITORING_VERIFICATION_REPORT.md
+├── mypy_report.txt
+├── openspec_cmd
+│   ├── README.md
+│   ├── check-report-example.md
+│   └── check.md
+├── operations
+│   ├── OPS_MANUAL.md
+│   ├── README.md
+│   ├── deployment-guide.md
+│   ├── 数据同步故障排除.md
+│   ├── 日志查看工具集成.md
+│   └── 运维效果分析报告.md
+├── overview
+│   ├── README.md
+│   ├── agents.md
+│   ├── archived.md
+│   ├── changelog.md
+│   ├── claude.md
+│   ├── initialization-prompt.md
+│   ├── 开发与安全规范.md
+│   ├── 开发工具链指南.md
+│   └── 项目总览.md
+├── performance
+│   └── API_PERFORMANCE_BENCHMARK.md
+├── phase_reports
+│   ├── Phase_5_Frontend_Technical_Research_Report.md
+│   ├── Phase_5_Technical_Research_Report.md
+│   └── Phase_6_3_GPU加速引擎核心功能重构_完成报告.md
+├── plans
+│   ├── 2025-01-17-mystocks-artdeco-integration-fix.md
+│   ├── 2026-01-13-mystocks-devops-design.md
+│   ├── 2026-02-01-repo-folder-organization-root-inventory.csv
+│   ├── 2026-02-02-minimal-human-changes-cleanup.md
+│   ├── artdeco_market_data_split_plan.md
+│   ├── artdeco_market_data_split_strategy.md
+│   ├── compatibility_timeline.md
+│   ├── database_service_split_plan.md
+│   ├── decision_models_split_plan.md
+│   ├── execution_guide.md
+│   ├── market_data_split_plan.md
+│   ├── phase1.3_data_adapter_split_execution_plan.md
+│   ├── phase1.3_data_adapter_split_start.md
+│   └── phase1.4_risk_management_split_strategy.md
+├── pylint-report-src.txt
+├── quality
+│   ├── README.md
+│   └── bugs
+│       ├── BUG-20260108-ERR_DDD_IMPORT_001.json
+│       ├── BUG-20260110-ERR_REGISTRY_JSONB_001.json
+│       └── BUG-20260110-ERR_ROUTER_MISSING_002.json
+├── reports
+│   ├── AI3_FRONTEND_COMPONENT_PLAN.md
+│   ├── AKSHARE_DATA_SOURCE_API_SUMMARY.md
+│   ├── ANALYSIS_TOOL_COMPLETION_SUMMARY.md
+│   ├── ANALYSIS_TOOL_README.md
+│   ├── API_AND_DATA_SOURCE_VERIFICATION_REPORT.md
+│   ├── API_AUTOMATION_TEST_GUIDE.md
+│   ├── API_CONTRACT_INTEGRATION_ASSESSMENT.md
+│   ├── API_CONTRACT_INTEGRATION_OPENSPEC_IMPLEMENTATION.md
+│   ├── API_DATA_VERIFICATION_FINAL_REPORT.md
+│   ├── API_DATA_VERIFICATION_REPORT.json
+│   ├── API_DEPLOYMENT_VERIFICATION_CHECKLIST.md
+│   ├── API_EXCEPTION_FRAMEWORK_MIGRATION_ENGINEERING_ANALYSIS.md
+│   ├── API_EXCEPTION_FRAMEWORK_MIGRATION_REPORT.md
+│   ├── API_FILE_LEVEL_TESTING_IMPLEMENTATION_REPORT.md
+│   ├── API_FILE_LEVEL_TESTING_STRATEGY_FINAL_REPORT.md
+│   ├── API_FIX_REPORT_20260102.md
+│   ├── API_ROUTE_PREFIX_FIX_REPORT.md
+│   ├── API_SOURCE_INTEGRATION_GUIDE_ENHANCEMENT_REPORT.md
+│   ├── API_STANDARDIZATION_E2E_VERIFICATION_REPORT_2026-01-01.md
+│   ├── API_STANDARDIZATION_NEXT_STEPS.md
+│   ├── API_STANDARDIZATION_VERIFICATION_REPORT_2026-01-01.md
+│   ├── API_VERIFICATION_PHASE21_REPORT.md
+│   ├── API_VERIFICATION_QUICK_SUMMARY.md
+│   ├── API_VERSION_CONTROL_FIX_20260108.md
+│   ├── API_WEB_DATA_USAGE_REPORT.md
+│   ├── ARCHITECTURE_REFACTOR_SUMMARY_2026-01-03.md
+│   ├── ARCHITECTURE_REVIEW_REPORT.md
+│   ├── ARRAY_TYPE_INFERENCE_FIX_20260110.md
+│   ├── ARTDECO_AC_COMPLETION_REPORT.md
+│   ├── ARTDECO_BREADCRUMB_MIGRATION_COMPLETION_REPORT.md
+│   ├── ARTDECO_CLEANUP_COMPLETION_REPORT.md
+│   ├── ARTDECO_COMPLETE_CLEANUP_COMPLETION.md
+│   ├── ARTDECO_DASHBOARD_FINAL_VERIFICATION.md
+│   ├── ARTDECO_DASHBOARD_VERIFICATION_REPORT.md
+│   ├── ARTDECO_FRONTEND_DESIGN_REVIEW.md
+│   ├── ARTDECO_GRID_P2_COMPLETION_REPORT.md
+│   ├── ARTDECO_GRID_P3_COMPLETION_REPORT.md
+│   ├── ARTDECO_GRID_SYSTEM_COMPLETION.md
+│   ├── ARTDECO_LAYOUT_OPTIMIZATION_ANALYSIS.md
+│   ├── ARTDECO_LAYOUT_OPTIMIZATION_IMPLEMENTATION.md
+│   ├── ARTDECO_LAYOUT_OPTIMIZATION_PROPOSAL.md
+│   ├── ARTDECO_LAYOUT_OPTIMIZED_FINAL.md
+│   ├── ARTDECO_LAYOUT_PROPOSAL_EVALUATION.md
+│   ├── ARTDECO_MENU_FRONTEND_DESIGN_REVIEW.md
+│   ├── ARTDECO_MENU_OPTIMIZATION_FINAL_REPORT.md
+│   ├── ARTDECO_MENU_OPTIMIZATION_REVIEW.md
+│   ├── ARTDECO_MENU_PHASE1_COMPLETION.md
+│   ├── ARTDECO_MENU_PHASE2_COMPLETION.md
+│   ├── ARTDECO_MENU_PHASE3_COMPLETION.md
+│   ├── ARTDECO_MENU_PHASE4_COMPLETION.md
+│   ├── ARTDECO_MENU_SYSTEM_FIX_REPORT.md
+│   ├── ARTDECO_MENU_SYSTEM_OPTIMIZATION_FINAL_REPORT.md
+│   ├── ARTDECO_MERGE_ANALYSIS_REPORT.md
+│   ├── ARTDECO_NAVIGATION_GAP_ANALYSIS.md
+│   ├── ARTDECO_OPTIMIZATION_EXECUTIVE_SUMMARY.md
+│   ├── ARTDECO_PAGES_FINAL_VERIFICATION_REPORT.md
+│   ├── ARTDECO_PAGE_DEVELOPMENT_COMPLETION_REPORT.md
+│   ├── ARTDECO_PHASE2_COMPLETION_REPORT.md
+│   ├── ARTDECO_PHASE3-4_COMPLETION_REPORT.md
+│   ├── ARTDECO_QUANT_EXTENSION_COMPLETION_REPORT.md
+│   ├── ARTDECO_RALPH_WIGGUM_VERIFICATION.md
+│   ├── ARTDECO_REORGANIZATION_REPORT.md
+│   ├── ARTDECO_REVIEW_SUMMARY.md
+│   ├── ARTDECO_SCSS_ARCHITECTURE_ANALYSIS.md
+│   ├── ARTDECO_STYLE_ANALYSIS_AND_OPTIMIZATION_PLAN.md
+│   ├── ARTDECO_SYSTEM_COMPREHENSIVE_ANALYSIS.md
+│   ├── ARTDECO_TOKEN_OPTIMIZATION_SUMMARY.md
+│   ├── ARTDECO_TO_ELEMENT_PLUS_CLEANUP_COMPLETION.md
+│   ├── ARTDECO_UI_UX_OPTIMIZATION_REPORT_2026-01-04.md
+│   ├── ARTDECO_UI_UX_PHASE1_SUMMARY.md
+│   ├── ARTDECO_UX_QUALITY_AUDIT_REPORT.md
+│   ├── ARTDECO_V2_COMPONENTS_COMPLETION_REPORT.md
+│   ├── ARTDECO_V2_CONTINUATION_REPORT.md
+│   ├── ARTDECO_V2_FINAL_COMPLETION_REPORT.md
+│   ├── ARTDECO_V2_IMPLEMENTATION_COMPLETION.md
+│   ├── ARTDECO_V3_COMPLETE_SUMMARY.md
+│   ├── ARTDECO_V3_UPDATE_COMPLETION.md
+│   ├── ARTDECO_VISUAL_OPTIMIZATION_COMPLETION_REPORT.md
+│   ├── ARTDECO_VISUAL_OPTIMIZATION_PLAN.md
+│   ├── ARTDECO迁移完成报告.md
+│   ├── ARTDEO_UI_UX_COMPREHENSIVE_ANALYSIS_REPORT.md
+│   ├── A_STOCK_DASHBOARD_TEST_DOCUMENTATION.md
+│   ├── A_STOCK_PROTOTYPE_COMPLETION_REPORT.md
+│   ├── BACKEND_API_FIX_REAL_DATA_INTEGRATION.md
+│   ├── BACKEND_DASHBOARD_REAL_DATA_MIGRATION.md
+│   ├── BACKTEST_API_DOCUMENTATION.md
+│   ├── BACKUP_RECOVERY_SECURITY_DEPLOYMENT_SUMMARY.md
+│   ├── BACKUP_RECOVERY_SECURITY_FINAL_SUMMARY.md
+│   ├── BACKUP_RECOVERY_SECURITY_IMPLEMENTATION_REPORT.md
+│   ├── BLOOMBERG_TERMINAL_PROJECT_SUMMARY.md
+│   ├── BLOOMBERG_TESTING_COMPLETION_REPORT.md
+│   ├── BRANCH_MERGE_STATUS_REPORT.md
+│   ├── BREADCRUMB_ARTDECO_OPTIMIZATION_REPORT.md
+│   ├── BREADCRUMB_COMPONENT_ORGANIZATION.md
+│   ├── BUG_REGISTRATION_20260109.md
+│   ├── CACHE_SYSTEM_ANALYSIS_AND_REDIS_PLAN.md
+│   ├── CHART_LIBRARY_COMPARISON_KLINECHARTS_VS_LIGHTWEIGHT.md
+│   ├── CHROME_DEVTOOLS_TESTING_REPORT_2026-01-23.md
+│   ├── CLI_2_EXECUTION_REPORT.md
+│   ├── CLI_2_EXECUTION_REPORT_PART2.md
+│   ├── CLI_2_FINAL_SUBMISSION_GUIDANCE.md
+│   ├── CLI_2_GIT_SUBMISSION_GUIDANCE.md
+│   ├── CLI_2_PRICE_PREDICTOR_FIX.md
+│   ├── CODE_FILES_OVER_1000_LINES_2026-01-28.md
+│   ├── CODE_REVIEW_FINDINGS.md
+│   ├── CODE_REVIEW_HTML5_HISTORY_MIGRATION.md
+│   ├── CODE_REVIEW_QUICK_FIX_REFERENCE.md
+│   ├── CODE_REVIEW_REPORT.md
+│   ├── COMPLETE_TEST_REPORT_2026-01-27.md
+│   ├── COMPREHENSIVE_ARCHITECTURE_ANALYSIS_2026-01-03.md
+│   ├── COMPREHENSIVE_CODE_REVIEW_REPORT_20260110.md
+│   ├── COVERAGE_HEATMAP.md
+│   ├── DASHBOARD_API_ENRICHMENT_COMPLETION_REPORT.md
+│   ├── DATABASE_PREPARATION_STATUS_CONFIRMATION.md
+│   ├── DATA_ANALYSIS_OPTIMIZATION_REPORT.md
+│   ├── DATA_CLEANING_IMPLEMENTATION_SUMMARY.md
+│   ├── DATA_CLEANING_REPORT.md
+│   ├── DATA_CLEANING_VERIFICATION_REPORT.md
+│   ├── DATA_GOVERNANCE_ROADMAP.md
+│   ├── DATA_MIGRATION_STATUS.md
+│   ├── DATA_SOURCE_ARCHITECTURE_CHECKLIST_20260107.md
+│   ├── DATA_SOURCE_ECOSYSTEM_SUMMARY.md
+│   ├── DATA_SOURCE_FUNCTION_LIST_20260107.md
+│   ├── DATA_SOURCE_OPTIMIZATION_FINAL_SUMMARY.md
+│   ├── DATA_SOURCE_OPTIMIZATION_IMPROVEMENT_SUGGESTIONS.md
+│   ├── DATA_SOURCE_OPTIMIZATION_PHASE1_COMPLETION_REPORT.md
+│   ├── DATA_SOURCE_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md
+│   ├── DATA_SOURCE_OPTIMIZATION_PLAN_V2.md
+│   ├── DATA_SOURCE_OPTIMIZATION_PROPOSAL.md
+│   ├── DATA_SOURCE_OPTIMIZATION_V2_FINAL_COMPREHENSIVE_SUMMARY.md
+│   ├── DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md
+│   ├── DATA_SOURCE_V2_FINAL_SUMMARY.md
+│   ├── DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md
+│   ├── DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md
+│   ├── DATA_SOURCE_V2_TEST_REPORT.md
+│   ├── DAY1_API_VERIFICATION_REPORT.md
+│   ├── DAY1_SMOKE_TEST_RESULTS.md
+│   ├── DAY5_PLUS_COMPLETION_REPORT.md
+│   ├── DAY6_7_PROGRESS_REPORT.md
+│   ├── DAY6_COMPLETION_REPORT.md
+│   ├── DAY7_COMPLETE_SUMMARY.md
+│   ├── DAY7_FINAL_SUMMARY.md
+│   ├── DAY7_PART2_COMPLETION_REPORT.md
+│   ├── DAY7_PART2_PLAN.md
+│   ├── DAY7_PART3_PROGRESS_REPORT.md
+│   ├── DAY7_PART4_FUNCTION_REDEFINED_ANALYSIS.md
+│   ├── DAY7_PART5_COMPLETION_REPORT.md
+│   ├── DAY7_PART5_PROGRESS.md
+│   ├── DAY7_SUMMARY.md
+│   ├── DAY8_COMPLETION_REPORT.md
+│   ├── DAY8_CONTINUED_PROGRESS.md
+│   ├── DAY8_E0001_PROGRESS_REPORT.md
+│   ├── DAY8_FINAL_PROGRESS_REPORT.md
+│   ├── DAY8_FINAL_REPORT.md
+│   ├── DAY8_FINAL_SUMMARY.md
+│   ├── DAY8_OVERALL_PROGRESS.md
+│   ├── DAY8_PHASE2_COMPLETION_REPORT.md
+│   ├── DAY8_PHASE2_PROGRESS_REPORT.md
+│   ├── DAY8_PHASE2_SUMMARY.md
+│   ├── DAY8_PHASE3_COMPLETION_REPORT.md
+│   ├── DAY8_PHASE4_COMPLETION_REPORT.md
+│   ├── DAY8_PHASE4_E1101_ANALYSIS.md
+│   ├── DAY8_SESSION1_FINAL_REPORT.md
+│   ├── DAY8_SESSION1_PHASE1_COMPLETION_REPORT.md
+│   ├── DAY8_SESSION1_SUMMARY.md
+│   ├── DAYJS_FIX_COMPLETION_REPORT.md
+│   ├── DAYJS_MODULE_IMPORT_BLOCKING_ISSUE_REPORT.md
+│   ├── DDD_ARCHITECTURE_APPLICATION_PROPOSAL.md
+│   ├── DDD_PHASES_0_3_VALIDATION_REPORT.md
+│   ├── DDD_PHASE_10_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_11B_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_11B_VERIFICATION_REPORT.md
+│   ├── DDD_PHASE_12_2_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_12_3_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_12_4_12_5_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_4_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_4_VALIDATION_REPORT.md
+│   ├── DDD_PHASE_5_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_5_VALIDATION_REPORT.md
+│   ├── DDD_PHASE_6_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_6_VALIDATION_REPORT.md
+│   ├── DDD_PHASE_7_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_8_COMPLETION_REPORT.md
+│   ├── DDD_PHASE_9_COMPLETION_REPORT.md
+│   ├── DEVELOPMENT_SUMMARY_2025.md
+│   ├── DOCUMENTATION_ORGANIZATION_SUMMARY.md
+│   ├── DOCUMENTATION_STANDARDIZATION_COMPLETION.md
+│   ├── DOCUMENT_ORGANIZATION_PLAN_REVIEW.md
+│   ├── DOC_CLEANUP_COMPLETION_REPORT.md
+│   ├── DOC_CLEANUP_EXECUTION_GUIDE.md
+│   ├── DOC_CLEANUP_PROGRESS_REPORT.md
+│   ├── DUAL_REVIEW_SUMMARY_20260110.md
+│   ├── E0110_ERROR_ANALYSIS.md
+│   ├── E2E_COMPLETE_TEST_PLAN.md
+│   ├── E2E_FAILURE_CLASSIFICATION.md
+│   ├── E2E_FINAL_COMPREHENSIVE_REPORT.md
+│   ├── E2E_FIX_COMPLETION_REPORT.md
+│   ├── E2E_MODULES_VERIFICATION_REPORT_2025-12-31.md
+│   ├── E2E_PHASE1_COMPLETION_REPORT.md
+│   ├── E2E_ROUND3_TEST_REPORT.md
+│   ├── E2E_TESTING_OPTIMIZATION_IMPLEMENTATION_REPORT.md
+│   ├── E2E_TESTING_ROADMAP.md
+│   ├── E2E_TEST_EXECUTION_REPORT.md
+│   ├── E2E_TEST_FIXES_COMPLETION.md
+│   ├── E2E_TEST_ISSUES_REPORT_2026-01-27.md
+│   ├── E2E_TEST_REPORT_2025-11-26.md
+│   ├── E2E_TEST_STATUS_REPORT.md
+│   ├── E2E_VERIFICATION_QUICK_SUMMARY.md
+│   ├── EFINANCE_INTEGRATION_COMPLETION_REPORT.md
+│   ├── ELEMENT_PLUS_GRADUAL_MIGRATION_STATUS.md
+│   ├── ELEMENT_PLUS_GRID_LAYOUT_MIGRATION_PLAN.md
+│   ├── ELEMENT_PLUS_MIGRATION_COMPLETION_REPORT.md
+│   ├── EMERGENCY_FIX_COMPLETION_REPORT.md
+│   ├── ENVIRONMENT_SWITCHING_IMPLEMENTATION_REPORT.md
+│   ├── ESLint_ANY_TYPE_FIX.md
+│   ├── ESLint_CONFIG_FIX_REPORT.md
+│   ├── FILE_ORGANIZATION_FIX_20260109.md
+│   ├── FINAL_PROJECT_SUMMARY.md
+│   ├── FINAL_STATUS_20260119.md
+│   ├── FINAL_STATUS_REPORT.md
+│   ├── FRONTEND_ARCHITECTURE_DESIGN_EVALUATION_2026-01-08.md
+│   ├── FRONTEND_ARCHITECTURE_OPTIMIZATION_SCHEME_ASSESSMENT.md
+│   ├── FRONTEND_ARTDECO_BADGE_CIRCULAR_DEPENDENCY_FIX.md
+│   ├── FRONTEND_BUILD_BUNDLE_OPTIMIZATION_PHASE1.md
+│   ├── FRONTEND_BUILD_ERROR_FIX_REPORT_2026-01-08.md
+│   ├── FRONTEND_COMPREHENSIVE_CODE_REVIEW_20260110.md
+│   ├── FRONTEND_DIAGNOSIS_COMPLETE.md
+│   ├── FRONTEND_FINAL_VERIFICATION_REPORT.md
+│   ├── FRONTEND_FIX_FINAL_STATUS.md
+│   ├── FRONTEND_JS_SYNTAX_FIX_REPORT.md
+│   ├── FRONTEND_OPTIMIZATION_PROGRESS_2026-01-08.md
+│   ├── FRONTEND_OPTION_C_COMPLETION_REPORT.md
+│   ├── FRONTEND_PAGES_INVENTORY.md
+│   ├── FRONTEND_PHASE2_3_4_OPTIMIZATION_REPORT.md
+│   ├── FRONTEND_PORT_FIX_COMPLETION_REPORT.md
+│   ├── FRONTEND_SERVICE_STATUS_20260109.md
+│   ├── FRONTEND_TEST_REPORT_2026-01-27.md
+│   ├── FRONTEND_TYPESCRIPT_FIX_REPORT.md
+│   ├── FRONTEND_VISUAL_DIAGNOSIS.md
+│   ├── FRONTEND_VISUAL_OPTIMIZATION_SUMMARY.md
+│   ├── FRONTEND_WORK_SUMMARY.md
+│   ├── GPU_ACCELERATION_BENCHMARK.py
+│   ├── GPU_API_FIXES_VERIFICATION_REPORT_20260110.md
+│   ├── GPU_API修复验证报告_20260110.md
+│   ├── GPU_FUNCTIONALITY_AUDIT_REPORT_20260110.md
+│   ├── GPU功能审计报告_20260110.md
+│   ├── GRID_SYSTEM_VERIFICATION_REPORT.md
+│   ├── HOOKS_REPAIR_COMPLETION_REPORT.md
+│   ├── HOOK_COMPLIANCE_UPGRADE_REPORT.md
+│   ├── HOOK_EXCLUSION_RULES_IMPLEMENTATION.md
+│   ├── HTML5_HISTORY_MODE_MIGRATION_COMPLETION_REPORT.md
+│   ├── HTML_TO_VUE_CONVERSION_EXECUTION_ANALYSIS.md
+│   ├── HTML_TO_VUE_CONVERSION_GAP_ANALYSIS.md
+│   ├── IMPLEMENT_WEB_FRONTEND_V2_NAVIGATION_STATUS_REPORT.md
+│   ├── INDEX.md
+│   ├── INDICATOR_SYSTEM_OPTIMIZATION_IMPLEMENTATION_EVALUATION.md
+│   ├── INDICATOR_SYSTEM_OPTIMIZATION_PLAN.md
+│   ├── INDICATOR_SYSTEM_V2_FINAL_REPORT.md
+│   ├── INDICATOR_SYSTEM_V2_VS_REFERENCE_GAP_ANALYSIS.md
+│   ├── INTELLIGENT_THRESHOLD_MANAGER_ANALYSIS.md
+│   ├── INTELLIGENT_THRESHOLD_MANAGER_TDD_REFACTORING_COMPLETION_REPORT.md
+│   ├── LOGIN_FIX_REPORT_2026-01-27.md
+│   ├── MAIN_PROJECT_INTEGRATION_REPORT.md
+│   ├── MARKET_CENTER_OPTIMIZATION_REPORT.md
+│   ├── MENU_API_OPTIMIZATION_PLAN.md
+│   ├── MENU_API_OPTIMIZATION_PLAN_V2.md
+│   ├── MENU_CONFIGURATION_MERGE_REPORT.md
+│   ├── MENU_DESCRIPTION_OPTIMIZATION_REPORT.md
+│   ├── MENU_SYSTEM_OPTIMIZATION_PLAN.md
+│   ├── MENU_TREE_COMPLIANCE_REPORT.md
+│   ├── MISSING_API_ALTERNATIVES.md
+│   ├── MOCK_REAL_DOCS_CLEANUP_COMPLETION_REPORT.md
+│   ├── MOCK_REAL_DOCS_CLEANUP_PLAN.md
+│   ├── MOCK_TO_REAL_DATA_MIGRATION_ANALYSIS.md
+│   ├── MOCK_TO_REAL_DATA_MIGRATION_IMPLEMENTATION_REPORT.md
+│   ├── MOCK_TO_REAL_MIGRATION_IMPLEMENTATION_COMPLETION.md
+│   ├── MONITORING_EXPLORATION_COMPLETE.md
+│   ├── MONITORING_QUICK_REFERENCE.md
+│   ├── MONITORING_STACK_RESTORE_REPORT_20260117.md
+│   ├── MONITORING_SYSTEM_INITIALIZATION_REPORT.md
+│   ├── MONITORING_SYSTEM_SUMMARY.md
+│   ├── MONITORING_SYSTEM_VERIFICATION_REPORT.md
+│   ├── MULTI_CLI_CONFIG_SYSTEM_COMPLETION.md
+│   ├── MULTI_CLI_DOCS_ORGANIZATION_REPORT.md
+│   ├── MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md
+│   ├── MULTI_CLI_V2_ARCHITECTURE_COMPARISON.md
+│   ├── MULTI_CLI_V2_COMPLETION_REPORT.md
+│   ├── MULTI_CLI_V2_FIX_SUMMARY.md
+│   ├── MULTI_ROLE_COMPREHENSIVE_ASSESSMENT_2026-01-03.md
+│   ├── MYSTOCKS_HTML_TO_VUE_CONVERSION_FINAL_REPORT.md
+│   ├── MYSTOCKS_HTML_VUE_CONVERSION_RESULTS.md
+│   ├── MyStocks_API全面分析报告_修正版.md
+│   ├── NEXT_STEPS_DETAILED_PLAN.md
+│   ├── OBSERVATION_ITEMS_FIX_REPORT.md
+│   ├── OPENSPEC_V2_PROPOSAL_SUMMARY.md
+│   ├── OPENSPROPOSAL_SUMMARY_2026-01-03.md
+│   ├── OPTIMIZATION_REPORT_20260107.md
+│   ├── OPTIMIZATION_REPORT_20260107_FINAL.md
+│   ├── P0_DATA_COMPONENTS_MIGRATION_REPORT.md
+│   ├── P0_STRATEGY_API_FIX_REPORT.md
+│   ├── P0_TASK1_ASYNC_MONITORING_COMPLETION.md
+│   ├── P0_TASKS_COMPLETION_REPORT_2026-01-03.md
+│   ├── P0_TASK_COMPLETION_REPORT.md
+│   ├── P0_TEST_VALIDATION_REPORT.md
+│   ├── P1_DEEP_INTEGRATION_VERIFICATION.md
+│   ├── P1_DIAGNOSTIC_REPORT.md
+│   ├── P1_INTEGRATION_ASSESSMENT.md
+│   ├── P1_TASK_1_COMPLETION_REPORT.md
+│   ├── P1_TYPESCRIPT_OPTIMIZATION_COMPLETION_REPORT.md
+│   ├── P2_INTEGRATION_ASSESSMENT.md
+│   ├── P2_PRIORITY_PAGES_ASSESSMENT.md
+│   ├── P2_TYPESCRIPT_OPTIMIZATION_COMPLETION_REPORT.md
+│   ├── PAGES_REORGANIZATION_PROPOSAL.md
+│   ├── PHASE0_COMPLETION_REPORT.md
+│   ├── PHASE10_BUG_REPORT.md
+│   ├── PHASE10_BUG_REPORTING_INTEGRATION.md
+│   ├── PHASE10_DAY1_EXECUTIVE_SUMMARY.md
+│   ├── PHASE10_FINAL_VERIFICATION.md
+│   ├── PHASE10_PHASE11_TRANSITION_SUMMARY.md
+│   ├── PHASE11_EXECUTION_READINESS.md
+│   ├── PHASE11_PLANNING.md
+│   ├── PHASE11_WEEK1_PARALLEL_EXECUTION_PLAN.md
+│   ├── PHASE11_WEEK1_PERFORMANCE_BASELINE.md
+│   ├── PHASE11_WEEK1_RUN2_ANALYSIS.md
+│   ├── PHASE11_WEEK1_STATUS_REPORT.md
+│   ├── PHASE11_WEEK1_TASK1_COMPLETION.md
+│   ├── PHASE15_ALGORITHM_IMPLEMENTATION_COMPLETION_REPORT.md
+│   ├── PHASE1_2_COMPLETION_REPORT_2025-12-05.md
+│   ├── PHASE1_3A_COMPLETION_REPORT_2025-12-05.md
+│   ├── PHASE1_3B_COMPLETION_REPORT_2025-12-05.md
+│   ├── PHASE1_3C_COMPLETION_REPORT_2025-12-05.md
+│   ├── PHASE1_COMPLETION_SUMMARY.md
+│   ├── PHASE1_FINAL_COMPLETION_SUMMARY_2025-12-05.md
+│   ├── PHASE1_FINAL_SUMMARY.md
+│   ├── PHASE1_TEST_INFRASTRUCTURE_COMPLETION.md
+│   ├── PHASE20_COMPLETE_ML_TRADING_SYSTEM_REPORT.md
+│   ├── PHASE20_ML_ENHANCED_TRADING_STRATEGIES_COMPLETION_REPORT.md
+│   ├── PHASE21_ML_STRATEGY_BACKTESTING_INTEGRATION_COMPLETION_REPORT.md
+│   ├── PHASE2_3_SAGA_FULLSTACK_COMPLETION_REPORT.md
+│   ├── PHASE2_3_SAGA_MIGRATION_COMPLETION_REPORT.md
+│   ├── PHASE2_COMPLETION_REPORT.md
+│   ├── PHASE2_E2E_TESTING_COMPLETION_REPORT.md
+│   ├── PHASE2_FINAL_COMPLETION_REPORT.md
+│   ├── PHASE2_IMPLEMENTATION_PLAN_PART2.md
+│   ├── PHASE2_MENU_REFACTORING_COMPLETION_REPORT.md
+│   ├── PHASE2_MID_TERM_PROGRESS_REPORT.md
+│   ├── PHASE2_PYLINT_FIX_PLAN.md
+│   ├── PHASE2_TASK2.1_COMPLETION_REPORT.md
+│   ├── PHASE2_TASK2.2.1_COMPLETION_REPORT.md
+│   ├── PHASE2_TASK2.2.2_COMPLETION_REPORT.md
+│   ├── PHASE2_TASK2.2.3_COMPLETION_REPORT.md
+│   ├── PHASE2_TASK2.2.4_COMPLETION_REPORT.md
+│   ├── PHASE2_TASK2.2.5_COMPLETION_REPORT.md
+│   ├── PHASE2_VERIFICATION_AND_PHASE3_OPTIMIZATION.md
+│   ├── PHASE3_5_FIXES_REPORT.md
+│   ├── PHASE3_5_TEST_RESULTS.md
+│   ├── PHASE3_BLOOMBERG_STYLE_TEST_REPORT.md
+│   ├── PHASE3_COMPLETION_REPORT.md
+│   ├── PHASE3_COMPLETION_REPORT_20260109.md
+│   ├── PHASE3_P2_FILE_TESTING_PROGRESS.md
+│   ├── PHASE3_PROGRESS_REPORT_20260109.md
+│   ├── PHASE3_SOURCE_COVERAGE_ACHIEVEMENTS.md
+│   ├── PHASE3_SQURGICAL_REPLACEMENT_COMPLETION_REPORT.md
+│   ├── PHASE3_STATUS.md
+│   ├── PHASE3_STYLE_UNIFICATION_PROGRESS_REPORT.md
+│   ├── PHASE3_TASK_CREATION_SUMMARY.md
+│   ├── PHASE3_VERIFICATION_STATUS.md
+│   ├── PHASE4.2_CONTRACT_TYPE_ALIGNMENT_COMPLETE_REPORT.md
+│   ├── PHASE4_DOT_2_CONTRACT_TYPE_ALIGNMENT_PROGRESS_REPORT.md
+│   ├── PHASE4_EXCEPTIONS_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE5_DELIVERABLES_VERIFICATION_REPORT.md
+│   ├── PHASE5_INTEGRATION_STRATEGY.md
+│   ├── PHASE5_MERGE_COMPLETION_AND_NEXT_STEPS.md
+│   ├── PHASE5_UNEXPECTED_BREAKTHROUGH.md
+│   ├── PHASE6_BATCH_FAILURE_STRATEGY_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_CLI_STATUS_T2.5H.md
+│   ├── PHASE6_CLI_STATUS_T3H.md
+│   ├── PHASE6_CLI_STATUS_T3H5H.md
+│   ├── PHASE6_CLI_STATUS_T4H.md
+│   ├── PHASE6_CLI_STATUS_T4H5H.md
+│   ├── PHASE6_CLI_STATUS_T5H.md
+│   ├── PHASE6_CLI_STATUS_T5H4H.md
+│   ├── PHASE6_CLI_STATUS_T6H5_FINAL.md
+│   ├── PHASE6_CLI_STATUS_T6H_MILESTONE.md
+│   ├── PHASE6_COMPLETION_REPORT.md
+│   ├── PHASE6_CONFIG_DRIVEN_TABLE_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_CONNECTION_POOL_CONFIG_PERFECT_COVERAGE.md
+│   ├── PHASE6_DATABASE_MODULE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_DATABASE_POOL_MODULE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_ERROR_HANDLING_MODULE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_FINAL_COMPLETION_REPORT.md
+│   ├── PHASE6_MEMORY_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_MERGE_PLAN.md
+│   ├── PHASE6_MONITORING_MODULE_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE6_MULTI_CLI_COORDINATION.md
+│   ├── PHASE6_PROGRESS_BAR_T4H.md
+│   ├── PHASE6_PROGRESS_BAR_T5H.md
+│   ├── PHASE6_PROGRESS_REPORT_CURRENT.md
+│   ├── PHASE6_PROGRESS_REPORT_T0.md
+│   ├── PHASE6_PROGRESS_REPORT_T1.5.md
+│   ├── PHASE6_PROGRESS_REPORT_T1.5_CLI3_COMPLETE.md
+│   ├── PHASE6_UNIFIED_MANAGER_COVERAGE_ACHIEVEMENT.md
+│   ├── PHASE7_WEEK2_PROGRESS_REPORT.md
+│   ├── PHASE_1_COMPLETION_REPORT.md
+│   ├── PHASE_2_COMPLETION_REPORT.md
+│   ├── PHASE_2_INTEGRATION_COMPLETION_REPORT.md
+│   ├── PHASE_5_5_DATA_MAPPER_COMPLETION_REPORT.md
+│   ├── PHASE_5_6_UNIFIED_INTERFACE_COMPLETION_REPORT.md
+│   ├── PHASE_5_COMPLETION_REPORT.md
+│   ├── PHASE_6_2_3_KERNEL_LAYER_COMPLETION_REPORT.md
+│   ├── PHASE_6_2_GPU_HAL_IMPLEMENTATION_REPORT.md
+│   ├── PHASE_7_COMPLETION_CERTIFICATE.md
+│   ├── PHASE_7_COMPLETION_SUMMARY.md
+│   ├── PHASE_8_COMPLETION_SUMMARY.md
+│   ├── PHASE_8_FINAL_SUMMARY.md
+│   ├── PHASE_8_IMPLEMENTATION_PLAN.md
+│   ├── PHASE_9_IMPLEMENTATION_PLAN.md
+│   ├── PM2_FRONTEND_TEST_COMPLETION_REPORT.md
+│   ├── PORTFOLIO_MANAGEMENT_REDESIGN_SUMMARY.md
+│   ├── PORTFOLIO_MANAGEMENT_TEST_REPORT_20260108.md
+│   ├── POSTGRESQL_CONNECTION_POOL_REFACTORING_COMPLETION_REPORT.md
+│   ├── POSTGRESQL_DATA_MAPPER_REFACTORING_COMPLETION_REPORT.md
+│   ├── POSTGRESQL_QUERY_BUILDER_REFACTORING_COMPLETION_REPORT.md
+│   ├── PRE_COMMIT_HOOK_DIAGNOSIS.md
+│   ├── PRE_VERIFICATION_STATUS.md
+│   ├── PROJECT_STATUS_QUICK_INDEX.md
+│   ├── PRO_FINTECH_UI_IMPROVEMENT_GUIDE.md
+│   ├── PYLINT_ERROR_ANALYSIS.md
+│   ├── PYTHON_TYPE_ERROR_FIX_PROGRESS_REPORT.md
+│   ├── QUALITY_GATE_DESIGN_ANALYSIS.md
+│   ├── QUANTITATIVE_TRADING_ALGORITHMS_PHASE1_COMPLETION_REPORT.md
+│   ├── QUANTITATIVE_TRADING_ALGORITHMS_PHASE4_COMPLETION_REPORT.md
+│   ├── RALPH_LOOP_AND_QUALITY_GATE_FIX_REPORT.md
+│   ├── RALPH_LOOP_COMPLETION_SUMMARY.md
+│   ├── README.md
+│   ├── README_API_CONTRACT.md
+│   ├── REALTIME_MARKET_SAGA_COMPLETION_REPORT.md
+│   ├── REDIS_OPTIMIZATION_PHASE2_COMPLETION_REPORT.md
+│   ├── REDIS_OPTIMIZATION_PHASE2_PLAN.md
+│   ├── REDIS_OPTIMIZATION_PHASE3_COMPLETION_REPORT.md
+│   ├── REDIS_THREE_DATABASE_ARCHITECTURE_INTEGRATION_REPORT.md
+│   ├── REDIS_THREE_DATABASE_OPTIMIZATION_PROPOSAL.md
+│   ├── REDIS_THREE_DATABASE_VERIFICATION_REPORT.md
+│   ├── REORGANIZATION_COMPLETION_REPORT.md
+│   ├── RISK_CONTROL_API_DOCUMENTATION.md
+│   ├── RISK_MANAGEMENT_ARCHITECTURE_V3.md
+│   ├── ROUTING_OPTIMIZATION_EVALUATION.md
+│   ├── SAGA_COORDINATOR_TEST_COMPLETION_REPORT.md
+│   ├── SAGA_TESTING_STRATEGY.md
+│   ├── SAGA_TRANSACTION_VALIDATION_REPORT_2026-01-03.md
+│   ├── SECURITY_AUDIT_REPORT.md
+│   ├── SECURITY_FIX_CHECKLIST.md
+│   ├── SECURITY_FIX_COMPLETION_REPORT.md
+│   ├── SECURITY_FIX_IMPLEMENTATION_PLAN.md
+│   ├── SECURITY_FIX_SIMPLIFIED_PLAN.md
+│   ├── SECURITY_FIX_SUMMARY.md
+│   ├── SECURITY_HARDcoded_PASSWORD_SCAN_REPORT.md
+│   ├── SECURITY_QUICK_REFERENCE_CARD.md
+│   ├── SESSION_COMPLETION_2025_11_06.md
+│   ├── SESSION_COMPLETION_REPORT.md
+│   ├── SESSION_COMPLETION_REPORT_20251111.md
+│   ├── SESSION_CONTINUATION_SUMMARY.md
+│   ├── SESSION_WORK_SUMMARY_20251111.md
+│   ├── SIGNALS_DEBUG_REPORT.md
+│   ├── SIGNAL_MONITORING_PHASE2_COMPLETION_REPORT.md
+│   ├── SIGNAL_MONITORING_PHASE2_DEPLOYMENT_TEST_REPORT.md
+│   ├── SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md
+│   ├── SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md
+│   ├── SIGNAL_MONITORING_PHASE2_TEST_FIX_REPORT.md
+│   ├── SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md
+│   ├── SQL_INJECTION_VULNERABILITY_REPORT.md
+│   ├── SSE_SERVICE_FIX_REPORT.md
+│   ├── STAGE1_MEDIUM_PRIORITY_FIXES_COMPLETION_REPORT.md
+│   ├── STAGE2_PERFORMANCE_OPTIMIZATION_COMPLETION_REPORT.md
+│   ├── STARTUP_WARNINGS_FIX.md
+│   ├── STOCK_MONITORING_IMPLEMENTATION_PLAN_REVIEW.md
+│   ├── STOCK_MONITORING_IMPLEMENTATION_PLAN_V3.md
+│   ├── STOCK_MONITORING_PORTFOLIO_OPTIMIZED_PROPOSAL.md
+│   ├── STOCK_MONITORING_PORTFOLIO_PROPOSAL.md
+│   ├── STRATEGY_LAB_OPTIMIZATION_REPORT.md
+│   ├── SUBTASK_2_2_COMPLETION_REPORT.md
+│   ├── SUBTASK_2_2_IMPLEMENTATION_PLAN.md
+│   ├── SUBTASK_2_2_PHASE3_4_PLAN.md
+│   ├── SUBTASK_2_2_PROGRESS.md
+│   ├── SYSTEM_STATUS_20251020_FINAL.md
+│   ├── TASK_1.2_TEST_INVESTIGATION.md
+│   ├── TASK_1.3_COMPLETION_REPORT.md
+│   ├── TASK_10_COMPLETION_VERIFICATION.md
+│   ├── TASK_2_1_COMPLETION_REPORT.md
+│   ├── TASK_2_1_DEPLOYMENT_GUIDE.md
+│   ├── TASK_2_1_FILES_NAVIGATION.md
+│   ├── TASK_2_COMPLETION_REPORT.md
+│   ├── TASK_2_IMPLEMENTATION_PLAN.md
+│   ├── TASK_3_2_ANALYSIS.md
+│   ├── TASK_3_2_COMPLETION.md
+│   ├── TASK_3_COMPLETION_REPORT.md
+│   ├── TASK_4_COMPLETION_VERIFICATION.md
+│   ├── TASK_6_COMPLETION_VERIFICATION.md
+│   ├── TASK_9_COMPLETION_VERIFICATION.md
+│   ├── TDENGINE_FIX_COMPLETION_REPORT.md
+│   ├── TDENGINE_FIX_REPORT.md
+│   ├── TDENGINE_SAGA_FIX_REPORT.md
+│   ├── TDX_ADAPTER_TDD_REFACTORING_COMPLETION_REPORT.md
+│   ├── TDX_ANALYSIS_COMPLETION_REPORT.md
+│   ├── TDX_COMPARISON_QUICK_REFERENCE.md
+│   ├── TDX_DATA_INVENTORY.md
+│   ├── TDX_ENHANCEMENT_PLAN.md
+│   ├── TDX_REORGANIZATION_REPORT.md
+│   ├── TECHNICAL_DEBT_ASSESSMENT_2025-11-12.md
+│   ├── TECHNICAL_DEBT_REMEDIATION_SESSION_SUMMARY_2025-12-05.md
+│   ├── TECHNICAL_DEBT_STATUS_2026-01-03.md
+│   ├── TEMP_FILE_CLEANUP_20260109.md
+│   ├── TEST_CLI_COMPLETION_REPORT.md
+│   ├── TEST_CLI_COMPLETION_REPORT_2025-12-31.md
+│   ├── TEST_CLI_DAILY_LOG_2025-12-31.md
+│   ├── TEST_CLI_FINAL_SUMMARY_2025-12-31.md
+│   ├── TEST_COVERAGE_ACHIEVEMENT_REPORT.md
+│   ├── TEST_COVERAGE_IMPROVEMENT_PLAN.md
+│   ├── TEST_COVERAGE_IMPROVEMENT_PROGRESS.md
+│   ├── TEST_COVERAGE_REPORT_2025-11-13.md
+│   ├── TEST_ERRORS_ANALYSIS.md
+│   ├── TEST_FIX_OPTION_B_PROGRESS.md
+│   ├── TEST_FIX_PHASE2_SUMMARY.md
+│   ├── TEST_ORDER_RECOMMENDATION.md
+│   ├── TEST_PROGRESS_REPORT.md
+│   ├── TEST_SUMMARY_20251020.md
+│   ├── TEST_VALIDATION_REPORT.md
+│   ├── TMP_TO_PROJECT_MIGRATION_REPORT.md
+│   ├── TODO_STATUS_DISPLAY_ISSUE_INVESTIGATION_REPORT.md
+│   ├── TODO_STATUS_INVESTIGATION_REPORT.md
+│   ├── TRACK_A_T2_BUGER_INTEGRATION_REPORT.md
+│   ├── TYPESCRIPT_COMPONENT_ISSUES_REPORT.md
+│   ├── TYPESCRIPT_EMERGENCY_FIX_2026-01-08.md
+│   ├── TYPESCRIPT_ERRORS_20260115.md
+│   ├── TYPESCRIPT_ERROR_FIX_20260109.md
+│   ├── TYPESCRIPT_ERROR_FIX_REPORT.md
+│   ├── TYPESCRIPT_EXTENSION_SYSTEM_COMPLETION_SUMMARY.md
+│   ├── TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_DIAGNOSTIC.md
+│   ├── TYPESCRIPT_FIX_ARTDECO.md
+│   ├── TYPESCRIPT_FIX_BEST_PRACTICES.md
+│   ├── TYPESCRIPT_FIX_REFLECTION.md
+│   ├── TYPESCRIPT_FIX_REPORT_20260115.md
+│   ├── TYPESCRIPT_P0_FIX_COMPLETION_2026-01-08.md
+│   ├── TYPESCRIPT_PHASE_4.1_TYPE_DEFINITION_OPTIMIZATION_REPORT.md
+│   ├── TYPESCRIPT_QUICK_FIX_SUMMARY.md
+│   ├── TYPESCRIPT_TECHNICAL_DEBTS.md
+│   ├── TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md
+│   ├── TYPESCRIPT修复完成报告.md
+│   ├── TYPES_EXPORT_FIX_COMPLETION.md
+│   ├── TypeScript_Documentation_Project_Complete_2026-01-20.md
+│   ├── TypeScript_优化项目_最终报告_2026-01-20.md
+│   ├── TypeScript_文档分类方案_2026-01-20.md
+│   ├── Typescript_差距分析报告_2026-01-20.md
+│   ├── Typescript文档整理_完整清单_2026-01-20.md
+│   ├── UI_UX_DESIGN_ANALYSIS_REPORT.md
+│   ├── UNDEFINED_PASSING_FIX_20260110.md
+│   ├── VICTORY_LAP_STATUS_REPORT.md
+│   ├── VISUAL_OPTIMIZATION_BEFORE_AFTER_COMPARISON.md
+│   ├── VISUAL_OPTIMIZATION_GUIDE.md
+│   ├── VISUAL_OPTIMIZATION_VERIFICATION_REPORT.md
+│   ├── VISUAL_SPECIFICATION.md
+│   ├── VUE_DEMO_FILE_SPLIT_REPORT.md
+│   ├── VUE_MOUNT_FIX_COMPLETION_REPORT.md
+│   ├── WEB3_COMPONENT_REMOVAL_FINAL_REPORT.md
+│   ├── WEB_ADAPTER_DEPENDENCY_ANALYSIS.md
+│   ├── WEB_COMPLETE_STATUS_20251020.md
+│   ├── WEB_DATA_POPULATION_SUMMARY_20251020.md
+│   ├── WEB_DESIGN_EXPERT_EVALUATION_REPORT.md
+│   ├── WEB_DESIGN_OPTIMIZATION_PROPOSAL.md
+│   ├── WEB_END_TO_END_TEST_REPORT.md
+│   ├── WEB_FINAL_STATUS_20251020.md
+│   ├── WEB_FIXES_SUMMARY_20251020.md
+│   ├── WEB_FRONTEND_API_MAPPING_TABLE.md
+│   ├── WEB_FRONTEND_ARTDECO_INTEGRATION_TEST_PLAN.md
+│   ├── WEB_FRONTEND_INTEGRATION_TEST_20251020.md
+│   ├── WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION.md
+│   ├── WEB_FRONTEND_MENU_ARCHITECTURE_OPTIMIZATION_V2.md
+│   ├── WEB_FRONTEND_OPTIMIZATION_REVIEW_RECOMMENDATIONS.md
+│   ├── WEB_FRONTEND_PAGE_STRUCTURE.md
+│   ├── WEB_FUNCTIONALITY_AUDIT.md
+│   ├── WEB_FUNCTION_TEST_REPORT_FINAL.md
+│   ├── WEB_HTML_SAMPLE_COMPLETION_SUMMARY.md
+│   ├── WEB_INTEGRATION_EXECUTIVE_SUMMARY.md
+│   ├── WEB_INTEGRATION_TASKS_AUDIT_REPORT.md
+│   ├── WEB_OPTIMIZATION_SCHEME.md
+│   ├── WEB_PAGES_INVENTORY_REPORT.md
+│   ├── WEB_PERFORMANCE_FIXES_SUMMARY.md
+│   ├── WEB_QUALITY_GATE_TYPESCRIPT_FIX.md
+│   ├── WEB_TEST_FIX_20251020.md
+│   ├── WEEK1_EMERGENCY_FIX_PROGRESS_20260110.md
+│   ├── WEEK1_FIX_SUMMARY_EN_20260110.md
+│   ├── WEEK7_COMPLETION_REPORT.md
+│   ├── WEEK_1_COMPLETION_SUMMARY.md
+│   ├── algorithm-api-phase1-3-completion-report.md
+│   ├── algorithm-api-phase1-4-completion-report.md
+│   ├── analysis
+│   │   ├── ai_automation_analysis_1763426351.json
+│   │   ├── ai_strategy_analysis_result.json
+│   │   ├── data_access_coverage_analysis.json
+│   │   ├── gpu_core_modules_analysis_20251218_182936.json
+│   │   ├── gpu_files_analysis_report.json
+│   │   ├── gpu_migration_analysis_report.json
+│   │   ├── overall_coverage_analysis.json
+│   │   └── simple_gpu_migration_report.json
+│   ├── api_data_inventory.json
+│   ├── api_split
+│   │   ├── API_SPLIT_INDEX.md
+│   │   ├── QUICKSTART.md
+│   │   ├── README.md
+│   │   ├── SPLIT_COMPLETION_REPORT.md
+│   │   ├── api_.json
+│   │   ├── api_adapters.json
+│   │   ├── api_add.json
+│   │   ├── api_alert-rules.json
+│   │   ├── api_alerts.json
+│   │   ├── api_analytics.json
+│   │   ├── api_analyze.json
+│   │   ├── api_architecture.json
+│   │   ├── api_audit.json
+│   │   ├── api_backtest.json
+│   │   ├── api_backup.json
+│   │   ├── api_backups.json
+│   │   ├── api_basic.json
+│   │   ├── api_batch.json
+│   │   ├── api_beta.json
+│   │   ├── api_blocktrade.json
+│   │   ├── api_cache.json
+│   │   ├── api_calculate.json
+│   │   ├── api_chart.json
+│   │   ├── api_check.json
+│   │   ├── api_chip-race.json
+│   │   ├── api_cleanup.json
+│   │   ├── api_clear-cache.json
+│   │   ├── api_clear.json
+│   │   ├── api_concept.json
+│   │   ├── api_config.json
+│   │   ├── api_configs.json
+│   │   ├── api_contracts.json
+│   │   ├── api_control.json
+│   │   ├── api_count.json
+│   │   ├── api_csrf.json
+│   │   ├── api_custom-query.json
+│   │   ├── api_dashboard.json
+│   │   ├── api_database.json
+│   │   ├── api_datasources.json
+│   │   ├── api_definitions.json
+│   │   ├── api_detailed.json
+│   │   ├── api_diff.json
+│   │   ├── api_dividend.json
+│   │   ├── api_dragon-tiger.json
+│   │   ├── api_email.json
+│   │   ├── api_etf.json
+│   │   ├── api_evict.json
+│   │   ├── api_eviction.json
+│   │   ├── api_execute.json
+│   │   ├── api_executions.json
+│   │   ├── api_export.json
+│   │   ├── api_features.json
+│   │   ├── api_fetch.json
+│   │   ├── api_financial.json
+│   │   ├── api_fund-flow.json
+│   │   ├── api_group.json
+│   │   ├── api_groups.json
+│   │   ├── api_health.json
+│   │   ├── api_heatmap.json
+│   │   ├── api_history.json
+│   │   ├── api_import.json
+│   │   ├── api_important.json
+│   │   ├── api_index.json
+│   │   ├── api_industry.json
+│   │   ├── api_integrity.json
+│   │   ├── api_kline.json
+│   │   ├── api_lhb.json
+│   │   ├── api_list.json
+│   │   ├── api_login.json
+│   │   ├── api_logout.json
+│   │   ├── api_logs.json
+│   │   ├── api_market-overview.json
+│   │   ├── api_markets.json
+│   │   ├── api_matched-stocks.json
+│   │   ├── api_me.json
+│   │   ├── api_metrics.json
+│   │   ├── api_mini-chart.json
+│   │   ├── api_models.json
+│   │   ├── api_monitor-rules.json
+│   │   ├── api_monitor.json
+│   │   ├── api_monitoring.json
+│   │   ├── api_move.json
+│   │   ├── api_news.json
+│   │   ├── api_notes.json
+│   │   ├── api_notifications.json
+│   │   ├── api_patterns.json
+│   │   ├── api_performance.json
+│   │   ├── api_portfolio.json
+│   │   ├── api_position.json
+│   │   ├── api_positions.json
+│   │   ├── api_postgresql.json
+│   │   ├── api_preferences.json
+│   │   ├── api_prewarming.json
+│   │   ├── api_profile.json
+│   │   ├── api_queries.json
+│   │   ├── api_query.json
+│   │   ├── api_quote.json
+│   │   ├── api_quotes.json
+│   │   ├── api_rate-limits.json
+│   │   ├── api_realtime-quote.json
+│   │   ├── api_realtime.json
+│   │   ├── api_recommendation.json
+│   │   ├── api_recovery.json
+│   │   ├── api_refresh-all.json
+│   │   ├── api_refresh-health.json
+│   │   ├── api_refresh.json
+│   │   ├── api_register.json
+│   │   ├── api_registry.json
+│   │   ├── api_remove.json
+│   │   ├── api_reports.json
+│   │   ├── api_reset-password.json
+│   │   ├── api_reset.json
+│   │   ├── api_results.json
+│   │   ├── api_run.json
+│   │   ├── api_scheduler.json
+│   │   ├── api_screener.json
+│   │   ├── api_search.json
+│   │   ├── api_sector.json
+│   │   ├── api_statistics.json
+│   │   ├── api_stats.json
+│   │   ├── api_status.json
+│   │   ├── api_stock.json
+│   │   ├── api_stocks.json
+│   │   ├── api_strategies.json
+│   │   ├── api_summary.json
+│   │   ├── api_supported-categories.json
+│   │   ├── api_symbol.json
+│   │   ├── api_symbols.json
+│   │   ├── api_sync.json
+│   │   ├── api_task_id.json
+│   │   ├── api_tdengine.json
+│   │   ├── api_tdx.json
+│   │   ├── api_test-connection.json
+│   │   ├── api_test-email.json
+│   │   ├── api_test.json
+│   │   ├── api_ticker-tape.json
+│   │   ├── api_today.json
+│   │   ├── api_trades.json
+│   │   ├── api_training.json
+│   │   ├── api_triggered-records.json
+│   │   ├── api_types.json
+│   │   ├── api_users.json
+│   │   ├── api_validate.json
+│   │   ├── api_var-cvar.json
+│   │   ├── api_versions.json
+│   │   └── api_with-groups.json
+│   ├── api_verification
+│   │   ├── API_VERIFICATION_COMPREHENSIVE_REPORT.md
+│   │   ├── BUG_VERIFICATION_REPORT.md
+│   │   ├── PHASE_2.2_BUG_SUMMARY.md
+│   │   ├── PHASE_2.2_KLINE_API_VERIFICATION_REPORT.md
+│   │   ├── PHASE_2.2_TEST_CASES.md
+│   │   ├── PHASE_2.3_2.4_VERIFICATION_REPORT.md
+│   │   ├── PHASE_2.7_2.8_VERIFICATION_REPORT.md
+│   │   ├── PHASE_2.7_2.8_VERIFICATION_REPORT_FINAL.md
+│   │   └── PHASE_2.7_2.8_VERIFICATION_REPORT_FIXED.md
+│   ├── artdeco-alignment
+│   │   ├── FRONTEND_DESIGN_EVALUATION.md
+│   │   ├── UI_UX_PRO_MAX_EVALUATION.md
+│   │   ├── artdeco-alignment-analysis.md
+│   │   ├── artdeco-alignment-summary.txt
+│   │   └── artdeco-quick-reference.md
+│   ├── artdeco-dashboard-full-debug.png
+│   ├── artdeco-integration-verification.md
+│   ├── artdeco_优化方案对比说明.md
+│   ├── batch-coverage-html
+│   │   ├── class_index.html
+│   │   ├── coverage_html_cb_6fb7b396.js
+│   │   ├── favicon_32_cb_58284776.png
+│   │   ├── function_index.html
+│   │   ├── index.html
+│   │   ├── keybd_closed_cb_ce680311.png
+│   │   ├── status.json
+│   │   ├── style_cb_6b508a39.css
+│   │   ├── z_0024c065c6ee5c15___init___py.html
+│   │   ├── z_0024c065c6ee5c15_base_py.html
+│   │   ├── z_0024c065c6ee5c15_financial_data_py.html
+│   │   ├── z_0024c065c6ee5c15_index_daily_py.html
+│   │   ├── z_0024c065c6ee5c15_industry_data_py.html
+│   │   ├── z_0024c065c6ee5c15_misc_data_py.html
+│   │   ├── z_0024c065c6ee5c15_realtime_data_py.html
+│   │   ├── z_0024c065c6ee5c15_stock_basic_py.html
+│   │   ├── z_0024c065c6ee5c15_stock_daily_py.html
+│   │   ├── z_00f62d81469fb39c___init___py.html
+│   │   ├── z_00f62d81469fb39c_alert_history_py.html
+│   │   ├── z_00f62d81469fb39c_alert_manager_py.html
+│   │   ├── z_00f62d81469fb39c_async_monitoring_manager_py.html
+│   │   ├── z_00f62d81469fb39c_clustering_analyzer_py.html
+│   │   ├── z_00f62d81469fb39c_data_analyzer_py.html
+│   │   ├── z_00f62d81469fb39c_data_quality_monitor_py.html
+│   │   ├── z_00f62d81469fb39c_gpu_integration_manager_py.html
+│   │   ├── z_00f62d81469fb39c_gpu_performance_optimizer_py.html
+│   │   ├── z_00f62d81469fb39c_indicator_metrics_py.html
+│   │   ├── z_00f62d81469fb39c_metrics_collector_py.html
+│   │   ├── z_00f62d81469fb39c_signal_aggregation_task_py.html
+│   │   ├── z_00f62d81469fb39c_signal_metrics_py.html
+│   │   ├── z_00f62d81469fb39c_signal_push_integration_py.html
+│   │   ├── z_00f62d81469fb39c_signal_recorder_py.html
+│   │   ├── z_00f62d81469fb39c_signal_result_tracker_py.html
+│   │   ├── z_00f62d81469fb39c_statistical_optimizer_py.html
+│   │   ├── z_00f62d81469fb39c_threshold_rule_manager_py.html
+│   │   ├── z_00f62d81469fb39c_trend_analyzer_py.html
+│   │   ├── z_01270a9997bd102e___init___py.html
+│   │   ├── z_01270a9997bd102e_routes_py.html
+│   │   ├── z_01c13e415dc89c4e_saga_coordinator_py.html
+│   │   ├── z_0567a1305777099e___init___py.html
+│   │   ├── z_0618756b1ff51bca___init___py.html
+│   │   ├── z_0618756b1ff51bca_batch_failure_strategy_py.html
+│   │   ├── z_0618756b1ff51bca_config_driven_table_manager_py.html
+│   │   ├── z_0618756b1ff51bca_config_loader_py.html
+│   │   ├── z_0618756b1ff51bca_config_py.html
+│   │   ├── z_0618756b1ff51bca_connection_pool_config_py.html
+│   │   ├── z_0618756b1ff51bca_data_classification_py.html
+│   │   ├── z_0618756b1ff51bca_data_manager_py.html
+│   │   ├── z_0618756b1ff51bca_data_quality_validator_py.html
+│   │   ├── z_0618756b1ff51bca_data_source_handlers_v2_py.html
+│   │   ├── z_0618756b1ff51bca_data_source_manager_v2_py.html
+│   │   ├── z_0618756b1ff51bca_data_storage_strategy_py.html
+│   │   ├── z_0618756b1ff51bca_data_validator_py.html
+│   │   ├── z_0618756b1ff51bca_database_metrics_py.html
+│   │   ├── z_0618756b1ff51bca_database_pool_py.html
+│   │   ├── z_0618756b1ff51bca_database_py.html
+│   │   ├── z_0618756b1ff51bca_error_handling_py.html
+│   │   ├── z_0618756b1ff51bca_exceptions_py.html
+│   │   ├── z_0618756b1ff51bca_logging_py.html
+│   │   ├── z_0618756b1ff51bca_memory_manager_py.html
+│   │   ├── z_0618756b1ff51bca_monitoring_py.html
+│   │   ├── z_0618756b1ff51bca_simple_calculator_py.html
+│   │   ├── z_0618756b1ff51bca_unified_manager_py.html
+│   │   ├── z_0623403995933fb7___init___py.html
+│   │   ├── z_0623403995933fb7_indicator_calculator_py.html
+│   │   ├── z_0623403995933fb7_signal_generation_service_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5___init___py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_factory_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_interfaces_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_postgresql_access_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_sql_injection_fix_helper_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_tdengine_access_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_unified_data_access_manager_py.html
+│   │   ├── z_0818856628530b65___init___py.html
+│   │   ├── z_08d7babbb4cde735___init___py.html
+│   │   ├── z_08d7babbb4cde735_order_py.html
+│   │   ├── z_08d7babbb4cde735_order_status_py.html
+│   │   ├── z_08d7babbb4cde735_position_py.html
+│   │   ├── z_092270014a0b6ff0___init___py.html
+│   │   ├── z_092270014a0b6ff0_order_side_py.html
+│   │   ├── z_092270014a0b6ff0_order_type_py.html
+│   │   ├── z_0aa0c0e288e5c6a9___init___py.html
+│   │   ├── z_0aa0ffbeb19dd445___init___py.html
+│   │   ├── z_0aa0ffbeb19dd445_routes_py.html
+│   │   ├── z_0ff71e8ee3f7fd49___init___py.html
+│   │   ├── z_0ff71e8ee3f7fd49_models_py.html
+│   │   ├── z_0ff71e8ee3f7fd49_routes_py.html
+│   │   ├── z_0ff71e8ee3f7fd49_schemas_py.html
+│   │   ├── z_122febd9eb9cb1a0___init___py.html
+│   │   ├── z_145eef247bfb46b6___init___py.html
+│   │   ├── z_145eef247bfb46b6_core_py.html
+│   │   ├── z_145eef247bfb46b6_data_access_py.html
+│   │   ├── z_145eef247bfb46b6_unified_manager_py.html
+│   │   ├── z_15ddd237d645abca___init___py.html
+│   │   ├── z_15ddd237d645abca_hmm_algorithm_py.html
+│   │   ├── z_172bc7b2db1d3591___init___py.html
+│   │   ├── z_172bc7b2db1d3591_base_py.html
+│   │   ├── z_172bc7b2db1d3591_config_py.html
+│   │   ├── z_172bc7b2db1d3591_metadata_py.html
+│   │   ├── z_172bc7b2db1d3591_results_py.html
+│   │   ├── z_172bc7b2db1d3591_types_py.html
+│   │   ├── z_1965e62d5b8cf4ba___init___py.html
+│   │   ├── z_1965e62d5b8cf4ba_portfolio_valuation_service_optimized_py.html
+│   │   ├── z_1965e62d5b8cf4ba_portfolio_valuation_service_py.html
+│   │   ├── z_1965e62d5b8cf4ba_rebalancer_py.html
+│   │   ├── z_1965e62d5b8cf4ba_rebalancer_service_py.html
+│   │   ├── z_1a32a2480bee56e8___init___py.html
+│   │   ├── z_1a32a2480bee56e8_app_factory_py.html
+│   │   ├── z_1a32a2480bee56e8_main_py.html
+│   │   ├── z_1a32a2480bee56e8_openapi_config_py.html
+│   │   ├── z_1bd14579e9b6167e___init___py.html
+│   │   ├── z_1bd14579e9b6167e_adapter_base_py.html
+│   │   ├── z_1bd14579e9b6167e_base_py.html
+│   │   ├── z_1bd14579e9b6167e_financial_data_py.html
+│   │   ├── z_1bd14579e9b6167e_fund_flow_py.html
+│   │   ├── z_1bd14579e9b6167e_market_data_py.html
+│   │   ├── z_1bd14579e9b6167e_market_overview_py.html
+│   │   ├── z_1bd14579e9b6167e_misc_data_py.html
+│   │   ├── z_1bd14579e9b6167e_stock_info_py.html
+│   │   ├── z_1cf6b85568e64809___init___py.html
+│   │   ├── z_1d921b85ba2aefc2___init___py.html
+│   │   ├── z_1d921b85ba2aefc2_config_py.html
+│   │   ├── z_1d921b85ba2aefc2_kline_data_service_py.html
+│   │   ├── z_1d921b85ba2aefc2_new_test_tdx_py.html
+│   │   ├── z_1d921b85ba2aefc2_realtime_service_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_adapter_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_block_reader_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_data_source_py.html
+│   │   ├── z_1dd3466c3837dceb___init___py.html
+│   │   ├── z_1dd3466c3837dceb_bar_py.html
+│   │   ├── z_1dd3466c3837dceb_market_data_py.html
+│   │   ├── z_1dd3466c3837dceb_quote_py.html
+│   │   ├── z_1dd3466c3837dceb_tick_py.html
+│   │   ├── z_1e28750dae14dd24___init___py.html
+│   │   ├── z_1ed4f8546fe0f548___init___py.html
+│   │   ├── z_1ed4f8546fe0f548_feature_engineering_py.html
+│   │   ├── z_1ed4f8546fe0f548_ml_strategy_py.html
+│   │   ├── z_1ed4f8546fe0f548_price_predictor_py.html
+│   │   ├── z_1f1157c3e43829b5___init___py.html
+│   │   ├── z_1f1157c3e43829b5_contract_registry_py.html
+│   │   ├── z_1f1157c3e43829b5_contract_testing_py.html
+│   │   ├── z_1f1157c3e43829b5_contract_validator_py.html
+│   │   ├── z_1f1157c3e43829b5_diff_engine_py.html
+│   │   ├── z_1f1157c3e43829b5_openapi_generator_py.html
+│   │   ├── z_1f1157c3e43829b5_validator_py.html
+│   │   ├── z_1f1157c3e43829b5_version_manager_py.html
+│   │   ├── z_21d69e0d215b0b35___init___py.html
+│   │   ├── z_21d69e0d215b0b35_routes_py.html
+│   │   ├── z_229de9cde8889e19___init___py.html
+│   │   ├── z_229de9cde8889e19_stock_strategies_py.html
+│   │   ├── z_229de9cde8889e19_strategy_base_py.html
+│   │   ├── z_257ffc4a95473b53___init___py.html
+│   │   ├── z_2b58b0717a2bed10___init___py.html
+│   │   ├── z_2b58b0717a2bed10_user_repository_py.html
+│   │   ├── z_2b9c5a25658dc204___init___py.html
+│   │   ├── z_310a782c77a4eb19___init___py.html
+│   │   ├── z_310a782c77a4eb19_i_data_access_py.html
+│   │   ├── z_3117475a4eb9d633___init___py.html
+│   │   ├── z_3117475a4eb9d633_backtest_tasks_py.html
+│   │   ├── z_3117475a4eb9d633_data_sync_py.html
+│   │   ├── z_3117475a4eb9d633_indicator_tasks_py.html
+│   │   ├── z_3117475a4eb9d633_market_data_py.html
+│   │   ├── z_3117475a4eb9d633_wencai_tasks_py.html
+│   │   ├── z_3244967df01e8d54___init___py.html
+│   │   ├── z_3244967df01e8d54_business_mock_py.html
+│   │   ├── z_3244967df01e8d54_relational_mock_py.html
+│   │   ├── z_3244967df01e8d54_timeseries_mock_py.html
+│   │   ├── z_32d9be1b0c7ae766___init___py.html
+│   │   ├── z_33c3b8bc9bdb208b___init___py.html
+│   │   ├── z_33c3b8bc9bdb208b_decorators_py.html
+│   │   ├── z_33c3b8bc9bdb208b_multi_level_py.html
+│   │   ├── z_3dd0f581acabe2d9___init___py.html
+│   │   ├── z_3dd0f581acabe2d9_bayesian_network_algorithm_py.html
+│   │   ├── z_3e5c055c3461f2bf___init___py.html
+│   │   ├── z_43a601337194d9b7___init___py.html
+│   │   ├── z_43a8d4362ff0933f___init___py.html
+│   │   ├── z_443a92b17d85ddf4___init___py.html
+│   │   ├── z_47cc7243f98b11a4___init___py.html
+│   │   ├── z_47cc7243f98b11a4_iportfolio_repository_py.html
+│   │   ├── z_47cc7243f98b11a4_repository_py.html
+│   │   ├── z_49df10ac9513f93c___init___py.html
+│   │   ├── z_4a2b0b16ed126e2b___init___py.html
+│   │   ├── z_4a2b0b16ed126e2b_query_router_py.html
+│   │   ├── z_505aa86692c672c8___init___py.html
+│   │   ├── z_505aa86692c672c8_anomaly_tracking_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_capital_flow_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_chip_distribution_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_decision_models_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_financial_valuation_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_fundamental_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_market_panorama_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_multidimensional_radar_py.html
+│   │   ├── z_505aa86692c672c8_sentiment_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_technical_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_timeseries_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_trading_signals_analyzer_py.html
+│   │   ├── z_512aabb557adce86___init___py.html
+│   │   ├── z_512aabb557adce86_decision_tree_algorithm_py.html
+│   │   ├── z_512aabb557adce86_naive_bayes_algorithm_py.html
+│   │   ├── z_512aabb557adce86_svm_algorithm_py.html
+│   │   ├── z_524b34ad92908d17___init___py.html
+│   │   ├── z_524b34ad92908d17_api_consistency_checker_py.html
+│   │   ├── z_524b34ad92908d17_contract_engine_py.html
+│   │   ├── z_524b34ad92908d17_report_generator_py.html
+│   │   ├── z_524b34ad92908d17_spec_validator_py.html
+│   │   ├── z_52ff6c46db01ba29___init___py.html
+│   │   ├── z_52ff6c46db01ba29_talib_wrapper_py.html
+│   │   ├── z_52ff6c46db01ba29_tdx_functions_py.html
+│   │   ├── z_5320508904cb74d0___init___py.html
+│   │   ├── z_5320508904cb74d0_database_detector_py.html
+│   │   ├── z_54d7073355a02bd0___init___py.html
+│   │   ├── z_54d7073355a02bd0_base_threshold_manager_py.html
+│   │   ├── z_54d7073355a02bd0_clustering_optimizer_py.html
+│   │   ├── z_54d7073355a02bd0_intelligent_threshold_manager_py.html
+│   │   ├── z_54d7073355a02bd0_statistical_optimizer_py.html
+│   │   ├── z_54d7073355a02bd0_trend_optimizer_py.html
+│   │   ├── z_5a2dc17ead558053___init___py.html
+│   │   ├── z_5a2dc17ead558053_bootstrap_py.html
+│   │   ├── z_5bcf113b662d6d69___init___py.html
+│   │   ├── z_5bcf113b662d6d69_base_py.html
+│   │   ├── z_5bcf113b662d6d69_genetic_py.html
+│   │   ├── z_5bcf113b662d6d69_grid_search_py.html
+│   │   ├── z_5bcf113b662d6d69_random_search_py.html
+│   │   ├── z_60c8198e7aa5fcc3___init___py.html
+│   │   ├── z_610d136ce7845ae7___init___py.html
+│   │   ├── z_610d136ce7845ae7_imarket_data_repository_py.html
+│   │   ├── z_610d136ce7845ae7_market_data_repository_py.html
+│   │   ├── z_62ec241679c7a0ae___init___py.html
+│   │   ├── z_62ec241679c7a0ae_routes_py.html
+│   │   ├── z_632b3cb742b5fe7c___init___py.html
+│   │   ├── z_657f98c6d87cb5c9___init___py.html
+│   │   ├── z_657f98c6d87cb5c9_adapter_py.html
+│   │   ├── z_657f98c6d87cb5c9_mock_repository_py.html
+│   │   ├── z_65b9803bca3ad463_adapter_registry_py.html
+│   │   ├── z_65b9803bca3ad463_data_router_py.html
+│   │   ├── z_65b9803bca3ad463_event_bus_py.html
+│   │   ├── z_66d4691c30e31f51___init___py.html
+│   │   ├── z_66d4691c30e31f51_base_py.html
+│   │   ├── z_66d4691c30e31f51_financial_data_py.html
+│   │   ├── z_66d4691c30e31f51_financial_data_source_py.html
+│   │   ├── z_66d4691c30e31f51_financial_report_adapter_py.html
+│   │   ├── z_66d4691c30e31f51_index_components_py.html
+│   │   ├── z_66d4691c30e31f51_market_calendar_py.html
+│   │   ├── z_66d4691c30e31f51_news_data_py.html
+│   │   ├── z_66d4691c30e31f51_realtime_data_py.html
+│   │   ├── z_66d4691c30e31f51_stock_basic_py.html
+│   │   ├── z_66d4691c30e31f51_stock_daily_adapter_py.html
+│   │   ├── z_68eb92ab90433819___init___py.html
+│   │   ├── z_68eb92ab90433819_announcement_py.html
+│   │   ├── z_68eb92ab90433819_backup_schemas_py.html
+│   │   ├── z_68eb92ab90433819_base_example_py.html
+│   │   ├── z_68eb92ab90433819_base_py.html
+│   │   ├── z_68eb92ab90433819_dashboard_py.html
+│   │   ├── z_68eb92ab90433819_event_models_py.html
+│   │   ├── z_68eb92ab90433819_indicator_config_py.html
+│   │   ├── z_68eb92ab90433819_indicator_data_py.html
+│   │   ├── z_68eb92ab90433819_market_data_py.html
+│   │   ├── z_68eb92ab90433819_monitoring_py.html
+│   │   ├── z_68eb92ab90433819_rbac_py.html
+│   │   ├── z_68eb92ab90433819_schemas_py.html
+│   │   ├── z_68eb92ab90433819_stock_py.html
+│   │   ├── z_68eb92ab90433819_strategy_py.html
+│   │   ├── z_68eb92ab90433819_strategy_schemas_py.html
+│   │   ├── z_68eb92ab90433819_sync_message_py.html
+│   │   ├── z_68eb92ab90433819_task_py.html
+│   │   ├── z_68eb92ab90433819_user_py.html
+│   │   ├── z_68eb92ab90433819_websocket_message_py.html
+│   │   ├── z_68eb92ab90433819_wencai_data_py.html
+│   │   ├── z_6b013c32088280a1___init___py.html
+│   │   ├── z_6c9993e31cd18529___init___py.html
+│   │   ├── z_6dd039016f16f79e___init___py.html
+│   │   ├── z_6dd039016f16f79e_bar_py.html
+│   │   ├── z_6e971d0aa22d9363___init___py.html
+│   │   ├── z_6e971d0aa22d9363_business_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_data_source_interface_py.html
+│   │   ├── z_6e971d0aa22d9363_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_refactored_interfaces_py.html
+│   │   ├── z_6e971d0aa22d9363_relational_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_timeseries_data_source_py.html
+│   │   ├── z_73ce52c8a18569ac___init___py.html
+│   │   ├── z_74b48040b4784d16___init___py.html
+│   │   ├── z_74b48040b4784d16_events_py.html
+│   │   ├── z_75104d6b5a7509ab___init___py.html
+│   │   ├── z_7530dad8cd1eb93b___init___py.html
+│   │   ├── z_7530dad8cd1eb93b_ai_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_ai_realtime_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_history_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_notifier_py.html
+│   │   ├── z_7530dad8cd1eb93b_async_monitoring_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_async_monitoring_py.html
+│   │   ├── z_7530dad8cd1eb93b_clustering_analyzer_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_analyzer_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_quality_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_source_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_decoupled_monitoring_py.html
+│   │   ├── z_7530dad8cd1eb93b_gpu_integration_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_gpu_performance_optimizer_py.html
+│   │   ├── z_7530dad8cd1eb93b_indicator_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_intelligent_threshold_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_metrics_collector_py.html
+│   │   ├── z_7530dad8cd1eb93b_monitoring_database_py.html
+│   │   ├── z_7530dad8cd1eb93b_monitoring_service_py.html
+│   │   ├── z_7530dad8cd1eb93b_multi_channel_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_performance_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_aggregation_task_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_decorator_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_push_integration_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_recorder_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_result_tracker_py.html
+│   │   ├── z_7530dad8cd1eb93b_statistical_optimizer_py.html
+│   │   ├── z_7530dad8cd1eb93b_threshold_rule_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_trend_analyzer_py.html
+│   │   ├── z_762715a5096110dd___init___py.html
+│   │   ├── z_762715a5096110dd_algorithm_model_repository_py.html
+│   │   ├── z_762715a5096110dd_backtest_repository_py.html
+│   │   ├── z_762715a5096110dd_indicator_repo_py.html
+│   │   ├── z_762715a5096110dd_strategy_repository_py.html
+│   │   ├── z_7748faaab8bf852d_VERSION_MAPPING_py.html
+│   │   ├── z_7748faaab8bf852d___init___py.html
+│   │   ├── z_7748faaab8bf852d_advanced_analysis_api_py.html
+│   │   ├── z_7748faaab8bf852d_advanced_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_algorithms_py.html
+│   │   ├── z_7748faaab8bf852d_alternative_data_py.html
+│   │   ├── z_7748faaab8bf852d_announcement_py.html
+│   │   ├── z_7748faaab8bf852d_auth_py.html
+│   │   ├── z_7748faaab8bf852d_backtest_ws_py.html
+│   │   ├── z_7748faaab8bf852d_backup_recovery_py.html
+│   │   ├── z_7748faaab8bf852d_backup_recovery_secure_py.html
+│   │   ├── z_7748faaab8bf852d_cache_py.html
+│   │   ├── z_7748faaab8bf852d_dashboard_py.html
+│   │   ├── z_7748faaab8bf852d_data_lineage_py.html
+│   │   ├── z_7748faaab8bf852d_data_py.html
+│   │   ├── z_7748faaab8bf852d_data_quality_py.html
+│   │   ├── z_7748faaab8bf852d_data_source_config_py.html
+│   │   ├── z_7748faaab8bf852d_data_source_registry_py.html
+│   │   ├── z_7748faaab8bf852d_efinance_py.html
+│   │   ├── z_7748faaab8bf852d_governance_dashboard_py.html
+│   │   ├── z_7748faaab8bf852d_gpu_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_health_py.html
+│   │   ├── z_7748faaab8bf852d_indicator_registry_py.html
+│   │   ├── z_7748faaab8bf852d_indicators_py.html
+│   │   ├── z_7748faaab8bf852d_industry_concept_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_market_py.html
+│   │   ├── z_7748faaab8bf852d_market_v2_py.html
+│   │   ├── z_7748faaab8bf852d_metrics_py.html
+│   │   ├── z_7748faaab8bf852d_ml_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_watchlists_py.html
+│   │   ├── z_7748faaab8bf852d_multi_source_py.html
+│   │   ├── z_7748faaab8bf852d_mystocks_complete_py.html
+│   │   ├── z_7748faaab8bf852d_notification_py.html
+│   │   ├── z_7748faaab8bf852d_prometheus_exporter_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_market_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_mtm_adapter_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_mtm_init_py.html
+│   │   ├── z_7748faaab8bf852d_register_routers_py.html
+│   │   ├── z_7748faaab8bf852d_risk_management_py.html
+│   │   ├── z_7748faaab8bf852d_signal_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_sse_endpoints_py.html
+│   │   ├── z_7748faaab8bf852d_stock_ratings_api_py.html
+│   │   ├── z_7748faaab8bf852d_stock_search_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_list_mock_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_management_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_mgmt_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_py.html
+│   │   ├── z_7748faaab8bf852d_system_py.html
+│   │   ├── z_7748faaab8bf852d_tasks_py.html
+│   │   ├── z_7748faaab8bf852d_tdx_py.html
+│   │   ├── z_7748faaab8bf852d_technical_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_trading_monitor_py.html
+│   │   ├── z_7748faaab8bf852d_tradingview_py.html
+│   │   ├── z_7748faaab8bf852d_watchlist_py.html
+│   │   ├── z_7748faaab8bf852d_websocket_py.html
+│   │   ├── z_7748faaab8bf852d_wencai_py.html
+│   │   ├── z_7b19a7a894f8f955___init___py.html
+│   │   ├── z_7c02c3e9c336df1b___init___py.html
+│   │   ├── z_7c02c3e9c336df1b_ngram_algorithm_py.html
+│   │   ├── z_7c838bd07ea044e1___init___py.html
+│   │   ├── z_7c838bd07ea044e1_query_optimizer_py.html
+│   │   ├── z_81b9bfba1e66808c___init___py.html
+│   │   ├── z_81b9bfba1e66808c_exceptions_py.html
+│   │   ├── z_81b9bfba1e66808c_models_py.html
+│   │   ├── z_81b9bfba1e66808c_portfolio_repository_impl_py.html
+│   │   ├── z_81b9bfba1e66808c_repository_impl_py.html
+│   │   ├── z_81b9bfba1e66808c_watchlist_repository_impl_py.html
+│   │   ├── z_8642125b8e621a98___init___py.html
+│   │   ├── z_8642125b8e621a98_asset_py.html
+│   │   ├── z_8642125b8e621a98_lineage_py.html
+│   │   ├── z_8642125b8e621a98_quality_py.html
+│   │   ├── z_8698bdc421a68131___init___py.html
+│   │   ├── z_8698bdc421a68131_mock_price_stream_adapter_py.html
+│   │   ├── z_8796a0096d2d7a54___init___py.html
+│   │   ├── z_897fc1f131f658ba___init___py.html
+│   │   ├── z_897fc1f131f658ba_strategy_dto_py.html
+│   │   ├── z_897fc1f131f658ba_trading_dto_py.html
+│   │   ├── z_8a3204ddea6d6116___init___py.html
+│   │   ├── z_8a3204ddea6d6116_backup_manager_py.html
+│   │   ├── z_8a3204ddea6d6116_backup_scheduler_py.html
+│   │   ├── z_8a3204ddea6d6116_integrity_checker_py.html
+│   │   ├── z_8a3204ddea6d6116_recovery_manager_py.html
+│   │   ├── z_8b7ed8e96cad1236___init___py.html
+│   │   ├── z_8b7ed8e96cad1236_tick_receiver_py.html
+│   │   ├── z_8c6693128d30f47e___init___py.html
+│   │   ├── z_8e9e166796882f90___init___py.html
+│   │   ├── z_8e9e166796882f90_adapter_mixins_py.html
+│   │   ├── z_8e9e166796882f90_akshare_adapter_py.html
+│   │   ├── z_8e9e166796882f90_akshare_proxy_adapter_py.html
+│   │   ├── z_8e9e166796882f90_base_adapter_py.html
+│   │   ├── z_8e9e166796882f90_customer_adapter_py.html
+│   │   ├── z_8e9e166796882f90_data_source_manager_py.html
+│   │   ├── z_8e9e166796882f90_data_validator_py.html
+│   │   ├── z_8e9e166796882f90_efinance_adapter_py.html
+│   │   ├── z_8e9e166796882f90_financial_adapter_example_py.html
+│   │   ├── z_8e9e166796882f90_financial_adapter_py.html
+│   │   ├── z_8e9e166796882f90_legacy_adapter_py.html
+│   │   ├── z_8e9e166796882f90_new_market_data_adapter_py.html
+│   │   ├── z_8e9e166796882f90_price_data_adapter_py.html
+│   │   ├── z_8e9e166796882f90_tdx_basic_data_manager_py.html
+│   │   ├── z_8e9e166796882f90_tdx_connection_manager_py.html
+│   │   ├── z_8e9e166796882f90_tdx_data_parser_py.html
+│   │   ├── z_8e9e166796882f90_tdx_kline_fetcher_py.html
+│   │   ├── z_8e9e166796882f90_tdx_realtime_manager_py.html
+│   │   ├── z_8e9e166796882f90_tushare_adapter_py.html
+│   │   ├── z_8e9e166796882f90_volume_data_processor_py.html
+│   │   ├── z_91aec8a57b1611a6___init___py.html
+│   │   ├── z_956571234e499d07___init___py.html
+│   │   ├── z_956571234e499d07_order_mgmt_service_py.html
+│   │   ├── z_987cb8dbd7f58333___init___py.html
+│   │   ├── z_987cb8dbd7f58333_pdf_generator_py.html
+│   │   ├── z_99c1608d642d3d9e___init___py.html
+│   │   ├── z_99c1608d642d3d9e_adx_py.html
+│   │   ├── z_99c1608d642d3d9e_base_py.html
+│   │   ├── z_99c1608d642d3d9e_bollinger_breakout_py.html
+│   │   ├── z_99c1608d642d3d9e_breakout_py.html
+│   │   ├── z_99c1608d642d3d9e_cci_py.html
+│   │   ├── z_99c1608d642d3d9e_dual_ma_py.html
+│   │   ├── z_99c1608d642d3d9e_factory_py.html
+│   │   ├── z_99c1608d642d3d9e_grid_py.html
+│   │   ├── z_99c1608d642d3d9e_kdj_py.html
+│   │   ├── z_99c1608d642d3d9e_macd_py.html
+│   │   ├── z_99c1608d642d3d9e_mean_reversion_py.html
+│   │   ├── z_99c1608d642d3d9e_momentum_py.html
+│   │   ├── z_99c1608d642d3d9e_sar_py.html
+│   │   ├── z_99c1608d642d3d9e_turtle_py.html
+│   │   ├── z_9b08cca0c6ce8ade___init___py.html
+│   │   ├── z_9b08cca0c6ce8ade_adapter_mixins_py.html
+│   │   ├── z_9b08cca0c6ce8ade_akshare_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_akshare_proxy_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_baostock_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_base_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_byapi_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_customer_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_data_source_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_data_validator_py.html
+│   │   ├── z_9b08cca0c6ce8ade_efinance_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_financial_adapter_example_py.html
+│   │   ├── z_9b08cca0c6ce8ade_financial_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_legacy_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_new_market_data_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_price_data_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_sina_finance_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_basic_data_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_connection_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_data_parser_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_integration_client_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_kline_fetcher_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_realtime_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tushare_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_volume_data_processor_py.html
+│   │   ├── z_9bb8144c76e5c278___init___py.html
+│   │   ├── z_9bb8144c76e5c278_portfolio_py.html
+│   │   ├── z_9bbebddf9106f61c___init___py.html
+│   │   ├── z_9bd3c51632ca1b4c___init___py.html
+│   │   ├── z_9bd3c51632ca1b4c_neural_network_algorithm_py.html
+│   │   ├── z_9d4a59eaa94404f3___init___py.html
+│   │   ├── z_9d4a59eaa94404f3_backtest_engine_py.html
+│   │   ├── z_9d4a59eaa94404f3_events_py.html
+│   │   ├── z_9d4a59eaa94404f3_execution_handler_py.html
+│   │   ├── z_9d4a59eaa94404f3_performance_metrics_py.html
+│   │   ├── z_9d4a59eaa94404f3_portfolio_manager_py.html
+│   │   ├── z_9d4a59eaa94404f3_risk_manager_py.html
+│   │   ├── z_9e122e40c3fa0521___init___py.html
+│   │   ├── z_9e122e40c3fa0521_baostock_importer_py.html
+│   │   ├── z_9e122e40c3fa0521_factory_py.html
+│   │   ├── z_9e122e40c3fa0521_mock_data_source_py.html
+│   │   ├── z_9e122e40c3fa0521_real_data_source_py.html
+│   │   ├── z_9e122e40c3fa0521_tdx_binary_parser_py.html
+│   │   ├── z_9e122e40c3fa0521_tdx_importer_py.html
+│   │   ├── z_9f5e9ce9939930b0___init___py.html
+│   │   ├── z_9f5e9ce9939930b0_connection_context_py.html
+│   │   ├── z_9f5e9ce9939930b0_connection_manager_py.html
+│   │   ├── z_9f5e9ce9939930b0_database_manager_py.html
+│   │   ├── z_9f5e9ce9939930b0_db_utils_py.html
+│   │   ├── z_9f5e9ce9939930b0_df2sql_py.html
+│   │   ├── z_9f5e9ce9939930b0_execute_example_mysql_only_py.html
+│   │   ├── z_9f5e9ce9939930b0_execute_example_py.html
+│   │   ├── z_9f5e9ce9939930b0_fix_database_connections_py.html
+│   │   ├── z_9f5e9ce9939930b0_fixed_example_py.html
+│   │   ├── z_9f5e9ce9939930b0_init_db_monitor_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_offline_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_simple_py.html
+│   │   ├── z_9f5e9ce9939930b0_security_check_py.html
+│   │   ├── z_9f5e9ce9939930b0_validate_mystocks_architecture_py.html
+│   │   ├── z_a1dee01b5e353332___init___py.html
+│   │   ├── z_a1dee01b5e353332_circuit_breaker_py.html
+│   │   ├── z_a1dee01b5e353332_rate_limiter_py.html
+│   │   ├── z_a1dee01b5e353332_request_router_py.html
+│   │   ├── z_a1dee01b5e353332_request_transformer_py.html
+│   │   ├── z_a2826705a05f9d0b___init___py.html
+│   │   ├── z_a2826705a05f9d0b_health_py.html
+│   │   ├── z_a2826705a05f9d0b_loadbalancer_py.html
+│   │   ├── z_a2826705a05f9d0b_registry_py.html
+│   │   ├── z_a395d48f679de347___init___py.html
+│   │   ├── z_a395d48f679de347_price_stream_processor_cached_py.html
+│   │   ├── z_a395d48f679de347_price_stream_processor_py.html
+│   │   ├── z_a3e12ab1beeba5a2___init___py.html
+│   │   ├── z_a3e12ab1beeba5a2_backtest_visualizer_py.html
+│   │   ├── z_a3e12ab1beeba5a2_chart_generator_py.html
+│   │   ├── z_a3e12ab1beeba5a2_complete_example_py.html
+│   │   ├── z_a43e3d6ad0f9a2e9___init___py.html
+│   │   ├── z_a5fb6c4b92b99bb9___init___py.html
+│   │   ├── z_a5fb6c4b92b99bb9_backtest_engine_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_ml_strategy_backtester_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_performance_metrics_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_risk_metrics_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_vectorized_backtester_py.html
+│   │   ├── z_a822e8eda976cb55___init___py.html
+│   │   ├── z_a842e2a8efb4920c___init___py.html
+│   │   ├── z_a842e2a8efb4920c_base_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_decision_tree_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_lstm_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_ml_strategy_base_py.html
+│   │   ├── z_a842e2a8efb4920c_naive_bayes_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_signal_manager_py.html
+│   │   ├── z_a842e2a8efb4920c_stock_screener_py.html
+│   │   ├── z_a842e2a8efb4920c_strategy_executor_py.html
+│   │   ├── z_a842e2a8efb4920c_svm_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_transformer_trading_strategy_py.html
+│   │   ├── z_aaa5e77aa80a7f7d___init___py.html
+│   │   ├── z_aaa5e77aa80a7f7d_coverage_report_py.html
+│   │   ├── z_aaa5e77aa80a7f7d_simple_coverage_check_py.html
+│   │   ├── z_aaa5e77aa80a7f7d_unified_mock_data_py.html
+│   │   ├── z_aabc4828f4d558e6___init___py.html
+│   │   ├── z_ab28320d674fc0ec___init___py.html
+│   │   ├── z_ab28320d674fc0ec_base_threshold_manager_py.html
+│   │   ├── z_ab28320d674fc0ec_clustering_optimizer_py.html
+│   │   ├── z_ab28320d674fc0ec_intelligent_threshold_manager_py.html
+│   │   ├── z_ab28320d674fc0ec_statistical_optimizer_py.html
+│   │   ├── z_ab28320d674fc0ec_trend_optimizer_py.html
+│   │   ├── z_ab4b6b838cc7b097___init___py.html
+│   │   ├── z_ab4b6b838cc7b097_iprice_stream_adapter_py.html
+│   │   ├── z_ab4b6b838cc7b097_price_changed_event_py.html
+│   │   ├── z_abf099d770e5d695___init___py.html
+│   │   ├── z_ac589c9e55951baf___init___py.html
+│   │   ├── z_ac589c9e55951baf_portfolio_app_service_py.html
+│   │   ├── z_b0035a28e613f6d5___init___py.html
+│   │   ├── z_b0035a28e613f6d5_domain_events_py.html
+│   │   ├── z_b0035a28e613f6d5_event_bus_py.html
+│   │   ├── z_b0035a28e613f6d5_event_py.html
+│   │   ├── z_b08530793cf59526___init___py.html
+│   │   ├── z_b195dea4d3d701d8___init___py.html
+│   │   ├── z_b3839b449c4ea458___init___py.html
+│   │   ├── z_b4036cbed78476ef___init___py.html
+│   │   ├── z_b4036cbed78476ef_performance_metrics_py.html
+│   │   ├── z_b44096930144f8d2___init___py.html
+│   │   ├── z_b44096930144f8d2_parameter_py.html
+│   │   ├── z_b44096930144f8d2_rule_py.html
+│   │   ├── z_b44096930144f8d2_signal_py.html
+│   │   ├── z_b44096930144f8d2_strategy_py.html
+│   │   ├── z_b850925142c8777f___init___py.html
+│   │   ├── z_b850925142c8777f_strategy_router_py.html
+│   │   ├── z_b850925142c8777f_trading_router_py.html
+│   │   ├── z_bfbe07ea4264f6a4___init___py.html
+│   │   ├── z_bfbe07ea4264f6a4_local_event_bus_py.html
+│   │   ├── z_bfbe07ea4264f6a4_redis_event_bus_py.html
+│   │   ├── z_c02420289d778acb___init___py.html
+│   │   ├── z_c066d6d74b0c2982___init___py.html
+│   │   ├── z_c133466b70ff82ee___init___py.html
+│   │   ├── z_c133466b70ff82ee_main_py.html
+│   │   ├── z_c29c2ded71231c86___init___py.html
+│   │   ├── z_c29c2ded71231c86_ac_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_base_py.html
+│   │   ├── z_c29c2ded71231c86_bmh_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_brute_force_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_kmp_algorithm_py.html
+│   │   ├── z_c4975f63ee658776___init___py.html
+│   │   ├── z_c4975f63ee658776_validation_models_py.html
+│   │   ├── z_c5d9a93f212b7143___init___py.html
+│   │   ├── z_c9ab8ce59b84844f___init___py.html
+│   │   ├── z_c9ab8ce59b84844f_portfolio_py.html
+│   │   ├── z_c9ab8ce59b84844f_transaction_py.html
+│   │   ├── z_cabf6fd828286e5d___init___py.html
+│   │   ├── z_cac180ec93e0bad9___init___py.html
+│   │   ├── z_cb4980cff22a336b___init___py.html
+│   │   ├── z_cb4980cff22a336b_indicator_config_py.html
+│   │   ├── z_cb4980cff22a336b_instrument_pool_py.html
+│   │   ├── z_cb4980cff22a336b_signal_definition_py.html
+│   │   ├── z_cb4980cff22a336b_strategy_id_py.html
+│   │   ├── z_cbed29eee4d42193___init___py.html
+│   │   ├── z_cbed29eee4d42193_monitored_notification_manager_py.html
+│   │   ├── z_cbed29eee4d42193_notification_manager_py.html
+│   │   ├── z_cbed29eee4d42193_predefined_tasks_py.html
+│   │   ├── z_cbed29eee4d42193_scheduler_py.html
+│   │   ├── z_cd361fe1c8307fb5___init___py.html
+│   │   ├── z_cd361fe1c8307fb5_base_py.html
+│   │   ├── z_cd361fe1c8307fb5_batch_processor_py.html
+│   │   ├── z_cd361fe1c8307fb5_cache_py.html
+│   │   ├── z_cd361fe1c8307fb5_circuit_breaker_py.html
+│   │   ├── z_cd361fe1c8307fb5_config_manager_py.html
+│   │   ├── z_cd361fe1c8307fb5_data_quality_validator_py.html
+│   │   ├── z_cd361fe1c8307fb5_handler_py.html
+│   │   ├── z_cd361fe1c8307fb5_health_check_py.html
+│   │   ├── z_cd361fe1c8307fb5_lineage_integration_py.html
+│   │   ├── z_cd361fe1c8307fb5_metrics_py.html
+│   │   ├── z_cd361fe1c8307fb5_monitoring_py.html
+│   │   ├── z_cd361fe1c8307fb5_registry_py.html
+│   │   ├── z_cd361fe1c8307fb5_router_py.html
+│   │   ├── z_cd361fe1c8307fb5_smart_cache_py.html
+│   │   ├── z_cd361fe1c8307fb5_smart_router_py.html
+│   │   ├── z_cd361fe1c8307fb5_validation_py.html
+│   │   ├── z_cf26288d9f31bc7f___init___py.html
+│   │   ├── z_cf26288d9f31bc7f_istrategy_repository_py.html
+│   │   ├── z_d026f51e51333d2e___init___py.html
+│   │   ├── z_d026f51e51333d2e_business_mappers_py.html
+│   │   ├── z_d026f51e51333d2e_composite_business_py.html
+│   │   ├── z_d026f51e51333d2e_connection_adapter_py.html
+│   │   ├── z_d026f51e51333d2e_connection_pool_py.html
+│   │   ├── z_d026f51e51333d2e_data_mapper_py.html
+│   │   ├── z_d026f51e51333d2e_enhanced_postgresql_relational_py.html
+│   │   ├── z_d026f51e51333d2e_postgresql_relational_py.html
+│   │   ├── z_d026f51e51333d2e_query_builder_py.html
+│   │   ├── z_d026f51e51333d2e_tdengine_timeseries_py.html
+│   │   ├── z_d3fcfe8757879fff___init___py.html
+│   │   ├── z_d3fcfe8757879fff_redis_lock_py.html
+│   │   ├── z_da656cc43bf503b9___init___py.html
+│   │   ├── z_da656cc43bf503b9_performance_monitor_py.html
+│   │   ├── z_da656cc43bf503b9_postgresql_index_optimizer_py.html
+│   │   ├── z_da656cc43bf503b9_slow_query_analyzer_py.html
+│   │   ├── z_da656cc43bf503b9_tdengine_index_optimizer_py.html
+│   │   ├── z_dbd3b6f071464ff6___init___py.html
+│   │   ├── z_dd38edaf63325f35___init___py.html
+│   │   ├── z_dd38edaf63325f35_gpu_calculator_py.html
+│   │   ├── z_df378d997b0a7db8___init___py.html
+│   │   ├── z_e027a7e1d90b302d___init___py.html
+│   │   ├── z_e027a7e1d90b302d_base_financial_adapter_py.html
+│   │   ├── z_e027a7e1d90b302d_base_py.html
+│   │   ├── z_e027a7e1d90b302d_financial_data_source_py.html
+│   │   ├── z_e027a7e1d90b302d_financial_report_adapter_py.html
+│   │   ├── z_e027a7e1d90b302d_stock_daily_adapter_py.html
+│   │   ├── z_e0d445f7b83e5a07___init___py.html
+│   │   ├── z_e0d445f7b83e5a07_routes_py.html
+│   │   ├── z_e6dbd10ac9192bf1___init___py.html
+│   │   ├── z_e6dbd10ac9192bf1_akshare_extension_py.html
+│   │   ├── z_e6dbd10ac9192bf1_base_py.html
+│   │   ├── z_e6dbd10ac9192bf1_cninfo_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_eastmoney_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_eastmoney_enhanced_py.html
+│   │   ├── z_e6dbd10ac9192bf1_tqlex_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_wencai_adapter_py.html
+│   │   ├── z_e812782950d2942c___init___py.html
+│   │   ├── z_e812782950d2942c_backtest_service_py.html
+│   │   ├── z_ec2182aa738d19f0___init___py.html
+│   │   ├── z_ec2182aa738d19f0_iorder_repository_py.html
+│   │   ├── z_ec2182aa738d19f0_iposition_repository_py.html
+│   │   ├── z_f1b38b22aeb65474___init___py.html
+│   │   ├── z_f1b38b22aeb65474_add_doc_metadata_py.html
+│   │   ├── z_f1b38b22aeb65474_add_python_headers_py.html
+│   │   ├── z_f1b38b22aeb65474_check_api_health_py.html
+│   │   ├── z_f1b38b22aeb65474_check_api_health_v2_py.html
+│   │   ├── z_f1b38b22aeb65474_check_db_health_py.html
+│   │   ├── z_f1b38b22aeb65474_column_mapper_py.html
+│   │   ├── z_f1b38b22aeb65474_data_format_converter_py.html
+│   │   ├── z_f1b38b22aeb65474_data_source_logger_py.html
+│   │   ├── z_f1b38b22aeb65474_data_source_validator_py.html
+│   │   ├── z_f1b38b22aeb65474_date_utils_py.html
+│   │   ├── z_f1b38b22aeb65474_db_connection_retry_py.html
+│   │   ├── z_f1b38b22aeb65474_error_handler_py.html
+│   │   ├── z_f1b38b22aeb65474_failure_recovery_queue_py.html
+│   │   ├── z_f1b38b22aeb65474_logging_config_py.html
+│   │   ├── z_f1b38b22aeb65474_simple_config_check_py.html
+│   │   ├── z_f1b38b22aeb65474_symbol_utils_py.html
+│   │   ├── z_f1b38b22aeb65474_tdx_server_config_py.html
+│   │   ├── z_f1b38b22aeb65474_validate_gitignore_py.html
+│   │   ├── z_f1b38b22aeb65474_validate_test_naming_py.html
+│   │   ├── z_f30056342d090e5d___init___py.html
+│   │   ├── z_f667d17946d57291___init___py.html
+│   │   ├── z_f667d17946d57291_base_tdx_adapter_py.html
+│   │   ├── z_f667d17946d57291_config_py.html
+│   │   ├── z_f667d17946d57291_kline_data_service_py.html
+│   │   ├── z_f667d17946d57291_new_test_tdx_py.html
+│   │   ├── z_f667d17946d57291_realtime_service_py.html
+│   │   ├── z_f667d17946d57291_tdx_adapter_py.html
+│   │   ├── z_f667d17946d57291_tdx_block_reader_py.html
+│   │   ├── z_f667d17946d57291_tdx_data_source_py.html
+│   │   ├── z_f7e3ca08ed5b34f4___init___py.html
+│   │   ├── z_f7e3ca08ed5b34f4_structured_py.html
+│   │   ├── z_f7e3ca08ed5b34f4_tracing_py.html
+│   │   └── z_f9bb3bf387c1b34d___init___py.html
+│   ├── bugs
+│   │   ├── MANUAL_BUG_REPORTING_GUIDE.md
+│   │   ├── manual-bug-report.json
+│   │   └── manual-bug-template.json
+│   ├── circular-dependencies.txt
+│   ├── code_quality
+│   │   ├── bandit_current_report.json
+│   │   ├── bandit_report.json
+│   │   ├── bandit_report_new.json
+│   │   ├── gpu_ai_integration_report.json
+│   │   ├── pylint_data_access.txt
+│   │   ├── pylint_data_access_2.txt
+│   │   ├── pylint_final_check.txt
+│   │   ├── pylint_full_report.txt
+│   │   ├── pylint_report.json
+│   │   ├── pylint_report.txt
+│   │   ├── pylint_report_current.json
+│   │   ├── pylint_report_current.txt
+│   │   └── pylint_summary.txt
+│   ├── comprehensive-cleanup.md
+│   ├── coverage-core.json
+│   ├── data-classification-coverage-html
+│   │   ├── class_index.html
+│   │   ├── coverage_html_cb_6fb7b396.js
+│   │   ├── favicon_32_cb_58284776.png
+│   │   ├── function_index.html
+│   │   ├── index.html
+│   │   ├── keybd_closed_cb_ce680311.png
+│   │   ├── status.json
+│   │   ├── style_cb_6b508a39.css
+│   │   ├── z_0024c065c6ee5c15___init___py.html
+│   │   ├── z_0024c065c6ee5c15_base_py.html
+│   │   ├── z_0024c065c6ee5c15_financial_data_py.html
+│   │   ├── z_0024c065c6ee5c15_index_daily_py.html
+│   │   ├── z_0024c065c6ee5c15_industry_data_py.html
+│   │   ├── z_0024c065c6ee5c15_misc_data_py.html
+│   │   ├── z_0024c065c6ee5c15_realtime_data_py.html
+│   │   ├── z_0024c065c6ee5c15_stock_basic_py.html
+│   │   ├── z_0024c065c6ee5c15_stock_daily_py.html
+│   │   ├── z_00f62d81469fb39c___init___py.html
+│   │   ├── z_00f62d81469fb39c_alert_history_py.html
+│   │   ├── z_00f62d81469fb39c_alert_manager_py.html
+│   │   ├── z_00f62d81469fb39c_async_monitoring_manager_py.html
+│   │   ├── z_00f62d81469fb39c_clustering_analyzer_py.html
+│   │   ├── z_00f62d81469fb39c_data_analyzer_py.html
+│   │   ├── z_00f62d81469fb39c_data_quality_monitor_py.html
+│   │   ├── z_00f62d81469fb39c_gpu_integration_manager_py.html
+│   │   ├── z_00f62d81469fb39c_gpu_performance_optimizer_py.html
+│   │   ├── z_00f62d81469fb39c_indicator_metrics_py.html
+│   │   ├── z_00f62d81469fb39c_metrics_collector_py.html
+│   │   ├── z_00f62d81469fb39c_signal_aggregation_task_py.html
+│   │   ├── z_00f62d81469fb39c_signal_metrics_py.html
+│   │   ├── z_00f62d81469fb39c_signal_push_integration_py.html
+│   │   ├── z_00f62d81469fb39c_signal_recorder_py.html
+│   │   ├── z_00f62d81469fb39c_signal_result_tracker_py.html
+│   │   ├── z_00f62d81469fb39c_statistical_optimizer_py.html
+│   │   ├── z_00f62d81469fb39c_threshold_rule_manager_py.html
+│   │   ├── z_00f62d81469fb39c_trend_analyzer_py.html
+│   │   ├── z_01270a9997bd102e___init___py.html
+│   │   ├── z_01270a9997bd102e_routes_py.html
+│   │   ├── z_01c13e415dc89c4e_saga_coordinator_py.html
+│   │   ├── z_0567a1305777099e___init___py.html
+│   │   ├── z_0618756b1ff51bca___init___py.html
+│   │   ├── z_0618756b1ff51bca_batch_failure_strategy_py.html
+│   │   ├── z_0618756b1ff51bca_config_driven_table_manager_py.html
+│   │   ├── z_0618756b1ff51bca_config_loader_py.html
+│   │   ├── z_0618756b1ff51bca_config_py.html
+│   │   ├── z_0618756b1ff51bca_connection_pool_config_py.html
+│   │   ├── z_0618756b1ff51bca_data_classification_py.html
+│   │   ├── z_0618756b1ff51bca_data_manager_py.html
+│   │   ├── z_0618756b1ff51bca_data_quality_validator_py.html
+│   │   ├── z_0618756b1ff51bca_data_source_handlers_v2_py.html
+│   │   ├── z_0618756b1ff51bca_data_source_manager_v2_py.html
+│   │   ├── z_0618756b1ff51bca_data_storage_strategy_py.html
+│   │   ├── z_0618756b1ff51bca_data_validator_py.html
+│   │   ├── z_0618756b1ff51bca_database_metrics_py.html
+│   │   ├── z_0618756b1ff51bca_database_pool_py.html
+│   │   ├── z_0618756b1ff51bca_database_py.html
+│   │   ├── z_0618756b1ff51bca_error_handling_py.html
+│   │   ├── z_0618756b1ff51bca_exceptions_py.html
+│   │   ├── z_0618756b1ff51bca_logging_py.html
+│   │   ├── z_0618756b1ff51bca_memory_manager_py.html
+│   │   ├── z_0618756b1ff51bca_monitoring_py.html
+│   │   ├── z_0618756b1ff51bca_simple_calculator_py.html
+│   │   ├── z_0618756b1ff51bca_unified_manager_py.html
+│   │   ├── z_0623403995933fb7___init___py.html
+│   │   ├── z_0623403995933fb7_indicator_calculator_py.html
+│   │   ├── z_0623403995933fb7_signal_generation_service_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5___init___py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_factory_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_interfaces_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_postgresql_access_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_sql_injection_fix_helper_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_tdengine_access_py.html
+│   │   ├── z_07a9cb3e6c8c2aa5_unified_data_access_manager_py.html
+│   │   ├── z_0818856628530b65___init___py.html
+│   │   ├── z_08d7babbb4cde735___init___py.html
+│   │   ├── z_08d7babbb4cde735_order_py.html
+│   │   ├── z_08d7babbb4cde735_order_status_py.html
+│   │   ├── z_08d7babbb4cde735_position_py.html
+│   │   ├── z_092270014a0b6ff0___init___py.html
+│   │   ├── z_092270014a0b6ff0_order_side_py.html
+│   │   ├── z_092270014a0b6ff0_order_type_py.html
+│   │   ├── z_0aa0c0e288e5c6a9___init___py.html
+│   │   ├── z_0aa0ffbeb19dd445___init___py.html
+│   │   ├── z_0aa0ffbeb19dd445_routes_py.html
+│   │   ├── z_0ff71e8ee3f7fd49___init___py.html
+│   │   ├── z_0ff71e8ee3f7fd49_models_py.html
+│   │   ├── z_0ff71e8ee3f7fd49_routes_py.html
+│   │   ├── z_0ff71e8ee3f7fd49_schemas_py.html
+│   │   ├── z_122febd9eb9cb1a0___init___py.html
+│   │   ├── z_145eef247bfb46b6___init___py.html
+│   │   ├── z_145eef247bfb46b6_core_py.html
+│   │   ├── z_145eef247bfb46b6_data_access_py.html
+│   │   ├── z_145eef247bfb46b6_unified_manager_py.html
+│   │   ├── z_15ddd237d645abca___init___py.html
+│   │   ├── z_15ddd237d645abca_hmm_algorithm_py.html
+│   │   ├── z_172bc7b2db1d3591___init___py.html
+│   │   ├── z_172bc7b2db1d3591_base_py.html
+│   │   ├── z_172bc7b2db1d3591_config_py.html
+│   │   ├── z_172bc7b2db1d3591_metadata_py.html
+│   │   ├── z_172bc7b2db1d3591_results_py.html
+│   │   ├── z_172bc7b2db1d3591_types_py.html
+│   │   ├── z_1965e62d5b8cf4ba___init___py.html
+│   │   ├── z_1965e62d5b8cf4ba_portfolio_valuation_service_optimized_py.html
+│   │   ├── z_1965e62d5b8cf4ba_portfolio_valuation_service_py.html
+│   │   ├── z_1965e62d5b8cf4ba_rebalancer_py.html
+│   │   ├── z_1965e62d5b8cf4ba_rebalancer_service_py.html
+│   │   ├── z_1a32a2480bee56e8___init___py.html
+│   │   ├── z_1a32a2480bee56e8_app_factory_py.html
+│   │   ├── z_1a32a2480bee56e8_main_py.html
+│   │   ├── z_1a32a2480bee56e8_openapi_config_py.html
+│   │   ├── z_1bd14579e9b6167e___init___py.html
+│   │   ├── z_1bd14579e9b6167e_adapter_base_py.html
+│   │   ├── z_1bd14579e9b6167e_base_py.html
+│   │   ├── z_1bd14579e9b6167e_financial_data_py.html
+│   │   ├── z_1bd14579e9b6167e_fund_flow_py.html
+│   │   ├── z_1bd14579e9b6167e_market_data_py.html
+│   │   ├── z_1bd14579e9b6167e_market_overview_py.html
+│   │   ├── z_1bd14579e9b6167e_misc_data_py.html
+│   │   ├── z_1bd14579e9b6167e_stock_info_py.html
+│   │   ├── z_1cf6b85568e64809___init___py.html
+│   │   ├── z_1d921b85ba2aefc2___init___py.html
+│   │   ├── z_1d921b85ba2aefc2_config_py.html
+│   │   ├── z_1d921b85ba2aefc2_kline_data_service_py.html
+│   │   ├── z_1d921b85ba2aefc2_new_test_tdx_py.html
+│   │   ├── z_1d921b85ba2aefc2_realtime_service_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_adapter_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_block_reader_py.html
+│   │   ├── z_1d921b85ba2aefc2_tdx_data_source_py.html
+│   │   ├── z_1dd3466c3837dceb___init___py.html
+│   │   ├── z_1dd3466c3837dceb_bar_py.html
+│   │   ├── z_1dd3466c3837dceb_market_data_py.html
+│   │   ├── z_1dd3466c3837dceb_quote_py.html
+│   │   ├── z_1dd3466c3837dceb_tick_py.html
+│   │   ├── z_1e28750dae14dd24___init___py.html
+│   │   ├── z_1ed4f8546fe0f548___init___py.html
+│   │   ├── z_1ed4f8546fe0f548_feature_engineering_py.html
+│   │   ├── z_1ed4f8546fe0f548_ml_strategy_py.html
+│   │   ├── z_1ed4f8546fe0f548_price_predictor_py.html
+│   │   ├── z_1f1157c3e43829b5___init___py.html
+│   │   ├── z_1f1157c3e43829b5_contract_registry_py.html
+│   │   ├── z_1f1157c3e43829b5_contract_testing_py.html
+│   │   ├── z_1f1157c3e43829b5_contract_validator_py.html
+│   │   ├── z_1f1157c3e43829b5_diff_engine_py.html
+│   │   ├── z_1f1157c3e43829b5_openapi_generator_py.html
+│   │   ├── z_1f1157c3e43829b5_validator_py.html
+│   │   ├── z_1f1157c3e43829b5_version_manager_py.html
+│   │   ├── z_21d69e0d215b0b35___init___py.html
+│   │   ├── z_21d69e0d215b0b35_routes_py.html
+│   │   ├── z_229de9cde8889e19___init___py.html
+│   │   ├── z_229de9cde8889e19_stock_strategies_py.html
+│   │   ├── z_229de9cde8889e19_strategy_base_py.html
+│   │   ├── z_257ffc4a95473b53___init___py.html
+│   │   ├── z_2b58b0717a2bed10___init___py.html
+│   │   ├── z_2b58b0717a2bed10_user_repository_py.html
+│   │   ├── z_2b9c5a25658dc204___init___py.html
+│   │   ├── z_310a782c77a4eb19___init___py.html
+│   │   ├── z_310a782c77a4eb19_i_data_access_py.html
+│   │   ├── z_3117475a4eb9d633___init___py.html
+│   │   ├── z_3117475a4eb9d633_backtest_tasks_py.html
+│   │   ├── z_3117475a4eb9d633_data_sync_py.html
+│   │   ├── z_3117475a4eb9d633_indicator_tasks_py.html
+│   │   ├── z_3117475a4eb9d633_market_data_py.html
+│   │   ├── z_3117475a4eb9d633_wencai_tasks_py.html
+│   │   ├── z_3244967df01e8d54___init___py.html
+│   │   ├── z_3244967df01e8d54_business_mock_py.html
+│   │   ├── z_3244967df01e8d54_relational_mock_py.html
+│   │   ├── z_3244967df01e8d54_timeseries_mock_py.html
+│   │   ├── z_32d9be1b0c7ae766___init___py.html
+│   │   ├── z_33c3b8bc9bdb208b___init___py.html
+│   │   ├── z_33c3b8bc9bdb208b_decorators_py.html
+│   │   ├── z_33c3b8bc9bdb208b_multi_level_py.html
+│   │   ├── z_3dd0f581acabe2d9___init___py.html
+│   │   ├── z_3dd0f581acabe2d9_bayesian_network_algorithm_py.html
+│   │   ├── z_3e5c055c3461f2bf___init___py.html
+│   │   ├── z_43a601337194d9b7___init___py.html
+│   │   ├── z_43a8d4362ff0933f___init___py.html
+│   │   ├── z_443a92b17d85ddf4___init___py.html
+│   │   ├── z_47cc7243f98b11a4___init___py.html
+│   │   ├── z_47cc7243f98b11a4_iportfolio_repository_py.html
+│   │   ├── z_47cc7243f98b11a4_repository_py.html
+│   │   ├── z_49df10ac9513f93c___init___py.html
+│   │   ├── z_4a2b0b16ed126e2b___init___py.html
+│   │   ├── z_4a2b0b16ed126e2b_query_router_py.html
+│   │   ├── z_505aa86692c672c8___init___py.html
+│   │   ├── z_505aa86692c672c8_anomaly_tracking_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_capital_flow_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_chip_distribution_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_decision_models_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_financial_valuation_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_fundamental_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_market_panorama_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_multidimensional_radar_py.html
+│   │   ├── z_505aa86692c672c8_sentiment_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_technical_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_timeseries_analyzer_py.html
+│   │   ├── z_505aa86692c672c8_trading_signals_analyzer_py.html
+│   │   ├── z_512aabb557adce86___init___py.html
+│   │   ├── z_512aabb557adce86_decision_tree_algorithm_py.html
+│   │   ├── z_512aabb557adce86_naive_bayes_algorithm_py.html
+│   │   ├── z_512aabb557adce86_svm_algorithm_py.html
+│   │   ├── z_524b34ad92908d17___init___py.html
+│   │   ├── z_524b34ad92908d17_api_consistency_checker_py.html
+│   │   ├── z_524b34ad92908d17_contract_engine_py.html
+│   │   ├── z_524b34ad92908d17_report_generator_py.html
+│   │   ├── z_524b34ad92908d17_spec_validator_py.html
+│   │   ├── z_52ff6c46db01ba29___init___py.html
+│   │   ├── z_52ff6c46db01ba29_talib_wrapper_py.html
+│   │   ├── z_52ff6c46db01ba29_tdx_functions_py.html
+│   │   ├── z_5320508904cb74d0___init___py.html
+│   │   ├── z_5320508904cb74d0_database_detector_py.html
+│   │   ├── z_54d7073355a02bd0___init___py.html
+│   │   ├── z_54d7073355a02bd0_base_threshold_manager_py.html
+│   │   ├── z_54d7073355a02bd0_clustering_optimizer_py.html
+│   │   ├── z_54d7073355a02bd0_intelligent_threshold_manager_py.html
+│   │   ├── z_54d7073355a02bd0_statistical_optimizer_py.html
+│   │   ├── z_54d7073355a02bd0_trend_optimizer_py.html
+│   │   ├── z_5a2dc17ead558053___init___py.html
+│   │   ├── z_5a2dc17ead558053_bootstrap_py.html
+│   │   ├── z_5bcf113b662d6d69___init___py.html
+│   │   ├── z_5bcf113b662d6d69_base_py.html
+│   │   ├── z_5bcf113b662d6d69_genetic_py.html
+│   │   ├── z_5bcf113b662d6d69_grid_search_py.html
+│   │   ├── z_5bcf113b662d6d69_random_search_py.html
+│   │   ├── z_60c8198e7aa5fcc3___init___py.html
+│   │   ├── z_610d136ce7845ae7___init___py.html
+│   │   ├── z_610d136ce7845ae7_imarket_data_repository_py.html
+│   │   ├── z_610d136ce7845ae7_market_data_repository_py.html
+│   │   ├── z_62ec241679c7a0ae___init___py.html
+│   │   ├── z_62ec241679c7a0ae_routes_py.html
+│   │   ├── z_632b3cb742b5fe7c___init___py.html
+│   │   ├── z_657f98c6d87cb5c9___init___py.html
+│   │   ├── z_657f98c6d87cb5c9_adapter_py.html
+│   │   ├── z_657f98c6d87cb5c9_mock_repository_py.html
+│   │   ├── z_65b9803bca3ad463_adapter_registry_py.html
+│   │   ├── z_65b9803bca3ad463_data_router_py.html
+│   │   ├── z_65b9803bca3ad463_event_bus_py.html
+│   │   ├── z_66d4691c30e31f51___init___py.html
+│   │   ├── z_66d4691c30e31f51_base_py.html
+│   │   ├── z_66d4691c30e31f51_financial_data_py.html
+│   │   ├── z_66d4691c30e31f51_financial_data_source_py.html
+│   │   ├── z_66d4691c30e31f51_financial_report_adapter_py.html
+│   │   ├── z_66d4691c30e31f51_index_components_py.html
+│   │   ├── z_66d4691c30e31f51_market_calendar_py.html
+│   │   ├── z_66d4691c30e31f51_news_data_py.html
+│   │   ├── z_66d4691c30e31f51_realtime_data_py.html
+│   │   ├── z_66d4691c30e31f51_stock_basic_py.html
+│   │   ├── z_66d4691c30e31f51_stock_daily_adapter_py.html
+│   │   ├── z_68eb92ab90433819___init___py.html
+│   │   ├── z_68eb92ab90433819_announcement_py.html
+│   │   ├── z_68eb92ab90433819_backup_schemas_py.html
+│   │   ├── z_68eb92ab90433819_base_example_py.html
+│   │   ├── z_68eb92ab90433819_base_py.html
+│   │   ├── z_68eb92ab90433819_dashboard_py.html
+│   │   ├── z_68eb92ab90433819_event_models_py.html
+│   │   ├── z_68eb92ab90433819_indicator_config_py.html
+│   │   ├── z_68eb92ab90433819_indicator_data_py.html
+│   │   ├── z_68eb92ab90433819_market_data_py.html
+│   │   ├── z_68eb92ab90433819_monitoring_py.html
+│   │   ├── z_68eb92ab90433819_rbac_py.html
+│   │   ├── z_68eb92ab90433819_schemas_py.html
+│   │   ├── z_68eb92ab90433819_stock_py.html
+│   │   ├── z_68eb92ab90433819_strategy_py.html
+│   │   ├── z_68eb92ab90433819_strategy_schemas_py.html
+│   │   ├── z_68eb92ab90433819_sync_message_py.html
+│   │   ├── z_68eb92ab90433819_task_py.html
+│   │   ├── z_68eb92ab90433819_user_py.html
+│   │   ├── z_68eb92ab90433819_websocket_message_py.html
+│   │   ├── z_68eb92ab90433819_wencai_data_py.html
+│   │   ├── z_6b013c32088280a1___init___py.html
+│   │   ├── z_6c9993e31cd18529___init___py.html
+│   │   ├── z_6dd039016f16f79e___init___py.html
+│   │   ├── z_6dd039016f16f79e_bar_py.html
+│   │   ├── z_6e971d0aa22d9363___init___py.html
+│   │   ├── z_6e971d0aa22d9363_business_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_data_source_interface_py.html
+│   │   ├── z_6e971d0aa22d9363_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_refactored_interfaces_py.html
+│   │   ├── z_6e971d0aa22d9363_relational_data_source_py.html
+│   │   ├── z_6e971d0aa22d9363_timeseries_data_source_py.html
+│   │   ├── z_73ce52c8a18569ac___init___py.html
+│   │   ├── z_74b48040b4784d16___init___py.html
+│   │   ├── z_74b48040b4784d16_events_py.html
+│   │   ├── z_75104d6b5a7509ab___init___py.html
+│   │   ├── z_7530dad8cd1eb93b___init___py.html
+│   │   ├── z_7530dad8cd1eb93b_ai_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_ai_realtime_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_history_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_alert_notifier_py.html
+│   │   ├── z_7530dad8cd1eb93b_async_monitoring_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_async_monitoring_py.html
+│   │   ├── z_7530dad8cd1eb93b_clustering_analyzer_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_analyzer_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_quality_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_data_source_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_decoupled_monitoring_py.html
+│   │   ├── z_7530dad8cd1eb93b_gpu_integration_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_gpu_performance_optimizer_py.html
+│   │   ├── z_7530dad8cd1eb93b_indicator_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_intelligent_threshold_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_metrics_collector_py.html
+│   │   ├── z_7530dad8cd1eb93b_monitoring_database_py.html
+│   │   ├── z_7530dad8cd1eb93b_monitoring_service_py.html
+│   │   ├── z_7530dad8cd1eb93b_multi_channel_alert_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_performance_monitor_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_aggregation_task_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_decorator_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_metrics_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_push_integration_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_recorder_py.html
+│   │   ├── z_7530dad8cd1eb93b_signal_result_tracker_py.html
+│   │   ├── z_7530dad8cd1eb93b_statistical_optimizer_py.html
+│   │   ├── z_7530dad8cd1eb93b_threshold_rule_manager_py.html
+│   │   ├── z_7530dad8cd1eb93b_trend_analyzer_py.html
+│   │   ├── z_762715a5096110dd___init___py.html
+│   │   ├── z_762715a5096110dd_algorithm_model_repository_py.html
+│   │   ├── z_762715a5096110dd_backtest_repository_py.html
+│   │   ├── z_762715a5096110dd_indicator_repo_py.html
+│   │   ├── z_762715a5096110dd_strategy_repository_py.html
+│   │   ├── z_7748faaab8bf852d_VERSION_MAPPING_py.html
+│   │   ├── z_7748faaab8bf852d___init___py.html
+│   │   ├── z_7748faaab8bf852d_advanced_analysis_api_py.html
+│   │   ├── z_7748faaab8bf852d_advanced_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_algorithms_py.html
+│   │   ├── z_7748faaab8bf852d_alternative_data_py.html
+│   │   ├── z_7748faaab8bf852d_announcement_py.html
+│   │   ├── z_7748faaab8bf852d_auth_py.html
+│   │   ├── z_7748faaab8bf852d_backtest_ws_py.html
+│   │   ├── z_7748faaab8bf852d_backup_recovery_py.html
+│   │   ├── z_7748faaab8bf852d_backup_recovery_secure_py.html
+│   │   ├── z_7748faaab8bf852d_cache_py.html
+│   │   ├── z_7748faaab8bf852d_dashboard_py.html
+│   │   ├── z_7748faaab8bf852d_data_lineage_py.html
+│   │   ├── z_7748faaab8bf852d_data_py.html
+│   │   ├── z_7748faaab8bf852d_data_quality_py.html
+│   │   ├── z_7748faaab8bf852d_data_source_config_py.html
+│   │   ├── z_7748faaab8bf852d_data_source_registry_py.html
+│   │   ├── z_7748faaab8bf852d_efinance_py.html
+│   │   ├── z_7748faaab8bf852d_governance_dashboard_py.html
+│   │   ├── z_7748faaab8bf852d_gpu_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_health_py.html
+│   │   ├── z_7748faaab8bf852d_indicator_registry_py.html
+│   │   ├── z_7748faaab8bf852d_indicators_py.html
+│   │   ├── z_7748faaab8bf852d_industry_concept_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_market_py.html
+│   │   ├── z_7748faaab8bf852d_market_v2_py.html
+│   │   ├── z_7748faaab8bf852d_metrics_py.html
+│   │   ├── z_7748faaab8bf852d_ml_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_monitoring_watchlists_py.html
+│   │   ├── z_7748faaab8bf852d_multi_source_py.html
+│   │   ├── z_7748faaab8bf852d_mystocks_complete_py.html
+│   │   ├── z_7748faaab8bf852d_notification_py.html
+│   │   ├── z_7748faaab8bf852d_prometheus_exporter_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_market_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_mtm_adapter_py.html
+│   │   ├── z_7748faaab8bf852d_realtime_mtm_init_py.html
+│   │   ├── z_7748faaab8bf852d_register_routers_py.html
+│   │   ├── z_7748faaab8bf852d_risk_management_py.html
+│   │   ├── z_7748faaab8bf852d_signal_monitoring_py.html
+│   │   ├── z_7748faaab8bf852d_sse_endpoints_py.html
+│   │   ├── z_7748faaab8bf852d_stock_ratings_api_py.html
+│   │   ├── z_7748faaab8bf852d_stock_search_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_list_mock_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_management_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_mgmt_py.html
+│   │   ├── z_7748faaab8bf852d_strategy_py.html
+│   │   ├── z_7748faaab8bf852d_system_py.html
+│   │   ├── z_7748faaab8bf852d_tasks_py.html
+│   │   ├── z_7748faaab8bf852d_tdx_py.html
+│   │   ├── z_7748faaab8bf852d_technical_analysis_py.html
+│   │   ├── z_7748faaab8bf852d_trading_monitor_py.html
+│   │   ├── z_7748faaab8bf852d_tradingview_py.html
+│   │   ├── z_7748faaab8bf852d_watchlist_py.html
+│   │   ├── z_7748faaab8bf852d_websocket_py.html
+│   │   ├── z_7748faaab8bf852d_wencai_py.html
+│   │   ├── z_7b19a7a894f8f955___init___py.html
+│   │   ├── z_7c02c3e9c336df1b___init___py.html
+│   │   ├── z_7c02c3e9c336df1b_ngram_algorithm_py.html
+│   │   ├── z_7c838bd07ea044e1___init___py.html
+│   │   ├── z_7c838bd07ea044e1_query_optimizer_py.html
+│   │   ├── z_81b9bfba1e66808c___init___py.html
+│   │   ├── z_81b9bfba1e66808c_exceptions_py.html
+│   │   ├── z_81b9bfba1e66808c_models_py.html
+│   │   ├── z_81b9bfba1e66808c_portfolio_repository_impl_py.html
+│   │   ├── z_81b9bfba1e66808c_repository_impl_py.html
+│   │   ├── z_81b9bfba1e66808c_watchlist_repository_impl_py.html
+│   │   ├── z_8642125b8e621a98___init___py.html
+│   │   ├── z_8642125b8e621a98_asset_py.html
+│   │   ├── z_8642125b8e621a98_lineage_py.html
+│   │   ├── z_8642125b8e621a98_quality_py.html
+│   │   ├── z_8698bdc421a68131___init___py.html
+│   │   ├── z_8698bdc421a68131_mock_price_stream_adapter_py.html
+│   │   ├── z_8796a0096d2d7a54___init___py.html
+│   │   ├── z_897fc1f131f658ba___init___py.html
+│   │   ├── z_897fc1f131f658ba_strategy_dto_py.html
+│   │   ├── z_897fc1f131f658ba_trading_dto_py.html
+│   │   ├── z_8a3204ddea6d6116___init___py.html
+│   │   ├── z_8a3204ddea6d6116_backup_manager_py.html
+│   │   ├── z_8a3204ddea6d6116_backup_scheduler_py.html
+│   │   ├── z_8a3204ddea6d6116_integrity_checker_py.html
+│   │   ├── z_8a3204ddea6d6116_recovery_manager_py.html
+│   │   ├── z_8b7ed8e96cad1236___init___py.html
+│   │   ├── z_8b7ed8e96cad1236_tick_receiver_py.html
+│   │   ├── z_8c6693128d30f47e___init___py.html
+│   │   ├── z_8e9e166796882f90___init___py.html
+│   │   ├── z_8e9e166796882f90_adapter_mixins_py.html
+│   │   ├── z_8e9e166796882f90_akshare_adapter_py.html
+│   │   ├── z_8e9e166796882f90_akshare_proxy_adapter_py.html
+│   │   ├── z_8e9e166796882f90_base_adapter_py.html
+│   │   ├── z_8e9e166796882f90_customer_adapter_py.html
+│   │   ├── z_8e9e166796882f90_data_source_manager_py.html
+│   │   ├── z_8e9e166796882f90_data_validator_py.html
+│   │   ├── z_8e9e166796882f90_efinance_adapter_py.html
+│   │   ├── z_8e9e166796882f90_financial_adapter_example_py.html
+│   │   ├── z_8e9e166796882f90_financial_adapter_py.html
+│   │   ├── z_8e9e166796882f90_legacy_adapter_py.html
+│   │   ├── z_8e9e166796882f90_new_market_data_adapter_py.html
+│   │   ├── z_8e9e166796882f90_price_data_adapter_py.html
+│   │   ├── z_8e9e166796882f90_tdx_basic_data_manager_py.html
+│   │   ├── z_8e9e166796882f90_tdx_connection_manager_py.html
+│   │   ├── z_8e9e166796882f90_tdx_data_parser_py.html
+│   │   ├── z_8e9e166796882f90_tdx_kline_fetcher_py.html
+│   │   ├── z_8e9e166796882f90_tdx_realtime_manager_py.html
+│   │   ├── z_8e9e166796882f90_tushare_adapter_py.html
+│   │   ├── z_8e9e166796882f90_volume_data_processor_py.html
+│   │   ├── z_91aec8a57b1611a6___init___py.html
+│   │   ├── z_956571234e499d07___init___py.html
+│   │   ├── z_956571234e499d07_order_mgmt_service_py.html
+│   │   ├── z_987cb8dbd7f58333___init___py.html
+│   │   ├── z_987cb8dbd7f58333_pdf_generator_py.html
+│   │   ├── z_99c1608d642d3d9e___init___py.html
+│   │   ├── z_99c1608d642d3d9e_adx_py.html
+│   │   ├── z_99c1608d642d3d9e_base_py.html
+│   │   ├── z_99c1608d642d3d9e_bollinger_breakout_py.html
+│   │   ├── z_99c1608d642d3d9e_breakout_py.html
+│   │   ├── z_99c1608d642d3d9e_cci_py.html
+│   │   ├── z_99c1608d642d3d9e_dual_ma_py.html
+│   │   ├── z_99c1608d642d3d9e_factory_py.html
+│   │   ├── z_99c1608d642d3d9e_grid_py.html
+│   │   ├── z_99c1608d642d3d9e_kdj_py.html
+│   │   ├── z_99c1608d642d3d9e_macd_py.html
+│   │   ├── z_99c1608d642d3d9e_mean_reversion_py.html
+│   │   ├── z_99c1608d642d3d9e_momentum_py.html
+│   │   ├── z_99c1608d642d3d9e_sar_py.html
+│   │   ├── z_99c1608d642d3d9e_turtle_py.html
+│   │   ├── z_9b08cca0c6ce8ade___init___py.html
+│   │   ├── z_9b08cca0c6ce8ade_adapter_mixins_py.html
+│   │   ├── z_9b08cca0c6ce8ade_akshare_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_akshare_proxy_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_baostock_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_base_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_byapi_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_customer_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_data_source_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_data_validator_py.html
+│   │   ├── z_9b08cca0c6ce8ade_efinance_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_financial_adapter_example_py.html
+│   │   ├── z_9b08cca0c6ce8ade_financial_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_legacy_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_new_market_data_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_price_data_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_sina_finance_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_basic_data_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_connection_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_data_parser_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_integration_client_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_kline_fetcher_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tdx_realtime_manager_py.html
+│   │   ├── z_9b08cca0c6ce8ade_tushare_adapter_py.html
+│   │   ├── z_9b08cca0c6ce8ade_volume_data_processor_py.html
+│   │   ├── z_9bb8144c76e5c278___init___py.html
+│   │   ├── z_9bb8144c76e5c278_portfolio_py.html
+│   │   ├── z_9bbebddf9106f61c___init___py.html
+│   │   ├── z_9bd3c51632ca1b4c___init___py.html
+│   │   ├── z_9bd3c51632ca1b4c_neural_network_algorithm_py.html
+│   │   ├── z_9d4a59eaa94404f3___init___py.html
+│   │   ├── z_9d4a59eaa94404f3_backtest_engine_py.html
+│   │   ├── z_9d4a59eaa94404f3_events_py.html
+│   │   ├── z_9d4a59eaa94404f3_execution_handler_py.html
+│   │   ├── z_9d4a59eaa94404f3_performance_metrics_py.html
+│   │   ├── z_9d4a59eaa94404f3_portfolio_manager_py.html
+│   │   ├── z_9d4a59eaa94404f3_risk_manager_py.html
+│   │   ├── z_9e122e40c3fa0521___init___py.html
+│   │   ├── z_9e122e40c3fa0521_baostock_importer_py.html
+│   │   ├── z_9e122e40c3fa0521_factory_py.html
+│   │   ├── z_9e122e40c3fa0521_mock_data_source_py.html
+│   │   ├── z_9e122e40c3fa0521_real_data_source_py.html
+│   │   ├── z_9e122e40c3fa0521_tdx_binary_parser_py.html
+│   │   ├── z_9e122e40c3fa0521_tdx_importer_py.html
+│   │   ├── z_9f5e9ce9939930b0___init___py.html
+│   │   ├── z_9f5e9ce9939930b0_connection_context_py.html
+│   │   ├── z_9f5e9ce9939930b0_connection_manager_py.html
+│   │   ├── z_9f5e9ce9939930b0_database_manager_py.html
+│   │   ├── z_9f5e9ce9939930b0_db_utils_py.html
+│   │   ├── z_9f5e9ce9939930b0_df2sql_py.html
+│   │   ├── z_9f5e9ce9939930b0_execute_example_mysql_only_py.html
+│   │   ├── z_9f5e9ce9939930b0_execute_example_py.html
+│   │   ├── z_9f5e9ce9939930b0_fix_database_connections_py.html
+│   │   ├── z_9f5e9ce9939930b0_fixed_example_py.html
+│   │   ├── z_9f5e9ce9939930b0_init_db_monitor_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_offline_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_py.html
+│   │   ├── z_9f5e9ce9939930b0_save_realtime_market_data_simple_py.html
+│   │   ├── z_9f5e9ce9939930b0_security_check_py.html
+│   │   ├── z_9f5e9ce9939930b0_validate_mystocks_architecture_py.html
+│   │   ├── z_a1dee01b5e353332___init___py.html
+│   │   ├── z_a1dee01b5e353332_circuit_breaker_py.html
+│   │   ├── z_a1dee01b5e353332_rate_limiter_py.html
+│   │   ├── z_a1dee01b5e353332_request_router_py.html
+│   │   ├── z_a1dee01b5e353332_request_transformer_py.html
+│   │   ├── z_a2826705a05f9d0b___init___py.html
+│   │   ├── z_a2826705a05f9d0b_health_py.html
+│   │   ├── z_a2826705a05f9d0b_loadbalancer_py.html
+│   │   ├── z_a2826705a05f9d0b_registry_py.html
+│   │   ├── z_a395d48f679de347___init___py.html
+│   │   ├── z_a395d48f679de347_price_stream_processor_cached_py.html
+│   │   ├── z_a395d48f679de347_price_stream_processor_py.html
+│   │   ├── z_a3e12ab1beeba5a2___init___py.html
+│   │   ├── z_a3e12ab1beeba5a2_backtest_visualizer_py.html
+│   │   ├── z_a3e12ab1beeba5a2_chart_generator_py.html
+│   │   ├── z_a3e12ab1beeba5a2_complete_example_py.html
+│   │   ├── z_a43e3d6ad0f9a2e9___init___py.html
+│   │   ├── z_a5fb6c4b92b99bb9___init___py.html
+│   │   ├── z_a5fb6c4b92b99bb9_backtest_engine_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_ml_strategy_backtester_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_performance_metrics_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_risk_metrics_py.html
+│   │   ├── z_a5fb6c4b92b99bb9_vectorized_backtester_py.html
+│   │   ├── z_a822e8eda976cb55___init___py.html
+│   │   ├── z_a842e2a8efb4920c___init___py.html
+│   │   ├── z_a842e2a8efb4920c_base_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_decision_tree_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_lstm_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_ml_strategy_base_py.html
+│   │   ├── z_a842e2a8efb4920c_naive_bayes_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_signal_manager_py.html
+│   │   ├── z_a842e2a8efb4920c_stock_screener_py.html
+│   │   ├── z_a842e2a8efb4920c_strategy_executor_py.html
+│   │   ├── z_a842e2a8efb4920c_svm_trading_strategy_py.html
+│   │   ├── z_a842e2a8efb4920c_transformer_trading_strategy_py.html
+│   │   ├── z_aaa5e77aa80a7f7d___init___py.html
+│   │   ├── z_aaa5e77aa80a7f7d_coverage_report_py.html
+│   │   ├── z_aaa5e77aa80a7f7d_simple_coverage_check_py.html
+│   │   ├── z_aaa5e77aa80a7f7d_unified_mock_data_py.html
+│   │   ├── z_aabc4828f4d558e6___init___py.html
+│   │   ├── z_ab28320d674fc0ec___init___py.html
+│   │   ├── z_ab28320d674fc0ec_base_threshold_manager_py.html
+│   │   ├── z_ab28320d674fc0ec_clustering_optimizer_py.html
+│   │   ├── z_ab28320d674fc0ec_intelligent_threshold_manager_py.html
+│   │   ├── z_ab28320d674fc0ec_statistical_optimizer_py.html
+│   │   ├── z_ab28320d674fc0ec_trend_optimizer_py.html
+│   │   ├── z_ab4b6b838cc7b097___init___py.html
+│   │   ├── z_ab4b6b838cc7b097_iprice_stream_adapter_py.html
+│   │   ├── z_ab4b6b838cc7b097_price_changed_event_py.html
+│   │   ├── z_abf099d770e5d695___init___py.html
+│   │   ├── z_ac589c9e55951baf___init___py.html
+│   │   ├── z_ac589c9e55951baf_portfolio_app_service_py.html
+│   │   ├── z_b0035a28e613f6d5___init___py.html
+│   │   ├── z_b0035a28e613f6d5_domain_events_py.html
+│   │   ├── z_b0035a28e613f6d5_event_bus_py.html
+│   │   ├── z_b0035a28e613f6d5_event_py.html
+│   │   ├── z_b08530793cf59526___init___py.html
+│   │   ├── z_b195dea4d3d701d8___init___py.html
+│   │   ├── z_b3839b449c4ea458___init___py.html
+│   │   ├── z_b4036cbed78476ef___init___py.html
+│   │   ├── z_b4036cbed78476ef_performance_metrics_py.html
+│   │   ├── z_b44096930144f8d2___init___py.html
+│   │   ├── z_b44096930144f8d2_parameter_py.html
+│   │   ├── z_b44096930144f8d2_rule_py.html
+│   │   ├── z_b44096930144f8d2_signal_py.html
+│   │   ├── z_b44096930144f8d2_strategy_py.html
+│   │   ├── z_b850925142c8777f___init___py.html
+│   │   ├── z_b850925142c8777f_strategy_router_py.html
+│   │   ├── z_b850925142c8777f_trading_router_py.html
+│   │   ├── z_bfbe07ea4264f6a4___init___py.html
+│   │   ├── z_bfbe07ea4264f6a4_local_event_bus_py.html
+│   │   ├── z_bfbe07ea4264f6a4_redis_event_bus_py.html
+│   │   ├── z_c02420289d778acb___init___py.html
+│   │   ├── z_c066d6d74b0c2982___init___py.html
+│   │   ├── z_c133466b70ff82ee___init___py.html
+│   │   ├── z_c133466b70ff82ee_main_py.html
+│   │   ├── z_c29c2ded71231c86___init___py.html
+│   │   ├── z_c29c2ded71231c86_ac_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_base_py.html
+│   │   ├── z_c29c2ded71231c86_bmh_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_brute_force_algorithm_py.html
+│   │   ├── z_c29c2ded71231c86_kmp_algorithm_py.html
+│   │   ├── z_c4975f63ee658776___init___py.html
+│   │   ├── z_c4975f63ee658776_validation_models_py.html
+│   │   ├── z_c5d9a93f212b7143___init___py.html
+│   │   ├── z_c9ab8ce59b84844f___init___py.html
+│   │   ├── z_c9ab8ce59b84844f_portfolio_py.html
+│   │   ├── z_c9ab8ce59b84844f_transaction_py.html
+│   │   ├── z_cabf6fd828286e5d___init___py.html
+│   │   ├── z_cac180ec93e0bad9___init___py.html
+│   │   ├── z_cb4980cff22a336b___init___py.html
+│   │   ├── z_cb4980cff22a336b_indicator_config_py.html
+│   │   ├── z_cb4980cff22a336b_instrument_pool_py.html
+│   │   ├── z_cb4980cff22a336b_signal_definition_py.html
+│   │   ├── z_cb4980cff22a336b_strategy_id_py.html
+│   │   ├── z_cbed29eee4d42193___init___py.html
+│   │   ├── z_cbed29eee4d42193_monitored_notification_manager_py.html
+│   │   ├── z_cbed29eee4d42193_notification_manager_py.html
+│   │   ├── z_cbed29eee4d42193_predefined_tasks_py.html
+│   │   ├── z_cbed29eee4d42193_scheduler_py.html
+│   │   ├── z_cd361fe1c8307fb5___init___py.html
+│   │   ├── z_cd361fe1c8307fb5_base_py.html
+│   │   ├── z_cd361fe1c8307fb5_batch_processor_py.html
+│   │   ├── z_cd361fe1c8307fb5_cache_py.html
+│   │   ├── z_cd361fe1c8307fb5_circuit_breaker_py.html
+│   │   ├── z_cd361fe1c8307fb5_config_manager_py.html
+│   │   ├── z_cd361fe1c8307fb5_data_quality_validator_py.html
+│   │   ├── z_cd361fe1c8307fb5_handler_py.html
+│   │   ├── z_cd361fe1c8307fb5_health_check_py.html
+│   │   ├── z_cd361fe1c8307fb5_lineage_integration_py.html
+│   │   ├── z_cd361fe1c8307fb5_metrics_py.html
+│   │   ├── z_cd361fe1c8307fb5_monitoring_py.html
+│   │   ├── z_cd361fe1c8307fb5_registry_py.html
+│   │   ├── z_cd361fe1c8307fb5_router_py.html
+│   │   ├── z_cd361fe1c8307fb5_smart_cache_py.html
+│   │   ├── z_cd361fe1c8307fb5_smart_router_py.html
+│   │   ├── z_cd361fe1c8307fb5_validation_py.html
+│   │   ├── z_cf26288d9f31bc7f___init___py.html
+│   │   ├── z_cf26288d9f31bc7f_istrategy_repository_py.html
+│   │   ├── z_d026f51e51333d2e___init___py.html
+│   │   ├── z_d026f51e51333d2e_business_mappers_py.html
+│   │   ├── z_d026f51e51333d2e_composite_business_py.html
+│   │   ├── z_d026f51e51333d2e_connection_adapter_py.html
+│   │   ├── z_d026f51e51333d2e_connection_pool_py.html
+│   │   ├── z_d026f51e51333d2e_data_mapper_py.html
+│   │   ├── z_d026f51e51333d2e_enhanced_postgresql_relational_py.html
+│   │   ├── z_d026f51e51333d2e_postgresql_relational_py.html
+│   │   ├── z_d026f51e51333d2e_query_builder_py.html
+│   │   ├── z_d026f51e51333d2e_tdengine_timeseries_py.html
+│   │   ├── z_d3fcfe8757879fff___init___py.html
+│   │   ├── z_d3fcfe8757879fff_redis_lock_py.html
+│   │   ├── z_da656cc43bf503b9___init___py.html
+│   │   ├── z_da656cc43bf503b9_performance_monitor_py.html
+│   │   ├── z_da656cc43bf503b9_postgresql_index_optimizer_py.html
+│   │   ├── z_da656cc43bf503b9_slow_query_analyzer_py.html
+│   │   ├── z_da656cc43bf503b9_tdengine_index_optimizer_py.html
+│   │   ├── z_dbd3b6f071464ff6___init___py.html
+│   │   ├── z_dd38edaf63325f35___init___py.html
+│   │   ├── z_dd38edaf63325f35_gpu_calculator_py.html
+│   │   ├── z_df378d997b0a7db8___init___py.html
+│   │   ├── z_e027a7e1d90b302d___init___py.html
+│   │   ├── z_e027a7e1d90b302d_base_financial_adapter_py.html
+│   │   ├── z_e027a7e1d90b302d_base_py.html
+│   │   ├── z_e027a7e1d90b302d_financial_data_source_py.html
+│   │   ├── z_e027a7e1d90b302d_financial_report_adapter_py.html
+│   │   ├── z_e027a7e1d90b302d_stock_daily_adapter_py.html
+│   │   ├── z_e0d445f7b83e5a07___init___py.html
+│   │   ├── z_e0d445f7b83e5a07_routes_py.html
+│   │   ├── z_e6dbd10ac9192bf1___init___py.html
+│   │   ├── z_e6dbd10ac9192bf1_akshare_extension_py.html
+│   │   ├── z_e6dbd10ac9192bf1_base_py.html
+│   │   ├── z_e6dbd10ac9192bf1_cninfo_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_eastmoney_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_eastmoney_enhanced_py.html
+│   │   ├── z_e6dbd10ac9192bf1_tqlex_adapter_py.html
+│   │   ├── z_e6dbd10ac9192bf1_wencai_adapter_py.html
+│   │   ├── z_e812782950d2942c___init___py.html
+│   │   ├── z_e812782950d2942c_backtest_service_py.html
+│   │   ├── z_ec2182aa738d19f0___init___py.html
+│   │   ├── z_ec2182aa738d19f0_iorder_repository_py.html
+│   │   ├── z_ec2182aa738d19f0_iposition_repository_py.html
+│   │   ├── z_f1b38b22aeb65474___init___py.html
+│   │   ├── z_f1b38b22aeb65474_add_doc_metadata_py.html
+│   │   ├── z_f1b38b22aeb65474_add_python_headers_py.html
+│   │   ├── z_f1b38b22aeb65474_check_api_health_py.html
+│   │   ├── z_f1b38b22aeb65474_check_api_health_v2_py.html
+│   │   ├── z_f1b38b22aeb65474_check_db_health_py.html
+│   │   ├── z_f1b38b22aeb65474_column_mapper_py.html
+│   │   ├── z_f1b38b22aeb65474_data_format_converter_py.html
+│   │   ├── z_f1b38b22aeb65474_data_source_logger_py.html
+│   │   ├── z_f1b38b22aeb65474_data_source_validator_py.html
+│   │   ├── z_f1b38b22aeb65474_date_utils_py.html
+│   │   ├── z_f1b38b22aeb65474_db_connection_retry_py.html
+│   │   ├── z_f1b38b22aeb65474_error_handler_py.html
+│   │   ├── z_f1b38b22aeb65474_failure_recovery_queue_py.html
+│   │   ├── z_f1b38b22aeb65474_logging_config_py.html
+│   │   ├── z_f1b38b22aeb65474_simple_config_check_py.html
+│   │   ├── z_f1b38b22aeb65474_symbol_utils_py.html
+│   │   ├── z_f1b38b22aeb65474_tdx_server_config_py.html
+│   │   ├── z_f1b38b22aeb65474_validate_gitignore_py.html
+│   │   ├── z_f1b38b22aeb65474_validate_test_naming_py.html
+│   │   ├── z_f30056342d090e5d___init___py.html
+│   │   ├── z_f667d17946d57291___init___py.html
+│   │   ├── z_f667d17946d57291_base_tdx_adapter_py.html
+│   │   ├── z_f667d17946d57291_config_py.html
+│   │   ├── z_f667d17946d57291_kline_data_service_py.html
+│   │   ├── z_f667d17946d57291_new_test_tdx_py.html
+│   │   ├── z_f667d17946d57291_realtime_service_py.html
+│   │   ├── z_f667d17946d57291_tdx_adapter_py.html
+│   │   ├── z_f667d17946d57291_tdx_block_reader_py.html
+│   │   ├── z_f667d17946d57291_tdx_data_source_py.html
+│   │   ├── z_f7e3ca08ed5b34f4___init___py.html
+│   │   ├── z_f7e3ca08ed5b34f4_structured_py.html
+│   │   ├── z_f7e3ca08ed5b34f4_tracing_py.html
+│   │   └── z_f9bb3bf387c1b34d___init___py.html
+│   ├── data-classification-coverage.json
+│   ├── dependency-graph.svg
+│   ├── dependency-tree.txt
+│   ├── design
+│   │   ├── ARTDECO_PHASE2_COMPLETION_REPORT.md
+│   │   └── artdeco-implementation-summary.md
+│   ├── doc-organization-plan.md
+│   ├── duplicate_code_analysis_report.md
+│   ├── final_execution_summary.md
+│   ├── final_project_completion_summary.md
+│   ├── final_project_summary.md
+│   ├── first_phase_technical_debt_completion_report.md
+│   ├── frontend-optimization-implementation-status-2026-01-27.md
+│   ├── gpu_debt_analysis.json
+│   ├── grafana-error.png
+│   ├── import_path_migration_report.md
+│   ├── marketplace_agents_inventory.md
+│   ├── mystocks-v31-complete-summary-20260110.md
+│   ├── notes.md
+│   ├── performance
+│   │   ├── complexity_report.txt
+│   │   ├── directory-structure-report.txt
+│   │   ├── gpu_performance_benchmark_report_20251218_172120.json
+│   │   └── performance_report.txt
+│   ├── phase1.1_decision_models_split_completion.md
+│   ├── phase1.1_true_execution_summary.md
+│   ├── phase1.2_database_service_split_completion.md
+│   ├── phase1.4_risk_management_split_progress.md
+│   ├── phase1_complete_execution_summary_report.md
+│   ├── phase1_completion_summary.md
+│   ├── phase1_duplicate_code_merge_completion.md
+│   ├── phase1_phase2_completion_report.md
+│   ├── phase1_phase2_final_completion_report.md
+│   ├── phase1_phase2_final_summary.md
+│   ├── phase1_phase2_phase3_4_5_final_completion_report.md
+│   ├── phase1_status.md
+│   ├── phase2.1_market_data_split_completion.md
+│   ├── phase2.2_decision_models_planned.md
+│   ├── phase2_completion_summary.md
+│   ├── phase2_progress_report.md
+│   ├── phase3_final_report.md
+│   ├── phase3_progress_report.md
+│   ├── phase4_6
+│   │   ├── README.md
+│   │   ├── phase4_6_final_summary_report.md
+│   │   ├── phase4_6_indicator_fixes_final_report.md
+│   │   └── phase4_6_optimization_final_report.md
+│   ├── phase7_worktree_collaboration_proposal.md
+│   ├── project_final_acceptance_report.md
+│   ├── project_final_completion_summary.md
+│   ├── pylint-error-summary.txt
+│   ├── pylint-errors-by-module.txt
+│   ├── pylint-errors.json
+│   ├── quantitative_trading_architecture_research_summary.md
+│   ├── risk-management-week3-progress-20260110.md
+│   ├── risk-management-week4-progress-20260110.md
+│   ├── risk-management-week5-progress-20260110.md
+│   ├── round1_cli1_4_progress_check.md
+│   ├── round1_cli_progress_check.md
+│   ├── round1_conflict_prevention_implementation_report.md
+│   ├── round1_final_conflict_prevention_report.md
+│   ├── round1_readme_conflict_prevention_update.md
+│   ├── screenshots
+│   │   ├── 1-首页-仪表盘.png
+│   │   ├── 10-ETF行情.png
+│   │   ├── 11-风险监控.png
+│   │   ├── 12-策略管理.png
+│   │   ├── 13-回测分析.png
+│   │   ├── 14-ArtDeco主控仪表盘.png
+│   │   ├── 15-ArtDeco市场中心.png
+│   │   ├── 2-数据分析.png
+│   │   ├── 3-股票管理.png
+│   │   ├── 4-技术分析.png
+│   │   ├── 5-系统设置.png
+│   │   ├── 6-市场行情.png
+│   │   ├── 7-TDX行情.png
+│   │   ├── 8-实时监控-ERROR.png
+│   │   ├── 8-实时监控.png
+│   │   ├── 9-资金流向.png
+│   │   ├── BLOOMBERG_STYLING_VERIFICATION_20260109.png
+│   │   ├── FRONTEND_PLAYWRIGHT_TEST_20260108.png
+│   │   └── realtime-monitor-debug.png
+│   ├── security
+│   │   ├── safety_report.json
+│   │   ├── security_bandit_report.json
+│   │   └── security_bandit_report_after.json
+│   ├── status_dashboard.html
+│   ├── t26_completion_report.md
+│   ├── t28_completion_report.md
+│   ├── t29_completion_report.md
+│   ├── test-results
+│   │   ├── API_AUTOMATION_TEST_SUMMARY.md
+│   │   ├── CORS_FIX_COMPLETION_REPORT.md
+│   │   ├── DETAILED_ANALYSIS.md
+│   │   ├── FINAL_COMPLETION_REPORT.md
+│   │   ├── FIX_RECOMMENDATIONS.md
+│   │   ├── PORT_STANDARDIZATION_COMPLETION_REPORT.md
+│   │   ├── README.md
+│   │   ├── TEST_REPORT.md
+│   │   ├── api-test-report-20260106_114851.txt
+│   │   ├── api-test-report-20260106_114858.txt
+│   │   ├── api-test-report-20260106_114915.txt
+│   │   ├── api-test-report-20260106_211720.txt
+│   │   ├── api-test-report-20260106_212222.txt
+│   │   ├── api-test-report-20260106_220600.txt
+│   │   ├── api-test-report-20260106_222516.txt
+│   │   ├── realtime-monitor-debug.json
+│   │   └── test-report.json
+│   ├── test_coverage_analysis.json
+│   ├── test_import_fix_report.json
+│   ├── type_annotations_analysis_report.md
+│   ├── unified_interface_analysis.json
+│   ├── web_api_calls.json
+│   ├── 代码优化执行报告.md
+│   ├── 功能提取报告.md
+│   ├── 协同测试计划.md
+│   ├── 协同测试计划_优化版.md
+│   ├── 文档优化完成报告.md
+│   ├── 文档优化计划.md
+│   ├── 文档清理完成报告.md
+│   ├── 文档管理指南.md
+│   ├── 文档结构说明.md
+│   ├── 文档迁移计划.md
+│   ├── 文档验证报告.md
+│   ├── 项目状态报告.md
+│   └── 项目进度追踪与风险管控.md
+├── requirements-mock.txt
+├── requirements-security.txt
+├── requirements.txt
+├── requirements_freeze.txt
+├── reviews
+│   ├── PHASE_2_PLAN_REVIEW.md
+│   ├── WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md
+│   └── frontend_routing_optimization_report.md
+├── risk_management_system_plan.md
+├── security
+│   └── SECURITY_BEST_PRACTICES.md
+├── standards
+│   ├── 00-DESIGN_OVERVIEW.md
+│   ├── 01-DESIGN_SYSTEM
+│   │   ├── README.md
+│   │   ├── color-system.md
+│   │   └── typography.md
+│   ├── 02-COMPONENT_LIBRARY
+│   │   └── README.md
+│   ├── 03-PAGE_DESIGNS
+│   │   └── README.md
+│   ├── 04-INTERACTION_FLOWS
+│   │   └── README.md
+│   ├── API_FILE_TESTING_STANDARDS.md
+│   ├── API_RESPONSE_STANDARDIZATION.md
+│   ├── CODE_SIZE_OPTIMIZATION_SAVED_20251125.md
+│   ├── FILE_ORGANIZATION_RULES.md
+│   ├── FILE_ORGANIZATION_RULES.md.backup-20251226-125820
+│   ├── IMPORT_STYLE_GUIDELINES.md
+│   ├── INDEX.md
+│   ├── LOCAL_ENV_SETUP.md
+│   ├── MODULE_REGISTRY.md
+│   ├── NEXT_STEPS_SUMMARY.md
+│   ├── PROJECT_MODULES.md
+│   ├── PYLINT_BUGS_REPORT.md
+│   ├── PYLINT_FIX_SUMMARY.md
+│   ├── README.md
+│   ├── RESOURCE_LEAK_AUDIT_REPORT.md
+│   ├── SECURITY_AUDIT_REPORT_2025-12-23.md
+│   ├── SECURITY_AUDIT_REPORT_20251130.md
+│   ├── SECURITY_FOLLOWUP_PLAN_20251130.md
+│   ├── SECURITY_QUICK_REFERENCE.md
+│   ├── SECURITY_REMEDIATION_GUIDE.md
+│   ├── TEST_COVERAGE_EXPANSION_PLAN.md
+│   ├── TEST_COVERAGE_EXPANSION_PROGRESS.md
+│   ├── UI_DESIGN_SYSTEM.md
+│   ├── WEB_PAGE_STRUCTURE_GUIDE.md
+│   ├── WEB_USABILITY_STANDARDS.md
+│   ├── bug-report-template.json
+│   ├── file-organization-rules.md
+│   ├── 代码修改规则-new.md
+│   ├── 代码修改规则-合并.md
+│   ├── 代码修改规则.md
+│   ├── 项目开发规范与指导文档.md
+│   └── 项目数据工作流程.md
+├── tasks
+│   ├── FRONTEND_HISTORY_MIGRATION.md
+│   └── PHASE_2_SAGA_ROLLOUT.md
+├── tdx_integration
+│   ├── INTEGRATION_ANALYSIS.md
+│   ├── README.md
+│   ├── complete_example.md
+│   ├── data_analysis.md
+│   ├── data_capture.md
+│   └── data_visualization.md
+├── technical_debt
+│   ├── detailed_technical_debt_assessment.md
+│   ├── technical_debt_assessment_report.md
+│   └── technical_debt_remediation_plan.md
+├── technical_debt_analysis_summary.md
+├── technical_debt_assessment_report.md
+├── technical_debt_remediation_plan.md
+├── test_reports
+│   ├── batch_optimization_report.md
+│   ├── test_optimization_report.md
+│   └── test_readme_root.md
+├── testing
+│   ├── BUGFIX-signals-500-error-retrospective.md
+│   ├── E2E_TEST_GUIDE.md
+│   ├── README.md
+│   ├── 常见测试问题与解决方案.md
+│   ├── 技术债务分析报告.md
+│   ├── 测试价值分析报告.md
+│   └── 测试策略与规范.md
+├── ui-ux-pro-max
+│   ├── CONVERSION_SUMMARY.md
+│   ├── PROJECT_COMPLETION_REPORT.md
+│   ├── README.md
+│   ├── domains
+│   │   └── style.md
+│   ├── quick-reference.md
+│   └── search-router.md
+├── web
+│   ├── ART_DECO_COMPONENTS_CATALOG.md
+│   ├── ART_DECO_COMPONENT_SHOWCASE.md
+│   ├── ART_DECO_COMPONENT_SHOWCASE_V2.md
+│   ├── ART_DECO_FINAL_REPORT.md
+│   ├── ART_DECO_IMPLEMENTATION_REPORT.md
+│   ├── ART_DECO_QUICK_REFERENCE.md
+│   ├── FRONTEND_ACCESS_GUIDE.md
+│   ├── FRONTEND_ARCHITECTURE_EVALUATION.md
+│   ├── FRONTEND_EVALUATION_SUMMARY.md
+│   ├── FRONTEND_IMPROVEMENT_GUIDE.md
+│   ├── FRONTEND_STARTUP_STATUS.md
+│   ├── LINEAR_THEME_COMPLETION_REPORT.md
+│   ├── TECHSTYLE_QUICK_REFERENCE.md
+│   ├── TECHSTYLE_THEME_IMPROVEMENT_REPORT.md
+│   ├── TECHSTYLE_VISUAL_COMPARISON.md
+│   ├── WEB3_DESIGN_COMPLETE_REPORT.md
+│   ├── WEB3_DESIGN_SYSTEM.md
+│   ├── WEB3_IMPLEMENTATION_REPORT.md
+│   ├── WEB3_QUICK_START.md
+│   ├── WEB_PAGE_REDESIGN_COMPLETION_REPORT.md
+│   └── web页面结构详细描述.md
+├── web-dev
+│   ├── GUIDE.md
+│   └── tracing
+│       └── web-edit-tracker.jsonl
+├── websocket_optimization_report.md
+├── 归档文档
+│   ├── README.md
+│   ├── 旧API文档
+│   │   └── api
+│   │       ├── API_ARCHITECTURE_DATA_2025-11-30.json
+│   │       ├── API_QUICK_REFERENCE_2025-11-30.txt
+│   │       ├── P2_SIMPLIFIED_TEST_REPORT.json
+│   │       ├── PHASE2_COMPLETION_REPORT.md
+│   │       ├── PHASE3_COMPLETION_REPORT.md
+│   │       ├── PHASE3_IMPLEMENTATION_GUIDE.md
+│   │       ├── README.md
+│   │       ├── SWAGGER_ENDPOINTS_2025-11-30.json
+│   │       ├── openapi.json
+│   │       ├── openapi.yaml
+│   │       └── swagger.json
+│   └── 旧标准文档
+│       ├── FILE_ORGANIZATION_RULES.md
+│       ├── LOCAL_ENV_SETUP.md
+│       └── README.md
+├── 技术负债修复报告.md
+├── 数据流转机制总结.md
+├── 文件目录管理方案.md
+└── 目录管理解决方案总结.md
+
+101 directories, 3387 files

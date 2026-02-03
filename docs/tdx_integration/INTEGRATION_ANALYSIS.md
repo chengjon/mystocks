@@ -124,10 +124,10 @@ huice.py          # 回测收益曲线（RQAlpha内置）
 **1. 5层数据分类系统**
 ```
 Market Data（时序数据）   → TDengine
-Reference Data（参考数据） → MySQL
+Reference Data（参考数据） → PostgreSQL
 Derived Data（衍生数据）   → PostgreSQL+TimescaleDB
 Transaction Data（交易）   → Redis(hot) + PostgreSQL(cold)
-Meta Data（元数据）        → MySQL
+Meta Data（元数据）        → PostgreSQL
 ```
 
 **2. 适配器模式数据源**
@@ -900,7 +900,7 @@ rq_result.png + plot.html
     ↓
 TDXLocalAdapter（自动更新，16:00定时任务）
     ↓
-MyStocks数据库（TDengine/PostgreSQL/MySQL）
+MyStocks数据库（TDengine/PostgreSQL）
     ↓
 StockScreeningStrategy（自动执行，16:30定时任务）
     ↓
@@ -1084,7 +1084,7 @@ backtest:
 | 组件 | 原项目 | MyStocks现有 | 整合后 |
 |------|--------|--------------|--------|
 | **数据源** | 通达信本地文件 | Akshare/Tushare/TDX在线 | 通达信本地+在线数据源 |
-| **数据存储** | CSV/pickle文件 | TDengine/PostgreSQL/MySQL | 统一数据库存储 |
+| **数据存储** | CSV/pickle文件 | TDengine/PostgreSQL | 统一数据库存储 |
 | **策略框架** | 硬编码celue.py | StrategyBase基类 | 注册式策略系统 |
 | **回测引擎** | RQAlpha | 无 | RQAlpha集成 |
 | **技术指标** | talib | 161个TA-Lib指标 | 复用现有指标 |

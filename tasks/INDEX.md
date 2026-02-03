@@ -1,11 +1,14 @@
 # Tasks
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 1
+**文档数量**: 2
 
 
 ---
+
+- [FRONTEND_HISTORY_MIGRATION](tasks/FRONTEND_HISTORY_MIGRATION.md)
+  - *Frontend History Mode Migration: Hash → HTML5*
 
 - [PHASE_2_SAGA_ROLLOUT](tasks/PHASE_2_SAGA_ROLLOUT.md)
   - *PHASE 2: Saga 分布式事务落地与生产化任务清单*

@@ -154,12 +154,12 @@ class AlgorithmModelRepository:
             self.session.add(model)
             self.session.commit()
 
-            logger.info("Saved algorithm model: {model.model_id}"")
+            logger.info("Saved algorithm model: {model.model_id}")
             return True
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to save algorithm model: %(e)s"")
+            logger.error("Failed to save algorithm model: %(e)s")
             return False
 
     async def get_model(self, model_id: str) -> Optional[Dict[str, Any]]:
@@ -193,7 +193,7 @@ class AlgorithmModelRepository:
             return None
 
         except SQLAlchemyError as e:
-            logger.error("Failed to get algorithm model %(model_id)s: %(e)s"")
+            logger.error("Failed to get algorithm model %(model_id)s: %(e)s")
             return None
 
     async def update_model(self, model_id: str, updates: Dict[str, Any]) -> bool:
@@ -214,13 +214,13 @@ class AlgorithmModelRepository:
             self.session.commit()
 
             if result > 0:
-                logger.info("Updated algorithm model: %(model_id)s"")
+                logger.info("Updated algorithm model: %(model_id)s")
                 return True
             return False
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to update algorithm model %(model_id)s: %(e)s"")
+            logger.error("Failed to update algorithm model %(model_id)s: %(e)s")
             return False
 
     async def delete_model(self, model_id: str) -> bool:
@@ -238,13 +238,13 @@ class AlgorithmModelRepository:
             self.session.commit()
 
             if result > 0:
-                logger.info("Deleted algorithm model: %(model_id)s"")
+                logger.info("Deleted algorithm model: %(model_id)s")
                 return True
             return False
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to delete algorithm model %(model_id)s: %(e)s"")
+            logger.error("Failed to delete algorithm model %(model_id)s: %(e)s")
             return False
 
     async def list_models(
@@ -290,7 +290,7 @@ class AlgorithmModelRepository:
             ]
 
         except SQLAlchemyError as e:
-            logger.error("Failed to list algorithm models: %(e)s"")
+            logger.error("Failed to list algorithm models: %(e)s")
             return []
 
     # ==================== 训练历史管理方法 ====================
@@ -310,12 +310,12 @@ class AlgorithmModelRepository:
             self.session.add(history)
             self.session.commit()
 
-            logger.info("Saved training history: {history.training_id}"")
+            logger.info("Saved training history: {history.training_id}")
             return True
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to save training history: %(e)s"")
+            logger.error("Failed to save training history: %(e)s")
             return False
 
     async def get_training_history(self, training_id: str) -> Optional[Dict[str, Any]]:
@@ -352,7 +352,7 @@ class AlgorithmModelRepository:
             return None
 
         except SQLAlchemyError as e:
-            logger.error("Failed to get training history %(training_id)s: %(e)s"")
+            logger.error("Failed to get training history %(training_id)s: %(e)s")
             return None
 
     async def list_training_history(
@@ -395,7 +395,7 @@ class AlgorithmModelRepository:
             ]
 
         except SQLAlchemyError as e:
-            logger.error("Failed to list training history: %(e)s"")
+            logger.error("Failed to list training history: %(e)s")
             return []
 
     # ==================== 预测历史管理方法 ====================
@@ -415,12 +415,12 @@ class AlgorithmModelRepository:
             self.session.add(history)
             self.session.commit()
 
-            logger.info("Saved prediction history: {history.prediction_id}"")
+            logger.info("Saved prediction history: {history.prediction_id}")
             return True
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to save prediction history: %(e)s"")
+            logger.error("Failed to save prediction history: %(e)s")
             return False
 
     async def get_prediction_history(self, prediction_id: str) -> Optional[Dict[str, Any]]:
@@ -454,7 +454,7 @@ class AlgorithmModelRepository:
             return None
 
         except SQLAlchemyError as e:
-            logger.error("Failed to get prediction history %(prediction_id)s: %(e)s"")
+            logger.error("Failed to get prediction history %(prediction_id)s: %(e)s")
             return None
 
     async def list_prediction_history(
@@ -497,7 +497,7 @@ class AlgorithmModelRepository:
             ]
 
         except SQLAlchemyError as e:
-            logger.error("Failed to list prediction history: %(e)s"")
+            logger.error("Failed to list prediction history: %(e)s")
             return []
 
     # ==================== 统计和监控方法 ====================
@@ -554,7 +554,7 @@ class AlgorithmModelRepository:
             }
 
         except SQLAlchemyError as e:
-            logger.error("Failed to get model statistics: %(e)s"")
+            logger.error("Failed to get model statistics: %(e)s")
             return {}
 
     async def cleanup_old_history(self, days_to_keep: int = 90) -> int:
@@ -585,13 +585,13 @@ class AlgorithmModelRepository:
             self.session.commit()
 
             total_deleted = deleted_trainings + deleted_predictions
-            logger.info("Cleaned up %(total_deleted)s old history records (keeping %(days_to_keep)s days)"")
+            logger.info("Cleaned up %(total_deleted)s old history records (keeping %(days_to_keep)s days)")
 
             return total_deleted
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to cleanup old history: %(e)s"")
+            logger.error("Failed to cleanup old history: %(e)s")
             return 0
 
     # ==================== 数据验证和清理方法 ====================
@@ -763,13 +763,13 @@ class AlgorithmModelRepository:
             if changes:
                 model.updated_at = datetime.now()
                 self.session.commit()
-                logger.info("Repaired model %(model_id)s: %(changes)s"")
+                logger.info("Repaired model %(model_id)s: %(changes)s")
 
             return {"repaired": len(changes) > 0, "changes": changes}
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to repair model %(model_id)s: %(e)s"")
+            logger.error("Failed to repair model %(model_id)s: %(e)s")
             return {"repaired": False, "changes": [], "error": str(e)}
 
     async def cleanup_orphaned_history(self) -> Dict[str, int]:
@@ -810,12 +810,12 @@ class AlgorithmModelRepository:
 
             result = {"training_deleted": deleted_trainings, "prediction_deleted": deleted_predictions}
 
-            logger.info("Cleaned up orphaned history records: %(result)s"")
+            logger.info("Cleaned up orphaned history records: %(result)s")
             return result
 
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error("Failed to cleanup orphaned history: %(e)s"")
+            logger.error("Failed to cleanup orphaned history: %(e)s")
             return {"training_deleted": 0, "prediction_deleted": 0}
 
     async def validate_data_integrity(self) -> Dict[str, Any]:
@@ -920,9 +920,9 @@ class AlgorithmModelRepository:
             else:
                 report["overall_status"] = "critical"
 
-            logger.info("Data integrity validation completed: {report['overall_status']}"")
+            logger.info("Data integrity validation completed: {report['overall_status']}")
             return report
 
         except Exception as e:
-            logger.error("Failed to validate data integrity: %(e)s"")
+            logger.error("Failed to validate data integrity: %(e)s")
             return {"timestamp": datetime.now().isoformat(), "overall_status": "error", "error": str(e)}

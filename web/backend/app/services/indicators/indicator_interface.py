@@ -274,7 +274,7 @@ class IndicatorPluginFactory:
     def register(cls, abbreviation: str, plugin_class: type):
         """注册指标插件"""
         cls._plugins[abbreviation.upper()] = plugin_class
-        logger.info("注册指标插件: %(abbreviation)s"")
+        logger.info("注册指标插件: %(abbreviation)s")
 
     @classmethod
     def get_plugin(cls, abbreviation: str) -> Optional[type]:

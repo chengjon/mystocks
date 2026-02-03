@@ -367,7 +367,7 @@ class SyncProcessor:
                     "elapsed_seconds": 0,
                 }
 
-            logger.info("🔄 Processing {len(pending)} pending messages"")
+            logger.info("🔄 Processing {len(pending)} pending messages")
 
             succeeded = 0
             failed = 0
@@ -517,7 +517,7 @@ class SyncProcessor:
                     "moved_to_dlq": 0,
                 }
 
-            logger.info("🔄 Processing {len(retryable)} retryable messages"")
+            logger.info("🔄 Processing {len(retryable)} retryable messages")
 
             succeeded = 0
             failed = 0

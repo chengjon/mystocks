@@ -37,7 +37,7 @@ class TaskManager:
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
-        logger.info("TaskManager initialized with log directory: {self.log_dir}"")
+        logger.info("TaskManager initialized with log directory: {self.log_dir}")
 
     def register_task(self, task_config: TaskConfig) -> TaskResponse:
         """注册新任务"""
@@ -56,7 +56,7 @@ class TaskManager:
                 task_id=task_config.task_id, task_name=task_config.task_name
             )
 
-            logger.info("Task registered: {task_config.task_id} - {task_config.task_name}"")
+            logger.info("Task registered: {task_config.task_id} - {task_config.task_name}")
 
             return TaskResponse(
                 success=True,
@@ -65,7 +65,7 @@ class TaskManager:
                 data=task_config.dict(),
             )
         except Exception as e:
-            logger.error("Failed to register task: %(e)s"")
+            logger.error("Failed to register task: %(e)s")
             return TaskResponse(success=False, message=f"Failed to register task: {str(e)}")
 
     def unregister_task(self, task_id: str) -> TaskResponse:
@@ -82,17 +82,17 @@ class TaskManager:
             if task_id in self.statistics:
                 del self.statistics[task_id]
 
-            logger.info("Task unregistered: %(task_id)s"")
+            logger.info("Task unregistered: %(task_id)s")
 
             return TaskResponse(success=True, message="Task unregistered successfully", task_id=task_id)
         except Exception as e:
-            logger.error("Failed to unregister task: %(e)s"")
+            logger.error("Failed to unregister task: %(e)s")
             return TaskResponse(success=False, message=f"Failed to unregister task: {str(e)}")
 
     def register_function(self, function_name: str, function: Callable):
         """注册任务函数"""
         self.task_functions[function_name] = function
-        logger.info("Function registered: %(function_name)s"")
+        logger.info("Function registered: %(function_name)s")
 
     async def execute_task(self, task_id: str, params: Optional[Dict[str, Any]] = None) -> TaskExecution:
         """执行任务"""
@@ -113,7 +113,7 @@ class TaskManager:
 
         self.executions[execution_id] = execution
 
-        logger.info("Starting task execution: %(task_id)s [%(execution_id)s]"")
+        logger.info("Starting task execution: %(task_id)s [%(execution_id)s]")
 
         try:
             # 合并参数
@@ -141,24 +141,24 @@ class TaskManager:
             # 更新统计信息
             self._update_statistics(task_id, execution)
 
-            logger.info("Task completed successfully: %(task_id)s [%(execution_id)s] in {execution.duration}s"")
+            logger.info("Task completed successfully: %(task_id)s [%(execution_id)s] in {execution.duration}s")
 
         except asyncio.TimeoutError:
             execution.status = TaskStatus.FAILED
             execution.end_time = datetime.now()
             execution.error_message = f"Task execution timeout after {task_config.timeout}s"
-            logger.error("Task timeout: %(task_id)s [%(execution_id)s]"")
+            logger.error("Task timeout: %(task_id)s [%(execution_id)s]")
 
         except Exception as e:
             execution.status = TaskStatus.FAILED
             execution.end_time = datetime.now()
             execution.error_message = str(e)
-            logger.error("Task failed: %(task_id)s [%(execution_id)s] - %(e)s"")
+            logger.error("Task failed: %(task_id)s [%(execution_id)s] - %(e)s")
 
             # 检查是否需要重试
             if execution.retry_count < task_config.retry_count:
                 execution.retry_count += 1
-                logger.info("Retrying task: %(task_id)s (attempt {execution.retry_count}/{task_config.retry_count})"")
+                logger.info("Retrying task: %(task_id)s (attempt {execution.retry_count}/{task_config.retry_count})")
                 await asyncio.sleep(task_config.retry_delay)
                 return await self.execute_task(task_id, params)
 
@@ -183,7 +183,7 @@ class TaskManager:
 
             return TaskResponse(success=True, message="Task started successfully", task_id=task_id)
         except Exception as e:
-            logger.error("Failed to start task: %(e)s"")
+            logger.error("Failed to start task: %(e)s")
             return TaskResponse(success=False, message=f"Failed to start task: {str(e)}")
 
     def stop_task(self, task_id: str) -> TaskResponse:
@@ -196,11 +196,11 @@ class TaskManager:
             task.cancel()
             del self.running_tasks[task_id]
 
-            logger.info("Task stopped: %(task_id)s"")
+            logger.info("Task stopped: %(task_id)s")
 
             return TaskResponse(success=True, message="Task stopped successfully", task_id=task_id)
         except Exception as e:
-            logger.error("Failed to stop task: %(e)s"")
+            logger.error("Failed to stop task: %(e)s")
             return TaskResponse(success=False, message=f"Failed to stop task: {str(e)}")
 
     def get_task(self, task_id: str) -> Optional[TaskConfig]:
@@ -275,7 +275,7 @@ class TaskManager:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(config_data, f, indent=2, ensure_ascii=False, default=str)
 
-        logger.info("Task configuration exported to %(output_path)s"")
+        logger.info("Task configuration exported to %(output_path)s")
 
     def import_config(self, config_path: str) -> TaskResponse:
         """导入任务配置"""
@@ -296,7 +296,7 @@ class TaskManager:
                 data={"imported_count": imported_count},
             )
         except Exception as e:
-            logger.error("Failed to import config: %(e)s"")
+            logger.error("Failed to import config: %(e)s")
             return TaskResponse(success=False, message=f"Failed to import config: {str(e)}")
 
     def cleanup_old_executions(self, days: int = 7):
@@ -311,7 +311,7 @@ class TaskManager:
         for exec_id in old_executions:
             del self.executions[exec_id]
 
-        logger.info("Cleaned up {len(old_executions)} old execution records"")
+        logger.info("Cleaned up {len(old_executions)} old execution records")
         return len(old_executions)
 
 

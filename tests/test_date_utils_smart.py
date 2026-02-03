@@ -11,9 +11,15 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import date_utils
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.utils import date_utils
 
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
+
+
+class TestDateUtilsSmart(unittest.TestCase):
     def test_date_utils_normalize_date_security(self):
         """安全测试 - normalize_date"""
         # 测试恶意输入
@@ -121,7 +127,6 @@ import date_utils
     def test_date_utils_basic_functionality(self):
         """基本功能测试"""
         # 测试模块导入
-        import date_utils
         self.assertTrue(hasattr(date_utils, '__name__'))
 
         # 测试是否有公共函数

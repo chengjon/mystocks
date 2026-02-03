@@ -1,8 +1,8 @@
 # Architecture
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 75
+**文档数量**: 99
 
 
 ---
@@ -46,6 +46,12 @@
 - [ARCHITECTURE_REVIEW_REPORT_2025-12-04](architecture/ARCHITECTURE_REVIEW_REPORT_2025-12-04.md)
   - *MyStocks API 全面架构评审报告*
 
+- [A股量化分析平台功能扩展方案](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台功能扩展方案.md)
+  - *A股量化分析平台功能扩展方案*
+
+- [A股量化分析平台扩展方案-豆包](architecture/legacy-cn/02-架构与设计文档/A股量化分析平台扩展方案-豆包.md)
+  - *A股量化分析平台扩展方案-豆包*
+
 - [DATABASE_ARCHITECTURE](architecture/DATABASE_ARCHITECTURE.md)
   - *MyStocks Database Architecture Overview*
 
@@ -73,6 +79,9 @@
 - [FIRST_PRINCIPLES_ARCHITECTURE_REVIEW](architecture/FIRST_PRINCIPLES_ARCHITECTURE_REVIEW.md)
   - *MyStocks 量化交易系统 - 第一性原理架构审查报告*
 
+- [FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2](architecture/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md)
+  - *MyStocks 前端代码优化实施方案 (V2.0 - 优化版)*
+
 - [ML集成完成报告](architecture/ML集成完成报告.md)
   - *PyProf 机器学习模块集成完成报告*
 
@@ -81,6 +90,15 @@
 
 - [Mock数据系统指南](architecture/Mock数据系统指南.md)
   - *MyStocks Mock数据系统使用指南*
+
+- [NEXT_DEV_PLAN](architecture/NEXT_DEV_PLAN.md)
+  - *MyStocks Quant System - Next Phase Development Plan (Optimized V2.3)*
+
+- [PAGE_CONFIG_MODEL](architecture/PAGE_CONFIG_MODEL.md)
+  - *前端扩展配置模型架构文档*
+
+- [PAGE_CONFIG_USAGE_GUIDE](architecture/PAGE_CONFIG_USAGE_GUIDE.md)
+  - *PageConfig 统一配置使用指南*
 
 - [PHASE3_COMPLETION_SUMMARY](architecture/PHASE3_COMPLETION_SUMMARY.md)
   - *Phase 3 完成总结 - 快速参考*
@@ -196,8 +214,20 @@
 - [QLIB_ARCHITECTURE_REVIEW_REPORT](architecture/QLIB_ARCHITECTURE_REVIEW_REPORT.md)
   - *MyStocks Qlib架构改进方案审核报告*
 
+- [README_TypeScript_Quality_System](architecture/README_TypeScript_Quality_System.md)
+  - *TypeScript质量保障系统 - 完整解决方案*
+
 - [README_审批指南](architecture/README_审批指南.md)
   - *数据源架构优化方案 - 审批指南*
+
+- [RISK_MANAGEMENT_ARCHITECTURE_V2](architecture/legacy-cn/02-架构与设计文档/RISK_MANAGEMENT_ARCHITECTURE_V2.md)
+  - *轻量级高性能风险管理系统架构方案 (LHP-RMS)*
+
+- [ROUTER_SIMPLIFICATION_EXPLANATION](architecture/ROUTER_SIMPLIFICATION_EXPLANATION.md)
+  - *路由配置简化说明*
+
+- [STOCK_INDICATOR_CALCULATION_SYSTEM](architecture/STOCK_INDICATOR_CALCULATION_SYSTEM.md)
+  - *📊 MyStocks项目股票指标计算体系完整分析*
 
 - [Strategy_Templates_Completion](architecture/Strategy_Templates_Completion.md)
   - *策略模板系统完成报告*
@@ -213,6 +243,33 @@
 
 - [interface_refactoring_proposal](architecture/interface_refactoring_proposal.md)
   - *MyStocks接口重构方案*
+
+- [typescript_documentation](architecture/typescript_documentation.md)
+  - *TypeScript质量保障系统 - 完整文档与培训指南*
+
+- [typescript_hooks_system](architecture/typescript_hooks_system.md)
+  - *TypeScript HOOKS质量门禁系统设计*
+
+- [typescript_implementation_plan](architecture/typescript_implementation_plan.md)
+  - *TypeScript质量保障系统 - 集成与实施完整方案*
+
+- [typescript_monitoring_system](architecture/typescript_monitoring_system.md)
+  - *TypeScript实时质量监控系统设计*
+
+- [typescript_prevention_system](architecture/typescript_prevention_system.md)
+  - *TypeScript质量保障系统 - 事前预防方案*
+
+- [typescript_quality_notes](architecture/typescript_quality_notes.md)
+  - *TypeScript质量保障系统设计笔记*
+
+- [typescript_quality_system_plan](architecture/typescript_quality_system_plan.md)
+  - *Task Plan: TypeScript质量保障系统设计与实现*
+
+- [vue组件开发注意事项](architecture/legacy-cn/02-架构与设计文档/vue组件开发注意事项.md)
+  - *vue组件开发注意事项*
+
+- [web页面结构详细描述](architecture/legacy-cn/02-架构与设计文档/web页面结构详细描述.md)
+  - *MyStocks 量化交易平台 - Web页面结构详细描述*
 
 - [备份策略架构优化](architecture/备份策略架构优化.md)
   - *架构优化数据库备份策略*
@@ -231,3 +288,18 @@
 
 - [数据源管理](architecture/数据源管理.md)
   - *数据源管理*
+
+- [股票指标计算体系](architecture/legacy-cn/02-架构与设计文档/股票指标计算体系.md)
+  - *股票指标计算体系*
+
+- [股票监控功能设计方案1](architecture/legacy-cn/02-架构与设计文档/股票监控功能设计方案1.md)
+  - *股票监控功能设计方案1*
+
+- [设计令牌的核心作用](architecture/legacy-cn/02-架构与设计文档/设计令牌的核心作用.md)
+  - *设计令牌的核心作用*
+
+- [页面结构优化方案v2](architecture/legacy-cn/02-架构与设计文档/页面结构优化方案v2.md)
+  - *页面结构优化方案v2*
+
+- [风险管理方案](architecture/legacy-cn/02-架构与设计文档/风险管理方案.md)
+  - *风险管理基础设施：*

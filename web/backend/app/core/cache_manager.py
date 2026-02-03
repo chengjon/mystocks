@@ -1022,7 +1022,7 @@ class CacheManager:
             )
             return result
         except Exception as e:
-            logger.warning("TDengine异步写入失败: %(e)s"")
+            logger.warning("TDengine异步写入失败: %(e)s")
             return False
 
     def _update_performance_stats(self, response_time: float, hit: bool) -> None:

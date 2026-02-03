@@ -13,7 +13,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 from src.alternative_data.news_sentiment_analyzer import NewsSentimentService
-from src.logging.audit_system import AuditEvent, get_audit_manager
+from src.infrastructure.logging.audit_system import AuditEvent, get_audit_manager
 
 router = APIRouter(prefix="/api/alternative-data", tags=["另类数据分析"])
 

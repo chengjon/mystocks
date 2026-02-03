@@ -96,7 +96,7 @@ class TalibGenericIndicator(IndicatorInterface):
             values = self._call_talib(data, parameters)
             return self._create_success_result(parameters, values)
         except Exception as e:
-            logger.error("Calculation failed for {self.ABBREVIATION}: %(e)s"")
+            logger.error("Calculation failed for {self.ABBREVIATION}: %(e)s")
             return self._create_error_result(parameters, f"TA-Lib calculation failed: {str(e)}")
 
     def _call_talib(self, data: OHLCVData, parameters: Dict[str, Any]) -> Dict[str, np.ndarray]:
@@ -275,4 +275,4 @@ def register_all_talib_indicators():
         IndicatorPluginFactory.register(abbr, DynamicClass)
         count += 1
 
-    logger.info("Registered %(count)s TA-Lib indicators via Generic Adapter"")
+    logger.info("Registered %(count)s TA-Lib indicators via Generic Adapter")

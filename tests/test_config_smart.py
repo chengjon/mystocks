@@ -11,8 +11,12 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import config
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.utils import simple_config_check as config
+
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
 
 
 class TestConfigSmart(unittest.TestCase):

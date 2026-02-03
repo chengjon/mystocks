@@ -21,7 +21,7 @@ MyStocks量化交易系统的TDX数据集成模块，提供从通达信本地数
 - **智能数据路由**
   - 自动通过5-tier数据分类系统路由
   - 时序数据 → TDengine数据库
-  - 元数据 → MySQL数据库
+  - 元数据 → PostgreSQL数据库
 
 - **增量导入**
   - 支持全量导入和增量导入
@@ -151,7 +151,7 @@ TDX数据通过MyStocks的5-tier数据分类系统自动路由：
 | 日线数据 | MARKET_DATA_DAILY | TDengine | stock_daily |
 | 5分钟数据 | MARKET_DATA_MIN5 | TDengine | stock_5min |
 | 1分钟数据 | MARKET_DATA_MIN1 | TDengine | stock_1min |
-| 导入记录 | META_DATA | MySQL | tdx_import_jobs |
+| 导入记录 | META_DATA | PostgreSQL | tdx_import_jobs |
 
 ## 性能优化
 

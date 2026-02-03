@@ -27,7 +27,6 @@ def sample_table_config():
         "databases": {
             "tdengine": {"host": "localhost", "port": 6041, "database": "market_data"},
             "postgresql": {"host": "localhost", "port": 5432, "database": "mystocks"},
-            "mysql": {"host": "localhost", "port": 3306, "database": "test_db"},
         },
         "tables": [
             {
@@ -73,7 +72,7 @@ def sample_table_config():
             },
             {
                 "table_name": "user_profiles",
-                "database_type": "MySQL",
+                "database_type": "PostgreSQL",
                 "columns": [
                     {
                         "name": "id",
@@ -274,18 +273,19 @@ class TestConfigDrivenTableManagerTableExists:
         assert exists is True
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_table_exists_mysql_true(self, mock_conn_manager, temp_config_file):
-        """测试MySQL表存在检查(存在)"""
+    def test_table_exists_postgresql_profile_true(self, mock_conn_manager, temp_config_file):
+        """测试PostgreSQL表存在检查(存在)"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
-        # Mock MySQL连接
+        # Mock PostgreSQL连接
         mock_cursor = MagicMock()
-        mock_cursor.fetchone.return_value = (1,)
+        mock_cursor.fetchone.return_value = (True,)
         mock_conn = MagicMock()
         mock_conn.cursor.return_value = mock_cursor
-        manager.conn_manager.get_mysql_connection = Mock(return_value=mock_conn)
+        manager.conn_manager.get_postgresql_connection = Mock(return_value=mock_conn)
+        manager.conn_manager._return_postgresql_connection = Mock()
 
-        exists = manager._table_exists("MySQL", "user_profiles", "test_db")
+        exists = manager._table_exists("PostgreSQL", "user_profiles")
         assert exists is True
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
@@ -503,19 +503,19 @@ class TestConfigDrivenTableManagerCreateTable:
         manager._create_postgresql_table.assert_called_once_with(table_def)
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
-    def test_create_table_mysql(self, mock_conn_manager, temp_config_file, sample_table_config):
-        """测试创建MySQL表"""
+    def test_create_table_postgresql_user_profiles(self, mock_conn_manager, temp_config_file, sample_table_config):
+        """测试创建PostgreSQL表 (user_profiles)"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         # Mock表不存在
         manager._table_exists = Mock(return_value=False)
-        manager._create_mysql_table = Mock(return_value=True)
+        manager._create_postgresql_table = Mock(return_value=True)
 
-        table_def = sample_table_config["tables"][2]  # user_profiles (MySQL)
+        table_def = sample_table_config["tables"][2]  # user_profiles (PostgreSQL)
         result = manager._create_table(table_def)
 
         assert result is True
-        manager._create_mysql_table.assert_called_once_with(table_def)
+        manager._create_postgresql_table.assert_called_once_with(table_def)
 
     @patch("src.core.config_driven_table_manager.DatabaseConnectionManager")
     def test_create_table_redis_skip(self, mock_conn_manager, temp_config_file, sample_table_config):

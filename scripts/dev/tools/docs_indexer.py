@@ -9,9 +9,9 @@
 4. 支持自定义模板
 
 使用方法：
-    python scripts/tools/docs_indexer.py
-    python scripts/tools/docs_indexer.py --path docs/
-    python scripts/tools/docs_indexer.py --output INDEX.md
+    python scripts/dev/tools/docs_indexer.py
+    python scripts/dev/tools/docs_indexer.py --path docs/
+    python scripts/dev/tools/docs_indexer.py --output INDEX.md
 """
 
 import os
@@ -39,7 +39,7 @@ class DocsIndexer:
             "readme": None,
             "index_files": [],
             "subdirs": {},
-            "files": []
+            "files": [],
         }
 
         # 查找README和INDEX
@@ -51,15 +51,13 @@ class DocsIndexer:
         # 扫描子目录和文件
         try:
             for item in sorted(dir_path.iterdir()):
-                if item.is_dir() and not item.name.startswith('.'):
+                if item.is_dir() and not item.name.startswith("."):
                     result["subdirs"][item.name] = self.scan_directory(item, level + 1)
                 elif item.is_file() and item.suffix == ".md" and item.name not in ["README.md", "INDEX.md", "index.md"]:
                     rel_path = item.relative_to(self.root_path)
-                    result["files"].append({
-                        "name": item.stem,
-                        "path": str(rel_path),
-                        "title": self._extract_title(item)
-                    })
+                    result["files"].append(
+                        {"name": item.stem, "path": str(rel_path), "title": self._extract_title(item)}
+                    )
         except PermissionError:
             pass
 
@@ -68,10 +66,10 @@ class DocsIndexer:
     def _extract_title(self, md_file: Path) -> str:
         """从Markdown文件中提取标题"""
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, "r", encoding="utf-8") as f:
                 first_line = f.readline()
-                if first_line.startswith('#'):
-                    return first_line.lstrip('#').strip()
+                if first_line.startswith("#"):
+                    return first_line.lstrip("#").strip()
         except Exception:
             pass
         return md_file.stem
@@ -82,7 +80,7 @@ class DocsIndexer:
             f"# {category}\n",
             f"**最后更新**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n",
             f"**文档数量**: {len(items)}\n",
-            "\n---\n"
+            "\n---\n",
         ]
 
         # 按名称排序
@@ -90,7 +88,7 @@ class DocsIndexer:
 
         for item in items_sorted:
             lines.append(f"- [{item['name']}]({item['path']})")
-            if item.get('title'):
+            if item.get("title"):
                 lines.append(f"  - *{item['title']}*")
             lines.append("")
 
@@ -98,11 +96,7 @@ class DocsIndexer:
 
     def generate_global_index(self, structure: Dict) -> str:
         """生成全局索引"""
-        lines = [
-            "# MyStocks 文档索引\n",
-            f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n",
-            "\n---\n"
-        ]
+        lines = ["# MyStocks 文档索引\n", f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n", "\n---\n"]
 
         # 快速导航
         lines.append("## 🚀 快速导航\n")
@@ -115,7 +109,7 @@ class DocsIndexer:
             "operations": "⚙️  运维文档",
             "testing": "🧪 测试文档",
             "reports": "📊 分析报告",
-            "archive": "📦 归档文档"
+            "archive": "📦 归档文档",
         }
 
         for key, name in categories.items():
@@ -178,10 +172,10 @@ class DocsIndexer:
     def _dir_to_title(self, dir_name: str) -> str:
         """将目录名转换为标题"""
         # 移除数字前缀
-        name = dir_name.lstrip('0123456789.-')
+        name = dir_name.lstrip("0123456789.-")
 
         # 替换连字符和下划线为空格
-        name = name.replace('-', ' ').replace('_', ' ')
+        name = name.replace("-", " ").replace("_", " ")
 
         # 首字母大写
         return name.title()
@@ -214,24 +208,20 @@ class DocsIndexer:
         stats = {
             "total_files": self._count_files(self.index_structure),
             "total_dirs": self._count_dirs(self.index_structure),
-            "generation_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            "generation_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
         print(f"✅ 扫描完成:")
         print(f"  - 总文档数: {stats['total_files']:,}")
         print(f"  - 总目录数: {stats['total_dirs']:,}")
 
-        return {
-            "structure": self.index_structure,
-            "global_index": global_index,
-            "stats": stats
-        }
+        return {"structure": self.index_structure, "global_index": global_index, "stats": stats}
 
     def save_global_index(self, output_path: str):
         """保存全局索引"""
         index_data = self.generate()
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(index_data["global_index"])
 
         print(f"✅ 全局索引已保存到: {output_path}")
@@ -264,7 +254,7 @@ class DocsIndexer:
             index_path = base_dir / category_data["path"] / "INDEX.md"
             index_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(index_path, 'w', encoding='utf-8') as f:
+            with open(index_path, "w", encoding="utf-8") as f:
                 f.write(index_content)
 
             print(f"✅ 分类索引已保存: {index_path}")
@@ -276,10 +266,8 @@ def main():
 
     parser = argparse.ArgumentParser(description="文档索引生成工具")
     parser.add_argument("--path", default="docs/", help="文档目录路径（默认: docs/）")
-    parser.add_argument("--output", default="docs/INDEX.md",
-                       help="全局索引输出路径（默认: docs/INDEX.md）")
-    parser.add_argument("--categories", action="store_true",
-                       help="同时生成各分类的索引文件")
+    parser.add_argument("--output", default="docs/INDEX.md", help="全局索引输出路径（默认: docs/INDEX.md）")
+    parser.add_argument("--categories", action="store_true", help="同时生成各分类的索引文件")
 
     args = parser.parse_args()
 

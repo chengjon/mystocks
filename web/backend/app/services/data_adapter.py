@@ -154,7 +154,7 @@ class DataDataSourceAdapter(IDataSource):
         except Exception as e:
             self.error_count += 1
             response_time = time.time() - start_time
-            logger.error("Data fetch failed for %(endpoint)s: {str(e)}"")
+            logger.error("Data fetch failed for %(endpoint)s: {str(e)}")
 
             # 更新监控指标
             self._update_metrics(success=False, response_time=response_time * 1000, error=str(e))
@@ -705,7 +705,7 @@ class DataDataSourceAdapter(IDataSource):
                 success=success,
             )
         except Exception as e:
-            logger.warning("Failed to trigger quality monitoring: {str(e)}"")
+            logger.warning("Failed to trigger quality monitoring: {str(e)}")
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -830,7 +830,7 @@ class DashboardDataSourceAdapter(IDataSource):
             self._update_metrics(response_time, False)
             self.metrics.last_error = str(e)
 
-            logger.error("Dashboard数据获取失败: endpoint=%(endpoint)s, error={str(e)}"")
+            logger.error("Dashboard数据获取失败: endpoint=%(endpoint)s, error={str(e)}")
             raise
 
     async def _generate_mock_dashboard_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -1018,7 +1018,7 @@ class DashboardDataSourceAdapter(IDataSource):
                 success=success,
             )
         except Exception as e:
-            logger.warning("Failed to trigger quality monitoring: {str(e)}"")
+            logger.warning("Failed to trigger quality monitoring: {str(e)}")
 
     async def health_check(self) -> HealthStatus:
         """健康检查"""
@@ -1214,7 +1214,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
                 data = await self._get_trading_signals(symbol, period)
 
-                logger.info("🔍 _get_trading_signals returned data: %(data)s, type={type(data)}"")
+                logger.info("🔍 _get_trading_signals returned data: %(data)s, type={type(data)}")
 
                 # For signals endpoint, return data directly without wrapping
                 self.metrics.record_success((time.time() - start_time) * 1000)
@@ -1302,17 +1302,17 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         service = self._get_technical_service()
 
-        logger.info("🔍 _get_trading_signals called: symbol=%(symbol)s, period=%(period)s"")
+        logger.info("🔍 _get_trading_signals called: symbol=%(symbol)s, period=%(period)s")
 
         # 获取历史数据
         df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
 
-        logger.info("🔍 _get_trading_signals: got df with shape={df.shape}"")
+        logger.info("🔍 _get_trading_signals: got df with shape={df.shape}")
 
         # 生成信号
         result = await asyncio.to_thread(service.generate_trading_signals, df)
 
-        logger.info("🔍 _get_trading_signals: result=%(result)s, type={type(result)}"")
+        logger.info("🔍 _get_trading_signals: result=%(result)s, type={type(result)}")
 
         return result
 
@@ -1355,7 +1355,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 indicators = await self._get_all_indicators(symbol, period)
                 results[symbol] = indicators
             except Exception as e:
-                logger.error("Failed to get indicators for %(symbol)s: %(e)s"")
+                logger.error("Failed to get indicators for %(symbol)s: %(e)s")
                 results[symbol] = {"error": str(e)}
 
         return results
@@ -1462,7 +1462,7 @@ class StrategyDataSourceAdapter(IDataSource):
 
         except Exception as e:
             self.metrics.record_error(time.time() - start_time, str(e))
-            logger.error("Strategy data fetch error: %(e)s"")
+            logger.error("Strategy data fetch error: %(e)s")
             raise
 
     async def _fetch_strategy_data(self, endpoint: str, params: Dict[str, Any]) -> Any:
@@ -1560,7 +1560,7 @@ class StrategyDataSourceAdapter(IDataSource):
             return self._get_mock_strategy_data(endpoint, params)
 
         except Exception as e:
-            logger.error("Strategy service error: %(e)s"")
+            logger.error("Strategy service error: %(e)s")
             # 降级到Mock数据
             if self._get_mock_manager():
                 return self._get_mock_strategy_data(endpoint, params)
@@ -1685,7 +1685,7 @@ class StrategyDataSourceAdapter(IDataSource):
             }
 
         except Exception as e:
-            logger.error("Mock strategy data generation error: %(e)s"")
+            logger.error("Mock strategy data generation error: %(e)s")
             return {"success": False, "error": str(e)}
 
     async def health_check(self) -> HealthStatus:
@@ -1812,7 +1812,7 @@ class WatchlistDataSourceAdapter(IDataSource):
 
         except Exception as e:
             self.metrics.record_error(time.time() - start_time, str(e))
-            logger.error("Watchlist data fetch error: %(e)s"")
+            logger.error("Watchlist data fetch error: %(e)s")
             raise
 
     async def _fetch_watchlist_data(self, endpoint: str, params: Dict[str, Any]) -> Any:
@@ -1936,7 +1936,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             return self._get_mock_watchlist_data(endpoint, params)
 
         except Exception as e:
-            logger.error("Watchlist service error: %(e)s"")
+            logger.error("Watchlist service error: %(e)s")
             # 降级到Mock数据
             if self._get_mock_manager():
                 return self._get_mock_watchlist_data(endpoint, params)
@@ -1953,7 +1953,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             return mock_manager.get_data("watchlist", endpoint=endpoint, **params)
 
         except Exception as e:
-            logger.error("Mock watchlist data fetch failed for %(endpoint)s: {str(e)}"")
+            logger.error("Mock watchlist data fetch failed for %(endpoint)s: {str(e)}")
             return {
                 "success": False,
                 "error": f"Failed to fetch mock watchlist data: {str(e)}",

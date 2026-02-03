@@ -49,7 +49,6 @@ class TestDatabaseTableManager:
         """测试数据库类型枚举"""
         assert DatabaseType.POSTGRESQL.value == "PostgreSQL"
         assert DatabaseType.TDENGINE.value == "TDengine"
-        assert DatabaseType.MYSQL.value == "MySQL"
 
 
 class TestDatabaseManagerQueryOperations:
@@ -143,18 +142,6 @@ class TestDatabaseManagerDDL:
         assert "CREATE STABLE IF NOT EXISTS test_stable" in ddl
         assert "TAGS (symbol BINARY(20))" in ddl
 
-    def test_generate_mysql_ddl(self, db_manager):
-        """测试生成MySQL DDL"""
-        schema = [
-            {"name": "id", "type": "INT", "primary_key": True},
-            {"name": "symbol", "type": "VARCHAR", "length": 20},
-            {"name": "date", "type": "DATE"},
-        ]
-
-        ddl = db_manager._generate_mysql_ddl("test_table", schema)
-        assert "CREATE TABLE IF NOT EXISTS test_table" in ddl
-        assert "symbol VARCHAR(20)" in ddl
-        assert "PRIMARY KEY (id)" in ddl
 
 
 class TestDatabaseManagerUtilities:

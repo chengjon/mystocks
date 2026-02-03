@@ -28,7 +28,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
     Returns:
         回测结果字典
     """
-    logger.info("开始执行回测任务 %(backtest_id)s"")
+    logger.info("开始执行回测任务 %(backtest_id)s")
 
     try:
         # 更新任务状态
@@ -75,7 +75,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
                 try:
                     ws_callback(progress_event.to_dict())
                 except Exception as e:
-                    logger.warning("WebSocket推送失败: %(e)s"")
+                    logger.warning("WebSocket推送失败: %(e)s")
 
         # 创建回测引擎
         engine = BacktestEngine(
@@ -88,7 +88,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
         # 执行回测
         results = engine.run()
 
-        logger.info("回测任务 %(backtest_id)s 完成"")
+        logger.info("回测任务 %(backtest_id)s 完成")
 
         # 更新数据库中的回测结果
         _save_backtest_results(backtest_id, results)
@@ -165,13 +165,13 @@ def _save_backtest_results(backtest_id: int, results: dict):
                 repo.save_trades(backtest_id, trades)
 
             db.commit()
-            logger.info("回测结果已保存: backtest_id=%(backtest_id)s"")
+            logger.info("回测结果已保存: backtest_id=%(backtest_id)s")
 
         finally:
             db.close()
 
     except Exception as e:
-        logger.error("保存回测结果失败: {str(e)}"")
+        logger.error("保存回测结果失败: {str(e)}")
         raise
 
 
@@ -190,4 +190,4 @@ def _update_backtest_status(backtest_id: int, status: str, error_message: str = 
             db.close()
 
     except Exception as e:
-        logger.error("更新回测状态失败: {str(e)}"")
+        logger.error("更新回测状态失败: {str(e)}")

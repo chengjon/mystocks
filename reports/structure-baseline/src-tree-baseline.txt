@@ -1,0 +1,1928 @@
+src/
+├── README.md
+├── __init__.py
+├── __pycache__
+│   ├── __init__.cpython-312.pyc
+│   ├── core.cpython-312.pyc
+│   ├── data_access.cpython-312.pyc
+│   └── unified_manager.cpython-312.pyc
+├── adapters
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── adapter_mixins.cpython-312.pyc
+│   │   ├── akshare_adapter.cpython-312.pyc
+│   │   ├── akshare_proxy_adapter.cpython-312.pyc
+│   │   ├── baostock_adapter.cpython-312.pyc
+│   │   ├── base_adapter.cpython-312.pyc
+│   │   ├── byapi_adapter.cpython-312.pyc
+│   │   ├── customer_adapter.cpython-312.pyc
+│   │   ├── data_source_manager.cpython-312.pyc
+│   │   ├── data_validator.cpython-312.pyc
+│   │   ├── efinance_adapter.cpython-312.pyc
+│   │   ├── financial_adapter.cpython-312.pyc
+│   │   ├── financial_adapter_example.cpython-312.pyc
+│   │   ├── legacy_adapter.cpython-312.pyc
+│   │   ├── new_market_data_adapter.cpython-312.pyc
+│   │   ├── price_data_adapter.cpython-312.pyc
+│   │   ├── sina_finance_adapter.cpython-312.pyc
+│   │   ├── tdx_basic_data_manager.cpython-312.pyc
+│   │   ├── tdx_connection_manager.cpython-312.pyc
+│   │   ├── tdx_data_parser.cpython-312.pyc
+│   │   ├── tdx_integration_client.cpython-312.pyc
+│   │   ├── tdx_kline_fetcher.cpython-312.pyc
+│   │   ├── tdx_realtime_manager.cpython-312.pyc
+│   │   ├── test_customer_adapter.cpython-312.pyc
+│   │   ├── test_financial_adapter.cpython-312.pyc
+│   │   ├── test_simple.cpython-312.pyc
+│   │   ├── tushare_adapter.cpython-312.pyc
+│   │   └── volume_data_processor.cpython-312.pyc
+│   ├── adapter_mixins.py
+│   ├── akshare
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── adapter_base.cpython-312.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── financial_data.cpython-312.pyc
+│   │   │   ├── fund_flow.cpython-312.pyc
+│   │   │   ├── index_daily.cpython-312.pyc
+│   │   │   ├── industry_data.cpython-312.pyc
+│   │   │   ├── legacy_market_data.cpython-312.pyc
+│   │   │   ├── market_data.cpython-312.pyc
+│   │   │   ├── market_data.py.cpython-312.pyc
+│   │   │   ├── market_overview.cpython-312.pyc
+│   │   │   ├── misc_data.cpython-312.pyc
+│   │   │   ├── realtime_data.cpython-312.pyc
+│   │   │   ├── stock_basic.cpython-312.pyc
+│   │   │   ├── stock_daily.cpython-312.pyc
+│   │   │   └── stock_info.cpython-312.pyc
+│   │   ├── adapter_base.py
+│   │   ├── base.py
+│   │   ├── financial_data.py
+│   │   ├── fund_flow.py
+│   │   ├── index_daily.py
+│   │   ├── industry_data.py
+│   │   ├── legacy_market_data.py
+│   │   ├── market_adapter
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── adapter.cpython-312.pyc
+│   │   │   │   ├── board_sector.cpython-312.pyc
+│   │   │   │   ├── forecast_analysis.cpython-312.pyc
+│   │   │   │   ├── fund_flow.cpython-312.pyc
+│   │   │   │   ├── market_overview.cpython-312.pyc
+│   │   │   │   ├── stock_profile.cpython-312.pyc
+│   │   │   │   └── stock_sentiment.cpython-312.pyc
+│   │   │   ├── adapter.py
+│   │   │   ├── board_sector.py
+│   │   │   ├── forecast_analysis.py
+│   │   │   ├── fund_flow.py
+│   │   │   ├── market_overview.py
+│   │   │   ├── stock_profile.py
+│   │   │   └── stock_sentiment.py
+│   │   ├── market_data.py
+│   │   ├── market_data.py.backup
+│   │   ├── market_overview.py
+│   │   ├── misc_data.py
+│   │   ├── modules
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── base.cpython-312.pyc
+│   │   │   │   ├── fund_flow.cpython-312.pyc
+│   │   │   │   └── stock_info.cpython-312.pyc
+│   │   │   ├── base.py
+│   │   │   ├── fund_flow.py
+│   │   │   ├── market_overview
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   │   └── market_overview.cpython-312.pyc
+│   │   │   │   └── market_overview.py
+│   │   │   └── stock_info.py
+│   │   ├── realtime_data.py
+│   │   ├── stock_basic.py
+│   │   ├── stock_daily.py
+│   │   └── stock_info.py
+│   ├── akshare_adapter.py
+│   ├── akshare_adapter.py.backup_1767777516
+│   ├── akshare_modules
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── fund_flow.cpython-312.pyc
+│   │   │   ├── market_overview.cpython-312.pyc
+│   │   │   └── stock_info.cpython-312.pyc
+│   │   ├── base.py
+│   │   ├── fund_flow.py
+│   │   ├── market_overview.py
+│   │   └── stock_info.py
+│   ├── akshare_proxy_adapter.py
+│   ├── baostock
+│   │   ├── __pycache__
+│   │   │   └── baostock_adapter.cpython-312.pyc
+│   │   └── baostock_adapter.py
+│   ├── baostock_adapter.py
+│   ├── base_adapter.py
+│   ├── byapi_adapter.py
+│   ├── customer_adapter.py
+│   ├── data_source_manager.py
+│   ├── data_validator.py
+│   ├── efinance_adapter.py
+│   ├── financial
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── base_financial_adapter.cpython-312.pyc
+│   │   │   ├── financial_data.cpython-312.pyc
+│   │   │   ├── financial_data_source.cpython-312.pyc
+│   │   │   ├── financial_report_adapter.cpython-312.pyc
+│   │   │   ├── index_components.cpython-312.pyc
+│   │   │   ├── index_daily.cpython-312.pyc
+│   │   │   ├── market_calendar.cpython-312.pyc
+│   │   │   ├── news_data.cpython-312.pyc
+│   │   │   ├── realtime_data.cpython-312.pyc
+│   │   │   ├── stock_basic.cpython-312.pyc
+│   │   │   ├── stock_daily.cpython-312.pyc
+│   │   │   └── stock_daily_adapter.cpython-312.pyc
+│   │   ├── base.py
+│   │   ├── base_financial_adapter.py
+│   │   ├── financial_data.py
+│   │   ├── financial_data_source.py
+│   │   ├── financial_report_adapter.py
+│   │   ├── index_components.py
+│   │   ├── index_daily.py
+│   │   ├── market_calendar.py
+│   │   ├── news_data.py
+│   │   ├── realtime_data.py
+│   │   ├── stock_basic.py
+│   │   ├── stock_daily.py
+│   │   └── stock_daily_adapter.py
+│   ├── financial_adapter.py
+│   ├── financial_adapter.py.backup_1767777515
+│   ├── financial_adapter_example.py
+│   ├── legacy_adapter.py
+│   ├── new_market_data_adapter.py
+│   ├── price_data_adapter.py
+│   ├── sina_finance_adapter.py
+│   ├── tdx
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base_tdx_adapter.cpython-312.pyc
+│   │   │   ├── config.cpython-312.pyc
+│   │   │   ├── kline_data_service.cpython-312.pyc
+│   │   │   ├── new_test_tdx.cpython-312.pyc
+│   │   │   ├── realtime_service.cpython-312.pyc
+│   │   │   ├── tdx_adapter.cpython-312.pyc
+│   │   │   ├── tdx_block_reader.cpython-312.pyc
+│   │   │   ├── tdx_connection_manager.cpython-312.pyc
+│   │   │   └── tdx_data_source.cpython-312.pyc
+│   │   ├── base_tdx_adapter.py
+│   │   ├── config.py
+│   │   ├── kline_data_service.py
+│   │   ├── new_test_tdx.py
+│   │   ├── realtime_service.py
+│   │   ├── tdx_adapter.py
+│   │   ├── tdx_block_reader.py
+│   │   ├── tdx_connection_manager.py
+│   │   └── tdx_data_source.py
+│   ├── tdx_basic_data_manager.py
+│   ├── tdx_connection_manager.py
+│   ├── tdx_data_parser.py
+│   ├── tdx_integration_client.py
+│   ├── tdx_kline_fetcher.py
+│   ├── tdx_realtime_manager.py
+│   ├── test_customer_adapter.py
+│   ├── test_financial_adapter.py
+│   ├── test_simple.py
+│   ├── tushare_adapter.py
+│   ├── volume_data_processor.py
+│   └── webdata
+│       ├── __pycache__
+│       │   └── webdata_adapter.cpython-312.pyc
+│       └── webdata_adapter.py
+├── advanced_analysis
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── anomaly_tracking_analyzer.cpython-312.pyc
+│   │   ├── capital_flow_analyzer.cpython-312.pyc
+│   │   ├── chip_distribution_analyzer.cpython-312.pyc
+│   │   ├── decision_models_analyzer.cpython-312.pyc
+│   │   ├── financial_valuation_analyzer.cpython-312.pyc
+│   │   ├── fundamental_analyzer.cpython-312.pyc
+│   │   ├── market_panorama_analyzer.cpython-312.pyc
+│   │   ├── multidimensional_radar.cpython-312.pyc
+│   │   ├── sentiment_analyzer.cpython-312.pyc
+│   │   ├── technical_analyzer.cpython-312.pyc
+│   │   ├── timeseries_analyzer.cpython-312.pyc
+│   │   └── trading_signals_analyzer.cpython-312.pyc
+│   ├── anomaly_tracking_analyzer.py
+│   ├── capital_flow_analyzer.py
+│   ├── chip_distribution_analyzer.py
+│   ├── decision_models
+│   │   ├── __pycache__
+│   │   │   └── decision_models_analyzer_new.cpython-312.pyc
+│   │   ├── base
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── analysis_result.cpython-312.pyc
+│   │   │   │   └── model_scores.cpython-312.pyc
+│   │   │   ├── analysis_result.py
+│   │   │   └── model_scores.py
+│   │   ├── decision_models_analyzer_new.py
+│   │   ├── main
+│   │   │   ├── __pycache__
+│   │   │   │   ├── analyzer_core.cpython-312.pyc
+│   │   │   │   └── data_manager.cpython-312.pyc
+│   │   │   ├── analyzer_core.py
+│   │   │   └── data_manager.py
+│   │   └── models
+│   │       ├── __pycache__
+│   │       │   ├── buffett_analyzer.cpython-312.pyc
+│   │       │   ├── canslim_analyzer.cpython-312.pyc
+│   │       │   ├── fisher_analyzer.cpython-312.pyc
+│   │       │   └── model_synthesis.cpython-312.pyc
+│   │       ├── buffett_analyzer.py
+│   │       ├── canslim_analyzer.py
+│   │       ├── fisher_analyzer.py
+│   │       └── model_synthesis.py
+│   ├── decision_models_analyzer.py
+│   ├── decision_models_analyzer.py.backup.20260130
+│   ├── financial_valuation_analyzer.py
+│   ├── fundamental_analyzer.py
+│   ├── market_panorama_analyzer.py
+│   ├── multidimensional_radar.py
+│   ├── sentiment_analyzer.py
+│   ├── technical_analyzer.py
+│   ├── timeseries_analyzer.py
+│   └── trading_signals_analyzer.py
+├── algorithms
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── base.cpython-312.pyc
+│   │   ├── config.cpython-312.pyc
+│   │   ├── metadata.cpython-312.pyc
+│   │   ├── results.cpython-312.pyc
+│   │   └── types.cpython-312.pyc
+│   ├── base.py
+│   ├── bayesian
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── bayesian_network_algorithm.cpython-312.pyc
+│   │   └── bayesian_network_algorithm.py
+│   ├── classification
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── decision_tree_algorithm.cpython-312.pyc
+│   │   │   ├── naive_bayes_algorithm.cpython-312.pyc
+│   │   │   └── svm_algorithm.cpython-312.pyc
+│   │   ├── decision_tree_algorithm.py
+│   │   ├── naive_bayes_algorithm.py
+│   │   └── svm_algorithm.py
+│   ├── config.py
+│   ├── markov
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── hmm_algorithm.cpython-312.pyc
+│   │   └── hmm_algorithm.py
+│   ├── metadata.py
+│   ├── neural
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── neural_network_algorithm.cpython-312.pyc
+│   │   └── neural_network_algorithm.py
+│   ├── ngram
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── ngram_algorithm.cpython-312.pyc
+│   │   └── ngram_algorithm.py
+│   ├── pattern_matching
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── ac_algorithm.cpython-312.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── bmh_algorithm.cpython-312.pyc
+│   │   │   ├── brute_force_algorithm.cpython-312.pyc
+│   │   │   └── kmp_algorithm.cpython-312.pyc
+│   │   ├── ac_algorithm.py
+│   │   ├── base.py
+│   │   ├── base.py.backup
+│   │   ├── bmh_algorithm.py
+│   │   ├── brute_force_algorithm.py
+│   │   └── kmp_algorithm.py
+│   ├── results.py
+│   └── types.py
+├── alternative_data
+│   ├── __pycache__
+│   │   └── news_sentiment_analyzer.cpython-312.pyc
+│   └── news_sentiment_analyzer.py
+├── api
+│   ├── __pycache__
+│   │   └── alert_history_routes.cpython-312.pyc
+│   ├── alert_history_routes.py
+│   ├── datasource
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── routes.cpython-312.pyc
+│   │   └── routes.py
+│   └── governance
+│       ├── __init__.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-312.pyc
+│       │   └── routes.cpython-312.pyc
+│       └── routes.py
+├── application
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   └── bootstrap.cpython-312.pyc
+│   ├── bootstrap.py
+│   ├── dto
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── strategy_dto.cpython-312.pyc
+│   │   │   └── trading_dto.cpython-312.pyc
+│   │   ├── strategy_dto.py
+│   │   └── trading_dto.py
+│   ├── market_data
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── price_stream_processor.cpython-312.pyc
+│   │   │   └── price_stream_processor_cached.cpython-312.pyc
+│   │   ├── price_stream_processor.py
+│   │   └── price_stream_processor_cached.py
+│   ├── portfolio
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── portfolio_app_service.cpython-312.pyc
+│   │   ├── model
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   └── portfolio.cpython-312.pyc
+│   │   │   └── portfolio.py
+│   │   ├── portfolio_app_service.py
+│   │   └── repository
+│   │       ├── __init__.py
+│   │       └── __pycache__
+│   │           └── __init__.cpython-312.pyc
+│   ├── strategy
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── backtest_service.cpython-312.pyc
+│   │   └── backtest_service.py
+│   ├── trading
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── order_mgmt_service.cpython-312.pyc
+│   │   └── order_mgmt_service.py
+│   └── watchlist
+│       ├── __pycache__
+│       │   └── watchlist_app_service.cpython-312.pyc
+│       └── watchlist_app_service.py
+├── backtesting
+│   ├── __pycache__
+│   │   └── advanced_backtest_engine.cpython-312.pyc
+│   └── advanced_backtest_engine.py
+├── backup_recovery
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── backup_manager.cpython-312.pyc
+│   │   ├── backup_scheduler.cpython-312.pyc
+│   │   ├── integrity_checker.cpython-312.pyc
+│   │   └── recovery_manager.cpython-312.pyc
+│   ├── backup_manager.py
+│   ├── backup_scheduler.py
+│   ├── integrity_checker.py
+│   └── recovery_manager.py
+├── components
+│   └── navigation
+│       └── DynamicSidebar.vue
+├── contract_testing
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── api_consistency_checker.cpython-312.pyc
+│   │   ├── contract_engine.cpython-312.pyc
+│   │   ├── report_generator.cpython-312.pyc
+│   │   ├── spec_validator.cpython-312.pyc
+│   │   ├── test_hooks.cpython-312-pytest-9.0.2.pyc
+│   │   └── test_hooks.cpython-312.pyc
+│   ├── api_consistency_checker.py
+│   ├── contract_engine.py
+│   ├── report_generator.py
+│   ├── spec_validator.py
+│   └── test_hooks.py
+├── core
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── batch_failure_strategy.cpython-312.pyc
+│   │   ├── config.cpython-312.pyc
+│   │   ├── config_driven_table_manager.cpython-312.pyc
+│   │   ├── config_loader.cpython-312.pyc
+│   │   ├── connection_pool_config.cpython-312.pyc
+│   │   ├── data_classification.cpython-312.pyc
+│   │   ├── data_manager.cpython-312.pyc
+│   │   ├── data_quality_validator.cpython-312.pyc
+│   │   ├── data_source_handlers_v2.cpython-312.pyc
+│   │   ├── data_source_manager_v2.cpython-312.pyc
+│   │   ├── data_storage_strategy.cpython-312.pyc
+│   │   ├── data_validator.cpython-312.pyc
+│   │   ├── database.cpython-312.pyc
+│   │   ├── database_metrics.cpython-312.pyc
+│   │   ├── database_pool.cpython-312.pyc
+│   │   ├── error_handling.cpython-312.pyc
+│   │   ├── exceptions.cpython-312.pyc
+│   │   ├── logging.cpython-312.pyc
+│   │   ├── memory_manager.cpython-312.pyc
+│   │   ├── monitoring.cpython-312.pyc
+│   │   ├── simple_calculator.cpython-312.pyc
+│   │   └── unified_manager.cpython-312.pyc
+│   ├── batch_failure_strategy.py
+│   ├── cache
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── decorators.cpython-312.pyc
+│   │   │   └── multi_level.cpython-312.pyc
+│   │   ├── decorators.py
+│   │   └── multi_level.py
+│   ├── config.py
+│   ├── config_driven_table_manager.py
+│   ├── config_driven_table_manager.py.backup_20251108
+│   ├── config_loader.py
+│   ├── connection_pool_config.py
+│   ├── data_classification.py
+│   ├── data_manager.py
+│   ├── data_quality_validator.py
+│   ├── data_source
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   ├── batch_processor.cpython-312.pyc
+│   │   │   ├── cache.cpython-312.pyc
+│   │   │   ├── circuit_breaker.cpython-312.pyc
+│   │   │   ├── config_manager.cpython-312.pyc
+│   │   │   ├── data_quality_validator.cpython-312.pyc
+│   │   │   ├── handler.cpython-312.pyc
+│   │   │   ├── health_check.cpython-312.pyc
+│   │   │   ├── lineage_integration.cpython-312.pyc
+│   │   │   ├── metrics.cpython-312.pyc
+│   │   │   ├── monitoring.cpython-312.pyc
+│   │   │   ├── registry.cpython-312.pyc
+│   │   │   ├── router.cpython-312.pyc
+│   │   │   ├── smart_cache.cpython-312.pyc
+│   │   │   ├── smart_router.cpython-312.pyc
+│   │   │   └── validation.cpython-312.pyc
+│   │   ├── base.py
+│   │   ├── batch_processor.py
+│   │   ├── cache.py
+│   │   ├── circuit_breaker.py
+│   │   ├── config_manager.py
+│   │   ├── data_quality_validator.py
+│   │   ├── handler.py
+│   │   ├── health_check.py
+│   │   ├── lineage_integration.py
+│   │   ├── metrics.py
+│   │   ├── monitoring.py
+│   │   ├── registry.py
+│   │   ├── router.py
+│   │   ├── smart_cache.py
+│   │   ├── smart_router.py
+│   │   └── validation.py
+│   ├── data_source_handlers_v2.py
+│   ├── data_source_manager_v2.py
+│   ├── data_source_manager_v2.py.backup_1767777516
+│   ├── data_storage_strategy.py
+│   ├── data_validator.py
+│   ├── database.py
+│   ├── database_metrics.py
+│   ├── database_pool.py
+│   ├── datasource
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── health.cpython-312.pyc
+│   │   │   ├── loadbalancer.cpython-312.pyc
+│   │   │   └── registry.cpython-312.pyc
+│   │   ├── health.py
+│   │   ├── loadbalancer.py
+│   │   └── registry.py
+│   ├── error_handling.py
+│   ├── exceptions
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── exceptions.py
+│   ├── infrastructure
+│   │   ├── __pycache__
+│   │   │   ├── adapter_registry.cpython-312.pyc
+│   │   │   ├── data_router.cpython-312.pyc
+│   │   │   └── event_bus.cpython-312.pyc
+│   │   ├── adapter_registry.py
+│   │   ├── data_router.py
+│   │   └── event_bus.py
+│   ├── logging
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── structured.cpython-312.pyc
+│   │   │   └── tracing.cpython-312.pyc
+│   │   ├── structured.py
+│   │   └── tracing.py
+│   ├── logging.py
+│   ├── memory_manager.py
+│   ├── middleware
+│   │   ├── __pycache__
+│   │   │   └── performance.cpython-312.pyc
+│   │   └── performance.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── monitoring.py
+│   ├── patterns
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── security
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── services
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── simple_calculator.py
+│   ├── transaction
+│   │   ├── __pycache__
+│   │   │   └── saga_coordinator.cpython-312.pyc
+│   │   └── saga_coordinator.py
+│   └── unified_manager.py
+├── core.py
+├── cron
+│   ├── __pycache__
+│   │   └── transaction_cleaner.cpython-312.pyc
+│   └── transaction_cleaner.py
+├── data_access
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── factory.cpython-312.pyc
+│   │   ├── interfaces.cpython-312.pyc
+│   │   ├── postgresql_access.cpython-312.pyc
+│   │   ├── sql_injection_fix_helper.cpython-312.pyc
+│   │   ├── tdengine_access.cpython-312.pyc
+│   │   └── unified_data_access_manager.cpython-312.pyc
+│   ├── capabilities
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── database_detector.cpython-312.pyc
+│   │   └── database_detector.py
+│   ├── factory.py
+│   ├── interfaces
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── i_data_access.cpython-312.pyc
+│   │   └── i_data_access.py
+│   ├── interfaces.py
+│   ├── optimizers
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── query_optimizer.cpython-312.pyc
+│   │   └── query_optimizer.py
+│   ├── postgresql_access.py
+│   ├── routers
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── query_router.cpython-312.pyc
+│   │   └── query_router.py
+│   ├── sql_injection_fix_helper.py
+│   ├── tdengine_access.py
+│   └── unified_data_access_manager.py
+├── data_access.py
+├── data_access.py.backup
+├── data_governance
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── asset.cpython-312.pyc
+│   │   ├── lineage.cpython-312.pyc
+│   │   └── quality.cpython-312.pyc
+│   ├── asset.py
+│   ├── lineage.py
+│   └── quality.py
+├── data_sources
+│   ├── README_TDX.md
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── baostock_importer.cpython-312.pyc
+│   │   ├── factory.cpython-312.pyc
+│   │   ├── mock_data_source.cpython-312.pyc
+│   │   ├── real_data_source.cpython-312.pyc
+│   │   ├── tdx_binary_parser.cpython-312.pyc
+│   │   └── tdx_importer.cpython-312.pyc
+│   ├── baostock_importer.py
+│   ├── factory.py
+│   ├── mock
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── business_mock.cpython-312.pyc
+│   │   │   ├── relational_mock.cpython-312.pyc
+│   │   │   └── timeseries_mock.cpython-312.pyc
+│   │   ├── business_mock.py
+│   │   ├── relational_mock.py
+│   │   └── timeseries_mock.py
+│   ├── mock_data_source.py
+│   ├── real
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── business_mappers.cpython-312.pyc
+│   │   │   ├── composite_business.cpython-312.pyc
+│   │   │   ├── connection_adapter.cpython-312.pyc
+│   │   │   ├── connection_pool.cpython-312.pyc
+│   │   │   ├── data_mapper.cpython-312.pyc
+│   │   │   ├── enhanced_postgresql_relational.cpython-312.pyc
+│   │   │   ├── postgresql_relational.cpython-312.pyc
+│   │   │   ├── query_builder.cpython-312.pyc
+│   │   │   └── tdengine_timeseries.cpython-312.pyc
+│   │   ├── business_mappers.py
+│   │   ├── composite_business.py
+│   │   ├── connection_adapter.py
+│   │   ├── connection_pool.py
+│   │   ├── data_mapper.py
+│   │   ├── enhanced_postgresql_relational.py
+│   │   ├── postgresql_relational.py
+│   │   ├── query_builder.py
+│   │   └── tdengine_timeseries.py
+│   ├── real_data_source.py
+│   ├── tdx
+│   │   ├── __pycache__
+│   │   │   ├── read_tdx_block.cpython-312.pyc
+│   │   │   └── read_tdx_day_file.cpython-312.pyc
+│   │   ├── block_file
+│   │   │   ├── block_fg.dat.csv
+│   │   │   ├── block_gn.dat.csv
+│   │   │   ├── block_hy.dat.csv
+│   │   │   └── block_zs.dat.csv
+│   │   ├── read_tdx_block.py
+│   │   ├── read_tdx_day_file.py
+│   │   └── tdx_file.md
+│   ├── tdx_binary_parser.py
+│   └── tdx_importer.py
+├── database
+│   ├── __pycache__
+│   │   ├── connection_manager.cpython-312.pyc
+│   │   ├── database_service.cpython-312.pyc
+│   │   ├── database_service_new.cpython-312.pyc
+│   │   ├── indicator_calculator.cpython-312.pyc
+│   │   ├── mock_data_storage.cpython-312.pyc
+│   │   ├── monitoring_data_manager.cpython-312.pyc
+│   │   ├── query_executor.cpython-312.pyc
+│   │   └── stocks_db_service.cpython-312.pyc
+│   ├── connection_manager.py
+│   ├── database_service.py
+│   ├── database_service.py.backup.20260130
+│   ├── database_service_new.py
+│   ├── indicator_calculator.py
+│   ├── mock_data_storage.py
+│   ├── monitoring_data_manager.py
+│   ├── query_executor.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base_database_service.cpython-312.pyc
+│   │   │   ├── connection_service.cpython-312.pyc
+│   │   │   ├── database_service.cpython-312.pyc
+│   │   │   ├── migration_service.cpython-312.pyc
+│   │   │   ├── query_service.cpython-312.pyc
+│   │   │   ├── stock_data_service.cpython-312.pyc
+│   │   │   ├── technical_indicators_service.cpython-312.pyc
+│   │   │   └── transaction_service.cpython-312.pyc
+│   │   ├── base_database_service.py
+│   │   ├── connection_service.py
+│   │   ├── database_service.py
+│   │   ├── migration_service.py
+│   │   ├── query_service.py
+│   │   ├── stock_data_service.py
+│   │   ├── technical_indicators_service.py
+│   │   └── transaction_service.py
+│   └── stocks_db_service.py
+├── database_optimization
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── performance_monitor.cpython-312.pyc
+│   │   ├── postgresql_index_optimizer.cpython-312.pyc
+│   │   ├── slow_query_analyzer.cpython-312.pyc
+│   │   └── tdengine_index_optimizer.cpython-312.pyc
+│   ├── performance_monitor.py
+│   ├── postgresql_index_optimizer.py
+│   ├── slow_query_analyzer.py
+│   └── tdengine_index_optimizer.py
+├── db_manager
+│   ├── __init__.py
+│   └── __pycache__
+│       └── __init__.cpython-312.pyc
+├── domain
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── __init__.cpython-312.pyc
+│   ├── market_data
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-312.pyc
+│   │   ├── model
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   └── bar.cpython-312.pyc
+│   │   │   └── bar.py
+│   │   ├── repository
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── imarket_data_repository.cpython-312.pyc
+│   │   │   │   └── market_data_repository.cpython-312.pyc
+│   │   │   ├── imarket_data_repository.py
+│   │   │   └── market_data_repository.py
+│   │   ├── streaming
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── iprice_stream_adapter.cpython-312.pyc
+│   │   │   │   └── price_changed_event.cpython-312.pyc
+│   │   │   ├── iprice_stream_adapter.py
+│   │   │   └── price_changed_event.py
+│   │   └── value_objects
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   ├── bar.cpython-312.pyc
+│   │       │   ├── market_data.cpython-312.pyc
+│   │       │   ├── quote.cpython-312.pyc
+│   │       │   └── tick.cpython-312.pyc
+│   │       ├── bar.py
+│   │       ├── market_data.py
+│   │       ├── quote.py
+│   │       └── tick.py
+│   ├── portfolio
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-312.pyc
+│   │   ├── model
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── portfolio.cpython-312.pyc
+│   │   │   │   └── transaction.cpython-312.pyc
+│   │   │   ├── portfolio.py
+│   │   │   └── transaction.py
+│   │   ├── repository
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── iportfolio_repository.cpython-312.pyc
+│   │   │   │   └── repository.cpython-312.pyc
+│   │   │   ├── iportfolio_repository.py
+│   │   │   └── repository.py
+│   │   ├── service
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── portfolio_valuation_service.cpython-312.pyc
+│   │   │   │   ├── portfolio_valuation_service_optimized.cpython-312.pyc
+│   │   │   │   ├── rebalancer.cpython-312.pyc
+│   │   │   │   └── rebalancer_service.cpython-312.pyc
+│   │   │   ├── portfolio_valuation_service.py
+│   │   │   ├── portfolio_valuation_service_optimized.py
+│   │   │   ├── rebalancer.py
+│   │   │   └── rebalancer_service.py
+│   │   └── value_objects
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   └── performance_metrics.cpython-312.pyc
+│   │       └── performance_metrics.py
+│   ├── prediction
+│   │   ├── __pycache__
+│   │   │   └── prediction_service.cpython-312.pyc
+│   │   └── prediction_service.py
+│   ├── shared
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── domain_events.cpython-312.pyc
+│   │   │   ├── event.cpython-312.pyc
+│   │   │   └── event_bus.cpython-312.pyc
+│   │   ├── domain_events.py
+│   │   ├── event.py
+│   │   └── event_bus.py
+│   ├── strategy
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-312.pyc
+│   │   ├── model
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── parameter.cpython-312.pyc
+│   │   │   │   ├── rule.cpython-312.pyc
+│   │   │   │   ├── signal.cpython-312.pyc
+│   │   │   │   └── strategy.cpython-312.pyc
+│   │   │   ├── parameter.py
+│   │   │   ├── rule.py
+│   │   │   ├── signal.py
+│   │   │   └── strategy.py
+│   │   ├── repository
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   └── istrategy_repository.cpython-312.pyc
+│   │   │   └── istrategy_repository.py
+│   │   ├── service
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── indicator_calculator.cpython-312.pyc
+│   │   │   │   └── signal_generation_service.cpython-312.pyc
+│   │   │   ├── indicator_calculator.py
+│   │   │   └── signal_generation_service.py
+│   │   └── value_objects
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   ├── indicator_config.cpython-312.pyc
+│   │       │   ├── instrument_pool.cpython-312.pyc
+│   │       │   ├── signal_definition.cpython-312.pyc
+│   │       │   └── strategy_id.cpython-312.pyc
+│   │       ├── indicator_config.py
+│   │       ├── instrument_pool.py
+│   │       ├── signal_definition.py
+│   │       └── strategy_id.py
+│   ├── trading
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── events.cpython-312.pyc
+│   │   ├── events.py
+│   │   ├── model
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── order.cpython-312.pyc
+│   │   │   │   ├── order_status.cpython-312.pyc
+│   │   │   │   └── position.cpython-312.pyc
+│   │   │   ├── order.py
+│   │   │   ├── order_status.py
+│   │   │   └── position.py
+│   │   ├── repository
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── iorder_repository.cpython-312.pyc
+│   │   │   │   └── iposition_repository.cpython-312.pyc
+│   │   │   ├── iorder_repository.py
+│   │   │   └── iposition_repository.py
+│   │   └── value_objects
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   ├── order_side.cpython-312.pyc
+│   │       │   └── order_type.cpython-312.pyc
+│   │       ├── order_side.py
+│   │       └── order_type.py
+│   └── watchlist
+│       ├── model
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── watchlist.cpython-312.pyc
+│       │   │   └── watchlist_stock.cpython-312.pyc
+│       │   ├── watchlist.py
+│       │   └── watchlist_stock.py
+│       ├── repository
+│       │   ├── __init__.py
+│       │   └── __pycache__
+│       │       └── __init__.cpython-312.pyc
+│       ├── service
+│       │   ├── __init__.py
+│       │   ├── __pycache__
+│       │   │   ├── __init__.cpython-312.pyc
+│       │   │   ├── snapshot_service.cpython-312.pyc
+│       │   │   └── watchlist_service.cpython-312.pyc
+│       │   ├── snapshot_service.py
+│       │   └── watchlist_service.py
+│       └── value_objects
+│           ├── __init__.py
+│           └── __pycache__
+│               └── __init__.cpython-312.pyc
+├── factories
+│   ├── __pycache__
+│   │   └── data_source_factory.cpython-312.pyc
+│   └── data_source_factory.py
+├── governance
+│   ├── core
+│   │   ├── __pycache__
+│   │   │   └── fetcher_bridge.cpython-312.pyc
+│   │   └── fetcher_bridge.py
+│   ├── engine
+│   │   ├── __pycache__
+│   │   │   ├── base.cpython-312.pyc
+│   │   │   └── gpu_validator.cpython-312.pyc
+│   │   ├── base.py
+│   │   └── gpu_validator.py
+│   ├── risk_management
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-312.pyc
+│   │   ├── calculators
+│   │   │   ├── __pycache__
+│   │   │   │   └── gpu_calculator.cpython-312.pyc
+│   │   │   └── gpu_calculator.py
+│   │   ├── core
+│   │   │   ├── __init__.py
+│   │   │   └── __pycache__
+│   │   │       └── __init__.cpython-312.pyc
+│   │   └── services
+│   │       ├── __pycache__
+│   │       │   ├── alert_rule_engine.cpython-312.pyc
+│   │       │   ├── alert_service.cpython-312.pyc
+│   │       │   ├── risk_alert_notification_manager.cpython-312.pyc
+│   │       │   ├── stop_loss_engine.cpython-312.pyc
+│   │       │   ├── stop_loss_execution_service.cpython-312.pyc
+│   │       │   └── stop_loss_history_service.cpython-312.pyc
+│   │       ├── alert_rule_engine.py
+│   │       ├── alert_service.py
+│   │       ├── risk_alert_notification_manager.py
+│   │       ├── stop_loss_engine.py
+│   │       ├── stop_loss_execution_service.py
+│   │       └── stop_loss_history_service.py
+│   └── tests
+│       ├── __pycache__
+│       │   ├── test_fetcher_bridge.cpython-312.pyc
+│       │   └── test_gpu_validator.cpython-312.pyc
+│       ├── test_fetcher_bridge.py
+│       └── test_gpu_validator.py
+├── gpu
+│   ├── __pycache__
+│   │   ├── data_processing_interfaces.cpython-312.pyc
+│   │   └── data_processor_factory.cpython-312.pyc
+│   ├── accelerated
+│   │   ├── __pycache__
+│   │   │   ├── cpu_data_processor.cpython-312.pyc
+│   │   │   ├── cpu_fallback.cpython-312.pyc
+│   │   │   ├── data_processor_gpu.cpython-312.pyc
+│   │   │   ├── data_processor_gpu_fixed.cpython-312.pyc
+│   │   │   ├── feature_generator_gpu.cpython-312.pyc
+│   │   │   ├── gpu_manager.cpython-312.pyc
+│   │   │   ├── integration_interface.cpython-312.pyc
+│   │   │   ├── memory_management_fix.cpython-312.pyc
+│   │   │   ├── performance_benchmark.cpython-312.pyc
+│   │   │   ├── price_predictor_gpu.cpython-312.pyc
+│   │   │   └── real_time_performance_monitor.cpython-312.pyc
+│   │   ├── cpu_data_processor.py
+│   │   ├── cpu_fallback.py
+│   │   ├── data_processor_gpu.py
+│   │   ├── data_processor_gpu_fixed.py
+│   │   ├── feature_generator_gpu.py
+│   │   ├── gpu_manager.py
+│   │   ├── integration_interface.py
+│   │   ├── memory_management_fix.py
+│   │   ├── performance_benchmark.py
+│   │   ├── price_predictor_gpu.py
+│   │   └── real_time_performance_monitor.py
+│   ├── acceleration
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── backtest_engine_gpu.cpython-312.pyc
+│   │   │   ├── feature_calculation_gpu.cpython-312.pyc
+│   │   │   ├── gpu_acceleration_engine.cpython-312.pyc
+│   │   │   ├── ml_training_gpu.cpython-312.pyc
+│   │   │   └── optimization_gpu.cpython-312.pyc
+│   │   ├── backtest_engine_gpu.py
+│   │   ├── feature_calculation_gpu.py
+│   │   ├── ml_training_gpu.py
+│   │   └── optimization_gpu.py
+│   ├── api_system
+│   │   ├── CACHE_OPTIMIZATION_GUIDE.md
+│   │   ├── INDEX.md
+│   │   ├── PHASE4_DELIVERABLES.md
+│   │   ├── PROJECT_COMPLETION_REPORT.md
+│   │   ├── PROJECT_SUMMARY.md
+│   │   ├── PROJECT_VERIFICATION.md
+│   │   ├── README.md
+│   │   ├── TESTING_QUICK_START.md
+│   │   ├── WSL2_GPU_COMPLETION.md
+│   │   ├── WSL2_GPU_SETUP.md
+│   │   ├── WSL2_GPU_SUMMARY.md
+│   │   ├── __pycache__
+│   │   │   ├── generate_test_report.cpython-312.pyc
+│   │   │   ├── main_server.cpython-312.pyc
+│   │   │   └── wsl2_gpu_init.cpython-312.pyc
+│   │   ├── api_proto
+│   │   │   ├── __pycache__
+│   │   │   │   ├── backtest_pb2.cpython-312.pyc
+│   │   │   │   ├── backtest_pb2_grpc.cpython-312.pyc
+│   │   │   │   ├── ml_pb2.cpython-312.pyc
+│   │   │   │   ├── ml_pb2_grpc.cpython-312.pyc
+│   │   │   │   ├── realtime_pb2.cpython-312.pyc
+│   │   │   │   └── realtime_pb2_grpc.cpython-312.pyc
+│   │   │   ├── backtest.proto
+│   │   │   ├── backtest_pb2.py
+│   │   │   ├── backtest_pb2_grpc.py
+│   │   │   ├── ml_pb2.py
+│   │   │   ├── ml_pb2_grpc.py
+│   │   │   ├── realtime.proto
+│   │   │   ├── realtime_pb2.py
+│   │   │   └── realtime_pb2_grpc.py
+│   │   ├── config
+│   │   │   ├── __pycache__
+│   │   │   │   └── system_config.cpython-312.pyc
+│   │   │   ├── gpu_config.yaml
+│   │   │   └── system_config.py
+│   │   ├── coverage.xml
+│   │   ├── deployment
+│   │   │   ├── Dockerfile
+│   │   │   ├── docker-compose.yml
+│   │   │   ├── entrypoint.sh
+│   │   │   └── setup_environment.sh
+│   │   ├── docs
+│   │   │   └── web-dev
+│   │   │       └── GUIDE.md
+│   │   ├── generate_test_report.py
+│   │   ├── htmlcov
+│   │   │   ├── class_index.html
+│   │   │   ├── coverage_html_cb_6fb7b396.js
+│   │   │   ├── favicon_32_cb_58284776.png
+│   │   │   ├── function_index.html
+│   │   │   ├── index.html
+│   │   │   ├── keybd_closed_cb_ce680311.png
+│   │   │   ├── status.json
+│   │   │   ├── style_cb_6b508a39.css
+│   │   │   ├── z_c810615cce0f7acb_cache_optimization_enhanced_py.html
+│   │   │   ├── z_c810615cce0f7acb_cache_optimization_py.html
+│   │   │   ├── z_c810615cce0f7acb_gpu_acceleration_engine_py.html
+│   │   │   ├── z_c810615cce0f7acb_gpu_utils_py.html
+│   │   │   ├── z_c810615cce0f7acb_monitoring_py.html
+│   │   │   ├── z_c810615cce0f7acb_redis_utils_py.html
+│   │   │   ├── z_de3833460954761d_backtest_service_py.html
+│   │   │   ├── z_de3833460954761d_gpu_api_server_py.html
+│   │   │   ├── z_de3833460954761d_integrated_backtest_service_py.html
+│   │   │   ├── z_de3833460954761d_integrated_ml_service_py.html
+│   │   │   ├── z_de3833460954761d_integrated_realtime_service_py.html
+│   │   │   ├── z_de3833460954761d_realtime_service_py.html
+│   │   │   └── z_de3833460954761d_resource_scheduler_py.html
+│   │   ├── main_server.py
+│   │   ├── monitoring
+│   │   │   ├── api_service_alert_rules.yml
+│   │   │   ├── gpu_alert_rules.yml
+│   │   │   └── prometheus.yml
+│   │   ├── pytest.ini
+│   │   ├── run_tests.sh
+│   │   ├── services
+│   │   │   ├── __pycache__
+│   │   │   │   ├── backtest_service.cpython-312.pyc
+│   │   │   │   ├── gpu_api_server.cpython-312.pyc
+│   │   │   │   ├── integrated_backtest_service.cpython-312.pyc
+│   │   │   │   ├── integrated_ml_service.cpython-312.pyc
+│   │   │   │   ├── integrated_realtime_service.cpython-312.pyc
+│   │   │   │   ├── realtime_service.cpython-312.pyc
+│   │   │   │   └── resource_scheduler.cpython-312.pyc
+│   │   │   ├── backtest_service.py
+│   │   │   ├── gpu_api_server.py
+│   │   │   ├── integrated_backtest_service.py
+│   │   │   ├── integrated_ml_service.py
+│   │   │   ├── integrated_realtime_service.py
+│   │   │   ├── realtime_service.py
+│   │   │   └── resource_scheduler.py
+│   │   ├── test_timing.csv
+│   │   ├── tests
+│   │   │   ├── README.md
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── conftest.cpython-312.pyc
+│   │   │   │   └── test_real_gpu.cpython-312.pyc
+│   │   │   ├── conftest.py
+│   │   │   ├── integration
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   └── test_end_to_end.cpython-312.pyc
+│   │   │   │   └── test_end_to_end.py
+│   │   │   ├── performance
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   └── test_performance.cpython-312.pyc
+│   │   │   │   └── test_performance.py
+│   │   │   ├── test_real_gpu.py
+│   │   │   └── unit
+│   │   │       ├── test_cache
+│   │   │       │   ├── __pycache__
+│   │   │       │   │   ├── test_cache_optimization.cpython-312.pyc
+│   │   │       │   │   └── test_cache_optimization_enhanced.cpython-312.pyc
+│   │   │       │   ├── test_cache_optimization.py
+│   │   │       │   └── test_cache_optimization_enhanced.py
+│   │   │       ├── test_gpu
+│   │   │       │   ├── __pycache__
+│   │   │       │   │   └── test_acceleration_engine.cpython-312.pyc
+│   │   │       │   └── test_acceleration_engine.py
+│   │   │       ├── test_services
+│   │   │       │   ├── __pycache__
+│   │   │       │   │   └── test_integrated_services.cpython-312.pyc
+│   │   │       │   └── test_integrated_services.py
+│   │   │       └── test_utils
+│   │   │           ├── __pycache__
+│   │   │           │   └── test_gpu_resource_manager.cpython-312.pyc
+│   │   │           └── test_gpu_resource_manager.py
+│   │   ├── utils
+│   │   │   ├── __pycache__
+│   │   │   │   ├── cache_optimization.cpython-312.pyc
+│   │   │   │   ├── cache_optimization_enhanced.cpython-312.pyc
+│   │   │   │   ├── gpu_acceleration_engine.cpython-312.pyc
+│   │   │   │   ├── gpu_utils.cpython-312.pyc
+│   │   │   │   ├── monitoring.cpython-312.pyc
+│   │   │   │   └── redis_utils.cpython-312.pyc
+│   │   │   ├── cache_optimization.py
+│   │   │   ├── cache_optimization_enhanced.py
+│   │   │   ├── gpu_acceleration_engine.py
+│   │   │   ├── gpu_utils.py
+│   │   │   ├── monitoring.py
+│   │   │   └── redis_utils.py
+│   │   └── wsl2_gpu_init.py
+│   ├── core
+│   │   ├── hardware_abstraction
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── health_monitor.cpython-312.pyc
+│   │   │   │   ├── interfaces.cpython-312.pyc
+│   │   │   │   ├── memory_pool.cpython-312.pyc
+│   │   │   │   ├── realtime_path.cpython-312.pyc
+│   │   │   │   ├── resource_manager.cpython-312.pyc
+│   │   │   │   └── strategy_context.cpython-312.pyc
+│   │   │   ├── health_monitor.py
+│   │   │   ├── interfaces.py
+│   │   │   ├── memory_pool.py
+│   │   │   ├── realtime_path.py
+│   │   │   ├── resource_manager.py
+│   │   │   └── strategy_context.py
+│   │   └── kernels
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   ├── inference_kernels.cpython-312.pyc
+│   │       │   ├── kernel_executor.cpython-312.pyc
+│   │       │   ├── kernel_registry.cpython-312.pyc
+│   │       │   ├── matrix_kernels.cpython-312.pyc
+│   │       │   ├── standardized_interface.cpython-312.pyc
+│   │       │   └── transform_kernels.cpython-312.pyc
+│   │       ├── inference_kernels.py
+│   │       ├── kernel_executor.py
+│   │       ├── kernel_registry.py
+│   │       ├── matrix_kernels.py
+│   │       ├── standardized_interface.py
+│   │       └── transform_kernels.py
+│   ├── data_processing_interfaces.py
+│   ├── data_processor_factory.py
+│   └── resources
+│       ├── __init__.py
+│       └── __pycache__
+│           └── __init__.cpython-312.pyc
+├── indicators
+│   ├── __pycache__
+│   │   ├── base.cpython-312.pyc
+│   │   ├── indicator_factory.cpython-312.pyc
+│   │   └── wrappers.cpython-312.pyc
+│   ├── base.py
+│   ├── implementations
+│   │   ├── momentum
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   └── rsi.cpython-312.pyc
+│   │   │   └── rsi.py
+│   │   └── trend
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   ├── ema.cpython-312.pyc
+│   │       │   ├── macd.cpython-312.pyc
+│   │       │   └── sma.cpython-312.pyc
+│   │       ├── ema.py
+│   │       ├── macd.py
+│   │       └── sma.py
+│   ├── indicator_factory.py
+│   └── wrappers.py
+├── infrastructure
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── __init__.cpython-312.pyc
+│   ├── cache
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── redis_lock.cpython-312.pyc
+│   │   └── redis_lock.py
+│   ├── calculation
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── gpu_calculator.cpython-312.pyc
+│   │   └── gpu_calculator.py
+│   ├── data_access
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── logging
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── market_data
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── adapter.cpython-312.pyc
+│   │   │   └── mock_repository.cpython-312.pyc
+│   │   ├── adapter.py
+│   │   ├── mock_repository.py
+│   │   └── streaming
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-312.pyc
+│   │       │   └── mock_price_stream_adapter.cpython-312.pyc
+│   │       └── mock_price_stream_adapter.py
+│   ├── messaging
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── local_event_bus.cpython-312.pyc
+│   │   │   └── redis_event_bus.cpython-312.pyc
+│   │   ├── local_event_bus.py
+│   │   └── redis_event_bus.py
+│   ├── persistence
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── exceptions.cpython-312.pyc
+│   │   │   ├── models.cpython-312.pyc
+│   │   │   ├── portfolio_repository_impl.cpython-312.pyc
+│   │   │   ├── repository_impl.cpython-312.pyc
+│   │   │   └── watchlist_repository_impl.cpython-312.pyc
+│   │   ├── exceptions.py
+│   │   ├── models.py
+│   │   ├── portfolio_repository_impl.py
+│   │   ├── repositories
+│   │   │   ├── __init__.py
+│   │   │   └── __pycache__
+│   │   │       └── __init__.cpython-312.pyc
+│   │   ├── repository_impl.py
+│   │   └── watchlist_repository_impl.py
+│   └── storage
+│       ├── __init__.py
+│       └── __pycache__
+│           └── __init__.cpython-312.pyc
+├── interface
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── __init__.cpython-312.pyc
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── strategy_router.cpython-312.pyc
+│   │   │   └── trading_router.cpython-312.pyc
+│   │   ├── strategy_router.py
+│   │   └── trading_router.py
+│   └── websocket
+│       ├── __init__.py
+│       └── __pycache__
+│           └── __init__.cpython-312.pyc
+├── interfaces
+│   ├── README.md
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── business_data_source.cpython-312.pyc
+│   │   ├── data_source.cpython-312.pyc
+│   │   ├── data_source_interface.cpython-312.pyc
+│   │   ├── refactored_interfaces.cpython-312.pyc
+│   │   ├── relational_data_source.cpython-312.pyc
+│   │   └── timeseries_data_source.cpython-312.pyc
+│   ├── adapters
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── adapter_mixins.cpython-312.pyc
+│   │   │   ├── akshare_adapter.cpython-312.pyc
+│   │   │   ├── akshare_proxy_adapter.cpython-312.pyc
+│   │   │   ├── baostock_adapter.cpython-312.pyc
+│   │   │   ├── base_adapter.cpython-312.pyc
+│   │   │   ├── byapi_adapter.cpython-312.pyc
+│   │   │   ├── customer_adapter.cpython-312.pyc
+│   │   │   ├── data_source_manager.cpython-312.pyc
+│   │   │   ├── data_validator.cpython-312.pyc
+│   │   │   ├── efinance_adapter.cpython-312.pyc
+│   │   │   ├── financial_adapter.cpython-312.pyc
+│   │   │   ├── financial_adapter_example.cpython-312.pyc
+│   │   │   ├── legacy_adapter.cpython-312.pyc
+│   │   │   ├── new_market_data_adapter.cpython-312.pyc
+│   │   │   ├── price_data_adapter.cpython-312.pyc
+│   │   │   ├── tdx_basic_data_manager.cpython-312.pyc
+│   │   │   ├── tdx_connection_manager.cpython-312.pyc
+│   │   │   ├── tdx_data_parser.cpython-312.pyc
+│   │   │   ├── tdx_integration_client.cpython-312.pyc
+│   │   │   ├── tdx_kline_fetcher.cpython-312.pyc
+│   │   │   ├── tdx_realtime_manager.cpython-312.pyc
+│   │   │   ├── test_customer_adapter.cpython-312.pyc
+│   │   │   ├── test_financial_adapter.cpython-312.pyc
+│   │   │   ├── test_simple.cpython-312.pyc
+│   │   │   ├── tushare_adapter.cpython-312.pyc
+│   │   │   └── volume_data_processor.cpython-312.pyc
+│   │   ├── adapter_mixins.py
+│   │   ├── akshare
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── base.cpython-312.pyc
+│   │   │   │   ├── financial_data.cpython-312.pyc
+│   │   │   │   ├── index_daily.cpython-312.pyc
+│   │   │   │   ├── industry_data.cpython-312.pyc
+│   │   │   │   ├── misc_data.cpython-312.pyc
+│   │   │   │   ├── realtime_data.cpython-312.pyc
+│   │   │   │   ├── stock_basic.cpython-312.pyc
+│   │   │   │   └── stock_daily.cpython-312.pyc
+│   │   │   ├── base.py
+│   │   │   ├── financial_data.py
+│   │   │   ├── index_daily.py
+│   │   │   ├── industry_data.py
+│   │   │   ├── misc_data.py
+│   │   │   ├── realtime_data.py
+│   │   │   ├── stock_basic.py
+│   │   │   └── stock_daily.py
+│   │   ├── akshare_adapter.py
+│   │   ├── akshare_adapter.py.backup_1767777516
+│   │   ├── akshare_proxy_adapter.py
+│   │   ├── baostock
+│   │   │   ├── __pycache__
+│   │   │   │   └── baostock_adapter.cpython-312.pyc
+│   │   │   └── baostock_adapter.py
+│   │   ├── baostock_adapter.py
+│   │   ├── base_adapter.py
+│   │   ├── byapi_adapter.py
+│   │   ├── customer_adapter.py
+│   │   ├── data_source_manager.py
+│   │   ├── data_validator.py
+│   │   ├── efinance_adapter.py
+│   │   ├── financial
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── base.cpython-312.pyc
+│   │   │   │   ├── base_financial_adapter.cpython-312.pyc
+│   │   │   │   ├── financial_data_source.cpython-312.pyc
+│   │   │   │   ├── financial_report_adapter.cpython-312.pyc
+│   │   │   │   ├── index_components.cpython-312.pyc
+│   │   │   │   ├── index_daily.cpython-312.pyc
+│   │   │   │   ├── market_calendar.cpython-312.pyc
+│   │   │   │   ├── news_data.cpython-312.pyc
+│   │   │   │   ├── realtime_data.cpython-312.pyc
+│   │   │   │   ├── stock_daily.cpython-312.pyc
+│   │   │   │   └── stock_daily_adapter.cpython-312.pyc
+│   │   │   ├── base.py
+│   │   │   ├── base_financial_adapter.py
+│   │   │   ├── financial_data_source.py
+│   │   │   ├── financial_report_adapter.py
+│   │   │   ├── index_components.py
+│   │   │   ├── index_daily.py
+│   │   │   ├── market_calendar.py
+│   │   │   ├── news_data.py
+│   │   │   ├── realtime_data.py
+│   │   │   ├── stock_daily.py
+│   │   │   └── stock_daily_adapter.py
+│   │   ├── financial_adapter.py
+│   │   ├── financial_adapter.py.backup_1767777515
+│   │   ├── financial_adapter_example.py
+│   │   ├── legacy_adapter.py
+│   │   ├── new_market_data_adapter.py
+│   │   ├── price_data_adapter.py
+│   │   ├── tdx
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── base_tdx_adapter.cpython-312.pyc
+│   │   │   │   ├── config.cpython-312.pyc
+│   │   │   │   ├── kline_data_service.cpython-312.pyc
+│   │   │   │   ├── new_test_tdx.cpython-312.pyc
+│   │   │   │   ├── realtime_service.cpython-312.pyc
+│   │   │   │   ├── tdx_adapter.cpython-312.pyc
+│   │   │   │   ├── tdx_block_reader.cpython-312.pyc
+│   │   │   │   └── tdx_data_source.cpython-312.pyc
+│   │   │   ├── base_tdx_adapter.py
+│   │   │   ├── config.py
+│   │   │   ├── kline_data_service.py
+│   │   │   ├── new_test_tdx.py
+│   │   │   ├── realtime_service.py
+│   │   │   ├── tdx_adapter.py
+│   │   │   ├── tdx_block_reader.py
+│   │   │   └── tdx_data_source.py
+│   │   ├── tdx_basic_data_manager.py
+│   │   ├── tdx_connection_manager.py
+│   │   ├── tdx_data_parser.py
+│   │   ├── tdx_integration_client.py
+│   │   ├── tdx_kline_fetcher.py
+│   │   ├── tdx_realtime_manager.py
+│   │   ├── test_customer_adapter.py
+│   │   ├── test_financial_adapter.py
+│   │   ├── test_simple.py
+│   │   ├── tushare_adapter.py
+│   │   ├── volume_data_processor.py
+│   │   └── webdata
+│   │       ├── __pycache__
+│   │       │   └── webdata_adapter.cpython-312.pyc
+│   │       └── webdata_adapter.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── business_data_source.py
+│   ├── cli
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── data_source.py
+│   ├── data_source_interface.py
+│   ├── refactored_interfaces.py
+│   ├── relational_data_source.py
+│   └── timeseries_data_source.py
+├── logging
+│   ├── __pycache__
+│   │   └── audit_system.cpython-312.pyc
+│   └── audit_system.py
+├── ml_strategy
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── feature_engineering.cpython-312.pyc
+│   │   ├── ml_strategy.cpython-312.pyc
+│   │   └── price_predictor.cpython-312.pyc
+│   ├── automation
+│   │   ├── README.md
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── monitored_notification_manager.cpython-312.pyc
+│   │   │   ├── notification_manager.cpython-312.pyc
+│   │   │   ├── predefined_tasks.cpython-312.pyc
+│   │   │   └── scheduler.cpython-312.pyc
+│   │   ├── monitored_notification_manager.py
+│   │   ├── notification_manager.py
+│   │   ├── predefined_tasks.py
+│   │   └── scheduler.py
+│   ├── backtest
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── backtest_engine.cpython-312.pyc
+│   │   │   ├── ml_strategy_backtester.cpython-312.pyc
+│   │   │   ├── performance_metrics.cpython-312.pyc
+│   │   │   ├── risk_metrics.cpython-312.pyc
+│   │   │   └── vectorized_backtester.cpython-312.pyc
+│   │   ├── backtest_engine.py
+│   │   ├── ml_strategy_backtester.py
+│   │   ├── performance_metrics.py
+│   │   ├── risk_metrics.py
+│   │   └── vectorized_backtester.py
+│   ├── backtesting
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── feature_engineering.py
+│   ├── indicators
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── talib_wrapper.cpython-312.pyc
+│   │   │   └── tdx_functions.cpython-312.pyc
+│   │   ├── talib_wrapper.py
+│   │   └── tdx_functions.py
+│   ├── ml_strategy.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── price_predictor.py
+│   ├── realtime
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── tick_receiver.cpython-312.pyc
+│   │   └── tick_receiver.py
+│   ├── strategy
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base_strategy.cpython-312.pyc
+│   │   │   ├── decision_tree_trading_strategy.cpython-312.pyc
+│   │   │   ├── lstm_trading_strategy.cpython-312.pyc
+│   │   │   ├── ml_strategy_base.cpython-312.pyc
+│   │   │   ├── naive_bayes_trading_strategy.cpython-312.pyc
+│   │   │   ├── signal_manager.cpython-312.pyc
+│   │   │   ├── stock_screener.cpython-312.pyc
+│   │   │   ├── strategy_executor.cpython-312.pyc
+│   │   │   ├── svm_trading_strategy.cpython-312.pyc
+│   │   │   └── transformer_trading_strategy.cpython-312.pyc
+│   │   ├── base_strategy.py
+│   │   ├── decision_tree_trading_strategy.py
+│   │   ├── lstm_trading_strategy.py
+│   │   ├── ml_strategy_base.py
+│   │   ├── naive_bayes_trading_strategy.py
+│   │   ├── signal_manager.py
+│   │   ├── stock_screener.py
+│   │   ├── strategy_executor.py
+│   │   ├── svm_trading_strategy.py
+│   │   ├── templates
+│   │   │   ├── __pycache__
+│   │   │   │   ├── custom_template.cpython-312.pyc
+│   │   │   │   ├── mean_reversion_template.cpython-312.pyc
+│   │   │   │   └── momentum_template.cpython-312.pyc
+│   │   │   ├── custom_template.py
+│   │   │   ├── mean_reversion_template.py
+│   │   │   └── momentum_template.py
+│   │   └── transformer_trading_strategy.py
+│   ├── training
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   └── validation
+│       ├── __pycache__
+│       │   └── ml_strategy_validator.cpython-312.pyc
+│       └── ml_strategy_validator.py
+├── mock
+│   ├── __pycache__
+│   │   ├── mock_Analysis.cpython-312.pyc
+│   │   ├── mock_BacktestAnalysis.cpython-312.pyc
+│   │   ├── mock_Dashboard.cpython-312.pyc
+│   │   ├── mock_IndicatorLibrary.cpython-312.pyc
+│   │   ├── mock_Login.cpython-312.pyc
+│   │   ├── mock_Market.cpython-312.pyc
+│   │   ├── mock_MarketData.cpython-312.pyc
+│   │   ├── mock_MarketDataView.cpython-312.pyc
+│   │   ├── mock_RealTimeMonitor.cpython-312.pyc
+│   │   ├── mock_RiskMonitor.cpython-312.pyc
+│   │   ├── mock_Settings.cpython-312.pyc
+│   │   ├── mock_StockSearch.cpython-312.pyc
+│   │   ├── mock_Stocks.cpython-312.pyc
+│   │   ├── mock_StrategyManagement.cpython-312.pyc
+│   │   ├── mock_TaskManagement.cpython-312.pyc
+│   │   ├── mock_TdxMarket.cpython-312.pyc
+│   │   ├── mock_TechnicalAnalysis.cpython-312.pyc
+│   │   ├── mock_TradeManagement.cpython-312.pyc
+│   │   ├── mock_TradingView.cpython-312.pyc
+│   │   ├── mock_Wencai.cpython-312.pyc
+│   │   ├── mock_strategy_BatchScan.cpython-312.pyc
+│   │   ├── mock_strategy_ResultsQuery.cpython-312.pyc
+│   │   ├── mock_strategy_SingleRun.cpython-312.pyc
+│   │   ├── mock_strategy_StatsAnalysis.cpython-312.pyc
+│   │   ├── mock_strategy_StrategyList.cpython-312.pyc
+│   │   ├── mock_system_Architecture.cpython-312.pyc
+│   │   └── mock_system_DatabaseMonitor.cpython-312.pyc
+│   ├── mock_Analysis.py
+│   ├── mock_BacktestAnalysis.py
+│   ├── mock_Dashboard.py
+│   ├── mock_IndicatorLibrary.py
+│   ├── mock_Login.py
+│   ├── mock_Market.py
+│   ├── mock_MarketData.py
+│   ├── mock_MarketDataView.py
+│   ├── mock_RealTimeMonitor.py
+│   ├── mock_RiskMonitor.py
+│   ├── mock_Settings.py
+│   ├── mock_StockSearch.py
+│   ├── mock_Stocks.py
+│   ├── mock_StrategyManagement.py
+│   ├── mock_TaskManagement.py
+│   ├── mock_TdxMarket.py
+│   ├── mock_TechnicalAnalysis.py
+│   ├── mock_TradeManagement.py
+│   ├── mock_TradingView.py
+│   ├── mock_Wencai.py
+│   ├── mock_strategy_BatchScan.py
+│   ├── mock_strategy_ResultsQuery.py
+│   ├── mock_strategy_SingleRun.py
+│   ├── mock_strategy_StatsAnalysis.py
+│   ├── mock_strategy_StrategyList.py
+│   ├── mock_system_Architecture.py
+│   └── mock_system_DatabaseMonitor.py
+├── monitoring
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── ai_alert_manager.cpython-312.pyc
+│   │   ├── ai_realtime_monitor.cpython-312.pyc
+│   │   ├── alert_history.cpython-312.pyc
+│   │   ├── alert_manager.cpython-312.pyc
+│   │   ├── alert_notifier.cpython-312.pyc
+│   │   ├── async_monitoring.cpython-312.pyc
+│   │   ├── async_monitoring_manager.cpython-312.pyc
+│   │   ├── clustering_analyzer.cpython-312.pyc
+│   │   ├── data_analyzer.cpython-312.pyc
+│   │   ├── data_quality_monitor.cpython-312.pyc
+│   │   ├── data_source_metrics.cpython-312.pyc
+│   │   ├── decoupled_monitoring.cpython-312.pyc
+│   │   ├── gpu_integration_manager.cpython-312.pyc
+│   │   ├── gpu_performance_optimizer.cpython-312.pyc
+│   │   ├── indicator_metrics.cpython-312.pyc
+│   │   ├── intelligent_threshold_manager.cpython-312.pyc
+│   │   ├── metrics_collector.cpython-312.pyc
+│   │   ├── monitoring_database.cpython-312.pyc
+│   │   ├── monitoring_service.cpython-312.pyc
+│   │   ├── multi_channel_alert_manager.cpython-312.pyc
+│   │   ├── performance_monitor.cpython-312.pyc
+│   │   ├── signal_aggregation_task.cpython-312.pyc
+│   │   ├── signal_decorator.cpython-312.pyc
+│   │   ├── signal_metrics.cpython-312.pyc
+│   │   ├── signal_push_integration.cpython-312.pyc
+│   │   ├── signal_recorder.cpython-312.pyc
+│   │   ├── signal_result_tracker.cpython-312.pyc
+│   │   ├── statistical_optimizer.cpython-312.pyc
+│   │   ├── threshold_rule_manager.cpython-312.pyc
+│   │   └── trend_analyzer.cpython-312.pyc
+│   ├── ai_alert_manager.py
+│   ├── ai_realtime_monitor.py
+│   ├── alert_history.py
+│   ├── alert_manager.py
+│   ├── alert_manager.py.backup_complex_20251108
+│   ├── alert_notifier.py
+│   ├── async_monitoring.py
+│   ├── async_monitoring_manager.py
+│   ├── clustering_analyzer.py
+│   ├── dashboards
+│   │   └── indicator_dashboard.json
+│   ├── data_analyzer.py
+│   ├── data_quality_monitor.py
+│   ├── data_source_metrics.py
+│   ├── decoupled_monitoring.py
+│   ├── domain
+│   │   ├── __pycache__
+│   │   │   ├── calculator_cpu.cpython-312.pyc
+│   │   │   ├── calculator_factory.cpython-312.pyc
+│   │   │   ├── calculator_gpu.cpython-312.pyc
+│   │   │   ├── market_regime.cpython-312.pyc
+│   │   │   ├── portfolio_optimizer.cpython-312.pyc
+│   │   │   └── risk_metrics.cpython-312.pyc
+│   │   ├── calculator_cpu.py
+│   │   ├── calculator_factory.py
+│   │   ├── calculator_gpu.py
+│   │   ├── market_regime.py
+│   │   ├── portfolio_optimizer.py
+│   │   └── risk_metrics.py
+│   ├── gpu_integration_manager.py
+│   ├── gpu_performance_optimizer.py
+│   ├── indicator_metrics.py
+│   ├── infrastructure
+│   │   ├── __pycache__
+│   │   │   ├── init_db.cpython-312.pyc
+│   │   │   ├── postgresql_async.cpython-312.pyc
+│   │   │   └── postgresql_async_v3.cpython-312.pyc
+│   │   ├── init_db.py
+│   │   ├── postgresql_async.py
+│   │   └── postgresql_async_v3.py
+│   ├── intelligent_threshold_manager.py
+│   ├── metrics_collector.py
+│   ├── monitoring_database.py
+│   ├── monitoring_service.py
+│   ├── multi_channel_alert_manager.py
+│   ├── performance_monitor.py
+│   ├── signal_aggregation_task.py
+│   ├── signal_decorator.py
+│   ├── signal_metrics.py
+│   ├── signal_push_integration.py
+│   ├── signal_recorder.py
+│   ├── signal_result_tracker.py
+│   ├── statistical_optimizer.py
+│   ├── threshold
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── base_threshold_manager.cpython-312.pyc
+│   │   │   ├── clustering_optimizer.cpython-312.pyc
+│   │   │   ├── intelligent_threshold_manager.cpython-312.pyc
+│   │   │   ├── statistical_optimizer.cpython-312.pyc
+│   │   │   └── trend_optimizer.cpython-312.pyc
+│   │   ├── base_threshold_manager.py
+│   │   ├── clustering_optimizer.py
+│   │   ├── intelligent_threshold_manager.py
+│   │   ├── statistical_optimizer.py
+│   │   └── trend_optimizer.py
+│   ├── threshold_rule_manager.py
+│   └── trend_analyzer.py
+├── portfolio
+│   ├── __pycache__
+│   │   └── strategy_portfolio_optimizer.cpython-312.pyc
+│   └── strategy_portfolio_optimizer.py
+├── reporting
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   └── pdf_generator.cpython-312.pyc
+│   └── pdf_generator.py
+├── routes
+│   ├── __pycache__
+│   │   ├── dashboard_routes.cpython-312.pyc
+│   │   ├── monitoring_routes.cpython-312.pyc
+│   │   ├── stocks_routes.cpython-312.pyc
+│   │   ├── strategy_routes.cpython-312.pyc
+│   │   ├── technical_routes.cpython-312.pyc
+│   │   └── wencai_routes.cpython-312.pyc
+│   ├── dashboard_routes.py
+│   ├── monitoring_routes.py
+│   ├── stocks_routes.py
+│   ├── strategy_routes.py
+│   ├── technical_routes.py
+│   └── wencai_routes.py
+├── services
+│   ├── __pycache__
+│   │   ├── market_data_parser.cpython-312.pyc
+│   │   ├── performance_optimizer.cpython-312.pyc
+│   │   └── position_mtm_engine.cpython-312.pyc
+│   ├── market_data_parser.py
+│   ├── performance_optimizer.py
+│   └── position_mtm_engine.py
+├── storage
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   └── __init__.cpython-312.pyc
+│   ├── access
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   └── base.cpython-312.pyc
+│   │   └── modules
+│   │       └── __pycache__
+│   │           ├── __init__.cpython-312.pyc
+│   │           └── base.cpython-312.pyc
+│   ├── database
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── connection_context.cpython-312.pyc
+│   │   │   ├── connection_manager.cpython-312.pyc
+│   │   │   ├── database_manager.cpython-312.pyc
+│   │   │   ├── db_utils.cpython-312.pyc
+│   │   │   ├── df2sql.cpython-312.pyc
+│   │   │   ├── execute_example.cpython-312.pyc
+│   │   │   ├── execute_example_mysql_only.cpython-312.pyc
+│   │   │   ├── fix_database_connections.cpython-312.pyc
+│   │   │   ├── fixed_example.cpython-312.pyc
+│   │   │   ├── init_db_monitor.cpython-312.pyc
+│   │   │   ├── save_realtime_market_data.cpython-312.pyc
+│   │   │   ├── save_realtime_market_data_offline.cpython-312.pyc
+│   │   │   ├── save_realtime_market_data_simple.cpython-312.pyc
+│   │   │   ├── security_check.cpython-312.pyc
+│   │   │   ├── test_database_menu.cpython-312.pyc
+│   │   │   ├── test_jupyter_compatibility.cpython-312.pyc
+│   │   │   ├── test_multi_directory.cpython-312.pyc
+│   │   │   ├── test_simple.cpython-312.pyc
+│   │   │   ├── test_tdengine.cpython-312.pyc
+│   │   │   └── validate_mystocks_architecture.cpython-312.pyc
+│   │   ├── connection_context.py
+│   │   ├── connection_manager.py
+│   │   ├── database_manager.py
+│   │   ├── db_utils.py
+│   │   ├── df2sql.py
+│   │   ├── execute_example.py
+│   │   ├── execute_example_mysql_only.py
+│   │   ├── fix_database_connections.py
+│   │   ├── fixed_example.py
+│   │   ├── init_db_monitor.py
+│   │   ├── save_realtime_market_data.py
+│   │   ├── save_realtime_market_data_offline.py
+│   │   ├── save_realtime_market_data_simple.py
+│   │   ├── security_check.py
+│   │   ├── test_database_menu.py
+│   │   ├── test_jupyter_compatibility.py
+│   │   ├── test_multi_directory.py
+│   │   ├── test_simple.py
+│   │   ├── test_tdengine.py
+│   │   └── validate_mystocks_architecture.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   └── schema
+│       └── indicator_registry.sql
+├── styles
+│   └── tokens
+│       ├── _borders_shadows.scss
+│       ├── _colors.scss
+│       ├── _components.scss
+│       ├── _spacing.scss
+│       ├── _typography.scss
+│       ├── _validation.scss
+│       └── index.scss
+├── temp
+│   └── connect.cfg
+├── trading
+│   ├── __pycache__
+│   │   ├── live_trading_engine.cpython-312.pyc
+│   │   └── realtime_strategy_executor.cpython-312.pyc
+│   ├── live_trading_engine.py
+│   └── realtime_strategy_executor.py
+├── unified_manager.py
+├── utils
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── add_doc_metadata.cpython-312.pyc
+│   │   ├── add_python_headers.cpython-312.pyc
+│   │   ├── check_api_health.cpython-312.pyc
+│   │   ├── check_api_health_v2.cpython-312.pyc
+│   │   ├── check_db_health.cpython-312.pyc
+│   │   ├── column_mapper.cpython-312.pyc
+│   │   ├── data_format_converter.cpython-312.pyc
+│   │   ├── data_source_logger.cpython-312.pyc
+│   │   ├── data_source_validator.cpython-312.pyc
+│   │   ├── date_utils.cpython-312.pyc
+│   │   ├── db_connection_retry.cpython-312.pyc
+│   │   ├── error_handler.cpython-312.pyc
+│   │   ├── failure_recovery_queue.cpython-312.pyc
+│   │   ├── logging_config.cpython-312.pyc
+│   │   ├── simple_config_check.cpython-312.pyc
+│   │   ├── symbol_utils.cpython-312.pyc
+│   │   ├── tdx_server_config.cpython-312.pyc
+│   │   ├── test_logs_api.cpython-312.pyc
+│   │   ├── validate_gitignore.cpython-312.pyc
+│   │   └── validate_test_naming.cpython-312.pyc
+│   ├── add_doc_metadata.py
+│   ├── add_python_headers.py
+│   ├── check_api_health.py
+│   ├── check_api_health_v2.py
+│   ├── check_db_health.py
+│   ├── column_mapper.py
+│   ├── converters
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── data_format_converter.py
+│   ├── data_source_logger.py
+│   ├── data_source_validator.py
+│   ├── date_utils.py
+│   ├── db_connection_retry.py
+│   ├── error_handler.py
+│   ├── failure_recovery_queue.py
+│   ├── helpers
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── logging_config.py
+│   ├── simple_config_check.py
+│   ├── symbol_utils.py
+│   ├── tdx_server_config.py
+│   ├── test_logs_api.py
+│   ├── validate_gitignore.py
+│   ├── validate_test_naming.py
+│   └── validators
+│       ├── __init__.py
+│       └── __pycache__
+│           └── __init__.cpython-312.pyc
+└── visualization
+    ├── __init__.py
+    ├── __pycache__
+    │   ├── __init__.cpython-312.pyc
+    │   ├── backtest_visualizer.cpython-312.pyc
+    │   ├── chart_generator.cpython-312.pyc
+    │   └── complete_example.cpython-312.pyc
+    ├── backtest_visualizer.py
+    ├── chart_generator.py
+    └── complete_example.py
+
+372 directories, 1554 files

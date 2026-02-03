@@ -697,7 +697,7 @@ paths:
 
         支持的数据库类型:
 
-        - mysql: MySQL/MariaDB
+        - postgresql: PostgreSQL
 
         - postgresql: PostgreSQL
 
@@ -866,7 +866,7 @@ paths:
 
         - 技术栈信息
 
-        - MySQL/Redis移除详情
+        - PostgreSQL/Redis移除详情
 
 
         用于架构可视化页面展示'

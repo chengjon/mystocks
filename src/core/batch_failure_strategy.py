@@ -154,7 +154,7 @@ class BatchFailureHandler:
             handler = BatchFailureHandler(BatchFailureStrategy.RETRY)
             result = handler.execute_batch(
                 df,
-                lambda batch: mysql_access.insert_dataframe('table', batch),
+                lambda batch: postgresql_access.insert_dataframe('table', batch),
                 'insert_stock_data'
             )
             print(f"成功率: {result.success_rate:.2%}")

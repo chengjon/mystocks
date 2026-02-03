@@ -16,7 +16,7 @@
     "type:build": "npm run generate-types && npm run type:validate && npm run type-check",
     "preview": "vite preview",
     "generate-types": "python ../../scripts/generate_frontend_types.py",
-    "generate-page-config": "node ../../scripts/tools/generate-page-config.js",
+    "generate-page-config": "node ../../scripts/dev/tools/generate-page-config.js",
     "validate-page-config": "node ../../scripts/hooks/check-page-config.mjs --fail",
     "lint": "eslint . --fix",
     "test": "vitest run",

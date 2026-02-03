@@ -1,7 +1,7 @@
 """
 数据库连接管理器
 
-管理4种数据库(TDengine/PostgreSQL/MySQL/Redis)的连接池和连接生命周期。
+管理数据库连接池和连接生命周期（MySQL已移除）。
 所有连接参数从环境变量读取,确保安全性。
 
 创建日期: 2025-10-11
@@ -21,7 +21,7 @@ class DatabaseConnectionManager:
     """
     数据库连接管理器基础类
 
-    管理4种数据库的连接池,提供统一的连接获取接口
+    管理数据库连接池，提供统一的连接获取接口（MySQL已移除）
     """
 
     def __init__(self) -> None:
@@ -30,7 +30,7 @@ class DatabaseConnectionManager:
         self._connections: Dict[str, Any] = {}
 
     def _validate_env_variables(self) -> None:
-        """验证必需的环境变量是否存在 (US3: 移除MySQL和Redis依赖)"""
+        """验证必需的环境变量是否存在 (US3: 移除MySQL依赖)"""
         required_vars = [
             # TDengine
             "TDENGINE_HOST",
@@ -52,9 +52,8 @@ class DatabaseConnectionManager:
             raise EnvironmentError(
                 f"缺少必需的环境变量: {', '.join(missing_vars)}\n"
                 f"请参考 .env.example 文件配置环境变量\n"
-                f"注意: MySQL和Redis已从US3架构中移除，不再需要这些环境变量"
+                f"注意: MySQL已从US3架构中移除，不再需要这些环境变量"
             )
-            raise ValueError("Redis配置错误: REDIS_DB=0 已被PAPERLESS占用!\n请使用1-15号数据库 (建议REDIS_DB=1)")
 
     def get_tdengine_connection(self):
         """
@@ -136,41 +135,6 @@ class DatabaseConnectionManager:
         if "postgresql" in self._connections:
             self._connections["postgresql"].putconn(conn)
 
-    def get_mysql_connection(self):
-        """
-        获取MySQL连接池
-
-        Returns:
-            MySQL连接池对象
-
-        Raises:
-            ConnectionError: 连接失败
-        """
-        try:
-            import pymysql
-            from pymysql import cursors
-
-            if "mysql" not in self._connections:
-                conn = pymysql.connect(
-                    host=os.getenv("MYSQL_HOST"),
-                    port=int(os.getenv("MYSQL_PORT", "3306")),
-                    user=os.getenv("MYSQL_USER", "root"),
-                    password=os.getenv("MYSQL_PASSWORD", ""),
-                    database=os.getenv("MYSQL_DATABASE", "mystocks"),
-                    charset="utf8mb4",
-                    cursorclass=cursors.DictCursor,
-                )
-                self._connections["mysql"] = conn
-
-            return self._connections["mysql"]
-
-        except ImportError:
-            raise ImportError("MySQL驱动未安装: pip install pymysql>=1.0.2")
-        except Exception as e:
-            raise ConnectionError(
-                f"MySQL连接失败: {e}\n请检查配置: {os.getenv('MYSQL_HOST')}:{os.getenv('MYSQL_PORT')}"
-            )
-
     def get_redis_connection(self):
         """
         获取Redis连接池
@@ -225,8 +189,6 @@ class DatabaseConnectionManager:
                     conn.close()
                 elif db_type == "postgresql":
                     conn.closeall()
-                elif db_type == "mysql":
-                    conn.close()
                 elif db_type == "redis":
                     # Redis连接是元组 (conn, pool)
                     if isinstance(conn, tuple):

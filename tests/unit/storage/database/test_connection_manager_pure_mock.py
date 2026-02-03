@@ -280,7 +280,6 @@ class TestDatabaseConnectionManagerPureMock:
         with (
             patch("src.storage.database.connection_manager.taosws") as mock_taosws,
             patch("src.storage.database.connection_manager.psycopg2") as mock_psycopg2,
-            patch("src.storage.database.connection_manager.pymysql") as mock_pymysql,
             patch("src.storage.database.connection_manager.redis") as mock_redis,
         ):
             # 创建各种连接的mock
@@ -289,9 +288,6 @@ class TestDatabaseConnectionManagerPureMock:
 
             mock_pg_pool = Mock()
             mock_psycopg2.pool.SimpleConnectionPool.return_value = mock_pg_pool
-
-            mock_mysql_conn = Mock()
-            mock_pymysql.connect.return_value = mock_mysql_conn
 
             mock_redis_conn = Mock()
             mock_redis.Redis.return_value = mock_redis_conn
@@ -307,8 +303,7 @@ class TestDatabaseConnectionManagerPureMock:
                 manager.get_tdengine_connection()
                 manager.get_postgresql_connection()
 
-                # 手动添加MySQL和Redis连接到缓存（因为这些可能不会成功创建）
-                manager._connections["mysql"] = mock_mysql_conn
+                # 手动添加Redis连接到缓存（因为这些可能不会成功创建）
                 manager._connections["redis"] = mock_redis_conn
 
                 # 验证连接已缓存
@@ -320,7 +315,6 @@ class TestDatabaseConnectionManagerPureMock:
                 # 验证各种关闭方法被调用
                 mock_tdengine_conn.close.assert_called_once()
                 mock_pg_pool.closeall.assert_called_once()
-                mock_mysql_conn.close.assert_called_once()
                 mock_redis_conn.close.assert_called_once()
 
                 # 验证连接缓存被清空

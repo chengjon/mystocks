@@ -1,5 +1,7 @@
 # Phase 1 完成报告: 优化配置和删除冗余
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **完成日期**: 2025-11-08
 **执行人**: Claude Code + TaskMaster AI
 **状态**: ✅ 已完成
@@ -32,7 +34,7 @@ Phase 1 成功完成所有4个核心任务,实现了重大的代码简化和优�
 
 2. **数据库简化**
    - **仅保留**: TDengine (5表) + PostgreSQL (11表)
-   - **删除**: MySQL (15表) 和 Redis配置
+   - **删除**: PostgreSQL (15表) 和 Redis配置
    - 符合Week 3架构简化决策
 
 3. **灾备恢复配置**
@@ -184,7 +186,7 @@ Phase 1 成功完成所有4个核心任务,实现了重大的代码简化和优�
 1. **数据库简化**
    - 从4数据库 → 2数据库 (TDengine + PostgreSQL)
    - 从31表 → 16核心表
-   - 删除MySQL/Redis依赖
+   - 删除PostgreSQL/Redis依赖
 
 2. **灾备恢复优化**
    - YAML配置专注于灾备场景

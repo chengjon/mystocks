@@ -1,5 +1,7 @@
 # 合规审查与代码优化报告
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **生成时间**: 2025-10-12
 **审查范围**: 全部适配器文件、测试文件、核心代码
 **审查依据**: 改进意见0.md（业务范围）、改进意见1.md（数据分类体系）
@@ -18,7 +20,7 @@
 所有适配器文件**完全符合**改进意见0.md和改进意见1.md的要求：
 1. ✅ **业务范围合规**: 所有适配器仅涉及A股、港股（可选）、股指期货
 2. ✅ **数据分类合规**: 财务数据正确归类为"参考数据-基本面数据"
-3. ✅ **存储路由合规**: 使用DataClassification.FUNDAMENTAL_METRICS → MySQL
+3. ✅ **存储路由合规**: 使用DataClassification.FUNDAMENTAL_METRICS → PostgreSQL
 
 ---
 
@@ -65,7 +67,7 @@
 **5. financial_adapter.py (已在P2任务中更新)**
 - ✅ Line 1-23: 明确定位为"参考数据/基本面数据统一门户"
 - ✅ Line 13: 数据分类`DataClassification.FUNDAMENTAL_METRICS`
-- ✅ Line 15: 存储策略`MySQL/MariaDB`
+- ✅ Line 15: 存储策略`PostgreSQL`
 - ✅ Line 16-21: 多数据源整合计划（akshare、tushare、byapi、新浪财经爬虫）
 - ❌ **无期货/期权/外汇/黄金/美股相关代码**
 
@@ -94,14 +96,14 @@
 
 | 适配器 | 财务数据方法 | 分类 | 存储目标 | 合规状态 |
 |--------|-------------|------|----------|----------|
-| **financial_adapter.py** | `get_financial_data()` | FUNDAMENTAL_METRICS | MySQL | ✅ |
-| **akshare_adapter.py** | `get_financial_data()` | 参考数据 | MySQL | ✅ |
-| **tushare_adapter.py** | `get_financial_data()` | 参考数据 | MySQL | ✅ |
-| **byapi_adapter.py** | `get_fundamental_data()` | 参考数据 | MySQL | ✅ |
+| **financial_adapter.py** | `get_financial_data()` | FUNDAMENTAL_METRICS | PostgreSQL | ✅ |
+| **akshare_adapter.py** | `get_financial_data()` | 参考数据 | PostgreSQL | ✅ |
+| **tushare_adapter.py** | `get_financial_data()` | 参考数据 | PostgreSQL | ✅ |
+| **byapi_adapter.py** | `get_fundamental_data()` | 参考数据 | PostgreSQL | ✅ |
 
 **关键证据**：
 - `financial_adapter.py:13` - 明确标注 `DataClassification.FUNDAMENTAL_METRICS`
-- `financial_adapter.py:15` - 存储策略 `MySQL/MariaDB`
+- `financial_adapter.py:15` - 存储策略 `PostgreSQL`
 - `financial_adapter.py:61` - 数据特性：低频、结构化、关系型
 
 ### 3. 测试文件审查
@@ -631,7 +633,7 @@ class AkshareProxyAdapter(IDataSource):
 
 - ✅ **业务范围**: 仅涉及A股、港股（可选）、股指期货
 - ✅ **数据分类**: 财务数据正确归类为FUNDAMENTAL_METRICS
-- ✅ **存储路由**: 正确使用MySQL存储参考数据
+- ✅ **存储路由**: 正确使用PostgreSQL存储参考数据
 - ✅ **架构设计**: 符合5层数据分类体系
 
 ### 💡 优化建议总结

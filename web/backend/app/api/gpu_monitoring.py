@@ -101,7 +101,7 @@ async def get_gpu_status(request: Request, device_id: Optional[int] = None):
         )
     ]
 
-    logger.info("GPU状态查询: device_id=%(device_id)s, request_id=%(request_id)s"")
+    logger.info("GPU状态查询: device_id=%(device_id)s, request_id=%(request_id)s")
 
     return create_unified_success_response(
         data={"gpus": [gpu.dict() for gpu in gpu_statuses]},
@@ -140,7 +140,7 @@ async def get_gpu_performance(request: Request, device_id: Optional[int] = None)
         )
     ]
 
-    logger.info("GPU性能查询: device_id=%(device_id)s, request_id=%(request_id)s"")
+    logger.info("GPU性能查询: device_id=%(device_id)s, request_id=%(request_id)s")
 
     return create_unified_success_response(
         data={"metrics": [metric.dict() for metric in performance_metrics]},
@@ -240,7 +240,7 @@ async def get_gpu_history(
         "total": 0,
     }
 
-    logger.info("GPU历史数据查询: device_id=%(device_id)s, limit=%(limit)s, request_id=%(request_id)s"")
+    logger.info("GPU历史数据查询: device_id=%(device_id)s, limit=%(limit)s, request_id=%(request_id)s")
 
     return create_unified_success_response(
         data=history_data,

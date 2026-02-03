@@ -6,7 +6,7 @@
  * for all routes, including API endpoints and WebSocket channels.
  * 
  * Usage:
- *   node scripts/tools/generate-page-config.js [options]
+ *   node scripts/dev/tools/generate-page-config.js [options]
  *   npm run generate-page-config -- [options]
  * 
  * Options:
@@ -24,9 +24,9 @@ const path = require('path')
 // ============================================================================
 
 const CONFIG = {
-  routerPath: path.resolve(__dirname, '../../web/frontend/src/router/index.ts'),
-  configOutputPath: path.resolve(__dirname, '../../web/frontend/src/config/pageConfig.ts'),
-  configBackupPath: path.resolve(__dirname, '../../web/frontend/src/config/pageConfig.ts.bak'),
+  routerPath: path.resolve(__dirname, '../../../web/frontend/src/router/index.ts'),
+  configOutputPath: path.resolve(__dirname, '../../../web/frontend/src/config/pageConfig.ts'),
+  configBackupPath: path.resolve(__dirname, '../../../web/frontend/src/config/pageConfig.ts.bak'),
   
   routeConfigMap: {
     'dashboard': { apiEndpoint: '/api/dashboard/overview', wsChannel: 'dashboard:realtime', description: '仪表盘概览' },
@@ -458,7 +458,7 @@ function main() {
 Page Configuration Generator
 
 Usage:
-  node scripts/tools/generate-page-config.js [options]
+  node scripts/dev/tools/generate-page-config.js [options]
 
 Options:
   --dry-run, -n    Show what would be generated without writing files

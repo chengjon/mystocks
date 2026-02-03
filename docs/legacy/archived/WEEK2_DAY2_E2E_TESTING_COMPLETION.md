@@ -1,5 +1,7 @@
 # Week 2 Day 2 Completion Summary - E2E Testing Implementation
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **Date**: 2025-10-24
 **Task**: Week 2 Priority P0 - E2E Testing Implementation
 **Status**: ✅ **100% Complete**
@@ -181,7 +183,7 @@ os.environ.setdefault('POSTGRESQL_PORT', '5438')
 os.environ.setdefault('MYSQL_HOST', os.getenv('POSTGRESQL_HOST'))
 os.environ.setdefault('MYSQL_PORT', os.getenv('POSTGRESQL_PORT'))
 os.environ.setdefault('MYSQL_USER', os.getenv('POSTGRESQL_USER'))
-# ... MySQL redirects
+# ... PostgreSQL redirects
 
 # Dummy values for required but unused databases
 os.environ.setdefault('TDENGINE_HOST', 'localhost')
@@ -554,7 +556,7 @@ print(f'Response: {response.text}')
 
 3. **table_config.yaml Cleanup** (0.5 day)
    - Remove unused TDengine table definitions
-   - Remove unused MySQL table definitions
+   - Remove unused PostgreSQL table definitions
    - Keep only PostgreSQL definitions
 
 4. **DatabaseTableManager Enhancement** (1 day)

@@ -106,7 +106,7 @@ class OpenAPIGenerator:
             }
 
             self.endpoints.append(info)
-            logger.debug("Extracted endpoint: %(method)s %(path)s"")
+            logger.debug("Extracted endpoint: %(method)s %(path)s")
 
     def _extract_path_params(self, path: str) -> List[Dict[str, Any]]:
         """Extract path parameters from path format"""
@@ -318,7 +318,7 @@ Total endpoints: {len(self.endpoints)}
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(spec, f, ensure_ascii=False, indent=2)
 
-        logger.info("Saved OpenAPI spec to %(path)s"")
+        logger.info("Saved OpenAPI spec to %(path)s")
 
     def get_sync_report(self) -> Dict[str, Any]:
         """

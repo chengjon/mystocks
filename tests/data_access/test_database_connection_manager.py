@@ -5,7 +5,6 @@ DatabaseConnectionManager测试
 - 环境变量验证
 - TDengine连接管理
 - PostgreSQL连接池管理
-- MySQL连接管理（已弃用但保留）
 - Redis连接管理（已弃用但保留）
 - 连接关闭和清理
 - 单例模式
@@ -293,58 +292,6 @@ class TestDatabaseConnectionManagerPostgreSQL(unittest.TestCase):
         mock_connection_pool.putconn.assert_called_once_with(mock_conn)
 
 
-class TestDatabaseConnectionManagerMySQL(unittest.TestCase):
-    """测试MySQL连接管理（已弃用但保留）"""
-
-    def setUp(self):
-        """测试前准备"""
-        os.environ.update(
-            {
-                "TDENGINE_HOST": "localhost",
-                "TDENGINE_PORT": "6030",
-                "TDENGINE_USER": "root",
-                "TDENGINE_PASSWORD": "taosdata",
-                "TDENGINE_DATABASE": "market_data",
-                "POSTGRESQL_HOST": "localhost",
-                "POSTGRESQL_PORT": "5438",
-                "POSTGRESQL_USER": "postgres",
-                "POSTGRESQL_PASSWORD": "password",
-                "POSTGRESQL_DATABASE": "mystocks",
-            }
-        )
-        self.manager = DatabaseConnectionManager()
-
-    @patch("src.storage.database.connection_manager.pymysql")
-    def test_get_mysql_connection_first_time(self, mock_pymysql):
-        """测试首次获取MySQL连接"""
-        os.environ.update(
-            {
-                "MYSQL_HOST": "localhost",
-                "MYSQL_PORT": "3306",
-                "MYSQL_USER": "root",
-                "MYSQL_PASSWORD": "password",
-                "MYSQL_DATABASE": "mystocks",
-            }
-        )
-
-        mock_conn = Mock()
-        mock_pymysql.connect.return_value = mock_conn
-
-        result = self.manager.get_mysql_connection()
-
-        self.assertEqual(result, mock_conn)
-        mock_pymysql.connect.assert_called_once()
-        self.assertIn("mysql", self.manager._connections)
-
-    def test_get_mysql_connection_import_error(self):
-        """测试MySQL驱动未安装时抛出ImportError"""
-        with patch("src.storage.database.connection_manager.pymysql", side_effect=ImportError):
-            with self.assertRaises(ImportError) as context:
-                self.manager.get_mysql_connection()
-
-            self.assertIn("MySQL驱动未安装", str(context.exception))
-
-
 class TestDatabaseConnectionManagerRedis(unittest.TestCase):
     """测试Redis连接管理（已弃用但保留）"""
 
@@ -436,16 +383,6 @@ class TestDatabaseConnectionManagerClose(unittest.TestCase):
         mock_postgresql_pool.closeall.assert_called_once()
         self.assertNotIn("postgresql", self.manager._connections)
 
-    def test_close_mysql_connection(self):
-        """测试关闭MySQL连接"""
-        mock_mysql_conn = Mock()
-        self.manager._connections["mysql"] = mock_mysql_conn
-
-        self.manager.close_all_connections()
-
-        mock_mysql_conn.close.assert_called_once()
-        self.assertNotIn("mysql", self.manager._connections)
-
     def test_close_redis_connection(self):
         """测试关闭Redis连接"""
         mock_redis_conn = Mock()
@@ -463,7 +400,6 @@ class TestDatabaseConnectionManagerClose(unittest.TestCase):
             {
                 "tdengine": Mock(close=Mock()),
                 "postgresql": Mock(closeall=Mock()),
-                "mysql": Mock(close=Mock()),
                 "redis": Mock(close=Mock()),
             }
         )

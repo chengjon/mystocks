@@ -393,14 +393,14 @@ class SSEPerformanceOptimizer:
         """优化单个事件"""
         # 1. 去重检查
         if self.performance_config["enable_deduplication"] and self.deduplicator.is_duplicate(event):
-            logger.debug("事件去重: {event.get('event')}"")
+            logger.debug("事件去重: {event.get('event')}")
             return None  # 丢弃重复事件
 
         # 2. 缓存检查
         if self.performance_config["enable_caching"]:
             cached_result = self.event_cache.get(event)
             if cached_result is not None:
-                logger.debug("事件缓存命中: {event.get('event')}"")
+                logger.debug("事件缓存命中: {event.get('event')}")
                 return cached_result
 
         # 3. 确定事件优先级
@@ -496,7 +496,7 @@ class SSEPerformanceOptimizer:
             return True
 
         except Exception as e:
-            logger.error("发送批次失败: %(e)s"")
+            logger.error("发送批次失败: %(e)s")
             self.metrics.total_events_dropped += len(batch.events)
             return False
 
@@ -542,7 +542,7 @@ class SSEPerformanceOptimizer:
                 batches = await self.batch_events()
 
                 if batches:
-                    logger.debug("处理 {len(batches)} 个事件批次"")
+                    logger.debug("处理 {len(batches)} 个事件批次")
 
                     # 并发发送批次
                     tasks = []
@@ -560,7 +560,7 @@ class SSEPerformanceOptimizer:
                 await asyncio.sleep(self.batch_config["flush_interval"])
 
             except Exception as e:
-                logger.error("批处理循环异常: %(e)s"")
+                logger.error("批处理循环异常: %(e)s")
                 await asyncio.sleep(1)
 
     async def _performance_monitoring_loop(self):
@@ -593,7 +593,7 @@ class SSEPerformanceOptimizer:
                 await asyncio.sleep(30)  # 每30秒监控一次
 
             except Exception as e:
-                logger.error("性能监控循环异常: %(e)s"")
+                logger.error("性能监控循环异常: %(e)s")
                 await asyncio.sleep(10)
 
     async def _cache_cleanup_loop(self):
@@ -606,7 +606,7 @@ class SSEPerformanceOptimizer:
                 await asyncio.sleep(300)  # 每5分钟清理一次
 
             except Exception as e:
-                logger.error("缓存清理循环异常: %(e)s"")
+                logger.error("缓存清理循环异常: %(e)s")
                 await asyncio.sleep(60)
 
     def get_performance_stats(self) -> Dict[str, Any]:
@@ -640,7 +640,7 @@ class SSEPerformanceOptimizer:
         if "performance_config" in kwargs:
             self.performance_config.update(kwargs["performance_config"])
 
-        logger.info("SSE性能配置已更新: %(kwargs)s"")
+        logger.info("SSE性能配置已更新: %(kwargs)s")
 
 
 # 全局性能优化器实例

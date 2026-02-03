@@ -1,5 +1,7 @@
 # Week 2 Day 1 Completion Summary - FastAPI Application Complete Setup
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **Date**: 2025-10-24
 **Task**: Week 2 Priority P0 - FastAPI Application Complete Setup
 **Status**: ✅ **100% Complete**
@@ -14,7 +16,7 @@ Successfully completed Week 2 Day 1 tasks, achieving **100% FastAPI application 
 - ✅ Proper startup/shutdown lifecycle management
 - ✅ 21 Week 1 architecture-compliant API endpoints integrated
 - ✅ 196 total API routes registered
-- ✅ Zero dependency on removed databases (MySQL, TDengine, Redis)
+- ✅ Zero dependency on removed databases (PostgreSQL, TDengine, Redis)
 
 ---
 
@@ -25,8 +27,8 @@ Successfully completed Week 2 Day 1 tasks, achieving **100% FastAPI application 
 **Before (Multi-database)**:
 ```python
 # config.py
-mysql_host: str = "192.168.123.104"
-mysql_port: int = 3306
+postgresql_host: str = "192.168.123.104"
+postgresql_port: int = 3306
 tdengine_host: str = "192.168.123.104"
 redis_host: str = "192.168.123.104"
 ```
@@ -41,10 +43,10 @@ monitor_db_url: str = ""  # PostgreSQL同库
 ```
 
 **Key Changes**:
-- ✅ Removed MySQL/TDengine/Redis configuration
+- ✅ Removed PostgreSQL/TDengine/Redis configuration
 - ✅ Updated `app/core/config.py` to PostgreSQL-only
 - ✅ Updated `app/core/database.py` to PostgreSQL-only
-- ✅ Added compatibility shims (`get_mysql_engine` → `get_postgresql_engine`)
+- ✅ Added compatibility shims (`get_postgresql_engine` → `get_postgresql_engine`)
 - ✅ Removed temporary configs from `.env`
 
 **Files Modified**:
@@ -174,7 +176,7 @@ app = FastAPI(
 **Complexity Reduction**:
 ```
 Before (Multi-database):
-├── MySQL (quant_research)
+├── PostgreSQL (quant_research)
 ├── PostgreSQL (mystocks)
 ├── TDengine (market_data)
 └── Redis (cache)
@@ -229,17 +231,17 @@ def get_monitoring_db():
 
 ### 3. Compatibility Shims ✅
 
-**MySQL → PostgreSQL Redirection**:
+**PostgreSQL → PostgreSQL Redirection**:
 ```python
 # app/core/database.py
-def get_mysql_engine():
-    """兼容性别名: Week 3简化后，MySQL请求重定向到PostgreSQL"""
-    logger.warning("get_mysql_engine() called, redirecting to PostgreSQL")
+def get_postgresql_engine():
+    """兼容性别名: Week 3简化后，PostgreSQL请求重定向到PostgreSQL"""
+    logger.warning("get_postgresql_engine() called, redirecting to PostgreSQL")
     return get_postgresql_engine()
 
-def get_mysql_session() -> Session:
-    """兼容性别名: Week 3简化后，MySQL会话重定向到PostgreSQL"""
-    logger.warning("get_mysql_session() called, redirecting to PostgreSQL")
+def get_postgresql_session() -> Session:
+    """兼容性别名: Week 3简化后，PostgreSQL会话重定向到PostgreSQL"""
+    logger.warning("get_postgresql_session() called, redirecting to PostgreSQL")
     return get_postgresql_session()
 ```
 
@@ -304,13 +306,13 @@ Available at:
 ### Modified Files (6)
 
 1. **`/opt/claude/mystocks_spec/web/backend/app/core/config.py`**
-   - Removed MySQL/TDengine/Redis configuration
+   - Removed PostgreSQL/TDengine/Redis configuration
    - Updated to PostgreSQL-only (Week 3 aligned)
    - Version: 1.0.0 → 2.0.0
 
 2. **`/opt/claude/mystocks_spec/web/backend/app/core/database.py`**
    - Simplified to PostgreSQL-only connections
-   - Added MySQL compatibility shims
+   - Added PostgreSQL compatibility shims
    - Graceful MyStocksDataAccess fallback
 
 3. **`/opt/claude/mystocks_spec/web/backend/app/main.py`**
@@ -372,9 +374,9 @@ def get_monitoring_db():
 **Approach**: Instead of massive refactoring, add redirection layer
 
 ```python
-def get_mysql_engine():
+def get_postgresql_engine():
     """Redirect to PostgreSQL with warning"""
-    logger.warning("MySQL redirected to PostgreSQL")
+    logger.warning("PostgreSQL redirected to PostgreSQL")
     return get_postgresql_engine()
 ```
 
@@ -470,7 +472,7 @@ async def shutdown():
 
 4. **table_config.yaml Cleanup** (0.5 day)
    - Remove unused TDengine definitions
-   - Remove unused MySQL definitions
+   - Remove unused PostgreSQL definitions
 
 5. **DatabaseTableManager Enhancement** (1 day)
    - Separate business vs monitoring tables

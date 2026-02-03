@@ -1,5 +1,7 @@
 # MyStocks Web Integration - Week 1 完整总结
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **项目**: MyStocks 量化交易系统 Web 集成
 **时间范围**: 2025-10-20 至 2025-10-24 (Day 1-5)
 **主题**: 架构合规性改造
@@ -332,7 +334,7 @@ if default_val is not None:
 ```
 
 **学习**:
-- PostgreSQL 比 MySQL 更严格（这是好事）
+- PostgreSQL 比 PostgreSQL 更严格（这是好事）
 - 所有类型都应该显式声明
 - 避免依赖隐式类型推断
 
@@ -435,7 +437,7 @@ WHERE table_name = 'strategies'
 
 ### 3. table_config.yaml 冗余
 
-**现状**: 包含 TDengine/MySQL 表定义，但这些数据库已不再使用
+**现状**: 包含 TDengine/PostgreSQL 表定义，但这些数据库已不再使用
 
 **影响**: batch_create_tables() 会产生连接错误日志（不影响 Web 层表创建）
 
@@ -481,7 +483,7 @@ WHERE table_name = 'strategies'
 
 5. **配置文件清理** (0.5 天)
    - 移除 TDengine 表定义（5 张）
-   - 移除 MySQL 表定义（14 张）
+   - 移除 PostgreSQL 表定义（14 张）
    - 保留注释说明历史原因
 
 6. **DatabaseTableManager 增强** (1 天)

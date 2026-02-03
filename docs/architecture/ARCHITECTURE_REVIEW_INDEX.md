@@ -121,7 +121,7 @@
 - ✅ 核心指标对比（开发、性能、成本）
 - ✅ 数据库技术选型详细对比
   - PostgreSQL vs TDengine
-  - PostgreSQL vs MySQL
+  - PostgreSQL vs MySQL (legacy)
   - Redis使用场景评估
 - ✅ 功能覆盖度评估
 - ✅ 技术栈深度对比

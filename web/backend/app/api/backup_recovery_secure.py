@@ -95,7 +95,7 @@ def log_security_event(
         "details": details or {},
     }
 
-    security_logger.info("SECURITY_EVENT: %(log_data)s"")
+    security_logger.info("SECURITY_EVENT: %(log_data)s")
 
 
 def check_backup_rate_limit(user: User) -> bool:

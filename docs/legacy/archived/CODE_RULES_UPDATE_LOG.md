@@ -1,5 +1,7 @@
 # 代码修改规则.md 更新记录
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **更新时间**: 2025-10-24
 **更新原因**: 整合 Day 5 DatabaseTableManager 修复过程中的关键学习
 
@@ -57,7 +59,7 @@
 明确禁止临时补救措施，建立"修复工具而非绕过工具"的思维模式。
 
 ### 3. PostgreSQL 特定知识
-补充 PostgreSQL 与 MySQL 的关键差异（ENUM name、严格类型检查），避免迁移时踩坑。
+补充 PostgreSQL 与 PostgreSQL 的关键差异（ENUM name、严格类型检查），避免迁移时踩坑。
 
 ### 4. 显式类型转换
 强调 ORM 映射时的显式类型转换，避免隐式推断错误。

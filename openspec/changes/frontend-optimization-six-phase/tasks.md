@@ -1,7 +1,7 @@
 # Tasks: Frontend Framework Six-Phase Optimization
 
 **Change ID**: `frontend-optimization-six-phase`
-**Total Tasks**: 122
+**Total Tasks**: 119
 **Estimated Duration**: 12-16 weeks (60-80 working days)
 
 ---

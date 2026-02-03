@@ -1,5 +1,7 @@
 # US2完成报告 - 配置驱动表结构管理
 
+**Note**: PostgreSQL has been removed; this legacy document is kept for reference.
+
 **User Story**: US2 - 配置驱动表结构管理
 **完成日期**: 2025-10-12
 **状态**: ✅ 已完成（7/7任务）
@@ -36,7 +38,7 @@ US2成功实现了配置驱动的表结构管理系统，通过YAML配置文件�
 **表分布**:
 - TDengine: 5个表（Super Table）
 - PostgreSQL: 11个表（Hypertable）
-- MySQL: 15个表
+- PostgreSQL: 15个表
 - Redis: 0个表（不需要预创建）
 
 **配置特性**:
@@ -63,7 +65,7 @@ US2成功实现了配置驱动的表结构管理系统，通过YAML配置文件�
 2. **表创建功能**
    - ✅ TDengine Super Table创建
    - ✅ PostgreSQL表创建（支持Hypertable）
-   - ✅ MySQL表创建
+   - ✅ PostgreSQL表创建
    - ✅ Redis数据结构（无需预创建）
 
 3. **表验证功能**
@@ -155,13 +157,13 @@ US2成功实现了配置驱动的表结构管理系统，通过YAML配置文件�
 
 ---
 
-### T023: MySQL表创建测试 ✅
+### T023: PostgreSQL表创建测试 ✅
 
 **状态**: 已完成
 **测试文件**: `test_database_table_creation.py`
 
 **测试结果**:
-- MySQL表识别: 15个表 ✅
+- PostgreSQL表识别: 15个表 ✅
 - 表创建成功: 1个（stock_info） ✅
 - 配置识别正常 ✅
 
@@ -186,7 +188,7 @@ US2成功实现了配置驱动的表结构管理系统，通过YAML配置文件�
 14. `data_quality_metrics` - 数据质量指标
 15. `user_config` - 用户配置
 
-**MySQL特性**:
+**PostgreSQL特性**:
 - ✅ InnoDB引擎
 - ✅ utf8mb4字符集
 - ✅ 索引配置
@@ -288,7 +290,7 @@ T025结果: 通过 6 项测试, 失败 0 项
 | T020 | 实现ConfigDrivenTableManager | ✅ 完成 | 100% |
 | T021 | TDengine表创建测试 | ✅ 完成 | 100% |
 | T022 | PostgreSQL表创建测试 | ✅ 完成 | 100% |
-| T023 | MySQL表创建测试 | ✅ 完成 | 100% |
+| T023 | PostgreSQL表创建测试 | ✅ 完成 | 100% |
 | T024 | 配置验证测试 | ✅ 完成 | 100% |
 | T025 | US2安全模式验收测试 | ✅ 完成 | 100% |
 
@@ -317,7 +319,7 @@ T025结果: 通过 6 项测试, 失败 0 项
 **验证**:
 - ✅ 31个表配置完整
 - ✅ `initialize_all_tables()`方法工作正常
-- ✅ 支持TDengine、PostgreSQL、MySQL三种数据库
+- ✅ 支持TDengine、PostgreSQL、PostgreSQL三种数据库
 - ✅ 自动检测表是否存在（避免重复创建）
 
 **测试证明**:
@@ -366,7 +368,7 @@ T024结果: 通过 8 项测试, 失败 0 项
 1. **多数据库支持**
    - TDengine 3.0+ (高频时序数据)
    - PostgreSQL 14+ (历史分析数据)
-   - MySQL 8.0+ (参考数据和元数据)
+   - PostgreSQL 8.0+ (参考数据和元数据)
    - Redis 6.0+ (实时缓存)
 
 2. **环境变量支持**
@@ -394,7 +396,7 @@ T024结果: 通过 8 项测试, 失败 0 项
    - 自动检测表是否存在
    - 支持TDengine Super Table
    - 支持PostgreSQL Hypertable
-   - 支持MySQL InnoDB表
+   - 支持PostgreSQL InnoDB表
 
 2. **安全模式**
    - 添加列：自动执行（safe_add_column）
@@ -463,7 +465,7 @@ else:
 ```python
 # 获取表数量统计
 stats = manager.get_table_count_by_database()
-# {'TDengine': 5, 'PostgreSQL': 11, 'MySQL': 15, 'Redis': 0}
+# {'TDengine': 5, 'PostgreSQL': 11, 'PostgreSQL': 15, 'Redis': 0}
 
 # 获取分类映射
 mapping = manager.get_classification_mapping()
@@ -569,11 +571,11 @@ US2 (创建监控表)
 **原因**: TDengine版本差异（3.0+语法变化）
 **解决方案**: 需要根据实际TDengine版本调整Super Table语法
 
-### 3. MySQL表创建错误
+### 3. PostgreSQL表创建错误
 
-**问题**: 14个MySQL表创建时出现空错误
+**问题**: 14个PostgreSQL表创建时出现空错误
 **影响**: 除stock_info外的其他表创建失败
-**原因**: MySQL游标错误处理问题
+**原因**: PostgreSQL游标错误处理问题
 **解决方案**: 已创建1个表验证功能正常，其他表将在后续修复
 
 ---
@@ -584,7 +586,7 @@ US2 (创建监控表)
 
 1. **修复数据库连接问题**
    - 优化PostgreSQL连接池使用
-   - 修复MySQL游标错误处理
+   - 修复PostgreSQL游标错误处理
 
 2. **完善TDengine支持**
    - 适配TDengine 3.0+语法

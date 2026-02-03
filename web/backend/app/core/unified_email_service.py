@@ -330,10 +330,10 @@ class UnifiedEmailService:
             part.add_header("Content-Disposition", f"attachment; filename= {filename}")
             msg.attach(part)
 
-            logger.info("✅ Added attachment: %(filename)s"")
+            logger.info("✅ Added attachment: %(filename)s")
 
         except Exception as e:
-            logger.error("❌ Failed to add attachment %(file_path)s: {str(e)}"")
+            logger.error("❌ Failed to add attachment %(file_path)s: {str(e)}")
             raise
 
     def _send_smtp(

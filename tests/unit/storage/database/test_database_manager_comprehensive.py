@@ -349,23 +349,6 @@ class TestDatabaseTableManagerDDLSpecific:
         assert "ts" in result
         assert "TIMESTAMP" in result
 
-    def test_generate_mysql_ddl(self):
-        """测试MySQL DDL生成"""
-        col_def = {
-            "name": "test_col",
-            "type": "DECIMAL",
-            "precision": 10,
-            "scale": 2,
-            "comment": "Test column",
-        }
-
-        result = self.manager._generate_mysql_ddl(col_def)
-
-        assert "test_col" in result
-        assert "DECIMAL" in result
-        assert "(10,2)" in result
-        assert "COMMENT 'Test column'" in result
-
     def test_generate_column_definition(self):
         """测试列定义生成"""
         col_def = {"name": "id", "type": "INTEGER", "primary_key": True}

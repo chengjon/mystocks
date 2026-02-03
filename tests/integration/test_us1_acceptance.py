@@ -286,7 +286,7 @@ print("  ✅ 统一简洁接口 (2-3行代码)")
 print("  ✅ 故障恢复机制 (SQLite Outbox队列)")
 print("  ✅ 批量操作优化 (支持10万条记录)")
 print("  ✅ 三种失败策略 (ROLLBACK/CONTINUE/RETRY)")
-print("  ✅ 4种数据库支持 (TDengine/PostgreSQL/MySQL/Redis)")
+print("  ✅ 2种数据库支持 (TDengine/PostgreSQL)")
 
 print("\n实施完成度:\n")
 print("  Phase 1: Setup - 100% ✅")

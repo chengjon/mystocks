@@ -23,7 +23,6 @@ class DatabaseTestTool:
 
         # 数据库连接库导入状态
         self.db_libs = {
-            "pymysql": None,
             "psycopg2": None,
             "redis": None,
             "tdengine": None,  # TDengine使用统一的键名
@@ -61,7 +60,6 @@ class DatabaseTestTool:
 
                 # 测试几个关键配置变量
                 test_vars = [
-                    "MYSQL_HOST",
                     "POSTGRESQL_HOST",
                     "REDIS_HOST",
                     "TDENGINE_HOST",
@@ -88,9 +86,9 @@ class DatabaseTestTool:
     def load_config(self) -> Dict[str, Any]:
         """从环境变量加载数据库配置"""
         return {
-            "monitor_mysql": {
+            "monitor_db": {
                 "url": os.getenv("MONITOR_DB_URL", ""),
-                "type": "MySQL Monitor",
+                "type": "Monitor DB",
             },
             "tdengine": {
                 "host": os.getenv("TDENGINE_HOST", ""),
@@ -112,20 +110,6 @@ class DatabaseTestTool:
                 "password": os.getenv("REDIS_PASSWORD", ""),
                 "db": int(os.getenv("REDIS_DB", 0)),
                 "type": "Redis",
-            },
-            "mysql": {
-                "host": os.getenv("MYSQL_HOST", ""),
-                "user": os.getenv("MYSQL_USER", "root"),
-                "password": os.getenv("MYSQL_PASSWORD", ""),
-                "port": int(os.getenv("MYSQL_PORT", 3306)),
-                "type": "MySQL",
-            },
-            "mariadb": {
-                "host": os.getenv("MARIADB_HOST", ""),
-                "user": os.getenv("MARIADB_USER", "root"),
-                "password": os.getenv("MARIADB_PASSWORD", ""),
-                "port": int(os.getenv("MARIADB_PORT", 3306)),
-                "type": "MariaDB",
             },
         }
 
@@ -149,8 +133,8 @@ class DatabaseTestTool:
         for db_name, config in self.config.items():
             print(f"\n🔍 检查 {config['type']} 配置...")
 
-            if db_name == "monitor_mysql":
-                # MySQL Monitor使用URL格式
+            if db_name == "monitor_db":
+                # Monitor DB使用URL格式
                 if config["url"]:
                     print(f"  ✅ 连接URL: {config['url']}")
                     self.test_results[db_name] = True
@@ -189,7 +173,6 @@ class DatabaseTestTool:
 
         # 检查各种数据库驱动
         drivers_info = [
-            ("pymysql", "MySQL/MariaDB 驱动"),
             ("psycopg2", "PostgreSQL 驱动"),
             ("redis", "Redis 驱动"),
             ("tdengine", "TDengine 驱动 (多种连接方式)"),  # 特殊处理，检测多种连接方式
@@ -239,7 +222,7 @@ class DatabaseTestTool:
 
         if installed_count < len(drivers_info):
             print("\n💡 安装缺失驱动的命令:")
-            print("pip install pymysql psycopg2-binary redis sqlalchemy python-dotenv")
+            print("pip install psycopg2-binary redis sqlalchemy python-dotenv")
             print("\n📝 TDengine 驱动选择 (任选一种):")
             print("  - WebSocket(推荐): pip install taos-ws-py")
             print("  - REST连接:        pip install taospy")
@@ -366,7 +349,7 @@ class DatabaseTestTool:
 
         # 重新导入需要的模块（用于实际连接测试）
         try:
-            import pymysql
+            import psycopg2
             import redis
             from sqlalchemy import create_engine, text
 
@@ -411,10 +394,10 @@ class DatabaseTestTool:
                 print(f"\n🔍 测试 {config['type']} 连接...")
 
                 try:
-                    if db_name == "monitor_mysql":
-                        success = self._test_mysql_monitor_simple(config, create_engine, text)
-                    elif db_name in ["mysql", "mariadb"]:
-                        success = self._test_mysql_simple(config, pymysql)
+                    if db_name == "monitor_db":
+                        success = self._test_monitor_db_simple(config, create_engine, text)
+                    elif db_name == "postgresql":
+                        success = self._test_postgresql_simple(config, psycopg2)
                     elif db_name == "redis":
                         success = self._test_redis_simple(config, redis)
                     elif db_name == "tdengine":
@@ -454,8 +437,8 @@ class DatabaseTestTool:
         print(f"\n📊 连接测试结果: {successful_connections}/{total_dbs} 个数据库连接成功")
         return successful_connections > 0
 
-    def _test_mysql_monitor_simple(self, config: Dict[str, Any], create_engine, text) -> bool:
-        """简化版MySQL监控数据库测试"""
+    def _test_monitor_db_simple(self, config: Dict[str, Any], create_engine, text) -> bool:
+        """简化版监控数据库测试（PostgreSQL URL）"""
         try:
             start_time = time.time()
             engine = create_engine(config["url"], pool_timeout=5)
@@ -469,20 +452,21 @@ class DatabaseTestTool:
             print(f"  ❌ 连接失败: {str(e)}")
             return False
 
-    def _test_mysql_simple(self, config: Dict[str, Any], pymysql) -> bool:
-        """简化版MySQL连接测试"""
+    def _test_postgresql_simple(self, config: Dict[str, Any], psycopg2_lib) -> bool:
+        """简化版PostgreSQL连接测试"""
         try:
             start_time = time.time()
-            conn = pymysql.connect(
+            conn = psycopg2_lib.connect(
                 host=config["host"],
                 user=config["user"],
                 password=config["password"],
                 port=config["port"],
+                dbname=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
                 connect_timeout=5,
             )
 
             cursor = conn.cursor()
-            cursor.execute("SELECT VERSION()")
+            cursor.execute("SELECT version()")
             version = cursor.fetchone()
 
             cursor.close()

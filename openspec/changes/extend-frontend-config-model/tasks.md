@@ -1,17 +1,9 @@
 # OpenSpec Change: extend-frontend-config-model
-**Status**: ✅ COMPLETED | **Started**: 2026-01-28 | **Completed**: 2026-01-28
+**Status**: 🔄 IN PROGRESS | **Started**: 2026-01-28 | **Completed**: -
 
 ## Progress Summary
-
-| Section | Tasks | Completed | In Progress | Pending |
-|---------|-------|-----------|-------------|---------|
-| Section 1 | 1.1-1.8 | 1.1-1.8 ✅ | - | - |
-| Section 2 | 2.1-2.3 | 2.1-2.3 ✅ | - | - |
-| Section 3 | 3.1-3.2 | 3.1-3.2 ✅ | - | - |
-| Section 4 | 4.1-4.2 | 4.1-4.2 ✅ | - | - |
-| Section 5 | 5.1-5.2 | 5.1-5.2 ✅ | - | - |
-
-**Overall Progress**: 100% Complete ✅
+- Checklist completion: 62/85 (73%)
+- Section breakdown: not reconciled; refer to checklist items below
 
 ## Summary of Deliverables
 
@@ -28,7 +20,7 @@
 - ArtDecoRiskManagement.vue - ✅ Standard page config pattern
 
 ### Tooling
-- `scripts/tools/generate-page-config.js` - Batch configuration generator
+- `scripts/dev/tools/generate-page-config.js` - Batch configuration generator
 - `scripts/hooks/check-page-config.mjs` - Validation hook
 - Pre-commit hook configured in `.pre-commit-config.yaml`
 

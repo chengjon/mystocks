@@ -55,7 +55,7 @@ class AdvancedAnalysisService:
             logger.info("AdvancedAnalysisService initialized successfully")
 
         except Exception as e:
-            logger.error("Failed to initialize AdvancedAnalysisService: %(e)s"")
+            logger.error("Failed to initialize AdvancedAnalysisService: %(e)s")
             raise
 
     async def _broadcast_analysis_progress(
@@ -85,7 +85,7 @@ class AdvancedAnalysisService:
             await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
         except Exception as e:
-            logger.warning("Failed to broadcast analysis progress: %(e)s"")
+            logger.warning("Failed to broadcast analysis progress: %(e)s")
 
     async def _broadcast_analysis_complete(self, analysis_type: str, symbol: str, result: Dict):
         """广播分析完成事件"""
@@ -103,7 +103,7 @@ class AdvancedAnalysisService:
             await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
         except Exception as e:
-            logger.warning("Failed to broadcast analysis completion: %(e)s"")
+            logger.warning("Failed to broadcast analysis completion: %(e)s")
 
     async def perform_analysis_with_realtime_updates(self, analysis_type: str, symbol: str, **kwargs) -> Dict[str, Any]:
         """执行分析并提供实时进度更新"""
@@ -136,7 +136,7 @@ class AdvancedAnalysisService:
         except Exception as e:
             # 广播错误状态
             await self._broadcast_analysis_progress(analysis_type, symbol, -1.0, "error", {"error": str(e)})
-            logger.error("Analysis failed for %(analysis_type)s:%(symbol)s: %(e)s"")
+            logger.error("Analysis failed for %(analysis_type)s:%(symbol)s: %(e)s")
             raise
 
     async def _perform_actual_analysis(self, analysis_type: str, symbol: str, **kwargs) -> Dict[str, Any]:
@@ -193,7 +193,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("基本面分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("基本面分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_technical(
@@ -208,7 +208,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("技术面分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("技术面分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_trading_signals(
@@ -228,7 +228,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("交易信号分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("交易信号分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_time_series(
@@ -243,7 +243,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("时序分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("时序分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_market_panorama(
@@ -258,7 +258,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("市场全景分析失败: %(e)s"")
+            logger.error("市场全景分析失败: %(e)s")
             raise
 
     async def analyze_capital_flow(
@@ -273,7 +273,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("资金流向分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("资金流向分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_chip_distribution(
@@ -288,7 +288,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("筹码分布分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("筹码分布分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_anomaly_tracking(
@@ -303,7 +303,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("异常追踪分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("异常追踪分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_financial_valuation(
@@ -318,7 +318,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("财务估值分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("财务估值分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_sentiment(
@@ -333,7 +333,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("情绪分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("情绪分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_decision_models(
@@ -348,7 +348,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("决策模型分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("决策模型分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_multidimensional_radar(
@@ -363,7 +363,7 @@ class AdvancedAnalysisService:
                 return result.dict() if hasattr(result, "dict") else result
 
         except Exception as e:
-            logger.error("多维度雷达分析失败 (symbol=%(symbol)s): %(e)s"")
+            logger.error("多维度雷达分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
     async def analyze_batch(
@@ -402,7 +402,7 @@ class AdvancedAnalysisService:
                 return results
 
         except Exception as e:
-            logger.error("批量分析失败: %(e)s"")
+            logger.error("批量分析失败: %(e)s")
             raise
 
     async def _analyze_single(self, symbol: str, analysis_type: str, user_id: Optional[str] = None) -> Dict[str, Any]:
@@ -460,7 +460,7 @@ class AdvancedAnalysisService:
             return health_info
 
         except Exception as e:
-            logger.error("健康检查失败: %(e)s"")
+            logger.error("健康检查失败: %(e)s")
             return {
                 "service": "advanced_analysis",
                 "overall_status": "unhealthy",

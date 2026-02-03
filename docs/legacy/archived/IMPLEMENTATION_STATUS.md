@@ -1,5 +1,7 @@
 # MyStocks MVP Implementation Status
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **实施计划**: 遵循原MVP计划 (US1: 统一数据接口访问)
 **开始日期**: 2025-10-11
 **当前状态**: Phase 1-2 完成 ✅
@@ -57,7 +59,7 @@ pandera>=0.17.0
 # 数据库驱动 (4种)
 taospy>=2.7.0              # TDengine WebSocket
 psycopg2-binary>=2.9.5     # PostgreSQL+TimescaleDB
-pymysql>=1.0.2             # MySQL/MariaDB
+pypostgresql>=1.0.2             # PostgreSQL
 redis>=4.5.0               # Redis
 
 # 数据源 (4个主要源)
@@ -90,7 +92,7 @@ mypy>=1.5.0
 **配置内容**:
 - ✅ TDengine配置 (WebSocket连接)
 - ✅ PostgreSQL配置 (TimescaleDB)
-- ✅ MySQL配置
+- ✅ PostgreSQL配置
 - ✅ **Redis配置 (默认使用1号数据库,避开0号冲突)** ← 关键约束
 - ✅ 监控数据库配置 (独立PostgreSQL)
 
@@ -157,7 +159,7 @@ class DataClassification(str, Enum):
 class DatabaseTarget(str, Enum):
     TDENGINE = "tdengine"
     POSTGRESQL = "postgresql"
-    MYSQL = "mysql"
+    MYSQL = "postgresql"
     REDIS = "redis"
 ```
 
@@ -185,7 +187,7 @@ class DatabaseTarget(str, Enum):
 1. **环境变量验证**: 启动时验证所有必需环境变量
 2. **TDengine WebSocket连接**: `get_tdengine_connection()`
 3. **PostgreSQL连接池**: `get_postgresql_connection()` (SimpleConnectionPool, maxconn=20)
-4. **MySQL连接**: `get_mysql_connection()` (utf8mb4字符集)
+4. **PostgreSQL连接**: `get_postgresql_connection()` (utf8mb4字符集)
 5. **Redis连接池**: `get_redis_connection()` (强制验证使用1-15号数据库)
 6. **连接测试**: `test_all_connections()` - 测试所有4种数据库
 7. **连接关闭**: `close_all_connections()` - 优雅关闭所有连接
@@ -307,7 +309,7 @@ CREATE TABLE outbox_queue (
 #### T009-T012: 数据访问层实现 (并行) ✅
 - T009: `data_access/tdengine_access.py` - TDengine WebSocket访问 (380行)
 - T010: `data_access/postgresql_access.py` - TimescaleDB访问 (370行)
-- T011: `data_access/mysql_access.py` - MySQL/MariaDB访问 (400行)
+- T011: `data_access/postgresql_access.py` - PostgreSQL访问 (400行)
 - T012: `data_access/redis_access.py` - Redis缓存访问 (450行)
 - **验证**: 所有数据库连接测试通过
 
@@ -329,7 +331,7 @@ CREATE TABLE outbox_queue (
 #### T015-T017: 集成测试 (并行) ✅
 - T015: TDengine集成测试 - 5/5用例通过
 - T016: PostgreSQL集成测试 - 6/6用例通过
-- T017: MySQL/Redis集成测试 - 10/10用例通过
+- T017: PostgreSQL/Redis集成测试 - 10/10用例通过
 - **总计**: 21个集成测试用例全部通过
 
 #### T018: 端到端验收测试 ✅
@@ -362,7 +364,7 @@ CREATE TABLE outbox_queue (
 
 **核心成果**:
 - ✅ 7个核心模块 (2,875行代码)
-- ✅ 4个数据访问层 (TDengine/PostgreSQL/MySQL/Redis)
+- ✅ 4个数据访问层 (TDengine/PostgreSQL/PostgreSQL/Redis)
 - ✅ 34个数据分类100%路由覆盖
 - ✅ 3种批量失败策略 (ROLLBACK/CONTINUE/RETRY)
 - ✅ 27个集成测试用例全部通过

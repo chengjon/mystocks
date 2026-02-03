@@ -1,8 +1,8 @@
 # Reviews
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 2
+**文档数量**: 3
 
 
 ---
@@ -12,3 +12,6 @@
 
 - [WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW](reviews/WEB_FRONTEND_MENU_ARCHITECTURE_REVIEW.md)
   - *Web前端菜单架构优化方案评审报告*
+
+- [frontend_routing_optimization_report](reviews/frontend_routing_optimization_report.md)
+  - *Web Frontend Routing Optimization Report*

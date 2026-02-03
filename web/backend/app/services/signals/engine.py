@@ -42,7 +42,7 @@ try:
     MONITORING_AVAILABLE = True
     logger.info("✅ Signal monitoring system available")
 except ImportError as e:
-    logger.warning("Signal monitoring system not available: %(e)s"")
+    logger.warning("Signal monitoring system not available: %(e)s")
     MONITORING_AVAILABLE = False
     get_signal_recorder = None
     get_signal_result_tracker = None
@@ -145,7 +145,7 @@ class SignalEngine:
         )
         self.strategies.append(bb_strategy)
 
-        logger.info("Loaded {len(self.strategies)} default strategies"")
+        logger.info("Loaded {len(self.strategies)} default strategies")
 
     def _setup_event_subscriptions(self):
         """设置事件订阅"""
@@ -173,7 +173,7 @@ class SignalEngine:
             await self._update_indicators(symbol, tick_data, "tick")
 
         except Exception as e:
-            logger.error("Error handling market tick: %(e)s"")
+            logger.error("Error handling market tick: %(e)s")
 
     async def _handle_market_bar(self, event: Event):
         """
@@ -196,7 +196,7 @@ class SignalEngine:
             await self._generate_signals(symbol, bar_data)
 
         except Exception as e:
-            logger.error("Error handling market bar: %(e)s"")
+            logger.error("Error handling market bar: %(e)s")
 
     async def _update_indicators(self, symbol: str, market_data: Dict[str, Any], data_type: str):
         """
@@ -224,10 +224,10 @@ class SignalEngine:
                         self.indicator_cache[symbol][indicator_name] = indicator_data
 
                 except Exception as e:
-                    logger.error("Error calculating %(indicator_name)s for %(symbol)s: %(e)s"")
+                    logger.error("Error calculating %(indicator_name)s for %(symbol)s: %(e)s")
 
         except Exception as e:
-            logger.error("Error updating indicators for %(symbol)s: %(e)s"")
+            logger.error("Error updating indicators for %(symbol)s: %(e)s")
 
     async def _calculate_indicator(
         self, symbol: str, indicator_name: str, market_data: Dict[str, Any]
@@ -260,7 +260,7 @@ class SignalEngine:
             return result.data if hasattr(result, "data") else result
 
         except Exception as e:
-            logger.error("Error in indicator calculation: %(e)s"")
+            logger.error("Error in indicator calculation: %(e)s")
             return None
 
     def _get_indicator_params(self, indicator_name: str) -> Dict[str, Any]:
@@ -301,7 +301,7 @@ class SignalEngine:
                         signals.append(signal)
 
                 except Exception as e:
-                    logger.error("Error in strategy {strategy.name}: %(e)s"")
+                    logger.error("Error in strategy {strategy.name}: %(e)s")
 
             # 信号融合和过滤
             filtered_signals = self._filter_and_rank_signals(signals)
@@ -319,7 +319,7 @@ class SignalEngine:
                 self.signals_generated += len(filtered_signals)
 
         except Exception as e:
-            logger.error("Error generating signals for %(symbol)s: %(e)s"")
+            logger.error("Error generating signals for %(symbol)s: %(e)s")
 
     def _can_generate_signal(self, symbol: str) -> bool:
         """
@@ -402,10 +402,10 @@ class SignalEngine:
             self.active_signals[signal.symbol].append(signal)
             self.signals_published += 1
 
-            logger.info("Published signal: {signal.signal_id} for {signal.symbol} ({signal.signal_type.value})"")
+            logger.info("Published signal: {signal.signal_id} for {signal.symbol} ({signal.signal_type.value})")
 
         except Exception as e:
-            logger.error("Error publishing signal {signal.signal_id}: %(e)s"")
+            logger.error("Error publishing signal {signal.signal_id}: %(e)s")
 
     async def _record_signal_to_monitoring(self, signal: TradingSignal):
         """记录信号到监控系统"""
@@ -431,7 +431,7 @@ class SignalEngine:
                 },
             )
         except Exception as e:
-            logger.error("Error recording signal to monitoring: %(e)s"")
+            logger.error("Error recording signal to monitoring: %(e)s")
 
     async def _send_signal_notification(self, signal: TradingSignal):
         """发送信号通知"""
@@ -453,7 +453,7 @@ class SignalEngine:
                 signal_id=signal.signal_id,
             )
         except Exception as e:
-            logger.error("Error sending signal notification: %(e)s"")
+            logger.error("Error sending signal notification: %(e)s")
 
     # ================ API规范实现 ================
 
@@ -503,7 +503,7 @@ class SignalEngine:
             }
 
         except Exception as e:
-            logger.error("Error getting trading signals for %(stock_code)s: %(e)s"")
+            logger.error("Error getting trading signals for %(stock_code)s: %(e)s")
             return {
                 "stock_code": stock_code,
                 "signals": [],
@@ -564,7 +564,7 @@ class SignalEngine:
             return all_signals[:100]
 
         except Exception as e:
-            logger.error("Error analyzing trading signals: %(e)s"")
+            logger.error("Error analyzing trading signals: %(e)s")
             return []
 
     def get_active_signals(self, symbol: Optional[str] = None) -> Dict[str, List[TradingSignal]]:
@@ -613,7 +613,7 @@ class SignalEngine:
             del self.active_signals[symbol]
 
         if expired_symbols:
-            logger.info("Cleaned up expired signals for {len(expired_symbols)} symbols"")
+            logger.info("Cleaned up expired signals for {len(expired_symbols)} symbols")
 
     async def shutdown(self):
         """关闭信号引擎"""

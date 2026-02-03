@@ -208,13 +208,13 @@ def get_monitoring_db():
                             ),
                         )
                     except Exception as e:
-                        logger.debug("Monitoring log failed (non-critical): %(e)s"")
+                        logger.debug("Monitoring log failed (non-critical): %(e)s")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
         except Exception as e:
-            logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s"")
+            logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s")
 
             # 创建一个简单的fallback对象
             class MonitoringFallback:
@@ -556,7 +556,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("添加止损监控失败: %(e)s"")
+        logger.error("添加止损监控失败: %(e)s")
         raise BusinessException(
             detail=f"添加止损监控失败: {str(e)}", status_code=500, error_code="STOP_LOSS_MONITORING_ADDITION_FAILED"
         )
@@ -591,7 +591,7 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("更新止损价格失败: %(e)s"")
+        logger.error("更新止损价格失败: %(e)s")
         raise BusinessException(
             detail=f"更新止损价格失败: {str(e)}", status_code=500, error_code="STOP_LOSS_PRICE_UPDATE_FAILED"
         )
@@ -626,7 +626,7 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("移除止损监控失败: %(e)s"")
+        logger.error("移除止损监控失败: %(e)s")
         raise BusinessException(
             detail=f"移除止损监控失败: {str(e)}", status_code=500, error_code="STOP_LOSS_MONITORING_REMOVAL_FAILED"
         )
@@ -661,7 +661,7 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取止损状态失败: %(e)s"")
+        logger.error("获取止损状态失败: %(e)s")
         raise BusinessException(
             detail=f"获取止损状态失败: {str(e)}", status_code=500, error_code="STOP_LOSS_STATUS_RETRIEVAL_FAILED"
         )
@@ -692,7 +692,7 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取止损总览失败: %(e)s"")
+        logger.error("获取止损总览失败: %(e)s")
         raise BusinessException(
             detail=f"获取止损总览失败: {str(e)}", status_code=500, error_code="STOP_LOSS_OVERVIEW_RETRIEVAL_FAILED"
         )
@@ -727,7 +727,7 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("批量更新止损价格失败: %(e)s"")
+        logger.error("批量更新止损价格失败: %(e)s")
         raise BusinessException(
             detail=f"批量更新止损价格失败: {str(e)}", status_code=500, error_code="BATCH_STOP_LOSS_UPDATE_FAILED"
         )
@@ -767,7 +767,7 @@ async def get_stop_loss_performance(
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取止损表现失败: %(e)s"")
+        logger.error("获取止损表现失败: %(e)s")
         raise BusinessException(
             detail=f"获取止损表现失败: {str(e)}", status_code=500, error_code="STOP_LOSS_PERFORMANCE_RETRIEVAL_FAILED"
         )
@@ -798,7 +798,7 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取止损建议失败: %(e)s"")
+        logger.error("获取止损建议失败: %(e)s")
         raise BusinessException(
             detail=f"获取止损建议失败: {str(e)}", status_code=500, error_code="STOP_LOSS_SUGGESTIONS_RETRIEVAL_FAILED"
         )
@@ -861,7 +861,7 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("发送风险告警失败: %(e)s"")
+        logger.error("发送风险告警失败: %(e)s")
         raise BusinessException(
             detail=f"发送风险告警失败: {str(e)}", status_code=500, error_code="RISK_ALERT_SENDING_FAILED"
         )
@@ -892,7 +892,7 @@ async def get_alert_statistics() -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取告警统计失败: %(e)s"")
+        logger.error("获取告警统计失败: %(e)s")
         raise BusinessException(
             detail=f"获取告警统计失败: {str(e)}", status_code=500, error_code="ALERT_STATISTICS_RETRIEVAL_FAILED"
         )
@@ -945,7 +945,7 @@ async def evaluate_alert_rules(request: Dict[str, Any]) -> List[Dict[str, Any]]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("评估告警规则失败: %(e)s"")
+        logger.error("评估告警规则失败: %(e)s")
         raise BusinessException(
             detail=f"评估告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_EVALUATION_FAILED"
         )
@@ -990,7 +990,7 @@ async def add_alert_rule(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("添加告警规则失败: %(e)s"")
+        logger.error("添加告警规则失败: %(e)s")
         raise BusinessException(
             detail=f"添加告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_ADDITION_FAILED"
         )
@@ -1023,7 +1023,7 @@ async def remove_alert_rule(rule_id: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("移除告警规则失败: %(e)s"")
+        logger.error("移除告警规则失败: %(e)s")
         raise BusinessException(
             detail=f"移除告警规则失败: {str(e)}", status_code=500, error_code="ALERT_RULE_REMOVAL_FAILED"
         )
@@ -1054,7 +1054,7 @@ async def get_rule_statistics() -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取规则统计失败: %(e)s"")
+        logger.error("获取规则统计失败: %(e)s")
         raise BusinessException(
             detail=f"获取规则统计失败: {str(e)}", status_code=500, error_code="RULE_STATISTICS_RETRIEVAL_FAILED"
         )
@@ -1088,7 +1088,7 @@ async def get_realtime_risk_metrics(symbol: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("获取实时风险指标失败 %(symbol)s: %(e)s"")
+        logger.error("获取实时风险指标失败 %(symbol)s: %(e)s")
         raise BusinessException(
             detail=f"获取实时风险指标失败: {str(e)}",
             status_code=500,
@@ -1585,7 +1585,7 @@ async def get_stock_risk_v31(symbol: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("V3.1个股风险计算失败 %(symbol)s: %(e)s"")
+        logger.error("V3.1个股风险计算失败 %(symbol)s: %(e)s")
         raise BusinessException(
             detail=f"个股风险计算失败: {str(e)}", status_code=500, error_code="INDIVIDUAL_STOCK_RISK_CALCULATION_FAILED"
         )
@@ -1631,7 +1631,7 @@ async def get_portfolio_risk_v31(portfolio_id: str) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("V3.1组合风险计算失败 %(portfolio_id)s: %(e)s"")
+        logger.error("V3.1组合风险计算失败 %(portfolio_id)s: %(e)s")
         raise BusinessException(
             detail=f"组合风险计算失败: {str(e)}", status_code=500, error_code="PORTFOLIO_RISK_CALCULATION_FAILED"
         )
@@ -1682,7 +1682,7 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException):
         raise
     except Exception as e:
-        logger.error("V3.1止损计算失败: %(e)s"")
+        logger.error("V3.1止损计算失败: %(e)s")
         raise BusinessException(
             detail=f"止损计算失败: {str(e)}", status_code=500, error_code="STOP_LOSS_CALCULATION_FAILED"
         )
@@ -1735,7 +1735,7 @@ async def trigger_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("V3.1止损执行失败: %(e)s"")
+        logger.error("V3.1止损执行失败: %(e)s")
         raise BusinessException(
             detail=f"止损执行失败: {str(e)}", status_code=500, error_code="STOP_LOSS_EXECUTION_FAILED"
         )
@@ -1767,7 +1767,7 @@ async def get_active_alerts_v31() -> Dict[str, Any]:
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("V3.1获取活跃告警失败: %(e)s"")
+        logger.error("V3.1获取活跃告警失败: %(e)s")
         raise BusinessException(
             detail=f"获取活跃告警失败: {str(e)}", status_code=500, error_code="ACTIVE_ALERTS_RETRIEVAL_FAILED"
         )
@@ -1811,7 +1811,7 @@ async def acknowledge_alert_v31(alert_id: int, request: Dict[str, Any]) -> Dict[
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("V3.1确认告警失败 %(alert_id)s: %(e)s"")
+        logger.error("V3.1确认告警失败 %(alert_id)s: %(e)s")
         raise BusinessException(
             detail=f"确认告警失败: {str(e)}", status_code=500, error_code="ALERT_CONFIRMATION_FAILED"
         )
@@ -1866,7 +1866,7 @@ async def get_risk_management_health() -> Dict[str, Any]:
         return health_status
 
     except Exception as e:
-        logger.error("V3.1健康检查失败: %(e)s"")
+        logger.error("V3.1健康检查失败: %(e)s")
         return {"status": "unhealthy", "error": str(e), "version": "3.1", "checked_at": datetime.now().isoformat()}
 
 
@@ -1897,7 +1897,7 @@ class ConnectionManager:
                 if topic in self.subscriptions:
                     self.subscriptions[topic].add(websocket)
 
-        logger.info("WebSocket连接建立，订阅主题: %(topics)s"")
+        logger.info("WebSocket连接建立，订阅主题: %(topics)s")
 
     def disconnect(self, websocket: WebSocket):
         """断开WebSocket连接"""
@@ -1990,13 +1990,13 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
                     elif message.get("type") == "subscribe":
                         new_topics = message.get("topics", [])
                         # 这里可以实现动态订阅更新
-                        logger.info("客户端请求更新订阅: %(new_topics)s"")
+                        logger.info("客户端请求更新订阅: %(new_topics)s")
 
                     # 处理取消订阅
                     elif message.get("type") == "unsubscribe":
                         remove_topics = message.get("topics", [])
                         # 这里可以实现动态取消订阅
-                        logger.info("客户端请求取消订阅: %(remove_topics)s"")
+                        logger.info("客户端请求取消订阅: %(remove_topics)s")
 
                 except json.JSONDecodeError:
                     # 忽略无效的JSON消息
@@ -2006,7 +2006,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
             connection_manager.disconnect(websocket)
 
     except Exception as e:
-        logger.error("WebSocket连接错误: %(e)s"")
+        logger.error("WebSocket连接错误: %(e)s")
         if websocket in connection_manager.active_connections:
             connection_manager.disconnect(websocket)
 
@@ -2049,7 +2049,7 @@ async def broadcast_risk_update(topic: str, message: Dict[str, Any]):
     except (BusinessException, ValidationException, NotFoundException):
         raise
     except Exception as e:
-        logger.error("广播风险更新失败 %(topic)s: %(e)s"")
+        logger.error("广播风险更新失败 %(topic)s: %(e)s")
         raise BusinessException(detail=f"广播失败: {str(e)}", status_code=500, error_code="BROADCAST_FAILED")
 
 
@@ -2075,7 +2075,7 @@ async def get_websocket_connections():
         }
 
     except Exception as e:
-        logger.error("获取WebSocket连接统计失败: %(e)s"")
+        logger.error("获取WebSocket连接统计失败: %(e)s")
         raise BusinessException(
             detail=f"获取统计失败: {str(e)}", status_code=500, error_code="STATISTICS_RETRIEVAL_FAILED"
         )
@@ -2101,7 +2101,7 @@ async def setup_risk_event_broadcasting():
         logger.info("风险事件WebSocket广播设置完成")
 
     except Exception as e:
-        logger.error("设置风险事件广播失败: %(e)s"")
+        logger.error("设置风险事件广播失败: %(e)s")
 
 
 # 在模块导入时自动设置广播（如果环境支持）

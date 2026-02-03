@@ -5,8 +5,8 @@
  * To make permanent changes, update the generation script and run:
  *   npm run generate-page-config
  * 
- * Generated at: 2026-01-28T03:11:46.032Z
- * Routes processed: 32
+ * Generated at: 2026-02-03T05:09:50.736Z
+ * Routes processed: 36
  */
 
 import type { PageConfigType, TabConfig, MonolithicPageConfig, StandardPageConfig, PageConfig } from '@/types/pageConfig'
@@ -77,33 +77,6 @@ const TAB_CONFIGS: Record<string, TabConfig[]> = {
       wsChannel: 'strategy:management',
     },
   ],
-  'ArtDecoTradingManagement.vue': [
-    {
-      id: 'overview',
-      apiEndpoint: '/api/trading/overview',
-      wsChannel: 'trading:overview',
-    },
-    {
-      id: 'signals',
-      apiEndpoint: '/api/trading/signals',
-      wsChannel: 'trading:signals',
-    },
-    {
-      id: 'positions',
-      apiEndpoint: '/api/trading/positions',
-      wsChannel: 'trading:positions',
-    },
-    {
-      id: 'history',
-      apiEndpoint: '/api/trading/history',
-      wsChannel: 'trading:history',
-    },
-    {
-      id: 'attribution',
-      apiEndpoint: '/api/trading/attribution',
-      wsChannel: 'trading:attribution',
-    },
-  ],
 }
 
 // Standard page configurations (non-monolithic)
@@ -128,6 +101,36 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     component: 'ArtDecoMarketQuotes.vue',
     requiresAuth: true,
   },
+  'market-overview': {
+    type: 'page',
+    routePath: 'overview',
+    title: '市场概览',
+    description: '市场概览',
+    apiEndpoint: '/api/market/overview',
+    wsChannel: 'market:overview',
+    component: 'ArtDecoMarketOverview.vue',
+    requiresAuth: true,
+  },
+  'market-analysis': {
+    type: 'page',
+    routePath: 'analysis',
+    title: '市场分析',
+    description: '市场分析',
+    apiEndpoint: '/api/market/analysis',
+    wsChannel: 'market:analysis',
+    component: 'ArtDecoMarketAnalysis.vue',
+    requiresAuth: true,
+  },
+  'market-industry': {
+    type: 'page',
+    routePath: 'industry',
+    title: '行业分析',
+    description: '行业分析',
+    apiEndpoint: '/api/market/industry',
+    wsChannel: 'market:industry',
+    component: 'ArtDecoIndustryAnalysis.vue',
+    requiresAuth: true,
+  },
   'market-technical': {
     type: 'page',
     routePath: 'technical',
@@ -136,6 +139,56 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     apiEndpoint: '/api/technical/indicators',
     wsChannel: 'market:technical',
     component: 'ArtDecoMarketQuotes.vue',
+    requiresAuth: true,
+  },
+  'trading-signals': {
+    type: 'page',
+    routePath: 'signals',
+    title: '交易信号',
+    description: '交易信号',
+    apiEndpoint: '/api/trading/signals',
+    wsChannel: 'trading:signals',
+    component: 'ArtDecoTradingSignals.vue',
+    requiresAuth: true,
+  },
+  'trading-history': {
+    type: 'page',
+    routePath: 'history',
+    title: '历史订单',
+    description: '历史订单',
+    apiEndpoint: '/api/trading/history',
+    wsChannel: 'trading:history',
+    component: 'ArtDecoTradingHistory.vue',
+    requiresAuth: true,
+  },
+  'trading-positions': {
+    type: 'page',
+    routePath: 'positions',
+    title: '持仓监控',
+    description: '持仓监控',
+    apiEndpoint: '/api/trading/positions',
+    wsChannel: 'trading:positions',
+    component: 'ArtDecoTradingPositions.vue',
+    requiresAuth: true,
+  },
+  'trading-performance': {
+    type: 'page',
+    routePath: 'performance',
+    title: '绩效分析',
+    description: '绩效分析',
+    apiEndpoint: '/api/trading/performance',
+    wsChannel: 'trading:performance',
+    component: 'ArtDecoPerformanceAnalysis.vue',
+    requiresAuth: true,
+  },
+  'trading-attribution': {
+    type: 'page',
+    routePath: 'attribution',
+    title: '绩效归因',
+    description: '绩效归因',
+    apiEndpoint: '/api/trading/attribution',
+    wsChannel: 'trading:attribution',
+    component: 'ArtDecoAttributionAnalysis.vue',
     requiresAuth: true,
   },
   'strategy-design': {
@@ -380,42 +433,6 @@ const MONOLITHIC_CONFIGS: Record<string, MonolithicPageConfig> = {
     description: '我的持仓',
     component: 'ArtDecoStockManagement.vue',
     tabs: TAB_CONFIGS['ArtDecoStockManagement.vue'] || [],
-    requiresAuth: true,
-  },
-  'trading-signals': {
-    type: 'monolithic',
-    routePath: 'signals',
-    title: '交易信号',
-    description: '交易信号',
-    component: 'ArtDecoTradingManagement.vue',
-    tabs: TAB_CONFIGS['ArtDecoTradingManagement.vue'] || [],
-    requiresAuth: true,
-  },
-  'trading-history': {
-    type: 'monolithic',
-    routePath: 'history',
-    title: '历史订单',
-    description: '历史订单',
-    component: 'ArtDecoTradingManagement.vue',
-    tabs: TAB_CONFIGS['ArtDecoTradingManagement.vue'] || [],
-    requiresAuth: true,
-  },
-  'trading-positions': {
-    type: 'monolithic',
-    routePath: 'positions',
-    title: '持仓监控',
-    description: '持仓监控',
-    component: 'ArtDecoTradingManagement.vue',
-    tabs: TAB_CONFIGS['ArtDecoTradingManagement.vue'] || [],
-    requiresAuth: true,
-  },
-  'trading-attribution': {
-    type: 'monolithic',
-    routePath: 'attribution',
-    title: '绩效归因',
-    description: '绩效归因',
-    component: 'ArtDecoTradingManagement.vue',
-    tabs: TAB_CONFIGS['ArtDecoTradingManagement.vue'] || [],
     requiresAuth: true,
   },
 }

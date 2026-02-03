@@ -20,7 +20,7 @@ class SecurityChecker:
             "user_hardcode": r'user\s*=\s*[\'"][^\'"\s]+[\'"]',
             "password_hardcode": r'password\s*=\s*[\'"][^\'"\s]+[\'"]',
             "port_hardcode": r"port\s*=\s*\d+",
-            "connection_string": r'mysql\+pymysql://[^\'"\s]+',
+            "connection_string": r'postgresql(\+psycopg2)?://[^\'"\s]+',
             # 移除dsn_string模式，因为它会误报正常的f-string
         }
 

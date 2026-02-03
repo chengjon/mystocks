@@ -26,7 +26,7 @@ export interface PaginatedResponse<T> {
 /**
  * API响应包装器
  */
-export interface ApiResponse<T = {
+export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   data: T;

@@ -211,7 +211,7 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("发送风险告警失败: %(e)s"")
+        logger.error("发送风险告警失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"发送风险告警失败: {str(e)}")
 
 
@@ -232,5 +232,5 @@ async def get_alert_statistics() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取告警统计失败: %(e)s"")
+        logger.error("获取告警统计失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取告警统计失败: {str(e)}")

@@ -65,10 +65,10 @@ class RedisPubSubService:
             channel_name = self._make_channel(channel)
             message_str = json.dumps(message)
             count = self.redis.publish(channel_name, message_str)
-            logger.debug("Published to %(channel)s: %(count)s subscribers"")
+            logger.debug("Published to %(channel)s: %(count)s subscribers")
             return count
         except Exception as e:
-            logger.error("Failed to publish to %(channel)s: %(e)s"")
+            logger.error("Failed to publish to %(channel)s: %(e)s")
             return 0
 
     # ========== 预定义消息发布方法 ==========
@@ -182,7 +182,7 @@ class RedisPubSubService:
         if channel not in self._listeners:
             self._listeners[channel] = []
         self._listeners[channel].append(callback)
-        logger.info("Subscribed to channel: %(channel)s"")
+        logger.info("Subscribed to channel: %(channel)s")
 
     def unsubscribe(self, channel: str, callback: Optional[Callable] = None):
         """
@@ -199,7 +199,7 @@ class RedisPubSubService:
                     del self._listeners[channel]
             else:
                 del self._listeners[channel]
-            logger.info("Unsubscribed from channel: %(channel)s"")
+            logger.info("Unsubscribed from channel: %(channel)s")
 
     def _message_handler(self, message: Dict[str, Any]):
         """
@@ -218,10 +218,10 @@ class RedisPubSubService:
                     try:
                         callback(data)
                     except Exception as e:
-                        logger.error("Callback error for %(channel)s: %(e)s"")
+                        logger.error("Callback error for %(channel)s: %(e)s")
 
         except Exception as e:
-            logger.error("Failed to handle message: %(e)s"")
+            logger.error("Failed to handle message: %(e)s")
 
     def start_listening(self):
         """
@@ -240,7 +240,7 @@ class RedisPubSubService:
         if self._listeners:
             channels = [self._make_channel(ch) for ch in self._listeners.keys()]
             self._pubsub.subscribe(*channels)
-            logger.info("Listening to {len(channels)} channels..."")
+            logger.info("Listening to {len(channels)} channels...")
 
         def _listen():
             while self._running:
@@ -249,7 +249,7 @@ class RedisPubSubService:
                     if message:
                         self._message_handler(message)
                 except Exception as e:
-                    logger.error("PubSub listen error: %(e)s"")
+                    logger.error("PubSub listen error: %(e)s")
 
         self._executor.submit(_listen)
         logger.info("PubSub listener started")

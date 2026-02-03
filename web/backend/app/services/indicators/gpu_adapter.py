@@ -90,7 +90,7 @@ class GPUResourceManager:
 
                 logger.info(".1f.1f.1f")
             except Exception as e:
-                logger.warning("Failed to get GPU memory info: %(e)s"")
+                logger.warning("Failed to get GPU memory info: %(e)s")
                 self.available_memory = 1024 * 1024 * 1024  # 1GB 默认
         else:
             self.available_memory = 0
@@ -165,7 +165,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
         self.memory_usage = []
         self.batch_sizes = []
 
-        logger.info("✅ GPU Indicator Adapter initialized (GPU: {self.use_gpu})"")
+        logger.info("✅ GPU Indicator Adapter initialized (GPU: {self.use_gpu})")
 
     def _should_use_gpu(self) -> bool:
         """判断是否应该使用GPU"""
@@ -228,10 +228,10 @@ class GPUIndicatorAdapter(IndicatorInterface):
             )
 
         except Exception as e:
-            logger.error("Error calculating {self.config.name}: %(e)s"")
+            logger.error("Error calculating {self.config.name}: %(e)s")
             # 回退到CPU计算
             if self.use_gpu:
-                logger.info("Falling back to CPU calculation for {self.config.name}"")
+                logger.info("Falling back to CPU calculation for {self.config.name}")
                 self.use_gpu = False
                 return self.calculate(data, parameters)
 
@@ -318,7 +318,7 @@ class GPUMACDIndicator(GPUIndicatorAdapter):
             }
 
         except Exception as e:
-            logger.error("GPU MACD calculation failed: %(e)s"")
+            logger.error("GPU MACD calculation failed: %(e)s")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -394,7 +394,7 @@ class GPURSIIndicator(GPUIndicatorAdapter):
             return {"rsi": rsi.to_pandas().fillna(50).values}  # RSI默认50
 
         except Exception as e:
-            logger.error("GPU RSI calculation failed: %(e)s"")
+            logger.error("GPU RSI calculation failed: %(e)s")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -456,7 +456,7 @@ class GPUBollingerBandsIndicator(GPUIndicatorAdapter):
             }
 
         except Exception as e:
-            logger.error("GPU Bollinger Bands calculation failed: %(e)s"")
+            logger.error("GPU Bollinger Bands calculation failed: %(e)s")
             raise
 
     def _calculate_cpu(self, data: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:

@@ -300,7 +300,7 @@ class RoomManager:
             self.event_callbacks[event_type] = []
 
         self.event_callbacks[event_type].append(handler)
-        logger.info("✅ Registered room event handler: %(event_type)s"")
+        logger.info("✅ Registered room event handler: %(event_type)s")
 
     def _trigger_event(self, event_type: RoomEventType, data: Dict[str, Any]) -> None:
         """触发事件"""

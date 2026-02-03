@@ -57,7 +57,7 @@ class TaskScheduler:
     def schedule_task(self, task_config: TaskConfig) -> bool:
         """调度任务"""
         if not task_config.schedule or not task_config.schedule.enabled:
-            logger.warning("Task {task_config.task_id} has no schedule or is disabled"")
+            logger.warning("Task {task_config.task_id} has no schedule or is disabled")
             return False
 
         try:
@@ -68,7 +68,7 @@ class TaskScheduler:
             # 创建触发器
             trigger = self._create_trigger(task_config.schedule)
             if not trigger:
-                logger.error("Failed to create trigger for task {task_config.task_id}"")
+                logger.error("Failed to create trigger for task {task_config.task_id}")
                 return False
 
             # 添加任务到调度器
@@ -82,11 +82,11 @@ class TaskScheduler:
             )
 
             self.scheduled_tasks[task_config.task_id] = job.id
-            logger.info("Task {task_config.task_id} scheduled successfully"")
+            logger.info("Task {task_config.task_id} scheduled successfully")
             return True
 
         except Exception as e:
-            logger.error("Failed to schedule task {task_config.task_id}: %(e)s"")
+            logger.error("Failed to schedule task {task_config.task_id}: %(e)s")
             return False
 
     def unschedule_task(self, task_id: str) -> bool:
@@ -95,11 +95,11 @@ class TaskScheduler:
             if task_id in self.scheduled_tasks:
                 self.scheduler.remove_job(self.scheduled_tasks[task_id])
                 del self.scheduled_tasks[task_id]
-                logger.info("Task %(task_id)s unscheduled"")
+                logger.info("Task %(task_id)s unscheduled")
                 return True
             return False
         except Exception as e:
-            logger.error("Failed to unschedule task %(task_id)s: %(e)s"")
+            logger.error("Failed to unschedule task %(task_id)s: %(e)s")
             return False
 
     def pause_task(self, task_id: str) -> bool:
@@ -107,11 +107,11 @@ class TaskScheduler:
         try:
             if task_id in self.scheduled_tasks:
                 self.scheduler.pause_job(self.scheduled_tasks[task_id])
-                logger.info("Task %(task_id)s paused"")
+                logger.info("Task %(task_id)s paused")
                 return True
             return False
         except Exception as e:
-            logger.error("Failed to pause task %(task_id)s: %(e)s"")
+            logger.error("Failed to pause task %(task_id)s: %(e)s")
             return False
 
     def resume_task(self, task_id: str) -> bool:
@@ -119,11 +119,11 @@ class TaskScheduler:
         try:
             if task_id in self.scheduled_tasks:
                 self.scheduler.resume_job(self.scheduled_tasks[task_id])
-                logger.info("Task %(task_id)s resumed"")
+                logger.info("Task %(task_id)s resumed")
                 return True
             return False
         except Exception as e:
-            logger.error("Failed to resume task %(task_id)s: %(e)s"")
+            logger.error("Failed to resume task %(task_id)s: %(e)s")
             return False
 
     def get_scheduled_jobs(self) -> List[Dict]:
@@ -149,7 +149,7 @@ class TaskScheduler:
                 # 解析cron表达式
                 parts = schedule.cron_expression.split()
                 if len(parts) != 5:
-                    logger.error("Invalid cron expression: {schedule.cron_expression}"")
+                    logger.error("Invalid cron expression: {schedule.cron_expression}")
                     return None
 
                 return CronTrigger(
@@ -179,20 +179,20 @@ class TaskScheduler:
                 return DateTrigger(run_date=schedule.start_time, timezone="Asia/Shanghai")
 
             else:
-                logger.error("Unknown schedule type: {schedule.schedule_type}"")
+                logger.error("Unknown schedule type: {schedule.schedule_type}")
                 return None
 
         except Exception as e:
-            logger.error("Failed to create trigger: %(e)s"")
+            logger.error("Failed to create trigger: %(e)s")
             return None
 
     async def _execute_scheduled_task(self, task_id: str):
         """执行调度的任务"""
-        logger.info("Executing scheduled task: %(task_id)s"")
+        logger.info("Executing scheduled task: %(task_id)s")
         try:
             await task_manager.start_task(task_id)
         except Exception as e:
-            logger.error("Failed to execute scheduled task %(task_id)s: %(e)s"")
+            logger.error("Failed to execute scheduled task %(task_id)s: %(e)s")
 
 
 # 全局调度器实例

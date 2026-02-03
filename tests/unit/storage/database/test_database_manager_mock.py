@@ -138,18 +138,6 @@ class TestDatabaseManagerMockOnly:
         assert "ts" in result
         assert "TIMESTAMP" in result
 
-    def test_generate_mysql_ddl_mock(self):
-        """测试MySQL DDL生成"""
-        manager = DatabaseTableManager()
-
-        col_def = {"name": "test_col", "type": "DECIMAL", "precision": 10, "scale": 2}
-
-        result = manager._generate_mysql_ddl(col_def)
-
-        assert "test_col" in result
-        assert "DECIMAL" in result
-        assert "(10,2)" in result
-
     def test_generate_column_definition_mock(self):
         """测试列定义生成"""
         manager = DatabaseTableManager()

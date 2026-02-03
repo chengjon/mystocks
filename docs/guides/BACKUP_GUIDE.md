@@ -3,7 +3,7 @@
 ## 快速备份命令
 
 ```bash
-rsync -avh --progress --delete --exclude='.git/' --exclude='node_modules/' --exclude='__pycache__/' --exclude='.pytest_cache/' --exclude='.mypy_cache/' --exclude='.ruff_cache/' --exclude='htmlcov/' --exclude='.coverage' --exclude='coverage/' --exclude='logs/' --exclude='*.log' --exclude='dist/' --exclude='venv/' --exclude='.env' --exclude='*.pyc' --exclude='*.pyo' --exclude='.DS_Store' --exclude='scripts/development/' --exclude='temp/' --exclude='playwright-report/' /opt/claude/mystocks_spec/ /mnt/wd_mycode/mystocks_bak2/
+rsync -avh --progress --delete --exclude='.git/' --exclude='node_modules/' --exclude='__pycache__/' --exclude='.pytest_cache/' --exclude='.mypy_cache/' --exclude='.ruff_cache/' --exclude='htmlcov/' --exclude='.coverage' --exclude='coverage/' --exclude='logs/' --exclude='*.log' --exclude='dist/' --exclude='venv/' --exclude='.env' --exclude='*.pyc' --exclude='*.pyo' --exclude='.DS_Store' --exclude='scripts/dev/' --exclude='temp/' --exclude='playwright-report/' /opt/claude/mystocks_spec/ /mnt/wd_mycode/mystocks_bak2/
 ```
 
 ## 预览模式（不实际执行）
@@ -11,7 +11,7 @@ rsync -avh --progress --delete --exclude='.git/' --exclude='node_modules/' --exc
 添加 `-n` 参数：
 
 ```bash
-rsync -avhn --progress --delete --exclude='.git/' --exclude='node_modules/' --exclude='__pycache__/' --exclude='.pytest_cache/' --exclude='.mypy_cache/' --exclude='.ruff_cache/' --exclude='htmlcov/' --exclude='.coverage' --exclude='coverage/' --exclude='logs/' --exclude='*.log' --exclude='dist/' --exclude='venv/' --exclude='.env' --exclude='*.pyc' --exclude='*.pyo' --exclude='.DS_Store' --exclude='scripts/development/' --exclude='temp/' --exclude='playwright-report/' /opt/claude/mystocks_spec/ /mnt/wd_mycode/mystocks_bak2/
+rsync -avhn --progress --delete --exclude='.git/' --exclude='node_modules/' --exclude='__pycache__/' --exclude='.pytest_cache/' --exclude='.mypy_cache/' --exclude='.ruff_cache/' --exclude='htmlcov/' --exclude='.coverage' --exclude='coverage/' --exclude='logs/' --exclude='*.log' --exclude='dist/' --exclude='venv/' --exclude='.env' --exclude='*.pyc' --exclude='*.pyo' --exclude='.DS_Store' --exclude='scripts/dev/' --exclude='temp/' --exclude='playwright-report/' /opt/claude/mystocks_spec/ /mnt/wd_mycode/mystocks_bak2/
 ```
 
 ## 排除项说明
@@ -20,7 +20,7 @@ rsync -avhn --progress --delete --exclude='.git/' --exclude='node_modules/' --ex
 |--------|------|----------|
 | `.git/` | Git历史，可重新clone | ~大 |
 | `node_modules/` | npm依赖，可 `npm install` 恢复 | ~800M |
-| `scripts/development/` | 开发依赖包 | ~1G |
+| `scripts/dev/` | 开发依赖包 | ~1G |
 | `logs/`, `*.log` | 日志文件 | ~235M |
 | `htmlcov/`, `coverage/` | 测试覆盖率报告 | ~100M |
 | `__pycache__/`, `*.pyc`, `*.pyo` | Python编译缓存 | - |

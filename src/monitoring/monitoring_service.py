@@ -24,8 +24,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
-import pymysql
 from dotenv import load_dotenv
 
 # 导入核心模块 (US3: 已移除DataStorageStrategy)
@@ -108,17 +108,20 @@ class MonitoringDatabase:
             DatabaseTableManager,
         )
 
-        self.monitor_db_url = monitor_db_url or os.getenv("MONITOR_DB_URL")
+        self.monitor_db_url = monitor_db_url or os.getenv("MONITOR_DB_URL") or ""
         self.db_manager = DatabaseTableManager()
 
-        # 监控数据库连接参数
+        parsed_url = urlparse(self.monitor_db_url)
+        if parsed_url.scheme and not parsed_url.scheme.startswith("postgresql"):
+            raise ValueError("监控数据库仅支持PostgreSQL（MySQL已移除）。")
+
+        self.monitor_db_backend = "postgresql"
         self.monitor_db_config = {
-            "host": os.getenv("MONITOR_DB_HOST"),
-            "port": int(os.getenv("MONITOR_DB_PORT", "3306")),
-            "user": os.getenv("MONITOR_DB_USER", "root"),
-            "password": os.getenv("MONITOR_DB_PASSWORD", ""),
-            "database": os.getenv("MONITOR_DB_DATABASE", "db_monitor"),
-            "charset": "utf8mb4",
+            "host": os.getenv("MONITOR_DB_HOST") or os.getenv("POSTGRESQL_HOST"),
+            "port": int(os.getenv("MONITOR_DB_PORT") or os.getenv("POSTGRESQL_PORT", "5432")),
+            "user": os.getenv("MONITOR_DB_USER") or os.getenv("POSTGRESQL_USER", "postgres"),
+            "password": os.getenv("MONITOR_DB_PASSWORD") or os.getenv("POSTGRESQL_PASSWORD", ""),
+            "database": os.getenv("MONITOR_DB_DATABASE") or os.getenv("POSTGRESQL_DATABASE", "mystocks"),
         }
 
         # 初始化监控表结构
@@ -129,7 +132,15 @@ class MonitoringDatabase:
     def _get_monitor_connection(self):
         """获取监控数据库连接"""
         try:
-            connection = pymysql.connect(**self.monitor_db_config)
+            import psycopg2
+
+            connection = psycopg2.connect(
+                host=self.monitor_db_config.get("host"),
+                port=self.monitor_db_config.get("port"),
+                user=self.monitor_db_config.get("user"),
+                password=self.monitor_db_config.get("password"),
+                dbname=self.monitor_db_config.get("database"),
+            )
             return connection
         except Exception as e:
             logger.error("连接监控数据库失败: %s", e)
@@ -137,47 +148,19 @@ class MonitoringDatabase:
 
     def _ensure_monitoring_tables(self):
         """确保监控表结构存在"""
-        try:
-            connection = self._get_monitor_connection()
-            if connection:
-                cursor = connection.cursor()
-
-                # 检查监控表是否存在，如果不存在则创建
-                check_tables_sql = """
-                SELECT COUNT(*) as table_count FROM information_schema.tables
-                WHERE table_schema = %s AND table_name IN
-                ('table_creation_log', 'column_definition_log', 'table_operation_log', 'table_validation_log')
-                """
-
-                cursor.execute(check_tables_sql, (self.monitor_db_config["database"],))
-                result = cursor.fetchone()
-
-                if result[0] < 4:
-                    logger.warning("监控表不完整，尝试创建监控表结构")
-                    # 这里可以调用 init_db_monitor.py 的功能
-                    try:
-                        from src.storage.database.init_db_monitor import (
-                            init_monitoring_database,
-                        )
-
-                        init_monitoring_database()
-                        logger.info("监控表结构创建完成")
-                    except Exception as e:
-                        logger.error("创建监控表失败: %s", e)
-
-                cursor.close()
-                connection.close()
-                logger.info("监控表结构检查完成")
-
-        except Exception as e:
-            logger.error("检查监控表结构失败: %s", e)
-
         if not self.monitor_db_url:
             logger.error("未配置监控数据库URL，无法启动监控服务")
             raise ValueError(
                 "MONITOR_DB_URL 环境变量必须设置。"
                 "请在 .env 文件中配置: MONITOR_DB_URL=postgresql://user:password@host:port/database"
             )
+
+        try:
+            from src.storage.database.init_db_monitor import init_monitoring_database
+
+            init_monitoring_database()
+        except Exception as e:
+            logger.warning("初始化监控表结构失败: %s", e)
 
         self._init_monitoring_tables()
 

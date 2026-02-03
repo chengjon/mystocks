@@ -126,7 +126,7 @@ class TestMonitoringDatabase:
 
     def test_monitoring_database_initialization_with_url(self):
         """测试使用URL初始化监控数据库"""
-        test_url = "mysql+pymysql://user:pass@host:3306/db_monitor"  # pragma: allowlist secret
+        test_url = "postgresql://user:pass@host:5432/db_monitor"  # pragma: allowlist secret
 
         with patch("monitoring.monitoring_service.DatabaseTableManager") as mock_db_manager:
             with patch("monitoring.monitoring_service.load_dotenv"):
@@ -141,36 +141,36 @@ class TestMonitoringDatabase:
             with patch("monitoring.monitoring_service.load_dotenv"):
                 with patch.dict(
                     os.environ,
-                    {"MONITOR_DB_URL": "mysql+pymysql://test:test@localhost:3306/monitor"},  # pragma: allowlist secret
+                    {"MONITOR_DB_URL": "postgresql://test:test@localhost:5432/monitor"},  # pragma: allowlist secret
                 ):
                     db = MonitoringDatabase()
 
                     assert (
-                        db.monitor_db_url == "mysql+pymysql://test:test@localhost:3306/monitor"
+                        db.monitor_db_url == "postgresql://test:test@localhost:5432/monitor"
                     )  # pragma: allowlist secret
                     mock_db_manager.assert_called_once()
 
-    @patch("monitoring.monitoring_service.pymysql.connect")
+    @patch("psycopg2.connect")
     def test_get_monitor_connection_success(self, mock_connect):
         """测试获取监控数据库连接成功"""
         mock_connect.return_value = Mock()
 
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
             with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase()
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 connection = db._get_monitor_connection()
 
                 assert connection is not None
                 mock_connect.assert_called_once()
 
-    @patch("monitoring.monitoring_service.pymysql.connect")
+    @patch("psycopg2.connect")
     def test_get_monitor_connection_failure(self, mock_connect):
         """测试获取监控数据库连接失败"""
         mock_connect.side_effect = Exception("Connection failed")
 
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring.service.load_dotenv"):
-                db = MonitoringDatabase()
+            with patch("monitoring.monitoring_service.load_dotenv"):
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 connection = db._get_monitor_connection()
 
                 assert connection is None
@@ -179,7 +179,7 @@ class TestMonitoringDatabase:
         """测试记录操作开始"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
             with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase()
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 db._insert_operation_log = Mock()
 
                 operation_id = db.log_operation_start(
@@ -197,7 +197,7 @@ class TestMonitoringDatabase:
         """测试记录操作开始并包含详细信息"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
             with patch("monitoring.monitoring_service.load_dotenv"):
-                db = MonitoringDatabase()
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 db._insert_operation_log = Mock()
 
                 details = {"batch_size": 100, "source": "api"}
@@ -215,8 +215,8 @@ class TestMonitoringDatabase:
     def test_log_operation_result_success(self):
         """测试记录操作结果成功"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring.service.load_dotenv"):
-                db = MonitoringDatabase()
+            with patch("monitoring.monitoring_service.load_dotenv"):
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 db._update_operation_log = Mock()
 
                 db.log_operation_result(operation_id="test_op_001", success=True, data_count=100)
@@ -226,8 +226,8 @@ class TestMonitoringDatabase:
     def test_log_operation_result_failure(self):
         """测试记录操作结果失败"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring.service.load_dotenv"):
-                db = MonitoringDatabase()
+            with patch("monitoring.monitoring_service.load_dotenv"):
+                db = MonitoringDatabase(monitor_db_url="postgresql://user:pass@host:5432/db_monitor")
                 db._update_operation_log = Mock()
 
                 db.log_operation_result(
@@ -241,7 +241,7 @@ class TestMonitoringDatabase:
     def test_get_operation_statistics_empty(self):
         """测试获取操作统计信息（无数据）"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring.service.load_dotenv"):
+            with patch("monitoring.monitoring_service.load_dotenv"):
                 db = MonitoringDatabase()
                 db._get_monitor_connection = Mock(return_value=None)
 
@@ -252,7 +252,7 @@ class TestMonitoringDatabase:
     def test_get_table_creation_history(self):
         """测试获取表创建历史"""
         with patch("monitoring.monitoring_service.DatabaseTableManager"):
-            with patch("monitoring.monitoring.service.load_dotenv"):
+            with patch("monitoring.monitoring_service.load_dotenv"):
                 db = MonitoringDatabase()
 
                 history = db.get_table_creation_history(limit=50)
@@ -964,7 +964,7 @@ class TestAlertChannels:
             timestamp=datetime.now(),
         )
 
-        with patch("monitoring.monitoring.service.logger") as mock_logger:
+        with patch("monitoring.monitoring_service.logger") as mock_logger:
             channel.send_alert(alert)
 
             mock_logger.info.assert_called_with("Webhook告警发送至: https://hooks.example.com/test")

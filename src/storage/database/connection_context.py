@@ -37,6 +37,13 @@ except ImportError:
     get_connection_manager = None
 
 
+def _normalize_db_type(db_type: str) -> str:
+    normalized = db_type.lower()
+    if normalized in {"mysql", "mariadb"}:
+        raise ValueError("MySQL/MariaDB已移除，请使用PostgreSQL")
+    return normalized
+
+
 class DatabaseConnectionContext:
     """数据库连接上下文管理器"""
 
@@ -45,9 +52,9 @@ class DatabaseConnectionContext:
         初始化连接上下文
 
         Args:
-            db_type: 数据库类型 (tdengine, postgresql, mysql, redis)
+            db_type: 数据库类型 (tdengine, postgresql, redis)
         """
-        self.db_type = db_type
+        self.db_type = _normalize_db_type(db_type)
         self.connection: Optional[Any] = None
         self.manager = None
 
@@ -68,8 +75,6 @@ class DatabaseConnectionContext:
             self.connection = self.manager.get_tdengine_connection()
         elif self.db_type == "postgresql":
             self.connection = self.manager.get_postgresql_connection()
-        elif self.db_type == "mysql":
-            self.connection = self.manager.get_mysql_connection()
         elif self.db_type == "redis":
             self.connection = self.manager.get_redis_connection()
         else:
@@ -97,9 +102,6 @@ class DatabaseConnectionContext:
                 elif self.db_type == "postgresql":
                     # PostgreSQL连接池不需要手动关闭单个连接
                     pass
-                elif self.db_type == "mysql":
-                    if hasattr(self.connection, "close"):
-                        self.connection.close()
                 elif self.db_type == "redis":
                     if hasattr(self.connection, "close"):
                         self.connection.close()
@@ -125,6 +127,7 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
     Yields:
         数据库连接对象
     """
+    db_type = _normalize_db_type(db_type)
     connection = None
     try:
         if not CONNECTION_MANAGER_AVAILABLE or get_connection_manager is None:
@@ -142,8 +145,6 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
             connection = manager.get_tdengine_connection()
         elif db_type == "postgresql":
             connection = manager.get_postgresql_connection()
-        elif db_type == "mysql":
-            connection = manager.get_mysql_connection()
         elif db_type == "redis":
             connection = manager.get_redis_connection()
         else:
@@ -161,8 +162,6 @@ def database_connection_sync(db_type: str) -> Generator[Any, None, None]:
         try:
             if connection:
                 if db_type == "tdengine" and hasattr(connection, "close"):
-                    connection.close()
-                elif db_type == "mysql" and hasattr(connection, "close"):
                     connection.close()
                 elif db_type == "redis" and hasattr(connection, "close"):
                     connection.close()
@@ -184,6 +183,7 @@ async def database_connection_async(db_type: str) -> Any:
     if not CONNECTION_MANAGER_AVAILABLE or get_connection_manager is None:
         raise RuntimeError("连接管理器不可用")
 
+    db_type = _normalize_db_type(db_type)
     manager = get_connection_manager()
 
     # 记录内存使用
@@ -196,8 +196,6 @@ async def database_connection_async(db_type: str) -> Any:
         connection = manager.get_tdengine_connection()
     elif db_type == "postgresql":
         connection = manager.get_postgresql_connection()
-    elif db_type == "mysql":
-        connection = manager.get_mysql_connection()
     elif db_type == "redis":
         connection = manager.get_redis_connection()
     else:
@@ -333,10 +331,6 @@ async def test_connection_contexts():
         async with DatabaseConnectionContext("postgresql") as conn:
             print(f"✓ 获取PostgreSQL连接成功: {type(conn)}")
 
-        # 测试MySQL连接
-        async with DatabaseConnectionContext("mysql") as conn:
-            print(f"✓ 获取MySQL连接成功: {type(conn)}")
-
         # 测试Redis连接
         async with DatabaseConnectionContext("redis") as conn:
             print(f"✓ 获取Redis连接成功: {type(conn)}")
@@ -355,10 +349,6 @@ def test_sync_connection_context():
         # 测试同步PostgreSQL连接
         with database_connection_sync("postgresql") as conn:
             print(f"✓ 同步获取PostgreSQL连接成功: {type(conn)}")
-
-        # 测试同步MySQL连接
-        with database_connection_sync("mysql") as conn:
-            print(f"✓ 同步获取MySQL连接成功: {type(conn)}")
 
         print("✓ 同步连接上下文测试通过")
 

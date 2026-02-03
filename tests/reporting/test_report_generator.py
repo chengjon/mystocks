@@ -727,9 +727,12 @@ class TestReportGenerator:
         pass_rate = sum(1 for r in test_results if r.get('status') == 'passed') / len(test_results)
 
         # 失败模式分析
-        critical_failures = sum(1 for r in test_results
-                              if r.get('status') == 'failed' and
-                              r.get('error_message', '').lower() in ['timeout', 'connection', 'server error']))
+        critical_failures = sum(
+            1
+            for r in test_results
+            if r.get('status') == 'failed'
+            and r.get('error_message', '').lower() in ['timeout', 'connection', 'server error']
+        )
 
         failure_penalty = (critical_failures / len(test_results)) * 50 if test_results else 0
 
