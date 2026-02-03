@@ -133,7 +133,7 @@ class IndicatorDependencyGraph:
 
         # 如果节点已存在，更新信息
         if node_id in self._nodes:
-            logger.debug("节点 %(node_id)s 已存在，更新依赖"")
+            logger.debug("节点 %(node_id)s 已存在，更新依赖")
             existing_node = self._nodes[node_id]
             for dep in dependencies:
                 dep_id = self._get_node_id_with_params(dep, {})
@@ -158,7 +158,7 @@ class IndicatorDependencyGraph:
 
             self._edges.append(DependencyEdge(from_node=dep_id, to_node=node_id))
 
-        logger.debug("添加节点: %(node_id)s, 依赖: %(dependencies)s"")
+        logger.debug("添加节点: %(node_id)s, 依赖: %(dependencies)s")
         return node_id
 
     def _get_node_id_with_params(self, abbreviation: str, default_params: Dict) -> str:
@@ -184,15 +184,15 @@ class IndicatorDependencyGraph:
             是否添加成功
         """
         if from_node == to_node:
-            logger.warning("不能添加自环依赖: %(from_node)s"")
+            logger.warning("不能添加自环依赖: %(from_node)s")
             return False
 
         if not self._graph.has_node(from_node):
-            logger.warning("节点不存在: %(from_node)s"")
+            logger.warning("节点不存在: %(from_node)s")
             return False
 
         if not self._graph.has_node(to_node):
-            logger.warning("节点不存在: %(to_node)s"")
+            logger.warning("节点不存在: %(to_node)s")
             return False
 
         self._graph.add_edge(from_node, to_node, edge_type=edge_type)
@@ -220,7 +220,7 @@ class IndicatorDependencyGraph:
                 for cycle in cycles:
                     cycle_str = " -> ".join(cycle) + f" -> {cycle[0]}"
                     cycle_strs.append(cycle_str)
-                logger.warning("检测到循环依赖: %(cycle_strs)s"")
+                logger.warning("检测到循环依赖: %(cycle_strs)s")
                 return cycles
             return None
         except nx.NetworkXNoCycle:
@@ -319,7 +319,7 @@ class IndicatorDependencyGraph:
 
         def dfs(node: str):
             if node in stack:
-                logger.error("检测到循环: %(node)s"")
+                logger.error("检测到循环: %(node)s")
                 return
             if node in visited:
                 return

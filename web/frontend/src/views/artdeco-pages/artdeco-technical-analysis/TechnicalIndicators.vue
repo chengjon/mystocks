@@ -71,7 +71,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">指标公式</label>
-            <textarea v-model="customIndicator.formula" placeholder="输入指标公式（如：MA(CLOSE,20)"）" class="form-textarea"></textarea>
+            <textarea v-model="customIndicator.formula" placeholder="输入指标公式（如：MA(CLOSE,20)）" class="form-textarea"></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">指标参数</label>

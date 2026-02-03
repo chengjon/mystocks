@@ -890,7 +890,7 @@
     "/api/system/test-connection": {
       "post": {
         "summary": "Test Database Connection",
-        "description": "测试数据库连接\n\n支持的数据库类型:\n- mysql: MySQL/MariaDB\n- postgresql: PostgreSQL\n- tdengine: TDengine\n- redis: Redis",
+        "description": "测试数据库连接\n\n支持的数据库类型:\n- postgresql: PostgreSQL\n- postgresql: PostgreSQL\n- tdengine: TDengine\n- redis: Redis",
         "operationId": "test_database_connection_api_system_test_connection_post",
         "tags": [
           "system"
@@ -1053,7 +1053,7 @@
     "/api/system/architecture": {
       "get": {
         "summary": "Get System Architecture",
-        "description": "获取系统架构信息 (Week 3简化后 - 双数据库架构)\n\n返回完整的系统架构信息，包括:\n- 数据库架构 (TDengine + PostgreSQL)\n- 数据分类路由策略\n- 架构简化指标\n- 技术栈信息\n- MySQL/Redis移除详情\n\n用于架构可视化页面展示",
+        "description": "获取系统架构信息 (Week 3简化后 - 双数据库架构)\n\n返回完整的系统架构信息，包括:\n- 数据库架构 (TDengine + PostgreSQL)\n- 数据分类路由策略\n- 架构简化指标\n- 技术栈信息\n- PostgreSQL/Redis移除详情\n\n用于架构可视化页面展示",
         "operationId": "get_system_architecture_api_system_architecture_get",
         "tags": [
           "system"

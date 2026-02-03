@@ -158,11 +158,7 @@ def close_all_connections():
 # 复用现有 MyStocks 数据访问逻辑 (可选，如果环境变量不完整则跳过)
 try:
     import os
-def close_all_connections():
-    """关闭所有数据库连接"""
-    for name, engine in engines.items():
-        engine.dispose()
-        logger.info("%s connection closed", name=name)  # ✅ Fixed
+    import sys
 
     # 添加项目根目录到 Python 路径
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
@@ -182,7 +178,7 @@ def close_all_connections():
 
 except (ImportError, OSError, EnvironmentError) as e:
     # Week 3 简化: 如果MyStocks核心模块不可用，跳过（web backend可独立运行）
-    logger.warning(f"MyStocks data access modules not available (expected in Week 3 simplified mode): {e}")
+    logger.warning("MyStocks data access modules not available (expected in Week 3 simplified mode): %s", e)
     postgresql_access = None
 
 
@@ -209,7 +205,7 @@ class DatabaseService:
         try:
             # 参数验证
             if limit <= 0 or limit > 10000:
-                logger.warning("Invalid limit parameter: %(limit)s, using default 100"")
+                logger.warning("Invalid limit parameter: %s, using default 100", limit)
                 limit = 100
 
             if postgresql_access:
@@ -225,7 +221,7 @@ class DatabaseService:
 
                 result = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
                 if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-                    logger.warning("Empty result from PostgreSQL access, search=%(search)s"")
+                    logger.warning("Empty result from PostgreSQL access, search=%s", search)
                     return pd.DataFrame()
                 return result
             else:
@@ -251,9 +247,13 @@ class DatabaseService:
                     result = session.execute(query, query_params)
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning("Empty stocks_basic result from database, limit=%(limit)s, search=%(search)s"")
+                        logger.warning(
+                            "Empty stocks_basic result from database, limit=%s, search=%s",
+                            limit,
+                            search,
+                        )
                     else:
-                        logger.info("Successfully fetched {len(df)} stocks from database"")
+                        logger.info("Successfully fetched %s stocks from database", len(df))
                     return df
                 except Exception as e:
                     logger.error(
@@ -265,7 +265,7 @@ class DatabaseService:
                     if session:
                         session.close()
         except Exception as e:
-            logger.error("Failed to query stocks basic: {str(e)}", exc_info=True)
+            logger.error("Failed to query stocks basic: %s", e, exc_info=True)
             raise
 
     @db_retry(max_retries=3, delay=1.0)
@@ -305,7 +305,7 @@ class DatabaseService:
                     )
                     return pd.DataFrame(result.fetchall(), columns=result.keys())
         except Exception as e:
-            logger.error("Failed to query daily kline: %(e)s"")
+            logger.error("Failed to query daily kline: %s", e)
             return pd.DataFrame()
 
     @db_retry(max_retries=3, delay=1.0)
@@ -333,9 +333,9 @@ class DatabaseService:
                     result = session.execute(query, {"limit": limit})
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
                     if df.empty:
-                        logger.warning("Empty concepts result from database, limit=%(limit)s"")
+                        logger.warning("Empty concepts result from database, limit=%s", limit)
                     else:
-                        logger.info("Successfully fetched {len(df)} concepts from database"")
+                        logger.info("Successfully fetched %s concepts from database", len(df))
                     return df
                 except Exception as e:
                     logger.error(
@@ -347,7 +347,7 @@ class DatabaseService:
                     if session:
                         session.close()
         except Exception as e:
-            logger.error("Failed to query concepts: {str(e)}", exc_info=True)
+            logger.error("Failed to query concepts: %s", e, exc_info=True)
             raise
 
 

@@ -321,7 +321,7 @@ class VersionManager:
         """
         from app.main import app as fastapi_app
 
-        logger.info("Starting Code-to-DB sync for contract: %(contract_name)s"")
+        logger.info("Starting Code-to-DB sync for contract: %(contract_name)s")
 
         try:
             # 从 FastAPI 应用生成 OpenAPI Spec
@@ -366,7 +366,7 @@ class VersionManager:
                 "generated_from": "FastAPI routes",
             }
 
-            logger.info("Code-to-DB sync completed: {sync_report['total_endpoints']} endpoints"")
+            logger.info("Code-to-DB sync completed: {sync_report['total_endpoints']} endpoints")
 
             return SyncResult(
                 success=True,
@@ -378,7 +378,7 @@ class VersionManager:
             )
 
         except Exception as e:
-            logger.error("Code-to-DB sync failed: %(e)s"")
+            logger.error("Code-to-DB sync failed: %(e)s")
             return SyncResult(success=False, direction="code_to_db", changes={}, message=f"Sync failed: {str(e)}")
 
     @staticmethod
@@ -395,7 +395,7 @@ class VersionManager:
         """
         import yaml
 
-        logger.info("Starting DB-to-Code sync for contract: %(contract_name)s"")
+        logger.info("Starting DB-to-Code sync for contract: %(contract_name)s")
 
         try:
             # 获取最新激活版本
@@ -437,7 +437,7 @@ class VersionManager:
                     "version": active_version.version,
                 }
 
-                logger.info("DB-to-Code sync completed: exported to %(saved_path)s"")
+                logger.info("DB-to-Code sync completed: exported to %(saved_path)s")
 
                 return SyncResult(
                     success=True,
@@ -453,7 +453,7 @@ class VersionManager:
                 )
 
         except Exception as e:
-            logger.error("DB-to-Code sync failed: %(e)s"")
+            logger.error("DB-to-Code sync failed: %(e)s")
             return SyncResult(success=False, direction="db_to_code", changes={}, message=f"Sync failed: {str(e)}")
 
     @staticmethod
@@ -508,7 +508,7 @@ class VersionManager:
             }
 
         except Exception as e:
-            logger.error("Validation failed: %(e)s"")
+            logger.error("Validation failed: %(e)s")
             return {"valid": False, "error": str(e)}
 
     @staticmethod

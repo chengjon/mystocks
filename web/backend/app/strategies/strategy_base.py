@@ -75,7 +75,7 @@ class StrategyRegistry:
         """注册策略"""
         strategy_instance = strategy_class()
         self._strategies[strategy_instance.strategy_id] = strategy_class
-        logger.info("注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}"")
+        logger.info("注册策略: {strategy_instance.strategy_id} - {strategy_instance.name}")
 
     def get_strategy(self, strategy_id: str) -> Optional[StrategyBase]:
         """获取策略实例"""

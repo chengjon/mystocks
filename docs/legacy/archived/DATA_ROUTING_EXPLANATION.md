@@ -1,5 +1,7 @@
 # MyStocks 数据自动路由与更新机制详解
 
+**Note**: MySQL has been removed; use PostgreSQL. This legacy guide is kept for reference.
+
 ## 概述
 
 MyStocks系统实现了一套科学的5层数据分类框架，配合智能自动路由机制，将不同类型的数据自动保存到最适合的数据库中，实现性能优化和管理简化。
@@ -12,16 +14,16 @@ MyStocks系统实现了一套科学的5层数据分类框架，配合智能自�
 # 来自 core.py
 class DataClassification(Enum):
     MARKET_DATA = "market_data"           # 市场数据 → TDengine
-    REFERENCE_DATA = "reference_data"     # 参考数据 → MySQL/MariaDB
+    REFERENCE_DATA = "reference_data"     # 参考数据 → PostgreSQL
     DERIVED_DATA = "derived_data"         # 衍生数据 → PostgreSQL+TimescaleDB
     TRANSACTION_DATA = "transaction_data" # 交易数据 → Redis(热) + PostgreSQL(冷)
-    META_DATA = "meta_data"              # 元数据 → MySQL/MariaDB
+    META_DATA = "meta_data"              # 元数据 → PostgreSQL
 
     # 具体业务分类
     TICK_DATA = "tick_data"              # Tick数据 → TDengine
     DAILY_KLINE = "daily_kline"          # 日K线数据 → PostgreSQL+TimescaleDB
     REALTIME_POSITIONS = "realtime_positions"  # 实时持仓 → Redis
-    SYMBOLS_INFO = "symbols_info"        # 股票信息 → MySQL/MariaDB
+    SYMBOLS_INFO = "symbols_info"        # 股票信息 → PostgreSQL
     TECHNICAL_INDICATORS = "technical_indicators"  # 技术指标 → PostgreSQL
 ```
 
@@ -33,7 +35,7 @@ routing_rules = {
     DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
     DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,
     DataClassification.REALTIME_POSITIONS: DatabaseTarget.REDIS,
-    DataClassification.SYMBOLS_INFO: DatabaseTarget.MYSQL,
+    DataClassification.SYMBOLS_INFO: DatabaseTarget.POSTGRESQL,
     DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
 }
 ```
@@ -115,8 +117,6 @@ def save_data_by_classification(self, data, classification: DataClassification) 
         accessor = self.postgresql_access
     elif target_db == DatabaseTarget.TDENGINE:
         accessor = self.tdengine_access
-    elif target_db == DatabaseTarget.MYSQL:
-        accessor = self.mysql_access
 
     # 3. 执行保存操作
     success = accessor.save_data(data, table_name, **params)
@@ -146,7 +146,7 @@ def save_data_by_classification(self, data, classification: DataClassification) 
 - **优势**: 毫秒级访问、内存存储
 - **配置**: 过期策略、持久化、集群
 
-#### MySQL/MariaDB (关系数据专家)
+#### PostgreSQL (参考/元数据)
 - **专长**: 股票信息、配置数据、元数据
 - **优势**: ACID事务、复杂关联
 - **配置**: 索引优化、外键约束

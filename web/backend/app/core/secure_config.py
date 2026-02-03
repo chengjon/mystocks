@@ -74,7 +74,7 @@ class SecureConfig:
             db_config["database"] = database
 
         self._config[f"db_{db_type}"] = db_config
-        logger.info("✅ Database credentials stored for %(db_type)s"")
+        logger.info("✅ Database credentials stored for %(db_type)s")
 
     def get_database_credentials(self, db_type: str) -> Dict[str, Any]:
         """
@@ -153,7 +153,7 @@ class SecureConfig:
         else:
             raise ValueError(f"Unsupported database type: {db_type}")
 
-        logger.info("✅ Connection string built for %(db_type)s"")
+        logger.info("✅ Connection string built for %(db_type)s")
         return conn_str
 
     def set_api_key(self, service: str, api_key: str):
@@ -168,7 +168,7 @@ class SecureConfig:
         """
         encrypted_key = self.encryption.encrypt(api_key)
         self._config[f"api_key_{service}"] = encrypted_key
-        logger.info("✅ API key stored for %(service)s"")
+        logger.info("✅ API key stored for %(service)s")
 
     def get_api_key(self, service: str) -> str:
         """
@@ -244,7 +244,7 @@ class SecureConfig:
 
             # Restrict file permissions to owner only
             os.chmod(filepath, 0o600)
-            logger.info("✅ Encrypted configuration saved to %(filepath)s"")
+            logger.info("✅ Encrypted configuration saved to %(filepath)s")
             self._encrypted_config_file = filepath
             return True
 
@@ -269,7 +269,7 @@ class SecureConfig:
                 self._config = json.load(f)
 
             self._encrypted_config_file = filepath
-            logger.info("✅ Encrypted configuration loaded from %(filepath)s"")
+            logger.info("✅ Encrypted configuration loaded from %(filepath)s")
             return True
 
         except Exception as e:

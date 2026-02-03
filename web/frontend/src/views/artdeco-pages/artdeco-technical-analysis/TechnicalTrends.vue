@@ -371,7 +371,7 @@ const getDirectionName = (direction: string) => {
   const names = {
     up: '上涨',
     down: '下跌',
-    sideways: '横盘'
+    sideways: '横盘',
     unknown: '未知'
   }
   return names[direction] || '未知'

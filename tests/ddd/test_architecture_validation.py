@@ -265,8 +265,8 @@ def test_directory_structure():
         "src/infrastructure/messaging",
         "src/infrastructure/calculation",
         "src/infrastructure/market_data",
-        "src/interface/api",
-        "src/interface/websocket",
+        "src/interfaces/api",
+        "src/interfaces/websocket",
     ]
 
     for dir_path in required_dirs:
@@ -324,7 +324,7 @@ def main():
     print("=" * 60)
     print(f"总通过: {total_passed}")
     print(f"总失败: {total_failed}")
-    print(f"成功率: {total_passed/(total_passed+total_failed)*100:.1f}%")
+    print(f"成功率: {total_passed / (total_passed + total_failed) * 100:.1f}%")
 
     if total_failed == 0:
         print("\n🎉 所有验证测试通过！DDD架构实施正确。")

@@ -58,7 +58,6 @@ class TestUS2ConfigDriven:
         available = {
             "tdengine": False,
             "postgresql": False,
-            "mysql": False,
             "redis": False,
         }
 
@@ -75,14 +74,6 @@ class TestUS2ConfigDriven:
             if conn:
                 cls.conn_manager._return_postgresql_connection(conn)
                 available["postgresql"] = True
-        except:
-            pass
-
-        try:
-            conn = cls.conn_manager.get_mysql_connection()
-            if conn:
-                conn.close()
-                available["mysql"] = True
         except:
             pass
 
@@ -108,8 +99,8 @@ class TestUS2ConfigDriven:
         """
         print("\n📍 场景1: 添加新表定义 → 自动创建")
 
-        if not self.test_db_available["mysql"]:
-            pytest.skip("MySQL数据库不可用")
+        if not self.test_db_available["postgresql"]:
+            pytest.skip("PostgreSQL数据库不可用")
 
         # 创建测试配置
         test_config = {
@@ -119,17 +110,17 @@ class TestUS2ConfigDriven:
                 "created_by": "US2 Acceptance Test",
             },
             "databases": {
-                "mysql": {
-                    "host": "${MYSQL_HOST:localhost}",
-                    "port": "${MYSQL_PORT:3306}",
-                    "user": "${MYSQL_USER:root}",
-                    "password": "${MYSQL_PASSWORD:}",
-                    "database": "${MYSQL_DATABASE:mystocks}",
+                "postgresql": {
+                    "host": "${POSTGRESQL_HOST:localhost}",
+                    "port": "${POSTGRESQL_PORT:5432}",
+                    "user": "${POSTGRESQL_USER:postgres}",
+                    "password": "${POSTGRESQL_PASSWORD:}",
+                    "database": "${POSTGRESQL_DATABASE:mystocks}",
                 }
             },
             "tables": [
                 {
-                    "database_type": "MySQL",
+                    "database_type": "PostgreSQL",
                     "table_name": "test_new_table_us2",
                     "database_name": "mystocks",
                     "classification": "USER_CONFIG",
@@ -184,11 +175,12 @@ class TestUS2ConfigDriven:
 
         # 先删除测试表（如果存在）
         try:
-            conn = self.conn_manager.get_mysql_connection()
+            pool = self.conn_manager.get_postgresql_connection()
+            conn = pool.getconn()
             cursor = conn.cursor()
             cursor.execute("DROP TABLE IF EXISTS test_new_table_us2")
             cursor.close()
-            conn.close()
+            pool.putconn(conn)
             print("  ✓ 已清理旧测试表")
         except:
             pass
@@ -207,14 +199,22 @@ class TestUS2ConfigDriven:
 
         # 验证表确实存在 - 直接查询数据库
         try:
-            conn = self.conn_manager.get_mysql_connection()
+            pool = self.conn_manager.get_postgresql_connection()
+            conn = pool.getconn()
             cursor = conn.cursor()
-            cursor.execute("SHOW TABLES LIKE 'test_new_table_us2'")
-            table_result = cursor.fetchall()
+            cursor.execute(
+                """
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables
+                    WHERE table_name = %s
+                )
+                """,
+                ("test_new_table_us2",),
+            )
+            exists = cursor.fetchone()[0]
             cursor.close()
-            conn.close()
-            exists = len(table_result) > 0
-            assert exists, f"新表应该已经创建，查询结果: {table_result}"
+            pool.putconn(conn)
+            assert exists, "新表应该已经创建"
             print("  ✓ 表存在性验证: 表已创建")
         except Exception as e:
             print(f"  ⚠️  表验证出错: {e}")
@@ -233,8 +233,8 @@ class TestUS2ConfigDriven:
         """
         print("\n📍 场景2: 添加新列 → 自动添加")
 
-        if not self.test_db_available["mysql"]:
-            pytest.skip("MySQL数据库不可用")
+        if not self.test_db_available["postgresql"]:
+            pytest.skip("PostgreSQL数据库不可用")
 
         print("  ℹ️  当前safe_mode=True，应该自动添加新列")
         print("  ⚠️  注意: 实际的列添加需要在ConfigDrivenTableManager中实现compare_and_update方法")
@@ -288,7 +288,7 @@ version: '3.0.0'
 metadata:
   project: 'Test'
 tables:
-  - database_type: 'MySQL'
+  - database_type: 'PostgreSQL'
     table_name: 'test'
     columns:
       - name: 'id'
@@ -352,12 +352,12 @@ tables:
             "version": "3.0.0",
             "metadata": {"project": "Test Invalid DB"},
             "databases": {
-                "mysql": {  # 使用有效的数据库配置避免连接错误
-                    "host": os.getenv("MYSQL_HOST", "localhost"),
-                    "port": int(os.getenv("MYSQL_PORT", 3306)),
-                    "user": os.getenv("MYSQL_USER", "root"),
-                    "password": os.getenv("MYSQL_PASSWORD", ""),
-                    "database": os.getenv("MYSQL_DATABASE", "test"),
+                "postgresql": {  # 使用有效的数据库配置避免连接错误
+                    "host": os.getenv("POSTGRESQL_HOST", "localhost"),
+                    "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
+                    "user": os.getenv("POSTGRESQL_USER", "postgres"),
+                    "password": os.getenv("POSTGRESQL_PASSWORD", ""),
+                    "database": os.getenv("POSTGRESQL_DATABASE", "test"),
                 }
             },
             "tables": [
@@ -396,7 +396,7 @@ tables:
             print("  ✓ 不支持的数据库类型导致错误（预期行为）")
             print(f"    错误信息: {str(e)[:100]}")
 
-        print("  ℹ️  支持的数据库类型: TDengine, PostgreSQL, MySQL, Redis")
+        print("  ℹ️  支持的数据库类型: TDengine, PostgreSQL, Redis")
         print("  ✅ 场景5验证通过: 不支持的数据库类型会产生错误")
 
     def test_scenario_6_table_name_conflict_error(self):
@@ -415,16 +415,16 @@ tables:
         conflict_config = {
             "version": "3.0.0",
             "metadata": {"project": "Test Conflict"},
-            "databases": {"mysql": {"host": "localhost", "port": 3306, "database": "mystocks"}},
+            "databases": {"postgresql": {"host": "localhost", "port": 5432, "database": "mystocks"}},
             "tables": [
                 {
-                    "database_type": "MySQL",
+                    "database_type": "PostgreSQL",
                     "table_name": "duplicate_table",  # 重复表名
                     "database_name": "mystocks",
                     "columns": [{"name": "id", "type": "INT", "primary_key": True}],
                 },
                 {
-                    "database_type": "MySQL",
+                    "database_type": "PostgreSQL",
                     "table_name": "duplicate_table",  # 重复表名
                     "database_name": "mystocks",
                     "columns": [{"name": "id", "type": "BIGINT", "primary_key": True}],

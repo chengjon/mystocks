@@ -11,9 +11,15 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import price_data_adapter
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.adapters import price_data_adapter
 
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
+
+
+class TestPriceDataAdapterSmart(unittest.TestCase):
     def test_price_data_adapter_bug_prevention_sql_injection(self):
         """Bug防护测试 - 存在SQL注入风险"""
         # 测试防护措施
@@ -30,7 +36,7 @@ import price_data_adapter
 
         for unsafe_input in unsafe_inputs:
             with self.assertRaises((ValueError, SecurityError)):
-                if hasattr(price_data_adapter, 'target_function'):
+                if hasattr(price_data_adapter, "target_function"):
                     price_data_adapter.target_function(unsafe_input)
 
 
@@ -38,11 +44,10 @@ import price_data_adapter
     def test_price_data_adapter_basic_functionality(self):
         """基本功能测试"""
         # 测试模块导入
-        import price_data_adapter
-        self.assertTrue(hasattr(price_data_adapter, '__name__'))
+        self.assertTrue(hasattr(price_data_adapter, "__name__"))
 
         # 测试是否有公共函数
-        public_funcs = [f for f in dir(price_data_adapter) if not f.startswith('_')]
+        public_funcs = [f for f in dir(price_data_adapter) if not f.startswith("_")]
         self.assertGreater(len(public_funcs), 0, "模块应该至少有一个公共函数")
 
 

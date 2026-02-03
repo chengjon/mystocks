@@ -337,13 +337,13 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
         if response.data:
             response.data["created_by"] = current_user.username
 
-        logger.info("Task registered successfully by {current_user.username}: {task_config.name}"")
+        logger.info("Task registered successfully by {current_user.username}: {task_config.name}")
         return response
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error("Failed to register task for user {current_user.username}: %(e)s"")
+        logger.error("Failed to register task for user {current_user.username}: %(e)s")
         raise BusinessException(detail="任务注册失败", status_code=500, error_code="TASK_REGISTRATION_FAILED")
 
 
@@ -375,13 +375,13 @@ async def unregister_task(
         if not response.success:
             raise NotFoundException(resource="任务", identifier=response.message)
 
-        logger.info("Task %(task_id)s unregistered successfully by {current_user.username}"")
+        logger.info("Task %(task_id)s unregistered successfully by {current_user.username}")
         return response
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error("Failed to unregister task %(task_id)s for user {current_user.username}: %(e)s"")
+        logger.error("Failed to unregister task %(task_id)s for user {current_user.username}: %(e)s")
         raise BusinessException(detail="任务注销失败", status_code=500, error_code="TASK_UNREGISTRATION_FAILED")
 
 
@@ -451,13 +451,13 @@ async def list_tasks(
         if not check_admin_privileges(current_user):
             tasks = [task for task in tasks if getattr(task, "created_by", None) == current_user.username]
 
-        logger.info("Tasks listed by {current_user.username}: {len(tasks)} tasks"")
+        logger.info("Tasks listed by {current_user.username}: {len(tasks)} tasks")
         return tasks
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error("Failed to list tasks for user {current_user.username}: %(e)s"")
+        logger.error("Failed to list tasks for user {current_user.username}: %(e)s")
         raise BusinessException(detail="获取任务列表失败", status_code=500, error_code="TASK_LIST_RETRIEVAL_FAILED")
 
 
@@ -739,7 +739,7 @@ async def get_audit_logs(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning("Unauthorized audit log access attempt by user: {current_user.username}"")
+            logger.warning("Unauthorized audit log access attempt by user: {current_user.username}")
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 记录审计日志访问
@@ -764,7 +764,7 @@ async def get_audit_logs(
         # 返回指定的记录数
         result_logs = filtered_logs[:limit]
 
-        logger.info("Audit logs accessed by admin {current_user.username}: {len(result_logs)} records"")
+        logger.info("Audit logs accessed by admin {current_user.username}: {len(result_logs)} records")
 
         return {
             "logs": result_logs,
@@ -776,7 +776,7 @@ async def get_audit_logs(
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error("Failed to get audit logs for admin {current_user.username}: %(e)s"")
+        logger.error("Failed to get audit logs for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="获取审计日志失败", status_code=500, error_code="AUDIT_LOG_RETRIEVAL_FAILED")
 
 
@@ -795,7 +795,7 @@ async def cleanup_audit_logs(
     try:
         # 检查管理员权限
         if not check_admin_privileges(current_user):
-            logger.warning("Unauthorized audit cleanup attempt by user: {current_user.username}"")
+            logger.warning("Unauthorized audit cleanup attempt by user: {current_user.username}")
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 计算清理时间点
@@ -814,7 +814,7 @@ async def cleanup_audit_logs(
             details={"days": days, "cleaned_count": cleaned_count, "remaining_count": len(task_audit_log)},
         )
 
-        logger.info("Audit logs cleaned by admin {current_user.username}: %(cleaned_count)s records removed"")
+        logger.info("Audit logs cleaned by admin {current_user.username}: %(cleaned_count)s records removed")
 
         return APIResponse(
             success=True,
@@ -825,5 +825,5 @@ async def cleanup_audit_logs(
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
     except Exception as e:
-        logger.error("Failed to cleanup audit logs for admin {current_user.username}: %(e)s"")
+        logger.error("Failed to cleanup audit logs for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="清理审计日志失败", status_code=500, error_code="AUDIT_LOG_CLEANUP_FAILED")

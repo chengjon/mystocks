@@ -1,8 +1,8 @@
 # Design
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 22
+**文档数量**: 23
 
 
 ---
@@ -36,6 +36,9 @@
 
 - [20251121-spec优化建议](design/20251121-spec优化建议.md)
   - *20251121-spec优化建议*
+
+- [ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL](design/ARTDECO_CONVERSION_OPTIMIZATION_PROPOSAL.md)
+  - *ArtDeco Conversion Optimization Proposal*
 
 - [AUTOMATION_GUIDE](design/AUTOMATION_GUIDE.md)
   - *Figma 自动化脚本使用指南*

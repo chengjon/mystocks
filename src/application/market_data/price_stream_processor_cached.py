@@ -18,7 +18,7 @@ from src.application.market_data.price_stream_processor import PriceStreamProces
 from src.domain.portfolio.service import PortfolioValuationService
 from src.domain.shared.event_bus import IEventBus
 from src.domain.market_data.streaming.price_changed_event import PriceChangedEvent
-from src.services.performance_optimizer import LRUCache
+from src.application.services.performance_optimizer import LRUCache
 
 logger = logging.getLogger(__name__)
 

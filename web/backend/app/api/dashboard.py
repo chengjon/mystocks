@@ -114,10 +114,10 @@ class RealBusinessDataSource:
                 return response.json()
 
         except httpx.HTTPError as e:
-            logger.error("HTTP请求失败: %(endpoint)s - {str(e)}"")
+            logger.error("HTTP请求失败: endpoint=%s, error=%s", endpoint, e)
             return {"success": False, "data": None}
         except Exception as e:
-            logger.error("请求异常: %(endpoint)s - {str(e)}"")
+            logger.error("请求异常: endpoint=%s, error=%s", endpoint, e)
             return {"success": False, "data": None}
 
     def get_dashboard_summary(self, user_id: int, trade_date: Optional[date] = None):
@@ -130,7 +130,7 @@ class RealBusinessDataSource:
         3. 用户持仓 -> /api/api/mtm/portfolio/{user_id}
         4. 活跃策略 -> /api/strategy-mgmt/strategies
         """
-        logger.info("获取仪表盘数据: user_id=%(user_id)s, trade_date=%(trade_date)s"")
+        logger.info("获取仪表盘数据: user_id=%s, trade_date=%s", user_id, trade_date)
 
         dashboard_data = {
             "data_source": "real_api_composite",
@@ -141,7 +141,7 @@ class RealBusinessDataSource:
         try:
             dashboard_data["market_overview"] = self._get_market_overview_data()
         except Exception as e:
-            logger.warning("获取市场概览失败: %(e)s"")
+            logger.warning("获取市场概览失败: %s", e)
             dashboard_data["market_overview"] = self._get_fallback_market_overview()
 
         # 2. 获取用户持仓数据
@@ -149,7 +149,7 @@ class RealBusinessDataSource:
             portfolio_data = self._get_user_portfolio_data(user_id)
             dashboard_data["portfolio"] = portfolio_data
         except Exception as e:
-            logger.warning("获取用户持仓失败: %(e)s"")
+            logger.warning("获取用户持仓失败: %s", e)
             dashboard_data["portfolio"] = self._get_fallback_portfolio()
 
         # 3. 获取自选股数据 (使用占位符，实际可从watchlist表获取)
@@ -160,7 +160,7 @@ class RealBusinessDataSource:
             strategies_data = self._get_user_active_strategies(user_id)
             dashboard_data["strategies"] = strategies_data
         except Exception as e:
-            logger.warning("获取活跃策略失败: %(e)s"")
+            logger.warning("获取活跃策略失败: %s", e)
             dashboard_data["strategies"] = []
 
         # 5. 获取风险预警 (使用占位符，实际可从alerts表获取)
@@ -248,7 +248,7 @@ class RealBusinessDataSource:
                 }
 
         except Exception as e:
-            logger.error("获取市场概览数据失败: %(e)s"")
+            logger.error("获取市场概览数据失败: %s", e)
 
         # Fallback: 返回降级数据
         return self._get_fallback_market_overview()
@@ -292,7 +292,7 @@ class RealBusinessDataSource:
                 }
 
         except Exception as e:
-            logger.error("获取用户持仓数据失败: %(e)s"")
+            logger.error("获取用户持仓数据失败: %s", e)
 
         # Fallback: 返回空持仓
         return self._get_fallback_portfolio()
@@ -326,7 +326,7 @@ class RealBusinessDataSource:
                 return active_strategies
 
         except Exception as e:
-            logger.error("获取活跃策略失败: %(e)s"")
+            logger.error("获取活跃策略失败: %s", e)
 
         return []
 
@@ -401,7 +401,7 @@ def get_data_source():
     try:
         return RealBusinessDataSource()
     except Exception as e:
-        logger.error("获取数据源失败: {str(e)}"")
+        logger.error("获取数据源失败: %s", e)
         raise HTTPException(status_code=500, detail=f"数据源初始化失败: {str(e)}")
 
 
@@ -443,7 +443,7 @@ def build_market_overview(raw_data: dict) -> Optional[MarketOverview]:
             most_active=raw_data.get("most_active", []),
         )
     except Exception as e:
-        logger.error("构建市场概览失败: {str(e)}"")
+        logger.error("构建市场概览失败: %s", e)
         return None
 
 
@@ -476,7 +476,7 @@ def build_watchlist_summary(raw_data: list) -> Optional[WatchlistSummary]:
 
         return WatchlistSummary(total_count=len(items), items=items, avg_change_percent=avg_change)
     except Exception as e:
-        logger.error("构建自选股汇总失败: {str(e)}"")
+        logger.error("构建自选股汇总失败: %s", e)
         return None
 
 
@@ -511,7 +511,7 @@ def build_portfolio_summary(raw_data: dict) -> Optional[PortfolioSummary]:
             positions=positions,
         )
     except Exception as e:
-        logger.error("构建持仓汇总失败: {str(e)}"")
+        logger.error("构建持仓汇总失败: %s", e)
         return None
 
 
@@ -546,7 +546,7 @@ def build_risk_alert_summary(raw_data: list) -> Optional[RiskAlertSummary]:
             total_count=len(alerts), unread_count=unread_count, critical_count=critical_count, alerts=alerts
         )
     except Exception as e:
-        logger.error("构建风险预警汇总失败: {str(e)}"")
+        logger.error("构建风险预警汇总失败: %s", e)
         return None
 
 
@@ -597,14 +597,14 @@ async def _try_get_cached_dashboard(
         )
 
         if cached_data and isinstance(cached_data, dict):
-            logger.info("✅ 三级缓存命中: %(cache_key)s"")
+            logger.info("✅ 三级缓存命中: %s", cache_key)
             return cached_data, True
         else:
-            logger.debug("⚠️ 三级缓存未命中: %(cache_key)s"")
+            logger.debug("⚠️ 三级缓存未命中: %s", cache_key)
             return None, False
 
     except Exception as e:
-        logger.warning("三级缓存读取失败，将继续获取新数据: {str(e)}"")
+        logger.warning("三级缓存读取失败，将继续获取新数据: %s", e)
         return None, False
 
 
@@ -652,14 +652,14 @@ async def _cache_dashboard_data(
         # Ensure bool return type
         success_bool: bool = bool(success)
         if success_bool:
-            logger.info("✅ 三级缓存写入成功: %(cache_key)s"")
+            logger.info("✅ 三级缓存写入成功: %s", cache_key)
         else:
-            logger.warning("⚠️ 三级缓存写入失败: %(cache_key)s"")
+            logger.warning("⚠️ 三级缓存写入失败: %s", cache_key)
 
         return success_bool
 
     except Exception as e:
-        logger.warning("三级缓存写入异常: {str(e)}"")
+        logger.warning("三级缓存写入异常: %s", e)
         return False
 
 
@@ -715,17 +715,17 @@ async def get_dashboard_summary(
                 trade_date,
             )
             if cache_hit and cached_entry:
-                logger.info("三级缓存命中: user_id=%(user_id)s, trade_date=%(trade_date)s"")
+                logger.info("三级缓存命中: user_id=%s, trade_date=%s", user_id, trade_date)
                 raw_dashboard = cached_entry.get("dashboard_data", {})
             else:
                 raw_dashboard = None
         else:
-            logger.info("跳过三级缓存获取仪表盘数据: user_id=%(user_id)s"")
+            logger.info("跳过三级缓存获取仪表盘数据: user_id=%s", user_id)
             raw_dashboard = None
 
         # 第2阶段：如果缓存未命中，从数据源获取新数据
         if not cache_hit or raw_dashboard is None:
-            logger.info("从真实数据源获取用户%(user_id)s的仪表盘数据"")
+            logger.info("从真实数据源获取用户%s的仪表盘数据", user_id)
 
             # 使用真实业务数据源
             data_source = get_data_source()
@@ -771,10 +771,10 @@ async def get_dashboard_summary(
         return response
 
     except ValueError as e:
-        logger.error("参数验证失败: {str(e)}"")
+        logger.error("参数验证失败: %s", e)
         raise HTTPException(status_code=400, detail=f"参数验证失败: {str(e)}")
     except Exception as e:
-        logger.error("获取仪表盘数据失败: {str(e)}", exc_info=True)
+        logger.error("获取仪表盘数据失败: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
 
 
@@ -805,7 +805,7 @@ async def get_market_overview(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取市场概览失败: {str(e)}"")
+        logger.error("获取市场概览失败: %s", e)
         raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
 
 
@@ -847,7 +847,7 @@ async def health_check(request: Request, data_source=Depends(get_data_source)):
         return create_health_response(service="dashboard", status="healthy", details=health_data, request_id=request_id)
 
     except Exception as e:
-        logger.error("健康检查失败: {str(e)}"")
+        logger.error("健康检查失败: %s", e)
         return create_error_response(
             error_code=ErrorCodes.SERVICE_UNAVAILABLE,
             message=f"仪表盘服务不可用: {str(e)}",

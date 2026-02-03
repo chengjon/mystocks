@@ -103,8 +103,8 @@
               </template>
 
               <div class="indicator-info">
-                <p class="indicator-full-name">{{ indicator.full_name.full_name ?? .full_name.fullName }}</p>
-                <p class="indicator-chinese-name">{{ indicator.chinese_name.chinese_name ?? .chinese_name.chineseName }}</p>
+                <p class="indicator-full-name">{{ indicator.full_name ?? indicator.fullName }}</p>
+                <p class="indicator-chinese-name">{{ indicator.chinese_name ?? indicator.chineseName }}</p>
                 <p class="indicator-description">{{ indicator.description }}</p>
 
                 <!-- 参数配置 -->
@@ -141,7 +141,7 @@
       <div v-if="currentIndicatorConfig" class="config-dialog-content">
         <!-- 指标信息 -->
         <el-alert
-          :title="`${currentIndicatorConfig.chinese_name.chinese_name ?? .chinese_name.chineseName} (${currentIndicatorConfig.abbreviation})`"
+          :title="`${currentIndicatorConfig.chinese_name ?? currentIndicatorConfig.chineseName} (${currentIndicatorConfig.abbreviation})`"
           type="info"
           :closable="false"
           style="margin-bottom: 20px;"
@@ -279,8 +279,8 @@ const filteredIndicators = computed(() => {
     indicators = indicators.filter(ind => {
       return (
         ind.abbreviation.toLowerCase().includes(query) ||
-        ind.full_name.full_name ?? .full_name.fullName.toLowerCase().includes(query) ||
-        ind.chinese_name.chinese_name ?? .chinese_name.chineseName.includes(query)
+        ind.full_name ?? ind.fullName.toLowerCase().includes(query) ||
+        ind.chinese_name ?? ind.chineseName.includes(query)
       )
     })
   }
@@ -304,7 +304,7 @@ const selectIndicator = (indicator) => {
   }
 
   emit('add-indicator', indicatorSpec)
-  ElMessage.success(`已添加指标: ${indicator.chinese_name.chinese_name ?? .chinese_name.chineseName}`)
+  ElMessage.success(`已添加指标: ${indicator.chinese_name ?? indicator.chineseName}`)
 }
 
 // 添加指标并配置参数
@@ -333,7 +333,7 @@ const confirmAddIndicator = () => {
   }
 
   emit('add-indicator', indicatorSpec)
-  ElMessage.success(`已添加指标: ${currentIndicatorConfig.value.chinese_name.chinese_name ?? .chinese_name.chineseName}`)
+  ElMessage.success(`已添加指标: ${currentIndicatorConfig.value.chinese_name ?? currentIndicatorConfig.value.chineseName}`)
 
   showConfigDialog.value = false
   currentIndicatorConfig.value = null

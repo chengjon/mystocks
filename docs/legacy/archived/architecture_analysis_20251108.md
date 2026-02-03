@@ -1,5 +1,7 @@
 # MyStocks 架构第一性原理分析报告
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **日期**: 2025-11-08
 **分析方法**: First-Principles Thinking
 **分析范围**: 文件组织优化后的整体架构评估
@@ -34,7 +36,7 @@
 **真实原因**:
 - TDengine: 时序数据专用，20:1压缩比，超高写入性能
 - PostgreSQL: 关系数据专用，支持复杂JOIN和事务
-- MySQL/Redis删除正确 (Week 3简化)
+- PostgreSQL/Redis删除正确 (Week 3简化)
 
 **判断**: ✅ **正确决策** - 符合"正确工具做正确的事"原则
 
@@ -148,7 +150,7 @@
 |--------|------|------|
 | **TDengine** | 高频时序 (tick/分钟) | ✅ 正确选择 |
 | **PostgreSQL** | 关系/元数据/日线 | ✅ 正确选择 |
-| ~~MySQL~~ | (已删除) | ✅ 正确决策 |
+| ~~PostgreSQL~~ | (已删除) | ✅ 正确决策 |
 | ~~Redis~~ | (已删除) | ✅ 正确决策 |
 
 **判断**: Week 3简化正确，从4个数据库减至2个
@@ -738,7 +740,7 @@ vi examples/*.py
 
 1. **✅ 正确决策**:
    - 双数据库架构 (TDengine + PostgreSQL)
-   - Week 3简化 (删除MySQL和Redis)
+   - Week 3简化 (删除PostgreSQL和Redis)
    - 适配器模式设计
    - 文件组织优化
 

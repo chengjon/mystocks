@@ -1,14 +1,16 @@
 # 量化交易数据管理完整方案
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 ## 🎯 概述
 
-基于您的NAS环境（PostgreSQL、Redis、MariaDB、MySQL、TDengine），设计了一套完整的量化交易数据管理方案，采用适配器模式和工厂模式，实现多数据库的统一管理和调用。
+基于您的NAS环境（PostgreSQL、Redis、TDengine），设计了一套完整的量化交易数据管理方案，采用适配器模式和工厂模式，实现多数据库的统一管理和调用。
 
 ## 📊 数据分类体系
 
-### 1. **市场行情数据 (Market Data)** → MySQL
+### 1. **市场行情数据 (Market Data)** → PostgreSQL
 ```sql
--- 存储位置: MySQL (localhost:3306)
+-- 存储位置: PostgreSQL (localhost:5433)
 -- 数据库: market_db
 ├── stock_daily          -- 股票日线数据 (OHLCV)
 ├── index_daily          -- 指数日线数据
@@ -54,14 +56,14 @@
 └── order_book          -- 委托单数据
 ```
 
-### 6. **因子和策略数据 (Factor & Strategy)** → PostgreSQL + MySQL
+### 6. **因子和策略数据 (Factor & Strategy)** → PostgreSQL
 ```sql
 -- 因子数据: PostgreSQL factor_db
 ├── technical_factors    -- 技术因子
 ├── fundamental_factors  -- 基本面因子
 └── alternative_factors  -- 另类因子
 
--- 策略数据: MySQL strategy_db
+-- 策略数据: PostgreSQL strategy_db
 ├── backtest_results     -- 回测结果
 ├── portfolio_holdings   -- 持仓记录
 └── strategy_performance -- 策略表现
@@ -72,10 +74,8 @@
 | 数据库 | 适用场景 | 数据特点 | 查询模式 |
 |--------|----------|----------|----------|
 | **PostgreSQL** | 复杂分析、OLAP | 关系型、低频更新 | 复杂查询、聚合分析 |
-| **MySQL** | 核心业务、OLTP | 事务性、高并发 | 简单查询、快速读写 |
 | **Redis** | 缓存、实时数据 | 内存型、高速 | 键值查询、实时访问 |
 | **TDengine** | 时序数据、高频 | 时序型、压缩 | 时间范围查询 |
-| **MariaDB** | 备用业务库 | 兼容MySQL | 备份、分流 |
 
 ## 🔧 数据管理API
 
@@ -90,7 +90,7 @@ manager = QuantDataManager()
 # 1. 根据数据分类自动保存到合适的数据库
 success = manager.save_data_by_category(
     data=stock_df,                    # pandas DataFrame
-    category=DataCategory.MARKET_DATA, # 自动选择MySQL
+    category=DataCategory.MARKET_DATA, # 自动选择PostgreSQL
     table_name="stock_daily"
 )
 
@@ -126,9 +126,9 @@ fundamental_data = pg_access.load_data(
     database_name="fundamental_db"
 )
 
-# MySQL - 快速业务查询
-mysql_access = MySQLDataAccess()
-market_data = mysql_access.load_data(
+# PostgreSQL - 业务查询
+pg_market_access = PostgreSQLDataAccess()
+market_data = pg_market_access.load_data(
     table_name="stock_daily",
     filters={'symbol': '600000', 'date': '>2024-01-01'},
     database_name="market_db",
@@ -154,7 +154,7 @@ hf_data = td_access.load_timeseries_data(
 
 **第一阶段：核心数据**
 ```python
-# 1. 股票基本信息和日线数据 → MySQL
+# 1. 股票基本信息和日线数据 → PostgreSQL
 symbols = ['600000', '000001', '000002']  # 核心股票池
 collect_daily_data(symbols, '2023-01-01', '2024-09-21')
 
@@ -184,18 +184,14 @@ collect_money_flow_data(symbols)
 
 **数据分区策略**
 ```sql
--- MySQL: 按日期分区
+-- PostgreSQL: 按日期分区
 CREATE TABLE stock_daily (
-    id BIGINT AUTO_INCREMENT,
+    id BIGSERIAL,
     symbol VARCHAR(10),
     date DATE,
     -- 其他字段...
     PRIMARY KEY (id, date)
-) PARTITION BY RANGE (YEAR(date)) (
-    PARTITION p2023 VALUES LESS THAN (2024),
-    PARTITION p2024 VALUES LESS THAN (2025),
-    PARTITION p2025 VALUES LESS THAN (2026)
-);
+) PARTITION BY RANGE (date);
 
 -- PostgreSQL: 按股票代码分区
 CREATE TABLE financial_statements (
@@ -267,32 +263,22 @@ MONITORING_METRICS = {
 数据库: fundamental_db, macro_db, factor_db
 ```
 
-**2. MySQL连接**
+**2. PostgreSQL连接（市场/策略/系统）**
 ```
-名称: MyStocks-MySQL-Market
+名称: MyStocks-PostgreSQL-Market
 主机: localhost
-端口: 3306
-用户: root
-密码: your-postgresql-password
+端口: 5433
+用户: paperless
+密码: paperless
 数据库: market_db, strategy_db, system_db
-```
-
-**3. MariaDB连接（备用）**
-```
-名称: MyStocks-MariaDB-Backup
-主机: localhost
-端口: 3307
-用户: root
-密码: your-postgresql-password
 ```
 
 ### Navicat使用建议
 
 **1. 数据库分组管理**
 - 📊 量化分析组: PostgreSQL连接
-- 💹 市场数据组: MySQL连接
+- 💹 市场数据组: PostgreSQL连接
 - ⚡ 实时数据组: Redis连接
-- 📈 备份数据组: MariaDB连接
 
 **2. 常用查询收藏**
 ```sql
@@ -313,7 +299,7 @@ ORDER BY roe DESC LIMIT 50;
 ```
 
 **3. 数据同步任务**
-- 每日同步: market_db → mariadb (备份)
+- 每日同步: market_db → 本地备份 (文件/对象存储)
 - 每周同步: fundamental_db → 本地文件
 - 实时监控: 关键表数据量变化
 

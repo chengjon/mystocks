@@ -2,7 +2,7 @@
 """
 数据库健康检查脚本
 
-验证4个数据库的连接状态，为修复Web页面问题做准备
+验证3个数据库的连接状态，为修复Web页面问题做准备
 """
 
 import os
@@ -12,54 +12,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-def check_mysql_connection():
-    """验证MySQL连接"""
-    print("\n" + "=" * 60)
-    print("【1/4】MySQL 连接测试")
-    print("=" * 60)
-
-    try:
-        import pymysql
-
-        from web.backend.app.core.config import settings
-
-        conn = pymysql.connect(
-            host=settings.mysql_host,
-            port=settings.mysql_port,
-            user=settings.mysql_user,
-            password=settings.mysql_password,
-            database=settings.mysql_database,
-            connect_timeout=5,
-        )
-
-        cursor = conn.cursor()
-        cursor.execute("SELECT VERSION()")
-        version = cursor.fetchone()
-        print("✅ MySQL连接成功")
-        print(f"   版本: {version[0]}")
-        print(f"   数据库: {settings.mysql_database}")
-
-        # 检查关键表
-        cursor.execute("SHOW TABLES")
-        tables = [table[0] for table in cursor.fetchall()]
-        print(f"   表数量: {len(tables)}")
-        if tables:
-            print(f"   示例表: {', '.join(tables[:5])}")
-
-        cursor.close()
-        conn.close()
-        return True, None
-
-    except Exception as e:
-        print("❌ MySQL连接失败")
-        print(f"   错误: {str(e)}")
-        return False, str(e)
-
-
 def check_postgresql_connection():
     """验证PostgreSQL连接"""
     print("\n" + "=" * 60)
-    print("【2/4】PostgreSQL 连接测试")
+    print("【1/3】PostgreSQL 连接测试")
     print("=" * 60)
 
     conn = None
@@ -159,7 +115,7 @@ def check_postgresql_connection():
 def check_tdengine_connection():
     """验证TDengine连接"""
     print("\n" + "=" * 60)
-    print("【3/4】TDengine 连接测试")
+    print("【2/3】TDengine 连接测试")
     print("=" * 60)
 
     try:
@@ -223,7 +179,7 @@ def check_tdengine_connection():
 def check_redis_connection():
     """验证Redis连接"""
     print("\n" + "=" * 60)
-    print("【4/4】Redis 连接测试")
+    print("【3/3】Redis 连接测试")
     print("=" * 60)
 
     r = None
@@ -272,7 +228,6 @@ def main():
     results = {}
 
     # 测试所有数据库
-    results["mysql"], mysql_error = check_mysql_connection()
     results["postgresql"], pg_error = check_postgresql_connection()
     results["tdengine"], td_error = check_tdengine_connection()
     results["redis"], redis_error = check_redis_connection()
@@ -297,12 +252,6 @@ def main():
         print("\n" + "=" * 60)
         print("修复建议")
         print("=" * 60)
-
-        if not results["mysql"]:
-            print("\n【MySQL修复】")
-            print("1. 检查MySQL服务是否启动: systemctl status mysql")
-            print("2. 验证配置文件: web/backend/app/core/config.py")
-            print("3. 确认.env文件中的MYSQL_*配置正确")
 
         if not results["postgresql"]:
             print("\n【PostgreSQL修复】")

@@ -11,9 +11,15 @@ import unittest
 from pathlib import Path
 
 # 导入被测试模块
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-import factory
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.data_sources import factory
 
+
+class SecurityError(Exception):
+    """Fallback security error for smart tests."""
+
+
+class TestFactorySmart(unittest.TestCase):
     def test_factory_bug_prevention_sql_injection(self):
         """Bug防护测试 - 存在SQL注入风险"""
         # 测试防护措施
@@ -30,16 +36,14 @@ import factory
 
         for unsafe_input in unsafe_inputs:
             with self.assertRaises((ValueError, SecurityError)):
-                if hasattr(factory, 'target_function'):
+                if hasattr(factory, "target_function"):
                     factory.target_function(unsafe_input)
-
 
 
     def test_factory_basic_functionality(self):
         """基本功能测试"""
         # 测试模块导入
-        import factory
-        self.assertTrue(hasattr(factory, '__name__'))
+        self.assertTrue(hasattr(factory, "__name__"))
 
         # 测试是否有公共函数
         public_funcs = [f for f in dir(factory) if not f.startswith('_')]

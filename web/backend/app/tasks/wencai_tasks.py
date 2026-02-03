@@ -58,7 +58,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
     Returns:
         执行结果统计
     """
-    logger.info("[Celery Task] Starting refresh for %(query_name)s, pages=%(pages)s"")
+    logger.info("[Celery Task] Starting refresh for %(query_name)s, pages=%(pages)s")
 
     db = SessionLocal()
 
@@ -87,7 +87,7 @@ def refresh_wencai_query(self, query_name: str, pages: int = 1) -> Dict[str, Any
 
         # 重试机制
         if self.request.retries < self.max_retries:
-            logger.info("Retrying task (attempt {self.request.retries + 1})"")
+            logger.info("Retrying task (attempt {self.request.retries + 1})")
             raise self.retry(exc=e)
 
         return {
@@ -133,12 +133,12 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
             queries = [q for q in queries if q.get("is_active", False)]
 
         results["total_queries"] = len(queries)
-        logger.info("Found {len(queries)} queries to refresh"")
+        logger.info("Found {len(queries)} queries to refresh")
 
         # 逐个刷新
         for query_info in queries:
             query_name = query_info["query_name"]
-            logger.info("Refreshing %(query_name)s..."")
+            logger.info("Refreshing %(query_name)s...")
 
             try:
                 result = service.fetch_and_save(query_name=query_name, pages=pages)
@@ -152,13 +152,13 @@ def scheduled_refresh_all_queries(pages: int = 1, active_only: bool = True) -> D
                     }
                 )
 
-                logger.info("✅ %(query_name)s: {result['new_records']} new records"")
+                logger.info("✅ %(query_name)s: {result['new_records']} new records")
 
             except Exception as e:
                 results["failed"] += 1
                 results["details"].append({"query_name": query_name, "success": False, "error": str(e)})
 
-                logger.error("❌ %(query_name)s: {str(e)}"")
+                logger.error("❌ %(query_name)s: {str(e)}")
 
         results["completed_at"] = datetime.now().isoformat()
         logger.info(
@@ -192,7 +192,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
     Returns:
         清理统计结果
     """
-    logger.info("[Celery Task] Starting cleanup old data, days=%(days)s, dry_run=%(dry_run)s"")
+    logger.info("[Celery Task] Starting cleanup old data, days=%(days)s, dry_run=%(dry_run)s")
 
     results = {
         "started_at": datetime.now().isoformat(),
@@ -209,7 +209,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
     try:
         # 计算截止日期
         cutoff_date = datetime.now() - timedelta(days=days)
-        logger.info("Cutoff date: %(cutoff_date)s"")
+        logger.info("Cutoff date: %(cutoff_date)s")
 
         # 获取所有问财结果表
         with engine.connect() as conn:
@@ -219,7 +219,7 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
             tables = [row[0] for row in tables_result]
 
         results["total_tables"] = len(tables)
-        logger.info("Found {len(tables)} result tables"")
+        logger.info("Found {len(tables)} result tables")
 
         # 逐表清理
         for table_name in tables:
@@ -237,15 +237,15 @@ def cleanup_old_wencai_data(days: int = 30, dry_run: bool = False) -> Dict[str, 
                             conn.execute(delete_query, {"cutoff_date": cutoff_date})
                             conn.commit()
 
-                            logger.info("✅ %(table_name)s: Deleted %(delete_count)s records"")
+                            logger.info("✅ %(table_name)s: Deleted %(delete_count)s records")
                         else:
-                            logger.info("[DRY RUN] %(table_name)s: Would delete %(delete_count)s records"")
+                            logger.info("[DRY RUN] %(table_name)s: Would delete %(delete_count)s records")
 
                         results["total_deleted"] += delete_count
                         results["details"].append({"table": table_name, "deleted": delete_count})
 
             except Exception as e:
-                logger.error("Failed to cleanup %(table_name)s: {str(e)}"")
+                logger.error("Failed to cleanup %(table_name)s: {str(e)}")
                 results["details"].append({"table": table_name, "error": str(e)})
 
         results["completed_at"] = datetime.now().isoformat()
@@ -334,11 +334,11 @@ def get_wencai_stats() -> Dict[str, Any]:
                         )
 
                 except Exception as e:
-                    logger.warning("Failed to get stats for %(table_name)s: {str(e)}"")
+                    logger.warning("Failed to get stats for %(table_name)s: {str(e)}")
 
         engine.dispose()
 
-        logger.info("[Celery Task] Stats completed: {stats['total_records']} total records"")
+        logger.info("[Celery Task] Stats completed: {stats['total_records']} total records")
 
         return stats
 
@@ -377,5 +377,5 @@ def trigger_cleanup(days: int = 30, dry_run: bool = False):
     Returns:
         Celery AsyncResult
     """
-    logger.info("Manually triggering cleanup: days=%(days)s, dry_run=%(dry_run)s"")
+    logger.info("Manually triggering cleanup: days=%(days)s, dry_run=%(dry_run)s")
     return cleanup_old_wencai_data.delay(days=days, dry_run=dry_run)

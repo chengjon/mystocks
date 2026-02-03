@@ -1,17 +1,23 @@
 # Api
 
-**最后更新**: 2026-01-10 22:15:42
+**最后更新**: 2026-02-02 22:10:38
 
-**文档数量**: 160
+**文档数量**: 191
 
 
 ---
+
+- [ADVANCED_ANALYSIS_IMPLEMENTATION_REPORT](api/reports/analysis/ADVANCED_ANALYSIS_IMPLEMENTATION_REPORT.md)
+  - *MyStocks 高级量化分析平台 - 实现完成报告*
 
 - [AGENTS_AUDIT_REPORT](api/AGENTS_AUDIT_REPORT.md)
   - *Claude Code Agents 审查报告*
 
 - [AGENTS_QUICK_REFERENCE](api/AGENTS_QUICK_REFERENCE.md)
   - *Claude Agents 快速参考卡片*
+
+- [AGENTS_SKILLS_AVAILABILITY_REPORT](api/AGENTS_SKILLS_AVAILABILITY_REPORT.md)
+  - *MyStocks 项目 - Agents & Skills 可用性报告*
 
 - [AKSHARE_INTERFACE_MAPPING](api/AKSHARE_INTERFACE_MAPPING.md)
   - *AkShare 数据接口快速参考*
@@ -31,26 +37,17 @@
 - [APIFOX_QUICK_START](api/APIFOX_QUICK_START.md)
   - *Apifox 快速开始指南*
 
-- [API_ACCEPTANCE_STANDARDS](api/API_ACCEPTANCE_STANDARDS.md)
-  - *API-Web 集成项目验收标准 (Acceptance Standards)*
-
-- [API_ARCHITECTURE_ANALYSIS_2025-11-30](api/API_ARCHITECTURE_ANALYSIS_2025-11-30.md)
+- [API_ARCHITECTURE_ANALYSIS_2025-11-30](api/reports/analysis/API_ARCHITECTURE_ANALYSIS_2025-11-30.md)
   - *API_ARCHITECTURE_ANALYSIS_2025-11-30*
 
 - [API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30](api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md)
   - *MyStocks API架构设计全面总结报告*
 
-- [API_COMPLIANCE_IMPROVEMENTS](api/API_COMPLIANCE_IMPROVEMENTS.md)
-  - *MyStocks API 合规性改进建议*
+- [API_CONTRACT_ARCHITECTURE_ANALYSIS](api/API_CONTRACT_ARCHITECTURE_ANALYSIS.md)
+  - *MyStocks 项目 API 契约架构完整分析*
 
-- [API_COMPLIANCE_REPORT](api/API_COMPLIANCE_REPORT.md)
-  - *MyStocks API 端点合规性审查报告*
-
-- [API_COMPLIANCE_TESTING_FRAMEWORK](api/API_COMPLIANCE_TESTING_FRAMEWORK.md)
-  - *API Compliance Testing Framework*
-
-- [API_COMPLIANCE_TEST_COMPLETION_REPORT](api/API_COMPLIANCE_TEST_COMPLETION_REPORT.md)
-  - *API 合规性测试完成报告*
+- [API_CONTRACT_ARCHITECTURE_ANALYSIS](api/reports/archives/critical_backups_20260119_125339/API_CONTRACT_ARCHITECTURE_ANALYSIS.md)
+  - *MyStocks 项目 API 契约架构完整分析*
 
 - [API_CONTRACT_PLATFORM_DEPLOYMENT_REPORT](api/API_CONTRACT_PLATFORM_DEPLOYMENT_REPORT.md)
   - *API契约管理平台部署报告*
@@ -67,14 +64,11 @@
 - [API_DECISION_SUMMARY](api/API_DECISION_SUMMARY.md)
   - *MyStocks API架构决策摘要*
 
-- [API_DEVELOPMENT_CHECKLIST](api/API_DEVELOPMENT_CHECKLIST.md)
-  - *API端点开发检查清单*
-
-- [API_DEVELOPMENT_GUIDELINES](api/API_DEVELOPMENT_GUIDELINES.md)
-  - *MyStocks API端点开发标准指南*
-
 - [API_DOCUMENTATION_2025-11-30](api/API_DOCUMENTATION_2025-11-30.md)
   - *MyStocks Web API 完整文档*
+
+- [API_DOCUMENTATION_CLEANUP_COMPLETION_REPORT](api/API_DOCUMENTATION_CLEANUP_COMPLETION_REPORT.md)
+  - *MyStocks API文档整理完成报告*
 
 - [API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30](api/API_DOCUMENTATION_STATUS_SUMMARY_2025-11-30.md)
   - *MyStocks API 文档完善工作总结报告*
@@ -82,23 +76,26 @@
 - [API_DOC_REFERENCE](api/API_DOC_REFERENCE.md)
   - *MyStocks API 文档参考样式*
 
+- [API_ECOSYSTEM_OPTIMIZATION_PLAN_PRAGMATIC_2026](api/API_ECOSYSTEM_OPTIMIZATION_PLAN_PRAGMATIC_2026.md)
+  - *MyStocks API生态系统优化方案 (2026务实版)*
+
+- [API_ECOSYSTEM_OPTIMIZATION_REPORT_2026](api/API_ECOSYSTEM_OPTIMIZATION_REPORT_2026.md)
+  - *MyStocks API生态系统优化报告 (2026版)*
+
+- [API_ENDPOINTS_STATISTICS_REPORT](api/reports/archives/critical_backups_20260119_125339/API_ENDPOINTS_STATISTICS_REPORT.md)
+  - *MyStocks API 端点统计报告*
+
 - [API_ENDPOINT_DOCUMENTATION](api/API_ENDPOINT_DOCUMENTATION.md)
   - *MyStocks API端点文档*
 
 - [API_ENHANCEMENT_PLAN](api/API_ENHANCEMENT_PLAN.md)
   - *MyStocks API Enhancement Plan*
 
-- [API_EXAMPLES](api/API_EXAMPLES.md)
-  - *MyStocks API 使用示例和最佳实践*
+- [API_FILE_LEVEL_TESTING_IMPLEMENTATION_REPORT](api/API_FILE_LEVEL_TESTING_IMPLEMENTATION_REPORT.md)
+  - *OpenSpec变更实施完整报告*
 
 - [API_FIXES_SUMMARY](api/API_FIXES_SUMMARY.md)
   - *MyStocks API 修复和监控系统总结*
-
-- [API_FRONTEND_MAPPING](api/API_FRONTEND_MAPPING.md)
-  - *API-前端映射文档*
-
-- [API_GUIDE](api/API_GUIDE.md)
-  - *MyStocks Web API 使用指南*
 
 - [API_INDEX](api/API_INDEX.md)
   - *MyStocks API 文档索引*
@@ -106,17 +103,11 @@
 - [API_INTEGRATION_GUIDE](api/API_INTEGRATION_GUIDE.md)
   - *API 集成指南 (API Integration Guide)*
 
-- [API_INTEGRATION_IMPLEMENTATION_STATUS](api/API_INTEGRATION_IMPLEMENTATION_STATUS.md)
-  - *API集成优化实施状态报告*
-
 - [API_INTERFACE_REVIEW_REPORT](api/API_INTERFACE_REVIEW_REPORT.md)
   - *MyStocks项目API接口工具评审报告*
 
 - [API_INVENTORY](api/API_INVENTORY.md)
   - *API端点清单 (API Inventory)*
-
-- [API_Integration_Optimization_Plan](api/API_Integration_Optimization_Plan.md)
-  - *API集成优化计划 (API Integration Optimization Plan)*
 
 - [API_Interface_Document_Draft](api/API_Interface_Document_Draft.md)
   - *MyStocks API Interface Document (Draft)*
@@ -124,17 +115,11 @@
 - [API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30](api/API_NEXT_STEPS_AND_RECOMMENDATIONS_2025-11-30.md)
   - *MyStocks API 架构分析 - 后续处理建议与行动计划*
 
-- [API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01](api/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md)
+- [API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01](api/reports/milestones/API_OPTIMIZATION_COMPLETION_REPORT_2025-12-01.md)
   - *API优化完成报告*
 
 - [API_OPTIMIZATION_REPORT_2025-12-01](api/API_OPTIMIZATION_REPORT_2025-12-01.md)
   - *MyStocks API 接口优化报告*
-
-- [API_PHASE4_COMPLETION_REPORT_2025-12-03](api/API_PHASE4_COMPLETION_REPORT_2025-12-03.md)
-  - *API Phase 4 完成报告 - 剩余7个API文件全面优化*
-
-- [API_QUICK_START_TEMPLATE](api/API_QUICK_START_TEMPLATE.md)
-  - *API端点开发快速开始模板*
 
 - [API_RESPONSE_UNIFICATION_REPORT_2025-12-03](api/API_RESPONSE_UNIFICATION_REPORT_2025-12-03.md)
   - *API Response Format Unification - Implementation Report*
@@ -142,10 +127,7 @@
 - [API_SECURITY_FIXES_SUMMARY_2025-11-30](api/API_SECURITY_FIXES_SUMMARY_2025-11-30.md)
   - *MyStocks API 安全修复总结*
 
-- [API_SPECIFICATION](api/API_SPECIFICATION.md)
-  - *MyStocks API 完整规范*
-
-- [API_WEB_ALIGNMENT_ANALYSIS](api/API_WEB_ALIGNMENT_ANALYSIS.md)
+- [API_WEB_ALIGNMENT_ANALYSIS](api/reports/analysis/API_WEB_ALIGNMENT_ANALYSIS.md)
   - *MyStocks API 与 Web 功能对齐分析*
 
 - [API_WEB_INTEGRATION_STRATEGY](api/API_WEB_INTEGRATION_STRATEGY.md)
@@ -172,11 +154,29 @@
 - [API契约同步组件实现方案](api/API契约同步组件实现方案.md)
   - *API契约同步组件实现方案*
 
+- [API契约同步组件实现方案](api/legacy-cn/03-API与功能文档/API契约同步组件实现方案.md)
+  - *API契约同步组件实现方案*
+
 - [API开发](api/API开发.md)
   - *API开发*
 
 - [API接口对齐报告](api/API接口对齐报告.md)
   - *API接口对齐清单*
+
+- [ARTDECO_TRADING_CENTER_API_MAPPING](api/ARTDECO_TRADING_CENTER_API_MAPPING.md)
+  - *ArtDeco 量化交易管理中心 - API端点映射表*
+
+- [ARTDECO_TRADING_CENTER_DESIGN](api/ARTDECO_TRADING_CENTER_DESIGN.md)
+  - *ArtDeco 量化交易管理中心 - 菜单功能树设计*
+
+- [ARTDECO_TRADING_CENTER_OPTIMIZED_V3](api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.md)
+  - *ArtDeco 量化交易管理中心 - 优化设计方案 V3.0*
+
+- [ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1](api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md)
+  - *ArtDeco 量化交易管理中心 - 优化设计方案 V3.1*
+
+- [ArtDeco_System_Architecture_Summary](api/ArtDeco_System_Architecture_Summary.md)
+  - *🎨 ArtDeco System Architecture Summary*
 
 - [BACKUP_RECOVERY_GUIDE](api/BACKUP_RECOVERY_GUIDE.md)
   - *数据备份恢复系统用户指南*
@@ -184,13 +184,16 @@
 - [CI_CD_INTEGRATION_GUIDE](api/CI_CD_INTEGRATION_GUIDE.md)
   - *CI/CD集成与告警通知指南*
 
+- [CI_CD_Validation_Extension_Guide](api/CI_CD_Validation_Extension_Guide.md)
+  - *MyStocks CI/CD 验证扩展行动指南*
+
 - [CLI_TOOL_GUIDE](api/CLI_TOOL_GUIDE.md)
   - *API契约管理CLI工具使用指南*
 
 - [CODEBASE_EXPLORATION_REPORT](api/CODEBASE_EXPLORATION_REPORT.md)
   - *MyStocks Codebase Exploration Report*
 
-- [COMPLETION_SUMMARY](api/COMPLETION_SUMMARY.md)
+- [COMPLETION_SUMMARY](api/reports/archives/COMPLETION_SUMMARY.md)
   - *Phase 3: API Parameter Validation - Implementation Complete ✅*
 
 - [CONTRACT_MANAGEMENT_API](api/CONTRACT_MANAGEMENT_API.md)
@@ -223,37 +226,37 @@
 - [DEPLOYMENT_CHECKLIST](api/DEPLOYMENT_CHECKLIST.md)
   - *API契约管理平台 - 部署检查清单*
 
-- [E2E_PHASE3_COMPLETION_SUMMARY](api/E2E_PHASE3_COMPLETION_SUMMARY.md)
+- [E2E_PHASE3_COMPLETION_SUMMARY](api/reports/archives/E2E_PHASE3_COMPLETION_SUMMARY.md)
   - *Phase 3: E2E测试框架开发 - 工作总结*
 
-- [E2E_QUICK_FIX_GUIDE](api/E2E_QUICK_FIX_GUIDE.md)
+- [E2E_QUICK_FIX_GUIDE](api/reports/archives/E2E_QUICK_FIX_GUIDE.md)
   - *E2E测试快速修复指南*
 
-- [E2E_TEST_COMMANDS](api/E2E_TEST_COMMANDS.md)
+- [E2E_TEST_COMMANDS](api/reports/archives/E2E_TEST_COMMANDS.md)
   - *E2E测试命令速查表*
 
-- [E2E_TEST_COMPLETION_REPORT](api/E2E_TEST_COMPLETION_REPORT.md)
+- [E2E_TEST_COMPLETION_REPORT](api/reports/milestones/E2E_TEST_COMPLETION_REPORT.md)
   - *E2E测试完成报告*
 
-- [E2E_TEST_EXECUTION_GUIDE](api/E2E_TEST_EXECUTION_GUIDE.md)
+- [E2E_TEST_EXECUTION_GUIDE](api/reports/archives/E2E_TEST_EXECUTION_GUIDE.md)
   - *E2E测试框架 - 实施完成报告*
 
-- [E2E_TEST_EXECUTION_REPORT](api/E2E_TEST_EXECUTION_REPORT.md)
+- [E2E_TEST_EXECUTION_REPORT](api/reports/archives/E2E_TEST_EXECUTION_REPORT.md)
   - *E2E Test Execution Report*
 
-- [E2E_TEST_EXECUTION_SUMMARY](api/E2E_TEST_EXECUTION_SUMMARY.md)
+- [E2E_TEST_EXECUTION_SUMMARY](api/reports/archives/E2E_TEST_EXECUTION_SUMMARY.md)
   - *MyStocks Web端端到端可用性测试执行总结*
 
-- [E2E_TEST_EXTENSION_COMPLETION_REPORT](api/E2E_TEST_EXTENSION_COMPLETION_REPORT.md)
+- [E2E_TEST_EXTENSION_COMPLETION_REPORT](api/reports/milestones/E2E_TEST_EXTENSION_COMPLETION_REPORT.md)
   - *E2E测试扩展完成报告*
 
-- [E2E_TEST_FINAL_REPORT](api/E2E_TEST_FINAL_REPORT.md)
+- [E2E_TEST_FINAL_REPORT](api/reports/archives/E2E_TEST_FINAL_REPORT.md)
   - *E2E测试最终执行报告*
 
-- [E2E_TEST_RESULTS](api/E2E_TEST_RESULTS.md)
+- [E2E_TEST_RESULTS](api/reports/archives/E2E_TEST_RESULTS.md)
   - *E2E测试执行结果报告*
 
-- [E2E_TEST_STATUS_REPORT](api/E2E_TEST_STATUS_REPORT.md)
+- [E2E_TEST_STATUS_REPORT](api/reports/archives/E2E_TEST_STATUS_REPORT.md)
   - *E2E测试状态报告*
 
 - [ERROR_CODES](api/ERROR_CODES.md)
@@ -261,6 +264,12 @@
 
 - [FINAL_AGENTS_CLEANUP_REPORT](api/FINAL_AGENTS_CLEANUP_REPORT.md)
   - *Claude Code Agents 最终清理报告*
+
+- [FRONTEND_CODE_DESIGN_VALIDATION_REPORT](api/FRONTEND_CODE_DESIGN_VALIDATION_REPORT.md)
+  - *MyStocks 前端代码设计验证报告*
+
+- [FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN](api/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN.md)
+  - *MyStocks 前端代码优化实施方案*
 
 - [FastAPI应用开发指南](api/FastAPI应用开发指南.md)
   - *FastAPI应用开发指南*
@@ -280,6 +289,9 @@
 - [IMPROVEMENT_PLAN_EXECUTOR](api/IMPROVEMENT_PLAN_EXECUTOR.md)
   - *MyStocks项目改进执行计划*
 
+- [INTEGRATION_COMPLETION_REPORT](api/reports/milestones/INTEGRATION_COMPLETION_REPORT.md)
+  - *MyStocks 全栈集成完成报告*
+
 - [LLMS_API_DOCUMENTATION](api/LLMS_API_DOCUMENTATION.md)
   - *MyStocks 帮助文档*
 
@@ -292,13 +304,16 @@
 - [MyStocks_API_Mapping_Document](api/MyStocks_API_Mapping_Document.md)
   - *MyStocks API 映射与依赖关系文档*
 
+- [NEW_API_SOURCE_INTEGRATION_GUIDE](api/reports/archives/critical_backups_20260119_125339/NEW_API_SOURCE_INTEGRATION_GUIDE.md)
+  - *新增数据源/API 接口开发指引*
+
 - [NEXT_DEVELOPMENT_PHASES](api/NEXT_DEVELOPMENT_PHASES.md)
   - *Next Development Phases - API Contract Platform*
 
 - [NEXT_PHASES_EXECUTIVE_SUMMARY](api/NEXT_PHASES_EXECUTIVE_SUMMARY.md)
   - *Next Development Phases - Executive Summary*
 
-- [P0_INTEGRATION_COMPLETION_REPORT](api/P0_INTEGRATION_COMPLETION_REPORT.md)
+- [P0_INTEGRATION_COMPLETION_REPORT](api/reports/milestones/P0_INTEGRATION_COMPLETION_REPORT.md)
   - *P0优先级API集成完成报告*
 
 - [PARAMETER_VALIDATION_ENHANCEMENT_REPORT](api/PARAMETER_VALIDATION_ENHANCEMENT_REPORT.md)
@@ -307,7 +322,7 @@
 - [PHASE1-2_ACCEPTANCE_REPORT](api/PHASE1-2_ACCEPTANCE_REPORT.md)
   - *Phase 1-2 验收报告*
 
-- [PHASE11_1_COMPLETION_REPORT](api/PHASE11_1_COMPLETION_REPORT.md)
+- [PHASE11_1_COMPLETION_REPORT](api/reports/milestones/PHASE11_1_COMPLETION_REPORT.md)
   - *Phase 11.1 完成报告 - localStorage访问问题修复*
 
 - [PHASE11_COMPLETION](api/PHASE11_COMPLETION.md)
@@ -319,7 +334,7 @@
 - [PHASE11_VERIFICATION_REPORT_2025-12-02](api/PHASE11_VERIFICATION_REPORT_2025-12-02.md)
   - *Phase 11 验证报告 - P1 认证修复和E2E测试状态*
 
-- [PHASE2_COMPLETION_REPORT](api/PHASE2_COMPLETION_REPORT.md)
+- [PHASE2_COMPLETION_REPORT](api/reports/milestones/PHASE2_COMPLETION_REPORT.md)
   - *Phase 2: 策略管理模块完成报告*
 
 - [PHASE2_DATA_ACCESS_TEST_COVERAGE_ACHIEVEMENT_REPORT](api/PHASE2_DATA_ACCESS_TEST_COVERAGE_ACHIEVEMENT_REPORT.md)
@@ -328,19 +343,19 @@
 - [PHASE2_STRATEGY_INTEGRATION_PLAN](api/PHASE2_STRATEGY_INTEGRATION_PLAN.md)
   - *Phase 2: 策略管理模块 API 集成实施方案*
 
-- [PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT](api/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md)
+- [PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT](api/reports/milestones/PHASE4B_SECURITY_IMPROVEMENTS_COMPLETION_REPORT.md)
   - *Phase 4B Security Improvements Completion Report*
 
-- [PHASE4C_COMPLETION_REPORT](api/PHASE4C_COMPLETION_REPORT.md)
+- [PHASE4C_COMPLETION_REPORT](api/reports/milestones/PHASE4C_COMPLETION_REPORT.md)
   - *Phase 4C Optimization Completion Report*
 
 - [PHASE4_2_INTEGRATION_REPORT](api/PHASE4_2_INTEGRATION_REPORT.md)
   - *Phase 4.2 - Function Pages API Integration Report*
 
-- [PHASE4_COMPLETION_REPORT](api/PHASE4_COMPLETION_REPORT.md)
+- [PHASE4_COMPLETION_REPORT](api/reports/milestones/PHASE4_COMPLETION_REPORT.md)
   - *Phase 4 - Complete Web Page API Integration Report*
 
-- [PHASE4_DOT_1_COMPLETION_REPORT](api/PHASE4_DOT_1_COMPLETION_REPORT.md)
+- [PHASE4_DOT_1_COMPLETION_REPORT](api/reports/milestones/PHASE4_DOT_1_COMPLETION_REPORT.md)
   - *Phase 4.1 Final Completion Report*
 
 - [PHASE4_DOT_1_PROGRESS_REPORT](api/PHASE4_DOT_1_PROGRESS_REPORT.md)
@@ -349,7 +364,7 @@
 - [PHASE4_DOT_1_PROGRESS_REPORT_CONTINUED](api/PHASE4_DOT_1_PROGRESS_REPORT_CONTINUED.md)
   - *Phase 4.1 Progress Report - Continued Work*
 
-- [PHASE4_REMAINING_FILES_ANALYSIS](api/PHASE4_REMAINING_FILES_ANALYSIS.md)
+- [PHASE4_REMAINING_FILES_ANALYSIS](api/reports/analysis/PHASE4_REMAINING_FILES_ANALYSIS.md)
   - *Phase 4: Remaining API Files Compliance Analysis*
 
 - [PHASE7_CSRF_RESOLUTION_REPORT](api/PHASE7_CSRF_RESOLUTION_REPORT.md)
@@ -364,22 +379,34 @@
 - [PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT](api/PHASE_COMPLIANCE_IMPROVEMENT_COMPLETE_REPORT.md)
   - *API 合规性改进完成报告 - Phase 1-3*
 
+- [PINIA_API_STANDARDIZATION](api/PINIA_API_STANDARDIZATION.md)
+  - *Pinia 标准化 API 获取设计方案*
+
 - [POSTTOOLUSE_WRITE_HOOK_FIX_REPORT](api/POSTTOOLUSE_WRITE_HOOK_FIX_REPORT.md)
   - *PostToolUse:Write Hook Error - Root Cause Analysis & Fix Report*
 
 - [Phase_6_4_GPU加速引擎集成与测试_完成报告](api/Phase_6_4_GPU加速引擎集成与测试_完成报告.md)
   - *Phase 6.4 GPU加速引擎集成与测试 - 完成报告*
 
-- [README_COMPLIANCE_TESTING](api/README_COMPLIANCE_TESTING.md)
+- [QUANTITATIVE_TRADING_ALGORITHMS_API_SPEC](api/QUANTITATIVE_TRADING_ALGORITHMS_API_SPEC.md)
+  - *MyStocks 量化交易算法 API 详细规格文档*
+
+- [README_COMPLIANCE_TESTING](api/reports/archives/merged_readmes/README_COMPLIANCE_TESTING.md)
   - *API Compliance Testing Framework*
+
+- [README_PLATFORM](api/reports/archives/merged_readmes/README_PLATFORM.md)
+  - *MyStocks 量化交易平台*
 
 - [REAL_DATA_BACKTEST_VERIFICATION_REPORT](api/REAL_DATA_BACKTEST_VERIFICATION_REPORT.md)
   - *真实数据回测验证完成报告*
 
+- [ROUTING_OPTIMIZATION_SOLUTION](api/ROUTING_OPTIMIZATION_SOLUTION.md)
+  - *前端路由系统优化方案*
+
 - [STOCK_CODES_FETCH_GUIDE](api/STOCK_CODES_FETCH_GUIDE.md)
   - *获取 A 股股票代码 - 完整指南*
 
-- [SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30](api/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md)
+- [SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30](api/reports/milestones/SWAGGER_DOCUMENTATION_COMPLETION_REPORT_2025-11-30.md)
   - *Swagger 文档完善工作完成报告*
 
 - [SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30](api/SWAGGER_DOCUMENTATION_IMPROVEMENT_GUIDE_2025-11-30.md)
@@ -393,6 +420,9 @@
 
 - [SWAGGER_UI_GUIDE](api/SWAGGER_UI_GUIDE.md)
   - *Swagger UI 使用指南*
+
+- [SYSTEM_FIX_EXPERIENCE_REPORT](api/SYSTEM_FIX_EXPERIENCE_REPORT.md)
+  - *OpenCode系统修复经验总结*
 
 - [TASK-REPORT](api/TASK-REPORT.md)
   - *Frontend CLI 任务报告*
@@ -427,10 +457,13 @@
 - [TASK_8_COMPLETION_VERIFICATION](api/TASK_8_COMPLETION_VERIFICATION.md)
   - *Task 8 Completion Verification Report*
 
+- [TASK_PLAN](api/TASK_PLAN.md)
+  - *任务规划：TypeScript 类型系统修复与前端质量提升*
+
 - [TDX_DATA_CAPABILITIES](api/TDX_DATA_CAPABILITIES.md)
   - *TDX模块数据能力总结*
 
-- [TEST_CLI_COMPLETION_REPORT](api/TEST_CLI_COMPLETION_REPORT.md)
+- [TEST_CLI_COMPLETION_REPORT](api/reports/milestones/TEST_CLI_COMPLETION_REPORT.md)
   - *Test CLI 完成总结报告*
 
 - [TEST_COVERAGE_ACHIEVEMENT_SUMMARY](api/TEST_COVERAGE_ACHIEVEMENT_SUMMARY.md)
@@ -457,17 +490,77 @@
 - [WENCAI实施完成报告](api/WENCAI实施完成报告.md)
   - *问财股票筛选功能集成 - 完整实施报告*
 
-- [WORK_COMPLETION_REPORT_2025-11-30](api/WORK_COMPLETION_REPORT_2025-11-30.md)
+- [WORK_COMPLETION_REPORT_2025-11-30](api/reports/milestones/WORK_COMPLETION_REPORT_2025-11-30.md)
   - *API 架构分析与安全修复 - 工作完成报告*
 
 - [Web访问指南](api/Web访问指南.md)
   - *MyStocks Web系统访问指南*
 
+- [api_acceptance_standards](api/testing/compliance/api_acceptance_standards.md)
+  - *API-Web 集成项目验收标准 (Acceptance Standards)*
+
+- [api_compliance_improvements](api/testing/compliance/api_compliance_improvements.md)
+  - *MyStocks API 合规性改进建议*
+
+- [api_compliance_report](api/testing/compliance/api_compliance_report.md)
+  - *MyStocks API 端点合规性审查报告*
+
+- [api_compliance_test_completion_report](api/reports/milestones/api_compliance_test_completion_report.md)
+  - *API 合规性测试完成报告*
+
+- [api_compliance_testing_framework](api/testing/compliance/api_compliance_testing_framework.md)
+  - *API Compliance Testing Framework*
+
+- [api_development_checklist](api/guides/development/api_development_checklist.md)
+  - *API端点开发检查清单*
+
+- [api_development_guidelines](api/guides/development/api_development_guidelines.md)
+  - *MyStocks API端点开发标准指南*
+
+- [api_documentation_cleanup_plan](api/api_documentation_cleanup_plan.md)
+  - *MyStocks API文档整理和清理方案*
+
+- [api_endpoints_statistics_report](api/reports/analysis/api_endpoints_statistics_report.md)
+  - *MyStocks API 端点统计报告*
+
+- [api_examples](api/guides/development/api_examples.md)
+  - *MyStocks API 使用示例和最佳实践*
+
+- [api_frontend_mapping](api/guides/integration/api_frontend_mapping.md)
+  - *API-前端映射文档*
+
+- [api_integration_implementation_status](api/guides/integration/api_integration_implementation_status.md)
+  - *API集成优化实施状态报告*
+
+- [api_integration_optimization_plan](api/guides/integration/api_integration_optimization_plan.md)
+  - *API集成优化计划 (API Integration Optimization Plan)*
+
+- [api_quick_start_template](api/guides/development/api_quick_start_template.md)
+  - *API端点开发快速开始模板*
+
+- [api_specification](api/specifications/core/api_specification.md)
+  - *MyStocks API 完整规范*
+
+- [api_usage_guide](api/guides/development/api_usage_guide.md)
+  - *MyStocks Web API 使用指南*
+
 - [apifox_mcp_playwright使用](api/apifox_mcp_playwright使用.md)
   - *apifox_mcp_playwright使用*
 
+- [env](api/legacy-cn/03-API与功能文档/env.md)
+  - *iccc数据库 MongoDB 数据库配置*
+
+- [notes](api/notes.md)
+  - *ArtDeco 量化交易管理 Web 端设计笔记*
+
 - [plugin_list](api/plugin_list.md)
   - *MyStocks 项目 - Claude Code 插件完整列表*
+
+- [quantitative-analysis-implementation-plan](api/quantitative-analysis-implementation-plan.md)
+  - *MyStocks 高级量化分析功能扩展示想与实现路径*
+
+- [task_plan](api/task_plan.md)
+  - *目录重构计划 - 根目录整理*
 
 - [task_plan_signal_monitoring_phase2_extended](api/task_plan_signal_monitoring_phase2_extended.md)
   - *Task Plan: Signal Monitoring System Phase 2 Extended Implementation*

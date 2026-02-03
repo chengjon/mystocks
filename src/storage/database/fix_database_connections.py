@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 数据库连接修复工具
-用于解决MyStocks项目中的数据库连接问题
+用于解决MyStocks项目中的数据库连接问题（MySQL已移除）
 """
 
 import logging
@@ -10,7 +10,7 @@ import os
 import sys
 
 import psycopg2
-import pymysql
+from psycopg2 import sql
 
 # 添加项目路径到模块搜索路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,7 +26,7 @@ def check_database_connections():
     """检查所有数据库连接配置"""
     logger.info("🔍 检查数据库连接配置...")
 
-    databases = ["mysql", "postgresql", "tdengine", "redis", "mariadb"]
+    databases = ["postgresql", "tdengine", "redis"]
     all_good = True
 
     for db in databases:
@@ -120,76 +120,55 @@ def create_databases():
 
     conn = None
     cursor = None
-    mariadb_conn = None
-    mariadb_cursor = None
 
     try:
-        # 从环境变量获取MySQL连接参数
-        mysql_host = os.getenv("MYSQL_HOST")
-        mysql_user = os.getenv("MYSQL_USER")
-        mysql_password = os.getenv("MYSQL_PASSWORD")
-        mysql_port = int(os.getenv("MYSQL_PORT", "3306"))
+        # 从环境变量获取PostgreSQL连接参数
+        pg_host = os.getenv("POSTGRESQL_HOST")
+        pg_user = os.getenv("POSTGRESQL_USER")
+        pg_password = os.getenv("POSTGRESQL_PASSWORD")
+        pg_port = int(os.getenv("POSTGRESQL_PORT", "5432"))
 
         # 验证必要的参数是否存在
-        if not all([mysql_host, mysql_user, mysql_password]):
+        if not all([pg_host, pg_user, pg_password]):
             missing_params = []
-            if not mysql_host:
-                missing_params.append("MYSQL_HOST")
-            if not mysql_user:
-                missing_params.append("MYSQL_USER")
-            if not mysql_password:
-                missing_params.append("MYSQL_PASSWORD")
+            if not pg_host:
+                missing_params.append("POSTGRESQL_HOST")
+            if not pg_user:
+                missing_params.append("POSTGRESQL_USER")
+            if not pg_password:
+                missing_params.append("POSTGRESQL_PASSWORD")
 
-            raise ValueError(f"MySQL连接参数不完整，缺少: {', '.join(missing_params)}")
+            raise ValueError(f"PostgreSQL连接参数不完整，缺少: {', '.join(missing_params)}")
 
-        print(f"连接到MySQL服务器: {mysql_user}@{mysql_host}:{mysql_port}")
+        print(f"连接到PostgreSQL服务器: {pg_user}@{pg_host}:{pg_port}")
 
-        # 创建连接
-        conn = pymysql.connect(
-            host=mysql_host,
-            user=mysql_user,
-            password=mysql_password,
-            port=mysql_port,
+        # 连接到管理数据库（默认postgres）
+        conn = psycopg2.connect(
+            host=pg_host,
+            user=pg_user,
+            password=pg_password,
+            port=pg_port,
+            dbname=os.getenv("POSTGRESQL_ADMIN_DB", "postgres"),
             connect_timeout=10,
         )
-
+        conn.autocommit = True
         cursor = conn.cursor()
 
         # 创建所需的数据库
         databases_to_create = [
             "test_db",
-            os.getenv("TDENGINE_DATABASE", "market_data"),
-            os.getenv("MYSQL_DATABASE", "quant_research"),
             os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+            os.getenv("MONITOR_DB_DATABASE", "mystocks_monitoring"),
+            "quant_research",
         ]
 
         for db_name in databases_to_create:
             if db_name:  # 确保数据库名称不为空
-                cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
+                cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
+                exists = cursor.fetchone() is not None
+                if not exists:
+                    cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
                 print(f"  ✓ 数据库 {db_name} 已确保存在")
-
-        conn.commit()
-
-        # 为MariaDB也创建数据库
-        mariadb_host = os.getenv("MARIADB_HOST")
-        mariadb_user = os.getenv("MARIADB_USER")
-        mariadb_password = os.getenv("MARIADB_PASSWORD")
-        mariadb_port = int(os.getenv("MARIADB_PORT", "3306"))
-
-        if mariadb_host and mariadb_user and mariadb_password:
-            print(f"连接到MariaDB服务器: {mariadb_user}@{mariadb_host}:{mariadb_port}")
-            mariadb_conn = pymysql.connect(
-                host=mariadb_host,
-                user=mariadb_user,
-                password=mariadb_password,
-                port=mariadb_port,
-                connect_timeout=10,
-            )
-
-            mariadb_cursor = mariadb_conn.cursor()
-            mariadb_cursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('MARIADB_DATABASE', 'quant_research')}")
-            print(f"  ✓ MariaDB数据库 {os.getenv('MARIADB_DATABASE', 'quant_research')} 已确保存在")
-            mariadb_conn.commit()
 
         logger.info("✓ 数据库创建成功")
         return True
@@ -208,16 +187,7 @@ def create_databases():
                 conn.close()
             except Exception:
                 pass
-        if mariadb_cursor is not None:
-            try:
-                mariadb_cursor.close()
-            except Exception:
-                pass
-        if mariadb_conn is not None:
-            try:
-                mariadb_conn.close()
-            except Exception:
-                pass
+        # PostgreSQL 连接清理
 
 
 def validate_connections():
@@ -227,11 +197,6 @@ def validate_connections():
     try:
         manager = DatabaseTableManager()
         databases = [
-            (
-                DatabaseType.MYSQL,
-                "mysql",
-                os.getenv("MYSQL_DATABASE", "quant_research"),
-            ),
             (
                 DatabaseType.POSTGRESQL,
                 "postgresql",
@@ -243,11 +208,6 @@ def validate_connections():
                 os.getenv("TDENGINE_DATABASE", "market_data"),
             ),
             (DatabaseType.REDIS, "redis", None),
-            (
-                DatabaseType.MARIADB,
-                "mariadb",
-                os.getenv("MARIADB_DATABASE", "quant_research"),
-            ),
         ]
         success_count = 0
 

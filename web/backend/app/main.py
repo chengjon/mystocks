@@ -138,7 +138,7 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
     except Exception as e:
-        logger.error("❌ 启动监控数据库失败: %(e)s"")
+        logger.error("❌ 启动监控数据库失败: %s", e)
         # 不阻止应用启动
         logger.warning("⚠️ 健康度评分功能将不可用")
 
@@ -174,7 +174,7 @@ async def lifespan(app: FastAPI):
         initialize_realtime_mtm()
         logger.info("✅ Real-time MTM system initialized (Phase 12.4)")
     except Exception as e:
-        logger.error("❌ Failed to initialize Real-time MTM: %(e)s"")
+        logger.error("❌ Failed to initialize Real-time MTM: %s", e)
         # 不阻止应用启动
         logger.warning("⚠️ Real-time MTM features will be unavailable")
 
@@ -194,7 +194,7 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Indicator tasks registered")
 
     except Exception as e:
-        logger.error("❌ Failed to initialize Indicator System: %(e)s"")
+        logger.error("❌ Failed to initialize Indicator System: %s", e)
 
     yield  # 应用运行期间
 
@@ -208,7 +208,7 @@ async def lifespan(app: FastAPI):
         shutdown_realtime_mtm()
         logger.info("✅ Real-time MTM system shut down (Phase 12.4)")
     except Exception as e:
-        logger.error("❌ Error shutting down Real-time MTM: %(e)s"")
+        logger.error("❌ Error shutting down Real-time MTM: %s", e)
 
     # 关闭监控数据库连接池
     try:
@@ -217,7 +217,7 @@ async def lifespan(app: FastAPI):
         await close_postgres_async()
         logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
     except Exception as e:
-        logger.error("❌ 关闭监控数据库失败: %(e)s"")
+        logger.error("❌ 关闭监控数据库失败: %s", e)
 
     # 停止缓存淘汰调度器
     try:
@@ -239,7 +239,7 @@ try:
     validate_required_settings(settings)
     logger.info("✅ 环境变量配置验证通过")
 except ValueError as e:
-    logger.error("❌ 启动失败：%(e)s"")
+    logger.error("❌ 启动失败：%s", e)
     import sys
 
     sys.exit(1)
@@ -346,10 +346,10 @@ async def csrf_protection_middleware(request: Request, call_next):
     if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
         if settings.testing:
             # 测试环境：记录调试日志但不阻止
-            logger.debug("🧪 CSRF验证跳过 (测试环境): {request.method} {request.url.path}"")
+            logger.debug("🧪 CSRF验证跳过 (测试环境): %s %s", request.method, request.url.path)
         elif not settings.csrf_enabled:
             # CSRF被显式禁用：记录警告
-            logger.warning("⚠️  CSRF保护已禁用: {request.method} {request.url.path}"")
+            logger.warning("⚠️  CSRF保护已禁用: %s %s", request.method, request.url.path)
 
         if should_enforce_csrf:
             # 某些端点应该排除CSRF检查（如CSRF token生成端点和登录端点）
@@ -372,7 +372,7 @@ async def csrf_protection_middleware(request: Request, call_next):
                 csrf_token = request.headers.get("x-csrf-token")
 
                 if not csrf_token:
-                    logger.warning("❌ CSRF token missing for {request.method} {request.url.path}"")
+                    logger.warning("❌ CSRF token missing for %s %s", request.method, request.url.path)
                     return JSONResponse(
                         status_code=403,
                         content={
@@ -384,7 +384,7 @@ async def csrf_protection_middleware(request: Request, call_next):
 
                 # 验证CSRF token
                 if not csrf_manager.validate_token(csrf_token):
-                    logger.warning("❌ Invalid CSRF token for {request.method} {request.url.path}"")
+                    logger.warning("❌ Invalid CSRF token for %s %s", request.method, request.url.path)
                     return JSONResponse(
                         status_code=403,
                         content={
@@ -740,9 +740,9 @@ if __name__ == "__main__":
         for key, value in openspec_config.items():
             if os.getenv(key) is None:
                 os.environ[key] = value
-                logger.info("设置环境变量: %(key)s=%(value)s"")
+                logger.info("设置环境变量: %s=%s", key, value)
     except Exception as e:
-        logger.warning("⚠️ 设置OpenSpec环境变量失败: %(e)s"")
+        logger.warning("⚠️ 设置OpenSpec环境变量失败: %s", e)
 
     # 初始化异步监控数据库
     async def startup_event():
@@ -756,7 +756,7 @@ if __name__ == "__main__":
             else:
                 logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
         except Exception as e:
-            logger.error("❌ 启动监控数据库失败: %(e)s"")
+            logger.error("❌ 启动监控数据库失败: %s", e)
             # 不阻止应用启动
             logger.warning("⚠️ 健康度评分功能将不可用")
 
@@ -769,7 +769,7 @@ if __name__ == "__main__":
             await close_postgres_async()
             logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
         except Exception as e:
-            logger.error("❌ 关闭监控数据库失败: %(e)s"")
+            logger.error("❌ 关闭监控数据库失败: %s", e)
 
     # 尝试使用异步生命周期（如果可用）
 
@@ -813,7 +813,7 @@ if __name__ == "__main__":
                     "timestamp": "2026-01-07",
                 }
             except Exception as e:
-                logger.error("❌ 健康检查失败: %(e)s"")
+                logger.error("❌ 健康检查失败: %s", e)
                 return {"status": "unhealthy", "app": "mystocks-backend", "version": "3.0", "error": str(e)}
 
         # API路由
@@ -824,13 +824,13 @@ if __name__ == "__main__":
         logger.info("✅ 已集成OpenSpec监控模块启动/关闭事件")
 
     except ImportError as e:
-        logger.error("❌ FastAPI 导入失败: %(e)s"")
+        logger.error("❌ FastAPI 导入失败: %s", e)
         logger.warning("⚠️ 无法使用 FastAPI 应用，将跳过监控模块事件")
 
     # 在端口范围内查找可用端口并启动服务
     try:
         available_port = find_available_port(settings.port_range_start, settings.port_range_end)
-        logger.info("🚀 Starting server on port %(available_port)s"")
+        logger.info("🚀 Starting server on port %s", available_port)
         uvicorn.run(
             "main:app",
             host=settings.host,
@@ -839,5 +839,5 @@ if __name__ == "__main__":
             log_level="info",
         )
     except RuntimeError as e:
-        logger.error("❌ %(e)s"")
+        logger.error("❌ %s", e)
         exit(1)

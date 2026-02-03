@@ -899,7 +899,6 @@ class SecurityVulnerabilityScanner:
 
         sql_injection_indicators = [
             "syntax error",
-            "mysql_fetch_array",
             "odbc_execute",
             "postgresql",
             "ora-",

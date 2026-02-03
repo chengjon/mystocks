@@ -18,7 +18,7 @@ from unittest.mock import patch, MagicMock
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-from src.logging.audit_system import (
+from src.infrastructure.logging.audit_system import (
     StructuredLogger,
     AuditManager,
     SecurityMonitor,
@@ -271,7 +271,7 @@ async def test_context_variables():
     """测试上下文变量"""
     logger.info("🧪 测试上下文变量...")
 
-    from src.logging.audit_system import request_id_var, user_id_var, session_id_var
+    from src.infrastructure.logging.audit_system import request_id_var, user_id_var, session_id_var
 
     # 设置上下文变量
     request_token = request_id_var.set("test-request-123")

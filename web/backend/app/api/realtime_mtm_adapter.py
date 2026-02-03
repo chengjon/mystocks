@@ -122,7 +122,7 @@ class RealtimeMTMAdapter:
         try:
             portfolio = self.portfolio_repo.find_by_id(portfolio_id)
             if not portfolio:
-                logger.warning("Portfolio not found: %(portfolio_id)s"")
+                logger.warning("Portfolio not found: %(portfolio_id)s")
                 return False
 
             # 如果持仓不存在，创建一个 mock 订单成交事件来添加持仓
@@ -139,16 +139,16 @@ class RealtimeMTMAdapter:
             portfolio.handle_order_filled(MockEvent())
             self.portfolio_repo.save(portfolio)
 
-            logger.info("✅ Registered position %(position_id)s for portfolio %(portfolio_id)s"")
+            logger.info("✅ Registered position %(position_id)s for portfolio %(portfolio_id)s")
             return True
 
         except Exception as e:
-            logger.error("Failed to register position: %(e)s"")
+            logger.error("Failed to register position: %(e)s")
             return False
 
     def unregister_position(self, position_id: str) -> bool:
         """注销持仓（兼容旧接口）"""
-        logger.warning("unregister_position not implemented in DDD architecture: %(position_id)s"")
+        logger.warning("unregister_position not implemented in DDD architecture: %(position_id)s")
         return True
 
     def update_price(self, symbol: str, price: float) -> List[MTMUpdate]:
@@ -204,7 +204,7 @@ class RealtimeMTMAdapter:
             return updates
 
         except Exception as e:
-            logger.error("Failed to update price for %(symbol)s: %(e)s"")
+            logger.error("Failed to update price for %(symbol)s: %(e)s")
             return []
 
     def get_portfolio_snapshot(self, portfolio_id: str) -> Optional[PortfolioSnapshot]:
@@ -239,7 +239,7 @@ class RealtimeMTMAdapter:
             return snapshot
 
         except Exception as e:
-            logger.error("Failed to get portfolio snapshot %(portfolio_id)s: %(e)s"")
+            logger.error("Failed to get portfolio snapshot %(portfolio_id)s: %(e)s")
             return None
 
     def get_position_snapshot(self, position_id: str) -> Optional[PositionSnapshot]:
@@ -283,7 +283,7 @@ class RealtimeMTMAdapter:
             return snapshot
 
         except Exception as e:
-            logger.error("Failed to get position snapshot %(position_id)s: %(e)s"")
+            logger.error("Failed to get position snapshot %(position_id)s: %(e)s")
             return None
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -299,7 +299,7 @@ class RealtimeMTMAdapter:
                 "architecture": "DDD (Phase 12.3)",
             }
         except Exception as e:
-            logger.error("Failed to get metrics: %(e)s"")
+            logger.error("Failed to get metrics: %(e)s")
             return {}
 
     def _convert_to_snapshot(self, portfolio, performance) -> PortfolioSnapshot:
@@ -352,7 +352,7 @@ class RealtimeMTMAdapter:
                 snapshot = self._convert_to_snapshot(portfolio, performance)
                 self._portfolio_snapshots[portfolio_id] = snapshot
         except Exception as e:
-            logger.error("Failed to update cache for %(portfolio_id)s: %(e)s"")
+            logger.error("Failed to update cache for %(portfolio_id)s: %(e)s")
 
 
 # 全局适配器实例（延迟初始化）

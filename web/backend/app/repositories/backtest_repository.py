@@ -201,13 +201,13 @@ class BacktestRepository:
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info("创建回测任务成功: backtest_id={backtest_orm.backtest_id}, strategy_id={request.strategy_id}"")
+            logger.info("创建回测任务成功: backtest_id={backtest_orm.backtest_id}, strategy_id={request.strategy_id}")
 
             return self._orm_to_pydantic(backtest_orm)
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("创建回测任务失败: {str(e)}"")
+            logger.error("创建回测任务失败: {str(e)}")
             raise
 
     def get_backtest(self, backtest_id: int) -> Optional[BacktestResult]:
@@ -225,13 +225,13 @@ class BacktestRepository:
             )
 
             if backtest_orm is None:
-                logger.warning("回测不存在: backtest_id=%(backtest_id)s"")
+                logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return None
 
             return self._orm_to_pydantic(backtest_orm)
 
         except SQLAlchemyError as e:
-            logger.error("查询回测失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("查询回测失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def list_backtests(
@@ -270,12 +270,12 @@ class BacktestRepository:
 
             backtests = [self._orm_to_pydantic(b) for b in backtests_orm]
 
-            logger.info("查询回测列表: user_id=%(user_id)s, total=%(total_count)s, page=%(page)s"")
+            logger.info("查询回测列表: user_id=%(user_id)s, total=%(total_count)s, page=%(page)s")
 
             return backtests, total_count
 
         except SQLAlchemyError as e:
-            logger.error("查询回测列表失败: user_id=%(user_id)s, error={str(e)}"")
+            logger.error("查询回测列表失败: user_id=%(user_id)s, error={str(e)}")
             raise
 
     def update_backtest_status(
@@ -300,7 +300,7 @@ class BacktestRepository:
             )
 
             if backtest_orm is None:
-                logger.warning("回测不存在: backtest_id=%(backtest_id)s"")
+                logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return None
 
             backtest_orm.status = status.value
@@ -315,13 +315,13 @@ class BacktestRepository:
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info("更新回测状态: backtest_id=%(backtest_id)s, status={status.value}"")
+            logger.info("更新回测状态: backtest_id=%(backtest_id)s, status={status.value}")
 
             return self._orm_to_pydantic(backtest_orm)
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("更新回测状态失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("更新回测状态失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def save_backtest_results(
@@ -346,7 +346,7 @@ class BacktestRepository:
             )
 
             if backtest_orm is None:
-                logger.warning("回测不存在: backtest_id=%(backtest_id)s"")
+                logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return None
 
             backtest_orm.final_capital = final_capital
@@ -357,13 +357,13 @@ class BacktestRepository:
             self.db.commit()
             self.db.refresh(backtest_orm)
 
-            logger.info("保存回测结果成功: backtest_id=%(backtest_id)s"")
+            logger.info("保存回测结果成功: backtest_id=%(backtest_id)s")
 
             return self._orm_to_pydantic(backtest_orm)
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("保存回测结果失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("保存回测结果失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def save_equity_curve(self, backtest_id: int, equity_curve: List[EquityCurvePoint]) -> bool:
@@ -392,13 +392,13 @@ class BacktestRepository:
             self.db.bulk_save_objects(equity_models)
             self.db.commit()
 
-            logger.info("保存权益曲线成功: backtest_id=%(backtest_id)s, points={len(equity_curve)}"")
+            logger.info("保存权益曲线成功: backtest_id=%(backtest_id)s, points={len(equity_curve)}")
 
             return True
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("保存权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("保存权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def get_equity_curve(self, backtest_id: int) -> List[EquityCurvePoint]:
@@ -429,7 +429,7 @@ class BacktestRepository:
             ]
 
         except SQLAlchemyError as e:
-            logger.error("获取权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("获取权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def save_trades(self, backtest_id: int, trades: List[TradeRecord]) -> bool:
@@ -461,13 +461,13 @@ class BacktestRepository:
             self.db.bulk_save_objects(trade_models)
             self.db.commit()
 
-            logger.info("保存交易记录成功: backtest_id=%(backtest_id)s, trades={len(trades)}"")
+            logger.info("保存交易记录成功: backtest_id=%(backtest_id)s, trades={len(trades)}")
 
             return True
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("保存交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("保存交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def get_trades(self, backtest_id: int) -> List[TradeRecord]:
@@ -502,7 +502,7 @@ class BacktestRepository:
             ]
 
         except SQLAlchemyError as e:
-            logger.error("获取交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("获取交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     def delete_backtest(self, backtest_id: int) -> bool:
@@ -520,15 +520,15 @@ class BacktestRepository:
             self.db.commit()
 
             if result > 0:
-                logger.info("删除回测成功: backtest_id=%(backtest_id)s"")
+                logger.info("删除回测成功: backtest_id=%(backtest_id)s")
                 return True
             else:
-                logger.warning("回测不存在: backtest_id=%(backtest_id)s"")
+                logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return False
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error("删除回测失败: backtest_id=%(backtest_id)s, error={str(e)}"")
+            logger.error("删除回测失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
     # ============================================================

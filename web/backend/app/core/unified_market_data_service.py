@@ -125,9 +125,9 @@ class UnifiedMarketDataService:
 
         try:
             self.adapter = AdapterFactory.get(adapter_name)
-            logger.info("✅ Initialized market data service with adapter: %(adapter_name)s"")
+            logger.info("✅ Initialized market data service with adapter: %(adapter_name)s")
         except KeyError as e:
-            logger.error("❌ Adapter '%(adapter_name)s' not registered: {str(e)}"")
+            logger.error("❌ Adapter '%(adapter_name)s' not registered: {str(e)}")
             raise
 
         # Adapter-specific configuration
@@ -152,7 +152,7 @@ class UnifiedMarketDataService:
             # Akshare specific setup if needed
             logger.info("📦 Using Akshare adapter for market data")
         else:
-            logger.info("📦 Using custom adapter: {self.adapter_name}"")
+            logger.info("📦 Using custom adapter: {self.adapter_name}")
 
     def switch_adapter(self, adapter_name: str):
         """
@@ -169,10 +169,10 @@ class UnifiedMarketDataService:
         try:
             self.adapter = AdapterFactory.get(adapter_name)
             self.adapter_name = adapter_name
-            logger.info("🔄 Switched to adapter: %(adapter_name)s"")
+            logger.info("🔄 Switched to adapter: %(adapter_name)s")
             self._setup_adapter_specific()
         except KeyError as e:
-            logger.error("❌ Failed to switch to adapter '%(adapter_name)s': {str(e)}"")
+            logger.error("❌ Failed to switch to adapter '%(adapter_name)s': {str(e)}")
             raise
 
     # ==================== Fund Flow Methods ====================
@@ -197,7 +197,7 @@ class UnifiedMarketDataService:
                 - error (str, optional): Error details if failed
         """
         try:
-            logger.info("📊 Fetching fund flow: symbol=%(symbol)s, timeframe=%(timeframe)s"")
+            logger.info("📊 Fetching fund flow: symbol=%(symbol)s, timeframe=%(timeframe)s")
 
             # Normalize timeframe for different adapters
             if self.adapter_name == "eastmoney" and isinstance(timeframe, int):
@@ -274,7 +274,7 @@ class UnifiedMarketDataService:
                     db.add(fund_flow)
 
                 db.commit()
-                logger.info("✅ Saved fund flow: %(symbol)s"")
+                logger.info("✅ Saved fund flow: %(symbol)s")
 
                 return {
                     "success": True,
@@ -287,7 +287,7 @@ class UnifiedMarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error("❌ Failed to save fund flow: {str(e)}"")
+            logger.error("❌ Failed to save fund flow: {str(e)}")
             return {
                 "success": False,
                 "message": "Failed to save fund flow",
@@ -348,12 +348,12 @@ class UnifiedMarketDataService:
                         saved_count += 1
 
                     except Exception as e:
-                        logger.warning("⚠️ Skipped row: {str(e)}"")
+                        logger.warning("⚠️ Skipped row: {str(e)}")
                         skipped_count += 1
                         continue
 
                 db.commit()
-                logger.info("✅ Batch saved: %(saved_count)s records, skipped: %(skipped_count)s"")
+                logger.info("✅ Batch saved: %(saved_count)s records, skipped: %(skipped_count)s")
 
                 return {
                     "success": True,
@@ -367,7 +367,7 @@ class UnifiedMarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error("❌ Batch save failed: {str(e)}"")
+            logger.error("❌ Batch save failed: {str(e)}")
             return {
                 "success": False,
                 "message": "Failed to batch save fund flow",
@@ -437,7 +437,7 @@ class UnifiedMarketDataService:
                 db.close()
 
         except Exception as e:
-            logger.error("❌ Query failed: {str(e)}"")
+            logger.error("❌ Query failed: {str(e)}")
             return []
 
     def close(self):

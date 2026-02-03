@@ -131,7 +131,7 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
         查询执行结果统计
     """
     try:
-        logger.info("Executing query: {request.query_name}, pages={request.pages}"")
+        logger.info("Executing query: {request.query_name}, pages={request.pages}")
 
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -157,7 +157,7 @@ async def execute_query(request: WencaiQueryRequest, db: Session = Depends(get_d
             return WencaiQueryResponse(**result)
 
     except ValueError as e:
-        logger.warning("Validation error: {str(e)}"")
+        logger.warning("Validation error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("Failed to execute query: {str(e)}", exc_info=True)
@@ -236,7 +236,7 @@ async def refresh_query(
         # 添加后台任务
         background_tasks.add_task(_refresh_query_task, query_name=query_name, pages=pages)
 
-        logger.info("Background refresh task added for %(query_name)s"")
+        logger.info("Background refresh task added for %(query_name)s")
 
         return WencaiRefreshResponse(
             status="refreshing",
@@ -308,7 +308,7 @@ async def execute_custom_query(
         查询结果（不保存到数据库）
     """
     try:
-        logger.info("Executing custom query: {request.query_text[:50]}..., pages={request.pages}"")
+        logger.info("Executing custom query: {request.query_text[:50]}..., pages={request.pages}")
 
         # 检查是否使用Mock数据
         use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
@@ -369,7 +369,7 @@ async def execute_custom_query(
             )
 
     except ValueError as e:
-        logger.warning("Validation error: {str(e)}"")
+        logger.warning("Validation error: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("Failed to execute custom query: {str(e)}", exc_info=True)
@@ -405,7 +405,7 @@ async def _refresh_query_task(query_name: str, pages: int = 1):
     # 创建新的数据库会话
     db = SessionLocal()
     try:
-        logger.info("[Background] Starting refresh for %(query_name)s"")
+        logger.info("[Background] Starting refresh for %(query_name)s")
 
         service = WencaiService(db=db)
 

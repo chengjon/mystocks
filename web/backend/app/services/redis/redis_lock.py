@@ -77,7 +77,7 @@ class RedisLockService:
                 acquired = self.redis.set(lock_key, token, nx=True, ex=timeout)  # 仅当键不存在时设置  # 自动过期时间
 
                 if acquired:
-                    logger.debug("Lock acquired: %(resource)s (token: {token[:8]}...)"")
+                    logger.debug("Lock acquired: %(resource)s (token: {token[:8]}...)")
                     return token
 
                 if not blocking:
@@ -87,14 +87,14 @@ class RedisLockService:
                 if blocking_timeout is not None:
                     elapsed = time.time() - start_time
                     if elapsed >= blocking_timeout:
-                        logger.warning("Lock acquisition timeout: %(resource)s"")
+                        logger.warning("Lock acquisition timeout: %(resource)s")
                         return None
 
                 # 短暂休眠后重试
                 time.sleep(0.1)
 
             except Exception as e:
-                logger.error("Failed to acquire lock %(resource)s: %(e)s"")
+                logger.error("Failed to acquire lock %(resource)s: %(e)s")
                 if not blocking:
                     return None
                 time.sleep(0.1)
@@ -126,14 +126,14 @@ class RedisLockService:
             success = bool(result)
 
             if success:
-                logger.debug("Lock released: %(resource)s"")
+                logger.debug("Lock released: %(resource)s")
             else:
-                logger.warning("Lock release failed (wrong token or expired): %(resource)s"")
+                logger.warning("Lock release failed (wrong token or expired): %(resource)s")
 
             return success
 
         except Exception as e:
-            logger.error("Failed to release lock %(resource)s: %(e)s"")
+            logger.error("Failed to release lock %(resource)s: %(e)s")
             return False
 
     def extend(self, resource: str, token: str, additional_time: int = 30) -> bool:
@@ -164,12 +164,12 @@ class RedisLockService:
             success = bool(result)
 
             if success:
-                logger.debug("Lock extended: %(resource)s (+%(additional_time)ss)"")
+                logger.debug("Lock extended: %(resource)s (+%(additional_time)ss)")
 
             return success
 
         except Exception as e:
-            logger.error("Failed to extend lock %(resource)s: %(e)s"")
+            logger.error("Failed to extend lock %(resource)s: %(e)s")
             return False
 
     # ========== 上下文管理器 ==========
@@ -244,7 +244,7 @@ class RedisLockService:
                 ttl = self.redis.ttl(lock_key)
                 return {"resource": resource, "token": token, "remaining_ttl": ttl}
         except Exception as e:
-            logger.error("Failed to get lock info %(resource)s: %(e)s"")
+            logger.error("Failed to get lock info %(resource)s: %(e)s")
         return None
 
     # ========== 预定义锁场景 ==========

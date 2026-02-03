@@ -1,5 +1,7 @@
 # 🎯 MyStocks 项目分析 - 从这里开始
 
+**Note**: MySQL has been removed; this legacy summary is kept for reference.
+
 **欢迎！** 本项目已完成全面的深度分析，包括代码质量分析和架构审查。
 
 ---
@@ -96,7 +98,7 @@
 ```
 文件数: 354 个
 代码行: 86,305 行
-数据库: 4 个（TDengine, PostgreSQL, MySQL, Redis）
+数据库: 3 个（TDengine, PostgreSQL, Redis）
 适配器: 18 个
 团队: 2-3 人
 月度成本: $3,150

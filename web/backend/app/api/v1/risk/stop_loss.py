@@ -71,7 +71,7 @@ async def add_stop_loss_position(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("添加止损监控失败: %(e)s"")
+        logger.error("添加止损监控失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"添加止损监控失败: {str(e)}")
 
 
@@ -96,7 +96,7 @@ async def update_stop_loss_price(request: Dict[str, Any]) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("更新止损价格失败: %(e)s"")
+        logger.error("更新止损价格失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"更新止损价格失败: {str(e)}")
 
 
@@ -125,7 +125,7 @@ async def remove_stop_loss_position(position_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("移除止损监控失败: %(e)s"")
+        logger.error("移除止损监控失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"移除止损监控失败: {str(e)}")
 
 
@@ -150,7 +150,7 @@ async def get_stop_loss_status(position_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取止损状态失败: %(e)s"")
+        logger.error("获取止损状态失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取止损状态失败: {str(e)}")
 
 
@@ -171,7 +171,7 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取止损总览失败: %(e)s"")
+        logger.error("获取止损总览失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取止损总览失败: {str(e)}")
 
 
@@ -196,7 +196,7 @@ async def batch_update_stop_loss_prices(request: Dict[str, Any]) -> Dict[str, An
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("批量更新止损价格失败: %(e)s"")
+        logger.error("批量更新止损价格失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"批量更新止损价格失败: {str(e)}")
 
 
@@ -226,7 +226,7 @@ async def get_stop_loss_performance(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取止损表现失败: %(e)s"")
+        logger.error("获取止损表现失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取止损表现失败: {str(e)}")
 
 
@@ -247,5 +247,5 @@ async def get_stop_loss_recommendations(strategy_type: str, symbol: Optional[str
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("获取止损建议失败: %(e)s"")
+        logger.error("获取止损建议失败: %(e)s")
         raise HTTPException(status_code=500, detail=f"获取止损建议失败: {str(e)}")

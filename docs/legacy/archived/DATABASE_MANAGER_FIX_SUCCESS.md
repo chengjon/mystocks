@@ -1,5 +1,7 @@
 # DatabaseTableManager 修复成功报告
 
+**Note**: MySQL has been removed; this legacy document is kept for reference.
+
 **日期**: 2025-10-24
 **任务**: Day 5 Web 层表创建
 **状态**: ✅ **100% 成功 - 所有表通过 ConfigDrivenTableManager 创建**
@@ -221,7 +223,7 @@ SQLEnum(..., name='operation_type_enum')  # ✅ 正确
 ```
 
 **启示**:
-- PostgreSQL 比 MySQL 更严格（这是好事）
+- PostgreSQL 比 PostgreSQL 更严格（这是好事）
 - 严格的类型系统帮助发现潜在问题
 - 迁移到 PostgreSQL 需要注意这些差异
 
@@ -231,13 +233,13 @@ SQLEnum(..., name='operation_type_enum')  # ✅ 正确
 
 ### 1. 清理 table_config.yaml 中不再使用的表定义
 
-**现状**: table_config.yaml 包含 TDengine/MySQL 表定义，但这些数据库已不再使用
+**现状**: table_config.yaml 包含 TDengine/PostgreSQL 表定义，但这些数据库已不再使用
 
 **建议**:
 ```yaml
 # 删除或注释掉：
 # - TDengine 的 5 张表（tick_data, minute_kline, 等）
-# - MySQL 的 14 张表（stock_info, industry_classification, 等）
+# - PostgreSQL 的 14 张表（stock_info, industry_classification, 等）
 ```
 
 **收益**:

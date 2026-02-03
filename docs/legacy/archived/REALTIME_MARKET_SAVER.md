@@ -1,5 +1,7 @@
 # MyStocks 沪深市场A股实时数据保存系统
 
+**Note**: MySQL has been removed; use PostgreSQL. This legacy guide is kept for reference.
+
 ## 快速启动
 
 ```bash
@@ -23,7 +25,7 @@ python run_realtime_market_saver.py --help
 - **实时行情快照** → `REALTIME_POSITIONS` → Redis (热数据，快速访问)
 - **Tick时序数据** → `TICK_DATA` → TDengine (时序存储，历史分析)
 - **日线数据** → `DAILY_KLINE` → PostgreSQL (分析存储)
-- **股票信息** → `SYMBOLS_INFO` → MySQL (参考数据)
+- **股票信息** → `SYMBOLS_INFO` → PostgreSQL (参考数据)
 
 ### 配置文件
 

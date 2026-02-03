@@ -30,8 +30,7 @@ def valid_config_data():
         "version": "1.0.0",
         "databases": {
             "tdengine": {"host": "localhost", "port": 6030},
-            "postgresql": {"host": "localhost", "port": 5432, "database": "mystocks"},
-            "mysql": {"host": "localhost", "port": 3306, "database": "mystocks"}
+            "postgresql": {"host": "localhost", "port": 5432, "database": "mystocks"}
         },
         "tables": [
             {
@@ -87,7 +86,6 @@ def mock_connection_manager():
 
         mock_instance.get_tdengine_connection.return_value = mock_conn
         mock_instance.get_postgresql_connection.return_value = mock_conn
-        mock_instance.get_mysql_connection.return_value = mock_conn
 
         yield mock_instance
 
@@ -449,12 +447,12 @@ class TestTableInitialization:
         finally:
             os.remove(config_path)
 
-    def test_initialize_mysql_tables(self, mock_connection_manager):
-        """测试初始化MySQL表"""
+    def test_initialize_postgresql_single_table(self, mock_connection_manager):
+        """测试初始化单个PostgreSQL表"""
         config_data = {
             "version": "1.0.0",
-            "databases": {"mysql": {"database": "test_db"}},
-            "tables": [{"table_name": "mysql_table", "database_type": "MySQL"}]
+            "databases": {"postgresql": {"database": "test_db"}},
+            "tables": [{"table_name": "pg_table", "database_type": "PostgreSQL"}]
         }
         with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False, encoding='utf-8') as f:
             yaml.dump(config_data, f)
@@ -559,27 +557,16 @@ class TestTableExists:
         exists = manager._table_exists("PostgreSQL", "nonexistent")
         assert exists is False
 
-    def test_mysql_table_exists(self, temp_config_file, mock_connection_manager):
-        """测试MySQL表存在"""
+    def test_postgresql_table_exists_second(self, temp_config_file, mock_connection_manager):
+        """测试PostgreSQL表存在（第二表）"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         # 模拟表存在
-        mock_cursor = mock_connection_manager.get_mysql_connection.return_value.cursor.return_value
-        mock_cursor.fetchone.return_value = (1,)
+        mock_cursor = mock_connection_manager.get_postgresql_connection.return_value.cursor.return_value
+        mock_cursor.fetchone.return_value = (True,)
 
-        exists = manager._table_exists("MySQL", "test_table", "test_db")
+        exists = manager._table_exists("PostgreSQL", "secondary_table")
         assert exists is True
-
-    def test_mysql_table_not_exists(self, temp_config_file, mock_connection_manager):
-        """测试MySQL表不存在"""
-        manager = ConfigDrivenTableManager(config_path=temp_config_file)
-
-        # 模拟表不存在
-        mock_cursor = mock_connection_manager.get_mysql_connection.return_value.cursor.return_value
-        mock_cursor.fetchone.return_value = (0,)
-
-        exists = manager._table_exists("MySQL", "nonexistent", "test_db")
-        assert exists is False
 
     def test_table_exists_sql_injection_protection(self, temp_config_file, mock_connection_manager):
         """测试SQL注入防护（无效表名）"""
@@ -672,19 +659,19 @@ class TestTableCreation:
         assert result is True
         mock_create.assert_called_once_with(table_def)
 
-    def test_create_table_mysql(self, temp_config_file, mock_connection_manager):
-        """测试创建MySQL表"""
+    def test_create_table_postgresql_secondary(self, temp_config_file, mock_connection_manager):
+        """测试创建PostgreSQL表（第二表）"""
         manager = ConfigDrivenTableManager(config_path=temp_config_file)
 
         table_def = {
-            "table_name": "test_table",
-            "database_type": "MySQL",
+            "table_name": "test_table_secondary",
+            "database_type": "PostgreSQL",
             "database_name": "test_db",
             "columns": [{"name": "id", "type": "INT PRIMARY KEY"}]
         }
 
         with patch.object(manager, '_table_exists', return_value=False):
-            with patch.object(manager, '_create_mysql_table', return_value=True) as mock_create:
+            with patch.object(manager, '_create_postgresql_table', return_value=True) as mock_create:
                 result = manager._create_table(table_def)
 
         assert result is True

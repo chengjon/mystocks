@@ -62,7 +62,7 @@ class MultiSourceManager:
             logger.info("Initialized EastMoney adapter")
 
         except Exception as e:
-            logger.error("Failed to initialize EastMoney adapter: %(e)s"")
+            logger.error("Failed to initialize EastMoney adapter: %(e)s")
 
         try:
             # 初始化巨潮资讯适配器
@@ -71,7 +71,7 @@ class MultiSourceManager:
             logger.info("Initialized Cninfo adapter")
 
         except Exception as e:
-            logger.error("Failed to initialize Cninfo adapter: %(e)s"")
+            logger.error("Failed to initialize Cninfo adapter: %(e)s")
 
     def _build_category_mapping(self):
         """
@@ -94,7 +94,7 @@ class MultiSourceManager:
         for category in self._category_sources:
             self._category_sources[category].sort(key=lambda st: self._adapters[st].get_config().priority)
 
-        logger.info("Built category mapping: {len(self._category_sources)} categories"")
+        logger.info("Built category mapping: {len(self._category_sources)} categories")
 
     def get_adapter(self, source_type: DataSourceType) -> Optional[BaseDataSourceAdapter]:
         """
@@ -150,7 +150,7 @@ class MultiSourceManager:
         if cache_key and cache_key in self._cache:
             cached_data, cached_time = self._cache[cache_key]
             if time.time() - cached_time < self._cache_ttl:
-                logger.debug("Cache hit for %(cache_key)s"")
+                logger.debug("Cache hit for %(cache_key)s")
                 return {
                     "success": True,
                     "data": cached_data,
@@ -162,7 +162,7 @@ class MultiSourceManager:
         sources = self.get_sources_for_category(category)
 
         if not sources:
-            logger.warning("No data source available for category {category.value}"")
+            logger.warning("No data source available for category {category.value}")
             return {
                 "success": False,
                 "error": f"No data source supports {category.value}",
@@ -176,11 +176,11 @@ class MultiSourceManager:
             adapter = self._adapters.get(source_type)
 
             if not adapter or not adapter.is_available():
-                logger.debug("Skipping unavailable source: {source_type.value}"")
+                logger.debug("Skipping unavailable source: {source_type.value}")
                 continue
 
             try:
-                logger.info("Trying to fetch from {source_type.value}"")
+                logger.info("Trying to fetch from {source_type.value}")
                 start_time = time.time()
 
                 # 调用数据获取函数
@@ -209,12 +209,12 @@ class MultiSourceManager:
                     return result
 
                 else:
-                    logger.warning("{source_type.value} returned empty data"")
+                    logger.warning("{source_type.value} returned empty data")
                     errors.append(f"{source_type.value}: empty data")
 
             except Exception as e:
                 error_msg = f"{source_type.value}: {str(e)}"
-                logger.error("Failed to fetch from {source_type.value}: %(e)s"")
+                logger.error("Failed to fetch from {source_type.value}: %(e)s")
                 errors.append(error_msg)
 
         # 所有数据源都失败
@@ -382,7 +382,7 @@ class MultiSourceManager:
                 }
 
         except Exception as e:
-            logger.error("Failed to fetch announcements: %(e)s"")
+            logger.error("Failed to fetch announcements: %(e)s")
             return {"success": False, "error": str(e), "source": source.value}
 
     def get_all_health_status(self) -> List[Dict[str, Any]]:
@@ -415,7 +415,7 @@ class MultiSourceManager:
                 )
 
             except Exception as e:
-                logger.error("Failed to get health status for {source_type.value}: %(e)s"")
+                logger.error("Failed to get health status for {source_type.value}: %(e)s")
 
         return statuses
 

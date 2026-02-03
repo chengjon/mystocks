@@ -44,7 +44,7 @@ class StrategyFactory:
             strategy_class: 策略类
         """
         cls._strategies[name] = strategy_class
-        logger.info("策略已注册: %(name)s -> {strategy_class.__name__}"")
+        logger.info("策略已注册: %(name)s -> {strategy_class.__name__}")
 
     @classmethod
     def create_strategy(cls, strategy_type: str, parameters: Dict[str, Any] = None) -> BaseStrategy:
@@ -67,7 +67,7 @@ class StrategyFactory:
         strategy_class = cls._strategies[strategy_type]
         strategy = strategy_class(parameters=parameters)
 
-        logger.info("策略实例已创建: %(strategy_type)s with {len(parameters or {})} parameters"")
+        logger.info("策略实例已创建: %(strategy_type)s with {len(parameters or {})} parameters")
         return strategy
 
     @classmethod
@@ -191,4 +191,4 @@ StrategyFactory.register_strategy("cci", CCIStrategy)
 StrategyFactory.register_strategy("adx", ADXStrategy)
 StrategyFactory.register_strategy("sar", SARStrategy)
 
-logger.info("策略工厂初始化完成，已注册 {len(StrategyFactory._strategies)} 个策略"")
+logger.info("策略工厂初始化完成，已注册 {len(StrategyFactory._strategies)} 个策略")

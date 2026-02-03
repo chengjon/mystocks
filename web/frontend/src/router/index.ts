@@ -108,6 +108,36 @@ const routes: RouteRecordRaw[] = [
           }
        },
        {
+         path: 'overview',
+         name: 'market-overview',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketOverview.vue'),
+         meta: {
+           title: '市场概览',
+           breadcrumb: 'Market > Overview',
+           requiresAuth: true
+         }
+       },
+       {
+         path: 'analysis',
+         name: 'market-analysis',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketAnalysis.vue'),
+         meta: {
+           title: '市场分析',
+           breadcrumb: 'Market > Analysis',
+           requiresAuth: true
+         }
+       },
+       {
+         path: 'industry',
+         name: 'market-industry',
+         component: () => import('@/views/artdeco-pages/components/market/ArtDecoIndustryAnalysis.vue'),
+         meta: {
+           title: '行业分析',
+           breadcrumb: 'Market > Industry',
+           requiresAuth: true
+         }
+       },
+       {
          path: 'technical',
          name: 'market-technical',
          component: () => import('@/views/artdeco-pages/ArtDecoMarketQuotes.vue'),
@@ -247,7 +277,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'signals',
          name: 'trading-signals',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingSignals.vue'),
          meta: {
            title: '交易信号',
            requiresAuth: true,
@@ -257,7 +287,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'history',
          name: 'trading-history',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingHistory.vue'),
          meta: {
            title: '历史订单',
            requiresAuth: true,
@@ -267,7 +297,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'positions',
          name: 'trading-positions',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingPositions.vue'),
          meta: {
            title: '持仓监控',
            requiresAuth: true,
@@ -275,9 +305,19 @@ const routes: RouteRecordRaw[] = [
          }
        },
        {
+         path: 'performance',
+         name: 'trading-performance',
+         component: () => import('@/views/artdeco-pages/components/trading/ArtDecoPerformanceAnalysis.vue'),
+         meta: {
+           title: '绩效分析',
+           requiresAuth: true,
+           activeTab: 'performance'
+         }
+       },
+       {
          path: 'attribution',
          name: 'trading-attribution',
-         component: () => import('@/views/artdeco-pages/ArtDecoTradingManagement.vue'),
+         component: () => import('@/views/artdeco-pages/components/ArtDecoAttributionAnalysis.vue'),
          meta: {
            title: '绩效归因',
            requiresAuth: true,
@@ -337,6 +377,35 @@ const routes: RouteRecordRaw[] = [
            title: '参数优化',
            requiresAuth: true,
          }
+       },
+       // Legacy strategy routes now redirected to trading domain
+       {
+         path: 'strategy-mgmt',
+         redirect: '/strategy/management'
+       },
+       {
+         path: 'signals',
+         redirect: '/trading/signals'
+       },
+       {
+         path: 'history',
+         redirect: '/trading/history'
+       },
+       {
+         path: 'position',
+         redirect: '/trading/positions'
+       },
+       {
+         path: 'positions',
+         redirect: '/trading/positions'
+       },
+       {
+         path: 'performance',
+         redirect: '/trading/performance'
+       },
+       {
+         path: 'attribution',
+         redirect: '/trading/attribution'
        }
      ]
    },

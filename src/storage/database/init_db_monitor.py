@@ -132,27 +132,37 @@ def load_env_config(env_file=None):
                     config[key.strip()] = value.strip()
                     logger.debug("第%s行: 加载配置 %s", line_num, key.strip())
 
-        # 验证必要的配置项
-        required_keys = ["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_PORT"]
-        missing_keys = [key for key in required_keys if key not in config]
+        host = config.get("MONITOR_DB_HOST") or config.get("POSTGRESQL_HOST")
+        user = config.get("MONITOR_DB_USER") or config.get("POSTGRESQL_USER")
+        password = config.get("MONITOR_DB_PASSWORD") or config.get("POSTGRESQL_PASSWORD")
+        port = config.get("MONITOR_DB_PORT") or config.get("POSTGRESQL_PORT")
+
+        missing_keys = []
+        if not host:
+            missing_keys.append("MONITOR_DB_HOST/POSTGRESQL_HOST")
+        if not user:
+            missing_keys.append("MONITOR_DB_USER/POSTGRESQL_USER")
+        if not password:
+            missing_keys.append("MONITOR_DB_PASSWORD/POSTGRESQL_PASSWORD")
+        if not port:
+            missing_keys.append("MONITOR_DB_PORT/POSTGRESQL_PORT")
 
         if missing_keys:
             raise ValueError(f"环境变量文件缺少必要配置: {', '.join(missing_keys)}")
 
         # 构建数据库配置
         db_config = {
-            "user": config["MYSQL_USER"],
-            "password": config["MYSQL_PASSWORD"],
-            "host": config["MYSQL_HOST"],
-            "port": int(config["MYSQL_PORT"]),
-            "database": "mysql",  # 初始连接使用的数据库
-            "charset": "utf8mb4",
-            "collation": "utf8mb4_unicode_ci",
+            "user": user,
+            "password": password,
+            "host": host,
+            "port": int(port),
+            "database": config.get("MONITOR_DB_DATABASE") or "mystocks_monitoring",
+            "admin_database": config.get("MONITOR_DB_ADMIN_DB") or config.get("POSTGRESQL_ADMIN_DB") or "postgres",
         }
 
         load_time = time.time() - start_time
         logger.success(f"✓ 环境配置加载成功! 耗时: {load_time:.3f}s")
-        logger.info("🔗 数据库连接信息: {config['MYSQL_USER']}@{config['MYSQL_HOST']}:%s")
+        logger.info("🔗 数据库连接信息: %s@%s:%s", db_config["user"], db_config["host"], db_config["port"])
 
         return db_config
 
@@ -162,8 +172,8 @@ def load_env_config(env_file=None):
         raise
 
 
-def get_sql_commands(drop_existing=False, charset="utf8mb4", collation="utf8mb4_unicode_ci"):
-    """生成SQL命令，支持删除已有表选项"""
+def get_sql_commands(drop_existing=False):
+    """生成PostgreSQL SQL命令，支持删除已有表选项"""
     drop_commands = ""
     if drop_existing:
         drop_commands = """
@@ -176,80 +186,74 @@ def get_sql_commands(drop_existing=False, charset="utf8mb4", collation="utf8mb4_
     create_table_prefix = "CREATE TABLE IF NOT EXISTS" if not drop_existing else "CREATE TABLE"
 
     return f"""
-CREATE DATABASE IF NOT EXISTS db_monitor
-    CHARACTER SET {charset}
-    COLLATE {collation};
-
-USE db_monitor;
-
 {drop_commands}
 
 {create_table_prefix} table_creation_log (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
-    table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
-    database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
-    creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    status ENUM('success', 'failed') NOT NULL COMMENT '创建状态',
-    table_parameters JSON NOT NULL COMMENT '表参数配置（JSON格式）',
-    ddl_command TEXT NOT NULL COMMENT '执行的DDL命令',
-    error_message TEXT COMMENT '错误信息（如有）',
-    INDEX idx_database_type (database_type),
-    INDEX idx_creation_time (creation_time)
-) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表创建日志表';
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(255) NOT NULL,
+    database_type VARCHAR(20) NOT NULL,
+    database_name VARCHAR(255) NOT NULL,
+    creation_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    modification_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(10) NOT NULL,
+    table_parameters JSONB NOT NULL,
+    ddl_command TEXT NOT NULL,
+    error_message TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_table_creation_db_type ON table_creation_log (database_type);
+CREATE INDEX IF NOT EXISTS idx_table_creation_time ON table_creation_log (creation_time);
 
 {create_table_prefix} column_definition_log (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
-    table_log_id INT NOT NULL COMMENT '关联的表创建日志ID',
-    column_name VARCHAR(255) NOT NULL COMMENT '列名',
-    data_type VARCHAR(100) NOT NULL COMMENT '数据类型',
-    col_length INT COMMENT '列长度',
-    col_precision INT COMMENT '精度',
-    col_scale INT COMMENT '小数位数',
-    is_nullable BOOLEAN DEFAULT TRUE COMMENT '是否允许为空',
-    is_primary_key BOOLEAN DEFAULT FALSE COMMENT '是否为主键',
-    default_value VARCHAR(255) COMMENT '默认值',
-    comment TEXT COMMENT '列备注',
-    FOREIGN KEY (table_log_id) REFERENCES table_creation_log(id) ON DELETE CASCADE,
-    INDEX idx_table_log_id (table_log_id)
-) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='列定义日志表';
+    id SERIAL PRIMARY KEY,
+    table_log_id INT NOT NULL,
+    column_name VARCHAR(255) NOT NULL,
+    data_type VARCHAR(100) NOT NULL,
+    col_length INT,
+    col_precision INT,
+    col_scale INT,
+    is_nullable BOOLEAN DEFAULT TRUE,
+    is_primary_key BOOLEAN DEFAULT FALSE,
+    default_value VARCHAR(255),
+    comment TEXT,
+    CONSTRAINT fk_table_log FOREIGN KEY (table_log_id) REFERENCES table_creation_log(id) ON DELETE CASCADE
+);
 
--- 新增表操作日志表
+CREATE INDEX IF NOT EXISTS idx_column_table_log_id ON column_definition_log (table_log_id);
+
 {create_table_prefix} table_operation_log (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
-    operation_id VARCHAR(100) NOT NULL COMMENT '操作ID',
-    table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
-    database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
-    operation_type ENUM('CREATE', 'ALTER', 'DROP', 'VALIDATE', 'save_data', 'save_data_with_dedup', \
-'load_data', 'upsert_data', 'insert_data') NOT NULL COMMENT '操作类型',
-    operation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
-    operation_status ENUM('success', 'failed', 'processing') NOT NULL COMMENT '操作状态',
-    operation_details JSON NOT NULL COMMENT '操作详情（JSON格式）',
-    ddl_command TEXT COMMENT '执行的DDL命令',
-    error_message TEXT COMMENT '错误信息（如有）',
-    data_count INT DEFAULT 0 COMMENT '数据记录数',
-    duration_seconds DECIMAL(10,3) DEFAULT 0 COMMENT '执行耗时（秒）',
-    end_time TIMESTAMP NULL COMMENT '结束时间',
-    INDEX idx_operation_id (operation_id),
-    INDEX idx_operation_time (operation_time),
-    INDEX idx_operation_type (operation_type),
-    UNIQUE KEY uk_operation_id (operation_id)
-) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表操作日志表';
+    id SERIAL PRIMARY KEY,
+    operation_id VARCHAR(100) NOT NULL,
+    table_name VARCHAR(255) NOT NULL,
+    database_type VARCHAR(20) NOT NULL,
+    database_name VARCHAR(255) NOT NULL,
+    operation_type VARCHAR(50) NOT NULL,
+    operation_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    operation_status VARCHAR(20) NOT NULL,
+    operation_details JSONB NOT NULL,
+    ddl_command TEXT,
+    error_message TEXT,
+    data_count INT DEFAULT 0,
+    duration_seconds NUMERIC(10,3) DEFAULT 0,
+    end_time TIMESTAMPTZ NULL,
+    UNIQUE (operation_id)
+);
 
--- 新增表结构验证日志表
+CREATE INDEX IF NOT EXISTS idx_operation_time ON table_operation_log (operation_time);
+CREATE INDEX IF NOT EXISTS idx_operation_type ON table_operation_log (operation_type);
+
 {create_table_prefix} table_validation_log (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
-    table_name VARCHAR(255) NOT NULL COMMENT '表名',
-    database_type ENUM('TDengine', 'PostgreSQL') NOT NULL COMMENT '数据库类型',
-    database_name VARCHAR(255) NOT NULL COMMENT '数据库名称',
-    validation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '验证时间',
-    validation_status ENUM('pass', 'fail') NOT NULL COMMENT '验证状态',
-    validation_details JSON NOT NULL COMMENT '验证详情（JSON格式）',
-    issues_found TEXT COMMENT '发现的问题',
-    INDEX idx_validation_time (validation_time)
-) ENGINE=InnoDB DEFAULT CHARSET={charset} COMMENT='表结构验证日志表';
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(255) NOT NULL,
+    database_type VARCHAR(20) NOT NULL,
+    database_name VARCHAR(255) NOT NULL,
+    validation_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    validation_status VARCHAR(10) NOT NULL,
+    validation_details JSONB NOT NULL,
+    issues_found TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_validation_time ON table_validation_log (validation_time);
 """
 
 
@@ -262,28 +266,51 @@ def create_database_and_tables(drop_existing=False):
         # 从 env 文件加载配置
         db_config = load_env_config()
 
-        # 创建数据库连接字符串
-        connection_str = (
-            f"mysql+pymysql://{db_config['user']}:{db_config['password']}@"
-            f"{db_config['host']}:{db_config['port']}/{db_config['database']}?"
-            f"charset={db_config['charset']}"
+        def is_safe_identifier(name: str) -> bool:
+            import re
+
+            return bool(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name))
+
+        if not is_safe_identifier(db_config["database"]):
+            raise ValueError(f"非法数据库名称: {db_config['database']}")
+
+        # 连接到管理库，创建监控数据库（如不存在）
+        admin_connection_str = (
+            f"postgresql+psycopg2://{db_config['user']}:{db_config['password']}@"
+            f"{db_config['host']}:{db_config['port']}/{db_config['admin_database']}"
         )
 
-        logger.info("🔗 连接数据库: {db_config['user']}@{db_config['host']}:%s")
+        logger.info("🔗 连接管理库: %s@%s:%s", db_config["user"], db_config["host"], db_config["port"])
 
-        # 建立数据库连接
+        admin_engine = sqlalchemy.create_engine(admin_connection_str)
+        with admin_engine.connect() as admin_connection:
+            admin_connection = admin_connection.execution_options(autocommit=True)
+            logger.success("✓ 管理库连接成功")
+
+            exists = admin_connection.execute(
+                text("SELECT 1 FROM pg_database WHERE datname = :db_name"),
+                {"db_name": db_config["database"]},
+            ).fetchone()
+            if not exists:
+                admin_connection.execute(text(f'CREATE DATABASE "{db_config["database"]}"'))
+                logger.info("📁 创建数据库: %s", db_config["database"])
+            else:
+                logger.info("📁 数据库已存在: %s", db_config["database"])
+
+        # 连接监控数据库
+        connection_str = (
+            f"postgresql+psycopg2://{db_config['user']}:{db_config['password']}@"
+            f"{db_config['host']}:{db_config['port']}/{db_config['database']}"
+        )
+
+        logger.info("🔗 连接监控数据库: %s@%s:%s", db_config["user"], db_config["host"], db_config["port"])
+
         engine = sqlalchemy.create_engine(connection_str)
         with engine.connect() as connection:
-            # 确保自动提交模式开启
-            connection = connection.execution_options(autocommit=True)
             logger.success("✓ 数据库连接成功")
 
             # 获取 SQL 命令
-            sql_commands = get_sql_commands(
-                drop_existing=drop_existing,
-                charset=db_config["charset"],
-                collation=db_config["collation"],
-            ).split(";")
+            sql_commands = get_sql_commands(drop_existing=drop_existing).split(";")
 
             # 统计信息
             total_commands = len([cmd for cmd in sql_commands if cmd.strip()])
@@ -299,11 +326,7 @@ def create_database_and_tables(drop_existing=False):
                     cmd_start_time = time.time()
                     try:
                         # 判断命令类型
-                        if "CREATE DATABASE" in cmd:
-                            logger.info("📁 [%s/%s] 创建数据库: db_monitor", i, total_commands)
-                        elif "USE db_monitor" in cmd:
-                            logger.info("🔄 [%s/%s] 切换到数据库: db_monitor", i, total_commands)
-                        elif "CREATE TABLE" in cmd:
+                        if "CREATE TABLE" in cmd:
                             table_name = extract_table_name(cmd)
                             logger.info("📊 [%s/%s] 创建表: %s", i, total_commands, table_name)
                         elif "DROP TABLE" in cmd:
@@ -335,7 +358,7 @@ def create_database_and_tables(drop_existing=False):
 
         # 输出创建的资源汇总
         logger.info("📦 创建的资源汇总:")
-        logger.info("  • 数据库: db_monitor")
+        logger.info("  • 数据库: %s", db_config["database"])
         logger.info("  • 表结构:")
         tables = [
             "table_creation_log - 表创建日志表",
