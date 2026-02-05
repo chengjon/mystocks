@@ -16,7 +16,7 @@ import pytest
 # 确保 src 目录在 path 中
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
-from src.storage.database.database_manager import DatabaseTableManager, DatabaseType
+from src.storage.database.database_manager import DatabaseTableManager, DatabaseType, TableOperationLog
 
 
 class TestDatabaseTableManager:
@@ -49,6 +49,13 @@ class TestDatabaseTableManager:
         """测试数据库类型枚举"""
         assert DatabaseType.POSTGRESQL.value == "PostgreSQL"
         assert DatabaseType.TDENGINE.value == "TDengine"
+
+    def test_monitoring_log_enum_uses_non_native_type(self):
+        """监控日志枚举不应触发 PostgreSQL 原生 Enum"""
+        operation_type = TableOperationLog.__table__.c.operation_type.type
+        operation_status = TableOperationLog.__table__.c.operation_status.type
+        assert operation_type.native_enum is False
+        assert operation_status.native_enum is False
 
 
 class TestDatabaseManagerQueryOperations:
