@@ -1,7 +1,9 @@
 import logging
+import time
 import uuid
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,37 @@ class SagaCoordinator:
         self.pg = pg_access
         self.td = td_access
 
+    def _safe_execute_sql(self, sql_str: str, params: Optional[tuple] = None) -> None:
+        if not hasattr(self.pg, "execute_sql"):
+            return
+        try:
+            self.pg.execute_sql(sql_str, params)
+        except Exception as e:
+            logger.warning("Failed to write transaction_log: %s", e)
+
+    def _log_txn_start(self, txn_id: str, business_type: str, business_id: str) -> None:
+        sql = (
+            "INSERT INTO transaction_log "
+            "(transaction_id, business_type, business_id, td_status, pg_status, final_status, "
+            "retry_count, error_msg, created_at, updated_at) "
+            "VALUES (%s, %s, %s, 'INIT', 'INIT', 'PENDING', 0, NULL, NOW(), NOW()) "
+            "ON CONFLICT (transaction_id) DO NOTHING"
+        )
+        self._safe_execute_sql(sql, (txn_id, business_type, business_id))
+
+    def _log_txn_update(self, txn_id: str, fields: Dict[str, Any]) -> None:
+        if not fields:
+            return
+        set_parts = []
+        params = []
+        for key, value in fields.items():
+            set_parts.append(f"{key} = %s")
+            params.append(value)
+        set_parts.append("updated_at = NOW()")
+        sql = f"UPDATE transaction_log SET {', '.join(set_parts)} WHERE transaction_id = %s"
+        params.append(txn_id)
+        self._safe_execute_sql(sql, tuple(params))
+
     def execute_kline_sync(
         self,
         business_id: str,
@@ -49,12 +82,17 @@ class SagaCoordinator:
             bool: 事务是否成功
         """
         txn_id = str(uuid.uuid4())
+        start_time = time.time()
+        business_type = (
+            classification.value if hasattr(classification, "value") else str(classification)
+        )
         logger.info("Starting Saga Transaction %(txn_id)s for %(business_id)s")
 
         # 1. 预记录事务状态 (Best Effort)
         # 在实际生产中，这一步应该写入 PG 的 transaction_log 表。
         # 这里模拟日志记录。
         logger.info("[TXN-LOG] %(txn_id)s: STARTED")
+        self._log_txn_start(txn_id, business_type, business_id)
 
         try:
             # 2. Step 1: 写入 TDengine
@@ -73,9 +111,26 @@ class SagaCoordinator:
 
             if not td_success:
                 logger.error("[TXN-LOG] %(txn_id)s: TDengine write failed")
+                duration_ms = int((time.time() - start_time) * 1000)
+                self._log_txn_update(
+                    txn_id,
+                    {
+                        "td_status": "FAIL",
+                        "final_status": TransactionStatus.ROLLED_BACK.value,
+                        "error_msg": "TDengine write failed",
+                        "duration_ms": duration_ms,
+                    },
+                )
                 return False
 
             logger.info("[TXN-LOG] %(txn_id)s: TDengine write SUCCESS")
+            self._log_txn_update(
+                txn_id,
+                {
+                    "td_status": "SUCCESS",
+                    "td_write_time": datetime.utcnow(),
+                },
+            )
 
             # 3. Step 2: 更新 PG 元数据
             # 开启 PG 事务
@@ -93,6 +148,16 @@ class SagaCoordinator:
                         # 在这里，我们也可以更新 PG 中的 transaction_log 表状态为 COMMITTED
 
                         # 提交 PG 事务 (session 退出时自动 commit)
+                        duration_ms = int((time.time() - start_time) * 1000)
+                        self._log_txn_update(
+                            txn_id,
+                            {
+                                "pg_status": "SUCCESS",
+                                "pg_update_time": datetime.utcnow(),
+                                "final_status": TransactionStatus.COMMITTED.value,
+                                "duration_ms": duration_ms,
+                            },
+                        )
                         logger.info("[TXN-LOG] %(txn_id)s: PG commit SUCCESS. Transaction COMPLETED.")
                         return True
 
@@ -100,6 +165,16 @@ class SagaCoordinator:
                         # PG 事务回滚，元数据未更新
                         # 但 TDengine 已经写入了，需要补偿
                         logger.error("PG Update failed, triggering compensation for %(txn_id)s: %(e)s")
+                        duration_ms = int((time.time() - start_time) * 1000)
+                        self._log_txn_update(
+                            txn_id,
+                            {
+                                "pg_status": "FAIL",
+                                "final_status": TransactionStatus.ROLLED_BACK.value,
+                                "error_msg": str(e)[:1000],
+                                "duration_ms": duration_ms,
+                            },
+                        )
                         raise  # 抛出异常以触发外层 except 块进行补偿
             else:
                 # 如果没有显式的 transaction_scope，这是一个风险点
@@ -107,6 +182,16 @@ class SagaCoordinator:
                 logger.warning("PG Access does not support explicit transaction scope. Atomicity reduced.")
                 try:
                     metadata_update_func(None)
+                    duration_ms = int((time.time() - start_time) * 1000)
+                    self._log_txn_update(
+                        txn_id,
+                        {
+                            "pg_status": "SUCCESS",
+                            "pg_update_time": datetime.utcnow(),
+                            "final_status": TransactionStatus.COMMITTED.value,
+                            "duration_ms": duration_ms,
+                        },
+                    )
                     return True
                 except Exception as e:
                     raise e
@@ -114,6 +199,15 @@ class SagaCoordinator:
         except Exception as e:
             # 4. 补偿流程 (Compensation)
             logger.warning("Transaction %(txn_id)s failed with error: %(e)s, compensating...")
+            duration_ms = int((time.time() - start_time) * 1000)
+            self._log_txn_update(
+                txn_id,
+                {
+                    "final_status": TransactionStatus.ROLLED_BACK.value,
+                    "error_msg": str(e)[:1000],
+                    "duration_ms": duration_ms,
+                },
+            )
             self._compensate_tdengine(txn_id, table_name)
             logger.info("[TXN-LOG] %(txn_id)s: ROLLED_BACK")
             return False
