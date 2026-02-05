@@ -1,0 +1,53 @@
+groups:
+  - name: mystocks_saga_alerts
+    interval: 30s
+    rules:
+      - alert: SagaRollbackRateHigh
+        expr: |
+          (
+            sum(rate(mystocks_saga_transactions_total{result="rolled_back"}[5m]))
+            /
+            sum(rate(mystocks_saga_transactions_total[5m]))
+          ) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+          category: saga
+        annotations:
+          summary: "High Saga rollback rate"
+          description: "Saga rollback rate over 5% for 10m"
+
+      - alert: SagaRollbackSpike
+        expr: sum(rate(mystocks_saga_transactions_total{result="rolled_back"}[1m])) > 1
+        for: 5m
+        labels:
+          severity: critical
+          category: saga
+        annotations:
+          summary: "Saga rollback spike"
+          description: "More than 1 rollback per minute for 5m"
+
+      - alert: SagaLatencyP95High
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(mystocks_saga_transaction_duration_seconds_bucket[5m]))
+              by (le, business_type)
+          ) > 2
+        for: 10m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High Saga latency (p95)"
+          description: "Saga p95 latency > 2s for 10m"
+
+      - alert: SagaTransactionsStuck
+        expr: mystocks_saga_transactions_in_flight > 0
+        for: 10m
+        labels:
+          severity: warning
+          category: saga
+        annotations:
+          summary: "Saga transactions stuck in-flight"
+          description: "In-flight Saga transactions > 0 for 10m"
