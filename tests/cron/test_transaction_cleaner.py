@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from src.core.transaction.saga_coordinator import TransactionStatus
 from src.cron.transaction_cleaner import TransactionCleaner
 
 
@@ -11,3 +12,37 @@ def test_load_pending_transactions_queries_pg(mocker):
     cleaner._load_pending_transactions(limit=5, threshold=datetime(2025, 1, 1))
 
     fake_pg.execute_sql.assert_called_once()
+
+
+def test_process_zombie_commits_when_td_and_pg_success(mocker):
+    cleaner = TransactionCleaner(pg=mocker.Mock(), td=mocker.Mock(), coordinator=mocker.Mock())
+    cleaner.update_txn_status = mocker.Mock()
+
+    cleaner.process_zombie(
+        {
+            "transaction_id": "t1",
+            "business_id": "kline_1",
+            "td_status": "SUCCESS",
+            "pg_status": "SUCCESS",
+        }
+    )
+
+    cleaner.update_txn_status.assert_called_once_with("t1", TransactionStatus.COMMITTED.value)
+
+
+def test_process_zombie_rolls_back_and_compensates(mocker):
+    coordinator = mocker.Mock()
+    cleaner = TransactionCleaner(pg=mocker.Mock(), td=mocker.Mock(), coordinator=coordinator)
+    cleaner.update_txn_status = mocker.Mock()
+
+    cleaner.process_zombie(
+        {
+            "transaction_id": "t2",
+            "business_id": "kline_1",
+            "td_status": "SUCCESS",
+            "pg_status": "FAIL",
+        }
+    )
+
+    coordinator._compensate_tdengine.assert_called_once()
+    cleaner.update_txn_status.assert_called_once_with("t2", TransactionStatus.ROLLED_BACK.value)

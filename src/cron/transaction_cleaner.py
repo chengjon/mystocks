@@ -153,7 +153,9 @@ class TransactionCleaner:
         logger.info("  TD Status: %(td_status)s, PG Status: %(pg_status)s")
 
         # 逻辑分支
-        if td_status == "SUCCESS" and pg_status != "SUCCESS":
+        if td_status == "SUCCESS" and pg_status == "SUCCESS":
+            self.update_txn_status(txn_id, TransactionStatus.COMMITTED.value)
+        elif td_status == "SUCCESS" and pg_status != "SUCCESS":
             # 中间态: TD 写了，PG 没写/未知
             # 策略: 优先回滚 (标记 TD 无效)
             logger.info("  Compensating %(txn_id)s (TD=Success, PG=Fail)")
