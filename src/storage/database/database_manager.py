@@ -150,9 +150,15 @@ class TableOperationLog(Base):
     table_name = Column(String(255), nullable=False)
     database_type = Column(String(20), nullable=False)
     database_name = Column(String(255), nullable=False)
-    operation_type: Any = Column(SQLEnum("CREATE", "ALTER", "DROP", "VALIDATE"), nullable=False)
+    operation_type: Any = Column(
+        SQLEnum("CREATE", "ALTER", "DROP", "VALIDATE", native_enum=False),
+        nullable=False,
+    )
     operation_time = Column(DateTime, default=datetime.utcnow)
-    operation_status: Any = Column(SQLEnum("success", "failed", "processing"), nullable=False)
+    operation_status: Any = Column(
+        SQLEnum("success", "failed", "processing", native_enum=False),
+        nullable=False,
+    )
     operation_details = Column(JSON, nullable=False)
     ddl_command = Column(Text)
     error_message = Column(Text)
