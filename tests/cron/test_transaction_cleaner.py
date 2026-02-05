@@ -46,3 +46,12 @@ def test_process_zombie_rolls_back_and_compensates(mocker):
 
     coordinator._compensate_tdengine.assert_called_once()
     cleaner.update_txn_status.assert_called_once_with("t2", TransactionStatus.ROLLED_BACK.value)
+
+
+def test_dry_run_skips_updates(mocker):
+    pg = mocker.Mock()
+    cleaner = TransactionCleaner(pg=pg, td=mocker.Mock(), coordinator=mocker.Mock(), dry_run=True)
+
+    cleaner.update_txn_status("t1", TransactionStatus.COMMITTED.value)
+
+    pg.execute_update.assert_not_called()

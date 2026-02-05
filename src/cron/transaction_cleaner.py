@@ -28,7 +28,7 @@ logger = logging.getLogger("TransactionCleaner")
 
 
 class TransactionCleaner:
-    def __init__(self, pg=None, td=None, coordinator=None):
+    def __init__(self, pg=None, td=None, coordinator=None, dry_run: bool = False):
         # 初始化 DataManager 以获取数据库访问层
         if pg is None or td is None or coordinator is None:
             self.dm = DataManager(enable_monitoring=True)
@@ -40,6 +40,7 @@ class TransactionCleaner:
             self.pg = pg
             self.td = td
             self.coordinator = coordinator
+        self.dry_run = dry_run
 
     def run(self, purge_invalid_data: bool = False):
         """
@@ -195,14 +196,16 @@ class TransactionCleaner:
             status: 新状态
         """
         try:
-            # 实际部署时需要使用DataAccess执行UPDATE
-            # sql = "UPDATE transaction_log SET final_status = %s, updated_at = NOW() WHERE transaction_id = %s"
-            # self.pg.execute_update(sql, (status, txn_id))
+            if self.dry_run:
+                logger.info("DRY RUN: would update %s to %s", txn_id, status)
+                return
 
-            logger.info("  Updated %(txn_id)s to %(status)s")
+            sql = "UPDATE transaction_log SET final_status = %s, updated_at = NOW() WHERE transaction_id = %s"
+            self.pg.execute_update(sql, (status, txn_id))
+            logger.info("Updated %s to %s", txn_id, status)
 
         except Exception as e:
-            logger.error("Failed to update txn status %(txn_id)s: %(e)s")
+            logger.error("Failed to update txn status %s: %s", txn_id, e)
 
     def cleanup_invalid_data(self):
         """
