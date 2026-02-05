@@ -9,9 +9,15 @@ Runs success/failure Saga flows and cleans up transaction_log records.
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Optional
+
+if __name__ == "__main__" and __package__ is None:
+    repo_root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(repo_root))
 
 import pandas as pd
 
