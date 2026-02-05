@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import pandas as pd
+
 from src.core.transaction.saga_coordinator import TransactionStatus
 from src.cron.transaction_cleaner import TransactionCleaner
 
@@ -55,3 +57,13 @@ def test_dry_run_skips_updates(mocker):
     cleaner.update_txn_status("t1", TransactionStatus.COMMITTED.value)
 
     pg.execute_update.assert_not_called()
+
+
+def test_cleanup_invalid_data_executes_delete(mocker):
+    td = mocker.Mock()
+    td.query_sql.return_value = pd.DataFrame([[3]])
+    cleaner = TransactionCleaner(pg=mocker.Mock(), td=td, coordinator=mocker.Mock(), dry_run=False)
+
+    cleaner.cleanup_invalid_data()
+
+    assert td.execute_update.called

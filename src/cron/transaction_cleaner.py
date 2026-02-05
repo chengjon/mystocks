@@ -230,28 +230,25 @@ class TransactionCleaner:
 
             for table in tables_to_check:
                 try:
-                    # 查询该表中is_valid=false的数据量
-                    # 注意：这里需要DataAccess支持聚合查询
-                    # count_sql = f"SELECT COUNT(*) FROM {table} WHERE is_valid=false"
-                    # count_df = self.td.query_sql(count_sql)
-
-                    # 为了演示，使用模拟数据
-                    invalid_count = 0  # 实际应该是查询结果
+                    count_sql = f"SELECT COUNT(*) FROM {table} WHERE is_valid=false"
+                    count_df = self.td.query_sql(count_sql)
+                    invalid_count = int(count_df.iloc[0, 0]) if not count_df.empty else 0
 
                     if invalid_count > 0:
-                        logger.info("  Table %(table)s: %(invalid_count)s invalid records")
+                        logger.info("  Table %s: %s invalid records", table, invalid_count)
+                        if self.dry_run:
+                            logger.info("  DRY RUN: would delete invalid records from %s", table)
+                            continue
 
-                        # 物理删除
-                        # delete_sql = f"DELETE FROM {table} WHERE is_valid=false"
-                        # self.td.execute_sql(delete_sql)
-
-                        # total_deleted += invalid_count
-                        logger.info("    Deleted %(invalid_count)s records from %(table)s")
+                        delete_sql = f"DELETE FROM {table} WHERE is_valid=false"
+                        self.td.execute_update(delete_sql)
+                        total_deleted += invalid_count
+                        logger.info("    Deleted %s records from %s", invalid_count, table)
 
                 except Exception as e:
-                    logger.error("  Failed to cleanup table %(table)s: %(e)s")
+                    logger.error("  Failed to cleanup table %s: %s", table, e)
 
-            logger.info("Total deleted records: %(total_deleted)s")
+            logger.info("Total deleted records: %s", total_deleted)
 
         except Exception as e:
             logger.error("Error during invalid data cleanup: %(e)s")
