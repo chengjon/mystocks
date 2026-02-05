@@ -28,7 +28,15 @@ logger = logging.getLogger("TransactionCleaner")
 
 
 class TransactionCleaner:
-    def __init__(self, pg=None, td=None, coordinator=None, dry_run: bool = False):
+    def __init__(
+        self,
+        pg=None,
+        td=None,
+        coordinator=None,
+        dry_run: bool = False,
+        zombie_minutes: int | None = None,
+        zombie_limit: int | None = None,
+    ):
         # 初始化 DataManager 以获取数据库访问层
         if pg is None or td is None or coordinator is None:
             self.dm = DataManager(enable_monitoring=True)
@@ -41,6 +49,8 @@ class TransactionCleaner:
             self.td = td
             self.coordinator = coordinator
         self.dry_run = dry_run
+        self.zombie_minutes = zombie_minutes if zombie_minutes is not None else int(os.getenv("TXN_ZOMBIE_MINUTES", "10"))
+        self.zombie_limit = zombie_limit if zombie_limit is not None else int(os.getenv("TXN_ZOMBIE_BATCH_LIMIT", "100"))
 
     def run(self, purge_invalid_data: bool = False):
         """
@@ -50,7 +60,7 @@ class TransactionCleaner:
             purge_invalid_data: 是否物理删除无效数据（默认False）
         """
         logger.info("Starting Transaction Cleanup Job")
-        logger.info("Purge invalid data: %(purge_invalid_data)s")
+        logger.info("Purge invalid data: %s", purge_invalid_data)
 
         # 1. 检查并处理僵尸事务
         zombie_count = self.check_zombie_transactions()
@@ -73,7 +83,7 @@ class TransactionCleaner:
             int: 处理的事务数量
         """
         # 定义超时阈值 (10分钟前)
-        timeout_threshold = datetime.now() - timedelta(minutes=10)
+        timeout_threshold = datetime.now() - timedelta(minutes=self.zombie_minutes)
 
         try:
             # 使用PostgreSQLDataAccess查询超时事务
@@ -95,21 +105,15 @@ class TransactionCleaner:
             # 目前先使用模拟逻辑，实际部署需要根据DataClassification调整
 
             logger.info("Scanning for zombie transactions...")
-            logger.info("Timeout threshold: %(timeout_threshold)s")
+            logger.info("Timeout threshold: %s", timeout_threshold)
 
-            # --- 模拟逻辑开始 ---
-            # 在实际部署时，这里应该查询真实的transaction_log表
-            # pending_txns = [...]
-
-            # 为了演示，我们使用硬编码的测试数据
-            pending_txns = []
-            # --- 模拟逻辑结束 ---
+            pending_txns = self._load_pending_transactions(self.zombie_limit, timeout_threshold)
 
             if not pending_txns:
                 logger.info("No zombie transactions found.")
                 return 0
 
-            logger.info("Found {len(pending_txns)} zombie transactions")
+            logger.info("Found %s zombie transactions", len(pending_txns))
 
             processed_count = 0
             for txn in pending_txns:
@@ -117,12 +121,16 @@ class TransactionCleaner:
                     self.process_zombie(txn)
                     processed_count += 1
                 except Exception as e:
-                    logger.error("Failed to process zombie transaction {txn.get('transaction_id', 'unknown')}: %(e)s")
+                    logger.error(
+                        "Failed to process zombie transaction %s: %s",
+                        txn.get("transaction_id", "unknown"),
+                        e,
+                    )
 
             return processed_count
 
         except Exception as e:
-            logger.error("Error scanning zombie transactions: %(e)s")
+            logger.error("Error scanning zombie transactions: %s", e)
             return 0
 
     def _load_pending_transactions(self, limit: int, threshold: datetime) -> list[dict]:
@@ -150,8 +158,8 @@ class TransactionCleaner:
         td_status = txn.get("td_status", "UNKNOWN")
         pg_status = txn.get("pg_status", "UNKNOWN")
 
-        logger.info("Processing zombie transaction %(txn_id)s...")
-        logger.info("  TD Status: %(td_status)s, PG Status: %(pg_status)s")
+        logger.info("Processing zombie transaction %s...", txn_id)
+        logger.info("  TD Status: %s, PG Status: %s", td_status, pg_status)
 
         # 逻辑分支
         if td_status == "SUCCESS" and pg_status == "SUCCESS":
@@ -159,15 +167,18 @@ class TransactionCleaner:
         elif td_status == "SUCCESS" and pg_status != "SUCCESS":
             # 中间态: TD 写了，PG 没写/未知
             # 策略: 优先回滚 (标记 TD 无效)
-            logger.info("  Compensating %(txn_id)s (TD=Success, PG=Fail)")
-            self.coordinator._compensate_tdengine(txn_id, self._extract_table_name(business_id))
+            logger.info("  Compensating %s (TD=Success, PG=Fail)", txn_id)
+            if self.dry_run:
+                logger.info("  DRY RUN: would compensate %s", txn_id)
+            else:
+                self.coordinator._compensate_tdengine(txn_id, self._extract_table_name(business_id))
 
             # 更新状态为 ROLLED_BACK
             self.update_txn_status(txn_id, TransactionStatus.ROLLED_BACK.value)
 
         elif td_status != "SUCCESS":
             # TD 都没成功，直接标记回滚
-            logger.info("  Marking %(txn_id)s as ROLLED_BACK (TD not successful)")
+            logger.info("  Marking %s as ROLLED_BACK (TD not successful)", txn_id)
             self.update_txn_status(txn_id, TransactionStatus.ROLLED_BACK.value)
 
     def _extract_table_name(self, business_id: str) -> str:
@@ -261,19 +272,22 @@ def main():
     parser = argparse.ArgumentParser(description="Saga事务清理任务")
     parser.add_argument("--purge", action="store_true", help="物理删除无效数据（默认只扫描）")
     parser.add_argument("--dry-run", action="store_true", help="模拟运行（不实际修改数据）")
+    parser.add_argument("--minutes", type=int, help="僵尸事务超时分钟数（默认读取 TXN_ZOMBIE_MINUTES）")
+    parser.add_argument("--limit", type=int, help="僵尸事务批量处理数量（默认读取 TXN_ZOMBIE_BATCH_LIMIT）")
 
     args = parser.parse_args()
 
     try:
-        cleaner = TransactionCleaner()
+        cleaner = TransactionCleaner(
+            dry_run=args.dry_run,
+            zombie_minutes=args.minutes,
+            zombie_limit=args.limit,
+        )
 
         if args.dry_run:
             logger.info("DRY RUN MODE: No actual changes will be made")
-            # 在dry-run模式下，只扫描不修改
-            # cleaner.run(purge_invalid_data=False)
-            logger.info("Dry run completed (no changes made)")
-        else:
-            cleaner.run(purge_invalid_data=args.purge)
+
+        cleaner.run(purge_invalid_data=args.purge)
 
         logger.info("✅ Transaction cleaner completed successfully")
         return 0

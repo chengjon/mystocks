@@ -67,3 +67,27 @@ def test_cleanup_invalid_data_executes_delete(mocker):
     cleaner.cleanup_invalid_data()
 
     assert td.execute_update.called
+
+
+def test_dry_run_skips_compensation(mocker):
+    coordinator = mocker.Mock()
+    cleaner = TransactionCleaner(pg=mocker.Mock(), td=mocker.Mock(), coordinator=coordinator, dry_run=True)
+
+    cleaner.process_zombie(
+        {
+            "transaction_id": "t3",
+            "business_id": "kline_1",
+            "td_status": "SUCCESS",
+            "pg_status": "FAIL",
+        }
+    )
+
+    coordinator._compensate_tdengine.assert_not_called()
+
+
+def test_env_defaults_loaded(mocker):
+    mocker.patch.dict("os.environ", {"TXN_ZOMBIE_MINUTES": "7", "TXN_ZOMBIE_BATCH_LIMIT": "12"})
+    cleaner = TransactionCleaner(pg=mocker.Mock(), td=mocker.Mock(), coordinator=mocker.Mock())
+
+    assert cleaner.zombie_minutes == 7
+    assert cleaner.zombie_limit == 12
