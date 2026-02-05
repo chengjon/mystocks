@@ -165,6 +165,36 @@ class TestTDengineDataAccessDataInsertion(unittest.TestCase):
         self.assertFalse(result)
 
 
+class TestTDengineMinuteKlineInsertion(unittest.TestCase):
+    """测试分钟K线插入逻辑（itertuples路径）"""
+
+    def setUp(self):
+        self.mock_db_manager = Mock()
+        self.access = TDengineDataAccess(db_manager=self.mock_db_manager)
+        self.mock_cursor = Mock()
+
+        self.test_data = pd.DataFrame(
+            {
+                "ts": [datetime(2026, 1, 3, 9, 30)],
+                "open": [10.0],
+                "high": [10.5],
+                "low": [9.8],
+                "close": [10.2],
+                "volume": [1000],
+                "amount": [10200.0],
+                "symbol": ["SAGA001"],
+                "frequency": ["1m"],
+            }
+        )
+
+    def test_insert_minute_kline_itertuples(self):
+        """分钟K线插入应成功执行SQL"""
+        result = self.access._insert_minute_kline(self.mock_cursor, self.test_data, "minute_kline")
+
+        self.assertTrue(result)
+        self.mock_cursor.execute.assert_called()
+
+
 class TestTDengineDataAccessQuery(unittest.TestCase):
     """测试查询功能"""
 
