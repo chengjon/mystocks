@@ -28,12 +28,18 @@ logger = logging.getLogger("TransactionCleaner")
 
 
 class TransactionCleaner:
-    def __init__(self):
+    def __init__(self, pg=None, td=None, coordinator=None):
         # 初始化 DataManager 以获取数据库访问层
-        self.dm = DataManager(enable_monitoring=True)
-        self.pg = self.dm._postgresql
-        self.td = self.dm._tdengine
-        self.coordinator = self.dm.saga_coordinator
+        if pg is None or td is None or coordinator is None:
+            self.dm = DataManager(enable_monitoring=True)
+            self.pg = self.dm._postgresql
+            self.td = self.dm._tdengine
+            self.coordinator = self.dm.saga_coordinator
+        else:
+            self.dm = None
+            self.pg = pg
+            self.td = td
+            self.coordinator = coordinator
 
     def run(self, purge_invalid_data: bool = False):
         """
@@ -117,6 +123,19 @@ class TransactionCleaner:
         except Exception as e:
             logger.error("Error scanning zombie transactions: %(e)s")
             return 0
+
+    def _load_pending_transactions(self, limit: int, threshold: datetime) -> list[dict]:
+        sql = (
+            "SELECT transaction_id, business_id, td_status, pg_status, created_at "
+            "FROM transaction_log "
+            "WHERE final_status = 'PENDING' AND created_at < %s "
+            "ORDER BY created_at ASC "
+            "LIMIT %s"
+        )
+        df = self.pg.execute_sql(sql, (threshold, limit))
+        if df is None or df.empty:
+            return []
+        return df.to_dict(orient="records")
 
     def process_zombie(self, txn: dict):
         """
