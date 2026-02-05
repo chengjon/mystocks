@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS transaction_log (
 
     retry_count INT DEFAULT 0,
     error_msg TEXT,
+    duration_ms BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -30,3 +31,6 @@ CREATE INDEX IF NOT EXISTS idx_trans_created_at ON transaction_log(created_at);
 
 -- Comment
 COMMENT ON TABLE transaction_log IS '分布式事务 Saga 模式状态追踪表';
+
+-- Backfill for existing deployments
+ALTER TABLE transaction_log ADD COLUMN IF NOT EXISTS duration_ms BIGINT;
