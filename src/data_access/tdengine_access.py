@@ -50,6 +50,28 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
     return identifier
 
 
+def validate_suffix(suffix: str, suffix_type: str = "suffix") -> str:
+    """
+    验证子表后缀（允许数字开头）
+
+    Args:
+        suffix: 待验证的后缀
+        suffix_type: 后缀类型（用于错误消息）
+
+    Returns:
+        验证后的安全后缀
+    """
+    if not suffix:
+        raise ValueError(f"{suffix_type} cannot be empty")
+
+    if not re.match(r"^[a-zA-Z0-9_]+$", suffix):
+        raise ValueError(
+            f"Invalid {suffix_type}: '{suffix}'. Only alphanumeric characters and underscores are allowed."
+        )
+
+    return suffix
+
+
 def validate_table_name(table_name: str) -> str:
     """验证表名"""
     return validate_identifier(table_name, "table_name")
@@ -104,7 +126,7 @@ class TDengineDataAccess:
 
         if suffix:
             # 验证后缀
-            clean_suffix = validate_identifier(suffix.lower(), "suffix")
+            clean_suffix = validate_suffix(suffix.lower(), "suffix")
             return f"{prefix}_{clean_symbol}_{clean_suffix}"
         return f"{prefix}_{clean_symbol}"
 
@@ -168,29 +190,29 @@ class TDengineDataAccess:
             # 使用itertuples提高性能（比iterrows快10倍）
             for row in data.itertuples():
                 # 验证和清洗股票代码
-                symbol = validate_symbol(str(row.get("symbol", "unknown")))
+                symbol = validate_symbol(str(getattr(row, "symbol", "unknown")))
 
                 # 验证和清洗交易所代码
-                exchange = validate_identifier(str(row.get("exchange", "sh")).lower(), "exchange")
+                exchange = validate_identifier(str(getattr(row, "exchange", "sh")).lower(), "exchange")
 
                 # 生成安全的子表名
                 subtable = self._get_subtable_name(safe_table_name, symbol, exchange)
 
-                ts = row.get("ts", datetime.now())
+                ts = getattr(row, "ts", datetime.now())
                 ts_str = ts.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-                price = float(row.get("price", 0.0))
-                volume = int(row.get("volume", 0))
-                amount = float(row.get("amount", 0.0))
+                price = float(getattr(row, "price", 0.0))
+                volume = int(getattr(row, "volume", 0))
+                amount = float(getattr(row, "amount", 0.0))
 
                 # 转义 txn_id 中的单引号（如果有）
-                if has_txn and row.get("txn_id"):
-                    txn_id_val = str(row.get("txn_id")).replace("'", "''")
+                if has_txn and getattr(row, "txn_id", None):
+                    txn_id_val = str(getattr(row, "txn_id")).replace("'", "''")
                     txn_id = f"'{txn_id_val}'"
                 else:
                     txn_id = "NULL"
 
-                is_valid = str(row.get("is_valid", True)).lower() if has_txn else "true"
+                is_valid = str(getattr(row, "is_valid", True)).lower() if has_txn else "true"
 
                 # 使用验证后的标识符构建SQL
                 sql = f"""
@@ -231,32 +253,32 @@ class TDengineDataAccess:
             # 使用itertuples提高性能（比iterrows快10倍）
             for row in data.itertuples():
                 # 验证和清洗股票代码
-                symbol = validate_symbol(str(row.get("symbol", "unknown")))
+                symbol = validate_symbol(str(getattr(row, "symbol", "unknown")))
 
                 # 验证和清洗频率
-                frequency = validate_identifier(str(row.get("frequency", "1m")).lower(), "frequency")
+                frequency = validate_suffix(str(getattr(row, "frequency", "1m")).lower(), "frequency")
 
                 # 生成安全的子表名
                 subtable = self._get_subtable_name(safe_table_name, symbol, frequency)
 
-                ts = row.get("ts", datetime.now())
+                ts = getattr(row, "ts", datetime.now())
                 ts_str = ts.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-                open_p = float(row.get("open", 0.0))
-                high = float(row.get("high", 0.0))
-                low = float(row.get("low", 0.0))
-                close = float(row.get("close", 0.0))
-                volume = int(row.get("volume", 0))
-                amount = float(row.get("amount", 0.0))
+                open_p = float(getattr(row, "open", 0.0))
+                high = float(getattr(row, "high", 0.0))
+                low = float(getattr(row, "low", 0.0))
+                close = float(getattr(row, "close", 0.0))
+                volume = int(getattr(row, "volume", 0))
+                amount = float(getattr(row, "amount", 0.0))
 
                 # 转义 txn_id 中的单引号
-                if has_txn and row.get("txn_id"):
-                    txn_id_val = str(row.get("txn_id")).replace("'", "''")
+                if has_txn and getattr(row, "txn_id", None):
+                    txn_id_val = str(getattr(row, "txn_id")).replace("'", "''")
                     txn_id = f"'{txn_id_val}'"
                 else:
                     txn_id = "NULL"
 
-                is_valid = str(row.get("is_valid", True)).lower() if has_txn else "true"
+                is_valid = str(getattr(row, "is_valid", True)).lower() if has_txn else "true"
 
                 # 按照 STABLE 定义: ts, open, high, low, close, volume, amount, txn_id, is_valid
                 sql = f"""

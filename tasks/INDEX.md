@@ -7,8 +7,8 @@
 
 ---
 
-- [FRONTEND_HISTORY_MIGRATION](tasks/FRONTEND_HISTORY_MIGRATION.md)
-  - *Frontend History Mode Migration: Hash → HTML5*
+- [FRONTEND_HISTORY_MIGRATION](../docs/tasks/FRONTEND_HISTORY_MIGRATION.md)
+  - *Frontend History Mode Migration: Hash → HTML5 (已完成)*
 
-- [PHASE_2_SAGA_ROLLOUT](tasks/PHASE_2_SAGA_ROLLOUT.md)
+- [PHASE_2_SAGA_ROLLOUT](../docs/tasks/PHASE_2_SAGA_ROLLOUT.md)
   - *PHASE 2: Saga 分布式事务落地与生产化任务清单*
