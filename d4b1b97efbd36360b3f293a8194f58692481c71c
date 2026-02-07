@@ -1,0 +1,3 @@
+Task: Generate a definitive list of User Source Code files > 1000 lines.
+Summary: Created scripts/find_large_files.py to identify target files. Identified top candidates: risk_management.py (2112 lines), data_adapter.py (2016 lines), ArtDecoMarketData.vue (3238 lines).
+Files: scripts/find_large_files.py
