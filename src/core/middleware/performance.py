@@ -7,47 +7,60 @@ import time
 from typing import Callable
 
 from fastapi import Response
-from prometheus_client import Counter, Gauge, Histogram, Info, generate_latest
+from prometheus_client import Counter, Gauge, Histogram, Info, REGISTRY, generate_latest
 
-REQUEST_LATENCY = Histogram(
+
+def _get_or_create(metric_cls, name: str, *args, **kwargs):
+    existing = REGISTRY._names_to_collectors.get(name)
+    if existing:
+        return existing
+    return metric_cls(name, *args, **kwargs)
+
+REQUEST_LATENCY = _get_or_create(
+    Histogram,
     "http_request_duration_seconds",
     "HTTP请求延迟(秒)",
     ["method", "endpoint", "status_code"],
     buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0],
 )
 
-REQUEST_COUNT = Counter(
+REQUEST_COUNT = _get_or_create(
+    Counter,
     "http_requests_total",
     "HTTP请求总数",
     ["method", "endpoint", "status_code"],
 )
 
-ACTIVE_REQUESTS = Gauge(
+ACTIVE_REQUESTS = _get_or_create(
+    Gauge,
     "http_requests_active",
     "当前活跃HTTP请求数",
     ["method", "endpoint"],
 )
 
-REQUEST_IN_PROGRESS = Gauge(
+REQUEST_IN_PROGRESS = _get_or_create(
+    Gauge,
     "http_requests_in_progress",
     "当前处理中的请求数",
     ["method", "endpoint"],
 )
 
-REQUEST_LATENCY_SECONDS = Histogram(
+REQUEST_LATENCY_SECONDS = _get_or_create(
+    Histogram,
     "http_request_duration_seconds_total",
     "HTTP请求总延迟(秒)",
     ["method", "endpoint"],
     buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0],
 )
 
-SLOW_REQUESTS = Counter(
+SLOW_REQUESTS = _get_or_create(
+    Counter,
     "slow_http_requests_total",
     "慢请求计数(>300ms)",
     ["method", "endpoint"],
 )
 
-APP_INFO = Info("mystocks_app", "MyStocks Application Information")
+APP_INFO = _get_or_create(Info, "mystocks_app", "MyStocks Application Information")
 
 
 def get_endpoint_name(path: str) -> str:

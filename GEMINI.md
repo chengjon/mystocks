@@ -2,6 +2,33 @@
 
 This document outlines the Python code quality assurance workflow and tools that Gemini CLI must adhere to when working on Python projects. These guidelines are derived from the project's official quality assurance documentation (`docs/guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md`, `docs/guides/PYTHON_QUALITY_TOOLS_QUICK_REFERENCE.md`, and `CLAUDE.md`).
 
+---
+
+## Git Branch Detection and Workflow
+
+**Critical**: Determine the current git branch to follow the correct workflow.
+
+```bash
+# Detect current branch in current working directory
+git branch --show-current
+# OR
+git rev-parse --abbrev-ref HEAD
+```
+
+**Workflow Rules**:
+- **If branch is `main`**: Follow Main CLI responsibilities
+  - Coordination role: use `.FILE_OWNERSHIP` to assign tasks
+  - Monitor worker progress via `TASK.md` and `TASK-REPORT.md` (worker artifacts)
+  - No direct task reporting in worker task files
+  - Reference: `docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+
+- **If branch is non-main** (worktree): Follow Worker CLI workflow
+  - Use `TASK.md` + `TASK-REPORT.md` (+ `TASK-*-REPORT.md`) in worktree root
+  - Report progress and completion status
+  - Reference: `docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+
+---
+
 ## Core Principles
 
 -   **Ruff First**: Prioritize Ruff for daily development for speed and efficiency.

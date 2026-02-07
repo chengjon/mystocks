@@ -2,52 +2,59 @@
  * @fileoverview 页面配置类型定义模块
  * @description 提供页面配置相关的类型定义
  * @module types
- * @version 1.0.0
+ * @version 2.0.0
+ * @updated 2026-02-03 - Extended with monolithic and standard page config types
  */
 
 /**
- * 页面类型枚举
+ * 页面配置类型
+ * - 'monolithic': 单体组件，包含多个 tab
+ * - 'page': 标准页面配置
  */
-export type PageConfigType = 'monolithic' | 'standard' | 'tabbed';
+export type PageConfigType = 'monolithic' | 'page';
 
 /**
- * 页面配置项
- */
-export interface PageConfig {
-  id: string;
-  name: string;
-  path: string;
-  component?: string;
-  icon?: string;
-  meta?: Record<string, any>;
-  permissions?: string[];
-  layout?: 'dashboard' | 'sidebar' | 'full' | 'custom';
-  cache?: boolean;
-  prefetch?: boolean;
-}
-
-/**
- * Tab配置
+ * Tab 配置（用于 monolithic 组件）
  */
 export interface TabConfig {
   id: string;
-  label: string;
-  path: string;
-  icon?: string;
-  disabled?: boolean;
-  badge?: number | string;
-  closable?: boolean;
+  apiEndpoint: string;
+  wsChannel: string;
 }
 
 /**
- * 页面配置响应
+ * Monolithic 页面配置
+ * 用于包含多个 tab 的单体组件
  */
-export interface PageConfigResponse {
-  pages: PageConfig[];
+export interface MonolithicPageConfig {
+  type: 'monolithic';
+  routePath: string;
+  title: string;
+  description: string;
+  component: string;
   tabs: TabConfig[];
-  defaultPage?: string;
-  layout?: 'dashboard' | 'sidebar' | 'full' | 'custom';
+  requiresAuth?: boolean;
 }
+
+/**
+ * 标准页面配置
+ * 用于单一功能的标准页面
+ */
+export interface StandardPageConfig {
+  type: 'page';
+  routePath: string;
+  title: string;
+  description: string;
+  apiEndpoint: string;
+  wsChannel: string;
+  component: string;
+  requiresAuth?: boolean;
+}
+
+/**
+ * 页面配置联合类型（判别联合）
+ */
+export type PageConfig = MonolithicPageConfig | StandardPageConfig;
 
 /**
  * 路由名称类型
@@ -55,14 +62,45 @@ export interface PageConfigResponse {
 export type RouteName = string;
 
 /**
+ * 类型守卫：检查是否为 Monolithic 配置
+ */
+export function isMonolithicConfig(config: PageConfig): config is MonolithicPageConfig {
+  return config.type === 'monolithic';
+}
+
+/**
+ * 类型守卫：检查是否为 Standard 配置
+ */
+export function isStandardConfig(config: PageConfig): config is StandardPageConfig {
+  return config.type === 'page';
+}
+
+/**
  * 路由名称验证函数
  */
 export function isRouteName(name: string): name is RouteName {
   const routeNames: string[] = [
     'dashboard',
-    'market',
-    'trading',
-    'portfolio',
+    'market-realtime',
+    'market-overview',
+    'market-analysis',
+    'market-industry',
+    'market-technical',
+    'trading-signals',
+    'trading-history',
+    'trading-positions',
+    'trading-performance',
+    'trading-attribution',
+    'strategy-design',
+    'strategy-management',
+    'strategy-backtest',
+    'strategy-gpu-backtest',
+    'strategy-optimization',
+    'risk-overview',
+    'risk-alerts',
+    'risk-analysis',
+    'portfolio-overview',
+    'portfolio-analysis',
     'settings',
     'monitoring',
     'analysis'

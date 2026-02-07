@@ -19,6 +19,31 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # AGENTS.md - Coding Agent Configuration
 
+## Git Branch Detection and Workflow
+
+**Critical**: Determine the current git branch to follow the correct workflow.
+
+```bash
+# Detect current branch
+git branch --show-current
+# OR
+git rev-parse --abbrev-ref HEAD
+```
+
+**Workflow Rules**:
+- **If branch is `main`**: Follow Main CLI responsibilities
+  - Coordination role: use `.FILE_OWNERSHIP` to assign tasks
+  - Monitor worker progress via `TASK.md` and `TASK-REPORT.md` (worker artifacts)
+  - No direct task reporting in worker task files
+  - Reference: `docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+
+- **If branch is non-main** (worktree): Follow Worker CLI workflow
+  - Use `TASK.md` + `TASK-REPORT.md` (+ `TASK-*-REPORT.md`) in worktree root
+  - Report progress and completion status
+  - Reference: `docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+
+---
+
 ## Build/Lint/Test Commands
 
 ```bash

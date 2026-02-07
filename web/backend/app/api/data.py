@@ -7,6 +7,7 @@
 """
 
 from datetime import datetime, timedelta
+import os
 from typing import Any, Dict, Optional
 
 import pandas as pd
@@ -20,13 +21,11 @@ from app.services.unified_data_service import UnifiedDataService
 
 logger = __import__("logging").getLogger(__name__)
 
-import os
+# Allow importing submodules from app.api.data.* while keeping this module.
+__path__ = [os.path.join(os.path.dirname(__file__), "data")]
 
 # 添加数据格式转换中间件
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../../../../src"))
-from utils.data_format_converter import normalize_api_response_format, normalize_stock_data_format
+from src.utils.data_format_converter import normalize_api_response_format, normalize_stock_data_format
 
 router = APIRouter()
 

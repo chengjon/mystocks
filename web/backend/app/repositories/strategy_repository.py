@@ -34,6 +34,9 @@ from app.models.strategy_schemas import (
 )
 
 
+Base = declarative_base()
+
+
 # ============================================================
 # SQLAlchemy ORM Models
 # ============================================================

@@ -394,7 +394,7 @@ class DatabaseService:
             logger.error(f"事务执行失败: {e}")
             raise
 
-    def _get_connection(self):
+    async def _get_connection(self):
         """获取数据库连接（内部方法）"""
         if not self.connection:
             success = await self.connect()

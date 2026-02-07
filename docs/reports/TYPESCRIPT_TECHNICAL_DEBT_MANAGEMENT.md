@@ -1,8 +1,15 @@
 # TypeScript 技术债务管理策略
 
+**任务命名规范**: 本文档属于 TASK-TS-DEBT-REPORT.md 模式（技术债务管理），阶段性报告可命名为 TASK-TS-DEBT-PHASE-*-REPORT.md
+
 **创建时间**: 2026-01-13
 **文档类型**: 技术债务管理规范
 **核心理念**: **精准忽略 + 分步根治 + 持续追踪**
+
+**相关文档**:
+- `../../.FILE_OWNERSHIP` - 文件归属权映射（权威来源）
+- `TYPESCRIPT_FIX_BEST_PRACTICES.md` - TypeScript修复案例研究报告
+- `../guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` - 多CLI协作指南（如需多人协作修复）
 
 ---
 

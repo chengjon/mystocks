@@ -277,6 +277,7 @@ class PricePredictorStrategy:
             "mae": mean_absolute_error(target, pred_result),
             "r2": r2_score(target, pred_result),
         }
+        eval_metrics["r2_score"] = eval_metrics["r2"]
 
         return eval_metrics
 

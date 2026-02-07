@@ -25,23 +25,18 @@
 #   4. 收集所有错误
 #   5. 如果错误 ≥ 阈值（默认 10），阻断 Stop 并要求 Claude 修复
 #
-# 退出码（符合 Claude 官方规范）:
-#   0: 质量检查通过或错误 < 阈值（允许停止）
-#   2: 质量检查失败且错误 ≥ 阈值（阻止停止，要求 Claude 修复）
-#
-# JSON 输出格式（Stop hook 使用简单格式，不使用 hookSpecificOutput）:
+# 退出码和JSON输出（符合 Claude 官方规范）:
 #   成功（允许停止）:
-#     {}
+#     退出码: 0
+#     JSON: {}
 #
-#   失败（阻止停止）:
-#     {
-#       "stopReason": "发现 12 个错误。请修复后再停止。详情：...",
-#         "core_syntax": 2,
-#         "type_hints_core": 3,
-#         "quick_tests": 2
-#       }
-#     }
-#   }
+#   警告（错误数低于阈值，允许停止但提示）:
+#     退出码: 0
+#     JSON: {"systemMessage": "⚠️ 发现 N 个错误，低于阈值..."}
+#
+#   阻止停止（错误数 >= 阈值）:
+#     退出码: 0  (不使用exit 2)
+#     JSON: {"decision": "block", "reason": "❌ Python 质量检查失败: 发现 N 个错误..."}
 #
 # 配置文件（.claude/build-checker-python.json）:
 #   {
@@ -128,8 +123,16 @@ if ! echo "$INPUT_JSON" | jq empty 2>/dev/null; then
 fi
 
 SESSION_ID=$(echo "$INPUT_JSON" | jq -r '.session_id // "unknown"' 2>/dev/null || echo "unknown")
+STOP_HOOK_ACTIVE=$(echo "$INPUT_JSON" | jq -r '.stop_hook_active // false' 2>/dev/null || echo "false")
 
 debug_log "Python Quality Gate started for session: $SESSION_ID"
+
+# ===== 防止无限循环：如果已经触发过 Stop hook，跳过检查 =====
+if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
+    debug_log "Stop hook already active, allowing stop to prevent loop"
+    echo '{}'
+    exit 0
+fi
 
 # ===== 检查编辑日志是否存在 =====
 if [ ! -f "$EDIT_LOG_FILE" ]; then
@@ -232,6 +235,35 @@ while IFS= read -r repo; do
 
         debug_log "    [$CHECK_NAME] Running: $CHECK_CMD"
 
+        # ===== 命令验证/白名单检查（Recommendation #1）=====
+        # 允许的命令可执行文件（基于 build-checker-python.json 配置）
+        ALLOWED_EXECUTABLES="python|python3|find|pytest|mypy|pylint|black|isort|bandit|radon"
+
+        # 提取实际命令（移除可选的环境变量前缀，如 PYTHONPATH=.）
+        ACTUAL_CMD="$CHECK_CMD"
+        if [[ "$ACTUAL_CMD" =~ ^[A-Z_]+= ]]; then
+            # 移除前导环境变量赋值（支持单个或多个，用空格分隔）
+            ACTUAL_CMD=$(echo "$ACTUAL_CMD" | sed -E 's/^([A-Z_]+=\S+\s+)+//')
+        fi
+
+        # 提取第一个命令可执行文件名（处理管道、子shell等）
+        FIRST_EXECUTABLE=$(echo "$ACTUAL_CMD" | sed -E 's/^[[:space:]]*//' | awk '{print $1}' | sed 's/.*\///')
+
+        if ! echo "$FIRST_EXECUTABLE" | grep -qE "^($ALLOWED_EXECUTABLES)$"; then
+            error_log "    [$CHECK_NAME] BLOCKED: Command '$FIRST_EXECUTABLE' not in allowlist"
+
+            # 阻止 Stop 并返回详细原因
+            jq -n \
+              --arg reason "❌ 安全检查失败: 检查 '$CHECK_NAME' 使用了未授权的命令 '$FIRST_EXECUTABLE'。\n\n允许的命令: $(echo "$ALLOWED_EXECUTABLES" | tr '|' ', ')\n\n请更新 .claude/build-checker-python.json 配置或联系管理员。" \
+              '{
+                decision: "block",
+                reason: $reason
+              }'
+            exit 0
+        fi
+
+        debug_log "    [$CHECK_NAME] Command validated: $FIRST_EXECUTABLE"
+
         # 运行检查（带超时）
         CHECK_OUTPUT=""
         if CHECK_OUTPUT=$(cd "$repo" && timeout "$CHECK_TIMEOUT" bash -c "$CHECK_CMD" 2>&1); then
@@ -322,12 +354,13 @@ REASON="❌ Python 质量检查失败: 发现 $TOTAL_ERRORS 个错误（阈值: 
 
 $(echo -e "$ERROR_SUMMARY" | head -c 800)"
 
-# 使用 jq 生成有效的 JSON
+# 使用 jq 生成有效的 JSON（decision: "block" + reason）
 jq -n \
   --arg reason "$REASON" \
   '{
-    stopReason: $reason
+    decision: "block",
+    reason: $reason
   }'
 
-# 退出码 2 = 阻止停止
-exit 2
+# 退出码 0（Stop hook 使用 JSON decision 字段控制是否阻止）
+exit 0

@@ -15,7 +15,8 @@
 
 **重要变更**: v2.0不再使用README.md记录进度，改用TASK-REPORT.md和TASK-*-REPORT.md
 - ✅ 避免多CLI修改README.md导致合并冲突
-- ✅ 任务说明和进度报告分离
+- ✅ 任务说明（TASK.md）与进度报告（TASK-REPORT.md）分离
+- ✅ 完成报告使用 TASK-*-REPORT.md
 - ✅ 更清晰的文档结构
 
 ---
@@ -27,6 +28,7 @@
 - ✅ 仔细阅读TASK.md中的任务描述
 - ✅ 理解验收标准（Acceptance Criteria）
 - ✅ 确认依赖关系和前置条件
+- ✅ 确认文件所有权（查阅 `/opt/claude/mystocks_spec/.FILE_OWNERSHIP`）
 - ✅ 如有疑问，在TASK-REPORT.md中记录问题并报告主CLI
 
 **TASK.md位置**: worktree根目录
@@ -679,7 +681,7 @@ git pull origin <branch>
 - [Git Worktree命令手册](./GIT_WORKTREE_MAIN_CLI_MANUAL.md) - 完整的Git Worktree命令
 
 ### 快速参考
-- [Git远程名称标准](./GIT_REMOTE_NAME_STANDARD.md) - 远程配置
+- [Git远程名称标准](./GIT_REMOTE_NAME_STANDARD.md) - 远程配置（统一使用 origin）
 - [主CLI工作规范-快速参考](./MAIN_CLI_WORKFLOW_STANDARDS.md#快速参考)
 
 ---
