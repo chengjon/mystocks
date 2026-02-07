@@ -2,7 +2,7 @@
 
 This plan outlines the steps to enforce the 1000-line limit across the codebase, prioritizing high-risk backend and frontend core modules. Adheres to Strict TDD and the Core Coding Principles.
 
-## Phase 1: Discovery & Preparation
+## Phase 1: Discovery & Preparation [checkpoint: b21c642]
 
 ### Goal: Identify target files and establish baselines.
 
@@ -12,7 +12,7 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
 - [x] Task: Establish dependency maps for top priority files. [03bef72]
     - [x] Sub-task: Analyze imports and dependencies for `web/backend/app/api/risk_management.py`.
     - [x] Sub-task: Analyze imports and dependencies for `web/backend/app/services/data_adapter.py`.
-- [ ] Task: Conductor - User Manual Verification 'Discovery & Preparation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Discovery & Preparation' (Protocol in workflow.md)
 
 ## Phase 2: Refactor `risk_management.py` (Backend Priority 1)
 
