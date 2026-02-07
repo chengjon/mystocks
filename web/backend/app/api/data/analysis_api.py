@@ -416,7 +416,7 @@ class AnalysisDataService:
             return {
                 'k': k_values[-1],
                 'd': d_values[-1],
-                'j': j_values[-1]
+                'j': j_values[-1],
                 'rsv': rsv_values[-1],
                 'k_value': k_values[-1],
                 'd_value': d_values[-1],

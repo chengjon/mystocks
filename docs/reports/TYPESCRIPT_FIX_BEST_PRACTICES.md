@@ -1,9 +1,16 @@
 # TypeScript 修复案例研究报告
 
+**任务命名规范**: 本文档属于 TASK-TS-REPORT.md 模式（技术债务报告），详细分析报告可命名为 TASK-TS-*-REPORT.md
+
 **文档版本**: v2.0 (案例研究版)
 **创建时间**: 2026-01-13
 **适用场景**: MyStocks 项目具体 TypeScript 修复案例分析
 **关键原则**: **以案例为导向，展示实际修复过程和效果**
+
+**相关文档**:
+- `../../.FILE_OWNERSHIP` - 文件归属权映射（权威来源）
+- `TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md` - TypeScript技术债务管理策略
+- `../guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` - 多CLI协作指南（如需多人协作修复）
 
 ---
 

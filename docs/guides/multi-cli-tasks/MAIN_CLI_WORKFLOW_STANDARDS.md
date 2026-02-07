@@ -81,14 +81,17 @@
 # 1. 确认在主CLI目录
 pwd  # 应该显示 /opt/claude/mystocks_spec
 
-# 2. 检查所有worktree
+# 2. 检查文件所有权映射
+cat .FILE_OWNERSHIP | head -20
+
+# 3. 检查所有worktree
 git worktree list
 
-# 3. 检查远程新提交
+# 4. 检查远程新提交（统一使用 origin）
 git fetch --all
 git log HEAD..origin/main --oneline
 
-# 4. 如果有worktree或新提交，处理它们
+# 5. 如果有worktree或新提交，处理它们
 #    （见下方的"合并已完成分支流程"）
 ```
 
@@ -146,15 +149,21 @@ done
 git worktree add -b cli-x-feature /opt/claude/mystocks_cli_x
 cp docs/guides/multi-cli-tasks/TASK_TEMPLATE.md /opt/claude/mystocks_cli_x/TASK.md
 
-# 2. 第一阶段完成，主CLI下发第二阶段任务
+# 2. Worker CLI开始更新进度（TASK-REPORT.md）
 cd /opt/claude/mystocks_cli_x
-mv TASK.md TASK-1.md  # 重命名已完成任务
+cat > TASK-REPORT.md << 'EOF'
+# CLI-X 任务进度报告
+...
+EOF
+
+# 3. 第一阶段完成，主CLI下发第二阶段任务
+mv TASK.md TASK-1.md
 cat > TASK-2.md << 'EOF'
 # CLI-X 第二阶段任务
 ...
 EOF
 
-# 3. 继续后续阶段...
+# 4. 继续后续阶段...
 mv TASK-2.md TASK-2-completed.md
 cat > TASK-3.md << 'EOF'
 # CLI-X 第三阶段任务

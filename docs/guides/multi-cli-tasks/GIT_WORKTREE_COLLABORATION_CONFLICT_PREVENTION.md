@@ -22,7 +22,7 @@
 - ✅ **职责分离**：每个CLI有清晰的职责范围
 - ✅ **配置集中管理**：pre-commit配置在主仓库统一管理
 - ✅ **文件组织标准化**：通过目录结构避免冲突
-- ✅ **任务文档分离**：TASK.md（任务说明）与TASK-REPORT.md（进度报告）分离
+- ✅ **任务文档分离**：TASK.md（任务说明）→ TASK-REPORT.md（进度报告）→ TASK-*-REPORT.md（完成报告）
 
 ---
 
@@ -79,6 +79,10 @@ DISABLE_DIR_STRUCTURE_CHECK=1 git commit -m "message"
 # 方式2: 完全跳过hooks（仅紧急情况）
 git commit --no-verify -m "message"
 ```
+
+**角色边界提醒**:
+- **Main CLI**: 维护 .pre-commit-config.yaml、.FILE_OWNERSHIP、全局流程与冲突协调
+- **Worker CLI**: 仅在自己的worktree内执行任务与提交，不跨所有权修改文件
 
 ---
 
@@ -276,7 +280,7 @@ esac
 **原则**:
 - ✅ 每个worktree有独立的TASK.md（任务说明）
 - ✅ 每个worktree有独立的TASK-REPORT.md（进度报告）
-- ✅ 多阶段任务用TASK-1.md, TASK-2.md和TASK-1-REPORT.md, TASK-2-REPORT.md
+- ✅ 多阶段任务用 TASK-1.md, TASK-2.md（任务）与 TASK-1-REPORT.md, TASK-2-REPORT.md（完成报告）
 - ✅ README.md保留给项目级介绍，不放入CLI特定任务
 
 **任务文档结构**：
@@ -520,7 +524,7 @@ npm install
 **解决**：
 - ✅ 使用独立的TASK.md任务文档（位于worktree根目录）
 - ✅ 使用独立的TASK-REPORT.md进度报告（位于worktree根目录）
-- ✅ 多阶段任务用TASK-1.md, TASK-2.md和TASK-1-REPORT.md, TASK-2-REPORT.md
+- ✅ 多阶段任务用 TASK-1.md, TASK-2.md（任务）与 TASK-1-REPORT.md, TASK-2-REPORT.md（完成报告）
 - ✅ README.md保留给项目级介绍，不放CLI特定任务
 - ✅ 任务文档不合并到主仓库，避免冲突
 

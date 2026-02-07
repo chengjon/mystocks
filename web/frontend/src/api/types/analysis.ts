@@ -1,5 +1,5 @@
 // Auto-generated types for analysis domain
-// Generated at: 2026-01-29T13:43:35.808209
+// Generated at: 2026-02-07T23:04:25.798053
 
 export interface MonteCarloRequest {
   strategy_id?: string;
