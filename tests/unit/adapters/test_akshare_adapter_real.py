@@ -11,6 +11,9 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
+if os.getenv("PYTEST_XDIST_WORKER"):
+    pytest.skip("Skip Akshare real adapter tests under xdist to avoid collection crash.", allow_module_level=True)
+
 # 添加源码路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../src"))
 

@@ -82,6 +82,10 @@ class RiskEvent:
         }
 
 
+# Compatibility alias for modules that import MonitoringEvent from risk_base.
+MonitoringEvent = RiskEvent
+
+
 @dataclass
 class RiskProfile:
     """风险配置文件"""

@@ -26,13 +26,13 @@ from .risk_management.risk_dashboard import (
 )
 
 # 市场数据模块
-from .services.market_api import MarketDataService
+from .market_api import MarketDataService
 
 # 交易数据模块
-from .services.trading_api import TradingDataService, OrderStatus, OrderType, OrderSide, Order, Position, Trade
+from .trading_api import TradingDataService, OrderStatus, OrderType, OrderSide, Order, Position, Trade
 
 # 分析数据模块
-from .services.analysis_api import (
+from .analysis_api import (
     AnalysisDataService,
     IndicatorType,
     TimePeriod,
@@ -43,16 +43,16 @@ from .services.analysis_api import (
 )
 
 # 数据适配模块
-from .services.data_api_new import DataApiService
+from .data_api_new import DataApiService
 
 # 数据库服务模块
-from .services.database_service import DatabaseService
+from .database_service import DatabaseService
 
 # WebSocket服务模块
-from .services.websocket_service import WebSocketService
+from .websocket_service import WebSocketService
 
 # 缓存服务模块
-from .services.cache_service import CacheService
+from .cache_service import CacheService
 
 
 class IntegratedServices:
@@ -104,19 +104,19 @@ class IntegratedServices:
             self.logger.info("开始初始化所有服务...")
 
             # 初始化数据库服务
-            from .services.database_service import DatabaseService
+            from .database_service import DatabaseService
 
             self.database_service = DatabaseService()
             self.logger.info("数据库服务已初始化")
 
             # 初始化WebSocket服务
-            from .services.websocket_service import WebSocketService
+            from .websocket_service import WebSocketService
 
             self.websocket_service = WebSocketService()
             self.logger.info("WebSocket服务已初始化")
 
             # 初始化缓存服务
-            from .services.cache_service import CacheService
+            from .cache_service import CacheService
 
             self.cache_service = CacheService()
             self.logger.info("缓存服务已初始化")
@@ -128,7 +128,7 @@ class IntegratedServices:
             self.logger.info("风险管理向后兼容接口已初始化")
 
             # 初始化数据API的向后兼容接口
-            from .services.data_api_new import DataApiService
+            from .data_api_new import DataApiService
 
             self.data_api_service = DataApiService()
             self.logger.info("数据API向后兼容接口已初始化")
@@ -198,7 +198,7 @@ class IntegratedServices:
     async def _get_risk_overview(self) -> Dict:
         """获取风险管理概览"""
         try:
-            from .services.database_service import DatabaseService
+            from .database_service import DatabaseService
 
             db = DatabaseService()
 

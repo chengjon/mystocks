@@ -1,9 +1,16 @@
 # PHASE 2: Saga 分布式事务落地与生产化任务清单
 
+**任务命名规范**: 本文档遵循 TASK-2.md 模式（阶段性任务），完成报告为 TASK-2-REPORT.md，详细分项报告为 TASK-2-*-REPORT.md
+
 ## 🎯 目标
 将跨库一致性方案从 Demo 提升至生产级，完成核心业务迁移并建立全方位监控。
 
 **当前状态**: 🟡 部分完成（已存在测试与仪表盘，但缺少 transaction_log 实写、duration_ms 字段、告警规则与业务接入路径更新）
+
+**相关文档**:
+- `../../.FILE_OWNERSHIP` - 文件归属权映射（权威来源）
+- `../guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` - 多CLI协作指南
+- `FRONTEND_HISTORY_MIGRATION.md` - 前端History Mode迁移任务示例
 
 ---
 

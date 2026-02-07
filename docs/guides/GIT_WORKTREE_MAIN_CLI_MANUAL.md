@@ -627,15 +627,17 @@ git worktree prune
 ## 相关文档
 
 ### 工作流程文档
+- `../../.FILE_OWNERSHIP` - 文件归属权映射（所有worktree的权威来源）
+- [Multi-CLI Worktree Management](./MULTI_CLI_WORKTREE_MANAGEMENT.md) - 完整多CLI协作指南
 - [主CLI工作规范](./multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md) - 主CLI工作流程
 - [Worker CLI工作流程](./multi-cli-tasks/CLI_WORKFLOW_GUIDE.md) - Worker CLI工作流程
 - [协作冲突预防](./multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 冲突处理
 
 ### 任务管理文档
-- [任务文档模板](./multi-cli-tasks/TASK_TEMPLATE.md) - TASK.md和TASK-REPORT.md模板
+- [任务文档模板](./multi-cli-tasks/TASK_TEMPLATE.md) - 任务文档命名规范：TASK.md → TASK-REPORT.md → TASK-*-REPORT.md（多阶段任务使用 TASK-1.md、TASK-2.md）
 
 ### 其他配置
-- [Git远程名称标准](./multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md) - 远程配置规范
+- [Git远程名称标准](./multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md) - 远程配置规范（统一使用origin）
 
 ---
 
