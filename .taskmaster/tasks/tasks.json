@@ -926,5 +926,992 @@
       "updated": "2026-01-03T18:47:35.105Z",
       "description": "UI/UX 优化任务 - ArtDeco 组件开发和页面优化"
     }
+  },
+  "code-review-fixes": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "修复CORS白名单配置（Critical）",
+        "description": "将FastAPI CORS从allow_origins=['*']改为环境变量白名单，仅允许受信任前端域名。",
+        "details": "修改web/backend/app/main.py中CORSMiddleware配置；启用settings.cors_origins；补充启动期配置校验（生产环境禁止*）。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.109Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.109Z"
+      },
+      {
+        "id": "2",
+        "title": "修复时序查询SQL注入（Critical）",
+        "description": "重构_timeseries_query构建逻辑，禁止字符串拼接SQL，统一使用参数化查询。",
+        "details": "重点修复src/data_access.py:593-615中的symbol条件拼接；补充输入验证与单元测试；回归验证所有调用路径。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.139Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 2,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.139Z"
+      },
+      {
+        "id": "3",
+        "title": "移除敏感信息日志输出（High）",
+        "description": "删除密码、重置token、哈希等敏感字段日志，改为脱敏结构化日志。",
+        "details": "修复web/backend/app/core/security.py、web/backend/app/api/auth.py等位置；统一日志规范：不记录明文凭据和可重放令牌。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.144Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.144Z"
+      },
+      {
+        "id": "4",
+        "title": "将CSRF Token存储迁移到Redis（High）",
+        "description": "替换内存字典token存储为Redis，并支持TTL与多实例共享。",
+        "details": "重构web/backend/app/main.py中的CSRFTokenManager；使用redis连接配置；补充回退策略与可观测性指标。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "6"
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 4,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "title": "将Token撤销黑名单迁移到Redis（High）",
+        "description": "替换内存set黑名单，保证重启后撤销状态持久化并支持TTL。",
+        "details": "修复web/backend/app/core/security.py中_revoked_tokens实现；按JWT过期时间设置Redis key过期。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "4"
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 5,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "title": "移除硬编码凭据默认值（High）",
+        "description": "删除配置中的硬编码密码与默认密钥回退，要求生产环境必须由环境变量提供。",
+        "details": "重点修复web/backend/app/main.py中的POSTGRESQL_PASSWORD默认值；启动时缺失关键密钥直接失败并给出可观测错误。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.149Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 6,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.149Z"
+      },
+      {
+        "id": "7",
+        "title": "替换不安全Pickle反序列化（High）",
+        "description": "将pickle.load/loads替换为安全序列化方案（JSON/MsgPack）或增加可信源校验。",
+        "details": "修复src/ml_strategy/ml_strategy.py、web/backend/app/services/redis/redis_cache.py、web/backend/app/services/ml_prediction_service.py；保留兼容迁移脚本。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.155Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.155Z"
+      },
+      {
+        "id": "8",
+        "title": "修复前端innerHTML潜在XSS（Medium）",
+        "description": "移除直接innerHTML写入，改为Vue模板绑定或安全渲染。",
+        "details": "修复web/frontend/src/views/RiskMonitor.vue相关渲染代码；若必须富文本，增加白名单清洗。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.161Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 8,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.161Z"
+      },
+      {
+        "id": "9",
+        "title": "移除exec动态执行并改为安全导入（Medium）",
+        "description": "禁止exec执行动态代码，使用importlib与显式白名单机制。",
+        "details": "修复src/storage/database/test_database_menu.py中的exec调用；补充异常处理与测试。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 9,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.167Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.167Z"
+      },
+      {
+        "id": "10",
+        "title": "替换os.system备份命令执行（Medium）",
+        "description": "用subprocess.run和受控参数替代os.system，避免命令注入与凭据暴露。",
+        "details": "修复src/infrastructure/backup_recovery/backup_manager.py相关逻辑；使用env传递凭据，避免出现在进程参数中。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.173Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 10,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.173Z"
+      },
+      {
+        "id": "11",
+        "title": "查询默认LIMIT与分页治理（High）",
+        "description": "为查询路径增加默认LIMIT与分页参数，避免无界结果导致内存压力。",
+        "details": "修复src/data_access.py中SELECT *路径；定义统一分页协议并补充回归测试。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.178Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.178Z"
+      },
+      {
+        "id": "12",
+        "title": "实现查询缓存与命中率监控（Medium）",
+        "description": "落地数据库查询缓存策略并接入命中率指标。",
+        "details": "完善web/backend/app/services/database_service.py中的query_cache实现或替换为Redis缓存；增加缓存失效策略。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "11"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "13",
+        "title": "清理不可达代码与重复异常块（High）",
+        "description": "删除安全模块中的不可达代码、重复except和历史遗留死代码，确保执行路径清晰。",
+        "details": "重点修复web/backend/app/core/security.py中authenticate_user与authenticate_user_by_id逻辑；补充单测防回归。",
+        "testStrategy": "",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "in-progress",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined",
+            "updatedAt": "2026-02-07T19:31:40.183Z"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 13,
+            "parentId": "undefined"
+          }
+        ],
+        "updatedAt": "2026-02-07T19:31:40.183Z"
+      },
+      {
+        "id": "14",
+        "title": "统一错误处理模式（Medium）",
+        "description": "在后端建立一致的异常捕获、转换与日志规范，减少泛化except Exception。",
+        "details": "覆盖web/backend/app/api/auth.py及相关服务层；统一BusinessException映射与HTTP响应策略。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "13"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 14,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 14,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 14,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 14,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "15",
+        "title": "补齐关键路径类型标注与mypy规则（Medium）",
+        "description": "补充关键安全与数据访问模块类型提示，收敛mypy噪音并提高可维护性。",
+        "details": "优先web/backend/app/core/security.py、src/data_access.py、database_service等高风险模块。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "13",
+          "14"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 15,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 15,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 15,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 15,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "16",
+        "title": "数据库连接池参数外置与观测（Medium）",
+        "description": "将连接池配置参数化并接入监控，支持按环境调优。",
+        "details": "修复web/backend/app/services/database_service.py中的固定pool_size/max_overflow；通过环境变量注入并增加指标。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "12"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 16,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 16,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 16,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 16,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "17",
+        "title": "补充外键/高频查询索引审计任务（Medium）",
+        "description": "审计并补齐外键与高频过滤字段索引，避免全表扫描。",
+        "details": "输出迁移脚本与EXPLAIN基线，覆盖交易、用户、策略等核心表。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "11"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 17,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 17,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 17,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 17,
+            "parentId": "undefined"
+          }
+        ]
+      },
+      {
+        "id": "18",
+        "title": "异步上下文阻塞IO治理（Medium）",
+        "description": "识别并替换async路径中的阻塞数据库/文件调用，降低事件循环阻塞。",
+        "details": "重点排查web/backend/app/core/security.py与服务层同步DB调用，必要时引入异步驱动。",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [
+          "14",
+          "16"
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "现状评估与影响分析",
+            "description": "梳理当前实现、调用链与风险点，确认改动边界和验收标准。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 18,
+            "parentId": "undefined"
+          },
+          {
+            "id": 2,
+            "title": "实施修复与代码调整",
+            "description": "按主任务目标完成最小必要改动，确保安全与功能正确性。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 18,
+            "parentId": "undefined"
+          },
+          {
+            "id": 3,
+            "title": "补充测试与边界用例",
+            "description": "新增或更新单元/集成测试，覆盖正常路径与关键异常场景。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 18,
+            "parentId": "undefined"
+          },
+          {
+            "id": 4,
+            "title": "回归验证与交付说明",
+            "description": "运行相关检查并记录结果，整理变更说明与后续注意事项。",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 18,
+            "parentId": "undefined"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-02-07T19:31:40.184Z",
+      "taskCount": 18,
+      "completedCount": 0,
+      "tags": [
+        "code-review-fixes"
+      ]
+    }
   }
 }

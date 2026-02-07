@@ -16,6 +16,10 @@
 !.env.example
 !.env.development.example
 
+# OpenCode config (may contain API keys)
+opencode.json
+config/opencode.json
+
 # Database Credentials and Backups
 config/.env
 config/.env.*

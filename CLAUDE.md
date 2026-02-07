@@ -43,6 +43,31 @@ MyStocks 使用 Claude/OpenCode 作为交互式开发助手，协助完成代码
 - 仅支持桌面端 Web（最小分辨率 1280x720）
 - 禁止移动端/平板适配，禁止添加 `@media (max-width: ...)` 等响应式规则
 
+### Git 分支检测与工作流程 (Git Branch Detection and Workflow)
+
+**关键要求**: 根据当前 git 分支确定工作流程。
+
+```bash
+# 检测当前分支（在当前仓库路径执行）
+git branch --show-current
+# 或
+git rev-parse --abbrev-ref HEAD
+```
+
+**工作流程规则**:
+- **如果分支为 `main`**: 遵循 Main CLI 职责
+  - 协调角色：使用 `.FILE_OWNERSHIP` 分配任务
+  - 监控 Worker 进度：查阅 `TASK.md` 和 `TASK-REPORT.md`（Worker CLI 工件）
+  - 不直接在 Worker 任务文件中报告任务
+  - 参考：`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
+
+- **如果分支为非 main**（worktree）：遵循 Worker CLI 工作流程
+  - 使用 worktree 根目录下的 `TASK.md` + `TASK-REPORT.md`（+ `TASK-*-REPORT.md`）
+  - 报告进度和完成状态
+  - 参考：`docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+
+---
+
 ### 1.2 技术栈与 Claude 依赖 (Technology Stack and Claude Dependencies)
 
 核心技术栈：
@@ -156,6 +181,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 - 导入问题：检查是否使用 `from src.*` 与正确的 `__init__.py` 导出
 - CORS 问题：检查 `web/backend/app/core/config.py` 的端口白名单
 - 新数据源/新 API：先读 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+- **Hooks 相关**：当用户说"检查hooks"或"检查*hooks"时，必须先查阅 `/opt/mydoc/Anthropic/Claude-code/hooks-guide.md` 与 `/opt/mydoc/Anthropic/Claude-code/hooks.md` 了解 Claude Code hooks 的配置、事件类型、安全注意事项与调试方法
 
 ### 3.4 Claude 相关扩展与二次开发指引 (Claude-related Extension and Secondary Development Guide)
 

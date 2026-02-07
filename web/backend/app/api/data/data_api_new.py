@@ -6,9 +6,9 @@
 
 from typing import Any, Dict, List, Optional
 
-from .data.market_api import MarketDataService
-from .data.trading_api import TradingDataService
-from .data.analysis_api import AnalysisDataService
+from .market_api import MarketDataService
+from .trading_api import TradingDataService
+from .analysis_api import AnalysisDataService
 
 import logging
 

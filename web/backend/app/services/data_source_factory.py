@@ -29,11 +29,7 @@ from app.services.data_adapter import (
 )
 
 # 导入数据源接口和适配器
-from app.services.data_source_interface import (
-    HealthStatus,
-    HealthStatusEnum,
-    IDataSource,
-)
+from app.services.data_source_interface import DataSourceStatus, HealthStatus, IDataSource
 from app.services.market_data_adapter import MarketDataSourceAdapter
 
 logger = logging.getLogger(__name__)
@@ -148,6 +144,26 @@ class DataSourceConfig:
     cache_ttl: int = 300  # 缓存时间(秒)
 
 
+class DataSourceHealthCheck(HealthStatus):
+    """数据源健康检查结果"""
+
+    def __init__(
+        self,
+        status: DataSourceStatus,
+        response_time: float,
+        message: str,
+        timestamp: Optional[datetime] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(
+            status=status,
+            response_time=response_time,
+            message=message,
+            timestamp=timestamp or datetime.now(),
+        )
+        self.details = details or {}
+
+
 class BaseDataSource(IDataSource):
     """基础数据源实现"""
 
@@ -156,7 +172,7 @@ class BaseDataSource(IDataSource):
         self.config_obj = config  # Keep the typed config object
         self.metrics = DataSourceMetrics()
         self._session: Optional[aiohttp.ClientSession] = None
-        self._health_status: Optional[HealthStatus] = None
+        self._health_status: Optional[DataSourceHealthCheck] = None
 
     async def __aenter__(self):
         """异步上下文管理器入口"""
@@ -268,6 +284,9 @@ class MockDataSource(BaseDataSource):
         start_time = time.time()
 
         try:
+            # 每次请求生成最新mock数据，确保时间戳与错误注入生效
+            self._mock_data = self._generate_mock_data()
+
             # 模拟网络延迟
             await asyncio.sleep(0.1)
 
@@ -293,7 +312,7 @@ class MockDataSource(BaseDataSource):
             logger.error(error_msg)
             raise
 
-    async def health_check(self) -> HealthStatus:
+    async def health_check(self) -> DataSourceHealthCheck:
         """Mock数据源健康检查"""
         start_time = time.time()
 
@@ -302,8 +321,8 @@ class MockDataSource(BaseDataSource):
             await asyncio.sleep(0.01)
             response_time = (time.time() - start_time) * 1000
 
-            return HealthStatus(
-                status=HealthStatusEnum.HEALTHY,
+            return DataSourceHealthCheck(
+                status=DataSourceStatus.HEALTHY,
                 response_time=response_time,
                 message="Mock data source is healthy",
                 timestamp=datetime.now(),
@@ -311,8 +330,8 @@ class MockDataSource(BaseDataSource):
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            return HealthStatus(
-                status=HealthStatusEnum.FAILED,
+            return DataSourceHealthCheck(
+                status=DataSourceStatus.FAILED,
                 response_time=response_time,
                 message=f"Mock health check failed: {str(e)}",
                 timestamp=datetime.now(),
@@ -364,7 +383,7 @@ class RealDataSource(BaseDataSource):
                     logger.error("All retries failed for %(url)s: %(error_msg)s")
                     raise
 
-    async def health_check(self) -> HealthStatus:
+    async def health_check(self) -> DataSourceHealthCheck:
         """真实数据源健康检查"""
         if not self._session:
             await self.initialize()
@@ -380,15 +399,15 @@ class RealDataSource(BaseDataSource):
 
                 if response.status == 200:
                     await response.json()
-                    return HealthStatus(
-                        status=HealthStatusEnum.HEALTHY,
+                    return DataSourceHealthCheck(
+                        status=DataSourceStatus.HEALTHY,
                         response_time=response_time,
                         message="Real data source is healthy",
                         timestamp=datetime.now(),
                     )
                 else:
-                    return HealthStatus(
-                        status=HealthStatusEnum.FAILED,
+                    return DataSourceHealthCheck(
+                        status=DataSourceStatus.FAILED,
                         response_time=response_time,
                         message=f"Health check failed: HTTP {response.status}",
                         timestamp=datetime.now(),
@@ -396,8 +415,8 @@ class RealDataSource(BaseDataSource):
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            return HealthStatus(
-                status=HealthStatusEnum.FAILED,
+            return DataSourceHealthCheck(
+                status=DataSourceStatus.FAILED,
                 response_time=response_time,
                 message=f"Health check error: {str(e)}",
                 timestamp=datetime.now(),
@@ -479,7 +498,7 @@ class HybridDataSource(BaseDataSource):
                 logger.error(error_msg)
                 raise Exception(error_msg)
 
-    async def health_check(self) -> HealthStatus:
+    async def health_check(self) -> DataSourceHealthCheck:
         """混合数据源健康检查"""
         start_time = time.time()
 
@@ -491,27 +510,40 @@ class HybridDataSource(BaseDataSource):
             response_time = (time.time() - start_time) * 1000
 
             # 混合状态判断
-            if real_health.status == HealthStatusEnum.HEALTHY:
-                status = HealthStatusEnum.HEALTHY
+            if real_health.status == DataSourceStatus.HEALTHY:
+                status = DataSourceStatus.HEALTHY
                 message = "Hybrid source healthy (real active)"
-            elif mock_health.status == HealthStatusEnum.HEALTHY:
-                status = HealthStatusEnum.DEGRADED
+            elif mock_health.status == DataSourceStatus.HEALTHY:
+                status = DataSourceStatus.DEGRADED
                 message = "Hybrid source degraded (mock fallback active)"
             else:
-                status = HealthStatusEnum.FAILED
+                status = DataSourceStatus.FAILED
                 message = "Hybrid source failed (both real and mock failed)"
 
-            return HealthStatus(
+            return DataSourceHealthCheck(
                 status=status,
                 response_time=response_time,
                 message=message,
                 timestamp=datetime.now(),
+                details={
+                    "fallback_count": self._fallback_count,
+                    "real_source": {
+                        "status": real_health.status.value,
+                        "response_time": real_health.response_time,
+                        "message": real_health.message,
+                    },
+                    "mock_source": {
+                        "status": mock_health.status.value,
+                        "response_time": mock_health.response_time,
+                        "message": mock_health.message,
+                    },
+                },
             )
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            return HealthStatus(
-                status=HealthStatusEnum.FAILED,
+            return DataSourceHealthCheck(
+                status=DataSourceStatus.FAILED,
                 response_time=response_time,
                 message=f"Hybrid health check failed: {str(e)}",
                 timestamp=datetime.now(),
@@ -827,7 +859,7 @@ class DataSourceFactory:
         data_source = self._data_sources.get(source_name)
         return data_source.metrics if data_source else None
 
-    async def health_check_all(self) -> Dict[str, HealthStatus]:
+    async def health_check_all(self) -> Dict[str, DataSourceHealthCheck]:
         """对所有数据源进行健康检查"""
         health_results = {}
 
@@ -836,8 +868,8 @@ class DataSourceFactory:
                 health_results[source_name] = await data_source.health_check()
             except Exception as e:
                 logger.error("Health check failed for '%(source_name)s': %(e)s")
-                health_results[source_name] = HealthStatus(
-                    status=HealthStatusEnum.FAILED,
+                health_results[source_name] = DataSourceHealthCheck(
+                    status=DataSourceStatus.FAILED,
                     response_time=0,
                     message=f"Health check error: {str(e)}",
                     timestamp=datetime.now(),
@@ -854,7 +886,7 @@ class DataSourceFactory:
 
                 # 记录不健康的数据源
                 for source_name, health in health_results.items():
-                    if health.status != HealthStatusEnum.HEALTHY:
+                    if health.status != DataSourceStatus.HEALTHY:
                         logger.warning("Data source '%(source_name)s' is {health.status.value}: {health.message}")
 
             except Exception as e:
@@ -984,7 +1016,9 @@ def is_fallback_enabled() -> bool:
 __all__ = [
     "DataSourceMode",
     "DataSourceConfig",
+    "DataSourceHealthCheck",
     "DataSourceMetrics",
+    "DataSourceStatus",
     "IDataSource",  # 修复拼写错误: IDateSource → IDataSource
     "MockDataSource",
     "RealDataSource",

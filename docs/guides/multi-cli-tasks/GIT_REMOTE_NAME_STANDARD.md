@@ -265,6 +265,7 @@ git push origin main
 - [Git Worktree命令手册](./GIT_WORKTREE_MAIN_CLI_MANUAL.md) - Git worktree命令参考（包含 `git remote`）
 - [主CLI工作规范](./multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md) - Pre-flight检查和Worktree创建流程
 - [Worker CLI工作流程](./multi-cli-tasks/CLI_WORKFLOW_GUIDE.md) - Worker CLI如何使用Git命令
+- [协作冲突预防](./multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 文件所有权与任务文档规范
 
 ### 工作流程文档
 - [协作冲突预防](./multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 避免协作冲突

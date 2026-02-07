@@ -12,15 +12,18 @@
 - **Part A**: 主CLI任务生成模板（用于生成TASK.md）
 - **Part B**: Worker CLI报告模板（用于生成TASK-REPORT.md和TASK-*-REPORT.md）
 
+**命名规范**: TASK.md → TASK-REPORT.md → TASK-*-REPORT.md（多阶段任务使用 TASK-1.md、TASK-2.md）
+
 **核心优势**:
 - ✅ 避免多CLI修改README.md导致合并冲突
 - ✅ 任务说明和进度报告分离
 - ✅ 支持多阶段任务管理
 
 **相关文档**:
-- [主CLI工作规范](./MAIN_CLI_WORKFLOW_STANDARDS.md) - 任务分配方法
+- [主CLI工作规范](./MAIN_CLI_WORKFLOW_STANDARDS.md) - 任务分配方法（包含 .FILE_OWNERSHIP 检查）
 - [Worker CLI工作流程](./CLI_WORKFLOW_GUIDE.md) - Worker CLI如何使用这些模板
 - [协作冲突预防](./GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md) - 避免README.md冲突
+- [Git远程名称标准](./GIT_REMOTE_NAME_STANDARD.md) - 远程配置规范（统一使用 origin）
 
 ---
 
