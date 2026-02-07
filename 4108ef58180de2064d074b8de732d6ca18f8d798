@@ -1,0 +1,4 @@
+Task: Enhance Regression Test Suite for risk_management.py
+Summary: Created comprehensive regression tests covering /var-cvar, /beta, /dashboard, and V3.1 stop-loss endpoints.
+Ensured 100% pass rate before refactoring.
+Tests: tests/backend/test_risk_management_regression.py
