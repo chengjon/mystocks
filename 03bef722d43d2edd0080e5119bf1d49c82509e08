@@ -1,0 +1,9 @@
+Phase 1: Discovery & Preparation
+Tasks Completed:
+1. Generate definitive list of large files.
+   - Identified risk_management.py (2112) and data_adapter.py (2016) as top backend targets.
+2. Establish dependency maps.
+   - Analyzed imports to guide splitting strategy.
+   - Risk Management: Extract core logic to src/governance.
+   - Data Adapter: Split into specialized adapters.
+Files: scripts/find_large_files.py, scripts/analyze_dependencies.py
