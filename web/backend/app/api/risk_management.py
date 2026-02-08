@@ -103,7 +103,12 @@ except ImportError:
 
 # 导入重构后的核心逻辑
 from .risk_management_core import RiskCalculator, RiskService
-
+from app.utils.risk_utils import (
+    get_monitoring_db, 
+    connection_manager, 
+    setup_risk_event_broadcasting,
+    ConnectionManager # Type hint
+)
 
 # 风险指标计算模块（新功能 - 2025-12-26）
 try:
@@ -115,68 +120,6 @@ except ImportError:
     RiskMetrics = None
 
 router = APIRouter(prefix="/api/v1/risk", tags=["风险管理-Week1"])
-
-# 延迟初始化监控数据库（避免导入时需要完整环境变量）
-monitoring_db = None
-
-
-def get_monitoring_db():
-    """获取监控数据库实例（延迟初始化）"""
-    global monitoring_db
-    if monitoring_db is None:
-        try:
-            real_monitoring_db = MonitoringDatabase()
-
-            # 创建适配器来匹配Week1 API的参数命名约定
-            class MonitoringAdapter:
-                def __init__(self, real_db):
-                    self.real_db = real_db
-
-                def log_operation(
-                    self,
-                    operation_type="UNKNOWN",
-                    table_name=None,
-                    operation_name=None,
-                    rows_affected=0,
-                    operation_time_ms=0,
-                    success=True,
-                    details="",
-                    **kwargs,
-                ):
-                    """适配Week1 API的参数命名到MonitoringDatabase的实际参数"""
-                    try:
-                        return self.real_db.log_operation(
-                            operation_type=operation_type,
-                            classification="DERIVED_DATA",
-                            target_database="PostgreSQL",
-                            table_name=table_name,
-                            record_count=rows_affected,
-                            operation_status="SUCCESS" if success else "FAILED",
-                            error_message=None if success else details,
-                            execution_time_ms=int(operation_time_ms),
-                            additional_info=(
-                                {"operation_name": operation_name, "details": details}
-                                if operation_name or details
-                                else None
-                            ),
-                        )
-                    except Exception as e:
-                        logger.debug("Monitoring log failed (non-critical): %(e)s")
-                        return False
-
-            monitoring_db = MonitoringAdapter(real_monitoring_db)
-
-        except Exception as e:
-            logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s")
-
-            # 创建一个简单的fallback对象
-            class MonitoringFallback:
-                def log_operation(self, *args, **kwargs):
-                    return True  # Silent fallback
-
-            monitoring_db = MonitoringFallback()
-    return monitoring_db
-
 
 from app.schemas.risk_schemas import (
     BetaRequest,
@@ -1749,73 +1692,6 @@ async def get_risk_management_health() -> Dict[str, Any]:
 # ===== WebSocket 实时风险数据推送 =====
 
 
-# WebSocket连接管理器
-class ConnectionManager:
-    """WebSocket连接管理器"""
-
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-        self.subscriptions: Dict[str, Set[WebSocket]] = {
-            "portfolio_risk": set(),
-            "stock_risk": set(),
-            "alerts": set(),
-            "stop_loss": set(),
-        }
-
-    async def connect(self, websocket: WebSocket, topics: List[str] = None):
-        """建立WebSocket连接"""
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-        # 订阅指定主题
-        if topics:
-            for topic in topics:
-                if topic in self.subscriptions:
-                    self.subscriptions[topic].add(websocket)
-
-        logger.info("WebSocket连接建立，订阅主题: %(topics)s")
-
-    def disconnect(self, websocket: WebSocket):
-        """断开WebSocket连接"""
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-
-        # 取消所有订阅
-        for topic_connections in self.subscriptions.values():
-            topic_connections.discard(websocket)
-
-        logger.info("WebSocket连接断开")
-
-    async def broadcast_to_topic(self, topic: str, message: Dict[str, Any]):
-        """向特定主题的订阅者广播消息"""
-        if topic not in self.subscriptions:
-            return
-
-        disconnected = []
-        message_json = json.dumps(message)
-
-        for connection in self.subscriptions[topic]:
-            try:
-                await connection.send_text(message_json)
-            except Exception:
-                disconnected.append(connection)
-
-        # 清理断开的连接
-        for connection in disconnected:
-            self.disconnect(connection)
-
-    async def send_personal_message(self, message: Dict[str, Any], websocket: WebSocket):
-        """向特定连接发送消息"""
-        try:
-            await websocket.send_text(json.dumps(message))
-        except Exception:
-            self.disconnect(websocket)
-
-
-# 全局连接管理器实例
-connection_manager = ConnectionManager()
-
-
 @router.websocket("/v31/ws/risk-updates")
 async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_risk,stock_risk,alerts"):
     """
@@ -1960,29 +1836,9 @@ async def get_websocket_connections():
 # ===== 集成风险事件到WebSocket广播 =====
 
 
-async def setup_risk_event_broadcasting():
-    """
-    设置风险事件自动广播到WebSocket
-
-    这个函数应该在应用启动时调用，以设置事件监听器。
-    """
-    try:
-        if not ENHANCED_RISK_FEATURES_AVAILABLE:
-            logger.warning("增强风险功能不可用，跳过WebSocket广播设置")
-            return
-
-        # 这里可以设置事件监听器，当风险事件发生时自动广播
-        # 例如监听SignalRecorder的事件或直接集成到风险计算函数中
-
-        logger.info("风险事件WebSocket广播设置完成")
-
-    except Exception as e:
-        logger.error("设置风险事件广播失败: %(e)s")
-
-
 # 在模块导入时自动设置广播（如果环境支持）
 try:
-    asyncio.create_task(setup_risk_event_broadcasting())
+    asyncio.create_task(setup_risk_event_broadcasting(ENHANCED_RISK_FEATURES_AVAILABLE))
 except Exception:
     # 在同步上下文中跳过
     pass
