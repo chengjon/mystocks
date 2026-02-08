@@ -373,7 +373,8 @@ class TDengineDataAccess(IDataAccessLayer):
 
             if "symbol" in data.columns:
                 symbols = data["symbol"].unique()
-                symbols_str = "','".join(symbols)
+                validated_symbols = [self._validate_tdengine_input(s, "symbol") for s in symbols]
+                symbols_str = "','".join(validated_symbols)
                 query = f"""
                 SELECT DISTINCT {time_column}, symbol
                 FROM {table_name}
@@ -576,6 +577,41 @@ class TDengineDataAccess(IDataAccessLayer):
             logger.error("插入通用时序数据失败: %s", e)
             return False
 
+    @staticmethod
+    def _validate_tdengine_input(value: str, input_type: str = "symbol") -> str:
+        """
+        Validate and sanitize input for TDengine queries to prevent SQL injection.
+
+        Args:
+            value: The input value to validate
+            input_type: Type of input ('symbol', 'datetime', 'table_name')
+
+        Returns:
+            Validated string
+
+        Raises:
+            ValueError: If input fails validation
+        """
+        import re
+
+        if not isinstance(value, str):
+            value = str(value)
+
+        if input_type == "symbol":
+            # Stock symbols: alphanumeric + dots, max 20 chars
+            if not re.match(r'^[A-Za-z0-9.]{1,20}$', value):
+                raise ValueError(f"Invalid symbol format: {value}")
+        elif input_type == "datetime":
+            # ISO datetime or date format
+            if not re.match(r'^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?$', value):
+                raise ValueError(f"Invalid datetime format: {value}")
+        elif input_type == "table_name":
+            # Table names: alphanumeric + underscores
+            if not re.match(r'^[A-Za-z_][A-Za-z0-9_]{0,63}$', value):
+                raise ValueError(f"Invalid table name: {value}")
+
+        return value
+
     def _build_timeseries_query(
         self,
         classification: DataClassification,
@@ -593,25 +629,34 @@ class TDengineDataAccess(IDataAccessLayer):
             for key, value in filters.items():
                 if key == "symbol":
                     if isinstance(value, list):
-                        symbols = "','".join(value)
+                        validated = [self._validate_tdengine_input(v, "symbol") for v in value]
+                        symbols = "','".join(validated)
                         conditions.append(f"symbol IN ('{symbols}')")
                     else:
-                        conditions.append(f"symbol = '{value}'")
+                        validated = self._validate_tdengine_input(value, "symbol")
+                        conditions.append(f"symbol = '{validated}'")
                 elif key == "start_time":
-                    conditions.append(f"ts >= '{value}'")
+                    validated = self._validate_tdengine_input(str(value), "datetime")
+                    conditions.append(f"ts >= '{validated}'")
                 elif key == "end_time":
-                    conditions.append(f"ts <= '{value}'")
+                    validated = self._validate_tdengine_input(str(value), "datetime")
+                    conditions.append(f"ts <= '{validated}'")
                 elif key == "date_range":
                     if isinstance(value, dict) and "start" in value and "end" in value:
-                        conditions.append(f"ts >= '{value['start']}' AND ts <= '{value['end']}'")
+                        start_val = self._validate_tdengine_input(str(value['start']), "datetime")
+                        end_val = self._validate_tdengine_input(str(value['end']), "datetime")
+                        conditions.append(f"ts >= '{start_val}' AND ts <= '{end_val}'")
 
         # 添加kwargs中的条件
         if "start_time" in kwargs:
-            conditions.append(f"ts >= '{kwargs['start_time']}'")
+            validated = self._validate_tdengine_input(str(kwargs['start_time']), "datetime")
+            conditions.append(f"ts >= '{validated}'")
         if "end_time" in kwargs:
-            conditions.append(f"ts <= '{kwargs['end_time']}'")
+            validated = self._validate_tdengine_input(str(kwargs['end_time']), "datetime")
+            conditions.append(f"ts <= '{validated}'")
         if "symbol" in kwargs:
-            conditions.append(f"symbol = '{kwargs['symbol']}'")
+            validated = self._validate_tdengine_input(str(kwargs['symbol']), "symbol")
+            conditions.append(f"symbol = '{validated}'")
 
         # 组装查询语句
         if conditions:
@@ -620,9 +665,12 @@ class TDengineDataAccess(IDataAccessLayer):
         # 添加排序
         base_query += " ORDER BY ts DESC"
 
-        # 添加限制
+        # 添加限制 - SECURITY FIX: Default LIMIT to prevent unbounded queries
+        DEFAULT_QUERY_LIMIT = 10000
         if "limit" in kwargs:
             base_query += f" LIMIT {kwargs['limit']}"
+        else:
+            base_query += f" LIMIT {DEFAULT_QUERY_LIMIT}"
 
         return base_query
 

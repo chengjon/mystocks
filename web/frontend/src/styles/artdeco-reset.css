@@ -1,0 +1,81 @@
+// web/frontend/src/styles/artdeco-reset.css
+
+/* ArtDeco Modern Reset + Element Defaults */
+
+/* Reset & Normalize */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-sans);
+  line-height: 1.5;
+}
+
+/* Images & Media */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Forms & Inputs */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Lists */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Scrollbars (Webkit/Chrome) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--artdeco-gold-primary);
+  color: #000;
+}

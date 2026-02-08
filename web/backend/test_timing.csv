@@ -7090,3 +7090,537 @@ web/backend/tests/unit/services/indicators/test_indicator_registry.py::TestIndic
 ------------------ -------------------------------------
 ------------------ -------------------------------------
 ------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:03:35.350280,2026-02-08 17:03:35.428213,0.078,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:03:35.350075,2026-02-08 17:03:35.430601,0.081,Fe
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:03:35.429534,2026-02-08 17:03:35.432800,0.003,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:03:35.431753,2026-02-08 17:03:35.434706,0.003,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_comprehensive_api_compliance,2026-02-08 17:03:35.435814,2026-02-08 17:03:35.439977,0.004,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_response_model_consistency,2026-02-08 17:03:35.440772,2026-02-08 17:03:35.444454,0.004,Fe
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:03:35.350318,2026-02-08 17:03:35.446815,0.096,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:03:35.433845,2026-02-08 17:03:35.447188,0.013,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:03:35.448081,2026-02-08 17:03:35.458288,0.010,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:03:35.459131,2026-02-08 17:03:35.468115,0.009,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:03:35.468952,2026-02-08 17:03:35.478574,0.010,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:03:35.355663,2026-02-08 17:03:35.479909,0.124,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:03:35.481822,2026-02-08 17:03:35.485736,0.004,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:03:35.487224,2026-02-08 17:03:35.489640,0.002,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:03:35.491428,2026-02-08 17:03:35.494420,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:03:35.495275,2026-02-08 17:03:35.497407,0.002,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:03:35.480943,2026-02-08 17:03:35.507280,0.026,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:03:35.447990,2026-02-08 17:03:35.765085,0.317,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:03:35.765876,2026-02-08 17:03:35.777054,0.011,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:03:35.777785,2026-02-08 17:03:35.788227,0.010,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:03:35.789053,2026-02-08 17:03:35.799533,0.010,Fe
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:03:35.508032,2026-02-08 17:03:35.834768,0.327,Fa
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:03:35.835938,2026-02-08 17:03:35.860850,0.025,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:03:35.861747,2026-02-08 17:03:35.885777,0.024,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:03:35.886831,2026-02-08 17:03:35.909836,0.023,Fx
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:03:35.349993,2026-02-08 17:03:35.962293,0.612,Fx
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:03:35.963199,2026-02-08 17:03:36.186076,0.223,Fx
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:03:36.186989,2026-02-08 17:03:36.431676,0.245,Fx
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:03:36.432595,2026-02-08 17:03:36.649922,0.217,Fx
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:03:35.349805,2026-02-08 17:03:36.956860,1.607,Fe
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:03:36.958005,2026-02-08 17:03:38.150082,1.192,Fe
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:03:38.150939,2026-02-08 17:03:39.091451,0.941,Fe
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:03:39.092199,2026-02-08 17:03:40.012814,0.921,Fe
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:03:35.498552,2026-02-08 17:05:07.258657,91.760,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_exception,2026-02-08 17:03:35.351571,2026-02-08 17:05:07.262043,91.910,P
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_batch_operation_performance,2026-02-08 17:03:35.350995,2026-02-08 17:05:07.278300,91.927,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:06:45.190809,2026-02-08 17:06:45.263176,0.072,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:06:45.264571,2026-02-08 17:06:45.268643,0.004,Fe
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:06:45.194501,2026-02-08 17:06:45.272912,0.078,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_comprehensive_api_compliance,2026-02-08 17:06:45.269480,2026-02-08 17:06:45.274054,0.005,Fe
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:06:45.191075,2026-02-08 17:06:45.276564,0.085,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_response_model_consistency,2026-02-08 17:06:45.274949,2026-02-08 17:06:45.278683,0.004,Fe
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:06:45.190629,2026-02-08 17:06:45.279578,0.089,Fx
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:06:45.273662,2026-02-08 17:06:45.281175,0.008,P
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:06:45.190546,2026-02-08 17:06:45.286512,0.096,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:06:45.277260,2026-02-08 17:06:45.286385,0.009,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:06:45.287682,2026-02-08 17:06:45.292135,0.004,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:06:45.281960,2026-02-08 17:06:45.294686,0.013,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:06:45.293182,2026-02-08 17:06:45.297356,0.004,Fe
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:06:45.280370,2026-02-08 17:06:45.302426,0.022,Fx
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:06:45.298352,2026-02-08 17:06:45.303942,0.006,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:06:45.295664,2026-02-08 17:06:45.303898,0.008,P
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:06:45.287441,2026-02-08 17:06:45.304339,0.017,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:06:45.304843,2026-02-08 17:06:45.313349,0.009,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:06:45.303253,2026-02-08 17:06:45.318084,0.015,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:06:45.314026,2026-02-08 17:06:45.321484,0.007,P
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:06:45.306943,2026-02-08 17:06:45.324368,0.017,Fe
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:06:45.318924,2026-02-08 17:06:45.334451,0.016,Fx
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:06:45.325147,2026-02-08 17:06:45.342350,0.017,Fe
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:06:45.322347,2026-02-08 17:06:45.343074,0.021,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:06:45.191732,2026-02-08 17:06:45.352802,0.161,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:06:45.353796,2026-02-08 17:06:45.356422,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:06:45.357134,2026-02-08 17:06:45.359614,0.002,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:06:45.343827,2026-02-08 17:06:45.360085,0.016,Fa
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:06:45.360306,2026-02-08 17:06:45.362735,0.002,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:06:45.363415,2026-02-08 17:06:45.365916,0.003,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:06:45.360799,2026-02-08 17:06:45.377416,0.017,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:06:45.378239,2026-02-08 17:06:45.397934,0.020,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:06:45.399369,2026-02-08 17:06:45.417885,0.019,Fx
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_exception,2026-02-08 17:06:45.200389,2026-02-08 17:08:17.054655,91.854,P
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_batch_operation_performance,2026-02-08 17:06:45.191829,2026-02-08 17:08:17.063594,91.872,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:06:45.366970,2026-02-08 17:08:17.119493,91.753,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_prewarming_status,2026-02-08 17:08:17.055369,2026-02-08 17:09:48.793726,91.738,P
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_cache_hit_rate,2026-02-08 17:08:17.064310,2026-02-08 17:09:48.795405,91.731,Fx
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 17:08:17.120142,2026-02-08 17:09:48.855167,91.735,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:11:52.746675,2026-02-08 17:11:52.824597,0.078,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:11:52.826012,2026-02-08 17:11:52.832017,0.006,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_comprehensive_api_compliance,2026-02-08 17:11:52.833843,2026-02-08 17:11:52.838366,0.005,Fe
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:11:52.746970,2026-02-08 17:11:52.838798,0.092,Fx
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:11:52.746459,2026-02-08 17:11:52.840007,0.094,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_response_model_consistency,2026-02-08 17:11:52.839159,2026-02-08 17:11:52.843229,0.004,Fe
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:11:52.839638,2026-02-08 17:11:52.853270,0.014,Fx
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:11:52.840841,2026-02-08 17:11:52.858305,0.017,Fe
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:11:52.854025,2026-02-08 17:11:52.868155,0.014,Fx
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:11:52.751755,2026-02-08 17:11:52.868618,0.117,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:11:52.746954,2026-02-08 17:11:52.870041,0.123,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:11:52.869434,2026-02-08 17:11:52.872169,0.003,P
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:11:52.859138,2026-02-08 17:11:52.876621,0.017,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:11:52.870778,2026-02-08 17:11:52.876941,0.006,Fe
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:11:52.747065,2026-02-08 17:11:52.877263,0.130,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:11:52.869030,2026-02-08 17:11:52.882350,0.013,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:11:52.879682,2026-02-08 17:11:52.883330,0.004,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:11:52.877659,2026-02-08 17:11:52.883520,0.006,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:11:52.873371,2026-02-08 17:11:52.887802,0.014,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:11:52.884298,2026-02-08 17:11:52.888356,0.004,Fe
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:11:52.885608,2026-02-08 17:11:52.889363,0.004,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:11:52.889080,2026-02-08 17:11:52.893329,0.004,Fe
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:11:52.877367,2026-02-08 17:11:52.894332,0.017,Fe
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:11:52.890025,2026-02-08 17:11:52.894608,0.005,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:11:52.888721,2026-02-08 17:11:52.896905,0.008,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:11:52.895594,2026-02-08 17:11:52.898409,0.003,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:11:52.897658,2026-02-08 17:11:52.908397,0.011,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:11:52.909135,2026-02-08 17:11:52.919118,0.010,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:11:52.919918,2026-02-08 17:11:52.938379,0.018,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:11:52.939100,2026-02-08 17:11:52.958189,0.019,Fa
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:11:52.959215,2026-02-08 17:11:52.979570,0.020,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:11:52.980755,2026-02-08 17:11:53.002662,0.022,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:11:53.004410,2026-02-08 17:11:53.029182,0.025,Fx
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_batch_operation_performance,2026-02-08 17:11:52.747215,2026-02-08 17:13:24.587357,91.840,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_exception,2026-02-08 17:11:52.747752,2026-02-08 17:13:24.589562,91.842,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:11:52.899323,2026-02-08 17:13:24.659309,91.760,P
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_cache_hit_rate,2026-02-08 17:13:24.588098,2026-02-08 17:14:56.323523,91.735,Fx
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_prewarming_status,2026-02-08 17:13:24.590289,2026-02-08 17:14:56.327218,91.737,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 17:13:24.660100,2026-02-08 17:14:56.403304,91.743,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_health_status,2026-02-08 17:14:56.328125,2026-02-08 17:16:28.063867,91.736,P
+web/backend/tests/test_cache_integration.py::TestCacheErrorHandling::test_fetch_with_exception,2026-02-08 17:14:56.324256,2026-02-08 17:16:28.066085,91.742,Fx
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_evict_expired_cache,2026-02-08 17:14:56.404784,2026-02-08 17:16:28.148669,91.744,Fx
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_generate_token,2026-02-08 17:17:52.322524,2026-02-08 17:17:52.397656,0.075,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_validate_empty_token,2026-02-08 17:17:52.327810,2026-02-08 17:17:52.398540,0.071,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_token_has_created_timestamp,2026-02-08 17:17:52.322666,2026-02-08 17:17:52.399252,0.077,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_multiple_tokens_independent,2026-02-08 17:17:52.401968,2026-02-08 17:17:52.404987,0.003,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_validate_none_token,2026-02-08 17:17:52.402164,2026-02-08 17:17:52.405211,0.003,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_generate_unique_tokens,2026-02-08 17:17:52.402072,2026-02-08 17:17:52.406884,0.005,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_token_used_flag,2026-02-08 17:17:52.322596,2026-02-08 17:17:52.427656,0.105,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_validate_valid_token,2026-02-08 17:17:52.322494,2026-02-08 17:17:52.433940,0.111,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_validate_invalid_token,2026-02-08 17:17:52.435868,2026-02-08 17:17:52.438778,0.003,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_concurrent_token_generation,2026-02-08 17:17:52.440986,2026-02-08 17:17:52.458268,0.017,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_token_expiration,2026-02-08 17:17:52.324498,2026-02-08 17:17:52.545730,0.221,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_token_replay_prevention,2026-02-08 17:17:52.547056,2026-02-08 17:17:52.550758,0.004,P
+web/backend/tests/test_csrf_protection.py::TestCSRFTokenManager::test_token_cleanup,2026-02-08 17:17:52.431703,2026-02-08 17:17:52.589351,0.158,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_put_requires_csrf_token,2026-02-08 17:17:52.409969,2026-02-08 17:17:53.997412,1.587,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_post_with_invalid_token_returns_403,2026-02-08 17:17:52.408787,2026-02-08 17:17:54.007151,1.598,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_post_without_token_returns_403,2026-02-08 17:17:52.322896,2026-02-08 17:17:54.024623,1.702,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_patch_requires_csrf_token,2026-02-08 17:17:52.407589,2026-02-08 17:17:54.103039,1.695,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_exempt_paths,2026-02-08 17:17:52.322720,2026-02-08 17:17:54.266924,1.944,P
+web/backend/tests/test_csrf_protection.py::TestCSRFSecurityScenarios::test_cross_origin_request_without_token_blocked,2026-02-08 17:17:52.460232,2026-02-08 17:17:54.288983,1.829,P
+web/backend/tests/test_csrf_protection.py::TestCSRFSecurityScenarios::test_token_reuse_across_requests_blocked,2026-02-08 17:17:52.552650,2026-02-08 17:17:54.331214,1.779,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_token_case_insensitive_header,2026-02-08 17:17:52.603600,2026-02-08 17:17:54.481220,1.878,P
+web/backend/tests/test_csrf_protection.py::TestCSRFSecurityScenarios::test_token_entropy_sufficient,2026-02-08 17:17:54.488019,2026-02-08 17:17:54.499003,0.011,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_delete_requires_csrf_token,2026-02-08 17:17:54.105375,2026-02-08 17:17:54.836109,0.731,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_options_bypasses_csrf_check,2026-02-08 17:17:54.000359,2026-02-08 17:17:54.876107,0.876,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_post_with_valid_token_succeeds,2026-02-08 17:17:54.031570,2026-02-08 17:17:54.914187,0.883,P
+web/backend/tests/test_csrf_protection.py::TestCSRFFrontendIntegration::test_token_format_compatible_with_frontend,2026-02-08 17:17:54.922975,2026-02-08 17:17:54.926434,0.003,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_get_does_not_require_csrf_token,2026-02-08 17:17:54.009699,2026-02-08 17:17:54.963916,0.954,P
+web/backend/tests/test_csrf_protection.py::TestCSRFSecurityScenarios::test_same_origin_request_with_valid_token_allowed,2026-02-08 17:17:54.295599,2026-02-08 17:17:55.330007,1.034,P
+web/backend/tests/test_csrf_protection.py::TestCSRFMiddleware::test_csrf_token_endpoint_returns_token,2026-02-08 17:17:54.268538,2026-02-08 17:17:55.330397,1.062,P
+web/backend/tests/test_csrf_protection.py::TestCSRFSecurityScenarios::test_token_expiration_prevents_old_attacks,2026-02-08 17:17:54.335594,2026-02-08 17:17:55.465894,1.130,P
+web/backend/tests/test_csrf_protection.py::TestCSRFIntegration::test_full_workflow,2026-02-08 17:17:54.880333,2026-02-08 17:17:56.494246,1.614,P
+web/backend/tests/test_csrf_protection.py::TestCSRFFrontendIntegration::test_multiple_clients_separate_tokens,2026-02-08 17:17:54.837358,2026-02-08 17:17:56.707765,1.870,P
+web/backend/tests/test_csrf_protection.py::TestCSRFIntegration::test_mixed_safe_and_protected_endpoints,2026-02-08 17:17:54.975620,2026-02-08 17:17:56.806548,1.831,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:19:17.505204,2026-02-08 17:19:17.616871,0.112,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_valid_token,2026-02-08 17:19:17.505153,2026-02-08 17:19:17.690604,0.185,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_invalid_token,2026-02-08 17:19:17.699611,2026-02-08 17:19:17.718930,0.019,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:19:17.505276,2026-02-08 17:19:17.963582,0.458,Fe
+web/backend/tests/test_auth.py::TestUserLogin::test_login_wrong_password,2026-02-08 17:19:17.511087,2026-02-08 17:19:17.970719,0.460,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_invalid_email,2026-02-08 17:19:17.965471,2026-02-08 17:19:17.978653,0.013,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_short_username,2026-02-08 17:19:17.505555,2026-02-08 17:19:17.986464,0.481,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:19:17.623611,2026-02-08 17:19:17.987304,0.364,Fe
+web/backend/tests/test_auth.py::TestUserLogin::test_login_nonexistent_user,2026-02-08 17:19:17.972428,2026-02-08 17:19:17.992835,0.020,Fe
+web/backend/tests/test_auth.py::TestPasswordReset::test_confirm_password_reset_success,2026-02-08 17:19:17.979984,2026-02-08 17:19:17.995931,0.016,Fe
+web/backend/tests/test_auth.py::TestUserLogin::test_login_success,2026-02-08 17:19:17.989811,2026-02-08 17:19:18.003216,0.013,Fe
+web/backend/tests/test_auth.py::TestGetCurrentUser::test_get_current_user_success,2026-02-08 17:19:17.996630,2026-02-08 17:19:18.009663,0.013,Fe
+web/backend/tests/test_auth.py::TestPasswordReset::test_confirm_password_reset_invalid_token,2026-02-08 17:19:17.994037,2026-02-08 17:19:18.011057,0.017,Fe
+web/backend/tests/test_auth.py::TestTokenRefresh::test_refresh_token_success,2026-02-08 17:19:17.989733,2026-02-08 17:19:18.016020,0.026,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:19:17.507041,2026-02-08 17:19:18.022949,0.516,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:19:18.027894,2026-02-08 17:19:18.050334,0.022,Fe
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hash_length_limit,2026-02-08 17:19:17.505108,2026-02-08 17:19:18.144737,0.640,P
+web/backend/tests/test_auth.py::TestJWTToken::test_create_token,2026-02-08 17:19:18.146860,2026-02-08 17:19:18.152587,0.006,P
+web/backend/tests/test_auth.py::TestTokenRefresh::test_refresh_token_invalid_auth,2026-02-08 17:19:17.720194,2026-02-08 17:19:18.393433,0.673,Fe
+web/backend/tests/test_auth.py::TestPasswordReset::test_request_password_reset,2026-02-08 17:19:18.396376,2026-02-08 17:19:18.440335,0.044,Fe
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hashing,2026-02-08 17:19:17.505087,2026-02-08 17:19:19.265089,1.760,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_verification,2026-02-08 17:19:19.267978,2026-02-08 17:19:20.796338,1.528,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_initialization,2026-02-08 17:22:44.827561,2026-02-08 17:22:44.896845,0.069,P
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeStats::test_stats_with_errors,2026-02-08 17:22:44.827389,2026-02-08 17:22:44.900469,0.073,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_success,2026-02-08 17:22:44.897896,2026-02-08 17:22:44.900949,0.003,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_error,2026-02-08 17:22:44.901777,2026-02-08 17:22:44.904654,0.003,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_list,2026-02-08 17:22:44.905559,2026-02-08 17:22:44.908373,0.003,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_rate_limiting_and_routing,2026-02-08 17:22:44.909756,2026-02-08 17:22:44.913206,0.003,P
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:22:44.827212,2026-02-08 17:22:44.915777,0.089,Fx
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:22:44.913989,2026-02-08 17:22:44.916776,0.003,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:22:44.917610,2026-02-08 17:22:44.921513,0.004,P
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:22:44.827225,2026-02-08 17:22:44.924668,0.097,Fe
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:22:44.916863,2026-02-08 17:22:44.932818,0.016,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:22:44.922713,2026-02-08 17:22:44.937046,0.014,P
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:22:44.926173,2026-02-08 17:22:44.942915,0.017,Fe
+web/backend/tests/test_cache_prewarming.py::TestCacheMonitor::test_reset,2026-02-08 17:22:44.828814,2026-02-08 17:22:44.943625,0.115,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:22:44.933651,2026-02-08 17:22:44.946782,0.013,Fx
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_timestamp,2026-02-08 17:22:44.827891,2026-02-08 17:22:44.948344,0.120,Fa
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:22:44.937954,2026-02-08 17:22:44.949309,0.011,P
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:22:44.951115,2026-02-08 17:22:44.959617,0.009,P
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:22:44.943682,2026-02-08 17:22:44.960956,0.017,Fe
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:22:44.947516,2026-02-08 17:22:44.961188,0.014,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:22:44.960580,2026-02-08 17:22:44.970122,0.010,P
+web/backend/scripts/test_strategy_api.py::test_run_batch_strategy_limited,2026-02-08 17:22:44.961960,2026-02-08 17:22:44.974290,0.012,Fx
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:22:44.961758,2026-02-08 17:22:44.978146,0.016,Fe
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_success_flag,2026-02-08 17:22:44.949206,2026-02-08 17:22:44.982276,0.033,Fa
+web/backend/app/api/test_announcement_api.py::test_get_important_announcements,2026-02-08 17:22:44.978981,2026-02-08 17:22:44.994938,0.016,Fe
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_error_response_structure,2026-02-08 17:22:44.983218,2026-02-08 17:22:45.016121,0.033,Fa
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_tracker_initialization,2026-02-08 17:22:45.016854,2026-02-08 17:22:45.019400,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_access,2026-02-08 17:22:45.020037,2026-02-08 17:22:45.022252,0.002,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:22:45.022854,2026-02-08 17:22:45.076097,0.053,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:22:45.077048,2026-02-08 17:22:45.079949,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:22:45.080688,2026-02-08 17:22:45.083519,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:22:45.084300,2026-02-08 17:22:45.087102,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:22:45.087907,2026-02-08 17:22:45.090634,0.003,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:22:44.970836,2026-02-08 17:22:45.125256,0.154,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:22:45.126034,2026-02-08 17:22:45.143744,0.018,Fa
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:22:45.144712,2026-02-08 17:22:45.161551,0.017,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:22:45.162445,2026-02-08 17:22:45.179444,0.017,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:22:45.180343,2026-02-08 17:22:45.201592,0.021,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_multiple_csrf_tokens_are_different,2026-02-08 17:22:45.202376,2026-02-08 17:22:45.286698,0.084,Fx
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeErrorHandling::test_handle_persistence_error,2026-02-08 17:22:44.901523,2026-02-08 17:22:45.315153,0.414,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_unified_response_structure,2026-02-08 17:22:45.315848,2026-02-08 17:22:45.319773,0.004,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_authentication_requirements,2026-02-08 17:22:45.320554,2026-02-08 17:22:45.323287,0.003,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_parameter_validation_completeness,2026-02-08 17:22:45.323978,2026-02-08 17:22:45.327141,0.003,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:22:45.327980,2026-02-08 17:22:45.331065,0.003,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:22:45.331835,2026-02-08 17:22:45.335030,0.003,Fe
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_verification,2026-02-08 17:22:44.828384,2026-02-08 17:22:45.715816,0.887,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hash_length_limit,2026-02-08 17:22:45.716874,2026-02-08 17:22:46.320742,0.604,P
+web/backend/tests/test_auth.py::TestJWTToken::test_create_token,2026-02-08 17:22:46.321668,2026-02-08 17:22:46.325480,0.004,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_valid_token,2026-02-08 17:22:46.326370,2026-02-08 17:22:46.335760,0.009,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_invalid_token,2026-02-08 17:22:46.336740,2026-02-08 17:22:46.345281,0.009,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:22:46.346339,2026-02-08 17:22:46.355430,0.009,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:22:46.356885,2026-02-08 17:22:46.366060,0.009,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:22:46.367404,2026-02-08 17:22:46.373643,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:22:46.374747,2026-02-08 17:22:46.380738,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:22:46.381806,2026-02-08 17:22:46.387787,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_invalid_email,2026-02-08 17:22:46.388847,2026-02-08 17:22:46.395150,0.006,Fe
+web/backend/tests/test_cache_integration.py::TestCacheInvalidationIntegration::test_invalidate_data_on_write,2026-02-08 17:22:44.831808,2026-02-08 17:24:16.655311,91.824,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_strategy_initialization,2026-02-08 17:22:44.945903,2026-02-08 17:24:16.698504,91.753,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:22:45.091412,2026-02-08 17:24:16.839777,91.748,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_read_wrapper,2026-02-08 17:24:16.656010,2026-02-08 17:25:48.398298,91.742,Fa
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_hot_data_list,2026-02-08 17:24:16.699168,2026-02-08 17:25:48.440777,91.742,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 17:24:16.840453,2026-02-08 17:25:48.575090,91.735,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_initialization,2026-02-08 17:27:54.616819,2026-02-08 17:27:54.684961,0.068,P
+web/backend/tests/test_cache_prewarming.py::TestCacheMonitor::test_reset,2026-02-08 17:27:54.618111,2026-02-08 17:27:54.688173,0.070,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_success,2026-02-08 17:27:54.686351,2026-02-08 17:27:54.689299,0.003,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_error,2026-02-08 17:27:54.689962,2026-02-08 17:27:54.692401,0.002,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_list,2026-02-08 17:27:54.693100,2026-02-08 17:27:54.695881,0.003,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_rate_limiting_and_routing,2026-02-08 17:27:54.696850,2026-02-08 17:27:54.699917,0.003,P
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeStats::test_stats_with_errors,2026-02-08 17:27:54.616632,2026-02-08 17:27:54.701426,0.085,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:27:54.700736,2026-02-08 17:27:54.703615,0.003,P
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:27:54.616545,2026-02-08 17:27:54.704005,0.087,Fx
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:27:54.704277,2026-02-08 17:27:54.706818,0.003,P
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:27:54.616418,2026-02-08 17:27:54.708776,0.092,Fe
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:27:54.705486,2026-02-08 17:27:54.719872,0.014,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:27:54.707494,2026-02-08 17:27:54.720389,0.013,P
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:27:54.709878,2026-02-08 17:27:54.727040,0.017,Fe
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_timestamp,2026-02-08 17:27:54.617132,2026-02-08 17:27:54.729425,0.112,Fa
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:27:54.721121,2026-02-08 17:27:54.729626,0.009,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:27:54.720613,2026-02-08 17:27:54.733123,0.013,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:27:54.730274,2026-02-08 17:27:54.738584,0.008,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:27:54.734134,2026-02-08 17:27:54.746893,0.013,Fx
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:27:54.739266,2026-02-08 17:27:54.747341,0.008,P
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:27:54.729368,2026-02-08 17:27:54.749003,0.020,Fe
+web/backend/scripts/test_strategy_api.py::test_run_batch_strategy_limited,2026-02-08 17:27:54.747675,2026-02-08 17:27:54.759985,0.012,Fx
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_success_flag,2026-02-08 17:27:54.730136,2026-02-08 17:27:54.762634,0.032,Fa
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:27:54.750318,2026-02-08 17:27:54.765219,0.015,Fe
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:27:54.748075,2026-02-08 17:27:54.765838,0.018,P
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeErrorHandling::test_handle_persistence_error,2026-02-08 17:27:54.702258,2026-02-08 17:27:54.766615,0.064,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_unified_response_structure,2026-02-08 17:27:54.767339,2026-02-08 17:27:54.771308,0.004,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_authentication_requirements,2026-02-08 17:27:54.771989,2026-02-08 17:27:54.774752,0.003,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_parameter_validation_completeness,2026-02-08 17:27:54.775505,2026-02-08 17:27:54.778360,0.003,Fe
+web/backend/app/api/test_announcement_api.py::test_get_important_announcements,2026-02-08 17:27:54.766048,2026-02-08 17:27:54.782049,0.016,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:27:54.779923,2026-02-08 17:27:54.782945,0.003,Fe
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:27:54.766561,2026-02-08 17:27:54.783312,0.017,Fa
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:27:54.783625,2026-02-08 17:27:54.786780,0.003,Fe
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_error_response_structure,2026-02-08 17:27:54.763279,2026-02-08 17:27:54.794204,0.031,Fa
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_tracker_initialization,2026-02-08 17:27:54.794717,2026-02-08 17:27:54.797889,0.003,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:27:54.784000,2026-02-08 17:27:54.798331,0.014,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_access,2026-02-08 17:27:54.798783,2026-02-08 17:27:54.801265,0.002,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:27:54.798907,2026-02-08 17:27:54.814507,0.016,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:27:54.815714,2026-02-08 17:27:54.830755,0.015,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:27:54.801830,2026-02-08 17:27:54.855205,0.053,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:27:54.856068,2026-02-08 17:27:54.859508,0.003,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_multiple_csrf_tokens_are_different,2026-02-08 17:27:54.831453,2026-02-08 17:27:54.862659,0.031,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:27:54.860448,2026-02-08 17:27:54.863328,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:27:54.864191,2026-02-08 17:27:54.866985,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:27:54.867758,2026-02-08 17:27:54.870407,0.003,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_verification,2026-02-08 17:27:54.623727,2026-02-08 17:27:55.580618,0.957,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hash_length_limit,2026-02-08 17:27:55.581773,2026-02-08 17:27:56.176692,0.595,P
+web/backend/tests/test_auth.py::TestJWTToken::test_create_token,2026-02-08 17:27:56.177863,2026-02-08 17:27:56.184248,0.006,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_valid_token,2026-02-08 17:27:56.185446,2026-02-08 17:27:56.195999,0.011,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_invalid_token,2026-02-08 17:27:56.197216,2026-02-08 17:27:56.206606,0.009,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:27:56.207748,2026-02-08 17:27:56.217007,0.009,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:27:56.218135,2026-02-08 17:27:56.226461,0.008,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:27:56.228311,2026-02-08 17:27:56.234621,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:27:56.235707,2026-02-08 17:27:56.241380,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:27:56.242477,2026-02-08 17:27:56.249086,0.007,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_invalid_email,2026-02-08 17:27:56.250177,2026-02-08 17:27:56.256527,0.006,Fe
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_strategy_initialization,2026-02-08 17:27:54.689666,2026-02-08 17:29:26.446642,91.757,P
+web/backend/tests/test_cache_integration.py::TestCacheInvalidationIntegration::test_invalidate_data_on_write,2026-02-08 17:27:54.617646,2026-02-08 17:29:26.487168,91.870,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:27:54.871199,2026-02-08 17:29:26.632654,91.761,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_hot_data_list,2026-02-08 17:29:26.447326,2026-02-08 17:30:58.190623,91.743,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_read_wrapper,2026-02-08 17:29:26.487882,2026-02-08 17:30:58.228627,91.741,Fa
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 17:29:26.633271,2026-02-08 17:30:58.376674,91.743,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_empty,2026-02-08 17:30:58.191688,2026-02-08 17:32:29.937056,91.745,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_write_wrapper,2026-02-08 17:30:58.229487,2026-02-08 17:32:29.965186,91.736,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_evict_expired_cache,2026-02-08 17:30:58.377319,2026-02-08 17:32:30.117881,91.741,Fx
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_cache_prewarming.py::TestCacheMonitor::test_reset,2026-02-08 17:34:49.233699,2026-02-08 17:34:49.309972,0.076,P
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeStats::test_stats_with_errors,2026-02-08 17:34:49.236382,2026-02-08 17:34:49.316815,0.080,P
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:34:49.232705,2026-02-08 17:34:49.328669,0.096,Fe
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_initialization,2026-02-08 17:34:49.233094,2026-02-08 17:34:49.337410,0.104,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_success,2026-02-08 17:34:49.338114,2026-02-08 17:34:49.340936,0.003,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_error,2026-02-08 17:34:49.341600,2026-02-08 17:34:49.344766,0.003,P
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:34:49.329488,2026-02-08 17:34:49.347119,0.018,Fe
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_list,2026-02-08 17:34:49.345566,2026-02-08 17:34:49.348294,0.003,P
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:34:49.232890,2026-02-08 17:34:49.350544,0.118,Fx
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_rate_limiting_and_routing,2026-02-08 17:34:49.349035,2026-02-08 17:34:49.351786,0.003,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:34:49.352429,2026-02-08 17:34:49.354735,0.002,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:34:49.355390,2026-02-08 17:34:49.358030,0.003,P
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_timestamp,2026-02-08 17:34:49.233559,2026-02-08 17:34:49.362399,0.129,Fa
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:34:49.351302,2026-02-08 17:34:49.364072,0.013,Fx
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:34:49.348205,2026-02-08 17:34:49.364455,0.016,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:34:49.358737,2026-02-08 17:34:49.373665,0.015,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:34:49.364878,2026-02-08 17:34:49.376966,0.012,Fx
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeErrorHandling::test_handle_persistence_error,2026-02-08 17:34:49.318308,2026-02-08 17:34:49.377945,0.060,P
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:34:49.365180,2026-02-08 17:34:49.380156,0.015,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_unified_response_structure,2026-02-08 17:34:49.378628,2026-02-08 17:34:49.383779,0.005,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:34:49.374383,2026-02-08 17:34:49.384878,0.010,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_authentication_requirements,2026-02-08 17:34:49.384724,2026-02-08 17:34:49.387553,0.003,Fe
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:34:49.377925,2026-02-08 17:34:49.389890,0.012,Fx
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_parameter_validation_completeness,2026-02-08 17:34:49.388162,2026-02-08 17:34:49.391065,0.003,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:34:49.385536,2026-02-08 17:34:49.392946,0.007,P
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_success_flag,2026-02-08 17:34:49.363156,2026-02-08 17:34:49.392975,0.030,Fa
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:34:49.391784,2026-02-08 17:34:49.395473,0.004,Fe
+web/backend/app/api/test_announcement_api.py::test_get_important_announcements,2026-02-08 17:34:49.381156,2026-02-08 17:34:49.396028,0.015,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:34:49.396227,2026-02-08 17:34:49.399447,0.003,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:34:49.393572,2026-02-08 17:34:49.403350,0.010,P
+web/backend/scripts/test_strategy_api.py::test_run_batch_strategy_limited,2026-02-08 17:34:49.390545,2026-02-08 17:34:49.404256,0.014,Fx
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_error_response_structure,2026-02-08 17:34:49.393635,2026-02-08 17:34:49.424597,0.031,Fa
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_tracker_initialization,2026-02-08 17:34:49.425236,2026-02-08 17:34:49.428112,0.003,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_access,2026-02-08 17:34:49.428689,2026-02-08 17:34:49.430861,0.002,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:34:49.404914,2026-02-08 17:34:49.435685,0.031,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:34:49.436330,2026-02-08 17:34:49.450575,0.014,Fa
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:34:49.451291,2026-02-08 17:34:49.470165,0.019,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:34:49.431603,2026-02-08 17:34:49.484881,0.053,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:34:49.470982,2026-02-08 17:34:49.487718,0.017,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:34:49.485641,2026-02-08 17:34:49.490123,0.004,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:34:49.491355,2026-02-08 17:34:49.495501,0.004,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:34:49.496759,2026-02-08 17:34:49.500829,0.004,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:34:49.501718,2026-02-08 17:34:49.504704,0.003,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:34:49.488512,2026-02-08 17:34:49.504541,0.016,Fx
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_multiple_csrf_tokens_are_different,2026-02-08 17:34:49.506582,2026-02-08 17:34:49.542531,0.036,Fx
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_verification,2026-02-08 17:34:49.233727,2026-02-08 17:34:50.130492,0.897,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hash_length_limit,2026-02-08 17:34:50.131779,2026-02-08 17:34:50.740149,0.608,P
+web/backend/tests/test_auth.py::TestJWTToken::test_create_token,2026-02-08 17:34:50.741232,2026-02-08 17:34:50.745272,0.004,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_valid_token,2026-02-08 17:34:50.746280,2026-02-08 17:34:50.756664,0.010,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_invalid_token,2026-02-08 17:34:50.758813,2026-02-08 17:34:50.768805,0.010,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:34:50.770362,2026-02-08 17:34:50.780540,0.010,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:34:50.781622,2026-02-08 17:34:50.790689,0.009,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:34:50.791825,2026-02-08 17:34:50.798172,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:34:50.799366,2026-02-08 17:34:50.806544,0.007,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:34:50.807806,2026-02-08 17:34:50.814133,0.006,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_invalid_email,2026-02-08 17:34:50.815339,2026-02-08 17:34:50.822150,0.007,Fe
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_strategy_initialization,2026-02-08 17:34:49.310643,2026-02-08 17:36:21.076748,91.766,P
+web/backend/tests/test_cache_integration.py::TestCacheInvalidationIntegration::test_invalidate_data_on_write,2026-02-08 17:34:49.239889,2026-02-08 17:36:21.094543,91.855,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:34:49.505499,2026-02-08 17:36:21.292408,91.787,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_hot_data_list,2026-02-08 17:36:21.077468,2026-02-08 17:37:52.817709,91.740,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_read_wrapper,2026-02-08 17:36:21.095567,2026-02-08 17:37:52.834692,91.739,Fa
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 17:36:21.293191,2026-02-08 17:37:53.034424,91.741,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_empty,2026-02-08 17:37:52.818568,2026-02-08 17:39:24.557681,91.739,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_write_wrapper,2026-02-08 17:37:52.835529,2026-02-08 17:39:24.572976,91.737,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_evict_expired_cache,2026-02-08 17:37:53.035142,2026-02-08 17:39:24.775913,91.741,Fx
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_data_sources,2026-02-08 17:39:24.558306,2026-02-08 17:40:56.296157,91.738,P
+web/backend/tests/test_cache_integration.py::TestCacheDataConsistency::test_cache_aside_pattern_read_then_write,2026-02-08 17:39:24.573596,2026-02-08 17:40:56.311017,91.737,Fx
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_get_hot_data,2026-02-08 17:39:24.776546,2026-02-08 17:40:56.515172,91.739,P
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+------------------ -------------------------------------
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeStats::test_stats_with_errors,2026-02-08 17:59:32.452132,2026-02-08 17:59:32.537475,0.085,P
+web/backend/scripts/test_phase3_api.py::test_clear_cache,2026-02-08 17:59:32.451900,2026-02-08 17:59:32.552836,0.101,Fx
+web/backend/scripts/test_strategy_api.py::test_get_strategy_definitions,2026-02-08 17:59:32.554122,2026-02-08 17:59:32.577301,0.023,Fx
+web/backend/tests/test_cache_prewarming.py::TestCacheMonitor::test_reset,2026-02-08 17:59:32.455871,2026-02-08 17:59:32.587177,0.131,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_initialization,2026-02-08 17:59:32.452611,2026-02-08 17:59:32.593366,0.141,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_success,2026-02-08 17:59:32.594347,2026-02-08 17:59:32.597824,0.003,P
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_error,2026-02-08 17:59:32.599102,2026-02-08 17:59:32.605000,0.006,P
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy,2026-02-08 17:59:32.578751,2026-02-08 17:59:32.606717,0.028,Fx
+web/backend/tests/test_api_gateway.py::TestResponseTransformer::test_response_transformer_list,2026-02-08 17:59:32.605798,2026-02-08 17:59:32.610697,0.005,P
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_timestamp,2026-02-08 17:59:32.453710,2026-02-08 17:59:32.611710,0.158,Fa
+web/backend/tests/test_aggregation_streaming_bridge.py::TestBridgeErrorHandling::test_handle_persistence_error,2026-02-08 17:59:32.538711,2026-02-08 17:59:32.620280,0.082,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_rate_limiting_and_routing,2026-02-08 17:59:32.611939,2026-02-08 17:59:32.620830,0.009,P
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_with_circuit_breaker,2026-02-08 17:59:32.621661,2026-02-08 17:59:32.626431,0.005,P
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_unified_response_structure,2026-02-08 17:59:32.622194,2026-02-08 17:59:32.627704,0.006,Fe
+web/backend/scripts/test_strategy_api.py::test_run_single_strategy_volume_surge,2026-02-08 17:59:32.608243,2026-02-08 17:59:32.632128,0.024,Fx
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_authentication_requirements,2026-02-08 17:59:32.629335,2026-02-08 17:59:32.633549,0.004,Fe
+web/backend/tests/test_api_gateway.py::TestGatewayIntegration::test_gateway_request_response_cycle,2026-02-08 17:59:32.627291,2026-02-08 17:59:32.636191,0.009,P
+web/backend/app/api/test_announcement_api.py::test_announcement_stats,2026-02-08 17:59:32.451742,2026-02-08 17:59:32.637778,0.186,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_parameter_validation_completeness,2026-02-08 17:59:32.635068,2026-02-08 17:59:32.639063,0.004,Fe
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_http_method_semantics,2026-02-08 17:59:32.639834,2026-02-08 17:59:32.647095,0.007,Fe
+web/backend/scripts/test_strategy_api.py::test_run_batch_strategy_limited,2026-02-08 17:59:32.633365,2026-02-08 17:59:32.650448,0.017,Fx
+web/backend/tests/test_api_compliance.py::TestAPICompliance::test_rest_api_design_principles,2026-02-08 17:59:32.648050,2026-02-08 17:59:32.651651,0.004,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_returns_200,2026-02-08 17:59:32.638305,2026-02-08 17:59:32.655463,0.017,P
+web/backend/app/api/test_announcement_api.py::test_get_announcement_types,2026-02-08 17:59:32.638961,2026-02-08 17:59:32.664569,0.026,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_response_structure,2026-02-08 17:59:32.656370,2026-02-08 17:59:32.670214,0.014,P
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_response_includes_success_flag,2026-02-08 17:59:32.612547,2026-02-08 17:59:32.677211,0.065,Fa
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_contains_service_info,2026-02-08 17:59:32.671027,2026-02-08 17:59:32.680932,0.010,P
+web/backend/app/api/test_announcement_api.py::test_get_announcements,2026-02-08 17:59:32.665515,2026-02-08 17:59:32.689551,0.024,Fe
+web/backend/tests/test_api_integration.py::TestHealthCheck::test_health_check_timestamp,2026-02-08 17:59:32.681679,2026-02-08 17:59:32.694742,0.013,P
+web/backend/app/api/test_announcement_api.py::test_get_today_announcements,2026-02-08 17:59:32.691270,2026-02-08 17:59:32.714232,0.023,Fe
+web/backend/tests/test_cache_api.py::TestCacheAPIResponseFormat::test_error_response_structure,2026-02-08 17:59:32.677878,2026-02-08 17:59:32.730855,0.053,Fa
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_tracker_initialization,2026-02-08 17:59:32.732189,2026-02-08 17:59:32.735923,0.004,P
+web/backend/app/api/test_announcement_api.py::test_get_important_announcements,2026-02-08 17:59:32.715679,2026-02-08 17:59:32.737672,0.022,Fe
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_endpoint_returns_200,2026-02-08 17:59:32.695489,2026-02-08 17:59:32.745039,0.050,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_access,2026-02-08 17:59:32.736773,2026-02-08 17:59:32.745966,0.009,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_response_structure,2026-02-08 17:59:32.745841,2026-02-08 17:59:32.764365,0.019,Fa
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_is_string,2026-02-08 17:59:32.765205,2026-02-08 17:59:32.784105,0.019,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_record_multiple_accesses,2026-02-08 17:59:32.747280,2026-02-08 17:59:32.808281,0.061,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_expires_in_is_positive,2026-02-08 17:59:32.785039,2026-02-08 17:59:32.812517,0.027,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_hot_data,2026-02-08 17:59:32.809195,2026-02-08 17:59:32.818587,0.009,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_get_statistics,2026-02-08 17:59:32.824189,2026-02-08 17:59:32.830565,0.006,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_csrf_token_type_is_bearer,2026-02-08 17:59:32.814007,2026-02-08 17:59:32.836692,0.023,Fx
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_clear_stats,2026-02-08 17:59:32.836545,2026-02-08 17:59:32.843829,0.007,P
+web/backend/tests/test_cache_eviction.py::TestAccessFrequencyTracker::test_multiple_cache_keys,2026-02-08 17:59:32.844758,2026-02-08 17:59:32.857097,0.012,P
+web/backend/tests/test_api_integration.py::TestCSRFTokenEndpoint::test_multiple_csrf_tokens_are_different,2026-02-08 17:59:32.837607,2026-02-08 17:59:32.921128,0.084,Fx
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_verification,2026-02-08 17:59:32.453194,2026-02-08 17:59:33.425329,0.972,P
+web/backend/tests/test_auth.py::TestPasswordSecurity::test_password_hash_length_limit,2026-02-08 17:59:33.427479,2026-02-08 17:59:34.077738,0.650,P
+web/backend/tests/test_auth.py::TestJWTToken::test_create_token,2026-02-08 17:59:34.078866,2026-02-08 17:59:34.083825,0.005,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_valid_token,2026-02-08 17:59:34.084672,2026-02-08 17:59:34.143935,0.059,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_invalid_token,2026-02-08 17:59:34.145774,2026-02-08 17:59:34.156197,0.010,P
+web/backend/tests/test_auth.py::TestJWTToken::test_verify_expired_token,2026-02-08 17:59:34.157830,2026-02-08 17:59:34.169357,0.012,P
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_user_success,2026-02-08 17:59:34.171416,2026-02-08 17:59:34.185140,0.014,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_username,2026-02-08 17:59:34.187560,2026-02-08 17:59:34.195089,0.008,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_duplicate_email,2026-02-08 17:59:34.200128,2026-02-08 17:59:34.207395,0.007,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_weak_password,2026-02-08 17:59:34.209375,2026-02-08 17:59:34.217617,0.008,Fe
+web/backend/tests/test_auth.py::TestUserRegistration::test_register_invalid_email,2026-02-08 17:59:34.219738,2026-02-08 17:59:34.227261,0.008,Fe
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_strategy_initialization,2026-02-08 17:59:32.591722,2026-02-08 18:01:04.382875,91.791,P
+web/backend/tests/test_cache_integration.py::TestCacheInvalidationIntegration::test_invalidate_data_on_write,2026-02-08 17:59:32.455744,2026-02-08 18:01:04.412790,91.957,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_strategy_initialization,2026-02-08 17:59:32.858125,2026-02-08 18:01:04.683793,91.826,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_hot_data_list,2026-02-08 18:01:04.383794,2026-02-08 18:02:36.120036,91.736,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_read_wrapper,2026-02-08 18:01:04.413456,2026-02-08 18:02:36.152399,91.739,Fa
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_record_cache_access,2026-02-08 18:01:04.684776,2026-02-08 18:02:36.424180,91.739,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_empty,2026-02-08 18:02:36.120798,2026-02-08 18:04:07.858538,91.738,P
+web/backend/tests/test_cache_integration.py::TestCacheDecoratorIntegration::test_cache_write_wrapper,2026-02-08 18:02:36.153034,2026-02-08 18:04:07.881494,91.728,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_evict_expired_cache,2026-02-08 18:02:36.424854,2026-02-08 18:04:08.168417,91.744,Fx
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_data_sources,2026-02-08 18:04:07.859281,2026-02-08 18:05:39.602758,91.743,P
+web/backend/tests/test_cache_integration.py::TestCacheDataConsistency::test_cache_aside_pattern_read_then_write,2026-02-08 18:04:07.882132,2026-02-08 18:05:39.621389,91.739,Fx
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_get_hot_data,2026-02-08 18:04:08.169133,2026-02-08 18:05:39.907849,91.739,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_prewarm_cache_with_exception,2026-02-08 18:05:39.603550,2026-02-08 18:07:11.342016,91.738,P
+web/backend/tests/test_cache_integration.py::TestCacheDataConsistency::test_cache_invalidation_on_update,2026-02-08 18:05:39.622020,2026-02-08 18:07:11.362610,91.741,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_get_eviction_statistics,2026-02-08 18:05:39.908530,2026-02-08 18:07:11.652945,91.744,P
+web/backend/tests/test_cache_prewarming.py::TestCachePrewarmingStrategy::test_get_prewarming_status,2026-02-08 18:07:11.342798,2026-02-08 18:08:43.084314,91.742,P
+web/backend/tests/test_cache_integration.py::TestCachePerformance::test_batch_operation_performance,2026-02-08 18:07:11.363420,2026-02-08 18:08:43.109441,91.746,P
+web/backend/tests/test_cache_eviction.py::TestTimeWindowEvictionStrategy::test_custom_ttl_days,2026-02-08 18:07:11.653781,2026-02-08 18:08:43.403911,91.750,P
+web/backend/tests/test_cache_eviction.py::TestEvictionScheduler::test_scheduler_initialization,2026-02-08 18:08:43.404720,2026-02-08 18:08:43.417958,0.013,P
+web/backend/tests/test_cache_eviction.py::TestEvictionScheduler::test_start_daily_cleanup,2026-02-08 18:08:43.418555,2026-02-08 18:08:43.422293,0.004,P
+web/backend/tests/test_cache_eviction.py::TestEvictionScheduler::test_stop_cleanup,2026-02-08 18:08:43.422889,2026-02-08 18:08:43.426250,0.003,P

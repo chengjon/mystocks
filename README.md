@@ -1,10 +1,44 @@
 # MyStocks 量化交易数据管理系统
 
 **创建人**: JohnC & Claude
-**版本**: 3.0.0
+**版本**: 3.2.0 (Security Hardened)
 **批准日期**: 2025-10-15
-**最后修订**: 2026-01-23
-**本次修订内容**: Week 3数据库简化完成 + Adapter整理 + ValueCell Phase 3完成 + Phase 2前端统一配置系统 + Phase 3 WebSocket解耦
+**最后修订**: 2026-02-09
+**本次修订内容**: 安全加固 + Redis 持久化 + SQL 注入防护
+
+---
+
+## 🔒 2026-02-09 安全加固完成
+
+**核心改进**: 修复 12 个安全/代码质量问题，增强多 Worker 环境下的安全性。
+
+**主要成果**:
+- ✅ **CORS 白名单**: `allow_origins=["*"]` → `settings.cors_origins`（环境变量驱动）
+- ✅ **SQL 注入防护**: TDengine 查询增加输入验证（symbol/datetime 格式校验）
+- ✅ **Redis 持久化**: CSRF token 和 revoked token 迁移到 Redis（支持多 Worker 共享 + 重启恢复）
+- ✅ **敏感日志清理**: 移除密码/token 明文日志
+- ✅ **死代码清理**: 删除 65 行不可达代码
+- ✅ **默认 LIMIT**: TDengine 查询增加 `DEFAULT_QUERY_LIMIT=10000` 防止无界查询
+
+**安全原则**: **Redis 共享状态，输入验证优先，最小权限**
+
+详细报告：[docs/api/security-remediation-report.md](./docs/api/security-remediation-report.md)
+
+---
+
+## 🏗️ 2026-02-08 架构重构与收敛完成
+
+**核心改进**: 彻底解决配置碎片化与路径不一致问题，建立严谨的域边界。
+
+**主要成果**:
+- ✅ **配置收敛**: 所有 `playwright` 和 `pm2` 配置文件统一收敛至 `config/` 专用子目录。
+- ✅ **域边界定义**: 在 `architecture/DOMAIN_BOUNDARIES.md` 中确立 5 大核心域架构。
+- ✅ **API 标准化**: `main.py` 路由注册完全基于 `VERSION_MAPPING.py` 动态加载，确保 API 路径 100% 对齐。
+- ✅ **根目录清理**: 清理了所有 `.backup`, `.bak` 及临时中间文件，根目录文件规范化为 re-export 外壳。
+
+**架构原则**: **职责分离，配置集中，路径标准**
+
+详细规范请参阅：[architecture/DOMAIN_BOUNDARIES.md](./architecture/DOMAIN_BOUNDARIES.md)
 
 ---
 
@@ -348,18 +382,17 @@ class AlertManager:
 
 **项目已完成全面重组**: 从42个杂乱的根目录精简到13个科学组织的目录，符合Python最佳实践。
 
-#### 📁 根目录 (仅核心文件)
+#### 📁 根目录 (入口点外壳)
 ```
 mystocks_spec/
 ├── README.md                 # 项目主文档 (本文件)
 ├── CLAUDE.md                 # Claude Code集成指南
-├── CHANGELOG.md              # 版本变更日志
-├── LICENSE                   # MIT许可证
+├── IFLOW.md                  # 工作流指令
 ├── requirements.txt          # Python依赖清单
-├── core.py                   # 核心模块入口点
-├── data_access.py           # 数据访问入口点
-├── monitoring.py            # 监控模块入口点
-├── unified_manager.py       # 统一管理器入口点
+├── core.py                   # 核心模块入口点 (Re-export)
+├── data_access.py           # 数据访问入口点 (Re-export)
+├── monitoring.py            # 监控模块入口点 (Re-export)
+├── unified_manager.py       # 统一管理器入口点 (Re-export)
 └── __init__.py              # Python包标识
 ```
 
@@ -367,62 +400,29 @@ mystocks_spec/
 
 ```
 mystocks_spec/
-├── src/                      # 📦 所有源代码
-│   ├── adapters/            # 数据源适配器 (7个核心适配器)
+├── src/                      # 📦 核心业务逻辑 (Single Source of Truth)
+│   ├── adapters/            # 数据源适配器
 │   ├── core/                # 核心管理类 (数据分类、路由策略)
 │   ├── data_access/         # 数据库访问层 (TDengine/PostgreSQL)
-│   ├── data_sources/        # 数据导入模块
-│   ├── db_manager/          # 数据库管理 (兼容层 → src.storage.database)
-│   ├── gpu/                 # GPU加速模块
-│   ├── interfaces/          # 接口定义 (IDataSource等)
-│   ├── ml_strategy/         # 机器学习策略
 │   ├── monitoring/          # 监控和告警
-│   ├── reporting/           # 报告生成
-│   ├── storage/             # 存储层 (database/connection_manager)
-│   ├── utils/               # 工具函数 (column_mapper/date_utils等)
-│   └── visualization/       # 可视化工具
+│   └── storage/             # 存储层基础设施
 │
-├── docs/                     # 📚 所有文档
-│   ├── api/                 # API文档
-│   ├── archived/            # 历史文档归档
-│   ├── architecture/        # 架构设计文档
-│   └── guides/              # 用户指南
+├── architecture/             # 🏛️ 架构定义与域边界 (DOMAIN_BOUNDARIES.md)
 │
-├── config/                   # ⚙️ 配置文件
-│   ├── table_config.yaml    # 表结构配置
-│   ├── docker-compose.*.yml # Docker部署配置
-│   └── *.yaml              # 其他配置文件
+├── config/                   # ⚙️ 配置文件 (集中收敛)
+│   ├── playwright/          # E2E 测试配置
+│   ├── pm2/                 # 进程管理配置 (ecosystem)
+│   ├── table_config.yaml    # 数据库表结构配置
+│   └── indicators_registry.yaml # 指标注册配置
 │
-├── scripts/                  # 🔧 脚本工具
-│   ├── tests/               # 测试脚本 (test_*.py)
-│   ├── runtime/             # 运行时脚本 (run_*.py, save_*.py)
-│   ├── database/            # 数据库脚本 (check_*.py, verify_*.py)
-│   ├── dev/                 # 开发工具脚本
-│   └── project/             # 项目管理脚本
+├── web/                      # 🌐 Web 应用层
+│   ├── backend/             # FastAPI 后端 (API V1 标准化)
+│   └── frontend/            # Vue 3 前端 (Pinia + Vite)
 │
-├── data/                     # 💾 数据文件
-│   ├── cache/               # 缓存数据
-│   └── models/              # 机器学习模型
-│
-├── web/                      # 🌐 Web应用
-│   ├── backend/             # FastAPI后端
-│   └── frontend/            # Vue 3前端
-│
-├── tests/                    # 🧪 测试代码
-├── examples/                 # 📖 示例代码
-├── logs/                     # 📝 日志目录
-├── temp/                     # 🗂️ 临时文件
-│
-├── .archive/                 # 📦 归档内容 (历史代码/文档)
-│   ├── old_code/            # 旧代码备份
-│   ├── old_docs/            # 旧文档备份
-│   └── ARCHIVE_INDEX.md     # 归档索引
-│
-└── [开发工具目录]            # 🛠️ 开发工具 (不移动)
-    ├── .claude/             # Claude Code配置
-    ├── .taskmaster/         # TaskMaster配置
-    ├── .specify/            # Specify配置
-    └── .benchmarks/         # 性能基准
+├── docs/                     # 📚 文档库
+├── scripts/                  # 🔧 维护与开发工具脚本
+├── tests/                    # 🧪 测试代码库
+└── data/                     # 💾 本地数据与模型
 ```
 
 #### 🔑 重要变更说明

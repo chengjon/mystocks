@@ -2,6 +2,7 @@
 认证相关 API
 """
 
+import logging
 from datetime import timedelta
 from typing import Any, Dict
 
@@ -10,6 +11,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2Pas
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.core.responses import create_success_response
 from app.core.security import (
@@ -554,9 +557,8 @@ async def request_password_reset(request: PasswordResetRequest):
                 details={"email": user.email},
             )
 
-            # TODO: Send email with reset token
-            # For now, just log the token (in production, send via email)
-            print(f"Password reset token for {user.email}: {reset_token}")
+            # NOTE: In production, send reset token via email service
+            logger.debug("Password reset token generated for user: %s", user.email)
 
         # Always return success (to prevent email enumeration)
         return create_success_response(

@@ -5,40 +5,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
-try:
-    from prometheus_client import Counter, Gauge, Histogram, REGISTRY
-
-    def _get_or_create_metric(metric_class, name, documentation, labelnames=None, **kwargs):
-        if hasattr(REGISTRY, "_names_to_collectors") and name in REGISTRY._names_to_collectors:
-            return REGISTRY._names_to_collectors[name]
-        if labelnames:
-            return metric_class(name, documentation, labelnames, registry=REGISTRY, **kwargs)
-        return metric_class(name, documentation, registry=REGISTRY, **kwargs)
-
-    SAGA_TXN_TOTAL = _get_or_create_metric(
-        Counter,
-        "mystocks_saga_transactions_total",
-        "Total Saga transactions by result",
-        ["business_type", "result"],
-    )
-    SAGA_TXN_IN_FLIGHT = _get_or_create_metric(
-        Gauge,
-        "mystocks_saga_transactions_in_flight",
-        "Saga transactions currently in flight",
-        ["business_type"],
-    )
-    SAGA_TXN_DURATION = _get_or_create_metric(
-        Histogram,
-        "mystocks_saga_transaction_duration_seconds",
-        "Saga transaction duration in seconds",
-        ["business_type", "result"],
-        buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0],
-    )
-except Exception:  # pragma: no cover - optional metrics dependency
-    SAGA_TXN_TOTAL = None
-    SAGA_TXN_IN_FLIGHT = None
-    SAGA_TXN_DURATION = None
-
 logger = logging.getLogger(__name__)
 
 
@@ -62,16 +28,6 @@ class SagaCoordinator:
     def __init__(self, pg_access, td_access):
         self.pg = pg_access
         self.td = td_access
-
-    def _record_saga_metrics(self, business_type: str, result: str, start_time: float) -> None:
-        if not SAGA_TXN_TOTAL or not SAGA_TXN_DURATION:
-            return
-        try:
-            duration = max(time.time() - start_time, 0.0)
-            SAGA_TXN_TOTAL.labels(business_type=business_type, result=result).inc()
-            SAGA_TXN_DURATION.labels(business_type=business_type, result=result).observe(duration)
-        except Exception as e:
-            logger.debug("Saga metrics recording failed: %s", e)
 
     def _safe_execute_sql(self, sql_str: str, params: Optional[tuple] = None) -> None:
         if not hasattr(self.pg, "execute_sql"):
@@ -131,11 +87,6 @@ class SagaCoordinator:
             classification.value if hasattr(classification, "value") else str(classification)
         )
         logger.info("Starting Saga Transaction %(txn_id)s for %(business_id)s")
-        if SAGA_TXN_IN_FLIGHT:
-            try:
-                SAGA_TXN_IN_FLIGHT.labels(business_type=business_type).inc()
-            except Exception as e:
-                logger.debug("Saga in-flight metric failed: %s", e)
 
         # 1. 预记录事务状态 (Best Effort)
         # 在实际生产中，这一步应该写入 PG 的 transaction_log 表。
@@ -170,7 +121,6 @@ class SagaCoordinator:
                         "duration_ms": duration_ms,
                     },
                 )
-                self._record_saga_metrics(business_type, "rolled_back", start_time)
                 return False
 
             logger.info("[TXN-LOG] %(txn_id)s: TDengine write SUCCESS")
@@ -208,7 +158,6 @@ class SagaCoordinator:
                                 "duration_ms": duration_ms,
                             },
                         )
-                        self._record_saga_metrics(business_type, "committed", start_time)
                         logger.info("[TXN-LOG] %(txn_id)s: PG commit SUCCESS. Transaction COMPLETED.")
                         return True
 
@@ -243,7 +192,6 @@ class SagaCoordinator:
                             "duration_ms": duration_ms,
                         },
                     )
-                    self._record_saga_metrics(business_type, "committed", start_time)
                     return True
                 except Exception as e:
                     raise e
@@ -261,15 +209,8 @@ class SagaCoordinator:
                 },
             )
             self._compensate_tdengine(txn_id, table_name)
-            self._record_saga_metrics(business_type, "rolled_back", start_time)
             logger.info("[TXN-LOG] %(txn_id)s: ROLLED_BACK")
             return False
-        finally:
-            if SAGA_TXN_IN_FLIGHT:
-                try:
-                    SAGA_TXN_IN_FLIGHT.labels(business_type=business_type).dec()
-                except Exception as e:
-                    logger.debug("Saga in-flight metric failed: %s", e)
 
     def _compensate_tdengine(self, txn_id: str, table_name: str):
         """

@@ -2,6 +2,7 @@
   <transition name="fade">
     <div v-if="isOpen" class="command-palette-overlay" @click.self="close">
       <div class="command-palette">
+        <!-- Search Input -->
         <div class="command-header">
           <ArtDecoIcon name="Search" size="sm" class="search-icon" />
           <input
@@ -9,59 +10,57 @@
             v-model="searchQuery"
             type="text"
             class="command-input"
-            placeholder="搜索命令或菜单..."
+            placeholder="Search pages, actions, or stocks..."
             @input="handleSearch"
             @keydown="handleKeydown"
+            autofocus
           />
-          <div class="shortcut-hint">ESC 关闭</div>
+          <div class="shortcut-hint">ESC to close</div>
         </div>
 
+        <!-- Results List -->
         <div class="command-body">
-          <div v-if="filteredCommands.length === 0" class="no-results">
+          <div v-if="groupedResults.length === 0" class="no-results">
             <ArtDecoIcon name="Search" size="lg" class="no-results-icon" />
-            <p>未找到匹配项</p>
+            <p>No results found</p>
           </div>
 
-          <div
-            v-for="(command, index) in paginatedCommands"
-            :key="command.path"
-            class="command-item"
-            :class="{
-              active: index === selectedIndex,
-              highlighted: isHighlighted(command)
-            }"
-            @click="executeCommand(command)"
-          >
-            <ArtDecoIcon :name="command.icon" size="sm" class="command-icon" />
-            <div class="command-info">
-              <span class="command-label">{{ command.label }}</span>
-              <span class="command-domain">{{ command.domainLabel }}</span>
-            </div>
-            <ArtDecoIcon name="ArrowRight" size="xs" class="arrow-icon" />
-          </div>
-
-          <div v-if="showPagination" class="pagination-controls">
-            <button class="pagination-btn" @click="prevPage">
-              <ArtDecoIcon name="ChevronLeft" size="xs" />
-            </button>
-            <span class="pagination-info">{{ currentPage }} / {{ totalPages }}</span>
-            <button class="pagination-btn" @click="nextPage">
-              <ArtDecoIcon name="ChevronRight" size="xs" />
-            </button>
+          <div v-else class="results-container">
+            <template v-for="(group, gIndex) in groupedResults" :key="group.title">
+              <div class="group-header" v-if="group.items.length > 0">
+                {{ group.title }}
+              </div>
+              <div
+                v-for="(item, iIndex) in group.items"
+                :key="item.id"
+                class="command-item"
+                :class="{
+                  active: isItemSelected(gIndex, iIndex),
+                  highlighted: isHighlighted(item)
+                }"
+                @click="executeCommand(item)"
+                @mouseenter="setSelectedIndex(gIndex, iIndex)"
+              >
+                <ArtDecoIcon :name="item.icon" size="sm" class="command-icon" />
+                <div class="command-info">
+                  <span class="command-label">{{ item.label }}</span>
+                  <span class="command-sublabel" v-if="item.sublabel">{{ item.sublabel }}</span>
+                </div>
+                <div class="command-shortcut" v-if="item.shortcut">
+                  <kbd>{{ item.shortcut }}</kbd>
+                </div>
+                <ArtDecoIcon name="ArrowRight" size="xs" class="arrow-icon" v-else />
+              </div>
+            </template>
           </div>
         </div>
 
+        <!-- Footer -->
         <div class="command-footer">
           <div class="keyboard-shortcuts">
-            <span class="shortcut-item">
-              <kbd>↑↓</kbd> 导航
-            </span>
-            <span class="shortcut-item">
-              <kbd>Enter</kbd> 选择
-            </span>
-            <span class="shortcut-item">
-              <kbd>Ctrl</kbd> + <kbd>K</kbd> 打开
-            </span>
+            <span class="shortcut-item"><kbd>↑↓</kbd> Navigate</span>
+            <span class="shortcut-item"><kbd>Enter</kbd> Select</span>
+            <span class="shortcut-item"><kbd>Esc</kbd> Close</span>
           </div>
         </div>
       </div>
@@ -70,143 +69,258 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useMenuStore } from '@/stores/menuStore'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
-import { ARTDECO_MENU_ENHANCED, type MenuItem } from '@/layouts/MenuConfig.enhanced'
+import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
 
-interface Command {
-  path: string
+// Types
+type CommandType = 'navigation' | 'action' | 'search' | 'external'
+
+interface CommandItem {
+  id: string
   label: string
+  sublabel?: string
+  type: CommandType
   icon: string
-  domainLabel: string
+  handler: () => void
+  shortcut?: string
+  keywords?: string[]
 }
+
+interface CommandGroup {
+  title: string
+  items: CommandItem[]
+}
+
+// State
+const isOpen = ref(false)
+const searchQuery = ref('')
+const searchInputRef = ref<HTMLInputElement | null>(null)
+const selectedGroupIndex = ref(0)
+const selectedItemIndex = ref(0)
 
 const router = useRouter()
+const menuStore = useMenuStore()
 
-const isOpen = ref<boolean>(false)
-const searchQuery = ref<string>('')
-const searchInputRef = ref<any>(null)
-const selectedIndex = ref<number>(0)
-const currentPage = ref<number>(1)
-const ITEMS_PER_PAGE = 8
+// Mock Stock Data (In real app, fetch from API)
+const mockStocks = [
+  { symbol: 'AAPL', name: 'Apple Inc.' },
+  { symbol: 'MSFT', name: 'Microsoft Corp.' },
+  { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+  { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+  { symbol: 'TSLA', name: 'Tesla Inc.' },
+  { symbol: 'NVDA', name: 'NVIDIA Corp.' },
+]
 
-const allCommands = computed<Command[]>(() => {
-  const commands: Command[] = []
-  ARTDECO_MENU_ENHANCED.forEach(domain => {
-    if (domain.children) {
-      domain.children.forEach(child => {
+// Commands Generation
+const generateNavigationCommands = (): CommandItem[] => {
+  const commands: CommandItem[] = []
+  
+  const traverse = (items: any[], parentLabel = '') => {
+    items.forEach(item => {
+      if (item.children) {
+        traverse(item.children, item.label)
+      } else {
         commands.push({
-          path: child.path,
-          label: child.label,
-          icon: child.icon,
-          domainLabel: domain.label
+          id: `nav-${item.path}`,
+          label: item.label,
+          sublabel: parentLabel ? `${parentLabel} > ${item.label}` : 'Navigation',
+          type: 'navigation',
+          icon: item.icon || 'FileText',
+          handler: () => {
+            router.push(item.path)
+            close()
+          },
+          keywords: [item.label, parentLabel, 'page', 'nav']
         })
-      })
-    }
-  })
+      }
+    })
+  }
+  
+  traverse(ARTDECO_MENU_ENHANCED)
   return commands
-})
+}
 
-const filteredCommands = computed<Command[]>(() => {
-  if (!searchQuery.value.trim()) {
-    return allCommands.value
-  }
+const generateActionCommands = (): CommandItem[] => {
+  return [
+    {
+      id: 'act-toggle-sidebar',
+      label: 'Toggle Sidebar',
+      sublabel: 'Layout',
+      type: 'action',
+      icon: 'Sidebar',
+      handler: () => {
+        menuStore.toggleSidebar()
+        close()
+      },
+      keywords: ['sidebar', 'menu', 'collapse', 'expand']
+    },
+    {
+      id: 'act-toggle-theme', // Placeholder
+      label: 'Toggle Theme',
+      sublabel: 'Appearance',
+      type: 'action',
+      icon: 'Moon', // Assuming Moon icon exists
+      handler: () => {
+        // Implement theme toggle logic here
+        console.log('Toggle theme')
+        close()
+      },
+      keywords: ['theme', 'dark', 'light', 'mode']
+    },
+    {
+      id: 'act-logout',
+      label: 'Log Out',
+      sublabel: 'Account',
+      type: 'action',
+      icon: 'LogOut',
+      handler: () => {
+        router.push('/login')
+        close()
+      },
+      keywords: ['logout', 'signout', 'exit']
+    }
+  ]
+}
+
+const generateStockCommands = (query: string): CommandItem[] => {
+  if (!query || query.length < 2) return []
+  
+  const q = query.toLowerCase()
+  return mockStocks
+    .filter(s => s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q))
+    .slice(0, 5)
+    .map(s => ({
+      id: `stock-${s.symbol}`,
+      label: `${s.symbol} - ${s.name}`,
+      sublabel: 'Stock Quote',
+      type: 'search',
+      icon: 'TrendingUp',
+      handler: () => {
+        // Navigate to stock detail
+        router.push(`/market/stock/${s.symbol}`) // Assuming route
+        close()
+      },
+      keywords: [s.symbol, s.name, 'stock']
+    }))
+}
+
+// Grouped Results
+const groupedResults = computed<CommandGroup[]>(() => {
   const query = searchQuery.value.toLowerCase().trim()
-  return allCommands.value.filter(cmd =>
-    cmd.label.toLowerCase().includes(query) ||
-    cmd.domainLabel.toLowerCase().includes(query)
-  )
+  const navs = generateNavigationCommands()
+  const actions = generateActionCommands()
+  const stocks = generateStockCommands(query)
+  
+  let filteredNavs = navs
+  let filteredActions = actions
+  
+  if (query) {
+    filteredNavs = navs.filter(cmd => 
+      cmd.label.toLowerCase().includes(query) || 
+      cmd.keywords?.some(k => k.toLowerCase().includes(query))
+    )
+    filteredActions = actions.filter(cmd => 
+      cmd.label.toLowerCase().includes(query) || 
+      cmd.keywords?.some(k => k.toLowerCase().includes(query))
+    )
+  }
+  
+  const groups: CommandGroup[] = []
+  
+  if (stocks.length > 0) {
+    groups.push({ title: 'Stocks', items: stocks })
+  }
+  
+  if (filteredNavs.length > 0) {
+    groups.push({ title: 'Navigation', items: filteredNavs.slice(0, 8) }) // Limit nav results
+  }
+  
+  if (filteredActions.length > 0) {
+    groups.push({ title: 'Actions', items: filteredActions })
+  }
+  
+  return groups
 })
 
-const totalPages = computed(() => Math.ceil(filteredCommands.value.length / ITEMS_PER_PAGE))
-
-const paginatedCommands = computed<Command[]>(() => {
-  const start = (currentPage.value - 1) * ITEMS_PER_PAGE
-  const end = start + ITEMS_PER_PAGE
-  return filteredCommands.value.slice(start, end)
+// Navigation Logic
+const flatItems = computed(() => {
+  return groupedResults.value.flatMap(g => g.items)
 })
 
-const showPagination = computed(() => totalPages.value > 1)
-
-const handleSearch = () => {
-  currentPage.value = 1
-  selectedIndex.value = 0
+const isItemSelected = (gIndex: number, iIndex: number) => {
+  return selectedGroupIndex.value === gIndex && selectedItemIndex.value === iIndex
 }
 
-const isHighlighted = (command: Command): boolean => {
-  if (!searchQuery.value.trim()) {
-    return false
-  }
-  const query = searchQuery.value.toLowerCase().trim()
-  return command.label.toLowerCase().includes(query) ||
-         command.domainLabel.toLowerCase().includes(query)
+const setSelectedIndex = (gIndex: number, iIndex: number) => {
+  selectedGroupIndex.value = gIndex
+  selectedItemIndex.value = iIndex
 }
 
-const handleKeydown = (event: KeyboardEvent) => {
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault()
-      if (selectedIndex.value < paginatedCommands.value.length - 1) {
-        selectedIndex.value++
+const isHighlighted = (item: CommandItem) => {
+  if (!searchQuery.value) return false
+  return item.label.toLowerCase().includes(searchQuery.value.toLowerCase())
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    const currentGroup = groupedResults.value[selectedGroupIndex.value]
+    if (!currentGroup) return
+
+    if (selectedItemIndex.value < currentGroup.items.length - 1) {
+      selectedItemIndex.value++
+    } else {
+      // Next group
+      if (selectedGroupIndex.value < groupedResults.value.length - 1) {
+        selectedGroupIndex.value++
+        selectedItemIndex.value = 0
+      } else {
+        // Loop to start
+        selectedGroupIndex.value = 0
+        selectedItemIndex.value = 0
       }
-      break
-
-    case 'ArrowUp':
-      event.preventDefault()
-      if (selectedIndex.value > 0) {
-        selectedIndex.value--
+    }
+    // Scroll into view logic could be added here
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    if (selectedItemIndex.value > 0) {
+      selectedItemIndex.value--
+    } else {
+      // Prev group
+      if (selectedGroupIndex.value > 0) {
+        selectedGroupIndex.value--
+        selectedItemIndex.value = groupedResults.value[selectedGroupIndex.value].items.length - 1
+      } else {
+        // Loop to end
+        selectedGroupIndex.value = groupedResults.value.length - 1
+        selectedItemIndex.value = groupedResults.value[selectedGroupIndex.value].items.length - 1
       }
-      break
-
-    case 'Enter':
-      event.preventDefault()
-      if (selectedIndex.value >= 0 && paginatedCommands.value[selectedIndex.value]) {
-        executeCommand(paginatedCommands.value[selectedIndex.value])
-      }
-      break
-
-    case 'PageDown':
-      event.preventDefault()
-      nextPage()
-      break
-
-    case 'PageUp':
-      event.preventDefault()
-      prevPage()
-      break
-
-    case 'Escape':
-      event.preventDefault()
-      close()
-      break
+    }
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    const currentGroup = groupedResults.value[selectedGroupIndex.value]
+    if (currentGroup && currentGroup.items[selectedItemIndex.value]) {
+      executeCommand(currentGroup.items[selectedItemIndex.value])
+    }
+  } else if (e.key === 'Escape') {
+    e.preventDefault()
+    close()
   }
 }
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-    selectedIndex.value = 0
-  }
+const executeCommand = (item: CommandItem) => {
+  item.handler()
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-    selectedIndex.value = 0
-  }
-}
-
-const executeCommand = (command: Command) => {
-  router.push(command.path)
-  close()
-}
-
+// Global Toggle
 const open = () => {
   isOpen.value = true
   searchQuery.value = ''
-  currentPage.value = 1
-  selectedIndex.value = 0
+  selectedGroupIndex.value = 0
+  selectedItemIndex.value = 0
   nextTick(() => {
     searchInputRef.value?.focus()
   })
@@ -214,20 +328,15 @@ const open = () => {
 
 const close = () => {
   isOpen.value = false
-  searchQuery.value = ''
 }
 
 const toggle = () => {
-  if (isOpen.value) {
-    close()
-  } else {
-    open()
-  }
+  isOpen.value ? close() : open()
 }
 
-const handleGlobalKeydown = (event: KeyboardEvent) => {
-  if (event.ctrlKey && event.key === 'k') {
-    event.preventDefault()
+const handleGlobalKeydown = (e: KeyboardEvent) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault()
     toggle()
   }
 }
@@ -240,18 +349,10 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleGlobalKeydown)
 })
 
-watch(isOpen, (newVal) => {
-  if (newVal) {
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = ''
-  }
-})
-
-defineExpose({
-  open,
-  close,
-  toggle
+// Watch to reset selection on search
+watch(searchQuery, () => {
+  selectedGroupIndex.value = 0
+  selectedItemIndex.value = 0
 })
 </script>
 
@@ -262,15 +363,15 @@ defineExpose({
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 15vh;
   z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 15vh;
 }
 
 .command-palette {
@@ -279,243 +380,172 @@ defineExpose({
   background: var(--artdeco-bg-surface);
   border: 1px solid var(--artdeco-border-primary);
   border-radius: var(--artdeco-radius-lg);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  max-height: 80vh;
 }
 
 .command-header {
   display: flex;
   align-items: center;
   padding: var(--artdeco-spacing-4);
-  border-bottom: 1px solid var(--artdeco-border-secondary);
-  background: var(--artdeco-bg-primary-light);
+  border-bottom: 1px solid var(--artdeco-border-subtle);
 }
 
 .search-icon {
-  color: var(--artdeco-text-tertiary);
+  color: var(--artdeco-fg-muted);
   margin-right: var(--artdeco-spacing-3);
-  flex-shrink: 0;
 }
 
 .command-input {
   flex: 1;
-  border: none;
+  font-size: 16px;
+  color: var(--artdeco-fg-primary);
   background: transparent;
-  font-size: var(--artdeco-font-size-base);
-  color: var(--artdeco-text-primary);
+  border: none;
   outline: none;
-  padding: 0;
-
+  
   &::placeholder {
-    color: var(--artdeco-text-tertiary);
+    color: var(--artdeco-fg-muted);
   }
 }
 
 .shortcut-hint {
-  font-size: var(--artdeco-font-size-xs);
-  color: var(--artdeco-text-tertiary);
-  margin-left: var(--artdeco-spacing-3);
-  white-space: nowrap;
+  font-size: 12px;
+  color: var(--artdeco-fg-muted);
+  border: 1px solid var(--artdeco-border-subtle);
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
 .command-body {
-  max-height: 480px;
+  flex: 1;
   overflow-y: auto;
-  padding: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-2) 0;
 }
 
 .no-results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: var(--artdeco-spacing-8);
-  color: var(--artdeco-text-tertiary);
-
+  text-align: center;
+  color: var(--artdeco-fg-muted);
+  
   .no-results-icon {
     margin-bottom: var(--artdeco-spacing-4);
-    opacity: 0.3;
+    opacity: 0.5;
   }
+}
 
-  p {
-    font-size: var(--artdeco-font-size-sm);
+.group-header {
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--artdeco-fg-muted);
+  letter-spacing: 0.05em;
+  margin-top: var(--artdeco-spacing-2);
+  
+  &:first-child {
+    margin-top: 0;
   }
 }
 
 .command-item {
   display: flex;
   align-items: center;
-  padding: var(--artdeco-spacing-3);
-  margin-bottom: var(--artdeco-spacing-1);
-  border-radius: var(--artdeco-radius-md);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
   cursor: pointer;
-  transition: all 0.15s ease;
-  border: 1px solid transparent;
-
-  &:hover {
-    background: var(--artdeco-bg-surface-hover);
-    border-color: var(--artdeco-border-secondary);
-  }
-
+  border-left: 2px solid transparent;
+  transition: background 0.1s;
+  
   &.active {
-    background: var(--artdeco-bg-primary);
-    color: var(--artdeco-text-on-primary);
-    border-color: var(--artdeco-border-active);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    background: var(--artdeco-bg-elevated);
+    border-left-color: var(--artdeco-gold-primary);
+    
+    .command-icon {
+      color: var(--artdeco-gold-primary);
+    }
   }
-
-  &.highlighted {
-    font-weight: 600;
+  
+  .command-icon {
+    color: var(--artdeco-fg-muted);
+    margin-right: var(--artdeco-spacing-3);
   }
-
-  &:last-child {
-    margin-bottom: 0;
+  
+  .command-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
-}
-
-.command-icon {
-  margin-right: var(--artdeco-spacing-3);
-  flex-shrink: 0;
-  opacity: 0.8;
-}
-
-.command-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-1);
-}
-
-.command-label {
-  font-size: var(--artdeco-font-size-sm);
-  color: var(--artdeco-text-primary);
-  font-weight: 500;
-}
-
-.command-domain {
-  font-size: var(--artdeco-font-size-xs);
-  color: var(--artdeco-text-tertiary);
-}
-
-.arrow-icon {
-  opacity: 0.5;
-  margin-left: var(--artdeco-spacing-3);
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--artdeco-spacing-3);
-  padding-top: var(--artdeco-spacing-4);
-  margin-top: var(--artdeco-spacing-3);
-  border-top: 1px solid var(--artdeco-border-secondary);
-}
-
-.pagination-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--artdeco-spacing-2);
-  background: var(--artdeco-bg-surface-hover);
-  border: 1px solid var(--artdeco-border-secondary);
-  border-radius: var(--artdeco-radius-sm);
-  color: var(--artdeco-text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--artdeco-bg-primary);
-    border-color: var(--artdeco-border-active);
-    color: var(--artdeco-text-on-primary);
+  
+  .command-label {
+    font-size: 14px;
+    color: var(--artdeco-fg-primary);
   }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  
+  .command-sublabel {
+    font-size: 12px;
+    color: var(--artdeco-fg-muted);
   }
-}
-
-.pagination-info {
-  font-size: var(--artdeco-font-size-sm);
-  color: var(--artdeco-text-tertiary);
-  min-width: 60px;
-  text-align: center;
+  
+  .command-shortcut {
+    kbd {
+      font-family: var(--artdeco-font-mono);
+      font-size: 11px;
+      padding: 2px 4px;
+      background: var(--artdeco-bg-global);
+      border: 1px solid var(--artdeco-border-subtle);
+      border-radius: 3px;
+      color: var(--artdeco-fg-muted);
+    }
+  }
+  
+  .arrow-icon {
+    color: var(--artdeco-fg-muted);
+    opacity: 0.5;
+  }
 }
 
 .command-footer {
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  background: var(--artdeco-bg-elevated);
+  border-top: 1px solid var(--artdeco-border-subtle);
+  font-size: 11px;
+  color: var(--artdeco-fg-muted);
   display: flex;
-  justify-content: center;
-  padding: var(--artdeco-spacing-3);
-  background: var(--artdeco-bg-primary-light);
-  border-top: 1px solid var(--artdeco-border-secondary);
+  justify-content: flex-end;
 }
 
 .keyboard-shortcuts {
   display: flex;
   gap: var(--artdeco-spacing-4);
-  flex-wrap: wrap;
-  justify-content: center;
+  
+  .shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    kbd {
+      font-family: var(--artdeco-font-mono);
+      background: var(--artdeco-bg-surface);
+      border: 1px solid var(--artdeco-border-subtle);
+      border-radius: 3px;
+      padding: 1px 4px;
+      min-width: 18px;
+      text-align: center;
+    }
+  }
 }
 
-.shortcut-item {
-  display: flex;
-  align-items: center;
-  gap: var(--artdeco-spacing-2);
-  font-size: var(--artdeco-font-size-xs);
-  color: var(--artdeco-text-tertiary);
-}
-
-kbd {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 6px;
-  background: var(--artdeco-bg-surface);
-  border: 1px solid var(--artdeco-border-secondary);
-  border-radius: var(--artdeco-radius-sm);
-  font-size: var(--artdeco-font-size-xs);
-  font-family: var(--artdeco-font-family-mono);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-// Fade transition
+/* Transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-// Scrollbar styling
-.command-body {
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--artdeco-bg-surface);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--artdeco-border-secondary);
-    border-radius: 3px;
-
-    &:hover {
-      background: var(--artdeco-border-hover);
-    }
-  }
 }
 </style>

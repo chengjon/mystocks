@@ -1,0 +1,76 @@
+// web/frontend/src/styles/artdeco-typography.css
+
+/* ArtDeco Base Typography */
+
+body {
+  font-family: var(--artdeco-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+  color: var(--artdeco-fg-primary);
+  background: var(--artdeco-bg-global);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--artdeco-gold-primary); /* Gold headings */
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.25rem; letter-spacing: -0.025em; } /* 36px */
+h2 { font-size: 1.875rem; letter-spacing: -0.025em; } /* 30px */
+h3 { font-size: 1.5rem; letter-spacing: -0.025em; }    /* 24px */
+h4 { font-size: 1.25rem; }  /* 20px */
+h5 { font-size: 1.125rem; } /* 18px */
+h6 { font-size: 1rem; }     /* 16px */
+
+/* Text Styles */
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+
+/* Weights */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Mono (Numbers/Code) */
+.font-mono {
+  font-family: var(--artdeco-font-mono, monospace);
+}
+
+/* Trading Colors (Semantic Text) */
+.text-up { color: var(--artdeco-up); }
+.text-down { color: var(--artdeco-down); }
+.text-neutral { color: var(--artdeco-neutral); }
+.text-gold { color: var(--artdeco-gold-primary); }
+.text-muted { color: var(--artdeco-fg-muted); }
+
+/* Links */
+a {
+  color: var(--artdeco-gold-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--artdeco-gold-hover);
+  text-decoration: underline;
+}
+
+/* Utility */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

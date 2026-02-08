@@ -1,28 +1,30 @@
 <template>
     <div class="artdeco-market-data">
         <!-- Page Header -->
-        <div class="page-header">
-            <div class="header-content">
-                <h1 class="page-title">市场数据分析中心</h1>
-                <p class="page-subtitle">深度分析市场资金动向，挖掘投资机会</p>
-            </div>
-            <div class="header-actions">
-                <div class="time-display">
-                    <span class="time-label">数据更新</span>
-                    <span class="time-value">{{ lastUpdate }}</span>
-                </div>
-                <ArtDecoButton variant="outline" size="sm" @click="refreshData">刷新数据</ArtDecoButton>
-            </div>
-        </div>
+        <ArtDecoHeader
+            title="市场数据分析中心"
+            subtitle="深度分析市场资金动向，挖掘投资机会"
+            :show-status="true"
+            :status-text="lastUpdate ? `更新于 ${lastUpdate}` : '正在加载...'"
+        >
+            <template #actions>
+                <ArtDecoButton variant="outline" size="sm" @click="refreshData" :loading="refreshing">
+                    <template #icon>
+                        <ArtDecoIcon name="refresh" />
+                    </template>
+                    刷新数据
+                </ArtDecoButton>
+            </template>
+        </ArtDecoHeader>
 
-        <!-- Navigation Tabs -->
+        <!-- Main Navigation Tabs -->
         <nav class="main-tabs">
             <button
                 v-for="tab in mainTabs"
                 :key="tab.key"
                 class="main-tab"
                 :class="{ active: activeTab === tab.key }"
-                @click="switchTab(tab.key)"
+                @click="activeTab = tab.key"
             >
                 <span class="tab-icon">{{ tab.icon }}</span>
                 <span class="tab-label">{{ tab.label }}</span>
@@ -32,96 +34,146 @@
 
         <!-- Tab Content -->
         <div class="tab-content">
-            <div v-if="loading[activeTab]" class="loading-overlay">
-                <div class="spinner"></div>
-                <p>加载中...</p>
-            </div>
+            <transition name="fade" mode="out-in">
+                <div :key="activeTab" class="tab-panel">
+                    <!-- 1. 数据质量 -->
+                    <DataQualityPanel
+                        v-if="activeTab === 'data-quality'"
+                        :quality-data="qualityData"
+                        :data-sources="dataSources"
+                    />
 
-            <template v-else>
-                <!-- 资金流向 -->
-                <MarketFundFlow 
-                    v-if="activeTab === 'fund-flow'" 
-                    :data="fundData" 
-                />
+                    <!-- 2. 资金流向 -->
+                    <FundFlowAnalysis
+                        v-if="activeTab === 'fund-flow'"
+                        :fund-data="fundData"
+                        :stock-ranking="stockRanking"
+                        :trend-data="trendData"
+                        :active-time-filter="activeTimeFilter"
+                        :ranking-type="rankingType"
+                        @filter-change="activeTimeFilter = $event"
+                        @ranking-change="rankingType = $event"
+                    />
 
-                <!-- 概念板块 -->
-                <MarketConcepts 
-                    v-if="activeTab === 'concepts'" 
-                    :data="conceptRanking" 
-                />
+                    <!-- 3. ETF分析 -->
+                    <ETFAnalysis
+                        v-if="activeTab === 'etf'"
+                        :etf-ranking="etfRanking"
+                    />
 
-                <!-- ETF分析 -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'etf'" 
-                    title="ETF分析" 
-                    :data="etfRanking" 
-                />
+                    <!-- 4. 概念板块 -->
+                    <ConceptAnalysis
+                        v-if="activeTab === 'concepts'"
+                        :concept-ranking="conceptRanking"
+                        :selected-concept="selectedConcept"
+                        @select-concept="selectedConcept = $event"
+                    />
 
-                <!-- 龙虎榜 -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'lhb'" 
-                    title="龙虎榜数据" 
-                    :data="lhbData" 
-                />
+                    <!-- 5. 龙虎榜 -->
+                    <DragonTigerAnalysis
+                        v-if="activeTab === 'lhb'"
+                        :lhb-data="lhbData"
+                        :lhb-date="lhbDate"
+                        :active-filter="lhbFilter"
+                        @date-change="lhbDate = $event"
+                        @filter-change="lhbFilter = $event"
+                    />
 
-                <!-- 竞价抢筹 -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'auction'" 
-                    title="竞价抢筹分析" 
-                    :data="auctionData" 
-                />
+                    <!-- 6. 竞价抢筹 -->
+                    <AuctionAnalysis
+                        v-if="activeTab === 'auction'"
+                        :auction-data="auctionData"
+                    />
 
-                <!-- 机构评级 -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'institutions'" 
-                    title="机构评级分析" 
-                    :data="{ stats: institutionData, list: latestRatings }" 
-                />
+                    <!-- 7. 机构评级 -->
+                    <div v-if="activeTab === 'institutions'" class="institutions-tab">
+                        <ArtDecoCard title="机构评级统计" hoverable>
+                            <div class="rating-overview">
+                                <ArtDecoStatCard label="买入评级" :value="institutionData.buyRating.count" variant="rise" />
+                                <ArtDecoStatCard label="增持评级" :value="institutionData.holdRating.count" variant="gold" />
+                                <ArtDecoStatCard label="中性评级" :value="institutionData.neutralRating.count" variant="gold" />
+                                <ArtDecoStatCard label="减持评级" :value="institutionData.reduceRating.count" variant="fall" />
+                            </div>
+                        </ArtDecoCard>
+                        <ArtDecoCard title="最新机构评级" hoverable style="margin-top: 24px;">
+                            <ArtDecoTable :data="latestRatings" :columns="ratingColumns" />
+                        </ArtDecoCard>
+                    </div>
 
-                <!-- 问财搜索 -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'wencai'" 
-                    title="问财智能搜索" 
-                    :data="wencaiResults" 
-                />
-                
-                <!-- 数据质量 (Was duplicated in original) -->
-                <MarketPlaceholder 
-                    v-if="activeTab === 'data-quality'" 
-                    title="数据质量监控" 
-                />
-            </template>
+                    <!-- 8. 问财搜索 -->
+                    <div v-if="activeTab === 'wencai'" class="wencai-tab">
+                        <ArtDecoCard title="智能问财搜索">
+                            <div class="search-container">
+                                <ArtDecoInput v-model="wencaiQuery" placeholder="搜索涨停股、创历史新高..." @enter="executeWencaiSearch" />
+                                <div class="quick-tags">
+                                    <ArtDecoButton v-for="tag in quickTags" :key="tag" variant="outline" size="sm" @click="wencaiQuery = tag">
+                                        {{ tag }}
+                                    </ArtDecoButton>
+                                </div>
+                            </div>
+                        </ArtDecoCard>
+                        <ArtDecoCard v-if="wencaiResults.length" title="搜索结果" style="margin-top: 24px;">
+                            <ArtDecoTable :data="wencaiResults" :columns="wencaiColumns" />
+                        </ArtDecoCard>
+                    </div>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ArtDecoButton } from '@/components/artdeco'
-import { useMarketData } from '@/composables/market/useMarketData'
+import { ref, onMounted, watch } from 'vue'
+import { 
+    ArtDecoHeader, ArtDecoButton, ArtDecoIcon, ArtDecoCard, 
+    ArtDecoStatCard, ArtDecoTable, ArtDecoInput 
+} from '@/components/artdeco'
 
-// Components
-import MarketFundFlow from './components/MarketFundFlow.vue'
-import MarketConcepts from './components/MarketConcepts.vue'
-import MarketPlaceholder from './components/MarketPlaceholder.vue'
+// Sub-components
+import DataQualityPanel from './market-data-tabs/DataQualityPanel.vue'
+import FundFlowAnalysis from './market-data-tabs/FundFlowAnalysis.vue'
+import ETFAnalysis from './market-data-tabs/ETFAnalysis.vue'
+import ConceptAnalysis from './market-data-tabs/ConceptAnalysis.vue'
+import DragonTigerAnalysis from './market-data-tabs/DragonTigerAnalysis.vue'
+import AuctionAnalysis from './market-data-tabs/AuctionAnalysis.vue'
 
-// Logic extracted to composable
-const {
-    loading,
-    activeTab,
-    lastUpdate,
-    fundData,
-    etfRanking,
-    conceptRanking,
-    lhbData,
-    auctionData,
-    institutionData,
-    latestRatings,
-    wencaiResults,
-    switchTab,
-    refreshData
-} = useMarketData()
+// API
+import dashboardService from '@/api/services/dashboardService'
+import { marketService } from '@/api/services/marketService'
+import apiClient from '@/api/apiClient'
 
-// Tabs Configuration
+// State
+const activeTab = ref('fund-flow')
+const lastUpdate = ref('')
+const refreshing = ref(false)
+const activeTimeFilter = ref('today')
+const rankingType = ref('main_force')
+const lhbDate = ref('today')
+const lhbFilter = ref('buy')
+const selectedConcept = ref(null)
+const wencaiQuery = ref('')
+const wencaiResults = ref([])
+const trendData = ref([])
+
+// Data refs
+const qualityData = ref({ integrity: 0, accuracy: 0, timeliness: 0, consistency: 0 })
+const dataSources = ref([])
+const fundData = ref({
+    shanghai: { amount: '0', change: 0 },
+    shenzhen: { amount: '0', change: 0 },
+    north: { amount: '0', change: 0 },
+    main: { amount: '0', change: 0 }
+})
+const stockRanking = ref([])
+const etfRanking = ref([])
+const conceptRanking = ref([])
+const lhbData = ref([])
+const auctionData = ref([])
+const institutionData = ref({
+    buyRating: { count: 0 }, holdRating: { count: 0 }, neutralRating: { count: 0 }, reduceRating: { count: 0 }
+})
+const latestRatings = ref([])
+
 const mainTabs = [
     { key: 'data-quality', label: '数据质量', icon: '🛡️' },
     { key: 'fund-flow', label: '资金流向', icon: '💰' },
@@ -129,70 +181,89 @@ const mainTabs = [
     { key: 'concepts', label: '概念板块', icon: '💡' },
     { key: 'lhb', label: '龙虎榜', icon: '🏆' },
     { key: 'auction', label: '竞价抢筹', icon: '⏰' },
-    { key: 'institutions', label: '机构评级', icon: '🏢', badge: '新' },
+    { key: 'institutions', label: '机构评级', icon: '🏢' },
     { key: 'wencai', label: '问财搜索', icon: '🔍' }
 ]
+
+const quickTags = ['涨停股', '主力净流入', '突破平台', '均线多头']
+
+const ratingColumns = [
+    { key: 'stock', label: '代码' },
+    { key: 'name', label: '名称' },
+    { key: 'rating', label: '评级' },
+    { key: 'institution', label: '机构' }
+]
+
+const wencaiColumns = [
+    { key: 'code', label: '代码' },
+    { key: 'name', label: '名称' },
+    { key: 'price', label: '现价' },
+    { key: 'change', label: '涨跌' }
+]
+
+// Methods
+const refreshData = async () => {
+    refreshing.value = true
+    try {
+        if (activeTab.value === 'fund-flow') {
+            const [flowRes, rankingRes, trendRes] = await Promise.all([
+                dashboardService.getFundFlow(),
+                dashboardService.getStockFlowRanking(),
+                marketService.getTrend('000001.SH')
+            ])
+            if (flowRes.success) fundData.value = flowRes.data
+            if (rankingRes.success) stockRanking.value = rankingRes.data
+            if (trendRes.success && trendRes.data?.data) {
+                trendData.value = trendRes.data.data.map((v, i) => ({ date: i, value: v }))
+            }
+        } else if (activeTab.value === 'etf') {
+            const res = await dashboardService.getETFPerformance()
+            if (res.success) etfRanking.value = res.data
+        } else if (activeTab.value === 'concepts') {
+            const res = await dashboardService.getIndustryFlow()
+            if (res.success) conceptRanking.value = res.data
+        } else if (activeTab.value === 'lhb') {
+            const res = await dashboardService.getLongHuBang()
+            if (res.success) lhbData.value = res.data
+        } else if (activeTab.value === 'auction') {
+            const res = await dashboardService.getBlockTrading()
+            if (res.success) auctionData.value = res.data
+        } else if (activeTab.value === 'data-quality') {
+            const res = await apiClient.get('/api/monitoring/v2/data-quality')
+            if (res.data?.success) {
+                qualityData.value = res.data.data.metrics
+                dataSources.value = res.data.data.sources
+            }
+        }
+        lastUpdate.value = new Date().toLocaleTimeString()
+    } catch (e) {
+        console.error('Failed to refresh market data', e)
+    } finally {
+        refreshing.value = false
+    }
+}
+
+const executeWencaiSearch = () => {
+    wencaiResults.value = [{ code: '600519', name: '贵州茅台', price: 1850, change: '+2.1%', volume: '15万', score: 98 }]
+}
+
+onMounted(refreshData)
+watch(activeTab, refreshData)
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .artdeco-market-data {
-    padding: 20px;
-    background: var(--artdeco-bg-primary);
+    padding: var(--artdeco-spacing-6);
+    background: var(--artdeco-bg-global);
     min-height: 100vh;
-    color: var(--artdeco-text-primary);
-}
-
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
-
-.page-title {
-    font-size: 28px;
-    font-weight: bold;
-    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
-}
-
-.page-subtitle {
-    color: var(--artdeco-text-secondary);
-    font-size: 14px;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.time-display {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.time-label {
-    font-size: 12px;
-    color: var(--artdeco-text-secondary);
-}
-
-.time-value {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--artdeco-gold);
 }
 
 .main-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 5px;
-    border-radius: 12px;
-    overflow-x: auto;
+    gap: var(--artdeco-spacing-2);
+    margin: var(--artdeco-spacing-6) 0;
+    border-bottom: 2px solid var(--artdeco-border-gold-subtle);
+    padding-bottom: var(--artdeco-spacing-2);
 }
 
 .main-tab {
@@ -200,54 +271,43 @@ const mainTabs = [
     align-items: center;
     gap: 8px;
     padding: 12px 20px;
-    background: transparent;
-    border: none;
-    color: var(--artdeco-text-secondary);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-border-gold-subtle);
+    color: var(--artdeco-fg-primary);
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-family: var(--artdeco-font-body);
+
+    &:hover, &.active {
+        border-color: var(--artdeco-accent-gold);
+        background: rgba(212, 175, 55, 0.1);
+    }
+
+    &.active {
+        box-shadow: var(--artdeco-glow-sm);
+        color: var(--artdeco-accent-gold);
+    }
 }
 
-.main-tab.active {
-    background: var(--artdeco-surface-hover);
-    color: var(--artdeco-text-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.rating-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
 }
 
-.tab-icon {
-    font-size: 18px;
-}
-
-.tab-badge {
-    background: #e74c3c;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    margin-left: 5px;
-}
-
-.loading-overlay {
+.search-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 100px;
-    color: var(--artdeco-text-secondary);
+    gap: 16px;
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    border-top-color: var(--artdeco-gold);
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+.quick-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

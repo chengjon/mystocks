@@ -51,42 +51,98 @@ logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelnam
 logger = structlog.get_logger()
 
 
-# SECURITY FIX 1.2: CSRF Token管理
+# SECURITY FIX 1.2: CSRF Token管理 - Redis持久化（支持多worker共享和重启恢复）
 class CSRFTokenManager:
-    """CSRF Token管理器 - 生成和验证CSRF tokens"""
+    """CSRF Token管理器 - Redis优先，内存回退"""
 
     def __init__(self):
-        self.tokens = {}  # token存储（生产环境应使用数据库或Redis）
+        self.tokens = {}  # 内存回退存储（Redis不可用时使用）
         self.token_timeout = 3600  # Token有效期 1小时
+        self._redis_prefix = "csrf_token:"
+
+    def _get_redis(self):
+        """获取Redis客户端，不可用时返回None"""
+        try:
+            from app.core.redis_client import get_redis_client
+            client = get_redis_client()
+            if client is not None:
+                client.ping()
+                return client
+        except Exception:
+            pass
+        return None
 
     def generate_token(self) -> str:
         """生成新的CSRF token"""
         token = secrets.token_urlsafe(32)
-        self.tokens[token] = {"created_at": time.time(), "used": False}
+        created_at = time.time()
+
+        redis_client = self._get_redis()
+        if redis_client:
+            try:
+                import json
+                token_data = json.dumps({"created_at": created_at, "used": False})
+                redis_client.setex(f"{self._redis_prefix}{token}", self.token_timeout, token_data)
+                return token
+            except Exception:
+                pass
+
+        # 回退到内存
+        self.tokens[token] = {"created_at": created_at, "used": False}
         return token
 
     def validate_token(self, token: str) -> bool:
         """验证CSRF token"""
-        if not token or token not in self.tokens:
+        if not token:
+            return False
+
+        redis_client = self._get_redis()
+        if redis_client:
+            try:
+                import json
+                key = f"{self._redis_prefix}{token}"
+                token_data_raw = redis_client.get(key)
+                if not token_data_raw:
+                    return False
+
+                token_info = json.loads(token_data_raw)
+
+                # 检查是否已使用（防止重放攻击）
+                if token_info.get("used", False):
+                    return False
+
+                # 检查是否过期（Redis TTL已处理，但双重检查）
+                if time.time() - token_info["created_at"] > self.token_timeout:
+                    redis_client.delete(key)
+                    return False
+
+                # 标记为已使用
+                token_info["used"] = True
+                remaining_ttl = redis_client.ttl(key)
+                if remaining_ttl > 0:
+                    redis_client.setex(key, remaining_ttl, json.dumps(token_info))
+                return True
+            except Exception:
+                pass
+
+        # 回退到内存
+        if token not in self.tokens:
             return False
 
         token_info = self.tokens[token]
 
-        # 检查是否已使用（防止重放攻击）
         if token_info.get("used", False):
             return False
 
-        # 检查是否过期
         if time.time() - token_info["created_at"] > self.token_timeout:
             del self.tokens[token]
             return False
 
-        # 标记为已使用（防止重放攻击）
         token_info["used"] = True
         return True
 
     def cleanup_expired_tokens(self):
-        """清理过期的tokens"""
+        """清理过期的tokens（Redis自动通过TTL清理，此方法清理内存回退）"""
         current_time = time.time()
         expired_tokens = [
             token for token, info in self.tokens.items() if current_time - info["created_at"] > self.token_timeout
@@ -290,8 +346,7 @@ else:
 # 配置 CORS - 白名单模式，仅允许明确的前端域名
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    # allow_origins=settings.cors_origins,  # 原配置暂时注释
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],  # 允许所有方法 (GET, POST, OPTIONS, etc.)
     allow_headers=["*"],  # 允许所有头 (Content-Type, Authorization, etc.)
@@ -606,233 +661,99 @@ from .api import (
 )
 from .api.v1 import pool_monitoring  # Phase 3 Task 19: Connection Pool Monitoring
 
-# 包含路由
-app.include_router(data.router, prefix="/api/v1/data", tags=["data"])
-app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])  # 数据质量监控
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])  # 更新至v1标准版本
-app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])  # 前端兼容路由
-app.include_router(system.router, prefix="/api/system", tags=["system"])
-app.include_router(indicators.router, prefix="/api/indicators", tags=["indicators"])
-app.include_router(websocket.router)  # 🆕 挂载 WebSocket 路由
-app.include_router(market.router, prefix="/api/v1/market", tags=["market"])
-app.include_router(market_v2.router, tags=["market-v2"])  # market V2路由（东方财富直接API）
-app.include_router(tdx.router, tags=["tdx"])  # TDX路由已包含prefix
-app.include_router(metrics.router, prefix="/api", tags=["metrics"])  # Prometheus metrics
-app.include_router(
-    pool_monitoring.router, prefix="/api", tags=["pool-monitoring"]
-)  # Phase 3 Task 19: Connection Pool Monitoring
-app.include_router(cache.router, prefix="/api", tags=["cache"])  # 缓存管理 (Task 2.2)
-app.include_router(tasks.router, tags=["tasks"])  # 任务管理
-# app.include_router(trade.router, prefix="/api", tags=["trade"])  # 交易管理 - TODO: 模块不存在，待实现
-app.include_router(wencai.router)  # 问财筛选路由，已包含prefix /api/market/wencai
+# 导入版本映射 (Phase 3: API 契约标准化)
+from .api.VERSION_MAPPING import VERSION_MAPPING
 
-# OpenStock 迁移功能路由
-app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])  # 股票搜索
-app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])  # 自选股管理
-app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])  # TradingView widgets
-app.include_router(notification.router, prefix="/api/notification", tags=["notification"])  # 邮件通知
+# --- 1. 标准化路由注册 (基于 VERSION_MAPPING) ---
+# 定义模块与路由器的映射
+router_modules = {
+    "auth": auth.router,
+    "market": market.router,
+    "market_v2": market_v2.router,
+    "strategy": strategy.router,
+    "monitoring": monitoring.router,
+    "technical": technical_analysis.router,
+    "data": data.router,
+    "system": system.router,
+    "indicators": indicators.router,
+    "tdx": tdx.router,
+    "announcement": announcement.router,
+}
 
-# PyProfiling 机器学习功能路由
-app.include_router(ml.router, prefix="/api", tags=["machine-learning"])  # ML预测和分析
+# 动态注册标准路由
+for key, config in VERSION_MAPPING.items():
+    if key in router_modules:
+        app.include_router(
+            router_modules[key],
+            prefix=config["prefix"],
+            tags=config["tags"]
+        )
+        logger.info(f"✅ Registered {key} router at {config['prefix']}")
 
-# InStock 策略系统路由
-app.include_router(strategy.router, tags=["strategy"])  # 股票策略筛选
+# --- 2. 兼容性与特殊路由注册 ---
+# 身份验证兼容路由
+app.include_router(auth.compat_router, prefix="/api/auth", tags=["auth-compat"])
 
-#  实时监控系统路由
-app.include_router(monitoring.router, prefix="/api/monitoring", tags=["monitoring"])
+# 基础与监控类 (通常挂在 /api 下)
+app.include_router(data_quality.router, prefix="/api", tags=["data-quality"])
+app.include_router(metrics.router, prefix="/api", tags=["metrics"])
+app.include_router(pool_monitoring.router, prefix="/api", tags=["pool-monitoring"])
+app.include_router(cache.router, prefix="/api", tags=["cache"])
+app.include_router(ml.router, prefix="/api", tags=["machine-learning"])
+app.include_router(realtime_market.router, prefix="/api", tags=["realtime-market"])
+app.include_router(signal_monitoring.router, prefix="/api", tags=["signal-monitoring"])
+app.include_router(announcement.router, prefix="/api", tags=["announcement"])
+app.include_router(health.router, prefix="/api", tags=["health"])
 
-# Phase 12.3: Real-time Data Stream Integration
-app.include_router(realtime_market.router, prefix="/api", tags=["realtime-market"])  # 实时行情和持仓市值
+# 无前缀或自包含前缀的路由
+app.include_router(websocket.router)
+app.include_router(tasks.router, tags=["tasks"])
+app.include_router(wencai.router)
+app.include_router(dashboard.router, tags=["dashboard"])
+app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])
+app.include_router(multi_source.router, tags=["multi-source"])
 
-# 智能量化监控系统路由 (2026-01-07) - v1版本
-app.include_router(monitoring_watchlists.router, prefix="/api/v1", tags=["monitoring-watchlists"])  # 清单管理
-app.include_router(monitoring_analysis.router, prefix="/api/v1", tags=["monitoring-analysis"])  # 组合分析与健康度计算
+# OpenStock / 迁移类
+app.include_router(stock_search.router, prefix="/api/stock-search", tags=["stock-search"])
+app.include_router(watchlist.router, prefix="/api/watchlist", tags=["watchlist"])
+app.include_router(tradingview.router, prefix="/api/tradingview", tags=["tradingview"])
+app.include_router(notification.router, prefix="/api/notification", tags=["notification"])
 
-# 信号监控API路由 (2026-01-08) - Phase 2
-app.include_router(signal_monitoring.router, prefix="/api", tags=["signal-monitoring"])  # 信号历史、质量报告、实时监控
+# 智能量化监控扩展 (v1 规范)
+app.include_router(monitoring_watchlists.router, prefix="/api/v1", tags=["monitoring-watchlists"])
+app.include_router(monitoring_analysis.router, prefix="/api/v1", tags=["monitoring-analysis"])
 
-# CLI-5: GPU监控路由 (Phase 6 - T5.2)
-# app.include_router(gpu_monitoring.router, tags=["gpu-monitoring"])  # GPU监控仪表板 - TODO: 模块不存在，待实现
+# Week 1/2 核心功能
+app.include_router(strategy_management.router)
+app.include_router(risk_management.router)
+app.include_router(sse_endpoints.router)
+app.include_router(industry_concept_analysis.router)
 
-# 技术分析系统路由 (Phase 2)
-app.include_router(technical_analysis.router, tags=["technical-analysis"])  # 增强技术分析
+# Phase 3/4 数据治理
+app.include_router(contract.router)
+app.include_router(data_source_registry.router)
+app.include_router(data_source_config.router)
+app.include_router(data_lineage.router)
+app.include_router(governance_dashboard.router)
+app.include_router(indicator_registry.router)
 
-app.include_router(dashboard.router, tags=["dashboard"])  # 仪表盘API
-app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])  # 策略管理API
-
-# Mock API路由 (仅开发环境注册，生产环境禁用)
+# Mock API (仅开发环境)
 if settings.use_mock_apis:
-    app.include_router(strategy_list_mock.router)  # Mock策略列表 (/api/mock/strategy)
-    logger.info("✅ Mock API routes registered (USE_MOCK_DATA=true)")
-else:
-    logger.info("ℹ️  Mock API routes disabled (USE_MOCK_DATA=false) - Using real APIs")
-
-#  多数据源系统路由 (Phase 3)
-app.include_router(multi_source.router, tags=["multi-source"])  # 多数据源管理
-app.include_router(announcement.router, prefix="/api", tags=["announcement"])  # 公告监控
-
-# Week 1 Architecture-Compliant APIs (策略管理和风险管理)
-app.include_router(strategy_management.router)  # 策略管理 (MyStocksUnifiedManager + MonitoringDatabase)
-app.include_router(risk_management.router)  # 风险管理 (MyStocksUnifiedManager + MonitoringDatabase)
-
-# Week 2 SSE Real-time Push (实时推送)
-app.include_router(sse_endpoints.router)  # SSE实时推送 (training, backtest, alerts, dashboard)
-
-# 行业概念分析API
-app.include_router(industry_concept_analysis.router)  # 行业概念分析
-
-# Phase 4: API契约管理
-app.include_router(contract.router)  # 契约版本管理、差异检测、验证
-
-# 数据源管理V2.0 API (数据源注册表管理)
-app.include_router(data_source_registry.router)  # 数据源搜索、测试、健康检查
-
-# 数据源配置CRUD API (Phase 3: 配置版本管理)
-app.include_router(data_source_config.router)  # 数据源配置CRUD、版本历史、回滚、热重载
-
-# 数据血缘追踪API (Phase 3: 数据血缘和影响分析)
-app.include_router(data_lineage.router)  # 血缘记录、上游/下游查询、影响分析
-
-# 数据治理仪表板数据API (Phase 3: 治理仪表板)
-app.include_router(governance_dashboard.router)  # 数据质量、血缘统计、资产目录、合规指标
-
-# 指标管理V2.1 API (指标注册表管理)
-app.include_router(indicator_registry.router)  # 指标搜索、计算、详情
-
-# 健康检查API
-app.include_router(health.router, prefix="/api")
+    app.include_router(strategy_list_mock.router)
+    logger.info("✅ Mock API routes registered")
 
 logger.info("✅ All API routers registered successfully")
 
-
-def find_available_port(start_port: int, end_port: int) -> int:
-    """在指定范围内查找可用端口"""
-    import socket
-
-    for port in range(start_port, end_port + 1):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            result = sock.connect_ex(("localhost", port))
-            if result != 0:  # 端口未被占用
-                return port
-    raise RuntimeError(f"No available port found in range {start_port}-{end_port}")
-
-
 if __name__ == "__main__":
-    import sys
-
     import uvicorn
-
     from .core.config import settings
-
-    # 导入OpenSpec环境配置
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-    # 尝试导入OpenSpec配置
-    try:
-        openspec_config = {
-            "POSTGRESQL_HOST": os.getenv("POSTGRESQL_HOST", "localhost"),
-            "POSTGRESQL_PORT": int(os.getenv("POSTGRESQL_PORT", 5438)),
-            "POSTGRESQL_USER": os.getenv("POSTGRESQL_USER", "postgres"),
-            "POSTGRESQL_PASSWORD": os.getenv("POSTGRESQL_PASSWORD", "your-postgresql-password"),
-            "POSTGRESQL_DATABASE": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
-        }
-        # 更新环境变量
-        for key, value in openspec_config.items():
-            if os.getenv(key) is None:
-                os.environ[key] = value
-                logger.info("设置环境变量: %s=%s", key, value)
-    except Exception as e:
-        logger.warning("⚠️ 设置OpenSpec环境变量失败: %s", e)
-
-    # 初始化异步监控数据库
-    async def startup_event():
-        """启动时初始化监控数据库连接池"""
-        try:
-            from src.monitoring.infrastructure.postgresql_async_v3 import initialize_postgres_async
-
-            success = await initialize_postgres_async()
-            if success:
-                logger.info("✅ 监控数据库连接池已初始化 (Phase 1.4)")
-            else:
-                logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
-        except Exception as e:
-            logger.error("❌ 启动监控数据库失败: %s", e)
-            # 不阻止应用启动
-            logger.warning("⚠️ 健康度评分功能将不可用")
-
-    # 关闭异步监控数据库
-    async def shutdown_event():
-        """关闭时清理监控数据库连接池"""
-        try:
-            from src.monitoring.infrastructure.postgresql_async_v3 import close_postgres_async
-
-            await close_postgres_async()
-            logger.info("✅ 监控数据库连接已关闭 (Phase 1.4)")
-        except Exception as e:
-            logger.error("❌ 关闭监控数据库失败: %s", e)
-
-    # 尝试使用异步生命周期（如果可用）
-
-    try:
-        from fastapi import FastAPI
-
-        app = FastAPI()
-
-        # 添加启动/关闭事件
-        @app.on_event("startup")
-        async def on_startup():
-            logger.info("🚀 MyStocks 应用启动中...")
-            # 初始化监控数据库
-            await startup_event()
-
-        @app.on_event("shutdown")
-        async def on_shutdown():
-            logger.info("🏹️ MyStocks 应用关闭中...")
-            await shutdown_event()
-
-        # 路由配置
-        @app.get("/health")
-        async def health_check_v2():
-            try:
-                # 检查异步数据库连接
-                from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-                postgres_async = get_postgres_async()
-
-                if postgres_async.is_connected():
-                    database_status = "✅ PostgreSQL (监控模块)"
-                else:
-                    database_status = "❌ PostgreSQL (监控模块未连接)"
-
-                return {
-                    "status": "healthy",
-                    "app": "mystocks-backend",
-                    "version": "3.0",
-                    "database": database_status,
-                    "gpu": "GPU加速引擎已集成",
-                    "timestamp": "2026-01-07",
-                }
-            except Exception as e:
-                logger.error("❌ 健康检查失败: %s", e)
-                return {"status": "unhealthy", "app": "mystocks-backend", "version": "3.0", "error": str(e)}
-
-        # API路由
-        @app.get("/api/v1/")
-        async def root_v2():
-            return {"message": "MyStocks Backend API v3.0", "version": "3.0"}
-
-        logger.info("✅ 已集成OpenSpec监控模块启动/关闭事件")
-
-    except ImportError as e:
-        logger.error("❌ FastAPI 导入失败: %s", e)
-        logger.warning("⚠️ 无法使用 FastAPI 应用，将跳过监控模块事件")
 
     # 在端口范围内查找可用端口并启动服务
     try:
         available_port = find_available_port(settings.port_range_start, settings.port_range_end)
         logger.info("🚀 Starting server on port %s", available_port)
         uvicorn.run(
-            "main:app",
+            "app.main:app",
             host=settings.host,
             port=available_port,
             reload=True,
@@ -841,3 +762,4 @@ if __name__ == "__main__":
     except RuntimeError as e:
         logger.error("❌ %s", e)
         exit(1)
+

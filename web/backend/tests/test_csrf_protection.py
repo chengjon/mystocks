@@ -11,7 +11,11 @@ CSRF 保护安全测试
 - 缺少 token 拒绝
 - 无效 token 拒绝
 
-版本: 1.0.0
+NOTE: CSRFTokenManager uses Redis when available, with in-memory dict fallback.
+In test environments (no Redis), the in-memory fallback is exercised automatically.
+Tests that access csrf_manager.tokens directly are testing the fallback path.
+
+版本: 1.1.0
 日期: 2025-12-23
 """
 
@@ -24,12 +28,32 @@ from fastapi.testclient import TestClient
 from app.app_factory import csrf_manager
 
 
+def _clear_all_csrf_tokens():
+    """Clear CSRF tokens from both Redis and in-memory fallback storage."""
+    # Clear in-memory fallback
+    csrf_manager.tokens.clear()
+    # Attempt to clear Redis tokens (best-effort, may not be available in tests)
+    try:
+        redis_client = csrf_manager._get_redis()
+        if redis_client:
+            # Delete all CSRF token keys
+            cursor = 0
+            while True:
+                cursor, keys = redis_client.scan(cursor, match=f"{csrf_manager._redis_prefix}*", count=100)
+                if keys:
+                    redis_client.delete(*keys)
+                if cursor == 0:
+                    break
+    except Exception:
+        pass  # Redis not available in test environment, fallback already cleared
+
+
 class TestCSRFTokenManager:
     """测试 CSRFTokenManager 类"""
 
     def setup_method(self):
-        """每个测试前清空tokens"""
-        csrf_manager.tokens.clear()
+        """每个测试前清空tokens（Redis + 内存回退）"""
+        _clear_all_csrf_tokens()
 
     def test_generate_token(self):
         """测试生成 CSRF token"""
@@ -386,8 +410,8 @@ class TestCSRFMiddleware:
             except Exception as e:
                 errors.append(e)
 
-        # 清空现有tokens
-        csrf_manager.tokens.clear()
+        # 清空现有tokens（Redis + 内存回退）
+        _clear_all_csrf_tokens()
 
         # 创建多个线程同时生成token
         threads = [threading.Thread(target=generate_token) for _ in range(50)]
@@ -407,8 +431,8 @@ class TestCSRFSecurityScenarios:
     """测试CSRF安全场景"""
 
     def setup_method(self):
-        """每个测试前清空tokens"""
-        csrf_manager.tokens.clear()
+        """每个测试前清空tokens（Redis + 内存回退）"""
+        _clear_all_csrf_tokens()
 
     def test_cross_origin_request_without_token_blocked(self):
         """测试跨域请求没有token被阻止"""
@@ -554,8 +578,8 @@ class TestCSRFIntegration:
     """测试CSRF集成场景"""
 
     def setup_method(self):
-        """每个测试前清空tokens"""
-        csrf_manager.tokens.clear()
+        """每个测试前清空tokens（Redis + 内存回退）"""
+        _clear_all_csrf_tokens()
 
     def test_full_workflow(self):
         """测试完整的CSRF保护工作流"""
