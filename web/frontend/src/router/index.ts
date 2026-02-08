@@ -56,6 +56,15 @@ const routes: RouteRecordRaw[] = [
              requiresAuth: true
     }
   },
+  {
+    path: '/artdeco/skeleton-demo',
+    name: 'artdeco-skeleton-demo',
+    component: () => import('@/views/SkeletonUsage.vue'),
+    meta: {
+      title: 'Skeleton Demo',
+      requiresAuth: true
+    }
+  },
 
   // ========== 公开路由 ==========
   {

@@ -86,7 +86,11 @@ class DatabaseQueryExecutor:
                 self.performance_stats["cache_hits"] += 1
                 return cached_result
 
-            # 模拟数据库查询
+            # SECURITY FIX: Validate stock_code to prevent SQL injection
+            import re
+            if not re.match(r'^[A-Za-z0-9.]{1,20}$', stock_code):
+                logger.warning("Invalid stock_code format rejected: %s", stock_code)
+                return {}
             query = f"SELECT * FROM stock_details WHERE symbol = '{stock_code}'"
             result = self._execute_query(query)
 

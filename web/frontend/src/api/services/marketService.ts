@@ -1,126 +1,34 @@
-/**
- * Market API Service
- *
- * Service layer for market data with full UnifiedResponse support.
- * All methods return complete UnifiedResponse objects for fallback handling.
- * This service ONLY handles API calls - no data transformation, caching, or mock fallback.
- */
+// web/frontend/src/api/services/marketService.ts
 
-import { apiGet } from '../apiClient';
-import type { UnifiedResponse } from '../apiClient';
-import type {
-  MarketOverviewDetailedResponse as MarketOverviewResponse,
-  FundFlowAPIResponse,
-  KLineDataResponse,
-  ETFDataResponse,
-  ChipRaceResponse,
-  LongHuBangResponse,
-} from '../types/generated-types';
+import apiClient from '../apiClient'
 
-export class MarketApiService {
-  private readonly baseUrl = '/api/market';
+export const marketService = {
+  // Get Real-time Quote (Snapshot)
+  getQuote: async (symbol: string) => {
+    const response = await apiClient.get<any>(`/api/market/quote/${symbol}`)
+    return response.data || response // Adapt based on if data is wrapped
+  },
 
-  /**
-   * Get market overview
-   * GET /api/market/overview
-   */
-  async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewResponse>> {
-    return apiGet<UnifiedResponse<MarketOverviewResponse>>(
-      `${this.baseUrl}/overview`
-    );
-  }
+  // Get Intraday Trend (Line Chart)
+  getTrend: async (symbol: string) => {
+    // In real API this might be /api/market/trend or derived from kline
+    // For now we map it to kline with '1m' or specific trend endpoint if exists
+    // Let's assume we use kline for trend or a specific trend endpoint
+    // If mockApiClient doesn't handle /trend, we can add it or use kline
+    // Let's use a specific endpoint for clarity
+    const response = await apiClient.get<any>(`/api/market/trend/${symbol}`)
+    return response.data || response
+  },
 
-  /**
-   * Get fund flow data
-   * GET /api/market/fund-flow
-   */
-  async getFundFlow(params?: {
-    startDate?: string;
-    endDate?: string;
-    market?: string;
-  }): Promise<UnifiedResponse<FundFlowAPIResponse>> {
-    return apiGet<UnifiedResponse<FundFlowAPIResponse>>(
-      `${this.baseUrl}/fund-flow`,
-      params
-    );
-  }
-
-  /**
-   * Get K-line data
-   * GET /api/market/kline
-   */
-  async getKLineData(params: {
-    symbol: string;
-    interval?: "1m" | "5m" | "15m" | "30m" | "1h" | "1d";
-    start_date?: string;
-    end_date?: string;
-    limit?: number;
-  }): Promise<UnifiedResponse<KLineDataResponse>> {
-    return apiGet<UnifiedResponse<KLineDataResponse>>(
-      `${this.baseUrl}/kline`,
-      params
-    );
-  }
-
-  /**
-   * Get ETF list
-   * GET /api/market/etf/list
-   */
-  async getETFList(params?: {
-    symbol?: string;
-    keyword?: string;
-    market?: "SH" | "SZ";
-    category?: "股票" | "债券" | "商品" | "货币" | "QDII";
-    limit?: number;
-    offset?: number;
-  }): Promise<UnifiedResponse<{
-      etfs?: ETFDataResponse[];
-      total?: number;
-      page?: number;
-      page_size?: number;
-  }>> {
-    return apiGet<UnifiedResponse<{
-      etfs?: ETFDataResponse[];
-      total?: number;
-      page?: number;
-      page_size?: number;
-  }>>(
-      `${this.baseUrl}/etf/list`,
-      params
-    );
-  }
-
-  /**
-   * Get Long Hu Bang data
-   * GET /api/market/lhb
-   */
-  async getLongHuBang(params?: {
-    date?: string;
-    type?: "rise" | "fall" | "all";
-  }): Promise<UnifiedResponse<LongHuBangResponse[]>> {
-    return apiGet<UnifiedResponse<LongHuBangResponse[]>>(
-      `${this.baseUrl}/lhb`,
-      params
-    );
-  }
-
-  /**
-   * Get Chip Race data
-   * GET /api/market/chip-race
-   */
-  async getChipRace(params?: {
-    date?: string;
-    limit?: number;
-  }): Promise<UnifiedResponse<ChipRaceResponse[]>> {
-    return apiGet<UnifiedResponse<ChipRaceResponse[]>>(
-      `${this.baseUrl}/chip-race`,
-      params
-    );
+  // Get K-Line History (Candlestick)
+  getKLine: async (symbol: string, period: string = '1d') => {
+    const response = await apiClient.get<any>('/api/market/kline', {
+        params: { symbol, period }
+    })
+    return {
+        symbol,
+        period,
+        data: response.data || response // mockApiClient returns candles directly or wrapped
+    }
   }
 }
-
-// Export singleton instance
-export const marketApiService = new MarketApiService();
-
-// Export class for dependency injection
-export default MarketApiService;

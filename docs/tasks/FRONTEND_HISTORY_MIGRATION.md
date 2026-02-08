@@ -2,18 +2,11 @@
 
 ## 任务概述
 
-**任务命名规范**: 本文档遵循 TASK-1.md 模式（父任务），完成报告为 TASK-1-REPORT.md，详细分项报告为 TASK-1-*-REPORT.md
-
 **任务类型1**: History Mode 迁移（Hash → HTML5）
 
 **状态**: 已完成 ✅
 
 **完成报告**: `docs/reports/HTML5_HISTORY_MODE_MIGRATION_COMPLETION_REPORT.md` (2026-01-22)
-
-**相关文档**:
-- `../../.FILE_OWNERSHIP` - 文件归属权映射（权威来源）
-- `../guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` - 多CLI协作指南
-- `PHASE_2_SAGA_ROLLOUT.md` - Saga分布式事务rollout任务示例
 
 **目标**: 将 Vue Router 从 Hash History 模式迁移到 HTML5 History 模式，提供更现代化、用户友好的 URL 结构
 

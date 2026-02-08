@@ -124,18 +124,50 @@ def verify_token(token: str) -> Optional[TokenData]:
         return None
 
 
-# 撤销的token存储（内存中的黑名单，生产环境建议使用Redis）
-_revoked_tokens = set()
+# 撤销的token存储 - 使用Redis持久化黑名单（支持多worker共享和重启恢复）
+# 回退到内存集合（Redis不可用时）
+_revoked_tokens_fallback = set()
+
+
+def _get_redis_for_tokens():
+    """获取Redis客户端用于token黑名单，不可用时返回None"""
+    try:
+        from app.core.redis_client import get_redis_client
+        client = get_redis_client()
+        if client is not None:
+            client.ping()
+            return client
+    except Exception:
+        pass
+    return None
 
 
 def revoke_token(token: str) -> None:
-    """撤销JWT令牌，将其加入黑名单"""
-    _revoked_tokens.add(token)
+    """撤销JWT令牌，将其加入黑名单（Redis优先，内存回退）"""
+    redis_client = _get_redis_for_tokens()
+    if redis_client:
+        try:
+            # 使用token过期时间作为Redis TTL（默认与access_token_expire_minutes一致）
+            from app.core.config import settings
+            ttl = settings.access_token_expire_minutes * 60
+            redis_client.setex(f"revoked_token:{token}", ttl, "1")
+            return
+        except Exception:
+            pass
+    # 回退到内存
+    _revoked_tokens_fallback.add(token)
 
 
 def _is_token_revoked(token: str) -> bool:
-    """检查token是否已被撤销"""
-    return token in _revoked_tokens
+    """检查token是否已被撤销（Redis优先，内存回退）"""
+    redis_client = _get_redis_for_tokens()
+    if redis_client:
+        try:
+            return redis_client.exists(f"revoked_token:{token}") > 0
+        except Exception:
+            pass
+    # 回退到内存
+    return token in _revoked_tokens_fallback
 
 
 # 注意：硬编码密码哈希已移除以提高安全性
@@ -190,46 +222,6 @@ def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
     # 回退到mock数据
     return _authenticate_with_mock(username, password)
 
-    # 回退到模拟用户数据 - 使用环境变量配置的密码
-    # 获取管理员初始密码
-    admin_initial_password = getattr(settings, "admin_initial_password", "admin123")
-    user_initial_password = "user123"  # 默认用户密码
-
-    users_db = {
-        "admin": {
-            "id": 1,
-            "username": "admin",
-            "email": "admin@mystocks.com",
-            "hashed_password": get_password_hash(admin_initial_password),
-            "role": "admin",
-            "is_active": True,
-        },
-        "user": {
-            "id": 2,
-            "username": "user",
-            "email": "user@mystocks.com",
-            "hashed_password": get_password_hash(user_initial_password),
-            "role": "user",
-            "is_active": True,
-        },
-    }
-
-    user = users_db.get(username)
-    if not user:
-        print(f"[Mock Auth] User not found in mock DB: {username}")
-        return None
-
-    user_in_db = UserInDB(**user)
-
-    if not verify_password(password, user_in_db.hashed_password):
-        print(f"[Mock Auth] Password verification failed for user: {username}")
-        print(f"[Mock Auth] Input password: {password}")
-        print(f"[Mock Auth] Stored hash: {user_in_db.hashed_password}")
-        return None
-
-    print(f"[Mock Auth] Authentication successful for user: {username}")
-    return user_in_db
-
 
 def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
     """
@@ -252,32 +244,6 @@ def authenticate_user_by_id(user_id: int) -> Optional[UserInDB]:
     except Exception as e:
         # 数据库查询失败时记录错误
         print(f"Database user lookup failed for ID {user_id} (will return None): {type(e).__name__}: {str(e)}")
-        return None
-        mock_users = {
-            1: {
-                "id": 1,
-                "username": "admin",
-                "email": "admin@mystocks.com",
-                "hashed_password": "$2b$12$JzXL46bSlDVnMJlDvkV7q.u5gY6pVEYNV18otWdH8FwHD3uRcV1ia",
-                "role": "admin",
-                "is_active": True,
-            },
-            2: {
-                "id": 2,
-                "username": "user",
-                "email": "user@mystocks.com",
-                "hashed_password": "$2b$12$8aBh8ytBXEX0B0okxvYqPO428xzvnJlnA6c.q/ua6BS6z33ZP3WnK",
-                "role": "user",
-                "is_active": True,
-            },
-        }
-        user_data = mock_users.get(user_id)
-        if user_data:
-            return UserInDB(**user_data)
-        return None
-    except Exception as e:
-        # 捕获其他意外异常
-        print(f"Unexpected error during user lookup by ID {user_id}: {str(e)}")
         return None
 
 
