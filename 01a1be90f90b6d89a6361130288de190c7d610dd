@@ -1,0 +1,4 @@
+Task: Refactor risk_management.py - Utils & Helpers
+Summary: Moved get_monitoring_db, ConnectionManager, and setup_risk_event_broadcasting to app.utils.risk_utils.
+Reduced risk_management.py line count.
+Verification: Regression tests passed.
