@@ -1,0 +1,30 @@
+// web/frontend/src/styles/artdeco-colors.css
+
+/* ArtDeco Color Palette - CSS Variables */
+:root {
+  /* Primary Colors */
+  --artdeco-bg-primary: #0b0c10;
+  --artdeco-bg-secondary: #1f2833;
+  --artdeco-bg-tertiary: #c5c6c7;
+  --artdeco-fg-primary: #66fcf1;
+  --artdeco-fg-secondary: #45a29e;
+  
+  /* Accent Colors */
+  --artdeco-accent-gold: #d4af37;
+  --artdeco-accent-silver: #c0c0c0;
+  
+  /* Semantic Colors */
+  --artdeco-success: #28a745;
+  --artdeco-error: #dc3545;
+  --artdeco-warning: #ffc107;
+  --artdeco-info: #17a2b8;
+  
+  /* Text Colors */
+  --artdeco-text-primary: #e0e0e0;
+  --artdeco-text-secondary: #a0a0a0;
+  --artdeco-text-muted: #6c757d;
+  
+  /* Border Colors */
+  --artdeco-border-primary: rgba(255, 255, 255, 0.1);
+  --artdeco-border-secondary: rgba(255, 255, 255, 0.05);
+}

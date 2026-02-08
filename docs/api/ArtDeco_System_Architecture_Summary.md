@@ -1,208 +1,50 @@
-# 🎨 ArtDeco System Architecture Summary
+# ArtDeco System Architecture Summary (V3.0)
 
-Based on comprehensive exploration of the MyStocks project, here's the complete ArtDeco system overview:
+本系统是基于 MyStocks 项目的高端金融级 UI 体系，旨在为量化交易提供极高信息密度的专业交互体验。
 
-## 📁 System Architecture
+## 1. 核心架构原则 (Architecture Principles)
 
-**Frontend Structure:**
-- **Location**: `web/frontend/src/`
-- **Framework**: Vue 3 + TypeScript + Element Plus (styled with ArtDeco)
-- **Pages**: 9 ArtDeco pages in `views/artdeco-pages/`
-- **Components**: 64 components organized in 4 categories (base/specialized/advanced/core)
-- **Styling**: SCSS-based design system with CSS variables and geometric patterns
+### 1.1 "Container-Tab" 混合架构
+系统弃用了过时的“超大单体组件”，演进为**容器化管理**模式：
+*   **父容器 (Parent Containers)**: 位于 `views/artdeco-pages/`，负责路由接入、全局 Tab 状态管理和通用 API 配置。
+*   **领域组件 (Domain Components)**: 位于 `views/artdeco-pages/components/`，按业务领域（market, risk, strategy 等）分拆，实现 1:1 的功能复刻。
+*   **基础资产 (Base Assets)**: 位于 `src/components/artdeco/`，提供原子级的 UI 支持。
 
-**Backend Integration:**
-- **API Modules**: 15 functional modules in `web/backend/app/api/`
-- **Endpoints**: ~469 endpoints supporting ArtDeco functionality
-- **Architecture**: FastAPI backend providing data for ArtDeco frontend
+### 1.2 统一配置驱动
+系统通过 `pageConfig.ts` 动态驱动。父容器根据当前激活的 Tab 名，自动从配置中提取 `apiEndpoint` 和 `wsChannel`，并下发给领域组件，实现了业务逻辑与界面表现的完全解耦。
 
-## 🏗️ Design System Foundation
+## 2. 视觉规范层 (Visual Layer - V3.0)
 
-### Color Palette (ArtDeco-Inspired)
-- **Primary**: `#D4AF37` (Metallic Gold)
-- **Background**: `#0A0A0A` (Obsidian Black) → `#141414` (Charcoal)
-- **Text**: `#F2F0E4` (Champagne Cream) → `#888888` (Tin)
-- **Financial Colors**: A股标准 (红涨绿跌: Red `#FF5252`, Green `#00E676`)
+### 2.1 设计令牌 (Design Tokens)
+**文件**: `web/frontend/src/styles/artdeco-tokens.scss`
+*   **主色调**: 黑曜石黑 (`#0A0A0A`) + 金属金 (`#D4AF37`)。
+*   **间距体系**: 11 级精确系统，从 `4px` (`--artdeco-spacing-1`) 到 `128px` (`--artdeco-spacing-32`)。
+*   **字体栈**: 
+    *   Display: `Cinzel` (几何衬线，用于标题)
+    *   Body: `Barlow` (现代无衬线，极佳的可读性)
+    *   Mono: `JetBrains Mono` (用于金融数值对齐)
 
-### Typography
-- **Fonts**: Marcellus (serif), Josefin Sans (sans-serif), JetBrains Mono (mono)
-- **Style**: All-caps with wide letter spacing (0.2em)
-- **Hierarchy**: Sharp corners, no rounded edges
+### 2.2 A 股特定规范
+系统强制执行 A 股“红涨绿跌”视觉语义：
+*   `--artdeco-rise`: `#FF5252` (上涨/盈利)
+*   `--artdeco-down`: `#00E676` (下跌/亏损)
 
-### Visual Patterns
-- **Borders**: Gold accents, L-shaped corner decorations
-- **Backgrounds**: Diagonal crosshatch, grid patterns, sunburst gradients
-- **Effects**: Gold glow on hover, theatrical transitions (300-500ms)
+## 3. 领域划分与组件分布 (Domain Mapping)
 
-## 📄 Page Applications (9 Pages)
+| 领域 (Domain) | 父容器 | 核心分拆组件 (位于 components/) |
+|:---|:---|:---|
+| **市场中心** | `ArtDecoMarketData.vue` | `MarketOverview`, `FundFlow`, `LHB`, `ETFAnalysis` |
+| **交易管理** | `ArtDecoTradingCenter.vue` | `SignalsView`, `HistoryView`, `PositionMonitor` |
+| **风险控制** | `ArtDecoRiskManagement.vue` | `RiskMonitor`, `AnnouncementMonitor`, `RiskAlerts` |
+| **策略研发** | `ArtDecoStrategyLab.vue` | `StrategyManagement`, `BacktestAnalysis`, `Optimization` |
 
-### 1. **ArtDecoDashboard.vue** - 主控仪表盘
-- **Purpose**: Real-time market overview and portfolio monitoring
-- **Features**: Market indices, technical indicators, portfolio summary
-- **Components Used**: ArtDecoStatCard, ArtDecoButton, ArtDecoCard
-- **Data**: Real-time SSE updates for market data
+## 4. 可验证性说明 (Verifiability)
 
-### 2. **ArtDecoMarketData.vue** - 市场数据分析中心
-- **Purpose**: Comprehensive market analysis and data visualization
-- **Features**: Fund flow analysis, ranking tables, trend charts
-- **Tabs**: 资金流向分析, 个股权重分析, 行业板块分析
-- **Components**: ArtDecoStatCard, ArtDecoCard, custom SVG charts
-
-### 3. **ArtDecoBacktestManagement.vue** - 策略回测管理中心
-- **Purpose**: GPU-accelerated quantitative strategy backtesting platform
-- **Features**: Strategy designer, backtest configuration, performance monitoring
-- **Key Sections**:
-  - Strategy Template Library
-  - Code Editor integration
-  - Parameter configuration
-  - GPU utilization monitoring
-- **Components**: ArtDecoBacktestConfig, ArtDecoStrategyCard, ArtDecoFilterBar
-
-### 4. **ArtDecoSettings.vue** - 系统设置
-- **Purpose**: Personalized configuration for the trading platform
-- **Features**: Theme settings, display preferences, data formatting
-- **Tabs**: Appearance, Data Display, Account Settings
-- **Components**: ArtDecoSelect, ArtDecoInput, toggle switches
-
-### 5. **ArtDecoTradingManagement.vue** - 交易管理中心
-- **Purpose**: Complete trading workflow from signals to execution
-- **Features**: Signal monitoring, order management, position tracking
-- **Tabs**: Trading Signals, Order Management, Position Analysis, Performance
-- **Components**: ArtDecoFilterBar, ArtDecoButton, status indicators
-
-### 6. **ArtDecoRiskManagement.vue** - 风险管理中心
-- **Purpose**: Comprehensive risk assessment and monitoring system
-- **Features**: VaR analysis, exposure tracking, stop-loss management
-- **Tabs**: Risk Assessment, Exposure Analysis, Alert Management
-- **Components**: ArtDecoRiskGauge, ArtDecoSelect, data visualization
-
-### 7. **ArtDecoStockManagement.vue** - 股票管理中心
-- **Purpose**: Stock portfolio and watchlist management
-- **Features**: Stock screening, portfolio analysis, watchlist management
-
-### 8. **ArtDecoDataAnalysis.vue** - 数据分析中心
-- **Purpose**: Advanced data analysis and visualization tools
-- **Features**: Multi-dimensional analysis, custom indicators, export functions
-
-### 9. **ArtDecoMarketQuotes.vue** - 行情报价中心
-- **Purpose**: Real-time market quotes and price monitoring
-- **Features**: Live quotes, price alerts, market depth
-
-## 🧩 Component Library (52 Components)
-
-### **Base Components (8)** - 核心基础组件
-- `ArtDecoButton`: Multi-variant buttons (default/solid/outline/rise/fall)
-- `ArtDecoCard`: Container with L-shaped corner decorations
-- `ArtDecoInput`: Transparent input with bottom gold border
-- `ArtDecoSelect`: Dropdown with gold border and custom arrow
-- `ArtDecoBadge`: Status badges with ArtDeco styling
-- `ArtDecoTable`: Gold headers, sortable columns, A股 colors
-- `ArtDecoStatCard`: Statistics display with change indicators
-- `ArtDecoLoader`: Geometric loading animation
-
-### **Specialized Components (32)** - 业务专用组件
-- **Trading**: `ArtDecoTradeForm`, `ArtDecoPositionCard`, `ArtDecoOrderBook`
-- **Analysis**: `ArtDecoKLineChartContainer`, `ArtDecoStrategyCard`, `ArtDecoFilterBar`
-- **Risk**: `ArtDecoRiskGauge`, `ArtDecoAlertRule`
-- **UI**: `ArtDecoSidebar`, `ArtDecoTopBar`, `ArtDecoDynamicSidebar`
-- **Advanced**: `ArtDecoCodeEditor`, `ArtDecoDateRange`, `ArtDecoSlider`
-
-### **Advanced Components (8)** - 高级分析组件
-- `ArtDecoMarketPanorama`: Market overview with statistics
-- `ArtDecoTechnicalAnalysis`: Technical indicators analysis
-- `ArtDecoFundamentalAnalysis`: Fundamental data analysis
-- `ArtDecoRadarAnalysis`: Multi-dimensional radar charts
-- `ArtDecoTimeSeriesAnalysis`: Time series data visualization
-- `ArtDecoAnomalyTracking`: Anomaly detection and tracking
-- `ArtDecoChipDistribution`: Chip distribution analysis
-- `ArtDecoCapitalFlow`: Capital flow visualization
-
-### **Core Components (4)** - 核心功能组件
-- `ArtDecoAnalysisDashboard`: Main analysis dashboard
-- `ArtDecoFundamentalAnalysis`: Fundamental analysis tools
-- `ArtDecoRadarAnalysis`: Radar chart analysis
-- `ArtDecoBatchAnalysisView`: Batch analysis interface
-
-## 🔧 Key Features & Functions
-
-### **Real-time Capabilities**
-- **SSE Integration**: Server-sent events for real-time data updates
-- **WebSocket Support**: Bidirectional communication for trading signals
-- **Live Updates**: Market data, positions, alerts update in real-time
-
-### **GPU Acceleration**
-- **Backtesting Engine**: CUDA-optimized strategy testing
-- **Real-time Processing**: 10,000+ data points per second
-- **Performance Monitoring**: GPU utilization tracking and optimization
-
-### **Data Visualization**
-- **K-line Charts**: Professional candlestick charts with indicators
-- **Risk Gauges**: Circular risk level indicators
-- **Heat Maps**: Market sentiment and flow visualization
-- **Time Series**: Advanced temporal data analysis
-
-### **API Integration**
-- **469 Endpoints**: Across 15 functional modules
-- **Key Modules**: Market data (95+), Strategy (65+), Risk (35+), Technical analysis (45+)
-- **Smart Routing**: Automatic data source selection and failover
-
-### **Security & Performance**
-- **JWT Authentication**: Secure API access
-- **Circuit Breakers**: Automatic failure handling
-- **Caching**: Redis-backed performance optimization
-- **Rate Limiting**: API protection and fair usage
-
-## 🎯 ArtDeco Design Principles
-
-### **Aesthetic Philosophy**
-- **Luxurious Minimalism**: Clean lines with gold accents
-- **Geometric Elegance**: Art Deco inspired patterns and shapes
-- **Financial Professionalism**: A股 color standards (red rise, green fall)
-- **Theatrical Experience**: Smooth animations and hover effects
-
-### **Component Architecture**
-- **Composable**: All components accept slots and props
-- **Themeable**: CSS variables for consistent theming
-- **Responsive**: Mobile-first responsive design
-- **Accessible**: ARIA support and keyboard navigation
-
-### **Code Organization**
-- **Modular**: Components organized by function (base/specialized/advanced/core)
-- **Type-safe**: Full TypeScript implementation
-- **Documented**: Comprehensive component documentation
-- **Testable**: Unit tests for critical components
-
-## 🚀 Integration Points
-
-### **Router Configuration**
-- **Base Path**: `/artdeco/` prefix for all ArtDeco pages
-- **Nested Routes**: Layout components as route parents
-- **Dynamic Loading**: Lazy-loaded components for performance
-
-### **State Management**
-- **Vue Composition API**: Reactive state management
-- **Global Stores**: Pinia stores for shared state
-- **Local State**: Component-level reactive data
-
-### **Build System**
-- **Vite**: Fast development and optimized production builds
-- **SCSS Processing**: CSS variables and mixins compilation
-- **Asset Optimization**: Image and font optimization
-
-## 📊 System Statistics
-
-- **Total Components**: 64 ArtDeco components (13 base, 11 core, 30 specialized, 10 advanced)
-- **Pages**: 9 complete page implementations
-- **API Endpoints**: ~469 across 15 modules
-- **Documentation Files**: 100+ MD files with ArtDeco references
-- **Style Files**: Complete SCSS design system
-- **Real-time Performance**: 10,000+ data points/second processing
-- **GPU Acceleration**: CUDA optimization for backtesting
-
-This ArtDeco system provides a sophisticated, professional interface for quantitative trading operations with comprehensive functionality, real-time capabilities, and GPU-accelerated processing. The design system maintains visual consistency while supporting complex financial workflows.
+开发者可通过以下路径验证系统一致性：
+1.  **物理核实**: 检查 `src/components/artdeco/` 下的 66+ 个组件是否与 [组件目录](../web/ART_DECO_COMPONENTS_CATALOG.md) 一致。
+2.  **样式验证**: 检查 `.vue` 文件是否通过 `@import '@/styles/artdeco-tokens.scss'` 导入令牌，而非硬编码颜色。
+3.  **布局验证**: 检查是否使用了 `@include artdeco-grid` 实现响应式降级（4列 -> 2列 -> 1列）。
 
 ---
-
-**Generated**: 2025-01-13
-**Source**: MyStocks Project ArtDeco System Exploration
-**Status**: Complete
+**维护者**: UI/UX Pro Max Agent
+**最后更新**: 2026-02-08 (基于 V3.0 代码库核实)
