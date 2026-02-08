@@ -14,12 +14,12 @@ Establish a single, authoritative backend config entry point and eliminate dupli
 
 ## Phased Timeline
 
-### Phase 1: Unification (Day 0-14)
+### Phase 1: Unification (2026-02-08 to 2026-02-21)
 - Document the primary entry point and SoT registry format.
 - Add deprecation warnings in secondary loaders.
 - Update services to call the shared loader instead of direct YAML/JSON reads.
 
-### Phase 2: Deprecation (Day 15-60)
+### Phase 2: Deprecation (2026-02-22 to 2026-04-08)
 - Remove direct JSON registry reads from services.
 - Remove ad-hoc `.env` loading outside the primary entry point.
 - If JSON registry is still needed, generate it from YAML as a build artifact.
@@ -27,6 +27,11 @@ Establish a single, authoritative backend config entry point and eliminate dupli
 ## Compatibility
 - Provide a temporary compatibility shim for legacy JSON paths.
 - Keep shims for one release cycle, then remove after migration.
+
+## Owners
+- Primary: main
+- API contract alignment: cli-2
+- Test coverage: cli-6
 
 ## Acceptance Criteria
 - Single backend entry point documented and referenced in SoT.

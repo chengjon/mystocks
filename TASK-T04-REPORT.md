@@ -21,8 +21,8 @@
 - Consolidation target selected; deprecation plan pending.
 
 ## Next Steps
-1. Define deprecation timeline for secondary loaders.
-2. Implement shared loader routing for registry reads.
+1. Implement shared loader routing for registry reads.
+2. Add CI guard to block new direct registry reads.
 
 ## Completion Checklist
 - [ ] Acceptance criteria met
