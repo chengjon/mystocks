@@ -1,8 +1,8 @@
 # Technical Debt
 
-**最后更新**: 2026-02-08 00:50:00
+**最后更新**: 2026-02-08 09:20:00
 
-**文档数量**: 7
+**文档数量**: 8
 
 
 ---
@@ -27,3 +27,6 @@
 
 - [DEBT_REGISTER](technical_debt/governance/DEBT_REGISTER.md)
   - *技术债台账*
+
+- [CONFIG_ENTRYPOINT_INVENTORY](technical_debt/governance/CONFIG_ENTRYPOINT_INVENTORY.md)
+  - *配置入口盘点*
