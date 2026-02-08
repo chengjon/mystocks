@@ -14,7 +14,7 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
     - [x] Sub-task: Analyze imports and dependencies for `web/backend/app/services/data_adapter.py`.
 - [x] Task: Conductor - User Manual Verification 'Discovery & Preparation' (Protocol in workflow.md)
 
-## Phase 2: Refactor `risk_management.py` (Backend Priority 1)
+## Phase 2: Refactor `risk_management.py` (Backend Priority 1) [checkpoint: phase-2-complete]
 
 ### Goal: Split `risk_management.py` (2112 lines) into modular units ≤ 1000 lines.
 
@@ -37,38 +37,38 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
 - [x] Task: Final Polish & Verification.
     - [x] Implement: Add header comments to all split files defining responsibility.
     - [x] Verify: Check line counts of all involved files.
-- [ ] Task: Conductor - User Manual Verification 'Refactor risk_management.py' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Refactor risk_management.py' (Protocol in workflow.md)
 
-## Phase 3: Refactor `data_adapter.py` (Backend Priority 2)
+## Phase 3: Refactor `data_adapter.py` (Backend Priority 2) [checkpoint: phase-3-complete]
 
 ### Goal: Split `data_adapter.py` (2016 lines).
 
-- [ ] Task: Enhance Regression Test Suite for `data_adapter.py`.
-    - [ ] Write Tests: Create `tests/backend/test_data_adapter_regression.py` covering data fetching and transformation.
-    - [ ] Implement: Confirm baseline pass.
-- [ ] Task: Refactor `data_adapter.py` - Logic Separation.
-    - [ ] Write Tests: Unit tests for new split modules.
-    - [ ] Implement: Split into `data_adapter_service.py` (logic) and `data_adapter_api.py` (interface) or similar structure based on analysis.
-    - [ ] Verify: Regression suite pass.
-- [ ] Task: Conductor - User Manual Verification 'Refactor data_adapter.py' (Protocol in workflow.md)
+- [x] Task: Enhance Regression Test Suite for `data_adapter.py`. [57d550c]
+    - [x] Write Tests: Create `tests/backend/test_data_adapter_regression.py` covering data fetching and transformation.
+    - [x] Implement: Confirm baseline pass.
+- [x] Task: Refactor `data_adapter.py` - Logic Separation. [57d550c]
+    - [x] Write Tests: Unit tests for new split modules.
+    - [x] Implement: Split into `data_adapter_service.py` (logic) and `data_adapter_api.py` (interface) or similar structure based on analysis.
+    - [x] Verify: Regression suite pass.
+- [x] Task: Conductor - User Manual Verification 'Refactor data_adapter.py' (Protocol in workflow.md)
 
-## Phase 4: Frontend Refactoring (Vue Core)
+## Phase 4: Frontend Refactoring (Vue Core) [checkpoint: phase-4-complete]
 
 ### Goal: Address largest Vue components.
 
-- [ ] Task: Identify and Refactor Top Priority Vue Component.
-    - [ ] Sub-task: Select largest `.vue` file (e.g., `OrderPage.vue` or similar from Phase 1 list).
-    - [ ] Write Tests: Ensure component has Cypress/Vitest coverage.
-    - [ ] Implement: Extract static logic to `@/utils`.
-    - [ ] Implement: Extract stateful logic to `composables/useX.ts`.
-    - [ ] Implement: Split sub-components (e.g., `Component/Child.vue`).
-    - [ ] Verify: Tests pass.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Refactoring' (Protocol in workflow.md)
+- [x] Task: Identify and Refactor Top Priority Vue Component. [ae8a03a]
+    - [x] Sub-task: Select largest `.vue` file (e.g., `OrderPage.vue` or similar from Phase 1 list).
+    - [x] Write Tests: Ensure component has Cypress/Vitest coverage.
+    - [x] Implement: Extract static logic to `@/utils`.
+    - [x] Implement: Extract stateful logic to `composables/useX.ts`.
+    - [x] Implement: Split sub-components (e.g., `Component/Child.vue`).
+    - [x] Verify: Tests pass.
+- [x] Task: Conductor - User Manual Verification 'Frontend Refactoring' (Protocol in workflow.md)
 
 ## Phase 5: Final Review & Cleanup
 
 ### Goal: Ensure system-wide adherence.
 
-- [ ] Task: Global Line Count Check.
-    - [ ] Implement: Run line count script again to verify no target files > 1000 lines remain (or phased plan is documented).
+- [x] Task: Global Line Count Check.
+    - [x] Implement: Run line count script again to verify no target files > 1000 lines remain (or phased plan is documented).
 - [ ] Task: Conductor - User Manual Verification 'Final Review & Cleanup' (Protocol in workflow.md)
