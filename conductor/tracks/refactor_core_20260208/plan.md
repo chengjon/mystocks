@@ -18,21 +18,25 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
 
 ### Goal: Split `risk_management.py` (2112 lines) into modular units ≤ 1000 lines.
 
-- [ ] Task: Enhance Regression Test Suite for `risk_management.py`.
-    - [ ] Write Tests: Create/Update `tests/backend/test_risk_management_regression.py` covering all public API endpoints and core calculation logic. ensure 90%+ coverage.
-    - [ ] Implement: Run tests to confirm current baseline (Green state).
-- [ ] Task: Refactor `risk_management.py` - Core Split.
-    - [ ] Write Tests: Verify `risk_management_core.py` (new) interfaces.
-    - [ ] Implement: Extract core calculation logic to `web/backend/app/api/risk_management_core.py`.
-    - [ ] Implement: Update original file to import from new core module.
-    - [ ] Verify: Run regression suite (Must be 100% Pass).
-- [ ] Task: Refactor `risk_management.py` - Utils & Helpers.
-    - [ ] Write Tests: Verify extracted utility functions.
-    - [ ] Implement: Move helper functions to `web/backend/app/utils/risk_utils.py`.
-    - [ ] Verify: Run regression suite.
-- [ ] Task: Final Polish & Verification.
-    - [ ] Implement: Add header comments to all split files defining responsibility.
-    - [ ] Verify: Check line counts of all involved files.
+- [x] Task: Enhance Regression Test Suite for `risk_management.py`. [4108ef5]
+    - [x] Write Tests: Create/Update `tests/backend/test_risk_management_regression.py` covering all public API endpoints and core calculation logic. ensure 90%+ coverage.
+    - [x] Implement: Run tests to confirm current baseline (Green state).
+- [x] Task: Refactor `risk_management.py` - Core Split. [bb3eaea]
+    - [x] Write Tests: Verify `risk_management_core.py` (new) interfaces.
+    - [x] Implement: Extract core calculation logic to `web/backend/app/api/risk_management_core.py`.
+    - [x] Implement: Update original file to import from new core module.
+    - [x] Verify: Run regression suite (Must be 100% Pass).
+- [x] Task: Refactor `risk_management.py` - Utils & Helpers. [01a1be9]
+    - [x] Write Tests: Verify extracted utility functions.
+    - [x] Implement: Move helper functions to `web/backend/app/utils/risk_utils.py`.
+    - [x] Verify: Run regression suite.
+- [x] Task: Refactor `risk_management.py` - Route Split (V3.1). [d9cd699]
+    - [x] Implement: Extract V3.1 routes to `web/backend/app/api/risk_management_v31.py`.
+    - [x] Implement: Update `risk_management.py` to include new router.
+    - [x] Verify: Run regression suite.
+- [x] Task: Final Polish & Verification.
+    - [x] Implement: Add header comments to all split files defining responsibility.
+    - [x] Verify: Check line counts of all involved files.
 - [ ] Task: Conductor - User Manual Verification 'Refactor risk_management.py' (Protocol in workflow.md)
 
 ## Phase 3: Refactor `data_adapter.py` (Backend Priority 2)
