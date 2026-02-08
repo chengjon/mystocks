@@ -50,3 +50,12 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
 - [x] Task: Refactor `ArtDecoDataAnalysis.vue` (Frontend ~2400 lines). [9146e50]
 - [x] Task: Refactor `risk_management_v31.py` (Backend ~1100 lines). [4c15021]
 - [x] Task: CI/CD Integration. [4c15021]
+
+## Phase 7: Data API Refactoring [checkpoint: phase-7-complete]
+
+### Goal: Split `data.py` (1785 lines).
+
+- [x] Task: Enhance Regression Test Suite for `data.py`. [4498207]
+- [x] Task: Modularize `data.py` into domain-specific routers. [4498207]
+    - [x] Sub-task: Stocks Basic, Market, KLine, Margin, LHB, Futures.
+- [x] Task: Verify with regression tests. [4498207]
