@@ -218,5 +218,41 @@
     "claimed_time": null,
     "published_time": "2026-01-01T20:49:40.565052",
     "progress": 0
+  },
+  "gov-t05": {
+    "task_id": "gov-t05",
+    "title": "T05 API contract baseline and drift checks",
+    "description": "Define API contract baseline (OpenAPI) for backend, add CI drift detection, update TASK-T05-REPORT.md with evidence links.",
+    "priority": "MEDIUM",
+    "skills": [
+      "backend",
+      "FastAPI",
+      "OpenAPI",
+      "contract-testing",
+      "CI"
+    ],
+    "estimated_hours": 10,
+    "status": "claimed",
+    "claimed_by": "api",
+    "claimed_time": "2026-02-08T09:24:06.252468",
+    "published_time": "2026-02-08T09:24:06.200858",
+    "progress": 0
+  },
+  "gov-t06-test": {
+    "task_id": "gov-t06-test",
+    "title": "T06 Data routing regression tests",
+    "description": "Add regression tests for data routing rules once documented; record evidence in TASK-T06-REPORT.md.",
+    "priority": "MEDIUM",
+    "skills": [
+      "testing",
+      "pytest",
+      "data-routing"
+    ],
+    "estimated_hours": 8,
+    "status": "claimed",
+    "claimed_by": "it/worker1",
+    "claimed_time": "2026-02-08T09:24:06.354350",
+    "published_time": "2026-02-08T09:24:06.302848",
+    "progress": 0
   }
 }
