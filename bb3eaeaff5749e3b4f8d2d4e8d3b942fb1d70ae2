@@ -1,0 +1,4 @@
+Task: Refactor risk_management.py - Core Split
+Summary: Extracted RiskCalculator and RiskService to web/backend/app/api/risk_management_core.py.
+Delegated calculate_var_cvar and calculate_beta logic.
+Tests Passed: tests/backend/test_risk_management_regression.py
