@@ -11,7 +11,7 @@
 | T01 | Define Architecture Source of Truth | P0 | main | 2026-02-20 | - | doing | SoT doc created and reviewed | `technical_debt/governance/ARCHITECTURE_SOURCE_OF_TRUTH.md` |
 | T02 | Seed Spec Conflict Matrix (Round 1) | P0 | main | 2026-02-22 | T01 | doing | SC-001..SC-010 tracked with owner/status | `technical_debt/governance/SPEC_CONFLICT_MATRIX.md` |
 | T03 | Establish Debt Register Cadence | P0 | main | 2026-02-23 | T01 | doing | TD-001..TD-015 have owner/DDL fields | `technical_debt/governance/DEBT_REGISTER.md` |
-| T04 | Consolidate Runtime Config Entry Points | P0 | main | 2026-02-26 | T01,T02 | todo | Single config entry point documented | TBD |
+| T04 | Consolidate Runtime Config Entry Points | P0 | main | 2026-02-26 | T01,T02 | doing | Single config entry point documented | `technical_debt/governance/CONFIG_ENTRYPOINT_INVENTORY.md` |
 | T05 | API Contract Baseline and Drift Checks | P1 | cli-2 | 2026-03-05 | T02 | todo | Contract checks added to CI | TBD |
 | T06 | Data Routing Rules + Regression Tests | P1 | main+cli-6 | 2026-03-08 | T01,T04 | todo | Routing rules documented + tests | TBD |
 | T07 | Minimum Observability SLO Baseline | P1 | main | 2026-03-10 | T04 | todo | 2 core SLOs defined and tracked | TBD |
