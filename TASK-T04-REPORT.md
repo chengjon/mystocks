@@ -15,13 +15,14 @@
 | Date | Action | Result | Evidence |
 | --- | --- | --- | --- |
 | 2026-02-08 | Created config entry point inventory | Draft created | `technical_debt/governance/CONFIG_ENTRYPOINT_INVENTORY.md` |
+| 2026-02-08 | Drafted consolidation plan | Draft created | `technical_debt/governance/CONFIG_CONSOLIDATION_PLAN.md` |
 
 ## Risks / Blockers
 - Consolidation target selected; deprecation plan pending.
 
 ## Next Steps
-1. Propose consolidation plan.
-2. Define deprecation timeline for secondary loaders.
+1. Define deprecation timeline for secondary loaders.
+2. Implement shared loader routing for registry reads.
 
 ## Completion Checklist
 - [ ] Acceptance criteria met

@@ -1,8 +1,8 @@
 # Technical Debt
 
-**最后更新**: 2026-02-08 09:20:00
+**最后更新**: 2026-02-08 09:35:00
 
-**文档数量**: 8
+**文档数量**: 9
 
 
 ---
@@ -30,3 +30,6 @@
 
 - [CONFIG_ENTRYPOINT_INVENTORY](technical_debt/governance/CONFIG_ENTRYPOINT_INVENTORY.md)
   - *配置入口盘点*
+
+- [CONFIG_CONSOLIDATION_PLAN](technical_debt/governance/CONFIG_CONSOLIDATION_PLAN.md)
+  - *配置入口收敛方案*
