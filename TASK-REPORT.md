@@ -17,7 +17,7 @@
 | T01 | doing | Drafted SoT doc | Review pending | Assign owner + review |
 | T02 | doing | Seeded conflict matrix | Owners missing | Assign owners |
 | T03 | doing | Seeded debt register | Owners/DDL missing | Assign owners + DDL |
-| T04 | doing | Drafted consolidation plan | Deprecation timeline pending | Define deprecation timeline |
+| T04 | doing | Added deprecation timeline | Implementation pending | Route registry reads via shared loader |
 | T05 | doing | Dispatched to CLI-api (gov-t05) | Awaiting baseline selection | Confirm OpenAPI source |
 | T06 | todo | Testing dispatched to CLI-6 (gov-t06-test) | Awaiting routing rules | Document routing rules |
 | T07 | todo | Not started | N/A | Define SLO baselines |
