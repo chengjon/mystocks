@@ -48,6 +48,6 @@ Identify current runtime configuration entry points and their loaders to support
 - Backend uses both `BaseSettings` and direct YAML/JSON loaders.
 
 ## Next Steps
-1. Select primary backend config entry point (candidate: `web/backend/app/core/config.py`).
+1. Select primary backend config entry point (selected: `web/backend/app/core/config.py`).
 2. Define a single authoritative data source registry format (YAML or JSON).
 3. Deprecate secondary loaders and document migration path.

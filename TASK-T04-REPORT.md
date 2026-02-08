@@ -17,11 +17,11 @@
 | 2026-02-08 | Created config entry point inventory | Draft created | `technical_debt/governance/CONFIG_ENTRYPOINT_INVENTORY.md` |
 
 ## Risks / Blockers
-- Consolidation target not selected.
+- Consolidation target selected; deprecation plan pending.
 
 ## Next Steps
-1. Select primary backend config entry point.
-2. Propose consolidation plan.
+1. Propose consolidation plan.
+2. Define deprecation timeline for secondary loaders.
 
 ## Completion Checklist
 - [ ] Acceptance criteria met
