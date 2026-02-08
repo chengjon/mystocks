@@ -1,0 +1,66 @@
+// web/frontend/src/styles/artdeco-variables.css
+
+:root {
+  /* ==========================================================================
+     ArtDeco Color System (Strictly following v2.0 Specs)
+     ========================================================================== */
+  
+  /* Primary Backgrounds */
+  --artdeco-bg-global: #0A0A0A;       /* Obsidian Black */
+  --artdeco-bg-surface: #141414;      /* Rich Charcoal (Card BG) */
+  --artdeco-bg-elevated: #1E3D59;     /* Midnight Blue (Dropdowns/Modals) - from docs */
+  --artdeco-bg-header: rgba(20, 20, 20, 0.95); /* Matches Card BG with blur */
+  
+  /* Text Colors */
+  --artdeco-fg-primary: #F2F0E4;      /* Champagne Cream */
+  --artdeco-fg-secondary: #888888;    /* Pewter (Muted) */
+  --artdeco-fg-muted: #666666;        /* Disabled/Placeholder */
+  --artdeco-fg-on-accent: #000000;    /* Text on gold buttons */
+
+  /* Brand Colors */
+  --artdeco-gold-primary: #D4AF37;    /* Metallic Gold (Primary Accent) */
+  --artdeco-gold-hover: #F2E8C4;      /* Light Gold (Hover) */
+  --artdeco-gold-muted: rgba(212, 175, 55, 0.5);
+  
+  /* Semantic Colors (A-Share Standard) */
+  --artdeco-up: #FF5252;              /* Red (Rise) */
+  --artdeco-down: #00E676;            /* Green (Fall) */
+  --artdeco-flat: #B0B3B8;            /* Gray (Flat) */
+  --artdeco-info: #2196f3;
+  --artdeco-warning: #ff9800;
+  --artdeco-error: #FF5252;           /* Same as Up in A-share context usually, but for errors red is universal */
+
+  /* Borders */
+  --artdeco-border-default: rgba(212, 175, 55, 0.3); /* Gold at 30% */
+  --artdeco-border-subtle: rgba(212, 175, 55, 0.1);
+  --artdeco-border-active: var(--artdeco-gold-primary);
+  
+  /* Spacing System (8px Base) */
+  --artdeco-space-1: 4px;
+  --artdeco-space-2: 8px;
+  --artdeco-space-3: 12px;
+  --artdeco-space-4: 16px;
+  --artdeco-space-6: 24px;
+  --artdeco-space-8: 32px;
+  
+  /* Typography */
+  --artdeco-font-display: 'Marcellus', serif;       /* Headings */
+  --artdeco-font-sans: 'Josefin Sans', sans-serif;  /* Body */
+  --artdeco-font-mono: 'JetBrains Mono', monospace;
+  
+  /* Radii (Sharp Corners) */
+  --artdeco-radius-none: 0px;
+  --artdeco-radius-sm: 2px;
+  --artdeco-radius-md: 0px; /* Enforce sharp corners per v2.0 spec */
+  --artdeco-radius-lg: 0px; 
+  
+  /* Effects */
+  --artdeco-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --artdeco-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --artdeco-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --artdeco-glass-blur: blur(10px);
+  
+  /* Tracking */
+  --artdeco-tracking-widest: 0.2em;
+  --artdeco-tracking-wide: 0.1em;
+}

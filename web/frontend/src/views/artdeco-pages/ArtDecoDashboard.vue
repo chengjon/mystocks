@@ -10,13 +10,16 @@
         >
             <template #actions>
                 <div class="header-metrics">
-                    <ArtDecoBadge variant="primary" pulse>
+                    <ArtDecoSkeleton v-if="loading.strategies" variant="button" width="120px" />
+                    <ArtDecoBadge v-else variant="primary" pulse>
                         <ArtDecoIcon name="activity" />
-                        {{ activeStrategies }} 策略运行中
+                        {{ activeStrategiesCount }} 策略运行中
                     </ArtDecoBadge>
-                    <ArtDecoBadge variant="success" pulse>
+                    
+                    <ArtDecoSkeleton v-if="loading.pnl" variant="button" width="120px" />
+                    <ArtDecoBadge v-else variant="success" pulse>
                         <ArtDecoIcon name="trending-up" />
-                        {{ todayPnL }}
+                        {{ todayPnLValue }}
                     </ArtDecoBadge>
                 </div>
 
@@ -48,37 +51,54 @@
                     </template>
 
                     <section class="summary-section">
-                        <ArtDecoStatCard
-                            label="沪股通净流入"
-                            :value="marketData.fundFlow.hgt.amount + '亿'"
-                            :change="'+' + marketData.fundFlow.hgt.change + '亿'"
-                            change-percent
-                            variant="rise"
-                            size="medium"
-                            :sub-value="'较昨日'"
-                        />
-                        <ArtDecoStatCard
-                            label="深股通净流入"
-                            :value="marketData.fundFlow.sgt.amount + '亿'"
-                            :change="'+' + marketData.fundFlow.sgt.change + '亿'"
-                            change-percent
-                            variant="rise"
-                            size="medium"
-                            :sub-value="'较昨日'"
-                        />
-                        <ArtDecoStatCard
-                            label="北向资金总额"
-                            :value="marketData.fundFlow.northTotal.amount + '亿'"
-                            :sub-value="'本月累计 ' + marketData.fundFlow.northTotal.monthly + '亿'"
-                            variant="gold"
-                            size="medium"
-                        />
-                        <ArtDecoStatCard
-                            label="主力净流入"
-                            :value="marketData.fundFlow.mainForce.amount + '亿'"
-                            :sub-value="'占比 ' + marketData.fundFlow.mainForce.percentage + '%'"
-                            variant="gold"
-                            size="medium"
+                        <template v-if="loading.fundFlow">
+                             <div class="skeleton-stat" v-for="i in 4" :key="i">
+                                 <ArtDecoSkeleton variant="text" width="60%" />
+                                 <ArtDecoSkeleton variant="text" width="80%" height="24px" />
+                             </div>
+                        </template>
+                        <template v-else>
+                            <ArtDecoStatCard
+                                label="沪股通净流入"
+                                :value="marketData.fundFlow.hgt.amount + '亿'"
+                                :change="'+' + marketData.fundFlow.hgt.change + '亿'"
+                                change-percent
+                                variant="rise"
+                                size="medium"
+                                :sub-value="'较昨日'"
+                            />
+                            <ArtDecoStatCard
+                                label="深股通净流入"
+                                :value="marketData.fundFlow.sgt.amount + '亿'"
+                                :change="'+' + marketData.fundFlow.sgt.change + '亿'"
+                                change-percent
+                                variant="rise"
+                                size="medium"
+                                :sub-value="'较昨日'"
+                            />
+                            <ArtDecoStatCard
+                                label="北向资金总额"
+                                :value="marketData.fundFlow.northTotal.amount + '亿'"
+                                :sub-value="'本月累计 ' + marketData.fundFlow.northTotal.monthly + '亿'"
+                                variant="gold"
+                                size="medium"
+                            />
+                            <ArtDecoStatCard
+                                label="主力净流入"
+                                :value="marketData.fundFlow.mainForce.amount + '亿'"
+                                :sub-value="'占比 ' + marketData.fundFlow.mainForce.percentage + '%'"
+                                variant="gold"
+                                size="medium"
+                            />
+                        </template>
+                    </section>
+                    
+                    <!-- Fund Flow Chart -->
+                    <section class="chart-section" v-if="!loading.fundFlow">
+                        <ArtDecoChart 
+                            :option="fundFlowChartOption" 
+                            :loading="loading.fundFlow" 
+                            height="200px" 
                         />
                     </section>
                 </ArtDecoCard>
@@ -93,7 +113,13 @@
                     </div>
                 </template>
 
-                <ArtDecoLoading v-if="loading.market" text="加载市场数据..." size="md" />
+                <div v-if="loading.market" class="charts-section">
+                    <div class="skeleton-chart" v-for="i in 3" :key="i">
+                        <ArtDecoSkeleton variant="text" width="50%" />
+                        <ArtDecoSkeleton variant="text" width="80%" height="32px" />
+                        <ArtDecoSkeleton variant="text" width="40%" />
+                    </div>
+                </div>
                 <div v-else-if="error.market" class="error-message">
                     <ArtDecoIcon name="alert-circle" />
                     <span>{{ error.market }}</span>
@@ -127,6 +153,16 @@
                         glow
                     />
                 </section>
+
+                <!-- Market Trend Chart -->
+                <section class="chart-section" v-if="!loading.market">
+                    <div class="trend-chart-title">上证指数分时趋势</div>
+                    <ArtDecoChart 
+                        :option="marketTrendOption" 
+                        :loading="loading.market" 
+                        height="200px" 
+                    />
+                </section>
             </ArtDecoCard>
 
             <!-- 资金流向和市场情绪 -->
@@ -140,25 +176,30 @@
                     </template>
 
                     <div class="sentiment-metrics">
-                        <ArtDecoStatCard
-                            label="北向资金"
-                            :value="marketData.northFund.amount"
-                            :change="marketData.northFund.change"
-                            change-percent
-                            :variant="marketData.northFund.change > 0 ? 'rise' : 'fall'"
-                        />
+                        <template v-if="loading.fundFlow">
+                             <ArtDecoSkeleton variant="rect" width="100%" height="80px" />
+                        </template>
+                        <template v-else>
+                            <ArtDecoStatCard
+                                label="北向资金"
+                                :value="marketData.northFund.amount"
+                                :change="marketData.northFund.change"
+                                change-percent
+                                :variant="marketData.northFund.change > 0 ? 'rise' : 'fall'"
+                            />
 
-                        <div class="sentiment-indicator">
-                            <div class="indicator-label">市场情绪</div>
-                            <div class="indicator-bar">
-                                <div
-                                    class="indicator-fill"
-                                    :style="{ width: marketSentiment + '%' }"
-                                    :class="sentimentColor"
-                                ></div>
+                            <div class="sentiment-indicator">
+                                <div class="indicator-label">市场情绪</div>
+                                <div class="indicator-bar">
+                                    <div
+                                        class="indicator-fill"
+                                        :style="{ width: marketSentiment + '%' }"
+                                        :class="sentimentColor"
+                                    ></div>
+                                </div>
+                                <div class="indicator-value">{{ marketSentiment }}%</div>
                             </div>
-                            <div class="indicator-value">{{ marketSentiment }}%</div>
-                        </div>
+                        </template>
                     </div>
                 </ArtDecoCard>
 
@@ -169,21 +210,27 @@
                             <h4>市场状态</h4>
                         </div>
                     </template>
-
-                    <ArtDecoStatCard
-                        label="涨跌家数"
-                        :value="`${marketData.stocks.up}↑/${marketData.stocks.down}↓`"
-                        change="2.1"
-                        change-percent
-                        variant="gold"
-                    />
-                <ArtDecoStatCard
-                    label="成交金额"
-                    :value="marketData.volume.amount"
-                    change="15.8"
-                    change-percent
-                    variant="gold"
-                />
+                    
+                    <template v-if="loading.market">
+                        <ArtDecoSkeleton variant="text" width="100%" height="40px" />
+                        <ArtDecoSkeleton variant="text" width="100%" height="40px" style="margin-top: 10px;" />
+                    </template>
+                    <template v-else>
+                        <ArtDecoStatCard
+                            label="涨跌家数"
+                            :value="`${marketData.stocks.up}↑/${marketData.stocks.down}↓`"
+                            change="2.1"
+                            change-percent
+                            variant="gold"
+                        />
+                        <ArtDecoStatCard
+                            label="成交金额"
+                            :value="marketData.volume.amount"
+                            change="15.8"
+                            change-percent
+                            variant="gold"
+                        />
+                    </template>
                 </ArtDecoCard>
             </section>
         </div>
@@ -193,35 +240,10 @@
         <div class="indicators-section">
             <ArtDecoCollapsible v-model="indicatorsExpanded" title="技术指标概览" @toggle="handleIndicatorsToggle">
                 <section class="charts-section">
-                    <div class="indicator-item">
-                        <div class="indicator-name">RSI</div>
-                        <div class="indicator-value">67.8</div>
-                        <div class="indicator-trend rise">↗ 多头</div>
-                    </div>
-                    <div class="indicator-item">
-                        <div class="indicator-name">MACD</div>
-                        <div class="indicator-value">+0.45</div>
-                        <div class="indicator-trend rise">↗ 金叉</div>
-                    </div>
-                    <div class="indicator-item">
-                        <div class="indicator-name">KDJ</div>
-                        <div class="indicator-value">78.5</div>
-                        <div class="indicator-trend neutral">→ 中性</div>
-                    </div>
-                    <div class="indicator-item">
-                        <div class="indicator-name">威廉指标</div>
-                        <div class="indicator-value">-23.4</div>
-                        <div class="indicator-trend fall">↘ 超卖</div>
-                    </div>
-                    <div class="indicator-item">
-                        <div class="indicator-name">布林带</div>
-                        <div class="indicator-value">上轨</div>
-                        <div class="indicator-trend rise">↗ 强势</div>
-                    </div>
-                    <div class="indicator-item">
-                        <div class="indicator-name">均线系统</div>
-                        <div class="indicator-value">多头排列</div>
-                        <div class="indicator-trend rise">↗ 看好</div>
+                    <div v-for="ind in indicatorList" :key="ind.name" class="indicator-item">
+                        <div class="indicator-name">{{ ind.name }}</div>
+                        <div class="indicator-value">{{ ind.value }}</div>
+                        <div class="indicator-trend" :class="ind.trend">{{ ind.signal }}</div>
                     </div>
                 </section>
             </ArtDecoCollapsible>
@@ -231,35 +253,10 @@
         <div class="monitoring-section">
             <ArtDecoCollapsible v-model="monitoringExpanded" title="系统监控状态" @toggle="handleMonitoringToggle">
                 <section class="charts-section">
-                    <div class="monitor-item">
-                        <div class="monitor-label">API响应时间</div>
-                        <div class="monitor-value">120ms</div>
-                        <div class="monitor-status good">正常</div>
-                    </div>
-                    <div class="monitor-item">
-                        <div class="monitor-label">数据更新延迟</div>
-                        <div class="monitor-value">2.3s</div>
-                        <div class="monitor-status warning">稍慢</div>
-                    </div>
-                    <div class="monitor-item">
-                        <div class="monitor-label">信号生成成功率</div>
-                        <div class="monitor-value">98.5%</div>
-                        <div class="monitor-status good">优秀</div>
-                    </div>
-                    <div class="monitor-item">
-                        <div class="monitor-label">系统CPU使用率</div>
-                        <div class="monitor-value">45%</div>
-                        <div class="monitor-status good">正常</div>
-                    </div>
-                    <div class="monitor-item">
-                        <div class="monitor-label">内存使用率</div>
-                        <div class="monitor-value">67%</div>
-                        <div class="monitor-status warning">偏高</div>
-                    </div>
-                    <div class="monitor-item">
-                        <div class="monitor-label">数据库连接数</div>
-                        <div class="monitor-value">23/100</div>
-                        <div class="monitor-status good">正常</div>
+                    <div v-for="m in systemHealth" :key="m.label" class="monitor-item">
+                        <div class="monitor-label">{{ m.label }}</div>
+                        <div class="monitor-value">{{ m.value }}</div>
+                        <div class="monitor-status" :class="m.status">{{ m.status === 'good' ? '正常' : '警告' }}</div>
                     </div>
                 </section>
             </ArtDecoCollapsible>
@@ -267,16 +264,19 @@
         <div class="content-grid">
             <!-- Market Heat Map -->
             <ArtDecoCard title="市场热度板块" hoverable class="heat-map-card">
-                <section class="heatmap-section">
-                    <div class="heat-item" v-for="sector in marketHeat" :key="sector.name">
-                        <div class="sector-name">{{ sector.name }}</div>
-                        <div class="sector-change" :class="sector.change > 0 ? 'rise' : 'fall'">
-                            {{ sector.change > 0 ? '+' : '' }}{{ sector.change }}%
-                        </div>
-                        <div class="heat-bar">
-                            <div class="heat-fill" :style="{ width: Math.abs(sector.change) * 2 + '%' }"></div>
-                        </div>
-                    </div>
+                <section class="heatmap-section" style="height: 300px;">
+                    <template v-if="loading.industry">
+                         <div class="skeleton-chart" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                             <ArtDecoSkeleton variant="rect" width="90%" height="90%" />
+                         </div>
+                    </template>
+                    <template v-else>
+                        <ArtDecoChart 
+                            :option="heatmapOption" 
+                            :loading="loading.industry" 
+                            height="100%" 
+                        />
+                    </template>
                 </section>
             </ArtDecoCard>
 
@@ -300,18 +300,25 @@
                     </button>
                 </div>
                 <div class="flow-list">
-                    <div class="flow-item" v-for="item in capitalFlowData" :key="item.name">
-                        <div class="item-info">
-                            <div class="item-name">{{ item.name }}</div>
-                            <div class="item-code">{{ item.code }}</div>
+                    <template v-if="loading.fundFlow">
+                        <div class="flow-item" v-for="i in 5" :key="i">
+                            <ArtDecoSkeleton variant="text" width="100%" />
                         </div>
-                        <div class="item-flow" :class="item.amount > 0 ? 'inflow' : 'outflow'">
-                            {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}亿
+                    </template>
+                    <template v-else>
+                        <div class="flow-item" v-for="item in capitalFlowData" :key="item.name">
+                            <div class="item-info">
+                                <div class="item-name">{{ item.name }}</div>
+                                <div class="item-code">{{ item.code }}</div>
+                            </div>
+                            <div class="item-flow" :class="item.amount > 0 ? 'inflow' : 'outflow'">
+                                {{ item.amount > 0 ? '+' : '' }}{{ item.amount }}亿
+                            </div>
+                            <div class="item-change" :class="item.change > 0 ? 'rise' : 'fall'">
+                                {{ item.change > 0 ? '+' : '' }}{{ item.change }}%
+                            </div>
                         </div>
-                        <div class="item-change" :class="item.change > 0 ? 'rise' : 'fall'">
-                            {{ item.change > 0 ? '+' : '' }}{{ item.change }}%
-                        </div>
-                    </div>
+                    </template>
                 </div>
             </ArtDecoCard>
 
@@ -402,283 +409,205 @@
 </template>
 
 <script setup>
-    import { ref, computed, onMounted, onUnmounted } from 'vue'
+    import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
     import {
         ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
         ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading
     } from '@/components/artdeco'
+    
+    // Import Skeleton
+    import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
+    
+    // Import Charts
+    import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
     // 导入新组件
     import ArtDecoLongHuBang from '@/components/artdeco/specialized/ArtDecoLongHuBang.vue'
     import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
+    import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
+    import { marketService } from '@/api/services/marketService'
+    import { mockWebSocket } from '@/api/mockWebSocket'
 
     // 导入API服务
     import dashboardService from '@/api/services/dashboardService'
+    
+    // Chart Options Generation
+    const fundFlowChartOption = computed(() => {
+        const data = marketData.value.fundFlow
+        const categories = ['沪股通', '深股通', '主力']
+        const values = [data.hgt.amount, data.sgt.amount, data.mainForce.amount]
+        
+        return {
+            tooltip: { trigger: 'axis' },
+            grid: { top: 30, bottom: 20, left: 40, right: 10, containLabel: true },
+            xAxis: { 
+                type: 'category', 
+                data: categories,
+                axisLine: { show: false },
+                axisTick: { show: false }
+            },
+            yAxis: { 
+                type: 'value', 
+                splitLine: { show: true, lineStyle: { color: 'rgba(255,255,255,0.05)' } } 
+            },
+            series: [{
+                type: 'bar',
+                barWidth: '40%',
+                data: values.map(val => ({
+                    value: val,
+                    itemStyle: {
+                        color: val >= 0 ? '#4caf50' : '#f44336',
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }))
+            }]
+        }
+    })
+
+    const marketTrendOption = computed(() => {
+        if (!trendData.value || trendData.value.length === 0) return null;
+
+        // Generate time labels (simplified)
+        const dataLength = trendData.value.length;
+        const hours = Array.from({length: dataLength}, (_, i) => i); // Placeholder x-axis
+        
+        return {
+            tooltip: { trigger: 'axis' },
+            grid: { top: 10, bottom: 20, left: 40, right: 10, containLabel: true },
+            xAxis: { 
+                type: 'category', 
+                data: hours,
+                boundaryGap: false,
+                axisLine: { show: false },
+                axisLabel: { show: false } // Hide labels for clean look
+            },
+            yAxis: { 
+                type: 'value', 
+                scale: true, // Auto scale
+                splitLine: { show: true, lineStyle: { color: 'rgba(255,255,255,0.05)' } } 
+            },
+            series: [{
+                type: 'line',
+                smooth: true,
+                symbol: 'none',
+                lineStyle: { width: 2, color: '#d4af37' },
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 0, y: 0, x2: 0, y2: 1,
+                        colorStops: [
+                            { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
+                            { offset: 1, color: 'rgba(212, 175, 55, 0)' }
+                        ]
+                    }
+                },
+                data: trendData.value
+            }]
+        }
+    })
+
+    const heatmapOption = computed(() => {
+        if (!marketHeat.value || marketHeat.value.length === 0) return null
+
+        const data = marketHeat.value.map(item => ({
+            name: item.name,
+            value: Math.abs(item.change),
+            change: item.change,
+            itemStyle: {
+                color: item.change >= 0 ? '#4caf50' : '#f44336'
+            }
+        }))
+
+        return {
+            tooltip: {
+                formatter: (params) => {
+                    const { name, change } = params.data
+                    const sign = change > 0 ? '+' : ''
+                    return `${name}: ${sign}${change}%`
+                }
+            },
+            series: [{
+                type: 'treemap',
+                width: '100%',
+                height: '100%',
+                roam: false,
+                nodeClick: false,
+                breadcrumb: { show: false },
+                label: {
+                    show: true,
+                    formatter: '{b}\n{c}%'
+                },
+                itemStyle: {
+                    borderColor: '#1f2833',
+                    borderWidth: 1,
+                    gapWidth: 1
+                },
+                data: data
+            }]
+        }
+    })
 
     // 响应式数据
     const currentTime = ref('')
     const activeFlowTab = ref('1day')
     const activePoolTab = ref('watchlist')
     const refreshing = ref(false)
+    const trendData = ref([])
+    const activeStrategiesCount = ref(0)
+    const todayPnLValue = ref('¥0.00')
+    const indicatorList = ref([
+        { name: 'RSI', value: '--', trend: 'neutral', signal: '--' },
+        { name: 'MACD', value: '--', trend: 'neutral', signal: '--' },
+        { name: 'KDJ', value: '--', trend: 'neutral', signal: '--' },
+        { name: '布林带', value: '--', trend: 'neutral', signal: '--' }
+    ])
+    const systemHealth = ref([])
 
     // ============================================
     // 加载状态管理
     // ============================================
     const loading = ref({
-        market: false,      // 市场指标加载状态
-        fundFlow: false,    // 资金流向加载状态
-        industry: false,    // 板块热度加载状态
-        indicators: false,  // 技术指标加载状态
-        monitoring: false   // 系统监控加载状态
+        market: true,
+        fundFlow: true,
+        industry: true,
+        indicators: true,
+        monitoring: true,
+        strategies: true,
+        pnl: true
     })
 
-    const error = ref({
-        market: '',         // 市场指标错误信息
-        fundFlow: '',       // 资金流向错误信息
-        industry: '',       // 板块热度错误信息
-        indicators: '',    // 技术指标错误信息
-        monitoring: ''      // 系统监控错误信息
-    })
-
-    // 计算属性
-    const marketStatus = computed(() => '活跃')
-    const marketStatusType = computed(() => 'success')
-    const activeStrategies = computed(() => 12)
-    const todayPnL = computed(() => '+8,450.20')
-    const marketSentiment = computed(() => 68)
-    const sentimentColor = computed(() => marketSentiment.value > 70 ? 'positive' : marketSentiment.value > 30 ? 'neutral' : 'negative')
-
-    // 可折叠面板状态（带localStorage持久化）
-    const getSavedState = (key, defaultValue = true) => {
-        try {
-            const saved = localStorage.getItem(`dashboard-collapse-${key}`)
-            return saved !== null ? saved === 'true' : defaultValue
-        } catch {
-            return defaultValue
-        }
-    }
-
-    const saveState = (key, value) => {
-        try {
-            localStorage.setItem(`dashboard-collapse-${key}`, String(value))
-        } catch (error) {
-            console.warn('Failed to save collapse state:', error)
-        }
-    }
-
-    // 技术指标面板展开状态（默认展开）
-    const indicatorsExpanded = ref(getSavedState('indicators', true))
-
-    // 系统监控面板展开状态（默认折叠以降低初始认知负荷）
-    const monitoringExpanded = ref(getSavedState('monitoring', false))
-
-    // 监听展开状态变化并持久化
-    const handleIndicatorsToggle = expanded => {
-        saveState('indicators', expanded)
-    }
-
-    const handleMonitoringToggle = expanded => {
-        saveState('monitoring', expanded)
-    }
-
-    // 模拟市场数据 - 增强版包含HTML dashboard的功能
-    const marketData = ref({
-        shanghai: {
-            index: 3128.45,
-            change: 0.85,
-            changePercent: '+0.03%'
-        },
-        shenzhen: {
-            index: 10245.67,
-            change: 1.23,
-            changePercent: '+0.01%'
-        },
-        chuangye: {
-            index: 2156.89,
-            change: -0.45,
-            changePercent: '-0.02%'
-        },
-        northFund: { amount: 58.8, change: 15.6 },
-        stocks: { up: 2856, down: 1689 },
-        volume: { amount: '8,956亿', change: 15.8 },
-        // 从HTML dashboard提取的资金流向数据 - 使用ArtDeco风格展示
-        fundFlow: {
-            hgt: { amount: 28.6, change: 5.2 },      // 沪股通净流入
-            sgt: { amount: 30.2, change: 8.9 },      // 深股通净流入
-            northTotal: { amount: 58.8, monthly: 1256 }, // 北向资金总额
-            mainForce: { amount: 126.5, percentage: 68 }  // 主力净流入
-        }
-    })
-
-    // 市场热度数据
-    const marketHeat = ref([
-        { name: '人工智能', change: 3.2 },
-        { name: '新能源汽车', change: 2.8 },
-        { name: '半导体', change: -1.5 },
-        { name: '医疗器械', change: 1.9 },
-        { name: '云计算', change: 4.1 },
-        { name: '新能源', change: 2.3 }
-    ])
-
-    // 资金流向标签
-    const flowTabs = [
-        { key: '1day', label: '1日' },
-        { key: '3day', label: '3日' },
-        { key: '5day', label: '5日' },
-        { key: '10day', label: '10日' }
-    ]
-
-    // 资金流向数据
-    const capitalFlowData = ref([
-        { name: '贵州茅台', code: '600519', amount: 12.5, change: 2.1 },
-        { name: '宁德时代', code: '300750', amount: 8.9, change: 3.5 },
-        { name: '中国石化', code: '600028', amount: -5.2, change: -1.8 },
-        { name: '招商银行', code: '600036', amount: 6.7, change: 1.2 },
-        { name: '万科A', code: '000002', amount: -3.1, change: -0.9 }
-    ])
-
-    // 股票池标签
-    const poolTabs = [
-        { key: 'watchlist', label: '自选股' },
-        { key: 'strategy', label: '策略选股' },
-        { key: 'industry', label: '行业选股' },
-        { key: 'concept', label: '概念选股' }
-    ]
-
-    // 表现最好的股票
-    const topStocks = ref([
-        { name: '宁德时代', code: '300750', price: '245.60', change: 3.2 },
-        { name: '贵州茅台', code: '600519', price: '1850.00', change: 2.1 },
-        { name: '比亚迪', code: '002594', price: '198.50', change: 1.8 },
-        { name: '招商银行', code: '600036', price: '38.45', change: 0.9 },
-        { name: '万科A', code: '000002', price: '18.90', change: -0.5 }
-    ])
-
-    // ============================================
-    // 数据获取函数
-    // ============================================
+    // ... (marketData, etc.)
 
     /**
-     * 获取市场概览数据（主要指数）
+     * 获取系统与策略状态 (P1)
      */
-    const fetchMarketOverview = async () => {
-        loading.value.market = true
-        error.value.market = ''
-
+    const fetchSystemStats = async () => {
         try {
-            const response = await dashboardService.getMarketOverview(100)
-            const etfData = response.data || []
-
-            // 筛选主要指数型ETF
-            const shanghaiETF = etfData.find(etf =>
-                /^510300|^510050/.test(etf.symbol) || etf.name.includes('沪深300') || etf.name.includes('上证50')
-            )
-            const shenzhenETF = etfData.find(etf =>
-                /^159919|^159901|^399001/.test(etf.symbol) || etf.name.includes('深证成指')
-            )
-            const chuangyeETF = etfData.find(etf =>
-                /^159915/.test(etf.symbol) || etf.name.includes('创业板')
-            )
-
-            // 更新市场数据
-            if (shanghaiETF) {
-                marketData.value.shanghai = {
-                    index: shanghaiETF.latest_price,
-                    change: shanghaiETF.change_percent,
-                    changePercent: `${shanghaiETF.change_percent >= 0 ? '+' : ''}${shanghaiETF.change_percent}%`
-                }
+            // 1. 获取策略数
+            const stratRes = await dashboardService.getActiveStrategies(1) // mock uid
+            activeStrategiesCount.value = stratRes.data?.length || 0
+            
+            // 2. 获取收益与风险
+            const riskRes = await dashboardService.getPositionRisk(1)
+            todayPnLValue.value = `¥${riskRes.data?.totalPnL?.toLocaleString() || '0.00'}`
+            
+            // 3. 获取系统健康度
+            const healthRes = await dashboardService.getSystemHealth()
+            systemHealth.value = healthRes.data || []
+            
+            // 4. 获取技术指标建议
+            const indRes = await dashboardService.getTechnicalIndicators(['000001.SH'], ['RSI', 'MACD', 'KDJ', 'BOLL'])
+            const stockInds = indRes.data?.['000001.SH'] || []
+            if (stockInds.length > 0) {
+                indicatorList.value = stockInds
             }
-
-            if (shenzhenETF) {
-                marketData.value.shenzhen = {
-                    index: shenzhenETF.latest_price,
-                    change: shenzhenETF.change_percent,
-                    changePercent: `${shenzhenETF.change_percent >= 0 ? '+' : ''}${shenzhenETF.change_percent}%`
-                }
-            }
-
-            if (chuangyeETF) {
-                marketData.value.chuangye = {
-                    index: chuangyeETF.latest_price,
-                    change: chuangyeETF.change_percent,
-                    changePercent: `${chuangyeETF.change_percent >= 0 ? '+' : ''}${chuangyeETF.change_percent}%`
-                }
-            }
-        } catch (err) {
-            console.error('Failed to fetch market overview:', err)
-            error.value.market = '市场数据加载失败'
-            // 保持Mock数据作为降级
+        } catch (e) {
+            console.error('Failed to fetch system stats', e)
         } finally {
-            loading.value.market = false
-        }
-    }
-
-    /**
-     * 获取资金流向数据
-     */
-    const fetchFundFlow = async () => {
-        loading.value.fundFlow = true
-        error.value.fundFlow = ''
-
-        try {
-            const response = await dashboardService.getFundFlow()
-            const fundFlowData = response.data
-
-            if (fundFlowData) {
-                marketData.value.fundFlow = fundFlowData
-            }
-        } catch (err) {
-            console.error('Failed to fetch fund flow:', err)
-            error.value.fundFlow = '资金流向数据加载失败'
-            // 保持Mock数据作为降级
-        } finally {
-            loading.value.fundFlow = false
-        }
-    }
-
-    /**
-     * 获取行业板块热度
-     */
-    const fetchIndustryFlow = async () => {
-        loading.value.industry = true
-        error.value.industry = ''
-
-        try {
-            const response = await dashboardService.getIndustryFlow('change_percent', 6)
-            const industryData = response.data || []
-
-            // 转换数据格式
-            marketHeat.value = industryData.map(item => ({
-                name: item.name,
-                change: item.change
-            }))
-        } catch (err) {
-            console.error('Failed to fetch industry flow:', err)
-            error.value.industry = '板块数据加载失败'
-            // 保持Mock数据作为降级
-        } finally {
-            loading.value.industry = false
-        }
-    }
-
-    /**
-     * 获取资金流向排名
-     */
-    const fetchStockFlowRanking = async () => {
-        try {
-            const response = await dashboardService.getStockFlowRanking('1day', 5)
-            const flowData = response.data || []
-
-            // 转换数据格式
-            capitalFlowData.value = flowData.map(item => ({
-                name: item.name,
-                code: item.code,
-                amount: item.amount,
-                change: item.change
-            }))
-        } catch (err) {
-            console.error('Failed to fetch stock flow ranking:', err)
-            // 保持Mock数据作为降级
+            loading.value.strategies = false
+            loading.value.pnl = false
+            loading.value.monitoring = false
+            loading.value.indicators = false
         }
     }
 
@@ -686,13 +615,15 @@
     const refreshData = async () => {
         refreshing.value = true
         try {
-            // TODO: 实现数据刷新逻辑
-            await new Promise(resolve => setTimeout(resolve, 2000))
             updateTime()
-            await fetchMarketOverview()
-            await fetchFundFlow()
-            await fetchIndustryFlow()
-            await fetchStockFlowRanking()
+            await Promise.all([
+                fetchMarketOverview(),
+                fetchFundFlow(),
+                fetchIndustryFlow(),
+                fetchStockFlowRanking(),
+                fetchTrendData(),
+                fetchSystemStats()
+            ])
         } finally {
             refreshing.value = false
         }
@@ -712,6 +643,19 @@
         })
     }
 
+    const handleTrendUpdate = (msg) => {
+        if (msg.data && msg.data.price) {
+            // Append new point
+            // For ECharts dynamic update, we might need to shift if array is too long
+            const newPoint = parseFloat(msg.data.price)
+            if (trendData.value && Array.isArray(trendData.value)) {
+                const newData = [...trendData.value, newPoint]
+                if (newData.length > 240) newData.shift() // Keep window size
+                trendData.value = newData
+            }
+        }
+    }
+
     onMounted(() => {
         updateTime()
         timeInterval = setInterval(updateTime, 1000)
@@ -721,12 +665,17 @@
         fetchFundFlow()
         fetchIndustryFlow()
         fetchStockFlowRanking()
+        fetchTrendData().then(() => {
+            // Start WS subscription after initial load
+            mockWebSocket.subscribe('market.trend.000001', handleTrendUpdate)
+        })
     })
 
     onUnmounted(() => {
         if (timeInterval) {
             clearInterval(timeInterval)
         }
+        mockWebSocket.unsubscribe('market.trend.000001', handleTrendUpdate)
     })
 </script>
 
@@ -1349,132 +1298,6 @@
             }
         }
     }
-    // ============================================
-    //   DESIGN NOTE - 设计说明
-    //   本项目仅支持桌面端，不包含移动端响应式代码
-    // 技术指标概览
-    .indicators-section {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .indicators-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: var(--artdeco-spacing-4);
-    }
-
-    .indicator-item {
-        padding: var(--artdeco-spacing-4);
-        background: var(--artdeco-bg-card);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        border-radius: var(--artdeco-radius-none);
-        text-align: center;
-        transition: all var(--artdeco-transition-base);
-
-        &:hover {
-            border-color: var(--artdeco-gold-primary);
-            box-shadow: var(--artdeco-glow-subtle);
-        }
-
-        .indicator-name {
-            font-family: var(--artdeco-font-display);
-            font-size: var(--artdeco-text-sm);
-            font-weight: 600;
-            color: var(--artdeco-gold-primary);
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-            margin-bottom: var(--artdeco-spacing-2);
-        }
-
-        .indicator-value {
-            font-family: var(--artdeco-font-mono);
-            font-size: var(--artdeco-text-lg);
-            font-weight: 700;
-            color: var(--artdeco-fg-primary);
-            margin-bottom: var(--artdeco-spacing-1);
-        }
-
-        .indicator-trend {
-            font-family: var(--artdeco-font-body);
-            font-size: var(--artdeco-text-sm);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-
-            &.rise {
-                color: var(--artdeco-up);
-            }
-
-            &.fall {
-                color: var(--artdeco-down);
-            }
-
-            &.neutral {
-                color: var(--artdeco-fg-muted);
-            }
-        }
-    }
-
-    // 系统监控
-    .monitoring-section {
-        margin-bottom: var(--artdeco-spacing-6);
-    }
-
-    .monitoring-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: var(--artdeco-spacing-4);
-    }
-
-    .monitor-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--artdeco-spacing-4);
-        background: var(--artdeco-bg-card);
-        border: 1px solid rgba(212, 175, 55, 0.1);
-        border-radius: var(--artdeco-radius-none);
-        transition: all var(--artdeco-transition-base);
-
-        &:hover {
-            border-color: var(--artdeco-gold-primary);
-            box-shadow: var(--artdeco-glow-subtle);
-        }
-
-        .monitor-label {
-            font-family: var(--artdeco-font-body);
-            font-size: var(--artdeco-text-sm);
-            color: var(--artdeco-fg-muted);
-            flex: 1;
-        }
-
-        .monitor-value {
-            font-family: var(--artdeco-font-mono);
-            font-weight: 600;
-            color: var(--artdeco-fg-primary);
-            margin-right: var(--artdeco-spacing-3);
-        }
-
-        .monitor-status {
-            padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
-            border-radius: var(--artdeco-radius-none);
-            font-family: var(--artdeco-font-body);
-            font-size: var(--artdeco-text-xs);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-
-            &.good {
-                background: rgba(0, 230, 118, 0.1);
-                color: var(--artdeco-up);
-            }
-
-            &.warning {
-                background: rgba(212, 175, 55, 0.1);
-                color: var(--artdeco-gold-primary);
-            }
-        }
-    }
 
     // ============================================
     // ENHANCED FUND FLOW OVERVIEW - Art Deco Style
@@ -1521,31 +1344,4 @@
         }
     }
 
-    // ============================================
 </style>
-
-// ============================================ // ADDITIONAL STYLES FOR NEW FEATURES //
-============================================ // 技术指标概览 .indicators-section { margin-bottom:
-var(--artdeco-spacing-6); } .indicators-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,
-1fr)); gap: var(--artdeco-spacing-4); } .indicator-item { padding: var(--artdeco-spacing-4); background:
-var(--artdeco-bg-card); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: var(--artdeco-radius-none);
-text-align: center; transition: all var(--artdeco-transition-base); &:hover { border-color: var(--artdeco-gold-primary);
-box-shadow: var(--artdeco-glow-subtle); } .indicator-name { font-family: var(--artdeco-font-display); font-size:
-var(--artdeco-text-sm); font-weight: 600; color: var(--artdeco-gold-primary); text-transform: uppercase; letter-spacing:
-var(--artdeco-tracking-wide); margin-bottom: var(--artdeco-spacing-2); } .indicator-value { font-family:
-var(--artdeco-font-mono); font-size: var(--artdeco-text-lg); font-weight: 700; color: var(--artdeco-fg-primary);
-margin-bottom: var(--artdeco-spacing-1); } .indicator-trend { font-family: var(--artdeco-font-body); font-size:
-var(--artdeco-text-sm); font-weight: 600; text-transform: uppercase; letter-spacing: var(--artdeco-tracking-wide);
-&.rise { color: var(--artdeco-up); } &.fall { color: var(--artdeco-down); } &.neutral { color: var(--artdeco-fg-muted);
-} } }; // 系统监控 .monitoring-section { margin-bottom: var(--artdeco-spacing-6); } .monitoring-grid { display: grid
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--artdeco-spacing-4); } .monitor-item { display:
-flex; justify-content: space-between; align-items: center; padding: var(--artdeco-spacing-4); background:
-var(--artdeco-bg-card); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: var(--artdeco-radius-none);
-transition: all var(--artdeco-transition-base); &:hover { border-color: var(--artdeco-gold-primary); box-shadow:
-var(--artdeco-glow-subtle); } .monitor-label { font-family: var(--artdeco-font-body); font-size: var(--artdeco-text-sm);
-color: var(--artdeco-fg-muted); flex: 1; } .monitor-value { font-family: var(--artdeco-font-mono); font-weight: 600;
-color: var(--artdeco-fg-primary); margin-right: var(--artdeco-spacing-3); } .monitor-status { padding:
-var(--artdeco-spacing-1) var(--artdeco-spacing-2); border-radius: var(--artdeco-radius-none); font-family:
-var(--artdeco-font-body); font-size: var(--artdeco-text-xs); font-weight: 600; text-transform: uppercase;
-letter-spacing: var(--artdeco-tracking-wide); &.good { background: rgba(0, 230, 118, 0.1); color: var(--artdeco-up); }
-&.warning { background: rgba(212, 175, 55, 0.1); color: var(--artdeco-gold-primary); } } }
