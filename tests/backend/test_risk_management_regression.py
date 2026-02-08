@@ -165,8 +165,8 @@ def test_get_dashboard(mock_unified_manager):
 
 @pytest.fixture
 def mock_risk_core():
-    # Patch where it is imported in the module
-    with patch("app.api.risk_management.get_risk_management_core") as mock:
+    # Patch where it is imported in the V31 module
+    with patch("app.api.risk_management_v31.get_risk_management_core") as mock:
         core = MagicMock()
         mock.return_value = core
         yield core
@@ -190,8 +190,8 @@ def test_v31_stop_loss_calculate(mock_risk_core):
         "k_factor": 2.0
     }
     
-    # We must patch the VARIABLE in the module
-    with patch("app.api.risk_management.RISK_MANAGEMENT_V31_AVAILABLE", True):
+    # We must patch the VARIABLE in the V31 module
+    with patch("app.api.risk_management_v31.RISK_MANAGEMENT_V31_AVAILABLE", True):
         response = client.post("/api/v1/risk/v31/stop-loss/calculate", json=payload)
         
         # Debug output if failed
