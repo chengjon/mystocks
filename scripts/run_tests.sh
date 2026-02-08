@@ -37,6 +37,19 @@ echo "运行单元测试..."
 echo "=================================="
 python -m pytest tests/unit/ -v --tb=short
 
+# 运行回归测试 (核心模块重构验证)
+echo ""
+echo "运行回归测试 (重构验证)..."
+echo "=================================="
+python -m pytest tests/backend/test_risk_management_regression.py \
+                 tests/backend/test_data_adapter_regression.py -v --tb=short
+
+# 运行前端测试 (Vitest)
+echo ""
+echo "运行前端测试 (重构验证)..."
+echo "=================================="
+npm run test:unit tests/unit/frontend/ArtDecoMarketData.spec.ts -- --run
+
 # 检查测试结果
 if [ $? -eq 0 ]; then
     echo ""
