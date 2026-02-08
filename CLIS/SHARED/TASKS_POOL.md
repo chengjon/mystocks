@@ -1,12 +1,12 @@
 # 任务池
 
-**Updated**: 2026-01-01 21:31:08
+**Updated**: 2026-02-08 09:24:06
 
 ## 统计信息
 
-- 总任务数: 12
+- 总任务数: 14
 - 待认领: 9
-- 进行中: 2
+- 进行中: 4
 - 已完成: 1
 
 ---
@@ -189,6 +189,8 @@ python scripts/dev/task_pool.py --claim --task=task-5.3 --cli=YOUR_CLI_NAME
 
 - **task-1.1**: 实现Web前端主页 (认领者: web, 进度: 0%)
 - **task-4.1**: 设计并实现数据库迁移脚本 (认领者: db, 进度: 0%)
+- **gov-t05**: T05 API contract baseline and drift checks (认领者: api, 进度: 0%)
+- **gov-t06-test**: T06 Data routing regression tests (认领者: it/worker1, 进度: 0%)
 
 ## 已完成任务
 
