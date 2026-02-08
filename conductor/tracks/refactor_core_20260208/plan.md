@@ -57,5 +57,17 @@ This plan outlines the steps to enforce the 1000-line limit across the codebase,
 
 - [x] Task: Enhance Regression Test Suite for `data.py`. [4498207]
 - [x] Task: Modularize `data.py` into domain-specific routers. [4498207]
-    - [x] Sub-task: Stocks Basic, Market, KLine, Margin, LHB, Futures.
 - [x] Task: Verify with regression tests. [4498207]
+
+## Phase 8: Extended Refactoring 2 (Remaining Large Files) [checkpoint: phase-8-complete]
+
+### Goal: Address remaining high-priority large files.
+
+- [x] Task: Refactor `ArtDecoDecisionModels.vue` (2399 -> 103 lines). [93d1427]
+- [x] Task: Refactor `ArtDecoAnomalyTracking.vue` (1915 -> 53 lines). [b4af9a6]
+- [x] Task: Refactor `ArtDecoFinancialValuation.vue` (1883 -> 84 lines). [9e09ac0]
+- [x] Task: Refactor `ArtDecoMarketPanorama.vue` (1823 -> 80 lines). [b12ff40]
+- [x] Task: Refactor `akshare_market.py` (1377 -> 24 lines). [285426a]
+- [ ] Task: Refactor `signal_monitoring.py` (~1170 lines).
+- [ ] Task: Refactor `indicators.py` (~1170 lines).
+- [ ] Task: Refactor `system.py` (~1160 lines).
