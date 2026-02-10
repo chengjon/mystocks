@@ -194,6 +194,43 @@ class TestMultiLevelCacheIntegration:
     def setup_method(self):
         """Setup test fixtures"""
         self.cache = MultiLevelCache(CacheConfig(memory_max_size=100))
+        
+        # Mock Redis
+        self.redis_store = {}
+        self.cache._redis = AsyncMock()
+        
+        async def mock_get(key):
+            return self.redis_store.get(key)
+            
+        async def mock_set(key, value, ex=None):
+            self.redis_store[key] = value
+            return True
+
+        async def mock_setex(key, time, value):
+            self.redis_store[key] = value
+            return True
+            
+        async def mock_delete(*keys):
+            count = 0
+            for key in keys:
+                if key in self.redis_store:
+                    del self.redis_store[key]
+                    count += 1
+            return count
+
+        async def mock_keys(pattern):
+            # Simple implementation for pattern matching
+            prefix = pattern.replace('*', '')
+            # encode to bytes if needed by real redis? Mock usually returns what was put in
+            # Assuming implementation handles str keys
+            return [k for k in self.redis_store.keys() if k.startswith(prefix)]
+
+        self.cache._redis.get.side_effect = mock_get
+        self.cache._redis.set.side_effect = mock_set
+        self.cache._redis.setex.side_effect = mock_setex
+        self.cache._redis.delete.side_effect = mock_delete
+        self.cache._redis.keys.side_effect = mock_keys
+        self.cache._redis_connected = True
 
     @pytest.mark.asyncio
     async def test_memory_cache_hit(self):
