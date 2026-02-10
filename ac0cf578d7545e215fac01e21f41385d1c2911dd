@@ -1,0 +1,4 @@
+Task: T1.1 - Directory Structure Initialization
+Summary: Created the root directory structure for ArtDeco V3.0 migration including 'views/artdeco-pages' with domain subdirectories and 'api/artdeco-api'. Added unit test to verify structure.
+Files: web/frontend/src/views/artdeco-pages/, web/frontend/src/api/artdeco-api/, web/frontend/tests/unit/structure.test.ts
+Why: Foundation for the side-by-side migration strategy.
