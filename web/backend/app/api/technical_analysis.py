@@ -15,7 +15,7 @@ from app.core.responses import create_error_response, create_success_response
 from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
 
-router = APIRouter(prefix="/api/technical", tags=["technical-analysis"])
+router = APIRouter(tags=["technical-analysis"])
 
 
 # ============================================================================

@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * MyStocks Web应用端到端可用性测试配置
  *
  * 测试目标：
- * - 前端: http://localhost:3001 (Vue3 + Element Plus)
+ * - 前端: http://localhost:3020 (Vue3 + Element Plus)
  * - 后端: http://localhost:8000 (FastAPI + Swagger UI)
  */
 export default defineConfig({
@@ -43,8 +43,8 @@ export default defineConfig({
 
   /* 全局设置 */
   use: {
-    /* 基础 URL - 指向实际的前端服务器 */
-    baseURL: process.env.BASE_URL || 'http://localhost:3001',
+    /* 基础 URL - 指向实际的前端服务器 (per CLAUDE.md port allocation) */
+    baseURL: process.env.BASE_URL || 'http://localhost:3020',
 
     /* 收集跟踪 */
     trace: 'retain-on-failure',
@@ -148,8 +148,8 @@ export default defineConfig({
   /* 网络设置 */
   webServer: [
     {
-      command: 'echo "Frontend server already running on port 3001"',
-      url: 'http://localhost:3001',
+      command: 'echo "Frontend server already running on port 3020"',
+      url: 'http://localhost:3020',
       reuseExistingServer: true,
       timeout: 10 * 1000,
     },

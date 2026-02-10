@@ -37,7 +37,7 @@ class MyStocksUser(HttpUser):
     @task(4)
     def get_market_overview(self):
         """获取市场概览数据 - 高频操作"""
-        with self.client.get("/api/market/overview",
+        with self.client.get("/api/v1/market/overview",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()
@@ -48,7 +48,7 @@ class MyStocksUser(HttpUser):
     def get_stock_quotes(self):
         """获取股票实时报价"""
         symbol = random.choice(STOCKS)
-        with self.client.get(f"/api/market/quote/{symbol}",
+        with self.client.get(f"/api/v1/market/quotes?symbol={symbol}",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()
@@ -59,7 +59,7 @@ class MyStocksUser(HttpUser):
     def get_daily_kline(self):
         """获取日K线数据"""
         symbol = random.choice(STOCKS)
-        with self.client.get(f"/api/market/daily-kline/{symbol}?limit=100",
+        with self.client.get(f"/api/v1/market/kline?symbol={symbol}&limit=100",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()
@@ -70,7 +70,7 @@ class MyStocksUser(HttpUser):
     def get_technical_indicators(self):
         """获取技术指标"""
         symbol = random.choice(STOCKS)
-        with self.client.get(f"/api/technical/{symbol}/indicators",
+        with self.client.get(f"/api/v1/technical/indicators?symbol={symbol}",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()
@@ -80,7 +80,7 @@ class MyStocksUser(HttpUser):
     @task(2)
     def get_strategy_list(self):
         """获取策略列表"""
-        with self.client.get("/api/strategies",
+        with self.client.get("/api/v1/strategy/definitions",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()
@@ -90,7 +90,7 @@ class MyStocksUser(HttpUser):
     @task(1)
     def health_check(self):
         """健康检查"""
-        with self.client.get("/api/health",
+        with self.client.get("/health",
                            catch_response=True) as response:
             if response.status_code == 200:
                 response.success()

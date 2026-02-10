@@ -18,7 +18,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
 
-router = APIRouter(prefix="/api/market/v2", tags=["市场数据V2"])
+router = APIRouter(tags=["市场数据V2"])
 
 
 # ==================== 个股资金流向 ====================

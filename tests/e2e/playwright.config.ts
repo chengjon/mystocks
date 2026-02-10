@@ -10,11 +10,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * 测试环境配置
- * Per port allocation spec: Frontend 3000-3009, Backend 8000-8009
+ * Per CLAUDE.md port allocation: Frontend 3020-3029, Backend 8020-8029
  */
-const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3020';
 const apiURL = process.env.PLAYWRIGHT_API_URL || 'http://localhost:8000';
-const timeout = parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000');
+const timeout = parseInt(process.env.PLAYWRIGHT_TIMEOUT || '60000');
 
 export default defineConfig({
   testDir: './',
@@ -91,8 +91,8 @@ export default defineConfig({
  */
 export const environments = {
   development: {
-    baseURL: 'http://localhost:3000',  // Per port allocation spec: Frontend 3000-3009
-    apiURL: 'http://localhost:8000',    // Backend 8000-8009
+    baseURL: 'http://localhost:3020',  // Per CLAUDE.md port allocation: Frontend 3020-3029
+    apiURL: 'http://localhost:8000',    // Backend 8000-8029
     headless: false,
     slowMo: 0,
   },

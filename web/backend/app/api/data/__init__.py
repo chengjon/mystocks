@@ -14,7 +14,7 @@ from .lhb import router as lhb_router
 from .futures import router as futures_router
 from .financial import router as financial_router
 
-router = APIRouter(prefix="/api/v1/data", tags=["Data Service"])
+router = APIRouter(tags=["Data Service"])
 
 # Include sub-routers
 router.include_router(stocks_router)

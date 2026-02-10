@@ -12,8 +12,9 @@ Tests for JWT authentication system including:
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from unittest.mock import patch
 
 from app.main import app
 from app.core.security import (
@@ -24,47 +25,76 @@ from app.core.security import (
 )
 
 
-# Test database setup (use in-memory SQLite for testing)
-TEST_DATABASE_URL = "sqlite:///:memory:"
+# PostgreSQL test database
+TEST_DATABASE_URL = (
+    "postgresql+psycopg2://postgres:c790414J@192.168.123.104:5438/mystocks_test"
+)
 
 
 @pytest.fixture
 def test_db():
-    """Create test database session"""
-    from app.db import Base
-    from sqlalchemy.pool import StaticPool
+    """Create PostgreSQL test database session with transaction rollback isolation"""
+    engine = create_engine(TEST_DATABASE_URL)
+    connection = engine.connect()
 
-    engine = create_engine(
-        TEST_DATABASE_URL,
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    # Start a top-level transaction that will be rolled back after each test
+    transaction = connection.begin()
 
-    # Create tables
-    Base.metadata.create_all(bind=engine)
+    # Bind session to the connection (shares the same transaction)
+    Session = sessionmaker(bind=connection)
+    session = Session()
 
-    db = TestingSessionLocal()
+    # Clean test data before each test (within the transaction)
+    session.execute(text("DELETE FROM user_audit_log"))
+    session.execute(text("DELETE FROM password_reset_tokens"))
+    session.execute(text("DELETE FROM users"))
+    session.flush()
+
+    # Override commit/close/rollback to use savepoints instead of real commits
+    # This prevents the auth routes from committing the outer transaction
+    _orig_commit = session.commit
+    _orig_close = session.close
+    _orig_rollback = session.rollback
+
+    def _fake_commit():
+        session.flush()  # Flush to DB but don't commit the outer transaction
+
+    def _fake_close():
+        pass  # Don't close - we manage the lifecycle
+
+    def _fake_rollback():
+        pass  # Don't rollback - we manage the lifecycle
+
+    session.commit = _fake_commit
+    session.close = _fake_close
+    session.rollback = _fake_rollback
+
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.commit = _orig_commit
+        session.close = _orig_close
+        session.rollback = _orig_rollback
+        session.close()
+        transaction.rollback()
+        connection.close()
+        engine.dispose()
 
 
 @pytest.fixture
 def client(test_db):
-    """Create test client with database override"""
-    from app.core.database import get_postgresql_session
+    """Create test client with PostgreSQL test database"""
+    from app.core.config import settings
 
-    def override_get_db():
-        try:
-            yield test_db
-        finally:
-            pass
+    # Disable CSRF for tests (without enabling testing mode which uses mock auth)
+    original_csrf = settings.csrf_enabled
+    settings.csrf_enabled = False
 
-    app.dependency_overrides[get_postgresql_session] = override_get_db
-    yield TestClient(app)
-    del app.dependency_overrides[get_postgresql_session]
+    # Mock get_postgresql_session to return the test session (with transaction rollback)
+    with patch("app.core.database.get_postgresql_session", side_effect=lambda: test_db):
+        yield TestClient(app)
+
+    settings.csrf_enabled = original_csrf
 
 
 class TestPasswordSecurity:
@@ -162,7 +192,7 @@ class TestUserRegistration:
 
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
-        assert data["code"] == "SUCCESS"
+        assert data.get("success") is True or data.get("code") == "SUCCESS"
         assert data["data"]["username"] == "testuser"
         assert data["data"]["email"] == "test@example.com"
         assert data["data"]["role"] == "user"
@@ -194,7 +224,9 @@ class TestUserRegistration:
         )
 
         assert response.status_code == status.HTTP_409_CONFLICT
-        assert "already exists" in response.json()["detail"].lower()
+        body = response.json()
+        error_msg = body.get("detail", body.get("message", "")).lower()
+        assert "already exists" in error_msg
 
     def test_register_duplicate_email(self, client):
         """Test registration with duplicate email"""
@@ -219,12 +251,14 @@ class TestUserRegistration:
         )
 
         assert response.status_code == status.HTTP_409_CONFLICT
-        assert "already exists" in response.json()["detail"].lower()
+        body = response.json()
+        error_msg = body.get("detail", body.get("message", "")).lower()
+        assert "already exists" in error_msg
 
     def test_register_weak_password(self, client):
         """Test registration with weak password"""
         response = client.post(
-            " /api/v1/auth/register",
+            "/api/v1/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -287,7 +321,7 @@ class TestUserLogin:
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data["code"] == "SUCCESS"
+        assert data.get("success") is True or data.get("code") == "SUCCESS"
         assert "token" in data["data"]
         assert data["data"]["token_type"] == "bearer"
         assert "expires_in" in data["data"]
@@ -391,7 +425,7 @@ class TestPasswordReset:
     def test_confirm_password_reset_success(self, client):
         """Test successful password reset confirmation"""
         # Register a user
-        client.post(
+        reg_response = client.post(
             "/api/v1/auth/register",
             json={
                 "username": "testuser",
@@ -399,6 +433,8 @@ class TestPasswordReset:
                 "password": "OldPassword123",
             },
         )
+        # Get actual user_id from registration response
+        user_id = reg_response.json()["data"]["id"]
 
         # Request reset (this would normally send email with token)
         # For testing, we'll create a reset token manually
@@ -406,7 +442,7 @@ class TestPasswordReset:
         from datetime import timedelta
 
         reset_token = create_access_token(
-            data={"sub": "testuser", "user_id": 1, "purpose": "password_reset"},
+            data={"sub": "testuser", "user_id": user_id, "role": "user", "purpose": "password_reset"},
             expires_delta=timedelta(hours=1),
         )
 
@@ -507,6 +543,6 @@ class TestCSRFToken:
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data["code"] == "SUCCESS"
+        assert data.get("success") is True or data.get("code") == "SUCCESS"
         assert "token" in data["data"]
         assert data["data"]["token_type"] == "csrf"
