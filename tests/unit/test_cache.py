@@ -4,8 +4,7 @@ Tests for memory cache, redis cache, and cache decorators
 """
 
 import asyncio
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -194,14 +193,14 @@ class TestMultiLevelCacheIntegration:
     def setup_method(self):
         """Setup test fixtures"""
         self.cache = MultiLevelCache(CacheConfig(memory_max_size=100))
-        
+
         # Mock Redis
         self.redis_store = {}
         self.cache._redis = AsyncMock()
-        
+
         async def mock_get(key):
             return self.redis_store.get(key)
-            
+
         async def mock_set(key, value, ex=None):
             self.redis_store[key] = value
             return True
@@ -209,7 +208,7 @@ class TestMultiLevelCacheIntegration:
         async def mock_setex(key, time, value):
             self.redis_store[key] = value
             return True
-            
+
         async def mock_delete(*keys):
             count = 0
             for key in keys:
