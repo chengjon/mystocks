@@ -184,6 +184,35 @@ class ContinuousIntegrationManager:
         """异步上下文管理器退出"""
         await self.session.__aexit__(exc_type, exc_val, exc_tb)
 
+    async def setup_test_environment(self, env_type: EnvironmentType) -> bool:
+        """启动测试环境"""
+        if env_type == EnvironmentType.TESTING:
+            compose_file = "docker-compose.test.yml"
+            logger.info(f"正在启动测试环境: {compose_file}")
+
+            # 启动容器
+            result = await self._run_command(
+                f"docker-compose -f {compose_file} up -d --wait"
+            )
+
+            if not result['success']:
+                logger.error(f"测试环境启动失败: {result.get('error')}")
+                # 尝试打印输出以便调试
+                logger.error(f"命令输出: {result.get('output')}")
+                return False
+
+            # 简单的健康检查等待（--wait参数通常已经处理了大部分，但这里可以添加额外的应用层检查）
+            # await self._wait_for_services_healthy()
+            logger.info("测试环境启动成功")
+            return True
+        return True
+
+    async def teardown_test_environment(self, env_type: EnvironmentType):
+        """拆除测试环境"""
+        if env_type == EnvironmentType.TESTING:
+            logger.info("正在拆除测试环境")
+            await self._run_command("docker-compose -f docker-compose.test.yml down -v")
+
     def load_config(self) -> PipelineConfig:
         """加载配置文件"""
         try:
@@ -231,10 +260,14 @@ class ContinuousIntegrationManager:
 
         self.pipelines[pipeline_id] = pipeline_info
 
-        logger.info("开始运行流水线: %(pipeline_id)s")
+        logger.info(f"开始运行流水线: {pipeline_id}")
 
         try:
-            # 执行流水线步骤
+            # 1. 启动测试环境
+            if not await self.setup_test_environment(config.environment):
+                raise RuntimeError("测试环境启动失败")
+
+            # 2. 执行流水线步骤
             if config.parallel:
                 pipeline_info["steps"] = await self._run_pipeline_parallel(config)
             else:
@@ -252,14 +285,16 @@ class ContinuousIntegrationManager:
             pipeline_info["reports"] = await self._generate_pipeline_reports(pipeline_id, config)
 
         except Exception as e:
-            logger.error("流水线执行失败: %(e)s")
+            logger.error(f"流水线执行失败: {e}")
             pipeline_info["status"] = PipelineStatus.FAILED.value
             pipeline_info["error"] = str(e)
 
         finally:
+            # 3. 拆除测试环境
+            await self.teardown_test_environment(config.environment)
             pipeline_info["end_time"] = datetime.now().isoformat()
 
-        logger.info("流水线执行完成: %(pipeline_id)s - {pipeline_info['status']}")
+        logger.info(f"流水线执行完成: {pipeline_id} - {pipeline_info['status']}")
         return pipeline_info
 
     async def _run_pipeline_parallel(self, config: PipelineConfig) -> List[Dict[str, Any]]:
