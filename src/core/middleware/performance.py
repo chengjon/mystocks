@@ -10,11 +10,40 @@ from fastapi import Response
 from prometheus_client import Counter, Gauge, Histogram, Info, REGISTRY, generate_latest
 
 
+from threading import Lock
+
+_METRICS_LOCK = Lock()
+
 def _get_or_create(metric_cls, name: str, *args, **kwargs):
-    existing = REGISTRY._names_to_collectors.get(name)
-    if existing:
-        return existing
-    return metric_cls(name, *args, **kwargs)
+    """
+    安全地获取或创建指标，避免重复注册。
+    使用公共API collector_registry.collect() 替代私有属性。
+    """
+    with _METRICS_LOCK:
+        # 使用公共API检查指标是否已存在
+        try:
+            # 尝试获取现有指标
+            for collector in REGISTRY.collect():
+                if hasattr(collector, '_name') and collector._name == name:
+                    return collector
+                # 对于多名称的collector，检查desc
+                for desc in getattr(collector, '_desc', []):
+                    if desc.name == name:
+                        return collector
+        except Exception:
+            pass
+        
+        # 如果指标不存在，创建新的
+        try:
+            return metric_cls(name, *args, **kwargs)
+        except ValueError as e:
+            # 指标已存在（可能在多线程环境下）
+            if "Duplicated" in str(e) or "already" in str(e).lower():
+                # 再次尝试获取
+                for collector in REGISTRY.collect():
+                    if hasattr(collector, '_name') and collector._name == name:
+                        return collector
+            raise
 
 REQUEST_LATENCY = _get_or_create(
     Histogram,

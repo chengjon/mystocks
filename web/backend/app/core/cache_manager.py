@@ -20,7 +20,7 @@ Features:
 import asyncio
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Lock
 from typing import Any, Dict, List, Optional
 
@@ -197,7 +197,7 @@ class CacheManager:
                     enriched_data = {
                         "data": redis_result,
                         "source": "redis",
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                     self._add_to_memory_cache(symbol, data_type, timeframe or "1d", enriched_data)
 
@@ -230,7 +230,7 @@ class CacheManager:
                 enriched_data = {
                     "data": cache_data,
                     "source": "tdengine",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
                 self._add_to_memory_cache(symbol, data_type, timeframe or "1d", enriched_data)
 
@@ -316,7 +316,7 @@ class CacheManager:
             # 增加元数据
             enriched_data = {
                 **data,
-                "_cached_at": datetime.utcnow().isoformat(),
+                "_cached_at": datetime.now(timezone.utc).isoformat(),
                 "_ttl_days": ttl_days,
                 "_cache_version": "2.0",  # 升级到三级缓存版本
                 "_source": "market_data",
@@ -326,7 +326,7 @@ class CacheManager:
             cache_data = {
                 "data": data,
                 "source": "cache",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             cache_key = self.get_cache_key(symbol, data_type, timeframe)
@@ -370,7 +370,7 @@ class CacheManager:
             # 增加元数据
             enriched_data = {
                 **data,
-                "_cached_at": datetime.utcnow().isoformat(),
+                "_cached_at": datetime.now(timezone.utc).isoformat(),
                 "_ttl_days": ttl_days,
                 "_cache_version": "1.0",
                 "_source": "market_data",
@@ -380,7 +380,7 @@ class CacheManager:
             memory_data = {
                 "data": data,
                 "source": "memory",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
             self._add_to_memory_cache(symbol, data_type, timeframe, memory_data)
 
@@ -639,7 +639,7 @@ class CacheManager:
                             enriched_data = {
                                 "data": cache_data,
                                 "source": "cache",
-                                "timestamp": datetime.utcnow().isoformat(),
+                                "timestamp": datetime.now(timezone.utc).isoformat(),
                             }
                             results[cache_key] = enriched_data
                             self._cache_stats["hits"] += 1
@@ -745,7 +745,9 @@ class CacheManager:
                 if "_cached_at" in cache_data.get("data", {}):
                     cached_at_str = cache_data["data"]["_cached_at"]
                     cached_at = datetime.fromisoformat(cached_at_str)
-                    age = datetime.utcnow() - cached_at
+                    if cached_at.tzinfo is None:
+                        cached_at = cached_at.replace(tzinfo=timezone.utc)
+                    age = datetime.now(timezone.utc) - cached_at
                     is_valid = age <= timedelta(days=max_age_days)
 
                     logger.debug(
@@ -766,7 +768,9 @@ class CacheManager:
                     if "_cached_at" in redis_result.get("data", {}):
                         cached_at_str = redis_result["data"]["_cached_at"]
                         cached_at = datetime.fromisoformat(cached_at_str)
-                        age = datetime.utcnow() - cached_at
+                        if cached_at.tzinfo is None:
+                            cached_at = cached_at.replace(tzinfo=timezone.utc)
+                        age = datetime.now(timezone.utc) - cached_at
                         is_valid = age <= timedelta(days=max_age_days)
 
                         logger.debug(
@@ -791,7 +795,9 @@ class CacheManager:
                 if cache_data and "_cached_at" in cache_data.get("data", {}):
                     cached_at_str = cache_data["data"]["_cached_at"]
                     cached_at = datetime.fromisoformat(cached_at_str)
-                    age = datetime.utcnow() - cached_at
+                    if cached_at.tzinfo is None:
+                        cached_at = cached_at.replace(tzinfo=timezone.utc)
+                    age = datetime.now(timezone.utc) - cached_at
                     is_valid = age <= timedelta(days=max_age_days)
 
                     logger.debug(
@@ -818,7 +824,7 @@ class CacheManager:
             if "_cached_at" in cache_data.get("data", {}):
                 cached_at_str = cache_data["data"]["_cached_at"]
                 cached_at = datetime.fromisoformat(cached_at_str)
-                age = datetime.utcnow() - cached_at
+                age = datetime.now(timezone.utc) - cached_at
                 is_valid = age <= timedelta(days=max_age_days)
 
                 logger.debug(
@@ -867,7 +873,7 @@ class CacheManager:
         avg_response_time = self._cache_stats["total_response_time"] / max(self._cache_stats["reads"], 1)
 
         stats = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "total_reads": self._cache_stats["reads"],
             "total_writes": self._cache_stats["writes"],
             "cache_hits": self._cache_stats["hits"],
@@ -928,7 +934,7 @@ class CacheManager:
                     return None
 
                 # 更新访问统计
-                self._access_patterns[cache_key].append(datetime.utcnow())
+                self._access_patterns[cache_key].append(datetime.now(timezone.utc))
                 result: Optional[Dict[str, Any]] = self._memory_cache[cache_key]
                 return result
 
@@ -953,15 +959,15 @@ class CacheManager:
             ttl_seconds = self._get_tiered_ttl(data_type)
 
             self._memory_cache[cache_key] = data
-            self._cache_ttl[cache_key] = datetime.utcnow() + timedelta(seconds=ttl_seconds)
-            self._access_patterns[cache_key].append(datetime.utcnow())
+            self._cache_ttl[cache_key] = datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)
+            self._access_patterns[cache_key].append(datetime.now(timezone.utc))
 
     def _is_cache_expired(self, cache_key: str) -> bool:
         """检查缓存是否过期"""
         if cache_key not in self._cache_ttl:
             return True
 
-        return datetime.utcnow() > self._cache_ttl[cache_key]
+        return datetime.now(timezone.utc) > self._cache_ttl[cache_key]
 
     def _get_tiered_ttl(self, data_type: str) -> int:
         """获取分层TTL"""
@@ -992,7 +998,7 @@ class CacheManager:
         """记录访问模式"""
         cache_key = self.get_cache_key(symbol, data_type)
         with self._cache_lock:
-            self._access_patterns[cache_key].append(datetime.utcnow())
+            self._access_patterns[cache_key].append(datetime.now(timezone.utc))
 
     async def _write_to_tdengine(
         self,
@@ -1111,7 +1117,7 @@ class CacheManager:
         with self._cache_lock:
             # 清理过期条目
             expired_count = 0
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             expired_keys = [key for key, expire_time in self._cache_ttl.items() if now > expire_time]
 
@@ -1144,7 +1150,7 @@ class CacheManager:
         """
         health_status: Dict[str, Any] = {
             "overall_healthy": True,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "components": {},
             "performance_metrics": {},
             "issues": [],

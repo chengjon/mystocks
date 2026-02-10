@@ -358,7 +358,7 @@ async def get_csrf_token():
         )
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def register_user(user_data: UserRegisterRequest):
     """
     用户注册
@@ -681,6 +681,8 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
         session.commit()
 
         # Log password reset
+        import json as _json_mod
+
         log_query = text(
             """
             INSERT INTO user_audit_log (user_id, action, details)
@@ -692,7 +694,7 @@ async def confirm_password_reset(reset_data: PasswordResetConfirm):
             {
                 "user_id": user_id,
                 "action": "password_reset_completed",
-                "details": {"method": "token_reset"},
+                "details": _json_mod.dumps({"method": "token_reset"}),
             },
         )
         session.commit()
