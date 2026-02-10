@@ -582,12 +582,14 @@ class TDengineDataAccess(IDataAccessLayer):
         """
         Validate and sanitize input for TDengine queries to prevent SQL injection.
 
+        Uses parameterized queries where possible and strict validation for identifiers.
+
         Args:
             value: The input value to validate
             input_type: Type of input ('symbol', 'datetime', 'table_name')
 
         Returns:
-            Validated string
+            Validated string with dangerous characters removed/rejected
 
         Raises:
             ValueError: If input fails validation
@@ -597,16 +599,24 @@ class TDengineDataAccess(IDataAccessLayer):
         if not isinstance(value, str):
             value = str(value)
 
+        # First check for SQL injection patterns across all input types
+        # Removed '%' and '_' from dangerous patterns as they are valid in table names/symbols
+        # and are checked by strict regex validation below.
+        dangerous_patterns = ["'", '"', ";", "--", "/*", "*/", "\\"]
+        for pattern in dangerous_patterns:
+            if pattern in value:
+                raise ValueError(f"Input contains dangerous character '{pattern}': {value}")
+
         if input_type == "symbol":
-            # Stock symbols: alphanumeric + dots, max 20 chars
-            if not re.match(r'^[A-Za-z0-9.]{1,20}$', value):
+            # Stock symbols: alphanumeric + dots + underscores, max 20 chars
+            if not re.match(r'^[A-Za-z0-9._]{1,20}$', value):
                 raise ValueError(f"Invalid symbol format: {value}")
         elif input_type == "datetime":
-            # ISO datetime or date format
+            # ISO datetime or date format - strictly numeric and separators only
             if not re.match(r'^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?)?$', value):
                 raise ValueError(f"Invalid datetime format: {value}")
         elif input_type == "table_name":
-            # Table names: alphanumeric + underscores
+            # Table names: alphanumeric + underscores, must start with letter/underscore
             if not re.match(r'^[A-Za-z_][A-Za-z0-9_]{0,63}$', value):
                 raise ValueError(f"Invalid table name: {value}")
 
