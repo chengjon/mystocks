@@ -8,8 +8,9 @@ async function globalSetup(config) {
   // 验证测试环境
   console.log('📡 验证测试环境连接...');
 
-  const frontendUrl = process.env.BASE_URL || 'http://localhost:3000';
-  const backendUrl = 'http://localhost:8000';
+  // Per CLAUDE.md port allocation: Frontend 3020-3029, Backend 8020-8029
+  const frontendUrl = process.env.BASE_URL || 'http://localhost:3020';
+  const backendUrl = process.env.API_URL || 'http://localhost:8000';
 
   try {
     // 检查前端服务器

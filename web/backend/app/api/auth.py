@@ -358,7 +358,7 @@ async def get_csrf_token():
         )
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserRegisterRequest):
     """
     用户注册
