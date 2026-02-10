@@ -5,16 +5,18 @@ import sys
 import logging
 from typing import List
 
-# Ensure src is in python path
+# Ensure project root is in python path
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(__file__))
 
-from tests.ci.test_continuous_integration import (
-    ContinuousIntegrationManager, 
-    PipelineConfig, 
-    PipelineStep, 
-    TestType, 
-    TestSuite, 
+from test_continuous_integration import (
+    ContinuousIntegrationManager,
+    PipelineConfig,
+    PipelineStep,
+    TestType,
+    TestSuite,
     EnvironmentType
 )
 
