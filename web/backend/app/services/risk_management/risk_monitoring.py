@@ -5,12 +5,11 @@
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
-from enum import Enum
 
-from .risk_base import RiskLevel, RiskEventType, RiskMetrics, RiskEvent, RiskProfile
+from .risk_base import RiskLevel, RiskEventType, RiskMetrics
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -219,9 +218,6 @@ class RiskMonitoring:
     async def _send_email_alert(self, event: MonitoringEvent):
         """发送邮件告警"""
         try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
 
             subject = f"[{event.risk_level.value}] 风险告警 - {event.event_id}"
             body = f"""

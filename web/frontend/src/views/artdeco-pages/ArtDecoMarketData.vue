@@ -211,23 +211,42 @@ const refreshData = async () => {
                 dashboardService.getStockFlowRanking(),
                 marketService.getTrend('000001.SH')
             ])
-            if (flowRes.success) fundData.value = flowRes.data
-            if (rankingRes.success) stockRanking.value = rankingRes.data
-            if (trendRes.success && trendRes.data?.data) {
-                trendData.value = trendRes.data.data.map((v, i) => ({ date: i, value: v }))
+
+            const flowPayload = flowRes?.data ?? flowRes
+            if (flowPayload && typeof flowPayload === 'object') {
+                fundData.value = {
+                    ...fundData.value,
+                    ...flowPayload
+                }
             }
+
+            const rankingPayload = rankingRes?.data ?? rankingRes
+            const rankingList = Array.isArray(rankingPayload)
+                ? rankingPayload
+                : (Array.isArray(rankingPayload?.data) ? rankingPayload.data : [])
+            stockRanking.value = rankingList
+
+            const trendPayload = trendRes?.data ?? trendRes
+            const trendList = Array.isArray(trendPayload?.data)
+                ? trendPayload.data
+                : (Array.isArray(trendPayload) ? trendPayload : [])
+            trendData.value = trendList.map((v, i) => ({ date: i, value: Number(v) || 0 }))
         } else if (activeTab.value === 'etf') {
             const res = await dashboardService.getETFPerformance()
-            if (res.success) etfRanking.value = res.data
+            const payload = res?.data ?? res
+            etfRanking.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'concepts') {
             const res = await dashboardService.getIndustryFlow()
-            if (res.success) conceptRanking.value = res.data
+            const payload = res?.data ?? res
+            conceptRanking.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'lhb') {
             const res = await dashboardService.getLongHuBang()
-            if (res.success) lhbData.value = res.data
+            const payload = res?.data ?? res
+            lhbData.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'auction') {
             const res = await dashboardService.getBlockTrading()
-            if (res.success) auctionData.value = res.data
+            const payload = res?.data ?? res
+            auctionData.value = Array.isArray(payload) ? payload : []
         } else if (activeTab.value === 'data-quality') {
             const res = await apiClient.get('/api/monitoring/v2/data-quality')
             if (res.data?.success) {

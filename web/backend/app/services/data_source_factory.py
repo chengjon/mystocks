@@ -555,7 +555,7 @@ class DynamicConfigManager:
             logger.info("Configuration loaded from {self.config_file}")
             return self._config_data
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load config from {self.config_file}: %(e)s")
             # 返回默认配置
             return await self._get_default_config()
@@ -575,12 +575,12 @@ class DynamicConfigManager:
                         for watcher in self._watchers:
                             try:
                                 await self._safe_call_watcher(watcher, old_config, self._config_data)
-                            except Exception as e:
+                            except Exception:
                                 logger.error("Config change notification failed: %(e)s")
 
                 await asyncio.sleep(5)  # 每5秒检查一次
 
-            except Exception as e:
+            except Exception:
                 logger.error("Config watching error: %(e)s")
                 await asyncio.sleep(10)  # 出错时等待更长时间
 
@@ -732,7 +732,7 @@ class DataSourceFactory:
 
                 logger.info("Data source '%(source_name)s' created successfully (mode: {config.mode})")
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to create data source '%(source_name)s': %(e)s")
 
     async def _create_single_data_source(self, config: DataSourceConfig) -> IDataSource:
@@ -857,7 +857,7 @@ class DataSourceFactory:
                     if health.status != HealthStatusEnum.HEALTHY:
                         logger.warning("Data source '%(source_name)s' is {health.status.value}: {health.message}")
 
-            except Exception as e:
+            except Exception:
                 logger.error("Health check loop error: %(e)s")
 
     async def _on_config_changed(self, old_config: Dict[str, Any], new_config: Dict[str, Any]):
@@ -873,7 +873,7 @@ class DataSourceFactory:
 
             logger.info("Data sources recreated successfully")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to recreate data sources: %(e)s")
 
     async def _cleanup_data_sources(self):
@@ -882,7 +882,7 @@ class DataSourceFactory:
             try:
                 await data_source.cleanup()
                 logger.debug("Data source '%(source_name)s' cleaned up")
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to cleanup data source '%(source_name)s': %(e)s")
 
         self._data_sources.clear()

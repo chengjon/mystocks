@@ -122,6 +122,35 @@ export const MENU_CONFIG = {
     }
 }
 
+// ArtDeco兼容菜单导出（供 MenuConfig.enhanced.ts 使用）
+export const ARTDECO_MENU_ITEMS = [
+    {
+        key: 'dashboard',
+        path: '/dashboard',
+        label: '仪表盘',
+        icon: 'Home',
+        description: '系统总览面板',
+        priority: 'primary',
+        featured: true
+    },
+    ...MENU_CONFIG.market.items.map(item => ({
+        key: `market-${item.key}`,
+        path: item.path,
+        label: item.title,
+        icon: item.icon,
+        description: item.description,
+        priority: 'secondary'
+    })),
+    ...MENU_CONFIG.stocks.items.map(item => ({
+        key: `stocks-${item.key}`,
+        path: item.path,
+        label: item.title,
+        icon: item.icon,
+        description: item.description,
+        priority: 'secondary'
+    }))
+]
+
 /**
  * Get menu configuration for a specific module
  * @param {string} module - 'market' or 'stocks'

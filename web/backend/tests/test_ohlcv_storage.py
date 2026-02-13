@@ -11,7 +11,7 @@ Date: 2025-11-07
 
 from unittest.mock import MagicMock, patch
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.services.data_aggregation_service import OHLCV, Timeframe
 from app.services.ohlcv_storage import (
@@ -289,7 +289,7 @@ class TestOHLCVStorageQuery:
                 10000,
                 10,
                 True,
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
             )
             self.mock_cursor.fetchall.return_value = [mock_row]
 
@@ -384,7 +384,7 @@ class TestOHLCVStorageGetLatest:
                 10000,
                 10,
                 True,
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
             )
             self.mock_cursor.fetchone.return_value = mock_row
 

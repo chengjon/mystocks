@@ -10,7 +10,6 @@ import logging
 import os
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Dict, Optional
 
 import baostock as bs
 import pandas as pd

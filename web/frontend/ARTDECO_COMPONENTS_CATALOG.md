@@ -1,6 +1,6 @@
-# ArtDeco Components Catalog (V3.0 Asset Audit)
+# ArtDeco Components Catalog (V3.1 Governance Baseline)
 
-本目录是对 MyStocks 项目中 ArtDeco 设计系统组件的**实时审计清单**。所有组件均经过核实，与 `src/` 目录下的物理文件 1:1 对应。
+本目录是 MyStocks 项目 ArtDeco 设计系统组件的**治理基线清单**。所有组件均经过核实，与 `src/` 目录下的物理文件 1:1 对应。
 
 ## 1. 基础 UI 组件 (Base UI - 14个)
 **位置**: `src/components/artdeco/base/`
@@ -86,4 +86,5 @@
 
 ---
 **核实状态**: ✅ 已通过 `find` 命令物理核实。
-**更新日期**: 2026-02-08 (V3.0 Final Audit)
+**治理口径**: V3.1 Governance Baseline（Base/Domain/tabs 职责边界）
+**更新日期**: 2026-02-08 (V3.1 Governance Baseline)

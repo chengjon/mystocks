@@ -85,7 +85,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -95,7 +95,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"nn_{self.metadata.name}")
                 logger.info("Neural Network GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     def _prepare_sequences(self, data: pd.DataFrame, config: Dict[str, Any]) -> Tuple[np.ndarray, np.ndarray]:
@@ -453,7 +453,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Neural Network training completed - {self.architecture} model, loss: %(training_loss)s")
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("Neural Network training failed: %(e)s")
             raise
 
@@ -526,7 +526,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Neural Network prediction failed: %(e)s")
             raise
 
@@ -583,7 +583,7 @@ class NeuralNetworkAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("Neural Network evaluation failed: %(e)s")
             raise
 

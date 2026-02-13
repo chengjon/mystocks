@@ -75,7 +75,7 @@ class UnifiedMockDataManager:
 
             return data
 
-        except Exception as e:
+        except Exception:
             logger.error("获取数据失败 {data_type}: {str(e)}", exc_info=True)
             # 如果是真实数据获取失败，可以降级到Mock数据
             if not self.use_mock_data:
@@ -140,7 +140,7 @@ class UnifiedMockDataManager:
                         get_volatility_indicators,
                         get_volume_indicators,
                     )
-                except ImportError as e:
+                except ImportError:
                     logger.error("导入Mock模块失败: %(e)s")
 
                     # 降级到默认实现
@@ -745,11 +745,11 @@ class UnifiedMockDataManager:
             else:
                 raise ValueError(f"不支持的数据类型: {data_type}")
 
-        except ImportError as e:
+        except ImportError:
             logger.error("导入Mock模块失败: {str(e)}")
             # 返回默认数据而不是抛出异常
             return self._get_default_data(data_type, **kwargs)
-        except Exception as e:
+        except Exception:
             logger.error("获取Mock数据失败 {data_type}: {str(e)}", exc_info=True)
             # 返回默认数据而不是抛出异常
             return self._get_default_data(data_type, **kwargs)
@@ -1051,7 +1051,7 @@ class UnifiedMockDataManager:
                     "symbol": symbol,
                     "timestamp": datetime.now().isoformat(),
                 }
-        except Exception as e:
+        except Exception:
             logger.error("获取技术指标失败: %(e)s")
             return None
 
@@ -1107,7 +1107,7 @@ class UnifiedMockDataManager:
 
                 logger.info("使用指定日期范围: %(start_date)s 到 %(end_date)s, 共 {len(dates)} 天")
 
-            except ValueError as e:
+            except ValueError:
                 logger.warning("日期格式错误，使用默认时间维度: %(e)s")
                 # 回退到默认时间维度逻辑
                 for i in range(timeframe_days):

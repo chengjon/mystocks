@@ -17,7 +17,7 @@ import asyncio
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from threading import Lock
 from typing import Any, Callable, Dict, List, Optional, Set
@@ -121,7 +121,7 @@ class CircuitBreaker:
         """检查是否应该尝试重置"""
         if self.last_failure_time is None:
             return True
-        return (datetime.utcnow() - self.last_failure_time).total_seconds() >= self.recovery_timeout
+        return (datetime.now(timezone.utc) - self.last_failure_time).total_seconds() >= self.recovery_timeout
 
     def _on_success(self):
         """成功时的处理"""
@@ -131,7 +131,7 @@ class CircuitBreaker:
     def _on_failure(self):
         """失败时的处理"""
         self.failure_count += 1
-        self.last_failure_time = datetime.utcnow()
+        self.last_failure_time = datetime.now(timezone.utc)
 
         if self.failure_count >= self.failure_threshold:
             self.state = CircuitState.OPEN
@@ -414,7 +414,7 @@ class WebSocketStabilityManager:
 
             if success:
                 self.connections[connection_id].total_messages_sent += 1
-                self.connections[connection_id].last_activity = datetime.utcnow()
+                self.connections[connection_id].last_activity = datetime.now(timezone.utc)
 
             return success
 
@@ -441,7 +441,7 @@ class WebSocketStabilityManager:
             )
 
         metrics = self.connections[connection_id]
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
 
         # 计算各项指标
         time_since_last_activity = (current_time - metrics.last_activity).total_seconds()
@@ -563,7 +563,7 @@ class WebSocketStabilityManager:
                     await self.perform_health_check(connection_id)
 
                 await asyncio.sleep(self.config["health_check"]["interval"])
-            except Exception as e:
+            except Exception:
                 logger.error("健康检查循环异常: %(e)s")
                 await asyncio.sleep(5)
 
@@ -571,7 +571,7 @@ class WebSocketStabilityManager:
         """连接清理循环"""
         while True:
             try:
-                current_time = datetime.utcnow()
+                current_time = datetime.now(timezone.utc)
 
                 # 清理长时间无活动的连接
                 inactive_connections = []
@@ -585,7 +585,7 @@ class WebSocketStabilityManager:
                     self.unregister_connection(connection_id)
 
                 await asyncio.sleep(60)  # 每分钟检查一次
-            except Exception as e:
+            except Exception:
                 logger.error("连接清理循环异常: %(e)s")
                 await asyncio.sleep(10)
 

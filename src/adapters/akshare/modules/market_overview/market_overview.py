@@ -4,10 +4,9 @@ SSE Market Overview Module
 提供上海证券交易所市场总貌数据获取功能
 """
 
-import asyncio
 import logging
 import akshare as ak
-from typing import Dict, Optional
+from typing import Dict
 
 from ..base import retry_api_call
 
@@ -56,7 +55,7 @@ class SSEMarketOverviewAdapter:
                 "amount": list(df.get("成交额", [])),
             }
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取SSE市场总貌数据失败: {str(e)}", exc_info=True)
             return {}
 

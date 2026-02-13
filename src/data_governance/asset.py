@@ -8,7 +8,7 @@ tracking, and catalog capabilities.
 import json
 import logging
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -114,7 +114,7 @@ class AssetStorage:
                     json.dumps(asset.metadata),
                 )
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save asset {asset.asset_id}: %(e)s")
             return False
 
@@ -148,7 +148,7 @@ class AssetStorage:
                         quality_score=row["quality_score"],
                         metadata=json.loads(row["metadata"] or "{}"),
                     )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get asset %(asset_id)s: %(e)s")
         return None
 
@@ -218,7 +218,7 @@ class AssetStorage:
                             metadata=json.loads(row["metadata"] or "{}"),
                         )
                     )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to list assets: %(e)s")
 
         return assets
@@ -237,7 +237,7 @@ class AssetStorage:
             async with self._db.acquire_connection() as conn:
                 await conn.execute("DELETE FROM data_assets WHERE asset_id = $1", asset_id)
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to delete asset %(asset_id)s: %(e)s")
             return False
 
@@ -361,7 +361,7 @@ class DataAssetRegistry:
             if hasattr(asset, key):
                 setattr(asset, key, value)
 
-        asset.updated_at = datetime.utcnow()
+        asset.updated_at = datetime.now(timezone.utc)
         return await self._storage.save(asset)
 
     async def record_access(self, asset_id: str) -> bool:
@@ -378,7 +378,7 @@ class DataAssetRegistry:
         if not asset:
             return False
 
-        asset.last_accessed = datetime.utcnow()
+        asset.last_accessed = datetime.now(timezone.utc)
         asset.access_count += 1
 
         return await self._storage.save(asset)
@@ -466,7 +466,7 @@ class DataAssetRegistry:
 
             logger.info("Discovered {len(discovered)} new assets")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to discover assets: %(e)s")
 
         return discovered

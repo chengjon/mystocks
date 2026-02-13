@@ -6,14 +6,12 @@ Provides context-aware logging with trace_id and request_id injection
 import sys
 import uuid
 from contextvars import ContextVar
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from loguru import logger as loguru_logger
 
 # Use environment variable for environment check instead of settings
-import os
 
 trace_id_var: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
 request_id_var: ContextVar[Optional[str]] = ContextVar("request_id", default=None)

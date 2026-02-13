@@ -311,11 +311,11 @@ const tradingStats = computed(() => {
   const pos = tradingDataStore.state.positionMonitor
 
   return {
-    totalAssets: pos?.total_assets || 0,
-    availableCash: pos?.available_cash || 0,
-    positionValue: pos?.position_value || 0,
-    totalProfit: perf?.total_profit || 0,
-    profitRate: perf?.profit_rate || 0
+    totalAssets: (pos?.pnlAnalysis as any)?.total_assets || 0,
+    availableCash: (pos?.pnlAnalysis as any)?.available_cash || 0,
+    positionValue: (pos?.pnlAnalysis as any)?.position_value || 0,
+    totalProfit: (perf?.metrics as any)?.total_profit || 0,
+    profitRate: (perf?.metrics as any)?.profit_rate || 0
   }
 })
 
@@ -413,8 +413,8 @@ const handleSearchStock = async () => {
   // TODO: Call API to fetch stock info
 }
 
-const getStatusVariant = (status: string) => {
-  const statusMap: Record<string, string> = {
+const getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'danger' | 'primary' => {
+  const statusMap: Record<string, 'success' | 'warning' | 'info' | 'danger' | 'primary'> = {
     'filled': 'success',
     'pending': 'warning',
     'cancelled': 'info'
@@ -462,40 +462,41 @@ onMounted(() => {
         axisLabel: {
           color: '#B8B8B8',
           formatter: '{value}'
-        },
-        series: [
-          {
-            type: 'line',
-            name: '上证指数',
-            smooth: true,
-            data: [3000, 3015, 3020, 3030, 3040],
-            lineStyle: {
-              width: 2,
-              color: '#D4AF37'
-            }
-          },
-          {
-            type: 'line',
-            name: '深证成指',
-            smooth: true,
-            data: [9800, 9850, 9900, 9950, 10000],
-            lineStyle: {
-              width: 2,
-              color: '#4A90E2'
-            }
-          },
-          {
-            type: 'line',
-            name: '创业板指',
-            smooth: true,
-            data: [1800, 1820, 1840, 1860, 1880],
-            lineStyle: {
-              width: 2,
-              color: '#CD7F32'
-            }
+        }
+      },
+      series: [
+        {
+          type: 'line',
+          name: '上证指数',
+          smooth: true,
+          data: [3000, 3015, 3020, 3030, 3040],
+          lineStyle: {
+            width: 2,
+            color: '#D4AF37'
           }
-        ]
-      }
+        },
+        {
+          type: 'line',
+          name: '深证成指',
+          smooth: true,
+          data: [9800, 9850, 9900, 9950, 10000],
+          lineStyle: {
+            width: 2,
+            color: '#4A90E2'
+          }
+        },
+        {
+          type: 'line',
+          name: '创业板指',
+          smooth: true,
+          data: [1800, 1820, 1840, 1860, 1880],
+          lineStyle: {
+            width: 2,
+            color: '#CD7F32'
+          }
+        }
+      ]
+    }
 
     marketDataChart = echarts.init(marketDataRef.value, artDecoTheme)
     marketDataChart.setOption(option)
@@ -538,7 +539,8 @@ const handleRefreshPortfolio = () => {
 }
 
 onMounted(async () => {
-  initMarketDataChart()
+  // TODO: Initialize market data chart
+  // initMarketDataChart()
 
   // Load performance data from store
   await tradingDataStore.loadPerformanceAnalysis()

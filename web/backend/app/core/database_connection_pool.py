@@ -19,7 +19,7 @@ Date: 2025-11-12
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, Optional
 
@@ -52,7 +52,7 @@ class PooledConnection:
 
     def is_stale(self, stale_timeout: int = 3600) -> bool:
         """检查连接是否过期（默认1小时）"""
-        elapsed = (datetime.utcnow() - self.last_used_at).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - self.last_used_at).total_seconds()
         return elapsed > stale_timeout
 
     def is_healthy(self) -> bool:
@@ -271,7 +271,7 @@ class DatabaseConnectionPoolOptimizer:
                 # 验证连接健康状态
                 if conn_metadata.is_healthy():
                     conn_metadata.state = ConnectionState.IN_USE
-                    conn_metadata.last_used_at = datetime.utcnow()
+                    conn_metadata.last_used_at = datetime.now(timezone.utc)
                     conn_metadata.usage_count += 1
                     self.in_use_connections[conn_id] = conn_metadata
                     self.total_acquired += 1
@@ -374,7 +374,7 @@ class DatabaseConnectionPoolOptimizer:
                 "idle": [c.to_dict() for c in idle_connections[:10]],
                 "in_use": [c.to_dict() for c in in_use_connections[:10]],
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def drain_pool(self) -> None:

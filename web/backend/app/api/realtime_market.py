@@ -199,7 +199,7 @@ async def websocket_market(websocket: WebSocket, client_id: str = Query(default=
 
     except WebSocketDisconnect:
         manager.disconnect(client_id)
-    except Exception as e:
+    except Exception:
         logger.error("WebSocket error: %(e)s")
         manager.disconnect(client_id)
 
@@ -290,7 +290,7 @@ async def websocket_portfolio(
 
     except WebSocketDisconnect:
         manager.disconnect(client_id)
-    except Exception as e:
+    except Exception:
         logger.error("Portfolio WebSocket error: %(e)s")
         manager.disconnect(client_id)
 
@@ -325,7 +325,7 @@ async def get_realtime_quote(symbol: str):
                     "change_percent": row.get("涨跌幅", 0),
                 }
                 return {"success": True, "data": data}
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to fetch quote via akshare: %(e)s")
 
         return {"success": False, "error": "Failed to fetch quote"}
@@ -359,7 +359,7 @@ async def get_realtime_quotes(symbols: str = Query(..., description="股票代�
                             "price": r.get("最新价", 0),
                             "change_percent": r.get("涨跌幅", 0),
                         }
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to fetch quotes via akshare: %(e)s")
 
         return {"success": True, "data": results}

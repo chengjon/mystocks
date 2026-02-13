@@ -225,7 +225,7 @@ async def get_fund_flow(
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()
-        except Exception as api_error:
+        except Exception:
             # API调用失败，记录失败并打开熔断器
             circuit_breaker.record_failure()
             logger.error("❌ Market data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")
@@ -699,7 +699,7 @@ async def get_kline_data(
             )
             # 成功调用，记录成功
             circuit_breaker.record_success()
-        except Exception as api_error:
+        except Exception:
             # API调用失败，记录失败
             circuit_breaker.record_failure()
             logger.error("❌ K-line data API failed: {str(api_error)}, failures: {circuit_breaker.failure_count}")

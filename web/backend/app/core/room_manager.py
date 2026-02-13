@@ -18,7 +18,7 @@ Date: 2025-11-06
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -49,14 +49,14 @@ class RoomMember:
         """
         self.sid = sid
         self.user_id = user_id
-        self.joined_at = datetime.utcnow()
+        self.joined_at = datetime.now(timezone.utc)
         self.message_count = 0
-        self.last_activity = datetime.utcnow()
+        self.last_activity = datetime.now(timezone.utc)
 
     def record_message(self) -> None:
         """记录成员消息"""
         self.message_count += 1
-        self.last_activity = datetime.utcnow()
+        self.last_activity = datetime.now(timezone.utc)
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -81,7 +81,7 @@ class Room:
         """
         self.name = name
         self.room_id = str(uuid.uuid4())
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
         self.members: Dict[str, RoomMember] = {}
         self.metadata: Dict[str, Any] = {}
 
@@ -322,7 +322,7 @@ class RoomManager:
         return {
             "total_rooms": len(self.rooms),
             "total_members": total_members,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "rooms": [room.get_stats() for room in self.rooms.values()],
         }
 

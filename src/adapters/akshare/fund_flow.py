@@ -5,7 +5,6 @@ AkShare资金流向模块
 """
 
 import logging
-from typing import Optional
 import pandas as pd
 import akshare as ak
 
@@ -124,7 +123,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取资金流向热门股票数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -162,7 +161,7 @@ class FundFlowAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取市场整体资金流向数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -202,6 +201,6 @@ class FundFlowAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取板块资金流向数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()

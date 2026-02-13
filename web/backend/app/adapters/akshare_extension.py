@@ -56,7 +56,7 @@ class AkshareExtension:
                 df = df.rename(columns=column_mapping)
                 return df
             return pd.DataFrame()
-        except Exception as e:
+        except Exception:
             logger.error("获取ETF数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -112,7 +112,7 @@ class AkshareExtension:
                 "medium_net_inflow": float(row.get("中单净流入-净额", 0)),
                 "small_net_inflow": float(row.get("小单净流入-净额", 0)),
             }
-        except Exception as e:
+        except Exception:
             logger.error("获取资金流向数据失败: %(e)s")
             return {}
 
@@ -163,7 +163,7 @@ class AkshareExtension:
 
                 return df
             return pd.DataFrame()
-        except Exception as e:
+        except Exception:
             logger.error("获取龙虎榜数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -207,7 +207,7 @@ class AkshareExtension:
 
                 return df
             return pd.DataFrame()
-        except Exception as e:
+        except Exception:
             logger.error("获取分红配送数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -242,7 +242,7 @@ class AkshareExtension:
                 df = df.rename(columns=column_mapping)
                 return df
             return pd.DataFrame()
-        except Exception as e:
+        except Exception:
             logger.error("获取板块资金流向数据失败: %(e)s")
             return pd.DataFrame()
 

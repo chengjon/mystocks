@@ -74,7 +74,7 @@ class DataSourceManager:
             try:
                 self._v2_manager = DataSourceManagerV2()
                 self.logger.info("✓ V2管理器初始化成功（智能路由已启用）")
-            except Exception as e:
+            except Exception:
                 self.logger.warning("V2管理器初始化失败，将使用旧版方式: %(e)s")
                 self._use_v2 = False
 
@@ -183,7 +183,7 @@ class DataSourceManager:
                 else:
                     self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
 
-            except Exception as e:
+            except Exception:
                 self.logger.warning("V2智能路由失败，尝试旧版方式: %(e)s")
 
         # 旧版方式：硬编码优先级（向后兼容）
@@ -242,7 +242,7 @@ class DataSourceManager:
                 else:
                     self.logger.warning("V2智能路由未返回数据，尝试旧版方式")
 
-            except Exception as e:
+            except Exception:
                 self.logger.warning("V2智能路由失败，尝试旧版方式: %(e)s")
 
         # 旧版方式：硬编码优先级（向后兼容）

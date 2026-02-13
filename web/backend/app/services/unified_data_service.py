@@ -431,7 +431,7 @@ class UnifiedDataService:
                 "total": len(df),
                 "timestamp": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             logger.error("数据库查询失败: {str(e)}")
             raise
 
@@ -462,7 +462,7 @@ class UnifiedDataService:
                 "total": len(industry_list),
                 "timestamp": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             logger.error("数据库查询行业失败: {str(e)}")
             raise
 
@@ -498,7 +498,7 @@ class UnifiedDataService:
                 "data": overview,
                 "timestamp": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             logger.error("数据库查询市场概览失败: {str(e)}")
             raise
 
@@ -527,7 +527,7 @@ class UnifiedDataService:
                 "total": len(filtered_df),
                 "timestamp": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             logger.error("数据库搜索失败: {str(e)}")
             raise
 
@@ -545,7 +545,7 @@ class UnifiedDataService:
                     # 尝试数据库
                     result = await primary_func(*args, **kwargs)
                     return result
-                except Exception as e:
+                except Exception:
                     logger.warning("主要数据源失败，切换到Mock: {str(e)}")
                     # 切换到Mock数据源
                     if callable(fallback_func):

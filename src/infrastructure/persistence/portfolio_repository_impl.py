@@ -43,7 +43,7 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
         try:
             self.session.execute(text(sql))
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             logger.warning("Table creation warning: %(e)s")
 
@@ -74,7 +74,7 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
         try:
             self.session.execute(text(sql), params)
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 
@@ -110,7 +110,7 @@ class PortfolioRepositoryImpl(IPortfolioRepository):
         try:
             self.session.execute(text(sql), (portfolio_id,))
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 

@@ -2,28 +2,11 @@
  * Indicator TypeScript Type Definitions
  * 技术指标类型定义
  */
- 
-import { PanelType, IndicatorCategory } from './backend_types';
 
-/**
- * 指标分类
- */
-export enum IndicatorCategory {
-  TREND = 'trend',
-  MOMENTUM = 'momentum',
-  VOLATILITY = 'volatility',
-  VOLUME = 'volume',
-  CANDLESTICK = 'candlestick'
-}
- 
-/**
- * 面板类型
- * @deprecated 使用 backend_types 中的 PanelType
- */
-export enum PanelType {
-  OVERLAY = 'overlay',      // 叠加在主图上
-  OSCILLATOR = 'oscillator' // 独立震荡器面板
-}
+import type { PanelType, IndicatorCategory } from './backend_types';
+
+// Re-export types from backend_types for convenience
+export type { PanelType, IndicatorCategory };
  
 /**
  * 指标参数定义
@@ -175,21 +158,12 @@ export interface IndicatorConfigUpdateRequest {
 }
  
 /**
- * 错误详情
- */
-export interface ErrorDetail {
-  errorCode: string;
-  errorMessage: string;
-  details?: Record<string, any>;
-}
- 
-/**
  * API响应包装器
  */
 export interface APIResponse<T = any> {
   success: boolean;
   data: T | null;
-  error: ErrorDetail | null;
+  error: { errorCode: string; errorMessage: string; details?: Record<string, any> } | null;
   timestamp: string;
 }
  

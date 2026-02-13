@@ -105,7 +105,7 @@ class BacktestEngine:
 
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("回测执行失败: %(e)s")
             raise
 

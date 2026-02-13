@@ -84,7 +84,7 @@ def _load_from_database(self) -> Dict:
             }
 
         return sources
-    except Exception as e:
+    except Exception:
         # logger.error("从数据库加载失败: %(e)s")
         return {}
 
@@ -108,7 +108,7 @@ def _load_from_yaml(self) -> Dict:
             sources[endpoint_key] = source_config
 
         return sources
-    except Exception as e:
+    except Exception:
         return {}
 
 

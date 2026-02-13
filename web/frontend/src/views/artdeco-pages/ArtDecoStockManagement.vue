@@ -61,8 +61,8 @@ const tabs = [
 ]
 
 const activeWatchlistId = ref('')
-const watchlists = ref([])
-const positions = ref([])
+const watchlists = ref<any[]>([])
+const positions = ref<any[]>([])
 
 const currentWatchlistStocks = computed(() => {
   return watchlists.value.find((l: any) => l.id === activeWatchlistId.value)?.stocks || []
@@ -74,14 +74,14 @@ const fetchData = async () => {
       apiClient.get('/api/portfolio/v2/watchlist'),
       apiClient.get('/api/portfolio/v2/summary')
     ])
-    
+
     if (wlRes.data?.success) {
       watchlists.value = wlRes.data.data
       if (watchlists.value.length > 0 && !activeWatchlistId.value) {
-        activeWatchlistId.value = watchlists.value[0].id
+        activeWatchlistId.value = (watchlists.value[0] as any).id
       }
     }
-    
+
     if (portRes.data?.success) {
       positions.value = portRes.data.data.positions
     }

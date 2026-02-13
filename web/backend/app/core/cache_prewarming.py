@@ -17,7 +17,7 @@ Architecture:
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 import structlog
@@ -37,7 +37,7 @@ class CacheMonitor:
         self.miss_count = 0
         self.total_read_time = 0.0
         self.read_operations = 0
-        self.last_reset = datetime.utcnow()
+        self.last_reset = datetime.now(timezone.utc)
 
         logger.info("🔧 初始化缓存监控器")
 
@@ -78,7 +78,7 @@ class CacheMonitor:
 
     def get_metrics(self) -> Dict[str, Any]:
         """获取监控指标"""
-        uptime = datetime.utcnow() - self.last_reset
+        uptime = datetime.now(timezone.utc) - self.last_reset
         hit_rate = self.get_hit_rate()
 
         return {
@@ -90,7 +90,7 @@ class CacheMonitor:
             "average_latency_ms": self.get_average_latency(),
             "uptime_seconds": uptime.total_seconds(),
             "health_status": "healthy" if hit_rate >= 80 else "warning",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def reset(self) -> None:
@@ -99,7 +99,7 @@ class CacheMonitor:
         self.miss_count = 0
         self.total_read_time = 0.0
         self.read_operations = 0
-        self.last_reset = datetime.utcnow()
+        self.last_reset = datetime.now(timezone.utc)
         logger.info("✅ 缓存监控数据已重置")
 
 
@@ -184,7 +184,7 @@ class CachePrewarmingStrategy:
 
                             if cached:
                                 prewarmed_count += 1
-                                self.prewarming_history[cache_key] = datetime.utcnow()
+                                self.prewarming_history[cache_key] = datetime.now(timezone.utc)
 
                     except Exception as e:
                         logger.warning(
@@ -221,7 +221,7 @@ class CachePrewarmingStrategy:
 
                             if success:
                                 prewarmed_count += 1
-                                self.prewarming_history[cache_key] = datetime.utcnow()
+                                self.prewarming_history[cache_key] = datetime.now(timezone.utc)
                             else:
                                 failed_count += 1
 
@@ -248,7 +248,7 @@ class CachePrewarmingStrategy:
                 "failed_count": failed_count,
                 "total_count": prewarmed_count + failed_count,
                 "elapsed_seconds": elapsed,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -265,7 +265,7 @@ class CachePrewarmingStrategy:
         return {
             "last_prewarming": (self.prewarming_history.get("_last_full_prewarm") if self.prewarming_history else None),
             "prewarmed_keys_count": len(self.prewarming_history),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_health_status(self) -> Dict[str, Any]:
@@ -279,7 +279,7 @@ class CachePrewarmingStrategy:
             "hit_rate_percent": metrics.get("hit_rate_percent"),
             "total_reads": metrics.get("total_reads"),
             "average_latency_ms": metrics.get("average_latency_ms"),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

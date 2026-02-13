@@ -9,7 +9,7 @@ Features:
 - 连接泄漏检测
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 import structlog
@@ -48,7 +48,7 @@ async def get_postgresql_pool_stats() -> Dict[str, Any]:
             "max_overflow": pool._max_overflow,
             "pool_capacity": pool.size() + pool._max_overflow,
             "usage_percentage": round((pool.checkedout() / (pool.size() + pool._max_overflow)) * 100, 2),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         # 连接池状态评估
@@ -153,7 +153,7 @@ async def connection_pools_health_check() -> Dict[str, Any]:
         "postgresql": {"status": "unknown", "details": {}},
         "tdengine": {"status": "unknown", "details": {}},
         "overall_status": "unknown",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     # 检查PostgreSQL连接池
@@ -222,7 +222,7 @@ async def check_connection_pool_alerts() -> Dict[str, Any]:
         - timestamp: 检查时间戳
     """
     alerts = []
-    timestamp = datetime.utcnow().isoformat()
+    timestamp = datetime.now(timezone.utc).isoformat()
 
     # 检查PostgreSQL连接池
     try:

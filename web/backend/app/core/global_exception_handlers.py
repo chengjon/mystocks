@@ -436,7 +436,7 @@ def register_global_exception_handlers(app: FastAPI) -> None:
     try:
         app.add_exception_handler(MyStocksException, mystocks_exception_handler)
         logger.info("MyStocks exception handlers registered (UnifiedResponse format)")
-    except Exception as e:
+    except Exception:
         logger.warning("Failed to register MyStocks exception handler: %(e)s")
 
     # FastAPI内置异常

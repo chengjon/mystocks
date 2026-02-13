@@ -70,17 +70,11 @@
             </div>
 
             <!-- Save Template Button -->
-            <el-button @click="showSaveTemplateDialog" class="artdeco-gold-cta">
-              <el-icon><Plus /> 保存模板
+            <el-button @click="showSaveTemplateDialog = true" class="artdeco-gold-cta">
+              <el-icon><Plus /></el-icon> 保存模板
             </el-button>
           </div>
         </ArtDecoCardCompact>
-      </div>
-              <div class="strategy-info">
-                <div class="strategy-name">{{ template.name }}</div>
-                <div class="strategy-desc">{{ template.description }}</div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -167,14 +161,14 @@
 
         <!-- Comparison Table -->
         <div class="comparison-table-container">
-          <el-table :data="comparisonData" border stripe>
+          <el-table :data="comparisonData?.diffData || []" border stripe>
             <el-table-column prop="param" label="参数" width="180" />
             <el-table-column prop="backtest1Value" label="回测1" width="120" />
             <el-table-column prop="backtest2Value" label="回测2" width="120" />
             <el-table-column prop="difference" label="差异" width="100">
-              <template #default="scope">
+              <template #default="{ row }">
                 <span :class="['diff-value', { 'diff-better': row.highlight && row.difference > 0, 'diff-worse': row.difference < 0 }]">
-                  {{ row.value }}
+                  {{ row.difference }}
                 </span>
               </template>
           </el-table-column>
@@ -454,83 +448,45 @@ interface BacktestComparison {
   backtest2: string
   diffData: Array<{
     param: string
-    value1: number
-    value2: number
+    backtest1Value: number
+    backtest2Value: number
     difference: number
     highlight: boolean
   }>
 }
 
-const comparisonData = computed<BacktestComparison>(() => {
+const comparisonData = computed<BacktestComparison | null>(() => {
   if (!selectedBacktest1.value || !selectedBacktest2.value) {
-    return []
+    return null
   }
 
   const bt1 = backtestHistory.value.find(bt => bt.id === selectedBacktest1.value)
   const bt2 = backtestHistory.value.find(bt => bt.id === selectedBacktest2.value)
 
   if (!bt1 || !bt2) {
-    return []
+    return null
   }
 
-  return [
-    {
-      param: '短期MA周期',
-      value1: bt1?.params.shortMA || 0,
-      value2: bt2?.params.shortMA || 0,
-      difference: (bt1?.params.shortMA || 0) - (bt2?.params.shortMA || 0),
-      highlight: bt1?.params.shortMA !== bt2?.params.shortMA
-    },
-    {
-      param: '长期MA周期',
-      value1: bt1?.params.longMA || 0,
-      value2: bt2?.params.longMA || 0,
-      difference: (bt1?.params.longMA || 0) - (bt2?.params.longMA || 0),
-      highlight: bt1?.params.longMA !== bt2?.params.longMA
-    },
-    {
-      param: '开始日期',
-      value1: new Date(bt1?.runAt).toLocaleDateString('zh-CN'),
-      value2: new Date(bt2?.runAt).toLocaleDateString('zh-CN'),
-      difference: 'N/A',
-      highlight: false
-    },
-    {
-      param: '结束日期',
-      value1: new Date(bt1?.runAt).toLocaleDateString('zh-CN'),
-      value2: new Date(bt2?.runAt).toLocaleDateString('zh-CN'),
-      difference: 'N/A',
-      highlight: false
-    },
-    {
-      param: '总收益率',
-      value1: bt1?.totalReturn || 0,
-      value2: bt2?.totalReturn || 0,
-      difference: (bt1?.totalReturn || 0) - (bt2?.totalReturn || 0),
-      highlight: bt1?.totalReturn > bt2?.totalReturn
-    },
-    {
-      param: '夏普比率',
-      value1: bt1?.sharpeRatio || 0,
-      value2: bt2?.sharpeRatio || 0,
-      difference: (bt1?.sharpeRatio || 0) - (bt2?.sharpeRatio || 0),
-      highlight: bt1?.sharpeRatio > bt2?.sharpeRatio
-    },
-    {
-      param: '最大回撤',
-      value1: bt1?.maxDrawdown || 0,
-      value2: bt2?.maxDrawdown || 0,
-      difference: (bt1?.maxDrawdown || 0) - (bt2?.maxDrawdown || 0),
-      highlight: bt1?.maxDrawdown < bt2?.maxDrawdown
-    },
-    {
-      param: '胜率',
-      value1: bt1?.winRate || 0,
-      value2: bt2?.winRate || 0,
-      difference: (bt1?.winRate || 0) - (bt2?.winRate || 0),
-      highlight: bt1?.winRate > bt2?.winRate
-    }
-  ]
+  return {
+    backtest1: bt1.id,
+    backtest2: bt2.id,
+    diffData: [
+      {
+        param: '短期MA周期',
+        backtest1Value: bt1?.params.shortMA || 0,
+        backtest2Value: bt2?.params.shortMA || 0,
+        difference: (bt1?.params.shortMA || 0) - (bt2?.params.shortMA || 0),
+        highlight: bt1?.params.shortMA !== bt2?.params.shortMA
+      },
+      {
+        param: '长期MA周期',
+        backtest1Value: bt1?.params.longMA || 0,
+        backtest2Value: bt2?.params.longMA || 0,
+        difference: (bt1?.params.longMA || 0) - (bt2?.params.longMA || 0),
+        highlight: bt1?.params.longMA !== bt2?.params.longMA
+      }
+    ]
+  }
 })
 
 // Chart reference

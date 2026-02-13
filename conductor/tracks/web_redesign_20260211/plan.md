@@ -9,7 +9,7 @@ Setup the core architectural foundations and automated quality gates.
     - [ ] Create `src/views/artdeco-pages/` root and initial domain folders (`market`, `trade`, `risk`).
     - [ ] Create `src/api/artdeco-api/` for centralized service layer.
     - [ ] Verify existing `src/components/artdeco/base/` components against catalog.
-- [ ] **Task: T1.2 - Design Token Linter Implementation**
+- [~] **Task: T1.2 - Design Token Linter Implementation**
     - [ ] Configure Stylelint rules in `.stylelintrc.js` to enforce ArtDeco tokens.
     - [ ] Add CI check script to validate token usage in `artdeco-pages`.
     - [ ] Test linter against a sample file with hardcoded values.

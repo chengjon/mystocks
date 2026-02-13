@@ -106,13 +106,13 @@ def get_monitoring_db():
                                 else None
                             ),
                         )
-                    except Exception as e:
+                    except Exception:
                         logger.debug("Monitoring log failed (non-critical): %(e)s")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
-        except Exception as e:
+        except Exception:
             logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s")
 
             # 创建一个简单的fallback对象
@@ -201,7 +201,7 @@ async def list_strategies(status: Optional[str] = None, page: int = 1, page_size
                 else:
                     items = []
 
-            except Exception as db_error:
+            except Exception:
                 # 数据库查询失败，记录错误并返回空结果
                 logger.error("数据库查询失败: {str(db_error)}")
                 items = []
@@ -763,7 +763,7 @@ async def run_backtest_task(backtest_id: int, config: Dict[str, Any]):
                 results["backend"] = "GPU"
                 logger.info("✅ GPU回测完成: 总收益率={results.get('performance', {}).get('total_return', 0):.2%}")
 
-            except Exception as gpu_error:
+            except Exception:
                 logger.warning("⚠️  GPU回测失败，使用模拟结果: %(gpu_error)s")
                 results = {
                     "total_return": 0.15,

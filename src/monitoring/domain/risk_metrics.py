@@ -112,7 +112,7 @@ class AdvancedRiskCalculator:
             try:
                 output = self._calculate_single(input_data)
                 results.append(output)
-            except Exception as e:
+            except Exception:
                 logger.error("计算 {input_data.stock_code} 风险指标失败: %(e)s")
                 results.append(
                     RiskMetricsOutput(

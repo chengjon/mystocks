@@ -31,5 +31,5 @@ class EventBus:
         for handler in self._subscribers[event_type]:
             try:
                 handler(data)
-            except Exception as e:
+            except Exception:
                 logger.error("Error handling event %(event_type)s: %(e)s")

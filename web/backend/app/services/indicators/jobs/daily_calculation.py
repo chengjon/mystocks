@@ -75,7 +75,7 @@ async def _publish_task_progress(
         await redis_pubsub.async_publish(EventChannels.TASKS_ALL, event.model_dump())
         await redis_pubsub.async_publish(EventChannels.task_channel(job_id), event.model_dump())
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to publish task progress event: %(e)s")
 
 
@@ -104,7 +104,7 @@ async def _publish_stock_completed(
         # Publish to indicators channel
         await redis_pubsub.async_publish(EventChannels.INDICATORS_ALL, event.model_dump())
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to publish stock completed event: %(e)s")
 
 
@@ -122,7 +122,7 @@ async def _publish_task_completed(job_id: str, task_type: str, status: TaskStatu
         await redis_pubsub.async_publish(EventChannels.TASKS_ALL, event.model_dump())
         await redis_pubsub.async_publish(EventChannels.task_channel(job_id), event.model_dump())
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to publish task completed event: %(e)s")
 
 
@@ -231,7 +231,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
     try:
         repo.create_task(job_id, "batch_daily", params)
         repo.update_task(job_id, "running", 0.0)
-    except Exception as e:
+    except Exception:
         logger.error("Failed to create task record: %(e)s")
 
     # 5. Process Batch with event publishing
@@ -262,7 +262,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                     volume=df_kline["volume"].values.astype(float),
                     timestamps=pd.to_datetime(df_kline["date"]).to_pydatetime(),
                 )
-            except Exception as e:
+            except Exception:
                 logger.warning("Data conversion failed for %(code)s: %(e)s")
                 continue
 
@@ -302,7 +302,7 @@ async def run_daily_calculation(params: Dict[str, Any] = None):
                 from_cache_count=from_cache_count,
             )
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to process %(code)s: %(e)s")
             fail_count += 1
 

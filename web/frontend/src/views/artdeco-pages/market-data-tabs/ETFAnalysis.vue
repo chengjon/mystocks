@@ -1,10 +1,10 @@
 <template>
   <div class="etf-analysis">
     <div class="etf-overview">
-      <ArtDecoStatCard label="ETF总成交额" value="2,345亿" change="18.5" change-percent variant="gold" />
-      <ArtDecoStatCard label="杠杆ETF成交" value="856亿" change="25.3" change-percent variant="rise" />
-      <ArtDecoStatCard label="沪深300ETF" value="4.25%" change="1.2" change-percent variant="rise" />
-      <ArtDecoStatCard label="创业板ETF" value="-2.1%" change="-0.8" change-percent variant="fall" />
+      <ArtDecoStatCard label="ETF总成交额" value="2,345亿" :change="18.5" change-percent variant="gold" />
+      <ArtDecoStatCard label="杠杆ETF成交" value="856亿" :change="25.3" change-percent variant="rise" />
+      <ArtDecoStatCard label="沪深300ETF" value="4.25%" :change="1.2" change-percent variant="rise" />
+      <ArtDecoStatCard label="创业板ETF" value="-2.1%" :change="-0.8" change-percent variant="fall" />
     </div>
 
     <ArtDecoCard title="热门ETF排行" hoverable class="etf-ranking-card">

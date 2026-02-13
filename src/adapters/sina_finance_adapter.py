@@ -114,7 +114,7 @@ class SinaFinanceAdapter(BaseDataSourceAdapter, IDataSource):
                         )
 
                 return pd.DataFrame(table_data)
-            except Exception as e:
+            except Exception:
                 logger.error("爬取失败: %(e)s")
                 return pd.DataFrame()
 

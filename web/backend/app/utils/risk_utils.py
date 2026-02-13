@@ -8,11 +8,9 @@ Author: Claude Code
 Date: 2026-02-08
 """
 
-import asyncio
 import json
 import structlog
 from typing import Dict, List, Set, Any
-from datetime import datetime
 from fastapi import WebSocket
 
 from src.monitoring.monitoring_database import MonitoringDatabase

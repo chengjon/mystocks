@@ -5,28 +5,28 @@
         <ArtDecoStatCard
           label="数据完整性"
           :value="qualityData.integrity + '%'"
-          change="0.2"
+          :change="0.2"
           change-percent
           variant="gold"
         />
         <ArtDecoStatCard
           label="数据准确性"
           :value="qualityData.accuracy + '%'"
-          change="-0.1"
+          :change="-0.1"
           change-percent
           variant="gold"
         />
         <ArtDecoStatCard
           label="更新及时性"
           :value="qualityData.timeliness + '%'"
-          change="1.5"
+          :change="1.5"
           change-percent
           variant="rise"
         />
         <ArtDecoStatCard
           label="数据一致性"
           :value="qualityData.consistency + '%'"
-          change="0.8"
+          :change="0.8"
           change-percent
           variant="gold"
         />

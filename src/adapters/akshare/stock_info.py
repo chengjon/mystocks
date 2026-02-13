@@ -75,7 +75,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取概念分类数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -131,7 +131,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取行业分类数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -178,7 +178,7 @@ class StockInfoAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取股票 {symbol} 信息失败: {str(e)}", exc_info=True)
             return None
 
@@ -225,6 +225,6 @@ class StockInfoAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取上海交易所每日概况数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()

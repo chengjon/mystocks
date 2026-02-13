@@ -19,7 +19,7 @@ Date: 2025-11-12
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
@@ -77,14 +77,14 @@ class BatchBuffer:
 
     def is_timeout(self, timeout_ms: int) -> bool:
         """检查缓冲区是否超时"""
-        elapsed = (datetime.utcnow() - self.created_at).total_seconds() * 1000
+        elapsed = (datetime.now(timezone.utc) - self.created_at).total_seconds() * 1000
         return elapsed > timeout_ms
 
     def clear(self) -> None:
         """清空缓冲区"""
         self.messages.clear()
         self.total_size = 0
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -229,7 +229,7 @@ class WebSocketMessageBatcher:
                     for msg in messages
                 ],
                 "batch_size": len(messages),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # 发送批处理消息
@@ -323,7 +323,7 @@ class WebSocketMessageBatcher:
                     self.total_messages_buffered / max(1, self.total_batches_sent) if self.total_batches_sent > 0 else 0
                 ),
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_buffer_info(self, sid: str) -> Optional[Dict[str, Any]]:

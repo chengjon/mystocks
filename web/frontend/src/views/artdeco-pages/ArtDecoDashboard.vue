@@ -424,7 +424,6 @@
     // 导入新组件
     import ArtDecoLongHuBang from '@/components/artdeco/specialized/ArtDecoLongHuBang.vue'
     import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
-    import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
     import { marketService } from '@/api/services/marketService'
     import { mockWebSocket } from '@/api/mockWebSocket'
 
@@ -576,7 +575,221 @@
         pnl: true
     })
 
-    // ... (marketData, etc.)
+    const error = ref({
+        market: '',
+        fundFlow: '',
+        industry: ''
+    })
+
+    const marketData = ref({
+        shanghai: { index: '0.00', change: '0.00' },
+        shenzhen: { index: '0.00', change: '0.00' },
+        chuangye: { index: '0.00', change: '0.00' },
+        fundFlow: {
+            hgt: { amount: 0, change: 0 },
+            sgt: { amount: 0, change: 0 },
+            northTotal: { amount: 0, monthly: 0 },
+            mainForce: { amount: 0, percentage: 0 }
+        },
+        northFund: { amount: '0.00亿', change: 0 },
+        stocks: { up: 0, down: 0 },
+        volume: { amount: '0.00亿' }
+    })
+
+    const marketHeat = ref([])
+    const capitalFlowData = ref([])
+
+    const flowTabs = [
+        { key: '1day', label: '1日' },
+        { key: '3day', label: '3日' },
+        { key: '5day', label: '5日' }
+    ]
+
+    const poolTabs = [
+        { key: 'watchlist', label: '自选' },
+        { key: 'position', label: '持仓' },
+        { key: 'focus', label: '重点' }
+    ]
+
+    const topStocks = ref([
+        { code: '600519', name: '贵州茅台', price: '1850.00', change: 2.1 },
+        { code: '300750', name: '宁德时代', price: '245.60', change: 1.8 },
+        { code: '000001', name: '平安银行', price: '12.85', change: -0.4 },
+        { code: '600036', name: '招商银行', price: '38.45', change: 0.9 }
+    ])
+
+    const indicatorsExpanded = ref(true)
+    const monitoringExpanded = ref(true)
+
+    const toNumber = (value, fallback = 0) => {
+        const numeric = Number(value)
+        return Number.isFinite(numeric) ? numeric : fallback
+    }
+
+    const marketSentiment = computed(() => {
+        const upCount = toNumber(marketData.value.stocks.up)
+        const downCount = toNumber(marketData.value.stocks.down)
+        const total = upCount + downCount
+        if (total <= 0) {
+            return 50
+        }
+        return Math.round((upCount / total) * 100)
+    })
+
+    const sentimentColor = computed(() => {
+        if (marketSentiment.value >= 60) {
+            return 'rise'
+        }
+        if (marketSentiment.value <= 40) {
+            return 'fall'
+        }
+        return 'neutral'
+    })
+
+    const marketStatus = computed(() => {
+        const shanghaiChange = toNumber(marketData.value.shanghai.change)
+        if (shanghaiChange > 0.5) {
+            return '市场偏强'
+        }
+        if (shanghaiChange < -0.5) {
+            return '市场偏弱'
+        }
+        return '市场震荡'
+    })
+
+    const marketStatusType = computed(() => {
+        const shanghaiChange = toNumber(marketData.value.shanghai.change)
+        if (shanghaiChange > 0.5) {
+            return 'success'
+        }
+        if (shanghaiChange < -0.5) {
+            return 'danger'
+        }
+        return 'warning'
+    })
+
+    const handleIndicatorsToggle = (expanded) => {
+        indicatorsExpanded.value = typeof expanded === 'boolean' ? expanded : !indicatorsExpanded.value
+    }
+
+    const handleMonitoringToggle = (expanded) => {
+        monitoringExpanded.value = typeof expanded === 'boolean' ? expanded : !monitoringExpanded.value
+    }
+
+    const fetchMarketOverview = async () => {
+        loading.value.market = true
+        error.value.market = ''
+
+        try {
+            const response = await dashboardService.getMarketOverview(20)
+            const marketList = Array.isArray(response?.data)
+                ? response.data
+                : (Array.isArray(response) ? response : [])
+
+            const formatIndex = (item) => ({
+                index: toNumber(item?.latest_price ?? item?.price).toFixed(2),
+                change: toNumber(item?.change_percent ?? item?.change).toFixed(2)
+            })
+
+            if (marketList.length > 0) {
+                marketData.value.shanghai = formatIndex(marketList[0])
+            }
+            if (marketList.length > 1) {
+                marketData.value.shenzhen = formatIndex(marketList[1])
+            }
+            if (marketList.length > 2) {
+                marketData.value.chuangye = formatIndex(marketList[2])
+            }
+        } catch {
+            error.value.market = '市场数据暂不可用'
+        } finally {
+            loading.value.market = false
+        }
+    }
+
+    const fetchFundFlow = async () => {
+        loading.value.fundFlow = true
+        error.value.fundFlow = ''
+
+        try {
+            const response = await dashboardService.getFundFlow()
+            const flowData = response?.data ?? response
+
+            if (flowData && typeof flowData === 'object') {
+                const normalized = {
+                    hgt: { ...marketData.value.fundFlow.hgt, ...(flowData.hgt || {}) },
+                    sgt: { ...marketData.value.fundFlow.sgt, ...(flowData.sgt || {}) },
+                    northTotal: { ...marketData.value.fundFlow.northTotal, ...(flowData.northTotal || {}) },
+                    mainForce: { ...marketData.value.fundFlow.mainForce, ...(flowData.mainForce || {}) }
+                }
+
+                marketData.value.fundFlow = normalized
+                marketData.value.northFund = {
+                    amount: `${toNumber(normalized.northTotal.amount).toFixed(2)}亿`,
+                    change: toNumber(normalized.hgt.change) + toNumber(normalized.sgt.change)
+                }
+            }
+        } catch {
+            error.value.fundFlow = '资金流向数据暂不可用'
+        } finally {
+            loading.value.fundFlow = false
+        }
+    }
+
+    const fetchIndustryFlow = async () => {
+        loading.value.industry = true
+        error.value.industry = ''
+
+        try {
+            const response = await dashboardService.getIndustryFlow('change_percent', 12)
+            const flowList = Array.isArray(response?.data)
+                ? response.data
+                : (Array.isArray(response) ? response : [])
+
+            marketHeat.value = flowList.map((item) => ({
+                name: item?.name || '--',
+                change: toNumber(item?.change),
+                amount: toNumber(item?.amount)
+            }))
+        } catch {
+            marketHeat.value = []
+            error.value.industry = '行业热度数据暂不可用'
+        } finally {
+            loading.value.industry = false
+        }
+    }
+
+    const fetchStockFlowRanking = async () => {
+        try {
+            const response = await dashboardService.getStockFlowRanking(activeFlowTab.value, 10)
+            const rankingList = Array.isArray(response?.data)
+                ? response.data
+                : (Array.isArray(response) ? response : [])
+
+            capitalFlowData.value = rankingList.map((item) => ({
+                name: item?.name || '--',
+                code: item?.code || item?.symbol || '--',
+                amount: toNumber(item?.amount),
+                change: toNumber(item?.change)
+            }))
+        } catch {
+            capitalFlowData.value = []
+        }
+    }
+
+    const fetchTrendData = async () => {
+        try {
+            const response = await marketService.getTrend('000001.SH')
+            const payload = response?.data ?? response
+            const source = Array.isArray(payload?.data)
+                ? payload.data
+                : (Array.isArray(payload) ? payload : [])
+
+            trendData.value = source.map((point) => toNumber(point)).filter((point) => Number.isFinite(point))
+        } catch {
+            trendData.value = []
+        }
+    }
 
     /**
      * 获取系统与策略状态 (P1)
@@ -655,6 +868,10 @@
             }
         }
     }
+
+    watch(activeFlowTab, () => {
+        fetchStockFlowRanking()
+    })
 
     onMounted(() => {
         updateTime()

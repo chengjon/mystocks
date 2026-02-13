@@ -655,7 +655,7 @@ class MonitoringDatabase:
 
                 return [{"timestamp": r[0], "value": r[1]} for r in records]
 
-        except Exception as e:
+        except Exception:
             logger.error("获取指标历史数据失败: %(e)s")
             return []
 
@@ -703,7 +703,7 @@ class MonitoringDatabase:
 
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("保存阈值调整记录失败: %(e)s")
             return False
 

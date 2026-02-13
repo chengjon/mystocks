@@ -2,14 +2,12 @@
 市场概览与热度路由 (Market Overview)
 """
 from datetime import datetime
-from typing import Any, Dict, Optional
-import pandas as pd
+from typing import Any, Dict
 from fastapi import APIRouter, Depends, Query, HTTPException
 
 from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
-from app.services.unified_data_service import UnifiedDataService
 
 router = APIRouter()
 

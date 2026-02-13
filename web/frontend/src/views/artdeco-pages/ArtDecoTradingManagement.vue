@@ -29,13 +29,13 @@
         <nav class="main-tabs">
             <button
                 v-for="tab in mainTabs"
-                :key="tab.key"
+                :key="'key' in tab ? tab.key : tab.id"
                 class="main-tab"
-                :class="{ active: activeTab === tab.key }"
-                @click="switchTab(tab.key)"
+                :class="{ active: activeTab === ('key' in tab ? tab.key : tab.id) }"
+                @click="switchTab('key' in tab ? tab.key : tab.id)"
             >
-                <span class="tab-icon">{{ tab.icon }}</span>
-                <span class="tab-label">{{ tab.label }}</span>
+                <span class="tab-icon">{{ 'icon' in tab ? tab.icon : '' }}</span>
+                <span class="tab-label">{{ 'label' in tab ? tab.label : '' }}</span>
             </button>
         </nav>
 
@@ -125,7 +125,7 @@
                             </div>
                         </template>
                         <ArtDecoTradingSignals
-                            :signals="tradingSignals"
+                            :data="tradingSignals"
                             @execute-signal="handleExecuteSignal"
                             @cancel-signal="handleCancelSignal"
                         />
@@ -238,14 +238,13 @@
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-    
+
      // ========== 配置系统集成 ==========
      import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
      import type { MarketOverviewResponse, FundFlowAPIResponse } from '@/api/types/generated-types'
-     import marketService from '@/api/services/marketService'
-     import strategyService from '@/api/services/strategyService'
-     import type { Strategy, BacktestRequest, BacktestTask } from '@/api/types/generated-types'
-    
+     import { marketService } from '@/api/services/marketService'
+     import { strategyApiService } from '@/api/services/strategyService'
+
      // Router instance
      const route = useRoute()
      const router = useRouter()
@@ -266,8 +265,12 @@
 
     // 验证是否为 monolithic 配置
     const isMonolithic = computed(() => {
-        return currentPageConfig.value !== null && isMonolithicConfig(currentPageConfig.value)
+        const config = currentPageConfig.value
+        return config !== null && config !== undefined && isMonolithicConfig(config)
     })
+
+    // 定义 activeTab
+    const activeTab = ref('overview')
 
     // Tab 配置
     const mainTabs = computed(() => {
@@ -294,12 +297,22 @@
 
     // API 端点
     const apiEndpoint = computed(() => {
-        return currentTabConfig.value?.apiEndpoint || currentPageConfig.value?.apiEndpoint || ''
+        const config = currentPageConfig.value
+        if (!config) return ''
+        if ('apiEndpoint' in config) {
+            return currentTabConfig.value?.apiEndpoint || config.apiEndpoint || ''
+        }
+        return currentTabConfig.value?.apiEndpoint || ''
     })
 
     // WebSocket 频道
     const wsChannel = computed(() => {
-        return currentTabConfig.value?.wsChannel || currentPageConfig.value?.wsChannel || ''
+        const config = currentPageConfig.value
+        if (!config) return ''
+        if ('wsChannel' in config) {
+            return currentTabConfig.value?.wsChannel || config.wsChannel || ''
+        }
+        return currentTabConfig.value?.wsChannel || ''
     })
 
     const switchTab = (tabKey: string) => {

@@ -78,7 +78,12 @@
             </div>
           </template>
           <div class="chart-container">
-            <div id="risk-distribution-chart" class="chart"></div>
+            <div id="risk-distribution-chart" class="chart">
+              <div style="text-align: center; padding: 40px; color: #666;">
+                Risk Distribution Chart<br/>
+                <small>Market Risk: 45% | Credit Risk: 25% | Liquidity Risk: 20% | Operational Risk: 10%</small>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -93,7 +98,12 @@
             </div>
           </template>
           <div class="chart-container">
-            <div id="var-trend-chart" class="chart"></div>
+            <div id="var-trend-chart" class="chart">
+              <div style="text-align: center; padding: 40px; color: #666;">
+                VaR Trend Chart (30 Days)<br/>
+                <small>Historical VaR values over the past month</small>
+              </div>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -278,23 +288,13 @@ const initializeCharts = () => {
   // Risk Distribution Chart
   const riskDistContainer = document.getElementById('risk-distribution-chart')
   if (riskDistContainer) {
-    riskDistContainer.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: #666;">
-        Risk Distribution Chart<br/>
-        <small>Market Risk: 45% | Credit Risk: 25% | Liquidity Risk: 20% | Operational Risk: 10%</small>
-      </div>
-    `
+    // Content handled in template
   }
 
   // VaR Trend Chart
   const varTrendContainer = document.getElementById('var-trend-chart')
   if (varTrendContainer) {
-    varTrendContainer.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: #666;">
-        VaR Trend Chart (30 Days)<br/>
-        <small>Historical VaR values over the past month</small>
-      </div>
-    `
+    // Content handled in template
   }
 }
 

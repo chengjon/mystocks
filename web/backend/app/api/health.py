@@ -5,7 +5,7 @@
 import json
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 import psycopg2
@@ -80,7 +80,7 @@ async def check_system_health(request: Request):
         health_data = {
             "overall_status": overall_status,
             "services": services,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         return create_health_response(

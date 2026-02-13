@@ -17,7 +17,7 @@ Date: 2025-11-06
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set
 
@@ -59,7 +59,7 @@ class StreamSubscriber:
 
     def update_activity(self) -> None:
         """更新活动时间"""
-        self.subscribed_at = datetime.utcnow()
+        self.subscribed_at = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -112,8 +112,8 @@ class MarketDataStream:
 
         # 状态管理
         self.status = StreamStatus.INACTIVE
-        self.created_at = datetime.utcnow()
-        self.last_update_time = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
+        self.last_update_time = datetime.now(timezone.utc)
 
         # 数据缓冲
         self.data_buffer: List[StreamData] = []
@@ -218,7 +218,7 @@ class MarketDataStream:
             "messages_dropped": self.messages_dropped,
             "errors_count": self.errors_count,
             "buffer_size": len(self.data_buffer),
-            "uptime_seconds": (datetime.utcnow() - self.created_at).total_seconds(),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.created_at).total_seconds(),
             "created_at": self.created_at.isoformat(),
             "last_update": self.last_update_time.isoformat(),
         }
@@ -347,7 +347,7 @@ class RealtimeStreamingService:
         stream_data = StreamData(
             message_id=str(uuid.uuid4()),
             symbol=symbol,
-            timestamp=int(datetime.utcnow().timestamp() * 1000),  # 毫秒时间戳
+            timestamp=int(datetime.now(timezone.utc).timestamp() * 1000),  # 毫秒时间戳
             data=data,
         )
 
@@ -358,7 +358,7 @@ class RealtimeStreamingService:
         # 更新指标
         stream.messages_sent += 1
         self.total_messages_sent += 1
-        stream.last_update_time = datetime.utcnow()
+        stream.last_update_time = datetime.now(timezone.utc)
 
         return True
 
@@ -392,7 +392,7 @@ class RealtimeStreamingService:
             "total_messages_sent": self.total_messages_sent,
             "total_messages_dropped": self.total_messages_dropped,
             "streams": {symbol: stream.get_stats() for symbol, stream in self.streams.items()},
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def register_event_handler(self, event_type: StreamEventType, handler: Callable) -> None:

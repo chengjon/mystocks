@@ -31,7 +31,7 @@ class GPUValidator(BaseValidator):
             try:
                 # 尝试初始化一个小对象来验证 GPU 是否真正可用
                 cudf.Series([1])
-            except Exception as e:
+            except Exception:
                 logger.warning("检测到 cudf 但无法连接 GPU: %(e)s。自动降级到 CPU 模式。")
                 self.use_gpu = False
 
@@ -58,7 +58,7 @@ class GPUValidator(BaseValidator):
         else:
             try:
                 gdf = cudf.DataFrame.from_pandas(data)
-            except Exception as e:
+            except Exception:
                 logger.error("数据传输到 GPU 失败: %(e)s。尝试降级到 CPU。")
                 self.use_gpu = False
                 return self._validate_cpu(data, rules)
@@ -76,7 +76,7 @@ class GPUValidator(BaseValidator):
                     results["suspension"] = self._validate_suspension_gpu(gdf)
                 else:
                     logger.warning("未知规则: %(rule)s")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU规则 %(rule)s 执行失败: %(e)s")
 
         return results
@@ -102,7 +102,7 @@ class GPUValidator(BaseValidator):
                     results["suspension"] = self._validate_suspension_cpu(df)
                 else:
                     logger.warning("未知规则: %(rule)s")
-            except Exception as e:
+            except Exception:
                 logger.error("CPU规则 %(rule)s 执行失败: %(e)s")
         return results
 

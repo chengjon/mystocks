@@ -75,15 +75,15 @@
             <span class="indicator-abbr">{{ indicator.abbreviation }}</span>
             <div class="indicator-badges">
               <span class="web3-tag category-tag">{{ getCategoryLabel(indicator.category) }}</span>
-              <span class="web3-tag panel-tag">{{ getPanelLabel(indicator.panelType) }}</span>
+              <span class="web3-tag panel-tag">{{ getPanelLabel(indicator.panel_type || (indicator as any).panelType) }}</span>
             </div>
           </div>
         </template>
 
         <div class="indicator-content">
           <div class="info-section">
-            <h3>{{ indicator.fullName ?? indicator.full_name }}</h3>
-            <h4>{{ indicator.chineseName ?? indicator.chinese_name }}</h4>
+            <h3>{{ indicator.full_name || (indicator as any).fullName }}</h3>
+            <h4>{{ indicator.chinese_name || (indicator as any).chineseName }}</h4>
             <p class="description">{{ indicator.description }}</p>
           </div>
 
@@ -94,7 +94,7 @@
             </h4>
             <div class="params-grid">
               <div v-for="param in indicator.parameters" :key="param.name" class="param-item">
-                <span class="param-label mono">{{ param.displayName ?? param.displayName }}</span>
+                <span class="param-label mono">{{ param.display_name || (param as any).displayName }}</span>
                 <span class="param-type mono">{{ param.type }}</span>
                 <span class="param-default mono">{{ param.default }}</span>
                 <span class="param-range mono">
@@ -257,8 +257,8 @@ const filteredIndicators: ComputedRef<IndicatorData[]> = computed(() => {
     indicators = indicators.filter((ind: any) => {
       return (
         ind.abbreviation.toLowerCase().includes(query) ||
-        ind.fullName ?? ind.fullName.toLowerCase().includes(query) ||
-        ind.chineseName ?? ind.chineseName.includes(query) ||
+        (ind.full_name ?? ind.fullName ?? '').toLowerCase().includes(query) ||
+        (ind.chinese_name ?? ind.chineseName ?? '').includes(query) ||
         ind.description.toLowerCase().includes(query)
       )
     })

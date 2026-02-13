@@ -91,6 +91,15 @@
           }
         ],
         "timeout": 120
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-three-layer-task-recorder.sh"
+          }
+        ],
+        "timeout": 8
       }
     ],
     "SessionStart": [

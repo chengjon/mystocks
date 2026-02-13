@@ -142,7 +142,7 @@ class RealtimeMTMAdapter:
             logger.info("✅ Registered position %(position_id)s for portfolio %(portfolio_id)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to register position: %(e)s")
             return False
 
@@ -203,7 +203,7 @@ class RealtimeMTMAdapter:
 
             return updates
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to update price for %(symbol)s: %(e)s")
             return []
 
@@ -238,7 +238,7 @@ class RealtimeMTMAdapter:
 
             return snapshot
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get portfolio snapshot %(portfolio_id)s: %(e)s")
             return None
 
@@ -282,7 +282,7 @@ class RealtimeMTMAdapter:
 
             return snapshot
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get position snapshot %(position_id)s: %(e)s")
             return None
 
@@ -298,7 +298,7 @@ class RealtimeMTMAdapter:
                 "adapter_type": "RealtimeMTMAdapter",
                 "architecture": "DDD (Phase 12.3)",
             }
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get metrics: %(e)s")
             return {}
 
@@ -351,7 +351,7 @@ class RealtimeMTMAdapter:
                 performance = portfolio.calculate_performance()
                 snapshot = self._convert_to_snapshot(portfolio, performance)
                 self._portfolio_snapshots[portfolio_id] = snapshot
-        except Exception as e:
+        except Exception:
             logger.error("Failed to update cache for %(portfolio_id)s: %(e)s")
 
 

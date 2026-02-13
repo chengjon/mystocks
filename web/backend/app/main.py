@@ -364,9 +364,27 @@ app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
 performance_middleware = PerformanceMiddleware()
 app.add_middleware(PerformanceMiddleware)
 
-# Phase 3: 注册全局异常处理器 (统一异常处理框架)
-from .core.exceptions import register_exception_handlers
+# Phase Security: 配置速率限制中间件 (防止暴力破解)
+# 【设计边界】本地部署默认禁用，仅公网暴露时通过 RATE_LIMIT_ENABLED=true 启用
+import os as _os
 
+_rate_limit_enabled = _os.getenv("RATE_LIMIT_ENABLED", "false").lower() == "true"
+from .core.rate_limit import RateLimitConfig, setup_rate_limiting
+
+rate_limit_config = RateLimitConfig(
+    enabled=_rate_limit_enabled,  # 默认禁用，本地部署不需要
+    requests_per_minute=10,  # 每分钟最多10次请求
+    requests_per_hour=100,  # 每小时最多100次请求
+    block_duration_seconds=300,  # 5分钟封禁
+)
+setup_rate_limiting(app, rate_limit_config)
+if _rate_limit_enabled:
+    logger.info("✅ Rate limiting middleware ENABLED (public network mode)")
+else:
+    logger.info("ℹ️ Rate limiting middleware DISABLED (local deployment mode)")
+
+# Phase 3: 注册全局异常处理器 (统一异常处理框架)
+# Note: register_exception_handlers is already imported at line 30
 register_exception_handlers(app)
 logger.info("✅ 统一异常处理器已注册")
 

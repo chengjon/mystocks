@@ -12,7 +12,7 @@
                 <el-icon class="module-icon">
                     <component :is="getModuleIcon(moduleKey)" />
                 </el-icon>
-                <span class="module-title">{{ getModuleConfig(moduleKey).title }}</span>
+                <span class="module-title">{{ activeModule }}</span>
             </button>
         </div>
 
@@ -23,13 +23,13 @@
                     <el-icon class="section-icon">
                         <component :is="getModuleIcon(activeModule)" />
                     </el-icon>
-                    {{ (currentModuleConfig as any).title }}
+                    {{ activeModule }}
                 </h3>
 
                 <nav class="menu-items">
                     <router-link
-                        v-for="item in (currentModuleConfig as any).items"
-                        :key="item.key"
+                        v-for="item in currentModuleConfig"
+                        :key="item.path"
                         :to="item.path"
                         class="menu-item"
                         active-class="active"
@@ -38,7 +38,7 @@
                             <component :is="getMenuIcon(item.icon)" />
                         </el-icon>
                         <div class="menu-content">
-                            <span class="menu-title">{{ item.title }}</span>
+                            <span class="menu-title">{{ item.label }}</span>
                             <span class="menu-description">{{ item.description }}</span>
                         </div>
                     </router-link>
@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
     import { ref, computed, type Component } from 'vue'
-    import { MENU_CONFIG, getMenuConfig, getAvailableModules } from '@/layouts/archive/MenuConfig'
+    import { MENU_CONFIG_MAP, type MenuConfigMap } from '@/layouts/archive/MenuConfig'
     import type { MenuItem } from '@/types/common'
     import {
         TrendCharts,
@@ -94,17 +94,17 @@
     const activeModule = ref<string>('market')
 
     // Computed properties
-    const availableModules = computed(() => getAvailableModules())
+    const availableModules = computed(() => Object.keys(MENU_CONFIG_MAP))
 
-    const currentModuleConfig = computed(() => getMenuConfig(activeModule.value))
+    const currentModuleConfig = computed(() => MENU_CONFIG_MAP[activeModule.value as keyof MenuConfigMap])
 
     // Methods
-    const switchModule = (moduleKey: any) => {
-        activeModule.value = moduleKey
+    const getModuleConfig = (moduleKey: string) => {
+        return MENU_CONFIG_MAP[moduleKey as keyof MenuConfigMap]
     }
 
-    const getModuleConfig = (moduleKey: any) => {
-        return (MENU_CONFIG as any)[moduleKey]
+    const switchModule = (moduleKey: any) => {
+        activeModule.value = moduleKey
     }
 
     const getModuleIcon = (moduleKey: any) => {

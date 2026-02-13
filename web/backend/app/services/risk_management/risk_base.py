@@ -39,9 +39,9 @@ class RiskMetrics:
     max_drawdown: float = 0.0
     beta: float = 0.0
     volatility: float = 0.0
-    
+
     calculated_at: Optional[datetime] = None
-    
+
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
@@ -65,9 +65,9 @@ class RiskEvent:
     timestamp: datetime = None
     portfolio_id: Optional[str] = None
     stock_code: Optional[str] = None
-    
+
     metadata: Dict[str, Any] = None
-    
+
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
@@ -98,7 +98,7 @@ class RiskProfile:
     var_99_threshold: float = 0.0
     sharpe_threshold: float = 0.0
     max_drawdown_threshold: float = 0.0
-    
+
     def to_dict(self) -> Dict:
         """转换为字典"""
         return {
@@ -116,103 +116,103 @@ class RiskProfile:
 
 class RiskBase:
     """风险管理基类"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.metrics_history = []
         self.events_history = []
-        
+
         logger.info("风险管理基础模块初始化")
-    
+
     def calculate_var(self, returns: List[float]) -> float:
         """计算方差"""
         if not returns or len(returns) < 2:
             return 0.0
-        
+
         n = len(returns)
         mean_return = sum(returns) / n
-        
+
         variance = sum((r - mean_return) ** 2 for r in returns) / n
-        
+
         logger.debug(f"计算方差: {variance:.6f}")
         return variance
-    
+
     def calculate_var_with_return(self, returns: List[float], risk_free_rate: float = 0.03) -> float:
         """计算带风险调整的方差"""
         if not returns or len(returns) < 2:
             return 0.0
-        
+
         n = len(returns)
         mean_return = sum(returns) / n
         risk_adjustment = 1 + risk_free_rate
-        
+
         variance = sum((r - mean_return * risk_adjustment) ** 2 for r in returns) / n
-        
+
         logger.debug(f"计算调整后方差: {variance:.6f}")
         return variance
-    
+
     def calculate_cvar(self, returns: List[float], confidence: float = 0.95) -> float:
         """计算条件方差（C-VaR）"""
         if not returns or len(returns) < 2:
             return 0.0
-        
+
         n = len(returns)
         mean_return = sum(returns) / n
-        
+
         excess_returns = [max(r - mean_return, 0) for r in returns]
         cvar = sum(e ** 2 for e in excess_returns) / n
-        
+
         logger.debug(f"计算C-VaR: {cvar:.6f}")
         return cvar
-    
+
     def calculate_var_at_risk_level(self, returns: List[float], confidence: float = 0.95, level: RiskLevel = RiskLevel.MEDIUM) -> float:
         """根据风险水平计算调整后的方差"""
         base_var = self.calculate_var(returns)
-        
+
         risk_level_adjustments = {
             RiskLevel.LOW: 0.5,
             RiskLevel.MEDIUM: 1.0,
             RiskLevel.HIGH: 2.0,
             RiskLevel.CRITICAL: 3.0
         }
-        
+
         adjustment = risk_level_adjustments.get(level, 1.0)
         adjusted_var = base_var * adjustment
-        
+
         logger.debug(f"风险水平{level.value}调整后方差: {adjusted_var:.6f}")
         return adjusted_var
-    
+
     def calculate_percentile(self, value: float, distribution: List[float], percentile: float = 95.0) -> float:
         """计算百分位"""
         if not distribution or len(distribution) == 0:
             return 0.0
-        
+
         sorted_dist = sorted(distribution)
         index = int(len(sorted_dist) * percentile / 100)
-        
+
         if index >= len(sorted_dist):
             index = len(sorted_dist) - 1
-        
+
         percentile_value = sorted_dist[index]
-        
+
         logger.debug(f"计算{percentile}百分位: {percentile_value:.2f}")
         return percentile_value
-    
+
     def log_risk_event(self, event: RiskEvent):
         """记录风险事件"""
         try:
             event.timestamp = datetime.now()
-            
+
             self.events_history.append(event)
-            
+
             if len(self.events_history) > 1000:
                 self.events_history = self.events_history[-1000:]
-            
+
             logger.warning(f"风险事件记录: {event.event_type.value} - {event.message}")
-            
+
         except Exception as e:
             logger.error(f"记录风险事件失败: {e}")
-    
+
     def get_risk_level(self, metrics: RiskMetrics, profile: RiskProfile) -> RiskLevel:
         """评估风险水平"""
         if metrics.var_95 > profile.var_95_threshold:
@@ -221,7 +221,7 @@ class RiskBase:
             return RiskLevel.CRITICAL
         else:
             return RiskLevel.MEDIUM
-    
+
     def get_metrics_summary(self, count: int = 100) -> Dict:
         """获取风险指标摘要"""
         if len(self.metrics_history) == 0:
@@ -233,9 +233,9 @@ class RiskBase:
                 'avg_max_drawdown': 0.0,
                 'avg_beta': 0.0
             }
-        
+
         recent_metrics = self.metrics_history[-count:]
-        
+
         if not recent_metrics:
             return {
                 'count': len(self.metrics_history),
@@ -245,7 +245,7 @@ class RiskBase:
                 'avg_max_drawdown': recent_metrics.max_drawdown,
                 'avg_beta': recent_metrics.beta
             }
-        
+
         return {
             'count': len(recent_metrics),
             'avg_var_95': sum(m.var_95 for m in recent_metrics) / len(recent_metrics),

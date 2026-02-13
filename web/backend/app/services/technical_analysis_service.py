@@ -142,7 +142,7 @@ class TechnicalAnalysisService:
             logger.info("Fetched {len(df)} records for %(symbol)s")
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get stock history for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
@@ -209,7 +209,7 @@ class TechnicalAnalysisService:
             logger.info("Calculated {len(indicators)} trend indicators")
             return indicators
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to calculate trend indicators: %(e)s")
             return {}
 
@@ -285,7 +285,7 @@ class TechnicalAnalysisService:
             logger.info("Calculated {len(indicators)} momentum indicators")
             return indicators
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to calculate momentum indicators: %(e)s")
             return {}
 
@@ -349,7 +349,7 @@ class TechnicalAnalysisService:
             logger.info("Calculated {len(indicators)} volatility indicators")
             return indicators
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to calculate volatility indicators: %(e)s")
             return {}
 
@@ -410,7 +410,7 @@ class TechnicalAnalysisService:
             logger.info("Calculated {len(indicators)} volume indicators")
             return indicators
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to calculate volume indicators: %(e)s")
             return {}
 

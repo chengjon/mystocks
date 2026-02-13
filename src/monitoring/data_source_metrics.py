@@ -361,7 +361,7 @@ def start_metrics_server(port: int = 8001):
     try:
         start_http_server(port)
         logger.info("Prometheus metrics服务器已启动: http://localhost:%(port)s/metrics")
-    except Exception as e:
+    except Exception:
         logger.error("启动metrics服务器失败: %(e)s")
         raise
 

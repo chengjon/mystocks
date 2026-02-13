@@ -4,9 +4,7 @@ BYAPI数据源适配器
 提供BYAPI REST API数据获取功能，支持涨跌停股池、技术指标等
 """
 
-import logging
 from typing import Any, Dict, List, Optional
-from datetime import datetime
 import httpx
 import asyncio
 

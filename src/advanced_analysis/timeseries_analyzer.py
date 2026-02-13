@@ -790,7 +790,7 @@ def _generate_ts_recommendations(
                     action += f" (预测确认{primary_signal}信号)"
                     confidence = "high"
                 else:
-                    action += f" (预测与趋势存在分歧，需谨慎)"
+                    action += " (预测与趋势存在分歧，需谨慎)"
 
         recommendations.update(
             {

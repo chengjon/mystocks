@@ -11,7 +11,7 @@ Test Coverage:
 
 import pytest
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 # Configure logging
@@ -121,7 +121,7 @@ def test_data_manager():
 
         def __init__(self):
             self.created_resources = []
-            self.created_at = datetime.utcnow()
+            self.created_at = datetime.now(timezone.utc)
 
         def track_resource(self, resource_type: str, resource_id: str):
             """Track created resources for cleanup"""

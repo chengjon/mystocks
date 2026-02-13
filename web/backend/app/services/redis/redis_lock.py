@@ -93,7 +93,7 @@ class RedisLockService:
                 # 短暂休眠后重试
                 time.sleep(0.1)
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to acquire lock %(resource)s: %(e)s")
                 if not blocking:
                     return None
@@ -132,7 +132,7 @@ class RedisLockService:
 
             return success
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to release lock %(resource)s: %(e)s")
             return False
 
@@ -168,7 +168,7 @@ class RedisLockService:
 
             return success
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to extend lock %(resource)s: %(e)s")
             return False
 
@@ -243,7 +243,7 @@ class RedisLockService:
             if token:
                 ttl = self.redis.ttl(lock_key)
                 return {"resource": resource, "token": token, "remaining_ttl": ttl}
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get lock info %(resource)s: %(e)s")
         return None
 

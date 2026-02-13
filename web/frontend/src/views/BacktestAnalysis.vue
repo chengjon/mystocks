@@ -194,7 +194,11 @@
           </div>
         </template>
         <div class="chart-container">
-          <div id="equity-chart" class="chart"></div>
+          <div id="equity-chart" class="chart">
+            <div v-if="backtestResult" style="text-align: center; padding: 40px; color: #666;">
+              Equity curve chart would be rendered here using a charting library like Chart.js or ECharts
+            </div>
+          </div>
         </div>
       </el-card>
 
@@ -385,7 +389,8 @@ const initializeEquityChart = () => {
   // Simple chart initialization - replace with actual chart library
   const chartContainer = document.getElementById('equity-chart')
   if (chartContainer) {
-    chartContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Equity curve chart would be rendered here using a charting library like Chart.js or ECharts</div>'
+    // Placeholder content is now handled in the template via v-if="backtestResult"
+    // When integrating a real chart library (e.g., ECharts), initialization code would go here
   }
 }
 

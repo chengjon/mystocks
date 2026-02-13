@@ -4,8 +4,8 @@
       <template #header>
         <div class="card-header">
           <span>{{ pageConfig.description }}</span>
-          <el-tag :type="pageConfig.realtime ? 'success' : 'info'" size="small">
-            {{ pageConfig.realtime ? '实时更新' : '静态数据' }}
+          <el-tag :type="isStandardPage ? 'success' : 'info'" size="small">
+            {{ isStandardPage ? '标准页面' : '单体组件' }}
           </el-tag>
         </div>
       </template>
@@ -15,17 +15,17 @@
           <el-descriptions-item label="路由名称">
             <code>{{ routeName }}</code>
           </el-descriptions-item>
-          <el-descriptions-item label="API端点">
-            <code>{{ pageConfig.apiEndpoint }}</code>
+          <el-descriptions-item v-if="isStandardPage" label="API端点">
+            <code>{{ (pageConfig as any).apiEndpoint }}</code>
           </el-descriptions-item>
           <el-descriptions-item label="WebSocket频道">
-            <el-tag v-if="pageConfig.wsChannel" type="warning" size="small">
-              {{ pageConfig.wsChannel }}
+            <el-tag v-if="isStandardPage && (pageConfig as any).wsChannel" type="warning" size="small">
+              {{ (pageConfig as any).wsChannel }}
             </el-tag>
             <span v-else class="text-muted">不需要</span>
           </el-descriptions-item>
-          <el-descriptions-item label="实时更新">
-            <el-icon v-if="pageConfig.realtime" color="#67C23A">
+          <el-descriptions-item label="页面类型">
+            <el-icon v-if="isStandardPage" color="#67C23A">
               <CircleCheck />
             </el-icon>
             <el-icon v-else color="#909399">
@@ -39,7 +39,7 @@
         <el-button type="primary" @click="loadData" :loading="loading">
           加载数据
         </el-button>
-        <el-button v-if="pageConfig.wsChannel" @click="toggleWebSocket">
+        <el-button v-if="isStandardPage && (pageConfig as any).wsChannel" @click="toggleWebSocket">
           {{ wsConnected ? '断开' : '连接' }} WebSocket
         </el-button>
       </div>
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getPageConfig, isValidRouteName, type PageConfig } from '@/config/pageConfig'
+import { getPageConfig, isRouteName, type PageConfig } from '@/config/pageConfig'
 import axios from 'axios'
 
 // 路由相关
@@ -70,6 +70,7 @@ const routeName = computed(() => route.name as string)
 
 // 页面配置
 const pageConfig = computed(() => getPageConfig(routeName.value))
+const isStandardPage = computed(() => pageConfig.value?.type === 'page')
 
 // 数据状态
 const data = ref<any>(null)
@@ -94,13 +95,14 @@ const loadData = async () => {
 
   try {
     // ✅ 使用统一配置的API端点（避免硬编码）
-    const response = await axios.get(pageConfig.value.apiEndpoint)
+    const apiEndpoint = isStandardPage.value ? (pageConfig.value as any).apiEndpoint : '/api/default'
+    const response = await axios.get(apiEndpoint)
     data.value = response.data
 
-    console.log(`✅ 数据加载成功: ${pageConfig.value.apiEndpoint}`)
+    console.log(`✅ 数据加载成功: ${apiEndpoint}`)
   } catch (err: any) {
     error.value = err.message || '数据加载失败'
-    console.error(`❌ 数据加载失败: ${pageConfig.value.apiEndpoint}`, err)
+    console.error(`❌ 数据加载失败`, err)
   } finally {
     loading.value = false
   }
@@ -110,7 +112,8 @@ const loadData = async () => {
  * 切换WebSocket连接 - 使用统一配置的频道
  */
 const toggleWebSocket = () => {
-  if (!pageConfig.value?.wsChannel) {
+  const wsChannel = isStandardPage.value ? (pageConfig.value as any)?.wsChannel : null
+  if (!wsChannel) {
     console.warn('当前路由不需要WebSocket连接')
     return
   }
@@ -123,12 +126,12 @@ const toggleWebSocket = () => {
     console.log('🔇 WebSocket已断开')
   } else {
     // 建立连接（示例URL，实际应从环境变量读取）
-    const wsUrl = `ws://localhost:8000/ws/${pageConfig.value.wsChannel}`
+    const wsUrl = `ws://localhost:8000/ws/${wsChannel}`
     wsInstance = new WebSocket(wsUrl)
 
     wsInstance.onopen = () => {
       wsConnected.value = true
-      console.log(`✅ WebSocket已连接: ${pageConfig.value?.wsChannel}`)
+      console.log(`✅ WebSocket已连接: ${wsChannel}`)
     }
 
     wsInstance.onmessage = (event) => {
@@ -153,7 +156,7 @@ const toggleWebSocket = () => {
  */
 onMounted(() => {
   // ✅ 类型安全的路由验证
-  if (!isValidRouteName(routeName.value)) {
+  if (!isRouteName(routeName.value)) {
     console.warn(`⚠️ 未配置的路由: ${routeName.value}`)
     error.value = `未配置的路由: ${routeName.value}`
   } else {

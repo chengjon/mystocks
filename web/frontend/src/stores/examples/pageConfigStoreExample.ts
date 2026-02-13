@@ -3,8 +3,12 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getPageConfig, isValidRouteName, type RouteName } from '@/config/pageConfig'
+import { getPageConfig, isRouteName, isStandardConfig } from '@/config/pageConfig'
+import type { PageConfig } from '@/config/pageConfig'
 import axios from 'axios'
+
+// 路由名称类型
+type RouteName = string
 
 /**
  * PageConfig Store 示例
@@ -29,23 +33,31 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
 
   /**
    * 是否需要实时更新
+   * 注意：PageConfig 没有 realtime 属性，这里返回 false
    */
   const needsRealtimeUpdate = computed(() => {
-    return currentPageConfig.value?.realtime ?? false
+    return false // PageConfig 类型中没有 realtime 属性
   })
 
   /**
    * 是否需要WebSocket连接
+   * 只有 StandardPageConfig 有 wsChannel
    */
   const needsWebSocket = computed(() => {
-    return !!currentPageConfig.value?.wsChannel
+    const config = currentPageConfig.value
+    return !!(config && isStandardConfig(config) && config.wsChannel)
   })
 
   /**
    * WebSocket频道名称
+   * 只有 StandardPageConfig 有 wsChannel
    */
   const wsChannel = computed(() => {
-    return currentPageConfig.value?.wsChannel ?? null
+    const config = currentPageConfig.value
+    if (config && isStandardConfig(config)) {
+      return config.wsChannel ?? null
+    }
+    return null
   })
 
   // ========== 方法 ==========
@@ -56,7 +68,7 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
    */
   const setRoute = (routeName: string) => {
     // ✅ 类型安全的路由验证
-    if (!isValidRouteName(routeName)) {
+    if (!isRouteName(routeName)) {
       console.warn(`⚠️ 未配置的路由: ${routeName}`)
       error.value = `未配置的路由: ${routeName}`
       return false
@@ -77,6 +89,13 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
     if (!config) {
       error.value = '未设置有效路由'
       console.warn('⚠️ 未设置有效路由')
+      return
+    }
+
+    // 只有 StandardPageConfig 有 apiEndpoint
+    if (!isStandardConfig(config)) {
+      error.value = '该路由不支持直接加载数据（Monolithic 类型）'
+      console.warn('⚠️ Monolithic 类型路由需要通过 tab 加载数据')
       return
     }
 
@@ -148,12 +167,24 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
     const config = currentPageConfig.value
     if (!config) return null
 
-    return {
-      routeName: currentRoute.value,
-      apiEndpoint: config.apiEndpoint,
-      wsChannel: config.wsChannel,
-      realtime: config.realtime,
-      description: config.description
+    // 根据配置类型返回不同的信息
+    if (isStandardConfig(config)) {
+      return {
+        routeName: currentRoute.value,
+        type: config.type,
+        apiEndpoint: config.apiEndpoint,
+        wsChannel: config.wsChannel,
+        description: config.description
+      }
+    } else {
+      // MonolithicPageConfig
+      return {
+        routeName: currentRoute.value,
+        type: config.type,
+        component: config.component,
+        tabCount: config.tabs.length,
+        description: config.description
+      }
     }
   }
 

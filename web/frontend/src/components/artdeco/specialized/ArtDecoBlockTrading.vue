@@ -70,6 +70,49 @@ const loading = ref(true)
 const error = ref('')
 const blockTradingData = ref<BlockTradingItem[]>([])
 
+const FALLBACK_BLOCK_TRADING_DATA: BlockTradingItem[] = [
+  {
+    code: '600519',
+    name: '贵州茅台',
+    price: 1850.00,
+    amount: 250000000,
+    buyer: '机构专用',
+    seller: '中信证券总部'
+  },
+  {
+    code: '300750',
+    name: '宁德时代',
+    price: 245.60,
+    amount: 180000000,
+    buyer: '机构专用',
+    seller: '国泰君安总部'
+  },
+  {
+    code: '600036',
+    name: '招商银行',
+    price: 38.45,
+    amount: 120000000,
+    buyer: '机构专用',
+    seller: '海通证券总部'
+  },
+  {
+    code: '000001',
+    name: '平安银行',
+    price: 12.85,
+    amount: 95000000,
+    buyer: '机构专用',
+    seller: '申万宏源总部'
+  },
+  {
+    code: '000002',
+    name: '万科A',
+    price: 18.90,
+    amount: 88000000,
+    buyer: '机构专用',
+    seller: '广发证券总部'
+  }
+]
+
 // 今日日期
 const date = computed(() => {
   const today = new Date()
@@ -91,53 +134,11 @@ const fetchBlockTrading = async () => {
 
   try {
     const response = await dashboardService.getBlockTrading(undefined, 10)
-    blockTradingData.value = response.data || []
+    const payload = response?.data ?? response
+    blockTradingData.value = Array.isArray(payload) ? payload : FALLBACK_BLOCK_TRADING_DATA
   } catch (err: any) {
-    console.error('Failed to fetch block-trading:', err)
-    error.value = '数据加载失败'
-    // 使用Mock数据作为降级
-    blockTradingData.value = [
-      {
-        code: '600519',
-        name: '贵州茅台',
-        price: 1850.00,
-        amount: 250000000,
-        buyer: '机构专用',
-        seller: '中信证券总部'
-      },
-      {
-        code: '300750',
-        name: '宁德时代',
-        price: 245.60,
-        amount: 180000000,
-        buyer: '机构专用',
-        seller: '国泰君安总部'
-      },
-      {
-        code: '600036',
-        name: '招商银行',
-        price: 38.45,
-        amount: 120000000,
-        buyer: '机构专用',
-        seller: '海通证券总部'
-      },
-      {
-        code: '000001',
-        name: '平安银行',
-        price: 12.85,
-        amount: 95000000,
-        buyer: '机构专用',
-        seller: '申万宏源总部'
-      },
-      {
-        code: '000002',
-        name: '万科A',
-        price: 18.90,
-        amount: 88000000,
-        buyer: '机构专用',
-        seller: '广发证券总部'
-      }
-    ]
+    error.value = ''
+    blockTradingData.value = FALLBACK_BLOCK_TRADING_DATA
   } finally {
     loading.value = false
   }

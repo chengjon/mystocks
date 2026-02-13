@@ -265,7 +265,7 @@ def _calculate_probability_features(self, series: pd.Series, bins: int = 10) -> 
 
         except Exception as e:
             logger.error("Naive Bayes信号解释失败: %s", str(e))
-            
+
 
 
 def _apply_naive_bayes_risk_controls(self, signals_df: pd.DataFrame, data: pd.DataFrame) -> pd.DataFrame:

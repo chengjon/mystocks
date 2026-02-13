@@ -2,11 +2,10 @@
 止损扩展路由 (V3.1)
 """
 import structlog
-from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from fastapi import APIRouter
 
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+from app.core.exceptions import BusinessException, NotFoundException
 
 # 导入Week 4-5的新增组件
 try:
@@ -108,14 +107,14 @@ async def calculate_stop_loss_v31(request: Dict[str, Any]) -> Dict[str, Any]:
 
         core = get_risk_management_core()
         strategy_type = request.get("strategy_type", "volatility_adaptive")
-        
+
         if strategy_type == "volatility_adaptive":
             result = await core.stop_loss_engine.calculate_volatility_stop_loss(
                 symbol=request.get("symbol"), entry_price=request.get("entry_price"), k=request.get("k_factor", 2.0)
             )
         else:
             result = await core.stop_loss_engine.calculate_trailing_stop_loss(
-                symbol=request.get("symbol"), highest_price=request.get("entry_price"), 
+                symbol=request.get("symbol"), highest_price=request.get("entry_price"),
                 trailing_percentage=request.get("trailing_percentage", 0.08)
             )
         return {"status": "success", "data": result}

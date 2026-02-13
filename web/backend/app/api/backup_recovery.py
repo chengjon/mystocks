@@ -15,7 +15,7 @@
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
@@ -65,7 +65,7 @@ def log_security_event(
 ):
     """记录安全审计日志"""
     log_data = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "event_type": event_type,
         "user_id": user.id,
         "username": user.username,

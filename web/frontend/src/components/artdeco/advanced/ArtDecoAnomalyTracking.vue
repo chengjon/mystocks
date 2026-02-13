@@ -23,8 +23,8 @@ import { ArtDecoStatCard } from '@/components/artdeco'
 import { useAnomalyTracking } from '@/composables/advanced/useAnomalyTracking'
 
 // Sub-components
-import AnomalyAlerts from './components/AnomalyAlerts.vue'
-import AnomalyPatterns from './components/AnomalyPatterns.vue'
+import AnomalyAlerts from '@/views/artdeco-pages/components/AnomalyAlerts.vue'
+import AnomalyPatterns from '@/views/artdeco-pages/components/AnomalyPatterns.vue'
 
 const {
     activeAlerts, patterns,

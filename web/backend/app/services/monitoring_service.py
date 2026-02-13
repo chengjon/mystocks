@@ -92,7 +92,7 @@ class MonitoringService:
             session.refresh(rule)
             logger.info("Created alert rule: {rule.rule_name}")
             return rule
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to create alert rule: %(e)s")
             raise
@@ -132,7 +132,7 @@ class MonitoringService:
             session.refresh(rule)
             logger.info("Updated alert rule: {rule.rule_name}")
             return rule
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to update alert rule: %(e)s")
             raise
@@ -151,7 +151,7 @@ class MonitoringService:
             session.commit()
             logger.info("Deleted alert rule: {rule.rule_name}")
             return True
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to delete alert rule: %(e)s")
             raise
@@ -198,7 +198,7 @@ class MonitoringService:
             logger.info("Fetched {len(df)} stocks realtime data")
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to fetch realtime data: %(e)s")
             return pd.DataFrame()
 
@@ -255,7 +255,7 @@ class MonitoringService:
             logger.info("Saved %(count)s realtime monitoring records")
             return count
 
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to save realtime data: %(e)s")
             return 0
@@ -283,7 +283,7 @@ class MonitoringService:
             try:
                 alerts = self._evaluate_single_rule(rule, df)
                 triggered_alerts.extend(alerts)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to evaluate rule {rule.rule_name}: %(e)s")
 
         # 保存告警记录
@@ -449,7 +449,7 @@ class MonitoringService:
 
             session.commit()
             return count
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to save alert records: %(e)s")
             return 0
@@ -511,7 +511,7 @@ class MonitoringService:
             alert.is_read = True
             session.commit()
             return True
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to mark alert read: %(e)s")
             return False
@@ -538,7 +538,7 @@ class MonitoringService:
             logger.info("Fetched {len(df)} dragon tiger records for %(date_str)s")
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to fetch dragon tiger list: %(e)s")
             return pd.DataFrame()
 
@@ -583,7 +583,7 @@ class MonitoringService:
             logger.info("Saved %(count)s dragon tiger records")
             return count
 
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to save dragon tiger data: %(e)s")
             return 0
@@ -673,7 +673,7 @@ class MonitoringService:
                 # 等待下一次更新
                 await asyncio.sleep(interval)
 
-            except Exception as e:
+            except Exception:
                 logger.error("Monitoring error: %(e)s")
                 await asyncio.sleep(interval)
 

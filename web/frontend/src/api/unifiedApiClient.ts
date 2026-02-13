@@ -412,7 +412,7 @@ export class UnifiedApiClient {
     private loadingStore: ReturnType<typeof useLoadingStore> | null = null
     private cache: LRUCache
 
-    constructor(baseURL = '/api') {
+    constructor(baseURL = '') {
         this.baseURL = baseURL
         // Don't initialize store in constructor to avoid "no active Pinia" error
         this.cache = new LRUCache({

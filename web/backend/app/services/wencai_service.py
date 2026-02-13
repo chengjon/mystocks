@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+from sqlalchemy import MetaData, Table, func, select
 from sqlalchemy import exc as sqlalchemy_exc
 from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
@@ -96,7 +97,7 @@ class WencaiService:
         try:
             queries = self.db.query(WencaiQuery).all()
             return [q.to_dict() for q in queries]
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get queries: {str(e)}")
             raise
 
@@ -113,7 +114,7 @@ class WencaiService:
         try:
             query = self.db.query(WencaiQuery).filter(WencaiQuery.query_name == query_name).first()
             return query.to_dict() if query else None
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get query %(query_name)s: {str(e)}")
             return None
 
@@ -160,7 +161,7 @@ class WencaiService:
 
             logger.info("Fetched {len(raw_data)} records from Wencai")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to fetch data: {str(e)}", exc_info=True)
             raise
 
@@ -168,7 +169,7 @@ class WencaiService:
         try:
             cleaned_data = self.adapter.clean_data(raw_data)
             logger.info("Data cleaned: {len(cleaned_data)} rows")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to clean data: {str(e)}", exc_info=True)
             raise
 
@@ -188,7 +189,7 @@ class WencaiService:
                 "fetch_time": datetime.now(),
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save data: {str(e)}", exc_info=True)
             raise
 
@@ -230,10 +231,10 @@ class WencaiService:
 
                     duplicate_count = len(data) - len(data_to_save)
                     logger.info(
-                        f"Deduplication: {len(data)} total, " f"{len(data_to_save)} new, {duplicate_count} duplicates"
+                        f"Deduplication: {len(data)} total, {len(data_to_save)} new, {duplicate_count} duplicates"
                     )
 
-                except Exception as e:
+                except Exception:
                     logger.warning("Deduplication failed: {str(e)}, saving all data")
                     data_to_save = data.copy()
                     duplicate_count = 0
@@ -261,10 +262,10 @@ class WencaiService:
                 "duplicate_records": duplicate_count,
             }
 
-        except sqlalchemy_exc.SQLAlchemyError as e:
+        except sqlalchemy_exc.SQLAlchemyError:
             logger.error("Database error: {str(e)}")
             raise
-        except Exception as e:
+        except Exception:
             logger.error("Unexpected error while saving: {str(e)}")
             raise
 
@@ -295,24 +296,34 @@ class WencaiService:
                     "message": "Table does not exist yet",
                 }
 
-            # 查询总数
+            # 使用 SQLAlchemy Core 构建查询，避免 SQL 注入
+            metadata = MetaData()
+            table = Table(table_name, metadata, autoload_with=self.engine)
+
             with self.engine.connect() as conn:
-                count_query = text(f"SELECT COUNT(*) as cnt FROM {table_name}")
-                total = conn.execute(count_query).scalar()
+                # 查询总数
+                count_stmt = select(func.count()).select_from(table)
+                total = conn.execute(count_stmt).scalar()
 
                 # 查询数据（按fetch_time降序）
-                data_query = text(
-                    f"SELECT * FROM {table_name} " f"ORDER BY fetch_time DESC " f"LIMIT :limit OFFSET :offset"
-                )
-                result = conn.execute(data_query, {"limit": limit, "offset": offset})
+                # 注意：如果 fetch_time 列不存在，可能会报错，应该先检查列是否存在
+                # 这里假设 fetch_time 总是存在，因为在 _save_to_database 中它是肯定存在的（或者被创建）
+                if "fetch_time" in table.c:
+                    stmt = select(table).order_by(table.c.fetch_time.desc()).limit(limit).offset(offset)
+                else:
+                    stmt = select(table).limit(limit).offset(offset)
+
+                result = conn.execute(stmt)
 
                 # 转换为字典列表
                 columns = result.keys()
                 rows = [dict(zip(columns, row)) for row in result]
 
                 # 获取最新fetch_time
-                latest_query = text(f"SELECT MAX(fetch_time) as latest FROM {table_name}")
-                latest_fetch_time = conn.execute(latest_query).scalar()
+                latest_fetch_time = None
+                if "fetch_time" in table.c:
+                    latest_stmt = select(func.max(table.c.fetch_time))
+                    latest_fetch_time = conn.execute(latest_stmt).scalar()
 
             return {
                 "query_name": query_name,
@@ -322,7 +333,7 @@ class WencaiService:
                 "latest_fetch_time": latest_fetch_time,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get results: {str(e)}")
             raise
 
@@ -393,7 +404,7 @@ class WencaiService:
                 "total_days": len(history),
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get history: {str(e)}")
             raise
 

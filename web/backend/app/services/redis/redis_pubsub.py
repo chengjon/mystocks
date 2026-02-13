@@ -67,7 +67,7 @@ class RedisPubSubService:
             count = self.redis.publish(channel_name, message_str)
             logger.debug("Published to %(channel)s: %(count)s subscribers")
             return count
-        except Exception as e:
+        except Exception:
             logger.error("Failed to publish to %(channel)s: %(e)s")
             return 0
 
@@ -217,10 +217,10 @@ class RedisPubSubService:
                 for callback in self._listeners[channel]:
                     try:
                         callback(data)
-                    except Exception as e:
+                    except Exception:
                         logger.error("Callback error for %(channel)s: %(e)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to handle message: %(e)s")
 
     def start_listening(self):
@@ -248,7 +248,7 @@ class RedisPubSubService:
                     message = self._pubsub.get_message(timeout=1.0)
                     if message:
                         self._message_handler(message)
-                except Exception as e:
+                except Exception:
                     logger.error("PubSub listen error: %(e)s")
 
         self._executor.submit(_listen)

@@ -12,7 +12,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -224,7 +224,7 @@ def log_task_operation(user: User, operation: str, task_id: Optional[str] = None
         details: 操作详情（可选）
     """
     audit_entry = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "user_id": user.id,
         "username": user.username,
         "operation": operation,
@@ -342,7 +342,7 @@ async def register_task(task_config: TaskConfig, current_user: User = Depends(ge
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Failed to register task for user {current_user.username}: %(e)s")
         raise BusinessException(detail="任务注册失败", status_code=500, error_code="TASK_REGISTRATION_FAILED")
 
@@ -380,7 +380,7 @@ async def unregister_task(
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Failed to unregister task %(task_id)s for user {current_user.username}: %(e)s")
         raise BusinessException(detail="任务注销失败", status_code=500, error_code="TASK_UNREGISTRATION_FAILED")
 
@@ -456,7 +456,7 @@ async def list_tasks(
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Failed to list tasks for user {current_user.username}: %(e)s")
         raise BusinessException(detail="获取任务列表失败", status_code=500, error_code="TASK_LIST_RETRIEVAL_FAILED")
 
@@ -775,7 +775,7 @@ async def get_audit_logs(
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Failed to get audit logs for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="获取审计日志失败", status_code=500, error_code="AUDIT_LOG_RETRIEVAL_FAILED")
 
@@ -799,7 +799,7 @@ async def cleanup_audit_logs(
             raise ForbiddenException(detail="需要管理员权限访问此端点")
 
         # 计算清理时间点
-        cutoff_time = datetime.utcnow() - timedelta(days=days)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(days=days)
         cutoff_str = cutoff_time.isoformat()
 
         # 清理旧的审计日志
@@ -824,6 +824,6 @@ async def cleanup_audit_logs(
 
     except (BusinessException, NotFoundException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Failed to cleanup audit logs for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="清理审计日志失败", status_code=500, error_code="AUDIT_LOG_CLEANUP_FAILED")

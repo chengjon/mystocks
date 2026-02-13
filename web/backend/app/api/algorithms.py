@@ -12,7 +12,7 @@
 版本: 1.0.0
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -97,7 +97,7 @@ async def health_check(
             "algorithms_loaded": True,
             "gpu_available": gpu_available,
             "supported_algorithms": len(alg_type.get_all_algorithms()) if alg_type else 0,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         return ok(data=health_data, message="算法服务运行正常")

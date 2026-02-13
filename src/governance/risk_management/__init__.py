@@ -67,7 +67,7 @@ class RiskManagementInitializer:
 
             return self.core
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ 风险管理系统初始化失败: %(e)s")
             self.is_initialized = False
             raise
@@ -83,7 +83,7 @@ class RiskManagementInitializer:
             self.is_initialized = False
             logger.info("✅ 风险管理系统已关闭")
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ 关闭风险管理系统时出错: %(e)s")
 
     def get_core(self) -> Optional[RiskManagementCore]:

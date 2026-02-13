@@ -12,7 +12,7 @@ Reference: docs/api/API_SPECIFICATION.md
 """
 
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Optional, Union
@@ -34,17 +34,17 @@ class TimestampFormat(str, Enum):
 
 def get_current_iso_timestamp() -> str:
     """Get current timestamp in ISO 8601 format (REST API standard)"""
-    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
 def get_current_ms_timestamp() -> int:
     """Get current timestamp in milliseconds (WebSocket standard)"""
-    return int(datetime.utcnow().timestamp() * 1000)
+    return int(datetime.now(timezone.utc).timestamp() * 1000)
 
 
 def get_current_seconds_timestamp() -> int:
     """Get current timestamp in seconds"""
-    return int(datetime.utcnow().timestamp())
+    return int(datetime.now(timezone.utc).timestamp())
 
 
 def parse_iso_timestamp(timestamp_str: str) -> datetime:

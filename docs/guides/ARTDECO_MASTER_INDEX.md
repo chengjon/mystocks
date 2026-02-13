@@ -1,6 +1,6 @@
-# ArtDeco v2.0 Design System - Master Index
+# ArtDeco v3/v3.1 Governance Baseline - Master Index
 
-This document serves as the authoritative entry point for the ArtDeco v2.0 Design System in the MyStocks project.
+This document is the authoritative entry point for ArtDeco v3/v3.1 governance in the MyStocks project.
 
 ## 1. 核心设计规范 (Core Specifications)
 
@@ -11,14 +11,14 @@ This document serves as the authoritative entry point for the ArtDeco v2.0 Desig
 *   **V3.1 Design Spec**: [ArtDeco Trading Center Optimized V3.1](../api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md)
     *   The latest specification for the Trading Center and V3 upgrades.
 *   **Component Catalog**: [ArtDeco Components Catalog](../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md)
-    *   Comprehensive list of 66+ specialized components with Prop interfaces.
+    *   Governance baseline for 80+ components and Base/Domain boundaries.
 
 ## 2. 实施与指南 (Implementation & Guides)
 
 *   **V3.0 Complete Summary**: [ArtDeco V3.0 Complete Summary](../reports/ARTDECO_V3_COMPLETE_SUMMARY.md)
     *   Comprehensive summary of the V3.0 design system upgrade.
-*   **v2.0 Final Completion Report**: [ArtDeco v2.0 Final Completion Report](../reports/ARTDECO_V2_FINAL_COMPLETION_REPORT.md)
-    *   Definitive summary of the v2.0 implementation status.
+*   **历史/归档**: [ArtDeco v2.0 Final Completion Report](../reports/ARTDECO_V2_FINAL_COMPLETION_REPORT.md)
+    *   Historical archive reference only, not active governance baseline.
 *   **Component Guide**: [ArtDeco Component Development Guide](./ARTDECO_COMPONENT_GUIDE.md)
     *   Coding standards and patterns for creating new ArtDeco components.
 *   **Grid System**: [ArtDeco Grid Quick Reference](./ARTDECO_GRID_QUICK_REFERENCE.md)
@@ -41,4 +41,4 @@ This document serves as the authoritative entry point for the ArtDeco v2.0 Desig
     *   Recent updates to button heights, card ratios, and spacing.
 
 ---
-**Maintenance**: All new ArtDeco documentation must be indexed here. Obsolete documents are moved to `docs/archive/artdeco/`.
+**Maintenance**: All new ArtDeco documentation must be indexed here. Active guidance must stay aligned to the ArtDeco v3/v3.1 Governance Baseline. Obsolete documents are moved to `docs/archive/artdeco/`.

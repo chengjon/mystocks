@@ -4,10 +4,8 @@
 提供WebSocket实时行情推送功能，支持股票、基金、指数等
 """
 
-import logging
 import asyncio
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Dict, List, Optional
 import json
 import websockets
 

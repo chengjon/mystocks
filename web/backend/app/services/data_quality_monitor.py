@@ -596,7 +596,7 @@ class DataQualityMonitor:
                     await callback(alert)
                 else:
                     callback(alert)
-            except Exception as e:
+            except Exception:
                 logger.error("Alert callback failed: %(e)s")
 
     def add_alert_callback(self, callback: Callable[[DataQualityAlert], None]) -> None:

@@ -24,7 +24,7 @@ except ImportError:
 
 from src.algorithms.base import AlgorithmMetadata, GPUAcceleratedAlgorithm
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
+from src.gpu.core.hardware_abstraction import GPUResourceManager
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -98,7 +98,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"svm_{self.metadata.name}")
                 logger.info("SVM GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -204,7 +204,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("SVM training completed - Accuracy: %(accuracy)s")
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("SVM training failed: %(e)s")
             raise
 
@@ -268,7 +268,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
 
             return prediction_result
 
-        except Exception as e:
+        except Exception:
             logger.error("SVM prediction failed: %(e)s")
             raise
 
@@ -314,7 +314,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("SVM evaluation failed: %(e)s")
             raise
 
@@ -352,7 +352,7 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("SVM model saved to %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save SVM model: %(e)s")
             return False
 
@@ -373,6 +373,6 @@ class SVMAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("SVM model loaded from %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load SVM model: %(e)s")
             return False

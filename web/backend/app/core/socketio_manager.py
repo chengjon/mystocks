@@ -15,7 +15,7 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Set
 
 import structlog
@@ -54,10 +54,10 @@ class ConnectionManager:
         self.active_connections[sid] = {
             "sid": sid,
             "user_id": user_id,
-            "connected_at": datetime.utcnow(),
+            "connected_at": datetime.now(timezone.utc),
             "rooms": set(),
             "message_count": 0,
-            "last_activity": datetime.utcnow(),
+            "last_activity": datetime.now(timezone.utc),
         }
 
         if user_id:
@@ -159,7 +159,7 @@ class ConnectionManager:
     def update_activity(self, sid: str) -> None:
         """更新连接活动时间"""
         if sid in self.active_connections:
-            self.active_connections[sid]["last_activity"] = datetime.utcnow()
+            self.active_connections[sid]["last_activity"] = datetime.now(timezone.utc)
 
     def increment_message_count(self, sid: str) -> None:
         """增加消息计数"""
@@ -172,7 +172,7 @@ class ConnectionManager:
             "total_connections": len(self.active_connections),
             "total_users": len(self.user_connections),
             "total_rooms": len(self.room_members),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
@@ -265,7 +265,7 @@ class MySocketIONamespace(AsyncNamespace):
                 {
                     "room": room,
                     "sid": sid,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 to=room,
                 skip_sid=sid,
@@ -300,7 +300,7 @@ class MySocketIONamespace(AsyncNamespace):
                 {
                     "room": room,
                     "sid": sid,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 to=room,
             )
@@ -411,7 +411,7 @@ class MySocketIONamespace(AsyncNamespace):
                     {
                         "symbol": symbol,
                         "status": "subscribed",
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     },
                     to=sid,
                 )
@@ -465,7 +465,7 @@ class MySocketIONamespace(AsyncNamespace):
                     {
                         "symbol": symbol,
                         "status": "unsubscribed",
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     },
                     to=sid,
                 )
@@ -539,7 +539,7 @@ class MySocketIONamespace(AsyncNamespace):
                     {
                         "symbol": symbol,
                         "fields": fields,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     },
                     to=sid,
                 )
@@ -666,7 +666,7 @@ class MySocketIOManager:
                 {
                     "symbol": symbol,
                     "data": data,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 to=f"stream_{symbol}",
             )

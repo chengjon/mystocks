@@ -154,7 +154,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取资金流向数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -272,7 +272,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取ETF数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -362,7 +362,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取龙虎榜数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -460,7 +460,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取板块资金流向失败: %(e)s")
             return pd.DataFrame()
 
@@ -517,7 +517,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取分红配送数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -590,7 +590,7 @@ class EastMoneyAdapter:
 
             return temp_df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取大宗交易数据失败: %(e)s")
             return pd.DataFrame()
 

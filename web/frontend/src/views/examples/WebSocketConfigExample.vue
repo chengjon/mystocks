@@ -69,6 +69,7 @@
           v-model="selectedRoute"
           placeholder="请选择路由"
           style="width: 100%"
+          clearable
         >
           <el-option
             v-for="info in allWebSocketRoutes"
@@ -122,7 +123,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useWebSocketWithConfig } from '@/composables/useWebSocketWithConfig'
-import type { RouteName } from '@/config/pageConfig'
+import type { PageConfig } from '@/config/pageConfig'
 
 // WebSocket功能
 const {
@@ -144,10 +145,10 @@ const {
 const allWebSocketRoutes = ref(getAllWebSocketChannels())
 
 // 选中的路由
-const selectedRoute = ref<RouteName | null>(null)
+const selectedRoute = ref<string>('')
 
 // 订阅处理器存储
-const unsubscribers = ref<Map<RouteName, () => void>>(new Map())
+const unsubscribers = ref<Map<string, () => void>>(new Map())
 const unsubscribeAll = ref<(() => void) | null>(null)
 
 /**
@@ -214,7 +215,7 @@ const unsubscribeFromRoute = () => {
 /**
  * 取消订阅指定路由
  */
-const unsubscribeRoute = (routeName: RouteName) => {
+const unsubscribeRoute = (routeName: string) => {
   const unsubscribe = unsubscribers.value.get(routeName)
 
   if (!unsubscribe) {

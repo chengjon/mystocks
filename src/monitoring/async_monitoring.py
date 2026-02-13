@@ -282,7 +282,7 @@ class MonitoringEventWorker:
         try:
             # 简化版本，实际应该从Redis队列获取
             pass
-        except Exception as e:
+        except Exception:
             logger.error("❌ 获取事件失败: %(e)s")
         return events
 
@@ -301,7 +301,7 @@ class MonitoringEventWorker:
             from src.monitoring.infrastructure.postgresql_async import postgres_async
 
             loop.run_until_complete(postgres_async.initialize())
-        except Exception as e:
+        except Exception:
             logger.error("❌ 初始化异步DB失败: %(e)s")
 
         while self._running:
@@ -332,7 +332,7 @@ class MonitoringEventWorker:
 
             loop.run_until_complete(postgres_async.close())
             loop.close()
-        except Exception as e:
+        except Exception:
             logger.error("❌ 关闭循环失败: %(e)s")
 
     async def _flush_events_async(self):
@@ -369,7 +369,7 @@ class MonitoringEventWorker:
                     except ImportError:
                         logger.warning("⚠️ postgres_async_v3 不可用，跳过 metric_update 处理")
                         failed_count += len(events)
-                    except Exception as e:
+                    except Exception:
                         logger.warning("⚠️ 批量写入健康度评分失败: %(e)s")
                         failed_count += len(events)
                 else:

@@ -14,7 +14,7 @@ Features:
 
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
@@ -259,7 +259,7 @@ class TDengineManager:
             return False
 
         try:
-            ts = timestamp or datetime.utcnow()
+            ts = timestamp or datetime.now(timezone.utc)
             data_json = json.dumps(data, ensure_ascii=False)
 
             # 生成子表名
@@ -272,8 +272,8 @@ class TDengineManager:
                     '{ts.isoformat()}',
                     '{data_json}',
                     0,
-                    '{datetime.utcnow().isoformat()}',
-                    '{datetime.utcnow().isoformat()}'
+                    '{datetime.now(timezone.utc).isoformat()}',
+                    '{datetime.now(timezone.utc).isoformat()}'
                 )
             """
 
@@ -316,7 +316,7 @@ class TDengineManager:
                 where_clause += f" AND timeframe = '{timeframe}'"
 
             # 添加时间范围条件
-            start_time = (datetime.utcnow() - timedelta(days=days)).isoformat()
+            start_time = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
             where_clause += f" AND ts >= '{start_time}'"
 
             sql = f"""
@@ -360,7 +360,7 @@ class TDengineManager:
             return 0
 
         try:
-            cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+            cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
 
             sql = f"""
                 DELETE FROM market_data_cache
@@ -399,7 +399,7 @@ class TDengineManager:
                 return {
                     "total_records": total_records,
                     "unique_symbols": unique_symbols,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
         except Exception as e:
@@ -491,11 +491,11 @@ class TDengineManager:
             sql = f"""
                 UPDATE market_data_cache
                 SET hit_count = hit_count + 1,
-                    updated_at = '{datetime.utcnow().isoformat()}'
+                    updated_at = '{datetime.now(timezone.utc).isoformat()}'
                 WHERE symbol = '{symbol}' AND data_type = '{data_type}'
             """
             self._execute(sql)
-        except Exception as e:
+        except Exception:
             logger.debug("更新命中次数失败: {str(e)}")
 
     def close(self):
@@ -544,7 +544,7 @@ def get_tdengine_manager() -> Optional[TDengineManager]:
             if not _tdengine_manager.initialize():
                 logger.warning("⚠️ TDengine初始化失败 - 系统将在无TDengine模式下运行")
                 _tdengine_manager = None
-        except Exception as e:
+        except Exception:
             logger.error("❌ TDengine初始化异常: %(e)s - 系统将在无TDengine模式下运行")
             _tdengine_manager = None
 

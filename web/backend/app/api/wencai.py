@@ -413,7 +413,7 @@ async def _refresh_query_task(query_name: str, pages: int = 1):
 
         logger.info("[Background] Refresh completed for {query_name}: " f"{result['new_records']} new records")
 
-    except Exception as e:
+    except Exception:
         logger.error("[Background] Refresh failed for {query_name}: {str(e)}", exc_info=True)
     finally:
         db.close()

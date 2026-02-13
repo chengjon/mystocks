@@ -61,7 +61,7 @@ class RedisManager:
             # 测试连接
             self._redis_client.ping()
             logger.info("✅ Redis connected: {settings.redis_host}:{settings.redis_port}/{settings.redis_db}")
-        except Exception as e:
+        except Exception:
             logger.error("❌ Redis connection failed: %(e)s")
             self._redis_client = None
 
@@ -86,7 +86,7 @@ class RedisManager:
         conn = self.client
         try:
             yield conn
-        except Exception as e:
+        except Exception:
             logger.error("Redis operation failed: %(e)s")
             raise
 
@@ -100,7 +100,7 @@ class RedisManager:
         try:
             self.client.ping()
             return True
-        except Exception as e:
+        except Exception:
             logger.warning("Redis health check failed: %(e)s")
             return False
 
@@ -121,7 +121,7 @@ class RedisManager:
         try:
             self.client.flushdb(asynchronous=asynchronous)
             logger.warning("Redis DB {settings.redis_db} flushed")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to flush Redis DB: %(e)s")
 
 

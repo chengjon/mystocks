@@ -87,6 +87,63 @@ class ConfigurationException(Exception):
         logger.error("配置异常：%(detail)s")
 
 
+# 速率限制异常
+class RateLimitException(BusinessException):
+    """速率限制异常 - 请求过于频繁"""
+
+    def __init__(self, detail: str = "请求过于频繁，请稍后重试", retry_after: Optional[int] = None):
+        self.retry_after = retry_after
+        headers = {}
+        if retry_after:
+            headers["Retry-After"] = str(retry_after)
+        super().__init__(
+            detail=detail,
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            error_code="RATE_LIMIT_EXCEEDED",
+            headers=headers if headers else None,
+        )
+
+
+# 数据库异常
+class DatabaseException(BusinessException):
+    """数据库操作异常"""
+
+    def __init__(self, detail: str = "数据库操作失败", operation: Optional[str] = None):
+        error_detail = f"数据库错误：{detail}"
+        if operation:
+            error_detail = f"数据库操作 '{operation}' 失败：{detail}"
+        super().__init__(
+            detail=error_detail,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            error_code="DATABASE_ERROR",
+        )
+
+
+# 外部服务异常
+class ExternalServiceException(BusinessException):
+    """外部服务调用异常"""
+
+    def __init__(self, service: str, detail: str = "外部服务不可用"):
+        error_detail = f"外部服务 '{service}' 错误：{detail}"
+        super().__init__(
+            detail=error_detail,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            error_code="EXTERNAL_SERVICE_ERROR",
+        )
+
+
+# 缓存异常
+class CacheException(BusinessException):
+    """缓存操作异常"""
+
+    def __init__(self, detail: str = "缓存操作失败"):
+        super().__init__(
+            detail=detail,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            error_code="CACHE_ERROR",
+        )
+
+
 # 全局通用异常处理（挂载到FastAPI app）
 def register_exception_handlers(app):
     """
@@ -136,6 +193,24 @@ def register_exception_handlers(app):
                 "path": str(request.url.path),
                 "timestamp": None,
             },
+        )
+
+    @app.exception_handler(RateLimitException)
+    async def rate_limit_exception_handler(request, exc: RateLimitException):
+        """处理速率限制异常"""
+        headers = {}
+        if exc.retry_after:
+            headers["Retry-After"] = str(exc.retry_after)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "code": exc.error_code,
+                "message": exc.detail,
+                "data": None,
+                "path": str(request.url.path),
+                "timestamp": None,
+            },
+            headers=headers if headers else None,
         )
 
     @app.exception_handler(HTTPException)
@@ -195,3 +270,23 @@ def raise_forbidden(detail: str = "权限不足"):
 def raise_unauthorized(detail: str = "认证失败"):
     """便捷函数：抛出认证失败异常"""
     raise UnauthorizedException(detail=detail)
+
+
+def raise_rate_limited(detail: str = "请求过于频繁", retry_after: Optional[int] = None):
+    """便捷函数：抛出速率限制异常"""
+    raise RateLimitException(detail=detail, retry_after=retry_after)
+
+
+def raise_database_error(detail: str = "数据库操作失败", operation: Optional[str] = None):
+    """便捷函数：抛出数据库异常"""
+    raise DatabaseException(detail=detail, operation=operation)
+
+
+def raise_external_service_error(service: str, detail: str = "外部服务不可用"):
+    """便捷函数：抛出外部服务异常"""
+    raise ExternalServiceException(service=service, detail=detail)
+
+
+def raise_cache_error(detail: str = "缓存操作失败"):
+    """便捷函数：抛出缓存异常"""
+    raise CacheException(detail=detail)

@@ -6,7 +6,7 @@ deregistration, and querying of data sources.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -94,7 +94,7 @@ class DataSourceRegistry:
             self._redis = redis.from_url(self._redis_url, decode_responses=True)
             await self._redis.ping()
             logger.info("Connected to Redis for DataSourceRegistry")
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to connect to Redis: %(e)s, using local cache only")
 
     async def disconnect(self) -> None:
@@ -123,7 +123,7 @@ class DataSourceRegistry:
 
             logger.info("Registered data source: {config.source_id")
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to register data source {config.source_id}: %(e)s")
             return False
 
@@ -148,7 +148,7 @@ class DataSourceRegistry:
 
             logger.info("Unregistered data source: %(source_id)s")
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to unregister data source %(source_id)s: %(e)s")
             return False
 
@@ -172,7 +172,7 @@ class DataSourceRegistry:
                     config = DataSourceConfig.model_validate_json(config_json)
                     self._local_cache[source_id] = config
                     return config
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to get config from Redis: %(e)s")
 
         return None
@@ -224,7 +224,7 @@ class DataSourceRegistry:
                     await self._redis.hset("datasource:health_err", source_id, report.error)
 
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to update health status: %(e)s")
             return False
 
@@ -252,7 +252,7 @@ class DataSourceRegistry:
         return HealthReport(
             source_id=source_id,
             status=status,
-            last_check=last_check or datetime.utcnow(),
+            last_check=last_check or datetime.now(timezone.utc),
         )
 
     async def load_from_redis(self) -> None:
@@ -266,9 +266,9 @@ class DataSourceRegistry:
                 try:
                     config = DataSourceConfig.model_validate_json(config_json)
                     self._local_cache[source_id] = config
-                except Exception as e:
+                except Exception:
                     logger.error("Failed to parse config for %(source_id)s: %(e)s")
 
             logger.info("Loaded {len(self._local_cache)} data sources from Redis")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load from Redis: %(e)s")

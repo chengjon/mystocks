@@ -16,7 +16,7 @@ Author: MyStocks Project
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 
 from fastapi import WebSocket
@@ -78,11 +78,11 @@ class ConnectionManager:
 
         # Store connection
         self.active_connections[connection_id] = websocket
-        self.last_heartbeat[connection_id] = datetime.utcnow()
+        self.last_heartbeat[connection_id] = datetime.now(timezone.utc)
 
         # Store metadata
         self.connection_metadata[connection_id] = {
-            "connected_at": datetime.utcnow(),
+            "connected_at": datetime.now(timezone.utc),
             "user_id": user_id,
             "remote_addr": websocket.client.host if websocket.client else None,
         }
@@ -102,7 +102,7 @@ class ConnectionManager:
 
         # Send welcome message
         await self.send_personal_message(
-            {"type": "connected", "connection_id": connection_id, "timestamp": datetime.utcnow().isoformat()},
+            {"type": "connected", "connection_id": connection_id, "timestamp": datetime.now(timezone.utc).isoformat()},
             connection_id,
         )
 
@@ -187,7 +187,7 @@ class ConnectionManager:
             try:
                 websocket = self.active_connections[connection_id]
                 await websocket.send_json(message)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to send message to %(connection_id)s: %(e)s")
                 self.disconnect(connection_id)
         else:
@@ -220,7 +220,7 @@ class ConnectionManager:
             try:
                 websocket = self.active_connections[connection_id]
                 await websocket.send_json(message)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to broadcast to %(connection_id)s: %(e)s")
                 failed_connections.append(connection_id)
 
@@ -263,7 +263,7 @@ class ConnectionManager:
             connection_id: Connection identifier
         """
         if connection_id in self.active_connections:
-            self.last_heartbeat[connection_id] = datetime.utcnow()
+            self.last_heartbeat[connection_id] = datetime.now(timezone.utc)
 
     async def _heartbeat_checker(self):
         """
@@ -271,7 +271,7 @@ class ConnectionManager:
         """
         while self.active_connections:
             try:
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 stale_connections = []
 
                 for connection_id, last_heartbeat in self.last_heartbeat.items():
@@ -290,7 +290,7 @@ class ConnectionManager:
             except asyncio.CancelledError:
                 logger.info("Heartbeat checker task cancelled")
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error in heartbeat checker: %(e)s")
                 await asyncio.sleep(self.heartbeat_interval)
 

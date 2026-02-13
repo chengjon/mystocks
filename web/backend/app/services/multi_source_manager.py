@@ -61,7 +61,7 @@ class MultiSourceManager:
             self._adapters[DataSourceType.EASTMONEY] = eastmoney
             logger.info("Initialized EastMoney adapter")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to initialize EastMoney adapter: %(e)s")
 
         try:
@@ -70,7 +70,7 @@ class MultiSourceManager:
             self._adapters[DataSourceType.CNINFO] = cninfo
             logger.info("Initialized Cninfo adapter")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to initialize Cninfo adapter: %(e)s")
 
     def _build_category_mapping(self):
@@ -414,7 +414,7 @@ class MultiSourceManager:
                     }
                 )
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to get health status for {source_type.value}: %(e)s")
 
         return statuses

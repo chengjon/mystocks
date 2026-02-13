@@ -1,11 +1,9 @@
 """
 股指期货数据路由 (Futures)
 """
-from datetime import datetime
 from typing import Any, Dict
 from fastapi import APIRouter, Depends, Query, HTTPException
 from app.core.security import User, get_current_user
-from app.core.exceptions import ValidationException
 
 router = APIRouter()
 

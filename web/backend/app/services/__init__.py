@@ -209,7 +209,7 @@ class IntegratedServices:
                 "total_risk_calculations": result["count"] if result else 0,
                 "last_calculation_time": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             return {}
 
     async def _get_market_data_status(self) -> Dict:
@@ -222,7 +222,7 @@ class IntegratedServices:
                 "cache_size": cache_stats["cache_size"],
                 "last_update": cache_stats["last_update"],
             }
-        except Exception as e:
+        except Exception:
             return {}
 
     async def _get_trading_data_status(self) -> Dict:
@@ -236,7 +236,7 @@ class IntegratedServices:
                 "trades_count": 0,
                 "last_update": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             return {}
 
     async def _get_analysis_data_status(self) -> Dict:
@@ -251,7 +251,7 @@ class IntegratedServices:
                 "trends_count": 0,
                 "last_update": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             return {}
 
 

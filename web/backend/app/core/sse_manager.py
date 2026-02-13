@@ -174,7 +174,7 @@ class SSEConnectionManager:
             except asyncio.TimeoutError:
                 logger.warning("Client queue full: %(client_id)s")
                 failed_clients.append(client_id)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to queue event for client %(client_id)s: %(e)s")
                 failed_clients.append(client_id)
 
@@ -202,7 +202,7 @@ class SSEConnectionManager:
             except asyncio.TimeoutError:
                 logger.warning("Client queue full: %(client_id)s")
                 await self.disconnect(channel, client_id)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to send event to client %(client_id)s: %(e)s")
 
     def get_connection_count(self, channel: Optional[str] = None) -> int:

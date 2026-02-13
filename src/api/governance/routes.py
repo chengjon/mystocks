@@ -6,7 +6,7 @@ and asset management.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
@@ -186,7 +186,7 @@ async def get_lineage_graph(
 
     # This would query the lineage tracker
     # For now, return placeholder data
-    return LineageGraphResponse(nodes=[], edges=[], queried_at=datetime.utcnow())
+    return LineageGraphResponse(nodes=[], edges=[], queried_at=datetime.now(timezone.utc))
 
 
 @router.get("/lineage/{node_id}/impact", response_model=ImpactAnalysisResponse)
@@ -239,8 +239,8 @@ async def create_asset(request: AssetCreateRequest) -> AssetResponse:
         description=request.description,
         owner=request.owner,
         tags=request.tags,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
 

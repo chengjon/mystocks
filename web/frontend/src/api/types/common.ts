@@ -1,5 +1,5 @@
 // Auto-generated types for common domain
-// Generated at: 2026-02-07T23:04:25.798282
+// Generated at: 2026-02-13T09:26:31.501955
 
 export interface APIResponse {
   success?: boolean;

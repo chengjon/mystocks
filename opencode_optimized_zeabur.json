@@ -1,0 +1,226 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "opencode",
+  "autoupdate": "notify",
+  "tui": {
+    "scroll_acceleration": {
+      "enabled": true
+    },
+    "diff_style": "auto"
+  },
+  "server": {
+    "port": 11000,
+    "mdns": true
+  },
+  "tools": {
+    "write": true,
+    "bash": true
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      ".ruff_cache/**",
+      ".pytest_cache/**",
+      "__pycache__/**"
+    ]
+  },
+  "plugin": [
+    "oh-my-opencode@3.2.3",
+    "@tarquinen/opencode-dcp@latest"
+  ],
+  "instructions": [
+    ".cursor/rules/*.md",
+    "CLAUDE.md"
+  ],
+  "enabled_providers": [
+    "cliproxyapi-claude",
+    "cliproxyapi-gemini",
+    "cliproxyapi-oai",
+    "cliproxyapi"
+  ],
+  "model": "cliproxyapi-claude/claude-sonnet-4-5-thinking",
+  "small_model": "cliproxyapi-gemini/gemini-3-flash",
+  "provider": {
+    "cliproxyapi-claude": {
+      "npm": "@ai-sdk/anthropic",
+      "name": "cliproxyapi-claude",
+      "options": {
+        "baseURL": "https://johncpa.zeabur.app/v1",
+        "apiKey": "sk-75c38ba2fcad4b09936aeb12e291db08",
+        "timeout": 300000
+      },
+      "models": {
+        "claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking",
+          "thinking": true,
+          "attachment": true,
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budgetTokens": 16000
+            }
+          },
+          "variants": {
+            "none": { "thinking": { "type": "disabled" } },
+            "low": { "thinking": { "budgetTokens": 4000 } },
+            "medium": { "thinking": { "budgetTokens": 16000 } },
+            "max": { "thinking": { "budgetTokens": 64000 } }
+          }
+        },
+        "claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking",
+          "thinking": true,
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "options": {
+            "thinking": {
+              "type": "enabled",
+              "budgetTokens": 16000
+            }
+          }
+        },
+        "kiro-claude-opus-4-5": { "name": "Kiro Claude Opus 4.5", "attachment": true },
+        "kiro-claude-opus-4-6": { "name": "Kiro Claude Opus 4.6", "attachment": true },
+        "kiro-claude-opus-4-6-agentic": { "name": "Kiro Claude Opus 4.6 Agentic", "attachment": true },
+        "kiro-claude-sonnet-4-5": { "name": "Kiro Claude Sonnet 4.5" },
+        "claude-sonnet-4-5": { "name": "Claude Sonnet 4.5" },
+        "kiro-claude-sonnet-4-agentic": { "name": "Kiro Claude Sonnet 4 Agentic" },
+        "kiro-claude-opus-4-5-agentic": { "name": "Kiro Claude Opus 4.5 Agentic" },
+        "kiro-claude-haiku-4-5-agentic": { "name": "Kiro Claude Haiku 4.5 Agentic" },
+        "kiro-claude-sonnet-4-5-agentic": { "name": "Kiro Claude Sonnet 4.5 Agentic" }
+      }
+    },
+    "cliproxyapi-gemini": {
+      "npm": "@ai-sdk/google",
+      "name": "cliproxyapi-gemini",
+      "options": {
+        "baseURL": "https://johncpa.zeabur.app/v1beta",
+        "apiKey": "sk-75c38ba2fcad4b09936aeb12e291db08",
+        "timeout": 300000
+      },
+      "models": {
+        "gemini-3-pro-high": {
+          "name": "Gemini 3 Pro High",
+          "thinking": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro Preview",
+          "thinking": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash",
+          "thinking": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview",
+          "thinking": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          }
+        }
+      }
+    },
+    "cliproxyapi-oai": {
+      "npm": "@ai-sdk/openai",
+      "name": "cliproxyapi-oai",
+      "options": {
+        "baseURL": "https://johncpa.zeabur.app/v1",
+        "apiKey": "sk-75c38ba2fcad4b09936aeb12e291db08",
+        "setCacheKey": true,
+        "timeout": 300000
+      },
+      "models": {
+        "gmn-5.3-codex": {
+          "name": "GMN 5.3 Codex",
+          "thinking": true,
+          "limit": {
+            "context": 400000,
+            "output": 128000
+          },
+          "options": {
+            "reasoningEffort": "medium"
+          }
+        },
+        "deepseek-v3.2-reasoner": {
+          "name": "DeepSeek V3.2 Reasoner",
+          "thinking": true,
+          "limit": {
+            "context": 64000,
+            "output": 8192
+          }
+        }
+      }
+    },
+    "cliproxyapi": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "cliproxyapi",
+      "options": {
+        "baseURL": "https://johncpa.zeabur.app/v1",
+        "apiKey": "sk-75c38ba2fcad4b09936aeb12e291db08",
+        "timeout": 300000
+      },
+      "models": {
+        "kimi-k2.5": {
+          "name": "Kimi K2.5",
+          "thinking": true,
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          }
+        },
+        "glm-4.7": {
+          "name": "GLM-4.7",
+          "thinking": true,
+          "limit": {
+            "context": 204800,
+            "output": 131072
+          }
+        },
+        "minimax-m2.1": {
+          "name": "Minimax M2.1",
+          "limit": {
+            "context": 204800,
+            "output": 131072
+          }
+        }
+      }
+    }
+  }
+}

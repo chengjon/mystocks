@@ -10,7 +10,7 @@ Test Suite for Sync Processor
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 
 from app.models.sync_message import (
@@ -312,7 +312,7 @@ class TestSyncProcessor:
         session = db_manager.get_session()
         try:
             msg = session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
-            msg.next_retry_at = datetime.utcnow() - timedelta(seconds=1)
+            msg.next_retry_at = datetime.now(timezone.utc) - timedelta(seconds=1)
             session.commit()
         finally:
             session.close()
@@ -424,7 +424,7 @@ class TestSyncProcessorEdgeCases:
         fake_message.id = 99999
         fake_message.operation_type = OperationType.INSERT
         fake_message.sync_direction = SyncDirection.POSTGRESQL_TO_TDENGINE
-        fake_message.created_at = datetime.utcnow()
+        fake_message.created_at = datetime.now(timezone.utc)
 
         result = processor._process_single_message(fake_message)
 

@@ -16,7 +16,7 @@ import hashlib
 import json
 import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from typing import Dict, List, Optional, Union
 
@@ -79,12 +79,12 @@ class IndicatorCache:
         cache_entry = self.cache[cache_key]
 
         # 检查是否过期
-        if (datetime.utcnow() - cache_entry["timestamp"]).seconds > self.ttl:
+        if (datetime.now(timezone.utc) - cache_entry["timestamp"]).seconds > self.ttl:
             self.remove(cache_key)
             return None
 
         # 更新访问时间
-        self.access_times[cache_key] = datetime.utcnow()
+        self.access_times[cache_key] = datetime.now(timezone.utc)
         return cache_entry["data"]
 
     def set(self, cache_key: str, data: Dict):
@@ -93,8 +93,8 @@ class IndicatorCache:
         if len(self.cache) >= self.max_size:
             self._cleanup_old_entries()
 
-        self.cache[cache_key] = {"data": data, "timestamp": datetime.utcnow()}
-        self.access_times[cache_key] = datetime.utcnow()
+        self.cache[cache_key] = {"data": data, "timestamp": datetime.now(timezone.utc)}
+        self.access_times[cache_key] = datetime.now(timezone.utc)
 
     def remove(self, cache_key: str):
         """移除缓存条目"""
@@ -137,7 +137,7 @@ class RateLimiter:
 
     def is_allowed(self, key: str, limit: int, window: int) -> bool:
         """检查是否允许请求"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # 清理过期的请求记录
         self.requests[key] = [req_time for req_time in self.requests[key] if (now - req_time).seconds < window]
@@ -500,7 +500,7 @@ async def calculate_indicators(
         # Get OHLCV data with error handling
         try:
             df, ohlcv_data = data_service.get_daily_ohlcv(symbol=request.symbol, start_date=start_dt, end_date=end_dt)
-        except StockDataNotFoundError as e:
+        except StockDataNotFoundError:
             raise NotFoundException(resource="股票数据", identifier="查询条件")
         except InvalidDateRangeError as e:
             raise ValidationException(detail=f"无效日期范围: {str(e)}", field="date_range")

@@ -153,7 +153,7 @@ async def validate_strategy(
         logger.info("策略验证完成: {strategy.name")
         return validation_result
 
-    except Exception as e:
+    except Exception:
         logger.error("策略验证失败: %(e)s")
         raise
 
@@ -184,7 +184,7 @@ async def compare_strategies(
             try:
                 result = await self.validate_strategy(strategy, market_data)
                 validation_results[strategy.name] = result
-            except Exception as e:
+            except Exception:
                 logger.error("策略 {strategy.name} 验证失败: %(e)s")
                 validation_results[strategy.name] = None
 
@@ -205,7 +205,7 @@ async def compare_strategies(
             "benchmark_comparison": self._calculate_benchmark_comparison(validation_results, benchmark_data),
         }
 
-    except Exception as e:
+    except Exception:
         logger.error("策略对比失败: %(e)s")
         raise
 
@@ -272,7 +272,7 @@ def _aggregate_validation_results(self, strategy_name: str, period_results: List
             risk_adjusted_score=risk_adjusted_score,
         )
 
-    except Exception as e:
+    except Exception:
         logger.error("验证结果聚合失败: %(e)s")
         raise
 
@@ -428,7 +428,7 @@ def _calculate_risk_adjusted_score(
 
         return max(0, min(1, score))  # 确保在[0,1]范围内
 
-    except Exception as e:
+    except Exception:
         logger.warning("风险调整分数计算失败: %(e)s")
         return 0.5
 
@@ -455,7 +455,7 @@ def _calculate_statistical_significance(self, returns: List[float]) -> float:
 
         return 1 - p_value  # 显著性水平
 
-    except Exception as e:
+    except Exception:
         logger.warning("统计显著性计算失败: %(e)s")
         return 0.5
 

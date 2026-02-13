@@ -11,7 +11,7 @@ Test Suite for Sync Message Table and Database Manager
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.models.sync_message import (
     SyncMessage,
@@ -432,7 +432,7 @@ class TestSyncDatabaseManager:
         session = manager.get_session()
         try:
             msg = session.query(SyncMessage).filter(SyncMessage.id == message1.id).first()
-            msg.next_retry_at = datetime.utcnow() - timedelta(seconds=1)
+            msg.next_retry_at = datetime.now(timezone.utc) - timedelta(seconds=1)
             session.commit()
         finally:
             session.close()
@@ -553,7 +553,7 @@ class TestSyncDatabaseManager:
         session = manager.get_session()
         try:
             msg = session.query(SyncMessage).filter(SyncMessage.id == message.id).first()
-            msg.completed_at = datetime.utcnow() - timedelta(days=8)
+            msg.completed_at = datetime.now(timezone.utc) - timedelta(days=8)
             session.commit()
         finally:
             session.close()

@@ -43,6 +43,38 @@ MyStocks 使用 Claude/OpenCode 作为交互式开发助手，协助完成代码
 - 仅支持桌面端 Web（最小分辨率 1280x720）
 - 禁止移动端/平板适配，禁止添加 `@media (max-width: ...)` 等响应式规则
 
+### 1.1.1 项目定位与设计边界约束 (Project Positioning and Design Boundary Constraints)
+
+**核心定位**：MyStocks 是面向**个人/小型量化投资者**的量化交易分析和管理工具，**不是**面向大型企业的多用户平台。
+
+**部署模式**：
+- 个体本地化部署为主（单用户或小团队）
+- 非云服务/SaaS 模式
+- 无需高并发、多租户、分布式锁等企业级特性
+
+**设计边界约束（严格执行）**：
+
+| ✅ 适合本系统 | ❌ 不适合本系统（过度设计） |
+|-------------|--------------------------|
+| 单用户/小团队认证 | 复杂的 RBAC 权限系统 |
+| 基础的安全防护 | 企业级安全审计日志 |
+| 简单的本地缓存 | 分布式缓存一致性 |
+| 直接数据库连接 | 连接池复杂治理 |
+| 功能性 API | API 网关/限流熔断 |
+| 本地文件存储 | 分布式文件系统 |
+| 简单定时任务 | 分布式任务调度 |
+
+**新增功能评估原则**：
+1. **必要性**：是否解决实际用户痛点？
+2. **简洁性**：能否用更简单的方式实现？
+3. **维护成本**：是否增加测试/运维负担？
+4. **适用性**：是否符合"个人本地化部署"场景？
+
+**违反此约束的后果**：
+- 增加代码复杂度和维护成本
+- 引入不必要的依赖和测试负担
+- 偏离项目核心目标
+
 ### Git 分支检测与工作流程 (Git Branch Detection and Workflow)
 
 **关键要求**: 根据当前 git 分支确定工作流程。
@@ -145,6 +177,7 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 本仓库没有固定的 QNEW/QPLAN 等快捷指令，建议流程：
 
+0. **环境稳定性检查**: 开发前在 `~/.codex/config.toml` 中禁用不必要的 MCP 服务器（如后端任务禁用浏览器工具），防止工具集过大导致连接中断。
 1. 读取 `AGENTS.md` 与相关 `docs/`，确认约束与现有实现
 2. 以最小修改完成需求，避免顺手重构
 3. 运行必要的验证命令并记录结果
@@ -171,9 +204,16 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md`
   - `docs/reports/TYPESCRIPT_FIX_REFLECTION.md`
 - BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
-- 多 CLI/Worktree 协作遵循：
-  - `docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
-  - `docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md`
+- 多 CLI/Worktree 协作核心索引 (必读):
+  - **`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册)**
+  - 链接文档：
+    - `docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md` (主 CLI 规范)
+    - `docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md` (Worker CLI 规范)
+    - `docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md` (冲突预防)
+- **2026Q1 物理布局与治理指引**:
+  - **Zero-Root-Config**: 禁止在根目录新增工具配置，所有配置必须入库 `config/` 对应子目录。
+  - **Logic Gravity**: 业务逻辑下沉 `src/`，根目录 `.py` 文件仅作为 Re-export 外壳。
+  - **API Standardization**: 所有新 API 必须通过 `web/backend/app/api/VERSION_MAPPING.py` 注册，严禁在 `main.py` 中硬编码路由前缀。
 
 ### 3.3 Claude 问题排查指南 (Claude Troubleshooting Guide)
 
@@ -203,10 +243,25 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 ### 4.2 Claude 相关风险提示 (Claude-related Risk Warnings)
 
 - Claude 输出可能不准确，所有关键修改需通过实际命令验证
-- 声称“已修复/已通过”前必须有可复现的命令输出
+- 声称"已修复/已通过"前必须有可复现的命令输出
 - 保持最小变更，不做未请求的重构或回滚用户改动
 - Web 仅桌面端支持，避免加入移动端响应式样式
 
+### 4.3 Claude 行为纪律 (Claude Behavioral Discipline)
+
+**问题处理原则：解决问题，不掩盖问题。**
+
+- 遇到质量门（quality gate）、测试失败、错误阈值等阻塞时，必须分析根因并提出修复方案，禁止通过调整阈值、禁用检查等方式绕过
+- 对于任何配置变更、阈值调整、规则修改，必须先向用户报告原因和方案，获得明确批准后才能动手修改
+- 禁止擅自做决定：涉及项目规范、配置、流程的改动，一律先报告、再审批、后执行
+
+**TS/代码错误分析原则：**
+
+- 遇到大量 TypeScript 或代码错误时，必须先分析错误来源：
+  - 若为 AI 写代码时顺手生成的错误 → 直接修复源文件
+  - 若为自动生成代码（如类型生成器、代码生成脚本）产生的错误 → 追溯到生成器/模板源头修复
+- 禁止不分析来源就批量修改或忽略错误
+
 ---
 
-**Last updated**: 2026-02-01
+**Last updated**: 2026-02-12

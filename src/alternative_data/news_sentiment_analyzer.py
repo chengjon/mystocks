@@ -125,7 +125,7 @@ async def collect_news(self, hours_back: int = 24) -> List[NewsArticle]:
                 all_articles.extend(articles)
                 logger.info("从 {source_config['name']} 采集到 {len(articles)} 篇文章")
 
-            except Exception as e:
+            except Exception:
                 logger.error("从 {source_config['name']} 采集失败: %(e)s")
                 continue
 
@@ -202,11 +202,11 @@ async def _collect_rss_feed(
 
                     articles.append(article)
 
-                except Exception as e:
+                except Exception:
                     logger.warning("解析RSS条目失败: %(e)s")
                     continue
 
-    except Exception as e:
+    except Exception:
         logger.error("采集RSS源失败: %(e)s")
 
     return articles
@@ -299,7 +299,7 @@ def __init__(self):
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
             self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
             logger.info("情感分析模型加载成功")
-        except Exception as e:
+        except Exception:
             logger.warning("情感分析模型加载失败: %(e)s，使用fallback分析器")
 
 
@@ -373,7 +373,7 @@ async def analyze_sentiment(self, text: str) -> SentimentResult:
         else:
             return self._analyze_with_fallback(text)
 
-    except Exception as e:
+    except Exception:
         logger.error("情感分析失败: %(e)s")
         return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
@@ -448,7 +448,7 @@ async def _analyze_with_model(self, text: str) -> SentimentResult:
                 confidence=0.5,
             )
 
-    except Exception as e:
+    except Exception:
         logger.error("模型情感分析失败: %(e)s")
         return self._analyze_with_fallback(text)
 
@@ -497,7 +497,7 @@ def _analyze_with_fallback(self, text: str) -> SentimentResult:
             confidence=confidence,
         )
 
-    except Exception as e:
+    except Exception:
         logger.error("Fallback情感分析失败: %(e)s")
         return SentimentResult(text=text, sentiment_score=0.0, sentiment_label="neutral", confidence=0.5)
 
@@ -557,7 +557,7 @@ async def collect_and_analyze_news(self, hours_back: int = 24) -> List[NewsArtic
 
             analyzed_articles.append(article)
 
-        except Exception as e:
+        except Exception:
             logger.error("分析文章失败 '{article.title}': %(e)s")
             analyzed_articles.append(article)  # 仍然添加文章，即使分析失败
 
@@ -602,7 +602,7 @@ async def _save_articles_to_db(self, articles: List[NewsArticle]):
 
         logger.info("成功保存 {len(articles)} 篇新闻文章到数据库")
 
-    except Exception as e:
+    except Exception:
         logger.error("保存新闻文章到数据库失败: %(e)s")
 
 

@@ -333,7 +333,7 @@ def get_wencai_stats() -> Dict[str, Any]:
                             }
                         )
 
-                except Exception as e:
+                except Exception:
                     logger.warning("Failed to get stats for %(table_name)s: {str(e)}")
 
         engine.dispose()

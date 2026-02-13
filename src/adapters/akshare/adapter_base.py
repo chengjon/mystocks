@@ -93,7 +93,7 @@ class BaseAkshareAdapter:
         """
         try:
             return api_func(*args, **kwargs)
-        except Exception as e:
+        except Exception:
             self.logger.error("API调用失败: {str(e)}", exc_info=True)
             raise
 

@@ -65,7 +65,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取上海证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -117,7 +117,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取深圳证券交易所市场总貌数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -169,7 +169,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取深圳地区交易排序数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 
@@ -222,7 +222,7 @@ class MarketOverviewAdapter(BaseAkshareAdapter):
             self._add_timestamp(df)
             return df
 
-        except Exception as e:
+        except Exception:
             self.logger.error("[Akshare] 获取深圳行业成交数据失败: {str(e)}", exc_info=True)
             return pd.DataFrame()
 

@@ -105,12 +105,12 @@ class PortfolioValuationService:
 
             return performance
 
-        except ConcurrencyException as e:
+        except ConcurrencyException:
             self.metrics["concurrency_conflicts"] += 1
             logger.warning("⚠️ Concurrency conflict revaluating portfolio %(portfolio_id)s: %(e)s")
             raise
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
             return None
 
@@ -133,7 +133,7 @@ class PortfolioValuationService:
             try:
                 performance = self.revaluate_portfolio(portfolio_id, prices)
                 results[portfolio_id] = performance
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
                 results[portfolio_id] = None
 

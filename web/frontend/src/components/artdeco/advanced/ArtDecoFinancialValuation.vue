@@ -36,8 +36,8 @@ import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 import { useFinancialValuation } from '@/composables/advanced/useFinancialValuation'
 
 // Components
-import FinancialMetrics from './components/FinancialMetrics.vue'
-import DupontAnalysis from './components/DupontAnalysis.vue'
+import FinancialMetrics from '@/views/artdeco-pages/components/FinancialMetrics.vue'
+import DupontAnalysis from '@/views/artdeco-pages/components/DupontAnalysis.vue'
 
 const {
     keyMetrics, financialHealthScore, profitabilityScore,

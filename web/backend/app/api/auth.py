@@ -6,7 +6,7 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -14,6 +14,7 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 from app.core.exceptions import ForbiddenException, UnauthorizedException
+from app.core.rate_limit import get_rate_limiter
 from app.core.responses import create_success_response
 from app.core.security import (
     User,
@@ -152,17 +153,31 @@ async def get_current_active_user(
 
 @router.post("/login")
 async def login_for_access_token(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     """
     用户登录获取访问令牌
     支持 OAuth2 标准的 form data 格式
     返回 APIResponse 格式以匹配前端期望
+
+    包含速率限制保护：
+    - 每分钟最多10次登录尝试
+    - 连续5次失败后临时封禁5分钟
     """
+    rate_limiter = get_rate_limiter()
+    client_ip = rate_limiter.get_client_ip(request)
+
     # 验证用户身份
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
+        # 记录失败的登录尝试
+        rate_limiter.record_failed_auth(client_ip)
+        logger.warning(f"Failed login attempt for user '{form_data.username}' from IP: {client_ip}")
         raise UnauthorizedException(detail="用户名或密码错误")
+
+    # 登录成功，重置失败计数
+    rate_limiter.reset_failed_auth(client_ip)
 
     # 创建访问令牌
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
@@ -170,6 +185,8 @@ async def login_for_access_token(
         data={"sub": user.username, "user_id": user.id, "role": user.role},
         expires_delta=access_token_expires,
     )
+
+    logger.info(f"User '{user.username}' logged in successfully from IP: {client_ip}")
 
     # 返回 APIResponse 格式，使用 "token" 而不是 "access_token" 以匹配前端期望
     return create_success_response(
@@ -263,7 +280,7 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
         finally:
             session.close()
 
-    except (DatabaseConnectionError, DatabaseOperationError) as e:
+    except (DatabaseConnectionError, DatabaseOperationError):
         # 数据库查询失败时返回错误响应
         raise ForbiddenException(detail="权限不足")
     except Exception as e:

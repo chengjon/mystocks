@@ -9,5 +9,5 @@
 
 <script setup lang="ts">
 import BaseLayout from './BaseLayout.vue'
-import { MARKET_MENU_ITEMS } from './MenuConfig'
+import { MARKET_MENU_ITEMS } from './archive/MenuConfig'
 </script>

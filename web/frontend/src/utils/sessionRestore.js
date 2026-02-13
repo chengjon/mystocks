@@ -13,6 +13,12 @@ import { useAuthStore } from '@/stores/auth'
  * - 如果token有效，恢复用户信息
  */
 export async function restoreSession() {
+  // Pinia未就绪时跳过，避免 useAuthStore 抛出 _s 未定义
+  if (!window?.$vue?.$pinia) {
+    console.warn('⚠️ Pinia not ready, skip session restore this round')
+    return
+  }
+
   const token = localStorage.getItem('token')
 
   // 如果没有token，无需恢复
@@ -31,14 +37,14 @@ export async function restoreSession() {
       return
     }
 
-    // 验证token并获取用户信息
-    const isValid = await authStore.checkAuth()
+    // 从localStorage恢复token和用户信息
+    authStore.initializeAuth()
 
-    if (isValid) {
+    if (authStore.isAuthenticated) {
       console.log('✅ Session restored successfully')
     } else {
-      console.warn('⚠️ Token invalid, clearing session')
-      // checkAuth已经处理了logout逻辑
+      console.warn('⚠️ Token invalid or missing, clearing session')
+      authStore.logout()
     }
   } catch (error) {
     console.error('❌ Session restore error:', error)

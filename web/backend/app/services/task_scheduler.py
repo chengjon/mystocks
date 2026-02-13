@@ -85,7 +85,7 @@ class TaskScheduler:
             logger.info("Task {task_config.task_id} scheduled successfully")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to schedule task {task_config.task_id}: %(e)s")
             return False
 
@@ -98,7 +98,7 @@ class TaskScheduler:
                 logger.info("Task %(task_id)s unscheduled")
                 return True
             return False
-        except Exception as e:
+        except Exception:
             logger.error("Failed to unschedule task %(task_id)s: %(e)s")
             return False
 
@@ -110,7 +110,7 @@ class TaskScheduler:
                 logger.info("Task %(task_id)s paused")
                 return True
             return False
-        except Exception as e:
+        except Exception:
             logger.error("Failed to pause task %(task_id)s: %(e)s")
             return False
 
@@ -122,7 +122,7 @@ class TaskScheduler:
                 logger.info("Task %(task_id)s resumed")
                 return True
             return False
-        except Exception as e:
+        except Exception:
             logger.error("Failed to resume task %(task_id)s: %(e)s")
             return False
 
@@ -182,7 +182,7 @@ class TaskScheduler:
                 logger.error("Unknown schedule type: {schedule.schedule_type}")
                 return None
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to create trigger: %(e)s")
             return None
 
@@ -191,7 +191,7 @@ class TaskScheduler:
         logger.info("Executing scheduled task: %(task_id)s")
         try:
             await task_manager.start_task(task_id)
-        except Exception as e:
+        except Exception:
             logger.error("Failed to execute scheduled task %(task_id)s: %(e)s")
 
 

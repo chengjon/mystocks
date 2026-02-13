@@ -50,7 +50,7 @@ class PostgreSQLAsyncAccess:
 
             self.pool = await asyncpg.create_pool(dsn=self._dsn, min_size=5, max_size=20, command_timeout=60)
             logger.info("✅ 异步PostgreSQL连接池已初始化")
-        except Exception as e:
+        except Exception:
             logger.error("❌ 初始化异步PostgreSQL连接池失败: %(e)s")
             raise
 

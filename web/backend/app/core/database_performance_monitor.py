@@ -19,7 +19,7 @@ Date: 2025-11-12
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -172,7 +172,7 @@ class DatabasePerformanceMonitor:
     async def _cleanup_old_metrics(self) -> None:
         """清理过期指标"""
         try:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             cutoff_metrics = now - timedelta(hours=self.metrics_retention_hours)
             cutoff_alerts = now - timedelta(hours=self.alert_retention_hours)
 
@@ -370,7 +370,7 @@ class DatabasePerformanceMonitor:
             "metrics_count": len(self.query_metrics),
             "alerts_count": len(self.slow_query_alerts),
             "tables_monitored": len(self.table_stats),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_comprehensive_report(self) -> Dict[str, Any]:
@@ -380,7 +380,7 @@ class DatabasePerformanceMonitor:
             "table_performance": self.get_table_performance(),
             "recent_slow_queries": self.get_slow_queries(10),
             "recent_alerts": self.get_recent_alerts(10),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

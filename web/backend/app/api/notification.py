@@ -13,7 +13,7 @@ Phase 4C Enhanced - 企业级通知服务
 
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from typing import Dict, List, Optional
 
@@ -59,7 +59,7 @@ class SendEmailRequest(BaseModel):
     @validator("scheduled_at")
     def validate_schedule_time(cls, v):
         """验证定时发送时间"""
-        if v and v <= datetime.utcnow():
+        if v and v <= datetime.now(timezone.utc):
             raise ValueError("定时发送时间必须晚于当前时间")
         return v
 
@@ -156,7 +156,7 @@ class RateLimiter:
             limit: 限制次数
             window: 时间窗口（秒）
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         if key not in self.requests:
             self.requests[key] = []
@@ -373,7 +373,7 @@ async def send_email(
             raise HTTPException(status_code=503, detail="邮件服务未配置，无法发送邮件")
 
         # 验证定时发送时间
-        if request.scheduled_at and request.scheduled_at <= datetime.utcnow():
+        if request.scheduled_at and request.scheduled_at <= datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="定时发送时间必须晚于当前时间")
 
         # 记录发送请求
@@ -392,7 +392,7 @@ async def send_email(
             try:
                 # 如果是定时发送，等待到指定时间
                 if request.scheduled_at:
-                    now = datetime.utcnow()
+                    now = datetime.now(timezone.utc)
                     if request.scheduled_at > now:
                         wait_seconds = (request.scheduled_at - now).total_seconds()
                         await asyncio.sleep(wait_seconds)
@@ -415,7 +415,7 @@ async def send_email(
                     # 发送实时通知给发送者
                     if current_user.id in connection_manager.active_connections:
                         notification = RealTimeNotification(
-                            notification_id=f"email_sent_{datetime.utcnow().timestamp()}",
+                            notification_id=f"email_sent_{datetime.now(timezone.utc).timestamp()}",
                             user_id=current_user.id,
                             type="system",
                             title="邮件发送成功",
@@ -493,7 +493,7 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
                 "type": "connection_established",
                 "message": "实时通知连接已建立",
                 "user_id": user.id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -508,7 +508,7 @@ async def websocket_notifications(websocket: WebSocket, token: str = None):
 
                     if message.get("type") == "ping":
                         # 响应心跳包
-                        await websocket.send_json({"type": "pong", "timestamp": datetime.utcnow().isoformat()})
+                        await websocket.send_json({"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()})
 
                     elif message.get("type") == "mark_read":
                         # 标记通知已读（这里可以实现具体的标记逻辑）
@@ -571,7 +571,7 @@ async def send_welcome_email(
 
                     # 发送实时通知
                     notification = RealTimeNotification(
-                        notification_id=f"welcome_sent_{datetime.utcnow().timestamp()}",
+                        notification_id=f"welcome_sent_{datetime.now(timezone.utc).timestamp()}",
                         user_id=current_user.id,
                         type="system",
                         title="欢迎邮件已发送",

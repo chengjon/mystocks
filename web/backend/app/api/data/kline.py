@@ -7,10 +7,8 @@ import pandas as pd
 from fastapi import APIRouter, Depends, Query, HTTPException
 
 from app.core.database import db_service
-from app.core.exceptions import BusinessException, ValidationException
-from app.core.responses import ErrorCodes, create_error_response
+from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
-from src.utils.data_format_converter import normalize_api_response_format, normalize_stock_data_format
 
 router = APIRouter()
 
@@ -26,13 +24,13 @@ async def get_daily_kline(
     try:
         from app.services.data_source_factory import get_data_source_factory
         factory = await get_data_source_factory()
-        
+
         if not end_date: end_date = datetime.now().strftime("%Y-%m-%d")
         if not start_date: start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
-        
+
         params = {"symbol": symbol, "start_date": start_date, "end_date": end_date, "limit": limit}
         result = await factory.get_data("data", "stocks/daily", params)
-        
+
         if result.get("status") == "success":
             return {
                 "success": True, "data": result.get("data", []),
@@ -73,7 +71,7 @@ async def get_kline_data(
 
         df["date"] = pd.to_datetime(df["trade_date"] if "trade_date" in df.columns else df["date"])
         df = df.sort_values("date")
-        
+
         # Format conversion
         data_records = []
         for _, row in df.iterrows():
@@ -83,7 +81,7 @@ async def get_kline_data(
                 "high": float(row["high"]), "low": float(row["low"]),
                 "volume": int(row["volume"])
             })
-            
+
         result = {"success": True, "data": data_records, "total": len(data_records), "timestamp": datetime.now().isoformat()}
         db_service.set_cache_data(cache_key, result, ttl=600)
         return result

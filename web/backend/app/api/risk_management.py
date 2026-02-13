@@ -207,13 +207,13 @@ def get_monitoring_db():
                                 else None
                             ),
                         )
-                    except Exception as e:
+                    except Exception:
                         logger.debug("Monitoring log failed (non-critical): %(e)s")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
 
-        except Exception as e:
+        except Exception:
             logger.warning("MonitoringDatabase initialization failed, using fallback: %(e)s")
 
             # 创建一个简单的fallback对象
@@ -2005,7 +2005,7 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
         except WebSocketDisconnect:
             connection_manager.disconnect(websocket)
 
-    except Exception as e:
+    except Exception:
         logger.error("WebSocket连接错误: %(e)s")
         if websocket in connection_manager.active_connections:
             connection_manager.disconnect(websocket)
@@ -2100,7 +2100,7 @@ async def setup_risk_event_broadcasting():
 
         logger.info("风险事件WebSocket广播设置完成")
 
-    except Exception as e:
+    except Exception:
         logger.error("设置风险事件广播失败: %(e)s")
 
 

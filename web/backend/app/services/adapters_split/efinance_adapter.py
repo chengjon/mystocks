@@ -4,9 +4,7 @@ Efinance数据源适配器
 提供Efinance中国金融数据获取功能，支持基础数据、日线数据、分红数据、实时行情等
 """
 
-import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Dict, List, Optional
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service

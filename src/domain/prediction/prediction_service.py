@@ -239,7 +239,7 @@ class PredictionService:
                 data = self.data_source_manager.get_data("akshare.stock_zh_a_hist", symbol=stock_code, period="daily")
                 if data is not None and not data.empty:
                     return data.tail(days)
-        except Exception as e:
+        except Exception:
             logger.debug("Could not get data for %(stock_code)s: %(e)s")
 
         return None

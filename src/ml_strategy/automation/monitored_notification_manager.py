@@ -98,7 +98,7 @@ class MonitoredNotificationManager(NotificationManager):
         try:
             # 调用父类方法
             success = super()._send_email(notification)
-        except Exception as e:
+        except Exception:
             logger.error("发送邮件失败: %(e)s")
             success = False
         finally:
@@ -116,7 +116,7 @@ class MonitoredNotificationManager(NotificationManager):
         try:
             # 调用父类方法
             success = super()._send_webhook(notification)
-        except Exception as e:
+        except Exception:
             logger.error("发送Webhook失败: %(e)s")
             success = False
         finally:
@@ -177,7 +177,7 @@ class MonitoredNotificationManager(NotificationManager):
                         },
                     )
                 )
-            except Exception as e:
+            except Exception:
                 logger.warning("异步记录推送日志失败（非关键）: %(e)s")
 
         return success
@@ -214,7 +214,7 @@ class MonitoredNotificationManager(NotificationManager):
             try:
                 record_signal_push(channel=channel, status=status)
                 record_push_latency(channel=channel, latency_seconds=latency_ms / 1000)
-            except Exception as e:
+            except Exception:
                 logger.warning("记录 Prometheus 指标失败: %(e)s")
 
     async def _log_push_to_database(
@@ -250,7 +250,7 @@ class MonitoredNotificationManager(NotificationManager):
 
             logger.debug("记录推送日志到数据库: signal_id=%(signal_id)s, channel=%(channel)s, success=%(success)s")
 
-        except Exception as e:
+        except Exception:
             logger.warning("记录推送日志到数据库失败（非关键）: %(e)s")
 
     def _determine_primary_channel(self) -> str:

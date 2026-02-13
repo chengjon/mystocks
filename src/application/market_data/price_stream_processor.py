@@ -231,7 +231,7 @@ class PriceStreamProcessor:
                 try:
                     self.event_bus.publish(event)
                     self.metrics["events_published"] += 1
-                except Exception as e:
+                except Exception:
                     logger.error("Failed to publish PriceChangedEvent: %(e)s")
 
             # 更新价格缓存
@@ -269,7 +269,7 @@ class PriceStreamProcessor:
                     else:
                         logger.warning("⚠️ Could not acquire lock for portfolio %(portfolio_id)s")
 
-                except Exception as e:
+                except Exception:
                     logger.error("Failed to revaluate portfolio %(portfolio_id)s: %(e)s")
 
         self.metrics["batches_processed"] += 1

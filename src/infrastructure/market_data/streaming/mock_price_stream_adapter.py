@@ -198,7 +198,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
                                 await callback(update)
                             else:
                                 callback(update)
-                        except Exception as e:
+                        except Exception:
                             logger.error("Error in message callback: %(e)s")
 
                 # 等待下一次更新
@@ -207,7 +207,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
             except asyncio.CancelledError:
                 logger.info("🛑 Price update loop cancelled")
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error in price update loop: %(e)s")
                 await asyncio.sleep(self.update_interval)
 
@@ -230,7 +230,7 @@ class MockPriceStreamAdapter(IPriceStreamAdapter):
             except asyncio.CancelledError:
                 logger.info("🛑 Heartbeat loop cancelled")
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error in heartbeat loop: %(e)s")
 
         logger.info("⏹️ Heartbeat loop stopped")

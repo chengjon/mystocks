@@ -4,8 +4,7 @@ CAN SLIM成长模型分析器
 基于CAN SLIM（C=Current, A=Annual, N=New, S=Supply, L=Leader, I=Institution, M=Market）的选股模型分析股票成长性
 """
 
-from typing import Dict, List, Optional
-from datetime import datetime
+from typing import Dict, Optional
 
 from .model_scores import OverallModelScore, ModelScoreConfig
 

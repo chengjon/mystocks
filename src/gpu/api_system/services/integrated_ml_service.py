@@ -5,7 +5,7 @@ Integrated Machine Learning Training Service
 
 import json
 import logging
-import pickle
+import joblib
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -184,10 +184,11 @@ class IntegratedMLService(MLServiceServicer):
 
                     for model_id in old_models:
                         logger.info("删除过期模型: %s", model_id)
-                        # 删除模型文件
-                        model_path = Path(self.config["model_save_path"]) / f"{model_id}.pkl"
-                        if model_path.exists():
-                            model_path.unlink()
+                        # 删除模型文件 (Check both extensions)
+                        for ext in [".joblib", ".pkl"]:
+                            model_path = Path(self.config["model_save_path"]) / f"{model_id}{ext}"
+                            if model_path.exists():
+                                model_path.unlink()
                         # 从内存中删除
                         del self.models[model_id]
 
@@ -220,13 +221,14 @@ class IntegratedMLService(MLServiceServicer):
         """加载已保存的模型"""
         try:
             model_dir = Path(self.config["model_save_path"])
-            model_files = list(model_dir.glob("*.pkl"))
+            # Support both .joblib (new) and .pkl (legacy)
+            model_files = list(model_dir.glob("*.joblib")) + list(model_dir.glob("*.pkl"))
 
             for model_file in model_files:
                 try:
                     model_id = model_file.stem
-                    with open(model_file, "rb") as f:
-                        model_data = pickle.load(f)
+                    # Use joblib for loading (it can often handle pickle files too, but safer to use joblib.load)
+                    model_data = joblib.load(model_file)
 
                     with self.model_lock:
                         self.models[model_id] = {
@@ -555,21 +557,20 @@ class IntegratedMLService(MLServiceServicer):
                 }
 
             # 保存到文件
-            model_path = Path(self.config["model_save_path"]) / f"{model_id}.pkl"
-            with open(model_path, "wb") as f:
-                pickle.dump(
-                    {
-                        "model": model,
-                        "metadata": {
-                            "model_type": model_type,
-                            "metrics": metrics,
-                            "created_at": datetime.now().isoformat(),
-                        },
+            model_path = Path(self.config["model_save_path"]) / f"{model_id}.joblib"
+            joblib.dump(
+                {
+                    "model": model,
+                    "metadata": {
                         "model_type": model_type,
+                        "metrics": metrics,
                         "created_at": datetime.now().isoformat(),
                     },
-                    f,
-                )
+                    "model_type": model_type,
+                    "created_at": datetime.now().isoformat(),
+                },
+                model_path,
+            )
 
             logger.info("模型已保存: %s", model_id)
 

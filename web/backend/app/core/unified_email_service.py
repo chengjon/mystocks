@@ -30,7 +30,7 @@ Estimated Duplication Reduced: 150+ lines
 
 import os
 import smtplib
-from datetime import datetime
+from datetime import datetime, timezone
 from email import encoders
 from email.header import Header
 from email.mime.base import MIMEBase
@@ -185,7 +185,7 @@ class UnifiedEmailService:
             return {
                 "success": True,
                 "message": f"Email sent to {len(to_addresses)} recipient(s)",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -269,7 +269,7 @@ class UnifiedEmailService:
             return {
                 "success": True,
                 "message": f"Email sent to {len(to_addresses)} recipient(s)",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -307,7 +307,7 @@ class UnifiedEmailService:
             msg["Cc"] = ", ".join(cc_addresses)
 
         msg["Subject"] = Header(subject, "utf-8")
-        msg["Date"] = Header(datetime.utcnow().isoformat(), "utf-8")
+        msg["Date"] = Header(datetime.now(timezone.utc).isoformat(), "utf-8")
 
         # Add content
         content_mime = MIMEText(content, content_type, "utf-8")
@@ -332,7 +332,7 @@ class UnifiedEmailService:
 
             logger.info("✅ Added attachment: %(filename)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ Failed to add attachment %(file_path)s: {str(e)}")
             raise
 

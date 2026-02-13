@@ -115,7 +115,7 @@ def get_stock_daily(
         logger.info("成功获取股票日线数据: %(symbol)s, 共 {len(df)} 条记录")
         return df
 
-    except Exception as e:
+    except Exception:
         logger.error("获取股票日线数据失败: %(e)s")
         raise
 
@@ -191,7 +191,7 @@ def get_index_daily(
         logger.info("成功获取指数日线数据: %(index_code)s, 共 {len(df)} 条记录")
         return df
 
-    except Exception as e:
+    except Exception:
         logger.error("获取指数日线数据失败: %(e)s")
         raise
 
@@ -397,7 +397,7 @@ def _resample_kline_data(self, df: pd.DataFrame, period: str) -> pd.DataFrame:
 
         return resampled
 
-    except Exception as e:
+    except Exception:
         logger.error("重新采样K线数据失败: %(e)s")
         return pd.DataFrame()
 
@@ -478,6 +478,6 @@ def get_minute_kline(self, symbol: str, period: str = "1min", count: int = 240, 
         logger.info("成功获取股票分钟K线数据: %(symbol)s, 共 {len(df)} 条记录")
         return df
 
-    except Exception as e:
+    except Exception:
         logger.error("获取股票分钟K线数据失败: %(e)s")
         raise

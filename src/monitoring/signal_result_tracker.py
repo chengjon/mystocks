@@ -80,7 +80,7 @@ class SignalResultTracker:
                     logger.warning("监控数据库未连接，结果追踪功能将不可用")
                     return None
                 self._pg_pool = pg
-            except Exception as e:
+            except Exception:
                 logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
@@ -144,7 +144,7 @@ class SignalResultTracker:
                 logger.info("记录执行结果成功: signal_id=%(signal_id)s, executed=%(executed)s")
             return success
 
-        except Exception as e:
+        except Exception:
             logger.error("记录执行结果失败: {e}", exc_info=True)
             return False
 
@@ -169,7 +169,7 @@ class SignalResultTracker:
             # 实际应该根据策略目标判断（例如：BUY信号应该价格上涨）
             await self._calculate_and_update_accuracy(strategy_id, signal_type)
 
-        except Exception as e:
+        except Exception:
             logger.warning("更新 Prometheus 指标失败: %(e)s")
 
     async def _calculate_and_update_accuracy(
@@ -223,7 +223,7 @@ class SignalResultTracker:
                     f"更新准确率: strategy_id={strategy_id}, signal_type={signal_type}, " f"accuracy={accuracy:.2f}%"
                 )
 
-        except Exception as e:
+        except Exception:
             logger.warning("计算准确率失败: %(e)s")
 
     async def calculate_profit_ratio(
@@ -275,7 +275,7 @@ class SignalResultTracker:
 
             return 0.0
 
-        except Exception as e:
+        except Exception:
             logger.error("计算盈利比率失败: {e}", exc_info=True)
             return 0.0
 
@@ -361,7 +361,7 @@ class SignalResultTracker:
                 "avg_latency_ms": row["avg_latency"] or 0,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("更新策略健康状态失败: {e}", exc_info=True)
             return {}
 
@@ -418,7 +418,7 @@ class SignalResultTracker:
                 "avg_loss_percent": float(row["avg_loss_percent"] or 0),
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("获取性能摘要失败: {e}", exc_info=True)
             return {}
 

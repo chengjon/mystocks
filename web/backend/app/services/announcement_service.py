@@ -201,7 +201,7 @@ class AnnouncementService:
 
             session.commit()
 
-        except Exception as e:
+        except Exception:
             session.rollback()
             logger.error("Failed to save announcements to DB: %(e)s")
             raise

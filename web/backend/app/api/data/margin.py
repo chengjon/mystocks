@@ -1,10 +1,9 @@
 """
 融资融券数据路由 (Margin Trading)
 """
-from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 from app.core.security import User, get_current_user
-from app.core.responses import UnifiedResponse, ok, server_error, bad_request
+from app.core.responses import UnifiedResponse, ok, server_error
 
 router = APIRouter()
 

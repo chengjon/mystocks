@@ -239,7 +239,7 @@ class TransformerTradingStrategy(MLTradingStrategy):
             logger.info("Transformer模型训练完成: %(model_key)s")
             return model_key
 
-        except Exception as e:
+        except Exception:
             logger.error("Transformer模型训练失败: %(e)s")
             return "training_failed"
 
@@ -293,7 +293,7 @@ class TransformerTradingStrategy(MLTradingStrategy):
             logger.info("Transformer预测完成: 预测收益率 %(predicted_return)s")
             return predictions
 
-        except Exception as e:
+        except Exception:
             logger.error("Transformer预测失败: %(e)s")
             # Fallback到简单预测
             from src.ml_strategy.strategy.lstm_trading_strategy import LSTMTradingStrategy
@@ -351,7 +351,7 @@ class TransformerTradingStrategy(MLTradingStrategy):
             logger.info("Transformer信号解释完成: 生成 {len(signals_df)} 个信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("Transformer信号解释失败: %(e)s")
             return pd.DataFrame(columns=["signal", "confidence", "predicted_return", "signal_strength"])
 

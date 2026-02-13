@@ -274,7 +274,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             if expired_keys:
                 logger.info("清除 {len(expired_keys)} 个过期的告警抑制")
 
-        except Exception as e:
+        except Exception:
             logger.error("清除过期抑制失败: %(e)s")
 
     def reset_alert_statistics(self):
@@ -288,7 +288,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
             self.alert_escalation_count.clear()
             logger.info("告警统计已重置")
 
-        except Exception as e:
+        except Exception:
             logger.error("重置告警统计失败: %(e)s")
 
     # 私有方法
@@ -435,7 +435,7 @@ class RiskAlertNotificationManager(MonitoredNotificationManager):
                 signal_id=f"risk_alert_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             )
 
-        except Exception as e:
+        except Exception:
             logger.error("发送风险通知失败: %(e)s")
             return False
 

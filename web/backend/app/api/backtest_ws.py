@@ -54,7 +54,7 @@ class ConnectionManager:
         """发送个人消息"""
         try:
             await websocket.send_text(message)
-        except Exception as e:
+        except Exception:
             logger.error("发送WebSocket消息失败: %(e)s")
 
     async def broadcast(self, backtest_id: str, message: dict):
@@ -68,7 +68,7 @@ class ConnectionManager:
         for connection in self.connections[backtest_id]:
             try:
                 await connection.send_text(message_json)
-            except Exception as e:
+            except Exception:
                 logger.warning("广播消息失败: %(e)s")
                 disconnected.add(connection)
 
@@ -93,7 +93,7 @@ class ConnectionManager:
                     loop.create_task(connection.send_text(message_json))
                 else:
                     asyncio.run(connection.send_text(message_json))
-            except Exception as e:
+            except Exception:
                 logger.warning("同步广播失败: %(e)s")
 
 
@@ -139,7 +139,7 @@ async def websocket_backtest_progress(websocket: WebSocket, backtest_id: str):
 
     except WebSocketDisconnect:
         logger.info("WebSocket客户端断开: backtest_id=%(backtest_id)s")
-    except Exception as e:
+    except Exception:
         logger.error("WebSocket错误: %(e)s")
     finally:
         manager.disconnect(websocket, backtest_id)

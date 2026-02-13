@@ -89,7 +89,7 @@ class GPUResourceManager:
                 self.available_memory = free_memory * self.gpu_memory_limit
 
                 logger.info(".1f.1f.1f")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to get GPU memory info: %(e)s")
                 self.available_memory = 1024 * 1024 * 1024  # 1GB 默认
         else:
@@ -227,7 +227,7 @@ class GPUIndicatorAdapter(IndicatorInterface):
                 },
             )
 
-        except Exception as e:
+        except Exception:
             logger.error("Error calculating {self.config.name}: %(e)s")
             # 回退到CPU计算
             if self.use_gpu:
@@ -317,7 +317,7 @@ class GPUMACDIndicator(GPUIndicatorAdapter):
                 "histogram": histogram.to_pandas().fillna(0).values,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU MACD calculation failed: %(e)s")
             raise
 
@@ -393,7 +393,7 @@ class GPURSIIndicator(GPUIndicatorAdapter):
 
             return {"rsi": rsi.to_pandas().fillna(50).values}  # RSI默认50
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU RSI calculation failed: %(e)s")
             raise
 
@@ -455,7 +455,7 @@ class GPUBollingerBandsIndicator(GPUIndicatorAdapter):
                 "lower": lower_band.to_pandas().fillna(method="bfill").values,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU Bollinger Bands calculation failed: %(e)s")
             raise
 

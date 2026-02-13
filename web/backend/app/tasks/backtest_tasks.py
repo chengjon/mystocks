@@ -74,7 +74,7 @@ def run_backtest_task(self, backtest_id: int, strategy_config: dict, backtest_co
             if ws_callback:
                 try:
                     ws_callback(progress_event.to_dict())
-                except Exception as e:
+                except Exception:
                     logger.warning("WebSocket推送失败: %(e)s")
 
         # 创建回测引擎
@@ -170,7 +170,7 @@ def _save_backtest_results(backtest_id: int, results: dict):
         finally:
             db.close()
 
-    except Exception as e:
+    except Exception:
         logger.error("保存回测结果失败: {str(e)}")
         raise
 
@@ -189,5 +189,5 @@ def _update_backtest_status(backtest_id: int, status: str, error_message: str = 
         finally:
             db.close()
 
-    except Exception as e:
+    except Exception:
         logger.error("更新回测状态失败: {str(e)}")

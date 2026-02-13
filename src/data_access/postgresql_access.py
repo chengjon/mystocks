@@ -118,7 +118,7 @@ class PostgreSQLDataAccess:
             cursor.execute(sql)
             conn.commit()
             logger.info("Table created successfully: %(table_name)s")
-        except Exception as e:
+        except Exception:
             if conn:
                 conn.rollback()
             logger.error("Failed to create table %(table_name)s: %(e)s")
@@ -128,7 +128,7 @@ class PostgreSQLDataAccess:
             if cursor:
                 try:
                     cursor.close()
-                except Exception as cursor_error:
+                except Exception:
                     logger.error("Error closing cursor: %(cursor_error)s")
             # 确保连接返回（即使cursor.close()失败）
             self._return_connection(conn)
@@ -158,7 +158,7 @@ class PostgreSQLDataAccess:
             cursor.execute(sql)
             conn.commit()
             logger.info("Hypertable created successfully: %(table_name)s")
-        except Exception as e:
+        except Exception:
             if conn:
                 conn.rollback()
             logger.error("Failed to create hypertable %(table_name)s: %(e)s")
@@ -168,7 +168,7 @@ class PostgreSQLDataAccess:
             if cursor:
                 try:
                     cursor.close()
-                except Exception as cursor_error:
+                except Exception:
                     logger.error("Error closing cursor: %(cursor_error)s")
             # 确保连接返回
             self._return_connection(conn)
@@ -482,7 +482,7 @@ class PostgreSQLDataAccess:
             if result is not None and not result.empty:
                 return result.to_dict('records')
             return []
-        except Exception as e:
+        except Exception:
             logger.error("PostgreSQL按分类加载数据失败: %(e)s")
             return []
 

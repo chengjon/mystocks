@@ -36,7 +36,7 @@ class LocalEventBus(IEventBus):
         for handler in handlers:
             try:
                 handler(event)
-            except Exception as e:
+            except Exception:
                 handler_name = getattr(handler, "__name__", str(handler))
                 logger.error("Error handling event %(event_name)s by %(handler_name)s: %(e)s")
 

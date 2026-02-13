@@ -71,7 +71,7 @@ class TransactionService:
                 result = operation(*args, **kwargs)
                 self.commit_transaction()
                 return result
-            except Exception as e:
+            except Exception:
                 self.rollback_transaction()
                 raise
 

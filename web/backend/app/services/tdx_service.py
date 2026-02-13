@@ -35,7 +35,7 @@ class TdxService:
         try:
             self.tdx_adapter = TdxDataSource(use_server_config=True)
             logger.info("TDX服务初始化成功")
-        except Exception as e:
+        except Exception:
             logger.error("TDX服务初始化失败: %(e)s")
             raise
 
@@ -72,7 +72,7 @@ class TdxService:
             logger.info("获取实时行情成功: %(symbol)s")
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("获取实时行情异常: %(symbol)s, 错误: %(e)s")
             raise
 
@@ -123,7 +123,7 @@ class TdxService:
             logger.info("获取K线成功: %(symbol)s, %(period)s, {len(data_list)}条")
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("获取K线异常: %(symbol)s, %(period)s, 错误: %(e)s")
             raise
 
@@ -159,7 +159,7 @@ class TdxService:
             logger.info("获取指数行情成功: %(symbol)s")
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("获取指数行情异常: %(symbol)s, 错误: %(e)s")
             raise
 
@@ -208,7 +208,7 @@ class TdxService:
             logger.info("获取指数K线成功: %(symbol)s, %(period)s, {len(data_list)}条")
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("获取指数K线异常: %(symbol)s, %(period)s, 错误: %(e)s")
             raise
 

@@ -27,7 +27,7 @@ Usage:
     ```
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 
@@ -141,7 +141,7 @@ class CacheIntegration:
                 return {
                     "data": source_data,
                     "source": "source",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
             logger.warning(
@@ -152,7 +152,7 @@ class CacheIntegration:
             return {
                 "data": None,
                 "source": "source",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:

@@ -74,7 +74,7 @@ const PAGES = [
 const TEST_USER = { username: 'admin', password: 'admin123' };
 
 // Frontend URL (from PM2 config)
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3002';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3020';
 
 // ============ Helper: Login ============
 async function login(page: any) {

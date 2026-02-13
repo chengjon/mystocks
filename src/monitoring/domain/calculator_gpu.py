@@ -71,7 +71,7 @@ class GPUHealthChecker:
             self._gpu_available = True
             self._device_info = self._get_device_info()
             logger.info("GPU检测成功: {self._device_info")
-        except Exception as e:
+        except Exception:
             logger.warning("GPU检测失败: %(e)s")
             self._gpu_available = False
 
@@ -193,7 +193,7 @@ class GPUHealthCalculator:
         if not fallback and self._health_checker.is_available:
             try:
                 return self._calculate_on_gpu(inputs)
-            except Exception as e:
+            except Exception:
                 logger.warning("GPU计算失败，降级到CPU: %(e)s")
                 return self._calculate_on_cpu(inputs)
         else:

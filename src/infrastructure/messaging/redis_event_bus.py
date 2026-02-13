@@ -83,7 +83,7 @@ class RedisEventBus(IEventBus):
                 message = self._pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
                 if message:
                     self._handle_raw_message(message)
-            except Exception as e:
+            except Exception:
                 logger.error("Error in Redis listen loop: %(e)s")
 
     def _handle_raw_message(self, message: Dict[str, Any]):
@@ -106,7 +106,7 @@ class RedisEventBus(IEventBus):
                     # 执行处理器
                     for handler in self._handlers[event_name]:
                         handler(event)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to handle event %(event_name)s: %(e)s")
 
     def stop(self):

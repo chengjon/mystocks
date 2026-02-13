@@ -244,7 +244,7 @@ class BaseOptimizer(ABC):
                 if df is not None and not df.empty:
                     market_data[symbol] = df
                     logger.debug("加载%(symbol)s数据: {len(df)}条")
-            except Exception as e:
+            except Exception:
                 logger.error("加载%(symbol)s数据失败: %(e)s")
 
         self._market_data = market_data

@@ -4,28 +4,28 @@
       <ArtDecoStatCard
         label="竞价成交金额"
         value="1,256亿"
-        change="12.3"
+        :change="12.3"
         change-percent
         variant="gold"
       />
       <ArtDecoStatCard
         label="涨停家数"
         value="68家"
-        change="15"
+        :change="15"
         change-percent
         variant="rise"
       />
       <ArtDecoStatCard
         label="炸板率"
         value="23.5%"
-        change="-5.2"
+        :change="-5.2"
         change-percent
         variant="fall"
       />
       <ArtDecoStatCard
         label="平均涨幅"
         value="8.7%"
-        change="2.1"
+        :change="2.1"
         change-percent
         variant="gold"
       />

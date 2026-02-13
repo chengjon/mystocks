@@ -218,7 +218,7 @@ class WatchlistDomainService:
                 if stock:
                     stock.capture_timed_snapshot(snapshot)
                 results[code] = snapshot
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to capture snapshot for %(code)s: %(e)s")
                 results[code] = None
 

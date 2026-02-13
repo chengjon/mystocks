@@ -25,7 +25,7 @@ module.exports = {
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
-      max_restarts: 5,
+      max_restarts: 30,
       min_uptime: '30s',  // ✅ 增加到30秒，给Vite更多启动时间
       max_memory_restart: '2G',  // 限制内存重启次数
       restart_delay: 10000,  // 10秒重启延迟

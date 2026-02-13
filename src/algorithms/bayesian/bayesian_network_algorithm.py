@@ -89,7 +89,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -99,7 +99,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"bn_{self.metadata.name}")
                 logger.info("Bayesian Network GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -139,7 +139,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
             if self.gpu_enabled:
                 try:
                     self.model = await self._train_gpu_bayesian_network(df_discrete, bn_params)
-                except Exception as e:
+                except Exception:
                     logger.warning("GPU BN training failed: %(e)s, falling back to CPU")
                     self.model = await self._train_cpu_bayesian_network(df_discrete, bn_params)
             else:
@@ -182,7 +182,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
             )
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("Bayesian Network training failed: %(e)s")
             raise
 
@@ -392,7 +392,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Bayesian Network prediction failed: %(e)s")
             raise
 
@@ -457,7 +457,7 @@ class BayesianNetworkAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("Bayesian Network evaluation failed: %(e)s")
             raise
 

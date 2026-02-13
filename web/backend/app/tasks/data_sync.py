@@ -344,7 +344,7 @@ def sync_financial_statements(params: Dict[str, Any]) -> Dict[str, Any]:
                         )
                         result["records_synced"] += len(financial_data)
 
-                except AttributeError as e:
+                except AttributeError:
                     # 如果方法不存在，记录警告
                     logger.warning("Financial adapter missing method for %(report_type)s: %(e)s")
                     result["errors"].append(f"{symbol} {report_type}: method not implemented")

@@ -4,13 +4,12 @@
 综合多个投资模型的分析结果，给出最终投资建议
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .buffett_analyzer import BuffettAnalyzer
 from .canslim_analyzer import CANSLIMAnalyzer
 from .fisher_analyzer import FisherAnalyzer
 
-from .model_scores import OverallModelScore
 from .analysis_result import ModelAnalysisResult, BatchAnalysisResult
 
 

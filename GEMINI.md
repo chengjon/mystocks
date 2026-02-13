@@ -45,6 +45,8 @@ Gemini CLI must integrate and respect the following four-stage quality assurance
 
 **Objective**: Rapidly fix code issues without hindering development speed.
 
+**Step 0 (Environment)**: Ensure `~/.codex/config.toml` has only essential MCP servers enabled. Disable browser tools (Puppeteer/Playwright) for backend tasks to avoid toolset size overruns.
+
 **Tool**: Ruff (all-in-one formatter + linter)
 
 **Trigger**: After any code modification or when asked to fix formatting/linting issues.

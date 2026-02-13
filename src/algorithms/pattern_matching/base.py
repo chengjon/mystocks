@@ -92,7 +92,7 @@ class PatternMatchingAlgorithm(GPUAcceleratedAlgorithm):
             self.patterns[pattern.id] = pattern
             logger.info("Added pattern: {pattern.id} ({pattern.name})")
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to add pattern {pattern.id}: %(e)s")
             return False
 

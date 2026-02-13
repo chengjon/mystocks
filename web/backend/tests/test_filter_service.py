@@ -9,7 +9,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.services.filter_service import (
     FilterCondition,
@@ -394,7 +394,7 @@ class TestAlertDispatcher:
         alert = Alert(
             id="alert_1",
             subscription_id="sub_1",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data={"price": 150.0},
             priority=AlertPriority.HIGH,
             delivery_methods={AlertDeliveryMethod.WEBSOCKET},

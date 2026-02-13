@@ -47,7 +47,7 @@ class SnapshotService:
             try:
                 value = self._calculate_indicator(stock_code, ind_id, reference_days)
                 indicator_values[ind_id] = IndicatorValue(indicator_id=ind_id, value=value)
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to calculate %(ind_id)s for %(stock_code)s: %(e)s")
 
         return IndicatorSnapshot(
@@ -80,7 +80,7 @@ class SnapshotService:
                     "open": float(row.get("open", 0)),
                     "volume": int(row.get("volume", 0)),
                 }
-        except Exception as e:
+        except Exception:
             logger.debug("Could not get realtime price for %(stock_code)s: %(e)s")
         return None
 
@@ -110,7 +110,7 @@ class SnapshotService:
                     # 处理 MACD 等返回多列的情况
                     col = indicator_id.split(".")[0] if "." in indicator_id else result.columns[0]
                     return float(result[col].iloc[-1]) if not result.empty else 0.0
-        except Exception as e:
+        except Exception:
             logger.debug("Indicator calculation failed for %(stock_code)s/%(indicator_id)s: %(e)s")
 
         return 0.0

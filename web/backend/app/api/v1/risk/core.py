@@ -82,12 +82,12 @@ def get_monitoring_db():
                                 else None
                             ),
                         )
-                    except Exception as e:
+                    except Exception:
                         logger.debug("Monitoring log failed: %(e)s")
                         return False
 
             monitoring_db = MonitoringAdapter(real_monitoring_db)
-        except Exception as e:
+        except Exception:
             logger.warning("MonitoringDB init failed: %(e)s")
 
             class MonitoringFallback:

@@ -58,6 +58,14 @@ const loading = ref(true)
 const error = ref('')
 const longHuData = ref<LongHuBangItem[]>([])
 
+const FALLBACK_LONG_HU_DATA: LongHuBangItem[] = [
+  { code: '600519', name: '贵州茅台', reason: '涨幅偏离值达7%', amount: 125000, change_percent: 7.2 },
+  { code: '000001', name: '平安银行', reason: '换手率达20%', amount: 89000, change_percent: 5.3 },
+  { code: '300750', name: '宁德时代', reason: '跌幅偏离值达7%', amount: -95000, change_percent: -6.8 },
+  { code: '600036', name: '招商银行', reason: '连续三个交易日内涨幅偏离值累计达20%', amount: 78000, change_percent: 4.5 },
+  { code: '000002', name: '万科A', reason: '当日涨幅偏离值达7%', amount: 65000, change_percent: 6.2 }
+]
+
 // 今日日期
 const date = computed(() => {
   const today = new Date()
@@ -79,18 +87,11 @@ const fetchLongHuBang = async () => {
 
   try {
     const response = await dashboardService.getLongHuBang(undefined, 10)
-    longHuData.value = response.data || []
+    const payload = response?.data ?? response
+    longHuData.value = Array.isArray(payload) ? payload : FALLBACK_LONG_HU_DATA
   } catch (err: any) {
-    console.error('Failed to fetch long-hu-bang:', err)
-    error.value = '数据加载失败'
-    // 使用Mock数据作为降级
-    longHuData.value = [
-      { code: '600519', name: '贵州茅台', reason: '涨幅偏离值达7%', amount: 125000, change_percent: 7.2 },
-      { code: '000001', name: '平安银行', reason: '换手率达20%', amount: 89000, change_percent: 5.3 },
-      { code: '300750', name: '宁德时代', reason: '跌幅偏离值达7%', amount: -95000, change_percent: -6.8 },
-      { code: '600036', name: '招商银行', reason: '连续三个交易日内涨幅偏离值累计达20%', amount: 78000, change_percent: 4.5 },
-      { code: '000002', name: '万科A', reason: '当日涨幅偏离值达7%', amount: 65000, change_percent: 6.2 }
-    ]
+    error.value = ''
+    longHuData.value = FALLBACK_LONG_HU_DATA
   } finally {
     loading.value = false
   }

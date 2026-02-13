@@ -20,7 +20,7 @@ import json
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -137,7 +137,7 @@ class EventCache:
             timestamp, cached_event = self.cache[key]
 
             # 检查是否过期
-            if datetime.utcnow() - timestamp < timedelta(seconds=self.ttl_seconds):
+            if datetime.now(timezone.utc) - timestamp < timedelta(seconds=self.ttl_seconds):
                 self.stats["hits"] += 1
                 # 更新访问顺序
                 if key in self.access_order:
@@ -161,7 +161,7 @@ class EventCache:
         if len(self.cache) >= self.max_size:
             self._evict_oldest()
 
-        self.cache[key] = (datetime.utcnow(), cached_value)
+        self.cache[key] = (datetime.now(timezone.utc), cached_value)
         self.access_order.append(key)
 
     def _evict_oldest(self):
@@ -465,7 +465,7 @@ class SSEPerformanceOptimizer:
             batch_data = {
                 "batch_id": batch.id,
                 "events": batch.events,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "compression": "gzip",
                 "event_count": len(batch.events),
             }
@@ -495,7 +495,7 @@ class SSEPerformanceOptimizer:
 
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("发送批次失败: %(e)s")
             self.metrics.total_events_dropped += len(batch.events)
             return False
@@ -559,7 +559,7 @@ class SSEPerformanceOptimizer:
 
                 await asyncio.sleep(self.batch_config["flush_interval"])
 
-            except Exception as e:
+            except Exception:
                 logger.error("批处理循环异常: %(e)s")
                 await asyncio.sleep(1)
 
@@ -592,7 +592,7 @@ class SSEPerformanceOptimizer:
 
                 await asyncio.sleep(30)  # 每30秒监控一次
 
-            except Exception as e:
+            except Exception:
                 logger.error("性能监控循环异常: %(e)s")
                 await asyncio.sleep(10)
 
@@ -605,7 +605,7 @@ class SSEPerformanceOptimizer:
 
                 await asyncio.sleep(300)  # 每5分钟清理一次
 
-            except Exception as e:
+            except Exception:
                 logger.error("缓存清理循环异常: %(e)s")
                 await asyncio.sleep(60)
 

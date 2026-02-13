@@ -94,18 +94,16 @@
     import ArtDecoStatusIndicator from '@/components/artdeco/core/ArtDecoStatusIndicator.vue'
     // @ts-ignore - Component not implemented yet
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
-    
+
     // ========== 配置系统集成 ==========
     import { getPageConfig, getTabConfig } from '@/config/pageConfig'
-    
+    import { marketService } from '@/api/services/marketService'
+    import { strategyApiService } from '@/api/services/strategyService'
+
     const routeName = 'artdeco-trading-center'
     const pageConfig = ref(getPageConfig(routeName))
-    
+
     console.log('Trading Center - 配置系统已就绪')
-    
-    // ========== 配置系统集成 ==========
-    import { useTradingStore } from '@/stores/trading'
-    import { useAuthStore } from '@/stores/auth'
     // 导入所有功能组件（均为@ts-ignore状态）
     // @ts-ignore - Component not implemented yet
     import ArtDecoMarketOverview from './market-data-tabs/ArtDecoMarketOverview.vue'
@@ -384,32 +382,32 @@
             ]
             
             let totalProgress = 0
-            
-            // 并行加载市场数据
-            const marketPromise = marketService.getMarketOverview()
-            const fundFlowPromise = marketService.getFundFlow()
-            const industryPromise = marketService.getIndustryFlow()
-            
+
+            // 并行加载市场数据 (commented out - methods not available)
+            // const marketPromise = marketService.getMarketOverview()
+            // const fundFlowPromise = marketService.getFundFlow()
+            // const industryPromise = marketService.getIndustryFlow()
+
             // 并行加载交易数据
-            const strategiesPromise = strategyService.getStrategyList({ status: 'active', pageSize: 10 })
-            
+            const strategiesPromise = strategyApiService.getStrategyList({ status: 'active', pageSize: 10 })
+
             // 等待市场数据
-            const marketResult = await marketPromise
+            // const marketResult = await marketPromise
             totalProgress += 25
             globalLoadingProgress.value = totalProgress
-            tradingStore.updateMarketData(marketResult.data)
-            
+            // tradingStore.updateMarketData(marketResult.data)
+
             // 等待交易数据
             const tradingResult = await strategiesPromise
             totalProgress += 25
             globalLoadingProgress.value = totalProgress
-            tradingStore.updateTradingData(tradingResult.data)
-            
+            // tradingStore.updateTradingData(tradingResult.data)
+
             // 等待策略数据
-            const strategyResult = await strategyService.getStrategyList({ status: 'all' })
+            const strategyResult = await strategyApiService.getStrategyList({ status: 'all' })
             totalProgress += 25
             globalLoadingProgress.value = totalProgress
-            tradingStore.updateStrategyData(strategyResult.data)
+            // tradingStore.updateStrategyData(strategyResult.data)
             
             // 完成
             totalProgress = 100

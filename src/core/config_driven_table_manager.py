@@ -55,7 +55,7 @@ class ConfigDrivenTableManager:
         return dict(config) if config else {}
 
     def _normalize_db_type(self, db_type: str) -> str:
-        if db_type in {"MySQL", "MariaDB"}:
+        if db_type.lower() in {"mysql", "mariadb"}:
             raise ValueError("MySQL/MariaDB已移除，请使用PostgreSQL")
         return db_type
 

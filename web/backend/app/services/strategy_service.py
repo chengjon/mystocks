@@ -112,7 +112,7 @@ class StrategyService:
 
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("获取股票%(symbol)s历史数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -152,7 +152,7 @@ class StrategyService:
 
             return result
 
-        except Exception as e:
+        except Exception:
             logger.error("获取股票列表失败: %(e)s")
             return []
 

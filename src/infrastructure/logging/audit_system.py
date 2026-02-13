@@ -288,7 +288,7 @@ async def _audit_worker(self):
                 if events:
                     await self._batch_insert_audit_events(events)
 
-            except Exception as e:
+            except Exception:
                 logger.error("Audit worker error: %(e)s")
 
     except asyncio.CancelledError:
@@ -332,7 +332,7 @@ async def _batch_insert_audit_events(self, events: List[AuditEvent]):
 
             logger.debug("Batch inserted {len(events)} audit events")
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to batch insert audit events: %(e)s")
 
 
@@ -401,7 +401,7 @@ async def get_audit_logs(
                 for row in rows
             ]
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to get audit logs: %(e)s")
         return []
 
@@ -421,7 +421,7 @@ async def cleanup_old_audit_logs(self, days_to_keep: int = 90):
             )
             return int(deleted_count)
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to cleanup audit logs: %(e)s")
         return 0
 

@@ -111,7 +111,7 @@ class WencaiDataSource:
                 if page < pages:
                     time.sleep(0.5)
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to fetch page %(page)s: {str(e)}")
                 # 继续处理其他页
                 continue
@@ -196,7 +196,7 @@ class WencaiDataSource:
             df = pd.DataFrame(datas)
             return df
 
-        except requests.RequestException as e:
+        except requests.RequestException:
             logger.error("HTTP request failed: {str(e)}")
             raise
         except (ValueError, KeyError, IndexError) as e:

@@ -10,7 +10,7 @@ import subprocess
 import logging
 from dataclasses import dataclass
 from typing import List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class APITestRunner:
         if not self._check_services():
             return {"error": "Services not available"}
 
-        results = {"start_time": datetime.utcnow().isoformat(), "tests": [], "summary": {}}
+        results = {"start_time": datetime.now(timezone.utc).isoformat(), "tests": [], "summary": {}}
 
         with sync_playwright() as p:
             browser = p.chromium.launch()
@@ -60,7 +60,7 @@ class APITestRunner:
 
         # 生成报告
         results["summary"] = self._generate_summary(results["tests"])
-        results["end_time"] = datetime.utcnow().isoformat()
+        results["end_time"] = datetime.now(timezone.utc).isoformat()
 
         return results
 
@@ -101,7 +101,7 @@ class APITestRunner:
                     "status_code": response.status,
                     "success": response.status < 400,
                     "response_time": response.time,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
                 results.append(result)

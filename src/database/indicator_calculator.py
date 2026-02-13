@@ -34,7 +34,7 @@ class TechnicalIndicatorCalculator:
             try:
                 self.factory = IndicatorFactory()
                 logger.info("Initialized V2 IndicatorFactory in Legacy Calculator")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to initialize V2 IndicatorFactory: %(e)s")
 
     def calculate_technical_indicators(self, data: pd.DataFrame) -> Dict[str, Any]:
@@ -221,7 +221,7 @@ class TechnicalIndicatorCalculator:
 
                 result = self.factory.calculate(template_id, df, period=period)
                 return result
-            except Exception as e:
+            except Exception:
                 logger.debug("V2 Factory SMA failed, falling back: %(e)s")
 
         # Legacy Implementation
@@ -248,7 +248,7 @@ class TechnicalIndicatorCalculator:
 
                 # Legacy compatibility: fill NaN with 50 (V2 returns NaN)
                 return result.fillna(50)
-            except Exception as e:
+            except Exception:
                 logger.debug("V2 Factory RSI failed, falling back: %(e)s")
 
         # Legacy Implementation

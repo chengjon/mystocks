@@ -20,7 +20,7 @@ interface MarketData {
 }
 
 // 使用标准Store模板
-export const useMarketStore = createBaseStore<MarketData>('market', {
+export const useMarketStore = createBaseStore('market', {
   marketOverview: null,
   marketAnalysis: null
 })
@@ -40,19 +40,19 @@ export const useMarketStoreExtended = () => {
       }
     ).then(result => {
       // 更新最后更新时间（仅当result中有时）
-      if (baseStore.state.data && result?.lastUpdateTime) {
-        ;(baseStore.state.data as any).lastUpdateTime = result.lastUpdateTime
+      if (baseStore.state.data && result?.lastUpdate) {
+        ;(baseStore.state.data as any).lastUpdateTime = result.lastUpdate
       }
       return result
     })
   }
 
   // 获取市场分析
-  const fetchAnalysis = async (forceRefresh = false) => {
+  const fetchAnalysis = async (type: 'technical' | 'capital_flow' | 'longhu_bang' = 'technical', forceRefresh = false) => {
     return baseStore.executeApiCall(
-      () => tradingApiManager.getMarketAnalysis(),
+      () => tradingApiManager.getMarketAnalysis(type),
       {
-        cacheKey: 'market-analysis',
+        cacheKey: `market-analysis-${type}`,
         forceRefresh,
         errorContext: 'Market Analysis'
       }
@@ -69,7 +69,7 @@ export const useMarketStoreExtended = () => {
   const refresh = async () => {
     await Promise.all([
       fetchOverview(true),
-      fetchAnalysis(true)
+      fetchAnalysis('technical', true)
     ])
   }
 

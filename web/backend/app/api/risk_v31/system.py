@@ -1,14 +1,12 @@
 """
 系统、WebSocket与核心监控路由 (V3.1)
 """
-import asyncio
-import json
 import structlog
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.exceptions import BusinessException, ValidationException
+from app.core.exceptions import BusinessException
 from app.utils.risk_utils import connection_manager
 
 # 导入核心
@@ -53,6 +51,6 @@ async def websocket_risk_updates(websocket: WebSocket, topics: str = "portfolio_
 async def get_websocket_connections():
     """获取WebSocket连接统计 (V3.1)"""
     return {
-        "status": "success", 
+        "status": "success",
         "data": {"total": len(connection_manager.active_connections)}
     }

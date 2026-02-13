@@ -704,7 +704,7 @@ class DataDataSourceAdapter(IDataSource):
                 response_time=response_time,
                 success=success,
             )
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to trigger quality monitoring: {str(e)}")
 
     async def health_check(self) -> HealthStatus:
@@ -1017,7 +1017,7 @@ class DashboardDataSourceAdapter(IDataSource):
                 response_time=response_time,
                 success=success,
             )
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to trigger quality monitoring: {str(e)}")
 
     async def health_check(self) -> HealthStatus:
@@ -1559,7 +1559,7 @@ class StrategyDataSourceAdapter(IDataSource):
             # 如果没有匹配的endpoint，返回默认数据
             return self._get_mock_strategy_data(endpoint, params)
 
-        except Exception as e:
+        except Exception:
             logger.error("Strategy service error: %(e)s")
             # 降级到Mock数据
             if self._get_mock_manager():
@@ -1935,7 +1935,7 @@ class WatchlistDataSourceAdapter(IDataSource):
             # 如果没有匹配的endpoint，返回默认数据
             return self._get_mock_watchlist_data(endpoint, params)
 
-        except Exception as e:
+        except Exception:
             logger.error("Watchlist service error: %(e)s")
             # 降级到Mock数据
             if self._get_mock_manager():

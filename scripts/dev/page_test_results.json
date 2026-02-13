@@ -1,0 +1,499 @@
+{
+  "pass": [
+    "/login",
+    "/dashboard",
+    "/market/realtime",
+    "/market/overview",
+    "/market/analysis",
+    "/market/industry",
+    "/market/technical",
+    "/market/fund-flow",
+    "/market/etf",
+    "/market/concept",
+    "/market/auction",
+    "/market/chip-race",
+    "/market/institution",
+    "/market/lhb",
+    "/market/sentiment",
+    "/market/wencai",
+    "/market/tdx-market",
+    "/stocks/list",
+    "/stocks/screener",
+    "/stocks/stock-detail/000001",
+    "/stocks/watchlists",
+    "/stocks/analysis/industry-concept",
+    "/trading/portfolio",
+    "/trading/positions",
+    "/trading/trade",
+    "/trading/history",
+    "/trading/risk",
+    "/strategy/management",
+    "/strategy/backtest",
+    "/strategy/signals",
+    "/strategy/performance",
+    "/strategy/optimization",
+    "/strategy/attribution",
+    "/strategy/gpu-backtest",
+    "/risk/overview",
+    "/risk/position",
+    "/risk/portfolio",
+    "/risk/alerts",
+    "/monitoring/dashboard",
+    "/monitoring/data-quality",
+    "/monitoring/performance",
+    "/monitoring/api-health",
+    "/monitoring/gpu-monitoring",
+    "/system/settings",
+    "/system/data-update",
+    "/system/announcement",
+    "/system/tasks",
+    "/system/design",
+    "/system/architecture",
+    "/system/database-monitor",
+    "/market-data/indicators",
+    "/market-data/longhubang",
+    "/market-data/smart-data-test",
+    "/artdeco/test",
+    "/artdeco/skeleton-demo",
+    "/artdeco/market",
+    "/artdeco/market-quotes",
+    "/artdeco/analysis",
+    "/artdeco/backtest",
+    "/artdeco/risk",
+    "/artdeco/settings",
+    "/artdeco/stock-management",
+    "/artdeco/trading",
+    "/strategy-hub/strategy-mgmt",
+    "/strategy-hub/backtest",
+    "/strategy-hub/signals",
+    "/strategy-hub/performance",
+    "/strategy-hub/optimization",
+    "/strategy-hub/attribution",
+    "/strategy-hub/gpu-backtest",
+    "/strategy-hub/freqtrade-demo",
+    "/strategy-hub/openstock-demo",
+    "/strategy-hub/pyprofiling-demo",
+    "/strategy-hub/stock-analysis-demo",
+    "/strategy-hub/tdxpy-demo",
+    "/risk-monitor/overview",
+    "/risk-monitor/position",
+    "/risk-monitor/portfolio",
+    "/risk-monitor/alerts",
+    "/phase4-dashboard",
+    "/strategy-mgmt-phase4",
+    "/test"
+  ],
+  "fail": [],
+  "errors": {
+    "/login": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/dashboard",
+      "title": "仪表盘 - MyStocks Platform"
+    },
+    "/dashboard": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/dashboard",
+      "title": "仪表盘 - MyStocks Platform"
+    },
+    "/market/realtime": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/realtime",
+      "title": "实时行情 - MyStocks Platform"
+    },
+    "/market/overview": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/overview",
+      "title": "市场概览 - MyStocks Platform"
+    },
+    "/market/analysis": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/analysis",
+      "title": "市场分析 - MyStocks Platform"
+    },
+    "/market/industry": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/industry",
+      "title": "行业分析 - MyStocks Platform"
+    },
+    "/market/technical": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/technical",
+      "title": "技术指标 - MyStocks Platform"
+    },
+    "/market/fund-flow": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/fund-flow",
+      "title": "资金流向 - MyStocks Platform"
+    },
+    "/market/etf": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/etf",
+      "title": "ETF行情 - MyStocks Platform"
+    },
+    "/market/concept": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/concept",
+      "title": "概念板块 - MyStocks Platform"
+    },
+    "/market/auction": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/auction",
+      "title": "竞价抢筹 - MyStocks Platform"
+    },
+    "/market/chip-race": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/chip-race",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market/institution": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/institution",
+      "title": "机构荐股 - MyStocks Platform"
+    },
+    "/market/lhb": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/lhb",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market/sentiment": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/sentiment",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market/wencai": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/wencai",
+      "title": "问财选股 - MyStocks Platform"
+    },
+    "/market/tdx-market": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/tdx-market",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/stocks/list": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/list",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/stocks/screener": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/screener",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/stocks/stock-detail/000001": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/stock-detail/000001",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/stocks/watchlists": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/watchlists",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/stocks/analysis/industry-concept": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/analysis/industry-concept",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/trading/portfolio": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/portfolio",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/trading/positions": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/positions",
+      "title": "持仓监控 - MyStocks Platform"
+    },
+    "/trading/trade": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/trade",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/trading/history": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/history",
+      "title": "历史订单 - MyStocks Platform"
+    },
+    "/trading/risk": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/risk",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy/management": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/management",
+      "title": "策略管理 - MyStocks Platform"
+    },
+    "/strategy/backtest": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/backtest",
+      "title": "策略回测 - MyStocks Platform"
+    },
+    "/strategy/signals": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/signals",
+      "title": "交易信号 - MyStocks Platform"
+    },
+    "/strategy/performance": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/performance",
+      "title": "绩效分析 - MyStocks Platform"
+    },
+    "/strategy/optimization": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/optimization",
+      "title": "参数优化 - MyStocks Platform"
+    },
+    "/strategy/attribution": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/trading/attribution",
+      "title": "绩效归因 - MyStocks Platform"
+    },
+    "/strategy/gpu-backtest": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/gpu-backtest",
+      "title": "GPU加速回测 - MyStocks Platform"
+    },
+    "/risk/overview": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk/overview",
+      "title": "风险概览 - MyStocks Platform"
+    },
+    "/risk/position": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk/position",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk/portfolio": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk/portfolio",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk/alerts": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk/alerts",
+      "title": "告警中心 - MyStocks Platform"
+    },
+    "/monitoring/dashboard": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/monitoring/dashboard",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/monitoring/data-quality": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/monitoring/data-quality",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/monitoring/performance": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/monitoring/performance",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/monitoring/api-health": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/monitoring/api-health",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/monitoring/gpu-monitoring": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/monitoring/gpu-monitoring",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/system/settings": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/settings",
+      "title": "系统设置 - MyStocks Platform"
+    },
+    "/system/data-update": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/data-update",
+      "title": "数据更新 - MyStocks Platform"
+    },
+    "/system/announcement": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/announcement",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/system/tasks": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/tasks",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/system/design": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/design",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/system/architecture": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/architecture",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/system/database-monitor": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/database-monitor",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market-data/indicators": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market-data/indicators",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market-data/longhubang": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market-data/longhubang",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/market-data/smart-data-test": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market-data/smart-data-test",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/artdeco/test": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/artdeco/test",
+      "title": "ArtDeco Component Test - MyStocks Platform"
+    },
+    "/artdeco/skeleton-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/artdeco/skeleton-demo",
+      "title": "Skeleton Demo - MyStocks Platform"
+    },
+    "/artdeco/market": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/data",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/artdeco/market-quotes": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/market/quotes",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/artdeco/analysis": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/analysis/data",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/artdeco/backtest": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/backtest",
+      "title": "策略回测 - MyStocks Platform"
+    },
+    "/artdeco/risk": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk/management",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/artdeco/settings": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/system/monitoring",
+      "title": "运维监控 - MyStocks Platform"
+    },
+    "/artdeco/stock-management": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/stocks/management",
+      "title": "股票管理 - MyStocks Platform"
+    },
+    "/artdeco/trading": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy/trading",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/strategy-mgmt": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/strategy-mgmt",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/backtest": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/backtest",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/signals": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/signals",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/performance": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/performance",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/optimization": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/optimization",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/attribution": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/attribution",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/gpu-backtest": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/gpu-backtest",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/freqtrade-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/freqtrade-demo",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/openstock-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/openstock-demo",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/pyprofiling-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/pyprofiling-demo",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/stock-analysis-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/stock-analysis-demo",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-hub/tdxpy-demo": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-hub/tdxpy-demo",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk-monitor/overview": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk-monitor/overview",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk-monitor/position": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk-monitor/position",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk-monitor/portfolio": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk-monitor/portfolio",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/risk-monitor/alerts": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/risk-monitor/alerts",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/phase4-dashboard": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/phase4-dashboard",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/strategy-mgmt-phase4": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/strategy-mgmt-phase4",
+      "title": "Not Found - MyStocks Platform"
+    },
+    "/test": {
+      "status": 200,
+      "finalUrl": "http://localhost:3020/test",
+      "title": "Vue Test"
+    }
+  }
+}

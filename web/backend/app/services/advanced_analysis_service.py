@@ -54,7 +54,7 @@ class AdvancedAnalysisService:
             self._initialized = True
             logger.info("AdvancedAnalysisService initialized successfully")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to initialize AdvancedAnalysisService: %(e)s")
             raise
 
@@ -84,7 +84,7 @@ class AdvancedAnalysisService:
             # 也广播到全局分析频道
             await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to broadcast analysis progress: %(e)s")
 
     async def _broadcast_analysis_complete(self, analysis_type: str, symbol: str, result: Dict):
@@ -102,7 +102,7 @@ class AdvancedAnalysisService:
 
             await websocket_manager.broadcast_to_channel(channel="analysis:all", message=event_data)
 
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to broadcast analysis completion: %(e)s")
 
     async def perform_analysis_with_realtime_updates(self, analysis_type: str, symbol: str, **kwargs) -> Dict[str, Any]:
@@ -192,7 +192,7 @@ class AdvancedAnalysisService:
 
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("基本面分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -207,7 +207,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["technical"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("技术面分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -227,7 +227,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["trading_signals"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("交易信号分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -242,7 +242,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["time_series"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("时序分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -257,7 +257,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["market_panorama"].analyze("market_overview")
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("市场全景分析失败: %(e)s")
             raise
 
@@ -272,7 +272,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["capital_flow"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("资金流向分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -287,7 +287,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["chip_distribution"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("筹码分布分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -302,7 +302,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["anomaly_tracking"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("异常追踪分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -317,7 +317,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["financial_valuation"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("财务估值分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -332,7 +332,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["sentiment"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("情绪分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -347,7 +347,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["decision_models"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("决策模型分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -362,7 +362,7 @@ class AdvancedAnalysisService:
                 result = self.analysis_engine.analyzers["multidimensional_radar"].analyze(symbol)
                 return result.dict() if hasattr(result, "dict") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("多维度雷达分析失败 (symbol=%(symbol)s): %(e)s")
             raise
 
@@ -401,7 +401,7 @@ class AdvancedAnalysisService:
 
                 return results
 
-        except Exception as e:
+        except Exception:
             logger.error("批量分析失败: %(e)s")
             raise
 

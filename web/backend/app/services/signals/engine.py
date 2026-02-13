@@ -41,7 +41,7 @@ try:
 
     MONITORING_AVAILABLE = True
     logger.info("✅ Signal monitoring system available")
-except ImportError as e:
+except ImportError:
     logger.warning("Signal monitoring system not available: %(e)s")
     MONITORING_AVAILABLE = False
     get_signal_recorder = None
@@ -172,7 +172,7 @@ class SignalEngine:
             # 更新指标缓存（实时tick数据）
             await self._update_indicators(symbol, tick_data, "tick")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error handling market tick: %(e)s")
 
     async def _handle_market_bar(self, event: Event):
@@ -195,7 +195,7 @@ class SignalEngine:
             # 生成信号
             await self._generate_signals(symbol, bar_data)
 
-        except Exception as e:
+        except Exception:
             logger.error("Error handling market bar: %(e)s")
 
     async def _update_indicators(self, symbol: str, market_data: Dict[str, Any], data_type: str):
@@ -223,10 +223,10 @@ class SignalEngine:
                     if indicator_data:
                         self.indicator_cache[symbol][indicator_name] = indicator_data
 
-                except Exception as e:
+                except Exception:
                     logger.error("Error calculating %(indicator_name)s for %(symbol)s: %(e)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error updating indicators for %(symbol)s: %(e)s")
 
     async def _calculate_indicator(
@@ -259,7 +259,7 @@ class SignalEngine:
 
             return result.data if hasattr(result, "data") else result
 
-        except Exception as e:
+        except Exception:
             logger.error("Error in indicator calculation: %(e)s")
             return None
 
@@ -300,7 +300,7 @@ class SignalEngine:
                     if signal and signal.confidence >= self.config.min_confidence:
                         signals.append(signal)
 
-                except Exception as e:
+                except Exception:
                     logger.error("Error in strategy {strategy.name}: %(e)s")
 
             # 信号融合和过滤
@@ -318,7 +318,7 @@ class SignalEngine:
                 self.last_signal_time[symbol] = datetime.now()
                 self.signals_generated += len(filtered_signals)
 
-        except Exception as e:
+        except Exception:
             logger.error("Error generating signals for %(symbol)s: %(e)s")
 
     def _can_generate_signal(self, symbol: str) -> bool:
@@ -404,7 +404,7 @@ class SignalEngine:
 
             logger.info("Published signal: {signal.signal_id} for {signal.symbol} ({signal.signal_type.value})")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error publishing signal {signal.signal_id}: %(e)s")
 
     async def _record_signal_to_monitoring(self, signal: TradingSignal):
@@ -430,7 +430,7 @@ class SignalEngine:
                     "indicators": signal.indicators,
                 },
             )
-        except Exception as e:
+        except Exception:
             logger.error("Error recording signal to monitoring: %(e)s")
 
     async def _send_signal_notification(self, signal: TradingSignal):
@@ -452,7 +452,7 @@ class SignalEngine:
                 },
                 signal_id=signal.signal_id,
             )
-        except Exception as e:
+        except Exception:
             logger.error("Error sending signal notification: %(e)s")
 
     # ================ API规范实现 ================
@@ -563,7 +563,7 @@ class SignalEngine:
             # 限制返回数量（避免返回过多数据）
             return all_signals[:100]
 
-        except Exception as e:
+        except Exception:
             logger.error("Error analyzing trading signals: %(e)s")
             return []
 
