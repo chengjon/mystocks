@@ -1,5 +1,5 @@
 // Auto-generated types for system domain
-// Generated at: 2026-02-07T23:04:25.801317
+// Generated at: 2026-02-13T09:26:31.505450
 
 export interface DataClassificationStats {
   description?: string;

@@ -353,7 +353,7 @@ class MLTradingStrategy(BaseStrategy):
             logger.info("生成 {len(signals_df)} 个交易信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("ML策略信号生成失败: %(e)s")
             # 返回空信号DataFrame
             return pd.DataFrame(columns=["signal", "confidence", "timestamp"])
@@ -378,7 +378,7 @@ class MLTradingStrategy(BaseStrategy):
 
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("参数验证失败: %(e)s")
             return False
 

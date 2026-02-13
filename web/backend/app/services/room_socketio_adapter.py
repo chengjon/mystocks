@@ -15,7 +15,7 @@ Date: 2025-11-07
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Set
 
 import structlog
@@ -227,7 +227,7 @@ class RoomSocketIOAdapter:
                     "user_id": user_id,
                     "username": username,
                     "role": role.value,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
@@ -288,7 +288,7 @@ class RoomSocketIOAdapter:
                     "user_left",
                     {
                         "user_id": user_id,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     },
                 )
 

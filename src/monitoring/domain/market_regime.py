@@ -192,7 +192,7 @@ class MarketRegimeIdentifier:
 
             return float(score)
 
-        except Exception as e:
+        except Exception:
             logger.error("MA斜率计算失败: %(e)s")
             return 0.0
 
@@ -245,7 +245,7 @@ class MarketRegimeIdentifier:
 
             return float(np.clip(score, -100, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("市场广度计算失败: %(e)s")
             return 0.0
 
@@ -309,7 +309,7 @@ class MarketRegimeIdentifier:
 
             return float(np.clip(score, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("波动率计算失败: %(e)s")
             return 50.0
 

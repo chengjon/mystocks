@@ -11,7 +11,6 @@
             type="text"
             class="command-input"
             placeholder="Search pages, actions, or stocks..."
-            @input="handleSearch"
             @keydown="handleKeydown"
             autofocus
           />

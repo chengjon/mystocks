@@ -16,7 +16,7 @@ Date: 2025-11-07
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
@@ -279,7 +279,7 @@ class AggregationEngine:
         self.ticks_processed = 0
         self.bars_completed = 0
         self.validation_errors = 0
-        self.last_update_time = datetime.utcnow()
+        self.last_update_time = datetime.now(timezone.utc)
 
         logger.info("✅ Aggregation Engine initialized")
 
@@ -294,7 +294,7 @@ class AggregationEngine:
             已完成的OHLCV柱线列表
         """
         self.ticks_processed += 1
-        self.last_update_time = datetime.utcnow()
+        self.last_update_time = datetime.now(timezone.utc)
         completed_bars = []
 
         # 处理所有时间周期
@@ -376,7 +376,7 @@ class AggregationEngine:
             "validation_errors": self.validation_errors,
             "active_buffers": active_buffers,
             "total_symbols": len(set(buf.symbol for buf in self.buffers.values())),
-            "uptime_seconds": (datetime.utcnow() - self.last_update_time).total_seconds(),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.last_update_time).total_seconds(),
             "last_update": self.last_update_time.isoformat(),
         }
 

@@ -157,7 +157,7 @@ class AlgorithmModelRepository:
             logger.info("Saved algorithm model: {model.model_id}")
             return True
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to save algorithm model: %(e)s")
             return False
@@ -192,7 +192,7 @@ class AlgorithmModelRepository:
                 }
             return None
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to get algorithm model %(model_id)s: %(e)s")
             return None
 
@@ -218,7 +218,7 @@ class AlgorithmModelRepository:
                 return True
             return False
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to update algorithm model %(model_id)s: %(e)s")
             return False
@@ -242,7 +242,7 @@ class AlgorithmModelRepository:
                 return True
             return False
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to delete algorithm model %(model_id)s: %(e)s")
             return False
@@ -289,7 +289,7 @@ class AlgorithmModelRepository:
                 for model in models
             ]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to list algorithm models: %(e)s")
             return []
 
@@ -313,7 +313,7 @@ class AlgorithmModelRepository:
             logger.info("Saved training history: {history.training_id}")
             return True
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to save training history: %(e)s")
             return False
@@ -351,7 +351,7 @@ class AlgorithmModelRepository:
                 }
             return None
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to get training history %(training_id)s: %(e)s")
             return None
 
@@ -394,7 +394,7 @@ class AlgorithmModelRepository:
                 for history in histories
             ]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to list training history: %(e)s")
             return []
 
@@ -418,7 +418,7 @@ class AlgorithmModelRepository:
             logger.info("Saved prediction history: {history.prediction_id}")
             return True
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to save prediction history: %(e)s")
             return False
@@ -453,7 +453,7 @@ class AlgorithmModelRepository:
                 }
             return None
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to get prediction history %(prediction_id)s: %(e)s")
             return None
 
@@ -496,7 +496,7 @@ class AlgorithmModelRepository:
                 for history in histories
             ]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to list prediction history: %(e)s")
             return []
 
@@ -553,7 +553,7 @@ class AlgorithmModelRepository:
                 },
             }
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("Failed to get model statistics: %(e)s")
             return {}
 
@@ -589,7 +589,7 @@ class AlgorithmModelRepository:
 
             return total_deleted
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to cleanup old history: %(e)s")
             return 0
@@ -813,7 +813,7 @@ class AlgorithmModelRepository:
             logger.info("Cleaned up orphaned history records: %(result)s")
             return result
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.session.rollback()
             logger.error("Failed to cleanup orphaned history: %(e)s")
             return {"training_deleted": 0, "prediction_deleted": 0}

@@ -4,9 +4,7 @@ Baostock东方财富数据源适配器
 提供Baostock中国历史数据获取功能，支持复权数据、高质量历史数据等
 """
 
-import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Dict, List, Optional
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service

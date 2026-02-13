@@ -5,9 +5,8 @@
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
-import asyncio
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -88,7 +87,7 @@ class MarketDataService:
 
             from app.core.database import db_service
 
-            sql = f"""
+            sql = """
             SELECT code, name, industry, area
             FROM stocks
             WHERE 1=1

@@ -93,7 +93,7 @@ class PushServiceMonitor:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_push_result("email", True, latency_ms)
                 return result
-            except Exception as e:
+            except Exception:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_push_result("email", False, latency_ms)
                 raise
@@ -111,7 +111,7 @@ class PushServiceMonitor:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_push_result("webhook", True, latency_ms)
                 return result
-            except Exception as e:
+            except Exception:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_push_result("webhook", False, latency_ms)
                 raise
@@ -224,7 +224,7 @@ class AsyncPushServiceMonitor:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_result(True, latency_ms)
                 return result
-            except Exception as e:
+            except Exception:
                 latency_ms = (time.time() - start_time) * 1000
                 self._record_result(False, latency_ms)
                 raise

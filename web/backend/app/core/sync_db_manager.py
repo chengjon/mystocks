@@ -8,7 +8,7 @@ Sync Database Manager for Dual-Database Consistency
 3. 提供消息查询和统计接口
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -276,7 +276,7 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             messages = (
                 session.query(SyncMessage)
@@ -360,14 +360,14 @@ class SyncDatabaseManager:
 
             # 更新状态
             message.status = status
-            message.updated_at = datetime.utcnow()
+            message.updated_at = datetime.now(timezone.utc)
 
             # 根据状态更新时间戳
             if status == MessageStatus.IN_PROGRESS:
-                message.started_at = datetime.utcnow()
+                message.started_at = datetime.now(timezone.utc)
 
             elif status == MessageStatus.SUCCESS:
-                message.completed_at = datetime.utcnow()
+                message.completed_at = datetime.now(timezone.utc)
                 if sync_latency_ms:
                     message.sync_latency_ms = sync_latency_ms
                 if processing_duration_ms:
@@ -386,7 +386,7 @@ class SyncDatabaseManager:
                 else:
                     # 计算下次重试时间 (指数退避)
                     retry_delay = 2**message.retry_count  # 2, 4, 8 秒
-                    message.next_retry_at = datetime.utcnow() + timedelta(seconds=retry_delay)
+                    message.next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=retry_delay)
                     message.status = MessageStatus.RETRY
 
             if processed_by:
@@ -439,7 +439,7 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            window_start = datetime.utcnow() - timedelta(minutes=window_minutes)
+            window_start = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
 
             query = session.query(
                 func.count(SyncMessage.id).label("total_messages"),
@@ -492,7 +492,7 @@ class SyncDatabaseManager:
         session = self.get_session()
 
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
             deleted_count = (
                 session.query(SyncMessage)

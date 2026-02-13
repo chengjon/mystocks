@@ -93,7 +93,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -103,7 +103,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"hmm_{self.metadata.name}")
                 logger.info("HMM GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -204,7 +204,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("HMM training completed - {self.n_states} states, %(n_regime_changes)s regime changes")
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("HMM training failed: %(e)s")
             raise
 
@@ -323,7 +323,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("HMM prediction failed: %(e)s")
             raise
 
@@ -352,7 +352,7 @@ class HMMAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("HMM evaluation failed: %(e)s")
             raise
 

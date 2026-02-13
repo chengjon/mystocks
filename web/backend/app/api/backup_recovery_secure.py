@@ -21,7 +21,7 @@
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
@@ -84,7 +84,7 @@ def log_security_event(
 ):
     """记录安全审计日志"""
     log_data = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "event_type": event_type,
         "user_id": user.id,
         "username": user.username,
@@ -504,7 +504,7 @@ async def restore_tdengine_full(
                 dry_run=request.dry_run,
                 success=True,
                 message=message,
-                start_time=datetime.utcnow().isoformat(),
+                start_time=datetime.now(timezone.utc).isoformat(),
                 duration_seconds=0,  # 实际应从恢复管理器获取
             )
 
@@ -577,7 +577,7 @@ async def restore_tdengine_pitr(
                 dry_run=False,
                 success=True,
                 message=message,
-                start_time=datetime.utcnow().isoformat(),
+                start_time=datetime.now(timezone.utc).isoformat(),
                 duration_seconds=0,
             )
 
@@ -663,7 +663,7 @@ async def restore_postgresql_full(
                 dry_run=request.dry_run,
                 success=True,
                 message=message,
-                start_time=datetime.utcnow().isoformat(),
+                start_time=datetime.now(timezone.utc).isoformat(),
                 duration_seconds=0,
             )
 
@@ -856,7 +856,7 @@ async def verify_backup_integrity(backup_id: str, current_user: User = Depends(g
             is_valid=is_valid,
             verification_details=details,
             report_file_path=str(report_file),
-            verification_time=datetime.utcnow().isoformat(),
+            verification_time=datetime.now(timezone.utc).isoformat(),
         )
 
         log_security_event(
@@ -1004,7 +1004,7 @@ async def backup_service_health():
         health_data = {
             "status": "healthy",
             "service": "backup-recovery",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "components": {
                 "backup_manager": "operational",
                 "recovery_manager": "operational",

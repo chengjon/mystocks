@@ -40,7 +40,7 @@ for (const page of pages) {
             errors.push(error.message);
         });
         
-        const response = await p.goto('http://localhost:3002' + page.path, { 
+        const response = await p.goto('http://localhost:3020' + page.path, { 
             waitUntil: 'domcontentloaded',
             timeout: 30000 
         });

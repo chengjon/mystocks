@@ -32,7 +32,7 @@ def _get_or_create(metric_cls, name: str, *args, **kwargs):
                         return collector
         except Exception:
             pass
-        
+
         # 如果指标不存在，创建新的
         try:
             return metric_cls(name, *args, **kwargs)

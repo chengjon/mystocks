@@ -100,7 +100,7 @@ class ResponseFormatMiddleware(BaseHTTPMiddleware):
 
             return wrapped_response
 
-        except Exception as e:
+        except Exception:
             # 处理未捕获的异常
             logger.error("未处理的异常 [request_id={request_id}]: {str(e)}", exc_info=True)
 

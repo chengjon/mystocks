@@ -87,7 +87,7 @@ class TalibGenericIndicator(IndicatorInterface):
         min_points = self._registry.get_min_data_points(self.ABBREVIATION, parameters)
         try:
             self.validate_data(data, min_points)
-        except Exception as e:
+        except Exception:
             # 返回INSUFFICIENT_DATA状态
             return self._create_insufficient_data_result(parameters, min_points, data.length)
 

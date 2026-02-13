@@ -158,7 +158,7 @@ class StopLossHistoryService:
 
             return record_id
 
-        except Exception as e:
+        except Exception:
             logger.error("记录止损执行失败 %(symbol)s %(position_id)s: %(e)s")
             raise
 
@@ -586,7 +586,7 @@ class StopLossHistoryService:
                         "holding_period_days": record.holding_period_days,
                     },
                 )
-        except Exception as e:
+        except Exception:
             logger.warning("记录到监控系统失败 {record.record_id}: %(e)s")
 
     async def _simulate_stop_loss_check(
@@ -613,7 +613,7 @@ class StopLossHistoryService:
 
             return False
 
-        except Exception as e:
+        except Exception:
             logger.warning("模拟止损检查失败 %(strategy_type)s %(symbol)s: %(e)s")
             return False
 

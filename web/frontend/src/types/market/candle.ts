@@ -5,6 +5,8 @@
  * @version 1.0.0
  */
 
+import type { UnifiedResponse } from '../common/response';
+
 /**
  * 复权类型
  */

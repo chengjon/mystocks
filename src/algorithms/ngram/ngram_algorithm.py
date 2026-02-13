@@ -80,7 +80,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -90,7 +90,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"ngram_{self.metadata.name}")
                 logger.info("N-gram GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     def _discretize_sequence(self, sequence: np.ndarray, bins: int = 10) -> List[str]:
@@ -299,7 +299,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
             )
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("N-gram training failed: %(e)s")
             raise
 
@@ -389,7 +389,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("N-gram prediction failed: %(e)s")
             raise
 
@@ -449,7 +449,7 @@ class NGramAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("N-gram evaluation failed: %(e)s")
             raise
 

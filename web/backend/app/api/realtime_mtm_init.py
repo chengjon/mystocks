@@ -59,7 +59,7 @@ def initialize_realtime_mtm():
 
             event_bus = RedisEventBus(host="localhost", port=6379, db=0)
             logger.info("✅ Redis Event Bus connected for Real-time MTM")
-        except Exception as e:
+        except Exception:
             logger.warning("⚠️ Redis not available for Real-time MTM: %(e)s")
 
         # 初始化适配器
@@ -70,7 +70,7 @@ def initialize_realtime_mtm():
         logger.info("✅ Real-time MTM system initialized successfully")
         return adapter
 
-    except Exception as e:
+    except Exception:
         logger.error("❌ Failed to initialize Real-time MTM: %(e)s")
         raise
 
@@ -102,7 +102,7 @@ def shutdown_realtime_mtm():
             _engine = None
             logger.info("✅ Database engine disposed")
 
-    except Exception as e:
+    except Exception:
         logger.error("❌ Error shutting down Real-time MTM: %(e)s")
 
 

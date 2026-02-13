@@ -164,7 +164,7 @@ def update_database_metrics():
         datasource_availability.labels(datasource="financial").set(1)
         datasource_availability.labels(datasource="baostock").set(1)
 
-    except Exception as e:
+    except Exception:
         logger.error("Failed to update database metrics: %(e)s")
         # 发生错误时标记服务不健康
         api_health_status.labels(service="backend").set(0)
@@ -190,7 +190,7 @@ async def health_check() -> Dict[str, Any]:
         update_database_metrics()
 
         return {"status": "healthy", "timestamp": time.time(), "version": "1.0.0"}
-    except Exception as e:
+    except Exception:
         logger.error("Health check failed: %(e)s")
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
@@ -215,7 +215,7 @@ async def basic_status() -> APIResponse:
             data={"api_status": "running", "database_status": "healthy", "cache_status": "available"},
             message="系统运行正常",
         )
-    except Exception as e:
+    except Exception:
         logger.error("Status check failed: %(e)s")
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
@@ -260,7 +260,7 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
     except (BusinessException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Basic metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
             detail="获取监控数据失败", status_code=500, error_code="MONITORING_DATA_RETRIEVAL_FAILED"
@@ -303,7 +303,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 
     except (BusinessException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Performance metrics failed for user {current_user.username}: %(e)s")
         raise BusinessException(
             detail="获取性能数据失败", status_code=500, error_code="PERFORMANCE_DATA_RETRIEVAL_FAILED"
@@ -349,7 +349,7 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
 
     except (BusinessException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Prometheus metrics failed for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
@@ -400,7 +400,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
 
     except (BusinessException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Detailed metrics failed for admin {current_user.username}: %(e)s")
         raise BusinessException(
             detail="获取详细监控数据失败", status_code=500, error_code="DETAILED_MONITORING_DATA_RETRIEVAL_FAILED"
@@ -435,7 +435,7 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
     except (BusinessException, ForbiddenException):
         raise
-    except Exception as e:
+    except Exception:
         logger.error("Metrics reset failed for admin {current_user.username}: %(e)s")
         raise BusinessException(detail="重置监控指标失败", status_code=500, error_code="METRICS_RESET_FAILED")
 

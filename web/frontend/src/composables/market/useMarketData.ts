@@ -2,7 +2,8 @@ import { ref } from 'vue'
 
 export function useMarketData() {
     // Loading states
-    const loading = ref({
+    type LoadingKeys = 'fundFlow' | 'etf' | 'concept' | 'longhub' | 'auction' | 'institutions' | 'wencai';
+    const loading = ref<Record<LoadingKeys, boolean>>({
         fundFlow: false,
         etf: false,
         concept: false,
@@ -118,7 +119,14 @@ export function useMarketData() {
     // Wencai Logic
     const wencaiQuery = ref('')
     const wencaiLoading = ref(false)
-    const wencaiResults = ref([])
+    const wencaiResults = ref<Array<{
+        code: string;
+        name: string;
+        price: string;
+        change: string;
+        volume: string;
+        score: number;
+    }>>([])
     const quickTags = ref([
         '涨停股', '创历史新高', '主力净流入', '北向资金买入',
         '技术指标金叉', '量能放大', '突破平台', '均线多头排列'
@@ -132,10 +140,13 @@ export function useMarketData() {
     const refreshData = () => {
         lastUpdate.value = new Date().toLocaleString()
         // Simulate refresh logic
-        loading.value[activeTab.value] = true
-        setTimeout(() => {
-            loading.value[activeTab.value] = false
-        }, 1000)
+        const tabKey = activeTab.value as LoadingKeys
+        if (tabKey in loading.value) {
+            loading.value[tabKey] = true
+            setTimeout(() => {
+                loading.value[tabKey] = false
+            }, 1000)
+        }
     }
 
     const handleSearch = () => {

@@ -9,7 +9,7 @@ Date: 2025-11-07
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -67,7 +67,7 @@ class RequestTransformer:
         # Create metadata
         metadata = RequestMetadata(
             correlation_id=correlation_id,
-            request_time=datetime.utcnow(),
+            request_time=datetime.now(timezone.utc),
             client_ip=headers.get("X-Forwarded-For", "unknown"),
             user_agent=headers.get("User-Agent"),
             version=version,
@@ -204,7 +204,7 @@ class ResponseTransformer:
             "success": 200 <= status_code < 300,
             "status_code": status_code,
             "data": data,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if correlation_id:
@@ -240,7 +240,7 @@ class ResponseTransformer:
             "status_code": status_code,
             "error": error_message,
             "error_type": error_type,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if correlation_id:
@@ -283,7 +283,7 @@ class ResponseTransformer:
                 "total": total,
                 "total_pages": total_pages,
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if correlation_id:

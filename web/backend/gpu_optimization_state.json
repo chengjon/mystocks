@@ -20,21 +20,126 @@
     "performance_degradation_threshold": 0.15
   },
   "optimization_stats": {
-    "total_optimizations": 5,
+    "total_optimizations": 10,
     "successful_optimizations": 0,
     "performance_improvements": [],
     "memory_recoveries": 0,
-    "task_redistributions": 1
+    "task_redistributions": 0
   },
   "adaptive_params": {
-    "current_batch_size": 2487,
+    "current_batch_size": 7423,
     "memory_threshold": 0.85,
-    "cpu_gpu_balance_factor": 1.1,
-    "last_optimization_time": "2025-11-19 12:23:46.907677"
+    "cpu_gpu_balance_factor": 1.0,
+    "last_optimization_time": "2026-02-09 09:39:19.124698"
   },
   "metrics_history": [
     {
-      "timestamp": "2025-11-19 12:23:42.896126",
+      "timestamp": "2026-02-09 09:39:05.084511",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:10.091734",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:10.094730",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:11.098347",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:11.101550",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:11.104284",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:11.106765",
+      "gpu_utilization": 0.0,
+      "gpu_memory_used": 0.0,
+      "gpu_memory_total": 8192.0,
+      "gpu_memory_utilization": 0.0,
+      "gpu_temperature": 0.0,
+      "gpu_power_usage": 0.0,
+      "gpu_fan_speed": 0.0,
+      "cuda_memory_pool_used": 0.0,
+      "cuda_memory_pool_total": 0.0,
+      "processing_time": 0.0,
+      "throughput": 0.0,
+      "efficiency_score": 0.0
+    },
+    {
+      "timestamp": "2026-02-09 09:39:15.120965",
       "gpu_utilization": 0.0,
       "gpu_memory_used": 0.0,
       "gpu_memory_total": 8192.0,
@@ -51,10 +156,10 @@
   ],
   "optimization_history": [
     {
-      "timestamp": "2025-11-19 12:23:40.869960",
+      "timestamp": "2026-02-09 09:39:05.069691",
       "optimization_type": "comprehensive",
       "before_metrics": {
-        "timestamp": "2025-11-19 12:23:39.979893",
+        "timestamp": "2026-02-09 09:39:05.069592",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -69,7 +174,7 @@
         "efficiency_score": 0.0
       },
       "after_metrics": {
-        "timestamp": "2025-11-19 12:23:40.869916",
+        "timestamp": "2026-02-09 09:39:05.069681",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -91,10 +196,10 @@
       "success": true
     },
     {
-      "timestamp": "2025-11-19 12:23:41.881169",
+      "timestamp": "2026-02-09 09:39:05.075411",
       "optimization_type": "comprehensive",
       "before_metrics": {
-        "timestamp": "2025-11-19 12:23:40.879790",
+        "timestamp": "2026-02-09 09:39:05.075263",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -109,47 +214,7 @@
         "efficiency_score": 0.0
       },
       "after_metrics": {
-        "timestamp": "2025-11-19 12:23:41.881145",
-        "gpu_utilization": 0.0,
-        "gpu_memory_used": 0.0,
-        "gpu_memory_total": 8192.0,
-        "gpu_memory_utilization": 0.0,
-        "gpu_temperature": 0.0,
-        "gpu_power_usage": 0.0,
-        "gpu_fan_speed": 0.0,
-        "cuda_memory_pool_used": 0.0,
-        "cuda_memory_pool_total": 0.0,
-        "processing_time": 0.0,
-        "throughput": 0.0,
-        "efficiency_score": 0.0
-      },
-      "improvement_score": 0.0,
-      "applied_actions": [
-        "批次大小优化: 1200 → 1440 (增加)"
-      ],
-      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
-      "success": true
-    },
-    {
-      "timestamp": "2025-11-19 12:23:42.895950",
-      "optimization_type": "comprehensive",
-      "before_metrics": {
-        "timestamp": "2025-11-19 12:23:41.894973",
-        "gpu_utilization": 0.0,
-        "gpu_memory_used": 0.0,
-        "gpu_memory_total": 8192.0,
-        "gpu_memory_utilization": 0.0,
-        "gpu_temperature": 0.0,
-        "gpu_power_usage": 0.0,
-        "gpu_fan_speed": 0.0,
-        "cuda_memory_pool_used": 0.0,
-        "cuda_memory_pool_total": 0.0,
-        "processing_time": 0.0,
-        "throughput": 0.0,
-        "efficiency_score": 0.0
-      },
-      "after_metrics": {
-        "timestamp": "2025-11-19 12:23:42.895927",
+        "timestamp": "2026-02-09 09:39:05.075399",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -171,10 +236,10 @@
       "success": true
     },
     {
-      "timestamp": "2025-11-19 12:23:44.902869",
+      "timestamp": "2026-02-09 09:39:05.081281",
       "optimization_type": "comprehensive",
       "before_metrics": {
-        "timestamp": "2025-11-19 12:23:43.897632",
+        "timestamp": "2026-02-09 09:39:05.081179",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -189,7 +254,7 @@
         "efficiency_score": 0.0
       },
       "after_metrics": {
-        "timestamp": "2025-11-19 12:23:44.902851",
+        "timestamp": "2026-02-09 09:39:05.081272",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -205,17 +270,16 @@
       },
       "improvement_score": 0.0,
       "applied_actions": [
-        "批次大小优化: 1728 → 2073 (增加)",
-        "负载均衡优化: CPU (70.1%) → GPU卸载因子 1.00 → 1.10"
+        "批次大小优化: 1728 → 2073 (增加)"
       ],
       "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
       "success": true
     },
     {
-      "timestamp": "2025-11-19 12:23:46.907669",
+      "timestamp": "2026-02-09 09:39:11.095669",
       "optimization_type": "comprehensive",
       "before_metrics": {
-        "timestamp": "2025-11-19 12:23:45.906558",
+        "timestamp": "2026-02-09 09:39:10.095119",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -230,7 +294,7 @@
         "efficiency_score": 0.0
       },
       "after_metrics": {
-        "timestamp": "2025-11-19 12:23:46.907646",
+        "timestamp": "2026-02-09 09:39:11.095660",
         "gpu_utilization": 0.0,
         "gpu_memory_used": 0.0,
         "gpu_memory_total": 8192.0,
@@ -247,6 +311,246 @@
       "improvement_score": 0.0,
       "applied_actions": [
         "批次大小优化: 2073 → 2487 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:12.110034",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:11.109474",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:12.110023",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 2487 → 2984 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:13.113551",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:12.113028",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:13.113542",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 2984 → 3580 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:14.117577",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:13.117094",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:14.117568",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 3580 → 4296 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:15.120871",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:14.120340",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:15.120861",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 4296 → 5155 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:17.122873",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:16.122298",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:17.122863",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 5155 → 6186 (增加)"
+      ],
+      "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
+      "success": true
+    },
+    {
+      "timestamp": "2026-02-09 09:39:19.124694",
+      "optimization_type": "comprehensive",
+      "before_metrics": {
+        "timestamp": "2026-02-09 09:39:18.124192",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "after_metrics": {
+        "timestamp": "2026-02-09 09:39:19.124684",
+        "gpu_utilization": 0.0,
+        "gpu_memory_used": 0.0,
+        "gpu_memory_total": 8192.0,
+        "gpu_memory_utilization": 0.0,
+        "gpu_temperature": 0.0,
+        "gpu_power_usage": 0.0,
+        "gpu_fan_speed": 0.0,
+        "cuda_memory_pool_used": 0.0,
+        "cuda_memory_pool_total": 0.0,
+        "processing_time": 0.0,
+        "throughput": 0.0,
+        "efficiency_score": 0.0
+      },
+      "improvement_score": 0.0,
+      "applied_actions": [
+        "批次大小优化: 6186 → 7423 (增加)"
       ],
       "recommendation": "➖ 性能基本稳定 (0.0%) - 可考虑其他优化方案",
       "success": true

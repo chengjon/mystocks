@@ -295,7 +295,7 @@ class TqlexDataSource:
 
             return df_combined
 
-        except Exception as e:
+        except Exception:
             logger.error("获取竞价抢筹数据失败: %(e)s")
             return pd.DataFrame()
 

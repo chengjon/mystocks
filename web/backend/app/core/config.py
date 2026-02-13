@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     # Mock API配置
     use_mock_apis: bool = Field(default=False, env="USE_MOCK_DATA")  # 控制是否注册Mock API路由
+    mock_auth_enabled: bool = Field(default=False, env="MOCK_AUTH_ENABLED")  # 生产环境安全控制：禁用Mock认证
 
     # 服务器配置
     host: str = "0.0.0.0"  # nosec
@@ -67,7 +68,7 @@ class Settings(BaseSettings):
     # CORS 配置 (使用字符串形式，避免pydantic-settings解析问题)
     # 前端端口范围: 3000-3009，后端端口范围: 8000-8009
     cors_origins_str: str = Field(
-        default="http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009",
+        default="http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003,http://localhost:3004,http://localhost:3005,http://localhost:3006,http://localhost:3007,http://localhost:3008,http://localhost:3009,http://localhost:3020,http://localhost:3021,http://localhost:3022,http://localhost:3023,http://localhost:3024,http://localhost:3025,http://localhost:3026,http://localhost:3027,http://localhost:3028,http://localhost:3029,http://localhost:8000,http://localhost:8001,http://localhost:8002,http://localhost:8003,http://localhost:8004,http://localhost:8005,http://localhost:8006,http://localhost:8007,http://localhost:8008,http://localhost:8009",
         env="CORS_ORIGINS",
     )
 

@@ -14,7 +14,7 @@ Date: 2025-11-07
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
@@ -387,7 +387,7 @@ class SubscriptionStorage:
                     list(alert.delivery_methods),
                     alert.acknowledged,
                     alert.delivered,
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
                 ),
             )
 

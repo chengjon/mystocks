@@ -15,7 +15,7 @@ Endpoints:
 - DELETE /cache                   - 清除所有缓存
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
@@ -80,7 +80,7 @@ async def get_cache_status(current_user: User = Depends(get_current_user)) -> Di
 
         return {
             "success": True,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "data": stats,
         }
 
@@ -152,7 +152,7 @@ async def get_cached_data(
             return {
                 "success": True,
                 "source": "cache",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "data": cached.get("data"),
                 "cached_at": cached.get("timestamp"),
             }
@@ -260,7 +260,7 @@ async def write_cache_data(
                 "data_type": data_type,
                 "timeframe": timeframe,
                 "ttl_days": ttl_days,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         logger.warning(
@@ -325,7 +325,7 @@ async def invalidate_symbol_cache(symbol: str, current_user: User = Depends(get_
             "message": "缓存已清除",
             "symbol": symbol,
             "deleted_count": deleted_count,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except ValueError as e:
@@ -378,7 +378,7 @@ async def clear_all_cache(
             "success": True,
             "message": "所有缓存已清除",
             "deleted_count": deleted_count,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except ValueError as e:
@@ -451,7 +451,7 @@ async def check_cache_freshness(
             "data_type": data_type,
             "is_fresh": is_fresh,
             "max_age_days": max_age_days,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except ValueError as e:
@@ -507,7 +507,7 @@ async def manual_cache_eviction(current_user: User = Depends(get_current_user)) 
             "success": result.get("success", False),
             "message": result.get("message", "缓存淘汰失败"),
             "deleted_count": result.get("deleted_count", 0),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -574,7 +574,7 @@ async def get_eviction_statistics(current_user: User = Depends(get_current_user)
                 "hot_data": hot_data,
                 "cache_stats": stats.get("cache_stats", {}),
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -626,7 +626,7 @@ async def trigger_cache_prewarming(current_user: User = Depends(get_current_user
             "prewarmed_count": result.get("prewarmed_count", 0),
             "failed_count": result.get("failed_count", 0),
             "elapsed_seconds": result.get("elapsed_seconds", 0),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -666,7 +666,7 @@ async def get_prewarming_status(current_user: User = Depends(get_current_user)) 
         return {
             "success": True,
             "data": status,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -720,7 +720,7 @@ async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_
                 "total_reads": metrics.get("total_reads", 0),
                 "health_status": metrics.get("health_status", "unknown"),
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -774,7 +774,7 @@ async def get_cache_health_status(current_user: User = Depends(get_current_user)
             "message": message,
             "total_reads": health.get("total_reads", 0),
             "average_latency_ms": health.get("average_latency_ms", 0),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:

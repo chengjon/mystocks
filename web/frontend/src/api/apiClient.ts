@@ -33,7 +33,7 @@ interface RequestConfig extends AxiosRequestConfig {
 
 // Create axios instance
 const instance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: '/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -138,7 +138,6 @@ async function getCSRFToken(): Promise<string> {
 
   try {
     const response = await axios.get('/api/csrf-token', {
-      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
       withCredentials: true,
     });
 

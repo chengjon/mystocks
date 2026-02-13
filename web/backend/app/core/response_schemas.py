@@ -28,7 +28,7 @@ def get_data():
 Estimated Duplication Reduced: 80+ lines
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -77,7 +77,7 @@ class APIResponse:
             "code": code,
             "message": message,
             "data": data,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     @staticmethod
@@ -104,7 +104,7 @@ class APIResponse:
             "code": code,
             "error": error,
             "message": message,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if details:

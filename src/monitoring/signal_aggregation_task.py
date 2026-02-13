@@ -27,7 +27,7 @@ aggregator.run_daily()    # 每天执行
 import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 
@@ -78,7 +78,7 @@ class SignalMetricsAggregator:
         - 活跃信号数量
         - 策略健康状态
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         logger.info("开始小时级信号指标聚合")
 
         results = {
@@ -111,9 +111,9 @@ class SignalMetricsAggregator:
             results["errors"].append(f"聚合任务失败: {e}")
             logger.error("小时级聚合任务失败: %(e)s")
 
-        elapsed = (datetime.utcnow() - start_time).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
         results["elapsed_seconds"] = elapsed
-        results["end_time"] = datetime.utcnow().isoformat()
+        results["end_time"] = datetime.now(timezone.utc).isoformat()
 
         logger.info("小时级聚合完成: 处理 {results['strategies_processed']} 个策略, 耗时 {elapsed:.2f}秒")
 
@@ -128,7 +128,7 @@ class SignalMetricsAggregator:
         - 过去30天的盈利比率
         - 策略性能排名
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         logger.info("开始天级信号指标聚合")
 
         results = {
@@ -158,9 +158,9 @@ class SignalMetricsAggregator:
             results["status"] = "failed"
             results["errors"].append(f"日级聚合任务失败: {e}")
 
-        elapsed = (datetime.utcnow() - start_time).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
         results["elapsed_seconds"] = elapsed
-        results["end_time"] = datetime.utcnow().isoformat()
+        results["end_time"] = datetime.now(timezone.utc).isoformat()
 
         logger.info(
             f"天级聚合完成: 处理 {results['strategies_processed']} 个策略, "
@@ -181,7 +181,7 @@ class SignalMetricsAggregator:
             strategy_ids: 策略ID列表（None表示所有策略）
             metrics: 要计算的指标列表（None表示所有）
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         logger.info("开始按需聚合: 策略=%(strategy_ids)s, 指标=%(metrics)s")
 
         results = {
@@ -204,7 +204,7 @@ class SignalMetricsAggregator:
                     updates = await self._aggregate_strategy(strategy, metrics)
                     results["updates"] += updates
                     results["strategies_processed"] += 1
-                except Exception as e:
+                except Exception:
                     logger.error("策略 {strategy.get('id')} 按需聚合失败: %(e)s")
 
             results["status"] = "success"
@@ -212,9 +212,9 @@ class SignalMetricsAggregator:
             results["status"] = "failed"
             results["errors"].append(str(e))
 
-        elapsed = (datetime.utcnow() - start_time).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
         results["elapsed_seconds"] = elapsed
-        results["end_time"] = datetime.utcnow().isoformat()
+        results["end_time"] = datetime.now(timezone.utc).isoformat()
 
         return results
 
@@ -227,7 +227,7 @@ class SignalMetricsAggregator:
 
             stats = manager.get_manager_stats()
             return [{"id": "default", "name": "Default Strategy"}]
-        except Exception as e:
+        except Exception:
             logger.warning("获取活跃策略失败: %(e)s")
             return []
 
@@ -263,7 +263,7 @@ class SignalMetricsAggregator:
 
             logger.debug("策略 %(strategy_id)s 小时聚合: BUY={signal_counts['BUY']}, SELL=%s")
 
-        except Exception as e:
+        except Exception:
             logger.error("策略 %(strategy_id)s 小时聚合失败: %(e)s")
             raise
 
@@ -301,7 +301,7 @@ class SignalMetricsAggregator:
                 strategy_id, accuracy, profit_ratio
             )
 
-        except Exception as e:
+        except Exception:
             logger.error("策略 %(strategy_id)s 日聚合失败: %(e)s")
             raise
 
@@ -329,7 +329,7 @@ class SignalMetricsAggregator:
 
             manager = SignalManager()
 
-            end_date = datetime.utcnow()
+            end_date = datetime.now(timezone.utc)
             start_date = end_date - timedelta(hours=hours)
 
             signals = manager.query_signals(
@@ -343,7 +343,7 @@ class SignalMetricsAggregator:
                 return signals.to_dict("records")
             return signals if isinstance(signals, list) else []
 
-        except Exception as e:
+        except Exception:
             logger.debug("获取信号数据失败: %(e)s")
             return []
 
@@ -406,7 +406,7 @@ class MetricsScheduler:
 
         while self._running:
             try:
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
 
                 # 执行小时级任务
                 await self._hourly_task.run_hourly()
@@ -416,7 +416,7 @@ class MetricsScheduler:
                     logger.info("执行每日聚合任务")
                     await self._daily_task.run_daily()
 
-            except Exception as e:
+            except Exception:
                 logger.error("调度任务执行失败: %(e)s")
 
             await asyncio.sleep(60)  # 每分钟检查一次
@@ -457,7 +457,7 @@ class SignalStatisticsAggregator:
                     logger.warning("监控数据库未连接，统计聚合功能将不可用")
                     return None
                 self._pg_pool = pg
-            except Exception as e:
+            except Exception:
                 logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
@@ -542,7 +542,7 @@ class SignalStatisticsAggregator:
 
             return bool(success)
 
-        except Exception as e:
+        except Exception:
             logger.error("聚合策略 {strategy_id} 失败: {e}", exc_info=True)
             return False
 
@@ -580,7 +580,7 @@ class SignalStatisticsAggregator:
 
             return [dict(row) for row in rows]
 
-        except Exception as e:
+        except Exception:
             logger.error("获取统计数据失败: {e}", exc_info=True)
             return []
 

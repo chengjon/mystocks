@@ -17,7 +17,7 @@ Date: 2025-11-06
 """
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
@@ -74,8 +74,8 @@ class ConnectionLifecycleManager:
     def register_connection(self, sid: str) -> None:
         """注册新连接"""
         self.connection_states[sid] = ConnectionState.CONNECTING
-        self.connection_times[sid] = datetime.utcnow()
-        self.last_heartbeat[sid] = datetime.utcnow()
+        self.connection_times[sid] = datetime.now(timezone.utc)
+        self.last_heartbeat[sid] = datetime.now(timezone.utc)
         self.heartbeat_failures[sid] = 0
 
         logger.info(
@@ -90,7 +90,7 @@ class ConnectionLifecycleManager:
             self.register_connection(sid)
 
         self.connection_states[sid] = ConnectionState.CONNECTED
-        self.last_heartbeat[sid] = datetime.utcnow()
+        self.last_heartbeat[sid] = datetime.now(timezone.utc)
 
         logger.info(
             "✅ Connection established",
@@ -104,7 +104,7 @@ class ConnectionLifecycleManager:
             return
 
         self.connection_states[sid] = ConnectionState.DISCONNECTED
-        connected_duration = (datetime.utcnow() - self.connection_times[sid]).total_seconds()
+        connected_duration = (datetime.now(timezone.utc) - self.connection_times[sid]).total_seconds()
 
         logger.info(
             "🛑 Connection closed",
@@ -120,7 +120,7 @@ class ConnectionLifecycleManager:
         if sid not in self.connection_states:
             return
 
-        self.last_heartbeat[sid] = datetime.utcnow()
+        self.last_heartbeat[sid] = datetime.now(timezone.utc)
         self.heartbeat_failures[sid] = 0  # 重置失败计数
 
         logger.debug("💓 Heartbeat received", sid=sid)
@@ -138,7 +138,7 @@ class ConnectionLifecycleManager:
         if not last_beat:
             return False
 
-        elapsed = (datetime.utcnow() - last_beat).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - last_beat).total_seconds()
         is_timeout = elapsed > self.heartbeat_config.timeout
 
         if is_timeout:
@@ -187,14 +187,14 @@ class ConnectionLifecycleManager:
         if sid not in self.connection_times:
             return None
 
-        return (datetime.utcnow() - self.connection_times[sid]).total_seconds()
+        return (datetime.now(timezone.utc) - self.connection_times[sid]).total_seconds()
 
     def get_heartbeat_age(self, sid: str) -> Optional[float]:
         """获取心跳年龄（秒）"""
         if sid not in self.last_heartbeat:
             return None
 
-        return (datetime.utcnow() - self.last_heartbeat[sid]).total_seconds()
+        return (datetime.now(timezone.utc) - self.last_heartbeat[sid]).total_seconds()
 
     def get_all_healthy_connections(self) -> list[str]:
         """获取所有健康连接"""
@@ -218,7 +218,7 @@ class ConnectionLifecycleManager:
             "idle": idle,
             "timeout": timeout,
             "disconnected": disconnected,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _cleanup_connection(self, sid: str) -> None:

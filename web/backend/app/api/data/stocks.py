@@ -1,13 +1,12 @@
 """
 股票基础信息路由 (Stocks Basic Info)
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, Optional
-import pandas as pd
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query
 
 from app.core.database import db_service
-from app.core.exceptions import BusinessException, ValidationException
+from app.core.exceptions import BusinessException
 from app.core.responses import ErrorCodes, create_error_response
 from app.core.security import User, get_current_user
 

@@ -4,7 +4,7 @@
 整合数据管理、模型分析和结果输出的核心逻辑
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .data_manager import DataManager
 from .buffett_analyzer import BuffettAnalyzer
@@ -12,7 +12,6 @@ from .canslim_analyzer import CANSLIMAnalyzer
 from .fisher_analyzer import FisherAnalyzer
 from .model_synthesis import ModelSynthesis
 
-from .model_scores import OverallModelScore
 from .analysis_result import ModelAnalysisResult, BatchAnalysisResult
 
 

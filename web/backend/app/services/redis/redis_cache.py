@@ -16,7 +16,6 @@ Author: MyStocks Project
 
 import json
 import logging
-import pickle
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -62,17 +61,14 @@ class RedisCacheService:
             cache_key = self._make_key(key)
             ttl = ttl or self.default_ttl
 
-            # 自动序列化
-            if isinstance(value, (dict, list)):
-                serialized = json.dumps(value)
-            else:
-                serialized = pickle.dumps(value)
+            # 自动序列化 (Security: Use JSON only, avoid pickle)
+            serialized = json.dumps(value, default=str)
 
             self.redis.setex(cache_key, ttl, serialized)
             logger.debug("Cache set: %(key)s (TTL: %(ttl)ss)")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to set cache %(key)s: %(e)s")
             return False
 
@@ -97,13 +93,9 @@ class RedisCacheService:
             try:
                 return json.loads(cached)
             except (json.JSONDecodeError, UnicodeDecodeError):
-                # 尝试Pickle反序列化
-                try:
-                    return pickle.loads(cached)
-                except Exception:
-                    return cached.decode("utf-8")
+                return cached.decode("utf-8")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get cache %(key)s: %(e)s")
             return None
 
@@ -122,7 +114,7 @@ class RedisCacheService:
             self.redis.delete(cache_key)
             logger.debug("Cache deleted: %(key)s")
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Failed to delete cache %(key)s: %(e)s")
             return False
 
@@ -139,7 +131,7 @@ class RedisCacheService:
         try:
             cache_key = self._make_key(key)
             return self.redis.exists(cache_key) > 0
-        except Exception as e:
+        except Exception:
             logger.error("Failed to check cache %(key)s: %(e)s")
             return False
 
@@ -157,7 +149,7 @@ class RedisCacheService:
         try:
             cache_key = self._make_key(key)
             return self.redis.expire(cache_key, ttl)
-        except Exception as e:
+        except Exception:
             logger.error("Failed to set expiry for %(key)s: %(e)s")
             return False
 
@@ -182,13 +174,10 @@ class RedisCacheService:
                 if value is not None:
                     try:
                         result[key] = json.loads(value)
-                    except:
-                        try:
-                            result[key] = pickle.loads(value)
-                        except:
-                            result[key] = value.decode("utf-8")
+                    except (json.JSONDecodeError, UnicodeDecodeError):
+                        result[key] = value.decode("utf-8")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to mget cache: %(e)s")
 
         return result
@@ -210,17 +199,14 @@ class RedisCacheService:
 
             for key, value in mapping.items():
                 cache_key = self._make_key(key)
-                if isinstance(value, (dict, list)):
-                    serialized = json.dumps(value)
-                else:
-                    serialized = pickle.dumps(value)
+                serialized = json.dumps(value, default=str)
                 pipe.setex(cache_key, ttl, serialized)
 
             pipe.execute()
             logger.debug("Batch cache set: {len(mapping)} keys (TTL: %(ttl)ss)")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to mset cache: %(e)s")
             return False
 
@@ -240,7 +226,7 @@ class RedisCacheService:
             if keys:
                 return self.redis.delete(*keys)
             return 0
-        except Exception as e:
+        except Exception:
             logger.error("Failed to delete pattern %(pattern)s: %(e)s")
             return 0
 
@@ -296,7 +282,11 @@ class RedisCacheService:
     # ========== API响应缓存 ==========
 
     def cache_api_response(
-        self, endpoint: str, params: Dict[str, Any], response: Any, ttl: int = 300  # 默认5分钟
+        self,
+        endpoint: str,
+        params: Dict[str, Any],
+        response: Any,
+        ttl: int = 300,  # 默认5分钟
     ) -> bool:
         """
         缓存API响应
@@ -355,7 +345,7 @@ class RedisCacheService:
                 "hit_rate": info.get("keyspace_hits", 0)
                 / max(info.get("keyspace_hits", 0) + info.get("keyspace_misses", 0), 1),
             }
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get cache stats: %(e)s")
             return {}
 

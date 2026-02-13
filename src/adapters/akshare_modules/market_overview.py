@@ -6,7 +6,6 @@ AkShare市场总貌数据模块
 """
 
 import logging
-from typing import Optional
 
 import pandas as pd
 

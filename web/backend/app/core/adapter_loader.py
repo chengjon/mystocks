@@ -133,7 +133,7 @@ class AdapterLoader:
 
             # 默认：如果能加载就认为健康
             return True
-        except Exception as e:
+        except Exception:
             logger.error("❌ Health check failed for %(adapter_name)s: %(e)s")
             return False
 

@@ -86,7 +86,7 @@ class LineageIntegrationMixin:
 
             logger.info("✅ Lineage tracker initialized successfully")
 
-        except Exception as e:
+        except Exception:
             logger.warning("⚠️ Failed to initialize lineage tracker: %(e)s")
             logger.warning("⚠️ Lineage tracking will be disabled")
             self.enable_lineage = False
@@ -173,7 +173,7 @@ class LineageIntegrationMixin:
 
             logger.debug("📊 Recorded fetch lineage: %(from_node)s -> %(to_node)s")
 
-        except Exception as e:
+        except Exception:
             logger.warning("⚠️ Failed to record fetch lineage: %(e)s")
 
     def _record_lineage_store(
@@ -246,7 +246,7 @@ class LineageIntegrationMixin:
 
             logger.debug("📊 Recorded store lineage: %(from_node)s -> %(to_node)s")
 
-        except Exception as e:
+        except Exception:
             logger.warning("⚠️ Failed to record store lineage: %(e)s")
 
     def _record_lineage_transform(
@@ -319,7 +319,7 @@ class LineageIntegrationMixin:
 
             logger.debug("📊 Recorded transform lineage: %(from_node)s -> %(to_node)s")
 
-        except Exception as e:
+        except Exception:
             logger.warning("⚠️ Failed to record transform lineage: %(e)s")
 
     def shutdown_lineage_tracker(self):
@@ -342,7 +342,7 @@ class LineageIntegrationMixin:
 
                 logger.info("✅ Lineage tracker shutdown successfully")
 
-            except Exception as e:
+            except Exception:
                 logger.warning("⚠️ Error shutting down lineage tracker: %(e)s")
 
             self._lineage_initialized = False

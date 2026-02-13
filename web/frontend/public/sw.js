@@ -132,20 +132,22 @@ async function handleApiRequest(request) {
       // Cache successful responses
       const cache = await caches.open(API_CACHE_NAME)
       cache.put(request, networkResponse.clone())
-      return networkResponse
     }
+    // Always return the network response (including 4xx/5xx)
+    // Only network failures (offline) should trigger cache/503 fallback
+    return networkResponse
   } catch (error) {
     console.warn('🌐 Network request failed, trying cache:', error)
   }
 
-  // Fallback to cache
+  // Fallback to cache (only reached on network failure, not HTTP errors)
   const cachedResponse = await caches.match(request)
   if (cachedResponse) {
     console.log('📦 Serving API response from cache:', request.url)
     return cachedResponse
   }
 
-  // Return offline message
+  // Return offline message (only when truly offline and no cache)
   return new Response(
     JSON.stringify({
       error: 'Offline',

@@ -122,7 +122,7 @@ class MonitoringPostgreSQLAccess:
             logger.info("   - Database: {os.getenv('POSTGRESQL_DATABASE')")
             logger.info("   - Pool Size: 5-20")
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ 数据库连接池初始化失败: %(e)s")
             raise
 
@@ -685,7 +685,7 @@ async def initialize_postgres_async() -> bool:
     try:
         await instance.initialize()
         return True
-    except Exception as e:
+    except Exception:
         logger.error("❌ 异步数据库初始化失败: %(e)s")
         return False
 

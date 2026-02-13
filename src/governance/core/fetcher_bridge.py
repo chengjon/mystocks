@@ -107,7 +107,7 @@ class GovernanceDataFetcher:
                 else:
                     logger.warning("获取数据为空: %(symbol)s")
 
-            except Exception as e:
+            except Exception:
                 logger.error("获取数据失败: %(symbol)s, 错误: %s")
                 # 记录失败，但不中断批量过程
                 continue

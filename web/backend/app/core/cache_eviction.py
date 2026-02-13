@@ -17,7 +17,7 @@ Architecture:
 """
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import structlog
@@ -48,11 +48,11 @@ class AccessFrequencyTracker:
             cache_key: 缓存键 (格式: "symbol:data_type:timeframe")
         """
         self.access_counts[cache_key] += 1
-        self.last_access_time[cache_key] = datetime.utcnow()
+        self.last_access_time[cache_key] = datetime.now(timezone.utc)
 
         # 如果是首次记录，记录创建时间
         if cache_key not in self.creation_time:
-            self.creation_time[cache_key] = datetime.utcnow()
+            self.creation_time[cache_key] = datetime.now(timezone.utc)
 
     def get_access_frequency(self, cache_key: str) -> int:
         """获取缓存访问频率"""
@@ -97,7 +97,7 @@ class AccessFrequencyTracker:
             "total_accesses": total_accesses,
             "average_frequency": (total_accesses / total_tracked if total_tracked > 0 else 0.0),
             "hot_data_count": min(10, total_tracked),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def clear_stats(self) -> None:
@@ -210,7 +210,7 @@ class TimeWindowEvictionStrategy:
         cache_stats = self.cache_manager.get_cache_stats()
 
         return {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "ttl_days": self.ttl_days,
             "frequency_tracking": freq_stats,
             "cache_stats": {
@@ -311,7 +311,7 @@ class EvictionScheduler:
                 "success": True,
                 "message": "缓存清理成功",
                 "deleted_count": deleted_count,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         except Exception as e:
@@ -332,7 +332,7 @@ class EvictionScheduler:
                 if self.scheduler.get_job("cache_daily_cleanup")
                 else None
             ),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

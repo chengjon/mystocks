@@ -97,7 +97,7 @@ class DecisionTreeTradingStrategy(MLTradingStrategy):
             )
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Decision Tree特征工程失败: %(e)s")
             raise
 
@@ -227,7 +227,7 @@ class DecisionTreeTradingStrategy(MLTradingStrategy):
             logger.info("Decision Tree策略生成 {len(signals_df)} 个交易信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("Decision Tree信号解释失败: %(e)s")
             raise
 
@@ -272,7 +272,7 @@ class DecisionTreeTradingStrategy(MLTradingStrategy):
             logger.info("Decision Tree特定风险控制已应用")
             return df
 
-        except Exception as e:
+        except Exception:
             logger.warning("Decision Tree风险控制应用失败，使用基础风险控制: %(e)s")
             # pylint: disable=no-member
             return self._apply_risk_controls(signals_df, data)

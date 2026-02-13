@@ -10,7 +10,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
 
-from .risk_base import RiskLevel, RiskEventType, MonitoringEvent
+from .risk_base import RiskLevel
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -94,9 +94,6 @@ class AlertManager:
     def _init_email_channel(self):
         """初始化邮件告警渠道"""
         try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
             import os
 
             smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
@@ -120,7 +117,6 @@ class AlertManager:
     def _init_webhook_channel(self):
         """初始化Webhook告警渠道"""
         try:
-            import httpx
 
             webhook_urls = {
                 "low": os.getenv("WEBHOOK_LOW_URL", "https://api.example.com/webhook/low"),

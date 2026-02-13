@@ -358,7 +358,7 @@ class PatternMatchingManager:
             logger.info("Exported {len(self.pattern_library)} patterns to %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to export patterns: %(e)s")
             return False
 
@@ -379,7 +379,7 @@ class PatternMatchingManager:
             logger.info("Imported %(imported_count)s patterns from %(filepath)s")
             return imported_count
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to import patterns: %(e)s")
             return 0
 

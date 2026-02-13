@@ -1,8 +1,8 @@
 <template>
   <div class="portfolio-monitor">
     <div class="portfolio-stats">
-      <ArtDecoStatCard label="总资产" value="¥1,256,789" change="+12.5%" variant="rise" />
-      <ArtDecoStatCard label="今日盈亏" value="+¥8,450" change="+0.68%" variant="rise" />
+      <ArtDecoStatCard label="总资产" value="¥1,256,789" :change="12.5" change-percent variant="rise" />
+      <ArtDecoStatCard label="今日盈亏" value="+¥8,450" :change="0.68" change-percent variant="rise" />
       <ArtDecoStatCard label="持仓仓位" value="65%" variant="gold" />
       <ArtDecoStatCard label="可用资金" value="¥439,339" variant="gold" />
     </div>

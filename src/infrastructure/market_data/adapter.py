@@ -62,7 +62,7 @@ class DataSourceV2Adapter(IMarketDataRepository):
                 )
             return bars
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get history kline: %(e)s")
             return []
 
@@ -99,7 +99,7 @@ class DataSourceV2Adapter(IMarketDataRepository):
                 )
             return quotes
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get realtime quote: %(e)s")
             return []
 

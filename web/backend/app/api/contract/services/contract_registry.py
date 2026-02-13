@@ -7,7 +7,7 @@ API 契约注册中心
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class ContractRegistry:
             "skipped": skipped,
             "errors": errors,
             "total": len(self.contracts),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _extract_module(self, path: str) -> str:
@@ -144,7 +144,7 @@ class ContractRegistry:
             "total_modules": len(self.modules),
             "modules": self.modules,
             "unregistered_count": len(self.get_unregistered_endpoints()),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

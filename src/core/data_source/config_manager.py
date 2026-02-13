@@ -135,7 +135,7 @@ class ConfigManager:
         except FileNotFoundError:
             logger.error("Configuration file not found: {self.yaml_config_path}")
             self.config_cache = {}
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load configuration: %(e)s")
             self.config_cache = {}
 
@@ -544,7 +544,7 @@ class ConfigManager:
             for callback in self.reload_callbacks:
                 try:
                     callback(self.config_cache)
-                except Exception as e:
+                except Exception:
                     logger.error("Reload callback failed: %(e)s")
 
             duration = (datetime.now() - start_time).total_seconds()
@@ -620,7 +620,7 @@ class ConfigManager:
                     sort_keys=False,
                 )
             logger.debug("Saved configuration to {self.yaml_config_path}")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save configuration: %(e)s")
             raise
 
@@ -700,7 +700,7 @@ class ConfigManager:
 
             logger.debug("Saved version to database: {version_info.endpoint_name} v{version_info.version")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save version to database: %(e)s")
             # 不抛出异常，允许继续操作
 
@@ -760,6 +760,6 @@ class ConfigManager:
 
                 logger.debug("Saved audit log: %(action)s on %(endpoint_name)s")
 
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to save audit log: %(e)s")
                 # 不抛出异常，允许继续操作

@@ -8,7 +8,7 @@ from .risk_v31.stop_loss import router as stop_loss_router
 from .risk_v31.alerts import router as alerts_router
 from .risk_v31.system import router as system_router
 
-# 导入核心系统以支持 import 
+# 导入核心系统以支持 import
 from src.governance.risk_management import get_risk_management_core
 
 router = APIRouter()

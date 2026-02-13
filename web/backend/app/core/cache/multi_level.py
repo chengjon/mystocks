@@ -238,7 +238,7 @@ class MultiLevelCache:
                 await self._redis.ping()
                 self._redis_connected = True
                 logger.info("Redis connection established")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to connect to Redis: %(e)s")
                 self._redis_connected = False
                 self._redis = None
@@ -280,7 +280,7 @@ class MultiLevelCache:
             CACHE_MISSES.labels(level="redis").inc()
             return None, False, "none"
 
-        except Exception as e:
+        except Exception:
             logger.error("Cache get error: %(e)s")
             CACHE_MISSES.labels(level="error").inc()
             return None, False, "none"
@@ -295,7 +295,7 @@ class MultiLevelCache:
             pass
         except json.JSONDecodeError:
             logger.warning("Failed to decode cached value for key: %(key)s")
-        except Exception as e:
+        except Exception:
             logger.error("Redis get error: %(e)s")
         return None
 
@@ -325,7 +325,7 @@ class MultiLevelCache:
                 CACHE_OPERATION_LATENCY.labels(operation="set", level="redis").observe(time.perf_counter() - start_time)
             except RuntimeError:
                 pass
-            except Exception as e:
+            except Exception:
                 logger.error("Redis set error: %(e)s")
 
     async def delete(self, key: str) -> None:
@@ -338,7 +338,7 @@ class MultiLevelCache:
                 CACHE_EVICTIONS.labels(level="redis").inc()
             except RuntimeError:
                 pass
-            except Exception as e:
+            except Exception:
                 logger.error("Redis delete error: %(e)s")
 
     async def delete_pattern(self, pattern: str) -> int:
@@ -359,7 +359,7 @@ class MultiLevelCache:
                     CACHE_EVICTIONS.labels(level="redis").inc(len(matching_keys))
             except RuntimeError:
                 pass
-            except Exception as e:
+            except Exception:
                 logger.error("Redis delete pattern error: %(e)s")
 
         return count
@@ -376,7 +376,7 @@ class MultiLevelCache:
                     CACHE_EVICTIONS.labels(level="redis").inc(len(keys))
             except RuntimeError:
                 pass
-            except Exception as e:
+            except Exception:
                 logger.error("Redis clear error: %(e)s")
 
     def get_stats(self) -> dict:

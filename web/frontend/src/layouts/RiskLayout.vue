@@ -9,5 +9,5 @@
 
 <script setup lang="ts">
 import BaseLayout from './BaseLayout.vue'
-import { RISK_MENU_ITEMS } from './MenuConfig'
+import { RISK_MENU_ITEMS } from './archive/MenuConfig'
 </script>

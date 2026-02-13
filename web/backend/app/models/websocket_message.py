@@ -12,7 +12,7 @@ Author: Claude Code
 Date: 2025-11-06
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, Optional
 
@@ -65,7 +65,7 @@ class WebSocketRequestMessage(BaseModel):
     payload: Dict[str, Any] = Field(default_factory=dict, description="请求数据负载")
     user_id: Optional[str] = Field(None, description="用户ID (已认证用户)")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
     trace_id: Optional[str] = Field(None, description="追踪ID (用于分布式追踪)")
@@ -119,11 +119,11 @@ class WebSocketResponseMessage(BaseModel):
     success: bool = Field(default=True, description="请求是否成功")
     data: Any = Field(None, description="响应数据负载")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
     server_time: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="服务器时间 (UTC毫秒)",
     )
     trace_id: Optional[str] = Field(None, description="追踪ID")
@@ -174,7 +174,7 @@ class WebSocketErrorMessage(BaseModel):
     error_message: str = Field(..., description="人类可读的错误描述")
     error_details: Optional[Dict[str, Any]] = Field(None, description="错误详细信息")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
     trace_id: Optional[str] = Field(None, description="追踪ID")
@@ -216,7 +216,7 @@ class WebSocketSubscribeMessage(BaseModel):
     room: str = Field(..., description="房间名称 (如: market_600519, portfolio_001)")
     user_id: Optional[str] = Field(None, description="用户ID")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
 
@@ -263,11 +263,11 @@ class WebSocketNotificationMessage(BaseModel):
     event: str = Field(..., description="事件类型 (如: price_update, alert)")
     data: Any = Field(..., description="推送数据负载")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
     server_time: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="服务器时间 (UTC毫秒)",
     )
 
@@ -312,7 +312,7 @@ class WebSocketHeartbeatMessage(BaseModel):
 
     type: WebSocketMessageType = Field(..., description="消息类型 (ping或pong)")
     timestamp: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000),
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000),
         description="UTC毫秒级时间戳",
     )
     server_time: Optional[int] = Field(None, description="服务器时间 (仅PONG)")
@@ -417,5 +417,5 @@ def create_pong_message() -> WebSocketHeartbeatMessage:
     """创建PONG心跳响应"""
     return WebSocketHeartbeatMessage(
         type=WebSocketMessageType.PONG,
-        server_time=int(datetime.utcnow().timestamp() * 1000),
+        server_time=int(datetime.now(timezone.utc).timestamp() * 1000),
     )

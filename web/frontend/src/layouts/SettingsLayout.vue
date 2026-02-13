@@ -6,5 +6,5 @@
 
 <script setup lang="ts">
     import ArtDecoBaseLayout from './ArtDecoBaseLayout.vue'
-    import { MONITORING_MENU_ITEMS } from './MenuConfig'
+    import { MONITORING_MENU_ITEMS } from './archive/MenuConfig'
 </script>

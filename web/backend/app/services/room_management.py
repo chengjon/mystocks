@@ -15,7 +15,7 @@ Date: 2025-11-07
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
@@ -93,7 +93,7 @@ class Room:
             return False
 
         self.members[user_id] = RoomMember(user_id=user_id, username=username, is_admin=is_admin)
-        self.last_activity = datetime.utcnow()
+        self.last_activity = datetime.now(timezone.utc)
         return True
 
     def remove_member(self, user_id: str) -> bool:
@@ -102,7 +102,7 @@ class Room:
             return False
 
         del self.members[user_id]
-        self.last_activity = datetime.utcnow()
+        self.last_activity = datetime.now(timezone.utc)
         return True
 
     def get_member(self, user_id: str) -> Optional[RoomMember]:
@@ -310,7 +310,7 @@ class RoomManager:
 
         room = self.rooms[room_id]
         room.message_count += 1
-        room.last_activity = datetime.utcnow()
+        room.last_activity = datetime.now(timezone.utc)
         return True
 
     def _add_user_room(self, user_id: str, room_id: str) -> None:

@@ -7,7 +7,6 @@
 from typing import Dict, Optional
 
 from .model_scores import OverallModelScore, ModelScoreConfig
-from .analysis_result import AnalysisResult
 
 
 class FisherAnalyzer:

@@ -18,7 +18,7 @@ Architecture:
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
@@ -429,7 +429,7 @@ class SyncProcessor:
             # 计算同步延迟
             sync_latency_ms = None
             if message.created_at:
-                sync_latency_ms = (datetime.utcnow() - message.created_at).total_seconds() * 1000
+                sync_latency_ms = (datetime.now(timezone.utc) - message.created_at).total_seconds() * 1000
 
             # 更新状态
             if result["success"]:

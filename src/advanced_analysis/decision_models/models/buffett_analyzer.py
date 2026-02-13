@@ -4,8 +4,7 @@
 基于沃伦·巴菲特的价值投资哲学，分析股票投资价值
 """
 
-from typing import Dict, List, Optional
-from datetime import datetime
+from typing import Dict, Optional
 
 from .model_scores import OverallModelScore, ModelScoreConfig, ValuationScore, GrowthScore, QualityScore, TechnicalScore
 

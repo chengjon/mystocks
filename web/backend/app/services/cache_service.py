@@ -6,8 +6,7 @@
 
 import logging
 from typing import Any, Dict, List, Optional
-from datetime import datetime, timedelta
-from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 
 logger = __import__("logging").getLogger(__name__)
@@ -330,7 +329,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-            import redis.asyncio as redis
 
             value = await self.redis_pool.get(key)
 
@@ -353,7 +351,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-            import redis.asyncio as redis
 
             serialized_value = str(value).encode("utf-8")
 
@@ -382,7 +379,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-            import redis.asyncio as redis
 
             await self.redis_pool.delete(key)
 
@@ -399,7 +395,6 @@ class CacheService:
             if not self.is_redis_connected:
                 await self._connect_redis()
 
-            import redis.asyncio as redis
 
             await self.redis_pool.flushdb()
 
@@ -429,7 +424,6 @@ class CacheService:
     async def _evict_random_redis_key(self):
         """淘汰随机的Redis键"""
         try:
-            import redis.asyncio as redis
 
             keys = await self.redis_pool.keys("*")
 

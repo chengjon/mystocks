@@ -48,10 +48,8 @@ export const FIELD_NAME_MAPPING = {
   'max_position_ratio': 'maxPositionRatio',
   'stop_loss_ratio': 'stopLossRatio',
   'take_profit_ratio': 'takeProfitRatio',
-  'risk_level': 'riskLevel',
 
   // ============ Panel Fields ============
-  'panel_type': 'panelType',
   'panel_name': 'panelName',
   'panel_abbreviation': 'panelAbbreviation',
   'panel_description': 'panelDescription',
@@ -84,17 +82,11 @@ export const FIELD_NAME_MAPPING = {
   'exit_amount': 'exitAmount',
   'entry_time': 'entryTime',
   'exit_time': 'exitTime',
-  'order_type': 'orderType',
-  'exchange': 'exchange',
-  'commission': 'commission',
-  'slippage': 'slippage',
-  'tax': 'tax',
   'net_profit': 'netProfit',
   'net_profit_percent': 'netProfitPercent',
   'realized_pnl': 'realizedPnL',
   'unrealized_pnl': 'unrealizedPnL',
   'trading_account_id': 'tradingAccountId',
-  'account_type': 'accountType',
 
   // ============ Time Series Fields ============
   'frequency': 'frequency',
@@ -142,7 +134,8 @@ export const FIELD_NAME_MAPPING = {
   'slippage': 'slippage',
   'exchange': 'exchange',
   'account_id': 'accountId',
-  'account_type': 'accountType'
+  'account_type': 'accountType',
+  'tax': 'tax'
 } as const;
 
 /**
@@ -154,7 +147,6 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
   'full_name': 'fullName',
   'chinese_name': 'chineseName',
   'display_name': 'displayName',
-  'panel_type': 'panelType',
   'sector_full_name': 'sectorFullName',
   'index_full_name': 'indexFullName',
   'concept_full_name': 'conceptFullName',
@@ -187,7 +179,6 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
   'max_position_ratio': 'maxPositionRatio',
   'stop_loss_ratio': 'stopLossRatio',
   'take_profit_ratio': 'takeProfitRatio',
-  'risk_level': 'riskLevel',
 
   // Panel Data
   'panel_type': 'panelType',
@@ -223,17 +214,11 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
   'exit_amount': 'exitAmount',
   'entry_time': 'entryTime',
   'exit_time': 'exitTime',
-  'order_type': 'orderType',
-  'exchange': 'exchange',
-  'commission': 'commission',
-  'slippage': 'slippage',
-  'tax': 'tax',
   'net_profit': 'netProfit',
   'net_profit_percent': 'netProfitPercent',
   'realized_pnl': 'realizedPnL',
   'unrealized_pnl': 'unrealizedPnL',
   'trading_account_id': 'tradingAccountId',
-  'account_type': 'accountType',
 
   // Time Series Data
   'frequency': 'frequency',
@@ -281,7 +266,8 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
   'slippage': 'slippage',
   'exchange': 'exchange',
   'account_id': 'accountId',
-  'account_type': 'accountType'
+  'account_type': 'accountType',
+  'tax': 'tax'
 } as const;
 
 /**
@@ -305,23 +291,23 @@ export const SNAKE_TO_CAMEL_MAPPING: Record<string, string> = {
  */
 export function transformContract<T extends Record<string, any>>(
   backendContract: T
-): { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K]) } {
+): { [K in keyof T]: (T[K] extends string ? FrontendContractField<T, K> : T[K]) } {
   const result = {} as any;
-  
+
   // 遍历所有字段，检查是否需要转换
   for (const key in backendContract) {
     const value = backendContract[key];
-    
+
     // 跳过null、undefined、数字、布尔值
     if (value === null || value === undefined || typeof value === 'number' || typeof value === 'boolean') {
       result[key] = value;
       continue;
     }
-    
+
     // 只转换字符串值
     if (typeof value === 'string') {
       const frontendKey = SNAKE_TO_CAMEL_MAPPING[key];
-      
+
       if (frontendKey && frontendKey !== key) {
         // 转换字段名
         result[frontendKey] = value;
@@ -331,8 +317,8 @@ export function transformContract<T extends Record<string, any>>(
       }
     }
   }
-  
-  return result as { [K in keyof T]: (backendContract[K] extends string ? FrontendContractField<T, K> : T[K]) };
+
+  return result as { [K in keyof T]: (T[K] extends string ? FrontendContractField<T, K> : T[K]) };
 }
 
 /**
@@ -363,12 +349,7 @@ export function transformContractArray<T extends Record<string, any>>(
  * 字段名转换类型
  * 用于标记转换后的字段类型
  */
-export type FrontendContractField<T extends Record<string, any>, K extends string> = {
-  fieldName: T[K];
-  value: T[K] extends string ? string : T[K]
-} & {
-  [originalKey in K as T]: originalKey
-}
+export type FrontendContractField<T extends Record<string, any>, K extends keyof T> = T[K];
 
 /**
  * 检查字段是否需要转换
@@ -555,73 +536,4 @@ export type TradeDirection = 'long' | 'short';
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'extreme';
 
-  /**
-   * Contract类型定义（前端TypeScript）
-   * 与后端Python风格对应的TypeScript接口
-   */
-
-export interface ParameterContract {
-  name: string;
-  type: 'int' | 'float' | 'string' | 'bool';
-  default: number | string | boolean;
-  min?: number;
-  max?: number;
-  step?: number;
-  description: string;
-}
-
-export interface OutputContract {
-  name: string;
-  description: string;
-  unit?: string;
-}
-
-export interface SignalContract {
-  symbol: string;
-  type: SignalType;
-  strength?: SignalStrength;
-  price?: number;
-  indicatorType?: string;
-  indicatorValue?: number;
-  timestamp: string;
-  description?: string;
-  confidence?: number;
-}
-
-export interface BacktestContract {
-  id: string;
-  name: string;
-  strategy: StrategyContract;
-  startDate: string;
-  endDate: string;
-  initialCapital: number;
-  finalCapital: number;
-  totalReturn: number;
-  annualizedReturn: number;
-  sharpeRatio: number;
-  maxDrawdown: number;
-  volatility: number;
-  winRate: number;
-  trades: TradeContract[];
-}
-
-export interface TradeContract {
-  id: string;
-  symbol: string;
-  type: TradeType;
-  status: TradeStatus;
-  direction: TradeDirection;
-  entryPrice: number;
-  exitPrice: number;
-  entryTime: string;
-  exitTime: string;
-  entryQuantity: number;
-  exitQuantity: number;
-  entryAmount: number;
-  exitAmount: number;
-  commission: number;
-  slippage: number;
-  tax: number;
-  pnl: number;
-  pnlPercent: number;
-}
+export type ParameterConfigType = 'default' | 'custom' | 'optimized';

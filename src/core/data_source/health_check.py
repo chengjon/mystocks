@@ -31,7 +31,7 @@ def _save_call_history_async(self, **kwargs):
                 ),
             )
             conn.commit()
-    except Exception as e:
+    except Exception:
         logger.error("保存调用历史失败: %(e)s")
 
 

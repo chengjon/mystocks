@@ -424,6 +424,7 @@ async def get_assets_catalog(
 
             if asset_type:
                 param_count += 1
+                # Safe: using parameterized query ($1, $2...) for user input
                 where_clause = f"WHERE asset_type = ${param_count}"
                 params.append(asset_type)
 

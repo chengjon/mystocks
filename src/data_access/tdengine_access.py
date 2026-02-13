@@ -36,6 +36,15 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
     Raises:
         ValueError: 如果标识符包含不安全字符
     """
+    # First check for dangerous characters that could be used for SQL injection
+    dangerous_chars = ["`", "'", ";", "--", "/*", "*/", "\\"]
+    for char in dangerous_chars:
+        if char in identifier:
+            raise ValueError(
+                f"Invalid {identifier_type}: '{identifier}' contains dangerous character. "
+                f"SQL injection attempt detected."
+            )
+
     # TDengine标识符规则：只能包含字母、数字、下划线
     # 且必须以字母或下划线开头
     if not identifier:
@@ -52,26 +61,38 @@ def validate_identifier(identifier: str, identifier_type: str = "identifier") ->
 
 def validate_suffix(suffix: str, suffix_type: str = "suffix") -> str:
     """
-    验证子表后缀（允许数字开头）
+    Validate subtable suffix (must start with letter or underscore per TDengine naming conventions)
 
     Args:
-        suffix: 待验证的后缀
-        suffix_type: 后缀类型（用于错误消息）
+        suffix: The suffix to validate
+        suffix_type: Type of suffix (for error messages)
 
     Returns:
-        验证后的安全后缀
+        Validated safe suffix
+
+    Raises:
+        ValueError: If suffix is empty, contains dangerous characters, or starts with a digit
     """
     if not suffix:
         raise ValueError(f"{suffix_type} cannot be empty")
 
-    if not re.match(r"^[a-zA-Z0-9_]+$", suffix):
+    # First check for dangerous characters that could be used for SQL injection
+    dangerous_chars = ["`", "'", ";", "--", "/*", "*/", "\\"]
+    for char in dangerous_chars:
+        if char in suffix:
+            raise ValueError(
+                f"Invalid {suffix_type}: '{suffix}' contains dangerous character. "
+                f"SQL injection attempt detected."
+            )
+
+    # TDengine subtable naming convention: must start with letter or underscore
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", suffix):
         raise ValueError(
-            f"Invalid {suffix_type}: '{suffix}'. Only alphanumeric characters and underscores are allowed."
+            f"Invalid {suffix_type}: '{suffix}'. Must start with a letter or underscore, "
+            f"followed by alphanumeric characters or underscores only."
         )
 
     return suffix
-
-
 def validate_table_name(table_name: str) -> str:
     """验证表名"""
     return validate_identifier(table_name, "table_name")
@@ -158,7 +179,7 @@ class TDengineDataAccess:
 
             return success
 
-        except Exception as e:
+        except Exception:
             logger.error("TDengine 保存失败: %(e)s")
             return False
 
@@ -222,7 +243,7 @@ class TDengineDataAccess:
                 """
                 cursor.execute(sql)
             return True
-        except Exception as e:
+        except Exception:
             logger.error("Tick 插入错误: %(e)s")
             return False
 
@@ -288,7 +309,7 @@ class TDengineDataAccess:
                 """
                 cursor.execute(sql)
             return True
-        except Exception as e:
+        except Exception:
             logger.error("K线插入错误: %(e)s")
             return False
 
@@ -298,7 +319,8 @@ class TDengineDataAccess:
             has_txn = "txn_id" in data.columns and "is_valid" in data.columns
 
             for _, row in data.iterrows():
-                symbol = str(row.get("symbol", "unknown"))
+                # 验证 symbol 防止 SQL 注入
+                symbol = validate_symbol(str(row.get("symbol", "unknown")))
                 # 生成子表名: rt_<code>
                 subtable = f"rt_{symbol.lower().replace('.', '_')}"
 
@@ -361,7 +383,7 @@ class TDengineDataAccess:
                 """
                 cursor.execute(sql)
             return True
-        except Exception as e:
+        except Exception:
             logger.error("实时行情插入错误: %(e)s")
             return False
 
@@ -374,7 +396,7 @@ class TDengineDataAccess:
             sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
             cursor.executemany(sql, data.values.tolist())
             return True
-        except Exception as e:
+        except Exception:
             logger.error("通用插入错误: %(e)s")
             return False
 
@@ -406,7 +428,7 @@ class TDengineDataAccess:
                 DataClassification.MINUTE_KLINE if "kline" in safe_table_name else DataClassification.TICK_DATA
             )
             return self.save_data(df, classification, table_name)
-        except Exception as e:
+        except Exception:
             logger.error("补偿操作失败: %(e)s")
             return False
 
@@ -428,7 +450,9 @@ class TDengineDataAccess:
                 conditions.append("ts <= ?")
                 params.append(filters["end_time"])
             if "symbol" in filters:
-                conditions.append(f"symbol = '{filters['symbol']}'")
+                # 验证 symbol 防止 SQL 注入
+                safe_symbol = validate_symbol(filters["symbol"])
+                conditions.append(f"symbol = '{safe_symbol}'")
             if filters.get("include_invalid") is not True:
                 conditions.append("is_valid = true")
             if conditions:
@@ -439,7 +463,7 @@ class TDengineDataAccess:
             else:
                 sql += " LIMIT 1000"
             return pd.read_sql(sql, conn)
-        except Exception as e:
+        except Exception:
             logger.error("加载数据失败: %(e)s")
             return None
 
@@ -476,7 +500,7 @@ class TDengineDataAccess:
                 result = cursor.execute(sql, **kwargs)
 
             return result
-        except Exception as e:
+        except Exception:
             logger.error("执行SQL失败: %(e)s")
             return None
 
@@ -485,7 +509,7 @@ class TDengineDataAccess:
         try:
             conn = self.db_manager.get_connection(self.db_type, "market_data")
             return pd.read_sql(sql, conn)
-        except Exception as e:
+        except Exception:
             logger.error("TDengine SQL 查询失败: %(e)s")
             return pd.DataFrame()
 
@@ -496,7 +520,7 @@ class TDengineDataAccess:
             cursor = conn.cursor()
             cursor.execute(sql)
             return True
-        except Exception as e:
+        except Exception:
             logger.error("TDengine SQL 执行失败: %(e)s")
             return False
 
@@ -514,7 +538,7 @@ class TDengineDataAccess:
 
             self._connection.execute_sql("SELECT 1")
             return True
-        except Exception as e:
+        except Exception:
             logger.error("TDengine连接检查失败: %(e)s")
             return False
 
@@ -523,7 +547,7 @@ class TDengineDataAccess:
         try:
             self._connection = self._get_connection()
             return True
-        except Exception as e:
+        except Exception:
             logger.error("TDengine连接失败: %(e)s")
             return False
 
@@ -541,7 +565,7 @@ class TDengineDataAccess:
         try:
             sql = f"SELECT * FROM {table_name} LIMIT {limit}"
             return self.query_sql(sql)
-        except Exception as e:
+        except Exception:
             logger.error("TDengine查询所有数据失败: %(e)s")
             return pd.DataFrame()
 
@@ -561,7 +585,7 @@ class TDengineDataAccess:
             if not result.empty:
                 return int(result.iloc[0, 0])
             return 0
-        except Exception as e:
+        except Exception:
             logger.error("TDengine查询记录数失败: %(e)s")
             return 0
 
@@ -585,7 +609,7 @@ class TDengineDataAccess:
             """
             result = self.execute_sql(sql)
             return result is not None
-        except Exception as e:
+        except Exception:
             logger.error("创建超表失败: %(e)s")
             return False
 
@@ -611,7 +635,7 @@ class TDengineDataAccess:
             """
             result = self.execute_sql(sql)
             return result is not None
-        except Exception as e:
+        except Exception:
             logger.error("创建表失败: %(e)s")
             return False
 
@@ -634,7 +658,7 @@ class TDengineDataAccess:
             cursor.executemany(sql, data.values.tolist())
             conn.close()
             return True
-        except Exception as e:
+        except Exception:
             logger.error("插入DataFrame失败: %(e)s")
             return False
 
@@ -657,7 +681,7 @@ class TDengineDataAccess:
             df = pd.read_sql(sql, conn)
             conn.close()
             return df
-        except Exception as e:
+        except Exception:
             logger.error("时间范围查询失败: %(e)s")
             return None
 
@@ -672,12 +696,14 @@ class TDengineDataAccess:
             conn = self.db_manager.get_connection(self.db_type, "market_data")
             sql = f"SELECT * FROM {table_name}"
             if symbol:
-                sql += f" WHERE symbol = '{symbol}'"
+                # 验证 symbol 防止 SQL 注入
+                safe_symbol = validate_symbol(symbol)
+                sql += f" WHERE symbol = '{safe_symbol}'"
             sql += f" ORDER BY ts DESC LIMIT {limit}"
             df = pd.read_sql(sql, conn)
             conn.close()
             return df
-        except Exception as e:
+        except Exception:
             logger.error("查询最新数据失败: %(e)s")
             return None
 
@@ -695,7 +721,7 @@ class TDengineDataAccess:
             """
             result = self.execute_sql(sql)
             return result is not None
-        except Exception as e:
+        except Exception:
             logger.error("删除数据失败: %(e)s")
             return False
 
@@ -730,7 +756,7 @@ class TDengineDataAccess:
             df = pd.read_sql(sql, conn)
             conn.close()
             return df
-        except Exception as e:
+        except Exception:
             logger.error("聚合到K线失败: %(e)s")
             return None
 
@@ -757,6 +783,6 @@ class TDengineDataAccess:
                 "columns": [{"name": col[0], "type": col[1]} for col in columns_info],
                 "row_count": row_count,
             }
-        except Exception as e:
+        except Exception:
             logger.error("获取表信息失败: %(e)s")
             return {"table_name": table_name, "columns": [], "row_count": 0}

@@ -5,7 +5,7 @@
 
 import logging
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -330,7 +330,7 @@ class VersionManager:
             spec = generator.generate_spec()
 
             # 生成版本号
-            timestamp = datetime.utcnow().strftime("%Y.%m.%d.%H%M")
+            timestamp = datetime.now(timezone.utc).strftime("%Y.%m.%d.%H%M")
             version = f"{timestamp}"
 
             # 获取 Git commit hash
@@ -351,7 +351,7 @@ class VersionManager:
                 spec=spec,
                 commit_hash=commit_hash,
                 author=author or "system",
-                description=description or f"Auto-generated from code at {datetime.utcnow().isoformat()}",
+                description=description or f"Auto-generated from code at {datetime.now(timezone.utc).isoformat()}",
                 tags=["auto-generated", "code-to-db"],
             )
 

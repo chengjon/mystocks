@@ -125,7 +125,7 @@ class StreamManager:
                 else:
                     logger.error("Failed to start stream for %(symbol)s")
 
-            except Exception as e:
+            except Exception:
                 logger.error("Error subscribing to %(symbol)s: %(e)s")
                 results[symbol] = False
 
@@ -160,7 +160,7 @@ class StreamManager:
 
                 results[symbol] = True
 
-            except Exception as e:
+            except Exception:
                 logger.error("Error unsubscribing from %(symbol)s: %(e)s")
                 results[symbol] = False
 
@@ -220,7 +220,7 @@ class StreamManager:
             else:
                 return "sina_finance"
 
-        except Exception as e:
+        except Exception:
             logger.error("Error resolving adapter for %(symbol)s: %(e)s")
             return None
 
@@ -263,7 +263,7 @@ class StreamManager:
             logger.info("Stream started for %(symbol)s via %(adapter_name)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Error starting stream for %(symbol)s: %(e)s")
             subscription.status = StreamStatus.ERROR
             return False
@@ -287,7 +287,7 @@ class StreamManager:
 
             logger.info("Stream stopped for %(symbol)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error stopping stream for %(symbol)s: %(e)s")
 
     async def _get_websocket_adapter(self, adapter_name: str) -> Optional[Any]:
@@ -324,7 +324,7 @@ class StreamManager:
             if symbol in self.subscriptions:
                 self.subscriptions[symbol].last_update = datetime.now()
 
-        except Exception as e:
+        except Exception:
             logger.error("Error handling stream message: %(e)s")
 
     async def _trigger_event(self, event_type: str, data: Dict[str, Any]) -> None:
@@ -341,7 +341,7 @@ class StreamManager:
                 tasks = [handler(data) for handler in handlers]
                 await asyncio.gather(*tasks, return_exceptions=True)
 
-        except Exception as e:
+        except Exception:
             logger.error("Error triggering event %(event_type)s: %(e)s")
 
     async def _heartbeat_monitor(self, symbol: str) -> None:
@@ -366,7 +366,7 @@ class StreamManager:
 
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error in heartbeat monitor for %(symbol)s: %(e)s")
 
     async def shutdown(self) -> None:

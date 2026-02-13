@@ -8,7 +8,7 @@ AkShare适配器基础模块
 import asyncio
 import logging
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 

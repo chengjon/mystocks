@@ -4,10 +4,9 @@ Fund Flow Module
 提供沪深港通资金流向数据获取功能
 """
 
-import asyncio
 import logging
 import akshare as ak
-from typing import Dict, Optional
+from typing import Dict
 
 from ..base import retry_api_call
 

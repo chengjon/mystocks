@@ -172,7 +172,7 @@ class BacktestEngine:
 
                 logger.info("加载 %(symbol)s 数据: {len(self.market_data[symbol])} 条记录")
 
-            except Exception as e:
+            except Exception:
                 logger.error("加载 %(symbol)s 数据失败: {str(e)}")
                 continue
 
@@ -491,7 +491,7 @@ class BacktestEngine:
             )
             try:
                 self.progress_callback(progress_event)
-            except Exception as e:
+            except Exception:
                 logger.warning("发送进度更新失败: {str(e)}")
 
     def stop(self):

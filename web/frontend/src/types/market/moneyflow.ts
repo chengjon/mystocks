@@ -5,6 +5,8 @@
  * @version 1.0.0
  */
 
+import type { UnifiedResponse } from '../common/response';
+
 /**
  * 资金流向类型
  */

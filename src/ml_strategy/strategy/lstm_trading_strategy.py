@@ -222,7 +222,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
             logger.info("LSTM特征准备完成: {len(available_features)} 个特征")
             return features
 
-        except Exception as e:
+        except Exception:
             logger.error("LSTM特征准备失败: %(e)s")
             # 返回基础特征作为fallback
             return data[["close", "volume"]].fillna(0)
@@ -306,7 +306,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
             logger.info("LSTM模型训练完成: %(model_key)s")
             return model_key
 
-        except Exception as e:
+        except Exception:
             logger.error("LSTM模型训练失败: %(e)s")
             return "training_failed"
 
@@ -362,7 +362,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
             logger.info("LSTM预测完成: 预测收益率 %(predicted_return)s")
             return predictions
 
-        except Exception as e:
+        except Exception:
             logger.error("LSTM预测失败: %(e)s")
             return self._fallback_prediction(data)
 
@@ -387,7 +387,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
 
             return [prediction]
 
-        except Exception as e:
+        except Exception:
             logger.error("Fallback预测失败: %(e)s")
             return []
 
@@ -448,7 +448,7 @@ class LSTMTradingStrategy(MLTradingStrategy):
             logger.info("LSTM信号解释完成: 生成 {len(signals_df)} 个信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("LSTM信号解释失败: %(e)s")
             return pd.DataFrame(columns=["signal", "confidence", "predicted_return", "signal_strength"])
 

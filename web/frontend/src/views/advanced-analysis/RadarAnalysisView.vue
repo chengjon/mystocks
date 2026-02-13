@@ -271,7 +271,7 @@
         const canvas = document.createElement('canvas')
         canvas.width = 400
         canvas.height = 400
-        radarChart.value.innerHTML = ''
+        radarChart.value.textContent = ''
         radarChart.value.appendChild(canvas)
 
         const ctx = canvas.getContext('2d')

@@ -332,7 +332,7 @@ class MarketDataSourceAdapter(IDataSource):
                 response_time=response_time,
                 success=success,
             )
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to trigger quality monitoring: {str(e)}")
 
     def _serialize_fund_flow(self, fund_flow) -> Dict[str, Any]:

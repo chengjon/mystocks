@@ -13,7 +13,7 @@ Task 2.2: 实现缓存读写逻辑
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import sys
 import os
 import time
@@ -133,7 +133,7 @@ class TestSingleCacheOperations:
 
     def test_cache_with_custom_timestamp(self):
         """测试自定义时间戳的缓存"""
-        custom_time = datetime.utcnow() - timedelta(days=1)
+        custom_time = datetime.now(timezone.utc) - timedelta(days=1)
         data = {"value": 100}
 
         result = self.manager.write_to_cache(

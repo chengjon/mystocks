@@ -41,7 +41,7 @@ except ImportError:
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
+from src.gpu.core.hardware_abstraction import GPUResourceManager
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
                     logger.warning("Failed to allocate GPU, falling back to CPU")
                     await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -124,7 +124,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"dt_{self.metadata.name}")
                 logger.info("Decision Tree GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -231,7 +231,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("%(algorithm_name)s training completed - Accuracy: %(accuracy)s")
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("Decision Tree training failed: %(e)s")
             raise
 
@@ -283,7 +283,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Decision Tree prediction failed: %(e)s")
             raise
 
@@ -325,7 +325,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("Decision Tree evaluation failed: %(e)s")
             raise
 
@@ -371,7 +371,7 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Decision Tree model saved to %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save Decision Tree model: %(e)s")
             return False
 
@@ -392,6 +392,6 @@ class DecisionTreeAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Decision Tree model loaded from %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load Decision Tree model: %(e)s")
             return False

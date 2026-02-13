@@ -49,7 +49,7 @@ class MarketDataService:
         # TQLEX适配器可能未配置token,需要优雅降级
         try:
             self.tqlex = get_tqlex_adapter()
-        except ValueError as e:
+        except ValueError:
             logger.warning("TQLEX适配器初始化失败(竞价抢筹功能将不可用): %(e)s")
             self.tqlex = None
 

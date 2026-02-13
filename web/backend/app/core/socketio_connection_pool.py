@@ -19,7 +19,7 @@ Date: 2025-11-12
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
@@ -52,7 +52,7 @@ class PooledConnection:
 
     def is_stale(self, stale_timeout: int = 300) -> bool:
         """检查连接是否过期（5分钟无活动）"""
-        elapsed = (datetime.utcnow() - self.last_activity).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - self.last_activity).total_seconds()
         return elapsed > stale_timeout
 
     def is_healthy(self, max_errors: int = 5) -> bool:
@@ -61,7 +61,7 @@ class PooledConnection:
 
     def record_activity(self) -> None:
         """记录活动"""
-        self.last_activity = datetime.utcnow()
+        self.last_activity = datetime.now(timezone.utc)
         self.activity_count += 1
 
     def record_error(self) -> None:
@@ -404,7 +404,7 @@ class WebSocketConnectionPool:
             },
             "users": len(self.user_connections),
             "utilization": (active_count / self.max_size * 100 if self.max_size > 0 else 0),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_connection_details(self, sid: str) -> Optional[Dict[str, Any]]:

@@ -1027,7 +1027,7 @@ class CacheManager:
                 ),
             )
             return result
-        except Exception as e:
+        except Exception:
             logger.warning("TDengine异步写入失败: %(e)s")
             return False
 

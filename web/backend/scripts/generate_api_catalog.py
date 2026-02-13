@@ -9,7 +9,7 @@ API 目录生成器
 """
 
 import yaml
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -21,7 +21,7 @@ class APICatalogGenerator:
     def __init__(self, app: FastAPI):
         self.app = app
         self.catalog = {
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "total_endpoints": 0,
             "modules": {},
             "summary": {},

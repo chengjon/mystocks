@@ -95,7 +95,7 @@ class SignalRecorder:
                     logger.warning("监控数据库未连接，信号记录功能将不可用")
                     return None
                 self._pg_pool = pg
-            except Exception as e:
+            except Exception:
                 logger.error("无法获取监控数据库连接: %(e)s")
                 return None
         return self._pg_pool
@@ -158,7 +158,7 @@ class SignalRecorder:
             )
             return signal_id
 
-        except Exception as e:
+        except Exception:
             logger.error("记录信号失败: {e}", exc_info=True)
             return None
 
@@ -207,7 +207,7 @@ class SignalRecorder:
             logger.info("批量记录 {len(signal_ids)} 个信号")
             return signal_ids
 
-        except Exception as e:
+        except Exception:
             logger.error("批量记录信号失败: {e}", exc_info=True)
             return []
 
@@ -264,7 +264,7 @@ class SignalRecorder:
             logger.debug("记录执行结果: signal_id=%(signal_id)s, executed=%(executed)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("记录执行结果失败: {e}", exc_info=True)
             return False
 
@@ -314,7 +314,7 @@ class SignalRecorder:
             logger.debug("记录推送日志: signal_id=%(signal_id)s, channel=%(channel)s, status=%(status)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("记录推送日志失败: {e}", exc_info=True)
             return False
 
@@ -348,7 +348,7 @@ class SignalRecorder:
             logger.debug("更新信号状态: signal_id=%(signal_id)s, status=%(status)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("更新信号状态失败: {e}", exc_info=True)
             return False
 
@@ -381,7 +381,7 @@ class SignalRecorder:
 
             return dict(record) if record else None
 
-        except Exception as e:
+        except Exception:
             logger.error("查询信号失败: {e}", exc_info=True)
             return None
 

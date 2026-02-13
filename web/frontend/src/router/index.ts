@@ -119,7 +119,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'overview',
          name: 'market-overview',
-         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketOverview.vue'),
+         component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoMarketOverview.vue'),
          meta: {
            title: '市场概览',
            breadcrumb: 'Market > Overview',
@@ -129,7 +129,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'analysis',
          name: 'market-analysis',
-         component: () => import('@/views/artdeco-pages/components/market/ArtDecoMarketAnalysis.vue'),
+         component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoMarketAnalysis.vue'),
          meta: {
            title: '市场分析',
            breadcrumb: 'Market > Analysis',
@@ -139,7 +139,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'industry',
          name: 'market-industry',
-         component: () => import('@/views/artdeco-pages/components/market/ArtDecoIndustryAnalysis.vue'),
+         component: () => import('@/views/artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue'),
          meta: {
            title: '行业分析',
            breadcrumb: 'Market > Industry',
@@ -286,7 +286,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'signals',
          name: 'trading-signals',
-         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingSignals.vue'),
+         component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingSignals.vue'),
          meta: {
            title: '交易信号',
            requiresAuth: true,
@@ -296,7 +296,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'history',
          name: 'trading-history',
-         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingHistory.vue'),
+         component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingHistory.vue'),
          meta: {
            title: '历史订单',
            requiresAuth: true,
@@ -306,7 +306,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'positions',
          name: 'trading-positions',
-         component: () => import('@/views/artdeco-pages/components/ArtDecoTradingPositions.vue'),
+         component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue'),
          meta: {
            title: '持仓监控',
            requiresAuth: true,
@@ -316,7 +316,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'performance',
          name: 'trading-performance',
-         component: () => import('@/views/artdeco-pages/components/trading/ArtDecoPerformanceAnalysis.vue'),
+         component: () => import('@/views/artdeco-pages/trading-tabs/ArtDecoPerformanceAnalysis.vue'),
          meta: {
            title: '绩效分析',
            requiresAuth: true,
@@ -345,7 +345,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'design',
          name: 'strategy-design',
-         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoStrategyManagement.vue'), // Placeholder
+         component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'), // Placeholder
          meta: {
            title: '策略设计',
            requiresAuth: true,
@@ -354,7 +354,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'management',
          name: 'strategy-management',
-         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoStrategyManagement.vue'),
+         component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue'),
          meta: {
            title: '策略管理',
            requiresAuth: true,
@@ -363,7 +363,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'backtest',
          name: 'strategy-backtest',
-         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoBacktestAnalysis.vue'),
+         component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue'),
          meta: {
            title: '策略回测',
            requiresAuth: true,
@@ -372,7 +372,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'gpu-backtest',
          name: 'strategy-gpu-backtest',
-         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoBacktestAnalysis.vue'), // Placeholder
+         component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue'), // Placeholder
          meta: {
            title: 'GPU加速回测',
            requiresAuth: true,
@@ -381,7 +381,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'optimization',
          name: 'strategy-optimization',
-         component: () => import('@/views/artdeco-pages/components/strategy/ArtDecoStrategyOptimization.vue'),
+         component: () => import('@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue'),
          meta: {
            title: '参数优化',
            requiresAuth: true,
@@ -482,7 +482,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'monitoring',
          name: 'system-monitoring',
-         component: () => import('@/views/artdeco-pages/components/system/ArtDecoMonitoringDashboard.vue'),
+         component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'),
          meta: {
            title: '运维监控',
            requiresAuth: true,
@@ -491,7 +491,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'settings',
          name: 'system-settings',
-         component: () => import('@/views/artdeco-pages/components/system/ArtDecoSystemSettings.vue'),
+         component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoSystemSettings.vue'),
          meta: {
            title: '系统设置',
            requiresAuth: true,
@@ -500,7 +500,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'data-update',
          name: 'system-data-update',
-         component: () => import('@/views/artdeco-pages/components/system/ArtDecoDataManagement.vue'),
+         component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'),
          meta: {
            title: '数据更新',
            requiresAuth: true,
@@ -509,7 +509,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'data-quality',
          name: 'system-data-quality',
-         component: () => import('@/views/artdeco-pages/components/system/ArtDecoDataManagement.vue'),
+         component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue'),
          meta: {
            title: '数据质量',
            requiresAuth: true,
@@ -518,7 +518,7 @@ const routes: RouteRecordRaw[] = [
        {
          path: 'api-health',
          name: 'system-api-health',
-         component: () => import('@/views/artdeco-pages/components/system/ArtDecoMonitoringDashboard.vue'), // Placeholder
+         component: () => import('@/views/artdeco-pages/system-tabs/ArtDecoMonitoringDashboard.vue'), // Placeholder
          meta: {
            title: 'API 健康',
            requiresAuth: true,

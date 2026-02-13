@@ -44,9 +44,9 @@ import { ArtDecoStatCard, ArtDecoCard, ArtDecoTable } from '@/components/artdeco
 import { useDecisionModels } from '@/composables/advanced/useDecisionModels'
 
 // Sub-components
-import BuffettModel from './components/BuffettModel.vue'
-import OneilModel from './components/OneilModel.vue'
-import LynchModel from './components/LynchModel.vue'
+import BuffettModel from '@/views/artdeco-pages/components/BuffettModel.vue'
+import OneilModel from '@/views/artdeco-pages/components/OneilModel.vue'
+import LynchModel from '@/views/artdeco-pages/components/LynchModel.vue'
 
 const {
     decisionModels, buffettCriteria, canslimFactors,

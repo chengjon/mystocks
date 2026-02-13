@@ -166,7 +166,7 @@ class VectorizedHealthCalculator:
             try:
                 output = self._calculate_single(input_data)
                 results.append(output)
-            except Exception as e:
+            except Exception:
                 logger.error("计算 {input_data.stock_code} 健康度失败: %(e)s")
                 results.append(
                     HealthScoreOutput(
@@ -311,7 +311,7 @@ class VectorizedHealthCalculator:
 
             return float(np.clip(trend_score, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("趋势评分计算失败: %(e)s")
             return 50.0
 
@@ -359,7 +359,7 @@ class VectorizedHealthCalculator:
 
             return float(np.clip(technical_score, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("技术评分计算失败: %(e)s")
             return 50.0
 
@@ -382,7 +382,7 @@ class VectorizedHealthCalculator:
 
             return float(np.clip(roc_avg, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("动量评分计算失败: %(e)s")
             return 50.0
 
@@ -419,7 +419,7 @@ class VectorizedHealthCalculator:
 
             return float(np.clip(volatility_score, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("波动率评分计算失败: %(e)s")
             return 50.0
 
@@ -451,7 +451,7 @@ class VectorizedHealthCalculator:
 
             return float(np.clip(risk_score, 0, 100))
 
-        except Exception as e:
+        except Exception:
             logger.error("风险评分计算失败: %(e)s")
             return 50.0
 

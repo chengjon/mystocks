@@ -107,7 +107,6 @@ class DatabaseService:
             bool: 是否连接成功
         """
         try:
-            import psycopg2
             from psycopg2 import pool
 
             self.connection = pool.SimpleConnectionPool(
@@ -386,7 +385,7 @@ class DatabaseService:
                 result = await operation(*args, **kwargs)
                 await self.commit_transaction()
                 return result
-            except Exception as e:
+            except Exception:
                 await self.rollback_transaction()
                 raise
 

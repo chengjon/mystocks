@@ -154,7 +154,7 @@ class BaseWebSocketAdapter(ABC):
                 logger.error("Failed to subscribe to symbols: %(symbols)s")
                 return False
 
-        except Exception as e:
+        except Exception:
             logger.error("Error subscribing to symbols %(symbols)s: %(e)s")
             return False
 
@@ -183,7 +183,7 @@ class BaseWebSocketAdapter(ABC):
                 logger.error("Failed to unsubscribe from symbols: %(symbols)s")
                 return False
 
-        except Exception as e:
+        except Exception:
             logger.error("Error unsubscribing from symbols %(symbols)s: %(e)s")
             return False
 
@@ -212,10 +212,10 @@ class BaseWebSocketAdapter(ABC):
             for handler in self.message_handlers:
                 try:
                     await handler(message)
-                except Exception as e:
+                except Exception:
                     logger.error("Error in message handler {handler.__name__}: %(e)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error handling message: %(e)s")
 
     def is_connected(self) -> bool:
@@ -244,7 +244,7 @@ class BaseWebSocketAdapter(ABC):
 
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error in heartbeat monitor: %(e)s")
 
     async def _reconnect(self) -> None:
@@ -277,7 +277,7 @@ class BaseWebSocketAdapter(ABC):
 
                     return
 
-            except Exception as e:
+            except Exception:
                 logger.error("Reconnection attempt {attempt + 1} failed: %(e)s")
 
         logger.error("All reconnection attempts failed")
@@ -336,7 +336,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
             logger.info("✅ Connected to Sina Finance WebSocket")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to connect to Sina Finance WebSocket: %(e)s")
             return False
 
@@ -350,7 +350,7 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
                 self.is_running = False
                 logger.info("✅ Disconnected from Sina Finance WebSocket")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error disconnecting from Sina Finance WebSocket: %(e)s")
 
     async def _send_subscription_message(self, symbols: List[str], action: str) -> bool:
@@ -374,6 +374,6 @@ class SinaFinanceWebSocketAdapter(BaseWebSocketAdapter):
 
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Error sending %(action)s message: %(e)s")
             return False

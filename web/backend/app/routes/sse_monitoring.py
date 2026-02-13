@@ -259,7 +259,7 @@ async def ensure_sse_manager():
     try:
         get_sse_manager()
         return True
-    except Exception as e:
+    except Exception:
         logger.error("SSE管理器未初始化: %(e)s")
         raise HTTPException(status_code=503, detail="SSE服务不可用")
 

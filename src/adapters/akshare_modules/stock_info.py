@@ -6,7 +6,7 @@ AkShare股票信息模块
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import pandas as pd
 

@@ -8,6 +8,15 @@
 import type { PaginationInfo } from './pagination';
 
 /**
+ * 错误详情
+ */
+export interface ErrorDetail {
+  errorCode: string;
+  errorMessage: string;
+  details?: Record<string, any>;
+}
+
+/**
  * 统一API响应类型（与后端UnifiedResponse匹配）
  */
 export interface UnifiedResponse<T = any> {

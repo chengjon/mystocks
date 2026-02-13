@@ -303,7 +303,7 @@ class PositionMTMEngine:
                 else:
                     listener(updates)
                 self.metrics["listeners_notified"] += 1
-            except Exception as e:
+            except Exception:
                 logger.error("Error notifying listener: %(e)s")
 
     def add_listener(self, listener: callable):

@@ -39,12 +39,22 @@
 
     // API 端点
     const apiEndpoint = computed(() => {
-        return currentPageConfig.value?.apiEndpoint || ''
+        const config = currentPageConfig.value
+        if (!config) return ''
+        if ('apiEndpoint' in config) {
+            return config.apiEndpoint
+        }
+        return ''
     })
 
     // WebSocket 频道
     const wsChannel = computed(() => {
-        return currentPageConfig.value?.wsChannel || ''
+        const config = currentPageConfig.value
+        if (!config) return ''
+        if ('wsChannel' in config) {
+            return config.wsChannel
+        }
+        return ''
     })
 
     // 组件名称

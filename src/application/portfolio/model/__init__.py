@@ -86,7 +86,7 @@ class Portfolio:
         if quantity_change > 0:
             cost = quantity_change * price
             if self.cash < cost:
-                raise ValueError(f"现金不足")
+                raise ValueError("现金不足")
             self.cash -= cost
             holding.add_quantity(quantity_change, price)
         else:

@@ -156,7 +156,7 @@ class MLStrategyBacktester:
 
             return enhanced_result
 
-        except Exception as e:
+        except Exception:
             logger.error("ML策略回测失败: %(e)s")
             raise
 
@@ -205,7 +205,7 @@ class MLStrategyBacktester:
                 "successful_tests": len([r for r in comparison_results.values() if "error" not in r]),
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("策略对比失败: %(e)s")
             raise
 
@@ -268,7 +268,7 @@ class MLStrategyBacktester:
             logger.info("策略信号生成完成: {len(signals_df)} 个信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("信号生成失败: %(e)s")
             raise
 
@@ -294,7 +294,7 @@ class MLStrategyBacktester:
             logger.info("信号转换完成: {len(backtest_signals)} 个交易日")
             return backtest_signals
 
-        except Exception as e:
+        except Exception:
             logger.error("信号转换失败: %(e)s")
             raise
 
@@ -334,7 +334,7 @@ class MLStrategyBacktester:
 
             return df
 
-        except Exception as e:
+        except Exception:
             logger.warning("信号过滤应用失败，使用原始信号: %(e)s")
             return signals_df
 
@@ -394,7 +394,7 @@ class MLStrategyBacktester:
 
             return enhanced_result
 
-        except Exception as e:
+        except Exception:
             logger.warning("回测结果增强失败: %(e)s")
             return backtest_result
 
@@ -411,7 +411,7 @@ class MLStrategyBacktester:
                 "avg_signals_per_day": len(signals_df[signals_df[self.config.signal_column] != 0]) / len(signals_df),
             }
 
-        except Exception as e:
+        except Exception:
             logger.warning("信号统计计算失败: %(e)s")
             return {}
 
@@ -444,7 +444,7 @@ class MLStrategyBacktester:
                 ),
             }
 
-        except Exception as e:
+        except Exception:
             logger.warning("基准对比计算失败: %(e)s")
             return {}
 

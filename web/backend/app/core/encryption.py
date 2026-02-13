@@ -18,7 +18,7 @@ Phase 3 Enhancements:
 import base64
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Union
 
 import structlog
@@ -112,7 +112,7 @@ class EncryptionManager:
         key = kdf.derive(self.master_password.encode())
         self._cipher_keys[version] = key
         self._key_metadata[version] = {
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "rotated_at": None,
         }
 
@@ -153,7 +153,7 @@ class EncryptionManager:
             return False
 
         # Mark current key as rotated
-        self._key_metadata[self.current_key_version]["rotated_at"] = datetime.utcnow().isoformat()
+        self._key_metadata[self.current_key_version]["rotated_at"] = datetime.now(timezone.utc).isoformat()
 
         # Derive new key
         self._derive_key_for_version(new_version)
@@ -517,7 +517,7 @@ class SecretManager:
             "failed": 0,
             "already_current": 0,
             "errors": [],
-            "start_time": datetime.utcnow().isoformat(),
+            "start_time": datetime.now(timezone.utc).isoformat(),
         }
 
         for key, encrypted_value in list(self.secrets.items()):
@@ -541,7 +541,7 @@ class SecretManager:
                 migration_report["errors"].append({"key": key, "error": str(e)})
                 logger.error("❌ Failed to migrate {key}", error=str(e))
 
-        migration_report["end_time"] = datetime.utcnow().isoformat()
+        migration_report["end_time"] = datetime.now(timezone.utc).isoformat()
 
         logger.info(
             "✅ Migration complete",

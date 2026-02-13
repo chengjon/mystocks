@@ -114,7 +114,7 @@ def load_default_indicators():
             v2_registry.register(meta)
             count += 1
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to migrate %(abbr)s: %(e)s")
 
     logger.info("Successfully loaded %(count)s default indicators")

@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import type { UnifiedResponse, PaginationInfo } from '../common/response';
+import type { UnifiedResponse, UnifiedPaginatedResponse } from '../common/response';
 
 /**
  * 风险指标

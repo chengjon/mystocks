@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import type { UnifiedResponse, PaginationInfo } from '../common/response';
+import type { UnifiedResponse, UnifiedPaginatedResponse } from '../common/response';
 
 /**
  * 用户基本信息
@@ -108,15 +108,6 @@ export interface UpdateUserRequest {
   email?: string;
   avatar?: string;
   preferences?: UserPreferences;
-}
-
-/**
- * 修改密码请求
- */
-export interface ChangePasswordRequest {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
 }
 
 /**

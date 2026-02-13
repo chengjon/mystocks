@@ -15,7 +15,7 @@ Features:
 import queue
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import structlog
@@ -149,8 +149,8 @@ class TDengineConnectionPool:
             conn_id = str(id(conn))
             self._all_connections.append(conn)
             self._connection_meta[conn_id] = {
-                "created_at": datetime.utcnow(),
-                "last_used_at": datetime.utcnow(),
+                "created_at": datetime.now(timezone.utc),
+                "last_used_at": datetime.now(timezone.utc),
                 "total_uses": 0,
             }
 
@@ -188,7 +188,7 @@ class TDengineConnectionPool:
             # 更新连接元数据
             conn_id = str(id(conn))
             if conn_id in self._connection_meta:
-                self._connection_meta[conn_id]["last_used_at"] = datetime.utcnow()
+                self._connection_meta[conn_id]["last_used_at"] = datetime.now(timezone.utc)
                 self._connection_meta[conn_id]["total_uses"] += 1
 
             # 更新统计
@@ -312,7 +312,7 @@ class TDengineConnectionPool:
 
     def _cleanup_idle_connections(self):
         """清理超时的空闲连接"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         closed_count = 0
 
         # 检查所有连接的空闲时间
@@ -356,7 +356,7 @@ class TDengineConnectionPool:
         return {
             **self._stats,
             "pool_size": len(self._all_connections),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def close_all(self):

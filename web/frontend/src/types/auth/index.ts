@@ -5,7 +5,8 @@
  * @version 1.0.0
  */
 
-import type { UnifiedResponse, LoginResponse, UserProfile } from '../user';
+import type { UnifiedResponse } from '../common/response';
+import type { LoginResponse, UserProfile } from '../user';
 
 /**
  * JWT令牌信息

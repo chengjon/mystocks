@@ -111,7 +111,7 @@ class RiskAlertService(IRiskAlertService):
 
             return self._map_score_to_level(max_score)
 
-        except Exception as e:
+        except Exception:
             logger.error("评估风险等级失败: %(e)s")
             return "attention"  # 默认中等风险
 
@@ -158,7 +158,7 @@ class RiskAlertService(IRiskAlertService):
 
             return alerts
 
-        except Exception as e:
+        except Exception:
             logger.error("生成风险告警失败: %(e)s")
             return []
 
@@ -182,7 +182,7 @@ class RiskAlertService(IRiskAlertService):
                 # 回退到基础告警功能
                 return await self._send_basic_alerts(alerts)
 
-        except Exception as e:
+        except Exception:
             logger.error("发送告警通知失败: %(e)s")
             return False
 
@@ -236,13 +236,13 @@ class RiskAlertService(IRiskAlertService):
                             f"增强风险告警发送失败: {alert.symbol or alert.portfolio_id} - {result.get('reason', 'unknown')}"
                         )
 
-                except Exception as e:
+                except Exception:
                     logger.error("发送增强告警失败: %(e)s")
                     continue
 
             return success_count == len(alerts)
 
-        except Exception as e:
+        except Exception:
             logger.error("增强告警发送过程失败: %(e)s")
             return False
 
@@ -281,13 +281,13 @@ class RiskAlertService(IRiskAlertService):
                     else:
                         logger.warning("基础风险告警发送失败: {alert.symbol or alert.portfolio_id")
 
-                except Exception as e:
+                except Exception:
                     logger.error("发送基础告警失败: %(e)s")
                     continue
 
             return success_count == len(alerts)
 
-        except Exception as e:
+        except Exception:
             logger.error("基础告警发送过程失败: %(e)s")
             return False
 

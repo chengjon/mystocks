@@ -138,7 +138,7 @@ class MarketDataParser:
                 logger.warning("Unknown source: %(source)s, trying generic parser")
                 return self._parse_generic(data)
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse market data: {e}", exc_info=True)
             return None
 
@@ -192,7 +192,7 @@ class MarketDataParser:
                 change_percent=self._safe_float(data.get("涨跌幅", 0)),
                 timestamp=datetime.now(),
             )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse efinance data: %(e)s")
             return None
 
@@ -220,7 +220,7 @@ class MarketDataParser:
                 change_percent=self._safe_float(info.get("pct", 0)),
                 timestamp=datetime.now(),
             )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse easyquotation data: %(e)s")
             return None
 
@@ -246,7 +246,7 @@ class MarketDataParser:
                 change_percent=self._safe_float(data.get("change_percent", 0)),
                 timestamp=datetime.fromtimestamp(data.get("timestamp", datetime.now().timestamp())),
             )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse websocket data: %(e)s")
             return None
 
@@ -272,7 +272,7 @@ class MarketDataParser:
                 change_percent=self._safe_float(data.get("pct_chg", data.get("change_percent", 0))),
                 timestamp=datetime.now(),
             )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse akshare data: %(e)s")
             return None
 
@@ -298,7 +298,7 @@ class MarketDataParser:
                 change_percent=self._extract_change_percent(data),
                 timestamp=datetime.now(),
             )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to parse generic data: %(e)s")
             return None
 

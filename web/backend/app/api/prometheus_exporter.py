@@ -284,7 +284,7 @@ def update_system_metrics():
         system_uptime_seconds.labels(service="backend").set(uptime)
 
         logger.debug("✅ System metrics updated")
-    except Exception as e:
+    except Exception:
         logger.warning("⚠️  Failed to update system metrics: %(e)s")
 
 
@@ -305,7 +305,7 @@ def update_database_metrics():
         db_connections_total.labels(database="tdengine").set(5)
 
         logger.debug("✅ Database metrics updated")
-    except Exception as e:
+    except Exception:
         logger.warning("⚠️  Failed to update database metrics: %(e)s")
 
 
@@ -320,7 +320,7 @@ def update_cache_metrics():
         cache_memory_usage_bytes.labels(cache_type="memory").set(5 * 1024 * 1024)  # 5MB
 
         logger.debug("✅ Cache metrics updated")
-    except Exception as e:
+    except Exception:
         logger.warning("⚠️  Failed to update cache metrics: %(e)s")
 
 
@@ -344,7 +344,7 @@ def update_health_metrics():
         dependency_availability.labels(dependency_name="baostock").set(99.0)
 
         logger.debug("✅ Health metrics updated")
-    except Exception as e:
+    except Exception:
         logger.warning("⚠️  Failed to update health metrics: %(e)s")
 
 
@@ -439,7 +439,7 @@ async def metrics_list():
                 }
                 if metric_info not in metrics_info:
                     metrics_info.append(metric_info)
-    except Exception as e:
+    except Exception:
         logger.warning("⚠️  Failed to collect metrics info: %(e)s")
 
     return {

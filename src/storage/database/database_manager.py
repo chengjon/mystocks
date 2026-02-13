@@ -12,7 +12,7 @@
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -483,7 +483,7 @@ class DatabaseTableManager:
             )
 
             if table_log:
-                table_log.modification_time = datetime.utcnow()  # type: ignore[assignment]
+                table_log.modification_time = datetime.now(timezone.utc)  # type: ignore[assignment]
                 self.monitor_session.commit()
 
             return True

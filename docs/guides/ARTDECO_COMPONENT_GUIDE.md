@@ -1,6 +1,6 @@
-# ArtDeco Component Development Guide (V3.0)
+# ArtDeco Component Development Guide (V3.1 Governance Baseline)
 
-本文档定义了 MyStocks 项目中 ArtDeco 风格组件的工程标准与交付规范。
+本文档定义了 MyStocks 项目中 ArtDeco 风格组件的工程标准与交付规范，并作为 V3.1 Governance Baseline 的开发准入文档。
 
 ## 1. 组件组织铁律 (Architectural Iron Law)
 
@@ -71,4 +71,5 @@
 
 ---
 **维护者**: Frontend Architecture Team
-**最后审核**: 2026-02-08 (V3.0 Final)
+**治理口径**: V3.1 Governance Baseline
+**最后审核**: 2026-02-08 (V3.1 Governance Baseline)

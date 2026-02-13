@@ -8,7 +8,7 @@ and success rate with Prometheus metrics integration.
 import asyncio
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Callable, Dict, Optional
 
 from prometheus_client import Counter, Gauge, Histogram
@@ -104,7 +104,7 @@ class DataSourceHealthMonitor:
                 source_id=source_id,
                 status=status,
                 latency_ms=latency * 1000,
-                last_check=datetime.utcnow(),
+                last_check=datetime.now(timezone.utc),
                 details={"success": result},
             )
 
@@ -126,7 +126,7 @@ class DataSourceHealthMonitor:
                 source_id=source_id,
                 status=HealthStatus.UNHEALTHY,
                 latency_ms=latency * 1000,
-                last_check=datetime.utcnow(),
+                last_check=datetime.now(timezone.utc),
                 error="Health check timed out",
             )
 
@@ -143,7 +143,7 @@ class DataSourceHealthMonitor:
                 source_id=source_id,
                 status=HealthStatus.ERROR,
                 latency_ms=latency * 1000,
-                last_check=datetime.utcnow(),
+                last_check=datetime.now(timezone.utc),
                 error=str(e),
             )
 
@@ -190,7 +190,7 @@ class DataSourceHealthMonitor:
         while self._running:
             try:
                 await self.check_all_sources()
-            except Exception as e:
+            except Exception:
                 logger.error("Error during health check cycle: %(e)s")
 
             await asyncio.sleep(self._check_interval)

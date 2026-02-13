@@ -53,7 +53,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
         try:
             self.session.execute(text(sql))
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             logger.warning("Table creation warning: %(e)s")
 
@@ -81,7 +81,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
         try:
             self.session.execute(text(sql), params)
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 
@@ -125,7 +125,7 @@ class WatchlistRepositoryImpl(IWatchlistRepository):
         try:
             self.session.execute(text(sql), {"watchlist_id": watchlist_id})
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 
@@ -194,7 +194,7 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
         try:
             self.session.execute(text(sql))
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             logger.warning("Table creation warning: %(e)s")
 
@@ -227,7 +227,7 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
         try:
             self.session.execute(text(sql), params)
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 
@@ -263,7 +263,7 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
         try:
             self.session.execute(text(sql), {"stock_id": stock_id})
             self.session.commit()
-        except Exception as e:
+        except Exception:
             self.session.rollback()
             raise
 
@@ -301,7 +301,7 @@ class WatchlistStockRepositoryImpl(IWatchlistStockRepository):
                     indicators={},
                     price_data=entry_data["price_data"],
                 )
-            except Exception as e:
+            except Exception:
                 logger.debug("Failed to parse entry snapshot: %(e)s")
 
         return stock

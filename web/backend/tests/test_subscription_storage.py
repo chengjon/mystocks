@@ -10,7 +10,7 @@ Date: 2025-11-07
 """
 
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.services.filter_service import (
     FilterOperator,
@@ -168,10 +168,10 @@ class TestSubscriptionStorageGet:
                 "Test Sub",
                 "high",
                 True,
-                datetime.utcnow(),
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
+                datetime.now(timezone.utc),
                 5,
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
                 None,
             )
             mock_cursor.fetchone.return_value = mock_row
@@ -231,10 +231,10 @@ class TestSubscriptionStorageGetUserSubscriptions:
                     "Sub1",
                     "high",
                     True,
-                    datetime.utcnow(),
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
+                    datetime.now(timezone.utc),
                     5,
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
                     None,
                 ),
                 (
@@ -243,10 +243,10 @@ class TestSubscriptionStorageGetUserSubscriptions:
                     "Sub2",
                     "medium",
                     True,
-                    datetime.utcnow(),
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
+                    datetime.now(timezone.utc),
                     3,
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
                     None,
                 ),
             ]
@@ -294,7 +294,7 @@ class TestSubscriptionStorageAlert:
             alert = Alert(
                 id="alert_1",
                 subscription_id="sub_1",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 data={"symbol": "600519", "price": 100.0},
                 priority=AlertPriority.HIGH,
                 delivery_methods={AlertDeliveryMethod.WEBSOCKET},
@@ -319,7 +319,7 @@ class TestSubscriptionStorageAlert:
                 (
                     "alert_1",
                     "sub_1",
-                    datetime.utcnow(),
+                    datetime.now(timezone.utc),
                     {"symbol": "600519"},
                     "high",
                     ["websocket"],
@@ -346,7 +346,7 @@ class TestSubscriptionStorageAlert:
         alert = Alert(
             id="alert_1",
             subscription_id="sub_1",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data={},
             priority=AlertPriority.HIGH,
             delivery_methods={AlertDeliveryMethod.WEBSOCKET},

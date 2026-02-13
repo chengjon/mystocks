@@ -23,6 +23,8 @@ import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 import { ARTDECO_THEME } from '@/styles/echarts-theme' // Create this separate file
 
+let artDecoThemeRegistered = false
+
 // Props
 const props = defineProps({
   option: {
@@ -77,9 +79,13 @@ const resize = () => {
 
 // Lifecycle
 onMounted(() => {
-  // Register theme if not already (assuming global registration or import)
-  if (!echarts.getTheme('artDeco')) {
+  if (!artDecoThemeRegistered) {
+    try {
       echarts.registerTheme('artDeco', ARTDECO_THEME)
+    } catch {
+      // no-op: theme may already be registered by another bundle chunk
+    }
+    artDecoThemeRegistered = true
   }
 
   initChart()

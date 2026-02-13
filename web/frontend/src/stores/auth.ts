@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { PiniaStoreFactory } from '@/stores/storeFactory'
 import { unifiedApiClient, createLoadingConfig } from '@/api/unifiedApiClient'
+import { authApi } from '@/api/index.js'
 
 export interface User {
   id: number
@@ -109,16 +110,15 @@ export const useAuthStore = defineStore('auth', () => {
   // Login with standardized API pattern
   const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: any }> => {
     try {
-      // Prepare form data for login
-      const formData = new URLSearchParams({
-        username,
-        password,
-      })
+      // Use authApi.login which correctly sets Content-Type to application/x-www-form-urlencoded
+      const response = await authApi.login(username, password)
 
-      // Use the login store's fetch method
-      const response = await loginStore.fetch(formData.toString())
+      // Backend returns {success, data: {token, token_type, user}, message}
+      // Extract token from nested data structure
+      const token = response?.data?.token || response?.access_token || response?.token
+      const user = response?.data?.user || response?.user
 
-      if (!response.access_token) {
+      if (!token) {
         return {
           success: false,
           message: 'Invalid response from server',
@@ -127,13 +127,13 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // Set token and user data
-      setToken(response.access_token)
+      setToken(token)
       setUser({
-        id: response.user?.id || 1,
+        id: user?.id || 1,
         username: username,
-        email: response.user?.email || `${username}@example.com`,
-        role: response.user?.role || 'user',
-        permissions: response.user?.permissions || []
+        email: user?.email || `${username}@example.com`,
+        role: user?.role || 'user',
+        permissions: user?.permissions || []
       })
 
       return { success: true }

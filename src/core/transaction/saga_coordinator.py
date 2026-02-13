@@ -1,7 +1,7 @@
 import logging
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
@@ -50,11 +50,33 @@ class SagaCoordinator:
     def _log_txn_update(self, txn_id: str, fields: Dict[str, Any]) -> None:
         if not fields:
             return
+
+        # Whitelist of allowed columns in transaction_log to prevent SQL injection
+        ALLOWED_FIELDS = {
+            "td_status",
+            "pg_status",
+            "final_status",
+            "error_msg",
+            "retry_count",
+            "duration_ms",
+            "td_write_time",
+            "pg_update_time",
+            "business_type",
+            "business_id",
+        }
+
         set_parts = []
         params = []
         for key, value in fields.items():
+            if key not in ALLOWED_FIELDS:
+                logger.warning("Attempted to update disallowed field in transaction_log: %s", key)
+                continue
             set_parts.append(f"{key} = %s")
             params.append(value)
+
+        if not set_parts:
+            return
+
         set_parts.append("updated_at = NOW()")
         sql = f"UPDATE transaction_log SET {', '.join(set_parts)} WHERE transaction_id = %s"
         params.append(txn_id)
@@ -128,7 +150,7 @@ class SagaCoordinator:
                 txn_id,
                 {
                     "td_status": "SUCCESS",
-                    "td_write_time": datetime.utcnow(),
+                    "td_write_time": datetime.now(timezone.utc),
                 },
             )
 
@@ -153,7 +175,7 @@ class SagaCoordinator:
                             txn_id,
                             {
                                 "pg_status": "SUCCESS",
-                                "pg_update_time": datetime.utcnow(),
+                                "pg_update_time": datetime.now(timezone.utc),
                                 "final_status": TransactionStatus.COMMITTED.value,
                                 "duration_ms": duration_ms,
                             },
@@ -187,7 +209,7 @@ class SagaCoordinator:
                         txn_id,
                         {
                             "pg_status": "SUCCESS",
-                            "pg_update_time": datetime.utcnow(),
+                            "pg_update_time": datetime.now(timezone.utc),
                             "final_status": TransactionStatus.COMMITTED.value,
                             "duration_ms": duration_ms,
                         },
@@ -228,5 +250,5 @@ class SagaCoordinator:
                 logger.error("TDengineDataAccess missing 'invalidate_data_by_txn_id'. Cannot compensate %(txn_id)s!")
 
             logger.info("Compensation successful for %(txn_id)s")
-        except Exception as e:
+        except Exception:
             logger.error("Compensation failed for %(txn_id)s (will be handled by cron): %(e)s")

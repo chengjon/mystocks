@@ -38,22 +38,24 @@ async function findAvailablePort(startPort: number, endPort: number): Promise<nu
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   let availablePort = 3000; // 默认端口
 
-  try {
-    // 端口分配规则: 前端使用 3000-3009 范围
-    availablePort = await findAvailablePort(3000, 3009);
-    console.log(`🚀 Using available port: ${availablePort}`);
-  } catch (error) {
-    console.error(`❌ ${(error as Error).message}`);
-    process.exit(1);
+  if (command === 'serve') {
+    try {
+      // 端口分配规则: 前端使用 3000-3009 范围
+      availablePort = await findAvailablePort(3000, 3009);
+      console.log(`🚀 Using available port: ${availablePort}`);
+    } catch (error) {
+      console.error(`❌ ${(error as Error).message}`);
+      process.exit(1);
+    }
   }
 
   return {
     define: {
       'import.meta.env.VITE_USE_MOCK_DATA': JSON.stringify(process.env.VITE_USE_MOCK_DATA === 'true'),
-      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || 'http://localhost:8000/api')
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || '/api')
     },
   plugins: [
       vue(),

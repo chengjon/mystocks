@@ -109,12 +109,12 @@ class TransactionCleaner:
                 try:
                     self.process_zombie(txn)
                     processed_count += 1
-                except Exception as e:
+                except Exception:
                     logger.error("Failed to process zombie transaction {txn.get('transaction_id', 'unknown')}: %(e)s")
 
             return processed_count
 
-        except Exception as e:
+        except Exception:
             logger.error("Error scanning zombie transactions: %(e)s")
             return 0
 
@@ -180,7 +180,7 @@ class TransactionCleaner:
 
             logger.info("  Updated %(txn_id)s to %(status)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to update txn status %(txn_id)s: %(e)s")
 
     def cleanup_invalid_data(self):
@@ -224,12 +224,12 @@ class TransactionCleaner:
                         # total_deleted += invalid_count
                         logger.info("    Deleted %(invalid_count)s records from %(table)s")
 
-                except Exception as e:
+                except Exception:
                     logger.error("  Failed to cleanup table %(table)s: %(e)s")
 
             logger.info("Total deleted records: %(total_deleted)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error during invalid data cleanup: %(e)s")
 
 
@@ -257,7 +257,7 @@ def main():
         logger.info("✅ Transaction cleaner completed successfully")
         return 0
 
-    except Exception as e:
+    except Exception:
         logger.error("❌ Transaction cleaner failed: %(e)s")
         return 1
 

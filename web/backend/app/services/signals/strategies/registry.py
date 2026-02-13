@@ -121,7 +121,7 @@ class StrategyRegistry:
             instance = strategy_class(parameters)
             self.instances[name] = instance
             logger.debug("Strategy instance created: %(name)s")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to create strategy instance %(name)s: %(e)s")
 
     def load_from_yaml(self, yaml_path: str) -> List[str]:
@@ -158,7 +158,7 @@ class StrategyRegistry:
             logger.info("Loaded {len(loaded_strategies)} strategies from %(yaml_path)s")
             return loaded_strategies
 
-        except Exception as e:
+        except Exception:
             logger.error("Error loading strategies from %(yaml_path)s: %(e)s")
             return []
 
@@ -217,7 +217,7 @@ class StrategyRegistry:
 
             return strategy_instance
 
-        except Exception as e:
+        except Exception:
             logger.error("Error creating strategy {definition.name}: %(e)s")
             return None
 
@@ -313,7 +313,7 @@ class StrategyRegistry:
                         return True
             return False
 
-        except Exception as e:
+        except Exception:
             logger.error("Error updating strategy parameters: %(e)s")
             return False
 
@@ -366,7 +366,7 @@ class StrategyRegistry:
 
             logger.info("Strategies saved to %(yaml_path)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("Error saving strategies to %(yaml_path)s: %(e)s")
 
     def clear_cache(self):

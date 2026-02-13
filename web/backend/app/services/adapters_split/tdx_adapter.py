@@ -4,9 +4,7 @@ TDX通达信数据源适配器
 提供TDX通达信协议的数据获取功能，支持股票行情、板块数据、技术指标等
 """
 
-import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Dict, List, Optional
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service

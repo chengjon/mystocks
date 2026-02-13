@@ -28,12 +28,30 @@ import {
   PAGE_CONFIG,
   getPageConfig,
   isRouteName,
-  getWebSocketRoutes,
-  type RouteName
+  isStandardConfig
 } from '@/config/pageConfig'
 
 // 消息回调类型
 type MessageCallback = (data: any) => void
+
+// 路由名称类型（从 PAGE_CONFIG 的键推导）
+type RouteName = keyof typeof PAGE_CONFIG
+
+// 辅助函数：获取所有需要 WebSocket 的路由
+function getWebSocketRoutes(): Array<{ routeName: RouteName; channel: string }> {
+  const routes: Array<{ routeName: RouteName; channel: string }> = []
+
+  for (const [routeName, config] of Object.entries(PAGE_CONFIG)) {
+    if (isStandardConfig(config) && config.wsChannel) {
+      routes.push({
+        routeName: routeName as RouteName,
+        channel: config.wsChannel
+      })
+    }
+  }
+
+  return routes
+}
 
 /**
  * 基于统一配置的WebSocket Composable
@@ -70,7 +88,7 @@ export function useWebSocketWithConfig() {
    */
   const subscribeByRoute = (routeName: RouteName, callback: MessageCallback) => {
     // ✅ 类型安全的路由验证
-    if (!isValidRouteName(routeName)) {
+    if (!isRouteName(routeName)) {
       console.error(`[WebSocket] 无效的路由名: ${routeName}`)
       return () => {} // 返回空函数
     }
@@ -78,7 +96,8 @@ export function useWebSocketWithConfig() {
     const config = PAGE_CONFIG[routeName]
 
     // ✅ 从统一配置读取频道（无硬编码）
-    if (!config.wsChannel) {
+    // 只有 StandardPageConfig 有 wsChannel
+    if (!isStandardConfig(config) || !config.wsChannel) {
       console.warn(`[WebSocket] 路由 ${routeName} 不需要WebSocket连接`)
       return () => {} // 返回空函数
     }
@@ -102,7 +121,7 @@ export function useWebSocketWithConfig() {
    */
   const unsubscribeByRoute = (routeName: RouteName, callback: MessageCallback) => {
     // ✅ 类型安全的路由验证
-    if (!isValidRouteName(routeName)) {
+    if (!isRouteName(routeName)) {
       console.error(`[WebSocket] 无效的路由名: ${routeName}`)
       return
     }
@@ -110,7 +129,7 @@ export function useWebSocketWithConfig() {
     const config = PAGE_CONFIG[routeName]
 
     // ✅ 从统一配置读取频道
-    if (!config.wsChannel) {
+    if (!isStandardConfig(config) || !config.wsChannel) {
       console.warn(`[WebSocket] 路由 ${routeName} 不需要WebSocket连接`)
       return
     }
@@ -146,7 +165,7 @@ export function useWebSocketWithConfig() {
     const unsubscribers: Array<() => void> = []
 
     // 为每个路由订阅
-    wsRoutes.forEach(({ routeName, channel }) => {
+    wsRoutes.forEach(({ routeName, channel }: { routeName: RouteName; channel: string }) => {
       console.log(`[WebSocket] 订阅 ${routeName} -> ${channel}`)
       const unsubscribe = subscribe(channel, callback)
       unsubscribers.push(unsubscribe)
@@ -180,7 +199,7 @@ export function useWebSocketWithConfig() {
     callback: MessageCallback
   ) => {
     // ✅ 验证路由名
-    if (!isValidRouteName(currentRouteName)) {
+    if (!isRouteName(currentRouteName)) {
       console.warn(`[WebSocket] 未配置的路由: ${currentRouteName}`)
       return () => {}
     }
@@ -189,7 +208,7 @@ export function useWebSocketWithConfig() {
     const config = PAGE_CONFIG[routeName]
 
     // ✅ 检查是否需要WebSocket
-    if (!config.wsChannel) {
+    if (!isStandardConfig(config) || !config.wsChannel) {
       console.log(`[WebSocket] 路由 ${routeName} 不需要WebSocket`)
       return () => {}
     }
@@ -212,7 +231,7 @@ export function useWebSocketWithConfig() {
   const getRouteChannelInfo = (routeName: RouteName) => {
     const config = getPageConfig(routeName)
 
-    if (!config || !config.wsChannel) {
+    if (!config || !isStandardConfig(config) || !config.wsChannel) {
       return null
     }
 
@@ -238,7 +257,7 @@ export function useWebSocketWithConfig() {
    * // ]
    */
   const getAllWebSocketChannels = () => {
-    return getWebSocketRoutes().map(({ routeName, channel }) => ({
+    return getWebSocketRoutes().map(({ routeName, channel }: { routeName: RouteName; channel: string }) => ({
       routeName,
       channel,
       description: PAGE_CONFIG[routeName].description
@@ -258,7 +277,7 @@ export function useWebSocketWithConfig() {
    */
   const routeNeedsWebSocket = (routeName: RouteName): boolean => {
     const config = getPageConfig(routeName)
-    return !!config?.wsChannel
+    return !!(config && isStandardConfig(config) && config.wsChannel)
   }
 
   /**
@@ -269,8 +288,8 @@ export function useWebSocketWithConfig() {
 
     // 反向查找：频道名 -> 路由名
     return getWebSocketRoutes()
-      .filter(({ channel }) => activeChannels.includes(channel))
-      .map(({ routeName }) => routeName)
+      .filter(({ channel }: { channel: string }) => activeChannels.includes(channel))
+      .map(({ routeName }: { routeName: RouteName }) => routeName)
   })
 
   /**

@@ -11,7 +11,7 @@ Tests cover:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import sys
 import os
 
@@ -154,7 +154,7 @@ class TestCacheWriteOperations:
     def test_write_cache_complex_data(self):
         """Test writing complex nested data"""
         data = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "symbol": "000001",
             "metrics": {
                 "fund_inflow": {
@@ -193,7 +193,7 @@ class TestCacheWriteOperations:
 
     def test_write_with_custom_timestamp(self):
         """Test write cache with custom timestamp"""
-        custom_time = datetime.utcnow() - timedelta(days=1)
+        custom_time = datetime.now(timezone.utc) - timedelta(days=1)
         data = {"value": 100}
 
         result = self.manager.write_cache(
@@ -311,7 +311,7 @@ class TestCacheExpirationAndCleanup:
     def test_clear_expired_cache(self):
         """Test clearing expired cache"""
         # Write old data (8 days ago)
-        old_time = datetime.utcnow() - timedelta(days=8)
+        old_time = datetime.now(timezone.utc) - timedelta(days=8)
         self.manager.write_cache(
             symbol="000001",
             data_type="old_data",
@@ -336,7 +336,7 @@ class TestCacheExpirationAndCleanup:
         """Test cleanup with custom retention period"""
         # Write data at different times
         for days_ago in [1, 5, 10, 15]:
-            timestamp = datetime.utcnow() - timedelta(days=days_ago)
+            timestamp = datetime.now(timezone.utc) - timedelta(days=days_ago)
             self.manager.write_cache(
                 symbol="000001",
                 data_type="test",

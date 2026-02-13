@@ -194,7 +194,7 @@ class AkshareHandler(BaseDataSourceHandler):
 
         except ImportError:
             raise ImportError("AKShare未安装: pip install akshare")
-        except Exception as e:
+        except Exception:
             logger.error("AKShare接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 
@@ -258,7 +258,7 @@ class TushareHandler(BaseDataSourceHandler):
 
         except ImportError:
             raise ImportError("TuShare未安装: pip install tushare")
-        except Exception as e:
+        except Exception:
             logger.error("TuShare接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 
@@ -315,7 +315,7 @@ class BaostockHandler(BaseDataSourceHandler):
 
         except ImportError:
             raise ImportError("BaoStock未安装: pip install baostock")
-        except Exception as e:
+        except Exception:
             logger.error("BaoStock接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             self._logout()
             raise
@@ -370,7 +370,7 @@ class TdxHandler(BaseDataSourceHandler):
 
         except ImportError:
             raise ImportError("PyTdx未安装: pip install pytdx")
-        except Exception as e:
+        except Exception:
             logger.error("通达信接口调用失败: {self.endpoint_name}, 错误: %(e)s")
             raise
 

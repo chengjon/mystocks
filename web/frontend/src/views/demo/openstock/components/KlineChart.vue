@@ -69,7 +69,7 @@ const loadKlineChart = async () => {
       try {
         const container = document.getElementById('kline-chart')
         if (container) {
-          container.innerHTML = ''
+          container.textContent = ''
         }
         chart = null
       } catch (e) {

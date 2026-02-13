@@ -29,7 +29,7 @@
         @click="emit('openNotifications')"
       >
         <ArtDecoIcon name="Bell" size="sm" />
-        <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+        <span v-if="unreadCount && unreadCount > 0" class="badge">{{ unreadCount }}</span>
       </button>
 
       <!-- User Menu -->

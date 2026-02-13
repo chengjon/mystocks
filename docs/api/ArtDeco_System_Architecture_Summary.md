@@ -1,6 +1,6 @@
-# ArtDeco System Architecture Summary (V3.0)
+# ArtDeco System Architecture Summary (V3.1 Governance Baseline)
 
-本系统是基于 MyStocks 项目的高端金融级 UI 体系，旨在为量化交易提供极高信息密度的专业交互体验。
+本系统是基于 MyStocks 项目的高端金融级 UI 体系，旨在为量化交易提供极高信息密度的专业交互体验。本文档作为 V3.1 Governance Baseline 的架构确权说明。
 
 ## 1. 核心架构原则 (Architecture Principles)
 
@@ -47,4 +47,5 @@
 
 ---
 **维护者**: UI/UX Pro Max Agent
-**最后更新**: 2026-02-08 (基于 V3.0 代码库核实)
+**治理口径**: V3.1 Governance Baseline
+**最后更新**: 2026-02-08 (基于 V3.1 代码库核实)

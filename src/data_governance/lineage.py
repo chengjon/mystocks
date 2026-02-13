@@ -9,7 +9,7 @@ import json
 import logging
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -101,7 +101,7 @@ class LineageStorage:
                     node.created_at,
                     node.updated_at,
                 )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save node {node.node_id}: %(e)s")
 
     async def save_edge(self, edge: LineageEdge) -> None:
@@ -120,7 +120,7 @@ class LineageStorage:
                     edge.timestamp,
                     json.dumps(edge.metadata),
                 )
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save edge: %(e)s")
 
     async def get_lineage(self, node_id: str) -> Tuple[List[LineageNode], List[LineageEdge]]:
@@ -209,7 +209,7 @@ class LineageStorage:
                             )
                         )
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get lineage: %(e)s")
 
         return nodes, edges
@@ -236,7 +236,7 @@ class LineageTracker:
                 t.record_transform("processed_data")
                 t.record_store("tdengine")
         """
-        self._context_id = f"context_{datetime.utcnow().timestamp()}"
+        self._context_id = f"context_{datetime.now(timezone.utc).timestamp()}"
         self._current_chain = [LineageNode(node_id=source_id, node_type=source_type, name=source_id)]
 
         try:

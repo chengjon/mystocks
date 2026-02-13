@@ -2,10 +2,10 @@
 风险告警与规则扩展路由 (V3.1)
 """
 import structlog
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from fastapi import APIRouter
 
-from app.core.exceptions import BusinessException, NotFoundException, ValidationException
+from app.core.exceptions import BusinessException
 
 # 导入Week 4-5的新增组件
 try:
@@ -34,7 +34,7 @@ async def send_risk_alert(request: Dict[str, Any]) -> Dict[str, Any]:
         notification_manager = get_risk_alert_notification_manager()
         alert_type = request.get("alert_type", "general_risk")
         severity = request.get("severity", "warning")
-        
+
         if "symbol" in request:
             result = await notification_manager.send_stock_risk_alert(
                 symbol=request["symbol"], risk_level=severity, risk_metrics=request.get("metrics", {})

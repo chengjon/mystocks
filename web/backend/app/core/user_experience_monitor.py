@@ -238,7 +238,7 @@ def monitor_api_performance(endpoint_name: str):
                 # 暂时使用默认值，后续完善
                 record_api_performance(endpoint_name, "GET", 200, response_time)
                 return result
-            except Exception as e:
+            except Exception:
                 response_time = time.time() - start_time
                 record_api_performance(endpoint_name, "GET", 500, response_time)
                 raise
@@ -259,7 +259,7 @@ def monitor_db_query(query_type: str, table: str):
                 query_time = time.time() - start_time
                 record_db_query_performance(query_type, table, query_time)
                 return result
-            except Exception as e:
+            except Exception:
                 query_time = time.time() - start_time
                 record_db_query_performance(query_type, table, query_time)
                 raise

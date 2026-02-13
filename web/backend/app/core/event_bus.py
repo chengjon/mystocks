@@ -235,7 +235,7 @@ class EventBus:
             if len(self.event_history) > self.max_history_size:
                 self.event_history.pop(0)
 
-        except Exception as e:
+        except Exception:
             logger.error("Error publishing event {event.type}: %(e)s")
 
     async def publish_data(
@@ -279,7 +279,7 @@ class EventBus:
 
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception:
                 logger.error("Error processing event: %(e)s")
                 self.processing_errors += 1
 
@@ -311,7 +311,7 @@ class EventBus:
             subscription["events_processed"] += 1
             self.events_processed += 1
 
-        except Exception as e:
+        except Exception:
             subscription["errors"] += 1
             logger.error("Error in event handler {subscription['id']}: %(e)s")
 

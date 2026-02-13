@@ -292,7 +292,7 @@ class IndicatorRegistry:
                 metadata = self._parse_indicator_config(abbr, ind_data)
                 self.register(metadata)
                 count += 1
-            except Exception as e:
+            except Exception:
                 logger.error("加载指标 %(abbr)s 失败: %(e)s")
 
         logger.info("从配置文件加载了 %(count)s 个指标")
@@ -370,7 +370,7 @@ class IndicatorRegistry:
                     tags=template_data.get("tags", []),
                 )
                 count += 1
-            except Exception as e:
+            except Exception:
                 logger.error("加载模板 %(template_id)s 失败: %(e)s")
 
         logger.info("加载了 %(count)s 个指标模板")

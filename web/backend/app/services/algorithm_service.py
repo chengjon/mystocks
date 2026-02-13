@@ -14,7 +14,6 @@ Features:
 """
 
 import logging
-import traceback
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -52,7 +51,7 @@ try:
 
     ALGORITHMS_AVAILABLE = True
     logger.info("Successfully imported all algorithm implementations")
-except ImportError as e:
+except ImportError:
     logger.error("Failed to import algorithms: %(e)s")
     # Fallback if src/algorithms not available yet
     ALGORITHMS_AVAILABLE = False
@@ -110,7 +109,7 @@ class AlgorithmFactory:
             try:
                 self._gpu_service = GPUBacktestService()
                 logger.info("GPU acceleration service initialized")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to initialize GPU service: %(e)s")
 
     async def create_algorithm(self, algorithm_type: AlgorithmType, config: AlgorithmConfig) -> BaseAlgorithm:
@@ -198,7 +197,7 @@ class AlgorithmFactory:
             await algorithm.initialize_gpu_context()
             logger.info("GPU context initialized for algorithm")
 
-        except Exception as e:
+        except Exception:
             logger.warning("GPU configuration failed, falling back to CPU: %(e)s")
             await algorithm.fallback_to_cpu()
 
@@ -604,7 +603,7 @@ class AlgorithmService:
 
             await self.repository.save_training_history(training_history_data)
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to persist training result: %(e)s")
             # Don't raise exception to avoid breaking the main flow
 
@@ -650,7 +649,7 @@ class AlgorithmService:
 
             await self.repository.save_prediction_history(prediction_history_data)
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to persist prediction result: %(e)s")
             # Don't raise exception to avoid breaking the main flow
 

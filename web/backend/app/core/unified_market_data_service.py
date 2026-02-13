@@ -40,7 +40,7 @@ Estimated Duplication Reduced: 300+ lines
 """
 
 import os
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
@@ -126,7 +126,7 @@ class UnifiedMarketDataService:
         try:
             self.adapter = AdapterFactory.get(adapter_name)
             logger.info("✅ Initialized market data service with adapter: %(adapter_name)s")
-        except KeyError as e:
+        except KeyError:
             logger.error("❌ Adapter '%(adapter_name)s' not registered: {str(e)}")
             raise
 
@@ -171,7 +171,7 @@ class UnifiedMarketDataService:
             self.adapter_name = adapter_name
             logger.info("🔄 Switched to adapter: %(adapter_name)s")
             self._setup_adapter_specific()
-        except KeyError as e:
+        except KeyError:
             logger.error("❌ Failed to switch to adapter '%(adapter_name)s': {str(e)}")
             raise
 
@@ -280,7 +280,7 @@ class UnifiedMarketDataService:
                     "success": True,
                     "saved_count": 1,
                     "message": f"Saved fund flow for {symbol}",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
             finally:
@@ -347,7 +347,7 @@ class UnifiedMarketDataService:
 
                         saved_count += 1
 
-                    except Exception as e:
+                    except Exception:
                         logger.warning("⚠️ Skipped row: {str(e)}")
                         skipped_count += 1
                         continue
@@ -360,7 +360,7 @@ class UnifiedMarketDataService:
                     "saved_count": saved_count,
                     "skipped_count": skipped_count,
                     "message": f"Saved {saved_count} fund flow records",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
             finally:
@@ -436,7 +436,7 @@ class UnifiedMarketDataService:
             finally:
                 db.close()
 
-        except Exception as e:
+        except Exception:
             logger.error("❌ Query failed: {str(e)}")
             return []
 

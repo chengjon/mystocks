@@ -5,7 +5,7 @@ Backtest Repository Layer
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from sqlalchemy import (
@@ -205,7 +205,7 @@ class BacktestRepository:
 
             return self._orm_to_pydantic(backtest_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("创建回测任务失败: {str(e)}")
             raise
@@ -230,7 +230,7 @@ class BacktestRepository:
 
             return self._orm_to_pydantic(backtest_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("查询回测失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
@@ -274,7 +274,7 @@ class BacktestRepository:
 
             return backtests, total_count
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("查询回测列表失败: user_id=%(user_id)s, error={str(e)}")
             raise
 
@@ -308,9 +308,9 @@ class BacktestRepository:
 
             # 更新时间戳
             if status == BacktestStatus.RUNNING:
-                backtest_orm.started_at = datetime.utcnow()
+                backtest_orm.started_at = datetime.now(timezone.utc)
             elif status in [BacktestStatus.COMPLETED, BacktestStatus.FAILED]:
-                backtest_orm.completed_at = datetime.utcnow()
+                backtest_orm.completed_at = datetime.now(timezone.utc)
 
             self.db.commit()
             self.db.refresh(backtest_orm)
@@ -319,7 +319,7 @@ class BacktestRepository:
 
             return self._orm_to_pydantic(backtest_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("更新回测状态失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
@@ -352,7 +352,7 @@ class BacktestRepository:
             backtest_orm.final_capital = final_capital
             backtest_orm.performance_metrics = performance_metrics.dict()
             backtest_orm.status = "completed"
-            backtest_orm.completed_at = datetime.utcnow()
+            backtest_orm.completed_at = datetime.now(timezone.utc)
 
             self.db.commit()
             self.db.refresh(backtest_orm)
@@ -361,7 +361,7 @@ class BacktestRepository:
 
             return self._orm_to_pydantic(backtest_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("保存回测结果失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
@@ -396,7 +396,7 @@ class BacktestRepository:
 
             return True
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("保存权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
@@ -428,7 +428,7 @@ class BacktestRepository:
                 for curve in curves_orm
             ]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("获取权益曲线失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
@@ -465,7 +465,7 @@ class BacktestRepository:
 
             return True
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("保存交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
@@ -501,7 +501,7 @@ class BacktestRepository:
                 for trade in trades_orm
             ]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("获取交易记录失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise
 
@@ -526,7 +526,7 @@ class BacktestRepository:
                 logger.warning("回测不存在: backtest_id=%(backtest_id)s")
                 return False
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("删除回测失败: backtest_id=%(backtest_id)s, error={str(e)}")
             raise

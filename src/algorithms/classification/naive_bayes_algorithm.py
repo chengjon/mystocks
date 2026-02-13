@@ -25,7 +25,7 @@ except ImportError:
 
 from src.algorithms.base import GPUAcceleratedAlgorithm
 from src.algorithms.metadata import AlgorithmFingerprint
-from src.gpu.core.hardware_abstraction import AllocationRequest, GPUResourceManager, StrategyPriority
+from src.gpu.core.hardware_abstraction import GPUResourceManager
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
                 logger.warning("Failed to allocate GPU, falling back to CPU")
                 await self.fallback_to_cpu()
 
-        except Exception as e:
+        except Exception:
             logger.error("GPU context initialization failed: %(e)s")
             await self.fallback_to_cpu()
 
@@ -96,7 +96,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
             try:
                 self.gpu_manager.release_context(f"nb_{self.metadata.name}")
                 logger.info("Naive Bayes GPU resources released")
-            except Exception as e:
+            except Exception:
                 logger.error("GPU resource release failed: %(e)s")
 
     async def train(self, data: pd.DataFrame, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -212,7 +212,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Naive Bayes ({self.variant}) training completed - Accuracy: %(accuracy)s")
             return training_result
 
-        except Exception as e:
+        except Exception:
             logger.error("Naive Bayes training failed: %(e)s")
             raise
 
@@ -266,7 +266,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
                 "gpu_used": self.gpu_enabled,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Naive Bayes prediction failed: %(e)s")
             raise
 
@@ -294,7 +294,6 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
                 # Initialize metrics to avoid E0606 errors
                 precision = recall = f1 = 0.0
                 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-                from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
                 accuracy = accuracy_score(actual_values, pred_values)
                 precision = precision_score(actual_values, pred_values, average="weighted", zero_division=0)
@@ -311,7 +310,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
 
             return metrics
 
-        except Exception as e:
+        except Exception:
             logger.error("Naive Bayes evaluation failed: %(e)s")
             raise
 
@@ -364,7 +363,7 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Naive Bayes model saved to %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to save Naive Bayes model: %(e)s")
             return False
 
@@ -386,6 +385,6 @@ class NaiveBayesAlgorithm(GPUAcceleratedAlgorithm):
             logger.info("Naive Bayes model loaded from %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load Naive Bayes model: %(e)s")
             return False

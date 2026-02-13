@@ -40,8 +40,8 @@ import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 import { useMarketPanorama } from '@/composables/advanced/useMarketPanorama'
 
 // Components
-import PanoramaIndices from './components/PanoramaIndices.vue'
-import PanoramaCapitalFlow from './components/PanoramaCapitalFlow.vue'
+import PanoramaIndices from '@/views/artdeco-pages/components/PanoramaIndices.vue'
+import PanoramaCapitalFlow from '@/views/artdeco-pages/components/PanoramaCapitalFlow.vue'
 
 const {
     marketIndices, northboundFlow, southboundFlow, mainForceFlow, sectorFlows,

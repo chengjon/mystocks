@@ -55,7 +55,7 @@ class IndicatorFactory:
                         logger.warning("Indicator %(key)s missing indicator_id, skipping.")
 
                 logger.info("Loaded {len(self.registry)} indicators from registry.")
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load registry: %(e)s")
 
     def get_calculator(

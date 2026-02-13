@@ -5,7 +5,7 @@
     </div>
 
     <div class="stats-grid">
-      <ArtDecoStatCard label="总收益率" :value="stats.totalReturn" change="+2.5%" variant="rise" />
+      <ArtDecoStatCard label="总收益率" :value="stats.totalReturn" :change="2.5" change-percent variant="rise" />
       <ArtDecoStatCard label="夏普比率" :value="stats.sharpe" variant="gold" />
       <ArtDecoStatCard label="最大回撤" :value="stats.maxDrawdown" variant="fall" />
       <ArtDecoStatCard label="胜率" :value="stats.winRate" variant="gold" />

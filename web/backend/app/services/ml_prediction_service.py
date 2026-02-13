@@ -4,7 +4,7 @@
 """
 
 import json
-import pickle
+import joblib
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
@@ -192,10 +192,9 @@ class MLPredictionService:
         model_path = self.model_dir / model_name
         model_path.mkdir(parents=True, exist_ok=True)
 
-        # 保存模型
-        model_file = model_path / "model.pkl"
-        with open(model_file, "wb") as f:
-            pickle.dump(self.model, f)
+        # 保存模型 (使用 joblib)
+        model_file = model_path / "model.joblib"
+        joblib.dump(self.model, model_file)
 
         # 保存元数据
         metadata_file = model_path / "metadata.json"
@@ -220,14 +219,27 @@ class MLPredictionService:
             bool: 是否加载成功
         """
         model_path = self.model_dir / model_name
-        model_file = model_path / "model.pkl"
+        model_file = model_path / "model.joblib"
 
+        # Backward compatibility: Check for .pkl if .joblib doesn't exist
         if not model_file.exists():
-            return False
+            pkl_file = model_path / "model.pkl"
+            if pkl_file.exists():
+                model_file = pkl_file
+            else:
+                return False
 
-        # 加载模型
-        with open(model_file, "rb") as f:
-            self.model = pickle.load(f)
+        # 加载模型 (使用 joblib)
+        try:
+            self.model = joblib.load(model_file)
+        except Exception:
+            # Fallback for old pickle files if joblib fails (though joblib usually handles them)
+            if model_file.suffix == ".pkl":
+                import pickle
+                with open(model_file, "rb") as f:
+                    self.model = pickle.load(f)
+            else:
+                raise
 
         # 加载元数据
         metadata_file = model_path / "metadata.json"

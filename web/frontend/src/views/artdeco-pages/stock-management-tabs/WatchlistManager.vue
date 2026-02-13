@@ -22,7 +22,7 @@
 
     <ArtDecoTable :columns="columns" :data="currentStocks">
       <template #action="{ row }">
-        <ArtDecoButton variant="outline" size="xs" @click="emit('remove-stock', row)">删除</ArtDecoButton>
+        <ArtDecoButton variant="outline" size="sm" @click="emit('remove-stock', row)">删除</ArtDecoButton>
       </template>
     </ArtDecoTable>
   </div>

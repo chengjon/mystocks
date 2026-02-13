@@ -729,7 +729,7 @@ def _generate_comprehensive_report(self, results: Dict[str, Any]) -> str:
             sig = stat["return_significance"]
             report_lines.extend(
                 [
-                    f"  收益率显著性 (t检验):",
+                    "  收益率显著性 (t检验):",
                     f"    t统计量: {sig['t_statistic']:.3f}",
                     f"    p值: {sig['p_value']:.4f}",
                     f"    95%显著: {'是' if sig['significant_at_95pct'] else '否'}",
@@ -741,7 +741,7 @@ def _generate_comprehensive_report(self, results: Dict[str, Any]) -> str:
             mc_pct = stat["monte_carlo_percentile"]
             report_lines.extend(
                 [
-                    f"  Monte Carlo分位数分析:",
+                    "  Monte Carlo分位数分析:",
                     f"    基准收益率: {
                         mc_pct['base_return']:.2%}",
                     f"    90%置信区间: [{

@@ -14,7 +14,7 @@ Author: Claude Code
 Date: 2025-11-07
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -82,7 +82,7 @@ class AggregationStreamingBridge:
         self.bars_persisted = 0
         self.publish_errors = 0
         self.last_error = None
-        self.last_update_time = datetime.utcnow()
+        self.last_update_time = datetime.now(timezone.utc)
 
         logger.info("✅ Aggregation Streaming Bridge initialized")
 
@@ -96,7 +96,7 @@ class AggregationStreamingBridge:
         if not completed_bars:
             return
 
-        self.last_update_time = datetime.utcnow()
+        self.last_update_time = datetime.now(timezone.utc)
 
         # 持久化柱线
         if self.enable_persistence and self.storage:
@@ -184,7 +184,7 @@ class AggregationStreamingBridge:
             "streaming_stats": self.streaming.get_stats(),
             "storage_stats": (self.storage.get_stats() if self.storage else {"enabled": False}),
             "last_error": self.last_error,
-            "uptime_seconds": (datetime.utcnow() - self.last_update_time).total_seconds(),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.last_update_time).total_seconds(),
         }
 
 

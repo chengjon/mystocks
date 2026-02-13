@@ -5,6 +5,8 @@
  * @version 1.0.0
  */
 
+import type { UnifiedResponse } from '../common/response';
+
 /**
  * K线周期类型
  */
@@ -33,29 +35,6 @@ export interface KLineData {
   startTime?: string;
   endTime?: string;
 }
-
-/**
- * K线数据响应
- */
-export interface KlineResponse extends UnifiedResponse<KLineData> {}
-
-/**
- * 资金流向数据
- */
-export interface MoneyFlowData {
-  symbol: string;
-  date: string;
-  mainInflow?: number;
-  mainOutflow?: number;
-  retailInflow?: number;
-  retailOutflow?: number;
-  netInflow?: number;
-}
-
-/**
- * 资金流向列表响应
- */
-export interface MoneyFlowResponse extends UnifiedResponse<MoneyFlowData[]> {}
 
 /**
  * 深度数据

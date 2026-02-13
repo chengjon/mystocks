@@ -6,5 +6,5 @@
 
 <script setup lang="ts">
     import ArtDecoBaseLayout from './ArtDecoBaseLayout.vue'
-    import { STRATEGY_MENU_ITEMS } from './MenuConfig'
+    import { STRATEGY_MENU_ITEMS } from './archive/MenuConfig'
 </script>

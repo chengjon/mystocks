@@ -122,7 +122,7 @@ class AlertRuleEngine:
             logger.info("✅ 告警规则已添加: {rule.rule_id} - {rule.name")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("添加告警规则失败 {rule.rule_id}: %(e)s")
             return False
 
@@ -148,7 +148,7 @@ class AlertRuleEngine:
                 logger.warning("规则不存在: %(rule_id)s")
                 return False
 
-        except Exception as e:
+        except Exception:
             logger.error("移除告警规则失败 %(rule_id)s: %(e)s")
             return False
 
@@ -195,7 +195,7 @@ class AlertRuleEngine:
             logger.debug("规则评估完成，触发告警: {len(triggered_alerts)} 个")
             return triggered_alerts
 
-        except Exception as e:
+        except Exception:
             logger.error("规则评估失败: %(e)s")
             return []
 
@@ -227,7 +227,7 @@ class AlertRuleEngine:
             rule = AlertRule(**rule_data)
             return rule
 
-        except Exception as e:
+        except Exception:
             logger.error("从模板创建规则失败 %(template_name)s: %(e)s")
             return None
 
@@ -275,7 +275,7 @@ class AlertRuleEngine:
             if expired_keys:
                 logger.info("清除 {len(expired_keys)} 个过期的告警抑制")
 
-        except Exception as e:
+        except Exception:
             logger.error("清除过期抑制失败: %(e)s")
 
     # 私有方法
@@ -339,7 +339,7 @@ class AlertRuleEngine:
 
             logger.info("✅ 内置告警规则加载完成")
 
-        except Exception as e:
+        except Exception:
             logger.error("加载内置规则失败: %(e)s")
 
     def _evaluate_rule(self, rule: AlertRule, context: AlertContext) -> AlertResult:
@@ -422,7 +422,7 @@ class AlertRuleEngine:
                 logger.warning("不支持的运算符: %(operator)s")
                 return False
 
-        except Exception as e:
+        except Exception:
             logger.error("条件评估失败: %(e)s")
             return False
 
@@ -481,7 +481,7 @@ class AlertRuleEngine:
 
             return len(recent_executions) < rule.max_frequency
 
-        except Exception as e:
+        except Exception:
             logger.error("检查频率限制失败 {rule.rule_id}: %(e)s")
             return True  # 出错时允许执行
 
@@ -566,7 +566,7 @@ class AlertRuleEngine:
             logger.info("✅ 规则已导出到: %(filepath)s")
             return True
 
-        except Exception as e:
+        except Exception:
             logger.error("导出规则失败: %(e)s")
             return False
 
@@ -588,14 +588,14 @@ class AlertRuleEngine:
                     if self.add_rule(rule):
                         imported_count += 1
 
-                except Exception as e:
+                except Exception:
                     logger.error("导入规则失败 {rule_data.get('rule_id')}: %(e)s")
                     continue
 
             logger.info("✅ 成功导入 %(imported_count)s 个规则")
             return imported_count
 
-        except Exception as e:
+        except Exception:
             logger.error("导入规则失败: %(e)s")
             return 0
 

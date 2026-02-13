@@ -45,7 +45,7 @@ class OrderManagementService:
 
             return self._map_to_response(order)
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to place order: %(e)s")
             raise
 
@@ -79,7 +79,7 @@ class OrderManagementService:
         for event in events:
             try:
                 self.event_bus.publish(event)
-            except Exception as e:
+            except Exception:
                 logger.error("Failed to publish event: %(e)s")
 
     def _map_to_response(self, order: Order) -> OrderResponse:

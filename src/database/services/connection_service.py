@@ -5,9 +5,8 @@
 """
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from datetime import datetime
-import psycopg2
 from psycopg2 import pool
 from contextlib import contextmanager
 

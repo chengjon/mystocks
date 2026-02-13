@@ -18,7 +18,7 @@ Date: 2025-11-07
 
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set, Union
@@ -225,7 +225,7 @@ class FilterEvaluator:
         # 指标
         self.evaluations = 0
         self.matches = 0
-        self.last_eval_time = datetime.utcnow()
+        self.last_eval_time = datetime.now(timezone.utc)
 
         logger.info("✅ Filter Evaluator initialized")
 
@@ -249,7 +249,7 @@ class FilterEvaluator:
     def evaluate_data(self, data: Dict[str, Any]) -> List[str]:
         """评估数据匹配的订阅"""
         self.evaluations += 1
-        self.last_eval_time = datetime.utcnow()
+        self.last_eval_time = datetime.now(timezone.utc)
 
         matched_subs = []
 
@@ -260,7 +260,7 @@ class FilterEvaluator:
             if subscription.filter_expr.evaluate(data):
                 matched_subs.append(sub_id)
                 subscription.match_count += 1
-                subscription.last_match_time = datetime.utcnow()
+                subscription.last_match_time = datetime.now(timezone.utc)
                 subscription.last_match_data = data
                 self.matches += 1
 
@@ -274,7 +274,7 @@ class FilterEvaluator:
             "evaluations": self.evaluations,
             "total_matches": self.matches,
             "match_rate": (self.matches / self.evaluations if self.evaluations > 0 else 0),
-            "uptime_seconds": (datetime.utcnow() - self.last_eval_time).total_seconds(),
+            "uptime_seconds": (datetime.now(timezone.utc) - self.last_eval_time).total_seconds(),
         }
 
 
@@ -309,7 +309,7 @@ class AlertDispatcher:
         alert = Alert(
             id=f"alert_{self.alerts_created}",
             subscription_id=subscription_id,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data=data,
             priority=priority,
             delivery_methods=delivery_methods,

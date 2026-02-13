@@ -11,7 +11,7 @@ to support:
 
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class HealthCheckMixin:
                 "healthy": is_healthy,
                 "latency_ms": latency,
                 "error": None,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             latency = (time.time() - start_time) * 1000
@@ -58,7 +58,7 @@ class HealthCheckMixin:
                 "healthy": False,
                 "latency_ms": latency,
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
 

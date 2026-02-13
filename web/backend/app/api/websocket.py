@@ -101,7 +101,7 @@ async def websocket_events(
 
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected: %(connection_id)s")
-    except Exception as e:
+    except Exception:
         logger.error("WebSocket error for %(connection_id)s: %(e)s")
     finally:
         manager.disconnect(connection_id)

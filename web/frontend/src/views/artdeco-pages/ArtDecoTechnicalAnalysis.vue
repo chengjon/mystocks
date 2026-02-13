@@ -8,7 +8,7 @@
     >
       <template #actions>
         <div class="header-metrics">
-          <ArtDecoBadge variant="primary">GPU 核心活跃</ArtDecoBadge>
+          <ArtDecoBadge variant="gold">GPU 核心活跃</ArtDecoBadge>
           <ArtDecoBadge variant="gold">计算负载 12%</ArtDecoBadge>
         </div>
       </template>
@@ -61,9 +61,9 @@ const tabs = [
   { key: 'backtest', label: '回测验证' }
 ]
 
-const indicators = ref([])
-const trendData = ref([])
-const equityData = ref([])
+const indicators = ref<any[]>([])
+const trendData = ref<any[]>([])
+const equityData = ref<any[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -78,11 +78,11 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
       dashboardService.getTechnicalIndicators([params.symbol], ['RSI', 'MACD', 'KDJ', 'BOLL']),
       marketService.getTrend(params.symbol)
     ])
-    
+
     if (indRes.data?.[params.symbol]) {
       indicators.value = indRes.data[params.symbol]
     }
-    
+
     if (trendRes.success && trendRes.data?.data) {
       trendData.value = trendRes.data.data.map((v: any, i: number) => ({ time: i, value: v }))
     }

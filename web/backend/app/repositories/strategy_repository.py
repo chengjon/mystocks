@@ -4,8 +4,7 @@ Strategy Repository Layer
 提供策略数据的数据库访问接口，使用SQLAlchemy ORM操作PostgreSQL
 """
 
-import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from sqlalchemy import (
@@ -133,7 +132,7 @@ class StrategyRepository:
             self.db.refresh(strategy_orm)
             self.db.commit()
             self.db.refresh(strategy_orm)
-            
+
             logger.info(f"创建策略成功: strategy_id={strategy_orm.strategy_id}, name={strategy_orm.strategy_name}")
             # 转换为Pydantic响应模型
             return self._orm_to_pydantic(strategy_orm)
@@ -161,7 +160,7 @@ class StrategyRepository:
 
             return self._orm_to_pydantic(strategy_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("查询策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
 
@@ -212,7 +211,7 @@ class StrategyRepository:
 
             return strategies, total_count
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("查询策略列表失败: user_id=%(user_id)s, error={str(e)}")
             raise
 
@@ -254,7 +253,7 @@ class StrategyRepository:
                 if hasattr(strategy_orm, key):
                     setattr(strategy_orm, key, value)
 
-            strategy_orm.updated_at = datetime.utcnow()
+            strategy_orm.updated_at = datetime.now(timezone.utc)
 
             self.db.commit()
             self.db.refresh(strategy_orm)
@@ -263,7 +262,7 @@ class StrategyRepository:
 
             return self._orm_to_pydantic(strategy_orm)
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("更新策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
@@ -292,7 +291,7 @@ class StrategyRepository:
                 logger.warning("策略不存在: strategy_id=%(strategy_id)s")
                 return False
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             self.db.rollback()
             logger.error("删除策略失败: strategy_id=%(strategy_id)s, error={str(e)}")
             raise
@@ -320,7 +319,7 @@ class StrategyRepository:
 
             return [self._orm_to_pydantic(s) for s in strategies_orm]
 
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error("查询策略失败: user_id=%(user_id)s, status=%(status)s, error={str(e)}")
             raise
 

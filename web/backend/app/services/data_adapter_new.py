@@ -4,7 +4,7 @@
 提供与原data_adapter.py相同的接口，但使用新拆分后的适配器模块
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from .adapters_split.base_adapter import BaseAdapter
 from .adapters_split.akshare_adapter import AkshareAdapter
@@ -15,7 +15,6 @@ from .adapters_split.baostock_adapter import BaostockAdapter
 from .adapters_split.byapi_adapter import BYAPIAdapter
 from .adapters_split.customer_adapter import CustomerAdapter
 
-import logging
 
 logger = __import__("logging").getLogger(__name__)
 

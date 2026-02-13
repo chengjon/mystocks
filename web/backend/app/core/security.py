@@ -2,7 +2,8 @@
 安全认证和权限管理
 """
 
-from datetime import datetime, timedelta
+import logging
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 import bcrypt
@@ -12,6 +13,8 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 # OAuth2 密码流
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -56,9 +59,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         # bcrypt has a 72-byte password length limit, truncate if necessary
         password_bytes = plain_password.encode("utf-8")[:72]
         return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
+    except ValueError as e:
+        # 无效的哈希格式
+        logger.warning(f"Invalid hash format: {e}")
+        return False
     except Exception as e:
-        # 记录错误但不抛出异常
-        print(f"Password verification error: {e}")
+        # 其他bcrypt错误
+        logger.error(f"Password verification error: {e}")
         return False
 
 
@@ -74,9 +81,9 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     to_encode = data.copy()
 
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
@@ -95,7 +102,7 @@ def verify_token(token: str) -> Optional[TokenData]:
 
         # 增强过期检查
         exp = payload.get("exp")
-        if exp and datetime.utcnow().timestamp() > exp:
+        if exp and datetime.now(timezone.utc).timestamp() > exp:
             return None
 
         # 验证必要字段
@@ -115,12 +122,15 @@ def verify_token(token: str) -> Optional[TokenData]:
 
     except jwt.ExpiredSignatureError:
         # Token已过期
+        logger.debug("Token expired")
         return None
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
         # Token无效
+        logger.warning(f"Invalid token: {e}")
         return None
-    except Exception:
-        # 其他JWT错误
+    except Exception as e:
+        # 其他JWT错误 - 记录但不过滤
+        logger.error(f"Unexpected JWT error: {e}")
         return None
 
 
@@ -133,12 +143,13 @@ def _get_redis_for_tokens():
     """获取Redis客户端用于token黑名单，不可用时返回None"""
     try:
         from app.core.redis_client import get_redis_client
+
         client = get_redis_client()
         if client is not None:
             client.ping()
             return client
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f"Redis unavailable for token blacklist, using memory fallback: {e}")
     return None
 
 
@@ -149,11 +160,12 @@ def revoke_token(token: str) -> None:
         try:
             # 使用token过期时间作为Redis TTL（默认与access_token_expire_minutes一致）
             from app.core.config import settings
+
             ttl = settings.access_token_expire_minutes * 60
             redis_client.setex(f"revoked_token:{token}", ttl, "1")
             return
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Failed to revoke token in Redis, using memory fallback: {e}")
     # 回退到内存
     _revoked_tokens_fallback.add(token)
 
@@ -164,8 +176,8 @@ def _is_token_revoked(token: str) -> bool:
     if redis_client:
         try:
             return redis_client.exists(f"revoked_token:{token}") > 0
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Failed to check revoked token in Redis, using memory fallback: {e}")
     # 回退到内存
     return token in _revoked_tokens_fallback
 
@@ -418,6 +430,11 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
     """
     from app.core.config import settings
 
+    # SECURITY: Only allow mock auth if explicitly enabled
+    if not getattr(settings, "mock_auth_enabled", False):
+        print("[Security] Mock authentication attempt blocked (MOCK_AUTH_ENABLED=False)")
+        return None
+
     # 获取管理员初始密码
     getattr(settings, "admin_initial_password", "admin123")
 
@@ -443,15 +460,12 @@ def _authenticate_with_mock(username: str, password: str) -> Optional[UserInDB]:
 
     user = users_db.get(username)
     if not user:
-        print(f"[Mock Auth] User not found in mock DB: {username}")
         return None
 
     user_in_db = UserInDB(**user)
 
     # 验证密码
     if not verify_password(password, user_in_db.hashed_password):
-        print(f"[Mock Auth] Password verification failed for user: {username}")
         return None
 
-    print(f"[Mock Auth] Authentication successful for user: {username}")
     return user_in_db

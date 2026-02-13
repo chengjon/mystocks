@@ -449,7 +449,7 @@ class MarkovBayesianManager:
 
             return success
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load algorithm from %(filepath)s: %(e)s")
             return False
 

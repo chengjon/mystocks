@@ -15,7 +15,7 @@ Date: 2025-11-12
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -201,7 +201,7 @@ class WebSocketPerformanceManager:
         memory_stats = self.memory_optimizer.get_stats()
 
         metrics = PerformanceMetrics(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             active_connections=pool_stats["pool_size"]["active"],
             idle_connections=pool_stats["pool_size"]["idle"],
             buffer_messages=batch_stats["current_buffers"]["buffered_messages"],
@@ -233,7 +233,7 @@ class WebSocketPerformanceManager:
             "connection_pool": pool_stats,
             "message_batcher": batch_stats,
             "memory_optimizer": memory_stats,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_performance_summary(self) -> Dict[str, Any]:
@@ -258,7 +258,7 @@ class WebSocketPerformanceManager:
             "peak_active_connections": max(m.active_connections for m in recent_metrics),
             "peak_memory_percent": max(m.memory_percent for m in recent_metrics),
             "connection_reuse_rate": (sum(m.connection_reuse_rate for m in recent_metrics) / len(recent_metrics)),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def export_metrics_history(self) -> List[Dict[str, Any]]:

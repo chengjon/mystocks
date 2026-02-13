@@ -9,5 +9,5 @@
 
 <script setup lang="ts">
 import BaseLayout from './BaseLayout.vue'
-import { STRATEGY_MENU_ITEMS } from './MenuConfig'
+import { STRATEGY_MENU_ITEMS } from './archive/MenuConfig'
 </script>

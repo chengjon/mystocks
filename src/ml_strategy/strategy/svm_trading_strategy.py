@@ -95,7 +95,7 @@ class SVMTradingStrategy(MLTradingStrategy):
             logger.info("SVM特征工程完成，生成 {len(df)} 个样本，{len(df.columns) - 1} 个特征")
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("SVM特征工程失败: %(e)s")
             raise
 
@@ -218,7 +218,7 @@ class SVMTradingStrategy(MLTradingStrategy):
             logger.info("SVM策略生成 {len(signals_df)} 个交易信号")
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.error("SVM信号解释失败: %(e)s")
             raise
 
@@ -277,7 +277,7 @@ class SVMTradingStrategy(MLTradingStrategy):
 
             return signals_df
 
-        except Exception as e:
+        except Exception:
             logger.warning("风险控制应用失败，使用原始信号: %(e)s")
             return signals_df
 

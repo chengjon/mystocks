@@ -6,7 +6,7 @@ Stock Info Module
 
 import logging
 import akshare as ak
-from typing import Dict, Optional
+from typing import Dict
 
 from ..base import retry_api_call
 
@@ -68,7 +68,7 @@ class StockInfoAdapter:
                 "concepts": list(set(concepts)),
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("[Akshare] 获取个股信息失败，股票: %(symbol)s: %s")
             return {"symbol": symbol, "industries": [], "concepts": []}
 

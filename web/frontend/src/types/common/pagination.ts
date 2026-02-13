@@ -33,19 +33,14 @@ export interface ApiResponse<T = any> {
 }
 
 /**
- * 错误详情
- */
-export interface ErrorDetail {
-  field?: string;
-  code: string;
-  message: string;
-}
-
-/**
  * 操作结果
  */
 export interface OperationResult<T = any> {
   success: boolean;
   data?: T;
-  error?: ErrorDetail;
+  error?: {
+    field?: string;
+    code: string;
+    message: string;
+  };
 }

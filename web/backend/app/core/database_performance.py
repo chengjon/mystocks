@@ -14,7 +14,7 @@ Date: 2025-11-12
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import structlog
@@ -201,7 +201,7 @@ class DatabasePerformanceManager:
         monitor_stats = self.performance_monitor.get_monitoring_stats()
 
         metrics = DatabasePerformanceMetrics(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             pool_size_total=pool_stats["pool_size"]["total"],
             pool_size_idle=pool_stats["pool_size"]["idle"],
             pool_size_in_use=pool_stats["pool_size"]["in_use"],
@@ -229,7 +229,7 @@ class DatabasePerformanceManager:
             "connection_pool": self.pool_optimizer.get_pool_stats(),
             "query_batcher": self.query_batcher.get_stats(),
             "performance_monitor": self.performance_monitor.get_monitoring_stats(),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_comprehensive_report(self) -> Dict[str, Any]:
@@ -238,7 +238,7 @@ class DatabasePerformanceManager:
             "connection_pool": self.pool_optimizer.get_pool_stats(),
             "query_batcher": self.query_batcher.get_stats(),
             "performance": self.performance_monitor.get_comprehensive_report(),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_performance_summary(self) -> Dict[str, Any]:
@@ -264,7 +264,7 @@ class DatabasePerformanceManager:
             "average_error_rate": round(avg_error_rate, 2),
             "peak_in_use_connections": max(m.pool_size_in_use for m in recent_metrics),
             "connection_reuse_rate": self.pool_optimizer.get_pool_stats()["performance"]["connection_reuse_rate"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def export_metrics_history(self) -> List[Dict[str, Any]]:

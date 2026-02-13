@@ -190,10 +190,10 @@
     import { getChartTheme } from '@/styles/chart-theme'
 
     // 导入新创建的高级图表组件
-    import SankeyChart from '@/components/charts/SankeyChart.vue'
-    import TreeChart from '@/components/charts/TreeChart.vue'
-    import RelationChart from '@/components/charts/RelationChart.vue'
-    import AdvancedHeatmap from '@/components/charts/AdvancedHeatmap.vue'
+    import SankeyChart from '@/components/Charts/SankeyChart.vue'
+    import TreeChart from '@/components/Charts/TreeChart.vue'
+    import RelationChart from '@/components/Charts/RelationChart.vue'
+    import AdvancedHeatmap from '@/components/Charts/AdvancedHeatmap.vue'
 
     // 图标
     import { Palette, DataAnalysis, Setting, Download, Monitor, Mobile } from '@element-plus/icons-vue'

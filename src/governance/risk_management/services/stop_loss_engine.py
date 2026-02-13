@@ -265,7 +265,7 @@ class StopLossEngine(IStopLossEngine):
 
             return triggered
 
-        except Exception as e:
+        except Exception:
             logger.error("检查止损触发失败 %(symbol)s: %(e)s")
             # 为了安全起见，如果检查失败也认为触发了
             return True
@@ -279,7 +279,7 @@ class StopLossEngine(IStopLossEngine):
             # 暂时返回模拟值
             # ATR通常是股价的1-3%
             return 2.5  # 假设2.5元的ATR值
-        except Exception as e:
+        except Exception:
             logger.error("获取ATR值失败 %(symbol)s: %(e)s")
             return 2.0  # 返回保守值
 
@@ -289,7 +289,7 @@ class StopLossEngine(IStopLossEngine):
             # 这里应该从实时数据源获取价格
             # 暂时返回模拟价格
             return 100.0  # 假设当前价格100元
-        except Exception as e:
+        except Exception:
             logger.error("获取当前价格失败 %(symbol)s: %(e)s")
             return 100.0
 
@@ -299,7 +299,7 @@ class StopLossEngine(IStopLossEngine):
             # 这里应该计算真实的移动平均值
             # 暂时返回模拟值
             return 98.0  # 假设20日均线98元
-        except Exception as e:
+        except Exception:
             logger.error("获取移动平均值失败 %(symbol)s: %(e)s")
             return None
 
@@ -378,7 +378,7 @@ class StopLossEngine(IStopLossEngine):
             # 限制K因子范围
             return max(0.5, min(4.0, dynamic_k))
 
-        except Exception as e:
+        except Exception:
             logger.warning("计算动态K因子失败 %(symbol)s: %(e)s")
             return self._get_default_k_factor(risk_tolerance)
 
@@ -421,7 +421,7 @@ class StopLossEngine(IStopLossEngine):
 
             return 1.0  # 无调整
 
-        except Exception as e:
+        except Exception:
             logger.warning("计算市场波动率调整失败 %(symbol)s: %(e)s")
             return 1.0
 
@@ -461,7 +461,7 @@ class StopLossEngine(IStopLossEngine):
                 "factors": risk_factors,
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("评估综合风险失败 %(symbol)s: %(e)s")
             return {
                 "level": "unknown",
@@ -567,7 +567,7 @@ class StopLossEngine(IStopLossEngine):
         elif risk_level == "low":
             return f"低风险环境，可以考虑稍微放宽止损至{stop_percentage * 1.2:.1f}%"
         else:
-            return f"极低风险环境，建议减少止损幅度以锁定利润"
+            return "极低风险环境，建议减少止损幅度以锁定利润"
 
     async def _analyze_historical_drawdowns(
         self, symbol: str, stop_loss_price: float, entry_price: float
@@ -583,7 +583,7 @@ class StopLossEngine(IStopLossEngine):
                 "success_rate": 0.75,
                 "recommendation": "历史数据显示类似情况有75%成功恢复",
             }
-        except Exception as e:
+        except Exception:
             logger.warning("历史回撤分析失败 %(symbol)s: %(e)s")
             return {}
 
@@ -607,7 +607,7 @@ class StopLossEngine(IStopLossEngine):
                     },
                 )
                 logger.debug("止损计算记录成功: %(symbol)s")
-        except Exception as e:
+        except Exception:
             logger.warning("记录止损计算失败 %(symbol)s: %(e)s")
 
     async def _get_market_volatility(self) -> float:
@@ -798,7 +798,7 @@ class StopLossEngine(IStopLossEngine):
                 "best_performing_mode": "hybrid",
                 "current_mode_performance": 0.85 if trailing_mode == "hybrid" else 0.78,
             }
-        except Exception as e:
+        except Exception:
             logger.warning("分析跟踪表现失败 %(symbol)s: %(e)s")
             return {}
 
@@ -880,7 +880,7 @@ class StopLossEngine(IStopLossEngine):
                     },
                 )
                 logger.debug("跟踪止损计算记录成功: %(symbol)s")
-        except Exception as e:
+        except Exception:
             logger.warning("记录跟踪止损计算失败 %(symbol)s: %(e)s")
 
     async def _get_recent_market_data(self, symbol: str, days: int) -> Dict[str, Any]:

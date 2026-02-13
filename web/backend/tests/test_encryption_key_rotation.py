@@ -15,7 +15,7 @@ Test Coverage:
 import pytest
 import base64
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.core.encryption import EncryptionManager, SecretManager
 
@@ -112,9 +112,9 @@ class TestKeyRotation:
 
     def test_rotation_timestamp_recorded(self, manager):
         """Test rotation timestamp is recorded for old key"""
-        before_rotation = datetime.utcnow()
+        before_rotation = datetime.now(timezone.utc)
         manager.rotate_key(2)
-        after_rotation = datetime.utcnow()
+        after_rotation = datetime.now(timezone.utc)
 
         rotated_at_str = manager._key_metadata[1]["rotated_at"]
         rotated_at = datetime.fromisoformat(rotated_at_str)

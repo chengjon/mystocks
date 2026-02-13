@@ -255,7 +255,7 @@ class StopLossExecutionService:
             else:
                 return False
 
-        except Exception as e:
+        except Exception:
             logger.error("移除止损监控失败 %(position_id)s: %(e)s")
             return False
 
@@ -454,7 +454,7 @@ class StopLossExecutionService:
                         "config": config,
                     },
                 )
-        except Exception as e:
+        except Exception:
             logger.warning("记录持仓添加失败 {position.position_id}: %(e)s")
 
     async def _record_position_removed(self, position: StopLossPosition, reason: str):
@@ -475,7 +475,7 @@ class StopLossExecutionService:
                         "highest_price": position.highest_price,
                     },
                 )
-        except Exception as e:
+        except Exception:
             logger.warning("记录持仓移除失败 {position.position_id}: %(e)s")
 
     async def _record_stop_loss_execution(
@@ -503,7 +503,7 @@ class StopLossExecutionService:
                         "highest_price": position.highest_price,
                     },
                 )
-        except Exception as e:
+        except Exception:
             logger.warning("记录止损执行失败 {position.position_id}: %(e)s")
 
 

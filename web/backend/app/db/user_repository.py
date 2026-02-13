@@ -11,18 +11,44 @@ from sqlalchemy.orm import Session
 
 from app.core.security import UserInDB
 
+try:
+    from src.core.exceptions import (
+        DatabaseOperationError as _BaseDatabaseOperationError,
+        DataValidationError as _BaseDataValidationError,
+    )
+except ImportError:
+    _BaseDatabaseOperationError = Exception
+    _BaseDataValidationError = Exception
 
-# 简化的异常类（如果需要更详细的异常处理）
+
+# 异常类继承自 src.core.exceptions，确保 auth 路由能正确捕获
 class DatabaseConnectionError(Exception):
     """数据库连接错误"""
 
 
-class DatabaseOperationError(Exception):
+class DatabaseOperationError(_BaseDatabaseOperationError):
     """数据库操作错误"""
 
+    def __init__(self, message="", code="", severity="", original_exception=None):
+        self.message = message
+        self.code = code
+        self.severity = severity
+        self.original_exception = original_exception
+        # Bypass the intermediate __init__ chain (which expects different params)
+        # and call Exception.__init__ directly to avoid error_code conflicts
+        Exception.__init__(self, message)
 
-class DataValidationError(Exception):
+
+class DataValidationError(_BaseDataValidationError):
     """数据验证错误"""
+
+    def __init__(self, message="", code="", severity="", original_exception=None):
+        self.message = message
+        self.code = code
+        self.severity = severity
+        self.original_exception = original_exception
+        # Bypass the intermediate __init__ chain and call Exception.__init__ directly
+        Exception.__init__(self, message)
 
 
 class UserRepository:

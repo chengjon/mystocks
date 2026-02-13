@@ -14,7 +14,6 @@ import sys
 import os
 import importlib.util
 from functools import wraps
-from types import ModuleType
 import pandas as pd
 
 # 常量定义
@@ -79,7 +78,7 @@ def _load_mixin_methods(cls):
                                 setattr(cls, attr_name, attr)
                                 logger.debug("[Akshare] 加载混入方法: %(attr_name)s from %(mixin_file)s")
 
-            except Exception as e:
+            except Exception:
                 logger.warning("[Akshare] 加载混入模块 %(mixin_file)s 失败: %(e)s")
                 continue
 

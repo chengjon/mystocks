@@ -11,7 +11,7 @@ Provides data quality detection capabilities measuring four core dimensions:
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -138,7 +138,7 @@ class DataQualityChecker:
                 details={"error": "No last update timestamp available"},
             )
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         time_since_update = (now - last_update).total_seconds()
 
         if time_since_update <= expected_interval_seconds:

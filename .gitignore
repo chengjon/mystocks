@@ -239,6 +239,9 @@ monitoring-stack/.env.*
 # ========================================
 # DOCUMENTATION ARTIFACTS (GENERATED/TEMPORARY)
 # ========================================
+# Documentation directory
+docs/
+
 # HTML Prototypes and Samples (development artifacts)
 docs/design/html_sample/
 

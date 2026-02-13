@@ -33,7 +33,7 @@ class GPUIndicatorCalculator(IIndicatorCalculator):
             try:
                 # 预检查 GPU 驱动
                 cudf.Series([1])
-            except Exception as e:
+            except Exception:
                 logger.warning("cuDF loaded but GPU check failed: %(e)s. Falling back to CPU.")
                 self.use_gpu = False
 

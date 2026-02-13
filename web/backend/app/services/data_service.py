@@ -51,7 +51,7 @@ try:
 
     AKSHARE_AVAILABLE = True
     logger.info("Akshare adapter imported successfully")
-except ImportError as e:
+except ImportError:
     AKSHARE_AVAILABLE = False
     logger.warning("Akshare adapter not available: %(e)s")
 
@@ -82,7 +82,7 @@ class DataService:
             # Initialize unified manager (with monitoring disabled for web service)
             self.unified_manager = MyStocksUnifiedManager(enable_monitoring=False)
             logger.info("DataService initialized with MyStocksUnifiedManager")
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to initialize MyStocksUnifiedManager: %(e)s")
             self.unified_manager = None
 
@@ -94,7 +94,7 @@ class DataService:
             try:
                 self.akshare_adapter = AkshareDataSource()
                 logger.info("Akshare adapter initialized for automatic data fetching")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to initialize Akshare adapter: %(e)s")
                 self.auto_fetch = False
 
@@ -106,7 +106,7 @@ class DataService:
             try:
                 self.cache = get_cache_integration()
                 logger.info("Cache integration initialized for DataService")
-            except Exception as e:
+            except Exception:
                 logger.warning("Failed to initialize cache integration: %(e)s")
                 self.use_cache = False
 
@@ -228,7 +228,7 @@ class DataService:
             # Return with proper column name for trade_date
             return df_save
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to fetch and save from Akshare: %(e)s")
             import traceback
 
@@ -274,7 +274,7 @@ class DataService:
 
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to load from UnifiedManager: %(e)s")
             return pd.DataFrame()
 
@@ -382,7 +382,7 @@ class DataService:
                 if not df.empty and "name" in df.columns:
                     return df.iloc[0]["name"]
 
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to get symbol name: %(e)s")
 
         # Fallback to symbol itself
@@ -455,7 +455,7 @@ class DataService:
 
             return (min_date.to_pydatetime(), max_date.to_pydatetime())
 
-        except Exception as e:
+        except Exception:
             logger.warning("Failed to get available date range: %(e)s")
             return None
 

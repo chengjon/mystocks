@@ -10,7 +10,6 @@ from .market_api import MarketDataService
 from .trading_api import TradingDataService
 from .analysis_api import AnalysisDataService
 
-import logging
 
 logger = __import__("logging").getLogger(__name__)
 

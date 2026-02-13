@@ -19,7 +19,7 @@ Date: 2025-11-12
 import asyncio
 import gc
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -313,7 +313,7 @@ class WebSocketMemoryOptimizer:
                 "max_stored": self.max_snapshots,
                 "recent": ([s.to_dict() for s in self.memory_snapshots[-10:]] if self.memory_snapshots else []),
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_memory_history(self) -> List[Dict[str, Any]]:

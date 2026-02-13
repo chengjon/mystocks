@@ -114,6 +114,7 @@
                         </div>
                     </div>
                 </ArtDecoCard>
+            </div>
 
             <!-- 技术分析 -->
             <div v-if="activeTab === 'technical'" class="tab-panel">
@@ -193,7 +194,9 @@
                             </div>
                         </div>
                     </ArtDecoCard>
+                </div>
             </div>
+        </div>
     </div>
 </template>
 
@@ -203,6 +206,37 @@ import { useRoute } from 'vue-router'
 import { getPageConfig, isRouteName, isStandardConfig } from '@/config/pageConfig'
 
 const route = useRoute()
+
+// 定义数据类型
+interface Stock {
+    code: string
+    name: string
+    price: number
+    change: number
+    volume: string
+    amount: string
+    turnover: number
+    pe: number
+}
+
+interface AbnormalStock {
+    code: string
+    name: string
+    type: string
+    typeText: string
+    change: number
+}
+
+interface TabOption {
+    key: string
+    label: string
+    icon: string
+}
+
+interface SelectOption {
+    label: string
+    value: string
+}
 
 // 根据当前路由名称获取配置
 const currentRouteName = computed(() => {
@@ -220,12 +254,22 @@ const currentPageConfig = computed(() => {
 
 // API 端点
 const apiEndpoint = computed(() => {
-    return currentPageConfig.value?.apiEndpoint || ''
+    const config = currentPageConfig.value
+    if (!config) return ''
+    if ('apiEndpoint' in config) {
+        return config.apiEndpoint
+    }
+    return ''
 })
 
 // WebSocket 频道
 const wsChannel = computed(() => {
-    return currentPageConfig.value?.wsChannel || ''
+    const config = currentPageConfig.value
+    if (!config) return ''
+    if ('wsChannel' in config) {
+        return config.wsChannel
+    }
+    return ''
 })
 
 // 组件名称
@@ -248,9 +292,42 @@ const analysisSymbol = ref('')
 const analysisPeriod = ref('1d')
 const activeSort = ref('code')
 
-const realtimeQuotes = ref([])
+const realtimeQuotes = ref<Stock[]>([])
 const hotSectors = ref([])
-const abnormalStocks = ref([])
+const abnormalStocks = ref<AbnormalStock[]>([])
+
+// 主标签配置
+const mainTabs: TabOption[] = [
+    { key: 'realtime', label: '实时行情', icon: '📊' },
+    { key: 'technical', label: '技术分析', icon: '📈' }
+]
+
+// 市场选项
+const marketOptions: SelectOption[] = [
+    { label: '上海', value: 'sh' },
+    { label: '深圳', value: 'sz' },
+    { label: '创业板', value: 'cyb' },
+    { label: '科创板', value: 'kcb' }
+]
+
+// 排序选项
+const sortOptions: TabOption[] = [
+    { key: 'code', label: '代码', icon: '' },
+    { key: 'change', label: '涨跌幅', icon: '' },
+    { key: 'volume', label: '成交量', icon: '' },
+    { key: 'amount', label: '成交额', icon: '' }
+]
+
+// 周期选项
+const periodOptions: SelectOption[] = [
+    { label: '日线', value: '1d' },
+    { label: '周线', value: '1w' },
+    { label: '月线', value: '1m' },
+    { label: '5分钟', value: '5m' },
+    { label: '15分钟', value: '15m' },
+    { label: '30分钟', value: '30m' },
+    { label: '60分钟', value: '60m' }
+]
 
 // 根据路由 meta.activeTab 设置初始 tab
 onMounted(() => {

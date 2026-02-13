@@ -29,8 +29,7 @@ result = monitored_executor.execute(symbols)
 
 import logging
 import time
-from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

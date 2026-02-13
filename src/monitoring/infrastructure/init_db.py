@@ -116,7 +116,7 @@ async def init_monitoring_tables():
 
         logger.info("✅ 监控模块数据库表初始化完成")
 
-    except Exception as e:
+    except Exception:
         logger.error("❌ 初始化失败: %(e)s")
         raise
     finally:

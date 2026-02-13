@@ -546,7 +546,7 @@ class SmartScheduler:
                 # 分布式锁未启用，直接计算
                 return self._perform_calculation(ind, ohlcv, use_cache)
 
-        except Exception as e:
+        except Exception:
             logger.error("Error in _calculate_single_with_lock for %(node_id)s: %(e)s")
             # 异常时回退到普通计算
             return self._perform_calculation(ind, ohlcv, use_cache)
@@ -556,7 +556,7 @@ class SmartScheduler:
                 try:
                     # 这里token可能已经在上面的try块中被释放，所以是幂等的
                     pass
-                except Exception as e:
+                except Exception:
                     logger.warning("Failed to release lock for %(node_id)s: %(e)s")
 
     def _generate_cache_key(self, node_id: str, params: Dict) -> str:

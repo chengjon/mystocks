@@ -18,7 +18,7 @@ Date: 2025-11-06
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -57,7 +57,7 @@ class OfflineMessage:
         self.event = event
         self.data = data
         self.room = room
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
         self.retry_count = 0
 
     def to_dict(self) -> Dict[str, Any]:
@@ -178,11 +178,11 @@ class ReconnectionManager:
         """注册新连接"""
         self.reconnection_states[sid] = ReconnectionState.CONNECTED
         self.reconnection_attempts[sid] = 0
-        self.last_reconnect_time[sid] = datetime.utcnow()
+        self.last_reconnect_time[sid] = datetime.now(timezone.utc)
         self.message_buffers[sid] = MessageBuffer()
         self.connection_metadata[sid] = {
             "user_id": user_id,
-            "registered_at": datetime.utcnow().isoformat(),
+            "registered_at": datetime.now(timezone.utc).isoformat(),
         }
 
         logger.info(
@@ -261,7 +261,7 @@ class ReconnectionManager:
             self.reconnection_attempts[sid] = 0
 
         self.reconnection_attempts[sid] += 1
-        self.last_reconnect_time[sid] = datetime.utcnow()
+        self.last_reconnect_time[sid] = datetime.now(timezone.utc)
         # 保持状态为DISCONNECTED，直到成功重连或达到最大重试次数
 
         interval = self.get_next_reconnect_interval(sid)
@@ -342,7 +342,7 @@ class ReconnectionManager:
             "reconnecting": reconnecting,
             "failed": failed,
             "total_buffered_messages": total_buffered,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

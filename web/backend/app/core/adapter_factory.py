@@ -104,7 +104,7 @@ class AdapterRegistry:
             else:
                 # It's a class
                 return adapter_class(*args, **kwargs)
-        except Exception as e:
+        except Exception:
             logger.error("❌ Failed to instantiate adapter '%(name)s': {str(e)}")
             raise
 

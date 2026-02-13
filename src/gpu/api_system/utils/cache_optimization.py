@@ -239,7 +239,7 @@ class RedisCache:
     def connect(self):
         try:
             self.client = redis.Redis(host=self.host, port=self.port, db=self.db, decode_responses=True)
-        except Exception as e:
+        except Exception:
             logger.error("Redis connection failed: %(e)s")
 
     def ping(self):

@@ -207,7 +207,7 @@ def get_stock_daily(self, symbol: str, start_date: str, end_date: str) -> pd.Dat
 
             return self._apply_column_mapping(df, "stock_daily")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get stock daily data for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
@@ -256,7 +256,7 @@ def get_stock_basic(self, symbol: str) -> Dict[str, Any]:
                 "industry": None,  # 占位符
                 "source": "efinance",
             }
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get stock basic info for %(symbol)s: %(e)s")
             return {}
 
@@ -281,7 +281,7 @@ def get_index_components(self, symbol: str) -> List[str]:
             # 在实际使用中，可能需要从其他数据源补充
             logger.warning("Index components not available for %(symbol)s in efinance")
             return []
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get index components for %(symbol)s: %(e)s")
             return []
 
@@ -332,7 +332,7 @@ def get_real_time_data(self, symbol: str) -> Optional[Dict[str, Any]]:
                 "source": "efinance",
             }
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get real-time data for %(symbol)s: %(e)s")
             return None
 
@@ -371,7 +371,7 @@ def get_market_calendar(self, start_date: str, end_date: str) -> pd.DataFrame:
 
             return df
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get market calendar: %(e)s")
             return pd.DataFrame()
 
@@ -425,7 +425,7 @@ def get_financial_data(self, symbol: str, period: str = "annual") -> pd.DataFram
 
             return self._apply_column_mapping(stock_data, "financial_data")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get financial data for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
@@ -452,7 +452,7 @@ def get_news_data(self, symbol: Optional[str] = None, limit: int = 10) -> List[D
             logger.warning("News data not available in efinance")
             return []
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get news data: %(e)s")
             return []
 
@@ -509,7 +509,7 @@ def get_dragon_tiger_list(self, start_date: str = None, end_date: str = None) ->
 
             return self._apply_column_mapping(df, "dragon_tiger")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get dragon tiger list: %(e)s")
             return pd.DataFrame()
 
@@ -557,7 +557,7 @@ def get_fund_flow_data(self, symbol: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "fund_flow")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get fund flow data for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
@@ -598,7 +598,7 @@ def get_today_fund_flow(self, symbol: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "today_fund_flow")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get today fund flow data for %(symbol)s: %(e)s")
             return pd.DataFrame()
 
@@ -637,7 +637,7 @@ def get_fund_history(self, fund_code: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "fund_history")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get fund history for %(fund_code)s: %(e)s")
             return pd.DataFrame()
 
@@ -676,7 +676,7 @@ def get_fund_holdings(self, fund_code: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "fund_holdings")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get fund holdings for %(fund_code)s: %(e)s")
             return pd.DataFrame()
 
@@ -717,7 +717,7 @@ def get_fund_basic_info(self, fund_codes: List[str]) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "fund_basic")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get fund basic info: %(e)s")
             return pd.DataFrame()
 
@@ -765,7 +765,7 @@ def get_bond_realtime_quotes(self) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "bond_quotes")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get bond realtime quotes: %(e)s")
             return pd.DataFrame()
 
@@ -807,7 +807,7 @@ def get_bond_basic_info(self) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "bond_basic")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get bond basic info: %(e)s")
             return pd.DataFrame()
 
@@ -853,7 +853,7 @@ def get_bond_history(self, bond_code: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "bond_history")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get bond history for %(bond_code)s: %(e)s")
             return pd.DataFrame()
 
@@ -889,7 +889,7 @@ def get_futures_basic_info(self) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "futures_basic")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get futures basic info: %(e)s")
             return pd.DataFrame()
 
@@ -935,7 +935,7 @@ def get_futures_history(self, quote_id: str) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "futures_history")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get futures history for %(quote_id)s: %(e)s")
             return pd.DataFrame()
 
@@ -973,7 +973,7 @@ def get_futures_realtime_quotes(self) -> pd.DataFrame:
 
             return self._apply_column_mapping(df, "futures_quotes")
 
-        except Exception as e:
+        except Exception:
             logger.error("Failed to get futures realtime quotes: %(e)s")
             return pd.DataFrame()
 

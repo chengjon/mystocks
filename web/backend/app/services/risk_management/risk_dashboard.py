@@ -4,13 +4,12 @@
 提供风险仪表盘数据汇总、图表数据、报告生成、实时风险监控UI功能
 """
 
-import logging
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from enum import Enum
 
-from .risk_base import RiskMetrics, RiskLevel, RiskProfile
+from .risk_base import RiskMetrics, RiskLevel
 from .risk_base import RiskBase
 
 logger = __import__("logging").getLogger(__name__)
