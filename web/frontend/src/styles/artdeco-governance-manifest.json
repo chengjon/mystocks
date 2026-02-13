@@ -1,0 +1,89 @@
+{
+  "tokens": {
+    "version": "v3.1",
+    "source": "web/frontend/src/styles/artdeco-tokens.scss",
+    "requiredVariables": [
+      "--artdeco-bg-global",
+      "--artdeco-bg-card",
+      "--artdeco-fg-primary",
+      "--artdeco-gold-primary",
+      "--artdeco-border-default",
+      "--artdeco-rise",
+      "--artdeco-down",
+      "--font-display",
+      "--font-body",
+      "--font-mono"
+    ],
+    "literalAllowList": [
+      "1px"
+    ]
+  },
+  "typography": {
+    "families": [
+      "Cinzel",
+      "Barlow",
+      "JetBrains Mono"
+    ],
+    "tokenBindings": {
+      "display": "--font-display",
+      "body": "--font-body",
+      "mono": "--font-mono"
+    }
+  },
+  "spacing": {
+    "levels": [
+      {
+        "token": "--artdeco-spacing-1",
+        "value": "0.25rem"
+      },
+      {
+        "token": "--artdeco-spacing-2",
+        "value": "0.5rem"
+      },
+      {
+        "token": "--artdeco-spacing-3",
+        "value": "0.75rem"
+      },
+      {
+        "token": "--artdeco-spacing-4",
+        "value": "1rem"
+      },
+      {
+        "token": "--artdeco-spacing-5",
+        "value": "1.25rem"
+      },
+      {
+        "token": "--artdeco-spacing-6",
+        "value": "1.5rem"
+      },
+      {
+        "token": "--artdeco-spacing-8",
+        "value": "2rem"
+      },
+      {
+        "token": "--artdeco-spacing-10",
+        "value": "2.5rem"
+      },
+      {
+        "token": "--artdeco-spacing-12",
+        "value": "3rem"
+      },
+      {
+        "token": "--artdeco-spacing-16",
+        "value": "4rem"
+      },
+      {
+        "token": "--artdeco-spacing-32",
+        "value": "8rem"
+      }
+    ]
+  },
+  "docs": {
+    "corePaths": [
+      "docs/guides/ARTDECO_MASTER_INDEX.md",
+      "docs/guides/ARTDECO_COMPONENT_GUIDE.md",
+      "docs/api/ArtDeco_System_Architecture_Summary.md",
+      "web/frontend/ARTDECO_COMPONENTS_CATALOG.md"
+    ]
+  }
+}
