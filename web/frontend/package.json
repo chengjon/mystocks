@@ -40,7 +40,8 @@
     "pm2:stop": "./stop.sh",
     "pm2:restart": "pm2 reload ecosystem.config.js --env production",
     "pm2:logs": "pm2 logs mystocks-frontend --lines 50",
-    "pm2:status": "pm2 list"
+    "pm2:status": "pm2 list",
+    "lint:artdeco:strict": "node scripts/check-artdeco-tokens.js --strict"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
