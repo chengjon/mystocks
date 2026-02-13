@@ -7,6 +7,9 @@
 
 ---
 
+- [LARGE_FILE_SPLITTING_PRINCIPLES_V1_0_RELEASE](reports/compliance/large_file_splitting_principles_v1.0_release.md)
+  - *Large File Splitting Principles v1.0 发布与执行边界记录（不含拆分实施）*
+
 - [AI3_FRONTEND_COMPONENT_PLAN](reports/AI3_FRONTEND_COMPONENT_PLAN.md)
   - *AI 3 前端组件规划文档*
 
