@@ -38,16 +38,26 @@ async function findAvailablePort(startPort: number, endPort: number): Promise<nu
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   let availablePort = 3000; // 默认端口
+  const explicitPort = Number(process.env.FRONTEND_PORT ?? process.env.PORT ?? 0);
+  const rangeStart = Number(process.env.FRONTEND_PORT_RANGE_START ?? 3000);
+  const rangeEnd = Number(process.env.FRONTEND_PORT_RANGE_END ?? 3009);
 
-  try {
-    // 端口分配规则: 前端使用 3000-3009 范围
-    availablePort = await findAvailablePort(3000, 3009);
-    console.log(`🚀 Using available port: ${availablePort}`);
-  } catch (error) {
-    console.error(`❌ ${(error as Error).message}`);
-    process.exit(1);
+  if (command === 'serve') {
+    if (Number.isInteger(explicitPort) && explicitPort > 0) {
+      availablePort = explicitPort;
+      console.log(`🚀 Using explicit port: ${availablePort}`);
+    } else {
+      try {
+        // 端口分配规则: 前端默认使用 3000-3009 范围，可由环境变量覆盖
+        availablePort = await findAvailablePort(rangeStart, rangeEnd);
+        console.log(`🚀 Using available port: ${availablePort}`);
+      } catch (error) {
+        console.error(`❌ ${(error as Error).message}`);
+        process.exit(1);
+      }
+    }
   }
 
   return {

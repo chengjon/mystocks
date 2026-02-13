@@ -15,7 +15,7 @@ const getFrontendPort = () => {
     return parseInt(process.env.FRONTEND_PORT_RANGE_START);
   }
   // 默认值
-  return 3000;
+  return 3101;
 };
 
 const frontendPort = getFrontendPort();
@@ -70,7 +70,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: `npm run dev -- --port ${frontendPort}`,
+    command: `FRONTEND_PORT=${frontendPort} FRONTEND_PORT_RANGE_START=${frontendPort} FRONTEND_PORT_RANGE_END=${frontendPort} npm run dev:no-types`,
     port: frontendPort,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
