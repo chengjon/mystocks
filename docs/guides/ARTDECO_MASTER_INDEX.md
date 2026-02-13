@@ -28,6 +28,8 @@ This index is the authoritative entry point for the active ArtDeco v3/v3.1 gover
   - Integration-level verification scope for ArtDeco pages.
 - **Visual Optimization Report**: [ArtDeco Visual Optimization Completion Report](../reports/ARTDECO_VISUAL_OPTIMIZATION_COMPLETION_REPORT.md)
   - Visual-level tuning and consistency outcomes.
+- **UI/UX Optimization Recommendations**: [ArtDeco UI/UX Optimization Recommendations](../reports/ARTDECO_UI_UX_OPTIMIZATION_RECOMMENDATIONS.md)
+  - Governance-aligned recommendations backlog; selected items can be merged into active tasks after technical verification.
 
 ## 4. 历史/归档
 

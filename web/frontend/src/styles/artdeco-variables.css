@@ -21,12 +21,18 @@
   --artdeco-gold-primary: #D4AF37;    /* Metallic Gold (Primary Accent) */
   --artdeco-gold-hover: #F2E8C4;      /* Light Gold (Hover) */
   --artdeco-gold-muted: rgba(212, 175, 55, 0.5);
+  --artdeco-accent-gold: var(--artdeco-gold-primary);
+
+  /* Trust Blue (UI/UX Governance Recommendation) */
+  --artdeco-trust-blue: #3B82F6;
+  --artdeco-trust-blue-light: #60A5FA;
   
   /* Semantic Colors (A-Share Standard) */
   --artdeco-up: #FF5252;              /* Red (Rise) */
   --artdeco-down: #00E676;            /* Green (Fall) */
   --artdeco-flat: #B0B3B8;            /* Gray (Flat) */
-  --artdeco-info: #2196f3;
+  --artdeco-info: var(--artdeco-trust-blue);
+  --artdeco-success: var(--artdeco-up);
   --artdeco-warning: #ff9800;
   --artdeco-error: #FF5252;           /* Same as Up in A-share context usually, but for errors red is universal */
 
@@ -34,6 +40,16 @@
   --artdeco-border-default: rgba(212, 175, 55, 0.3); /* Gold at 30% */
   --artdeco-border-subtle: rgba(212, 175, 55, 0.1);
   --artdeco-border-active: var(--artdeco-gold-primary);
+
+  /* Compatibility Aliases (legacy --artdeco-* consumers) */
+  --artdeco-bg-primary: var(--artdeco-bg-global);
+  --artdeco-bg-secondary: var(--artdeco-bg-surface);
+  --artdeco-bg-tertiary: var(--artdeco-bg-elevated);
+  --artdeco-text-primary: var(--artdeco-fg-primary);
+  --artdeco-text-secondary: var(--artdeco-fg-secondary);
+  --artdeco-text-muted: var(--artdeco-fg-muted);
+  --artdeco-border-primary: var(--artdeco-border-default);
+  --artdeco-border-secondary: var(--artdeco-border-subtle);
   
   /* Spacing System (8px Base) */
   --artdeco-space-1: 4px;

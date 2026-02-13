@@ -57,6 +57,17 @@
 - [ ] A 股红涨绿跌语义正确。
 - [ ] 页面分拆边界清晰。
 - [ ] `npx vue-tsc --noEmit` 通过。
+- [ ] `npm run lint:artdeco:strict` 通过（无硬编码与重复变量违规）。
+- [ ] 动画相关改动验证 `prefers-reduced-motion` 降级路径可用。
+
+### 4.1 治理验证命令
+
+```bash
+cd web/frontend
+npm run lint:artdeco:strict
+```
+
+该命令用于在提交前执行 ArtDeco 样式治理校验，发现违规时应返回非零退出码。
 
 ---
 **维护口径**: V3.1 Governance Baseline
