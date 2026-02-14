@@ -13,13 +13,13 @@ import type { PaginationInfo } from './pagination';
 export interface ErrorDetail {
   errorCode: string;
   errorMessage: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
  * 统一API响应类型（与后端UnifiedResponse匹配）
  */
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean;
   code: number;
   message: string;

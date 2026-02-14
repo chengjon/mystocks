@@ -34,7 +34,7 @@
 
       <!-- Dynamic Columns -->
       <el-table-column
-        v-for="column in columns"
+        v-for="(column, _idx) in columns"
         :key="column.prop"
         :prop="column.prop"
         :label="column.label"
@@ -115,7 +115,7 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item
-                      v-for="item in action.items"
+                      v-for="(item, _idx) in action.items"
                       :key="item.key"
                       :command="item.key"
                       :icon="item.icon"
@@ -143,9 +143,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { _ref, _computed } from 'vue'
 import { ArrowDown, DocumentDelete } from '@element-plus/icons-vue'
-import type { TableColumnCtx } from 'element-plus'
+import type { _TableColumnCtx } from 'element-plus'
 
 export interface TableColumn {
   prop: string
@@ -156,8 +156,8 @@ export interface TableColumn {
   sortable?: boolean
   align?: 'left' | 'center' | 'right'
   className?: string
-  formatter?: (value: any, row: any) => string
-  colorClass?: (value: any, row: any) => string
+  formatter?: (value: unknown, row: unknown) => string
+  colorClass?: (value: unknown, row: unknown) => string
 }
 
 export interface TableAction {
@@ -166,23 +166,23 @@ export interface TableAction {
   type: 'button' | 'icon' | 'dropdown'
   variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'default'
   size?: 'large' | 'default' | 'small'
-  icon?: any
-  disabled?: (row: any) => boolean
-  loading?: (row: any) => boolean
-  handler?: (row: any, index: number) => void
+  icon?: unknown
+  disabled?: (row: unknown) => boolean
+  loading?: (row: unknown) => boolean
+  handler?: (row: unknown, index: number) => void
   items?: TableActionItem[]
 }
 
 export interface TableActionItem {
   key: string
   text: string
-  icon?: any
-  disabled?: (row: any) => boolean
-  handler?: (row: any, index: number) => void
+  icon?: unknown
+  disabled?: (row: unknown) => boolean
+  handler?: (row: unknown, index: number) => void
 }
 
 interface Props {
-  data: any[]
+  data: unknown[]
   columns: TableColumn[]
   loading?: boolean
   height?: string | number
@@ -193,7 +193,7 @@ interface Props {
   showIndex?: boolean
   indexMethod?: (index: number) => number
   selectable?: boolean
-  selectableFunction?: (row: any, index: number) => boolean
+  selectableFunction?: (row: unknown, index: number) => boolean
   showActions?: boolean
   actions?: TableAction[]
   actionWidth?: number
@@ -203,9 +203,9 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'selection-change', selection: any[]): void
-  (e: 'sort-change', sort: { column: any; prop: string; order: string | null }): void
-  (e: 'row-click', row: any, column: any, index: number): void
+  (e: 'selection-change', selection: unknown[]): void
+  (e: 'sort-change', sort: { column: unknown; prop: string; order: string | null }): void
+  (e: 'row-click', row: unknown, column: unknown, index: number): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -226,21 +226,21 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection: unknown[]) => {
   emit('selection-change', selection)
 }
 
-const handleSortChange = (sort: { column: any; prop: string; order: string | null }) => {
+const handleSortChange = (sort: { column: unknown; prop: string; order: string | null }) => {
   emit('sort-change', sort)
 }
 
-const handleRowClick = (row: any, column: any, index: number) => {
+const handleRowClick = (row: unknown, column: unknown, index: number) => {
   if (props.rowClickable) {
     emit('row-click', row, column, index)
   }
 }
 
-const handleAction = (action: TableAction, row: any, index: number) => {
+const handleAction = (action: TableAction, row: unknown, index: number) => {
   if (action.handler) {
     action.handler(row, index)
   }
@@ -249,7 +249,7 @@ const handleAction = (action: TableAction, row: any, index: number) => {
 const handleDropdownCommand = (
   command: string,
   action: TableAction,
-  row: any,
+  row: unknown,
   index: number
 ) => {
   const item = action.items?.find(i => i.key === command)
@@ -258,14 +258,14 @@ const handleDropdownCommand = (
   }
 }
 
-const formatCellValue = (value: any, column: TableColumn) => {
+const formatCellValue = (value: unknown, column: TableColumn) => {
   if (column.formatter) {
     return column.formatter(value, {})
   }
   return value
 }
 
-const getCellClass = (row: any, column: TableColumn) => {
+const getCellClass = (row: unknown, column: TableColumn) => {
   if (column.colorClass) {
     return column.colorClass(row[column.prop], row)
   }
@@ -277,18 +277,18 @@ const getCellClass = (row: any, column: TableColumn) => {
 .stock-list-table {
   width: 100%;
   background: #f5f7fa;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgb(212 175 55 / 20%);
   border-radius: 4px;
 
   :deep(.el-table__header-wrapper) {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
 
     th {
       background: transparent;
       border-bottom: 2px solid #409eff;
 
       .cell {
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         font-size: 12px;
         font-weight: 600;
         text-transform: uppercase;
@@ -298,7 +298,7 @@ const getCellClass = (row: any, column: TableColumn) => {
 
       .caret-wrapper {
         .sort-caret {
-          border-color: rgba(212, 175, 55, 0.5);
+          border-color: rgb(212 175 55 / 50%);
 
           &.ascending {
             bottom: -2px;
@@ -321,22 +321,22 @@ const getCellClass = (row: any, column: TableColumn) => {
       cursor: pointer;
 
       &:hover {
-        background: rgba(212, 175, 55, 0.05);
+        background: rgb(212 175 55 / 5%);
       }
 
       &.el-table__row--striped {
-        background: rgba(0, 0, 0, 0.2);
+        background: rgb(0 0 0 / 20%);
 
         &:hover {
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
         }
       }
 
       td {
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgb(212 175 55 / 10%);
 
         .cell {
-          font-family: 'Inter', -apple-system, sans-serif;
+          font-family: Inter, -apple-system, sans-serif;
           font-size: 13px;
           color: #303133;
         }
@@ -360,11 +360,11 @@ const getCellClass = (row: any, column: TableColumn) => {
 
     .el-icon {
       font-size: 48px;
-      opacity: 0.5;
+      opacity: 50%;
     }
 
     p {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
@@ -380,18 +380,18 @@ const getCellClass = (row: any, column: TableColumn) => {
     align-items: center;
 
     .el-button {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      border: 1px solid rgba(212, 175, 55, 0.3);
+      border: 1px solid rgb(212 175 55 / 30%);
       border-radius: 0;
       transition: all 0.3s;
 
       &.el-button--primary {
         background: #409eff;
         border-color: #409eff;
-        color: #ffffff;
+        color: #fff;
 
         &:hover {
           background: #66b1ff;
@@ -402,7 +402,7 @@ const getCellClass = (row: any, column: TableColumn) => {
       &.el-button--success {
         background: #67c23a;
         border-color: #67c23a;
-        color: #ffffff;
+        color: #fff;
 
         &:hover {
           background: #27AE60;
@@ -413,7 +413,7 @@ const getCellClass = (row: any, column: TableColumn) => {
       &.el-button--danger {
         background: #f56c6c;
         border-color: #f56c6c;
-        color: #ffffff;
+        color: #fff;
 
         &:hover {
           background: #C0392B;
@@ -421,19 +421,19 @@ const getCellClass = (row: any, column: TableColumn) => {
         }
       }
 
-      &:not(.el-button--primary):not(.el-button--success):not(.el-button--danger) {
+      &:not(.el-button--primary, .el-button--success, .el-button--danger) {
         background: transparent;
-        border-color: rgba(212, 175, 55, 0.3);
+        border-color: rgb(212 175 55 / 30%);
         color: #409eff;
 
         &:hover {
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-color: #409eff;
         }
       }
 
       &:disabled {
-        opacity: 0.3;
+        opacity: 30%;
         cursor: not-allowed;
       }
     }
@@ -466,7 +466,7 @@ const getCellClass = (row: any, column: TableColumn) => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .stock-list-table {
     :deep(.el-table__header-wrapper) {
       th .cell {

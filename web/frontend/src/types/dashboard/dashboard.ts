@@ -21,7 +21,7 @@ export interface DashboardCard {
     w?: number;
     h?: number;
   };
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
   refreshInterval?: number;
 }
 
@@ -57,7 +57,7 @@ export interface DashboardWidget {
   id: string;
   type: string;
   title: string;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 /**

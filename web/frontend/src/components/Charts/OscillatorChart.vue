@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { init, dispose, type Chart, type LayoutChildType, type ActionType } from 'klinecharts';
+import { init, dispose, type Chart, type LayoutChildType, type _ActionType } from 'klinecharts';
 import type { KLineData } from '@/types/kline';
 import type { OscillatorType } from '@/utils/indicator';
 import { calculateOscillator, formatOscillatorValue } from '@/utils/indicator/oscillator';
@@ -111,7 +111,7 @@ const updateChart = () => {
   });
 
   try {
-    chartInstance.applyNewData(chartData as any);
+    chartInstance.applyNewData(chartData as unknown);
   } catch (e) {
     console.warn('Failed to update oscillator chart:', e);
   }
@@ -167,7 +167,7 @@ const initChart = () => {
     layout: [
       { type: 'xAxis' as LayoutChildType, options: { height: 25 } }
     ]
-  } as any);
+  } as Record<string, unknown>);
 
   if (props.klineData.length > 0) {
     updateChart();
@@ -176,7 +176,7 @@ const initChart = () => {
   // ✅ 修复：在使用chartInstance之前检查null
   if (chartInstance) {
     try {
-      chartInstance.subscribeAction('onCrosshairChange' as any, (data: unknown) => {
+      chartInstance.subscribeAction('onCrosshairChange' as unknown, (data: unknown) => {
         const crosshair = data as { data?: Record<string, unknown> };
         if (crosshair.data) {
           const indicatorNames = getIndicatorNames(props.type);

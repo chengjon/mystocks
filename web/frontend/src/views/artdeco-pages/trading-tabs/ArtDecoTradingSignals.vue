@@ -40,7 +40,7 @@
                         <div class="artdeco-trading-signals__col artdeco-trading-signals__col--strength">
                             <div class="artdeco-trading-signals__strength">
                                 <span
-                                    v-for="i in 5"
+                                    v-for="(i, _idx) in 5"
                                     :key="i"
                                     class="artdeco-trading-signals__star"
                                     :class="{ 'artdeco-trading-signals__star--filled': i <= signal.strength }"
@@ -104,8 +104,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .artdeco-trading-signals {
         position: relative;
@@ -241,7 +241,7 @@
         height: 16px;
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
-        opacity: 0.4;
+        opacity: 40%;
         transition: opacity var(--artdeco-transition-base);
         z-index: 1;
     }

@@ -16,10 +16,10 @@ import type {
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
 // Type aliases currently unused - comment out to avoid ESLint error
-// type SystemStatusResponse = any
-// type MonitoringAlertResponse = any
-// type LogEntryResponse = any
-// type DataQualityResponse = any
+// type SystemStatusResponse = Record<string, unknown>
+// type MonitoringAlertResponse = Record<string, unknown>
+// type LogEntryResponse = Record<string, unknown>
+// type DataQualityResponse = Record<string, unknown>
 
 class MonitoringApiService {
   private baseUrl = '/api/monitoring'
@@ -232,7 +232,7 @@ class MonitoringApiService {
   async getDashboardData(): Promise<{
     systemStatus: SystemStatusVM
     recentAlerts: MonitoringAlertVM[]
-    performanceMetrics: any
+    performanceMetrics: unknown
     healthSummary: {
       totalServices: number
       healthyServices: number
@@ -268,7 +268,7 @@ class MonitoringApiService {
     format?: 'csv' | 'json' | 'excel'
     startDate?: string
     endDate?: string
-    filters?: Record<string, any>
+    filters?: Record<string, unknown>
   }): Promise<Blob> {
     const response = await request.get(`${this.baseUrl}/export`, {
       params,
@@ -347,10 +347,10 @@ class MonitoringApiService {
     id: string
     name: string
     description?: string
-    condition: any
+    condition: unknown
     severity: string
     category: string
-    actions: any[]
+    actions: unknown[]
     enabled: boolean
     createdAt: string
     lastTriggered?: string
@@ -364,9 +364,9 @@ class MonitoringApiService {
   async updateAlertRule(ruleId: string, updates: Partial<{
     name: string
     description: string
-    condition: any
+    condition: unknown
     severity: string
-    actions: any[]
+    actions: unknown[]
     enabled: boolean
   }>): Promise<void> {
     await request.put(`${this.baseUrl}/alert-rules/${ruleId}`, updates)

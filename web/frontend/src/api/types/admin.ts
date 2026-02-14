@@ -1,5 +1,5 @@
 // Auto-generated types for admin domain
-// Generated at: 2026-02-13T09:26:31.500647
+// Generated at: 2026-02-14T21:49:36.268536
 
 export interface AuditLogResponse {
   log_id?: string;

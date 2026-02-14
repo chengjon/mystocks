@@ -63,7 +63,7 @@ interface Props {
   clearable?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   label: '',
   placeholder: '',
@@ -128,7 +128,7 @@ defineExpose({
 
 .form-field-label {
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   color: #E5E5E5;
@@ -172,7 +172,7 @@ defineExpose({
   width: 100%;
   height: 32px; // 紧凑高度
   padding: 0 12px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 13px;
   color: #E5E5E5;
   background: #0A0A0A;
@@ -182,7 +182,7 @@ defineExpose({
   transition: border-color 150ms ease, background 150ms ease;
 
   &::placeholder {
-    color: #666666;
+    color: #666;
   }
 
   &:focus {
@@ -191,7 +191,7 @@ defineExpose({
   }
 
   &:disabled {
-    color: #666666;
+    color: #666;
     cursor: not-allowed;
     background: #0A0A0A;
   }

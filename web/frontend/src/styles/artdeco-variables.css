@@ -9,18 +9,18 @@
   --artdeco-bg-global: #0A0A0A;       /* Obsidian Black */
   --artdeco-bg-surface: #141414;      /* Rich Charcoal (Card BG) */
   --artdeco-bg-elevated: #1E3D59;     /* Midnight Blue (Dropdowns/Modals) - from docs */
-  --artdeco-bg-header: rgba(20, 20, 20, 0.95); /* Matches Card BG with blur */
+  --artdeco-bg-header: rgb(20 20 20 / 95%); /* Matches Card BG with blur */
   
   /* Text Colors */
   --artdeco-fg-primary: #F2F0E4;      /* Champagne Cream */
-  --artdeco-fg-secondary: #888888;    /* Pewter (Muted) */
-  --artdeco-fg-muted: #666666;        /* Disabled/Placeholder */
-  --artdeco-fg-on-accent: #000000;    /* Text on gold buttons */
+  --artdeco-fg-secondary: #888;    /* Pewter (Muted) */
+  --artdeco-fg-muted: #666;        /* Disabled/Placeholder */
+  --artdeco-fg-on-accent: #000;    /* Text on gold buttons */
 
   /* Brand Colors */
   --artdeco-gold-primary: #D4AF37;    /* Metallic Gold (Primary Accent) */
   --artdeco-gold-hover: #F2E8C4;      /* Light Gold (Hover) */
-  --artdeco-gold-muted: rgba(212, 175, 55, 0.5);
+  --artdeco-gold-muted: rgb(212 175 55 / 50%);
   
   /* Semantic Colors (A-Share Standard) */
   --artdeco-up: #FF5252;              /* Red (Rise) */
@@ -31,8 +31,8 @@
   --artdeco-error: #FF5252;           /* Same as Up in A-share context usually, but for errors red is universal */
 
   /* Borders */
-  --artdeco-border-default: rgba(212, 175, 55, 0.3); /* Gold at 30% */
-  --artdeco-border-subtle: rgba(212, 175, 55, 0.1);
+  --artdeco-border-default: rgb(212 175 55 / 30%); /* Gold at 30% */
+  --artdeco-border-subtle: rgb(212 175 55 / 10%);
   --artdeco-border-active: var(--artdeco-gold-primary);
   
   /* Spacing System (8px Base) */
@@ -55,9 +55,9 @@
   --artdeco-radius-lg: 0px; 
   
   /* Effects */
-  --artdeco-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --artdeco-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-  --artdeco-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --artdeco-shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+  --artdeco-shadow-md: 0 4px 6px rgb(0 0 0 / 30%);
+  --artdeco-shadow-lg: 0 10px 15px rgb(0 0 0 / 30%);
   --artdeco-glass-blur: blur(10px);
   
   /* Tracking */

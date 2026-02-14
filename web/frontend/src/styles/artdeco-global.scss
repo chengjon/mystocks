@@ -2,7 +2,6 @@
 //   ART DECO GLOBAL STYLES
 //   艺术装饰全局样式
 // ============================================
-//
 // Purpose: ArtDeco设计系统的全局基础样式
 // Features: Google Fonts导入、全局重置、排版基础、滚动条样式
 // Created: 2026-01-20
@@ -17,17 +16,17 @@
 // Google Fonts - ArtDeco字体栈
 // Marcellus: 标题字体(罗马结构,ArtDeco经典)
 // Josefin Sans: 正文字体(几何复古感,1920年代风格)
-@import url('https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap';
 
 // ============================================
 //   CSS CUSTOM PROPERTIES - 设计令牌导入
 // ============================================
 
-@import './artdeco-tokens.scss';
-@import './artdeco-quant-extended.scss'; // 量化交易扩展
-@import './artdeco-patterns.scss';
-@import './artdeco-financial.scss';
-@import './artdeco-grid.scss'; // 网格布局系统 (V3.1新增)
+@import './artdeco-tokens';
+@import './artdeco-quant-extended'; // 量化交易扩展
+@import './artdeco-patterns';
+@import './artdeco-financial';
+@import './artdeco-grid'; // 网格布局系统 (V3.1新增)
 
 // ============================================
 //   GLOBAL RESET & BASE - 全局重置
@@ -66,15 +65,15 @@ body {
       45deg,
       transparent,
       transparent 10px,
-      rgba(212, 175, 55, 0.06) 10px,  // 从2%提升到6%，更明显可见
-      rgba(212, 175, 55, 0.06) 11px
+      rgb(212 175 55 / 6%) 10px,  // 从2%提升到6%，更明显可见
+      rgb(212 175 55 / 6%) 11px
     ),
     repeating-linear-gradient(
       -45deg,
       transparent,
       transparent 10px,
-      rgba(212, 175, 55, 0.06) 10px,  // 从2%提升到6%
-      rgba(212, 175, 55, 0.06) 11px
+      rgb(212 175 55 / 6%) 10px,  // 从2%提升到6%
+      rgb(212 175 55 / 6%) 11px
     );
 }
 
@@ -139,7 +138,6 @@ p {
     var(--artdeco-gold-primary),
     var(--artdeco-gold-hover)
   );
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -151,7 +149,6 @@ p {
     var(--artdeco-gold-hover) 50%,
     var(--artdeco-gold-primary) 100%
   );
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -239,7 +236,7 @@ a {
   color: var(--artdeco-bg-global);
 }
 
-::-moz-selection {
+::selection {
   background: var(--artdeco-gold-muted);
   color: var(--artdeco-bg-global);
 }
@@ -302,15 +299,15 @@ a {
   background-image:
     repeating-linear-gradient(
       45deg,
-      rgba(212, 175, 55, 0.03) 0px,
-      rgba(212, 175, 55, 0.03) 1px,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
       transparent 1px,
       transparent 4px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(212, 175, 55, 0.03) 0px,
-      rgba(212, 175, 55, 0.03) 1px,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
       transparent 1px,
       transparent 4px
     );
@@ -319,9 +316,9 @@ a {
 .artdeco-bg-sunburst {
   background: radial-gradient(
     ellipse at center,
-    rgba(212, 175, 55, 0.1) 0%,
-    rgba(212, 175, 55, 0.05) 25%,
-    rgba(212, 175, 55, 0.02) 50%,
+    rgb(212 175 55 / 10%) 0%,
+    rgb(212 175 55 / 5%) 25%,
+    rgb(212 175 55 / 2%) 50%,
     transparent 75%
   );
 }
@@ -349,7 +346,7 @@ a {
     background: linear-gradient(
       to right,
       transparent,
-      rgba(212, 175, 55, 0.3),
+      rgb(212 175 55 / 30%),
       transparent
     );
   }
@@ -376,7 +373,7 @@ a {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
@@ -404,22 +401,22 @@ a {
 
 @keyframes artdeco-fade-in {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(-10px);
   }
   to {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }
 
 @keyframes artdeco-slide-up {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(20px);
   }
   to {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }

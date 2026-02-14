@@ -196,17 +196,15 @@ const sparklinePath = computed(() => {
   justify-content: space-between;
   gap: 20px;
   padding: 20px;
-
   background: linear-gradient(135deg, #0F1115 0%, #141A24 100%);
   border: 1px solid #1E293B;
   border-radius: 8px;
-
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   // 初始阴影
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 1px 3px rgb(0 0 0 / 40%),
+    inset 0 1px 0 rgb(255 255 255 / 5%);
 
   // 装饰性边框
   &::before {
@@ -218,10 +216,10 @@ const sparklinePath = computed(() => {
     height: 1px;
     background: linear-gradient(90deg,
       transparent 0%,
-      rgba(0, 128, 255, 0.5) 50%,
+      rgb(0 128 255 / 50%) 50%,
       transparent 100%
     );
-    opacity: 0;
+    opacity: 0%;
     transition: opacity 0.3s ease;
   }
 
@@ -229,19 +227,19 @@ const sparklinePath = computed(() => {
   &:hover {
     border-color: #0080FF;
     box-shadow:
-      0 4px 12px rgba(0, 0, 0, 0.6),
-      0 0 20px rgba(0, 128, 255, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      0 4px 12px rgb(0 0 0 / 60%),
+      0 0 20px rgb(0 128 255 / 15%),
+      inset 0 1px 0 rgb(255 255 255 / 8%);
     transform: translateY(-2px);
 
     &::before {
-      opacity: 1;
+      opacity: 100%;
     }
   }
 
   // 加载状态
   &.is-loading {
-    opacity: 0.6;
+    opacity: 60%;
     pointer-events: none;
 
     .stat-value .value-main {
@@ -266,9 +264,8 @@ const sparklinePath = computed(() => {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
+  background: linear-gradient(135deg, rgb(255 255 255 / 5%) 0%, rgb(255 255 255 / 2%) 100%);
+  border: 1px solid rgb(255 255 255 / 10%);
   transition: all 0.3s ease;
 
   svg {
@@ -278,20 +275,20 @@ const sparklinePath = computed(() => {
   }
 
   &.icon-up {
-    background: linear-gradient(135deg, rgba(255, 59, 48, 0.15) 0%, rgba(255, 59, 48, 0.05) 100%);
-    border-color: rgba(255, 59, 48, 0.3);
+    background: linear-gradient(135deg, rgb(255 59 48 / 15%) 0%, rgb(255 59 48 / 5%) 100%);
+    border-color: rgb(255 59 48 / 30%);
     color: #FF3B30;
   }
 
   &.icon-down {
-    background: linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 230, 118, 0.05) 100%);
-    border-color: rgba(0, 230, 118, 0.3);
+    background: linear-gradient(135deg, rgb(0 230 118 / 15%) 0%, rgb(0 230 118 / 5%) 100%);
+    border-color: rgb(0 230 118 / 30%);
     color: #00E676;
   }
 
   &.icon-neutral {
-    background: linear-gradient(135deg, rgba(0, 128, 255, 0.15) 0%, rgba(0, 128, 255, 0.05) 100%);
-    border-color: rgba(0, 128, 255, 0.3);
+    background: linear-gradient(135deg, rgb(0 128 255 / 15%) 0%, rgb(0 128 255 / 5%) 100%);
+    border-color: rgb(0 128 255 / 30%);
     color: #0080FF;
   }
 
@@ -357,7 +354,7 @@ const sparklinePath = computed(() => {
 
   &.trend-neutral {
     .value-main {
-      color: #FFFFFF;
+      color: #FFF;
     }
     .value-change {
       color: #94A3B8;
@@ -393,8 +390,8 @@ const sparklinePath = computed(() => {
   position: absolute;
   width: 8px;
   height: 8px;
-  border: 1px solid rgba(0, 128, 255, 0.2);
-  opacity: 0;
+  border: 1px solid rgb(0 128 255 / 20%);
+  opacity: 0%;
   transition: opacity 0.3s ease;
 }
 
@@ -428,7 +425,7 @@ const sparklinePath = computed(() => {
 
 .bloomberg-stat-card:hover {
   .corner-decoration {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
@@ -438,10 +435,10 @@ const sparklinePath = computed(() => {
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
   }
   50% {
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
 
@@ -449,7 +446,7 @@ const sparklinePath = computed(() => {
 //   响应式
 // ============================================
 
-@media (max-width: 1366px) {
+@media (width <= 1366px) {
   .bloomberg-stat-card {
     padding: 16px;
 

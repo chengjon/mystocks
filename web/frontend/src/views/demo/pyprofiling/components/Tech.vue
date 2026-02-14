@@ -132,7 +132,7 @@ const dependencies = DEPENDENCIES
   .cmd-value {
     flex: 1;
     padding: 8px 14px;
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 13px;
     color: var(--text-primary);
     margin: 0;
@@ -177,7 +177,7 @@ const dependencies = DEPENDENCIES
   overflow-x: auto;
 
   code {
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 13px;
     color: var(--text-primary);
     line-height: 1.5;

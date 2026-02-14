@@ -80,8 +80,8 @@ export class TypeValidator {
     hasConflicts: boolean;
     conflicts: Array<{
       typeName: string;
-      generatedType: any;
-      extensionType: any;
+      generatedType: unknown;
+      extensionType: unknown;
     }>;
   }> {
     try {
@@ -91,8 +91,8 @@ export class TypeValidator {
 
       const conflicts: Array<{
         typeName: string;
-        generatedType: any;
-        extensionType: any;
+        generatedType: unknown;
+        extensionType: unknown;
       }> = [];
 
       // Check for conflicts
@@ -180,7 +180,7 @@ export class TypeValidator {
     try {
       const extensionTypes = await this.loadExtensionTypes();
 
-      for (const [typeName, typeDef] of Object.entries(extensionTypes)) {
+      for (const [typeName, _typeDef] of Object.entries(extensionTypes)) {
         // Check PascalCase for interfaces and types
         if (!/^[A-Z][a-zA-Z0-9]*$/.test(typeName)) {
           warnings.push({
@@ -238,17 +238,17 @@ export class TypeValidator {
   }
 
   // Helper methods (would be implemented with actual file system access)
-  private static async loadGeneratedTypes(): Promise<Record<string, any>> {
+  private static async loadGeneratedTypes(): Promise<Record<string, unknown>> {
     // In a real implementation, this would dynamically import generated types
     return {};
   }
 
-  private static async loadExtensionTypes(): Promise<Record<string, any>> {
+  private static async loadExtensionTypes(): Promise<Record<string, unknown>> {
     // In a real implementation, this would dynamically import extension types
     return {};
   }
 
-  private static async fileExists(path: string): Promise<boolean> {
+  private static async fileExists(_path: string): Promise<boolean> {
     // In a real implementation, this would check file existence
     return true;
   }

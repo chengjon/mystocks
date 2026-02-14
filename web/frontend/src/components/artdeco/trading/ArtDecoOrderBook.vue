@@ -82,11 +82,11 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-orderbook {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-2);
       font-family: var(--artdeco-font-mono);
       width: 100%;
@@ -108,7 +108,7 @@
     }
 
     .artdeco-orderbook-row:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgb(255 255 255 / 5%);
     }
 
     .row-label {
@@ -135,7 +135,7 @@
       top: 2px;
       bottom: 2px;
       right: 0;
-      opacity: 0.15;
+      opacity: 15%;
       z-index: -1;
       transition: width 0.3s ease-out;
     }
@@ -146,8 +146,8 @@
     .artdeco-orderbook-meta {
       margin: 12px 0;
       padding: 8px;
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      border-top: 1px solid rgb(212 175 55 / 20%);
+      border-bottom: 1px solid rgb(212 175 55 / 20%);
       text-align: center;
     }
 

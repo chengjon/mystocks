@@ -97,11 +97,11 @@ export const dashboardService = {
 
   /**
    * 获取市场概览数据（主要指数）
-   * API: GET /api/market/v2/etf/list
+   * API: GET /api/v1/market/quotes
    * 用途: 获取上证、深证、创业板等主要指数数据
    */
   async getMarketOverview(limit = 100): Promise<{ data: MarketOverviewData[] }> {
-    const response = await apiClient.get('/api/market/v2/etf/list', {
+    const response = await apiClient.get('/v1/market/quotes', {
       params: { limit }
     })
     return response.data
@@ -109,25 +109,25 @@ export const dashboardService = {
 
   /**
    * 获取资金流向数据
-   * API: GET /api/market/fund-flow
+   * API: GET /api/v1/market/fund-flow
    * 用途: 获取沪股通、深股通、北向资金、主力净流入数据
    */
   async getFundFlow(date?: string): Promise<{ data: FundFlowData }> {
     const params = date ? { date } : {}
-    const response = await apiClient.get('/api/market/fund-flow', { params })
+    const response = await apiClient.get('/v1/market/fund-flow', { params })
     return response.data
   },
 
   /**
    * 获取行业板块资金流向
-   * API: GET /api/market/industry/flow
-   * 用途: 获取市场热度板块前10名
+   * API: GET /api/v1/market/industry/flow
+   * 用途: 获取市场热度板块前 10 名
    */
   async getIndustryFlow(
     sort = 'change_percent',
     limit = 10
   ): Promise<{ data: IndustryFlowData[] }> {
-    const response = await apiClient.get('/api/market/industry/flow', {
+    const response = await apiClient.get('/v1/market/industry/flow', {
       params: { sort, limit }
     })
     return response.data
@@ -139,31 +139,31 @@ export const dashboardService = {
 
   /**
    * 获取龙虎榜数据
-   * API: GET /api/market/long-hu-bang
+   * API: GET /api/v1/market/lhb
    * 用途: 获取市场活跃股票榜单
    */
   async getLongHuBang(
     date?: string,
     limit = 10
   ): Promise<{ data: LongHuBangData[] }> {
-    const params: Record<string, any> = { limit }
+    const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/api/market/long-hu-bang', { params })
+    const response = await apiClient.get('/v1/market/lhb', { params })
     return response.data
   },
 
   /**
    * 获取大宗交易数据
-   * API: GET /api/market/v2/block-trading
+   * API: GET /api/v1/market/v2/block-trading
    * 用途: 获取大宗交易成交数据
    */
   async getBlockTrading(
     date?: string,
     limit = 10
   ): Promise<{ data: BlockTradingData[] }> {
-    const params: Record<string, any> = { limit }
+    const params: Record<string, unknown> = { limit }
     if (date) params.date = date
-    const response = await apiClient.get('/api/market/v2/block-trading', { params })
+    const response = await apiClient.get('/v1/market/v2/block-trading', { params })
     return response.data
   },
 
@@ -236,7 +236,7 @@ export const dashboardService = {
    * API: GET /api/strategy-mgmt/strategies
    * 用途: 获取用户的活跃策略数量
    */
-  async getActiveStrategies(userId: number): Promise<{ data: any[] }> {
+  async getActiveStrategies(userId: number): Promise<{ data: unknown[] }> {
     const response = await apiClient.get('/api/strategy-mgmt/strategies', {
       params: { user_id: userId, status: 'active' }
     })

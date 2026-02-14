@@ -19,9 +19,18 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-h1 { font-size: 2.25rem; letter-spacing: -0.025em; } /* 36px */
-h2 { font-size: 1.875rem; letter-spacing: -0.025em; } /* 30px */
-h3 { font-size: 1.5rem; letter-spacing: -0.025em; }    /* 24px */
+h1 {
+  font-size: 2.25rem;
+  letter-spacing: -0.025em;
+}
+h2 {
+  font-size: 1.875rem;
+  letter-spacing: -0.025em;
+}
+h3 {
+  font-size: 1.5rem;
+  letter-spacing: -0.025em;
+}
 h4 { font-size: 1.25rem; }  /* 20px */
 h5 { font-size: 1.125rem; } /* 18px */
 h6 { font-size: 1rem; }     /* 16px */
@@ -32,10 +41,22 @@ p {
   margin-bottom: 1rem;
 }
 
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-.text-xs { font-size: 0.75rem; line-height: 1rem; }
-.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
 
 /* Weights */
 .font-light { font-weight: 300; }

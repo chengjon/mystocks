@@ -1,18 +1,15 @@
 <template>
   <div class="app-container">
-    <router-view />
+    <!-- FORCE RENDER: 直接渲染指挥中心，绕过路由 -->
+    <ArtDecoDashboard />
   </div>
 </template>
 
 <script setup>
-// MyStocks Vue Application - Root Component
-// The router-view will render the appropriate page component
-console.log('App.vue loaded')
+import ArtDecoDashboard from '@/views/artdeco-pages/ArtDecoDashboard.vue'
+console.log('🔥 FORCE RENDER: ArtDecoDashboard')
 </script>
 
-<style scoped>
-.app-container {
-  min-height: 100vh;
-  width: 100%;
-}
+<style>
+.app-container { min-height: 100vh; background: #0a0a0f; color: gold; }
 </style>

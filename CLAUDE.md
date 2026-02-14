@@ -146,6 +146,7 @@ pytest
 ruff check src/
 black --check .
 mypy src/ --no-error-summary
+cd web/frontend && npx stylelint "src/**/*.{vue,scss,css}"   # CSS/SCSS 零错误检查
 ```
 
 #### 2.2.2 运行服务与演示
@@ -185,6 +186,16 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
 
 遇到“计划/提案/架构调整”类需求时，先打开 `openspec/AGENTS.md`。
 
+#### Skill 手动加载
+
+当自动激活未触发时，可使用 `/skill` 命令手动加载技能包：
+
+```
+/skill vue3          # 加载 Vue 3 官方指南与 API 参考（全局 skill）
+```
+
+全局 skill 位置：`/root/.claude/skills/`，项目级 skill 位置：`.claude/skills/`。
+
 ### 3.2 编码与协作规范 (Coding and Collaboration Specifications)
 
 #### 编码与架构要点
@@ -203,13 +214,19 @@ python -c "from unified_manager import MyStocksUnifiedManager; MyStocksUnifiedMa
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBT_MANAGEMENT.md`
   - `docs/reports/TYPESCRIPT_TECHNICAL_DEBTS.md`
   - `docs/reports/TYPESCRIPT_FIX_REFLECTION.md`
+- **CSS/SCSS 开发必须遵循 `docs/guides/css-scss-development-guide.md`（强制执行）**：
+  - **禁止内联样式**：Vue 组件 `<style>` 块仅允许 `@import` 引用外部 SCSS 文件，不得直接编写 CSS
+  - **样式文件位置**：组件样式放在同级 `styles/` 目录，全局样式放在 `src/styles/`
+  - **组件体积红线**：单个 `.vue` 文件不得超过 800 行，超过时必须提取 CSS 到独立 SCSS 或拆分 composables
+  - **提交前零错误**：`cd web/frontend && npx stylelint "src/**/*.{vue,scss,css}"` 必须通过
+  - **禁止废弃属性**（如 `clip`）、禁止 shorthand 覆盖冲突、禁止重复选择器
 - BUG 登记按模板 `docs/standards/bug-report-template.json`，输出到 `docs/quality/bugs/` 并更新 `docs/guides/BUG_LESSONS_LEARNED.md`
 - 多 CLI/Worktree 协作核心索引 (必读):
   - **`docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md` (总手册)**
   - 链接文档：
-    - `docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md` (主 CLI 规范)
-    - `docs/guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md` (Worker CLI 规范)
-    - `docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md` (冲突预防)
+    - `docs/guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md` (主 CLI 规范)
+    - `docs/guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md` (Worker CLI 规范)
+    - `docs/guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md` (冲突预防)
 - **2026Q1 物理布局与治理指引**:
   - **Zero-Root-Config**: 禁止在根目录新增工具配置，所有配置必须入库 `config/` 对应子目录。
   - **Logic Gravity**: 业务逻辑下沉 `src/`，根目录 `.py` 文件仅作为 Re-export 外壳。

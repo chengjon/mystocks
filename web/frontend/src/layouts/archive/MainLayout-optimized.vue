@@ -46,7 +46,8 @@
 
                     <div class="nav-items">
                         <router-link
-                            v-for="item in section.items"
+                            v-for="(item, _idx) in section.items"
+                            :key="item.path"
                             :key="item.path"
                             :to="item.path"
                             class="nav-item"
@@ -143,7 +144,7 @@
     } from '@element-plus/icons-vue'
 
     const route = useRoute()
-    const router = useRouter()
+    const _router = useRouter()
 
     // State
     const isCollapsed = ref(false)
@@ -234,7 +235,7 @@
     .sidebar {
         width: 260px;
         background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-        border-right: 1px solid rgba(212, 175, 55, 0.1);
+        border-right: 1px solid rgb(212 175 55 / 10%);
         display: flex;
         flex-direction: column;
         transition: width var(--transition-base);
@@ -249,7 +250,7 @@
     /* Sidebar Header */
     .sidebar-header {
         padding: var(--space-6);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgb(212 175 55 / 10%);
     }
 
     .logo-container {
@@ -336,12 +337,12 @@
 
     .nav-item:hover {
         color: var(--text-primary);
-        background: rgba(212, 175, 55, 0.05);
+        background: rgb(212 175 55 / 5%);
     }
 
     .nav-item-active {
         color: var(--accent-primary);
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         border-left-color: var(--accent-primary);
     }
 
@@ -370,7 +371,7 @@
     /* Sidebar Footer */
     .sidebar-footer {
         padding: var(--space-4);
-        border-top: 1px solid rgba(212, 175, 55, 0.1);
+        border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .collapse-btn {
@@ -381,7 +382,7 @@
         justify-content: center;
         color: var(--text-secondary);
         background: transparent;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 1px solid rgb(212 175 55 / 20%);
         border-radius: var(--radius-md);
         cursor: pointer;
         transition: all var(--transition-fast);
@@ -389,7 +390,7 @@
         &:hover {
             color: var(--accent-primary);
             border-color: var(--accent-primary);
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
         }
     }
 
@@ -413,7 +414,7 @@
         justify-content: space-between;
         padding: 0 var(--space-6);
         background: var(--bg-secondary);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgb(212 175 55 / 10%);
     }
 
     .header-left {
@@ -452,14 +453,14 @@
 
     .fade-enter-from,
     .fade-leave-to {
-        opacity: 0;
+        opacity: 0%;
     }
 
     /* ========================================
    RESPONSIVE
    ======================================== */
 
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
         .sidebar {
             position: absolute;
             height: 100%;
@@ -477,7 +478,7 @@
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .top-header {
             padding: 0 var(--space-4);
         }

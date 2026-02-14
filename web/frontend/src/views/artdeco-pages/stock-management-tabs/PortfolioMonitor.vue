@@ -17,7 +17,7 @@
 import { ArtDecoStatCard, ArtDecoCard, ArtDecoTable } from '@/components/artdeco'
 
 interface Props {
-  positions: any[]
+  positions: unknown[]
 }
 
 defineProps<Props>()
@@ -33,7 +33,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .portfolio-stats {
   display: grid;

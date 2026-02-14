@@ -69,7 +69,7 @@ class RealtimeMarketService {
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
   private reconnectDelay = 3000
-  private listeners: Map<string, Set<(data: any) => void>> = new Map()
+  private listeners: Map<string, Set<(data: unknown) => void>> = new Map()
 
   connectionStatus = ref<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected')
   lastPrice = ref<Record<string, number>>({})
@@ -134,7 +134,7 @@ class RealtimeMarketService {
     }
   }
 
-  async getMTMStats(): Promise<any> {
+  async getMTMStats(): Promise<unknown> {
     try {
       const response = await fetch(`${API_BASE}/mtm/stats`)
       return await response.json()
@@ -196,7 +196,7 @@ class RealtimeMarketService {
     }
   }
 
-  private handleMessage(data: any): void {
+  private handleMessage(data: unknown): void {
     switch (data.action) {
       case 'connected':
         this.emit('connected', data)
@@ -295,18 +295,18 @@ class RealtimeMarketService {
     this.connectionStatus.value = 'disconnected'
   }
 
-  on(event: string, callback: (data: any) => void): void {
+  on(event: string, callback: (data: unknown) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set())
     }
     this.listeners.get(event)!.add(callback)
   }
 
-  off(event: string, callback: (data: any) => void): void {
+  off(event: string, callback: (data: unknown) => void): void {
     this.listeners.get(event)?.delete(callback)
   }
 
-  private emit(event: string, data: any): void {
+  private emit(event: string, data: unknown): void {
     this.listeners.get(event)?.forEach(callback => callback(data))
     this.listeners.get('*')?.forEach(callback => callback({ event, ...data }))
   }
@@ -363,8 +363,8 @@ export function useRealtimeMarket() {
     requestSnapshot: () => service.requestSnapshot(),
     ping: () => service.ping(),
 
-    on: (event: string, callback: (data: any) => void) => service.on(event, callback),
-    off: (event: string, callback: (data: any) => void) => service.off(event, callback),
+    on: (event: string, callback: (data: unknown) => void) => service.on(event, callback),
+    off: (event: string, callback: (data: unknown) => void) => service.off(event, callback),
 
     getLastPrice: (symbol: string) => service.getLastPrice(symbol),
     getPriceChange: (symbol: string) => service.getPriceChange(symbol)

@@ -153,11 +153,11 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-risk-gauge {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-4);
       display: flex;
       flex-direction: column;
@@ -278,7 +278,7 @@
     .breakdown-bar {
       height: 6px;
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       overflow: hidden;
     }
 

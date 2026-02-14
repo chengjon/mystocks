@@ -96,17 +96,16 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-topbar {
       height: 60px;
       background: var(--artdeco-bg-header);
-      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 2px solid rgb(212 175 55 / 20%);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 var(--artdeco-spacing-5);  // 40px
-      position: sticky;
       top: 0;
       z-index: var(--artdeco-z-sticky);
       position: relative;
@@ -134,7 +133,7 @@
 
     .artdeco-breadcrumb-separator {
       color: var(--artdeco-accent-gold);
-      opacity: 0.5;
+      opacity: 50%;
       font-weight: 700;
     }
 
@@ -166,7 +165,7 @@
       color: var(--artdeco-fg-primary);
       background: transparent;
       border: none;
-      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 2px solid rgb(212 175 55 / 20%);
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
       letter-spacing: var(--artdeco-tracking-normal);  // 0em
@@ -174,7 +173,7 @@
 
     .artdeco-search-input::placeholder {
       color: var(--artdeco-fg-muted);
-      opacity: 0.7;
+      opacity: 70%;
     }
 
     .artdeco-search-input:focus {
@@ -191,13 +190,13 @@
       transform: translateY(-50%);
       color: var(--artdeco-accent-gold);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
-      opacity: 0.7;
+      opacity: 70%;
       transition: opacity var(--artdeco-transition-base);
       pointer-events: none;
     }
 
     .artdeco-search-input:focus + .artdeco-search-icon {
-      opacity: 1;
+      opacity: 100%;
     }
 
     /* Status Badge - Simplified */
@@ -216,7 +215,7 @@
       font-family: var(--artdeco-font-mono);
       color: var(--artdeco-fg-secondary);
       background: transparent;
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
     }
@@ -236,25 +235,25 @@
 
     .artdeco-status-dot.online {
       background: var(--artdeco-success);
-      box-shadow: 0 0 6px rgba(39, 174, 96, 0.6);
+      box-shadow: 0 0 6px rgb(39 174 96 / 60%);
     }
 
     .artdeco-status-dot.warning {
       background: var(--artdeco-warning);
-      box-shadow: 0 0 6px rgba(230, 126, 34, 0.6);
+      box-shadow: 0 0 6px rgb(230 126 34 / 60%);
     }
 
     .artdeco-status-dot.offline {
       background: var(--artdeco-danger);
-      box-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+      box-shadow: 0 0 6px rgb(231 76 60 / 60%);
     }
 
     @keyframes artdeco-pulse {
       0%, 100% {
-        opacity: 1;
+        opacity: 100%;
       }
       50% {
-        opacity: 0.5;
+        opacity: 50%;
       }
     }
 
@@ -272,7 +271,7 @@
       left: var(--artdeco-spacing-5);  // 40px
       border-top: 2px solid var(--artdeco-accent-gold);
       border-left: 2px solid var(--artdeco-accent-gold);
-      opacity: 0.3;
+      opacity: 30%;
     }
 
     .artdeco-corner-tr {
@@ -280,7 +279,7 @@
       right: var(--artdeco-spacing-5);  // 40px
       border-top: 2px solid var(--artdeco-accent-gold);
       border-right: 2px solid var(--artdeco-accent-gold);
-      opacity: 0.3;
+      opacity: 30%;
     }
 
     // ============================================

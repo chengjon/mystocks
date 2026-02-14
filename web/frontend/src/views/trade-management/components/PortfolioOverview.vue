@@ -78,7 +78,7 @@ defineExpose({
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 
-  @media (max-width: 1440px) {
+  @media (width <= 1440px) {
     grid-template-columns: repeat(2, 1fr);
   }
 }

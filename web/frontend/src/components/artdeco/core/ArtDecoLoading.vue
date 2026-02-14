@@ -24,7 +24,7 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-loading {
   display: flex;
@@ -103,11 +103,11 @@ const sizeClass = computed(() => `artdeco-loading-${props.size}`)
 @keyframes artdeco-loading-bounce {
   0%, 80%, 100% {
     transform: scale(0);
-    opacity: 0.5;
+    opacity: 50%;
   }
   40% {
     transform: scale(1);
-    opacity: 1;
+    opacity: 100%;
   }
 }
 </style>

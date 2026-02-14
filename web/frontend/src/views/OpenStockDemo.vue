@@ -15,7 +15,7 @@
 
     <div class="function-nav">
       <el-button
-        v-for="tab in tabs"
+        v-for="(tab, _idx) in tabs"
         :key="tab.key"
         :type="activeTab === tab.key ? 'primary' : 'default'"
         @click="activeTab = tab.key"
@@ -116,12 +116,12 @@ const tabs = TABS
 const apiStatus = ref<ApiStatus>({ ...DEFAULT_API_STATUS })
 
 // 组件引用
-const stockQuoteRef: Ref<any> = ref(null)
-const stockNewsRef: Ref<any> = ref(null)
-const featureStatusRef: Ref<any> = ref(null)
+const stockQuoteRef: Ref<unknown> = ref(null)
+const stockNewsRef: Ref<unknown> = ref(null)
+const featureStatusRef: Ref<unknown> = ref(null)
 
 // 分组数据（用于搜索组件的自动完成）
-const groups = ref<any[]>([])
+const groups = ref<unknown[]>([])
 
 // 获取分组列表
 const fetchGroups = async () => {
@@ -144,7 +144,7 @@ const handleApiTest = (feature: keyof ApiStatus) => {
 }
 
 // 处理获取行情
-const handleGetQuote = (stock: any) => {
+const handleGetQuote = (stock: unknown) => {
   activeTab.value = 'quote'
   if (stockQuoteRef.value) {
     stockQuoteRef.value.setQuote(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
@@ -153,7 +153,7 @@ const handleGetQuote = (stock: any) => {
 }
 
 // 处理获取新闻
-const handleGetNews = (stock: any) => {
+const handleGetNews = (stock: unknown) => {
   activeTab.value = 'news'
   if (stockNewsRef.value) {
     stockNewsRef.value.setNews(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
@@ -186,7 +186,7 @@ onMounted(() => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 4%;
   background-image:
     repeating-linear-gradient(
       45deg,

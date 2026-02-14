@@ -43,6 +43,16 @@
         "timeout": 5
       },
       {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-file-location-validator.sh"
+          }
+        ],
+        "timeout": 5
+      },
+      {
         "matcher": "Edit|Write",
         "hooks": [
           {

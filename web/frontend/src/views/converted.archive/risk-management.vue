@@ -33,7 +33,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .risk-management-page {
   @include artdeco-layout;

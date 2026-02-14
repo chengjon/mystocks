@@ -44,7 +44,7 @@
         <!-- Main Tabs -->
         <nav class="main-tabs">
             <button
-                v-for="tab in mainTabs"
+                v-for="(tab, _idx) in mainTabs"
                 :key="tab.key"
                 class="main-tab"
                 :class="{ active: activeTab === tab.key }"
@@ -170,7 +170,7 @@ function handleRowClick(row) {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-data-analysis {
     padding: 20px;
@@ -195,7 +195,7 @@ function handleRowClick(row) {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgb(212 175 55 / 20%);
 }
 
 .main-tab {

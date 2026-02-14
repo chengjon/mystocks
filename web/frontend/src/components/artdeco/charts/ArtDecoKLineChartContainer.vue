@@ -93,7 +93,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-kline-container {
       height: 600px;

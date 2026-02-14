@@ -1,0 +1,237 @@
+.wencai-panel {
+  padding: 20px;
+  background: #f5f7fa;
+
+  .header-card {
+    margin-bottom: 20px;
+    border-radius: 6px;
+
+    :deep(.el-card__header) {
+      border-bottom: 1px solid #ebeef5;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .title-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .title-icon {
+          color: #409eff;
+          font-size: 24px;
+        }
+
+        .title {
+          font-size: 18px;
+          font-weight: bold;
+          color: #333;
+        }
+      }
+    }
+
+    .header-content {
+      margin-top: 10px;
+      color: #666;
+      font-size: 14px;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .search-bar {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 4px;
+  }
+
+  .queries-container {
+    min-height: 300px;
+
+    .query-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+
+      .query-card {
+        border: 1px solid #e0e6f6;
+        border-radius: 6px;
+        padding: 20px;
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+          transform: translateY(-2px);
+        }
+
+        &.executing {
+          border-color: #409eff;
+          background: #f0f9ff;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+
+          h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+          }
+        }
+
+        .card-content {
+          margin-bottom: 15px;
+
+          .description {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 40px;
+          }
+
+          .query-text {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f7fa;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            max-height: 150px;
+            overflow-y: auto;
+            word-break: break-all;
+          }
+        }
+
+        .card-footer {
+          .meta {
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #999;
+          }
+
+          .actions {
+            display: flex;
+            gap: 8px;
+
+            .el-button {
+              flex: 1;
+            }
+          }
+        }
+
+        .progress {
+          margin-top: 10px;
+          padding-top: 10px;
+          border-top: 1px solid #e0e6f6;
+
+          .status {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+
+  .results-container {
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f5f7fa;
+      border-radius: 4px;
+
+      .left .title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .right {
+        display: flex;
+        gap: 10px;
+      }
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f5f7fa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  }
+
+  .details-content,
+  .history-content {
+    max-height: 400px;
+    overflow-y: auto;
+
+    .detail-item,
+    .history-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #f9f9f9;
+      border-radius: 4px;
+
+      .label {
+        font-weight: bold;
+        color: #666;
+        margin-right: 8px;
+      }
+
+      .value {
+        color: #333;
+        word-break: break-all;
+      }
+
+      .time {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .records {
+        display: flex;
+        gap: 10px;
+
+        .badge {
+          display: inline-block;
+          padding: 3px 8px;
+          background: #e0e6f6;
+          border-radius: 3px;
+          font-size: 12px;
+          color: #666;
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .wencai-panel {
+    .query-cards {
+      grid-template-columns: 1fr !important;
+    }
+  }
+}

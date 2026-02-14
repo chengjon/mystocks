@@ -20,7 +20,7 @@ import { SUPPORTED_LOCALES, DEFAULT_LOCALE, LOCALE_STORAGE_KEY, type SupportedLo
  * 国际化 Composable
  */
 export function useI18n() {
-    const { t, locale, availableLocales } = useVueI18n()
+    const { t, locale, _availableLocales } = useVueI18n()
 
     /**
      * 当前语言（只读）

@@ -137,7 +137,7 @@
 import { ref, reactive, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
-import * as echarts from 'echarts'
+import echarts from '@/utils/echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import request from '@/api'
@@ -186,7 +186,7 @@ const handleQuery = async (): Promise<void> => {
 
   loading.value = true
   try {
-    const params: any = {
+    const params: unknown = {
       symbol: queryForm.symbol,
       timeframe: queryForm.timeframe
     }
@@ -207,7 +207,7 @@ const handleQuery = async (): Promise<void> => {
       await nextTick()
       renderChart()
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
   } finally {
     loading.value = false
@@ -233,7 +233,7 @@ const handleRefresh = async (): Promise<void> => {
     ElMessage.success('数据刷新成功')
     // 自动重新查询
     await handleQuery()
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
   } finally {
     refreshing.value = false
@@ -288,9 +288,9 @@ const renderChart = (): void => {
     },
     tooltip: {
       trigger: 'axis',
-      formatter: function (params: any) {
+      formatter: function (params: unknown) {
         let result = params[0].axisValue + '<br/>'
-        params.forEach((param: any) => {
+        params.forEach((param: unknown) => {
           const value = parseFloat(param.value)
           const color = value >= 0 ? '#67C23A' : '#F56C6C'
           result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
@@ -320,7 +320,7 @@ const renderChart = (): void => {
       type: 'value',
       name: '金额(万元)',
       axisLabel: {
-        formatter: function(value: any) {
+        formatter: function(value: unknown) {
           return value + '万'
         }
       },

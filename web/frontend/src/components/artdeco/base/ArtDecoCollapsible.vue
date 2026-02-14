@@ -189,7 +189,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-collapsible {
         position: relative;
@@ -203,7 +203,7 @@
 
         &:hover {
             border-color: var(--artdeco-border-hover);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 4px 12px rgb(212 175 55 / 10%);
         }
 
         &.is-expanded {
@@ -234,12 +234,12 @@
             box-shadow:
                 0 0 0 2px var(--artdeco-bg-global),
                 0 0 0 4px var(--artdeco-gold-primary),
-                0 0 12px rgba(212, 175, 55, 0.4);
+                0 0 12px rgb(212 175 55 / 40%);
         }
 
         // 悬停状态
         &:hover {
-            background: rgba(212, 175, 55, 0.05);
+            background: rgb(212 175 55 / 5%);
 
             .artdeco-collapsible-title {
                 color: var(--artdeco-gold-primary);
@@ -284,7 +284,7 @@
         width: 8px;
         height: 8px;
         border: 2px solid var(--artdeco-gold-dim);
-        opacity: 0.6;
+        opacity: 60%;
         transition: all var(--artdeco-transition-base);
 
         &--left {
@@ -303,14 +303,14 @@
 
         .artdeco-collapsible:hover &,
         .artdeco-collapsible.is-expanded & {
-            opacity: 1;
+            opacity: 100%;
             border-color: var(--artdeco-gold-primary);
         }
     }
 
     .artdeco-collapsible-content {
         overflow: hidden;
-        background: rgba(10, 10, 10, 0.5);
+        background: rgb(10 10 10 / 50%);
     }
 
     .artdeco-collapsible-inner {
@@ -333,7 +333,7 @@
 
     // 禁用状态
     .artdeco-collapsible[aria-disabled='true'] {
-        opacity: 0.6;
+        opacity: 60%;
         cursor: not-allowed;
         pointer-events: none;
     }

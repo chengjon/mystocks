@@ -57,15 +57,15 @@
 import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 
 interface Props {
-  qualityData: any
-  dataSources: any[]
+  qualityData: unknown
+  dataSources: unknown[]
 }
 
 defineProps<Props>()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .quality-overview {
   display: grid;
@@ -94,21 +94,33 @@ defineProps<Props>()
   align-items: center;
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgb(212 175 55 / 10%);
   border-radius: var(--artdeco-radius-none);
   
   .source-info {
     flex: 1;
-    .source-name { font-weight: 600; color: var(--artdeco-fg-primary); }
-    .source-type { font-size: 12px; color: var(--artdeco-fg-muted); }
+    .source-name {
+      font-weight: 600;
+      color: var(--artdeco-fg-primary);
+    }
+    .source-type {
+      font-size: 12px;
+      color: var(--artdeco-fg-muted);
+    }
   }
 
   .source-status {
     padding: 2px 8px;
     font-size: 12px;
     text-transform: uppercase;
-    &.healthy { color: var(--artdeco-up); background: rgba(255, 82, 82, 0.1); }
-    &.warning { color: var(--artdeco-gold-primary); background: rgba(212, 175, 55, 0.1); }
+    &.healthy {
+      color: var(--artdeco-up);
+      background: rgb(255 82 82 / 10%);
+    }
+    &.warning {
+      color: var(--artdeco-gold-primary);
+      background: rgb(212 175 55 / 10%);
+    }
   }
 }
 </style>

@@ -66,7 +66,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-decision-models {
     padding: 20px;
@@ -97,8 +97,16 @@ const columns = [
         display: flex;
         flex-direction: column;
         align-items: center;
-        .label { font-size: 12px; color: var(--artdeco-fg-muted); margin-bottom: 10px; }
-        .value { font-size: 20px; font-weight: bold; color: var(--artdeco-gold-primary); }
+        .label {
+          font-size: 12px;
+          color: var(--artdeco-fg-muted);
+          margin-bottom: 10px;
+        }
+        .value {
+          font-size: 20px;
+          font-weight: bold;
+          color: var(--artdeco-gold-primary);
+        }
     }
 }
 </style>

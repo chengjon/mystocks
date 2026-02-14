@@ -7,7 +7,7 @@
 /**
  * API Response wrapper
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   code: number
   data: T
   message: string

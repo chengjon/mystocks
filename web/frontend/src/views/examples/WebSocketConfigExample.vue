@@ -72,7 +72,7 @@
           clearable
         >
           <el-option
-            v-for="info in allWebSocketRoutes"
+            v-for="(info, _idx) in allWebSocketRoutes"
             :key="info.routeName"
             :label="info.routeName"
             :value="info.routeName"
@@ -91,7 +91,7 @@
         <h4>已订阅路由:</h4>
         <el-space wrap>
           <el-tag
-            v-for="routeName in subscribedRoutes"
+            v-for="(routeName, _idx) in subscribedRoutes"
             :key="routeName"
             closable
             @close="unsubscribeRoute(routeName)"
@@ -123,7 +123,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useWebSocketWithConfig } from '@/composables/useWebSocketWithConfig'
-import type { PageConfig } from '@/config/pageConfig'
+import type { _PageConfig } from '@/config/pageConfig'
 
 // WebSocket功能
 const {
@@ -135,7 +135,7 @@ const {
   subscriptionStats,
   getAllWebSocketChannels,
   subscribeByRoute,
-  unsubscribeByRoute,
+  _unsubscribeByRoute,
   subscribeAllWebSocketRoutes,
   connect,
   disconnect
@@ -246,7 +246,7 @@ const subscribeAll = () => {
 /**
  * 消息处理函数
  */
-const handleMessage = (data: any) => {
+const handleMessage = (data: unknown) => {
   console.log('📨 收到WebSocket消息:', data)
 
   // 可以在这里添加业务逻辑

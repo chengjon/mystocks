@@ -140,7 +140,7 @@ import { ref, onMounted, reactive, computed, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import type { FilterItem } from '@/components/shared/types'
+import type { _FilterItem } from '@/components/shared/types'
 // Import Art Deco components
 import {
   ArtDecoHeader,
@@ -149,7 +149,7 @@ import {
   ArtDecoButton,
   ArtDecoBadge,
   ArtDecoCard,
-  ArtDecoStatCard
+  _ArtDecoStatCard
 } from '@/components/artdeco'
 import { ElPagination } from 'element-plus'
 
@@ -176,7 +176,7 @@ const stocks = ref([])
 const total = ref(0)
 
 // FilterBar 配置
-const filterConfig = computed((): any[] => [
+const filterConfig = computed((): unknown[] => [
   {
     type: 'input',
     key: 'search',
@@ -249,7 +249,7 @@ const loadFilterOptions = async () => {
 const loadData = async () => {
   loading.value = true
   try {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       limit: pagination.pageSize,
       offset: (pagination.currentPage - 1) * pagination.pageSize
     }
@@ -279,7 +279,7 @@ const loadData = async () => {
 
     if (error && typeof error === 'object' && 'response' in error) {
       // Axios错误
-      const axiosError = error as any
+      const axiosError = error as Error
       ElMessage.error(`加载数据失败: ${axiosError.response.data?.msg || axiosError.response.data?.detail || '服务器错误'}`)
     } else if (error instanceof Error) {
       // 标准Error
@@ -340,12 +340,12 @@ const handleRowClick = (row: { symbol: string; name: string }) => {
   handleView(row)
 }
 
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection: unknown[]) => {
   console.log('Selection changed:', selection)
 }
 
 // Legacy change class function (for backward compatibility)
-const getChangeClass = (value: number | string | null | undefined) => {
+const _getChangeClass = (value: number | string | null | undefined) => {
   if (value === null || value === undefined || value === '--') return ''
   const numValue = typeof value === 'string' ? parseFloat(value) : value
   return numValue > 0 ? 'positive' : numValue < 0 ? 'negative' : ''

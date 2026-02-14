@@ -108,11 +108,11 @@ class MarketApiServiceWithFallback {
     // Map legacy intervals to new API intervals
     // New API only supports: "1m" | "5m" | "15m" | "30m" | "1h" | "1d"
     const supportedIntervals = ['1m', '5m', '15m', '30m', '1h', '1d'] as const;
-    const interval = supportedIntervals.includes(params.interval as any)
+    const interval = supportedIntervals.includes(params.interval as unknown)
       ? params.interval
       : '1d'; // Default to 1d for unsupported intervals
 
-    if (!supportedIntervals.includes(params.interval as any)) {
+    if (!supportedIntervals.includes(params.interval as unknown)) {
       console.warn(`[MarketApiServiceWithFallback] Interval '${params.interval}' not supported by new API, using '1d' instead`);
     }
 

@@ -45,7 +45,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .data-analysis-page {
   @include artdeco-layout;

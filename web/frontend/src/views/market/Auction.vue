@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, onMounted } from 'vue'
+    import { ref, reactive, onMounted , onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElTag, ElMessage } from 'element-plus'
     import { ShoppingCart, RefreshRight } from '@element-plus/icons-vue'
 
@@ -128,10 +128,16 @@
     onMounted(() => {
         refreshData()
     })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
+    @import '@/styles/theme-tokens';
 
     .auction-container {
       display: flex;
@@ -160,7 +166,10 @@
         letter-spacing: 0.15em;
         color: var(--color-accent);
 
-        .el-icon { font-size: var(--font-size-3xl); color: var(--color-accent); }
+                .el-icon {
+          font-size: var(--font-size-3xl);
+          color: var(--color-accent);
+        }
       }
 
       .page-subtitle {
@@ -174,11 +183,32 @@
     }
 
     .auction-overview .overview-card :deep(.el-card__body) { padding: var(--spacing-lg); }
-    .overview-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
-    .stat-item { text-align: center; padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); }
-    .stat-label { display: block; font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--spacing-xs); }
-    .stat-value { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text-primary); }
+        .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+        .stat-item {
+      text-align: center;
+      padding: var(--spacing-md);
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+    }
+        .stat-label {
+      display: block;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--spacing-xs);
+    }
+        .stat-value {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
 
-    .auction-data-card :deep(.el-card__header) { padding: var(--spacing-md) var(--spacing-lg); border-bottom: 1px solid var(--color-border); }
+        .auction-data-card :deep(.el-card__header) {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
     .auction-table :deep(.el-table__header th) { background: var(--color-bg-secondary); }
 </style>

@@ -28,7 +28,7 @@ const badgeClasses = computed(() => [
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   border-radius: 3px;
@@ -58,27 +58,27 @@ const badgeClasses = computed(() => [
   }
 
   &.status-badge-success {
-    background: rgba(0, 230, 118, 0.1);
+    background: rgb(0 230 118 / 10%);
     color: #00E676;
-    border-color: rgba(0, 230, 118, 0.2);
+    border-color: rgb(0 230 118 / 20%);
   }
 
   &.status-badge-warning {
-    background: rgba(255, 193, 7, 0.1);
+    background: rgb(255 193 7 / 10%);
     color: #FFC107;
-    border-color: rgba(255, 193, 7, 0.2);
+    border-color: rgb(255 193 7 / 20%);
   }
 
   &.status-badge-danger {
-    background: rgba(255, 82, 82, 0.1);
+    background: rgb(255 82 82 / 10%);
     color: #FF5252;
-    border-color: rgba(255, 82, 82, 0.2);
+    border-color: rgb(255 82 82 / 20%);
   }
 
   &.status-badge-info {
-    background: rgba(59, 130, 246, 0.1);
+    background: rgb(59 130 246 / 10%);
     color: #3B82F6;
-    border-color: rgba(59, 130, 246, 0.2);
+    border-color: rgb(59 130 246 / 20%);
   }
 }
 </style>

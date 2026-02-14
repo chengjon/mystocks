@@ -26,7 +26,7 @@ export interface PaginatedResponse<T> {
 /**
  * API响应包装器
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data: T;
@@ -35,7 +35,7 @@ export interface ApiResponse<T = any> {
 /**
  * 操作结果
  */
-export interface OperationResult<T = any> {
+export interface OperationResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: {

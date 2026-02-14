@@ -45,7 +45,7 @@ export interface UpdateAdvancedSettingsRequest {
  */
 export interface SystemConfig {
   key: string;
-  value: any;
+  value: unknown;
   type: 'string' | 'number' | 'boolean' | 'object';
   description?: string;
   category?: string;

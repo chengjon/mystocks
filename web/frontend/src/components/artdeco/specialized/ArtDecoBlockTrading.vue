@@ -18,7 +18,7 @@
     <div v-else class="block-trading-content">
       <div class="block-trading-list">
         <div
-          v-for="item in blockTradingData"
+          v-for="(item, _idx) in blockTradingData"
           :key="item.code"
           class="block-trading-item"
         >
@@ -136,7 +136,7 @@ const fetchBlockTrading = async () => {
     const response = await dashboardService.getBlockTrading(undefined, 10)
     const payload = response?.data ?? response
     blockTradingData.value = Array.isArray(payload) ? payload : FALLBACK_BLOCK_TRADING_DATA
-  } catch (err: any) {
+  } catch (_err: unknown) {
     error.value = ''
     blockTradingData.value = FALLBACK_BLOCK_TRADING_DATA
   } finally {
@@ -150,8 +150,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-tokens';
+@import '@/styles/artdeco-quant-extended';
 
 .card-header {
   display: flex;

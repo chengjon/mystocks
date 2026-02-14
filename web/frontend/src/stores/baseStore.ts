@@ -1,9 +1,9 @@
 // stores/baseStore.ts - 统一Store模板
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { _ref, reactive, computed } from 'vue'
 
 export interface BaseStoreState {
-  data: any | null
+  data: unknown | null
   loading: boolean
   error: string | null
   lastFetch: number | null
@@ -12,7 +12,7 @@ export interface BaseStoreState {
 
 export function createBaseStore(
   storeId: string,
-  initialData: any | null = null
+  initialData: unknown | null = null
 ) {
   return defineStore(storeId, () => {
     const state = reactive<BaseStoreState>({
@@ -97,7 +97,7 @@ export function createBaseStore(
   })
 }
 
-function handleApiError(error: any, context: string): string {
+function handleApiError(error: unknown, context: string): string {
   console.error(`API Error in ${context}:`, error)
 
   if (error.response) {

@@ -149,7 +149,7 @@
                 <label class="artdeco-label">QUICK PRESETS</label>
                 <div class="presets-list">
                     <button
-                        v-for="preset in presets"
+                        v-for="(preset, _idx) in presets"
                         :key="preset.name"
                         class="preset-btn"
                         :class="{ active: activePreset === preset.name }"
@@ -220,7 +220,7 @@
     const formData = reactive<BacktestConfig>({
         strategy_code: '',
         symbol: '',
-        dateRange: [] as any,
+        dateRange: [] as unknown[],
         initial_capital: props.defaultCapital,
         commission_rate: 0.0003,
         slippage_rate: 0.0001,
@@ -255,7 +255,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-backtest-config {
       background: var(--artdeco-bg-card);
@@ -306,7 +306,7 @@
 
     .artdeco-input {
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -321,7 +321,7 @@
     }
 
     .artdeco-input:disabled {
-      opacity: 0.5;
+      opacity: 50%;
       cursor: not-allowed;
     }
 
@@ -358,7 +358,7 @@
       gap: var(--artdeco-spacing-3);
       padding: var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
     }
 
     .presets-section {
@@ -376,7 +376,7 @@
     .preset-btn {
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-body);
       font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1

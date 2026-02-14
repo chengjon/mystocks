@@ -2,7 +2,7 @@
 
 import { UnifiedResponse } from './apiClient';
 import mockDashboard from '../mock/mockDashboard';
-import { loadMockKlineData, loadMockIndicators } from './mockKlineData';
+import { loadMockKlineData, _loadMockIndicators } from './mockKlineData';
 
 // A simple delay function to simulate network latency
 const simulateNetworkDelay = (min = 100, max = 500) =>
@@ -20,7 +20,7 @@ const createMockResponse = <T>(data: T): UnifiedResponse<T> => ({
 });
 
 export const mockApiClient = {
-  async get<T = UnifiedResponse>(url: string, config?: any): Promise<T> {
+  async get<T = UnifiedResponse>(url: string, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
     console.log(`[Mock API] GET ${url}`, config);
 
@@ -37,7 +37,7 @@ export const mockApiClient = {
         { symbol: '399006.SZ', name: '创业板指', latest_price: 2156.89, change_percent: -0.45, volume: 500000 },
         { symbol: '510300.SH', name: '沪深300', latest_price: 3800.00, change_percent: 0.50, volume: 800000 },
       ];
-      return createMockResponse(indices) as any;
+      return createMockResponse(indices) as unknown;
     }
 
     // 2. Fund Flow
@@ -49,14 +49,14 @@ export const mockApiClient = {
         northTotal: { amount: 58.8, monthly: 1256 },
         mainForce: { amount: 126.5, percentage: 68 }
       };
-      return createMockResponse(flowData) as any;
+      return createMockResponse(flowData) as unknown;
     }
 
     // 3. Industry Flow
     if (url.includes('/api/market/industry/flow')) {
       // Use mockDashboard logic
       const sectors = mockDashboard.getLeadingSectors();
-      return createMockResponse(sectors) as any;
+      return createMockResponse(sectors) as unknown;
     }
 
     // 4. Stock Flow Ranking
@@ -68,7 +68,7 @@ export const mockApiClient = {
         { code: '600036', name: '招商银行', amount: 6.7, change: 1.2 },
         { code: '000002', name: '万科A', amount: -3.1, change: -0.9 }
       ];
-      return createMockResponse(stocks) as any;
+      return createMockResponse(stocks) as unknown;
     }
 
     // 5. Long Hu Bang (Dragon Tiger List)
@@ -77,7 +77,7 @@ export const mockApiClient = {
         { code: '000001', name: '平安银行', reason: '日涨幅偏离值达7%', amount: 12000, change_percent: 10.01 },
         { code: '600000', name: '浦发银行', reason: '连续三个交易日内，涨幅偏离值累计达20%', amount: 8500, change_percent: 9.98 }
       ];
-      return createMockResponse(lhb) as any;
+      return createMockResponse(lhb) as unknown;
     }
 
     // 6. Block Trading
@@ -86,7 +86,7 @@ export const mockApiClient = {
         { code: '600519', name: '贵州茅台', price: 1800.00, amount: 5000, buyer: '机构专用', seller: '中信证券北京总部' },
         { code: '300750', name: '宁德时代', price: 240.00, amount: 3000, buyer: '深股通专用', seller: '机构专用' }
       ];
-      return createMockResponse(block) as any;
+      return createMockResponse(block) as unknown;
     }
 
     // 7. K-Line Data
@@ -94,7 +94,7 @@ export const mockApiClient = {
         const symbol = params.symbol || '000001.SH';
         const period = params.period || '1d';
         const kline = await loadMockKlineData(symbol, period);
-        return createMockResponse(kline.candles) as any;
+        return createMockResponse(kline.candles) as unknown;
     }
 
     // 8. Real-time Quote
@@ -108,7 +108,7 @@ export const mockApiClient = {
             volume: Math.floor(Math.random() * 1000000),
             turnover: Math.floor(Math.random() * 100000000)
         };
-        return createMockResponse(quote) as any;
+        return createMockResponse(quote) as unknown;
     }
 
     // 9. Intraday Trend
@@ -117,7 +117,7 @@ export const mockApiClient = {
         // Use 1m kline as trend data source
         const kline = await loadMockKlineData(symbol, '1m');
         // Simplify for trend: just timestamp and close price
-        const trendData = kline.candles.slice(0, 240).map(c => ({
+        const _trendData = kline.candles.slice(0, 240).map(c => ({
             timestamp: c.timestamp,
             price: c.close
         })).reverse(); // Mock data generation is reverse time usually? check generateMockCandles implementation. 
@@ -131,7 +131,7 @@ export const mockApiClient = {
             symbol,
             lastClose: kline.candles[0].open * 0.98, // approximate
             data: kline.candles.map(c => c.close) // Simpler trend array
-        }) as any;
+        }) as unknown;
     }
 
     // 10. Technical Indicators
@@ -141,7 +141,7 @@ export const mockApiClient = {
         { name: 'MACD', value: '+0.45', signal: '金叉', signalType: 'rise' },
         { name: 'KDJ', value: '78.5', signal: '中性', signalType: 'neutral' },
         { name: 'BOLL', value: '上轨', signal: '强势', signalType: 'rise' }
-      ]) as any;
+      ]) as unknown;
     }
 
     // 11. Portfolio Summary & Positions
@@ -156,7 +156,7 @@ export const mockApiClient = {
           { symbol: '600519', name: '贵州茅台', quantity: 100, cost: 1800, price: 1850, pnl: 5000, pnl_percent: 2.78 },
           { symbol: '300750', name: '宁德时代', quantity: 200, cost: 230, price: 245, pnl: 3000, pnl_percent: 6.52 }
         ]
-      }) as any;
+      }) as unknown;
     }
 
     // 12. Watchlist Data
@@ -178,7 +178,7 @@ export const mockApiClient = {
             { symbol: '002230', name: '科大讯飞', price: '45.6', change: -1.2 }
           ] 
         }
-      ]) as any;
+      ]) as unknown;
     }
 
     // 13. Data Quality Monitoring
@@ -190,7 +190,7 @@ export const mockApiClient = {
           { name: '财务报表数据库', type: '离线', status: 'healthy', statusText: '正常', quality: 99.5 },
           { name: '问财三方数据', type: 'API', status: 'warning', statusText: '稍慢', quality: 85.2 }
         ]
-      }) as any;
+      }) as unknown;
     }
 
     // Default fallback
@@ -198,25 +198,25 @@ export const mockApiClient = {
     return { ...createMockResponse({}), data: { url, method: 'GET', ...config?.params } } as T;
   },
 
-  async post<T = UnifiedResponse>(url: string, data?: any, config?: any): Promise<T> {
+  async post<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] POST request to ${url} with data:`, data, 'and config:', config);
     return { ...createMockResponse({}), data: { url, method: 'POST', requestData: data, ...config?.params } } as T;
   },
 
-  async put<T = UnifiedResponse>(url: string, data?: any, config?: any): Promise<T> {
+  async put<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] PUT request to ${url} with data:`, data, 'and config:', config);
     return { ...createMockResponse({}), data: { url, method: 'PUT', requestData: data, ...config?.params } } as T;
   },
 
-  async patch<T = UnifiedResponse>(url: string, data?: any, config?: any): Promise<T> {
+  async patch<T = UnifiedResponse>(url: string, data?: unknown, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] PATCH request to ${url} with data:`, data, 'and config:', config);
     return { ...createMockResponse({}), data: { url, method: 'PATCH', requestData: data, ...config?.params } } as T;
   },
 
-  async delete<T = UnifiedResponse>(url: string, config?: any): Promise<T> {
+  async delete<T = UnifiedResponse>(url: string, config?: unknown): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] DELETE request to ${url} with config:`, config);
     return { ...createMockResponse({}), data: { url, method: 'DELETE', ...config?.params } } as T;

@@ -36,7 +36,7 @@
 
   /// Card background - 白色
   /// 用于卡片、面板、对话框
-  --bg-card: #FFFFFF;
+  --bg-card: #FFF;
 
   /// Hover state - 交互悬停状态
   /// 用于按钮悬停、列表项悬停
@@ -48,7 +48,7 @@
 
   /// Overlay/Mask background - 遮罩层
   /// 用于模态框背景、加载遮罩
-  --bg-overlay: rgba(248, 250, 252, 0.85);
+  --bg-overlay: rgb(248 250 252 / 85%);
 
   /* ------------------------------------------
      A-Share Market Colors - A股市场颜色 (CRITICAL)
@@ -61,7 +61,7 @@
 
   /// UP background - 红色背景（淡化）
   /// 用于: 上涨趋势背景、买入按钮
-  --color-up-bg: rgba(220, 38, 38, 0.1);
+  --color-up-bg: rgb(220 38 38 / 10%);
 
   /// DOWN color - 绿色 (下跌)
   /// 用于: 价格下跌、负值、收益减少、卖出信号
@@ -69,14 +69,14 @@
 
   /// DOWN background - 绿色背景（淡化）
   /// 用于: 下跌趋势背景、卖出按钮
-  --color-down-bg: rgba(5, 150, 105, 0.1);
+  --color-down-bg: rgb(5 150 105 / 10%);
 
   /// FLAT color - 灰色 (平盘)
   /// 用于: 价格不变、零值、持平状态
   --color-flat: #6B7280;
 
   /// FLAT background - 灰色背景（淡化）
-  --color-flat-bg: rgba(107, 114, 128, 0.1);
+  --color-flat-bg: rgb(107 114 128 / 10%);
 
   /* ------------------------------------------
      Accent Colors - 功能强调色
@@ -154,15 +154,15 @@
 
   /// Base shadow - 基础阴影
   /// 用于: 卡片阴影、悬浮效果
-  --shadow-base: rgba(0, 0, 0, 0.05);
+  --shadow-base: rgb(0 0 0 / 5%);
 
   /// Medium shadow - 中等阴影
   /// 用于: 对话框阴影、菜单阴影
-  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgb(0 0 0 / 10%);
 
   /// Large shadow - 大阴影
   /// 用于: 模态框阴影、弹出层阴影
-  --shadow-large: rgba(0, 0, 0, 0.15);
+  --shadow-large: rgb(0 0 0 / 15%);
 
   /* ------------------------------------------
      Chart Colors - 图表颜色系统
@@ -170,7 +170,7 @@
      ------------------------------------------ */
 
   /// Chart background - 图表背景
-  --chart-bg: #FFFFFF;
+  --chart-bg: #FFF;
 
   /// Grid lines - 网格线
   --chart-grid: #F3F4F6;
@@ -179,7 +179,7 @@
   --chart-axis: #6B7280;
 
   /// Tooltip background - 提示框背景
-  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-tooltip-bg: rgb(255 255 255 / 95%);
 
   /// Tooltip border - 提示框边框
   --chart-tooltip-border: #E5E7EB;
@@ -203,7 +203,7 @@
     &.el-button--primary {
       background-color: var(--color-primary);
       border-color: var(--color-primary);
-      color: #FFFFFF;
+      color: #FFF;
 
       &:hover {
         background-color: var(--color-primary-hover);

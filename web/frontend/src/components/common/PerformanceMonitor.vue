@@ -27,13 +27,13 @@ const fpsColor = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .performance-monitor {
   position: fixed;
   bottom: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgb(0 0 0 / 70%);
   padding: 6px 10px;
   border-radius: 4px;
   color: #fff;
@@ -43,7 +43,7 @@ const fpsColor = computed(() => {
   pointer-events: none;
   display: flex;
   gap: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(255 255 255 / 10%);
   backdrop-filter: blur(2px);
 }
 

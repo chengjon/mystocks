@@ -1,0 +1,235 @@
+.dashboard-metrics-card {
+  margin-bottom: 20px;
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #303133;
+
+      .el-icon {
+        font-size: 18px;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .el-tag {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .el-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    text-align: center;
+
+    :deep(.el-empty__image) {
+      .el-icon {
+        animation: spin 2s linear infinite;
+      }
+    }
+  }
+
+  .error-state {
+    padding: 20px;
+  }
+
+  .metrics-content {
+    .core-metrics {
+      margin-bottom: 20px;
+
+      .metric-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
+        border: 2px solid #ebeef5;
+        transition: all 0.3s;
+        min-height: 120px;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px rgb(0 0 0 / 10%);
+        }
+
+        .metric-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          flex-shrink: 0;
+        }
+
+        .metric-info {
+          flex: 1;
+
+          .metric-label {
+            font-size: 13px;
+            color: #909399;
+            margin-bottom: 8px;
+          }
+
+          .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #303133;
+            margin-bottom: 4px;
+
+            &.positive {
+              color: #67c23a;
+            }
+
+            &.negative {
+              color: #f56c6c;
+            }
+          }
+
+          .metric-change {
+            font-size: 14px;
+
+            span {
+              display: inline-flex;
+              align-items: center;
+              gap: 2px;
+              font-weight: 600;
+
+              &.positive {
+                color: #67c23a;
+              }
+
+              &.negative {
+                color: #f56c6c;
+              }
+            }
+          }
+        }
+
+        &.value-card .metric-icon {
+          background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
+        }
+
+        &.return-card .metric-icon {
+          background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+        }
+
+        &.positions-card .metric-icon {
+          background: linear-gradient(135deg, #e6a23c 0%, #f0c78a 100%);
+        }
+
+        &.orders-card .metric-icon {
+          background: linear-gradient(135deg, #909399 0%, #b1b3b8 100%);
+        }
+      }
+    }
+
+    .more-metrics {
+      margin-top: 24px;
+
+      .el-divider {
+        margin: 16px 0 20px;
+
+        :deep(.el-divider__text) {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-weight: 600;
+          color: #303133;
+        }
+      }
+
+      .metric-statistic {
+        margin-bottom: 16px;
+        padding: 16px;
+        background: #f5f7fa;
+        border-radius: 8px;
+
+        :deep(.el-statistic__head) {
+          font-size: 12px;
+          color: #606266;
+          margin-bottom: 8px;
+        }
+
+        :deep(.el-statistic__content) {
+          font-size: 20px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .footer-info {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #ebeef5;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .el-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive adjustments
+@media (width <= 768px) {
+  .dashboard-metrics-card {
+    .core-metrics .metric-card {
+      min-height: 100px;
+      padding: 16px;
+
+      .metric-icon {
+        width: 48px;
+        height: 48px;
+
+        .el-icon {
+          font-size: 24px !important;
+        }
+      }
+
+      .metric-info {
+        .metric-value {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}

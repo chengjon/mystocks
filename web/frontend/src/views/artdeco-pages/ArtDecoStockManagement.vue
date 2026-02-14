@@ -16,7 +16,7 @@
 
     <nav class="main-tabs">
       <button
-        v-for="tab in tabs"
+        v-for="(tab, _idx) in tabs"
         :key="tab.key"
         class="main-tab"
         :class="{ active: activeTab === tab.key }"
@@ -61,11 +61,11 @@ const tabs = [
 ]
 
 const activeWatchlistId = ref('')
-const watchlists = ref<any[]>([])
-const positions = ref<any[]>([])
+const watchlists = ref<unknown[]>([])
+const positions = ref<unknown[]>([])
 
 const currentWatchlistStocks = computed(() => {
-  return watchlists.value.find((l: any) => l.id === activeWatchlistId.value)?.stocks || []
+  return watchlists.value.find((l: unknown) => l.id === activeWatchlistId.value)?.stocks || []
 })
 
 const fetchData = async () => {
@@ -78,7 +78,7 @@ const fetchData = async () => {
     if (wlRes.data?.success) {
       watchlists.value = wlRes.data.data
       if (watchlists.value.length > 0 && !activeWatchlistId.value) {
-        activeWatchlistId.value = (watchlists.value[0] as any).id
+        activeWatchlistId.value = (watchlists.value[0] as unknown).id
       }
     }
 
@@ -98,7 +98,7 @@ onMounted(fetchData)
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-stock-management {
   padding: var(--artdeco-spacing-6);
@@ -135,5 +135,5 @@ onMounted(fetchData)
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-from, .fade-leave-to { opacity: 0%; }
 </style>

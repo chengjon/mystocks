@@ -2,7 +2,6 @@
 //   ART DECO FINANCIAL TOKENS
 //   金融量化专用设计令牌
 // ============================================
-//
 // Purpose: 为MyStocks量化交易平台提供ArtDeco风格的金融专用视觉令牌
 // Coverage: 技术指标、风险等级、数据质量、GPU性能、回测收益率等
 // Created: 2026-01-20
@@ -26,7 +25,7 @@
   --artdeco-indicator-rsi-overbought: #FF5252;    // >70 超买 - 红色
   --artdeco-indicator-rsi-oversold: #00E676;      // <30 超卖 - 绿色
   --artdeco-indicator-rsi-neutral: #D4AF37;        // 30-70 中性 - 金色
-  --artdeco-indicator-rsi-range: rgba(212, 175, 55, 0.2); // RSI范围背景
+  --artdeco-indicator-rsi-range: rgb(212 175 55 / 20%); // RSI范围背景
 
   // KDJ指标 (Stochastic Oscillator)
   --artdeco-indicator-kdj-golden-cross: #D4AF37;  // 金叉 - 金色
@@ -83,14 +82,14 @@
   --artdeco-quality-good: #4FC3F7;         // 良好 85-94% - 蓝色
   --artdeco-quality-fair: #FFD700;         // 一般 70-84% - 金色
   --artdeco-quality-poor: #FF5252;         // 差 <70% - 红色
-  --artdeco-quality-missing: #888888;      // 缺失 - 灰色
+  --artdeco-quality-missing: #888;      // 缺失 - 灰色
 
   // 数据新鲜度 (实时性)
   --artdeco-freshness-realtime: #D4AF37;   // 实时 - 金色
   --artdeco-freshness-minute: #00E676;     // 1分钟内 - 绿色
   --artdeco-freshness-hour: #4FC3F7;        // 1小时内 - 蓝色
   --artdeco-freshness-day: #FFD700;        // 1天内 - 金色
-  --artdeco-freshness-stale: #888888;      // >1天 - 灰色
+  --artdeco-freshness-stale: #888;      // >1天 - 灰色
 
   // 数据准确性
   --artdeco-accuracy-verified: #00E676;   // 已验证
@@ -103,7 +102,7 @@
   // ============================================
 
   // GPU利用率状态
-  --artdeco-gpu-idle: #888888;            // 空闲 - 灰色
+  --artdeco-gpu-idle: #888;            // 空闲 - 灰色
   --artdeco-gpu-light: #4FC3F7;            // 轻载 <30% - 蓝色
   --artdeco-gpu-normal: #00E676;           // 正常 30-70% - 绿色
   --artdeco-gpu-busy: #FFD700;             // 忙碌 70-90% - 金色
@@ -127,9 +126,9 @@
   // ============================================
 
   --artdeco-return-catastrophic: #8B0000;   // <-50% 灾难性 - 深红
-  --artdeco-return-terrible: #FF0000;       // -50%~-20% 极差 - 红色
+  --artdeco-return-terrible: #F00;       // -50%~-20% 极差 - 红色
   --artdeco-return-negative: #FF5252;       // -20%~0% 负收益 - 浅红
-  --artdeco-return-flat: #888888;           // 0% 平盘 - 灰色
+  --artdeco-return-flat: #888;           // 0% 平盘 - 灰色
   --artdeco-return-positive: #00E676;       // 0%~10% 正收益 - 绿色
   --artdeco-return-good: #4FC3F7;           // 10%~20% 良好 - 蓝色
   --artdeco-return-excellent: #D4AF37;      // 20%~50% 优秀 - 金色
@@ -148,13 +147,13 @@
 
   --artdeco-sentiment-extreme-fear: #8B0000;  // 极度恐惧 - 深红
   --artdeco-sentiment-fear: #FF5252;          // 恐惧 - 红色
-  --artdeco-sentiment-neutral: #888888;        // 中性 - 灰色
+  --artdeco-sentiment-neutral: #888;        // 中性 - 灰色
   --artdeco-sentiment-greed: #00E676;         // 贪婪 - 绿色
   --artdeco-sentiment-extreme-greed: #D4AF37; // 极度贪婪 - 金色
 
   // 市场强度
   --artdeco-strength-weak: #FF5252;           // 弱势
-  --artdeco-strength-neutral: #888888;        // 中性
+  --artdeco-strength-neutral: #888;        // 中性
   --artdeco-strength-strong: #00E676;         // 强势
 
   // ============================================
@@ -190,13 +189,13 @@
 
   --artdeco-position-long: #00E676;          // 多头持仓 - 绿色
   --artdeco-position-short: #FF5252;          // 空头持仓 - 红色
-  --artdeco-position-flat: #888888;           // 平仓 - 灰色
+  --artdeco-position-flat: #888;           // 平仓 - 灰色
   --artdeco-position-partial: #FFD700;        // 部分平仓 - 金色
 
   // 持仓盈亏
   --artdeco-position-profit: #00E676;         // 盈利 - 绿色
   --artdeco-position-loss: #FF5252;           // 亏损 - 红色
-  --artdeco-position-breakeven: #888888;      // 盈亏平衡 - 灰色
+  --artdeco-position-breakeven: #888;      // 盈亏平衡 - 灰色
 
   // ============================================
   //   ORDER STATUS - 订单状态
@@ -206,7 +205,7 @@
   --artdeco-order-pending: #FFD700;           // 待成交 - 金色
   --artdeco-order-partial: #4FC3F7;           // 部分成交 - 蓝色
   --artdeco-order-filled: #00E676;            // 完全成交 - 绿色
-  --artdeco-order-cancelled: #888888;         // 已撤销 - 灰色
+  --artdeco-order-cancelled: #888;         // 已撤销 - 灰色
   --artdeco-order-rejected: #FF5252;           // 被拒绝 - 红色
 }
 
@@ -401,16 +400,16 @@
 
   @if $signal == 'strong-buy' {
     $bg-color: var(--artdeco-signal-strong-buy);
-    $hover-glow: 0 0 20px rgba(0, 230, 118, 0.4);
+    $hover-glow: 0 0 20px rgb(0 230 118 / 40%);
   } @else if $signal == 'buy' {
     $bg-color: var(--artdeco-signal-buy);
-    $hover-glow: 0 0 20px rgba(100, 221, 23, 0.4);
+    $hover-glow: 0 0 20px rgb(100 221 23 / 40%);
   } @else if $signal == 'sell' {
     $bg-color: var(--artdeco-signal-sell);
-    $hover-glow: 0 0 20px rgba(255, 82, 82, 0.4);
+    $hover-glow: 0 0 20px rgb(255 82 82 / 40%);
   } @else if $signal == 'strong-sell' {
     $bg-color: var(--artdeco-signal-strong-sell);
-    $hover-glow: 0 0 20px rgba(139, 0, 0, 0.4);
+    $hover-glow: 0 0 20px rgb(139 0 0 / 40%);
   }
 
   background: $bg-color;

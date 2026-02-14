@@ -11,8 +11,8 @@ import {
   WatchlistSummary,
   PortfolioSummary,
   RiskAlertSummary,
-  IndustryInfo,
-  ConceptInfo
+  _IndustryInfo,
+  _ConceptInfo
 } from '@/api/types/common';
 
 // ChartDataPoint type definition
@@ -62,7 +62,7 @@ export const dashboardService = {
    */
   async getMarketOverview(): Promise<UnifiedResponse<MarketOverviewDetailedResponse>> {
     try {
-      const response = await apiGet<any>('/api/dashboard/market-overview');
+      const response = await apiGet<unknown>('/api/dashboard/market-overview');
       return response;
     } catch (error) {
       console.error('[dashboardService] Failed to fetch market overview:', error);
@@ -75,17 +75,17 @@ export const dashboardService = {
    * 替代缺失的: /api/market/v2/indices/list
    * 使用: /api/market/v2/etf/list + 筛选
    */
-  async getIndicesList(): Promise<UnifiedResponse<any[]>> {
+  async getIndicesList(): Promise<UnifiedResponse<unknown[]>> {
     try {
       // 使用ETF列表API
-      const response = await apiGet<any>('/api/market/v2/etf/list', {
+      const response = await apiGet<unknown>('/api/market/v2/etf/list', {
         limit: 100
       });
 
       if (response.data && Array.isArray(response.data)) {
         // 筛选主要指数型ETF
         const indexETFs = response.data
-          .filter((etf: any) =>
+          .filter((etf: unknown) =>
             // 沪市指数基金（510开头）
             etf.symbol.match(/^510(300|500|050|900)/) ||
             // 深市指数基金（159开头）
@@ -94,7 +94,7 @@ export const dashboardService = {
             etf.name.includes('指数')
           )
           .slice(0, 10)  // 取前10个
-          .map((etf: any) => ({
+          .map((etf: unknown) => ({
             symbol: etf.symbol,
             name: etf.name
               .replace('ETF', '')
@@ -124,9 +124,9 @@ export const dashboardService = {
    * 替代缺失的: /api/market/v2/market-stats
    * 使用: /api/dashboard/market-overview
    */
-  async getMarketStats(): Promise<UnifiedResponse<any>> {
+  async getMarketStats(): Promise<UnifiedResponse<unknown>> {
     try {
-      const response = await apiGet<any>('/api/dashboard/market-overview');
+      const response = await apiGet<unknown>('/api/dashboard/market-overview');
 
       // 提取统计字段
       const stats = {
@@ -161,10 +161,10 @@ export const dashboardService = {
    * 替代缺失的: /api/v1/portfolio/{user_id}
    * 使用: /api/mtm/portfolio/{user_id} (axios baseURL已经是/api)
    */
-  async getUserPortfolio(userId: number): Promise<UnifiedResponse<any>> {
+  async getUserPortfolio(userId: number): Promise<UnifiedResponse<unknown>> {
     try {
       // 使用实时市值API，将user_id作为portfolio_id
-      const response = await apiGet<any>(`/api/mtm/portfolio/${userId}`);
+      const response = await apiGet<unknown>(`/api/mtm/portfolio/${userId}`);
 
       return createUnifiedResponse({
         total_market_value: response.data?.total_value || 0,
@@ -195,10 +195,10 @@ export const dashboardService = {
   async getHotIndustries(): Promise<UnifiedResponse<IndustryConceptData[]>> {
     try {
       // 使用行业表现API
-      const response = await apiGet<any>('/api/analysis/industry/performance');
+      const response = await apiGet<unknown>('/api/analysis/industry/performance');
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-        const industries = response.data.map((item: any) => ({
+        const industries = response.data.map((item: unknown) => ({
           industry_name: item.name || item.industry_name,
           avg_change: item.change_percent || item.avg_change || 0,
           stock_count: item.stock_count || 0
@@ -209,11 +209,11 @@ export const dashboardService = {
 
       // 备选方案：使用行业资金流向API
       try {
-        const fundFlowResponse = await apiGet<any>('/api/market/v2/sector/fund-flow');
+        const fundFlowResponse = await apiGet<unknown>('/api/market/v2/sector/fund-flow');
 
         if (fundFlowResponse.data && Array.isArray(fundFlowResponse.data)) {
           // 从资金流向提取行业列表
-          const industries = [...new Set(fundFlowResponse.data.map((item: any) => item.sector_name))]
+          const industries = [...new Set(fundFlowResponse.data.map((item: unknown) => item.sector_name))]
             .filter(name => name)
             .slice(0, 10)
             .map(name => ({
@@ -244,12 +244,12 @@ export const dashboardService = {
   async getHotConcepts(): Promise<UnifiedResponse<IndustryConceptData[]>> {
     try {
       // 使用概念股票API反向聚合
-      const response = await apiGet<any>('/api/analysis/concept/stocks');
+      const response = await apiGet<unknown>('/api/analysis/concept/stocks');
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         // 提取概念名称并聚合
         const conceptMap = new Map<string, number>();
-        response.data.forEach((item: any) => {
+        response.data.forEach((item: unknown) => {
           const conceptName = item.concept_name || item.name;
           if (conceptName) {
             conceptMap.set(conceptName, (conceptMap.get(conceptName) || 0) + 1);
@@ -286,7 +286,7 @@ export const dashboardService = {
 
       if (indicesResponse.data && indicesResponse.data.length > 0) {
         const chartData = indicesResponse.data
-          .map((idx: any) => ({
+          .map((idx: unknown) => ({
             name: idx.name,
             value: Math.abs(idx.change_percent || 0),
             change_percent: idx.change_percent || 0
@@ -312,7 +312,7 @@ export const dashboardService = {
 
       if (industriesResponse.data && industriesResponse.data.length > 0) {
         const chartData = industriesResponse.data
-          .map((ind: any) => ({
+          .map((ind: unknown) => ({
             name: ind.industry_name,
             value: Math.abs(ind.avg_change || 0),
             change_percent: ind.avg_change || 0
@@ -334,7 +334,7 @@ export const dashboardService = {
    */
   async getCapitalFlowChartData(): Promise<UnifiedResponse<ChartDataPoint[]>> {
     try {
-      const response = await apiGet<any>('/api/market/v2/fund-flow', {
+      const _response = await apiGet<unknown>('/api/market/v2/fund-flow', {
         symbol: '000001',  // 上证指数
         timeframe: '1'
       });
@@ -355,13 +355,13 @@ export const dashboardService = {
    */
   async getIndustryCapitalFlowChartData(industryStandard: string): Promise<UnifiedResponse<ChartDataPoint[]>> {
     try {
-      const response = await apiGet<any>('/api/market/v2/sector/fund-flow');
+      const response = await apiGet<unknown>('/api/market/v2/sector/fund-flow');
 
       if (response.data && Array.isArray(response.data)) {
         // 筛选指定行业
         const industryData = response.data
-          .filter((item: any) => item.sector_name === industryStandard || item.sector_code === industryStandard)
-          .map((item: any) => ({
+          .filter((item: unknown) => item.sector_name === industryStandard || item.sector_code === industryStandard)
+          .map((item: unknown) => ({
             name: item.sector_name,
             value: Math.abs(item.main_net_inflow || 0),
             change_percent: item.main_net_inflow_rate || 0
@@ -412,16 +412,16 @@ export const dashboardService = {
    * 替代缺失的: /api/strategy/{user_id}/active
    * 使用: /api/strategy-mgmt/strategies
    */
-  async getUserActiveStrategies(userId: number): Promise<UnifiedResponse<any[]>> {
+  async getUserActiveStrategies(userId: number): Promise<UnifiedResponse<unknown[]>> {
     try {
-      const response = await apiGet<any>('/api/strategy-mgmt/strategies', {
+      const response = await apiGet<unknown>('/api/strategy-mgmt/strategies', {
         user_id: userId,
         status: 'active'
       });
 
       if (response.data) {
         const activeStrategies = Array.isArray(response.data)
-          ? response.data.filter((s: any) => s.status === 'active' || s.is_active === true)
+          ? response.data.filter((s: unknown) => s.status === 'active' || s.is_active === true)
           : [];
 
         return createUnifiedResponse(activeStrategies);
@@ -439,15 +439,15 @@ export const dashboardService = {
    * 替代: /api/stock/search
    * 使用: /api/market/wencai/query
    */
-  async searchStocks(query: string): Promise<UnifiedResponse<any[]>> {
+  async searchStocks(query: string): Promise<UnifiedResponse<unknown[]>> {
     try {
-      const response = await apiPost<any>('/api/market/wencai/query', {
+      const response = await apiPost<unknown>('/api/market/wencai/query', {
         query: query,
         limit: 20
       });
 
       if (response.data && response.data.results) {
-        const stocks = response.data.results.map((stock: any) => ({
+        const stocks = response.data.results.map((stock: unknown) => ({
           symbol: stock.code || stock.symbol,
           name: stock.name,
           price: stock.price || stock.latest_price,

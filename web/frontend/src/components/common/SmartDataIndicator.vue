@@ -295,9 +295,9 @@ export default {
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% { opacity: 100%; }
+  50% { opacity: 50%; }
+  100% { opacity: 100%; }
 }
 
 .status-tooltip {
@@ -312,7 +312,7 @@ export default {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 10%);
   min-width: 280px;
   max-width: 400px;
 }
@@ -419,7 +419,7 @@ export default {
 .source-status {
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgb(16 185 129 / 10%);
   color: #10b981;
   font-size: 10px;
 }
@@ -427,11 +427,11 @@ export default {
 .source-response {
   color: #6b7280;
   font-size: 11px;
-  font-family: 'Monaco', 'Menlo', monospace;
+  font-family: Monaco, Menlo, monospace;
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .smart-data-indicator {
     flex-direction: column;
     gap: 8px;

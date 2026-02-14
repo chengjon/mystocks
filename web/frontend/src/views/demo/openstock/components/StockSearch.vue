@@ -110,25 +110,25 @@ import axios from 'axios'
 
 interface Props {
   isAuthenticated: boolean
-  groups: any[]
+  groups: unknown[]
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'get-quote': [stock: any]
-  'get-news': [stock: any]
+  'get-quote': [stock: unknown]
+  'get-news': [stock: unknown]
   'api-tested': [feature: string]
 }>()
 
 const searchQuery = ref('')
 const searchMarket = ref('auto')
-const searchResults = ref<any[]>([])
+const searchResults = ref<unknown[]>([])
 const searchLoading = ref(false)
 const selectedGroupName = ref('')
 const showAddPopover = ref(false)
-const selectedStock = ref<any>(null)
-const groupSuggestions = ref<any[]>([])
+const selectedStock = ref<unknown>(null)
+const groupSuggestions = ref<unknown[]>([])
 
 const handleSearch = async () => {
   if (!searchQuery.value.trim()) {
@@ -150,7 +150,7 @@ const handleSearch = async () => {
     searchResults.value = response.data
     emit('api-tested', 'search')
     ElMessage.success(`找到 ${response.data.length} 条结果`)
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('搜索失败: ' + (error.response?.data?.detail || error.message))
   } finally {
     searchLoading.value = false
@@ -163,18 +163,18 @@ const clearSearch = () => {
 }
 
 const queryGroupSuggestions = () => {
-  const suggestions = props.groups.map((group: any) => ({
+  const suggestions = props.groups.map((group: unknown) => ({
     value: group.group_name,
     count: group.stock_count,
     id: group.id
   }))
   const query = selectedGroupName.value.toLowerCase()
   groupSuggestions.value = query
-    ? suggestions.filter((item: any) => item.value.toLowerCase().includes(query))
+    ? suggestions.filter((item: unknown) => item.value.toLowerCase().includes(query))
     : suggestions
 }
 
-const openAddPopover = (stock: any) => {
+const openAddPopover = (stock: unknown) => {
   selectedStock.value = stock
   queryGroupSuggestions()
   showAddPopover.value = true
@@ -202,7 +202,7 @@ const addToWatchlist = async () => {
     ElMessage.success(`已添加到分组 "${response.data.group_name}"`)
     closeAddPopover()
     emit('api-tested', 'watchlist')
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('添加失败: ' + (error.response?.data?.detail || error.message))
   }
 }
@@ -333,7 +333,7 @@ const addToWatchlist = async () => {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -346,11 +346,8 @@ const addToWatchlist = async () => {
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  inset: 0 0 0 0;
+  background: rgb(0 0 0 / 30%);
   display: flex;
   align-items: center;
   justify-content: center;

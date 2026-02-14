@@ -2,7 +2,6 @@
 //   ART DECO GRID SYSTEM
 //   艺术装饰网格布局系统
 // ============================================
-//
 // Purpose: 提供统一的CSS Grid布局系统,对齐HTML源文件设计
 // Features: 5种Grid模式、响应式断点、复用ArtDeco令牌
 // Created: 2026-01-22
@@ -40,12 +39,12 @@
   grid-template-columns: repeat(3, 1fr);
   gap: var(--artdeco-spacing-6);  // 24px
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--artdeco-spacing-4);  // 16px
   }
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     grid-template-columns: 1fr;
     gap: var(--artdeco-spacing-4);  // 16px
   }
@@ -56,16 +55,16 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--artdeco-spacing-6);  // 24px
 
-  @media (max-width: 1280px) {
+  @media (width <= 1280px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--artdeco-spacing-4);  // 16px
   }
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     grid-template-columns: 1fr;
   }
 }
@@ -75,7 +74,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: var(--artdeco-spacing-6);  // 24px
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     grid-template-columns: 1fr;
     gap: var(--artdeco-spacing-4);  // 16px
   }
@@ -86,11 +85,11 @@
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: var(--artdeco-spacing-2);  // 8px (紧凑间距)
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 
-  @media (max-width: 480px) {
+  @media (width <= 480px) {
     grid-template-columns: repeat(2, 1fr);  // 移动端强制2列
   }
 }
@@ -100,11 +99,11 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--artdeco-spacing-6);  // 24px
 
-  @media (max-width: 1280px) {
+  @media (width <= 1280px) {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     grid-template-columns: 1fr;  // 移动端单列
     gap: var(--artdeco-spacing-4);  // 16px
   }
@@ -154,6 +153,7 @@
 .charts-section {
   @include artdeco-grid-container;
   @include artdeco-grid-3-cols;
+
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
 
@@ -161,6 +161,7 @@
 .summary-section {
   @include artdeco-grid-container;
   @include artdeco-grid-4-cols;
+
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
 
@@ -168,6 +169,7 @@
 .heatmap-section {
   @include artdeco-grid-container;
   @include artdeco-grid-auto;
+
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
 
@@ -175,6 +177,7 @@
 .flow-section {
   @include artdeco-grid-container;
   @include artdeco-grid-2-cols;
+
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
 
@@ -182,6 +185,7 @@
 .pool-section {
   @include artdeco-grid-container;
   @include artdeco-grid-cards;
+
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
 
@@ -189,6 +193,7 @@
 .nav-section {
   @include artdeco-grid-container;
   @include artdeco-grid-3-cols;
+
   gap: var(--artdeco-spacing-8);  // 32px
   margin-bottom: var(--artdeco-spacing-8);  // 32px
 }
@@ -203,7 +208,7 @@
   grid-template-columns: 240px 1fr;  // 侧边栏240px,主内容自适应
   gap: var(--artdeco-spacing-6);  // 24px
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     grid-template-columns: 1fr;  // 移动端单列
   }
 }
@@ -219,7 +224,7 @@
     grid-template-columns: 64px 1fr;
   }
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     grid-template-columns: 1fr;
   }
 }
@@ -231,7 +236,7 @@
   gap: var(--artdeco-spacing-4);  // 16px
   align-items: center;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     grid-template-columns: 1fr;  // 移动端垂直布局
     gap: var(--artdeco-spacing-2);  // 8px
   }
@@ -244,11 +249,11 @@
   gap: var(--artdeco-spacing-3);  // 12px
   align-items: center;
 
-  @media (max-width: 1024px) {
+  @media (width <= 1024px) {
     grid-template-columns: 60px 1fr 100px 80px 60px;  // 缩小列宽
   }
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     grid-template-columns: 1fr;  // 移动端单列
   }
 }
@@ -258,28 +263,28 @@
 // ============================================
 
 // 仅在移动端隐藏
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .artdeco-hide-mobile {
     display: none !important;
   }
 }
 
 // 仅在桌面端隐藏
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .artdeco-hide-desktop {
     display: none !important;
   }
 }
 
 // 仅在平板及以上显示
-@media (min-width: 769px) {
+@media (width >= 769px) {
   .artdeco-show-tablet {
     display: block !important;
   }
 }
 
 // 仅在桌面及以上显示
-@media (min-width: 1025px) {
+@media (width >= 1025px) {
   .artdeco-show-desktop {
     display: block !important;
   }

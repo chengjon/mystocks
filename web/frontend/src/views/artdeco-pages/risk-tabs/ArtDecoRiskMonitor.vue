@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-quant-extended';
 
 .risk-monitor {
     min-height: 900px;
@@ -12,6 +12,7 @@
 
         h2 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-2xl);
             font-weight: 700;
@@ -68,6 +69,7 @@
             .control-group {
                 h4 {
                     @include artdeco-gold-accent;
+
                     font-family: var(--artdeco-font-display);
                     font-size: var(--artdeco-text-lg);
                     font-weight: 600;
@@ -147,7 +149,7 @@
         justify-content: space-between;
         padding: var(--artdeco-spacing-3);
         background: var(--artdeco-bg-card);
-        border: 1px solid rgba(212, 175, 55, 0.1);
+        border: 1px solid rgb(212 175 55 / 10%);
         border-radius: var(--artdeco-radius-none);
 
         .position-info {
@@ -217,7 +219,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
     .risk-monitor {
         .overview-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -229,7 +231,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .risk-monitor {
         .monitor-header {
             flex-direction: column;
@@ -263,7 +265,7 @@
     .risk-charts-section,
     .risk-alerts-section,
     .risk-controls-section {
-        animation: fadeInUp 0.6s ease-out;
+        animation: fade-in-up 0.6s ease-out;
     }
 
     .risk-overview {
@@ -283,13 +285,13 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateY(0);
     }
 }

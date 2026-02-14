@@ -31,7 +31,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-status {
       display: inline-flex;
@@ -40,7 +40,7 @@
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       border-radius: var(--artdeco-radius-none);
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       transition: all var(--artdeco-transition-base);
     }
 
@@ -58,11 +58,11 @@
 
     @keyframes pulse {
       0%, 100% {
-        opacity: 1;
+        opacity: 100%;
         box-shadow: 0 0 8px currentColor;
       }
       50% {
-        opacity: 0.6;
+        opacity: 60%;
         box-shadow: 0 0 4px currentColor;
       }
     }

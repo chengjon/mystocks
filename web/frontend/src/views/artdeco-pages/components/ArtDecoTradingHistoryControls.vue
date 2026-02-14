@@ -53,7 +53,7 @@
         selectedType: string
     }
 
-    const props = withDefaults(defineProps<Props>(), {
+    const _props = withDefaults(defineProps<Props>(), {
         symbolOptions: () => [],
         tradeTypeOptions: () => [],
         startDate: '',
@@ -88,8 +88,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .artdeco-trading-history-controls {
         display: flex;
@@ -103,7 +103,6 @@
         border-radius: var(--artdeco-radius-none);
 
         @include artdeco-stepped-corners(8px);
-
         @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 12px, $border-width: 1px);
     }
 

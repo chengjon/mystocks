@@ -1,7 +1,7 @@
 <template>
   <div class="tree-menu">
     <div
-      v-for="domain in menuDomains"
+      v-for="(domain, _idx) in menuDomains"
       :key="domain.key || domain.path"
       class="menu-domain"
     >
@@ -20,7 +20,7 @@
       <transition name="slide">
         <div v-if="expandedDomains[domain.key || domain.path]" class="domain-items">
           <div
-            v-for="item in domain.children || []"
+            v-for="(item, _idx) in domain.children || []"
             :key="item.path"
             class="menu-item"
             :class="{ active: isActive(item.path) }"
@@ -91,7 +91,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .tree-menu {
   padding: var(--artdeco-spacing-4);
@@ -181,7 +181,7 @@ onMounted(() => {
 .item-icon {
   margin-right: var(--artdeco-spacing-3);
   font-size: var(--artdeco-font-size-base);
-  opacity: 0.8;
+  opacity: 80%;
 }
 
 .item-label {
@@ -209,12 +209,12 @@ onMounted(() => {
 .slide-enter-from,
 .slide-leave-to {
   max-height: 0;
-  opacity: 0;
+  opacity: 0%;
 }
 
 .slide-enter-to,
 .slide-leave-from {
   max-height: 500px;
-  opacity: 1;
+  opacity: 100%;
 }
 </style>

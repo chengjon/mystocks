@@ -21,7 +21,7 @@
         <!-- 网格视图 -->
         <div v-if="viewMode === 'grid'" class="hybrid-heatmap-card__grid">
             <div
-                v-for="stock in sortedStocks"
+                v-for="(stock, _idx) in sortedStocks"
                 :key="stock.symbol"
                 class="hybrid-heatmap-card__cell"
                 :class="getCellClass(stock)"
@@ -53,7 +53,7 @@
                 <div class="hybrid-heatmap-card__list-cell">成交量</div>
             </div>
             <div
-                v-for="stock in sortedStocks"
+                v-for="(stock, _idx) in sortedStocks"
                 :key="stock.symbol"
                 class="hybrid-heatmap-card__list-row"
                 @click="handleStockClick(stock)"
@@ -209,19 +209,19 @@
 
         switch (sortBy.value) {
             case 'change':
-                return sorted.sort((a: any, b: any) => b.changePercent - a.changePercent)
+                return sorted.sort((a: unknown, b: unknown) => b.changePercent - a.changePercent)
             case 'volume':
-                return sorted.sort((a: any, b: any) => b.volume - a.volume)
+                return sorted.sort((a: unknown, b: unknown) => b.volume - a.volume)
             case 'symbol':
             default:
-                return sorted.sort((a: any, b: any) => a.symbol.localeCompare(b.symbol))
+                return sorted.sort((a: unknown, b: unknown) => a.symbol.localeCompare(b.symbol))
         }
     })
 
     // 最大成交量（用于相对宽度计算）
     const maxVolume = computed(() => {
         if (props.maxVolume > 0) return props.maxVolume
-        return Math.max(...props.stocks.map((s: any) => s.volume), 1)
+        return Math.max(...props.stocks.map((s: unknown) => s.volume), 1)
     })
 
     // 工具函数
@@ -334,346 +334,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/data-dense/index.scss';
-
-    // ============================================
-    //   HYBRID HEATMAP CARD - 混合热力图卡片
-    //   Art Deco 视觉 + 数据密集型热力图
-    // ============================================
-
-    .hybrid-heatmap-card {
-        @include hybrid-card;
-        position: relative;
-
-        &--loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-    }
-
-    .hybrid-heatmap-card__header {
-        @include data-dense-spacing;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
-    }
-
-    .hybrid-heatmap-card__title {
-        @include artdeco-gold-accent;
-        font-family: var(--hybrid-font-display);
-        font-size: var(--data-dense-font-lg);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin: 0;
-    }
-
-    .hybrid-heatmap-card__controls {
-        display: flex;
-        gap: var(--data-dense-gap-sm);
-        align-items: center;
-    }
-
-    .hybrid-heatmap-card__sort-select {
-        @include data-dense-typography;
-        padding: var(--data-dense-padding-xs) var(--data-dense-padding-sm);
-        border: var(--data-dense-border-width) solid var(--data-dense-border-color);
-        border-radius: 0px;
-        background-color: var(--artdeco-bg-card);
-        color: var(--artdeco-fg-primary);
-        cursor: pointer;
-
-        &:focus {
-            border-color: var(--artdeco-gold-primary);
-        }
-    }
-
-    // 网格视图
-    .hybrid-heatmap-card__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: var(--data-dense-gap-xs);
-        padding: var(--data-dense-padding-sm);
-    }
-
-    .hybrid-heatmap-card__cell {
-        @include data-dense-transitions;
-        @include gpu-accelerated;
-        position: relative;
-        aspect-ratio: 1;
-        border-radius: 0px;
-        cursor: pointer;
-        overflow: hidden;
-
-        &:hover {
-            transform: scale(1.05);
-            box-shadow: var(--data-dense-shadow-md);
-            z-index: 10;
-        }
-
-        &--up {
-            border: 1px solid rgba(255, 82, 82, 0.3);
-        }
-
-        &--down {
-            border: 1px solid rgba(0, 230, 118, 0.3);
-        }
-
-        &--flat {
-            border: 1px solid rgba(136, 136, 136, 0.3);
-        }
-    }
-
-    .hybrid-heatmap-card__cell-content {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: var(--data-dense-padding-xs);
-    }
-
-    .hybrid-heatmap-card__symbol {
-        @include data-dense-typography;
-        font-size: var(--data-dense-font-xs);
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        text-align: center;
-        word-break: break-all;
-    }
-
-    .hybrid-heatmap-card__change {
-        @include data-dense-typography;
-        font-size: 10px;
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        margin-top: 2px;
-    }
-
-    .hybrid-heatmap-card__volume-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
-        background-color: rgba(255, 255, 255, 0.3);
-        transition: width var(--data-dense-transition-fast);
-    }
-
-    // 列表视图
-    .hybrid-heatmap-card__list {
-        @include data-dense-spacing;
-    }
-
-    .hybrid-heatmap-card__list-header,
-    .hybrid-heatmap-card__list-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: var(--data-dense-gap-sm);
-        padding: var(--data-dense-padding-xs) var(--data-dense-padding-sm);
-        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
-    }
-
-    .hybrid-heatmap-card__list-header {
-        @include artdeco-gold-accent;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: var(--data-dense-font-sm);
-        letter-spacing: 0.05em;
-    }
-
-    .hybrid-heatmap-card__list-row {
-        @include data-dense-transitions;
-        cursor: pointer;
-
-        &:hover {
-            background-color: rgba(212, 175, 55, 0.05);
-        }
-
-        &:last-child {
-            border-bottom: none;
-        }
-    }
-
-    .hybrid-heatmap-card__list-cell {
-        @include data-dense-typography;
-        text-align: left;
-    }
-
-    .hybrid-heatmap-card__symbol-cell {
-        font-weight: 600;
-        @include artdeco-gold-accent;
-    }
-
-    // 图例
-    .hybrid-heatmap-card__legend {
-        display: flex;
-        justify-content: center;
-        gap: var(--data-dense-gap-md);
-        padding: var(--data-dense-padding-sm);
-        border-top: var(--data-dense-border-width) solid var(--data-dense-border-color);
-        flex-wrap: wrap;
-    }
-
-    .hybrid-heatmap-card__legend-item {
-        display: flex;
-        align-items: center;
-        gap: var(--data-dense-gap-xs);
-    }
-
-    .hybrid-heatmap-card__legend-color {
-        width: 16px;
-        height: 16px;
-        border-radius: 0px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .hybrid-heatmap-card__legend-text {
-        @include data-dense-typography;
-        font-size: var(--data-dense-font-xs);
-        color: var(--artdeco-fg-muted);
-    }
-
-    // 工具提示
-    .hybrid-heatmap-card__tooltip {
-        position: fixed;
-        pointer-events: none;
-        z-index: 1000;
-        transform: translate(-50%, -100%);
-        margin-top: -10px;
-    }
-
-    .hybrid-heatmap-card__tooltip-content {
-        @include hybrid-card;
-        padding: var(--data-dense-padding-sm);
-        min-width: 180px;
-        box-shadow: var(--data-dense-shadow-md);
-    }
-
-    .hybrid-heatmap-card__tooltip-title {
-        @include artdeco-gold-accent;
-        font-weight: 600;
-        margin-bottom: var(--data-dense-margin-sm);
-    }
-
-    .hybrid-heatmap-card__tooltip-row {
-        display: flex;
-        justify-content: space-between;
-        gap: var(--data-dense-gap-sm);
-        margin-bottom: var(--data-dense-margin-xs);
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    .hybrid-heatmap-card__tooltip-label {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-    }
-
-    .hybrid-heatmap-card__tooltip-value {
-        @include data-dense-typography;
-        font-weight: 600;
-
-        &.text-up {
-            color: var(--artdeco-up);
-        }
-        &.text-down {
-            color: var(--artdeco-down);
-        }
-    }
-
-    // 加载和空状态
-    .hybrid-heatmap-card__loading,
-    .hybrid-heatmap-card__empty {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--data-dense-gap-sm);
-    }
-
-    .hybrid-heatmap-card__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid rgba(212, 175, 55, 0.2);
-        border-top-color: var(--artdeco-gold-primary);
-        border-radius: 0px;
-        animation: hybrid-spin 1s linear infinite;
-    }
-
-    @keyframes hybrid-spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .hybrid-heatmap-card__loading p,
-    .hybrid-heatmap-card__empty p {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-        margin: 0;
-    }
-
-    // ============================================
-    //   RESPONSIVE DESIGN - 响应式设计
-    // ============================================
-
-    @media (max-width: 768px) {
-        .hybrid-heatmap-card {
-            .hybrid-heatmap-card__title {
-                font-size: var(--data-dense-font-base);
-            }
-
-            .hybrid-heatmap-card__grid {
-                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            }
-
-            .hybrid-heatmap-card__legend {
-                gap: var(--data-dense-gap-sm);
-            }
-
-            .hybrid-heatmap-card__list-header,
-            .hybrid-heatmap-card__list-row {
-                grid-template-columns: 1fr 1fr;
-                font-size: var(--data-dense-font-xs);
-            }
-
-            // 移动端默认列表视图
-            .hybrid-heatmap-card__grid {
-                display: none;
-            }
-
-            .hybrid-heatmap-card__list {
-                display: block;
-            }
-        }
-    }
-
-    // ============================================
-    //   PERFORMANCE NOTES - 性能说明
-    // ============================================
-
-    /*
-  热力图性能优化：
-  1. GPU加速：transform和颜色变化使用硬件加速
-  2. 虚拟化准备：网格布局支持后续添加虚拟滚动
-  3. 内存优化：颜色计算缓存，避免重复计算
-  4. 响应式优化：移动端自动切换到列表视图
-
-  预期性能：
-  - 支持数百只股票实时更新
-  - 颜色变化延迟 < 16ms
-  - 内存占用 < 50MB (1000只股票)
-*/
+@import "./styles/HeatmapCard.scss";
 </style>

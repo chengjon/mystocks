@@ -115,7 +115,7 @@ const formData = ref<{
   name: string;
   description: string;
   type: Strategy['type'];
-  parameters: Record<string, any>;
+  parameters: Record<string, unknown>;
 }>({
   name: '',
   description: '',
@@ -182,11 +182,8 @@ const handleCancel = () => {
 <style scoped>
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0 0 0 0;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,7 +198,7 @@ const handleCancel = () => {
   max-width: 600px;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
 }
 
 .modal-header {
@@ -272,7 +269,7 @@ const handleCancel = () => {
 .form-textarea:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .form-textarea {
@@ -356,7 +353,7 @@ const handleCancel = () => {
 }
 
 .btn-submit:disabled {
-  opacity: 0.6;
+  opacity: 60%;
   cursor: not-allowed;
 }
 
@@ -367,7 +364,7 @@ const handleCancel = () => {
 
 .modal-enter-from,
 .modal-leave-to {
-  opacity: 0;
+  opacity: 0%;
 }
 
 .modal-enter-from .modal-container,

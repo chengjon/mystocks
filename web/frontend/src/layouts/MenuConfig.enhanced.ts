@@ -77,7 +77,7 @@ export interface MenuItem {
   businessKey?: string // 用于映射 API 和 WebSocket
   apiEndpoint?: string // 后端 API 端点
   apiMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE' // API 请求方法
-  apiParams?: Record<string, any> // API 请求参数
+  apiParams?: Record<string, unknown> // API 请求参数
   wsChannel?: string // WebSocket 频道名称
   liveUpdate?: boolean // 是否开启实时更新
 

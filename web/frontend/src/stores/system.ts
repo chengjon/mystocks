@@ -2,7 +2,7 @@
 // 负责监控面板、系统设置、系统健康状态等系统相关数据
 
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { _ref, reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type {
     MonitoringDashboardData,
@@ -14,7 +14,7 @@ interface SystemState {
     monitoringDashboard: MonitoringDashboardData | null
     systemSettings: SystemSettings | null
     systemHealth: SystemHealth | null
-    systemConfig: Record<string, any> | null
+    systemConfig: Record<string, unknown> | null
     lastUpdateTime: string
 }
 
@@ -56,7 +56,7 @@ export const useSystemStore = defineStore('system', () => {
         }
     }
 
-    const updateSystemConfig = (config: Record<string, any>) => {
+    const updateSystemConfig = (config: Record<string, unknown>) => {
         state.systemConfig = { ...state.systemConfig, ...config }
         // 可以选择持久化到localStorage
         localStorage.setItem('systemConfig', JSON.stringify(state.systemConfig))

@@ -111,7 +111,7 @@ export function calculateMACD(data: KLineDataPoint[]): {
   }
 
   try {
-    const macdData = MACD.calculate(macdInput as any)
+    const macdData = MACD.calculate(macdInput as unknown)
 
     // ✅ 修复：使用类型断言确保返回number[]类型
     // 替换无效值而非过滤，保持长度一致
@@ -149,7 +149,7 @@ export function calculateKDJ(
   data: KLineDataPoint[],
   kPeriod: number = 9,
   dPeriod: number = 3,
-  jPeriod: number = 3
+  _jPeriod: number = 3
 ): {
   k: number[]
   d: number[]

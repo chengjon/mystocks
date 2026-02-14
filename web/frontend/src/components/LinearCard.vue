@@ -73,7 +73,7 @@ const handleMouseLeave = () => {
 <style scoped>
 .linear-card {
   position: relative;
-  background: linear-gradient(to bottom, var(--bg-surface), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(to bottom, var(--bg-surface), rgb(255 255 255 / 2%));
   border: 1px solid var(--border-default);
   border-radius: var(--radius-2xl);
   padding: var(--spacing-xl);
@@ -96,17 +96,14 @@ const handleMouseLeave = () => {
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(to bottom, var(--border-hover), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   pointer-events: none;
-  opacity: 0;
+  opacity: 0%;
   transition: opacity var(--duration-normal) var(--easing-default);
 }
 
 .linear-card:hover .linear-card__border {
-  opacity: 1;
+  opacity: 100%;
 }
 
 /* Mouse-tracking spotlight */

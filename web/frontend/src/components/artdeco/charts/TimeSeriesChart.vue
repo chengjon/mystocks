@@ -13,7 +13,7 @@
                     <div class="header-controls" v-if="showControls">
                         <ArtDecoButtonGroup v-if="timeRangeOptions.length > 0" :size="'sm'">
                             <ArtDecoButton
-                                v-for="range in timeRangeOptions"
+                                v-for="(range, _idx) in timeRangeOptions"
                                 :key="range.value"
                                 @click="handleTimeRangeChange(range.value)"
                                 :variant="selectedTimeRange === range.value ? 'solid' : 'outline'"
@@ -147,7 +147,7 @@
         ],
         height: 400,
         lineColor: '#D4AF37',
-        fillColor: 'rgba(212, 175, 55, 0.1)'
+        fillColor: 'rgb(212 175 55 / 10%)'
     })
 
     const emit = defineEmits<{
@@ -232,7 +232,7 @@
             height - padding.bottom - ((value - minValue) / valueRange) * (height - padding.top - padding.bottom)
 
         // 绘制网格线
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.1)'
+        ctx.strokeStyle = 'rgb(212 175 55 / 10%)'
         ctx.lineWidth = 1
         for (let i = 0; i <= 5; i++) {
             const y = padding.top + (i / 5) * (height - padding.top - padding.bottom)
@@ -405,263 +405,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-
-    // ============================================
-    //   ART DECO TIME SERIES CHART
-    // ============================================
-
-    .artdeco-timeseries-chart {
-        width: 100%;
-    }
-
-    .chart-card {
-        :deep(.card-header) {
-            padding: 0;
-        }
-    }
-
-    // ============================================
-    //   CHART HEADER
-    // ============================================
-
-    .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--artdeco-spacing-6);
-        padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-4);
-
-            .title-icon {
-                font-size: var(--artdeco-text-2xl);
-                opacity: 0.8;
-            }
-
-            .title-text {
-                .title-main {
-                    font-family: var(--artdeco-font-heading);
-                    font-size: var(--artdeco-text-lg);
-                    font-weight: 700;
-                    color: var(--artdeco-gold-primary);
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                    line-height: var(--artdeco-leading-tight);
-                }
-
-                .title-sub {
-                    font-family: var(--artdeco-font-body);
-                    font-size: var(--artdeco-text-xs);
-                    font-weight: 600;
-                    color: var(--artdeco-fg-muted);
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                    margin-top: var(--artdeco-spacing-1);
-                }
-            }
-        }
-    }
-
-    // ============================================
-    //   CHART CONTAINER
-    // ============================================
-
-    .chart-container {
-        position: relative;
-        min-height: 400px;
-        padding: var(--artdeco-spacing-4);
-
-        &.loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
-
-    .chart-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .chart-canvas {
-        width: 100%;
-        display: block;
-        cursor: crosshair;
-    }
-
-    // ============================================
-    //   EMPTY STATE
-    // ============================================
-
-    .empty-state {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-
-        .empty-icon {
-            font-size: var(--artdeco-text-5xl);
-            margin-bottom: var(--artdeco-spacing-4);
-            opacity: 0.3;
-        }
-
-        .empty-text {
-            font-family: var(--artdeco-font-heading);
-            font-size: var(--artdeco-text-lg);
-            font-weight: 600;
-            color: var(--artdeco-fg-muted);
-            margin-bottom: var(--artdeco-spacing-2);
-        }
-
-        .empty-hint {
-            font-family: var(--artdeco-font-body);
-            font-size: var(--artdeco-text-xs);
-            font-weight: 600;
-            color: var(--artdeco-fg-dim);
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-        }
-    }
-
-    // ============================================
-    //   TOOLTIP
-    // ============================================
-
-    .chart-tooltip {
-        position: absolute;
-        background: var(--artdeco-bg-card);
-        border: 1px solid var(--artdeco-gold-dim);
-        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-        border-radius: 4px;
-        pointer-events: none;
-        z-index: 100;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        min-width: 150px;
-
-        .tooltip-date {
-            font-family: var(--artdeco-font-mono);
-            font-size: var(--artdeco-text-xs);
-            color: var(--artdeco-fg-muted);
-            margin-bottom: var(--artdeco-spacing-2);
-            padding-bottom: var(--artdeco-spacing-2);
-            border-bottom: 1px solid var(--artdeco-gold-dim);
-        }
-
-        .tooltip-value {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: var(--artdeco-spacing-3);
-            margin-bottom: var(--artdeco-spacing-1);
-
-            .value-label {
-                font-family: var(--artdeco-font-body);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-muted);
-                text-transform: uppercase;
-            }
-
-            .value-number {
-                font-family: var(--artdeco-font-mono);
-                font-size: var(--artdeco-text-sm);
-                font-weight: 700;
-
-                &.rise {
-                    color: var(--artdeco-rise);
-                }
-
-                &.fall {
-                    color: var(--artdeco-fall);
-                }
-            }
-        }
-
-        .tooltip-change {
-            text-align: right;
-
-            .change-label {
-                font-family: var(--artdeco-font-mono);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-
-                &.rise {
-                    color: var(--artdeco-rise);
-                }
-
-                &.fall {
-                    color: var(--artdeco-fall);
-                }
-
-                &.neutral {
-                    color: var(--artdeco-fg-muted);
-                }
-            }
-        }
-    }
-
-    // ============================================
-    //   LEGEND
-    // ============================================
-
-    .chart-legend {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4) var(--artdeco-spacing-4);
-        border-top: 1px solid var(--artdeco-gold-dim);
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-2);
-            margin-right: var(--artdeco-spacing-6);
-
-            .legend-color {
-                width: 12px;
-                height: 12px;
-                border-radius: 2px;
-
-                &.rise {
-                    background: var(--artdeco-rise);
-                }
-
-                &.fall {
-                    background: var(--artdeco-fall);
-                }
-            }
-
-            .legend-text {
-                font-family: var(--artdeco-font-body);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-muted);
-                text-transform: uppercase;
-                letter-spacing: var(--artdeco-tracking-wide);
-            }
-        }
-
-        .legend-stats {
-            display: flex;
-            gap: var(--artdeco-spacing-6);
-
-            .stat-item {
-                font-family: var(--artdeco-font-mono);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-primary);
-
-                &::before {
-                    content: attr(data-label);
-                    margin-right: var(--artdeco-spacing-1);
-                    color: var(--artdeco-fg-muted);
-                }
-            }
-        }
-    }
+@import "./styles/TimeSeriesChart.scss";
 </style>

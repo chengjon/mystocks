@@ -94,7 +94,7 @@ export interface SecurityLog {
   ip?: string;
   device?: string;
   location?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**

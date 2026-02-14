@@ -68,7 +68,7 @@ const emit = defineEmits<{
 const newsSymbol = ref('')
 const newsMarket = ref('cn')
 const newsDays = ref(7)
-const newsList = ref<any[]>([])
+const newsList = ref<unknown[]>([])
 const newsLoading = ref(false)
 
 const fetchNews = async () => {
@@ -92,7 +92,7 @@ const fetchNews = async () => {
     newsList.value = response.data
     emit('api-tested', 'news')
     ElMessage.success(`获取到 ${response.data.length} 条新闻`)
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('获取新闻失败: ' + (error.response?.data?.detail || error.message))
   } finally {
     newsLoading.value = false
@@ -261,7 +261,7 @@ defineExpose({
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

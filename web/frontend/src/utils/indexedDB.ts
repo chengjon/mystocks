@@ -17,14 +17,14 @@ export interface MarketData {
 export interface TechnicalIndicator {
   symbol: string;
   indicator: string;
-  params: Record<string, any>;
+  params: Record<string, unknown>;
   values: number[];
   timestamp: number;
 }
 
 export interface UserPreferences {
   userId: string;
-  settings: Record<string, any>;
+  settings: Record<string, unknown>;
   timestamp: number;
 }
 

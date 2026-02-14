@@ -13,7 +13,7 @@
       <div class="stats-section">
         <ArtDecoGrid columns="3" responsive class="stats-grid">
           <ArtDecoStatCard
-            v-for="stat in statistics"
+            v-for="(stat, _idx) in statistics"
             :key="stat.id"
             :title="stat.title"
             :value="stat.value"
@@ -244,10 +244,11 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .dashboard-page {
   @include artdeco-layout;
+
   position: relative;
   min-height: 100vh;
 
@@ -281,6 +282,7 @@ onMounted(() => {
 
   .main-content {
     @include artdeco-content-spacing;
+
     position: relative;
   }
 
@@ -295,6 +297,7 @@ onMounted(() => {
 
     .stat-card {
       @include artdeco-hover-lift-glow;
+
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-border-accent);
       transition: all var(--artdeco-transition-base);
@@ -313,6 +316,7 @@ onMounted(() => {
     .risk-card,
     .status-card {
       @include artdeco-hover-lift-glow;
+
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-dim);
       position: relative;
@@ -327,7 +331,7 @@ onMounted(() => {
             height: 100%;
             background: linear-gradient(135deg,
               var(--artdeco-bg-card) 0%,
-              rgba(212, 175, 55, 0.05) 50%,
+              rgb(212 175 55 / 5%) 50%,
               var(--artdeco-bg-card) 100%
             );
             border-radius: var(--artdeco-radius-md);
@@ -348,7 +352,7 @@ onMounted(() => {
               height: 200px;
               background: radial-gradient(circle,
                 transparent 30%,
-                rgba(212, 175, 55, 0.1) 50%,
+                rgb(212 175 55 / 10%) 50%,
                 transparent 70%
               );
               border-radius: 50%;
@@ -369,7 +373,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-3);
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-radius: var(--artdeco-radius-sm);
 
           .symbol {
@@ -420,12 +424,12 @@ onMounted(() => {
           align-items: center;
           gap: var(--artdeco-spacing-4);
           padding: var(--artdeco-spacing-3);
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-radius: var(--artdeco-radius-sm);
           transition: all var(--artdeco-transition-fast);
 
           &:hover {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
             transform: translateX(4px);
           }
 
@@ -474,7 +478,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-4);
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-radius: var(--artdeco-radius-sm);
 
           .metric-label {
@@ -516,7 +520,7 @@ onMounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-3);
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-radius: var(--artdeco-radius-sm);
 
           .service-name {
@@ -537,17 +541,17 @@ onMounted(() => {
 
               &.online {
                 background: var(--artdeco-success);
-                box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+                box-shadow: 0 0 8px rgb(76 175 80 / 60%);
               }
 
               &.warning {
                 background: var(--artdeco-warning);
-                box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+                box-shadow: 0 0 8px rgb(255 193 7 / 60%);
               }
 
               &.offline {
                 background: var(--artdeco-danger);
-                box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+                box-shadow: 0 0 8px rgb(244 67 54 / 60%);
               }
             }
 
@@ -566,17 +570,17 @@ onMounted(() => {
 // Art Deco pulse animation for decorative elements
 @keyframes artdeco-pulse {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 30%;
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    opacity: 0.6;
+    opacity: 60%;
     transform: translate(-50%, -50%) scale(1.05);
   }
 }
 
 // Responsive design for Art Deco dashboard
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .dashboard-page {
     .dashboard-grid {
       grid-template-columns: 1fr 1fr;
@@ -584,7 +588,7 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboard-page {
     .stats-grid {
       grid-template-columns: 1fr;

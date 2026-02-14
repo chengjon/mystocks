@@ -35,7 +35,7 @@ export interface ErrorDetail {
  * request_id: 请求ID，用于追踪请求日志
  * errors: 详细错误信息数组，仅在请求失败时存在
  */
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean
   code: number
   message: string
@@ -48,7 +48,7 @@ export interface UnifiedResponse<T = any> {
 /**
  * 统一分页响应模型
  */
-export interface UnifiedPaginatedResponse<T = any> extends UnifiedResponse<T> {
+export interface UnifiedPaginatedResponse<T = unknown> extends UnifiedResponse<T> {
   pagination: PaginationInfo
 }
 
@@ -185,7 +185,7 @@ export interface KLineData {
 export interface TechnicalIndicator {
   symbol: string
   indicator: string
-  params: Record<string, any>
+  params: Record<string, unknown>
   values: number[]
   timestamps: number[]
 }
@@ -254,7 +254,7 @@ export interface BacktestParams {
   start_date: string
   end_date: string
   initial_capital: number
-  params?: Record<string, any>
+  params?: Record<string, unknown>
 }
 
 /**
@@ -332,19 +332,19 @@ export class APIError extends Error {
     this.name = 'APIError'
   }
 
-  static isNotFound(error: any): error is NotFoundResponse {
+  static isNotFound(error: unknown): error is NotFoundResponse {
     return error?.code === 404
   }
 
-  static isUnauthorized(error: any): error is UnauthorizedResponse {
+  static isUnauthorized(error: unknown): error is UnauthorizedResponse {
     return error?.code === 401
   }
 
-  static isValidation(error: any): error is ValidationErrorResponse {
+  static isValidation(error: unknown): error is ValidationErrorResponse {
     return error?.code === 422 || error?.code === 400
   }
 
-  static isServerError(error: any): error is ServerErrorResponse {
+  static isServerError(error: unknown): error is ServerErrorResponse {
     return error?.code >= 500
   }
 }
@@ -370,7 +370,7 @@ export function isErrorResponse(response: UnifiedResponse): response is UnifiedR
 /**
  * 检查是否为分页响应
  */
-export function isPaginatedResponse<T>(response: any): response is UnifiedPaginatedResponse<T> {
+export function isPaginatedResponse<T>(response: unknown): response is UnifiedPaginatedResponse<T> {
   return response?.pagination !== undefined
 }
 

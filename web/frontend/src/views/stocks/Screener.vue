@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, computed } from 'vue'
+    import { ref, reactive, computed, onUnmounted } from 'vue'
     import {
         ElCard,
         ElButton,
@@ -281,27 +281,36 @@
                 mid: stock.marketCap >= 5000000000 && stock.marketCap <= 50000000000,
                 small: stock.marketCap < 5000000000
             }
-            if (filters.marketCapRange !== 'any' && !(capRanges as any)[filters.marketCapRange]) return false
+            if (filters.marketCapRange !== 'any' && !(capRanges as unknown)[filters.marketCapRange]) return false
 
             return true
         })
     })
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const runScreening = async () => {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        ElMessage.success(`Found ${filteredStocks.value.length} stocks matching criteria`)
+        timer = setTimeout(() => {
+            ElMessage.success(`Found ${filteredStocks.value.length} stocks matching criteria`)
+        }, 500)
     }
+
+    onUnmounted(() => {
+        if (timer) {
+            clearTimeout(timer)
+            timer = null
+        }
+    })
 
     const clearFilters = () => {
         Object.keys(filters).forEach(key => {
-            ;(filters as any)[key] = key.includes('Type') || key.includes('Range') ? 'any' : undefined
+            ;(filters as unknown)[key] = key.includes('Type') || key.includes('Range') ? 'any' : undefined
         })
         ElMessage.info('Filters cleared')
     }
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
+    @import '@/styles/theme-tokens';
 
     .screener-container {
       display: flex;
@@ -330,7 +339,10 @@
         letter-spacing: 0.15em;
         color: var(--color-accent);
 
-        .el-icon { font-size: var(--font-size-3xl); color: var(--color-accent); }
+                .el-icon {
+          font-size: var(--font-size-3xl);
+          color: var(--color-accent);
+        }
       }
 
       .page-subtitle {
@@ -343,29 +355,75 @@
       }
     }
 
-    .filters-section .filters-card :deep(.el-card__header) { padding: var(--spacing-md) var(--spacing-lg); border-bottom: 1px solid var(--color-border); }
-    .card-title { font-family: var(--font-family-sans); font-size: var(--font-size-sm); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-accent); }
+        .filters-section .filters-card :deep(.el-card__header) {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+        .card-title {
+      font-family: var(--font-family-sans);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+    }
 
-    .filters-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-lg); }
-    .filter-group { background: var(--color-bg-secondary); padding: var(--spacing-lg); border-radius: var(--border-radius-md); }
-    .filter-title { font-size: var(--font-size-sm); font-weight: 600; color: var(--color-accent); margin: 0 0 var(--spacing-md) 0; }
-    .filter-row { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+        .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+    }
+        .filter-group {
+      background: var(--color-bg-secondary);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+    }
+        .filter-title {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-accent);
+      margin: 0 0 var(--spacing-md) 0;
+    }
+        .filter-row {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
 
-    .results-section .results-card :deep(.el-card__header) { padding: var(--spacing-md) var(--spacing-lg); border-bottom: 1px solid var(--color-border); }
-    .results-header { display: flex; align-items: center; justify-content: space-between; }
-    .results-count { font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
+        .results-section .results-card :deep(.el-card__header) {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+        .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+        .results-count {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
 
     .results-table :deep(.el-table__header th) { background: var(--color-bg-secondary); }
     .positive { color: var(--color-stock-up); }
     .negative { color: var(--color-stock-down); }
 
-    @media (max-width: 1200px) {
+    @media (width <= 1200px) {
       .filters-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
       .screener-container { padding: var(--spacing-md); }
-      .page-header { flex-direction: column; align-items: flex-start; gap: var(--spacing-md); }
-      .filter-row { flex-direction: column; align-items: stretch; }
+            .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+      }
+            .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
 </style>

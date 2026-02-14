@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed , onUnmounted } from 'vue'
 import ArtDecoIcon from '../core/ArtDecoIcon.vue'
 
 // Props
@@ -81,10 +81,16 @@ if (props.duration > 0) {
 defineExpose({
   dismiss: handleDismiss,
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 // ============================================
 //   ALERT CONTAINER
@@ -108,7 +114,7 @@ defineExpose({
     width: 8px;
     height: 8px;
     border: 1px solid currentColor;
-    opacity: 0.3;
+    opacity: 30%;
   }
 
   &::before {
@@ -132,8 +138,8 @@ defineExpose({
   color: var(--artdeco-success, #00E676);
   background: linear-gradient(
     135deg,
-    rgba(0, 230, 118, 0.1),
-    rgba(0, 230, 118, 0.05)
+    rgb(0 230 118 / 10%),
+    rgb(0 230 118 / 5%)
   );
 
   .artdeco-alert-icon {
@@ -146,8 +152,8 @@ defineExpose({
   color: var(--artdeco-warning, #FFC107);
   background: linear-gradient(
     135deg,
-    rgba(255, 193, 7, 0.1),
-    rgba(255, 193, 7, 0.05)
+    rgb(255 193 7 / 10%),
+    rgb(255 193 7 / 5%)
   );
 
   .artdeco-alert-icon {
@@ -161,8 +167,8 @@ defineExpose({
   color: var(--artdeco-danger, #FF5252);
   background: linear-gradient(
     135deg,
-    rgba(255, 82, 82, 0.1),
-    rgba(255, 82, 82, 0.05)
+    rgb(255 82 82 / 10%),
+    rgb(255 82 82 / 5%)
   );
 
   .artdeco-alert-icon {
@@ -175,8 +181,8 @@ defineExpose({
   color: var(--artdeco-info, #2196F3);
   background: linear-gradient(
     135deg,
-    rgba(33, 150, 243, 0.1),
-    rgba(33, 150, 243, 0.05)
+    rgb(33 150 243 / 10%),
+    rgb(33 150 243 / 5%)
   );
 
   .artdeco-alert-icon {
@@ -209,7 +215,7 @@ defineExpose({
   font-family: var(--artdeco-font-body);
   font-size: var(--artdeco-text-sm);
   line-height: 1.5;
-  opacity: 0.9;
+  opacity: 90%;
 }
 
 // Dismiss Button
@@ -232,11 +238,11 @@ defineExpose({
   color: inherit;
   cursor: pointer;
   transition: all var(--artdeco-transition-base);
-  opacity: 0.6;
+  opacity: 60%;
 
   &:hover {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.1);
+    opacity: 100%;
+    background: rgb(0 0 0 / 10%);
   }
 
   &:active {
@@ -253,12 +259,12 @@ defineExpose({
 }
 
 .alert-fade-enter-from {
-  opacity: 0;
+  opacity: 0%;
   transform: translateY(-10px);
 }
 
 .alert-fade-leave-to {
-  opacity: 0;
+  opacity: 0%;
   transform: translateY(-10px);
 }
 </style>

@@ -101,8 +101,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .artdeco-signal-monitoring-metrics {
         position: relative;
@@ -110,9 +110,7 @@
         margin-bottom: var(--artdeco-spacing-4);
 
         @include artdeco-stepped-corners(8px);
-
         @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
-
         @include artdeco-hover-lift-glow;
     }
 
@@ -122,7 +120,7 @@
         gap: var(--artdeco-spacing-4);
         padding: var(--artdeco-spacing-4);
 
-        @media (max-width: 900px) {
+        @media (width <= 900px) {
             grid-template-columns: 1fr;
         }
     }
@@ -220,7 +218,7 @@
         height: 16px;
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
-        opacity: 0.4;
+        opacity: 40%;
         transition: opacity var(--artdeco-transition-base);
         z-index: 1;
     }

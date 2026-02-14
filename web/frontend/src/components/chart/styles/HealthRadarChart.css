@@ -1,0 +1,355 @@
+/* ========================================
+   Bloomberg-Level Health Radar Chart
+   ======================================== */
+
+.health-radar-chart {
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+  border-radius: var(--fintech-radius-lg);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* 图表头部 */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.header-info h3 {
+  margin: 0 0 var(--fintech-space-1) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.header-info p {
+  margin: 0;
+  font-size: var(--fintech-font-size-sm);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--fintech-space-3);
+}
+
+/* 图表内容 */
+.chart-content {
+  display: flex;
+  min-height: 400px;
+}
+
+.radar-container {
+  flex: 1;
+  position: relative;
+  padding: var(--fintech-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-canvas {
+  width: 100%;
+  min-height: 320px;
+}
+
+/* 中心数值显示 */
+.center-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.center-value {
+  font-size: var(--fintech-font-size-3xl);
+  font-weight: 700;
+  font-family: var(--fintech-font-family-data);
+  margin-bottom: var(--fintech-space-1);
+  text-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+}
+
+.center-label {
+  font-size: var(--fintech-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 80%;
+}
+
+/* 图例面板 */
+.legend-panel {
+  width: 280px;
+  border-left: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.legend-header {
+  padding: var(--fintech-space-4) var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-dark);
+}
+
+.legend-title {
+  margin: 0;
+  font-size: var(--fintech-font-size-base);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.legend-items {
+  padding: var(--fintech-space-4);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-3);
+  padding: var(--fintech-space-3);
+  border-radius: var(--fintech-radius-base);
+  transition: all var(--fintech-transition-fast);
+  cursor: pointer;
+}
+
+.legend-item:hover {
+  background: var(--fintech-bg-elevated);
+}
+
+.legend-item.active {
+  background: var(--fintech-bg-elevated);
+  border-left: 3px solid var(--fintech-accent-primary);
+}
+
+.legend-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fintech-space-1);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--fintech-radius-sm);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+}
+
+.legend-rank {
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+  opacity: 80%;
+}
+
+.legend-info {
+  flex: 1;
+}
+
+.legend-name {
+  font-size: var(--fintech-font-size-base);
+  font-weight: 500;
+  margin-bottom: var(--fintech-space-1);
+}
+
+.legend-value {
+  font-size: var(--fintech-font-size-sm);
+  font-family: var(--fintech-font-family-data);
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-2);
+}
+
+.value-change {
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--fintech-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.value-change.positive {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.value-change.negative {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.value-change.neutral {
+  background: var(--fintech-gray-6);
+  color: var(--fintech-text-secondary);
+}
+
+.legend-bar {
+  width: 60px;
+}
+
+.bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--fintech-bg-primary);
+  border-radius: var(--fintech-radius-sm);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: var(--fintech-radius-sm);
+  transition: width var(--fintech-transition-base);
+}
+
+/* 图表底部统计 */
+.chart-footer {
+  padding: var(--fintech-space-4) var(--fintech-space-5);
+  border-top: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.footer-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: var(--fintech-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--fintech-space-1);
+}
+
+.stat-value {
+  font-size: var(--fintech-font-size-sm);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+}
+
+/* 工具提示 */
+.tooltip-overlay {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+}
+
+.tooltip-content {
+  background: var(--fintech-bg-primary);
+  border: 1px solid var(--fintech-border-base);
+  border-radius: var(--fintech-radius-base);
+  padding: var(--fintech-space-3);
+  box-shadow: var(--fintech-shadow-lg);
+  min-width: 200px;
+}
+
+.tooltip-title {
+  font-size: var(--fintech-font-size-sm);
+  font-weight: 600;
+  margin-bottom: var(--fintech-space-1);
+}
+
+.tooltip-value {
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 500;
+  font-family: var(--fintech-font-family-data);
+  margin-bottom: var(--fintech-space-1);
+}
+
+.tooltip-desc {
+  font-size: var(--fintech-font-size-xs);
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (width <= 1200px) {
+  .chart-content {
+    flex-direction: column;
+  }
+
+  .legend-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--fintech-border-base);
+  }
+
+  .footer-stats {
+    flex-wrap: wrap;
+    gap: var(--fintech-space-4);
+  }
+}
+
+@media (width <= 768px) {
+  .chart-header {
+    flex-direction: column;
+    gap: var(--fintech-space-3);
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+
+  .center-value {
+    font-size: var(--fintech-font-size-2xl);
+  }
+
+  .legend-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--fintech-space-2);
+  }
+
+  .legend-bar {
+    width: 100%;
+  }
+}
+
+/* 高分辨率优化 */
+@media (width >= 1920px) {
+  .radar-container {
+    padding: var(--fintech-space-6);
+  }
+
+  .center-value {
+    font-size: 48px;
+  }
+
+  .legend-panel {
+    width: 320px;
+  }
+}
+
+/* 深色主题适配 */
+@media (prefers-color-scheme: dark) {
+  .health-radar-chart {
+    border-color: var(--fintech-border-light);
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .chart-header .header-actions,
+  .tooltip-overlay {
+    display: none !important;
+  }
+
+  .health-radar-chart {
+    border: none;
+    box-shadow: none;
+  }
+}

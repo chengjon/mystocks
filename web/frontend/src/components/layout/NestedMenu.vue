@@ -36,7 +36,7 @@
 
           <!-- 二级菜单 -->
           <el-menu-item
-            v-for="subMenu in menu.children"
+            v-for="(subMenu, _idx) in menu.children"
             :key="subMenu.id"
             :index="subMenu.path"
             :disabled="subMenu.disabled"
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, _computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 /**
@@ -213,12 +213,12 @@ export default {
 /* 菜单项悬停效果 */
 .nested-menu :deep(.el-menu-item:hover),
 .nested-menu :deep(.el-sub-menu__title:hover) {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgb(255 255 255 / 10%) !important;
 }
 
 /* 激活菜单项样式 */
 .nested-menu :deep(.el-menu-item.is-active) {
-  background-color: rgba(64, 158, 255, 0.2) !important;
+  background-color: rgb(64 158 255 / 20%) !important;
 }
 
 /* 图标样式 */
@@ -241,7 +241,7 @@ export default {
 /* 禁用菜单项样式 */
 .nested-menu :deep(.el-menu-item.is-disabled),
 .nested-menu :deep(.el-sub-menu.is-disabled .el-sub-menu__title) {
-  opacity: 0.5;
+  opacity: 50%;
   cursor: not-allowed;
 }
 
@@ -257,7 +257,7 @@ export default {
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .nested-menu :deep(.el-menu-item),
   .nested-menu :deep(.el-sub-menu__title) {
     font-size: 14px;

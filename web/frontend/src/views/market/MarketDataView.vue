@@ -30,7 +30,7 @@
     <div class="card main-card">
       <div class="tabs-container">
         <button
-          v-for="tab in tabs"
+          v-for="(tab, _idx) in tabs"
           :key="tab.name"
           class="tab-button"
           :class="{ active: activeTab === tab.name }"
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
   min-height: 100vh;
   padding: 20px;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
 }
 
   position: fixed;
@@ -122,11 +122,10 @@ onBeforeUnmount(() => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 4%;
   background-image:
     repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
     repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
-}
 
 .card {
   background: var(--bg-secondary);
@@ -176,7 +175,7 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
     border: 1px solid var(--gold-dim);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -220,7 +219,7 @@ onBeforeUnmount(() => {
 
     .status-badge {
       padding: 6px 14px;
-      background: rgba(0, 230, 118, 0.15);
+      background: rgb(0 230 118 / 15%);
       border: 1px solid var(--fall);
       color: var(--fall);
       font-family: var(--font-display);
@@ -229,7 +228,7 @@ onBeforeUnmount(() => {
       letter-spacing: 1px;
 
       &.live {
-        background: rgba(0, 230, 118, 0.15);
+        background: rgb(0 230 118 / 15%);
         border-color: var(--fall);
         color: var(--fall);
       }
@@ -286,13 +285,13 @@ onBeforeUnmount(() => {
       stroke: var(--gold-primary);
     }
 
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
   }
 
   &.active {
     color: var(--gold-primary);
     border-bottom-color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.08);
+    background: rgb(212 175 55 / 8%);
 
     svg {
       stroke: var(--gold-primary);
@@ -305,7 +304,7 @@ onBeforeUnmount(() => {
   min-height: 500px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .market-data-view {
     padding: 10px;
   }

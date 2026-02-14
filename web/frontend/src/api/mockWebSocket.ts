@@ -1,6 +1,6 @@
 // web/frontend/src/api/mockWebSocket.ts
 
-type MessageHandler = (data: any) => void;
+type MessageHandler = (data: unknown) => void;
 
 class MockWebSocketService {
   private handlers: Map<string, Set<MessageHandler>> = new Map();

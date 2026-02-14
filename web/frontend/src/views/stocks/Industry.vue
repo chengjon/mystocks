@@ -18,7 +18,7 @@
 
         <div class="industries-grid">
             <el-card
-                v-for="industry in industries"
+                v-for="(industry, _idx) in industries"
                 :key="industry.name"
                 class="industry-card"
                 @click="selectIndustry(industry)"
@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive } from 'vue'
+    import { ref, _reactive, onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElMessage } from 'element-plus'
     import { Box, RefreshRight } from '@element-plus/icons-vue'
 
@@ -200,12 +200,22 @@
         }
     ])
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     const refreshData = async () => {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        ElMessage.success('Industry data refreshed')
+        timer = setTimeout(() => {
+          ElMessage.success('Industry data refreshed')
+        }, 500)
     }
 
-    const selectIndustry = (industry: any) => {
+    onUnmounted(() => {
+        if (timer) {
+            clearTimeout(timer)
+            timer = null
+        }
+    })
+
+    const selectIndustry = (industry: unknown) => {
         selectedIndustry.value = industry
     }
 
@@ -217,7 +227,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
+    @import '@/styles/theme-tokens';
 
     .industry-container {
       display: flex;
@@ -246,7 +256,10 @@
         letter-spacing: 0.15em;
         color: var(--color-accent);
 
-        .el-icon { font-size: var(--font-size-3xl); color: var(--color-accent); }
+                .el-icon {
+          font-size: var(--font-size-3xl);
+          color: var(--color-accent);
+        }
       }
 
       .page-subtitle {
@@ -397,15 +410,22 @@
     .positive { color: var(--color-stock-up); }
     .negative { color: var(--color-stock-down); }
 
-    @media (max-width: 1200px) {
+    @media (width <= 1200px) {
       .industries-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
       .industry-container { padding: var(--spacing-md); }
-      .page-header { flex-direction: column; align-items: flex-start; gap: var(--spacing-md); }
+            .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+      }
       .industries-grid { grid-template-columns: 1fr; }
-      .industry-header { flex-direction: column; text-align: center; }
+            .industry-header {
+        flex-direction: column;
+        text-align: center;
+      }
       .industry-stats { grid-template-columns: 1fr; }
     }
 </style>

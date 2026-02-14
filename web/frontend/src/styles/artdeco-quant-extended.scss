@@ -2,7 +2,6 @@
 //   ART DECO QUANTITATIVE TRADING EXTENSION
 //   艺术装饰量化交易扩展令牌
 // ============================================
-//
 // Purpose: 扩展ArtDeco设计系统，添加量化交易专业特性
 // Principle: 基于现有ArtDeco令牌，不重复定义，仅扩展缺失部分
 // Created: 2026-01-20
@@ -16,7 +15,7 @@
 
 // IBM Plex Sans - 技术数据字体 (开源，高可读性)
 // JetBrains Mono - 等宽数据字体 (数字对齐，技术感)
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap';
 
 // ============================================
 //   EXTENDED TYPOGRAPHY - 扩展排版系统
@@ -26,9 +25,11 @@
 :root {
   // Technical Fonts (量化交易专用)
   --artdeco-font-technical: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
   // 用途: 技术指标名称、策略标签、分析面板标题
 
   --artdeco-font-data: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+
   // 用途: 数值显示、价格数据、技术指标数值、代码片段
 
   // Financial Data Sizes (量化数据尺寸 - 更紧凑)
@@ -59,7 +60,7 @@
   // 买入信号→红色(预期涨), 卖出信号→绿色(预期跌)
   --quant-signal-strong-buy: #D50000;      // 强买入 - 深红
   --quant-signal-buy: var(--artdeco-up);   // 买入 - 红色 (复用涨色)
-  --quant-signal-neutral: #888888;         // 中性 - 灰色
+  --quant-signal-neutral: #888;         // 中性 - 灰色
   --quant-signal-sell: var(--artdeco-down); // 卖出 - 绿色 (复用跌色)
   --quant-signal-strong-sell: #00C853;     // 强卖出 - 深绿
 
@@ -67,15 +68,12 @@
   --quant-indicator-macd-fast: #2962FF;   // MACD快线 - 蓝色
   --quant-indicator-macd-slow: #FF6D00;   // MACD慢线 - 橙色
   --quant-indicator-macd-histogram: var(--artdeco-gold-primary); // MACD柱状图 - 金色
-
   --quant-indicator-kdj-k: #00BCD4;       // KDJ-K线 - 青色
   --quant-indicator-kdj-d: #7C4DFF;       // KDJ-D线 - 紫色
   --quant-indicator-kdj-j: #FF4081;       // KDJ-J线 - 粉色
-
-  --quant-indicator-rsi: #AA00FF;         // RSI指标 - 紫色
+  --quant-indicator-rsi: #A0F;         // RSI指标 - 紫色
   --quant-indicator-rsi-overbought: #FF5252; // RSI超买 - 红色
   --quant-indicator-rsi-oversold: #00E676;  // RSI超卖 - 绿色
-
   --quant-indicator-boll-upper: #FF5252;  // BOLL上轨 - 红色
   --quant-indicator-boll-middle: #D4AF37; // BOLL中轨 - 金色
   --quant-indicator-boll-lower: #00E676;  // BOLL下轨 - 绿色
@@ -151,18 +149,18 @@
 // ============================================
 
 @keyframes quant-flash-up {
-  0% { background-color: rgba(0, 230, 118, 0.3); }
+  0% { background-color: rgb(0 230 118 / 30%); }
   100% { background-color: transparent; }
 }
 
 @keyframes quant-flash-down {
-  0% { background-color: rgba(255, 82, 82, 0.3); }
+  0% { background-color: rgb(255 82 82 / 30%); }
   100% { background-color: transparent; }
 }
 
 @keyframes quant-pulse-signal {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 100%; }
+  50% { opacity: 60%; }
 }
 
 // 数据更新闪烁工具类
@@ -214,12 +212,12 @@
 
 // 背景色版本 (用于徽章、标签)
 .quant-bg-up {
-  background-color: rgba(255, 82, 82, 0.15);
+  background-color: rgb(255 82 82 / 15%);
   color: var(--artdeco-up);
 }
 
 .quant-bg-down {
-  background-color: rgba(0, 230, 118, 0.15);
+  background-color: rgb(0 230 118 / 15%);
   color: var(--artdeco-down);
 }
 
@@ -390,13 +388,13 @@
 //   仅支持桌面端 (最小1280x720)
 // ============================================
 
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   :root {
     --quant-grid-gap: var(--artdeco-dense-gap-sm); // 保持紧凑间距
   }
 }
 
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
   :root {
     --quant-grid-gap: var(--artdeco-dense-gap-md); // 大屏稍增加间距
     --quant-kline-height: 500px; // 更大K线图
@@ -416,7 +414,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
@@ -424,9 +422,9 @@
 // 高对比度模式支持
 @media (prefers-contrast: high) {
   :root {
-    --quant-signal-strong-buy: #00FF00;
-    --quant-signal-strong-sell: #FF0000;
-    --quant-indicator-rsi: #DD00FF;
+    --quant-signal-strong-buy: #0F0;
+    --quant-signal-strong-sell: #F00;
+    --quant-indicator-rsi: #D0F;
   }
 }
 

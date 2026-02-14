@@ -76,7 +76,7 @@ export interface StrategyParametersVM {
   risk?: RiskParametersVM;
 
   // Custom parameters
-  custom?: Record<string, any>;
+  custom?: Record<string, unknown>;
 }
 
 /**
@@ -111,7 +111,7 @@ export interface IndicatorParametersVM {
   };
 
   // Additional indicators can be added here
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -226,7 +226,7 @@ export interface BacktestRequestVM {
   start_date: string;
   end_date: string;
   initial_capital: number;
-  parameters: Record<string, any>;
+  parameters: Record<string, unknown>;
   // Additional fields for backtest task tracking
   status?: 'pending' | 'running' | 'completed' | 'failed';
   created_at?: string;

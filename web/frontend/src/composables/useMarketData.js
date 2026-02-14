@@ -32,7 +32,7 @@ export function useMarketData() {
     const error = ref(null)
 
     // 获取市场概览数据
-    const fetchMarketOverview = async (forceRefresh = false) => {
+    const fetchMarketOverview = async (_forceRefresh = false) => {
         error.value = null
         try {
             const response = await dataApi.getMarketOverview()

@@ -66,7 +66,7 @@ class IntelligentDataSourceAdapter {
       this.notifyModeChange(this.currentMode)
 
       return config
-    } catch (error) {
+    } catch (_error) {
       console.warn('⚠️ Failed to detect data source mode, using default')
       this.currentMode = 'mock'
       this.fallbackEnabled = true

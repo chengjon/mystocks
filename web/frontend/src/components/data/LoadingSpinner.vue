@@ -38,11 +38,8 @@ const spinnerClasses = computed(() => `spinner-${props.size}`)
 
   &.loading-spinner-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    inset: 0 0 0 0;
+    background: rgb(0 0 0 / 80%);
     z-index: 9999;
   }
 }
@@ -79,7 +76,7 @@ const spinnerClasses = computed(() => `spinner-${props.size}`)
 }
 
 .loading-text {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
   color: #A0A0A0;
   margin: 0;

@@ -80,7 +80,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
       wsManager.connect()
 
       // 监听连接状态（通过订阅一个状态频道）
-      const statusHandler = (data: any) => {
+      const statusHandler = (data: unknown) => {
         if (data.status === 'connected') {
           wsStatus.value.connected = true
           wsStatus.value.connecting = false
@@ -132,7 +132,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
     }
 
     // 创建消息处理器
-    const handler = (rawData: any) => {
+    const handler = (rawData: unknown) => {
       const data: RealtimeMarketData = {
         symbol: rawData.symbol || symbol,
         name: rawData.name,
@@ -206,7 +206,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
    * @returns 取消订阅函数
    */
   const subscribeMarketSummary = (
-    callback?: (data: any) => void
+    callback?: (data: unknown) => void
   ): (() => void) => {
     const channel = 'market:summary'
 
@@ -216,7 +216,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
       connect()
     }
 
-    const handler = (data: any) => {
+    const handler = (data: unknown) => {
       if (callback) {
         callback(data)
       }
@@ -356,10 +356,10 @@ export function onMarketUpdate(
  * @returns 清理函数
  */
 export function onMarketSummaryUpdate(
-  callback: (data: any) => void
+  callback: (data: unknown) => void
 ): () => void {
   const handler = (event: Event) => {
-    const customEvent = event as CustomEvent<any>
+    const customEvent = event as CustomEvent<unknown>
     callback(customEvent.detail)
   }
 

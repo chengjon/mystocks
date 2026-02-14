@@ -23,6 +23,7 @@ ALLOWED_ROOT_FILES=(
   "tsconfig.json" "tsconfig.node.json" "tsconfig.app.json"
   "vitest.config.ts" "vitest.config.js"
   "playwright.config.ts"
+  "ecosystem.test.config.js"
   # 兼容入口点 (src/ 重导出)
   "core.py" "data_access.py" "monitoring.py" "unified_manager.py"
   # Docker/部署配置

@@ -40,10 +40,10 @@
           <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
             <defs>
               <linearGradient id="fundPositive" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color: #e74c3c; stop-opacity: 0.6" />
+                <stop offset="0%" style="stop-color: #e74c3c; stop-opacity: 60%" />
               </linearGradient>
               <linearGradient id="fundNegative" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="100%" style="stop-color: #27ae60; stop-opacity: 0.6" />
+                <stop offset="100%" style="stop-color: #27ae60; stop-opacity: 60%" />
               </linearGradient>
               <rect x="20" y="60" width="25" height="80" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
               <rect x="55" y="40" width="25" height="80" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
@@ -61,7 +61,7 @@
       <div class="ranking-controls">
         <div class="time-filters">
           <button
-            v-for="filter in timeFilters"
+            v-for="(filter, _idx) in timeFilters"
             :key="filter.key"
             class="filter-btn"
             :class="{ active: activeTimeFilter === filter.key }"
@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, _computed, onMounted } from 'vue'
 
 const props = defineProps({
   stockCode: {
@@ -187,7 +187,7 @@ onMounted(() => {
 
 .chart-card {
   grid-column: span 2;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 12px;
   padding: 20px;
 }
@@ -208,7 +208,7 @@ onMounted(() => {
 
 .chart-area {
   flex: 1;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(255 255 255 / 2%);
   border-radius: 8px;
   padding: 15px;
   overflow: hidden;
@@ -216,7 +216,7 @@ onMounted(() => {
 
 .ranking-card {
   grid-column: span 2;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 12px;
   padding: 20px;
 }
@@ -234,8 +234,8 @@ onMounted(() => {
 
 .filter-btn {
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(255 255 255 / 20%);
   border-radius: 8px;
   color: #e74c3c;
   cursor: pointer;
@@ -243,7 +243,7 @@ onMounted(() => {
 }
 
 .filter-btn:hover {
-  background: rgba(231, 76, 60, 1);
+  background: rgb(231 76 60 / 100%);
   transform: translateY(-2px);
 }
 
@@ -255,14 +255,14 @@ onMounted(() => {
 .ranking-select {
   width: 200px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 5%);
+  border: 1px solid rgb(255 255 255 / 20%);
   border-radius: 8px;
   color: #e74c3c;
 }
 
 .ranking-table {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(255 255 255 / 2%);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -271,7 +271,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   padding: 12px;
-  background: rgba(231, 76, 60, 0.1);
+  background: rgb(231 76 60 / 10%);
   font-weight: 600;
   color: #e74c3c;
   border-radius: 8px 8px 8px 0 0;
@@ -285,11 +285,11 @@ onMounted(() => {
 .table-row {
   display: contents;
   padding: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
 }
 
 .table-row:hover {
-  background: rgba(231, 76, 60, 0.05);
+  background: rgb(231 76 60 / 5%);
 }
 
 .col-rank {
@@ -309,7 +309,7 @@ onMounted(() => {
 
 .stock-code {
   font-size: 12px;
-  color: rgba(231, 76, 60, 0.7);
+  color: rgb(231 76 60 / 70%);
 }
 
 .col-price {

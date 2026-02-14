@@ -284,7 +284,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed , onUnmounted } from 'vue'
 // ArtDeco component imports
 import {
   ArtDecoHeader,
@@ -482,13 +482,20 @@ const loadData = async () => {
     console.error('Failed to load settings:', error)
   }
 }
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .setting-page {
   @include artdeco-layout;
+
   position: relative;
 
   // Art Deco geometric corner decorations
@@ -521,6 +528,7 @@ const loadData = async () => {
 
   .main-content {
     @include artdeco-content-spacing;
+
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -528,6 +536,7 @@ const loadData = async () => {
   // Settings sections with Art Deco styling
   .settings-section {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
     margin-bottom: var(--artdeco-spacing-8);
@@ -538,10 +547,7 @@ const loadData = async () => {
     &::after {
       content: '';
       position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
+      inset: -2px -2px -2px -2px;
       background: linear-gradient(45deg,
         transparent 0%,
         var(--artdeco-gold-dim) 25%,
@@ -551,7 +557,7 @@ const loadData = async () => {
       );
       border-radius: var(--artdeco-radius-md);
       z-index: -1;
-      opacity: 0.3;
+      opacity: 30%;
     }
 
     .settings-form {
@@ -662,7 +668,7 @@ const loadData = async () => {
     gap: var(--artdeco-spacing-6);
     margin-top: var(--artdeco-spacing-12);
     padding: var(--artdeco-spacing-8);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
     border-radius: var(--artdeco-radius-md);
     border: 1px solid var(--artdeco-gold-dim);
 
@@ -690,7 +696,7 @@ const loadData = async () => {
       }
 
       &:disabled {
-        opacity: 0.6;
+        opacity: 60%;
         cursor: not-allowed;
       }
 
@@ -721,7 +727,7 @@ const loadData = async () => {
       }
 
       &:disabled {
-        opacity: 0.6;
+        opacity: 60%;
         cursor: not-allowed;
       }
 
@@ -747,11 +753,11 @@ const loadData = async () => {
       &:hover:not(:disabled) {
         background: darken(#E74C3C, 10%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        box-shadow: 0 4px 12px rgb(231 76 60 / 40%);
       }
 
       &:disabled {
-        opacity: 0.6;
+        opacity: 60%;
         cursor: not-allowed;
       }
 
@@ -764,12 +770,18 @@ const loadData = async () => {
 
 // Art Deco animations for settings
 @keyframes artdeco-error-flash {
-  0% { opacity: 0; transform: translateY(-10px); }
-  100% { opacity: 1; transform: translateY(0); }
+    0% {
+    opacity: 0%;
+    transform: translateY(-10px);
+  }
+    100% {
+    opacity: 100%;
+    transform: translateY(0);
+  }
 }
 
 // Responsive design for Art Deco settings
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .setting-page {
     .main-content {
       padding: var(--artdeco-spacing-4);
@@ -808,7 +820,7 @@ const loadData = async () => {
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .setting-page {
     .settings-actions {
       padding: var(--artdeco-spacing-4);

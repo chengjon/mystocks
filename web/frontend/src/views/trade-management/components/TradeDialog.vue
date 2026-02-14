@@ -174,7 +174,7 @@ const handleSubmit = async () => {
     ElMessage.success(`${form.type === 'buy' ? 'BUY' : 'SELL'} ORDER SUBMITTED`)
     emit('update:visible', false)
     emit('submitted')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('交易失败:', error)
     ElMessage.error('TRADE FAILED: ' + (error.message || 'UNKNOWN ERROR'))
   } finally {
@@ -198,8 +198,8 @@ defineExpose({
     border: 1px solid #1E293B;
     border-radius: 8px;
     box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.6),
-      0 0 40px rgba(0, 128, 255, 0.1);
+      0 4px 20px rgb(0 0 0 / 60%),
+      0 0 40px rgb(0 128 255 / 10%);
   }
 
   :deep(.el-dialog__header) {
@@ -243,7 +243,7 @@ defineExpose({
 
   :deep(.el-input) {
     .el-input__wrapper {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgb(0 0 0 / 30%);
       border: 1px solid #1E293B;
       border-radius: 4px;
       box-shadow: none;
@@ -255,11 +255,11 @@ defineExpose({
 
       &.is-focus {
         border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
       }
 
       .el-input__inner {
-        color: #FFFFFF;
+        color: #FFF;
         font-family: 'Roboto Mono', monospace;
         font-size: 14px;
 
@@ -271,7 +271,7 @@ defineExpose({
       }
 
       &.is-disabled {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgb(0 0 0 / 50%);
         border-color: #1E293B;
 
         .el-input__inner {
@@ -285,7 +285,7 @@ defineExpose({
     width: 100%;
 
     .el-input__wrapper {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgb(0 0 0 / 30%);
       border: 1px solid #1E293B;
       border-radius: 4px;
       box-shadow: none;
@@ -297,11 +297,11 @@ defineExpose({
 
       &.is-focus {
         border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
       }
 
       .el-input__inner {
-        color: #FFFFFF;
+        color: #FFF;
         font-family: 'Roboto Mono', monospace;
         font-size: 14px;
         text-align: left;
@@ -322,10 +322,10 @@ defineExpose({
 
   :deep(.el-textarea) {
     .el-textarea__inner {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgb(0 0 0 / 30%);
       border: 1px solid #1E293B;
       border-radius: 4px;
-      color: #FFFFFF;
+      color: #FFF;
       font-family: 'Roboto Mono', monospace;
       font-size: 14px;
       resize: none;
@@ -337,7 +337,7 @@ defineExpose({
 
       &:focus {
         border-color: #0080FF;
-        box-shadow: 0 0 0 2px rgba(0, 128, 255, 0.1);
+        box-shadow: 0 0 0 2px rgb(0 128 255 / 10%);
       }
 
       &::placeholder {
@@ -357,8 +357,8 @@ defineExpose({
   font-weight: 700;
   color: #0080FF;
   padding: 12px 16px;
-  background: rgba(0, 128, 255, 0.05);
-  border: 1px solid rgba(0, 128, 255, 0.2);
+  background: rgb(0 128 255 / 5%);
+  border: 1px solid rgb(0 128 255 / 20%);
   border-radius: 4px;
   text-align: center;
 }

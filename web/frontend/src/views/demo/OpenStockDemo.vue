@@ -22,7 +22,7 @@
     <!-- 功能导航 -->
     <div class="function-nav tabs-nav">
       <button
-        v-for="tab in tabs"
+        v-for="(tab, _idx) in tabs"
         :key="tab.key"
         class="btn"
         @click="activeTab = tab.key"
@@ -109,7 +109,7 @@ const isAuthenticated = computed<boolean>(() => {
   return !!(token && token.length > 0)
 })
 
-const goToLogin = () => {
+const _goToLogin = () => {
   router.push('/login')
 }
 
@@ -118,11 +118,11 @@ const tabs = TABS
 
 const apiStatus = ref<ApiStatus>({ ...DEFAULT_API_STATUS })
 
-const stockQuoteRef: Ref<any> = ref(null)
-const stockNewsRef: Ref<any> = ref(null)
-const featureStatusRef: Ref<any> = ref(null)
+const stockQuoteRef: Ref<unknown> = ref(null)
+const stockNewsRef: Ref<unknown> = ref(null)
+const featureStatusRef: Ref<unknown> = ref(null)
 
-const groups = ref<any[]>([])
+const groups = ref<unknown[]>([])
 
 const fetchGroups = async () => {
   try {
@@ -142,7 +142,7 @@ const handleApiTest = (feature: keyof ApiStatus) => {
   }
 }
 
-const handleGetQuote = (stock: any) => {
+const handleGetQuote = (stock: unknown) => {
   activeTab.value = 'quote'
   if (stockQuoteRef.value) {
     stockQuoteRef.value.setQuote(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
@@ -150,7 +150,7 @@ const handleGetQuote = (stock: any) => {
   }
 }
 
-const handleGetNews = (stock: any) => {
+const handleGetNews = (stock: unknown) => {
   activeTab.value = 'news'
   if (stockNewsRef.value) {
     stockNewsRef.value.setNews(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
@@ -179,11 +179,7 @@ onMounted(() => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
-  background-image:
-    repeating-linear-gradient(45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px),
-    repeating-linear-gradient(-45deg, var(--accent-gold) 0px, var(--accent-gold) 1px, transparent 1px, transparent 10px);
-}
+  opacity: 4%;
 
 .page-header {
   text-align: center;
@@ -225,7 +221,7 @@ onMounted(() => {
       transform: translateX(-50%);
       width: 60px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, rgb(212 175 55 / 50%), transparent);
     }
   }
 }
@@ -234,8 +230,8 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   margin-bottom: var(--spacing-6);
-  background: rgba(230, 126, 34, 0.1);
-  border: 1px solid rgba(230, 126, 34, 0.4);
+  background: rgb(230 126 34 / 10%);
+  border: 1px solid rgb(230 126 34 / 40%);
 }
 
 .alert-content {
@@ -296,25 +292,19 @@ onMounted(() => {
   border-radius: 0;
   cursor: pointer;
   transition: all var(--transition-base);
-}
-
-  background: var(--accent-gold);
-  color: var(--bg-primary);
 
   &:hover {
     background: var(--accent-gold-light);
     box-shadow: var(--glow-medium);
   }
-}
 
   background: transparent;
   color: var(--accent-gold);
 
   &:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
     box-shadow: var(--glow-subtle);
   }
-}
 
 .tab-icon {
   font-size: 14px;
@@ -324,14 +314,13 @@ onMounted(() => {
   font-size: var(--font-size-small);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .openstock-demo {
     padding: var(--spacing-4);
   }
 
   .function-nav {
     flex-direction: column;
-
       width: 100%;
     }
   }
@@ -340,5 +329,4 @@ onMounted(() => {
     flex-direction: column;
     text-align: center;
   }
-}
 </style>

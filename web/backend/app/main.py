@@ -48,7 +48,7 @@ from .openapi_config import get_openapi_config
 # 配置日志 - 从环境变量读取级别，默认INFO，生产环境可设置为WARNING/ERROR
 log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
 logging.basicConfig(level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = structlog.get_logger()
+logger = logging.getLogger("app.main")
 
 
 # SECURITY FIX 1.2: CSRF Token管理 - Redis持久化（支持多worker共享和重启恢复）
@@ -64,6 +64,7 @@ class CSRFTokenManager:
         """获取Redis客户端，不可用时返回None"""
         try:
             from app.core.redis_client import get_redis_client
+
             client = get_redis_client()
             if client is not None:
                 client.ping()
@@ -81,6 +82,7 @@ class CSRFTokenManager:
         if redis_client:
             try:
                 import json
+
                 token_data = json.dumps({"created_at": created_at, "used": False})
                 redis_client.setex(f"{self._redis_prefix}{token}", self.token_timeout, token_data)
                 return token
@@ -100,6 +102,7 @@ class CSRFTokenManager:
         if redis_client:
             try:
                 import json
+
                 key = f"{self._redis_prefix}{token}"
                 token_data_raw = redis_client.get(key)
                 if not token_data_raw:
@@ -169,15 +172,15 @@ async def lifespan(app: FastAPI):
     try:
         # 初始化PostgreSQL连接
         engine = get_postgresql_engine()
-        logger.info("✅ Database connection initialized", database="PostgreSQL")
+        logger.info("✅ Database connection initialized")
 
         # 测试连接
         with engine.connect() as conn:
             result = conn.execute(text("SELECT version()"))
             version = result.fetchone()[0]
-            logger.info("✅ Database connection verified", version=version[:50])
+            logger.info(f"✅ Database connection verified version={version[:50]}")
     except Exception as e:
-        logger.error("❌ Database initialization failed", error=str(e))
+        logger.error(f"❌ Database initialization failed: {e}")
         # DEVELOPMENT MODE: Continue without database for frontend development
         if os.getenv("DEVELOPMENT_MODE", "false").lower() == "true":
             logger.warning("⚠️ DEVELOPMENT MODE: Continuing without database connection")
@@ -194,7 +197,7 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("⚠️ 监控数据库初始化失败，健康度功能将不可用")
     except Exception as e:
-        logger.error("❌ 启动监控数据库失败: %s", e)
+        logger.error(f"❌ 启动监控数据库失败: {e}")
         # 不阻止应用启动
         logger.warning("⚠️ 健康度评分功能将不可用")
 
@@ -221,7 +224,7 @@ async def lifespan(app: FastAPI):
     except TimeoutError:
         logger.warning("⚠️ Cache eviction scheduler initialization timeout - skipping (TDengine not available)")
     except Exception as e:
-        logger.warning("⚠️ Failed to start cache eviction scheduler", error=str(e))
+        logger.warning(f"⚠️ Failed to start cache eviction scheduler: {e}")
 
     # 初始化实时市值系统 (Phase 12.4 - DDD Architecture)
     try:
@@ -230,7 +233,7 @@ async def lifespan(app: FastAPI):
         initialize_realtime_mtm()
         logger.info("✅ Real-time MTM system initialized (Phase 12.4)")
     except Exception as e:
-        logger.error("❌ Failed to initialize Real-time MTM: %s", e)
+        logger.error(f"❌ Failed to initialize Real-time MTM: {e}")
         # 不阻止应用启动
         logger.warning("⚠️ Real-time MTM features will be unavailable")
 
@@ -250,7 +253,7 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Indicator tasks registered")
 
     except Exception as e:
-        logger.error("❌ Failed to initialize Indicator System: %s", e)
+        logger.error(f"❌ Failed to initialize Indicator System: {e}")
 
     yield  # 应用运行期间
 
@@ -281,7 +284,7 @@ async def lifespan(app: FastAPI):
         # logger.info("✅ Cache eviction scheduler stopped")
         logger.info("⚠️ Cache eviction scheduler reset disabled (import commented out)")
     except Exception as e:
-        logger.warning("⚠️ Error stopping cache eviction scheduler", error=str(e))
+        logger.warning(f"⚠️ Error stopping cache eviction scheduler: {e}")
 
     close_all_connections()
     logger.info("✅ All database connections closed")
@@ -478,10 +481,7 @@ async def log_requests(request: Request, call_next):
 
     # 记录请求信息
     logger.info(
-        "HTTP request started",
-        method=request.method,
-        url=str(request.url),
-        client_host=request.client.host,
+        f"HTTP request started: method={request.method} url={str(request.url)} client_host={request.client.host}"
     )
 
     response = await call_next(request)
@@ -489,11 +489,7 @@ async def log_requests(request: Request, call_next):
     # 记录响应信息
     process_time = time.time() - start_time
     logger.info(
-        "HTTP request completed",
-        method=request.method,
-        url=str(request.url),
-        status_code=response.status_code,
-        process_time=round(process_time, 3),
+        f"HTTP request completed: method={request.method} url={str(request.url)} status_code={response.status_code} process_time={round(process_time, 3)}"
     )
 
     return response
@@ -701,11 +697,7 @@ router_modules = {
 # 动态注册标准路由
 for key, config in VERSION_MAPPING.items():
     if key in router_modules:
-        app.include_router(
-            router_modules[key],
-            prefix=config["prefix"],
-            tags=config["tags"]
-        )
+        app.include_router(router_modules[key], prefix=config["prefix"], tags=config["tags"])
         logger.info(f"✅ Registered {key} router at {config['prefix']}")
 
 # --- 2. 兼容性与特殊路由注册 ---
@@ -747,6 +739,11 @@ app.include_router(risk_management.router)
 app.include_router(sse_endpoints.router)
 app.include_router(industry_concept_analysis.router)
 
+# --- MyStocks v1 Domain-Split API (from mystocks_complete.py refactor) ---
+from .api.v1.router import api_v1_router as mystocks_v1_router
+
+app.include_router(mystocks_v1_router)
+
 # Phase 3/4 数据治理
 app.include_router(contract.router)
 app.include_router(data_source_registry.router)
@@ -780,4 +777,3 @@ if __name__ == "__main__":
     except RuntimeError as e:
         logger.error("❌ %s", e)
         exit(1)
-

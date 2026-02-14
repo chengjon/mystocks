@@ -33,7 +33,7 @@
 - 解决2个关键协作问题的完整方案
 - 提供实施步骤和检查清单
 - Git提交: `01d3723` (CLI-2分支)
-- 位置: `docs/guides/multi-cli-tasks/`
+- 位置: `docs/guides/.multi-cli-tasks/`
 
 #### 3. **`check_file_conflicts.sh`** - 自动冲突检测脚本
 - 基于所有权映射自动检测冲突
@@ -46,7 +46,7 @@
 - 添加问题7到常见问题（+60行）
 - 更新所有检查清单（+15行）
 - Git提交: `004072b` (main分支)
-- 位置: `docs/guides/multi-cli-tasks/`
+- 位置: `docs/guides/.multi-cli-tasks/`
 
 ---
 
@@ -268,9 +268,9 @@ CHANGELOG.md                        主CLI维护
 
 ## 📖 相关文档
 
-- **[冲突预防规范](./docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南（200行）
-- **[Git远程名称标准化](./docs/guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)** - 远程名称规范（261行）
-- **[主CLI工作规范](./docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准（已更新）
+- **[冲突预防规范](./docs/guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南（200行）
+- **[Git远程名称标准化](./docs/guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)** - 远程名称规范（261行）
+- **[主CLI工作规范](./docs/guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准（已更新）
 
 ---
 

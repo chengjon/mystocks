@@ -65,7 +65,7 @@ export interface ErrorInfo {
 export function classifyError(error: AxiosError): ErrorInfo {
   if (error.response) {
     const status = error.response.status
-    const data = error.response.data as any
+    const data = error.response.data as Record<string, unknown>
 
     // 优先使用服务器返回的错误消息
     const serverMessage = data?.error_message || data?.detail || ''
@@ -226,7 +226,7 @@ const createApiClient = (): AxiosInstance => {
       if (error.response) {
         // 服务器响应错误
         const status = error.response.status
-        const data = error.response.data as any
+        const data = error.response.data as Record<string, unknown>
 
         if (status === 401) {
           // 未授权,清除token并跳转登录

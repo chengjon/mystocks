@@ -32,7 +32,7 @@
 
 <script setup>
     import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-    import * as echarts from 'echarts'
+    import echarts from '@/utils/echarts'
     import { artDecoTheme } from '@/utils/echarts'
     import { Download, Refresh, Loading } from '@element-plus/icons-vue'
 
@@ -383,10 +383,10 @@
         }
 
         .chart-error {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgb(255 255 255 / 90%);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 
             .el-alert {
                 margin-bottom: 12px;
@@ -395,7 +395,7 @@
     }
 
     // 响应式设计
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .sankey-chart-container {
             .chart-header {
                 flex-direction: column;

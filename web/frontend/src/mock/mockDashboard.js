@@ -30,7 +30,7 @@ const formatPercent = () => randomFloat(-5, 8, 2)
  * 对应Dashboard.vue中期望的stats数组格式
  */
 export function getDashboardStats() {
-  const currentTime = new Date().toLocaleString('zh-CN')
+  const _currentTime = new Date().toLocaleString('zh-CN')
 
   return [
     {

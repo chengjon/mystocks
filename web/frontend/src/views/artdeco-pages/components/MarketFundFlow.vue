@@ -39,12 +39,12 @@
                     <svg width="100%" height="200" viewBox="0 0 800 200" preserveAspectRatio="none">
                         <defs>
                             <linearGradient id="fundPositive" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color: #e74c3c; stop-opacity: 0.6" />
-                                <stop offset="100%" style="stop-color: #e74c3c; stop-opacity: 0.1" />
+                                <stop offset="0%" style="stop-color: #e74c3c; stop-opacity: 60%" />
+                                <stop offset="100%" style="stop-color: #e74c3c; stop-opacity: 10%" />
                             </linearGradient>
                             <linearGradient id="fundNegative" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color: #27ae60; stop-opacity: 0.6" />
-                                <stop offset="100%" style="stop-color: #27ae60; stop-opacity: 0.1" />
+                                <stop offset="0%" style="stop-color: #27ae60; stop-opacity: 60%" />
+                                <stop offset="100%" style="stop-color: #27ae60; stop-opacity: 10%" />
                             </linearGradient>
                         </defs>
                         <!-- 模拟资金流向柱状图 (Simplified) -->
@@ -96,7 +96,7 @@ defineProps({
 
 .chart-area {
     flex: 1;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgb(0 0 0 / 10%);
     border-radius: 4px;
     overflow: hidden;
 }

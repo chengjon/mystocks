@@ -1,5 +1,5 @@
 // web/frontend/src/styles/artdeco-menu.scss
-@import './artdeco-tokens.scss'; // Assuming artdeco-tokens.scss is in the same directory
+@import './artdeco-tokens'; // Assuming artdeco-tokens.scss is in the same directory
 
 .artdeco-sidebar {
   background: var(--artdeco-bg-global);
@@ -37,6 +37,7 @@
       height: 8px;
       border: 2px solid transparent;
       transition: all 0.3s ease;
+
     }
 
     &::before {
@@ -44,6 +45,7 @@
       left: 4px;
       border-top-color: var(--artdeco-gold-dim);
       border-left-color: var(--artdeco-gold-dim);
+
     }
 
     &::after {
@@ -51,6 +53,7 @@
       right: 4px;
       border-bottom-color: var(--artdeco-gold-dim);
       border-right-color: var(--artdeco-gold-dim);
+
     }
 
     &:hover::before,
@@ -58,6 +61,7 @@
       width: 12px;
       height: 12px;
       border-color: var(--artdeco-gold-primary);
+
     }
   }
 
@@ -66,14 +70,14 @@
     color: var(--artdeco-gold-hover);
     background: linear-gradient(
       90deg,
-      rgba(212, 175, 55, 0.15) 0%,
-      rgba(212, 175, 55, 0.05) 100%
+      rgb(212 175 55 / 15%) 0%,
+      rgb(212 175 55 / 5%) 100%
     );
     border-left-color: var(--artdeco-gold-primary);
     border-left-width: 4px;
     box-shadow:
-      inset 0 0 20px rgba(212, 175, 55, 0.1),
-      0 0 10px rgba(212, 175, 55, 0.2);
+      inset 0 0 20px rgb(212 175 55 / 10%),
+      0 0 10px rgb(212 175 55 / 20%);
   }
 
   // 特色功能：放射状装饰
@@ -82,7 +86,7 @@
       repeating-conic-gradient(
         from 0deg,
         transparent 0deg 15deg,
-        rgba(212, 175, 55, 0.03) 15deg 30deg
+        rgb(212 175 55 / 3%) 15deg 30deg
       );
   }
 
@@ -92,7 +96,7 @@
 
     &.nav-item--featured {
       // 金色光晕效果
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+      box-shadow: 0 0 20px rgb(212 175 55 / 30%);
     }
   }
 
@@ -102,7 +106,8 @@
 
   &.priority-tertiary {
     font-weight: 300;
-    opacity: 0.8;
+    opacity: 80%;
+
   }
 }
 
@@ -115,12 +120,15 @@
   flex-shrink: 0; // Prevent shrinking
 
   &.status-live {
-    background: var(--artdeco-up, #28a745); // Default green if token not found
+    background: var(--artdeco-up, #28a745);
+
+    // Default green if token not found
     animation: pulse 2s infinite;
+
   }
 
   &.status-idle {
-    background: var(--artdeco-fg-muted, #888888); // Default gray
+    background: var(--artdeco-fg-muted, #888); // Default gray
   }
 
   &.status-error {
@@ -129,6 +137,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); } // Using default green
-  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(40, 167, 69, 0); }
+    0%, 100% {
+    opacity: 100%;
+    box-shadow: 0 0 0 0 rgb(40 167 69 / 70%);
+  }
+  50% {
+    opacity: 70%;
+    box-shadow: 0 0 0 4px rgb(40 167 69 / 0%);
+  }
 }

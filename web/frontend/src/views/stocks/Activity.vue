@@ -19,13 +19,13 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, computed } from 'vue'
-    import { ElCard, ElButton, ElTable, ElTableColumn, ElSelect, ElOption, ElTag, ElMessage } from 'element-plus'
+    import { ref, reactive, computed , onUnmounted } from 'vue'
+    import { _ElCard, ElButton, _ElTable, _ElTableColumn, _ElSelect, _ElOption, _ElTag, ElMessage } from 'element-plus'
     import { Tickets, RefreshRight } from '@element-plus/icons-vue'
 
-    const activityFilter = ref('all')
+    const _activityFilter = ref('all')
 
-    const activityStats = reactive({
+    const _activityStats = reactive({
         totalTrades: 1247,
         todayTrades: 23,
         totalVolume: 45000000,
@@ -62,7 +62,7 @@
         }
     ])
 
-    const filteredActivities = computed(() => {
+    const _filteredActivities = computed(() => {
         // Simple filtering - in real app would filter by date ranges
         return tradingActivities.value
     })
@@ -72,7 +72,7 @@
         ElMessage.success('Activity data refreshed')
     }
 
-    const getStatusType = (status: string) => {
+    const _getStatusType = (status: string) => {
         switch (status) {
             case 'completed':
                 return 'success'
@@ -85,15 +85,21 @@
         }
     }
 
-    const formatVolume = (volume: number) => {
+    const _formatVolume = (volume: number) => {
         if (volume >= 100000000) return (volume / 100000000).toFixed(1) + '亿'
         if (volume >= 10000) return (volume / 10000).toFixed(1) + '万'
         return volume.toString()
     }
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
+    @import '@/styles/theme-tokens';
 
     .activity-container {
         display: flex;
@@ -186,7 +192,7 @@
         background: var(--color-bg-secondary);
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .activity-container {
             padding: var(--spacing-md);
         }

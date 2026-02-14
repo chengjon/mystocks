@@ -96,8 +96,8 @@ const calculateSAR = (high: number[], low: number[], af: number = 0.02, maxAf: n
 
     const prevSar = sar;
     const newSar = prevSar + afVal * (ep - prevSar);
-    const prevHigh = high[i - 1];
-    const prevLow = low[i - 1];
+    const _prevHigh = high[i - 1];
+    const _prevLow = low[i - 1];
     const currHigh = high[i];
     const currLow = low[i];
 
@@ -140,10 +140,10 @@ export const calculateKAMA = (data: number[], fastPeriod: number = 10, slowPerio
     return new Array(n).fill(NaN);
   }
 
-  const smooth = 2 / (fastPeriod + 1);
+  const _smooth = 2 / (fastPeriod + 1);
   const fast = 2 / (fastPeriod + 1);
   const slow = 2 / (slowPeriod + 1);
-  const diff = Math.abs(data[0] - data[0]);
+  const _diff = Math.abs(data[0] - data[0]);
 
   for (let i = 0; i < n; i++) {
     if (i < maxPeriod) {
@@ -185,14 +185,14 @@ export const calculateIndicator = (
   switch (type) {
     case 'MA': {
       const result: IndicatorResult = {};
-      params.forEach((p, idx) => {
+      params.forEach((p, _idx) => {
         result[`MA${p}`] = calculateSMA(closes, p);
       });
       return result;
     }
     case 'EMA': {
       const result: IndicatorResult = {};
-      params.forEach((p, idx) => {
+      params.forEach((p, _idx) => {
         result[`EMA${p}`] = calculateEMA(closes, p);
       });
       return result;

@@ -32,17 +32,24 @@ defineProps({
     gap: 20px;
 }
 .index-item {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
     padding: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid rgb(212 175 55 / 10%);
     .header {
         display: flex;
         justify-content: space-between;
         font-size: 12px;
         margin-bottom: 8px;
     }
-    .value { font-size: 20px; font-weight: bold; margin-bottom: 8px; }
-    .footer { font-size: 11px; color: var(--artdeco-fg-muted); }
+    .value {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .footer {
+      font-size: 11px;
+      color: var(--artdeco-fg-muted);
+    }
     .change.rise { color: var(--artdeco-rise); }
     .change.fall { color: var(--artdeco-fall); }
 }

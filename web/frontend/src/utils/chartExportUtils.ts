@@ -49,7 +49,7 @@ export class ChartImageExporter {
             })
 
             canvas.toBlob(
-                (blob: any) => {
+                (blob: unknown) => {
                     if (blob) {
                         const filename = config.filename || `chart-${Date.now()}.png`
                         saveAs(blob, filename)
@@ -67,7 +67,7 @@ export class ChartImageExporter {
     /**
      * 导出为SVG格式 (通过ECharts)
      */
-    static exportToSVG(echartsInstance: any, config: ExportConfig = { format: 'svg' }): void {
+    static exportToSVG(echartsInstance: unknown, config: ExportConfig = { format: 'svg' }): void {
         try {
             const svgData = echartsInstance.getDataURL({
                 type: 'svg',
@@ -143,7 +143,7 @@ export class ChartDataExporter {
     /**
      * 导出为JSON格式
      */
-    static exportToJSON(data: any, config: ExportConfig = { format: 'json' }): void {
+    static exportToJSON(data: unknown, config: ExportConfig = { format: 'json' }): void {
         try {
             const jsonString = JSON.stringify(data, null, 2)
             const blob = new Blob([jsonString], { type: 'application/json' })
@@ -158,7 +158,7 @@ export class ChartDataExporter {
     /**
      * 导出为CSV格式
      */
-    static exportToCSV(data: any[], config: ExportConfig = { format: 'csv' }): void {
+    static exportToCSV(data: unknown[], config: ExportConfig = { format: 'csv' }): void {
         try {
             if (!Array.isArray(data) || data.length === 0) {
                 throw new Error('Data must be a non-empty array')
@@ -207,10 +207,10 @@ export class ChartDataExporter {
     /**
      * 导出为Excel格式
      */
-    static async exportToExcel(data: any[], config: ExportConfig = { format: 'csv' }): Promise<void> {
+    static async exportToExcel(data: unknown[], config: ExportConfig = { format: 'csv' }): Promise<void> {
         try {
             // 动态导入xlsx库
-            const XLSX = (await import('xlsx')) as any
+            const XLSX = (await import('xlsx')) as unknown
 
             // 创建工作簿
             const wb = XLSX.utils.book_new()
@@ -266,7 +266,7 @@ export class ChartShareManager {
     /**
      * 生成嵌入代码
      */
-    static generateEmbedCode(chartConfig: EChartsOption, config: ShareConfig): string {
+    static generateEmbedCode(chartConfig: EChartsOption, _config: ShareConfig): string {
         try {
             const serializedConfig = btoa(JSON.stringify(chartConfig))
 
@@ -293,7 +293,7 @@ export class ChartShareManager {
     static shareToSocialMedia(platform: 'twitter' | 'linkedin' | 'facebook', url: string, config: ShareConfig): void {
         const encodedUrl = encodeURIComponent(url)
         const encodedTitle = encodeURIComponent(config.title || 'Interactive Chart')
-        const encodedDescription = encodeURIComponent(config.description || '')
+        const _encodedDescription = encodeURIComponent(config.description || '')
 
         let shareUrl = ''
 
@@ -317,7 +317,7 @@ export class ChartShareManager {
     /**
      * 导出分享配置
      */
-    static exportShareConfig(chartConfig: EChartsOption, config: ShareConfig): any {
+    static exportShareConfig(chartConfig: EChartsOption, config: ShareConfig): unknown {
         return {
             chartConfig,
             shareConfig: config,
@@ -334,9 +334,9 @@ export class BatchExportManager {
         id: string
         config: ExportConfig
         element: HTMLElement
-        echartsInstance?: any
+        echartsInstance?: unknown
         resolve: (value: void) => void
-        reject: (reason: any) => void
+        reject: (reason: unknown) => void
     }> = []
 
     private isProcessing = false
@@ -344,7 +344,7 @@ export class BatchExportManager {
     /**
      * 添加导出任务到队列
      */
-    addToQueue(config: ExportConfig, element: HTMLElement, echartsInstance?: any): Promise<void> {
+    addToQueue(config: ExportConfig, element: HTMLElement, echartsInstance?: unknown): Promise<void> {
         return new Promise((resolve, reject) => {
             const id = `export-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 

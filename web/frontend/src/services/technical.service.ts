@@ -147,7 +147,7 @@ export class TechnicalService {
     end_date?: string;
   }): Promise<APIResponse<{
     symbol: string;
-    data: Record<string, any[]>;
+    data: Record<string, unknown[]>;
   }>> {
     return apiClient.post(`${this.basePath}/indicators/batch`, params);
   }

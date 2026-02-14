@@ -24,7 +24,7 @@
       <!-- Bloomberg-style Custom Tabs -->
       <div class="bloomberg-tabs-wrapper">
         <button
-          v-for="tab in tabs"
+          v-for="(tab, _idx) in tabs"
           :key="tab.name"
           :class="['bloomberg-tab', { active: activeTab === tab.name }]"
           @click="activeTab = tab.name"
@@ -120,7 +120,7 @@ const openTradeDialog = (type: 'buy' | 'sell') => {
   tradeDialogVisible.value = true
 }
 
-const handleQuickSell = (position: any) => {
+const handleQuickSell = (position: unknown) => {
   tradeType.value = 'sell'
   tradeDialogVisible.value = true
 }
@@ -136,7 +136,7 @@ const handleTradeSubmitted = async () => {
 <style scoped lang="scss">
 // Phase 3.3: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens.scss';
+@import '@/styles/theme-tokens';
 
 // ============================================
 //   Bloomberg Terminal Style Trade Management
@@ -245,7 +245,7 @@ const handleTradeSubmitted = async () => {
 }
 
 // Responsive Design
-@media (max-width: 1440px) {
+@media (width <= 1440px) {
   .trade-management-container {
     padding: var(--spacing-lg);
     gap: var(--spacing-lg);
@@ -263,7 +263,7 @@ const handleTradeSubmitted = async () => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .trade-management-container {
     padding: var(--spacing-md);
     gap: var(--spacing-md);

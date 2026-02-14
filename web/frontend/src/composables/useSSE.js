@@ -5,7 +5,7 @@
  * Provides reactive SSE connection management for real-time updates
  */
 
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, _watch } from 'vue'
 import { API_BASE_URL } from '@/config/api.js'
 
 /**
@@ -265,7 +265,7 @@ export function useTrainingProgress(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (data) => {
+  sse.addEventListener('ping', (_data) => {
     console.log('[Training] Keepalive ping received')
   })
 
@@ -328,7 +328,7 @@ export function useBacktestProgress(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (data) => {
+  sse.addEventListener('ping', (_data) => {
     console.log('[Backtest] Keepalive ping received')
   })
 
@@ -396,7 +396,7 @@ export function useRiskAlerts(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (data) => {
+  sse.addEventListener('ping', (_data) => {
     console.log('[Alerts] Keepalive ping received')
   })
 
@@ -484,7 +484,7 @@ export function useDashboardUpdates(options = {}) {
   })
 
   // Handle ping event (keepalive)
-  sse.addEventListener('ping', (data) => {
+  sse.addEventListener('ping', (_data) => {
     console.log('[Dashboard] Keepalive ping received')
   })
 

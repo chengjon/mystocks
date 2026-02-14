@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, watch, nextTick } from 'vue'
+    import { ref, computed, _watch, _nextTick } from 'vue'
 
     interface Props {
         modelValue: string
@@ -48,7 +48,7 @@
     })
 
     const emit = defineEmits({
-        'update:modelValue': (value: string) => true
+        'update:modelValue': (_value: string) => true
     })
 
     const textareaRef = ref<HTMLTextAreaElement>()
@@ -95,13 +95,13 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-code-editor {
       display: flex;
       flex-direction: column;
       background: #0F1215; /* Deepest dark */
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       border-radius: var(--artdeco-radius-none);
       transition: all var(--artdeco-transition-base);
       height: 100%;
@@ -119,7 +119,7 @@
       align-items: center;
       padding: 8px 16px;
       background: var(--artdeco-bg-header);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 1px solid rgb(212 175 55 / 20%);
     }
 
     .editor-title {
@@ -145,7 +145,7 @@
     .line-numbers {
       width: 40px;
       background: var(--artdeco-bg-card);
-      border-right: 1px solid rgba(212, 175, 55, 0.2);
+      border-right: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-muted);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -154,7 +154,7 @@
       padding: 10px 8px 10px 0;
       overflow: hidden;
       user-select: none;
-      opacity: 0.5;
+      opacity: 50%;
     }
 
     .line-number {
@@ -178,11 +178,12 @@
     }
 
     .code-textarea::selection {
-      background: rgba(212, 175, 55, 0.3);
+      background: rgb(212 175 55 / 30%);
       color: #fff;
     }
 
     /* Syntax Highlighting Simulation (Simple color overrides) */
+
     /* Since we are using a textarea, we can't do real highlighting without a parser and overlay.
        For now, we just ensure the text color is readable. */
 </style>

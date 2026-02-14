@@ -7,11 +7,11 @@
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type SystemStatusResponse = any
-type MonitoringAlertResponse = any
-type LogEntryResponse = any
-type DataQualityResponse = any
-type DataQualityIssue = any
+type SystemStatusResponse = Record<string, unknown>
+type MonitoringAlertResponse = Record<string, unknown>
+type LogEntryResponse = Record<string, unknown>
+type DataQualityResponse = Record<string, unknown>
+type _DataQualityIssue = Record<string, unknown>
 
 // ViewModel interfaces
 export interface SystemStatusVM {
@@ -89,7 +89,7 @@ export interface LogEntryVM {
   logger: string
   message: string
   module: string
-  context: Record<string, any>
+  context: Record<string, unknown>
   stackTrace?: string
 }
 
@@ -130,30 +130,30 @@ export class MonitoringAdapter {
     const cpuData = data.cpu
     const cpu = typeof cpuData === 'number'
       ? { current: cpuData, total: 100, percentage: cpuData }
-      : (cpuData as any) || { current: 0, total: 100, percentage: 0 }
+      : (cpuData as unknown) || { current: 0, total: 100, percentage: 0 }
 
     // Handle memory - can be number (MB) or object
     const memoryData = data.memory
     const memory = typeof memoryData === 'number'
       ? { current: memoryData, total: 0, percentage: 0 }
-      : (memoryData as any) || { current: 0, total: 0, percentage: 0 }
+      : (memoryData as unknown) || { current: 0, total: 0, percentage: 0 }
 
     // Handle disk - can be number (GB) or object
     const diskData = data.disk
     const disk = typeof diskData === 'number'
       ? { current: diskData, total: 0, percentage: 0 }
-      : (diskData as any) || { current: 0, total: 0, percentage: 0 }
+      : (diskData as unknown) || { current: 0, total: 0, percentage: 0 }
 
     // Handle network - can be object or undefined
-    const networkData = (data as any).network
+    const networkData = (data as Record<string, unknown>).network
     const network = networkData || { inbound: 0, outbound: 0, errors: 0, status: 'normal' as const, unit: 'req/s' }
 
     // Handle database - can be object or undefined
-    const databaseData = (data as any).database
+    const databaseData = (data as Record<string, unknown>).database
     const database = databaseData || { connected: false, responseTime: 0, connections: 0, maxConnections: 0, status: 'critical' as const }
 
     // Handle api - can be object or undefined
-    const apiData = (data as any).api
+    const apiData = (data as Record<string, unknown>).api
     const api = apiData || { uptime: 0, requestsPerMinute: 0, averageResponseTime: 0, errorRate: 0, status: 'normal' as const }
 
     return {
@@ -199,8 +199,8 @@ export class MonitoringAdapter {
         errorRate: api.errorRate ?? 0,
         status: this.getApiStatus(api)
       },
-      websocket: ((data as any).websocket as any)?.connected ?? false,
-      services: ((data as any).services || []).map((service: any) => ({
+      websocket: ((data as Record<string, unknown>).websocket as unknown)?.connected ?? false,
+      services: ((data as Record<string, unknown>).services || []).map((service: unknown) => ({
         name: service.name || '',
         status: this.getServiceStatus(service.status),
         cpu: service.cpu ?? 0,
@@ -221,9 +221,9 @@ export class MonitoringAdapter {
     // Handle different response formats
     const alerts = Array.isArray(data)
       ? data
-      : (data as any).alerts || []
+      : (data as Record<string, unknown>).alerts || []
 
-    return alerts.map((alert: any) => ({
+    return alerts.map((alert: unknown) => ({
       id: String(alert.id || ''),
       title: alert.message || alert.title || '系统告警',
       description: alert.message || alert.description || '',
@@ -246,9 +246,9 @@ export class MonitoringAdapter {
     // Handle different response formats
     const logs = Array.isArray(data)
       ? data
-      : (data as any).logs || []
+      : (data as Record<string, unknown>).logs || []
 
-    return logs.map((log: any) => ({
+    return logs.map((log: unknown) => ({
       id: String(log.id || Date.now()),
       timestamp: this.formatDateTime(log.timestamp),
       level: this.getLogLevel(log.level) as 'debug' | 'info' | 'warning' | 'error' | 'fatal',
@@ -266,11 +266,11 @@ export class MonitoringAdapter {
    */
   static toDataQualityVM(data: DataQualityResponse): DataQualityVM {
     // Handle actual API response format
-    const checks = (data as any).checks || []
-    const summary = (data as any).summary || {}
+    const checks = (data as Record<string, unknown>).checks || []
+    const summary = (data as Record<string, unknown>).summary || {}
 
     // Calculate overall score from checks
-    const passedChecks = checks.filter((c: any) => c.status === 'passed' || c.status === 'success').length
+    const passedChecks = checks.filter((c: unknown) => c.status === 'passed' || c.status === 'success').length
     const totalChecks = checks.length
     const overallScore = totalChecks > 0 ? (passedChecks / totalChecks) * 100 : 0
 
@@ -288,7 +288,7 @@ export class MonitoringAdapter {
   /**
    * Convert quality metric to ViewModel
    */
-  private static toQualityMetric(metric: any): QualityMetricVM {
+  private static toQualityMetric(metric: unknown): QualityMetricVM {
     return {
       score: metric.score || 0,
       status: this.getQualityStatus(metric.score),
@@ -319,7 +319,7 @@ export class MonitoringAdapter {
   /**
    * Get API status
    */
-  private static getApiStatus(api: any): 'normal' | 'warning' | 'critical' {
+  private static getApiStatus(api: unknown): 'normal' | 'warning' | 'critical' {
     const hasIssue = api.errorRate >= 1 || api.averageResponseTime > 1000
     const hasCriticalIssue = api.errorRate >= 5 || api.averageResponseTime > 3000
 
@@ -353,7 +353,7 @@ export class MonitoringAdapter {
   /**
    * Get overall system status
    */
-  private static getOverallStatus(data: any): 'healthy' | 'warning' | 'critical' {
+  private static getOverallStatus(data: unknown): 'healthy' | 'warning' | 'critical' {
     const hasCritical =
       data.cpu?.percentage >= 90 ||
       data.memory?.percentage >= 90 ||

@@ -81,7 +81,7 @@ import ProKLineChart from '@/components/Charts/ProKLineChart.vue';
   padding: 20px;
   min-height: 100vh;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
 }
 
 .page-header {
@@ -159,7 +159,7 @@ import ProKLineChart from '@/components/Charts/ProKLineChart.vue';
 
   &:hover {
     border-color: var(--gold-primary);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 15px rgb(212 175 55 / 30%);
   }
 }
 
@@ -196,7 +196,7 @@ import ProKLineChart from '@/components/Charts/ProKLineChart.vue';
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
     border: 1px solid var(--gold-dim);
     flex-shrink: 0;
   }
@@ -224,7 +224,7 @@ import ProKLineChart from '@/components/Charts/ProKLineChart.vue';
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .kline-demo-page {
     padding: 10px;
   }

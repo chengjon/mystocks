@@ -33,7 +33,7 @@
             class="full-width"
           >
             <el-option
-              v-for="symbol in popularSymbols"
+              v-for="(symbol, _idx) in popularSymbols"
               :key="symbol"
               :label="symbol"
               :value="symbol"
@@ -189,7 +189,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { TrendChartUp, TrendChartDown } from '@element-plus/icons-vue'
+import { _TrendChartUp, _TrendChartDown } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 // 策略配置
@@ -345,16 +345,16 @@ onMounted(() => {
 }
 
 .results-card {
-  animation: fadeIn 0.5s;
+  animation: fade-in 0.5s;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(20px);
   }
   to {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }

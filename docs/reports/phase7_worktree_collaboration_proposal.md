@@ -457,7 +457,7 @@ EOF
 
 ### 相关文档
 
-- **[TASK_TEMPLATE.md](../docs/guides/multi-cli-tasks/TASK_TEMPLATE.md)** - 完整模板参考
+- **[TASK_TEMPLATE.md](../docs/guides/.multi-cli-tasks/TASK_TEMPLATE.md)** - 完整模板参考
 - **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略
 
 ---
@@ -1953,7 +1953,7 @@ git commit -m "docs: T+2h进度报告"
 - **[MULTI_CLI_WORKTREE_MANAGEMENT.md](../docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md)** ⭐ - Version 2.0 完整工作指南 (2735行)
 - **[MULTI_CLI_PROMPT_STRATEGIES.md](../docs/guides/MULTI_CLI_PROMPT_STRATEGIES.md)** - Prompt策略与10个模板 (1328行)
 - **[MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md](../docs/guides/MULTI_CLI_MAIN_CLI_LESSONS_LEARNED.md)** - Phase 6经验总结 (861行)
-- **[TASK_TEMPLATE.md](../docs/guides/multi-cli-tasks/TASK_TEMPLATE.md)** - 任务文档模板 (692行)
+- **[TASK_TEMPLATE.md](../docs/guides/.multi-cli-tasks/TASK_TEMPLATE.md)** - 任务文档模板 (692行)
 
 **Phase 7实施文档**:
 - **[IMPLEMENTATION_GUIDE.md](../web/backend/IMPLEMENTATION_GUIDE.md)** - 209 API完整实施指南

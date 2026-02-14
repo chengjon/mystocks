@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, onMounted } from 'vue'
+    import { ref, reactive, onMounted, onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElSelect, ElOption, ElEmpty, ElMessage } from 'element-plus'
     import { Folder, RefreshRight, Plus } from '@element-plus/icons-vue'
 
@@ -236,24 +236,25 @@
         }
     ])
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const refreshPortfolio = async () => {
         // Simulate portfolio refresh
-        await new Promise(resolve => setTimeout(resolve, 500))
+        timer = setTimeout(() => {
+            // Update positions with new prices
+            positions.value.forEach(position => {
+                const priceChange = (Math.random() - 0.5) * 2
+                position.currentPrice = parseFloat((position.currentPrice + priceChange).toFixed(2))
+                position.marketValue = position.shares * position.currentPrice
+                position.unrealizedPnL = (position.currentPrice - position.avgCost) * position.shares
+                position.returnPct = ((position.currentPrice - position.avgCost) / position.avgCost) * 100
+            })
 
-        // Update positions with new prices
-        positions.value.forEach(position => {
-            const priceChange = (Math.random() - 0.5) * 2
-            position.currentPrice = parseFloat((position.currentPrice + priceChange).toFixed(2))
-            position.marketValue = position.shares * position.currentPrice
-            position.unrealizedPnL = (position.currentPrice - position.avgCost) * position.shares
-            position.returnPct = ((position.currentPrice - position.avgCost) / position.avgCost) * 100
-        })
+            // Recalculate portfolio metrics
+            portfolioMetrics.totalValue = positions.value.reduce((sum, pos) => sum + pos.marketValue, 0)
+            portfolioMetrics.dailyPnL = Math.random() * 10000 - 5000
 
-        // Recalculate portfolio metrics
-        portfolioMetrics.totalValue = positions.value.reduce((sum, pos) => sum + pos.marketValue, 0)
-        portfolioMetrics.dailyPnL = Math.random() * 10000 - 5000
-
-        ElMessage.success('Portfolio refreshed')
+            ElMessage.success('Portfolio refreshed')
+        }, 500)
     }
 
     const addPosition = () => {
@@ -279,253 +280,15 @@
     onMounted(() => {
         // Initial load
     })
+
+    onUnmounted(() => {
+        if (timer) {
+            clearTimeout(timer)
+            timer = null
+        }
+    })
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
-
-    .portfolio-container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-lg);
-      padding: var(--spacing-lg);
-      background: var(--color-bg-primary);
-      min-height: 100vh);
-    }
-
-    // Header
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
-
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-2xl);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--color-accent);
-
-        .el-icon { font-size: var(--font-size-3xl); color: var(--color-accent); }
-      }
-
-      .page-subtitle {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-xs);
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin: var(--spacing-sm) 0 0 0;
-      }
-    }
-
-    // Overview Cards
-    .overview-section {
-      .overview-cards {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: var(--spacing-lg);
-
-        @media (max-width: 1200px) {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (max-width: 768px) {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .metric-card {
-        :deep(.el-card__body) {
-          padding: var(--spacing-lg);
-        }
-      }
-
-      .metric-content {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-
-        .metric-icon {
-          font-size: var(--font-size-2xl);
-          width: 48px;
-          height: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--color-accent-alpha-90);
-          border-radius: var(--border-radius-md);
-        }
-
-        .metric-data {
-          flex: 1;
-
-          .metric-value {
-            font-family: var(--font-family-mono);
-            font-size: var(--font-size-xl);
-            font-weight: 700;
-            color: var(--color-text-primary);
-            margin-bottom: var(--spacing-xs);
-
-            &.positive { color: var(--color-stock-up); }
-            &.negative { color: var(--color-stock-down); }
-          }
-
-          .metric-label {
-            font-family: var(--font-family-sans);
-            font-size: var(--font-size-xs);
-            color: var(--color-text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-          }
-        }
-      }
-    }
-
-    // Positions Section
-    .positions-section {
-      .positions-card {
-        :deep(.el-card__header) {
-          background: transparent;
-          border-bottom: 1px solid var(--color-border);
-          padding: var(--spacing-md) var(--spacing-lg);
-        }
-
-        :deep(.el-card__body) {
-          padding: 0;
-        }
-      }
-
-      .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--spacing-lg);
-
-        .card-title {
-          font-family: var(--font-family-sans);
-          font-size: var(--font-size-sm);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--color-accent);
-        }
-
-        .position-count {
-          font-family: var(--font-family-mono);
-          font-size: var(--font-size-xs);
-          color: var(--color-text-tertiary);
-        }
-      }
-    }
-
-    // Positions Table
-    .positions-table {
-      :deep(.el-table__header th) {
-        background: var(--color-bg-secondary);
-        border-bottom: 2px solid var(--color-border);
-        color: var(--color-text-secondary);
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-xs);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-      }
-
-      :deep(.el-table__body td) {
-        border-bottom: 1px solid var(--color-border);
-        color: var(--color-text-primary);
-        font-family: var(--font-family-mono);
-        font-size: var(--font-size-sm);
-      }
-
-      .positive { color: var(--color-stock-up); }
-      .negative { color: var(--color-stock-down); }
-    }
-
-    // Performance Section
-    .performance-section {
-      .performance-card {
-        :deep(.el-card__header) {
-          background: transparent;
-          border-bottom: 1px solid var(--color-border);
-          padding: var(--spacing-md) var(--spacing-lg);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        :deep(.el-card__body) {
-          padding: var(--spacing-lg);
-        }
-      }
-
-      .card-header {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        .card-title {
-          font-family: var(--font-family-sans);
-          font-size: var(--font-size-sm);
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--color-accent);
-        }
-
-        .chart-controls {
-          display: flex;
-          gap: var(--spacing-md);
-        }
-      }
-
-      .chart-placeholder {
-        min-height: 300px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    // Responsive Design
-    @media (max-width: 1200px) {
-      .portfolio-container {
-        padding: var(--spacing-lg);
-        gap: var(--spacing-lg);
-      }
-
-      .overview-cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .portfolio-container {
-        padding: var(--spacing-md);
-        gap: var(--spacing-md);
-      }
-
-      .page-title {
-        font-size: var(--font-size-xl);
-      }
-
-      .overview-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-md);
-      }
-    }
+@import "./styles/Portfolio.scss";
 </style>

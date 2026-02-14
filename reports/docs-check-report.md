@@ -2701,29 +2701,29 @@
   - 目录名包含中文: 06-项目管理与报告
   - 目录名有数字前缀: 06-项目管理与报告
   - 目录名包含中文: 历史指南
-- ❌ `guides/multi-cli-tasks/TASK_TEMPLATE.md`
+- ❌ `guides/.multi-cli-tasks/TASK_TEMPLATE.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md`
+- ❌ `guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md`
+- ❌ `guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md`
+- ❌ `guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-1_PHASE3_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md`
+- ❌ `guides/.multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md`
+- ❌ `guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md`
   - 包含大写字母（推荐使用kebab-case）
-- ❌ `guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md`
+- ❌ `guides/.multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md`
   - 包含大写字母（推荐使用kebab-case）
 - ❌ `archive/2025/Q4/PYPROF_INTEGRATION_SUMMARY.md`
   - 包含大写字母（推荐使用kebab-case）
@@ -5940,7 +5940,7 @@
 - {'dir': 'web', 'item_count': 18}
 - {'dir': 'design/update', 'item_count': 6}
 - {'dir': 'design/new', 'item_count': 10}
-- {'dir': 'guides/multi-cli-tasks', 'item_count': 12}
+- {'dir': 'guides/.multi-cli-tasks', 'item_count': 12}
 - {'dir': '归档文档/临时文档', 'item_count': 40}
 - {'dir': 'reports/api_verification', 'item_count': 9}
 - {'dir': 'reports/analysis', 'item_count': 8}

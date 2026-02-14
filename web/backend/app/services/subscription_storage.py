@@ -131,7 +131,7 @@ class SubscriptionStorage:
             logger.info("✅ Connected to PostgreSQL")
             return True
         except Exception as e:
-            logger.error("❌ Connection failed", error=str(e))
+            logger.error(f"❌ Connection failed: {e}")
             self.last_error = str(e)
             return False
 
@@ -175,7 +175,7 @@ class SubscriptionStorage:
             return True
 
         except Exception as e:
-            logger.error("❌ Setup failed", error=str(e))
+            logger.error(f"❌ Setup failed: {e}")
             self.last_error = str(e)
             return False
 
@@ -272,7 +272,7 @@ class SubscriptionStorage:
             return True
 
         except Exception as e:
-            logger.error("❌ Save failed", error=str(e))
+            logger.error(f"❌ Save failed: {e}")
             self.last_error = str(e)
             return False
 
@@ -291,7 +291,7 @@ class SubscriptionStorage:
             return True
 
         except Exception as e:
-            logger.error("❌ Delete failed", error=str(e))
+            logger.error(f"❌ Delete failed: {e}")
             self.last_error = str(e)
             return False
 
@@ -323,7 +323,7 @@ class SubscriptionStorage:
             }
 
         except Exception as e:
-            logger.error("❌ Get failed", error=str(e))
+            logger.error(f"❌ Get failed: {e}")
             self.last_error = str(e)
             return None
 
@@ -358,7 +358,7 @@ class SubscriptionStorage:
             ]
 
         except Exception as e:
-            logger.error("❌ Get user subscriptions failed", error=str(e))
+            logger.error(f"❌ Get user subscriptions failed: {e}")
             self.last_error = str(e)
             return []
 
@@ -397,7 +397,7 @@ class SubscriptionStorage:
             return True
 
         except Exception as e:
-            logger.error("❌ Alert save failed", error=str(e))
+            logger.error(f"❌ Alert save failed: {e}")
             self.last_error = str(e)
             return False
 
@@ -442,7 +442,7 @@ class SubscriptionStorage:
             ]
 
         except Exception as e:
-            logger.error("❌ Get alerts failed", error=str(e))
+            logger.error(f"❌ Get alerts failed: {e}")
             self.last_error = str(e)
             return []
 
@@ -477,7 +477,7 @@ class SubscriptionStorage:
             }
 
         except Exception as e:
-            logger.error("❌ Get stats failed", error=str(e))
+            logger.error(f"❌ Get stats failed: {e}")
             return {"connected": False, "error": str(e)}
 
 

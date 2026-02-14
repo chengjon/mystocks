@@ -15,7 +15,7 @@ export const BOARD_CONFIGS: Record<BoardType, LimitConfig> = {
   bj: { limitPct: 0.30, name: '北交所', color: '#D4AF37' }
 };
 
-export const isSTStock = (symbol: string): boolean => {
+export const isSTStock = (_symbol: string): boolean => {
   return false;
 };
 

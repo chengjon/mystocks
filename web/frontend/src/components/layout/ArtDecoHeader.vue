@@ -54,7 +54,7 @@ import { usePreferenceStore } from '@/stores/preferenceStore'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 
 // Props & Emitters
-const props = defineProps<{
+const _props = defineProps<{
   unreadCount?: number
   userName?: string
 }>()
@@ -75,7 +75,7 @@ const pageTitle = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-header {
   display: flex;
@@ -221,7 +221,7 @@ const pageTitle = computed(() => {
 }
 
 // Mobile Responsiveness
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .page-title {
     display: none; // Hide title on mobile if needed or shrink
   }

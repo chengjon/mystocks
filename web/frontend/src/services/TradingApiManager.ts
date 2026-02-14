@@ -15,7 +15,7 @@ import {
     indicatorApi,
     userApi,
     announcementApi,
-    watchlistApi,
+    _watchlistApi,
     realtimeService
 } from '@/api'
 
@@ -25,13 +25,13 @@ class DataFlowManager {
     private realtimeConnections = new Set<string>()
 
     // US3架构数据路由
-    async saveData(classification: DataClassification, data: any): Promise<boolean> {
+    async saveData(classification: DataClassification, data: unknown): Promise<boolean> {
         // 自动路由到最优数据库
         const route = this.getDataRoute(classification)
         return await this.saveToDatabase(route.database, data, route.table)
     }
 
-    async loadData(classification: DataClassification, filters: any = {}): Promise<any> {
+    async loadData(classification: DataClassification, filters: Record<string, unknown> = {}): Promise<unknown> {
         const route = this.getDataRoute(classification)
         const cacheKey = `${classification}-${JSON.stringify(filters)}`
 
@@ -86,7 +86,7 @@ class DataFlowManager {
         return routes[classification] || { database: 'postgresql', table: 'default' }
     }
 
-    private async saveToDatabase(database: string, data: any, table: string): Promise<boolean> {
+    private async saveToDatabase(database: string, data: unknown, table: string): Promise<boolean> {
         try {
             if (database === 'tdengine') {
                 return await this.saveToTDengine(data, table)
@@ -99,7 +99,7 @@ class DataFlowManager {
         }
     }
 
-    private async loadFromDatabase(database: string, table: string, filters: any): Promise<any> {
+    private async loadFromDatabase(database: string, table: string, filters: unknown): Promise<unknown> {
         if (database === 'tdengine') {
             return await this.loadFromTDengine(table, filters)
         } else {
@@ -107,7 +107,7 @@ class DataFlowManager {
         }
     }
 
-    private async saveToTDengine(data: any, table: string): Promise<boolean> {
+    private async saveToTDengine(data: unknown, table: string): Promise<boolean> {
         // 实现TDengine批量插入
         const result = await dataApi.saveBatchData(table, data, {
             database: 'tdengine',
@@ -117,7 +117,7 @@ class DataFlowManager {
         return result.success
     }
 
-    private async saveToPostgreSQL(data: any, table: string): Promise<boolean> {
+    private async saveToPostgreSQL(data: unknown, table: string): Promise<boolean> {
         // 实现PostgreSQL批量插入
         const result = await dataApi.saveBatchData(table, data, {
             database: 'postgresql',
@@ -128,11 +128,11 @@ class DataFlowManager {
         return result.success
     }
 
-    private async loadFromTDengine(table: string, filters: any): Promise<any> {
+    private async loadFromTDengine(table: string, filters: unknown): Promise<unknown> {
         return await dataApi.queryTimeSeries(table, filters)
     }
 
-    private async loadFromPostgreSQL(table: string, filters: any): Promise<any> {
+    private async loadFromPostgreSQL(table: string, filters: unknown): Promise<unknown> {
         return await dataApi.queryRelational(table, filters)
     }
 
@@ -178,7 +178,7 @@ export class TradingApiManager {
     }
 
     // 市场数据分析
-    async getMarketAnalysis(type: 'technical' | 'capital_flow' | 'longhu_bang'): Promise<any> {
+    async getMarketAnalysis(type: 'technical' | 'capital_flow' | 'longhu_bang'): Promise<unknown> {
         switch (type) {
             case 'technical':
                 return await indicatorApi.getTechnicalAnalysis()
@@ -192,7 +192,7 @@ export class TradingApiManager {
     }
 
     // 行业概念分析
-    async getIndustryConceptAnalysis(type: 'industry' | 'concept' | 'comparison'): Promise<any> {
+    async getIndustryConceptAnalysis(type: 'industry' | 'concept' | 'comparison'): Promise<unknown> {
         if (type === 'comparison') {
             return await marketApi.compareSectors()
         }
@@ -463,69 +463,69 @@ export class TradingApiManager {
 
 // 类型定义
 export interface MarketOverview {
-    indices: any[]
-    rankings: any[]
-    volume: any
+    indices: unknown[]
+    rankings: unknown[]
+    volume: unknown
     lastUpdate: string
 }
 
 export interface TradingSignals {
-    signals: any[]
+    signals: unknown[]
     total: number
     filters: SignalFilters
 }
 
 export interface TradingHistory {
-    records: any[]
+    records: unknown[]
     total: number
     filters: HistoryFilters
 }
 
 export interface PositionMonitorData {
-    positions: any[]
-    pnlAnalysis: any
-    riskMetrics: any[]
+    positions: unknown[]
+    pnlAnalysis: unknown
+    riskMetrics: unknown[]
 }
 
 export interface PerformanceAnalysis {
-    returnCurve: any[]
-    attribution: any
-    metrics: any
+    returnCurve: unknown[]
+    attribution: unknown
+    metrics: unknown
 }
 
 export interface StrategyManagementData {
-    strategies: any[]
-    templates: any[]
+    strategies: unknown[]
+    templates: unknown[]
 }
 
 export interface RiskMonitorData {
-    overview: any
-    trends: any[]
-    alerts: any[]
+    overview: unknown
+    trends: unknown[]
+    alerts: unknown[]
 }
 
 export interface AnnouncementMonitorData {
-    announcements: any[]
-    sentimentAnalysis: any
+    announcements: unknown[]
+    sentimentAnalysis: unknown
 }
 
 export interface RiskAlertsData {
-    activeAlerts: any[]
-    alertRules: any[]
-    alertHistory: any[]
+    activeAlerts: unknown[]
+    alertRules: unknown[]
+    alertHistory: unknown[]
 }
 
 export interface MonitoringDashboardData {
-    systemStatus: any
-    performanceMetrics: any[]
-    dataQuality: any
+    systemStatus: unknown
+    performanceMetrics: unknown[]
+    dataQuality: unknown
 }
 
 export interface SystemSettings {
-    general: any
-    datasource: any
-    notification: any
-    security: any
+    general: unknown
+    datasource: unknown
+    notification: unknown
+    security: unknown
 }
 
 export interface SystemHealth {
@@ -569,7 +569,7 @@ interface DataRoute {
 }
 
 interface CachedData {
-    data: any
+    data: unknown
     timestamp: number
     ttl: number
 }
@@ -606,29 +606,29 @@ export interface BacktestConfig {
     startDate: string
     endDate: string
     initialCapital: number
-    parameters?: Record<string, any>
+    parameters?: Record<string, unknown>
 }
 
 export interface OptimizationConfig {
     method: 'grid' | 'genetic' | 'bayesian'
-    parameters: Record<string, any[]>
+    parameters: Record<string, unknown[]>
     target: 'sharpe' | 'returns' | 'max_drawdown'
-    constraints?: Record<string, any>
+    constraints?: Record<string, unknown>
 }
 
 export interface DataConfig {
     source?: string
     destination?: string
-    filters?: any
+    filters?: unknown
     format?: string
 }
 
 export type DataOperation = 'import' | 'export' | 'cleanup'
-export type BatchExecutionResult = any
-export type BacktestResult = any
-export type BacktestResults = any[]
-export type OptimizationResult = any
-export type DataOperationResult = any
+export type BatchExecutionResult = unknown
+export type BacktestResult = unknown
+export type BacktestResults = unknown[]
+export type OptimizationResult = unknown
+export type DataOperationResult = unknown
 
 // 导出单例实例
 export const tradingApiManager = new TradingApiManager()

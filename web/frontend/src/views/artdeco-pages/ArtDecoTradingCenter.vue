@@ -96,12 +96,12 @@
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
 
     // ========== 配置系统集成 ==========
-    import { getPageConfig, getTabConfig } from '@/config/pageConfig'
-    import { marketService } from '@/api/services/marketService'
+    import { getPageConfig, _getTabConfig } from '@/config/pageConfig'
+    import { _marketService } from '@/api/services/marketService'
     import { strategyApiService } from '@/api/services/strategyService'
 
     const routeName = 'artdeco-trading-center'
-    const pageConfig = ref(getPageConfig(routeName))
+    const _pageConfig = ref(getPageConfig(routeName))
 
     console.log('Trading Center - 配置系统已就绪')
     // 导入所有功能组件（均为@ts-ignore状态）
@@ -284,7 +284,7 @@
     ])
 
     // 组件映射
-    const componentMap: Record<string, any> = {
+    const componentMap: Record<string, unknown> = {
         'market-overview': ArtDecoMarketOverview,
         'realtime-monitor': ArtDecoRealtimeMonitor,
         'market-analysis': ArtDecoMarketAnalysis,
@@ -316,8 +316,8 @@
 
     // 当前面包屑
     const currentBreadcrumbs = computed(() => {
-        const breadcrumbs = []
-        const findNode = (nodes: any[], targetKey: string): any[] => {
+        const _breadcrumbs = []
+        const findNode = (nodes: unknown[], targetKey: string): unknown[] => {
             for (const node of nodes) {
                 if (node.key === targetKey) {
                     return [node]
@@ -358,7 +358,7 @@
         activeFunction.value = breadcrumbKey
     }
 
-    const handleComponentAction = (action: any) => {
+    const handleComponentAction = (action: unknown) => {
         // 处理子组件的动作
         console.log('Component action:', action)
     }
@@ -374,7 +374,7 @@
         
         try {
             // 配置系统集成 - 并行加载真实API数据
-            const progressSteps = [
+            const _progressSteps = [
                 { step: 'market', label: '正在加载市场数据...', weight: 25 },
                 { step: 'trading', label: '正在加载交易数据...', weight: 25 },
                 { step: 'strategy', label: '正在加载策略数据...', weight: 25 },
@@ -398,13 +398,13 @@
             // tradingStore.updateMarketData(marketResult.data)
 
             // 等待交易数据
-            const tradingResult = await strategiesPromise
+            const _tradingResult = await strategiesPromise
             totalProgress += 25
             globalLoadingProgress.value = totalProgress
             // tradingStore.updateTradingData(tradingResult.data)
 
             // 等待策略数据
-            const strategyResult = await strategyApiService.getStrategyList({ status: 'all' })
+            const _strategyResult = await strategyApiService.getStrategyList({ status: 'all' })
             totalProgress += 25
             globalLoadingProgress.value = totalProgress
             // tradingStore.updateStrategyData(strategyResult.data)
@@ -443,79 +443,5 @@
     })
 </script>
 <style scoped lang="scss">
-    .artdeco-trading-center {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        background: var(--artdeco-bg-primary);
-        color: var(--artdeco-fg-primary);
-    }
-
-    .trading-center-content {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-    }
-
-    .function-tree-panel {
-        width: 320px;
-        border-right: 1px solid var(--artdeco-bg-tertiary);
-        background: var(--artdeco-bg-secondary);
-        overflow-y: auto;
-    }
-
-    .content-panel {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .dynamic-content {
-        flex: 1;
-        padding: var(--artdeco-spacing-4);
-        overflow-y: auto;
-    }
-
-    .status-indicators {
-        display: flex;
-        gap: var(--artdeco-spacing-6);
-    }
-
-    .footer-info {
-        display: flex;
-        align-items: center;
-        gap: var(--artdeco-spacing-4);
-
-        .last-update {
-            color: var(--artdeco-fg-muted);
-            font-size: 12px;
-        }
-
-        .version-info {
-            color: var(--artdeco-gold-primary);
-            font-weight: 600;
-            font-size: 12px;
-        }
-    }
-
-    // 响应式设计
-    @media (max-width: 1024px) {
-        .function-tree-panel {
-            width: 280px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .trading-center-content {
-            flex-direction: column;
-        }
-
-        .function-tree-panel {
-            width: 100%;
-            height: 200px;
-            border-right: none;
-            border-bottom: 1px solid var(--artdeco-bg-tertiary);
-        }
-    }
+@import "./styles/ArtDecoTradingCenter.scss";
 </style>

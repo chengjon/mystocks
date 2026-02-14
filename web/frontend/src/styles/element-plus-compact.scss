@@ -4,7 +4,7 @@
  * ⭐ ArtDeco V3.0: 专家评估版，金色边框 + A股红涨绿跌
  */
 
-@import './artdeco-tokens.scss';
+@import './artdeco-tokens';
 
 :root {
   // ========== ArtDeco V3.0 字体大小（紧凑！Bloomberg标准） ==========
@@ -24,10 +24,10 @@
   --el-table-border-color: var(--artdeco-border-gold);  // 金色边框
   --el-table-bg-color: var(--artdeco-bg-card);           // 深色背景
   --el-table-header-bg-color: var(--artdeco-bg-elevated);  // 抬升背景
-  --el-table-row-hover-bg-color: rgba(212, 175, 55, 0.1);  // 金色悬停
+  --el-table-row-hover-bg-color: rgb(212 175 55 / 10%);  // 金色悬停
   --el-table-text-color: var(--artdeco-fg-primary);    // 纯白文本
   --el-table-header-text-color: var(--artdeco-gold-primary);  // 金色标题
-  --el-table-current-row-bg-color: rgba(212, 175, 55, 0.15);  // 金色激活行
+  --el-table-current-row-bg-color: rgb(212 175 55 / 15%);  // 金色激活行
   --el-table-border: 1px solid var(--artdeco-border-gold);
   --el-table-header-font-size: 12px;  // 紧凑字体
   --el-table-font-size: 11px;  // Bloomberg标准字体
@@ -63,7 +63,7 @@
   --el-input-clear-hover-color: var(--artdeco-gold-light);
 
   // ========== ArtDeco V3.0 Tag样式 ==========
-  --el-tag-bg-color: rgba(212, 175, 55, 0.1);     // 金色半透明
+  --el-tag-bg-color: rgb(212 175 55 / 10%);     // 金色半透明
   --el-tag-border-color: var(--artdeco-border-gold);
   --el-tag-text-color: var(--artdeco-gold-primary);
   --el-tag-font-size: 11px;
@@ -108,12 +108,12 @@
 
   // 悬停效果：金色光晕
   tr.el-table__row:hover > td {
-    background-color: rgba(212, 175, 55, 0.1) !important;
+    background-color: rgb(212 175 55 / 10%) !important;
   }
 
   // 激活行：金色背景
   tr.current-row > td {
-    background-color: rgba(212, 175, 55, 0.15) !important;
+    background-color: rgb(212 175 55 / 15%) !important;
   }
 }
 
@@ -334,7 +334,7 @@ th.el-table__cell {
   }
 
   .row-flat {
-    color: #666666;
+    color: #666;
   }
 
   .cell-rise {

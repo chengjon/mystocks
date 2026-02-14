@@ -1,0 +1,1119 @@
+    @import '@/styles/artdeco-tokens';
+
+    .artdeco-capital-flow {
+        display: grid;
+        gap: var(--artdeco-spacing-6);
+    }
+
+    // ============================================
+    //   FLOW OVERVIEW - 资金流向概览
+    // ============================================
+
+    .flow-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--artdeco-spacing-4);
+    }
+
+    // ============================================
+    //   CAPITAL HEATMAP - 资金流向热力图
+    // ============================================
+
+    .capital-heatmap {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+
+            .heatmap-controls {
+                display: flex;
+                gap: var(--artdeco-spacing-3);
+                align-items: center;
+            }
+        }
+
+        .heatmap-container {
+            .heatmap-placeholder {
+                height: 400px;
+                background: var(--artdeco-bg-card);
+                border: 1px solid var(--artdeco-border-default);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+
+                // 几何装饰
+                @include artdeco-geometric-corners(
+                    $color: var(--artdeco-gold-primary),
+                    $size: 16px,
+                    $border-width: 1px
+                );
+
+                .capital-heatmap-visualization {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    padding: var(--artdeco-spacing-4);
+
+                    .heatmap-grid {
+                        flex: 1;
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                        gap: var(--artdeco-spacing-3);
+
+                        .heatmap-cell {
+                            @include artdeco-stepped-corners(4px);
+
+                            border: 1px solid var(--artdeco-border-default);
+                            position: relative;
+                            overflow: hidden;
+                            transition: all var(--artdeco-transition-base);
+                            min-height: 80px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &:hover {
+                                transform: translateY(-2px);
+                                box-shadow: 0 4px 12px rgb(212 175 55 / 20%);
+                            }
+
+                            .cell-label {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-1);
+                                text-align: center;
+                                color: white;
+                                text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+
+                                .sector-name {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                }
+
+                                .sector-flow {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                }
+                            }
+
+                            .cell-compact {
+                                .sector-code {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-lg);
+                                    font-weight: 600;
+                                    color: white;
+                                    text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+                                }
+                            }
+                        }
+                    }
+
+                    .heatmap-legend {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: var(--artdeco-spacing-2);
+                        margin-top: var(--artdeco-spacing-4);
+
+                        .legend-scale {
+                            display: flex;
+                            align-items: center;
+                            gap: var(--artdeco-spacing-3);
+
+                            .legend-label {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-muted);
+                                font-weight: 600;
+                            }
+
+                            .legend-gradient {
+                                width: 200px;
+                                height: 12px;
+                                background: linear-gradient(
+                                    90deg,
+                                    rgb(239 68 68 / 80%) 0%,
+                                    rgb(156 163 175 / 30%) 50%,
+                                    rgb(34 197 94 / 80%) 100%
+                                );
+                                border-radius: 6px;
+                            }
+                        }
+
+                        .legend-values {
+                            display: flex;
+                            justify-content: space-between;
+                            width: 200px;
+
+                            span {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-muted);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ============================================
+    //   CLUSTERING ANALYSIS - 聚类分析
+    // ============================================
+
+    .clustering-analysis {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .clustering-content {
+            .cluster-overview {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .cluster-stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .stat-item {
+                        text-align: center;
+                        padding: var(--artdeco-spacing-3);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+
+                        .stat-label {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin-bottom: var(--artdeco-spacing-2);
+                        }
+
+                        .stat-value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-xl);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                        }
+                    }
+                }
+            }
+
+            .cluster-visualization {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: var(--artdeco-spacing-5);
+
+                .cluster-diagram {
+                    .scatter-plot {
+                        height: 300px;
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 8px;
+                        position: relative;
+                        overflow: hidden;
+
+                        // 几何装饰
+                        @include artdeco-geometric-corners(
+                            $color: var(--artdeco-gold-primary),
+                            $size: 12px,
+                            $border-width: 1px
+                        );
+
+                        .plot-area {
+                            position: relative;
+                            width: 100%;
+                            height: 100%;
+                            padding: var(--artdeco-spacing-4);
+
+                            .data-point {
+                                position: absolute;
+                                width: 8px;
+                                height: 8px;
+                                border-radius: 50%;
+                                border: 2px solid white;
+                                box-shadow: 0 0 4px rgb(0 0 0 / 30%);
+                                transform: translate(-50%, -50%);
+                                transition: all var(--artdeco-transition-base);
+
+                                &:hover {
+                                    width: 12px;
+                                    height: 12px;
+                                    z-index: 10;
+                                }
+                            }
+                        }
+
+                        .plot-axis {
+                            position: absolute;
+                            bottom: var(--artdeco-spacing-2);
+                            left: var(--artdeco-spacing-2);
+                            right: var(--artdeco-spacing-2);
+
+                            .x-axis {
+                                text-align: center;
+                                margin-bottom: var(--artdeco-spacing-1);
+
+                                .axis-label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    text-transform: uppercase;
+                                    letter-spacing: var(--artdeco-tracking-wide);
+                                }
+                            }
+
+                            .y-axis {
+                                position: absolute;
+                                left: 0;
+                                top: 50%;
+                                transform: translateY(-50%) rotate(-90deg);
+                                transform-origin: center;
+
+                                .axis-label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    text-transform: uppercase;
+                                    letter-spacing: var(--artdeco-tracking-wide);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .cluster-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--artdeco-spacing-3);
+
+                    .cluster-item {
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        padding: var(--artdeco-spacing-3);
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                        }
+
+                        .cluster-header {
+                            display: flex;
+                            align-items: center;
+                            gap: var(--artdeco-spacing-3);
+                            margin-bottom: var(--artdeco-spacing-3);
+
+                            .cluster-indicator {
+                                width: 12px;
+                                height: 12px;
+                                border-radius: 50%;
+                                flex-shrink: 0;
+                            }
+
+                            .cluster-info {
+                                flex: 1;
+
+                                .cluster-name {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-md);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    display: block;
+                                }
+
+                                .cluster-size {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                }
+                            }
+
+                            .cluster-flow {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                            }
+                        }
+
+                        .cluster-details {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: var(--artdeco-spacing-2);
+
+                            .detail-row {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+
+                                .label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+
+                                .value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-primary);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ============================================
+    //   MAIN FORCE CONTROL - 主力控盘能力
+    // ============================================
+
+    .mainforce-control {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .control-analysis {
+            .control-metrics {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .metric-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--artdeco-spacing-5);
+
+                    .metric-item {
+                        .metric-label {
+                            font-family: var(--artdeco-font-display);
+                            font-size: var(--artdeco-font-size-md);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin: 0 0 var(--artdeco-spacing-4) 0;
+                        }
+
+                        .metric-chart {
+                            height: 200px;
+                            background: var(--artdeco-bg-card);
+                            border: 1px solid var(--artdeco-border-default);
+                            border-radius: 8px;
+                            padding: var(--artdeco-spacing-4);
+                            position: relative;
+                            overflow: hidden;
+
+                            // 几何装饰
+                            @include artdeco-geometric-corners(
+                                $color: var(--artdeco-gold-primary),
+                                $size: 12px,
+                                $border-width: 1px
+                            );
+
+                            .control-gauge {
+                                position: relative;
+                                width: 120px;
+                                height: 120px;
+                                margin: 0 auto;
+
+                                .gauge-background {
+                                    position: relative;
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 50%;
+                                    background: conic-gradient(
+                                        from 0deg,
+                                        rgb(239 68 68 / 20%) 0deg,
+                                        rgb(212 175 55 / 40%) 90deg,
+                                        rgb(34 197 94 / 60%) 180deg,
+                                        rgb(34 197 94 / 60%) 180deg
+                                    );
+
+                                    .gauge-fill {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        border-radius: 50%;
+                                        background: conic-gradient(
+                                            from 0deg,
+                                            transparent 0deg,
+                                            transparent 180deg,
+                                            rgb(212 175 55 / 80%) 180deg,
+                                            rgb(212 175 55 / 80%) 360deg
+                                        );
+                                        clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%);
+                                        transition: transform var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .gauge-center {
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                    text-align: center;
+
+                                    .gauge-value {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-xl);
+                                        font-weight: 600;
+                                        color: var(--artdeco-gold-primary);
+                                        display: block;
+                                        margin-bottom: var(--artdeco-spacing-1);
+                                    }
+
+                                    .gauge-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                        text-transform: uppercase;
+                                        letter-spacing: var(--artdeco-tracking-wide);
+                                    }
+                                }
+                            }
+
+                            .concentration-bars {
+                                display: flex;
+                                flex-direction: column;
+                                gap: var(--artdeco-spacing-3);
+
+                                .concentration-bar {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: var(--artdeco-spacing-3);
+
+                                    .bar-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-primary);
+                                        font-weight: 600;
+                                        min-width: 80px;
+                                    }
+
+                                    .bar-container {
+                                        flex: 1;
+                                        height: 12px;
+                                        background: var(--artdeco-bg-muted);
+                                        border-radius: 6px;
+                                        overflow: hidden;
+
+                                        .bar-fill {
+                                            height: 100%;
+                                            background: linear-gradient(
+                                                90deg,
+                                                var(--artdeco-gold-primary),
+                                                var(--artdeco-gold-secondary)
+                                            );
+                                            border-radius: 6px;
+                                            transition: width var(--artdeco-transition-base);
+                                        }
+                                    }
+
+                                    .bar-value {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-muted);
+                                        font-weight: 600;
+                                        min-width: 50px;
+                                        text-align: right;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .control-ranking {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .ranking-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--artdeco-spacing-3);
+
+                    .ranking-item {
+                        display: grid;
+                        grid-template-columns: 40px 1fr 150px;
+                        gap: var(--artdeco-spacing-4);
+                        padding: var(--artdeco-spacing-3);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                        }
+
+                        .rank-number {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-lg);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .stock-info {
+                            .stock-name {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                display: block;
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .stock-code {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-muted);
+                            }
+                        }
+
+                        .control-metrics {
+                            display: flex;
+                            flex-direction: column;
+                            gap: var(--artdeco-spacing-1);
+
+                            .metric {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+
+                                .label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+
+                                .value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-primary);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ============================================
+    //   OPPORTUNITY DIAGNOSIS - 风口位置诊断
+    // ============================================
+
+    .opportunity-diagnosis {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .diagnosis-content {
+            .opportunity-overview {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .opportunity-indicators {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .indicator-item {
+                        text-align: center;
+                        padding: var(--artdeco-spacing-3);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+
+                        .indicator-label {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin-bottom: var(--artdeco-spacing-2);
+                        }
+
+                        .indicator-value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-xl);
+                            font-weight: 600;
+                            margin-bottom: var(--artdeco-spacing-1);
+
+                            &.positive {
+                                color: var(--artdeco-up);
+                            }
+
+                            &.negative {
+                                color: var(--artdeco-down);
+                            }
+
+                            &.neutral {
+                                color: var(--artdeco-gold-primary);
+                            }
+
+                            &.warning {
+                                color: #f59e0b;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .sector-opportunities {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .sector-opportunities {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .sector-opportunity {
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        padding: var(--artdeco-spacing-4);
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                        }
+
+                        .sector-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: var(--artdeco-spacing-3);
+
+                            .sector-name {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-lg);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                            }
+
+                            .sector-score {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-2);
+
+                                .score-bar {
+                                    width: 80px;
+                                    height: 8px;
+                                    background: var(--artdeco-bg-muted);
+                                    border-radius: 4px;
+                                    overflow: hidden;
+
+                                    .score-fill {
+                                        height: 100%;
+                                        background: linear-gradient(
+                                            90deg,
+                                            var(--artdeco-gold-primary),
+                                            var(--artdeco-gold-secondary)
+                                        );
+                                        border-radius: 4px;
+                                        transition: width var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .score-value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+
+                        .sector-details {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr 1fr;
+                            gap: var(--artdeco-spacing-2);
+                            margin-bottom: var(--artdeco-spacing-3);
+
+                            .detail-item {
+                                display: flex;
+                                flex-direction: column;
+                                gap: var(--artdeco-spacing-1);
+
+                                .label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+
+                                .value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-primary);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+
+                        .sector-reason {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-secondary);
+                            line-height: 1.5;
+                            padding-top: var(--artdeco-spacing-2);
+                            border-top: 1px solid rgb(212 175 55 / 10%);
+                        }
+                    }
+                }
+            }
+
+            .diagnosis-insights {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .insight-card {
+                        display: flex;
+                        gap: var(--artdeco-spacing-3);
+                        padding: var(--artdeco-spacing-4);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        transition: all var(--artdeco-transition-base);
+
+                        &.bullish {
+                            border-left: 3px solid var(--artdeco-up);
+                        }
+
+                        &.bearish {
+                            border-left: 3px solid var(--artdeco-down);
+                        }
+
+                        &.neutral {
+                            border-left: 3px solid var(--artdeco-fg-muted);
+                        }
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px rgb(212 175 55 / 10%);
+                        }
+
+                        .insight-icon {
+                            flex-shrink: 0;
+                            width: 24px;
+                            height: 24px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--artdeco-fg-primary);
+                        }
+
+                        .insight-content {
+                            flex: 1;
+
+                            .insight-title {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .insight-description {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-secondary);
+                                line-height: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= 768px) {
+        .artdeco-capital-flow {
+            gap: var(--artdeco-spacing-4);
+        }
+
+        .flow-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .capital-heatmap {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--artdeco-spacing-3);
+
+                .header-content {
+                    margin-left: 0;
+                }
+
+                .heatmap-controls {
+                    width: 100%;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+
+            .heatmap-container {
+                .capital-heatmap-visualization {
+                    .heatmap-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
+            }
+        }
+
+        .clustering-analysis {
+            .cluster-visualization {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-analysis {
+            .control-metrics {
+                .metric-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+
+        .opportunity-diagnosis {
+            .opportunity-overview {
+                .opportunity-indicators {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .sector-opportunities {
+                .sector-opportunities {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .diagnosis-insights {
+                .insights-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+    }

@@ -48,13 +48,20 @@ defineProps({
     gap: 15px;
 }
 .node {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
     border: 1px solid var(--artdeco-gold-primary);
     padding: 15px;
     text-align: center;
     min-width: 120px;
-    .label { font-size: 12px; margin-bottom: 5px; }
-    .value { font-size: 18px; font-weight: bold; color: var(--artdeco-gold-primary); }
+    .label {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .value {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--artdeco-gold-primary);
+    }
 }
 .roe {
     background: var(--artdeco-gold-primary);

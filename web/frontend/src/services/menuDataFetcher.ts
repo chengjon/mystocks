@@ -19,7 +19,7 @@ export interface MenuDataFetchOptions {
   cache?: boolean // 是否使用缓存
 }
 
-export interface MenuDataFetchResult<T = any> {
+export interface MenuDataFetchResult<T = unknown> {
   success: boolean
   data?: T
   error?: string
@@ -27,13 +27,13 @@ export interface MenuDataFetchResult<T = any> {
 }
 
 // 简单的内存缓存
-const cache = new Map<string, { data: any; timestamp: number }>()
+const cache = new Map<string, { data: unknown; timestamp: number }>()
 const CACHE_DURATION = 60000 // 1分钟缓存
 
 /**
  * 从缓存获取数据
  */
-const getFromCache = (key: string): any | null => {
+const getFromCache = (key: string): unknown | null => {
   const cached = cache.get(key)
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data
@@ -47,7 +47,7 @@ const getFromCache = (key: string): any | null => {
 /**
  * 保存到缓存
  */
-const saveToCache = (key: string, data: any): void => {
+const saveToCache = (key: string, data: unknown): void => {
   cache.set(key, { data, timestamp: Date.now() })
 }
 
@@ -82,7 +82,7 @@ export const clearMenuDataCache = (pattern?: string): void => {
  * @param options - 获取选项
  * @returns Promise<MenuDataFetchResult>
  */
-export async function fetchMenuItemData<T = any>(
+export async function fetchMenuItemData<T = unknown>(
   item: MenuItem,
   options: MenuDataFetchOptions = {}
 ): Promise<MenuDataFetchResult<T>> {
@@ -117,7 +117,7 @@ export async function fetchMenuItemData<T = any>(
   }
 
   // 执行API请求（带重试）
-  let lastError: any = null
+  let lastError: unknown = null
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -160,7 +160,7 @@ export async function fetchMenuItemData<T = any>(
       } else {
         throw new Error(response?.message || '请求失败')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       lastError = error
       console.warn(`[MenuDataFetcher] Attempt ${attempt + 1} failed:`, error.message)
 

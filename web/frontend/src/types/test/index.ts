@@ -26,7 +26,7 @@ export interface TestCase {
 export interface TestResult {
   testCaseId: string;
   success: boolean;
-  output?: any;
+  output?: unknown;
   error?: string;
   duration?: number;
   timestamp?: string;

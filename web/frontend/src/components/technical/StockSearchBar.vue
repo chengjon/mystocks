@@ -46,7 +46,7 @@
     <div v-if="showQuickSelect" class="quick-select">
       <el-space wrap>
         <el-tag
-          v-for="stock in popularStocks"
+          v-for="(stock, _idx) in popularStocks"
           :key="stock.symbol"
           class="quick-select-tag"
           effect="plain"
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, _computed } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -250,14 +250,14 @@ watch(() => props.modelValue, (newVal) => {
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
       }
     }
   }
 }
 
 // 响应式设计
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .stock-search-bar {
     .stock-search-input {
       width: 100%;

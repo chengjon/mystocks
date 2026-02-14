@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-quant-extended';
 
 .realtime-monitor {
     min-height: 600px;
@@ -13,6 +13,7 @@
 
         h2 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-2xl);
             font-weight: 700;
@@ -38,9 +39,9 @@
     .ticker-section {
         margin-bottom: var(--artdeco-spacing-6);
         padding: var(--artdeco-spacing-4);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgb(255 255 255 / 2%);
         border-radius: var(--artdeco-radius-none);
-        border: 1px solid rgba(212, 175, 55, 0.1);
+        border: 1px solid rgb(212 175 55 / 10%);
     }
 
     .indices-section {
@@ -153,7 +154,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
     .realtime-monitor {
         .indices-grid {
             grid-template-columns: 1fr;
@@ -165,7 +166,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .realtime-monitor {
         .monitor-header {
             flex-direction: column;
@@ -191,7 +192,7 @@
     .indices-section,
     .table-section,
     .summary-section {
-        animation: fadeInUp 0.6s ease-out;
+        animation: fade-in-up 0.6s ease-out;
     }
 
     .ticker-section {
@@ -211,13 +212,13 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateY(0);
     }
 }
@@ -235,10 +236,10 @@
 
 @keyframes blink {
     0%, 50% {
-        opacity: 1;
+        opacity: 100%;
     }
     51%, 100% {
-        opacity: 0.5;
+        opacity: 50%;
     }
 }
 

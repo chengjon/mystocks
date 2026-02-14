@@ -297,7 +297,6 @@
         font-weight: bold;
         margin-bottom: 0.5rem;
         background: linear-gradient(45deg, #ffd700, #ffa500);
-        -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
@@ -375,7 +374,7 @@
         margin-top: 1rem;
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .artdeco-trading-management {
             padding: 1rem;
         }

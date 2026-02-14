@@ -58,22 +58,22 @@
 - [CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE](guides/CLAUDE_CODE_AGENTS_MANAGEMENT_GUIDE.md)
   - *Claude Code Agents 管理完全指南*
 
-- [CLI-1_PHASE3_TASKS](guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md)
+- [CLI-1_PHASE3_TASKS](guides/.multi-cli-tasks/CLI-1_PHASE3_TASKS.md)
   - *CLI-1: Phase 3 前端K线图可视化与UI优化*
 
-- [CLI-2_API_CONTRACT_TASKS](guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md)
+- [CLI-2_API_CONTRACT_TASKS](guides/.multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md)
   - *CLI-2 任务分配文档 - API契约优化与标准化*
 
-- [CLI-3_PHASE4_COMPLETE_TASKS](guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md)
+- [CLI-3_PHASE4_COMPLETE_TASKS](guides/.multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md)
   - *CLI-3 任务分配文档 - Phase 4完整实现 (A股规则 + 161指标 + GPU加速)*
 
-- [CLI-4_PHASE5_AI_SCREENING_TASKS](guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md)
+- [CLI-4_PHASE5_AI_SCREENING_TASKS](guides/.multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md)
   - *CLI-4 任务分配：Phase 5 AI智能选股系统*
 
-- [CLI-5_PHASE6_GPU_MONITORING_TASKS](guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md)
+- [CLI-5_PHASE6_GPU_MONITORING_TASKS](guides/.multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md)
   - *CLI-5 任务分配：Phase 6 GPU加速监控仪表板*
 
-- [CLI-6_QUALITY_ASSURANCE_TASKS](guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md)
+- [CLI-6_QUALITY_ASSURANCE_TASKS](guides/.multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md)
   - *CLI-6 任务分配：代码质量与测试保证*
 
 - [CLI_REGISTRATION_GUIDE](guides/CLI_REGISTRATION_GUIDE.md)
@@ -82,7 +82,7 @@
 - [CLI_ROLES_REFERENCE](guides/CLI_ROLES_REFERENCE.md)
   - *CLI角色查看指南*
 
-- [CLI_WORKFLOW_GUIDE](guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
+- [CLI_WORKFLOW_GUIDE](guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md)
   - *Worker CLI 工作流程指南*
 
 - [CONFIG_SYSTEM_GUIDE](guides/CONFIG_SYSTEM_GUIDE.md)
@@ -133,10 +133,10 @@
 - [EXCEPTION_HANDLER_GUIDE](guides/EXCEPTION_HANDLER_GUIDE.md)
   - *全局异常处理器使用指南*
 
-- [GIT_REMOTE_NAME_STANDARD](guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)
+- [GIT_REMOTE_NAME_STANDARD](guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)
   - *Git 远程仓库名称标准化规范*
 
-- [GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION](guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
+- [GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION](guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)
   - *Git Worktree协作冲突预防规范*
 
 - [GIT_WORKTREE_MAIN_CLI_MANUAL](guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md)
@@ -145,7 +145,7 @@
 - [LINEAR_THEME_GUIDE](guides/LINEAR_THEME_GUIDE.md)
   - *Linear Design System - 使用指南*
 
-- [MAIN_CLI_WORKFLOW_STANDARDS](guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)
+- [MAIN_CLI_WORKFLOW_STANDARDS](guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)
   - *Main CLI 工作规范与最佳实践*
 
 - [MOCK_DATA_USAGE_RULES](guides/MOCK_DATA_USAGE_RULES.md)
@@ -190,7 +190,7 @@
 - [PHASE_6_METHODOLOGY_GUIDE](guides/PHASE_6_METHODOLOGY_GUIDE.md)
   - *Phase 6 测试覆盖率优化方法论指南*
 
-- [PROGRESS_MONITORING_AND_MILESTONES](guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md)
+- [PROGRESS_MONITORING_AND_MILESTONES](guides/.multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md)
   - *多CLI并行开发 - 进度监控与里程碑管理方案*
 
 - [PYTHON_QUALITY_ASSURANCE_WORKFLOW](guides/PYTHON_QUALITY_ASSURANCE_WORKFLOW.md)
@@ -238,7 +238,7 @@
 - [TASK_POOL_USAGE_GUIDE](guides/TASK_POOL_USAGE_GUIDE.md)
   - *任务池使用指南*
 
-- [TASK_TEMPLATE](guides/multi-cli-tasks/TASK_TEMPLATE.md)
+- [TASK_TEMPLATE](guides/.multi-cli-tasks/TASK_TEMPLATE.md)
   - *任务文档模板*
 
 - [TDD_REFACTORING_COMPLETION_REPORT](guides/TDD_REFACTORING_COMPLETION_REPORT.md)

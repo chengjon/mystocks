@@ -10,7 +10,7 @@
     <div class="card main-card">
       <div class="tabs-container">
         <button
-          v-for="tab in tabs"
+          v-for="(tab, _idx) in tabs"
           :key="tab.key"
           class="tab-button"
           :class="{ active: activeTab === tab.key }"
@@ -43,7 +43,7 @@ const Tech = defineAsyncComponent(() => import('./pyprofiling/components/Tech.vu
 const activeTab = ref('overview')
 const tabs = TABS
 
-const componentMap: Record<string, any> = {
+const componentMap: Record<string, unknown> = {
   overview: Overview,
   prediction: Prediction,
   features: Features,
@@ -64,7 +64,7 @@ const currentComponent = computed(() => {
   padding: 20px;
   min-height: 100vh;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
 }
 
   position: fixed;
@@ -74,11 +74,10 @@ const currentComponent = computed(() => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 4%;
   background-image:
     repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
     repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
-}
 
 .page-header {
   text-align: center;
@@ -187,7 +186,7 @@ const currentComponent = computed(() => {
   &:hover {
     color: var(--gold-primary);
     border-color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
   }
 
   &.active {
@@ -202,7 +201,7 @@ const currentComponent = computed(() => {
   z-index: 1;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .pyprofiling-demo {
     padding: 10px;
   }

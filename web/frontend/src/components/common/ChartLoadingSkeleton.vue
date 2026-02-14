@@ -111,7 +111,7 @@ const progressText = computed(() => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: #ffffff;
+  background: #fff;
   position: relative;
 
   .loading-progress {
@@ -217,7 +217,7 @@ const progressText = computed(() => {
       align-items: center;
       justify-content: center;
       gap: 12px;
-      background: #ffffff;
+      background: #fff;
       border-top: 1px solid #e4e7ed;
 
       .skeleton-button {
@@ -262,15 +262,15 @@ const progressText = computed(() => {
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
   }
   50% {
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
 
 // 响应式设计
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .chart-loading-skeleton {
     padding: 12px;
 

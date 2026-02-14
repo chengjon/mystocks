@@ -32,14 +32,14 @@
 import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 
 interface Props {
-  etfRanking: any[]
+  etfRanking: unknown[]
 }
 
 defineProps<Props>()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .etf-overview {
   display: grid;
@@ -60,7 +60,7 @@ defineProps<Props>()
   align-items: center;
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgb(212 175 55 / 10%);
   border-radius: var(--artdeco-radius-none);
   transition: all var(--artdeco-transition-base);
 

@@ -9,7 +9,7 @@ import { ElMessage } from 'element-plus';
 /**
  * API响应格式
  */
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   code: string;
   message: string;
   data: T;
@@ -136,9 +136,9 @@ export class APIClient {
   /**
    * GET请求
    */
-  public async get<T = any>(
+  public async get<T = unknown>(
     url: string,
-    params?: any,
+    params?: unknown,
     config?: RequestConfig
   ): Promise<APIResponse<T>> {
     const response = await this.client.get<APIResponse<T>>(url, {
@@ -151,9 +151,9 @@ export class APIClient {
   /**
    * POST请求
    */
-  public async post<T = any>(
+  public async post<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: RequestConfig
   ): Promise<APIResponse<T>> {
     const response = await this.client.post<APIResponse<T>>(url, data, config);
@@ -163,9 +163,9 @@ export class APIClient {
   /**
    * PUT请求
    */
-  public async put<T = any>(
+  public async put<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: RequestConfig
   ): Promise<APIResponse<T>> {
     const response = await this.client.put<APIResponse<T>>(url, data, config);
@@ -175,9 +175,9 @@ export class APIClient {
   /**
    * PATCH请求
    */
-  public async patch<T = any>(
+  public async patch<T = unknown>(
     url: string,
-    data?: any,
+    data?: unknown,
     config?: RequestConfig
   ): Promise<APIResponse<T>> {
     const response = await this.client.patch<APIResponse<T>>(url, data, config);
@@ -187,7 +187,7 @@ export class APIClient {
   /**
    * DELETE请求
    */
-  public async delete<T = any>(
+  public async delete<T = unknown>(
     url: string,
     config?: RequestConfig
   ): Promise<APIResponse<T>> {
@@ -198,7 +198,7 @@ export class APIClient {
   /**
    * 文件上传
    */
-  public async upload<T = any>(
+  public async upload<T = unknown>(
     url: string,
     file: File,
     onProgress?: (percent: number) => void,

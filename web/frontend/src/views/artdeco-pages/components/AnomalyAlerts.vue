@@ -33,7 +33,7 @@ defineProps({
 <style scoped lang="scss">
 .alert-item {
     padding: 15px;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    border-bottom: 1px solid rgb(212 175 55 / 10%);
     &.critical { border-left: 4px solid var(--artdeco-fall); }
     &.warning { border-left: 4px solid var(--artdeco-gold-primary); }
 }
@@ -45,8 +45,14 @@ defineProps({
 }
 .alert-body {
     margin-bottom: 15px;
-    .symbol { font-weight: bold; margin-bottom: 5px; }
-    .desc { font-size: 14px; color: var(--artdeco-fg-muted); }
+    .symbol {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .desc {
+      font-size: 14px;
+      color: var(--artdeco-fg-muted);
+    }
 }
 .alert-footer {
     display: flex;

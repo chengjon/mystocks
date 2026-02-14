@@ -160,7 +160,7 @@
 import { computed } from 'vue'
 import {
   Histogram, Connection, Close, Timer, Refresh, Calendar,
-  TrendCharts, SuccessFilled, CircleClose, Sort, Warning
+  TrendCharts, _SuccessFilled, _CircleClose, Sort, _Warning
 } from '@element-plus/icons-vue'
 import { useBacktestProgress } from '@/composables/useSSE'
 
@@ -408,7 +408,7 @@ const formatPercentage = (value) => {
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
           }
 
           .metric-icon {

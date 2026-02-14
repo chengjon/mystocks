@@ -15,7 +15,7 @@ export interface WebSocketConfig {
 export interface WebSocketMessage {
   type: string
   channel?: string
-  data?: any
+  data?: unknown
   timestamp?: number
   id?: string
 }

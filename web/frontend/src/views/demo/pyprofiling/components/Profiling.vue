@@ -82,7 +82,7 @@ const getLevelBadgeClass = (level: string) => {
   align-items: center;
   margin-bottom: var(--spacing-5);
   padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgb(212 175 55 / 30%);
 }
 
 .card-title {
@@ -112,7 +112,7 @@ const getLevelBadgeClass = (level: string) => {
   border-collapse: collapse;
 
   th {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
     color: var(--accent-gold);
     font-family: var(--font-display);
     font-weight: 600;
@@ -125,13 +125,13 @@ const getLevelBadgeClass = (level: string) => {
 
   td {
     padding: var(--spacing-3) var(--spacing-4);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgb(212 175 55 / 20%);
     color: var(--fg-secondary);
     font-size: var(--font-size-small);
   }
 
   tr:hover td {
-    background: rgba(212, 175, 55, 0.03);
+    background: rgb(212 175 55 / 3%);
   }
 
   .tool-name {
@@ -155,8 +155,8 @@ const getLevelBadgeClass = (level: string) => {
 
 .command-card {
   padding: var(--spacing-4);
-  background: rgba(212, 175, 55, 0.03);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgb(212 175 55 / 3%);
+  border: 1px solid rgb(212 175 55 / 20%);
 
   h4 {
     font-family: var(--font-display);
@@ -181,8 +181,8 @@ const getLevelBadgeClass = (level: string) => {
 }
 
 .command-code {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgb(0 0 0 / 30%);
+  border: 1px solid rgb(212 175 55 / 20%);
   border-radius: 0;
   padding: var(--spacing-3);
   font-family: var(--font-mono);
@@ -226,15 +226,13 @@ const getLevelBadgeClass = (level: string) => {
       margin: var(--spacing-2) 0;
     }
   }
-}
 
-  background: rgba(39, 174, 96, 0.1);
-  border-color: rgba(39, 174, 96, 0.4);
+  background: rgb(39 174 96 / 10%);
+  border-color: rgb(39 174 96 / 40%);
 
   .alert-title {
     color: #27AE60;
   }
-}
 
 .badge {
   display: inline-block;
@@ -248,31 +246,31 @@ const getLevelBadgeClass = (level: string) => {
 }
 
 .badge-info {
-  background: rgba(74, 144, 226, 0.15);
+  background: rgb(74 144 226 / 15%);
   color: #4A90E2;
   border: 1px solid #4A90E2;
 }
 
 .badge-warning {
-  background: rgba(230, 126, 34, 0.15);
+  background: rgb(230 126 34 / 15%);
   color: #E67E22;
   border: 1px solid #E67E22;
 }
 
 .badge-success {
-  background: rgba(39, 174, 96, 0.15);
+  background: rgb(39 174 96 / 15%);
   color: #27AE60;
   border: 1px solid #27AE60;
 }
 
 .badge-danger {
-  background: rgba(231, 76, 60, 0.15);
+  background: rgb(231 76 60 / 15%);
   color: #E74C3C;
   border: 1px solid #E74C3C;
 }
 
 code {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgb(212 175 55 / 10%);
   padding: 2px 6px;
   border-radius: 0;
   font-family: var(--font-mono);

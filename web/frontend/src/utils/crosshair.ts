@@ -86,7 +86,7 @@ export class CrosshairHandler {
     this.draw(x, y);
   }
 
-  private handleMouseEnter(event: MouseEvent): void {
+  private handleMouseEnter(_event: MouseEvent): void {
     this.isActive = true;
   }
 
@@ -103,7 +103,7 @@ export class CrosshairHandler {
     this.ctx.clearRect(0, 0, width, height);
   }
 
-  draw(mouseX: number, mouseY: number): void {
+  draw(_mouseX: number, _mouseY: number): void {
     if (!this.isActive || !this.currentPosition) return;
 
     this.clear();

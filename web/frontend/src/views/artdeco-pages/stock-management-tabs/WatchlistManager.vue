@@ -3,7 +3,7 @@
     <div class="watchlist-header">
       <div class="watchlist-tabs">
         <button
-          v-for="list in watchlists"
+          v-for="(list, _idx) in watchlists"
           :key="list.id"
           class="watchlist-tab"
           :class="{ active: activeWatchlistId === list.id }"
@@ -32,9 +32,9 @@
 import { ArtDecoButton, ArtDecoTable } from '@/components/artdeco'
 
 interface Props {
-  watchlists: any[]
+  watchlists: unknown[]
   activeWatchlistId: string
-  currentStocks: any[]
+  currentStocks: unknown[]
 }
 
 defineProps<Props>()
@@ -50,7 +50,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .watchlist-header {
   display: flex;
@@ -79,12 +79,13 @@ const columns = [
   .count {
     margin-left: 8px;
     font-size: 12px;
-    opacity: 0.6;
+    opacity: 60%;
   }
 }
 
 .add-list-btn {
   @extend .watchlist-tab;
+
   width: 40px;
   padding: 8px 0;
 }

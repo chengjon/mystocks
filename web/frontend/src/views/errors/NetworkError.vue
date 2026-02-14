@@ -118,8 +118,8 @@
             45deg,
             transparent,
             transparent 10px,
-            rgba(212, 175, 55, 0.02) 10px,
-            rgba(212, 175, 55, 0.02) 11px
+            rgb(212 175 55 / 2%) 10px,
+            rgb(212 175 55 / 2%) 11px
         );
         padding: 20px;
     }
@@ -135,7 +135,7 @@
         width: 100%;
         background: var(--bg-secondary);
         border: 1px solid var(--gold-dim);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgb(0 0 0 / 10%);
 
         &::before,
         &::after {
@@ -211,9 +211,9 @@
                 font-weight: 500;
 
                 &.offline {
-                    background: rgba(245, 108, 108, 0.1);
+                    background: rgb(245 108 108 / 10%);
                     color: #f56c6c;
-                    border: 1px solid rgba(245, 108, 108, 0.2);
+                    border: 1px solid rgb(245 108 108 / 20%);
                 }
 
                 .dot {
@@ -252,12 +252,12 @@
 
                     &:hover:not(:disabled) {
                         background: var(--gold-muted);
-                        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+                        box-shadow: 0 0 20px rgb(212 175 55 / 40%);
                         transform: translateY(-2px);
                     }
 
                     &:disabled {
-                        opacity: 0.6;
+                        opacity: 60%;
                         cursor: not-allowed;
                     }
                 }
@@ -320,7 +320,7 @@
         justify-content: center;
         width: 200px;
         height: 200px;
-        background: rgba(212, 175, 55, 0.05);
+        background: rgb(212 175 55 / 5%);
         border: 1px solid var(--gold-dim);
         position: relative;
 
@@ -356,10 +356,10 @@
     @keyframes pulse {
         0%,
         100% {
-            opacity: 1;
+            opacity: 100%;
         }
         50% {
-            opacity: 0.5;
+            opacity: 50%;
         }
     }
 
@@ -372,7 +372,7 @@
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .error-card {
             flex-direction: column;
             gap: 40px;

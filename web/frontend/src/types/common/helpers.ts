@@ -8,7 +8,7 @@
 /**
  * 消息回调函数类型
  */
-export type MessageCallback = (data: any) => void;
+export type MessageCallback = (data: unknown) => void;
 
 /**
  * 日期格式化选项
@@ -41,7 +41,7 @@ export interface SortOptions {
 export interface FilterCondition {
   field: string;
   operator: 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'contains';
-  value: any;
+  value: unknown;
 }
 
 /**

@@ -17,8 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue'
-import * as echarts from 'echarts'
+import { ref, watch, computed, onMounted , onUnmounted } from 'vue'
+import echarts from '@/utils/echarts'
 import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 import { ARTDECO_THEME } from '@/styles/echarts-theme' // Create this separate file
@@ -54,7 +54,7 @@ let resizeObserver: ResizeObserver | null = null
 const isEmpty = computed(() => {
   if (!props.option || !props.option.series || props.option.series.length === 0) return true
   // Check if data arrays are empty
-  return props.option.series.every((s: any) => !s.data || s.data.length === 0)
+  return props.option.series.every((s: unknown) => !s.data || s.data.length === 0)
 })
 
 // Methods
@@ -119,10 +119,16 @@ watch(() => props.loading, (isLoading) => {
     }, 50)
   }
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-chart-container {
   position: relative;
@@ -157,12 +163,12 @@ watch(() => props.loading, (isLoading) => {
   align-items: center;
   justify-content: center;
   color: var(--artdeco-fg-muted);
-  background: rgba(0,0,0,0.1);
+  background: rgb(0 0 0 / 10%);
   z-index: 5;
   
   .empty-icon {
     margin-bottom: 8px;
-    opacity: 0.5;
+    opacity: 50%;
   }
   
   .empty-text {

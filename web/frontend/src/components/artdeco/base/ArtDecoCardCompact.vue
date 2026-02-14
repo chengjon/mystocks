@@ -60,7 +60,7 @@ const handleClick = (event: MouseEvent) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 // ============================================
 //   COMPACT ARTDECO CARD - 简化紧凑版
@@ -71,7 +71,6 @@ const handleClick = (event: MouseEvent) => {
 .artdeco-card-compact {
   // Art Deco 核心特征：锐利直角
   border-radius: 0;
-
   background: var(--artdeco-bg-card);
   border: 1px solid var(--artdeco-border-default);
   padding: var(--artdeco-spacing-3);  // 紧凑：12px（原16px）

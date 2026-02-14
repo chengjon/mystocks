@@ -88,7 +88,7 @@
     import { computed } from 'vue'
 
     interface Props {
-        data: any
+        data: unknown
     }
 
     const props = defineProps<Props>()

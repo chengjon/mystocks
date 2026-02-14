@@ -13,9 +13,9 @@ import type { Strategy } from '@/api/types/strategy'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type StrategyConfigResponse = any
-type BacktestResultResponse = any
-type TechnicalIndicatorResponse = any
+type StrategyConfigResponse = Record<string, unknown>
+type BacktestResultResponse = Record<string, unknown>
+type TechnicalIndicatorResponse = Record<string, unknown>
 
 // ViewModel interfaces
 export interface StrategyListItemVM {
@@ -47,8 +47,8 @@ export interface StrategyParameterVM {
   name: string
   displayName: string
   type: 'number' | 'string' | 'boolean' | 'select' | 'date'
-  value: any
-  defaultValue: any
+  value: unknown
+  defaultValue: unknown
   options?: ParameterOptionVM[]
   min?: number
   max?: number
@@ -59,7 +59,7 @@ export interface StrategyParameterVM {
 
 export interface ParameterOptionVM {
   label: string
-  value: any
+  value: unknown
 }
 
 export interface BacktestResultVM {
@@ -116,7 +116,7 @@ export interface TechnicalIndicatorVM {
 export interface IndicatorParameterVM {
   name: string
   type: string
-  defaultValue: any
+  defaultValue: unknown
   description: string
   range?: [number, number]
 }
@@ -126,7 +126,7 @@ export class StrategyAdapter {
    * Convert strategy list response to ViewModel
    */
   static toStrategyListVM(data: StrategyListResponse[]): StrategyListItemVM[] {
-    return data.map((item: any) => ({
+    return data.map((item: unknown) => ({
       id: item.id || '',
       code: item.strategyCode || item.code || '',
       name: item.name || item.displayName || '',
@@ -219,14 +219,14 @@ export class StrategyAdapter {
   /**
    * Convert parameter to ViewModel
    */
-  private static toParameterVM(param: any): StrategyParameterVM {
+  private static toParameterVM(param: unknown): StrategyParameterVM {
     return {
       name: param.name || '',
       displayName: param.displayName || param.name || '',
       type: param.type || 'string',
       value: param.value,
       defaultValue: param.defaultValue,
-      options: param.options?.map((opt: any) => ({
+      options: param.options?.map((opt: unknown) => ({
         label: opt.label || String(opt.value),
         value: opt.value
       })),
@@ -322,21 +322,21 @@ export class StrategyAdapter {
   /**
    * Alias for toStrategyListVM
    */
-  static adaptStrategyList(data: any): StrategyListItemVM[] {
+  static adaptStrategyList(data: unknown): StrategyListItemVM[] {
     return this.toStrategyListVM(data)
   }
 
   /**
    * Alias for toStrategyConfigVM
    */
-  static adaptStrategyDetail(data: any): StrategyConfigVM {
+  static adaptStrategyDetail(data: unknown): StrategyConfigVM {
     return this.toStrategyConfigVM(data)
   }
 
   /**
    * Alias for toStrategyConfigVM
    */
-  static adaptStrategy(data: any): Strategy {
+  static adaptStrategy(data: unknown): Strategy {
     return {
       id: data.id || data.strategy_id || '',
       strategy_id: data.strategy_id || data.id || '',
@@ -358,7 +358,7 @@ export class StrategyAdapter {
   /**
    * Alias for toBacktestResultVM
    */
-  static adaptBacktestTask(data: any): BacktestResultVM | null {
+  static adaptBacktestTask(data: unknown): BacktestResultVM | null {
     if (!data) return null
     return this.toBacktestResultVM(data)
   }

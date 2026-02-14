@@ -22,8 +22,8 @@ export interface WidgetConfig {
   dataSource: WidgetDataSource;
   endpoint?: string;
   refreshInterval?: number;
-  query?: Record<string, any>;
-  filters?: Record<string, any>;
+  query?: Record<string, unknown>;
+  filters?: Record<string, unknown>;
 }
 
 /**
@@ -37,7 +37,7 @@ export interface WidgetConfigResponse extends UnifiedResponse<WidgetConfig[]> {}
 export interface WidgetInstance {
   id: string;
   config: WidgetConfig;
-  state?: Record<string, any>;
+  state?: Record<string, unknown>;
   lastUpdate?: string;
 }
 

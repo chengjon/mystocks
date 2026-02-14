@@ -10,8 +10,12 @@ TDX配置管理模块
 
 import configparser
 import os
+import logging
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 class TdxConfigManager:

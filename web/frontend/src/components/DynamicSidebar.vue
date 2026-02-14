@@ -3,7 +3,7 @@
         <!-- Module Switcher -->
         <div class="module-switcher">
             <button
-                v-for="moduleKey in availableModules"
+                v-for="(moduleKey, _idx) in availableModules"
                 :key="moduleKey"
                 class="module-button"
                 :class="{ active: activeModule === moduleKey }"
@@ -28,7 +28,7 @@
 
                 <nav class="menu-items">
                     <router-link
-                        v-for="item in currentModuleConfig"
+                        v-for="(item, _idx) in currentModuleConfig"
                         :key="item.path"
                         :to="item.path"
                         class="menu-item"
@@ -99,19 +99,19 @@
     const currentModuleConfig = computed(() => MENU_CONFIG_MAP[activeModule.value as keyof MenuConfigMap])
 
     // Methods
-    const getModuleConfig = (moduleKey: string) => {
+    const _getModuleConfig = (moduleKey: string) => {
         return MENU_CONFIG_MAP[moduleKey as keyof MenuConfigMap]
     }
 
-    const switchModule = (moduleKey: any) => {
+    const switchModule = (moduleKey: unknown) => {
         activeModule.value = moduleKey
     }
 
-    const getModuleIcon = (moduleKey: any) => {
+    const getModuleIcon = (moduleKey: unknown) => {
         return moduleIcons[moduleKey] || TrendCharts
     }
 
-    const getMenuIcon = (iconName: any) => {
+    const getMenuIcon = (iconName: unknown) => {
         return menuIcons[iconName] || Monitor
     }
 
@@ -126,7 +126,7 @@
     .dynamic-sidebar {
         width: 280px;
         height: 100vh;
-        background: #ffffff;
+        background: #fff;
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
@@ -264,7 +264,7 @@
     }
 
     // Responsive design for desktop only
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
         .dynamic-sidebar {
             width: 260px;
         }

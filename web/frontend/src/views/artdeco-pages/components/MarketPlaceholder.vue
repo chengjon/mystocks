@@ -30,6 +30,6 @@ defineProps({
     margin-top: 20px;
     font-family: monospace;
     font-size: 12px;
-    opacity: 0.5;
+    opacity: 50%;
 }
 </style>

@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, _computed } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -227,7 +227,7 @@ const handleSubmit = async () => {
     }
 
     emit('submit', formData.value)
-  } catch (error) {
+  } catch (_error) {
     ElMessage.error('请填写完整的表单信息')
   }
 }

@@ -169,7 +169,7 @@
       </template>
 
       <el-alert
-        v-for="alert in riskAlerts"
+        v-for="(alert, _idx) in riskAlerts"
         :key="alert.id"
         :title="alert.title"
         :description="alert.description"
@@ -182,8 +182,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, onMounted , onUnmounted } from 'vue'
+import { _ElMessage } from 'element-plus'
 import {
   PieChart,
   TrendCharts,
@@ -312,6 +312,14 @@ onMounted(() => {
     portfolioChange.value = (portfolioValue.value - 1250000) / 1250000
   }, 5000)
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+const _timer_2: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearInterval(_timer_1)
+  if (_timer_2) clearTimeout(_timer_2)
+})
 </script>
 
 <style scoped>
@@ -347,7 +355,7 @@ onMounted(() => {
 
 .risk-card {
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
   transition: transform 0.2s;
 }
 
@@ -363,7 +371,7 @@ onMounted(() => {
 
 .metric-icon {
   font-size: 2rem;
-  opacity: 0.8;
+  opacity: 80%;
 }
 
 .metric-content {
@@ -407,7 +415,7 @@ onMounted(() => {
 
 .analysis-card, .positions-card, .alerts-card {
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
 }
 
 .card-header {

@@ -47,7 +47,7 @@ const radius = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-skeleton {
   background-color: var(--artdeco-bg-elevated);
@@ -70,15 +70,12 @@ const radius = computed(() => {
     &::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0 0 0 0;
       transform: translateX(-100%);
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(255, 255, 255, 0.05),
+        rgb(255 255 255 / 5%),
         transparent
       );
       animation: skeleton-loading 1.5s infinite;

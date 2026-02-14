@@ -280,8 +280,8 @@
 
 <style scoped lang="scss">
     // Import Art Deco tokens and patterns
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     // ============================================
     //   BASE INPUT STYLES - 输入框基础样式
@@ -350,7 +350,7 @@
         // Focus state: Border brightens + glow
         .artdeco-input--focused &::after {
             background-color: var(--artdeco-accent-gold);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
         }
 
         // Error state

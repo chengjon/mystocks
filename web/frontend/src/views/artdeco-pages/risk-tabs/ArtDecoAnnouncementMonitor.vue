@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-quant-extended';
 
 .announcement-monitor {
     min-height: 900px;
@@ -12,6 +12,7 @@
 
         h2 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-2xl);
             font-weight: 700;
@@ -62,6 +63,7 @@
             .setting-group {
                 h4 {
                     @include artdeco-gold-accent;
+
                     font-family: var(--artdeco-font-display);
                     font-size: var(--artdeco-text-lg);
                     font-weight: 600;
@@ -152,7 +154,7 @@
     .detail-header {
         margin-bottom: var(--artdeco-spacing-6);
         padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        border-bottom: 1px solid rgb(212 175 55 / 20%);
 
         .detail-meta {
             display: flex;
@@ -189,6 +191,7 @@
     .detail-content {
         h3 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-lg);
             font-weight: 600;
@@ -216,7 +219,7 @@
             background: var(--artdeco-bg-card);
             padding: var(--artdeco-spacing-4);
             border-radius: var(--artdeco-radius-none);
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            border: 1px solid rgb(212 175 55 / 10%);
         }
 
         .impact-analysis {
@@ -230,7 +233,7 @@
                 align-items: center;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgba(212, 175, 55, 0.1);
+                border: 1px solid rgb(212 175 55 / 10%);
                 border-radius: var(--artdeco-radius-none);
 
                 .impact-label {
@@ -250,7 +253,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
     .announcement-monitor {
         .stats-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -258,7 +261,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .announcement-monitor {
         .monitor-header {
             flex-direction: column;
@@ -301,7 +304,7 @@
     .announcement-stats,
     .announcements-section,
     .monitor-settings-section {
-        animation: fadeInUp 0.6s ease-out;
+        animation: fade-in-up 0.6s ease-out;
     }
 
     .announcement-stats {
@@ -317,13 +320,13 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateY(0);
     }
 }
@@ -332,7 +335,7 @@
 .announcements-section {
     .artdeco-table__row {
         &:has(.artdeco-status[status="info"]) {
-            background: rgba(255, 213, 79, 0.05);
+            background: rgb(255 213 79 / 5%);
             border-left: 3px solid var(--artdeco-gold-primary);
         }
     }

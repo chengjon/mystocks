@@ -13,8 +13,8 @@ import type {
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type AccountOverviewResponse = any
-type PositionResponse = any
+type AccountOverviewResponse = Record<string, unknown>
+type PositionResponse = Record<string, unknown>
 
 // ViewModel interfaces
 export interface AccountOverviewVM {
@@ -132,7 +132,7 @@ export class TradeAdapter {
    * Convert order response to ViewModel
    */
   static toOrderVM(data: OrderResponse[]): OrderVM[] {
-    return data.map((order: any) => ({
+    return data.map((order: unknown) => ({
       orderId: order.order_id || order.orderId || '',
       symbol: order.symbol || '',
       name: order.name || order.order_name || '',
@@ -189,14 +189,14 @@ export class TradeAdapter {
    */
   static toTradeHistoryVM(data: TradeHistoryResponse[]): TradeHistoryVM[] {
     // Group trades by date
-    const groupedTrades = data.reduce((groups, trade: any) => {
+    const groupedTrades = data.reduce((groups, trade: unknown) => {
       const date = this.formatDate(trade.tradeTime || trade.trade_time)
       if (!groups[date]) {
         groups[date] = []
       }
       groups[date].push(trade)
       return groups
-    }, {} as Record<string, any[]>)
+    }, {} as Record<string, unknown[]>)
 
     // Convert to VMs
     return Object.entries(groupedTrades).map(([date, trades]) => {
@@ -218,7 +218,7 @@ export class TradeAdapter {
   /**
    * Convert single trade to ViewModel
    */
-  private static toTradeVM(trade: any): TradeVM {
+  private static toTradeVM(trade: unknown): TradeVM {
     return {
       tradeId: trade.tradeId || '',
       orderId: trade.orderId || '',

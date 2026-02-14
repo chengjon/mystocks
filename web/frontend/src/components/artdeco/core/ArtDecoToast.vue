@@ -2,7 +2,7 @@
   <Teleport to="body">
     <TransitionGroup name="artdeco-toast" tag="div" :class="containerClass">
       <div
-        v-for="toast in toasts"
+        v-for="(toast, _idx) in toasts"
         :key="toast.id"
         :class="['artdeco-toast', `artdeco-toast--${toast.type}`]"
         role="alert"
@@ -98,7 +98,7 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 // ========== Container ==========
 .artdeco-toast-container {
@@ -171,10 +171,10 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 
   // Type-specific styles
   &--success {
-    border-color: rgba(34, 197, 94, 0.5);
+    border-color: rgb(34 197 94 / 50%);
     background: linear-gradient(135deg,
-      rgba(34, 197, 94, 0.05) 0%,
-      rgba(34, 197, 94, 0.02) 100%
+      rgb(34 197 94 / 5%) 0%,
+      rgb(34 197 94 / 2%) 100%
     );
 
     .artdeco-toast__icon {
@@ -187,10 +187,10 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   }
 
   &--error {
-    border-color: rgba(239, 68, 68, 0.5);
+    border-color: rgb(239 68 68 / 50%);
     background: linear-gradient(135deg,
-      rgba(239, 68, 68, 0.05) 0%,
-      rgba(239, 68, 68, 0.02) 100%
+      rgb(239 68 68 / 5%) 0%,
+      rgb(239 68 68 / 2%) 100%
     );
 
     .artdeco-toast__icon {
@@ -203,10 +203,10 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   }
 
   &--warning {
-    border-color: rgba(251, 191, 36, 0.5);
+    border-color: rgb(251 191 36 / 50%);
     background: linear-gradient(135deg,
-      rgba(251, 191, 36, 0.05) 0%,
-      rgba(251, 191, 36, 0.02) 100%
+      rgb(251 191 36 / 5%) 0%,
+      rgb(251 191 36 / 2%) 100%
     );
 
     .artdeco-toast__icon {
@@ -219,10 +219,10 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   }
 
   &--info {
-    border-color: rgba(59, 130, 246, 0.5);
+    border-color: rgb(59 130 246 / 50%);
     background: linear-gradient(135deg,
-      rgba(59, 130, 246, 0.05) 0%,
-      rgba(59, 130, 246, 0.02) 100%
+      rgb(59 130 246 / 5%) 0%,
+      rgb(59 130 246 / 2%) 100%
     );
 
     .artdeco-toast__icon {
@@ -240,7 +240,7 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 60%;
 
   .corner {
     position: absolute;
@@ -315,7 +315,7 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
   font-family: var(--artdeco-font-body);
   color: var(--artdeco-fg-secondary);
   line-height: 1.5;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 // ========== Close Button ==========
@@ -367,12 +367,12 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 }
 
 .artdeco-toast-enter-from {
-  opacity: 0;
+  opacity: 0%;
   transform: translateX(100%);
 }
 
 .artdeco-toast-leave-to {
-  opacity: 0;
+  opacity: 0%;
   transform: translateX(100%) scale(0.9);
 }
 
@@ -393,12 +393,12 @@ const getIconForType = (type: ToastConfig['type'] = 'info') => {
 .artdeco-toast-container--bottom-center {
   .artdeco-toast-enter-from {
     transform: translateY(-20px) scale(0.9);
-    opacity: 0;
+    opacity: 0%;
   }
 
   .artdeco-toast-leave-to {
     transform: translateY(-20px) scale(0.9);
-    opacity: 0;
+    opacity: 0%;
   }
 }
 </style>

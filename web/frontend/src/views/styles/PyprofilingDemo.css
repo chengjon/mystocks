@@ -1,0 +1,215 @@
+.pyprofiling-demo {
+  padding: var(--spacing-6);
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 4%;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--accent-gold) 0px,
+      var(--accent-gold) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+  position: relative;
+  z-index: 1;
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-h2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--accent-gold);
+    margin: 0 0 var(--spacing-2) 0;
+  }
+
+  .page-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0;
+  }
+}
+
+.demo-grid {
+  display: flex;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.demo-card {
+  margin-bottom: var(--spacing-6);
+  position: relative;
+  z-index: 1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
+}
+
+.overview-section,
+.prediction-section,
+.features-section,
+.profiling-section,
+.data-section,
+.api-section,
+.tech-section {
+  padding: var(--spacing-4) 0;
+}
+
+.overview-section h3,
+.prediction-section h3,
+.features-section h3,
+.profiling-section h3,
+.data-section h3,
+.api-section h3,
+.tech-section h3 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-4);
+}
+
+.overview-section h4,
+.prediction-section h4,
+.features-section h4,
+.profiling-section h4,
+.data-section h4,
+.api-section h4,
+.tech-section h4 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--fg-primary);
+  margin-top: 0;
+  margin-bottom: var(--spacing-3);
+}
+
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.model-list ul {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  line-height: 2;
+  list-style: disc;
+}
+
+.model-actions {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.command-examples {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.command-card h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-3);
+  color: var(--accent-gold);
+}
+
+.install-card {
+  margin-top: var(--spacing-4);
+}
+
+.install-card h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-3);
+  color: var(--accent-gold);
+}
+
+.install-card ul {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  line-height: 1.8;
+}
+
+.profiling-section code {
+  background: rgb(212 175 55 / 10%);
+  padding: 2px 6px;
+  border-radius: var(--radius-none);
+  font-family: 'Courier New', monospace;
+  color: var(--accent-gold);
+  display: block;
+  margin-top: var(--spacing-2);
+}
+
+.profiling-section :deep(.el-descriptions__label) {
+  background: rgb(212 175 55 / 10%) !important;
+  color: var(--fg-muted) !important;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-section :deep(.el-descriptions__content) {
+  background: transparent !important;
+  color: var(--fg-primary) !important;
+  font-family: var(--font-body);
+}
+
+.profiling-steps :deep(.el-step__title) {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.profiling-steps :deep(.el-step__description) {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+}

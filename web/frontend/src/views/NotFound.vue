@@ -46,7 +46,7 @@ const goHome = () => {
   align-items: center;
   justify-content: center;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
   padding: 20px;
 }
 
@@ -58,7 +58,7 @@ const goHome = () => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 4%;
   background-image:
     repeating-linear-gradient(45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px),
     repeating-linear-gradient(-45deg, var(--gold-primary) 0px, var(--gold-primary) 1px, transparent 1px, transparent 10px);
@@ -148,7 +148,7 @@ const goHome = () => {
 
     &:hover {
       background: var(--gold-muted);
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+      box-shadow: 0 0 20px rgb(212 175 55 / 40%);
       transform: translateY(-2px);
     }
   }
@@ -160,7 +160,7 @@ const goHome = () => {
   justify-content: center;
   width: 200px;
   height: 200px;
-  background: rgba(212, 175, 55, 0.05);
+  background: rgb(212 175 55 / 5%);
   border: 1px solid var(--gold-dim);
   position: relative;
 
@@ -188,7 +188,7 @@ const goHome = () => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .error-card {
     flex-direction: column;
     gap: 40px;

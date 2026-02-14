@@ -43,7 +43,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-switch-wrapper {
       display: inline-flex;
@@ -55,7 +55,7 @@
 
     .artdeco-switch-wrapper.is-disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: 50%;
     }
 
     .artdeco-switch-label {
@@ -75,12 +75,9 @@
 
     .artdeco-switch-track {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0 0 0 0;
       background: #1A2026;
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       transition: all var(--artdeco-transition-base);
     }
 
@@ -93,13 +90,13 @@
       background: var(--artdeco-silver-dim);
       border: 1px solid #000;
       transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+      box-shadow: 0 0 5px rgb(0 0 0 / 50%);
       z-index: 2;
     }
 
     /* Active State */
     .artdeco-switch.active .artdeco-switch-track {
-      background: rgba(212, 175, 55, 0.15);
+      background: rgb(212 175 55 / 15%);
       border-color: var(--artdeco-accent-gold);
     }
 

@@ -53,11 +53,11 @@ export class ConnectionHealthMonitor {
     }
   }
 
-  private messageBuffer: Array<any> = []
+  private messageBuffer: unknown[] = []
   private performanceBuffer: Array<number> = []
   private errorBuffer: Array<number> = []
 
-  constructor(private options: any = {}) {
+  constructor(private options: Record<string, unknown> = {}) {
     // 合并配置
     this.config = { ...this.config, ...options }
 
@@ -92,7 +92,7 @@ export class ConnectionHealthMonitor {
   /**
    * 记录错误
    */
-  recordError(error?: Error): void {
+  recordError(_error?: Error): void {
     const now = Date.now()
 
     // 更新断路器状态
@@ -205,7 +205,7 @@ export class ConnectionHealthMonitor {
   /**
    * 添加消息到缓冲区
    */
-  bufferMessage(message: any): boolean {
+  bufferMessage(message: unknown): boolean {
     if (!this.canSendMessage()) {
       return false
     }
@@ -217,7 +217,7 @@ export class ConnectionHealthMonitor {
   /**
    * 获取并清空消息缓冲区
    */
-  flushMessageBuffer(): any[] {
+  flushMessageBuffer(): unknown[] {
     const messages = [...this.messageBuffer]
     this.messageBuffer = []
     return messages
@@ -309,7 +309,7 @@ export class ConnectionHealthMonitor {
   /**
    * 获取性能统计
    */
-  getPerformanceStats(): any {
+  getPerformanceStats(): unknown {
     return {
       metrics: this.metrics,
       circuitBreaker: this.circuitBreaker,
@@ -322,6 +322,6 @@ export class ConnectionHealthMonitor {
 }
 
 // 创建默认的健康监控实例
-export const createHealthMonitor = (options?: any): ConnectionHealthMonitor => {
+export const createHealthMonitor = (options?: unknown): ConnectionHealthMonitor => {
   return new ConnectionHealthMonitor(options)
 }

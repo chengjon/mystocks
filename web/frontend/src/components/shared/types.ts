@@ -14,18 +14,18 @@ export interface FilterItem {
   placeholder?: string
   width?: string
   options?: FilterOption[]
-  defaultValue?: any
+  defaultValue?: unknown
 }
 
 // StockListTable types
-export interface TableColumn<T = any> {
+export interface TableColumn<T = unknown> {
   prop?: string
   label: string
   width?: string | number
   minWidth?: string | number
   align?: 'left' | 'center' | 'right'
   sortable?: boolean | 'custom'
-  formatter?: (row: T, column: TableColumn, cellValue: any, index: number) => string
+  formatter?: (row: T, column: TableColumn, cellValue: unknown, index: number) => string
   slotName?: string
   className?: string
   colorClass?: string | ((row: T) => string)
@@ -35,8 +35,8 @@ export interface TableAction {
   label: string
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   icon?: string
-  disabled?: (row: any) => boolean
-  show?: (row: any) => boolean
+  disabled?: (row: unknown) => boolean
+  show?: (row: unknown) => boolean
 }
 
 export interface TableActionItem {
@@ -44,8 +44,8 @@ export interface TableActionItem {
   label: string
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
   icon?: string
-  disabled?: (row: any) => boolean
-  visible?: (row: any) => boolean
+  disabled?: (row: unknown) => boolean
+  visible?: (row: unknown) => boolean
 }
 
 // CommandPalette types

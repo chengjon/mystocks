@@ -16,12 +16,12 @@
  * @date 2026-01-09
  */
 
-type MessageHandler = (data: any) => void
+type MessageHandler = (data: unknown) => void
 type UnsubscribeFunction = () => void
 
 interface WebSocketMessage {
   type: string
-  data: any
+  data: unknown
   timestamp?: number
 }
 
@@ -303,7 +303,7 @@ class WebSocketManager {
    *
    * @param data - The data to send (will be JSON stringified)
    */
-  send(data: any): void {
+  send(data: unknown): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       try {
         this.ws.send(JSON.stringify(data))

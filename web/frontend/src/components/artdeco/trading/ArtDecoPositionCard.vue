@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
     import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
-    import * as echarts from 'echarts'
+    import echarts from '@/utils/echarts'
     import { artDecoTheme } from '@/utils/echarts'
     import ArtDecoBadge from '../base/ArtDecoBadge.vue'
 
@@ -97,7 +97,7 @@
     }>()
 
     const chartCanvas = ref<HTMLCanvasElement>()
-    let chartInstance: any = null
+    let chartInstance: unknown = null
 
     const marketValue = computed(() => {
         return props.position.quantity * props.position.current_price
@@ -181,8 +181,8 @@
                         areaStyle: {
                             color:
                                 props.pnlHistory[props.pnlHistory.length - 1].profit >= 0
-                                    ? 'rgba(255, 82, 82, 0.1)'
-                                    : 'rgba(0, 230, 118, 0.1)'
+                                    ? 'rgb(255 82 82 / 10%)'
+                                    : 'rgb(0 230 118 / 10%)'
                         }
                     }
                 ]
@@ -208,11 +208,11 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-position-card {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
@@ -236,7 +236,7 @@
       width: 16px;
       height: 16px;
       pointer-events: none;
-      opacity: 0.4;
+      opacity: 40%;
       transition: opacity var(--artdeco-transition-base);
     }
 
@@ -256,7 +256,7 @@
 
     .artdeco-position-card:hover .artdeco-corner-tl,
     .artdeco-position-card:hover .artdeco-corner-br {
-      opacity: 1;
+      opacity: 100%;
     }
 
     /* Position header */
@@ -313,7 +313,7 @@
     .grid-item.full-width {
       grid-column: 1 / -1;
       padding-top: var(--artdeco-spacing-2);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .item-label {
@@ -358,13 +358,13 @@
       display: flex;
       gap: var(--artdeco-spacing-2);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .artdeco-btn-mini {
       flex: 1;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       background: var(--artdeco-bg-primary);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -396,7 +396,7 @@
       height: 80px;
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .pnl-chart canvas {

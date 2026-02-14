@@ -29,7 +29,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-loader-container {
       display: flex;
@@ -40,11 +40,8 @@
 
     .artdeco-loader-container.fullscreen {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(10, 12, 14, 0.9);
+      inset: 0 0 0 0;
+      background: rgb(10 12 14 / 90%);
       z-index: var(--artdeco-z-modal);
     }
 
@@ -56,7 +53,7 @@
     }
 
     .artdeco-loader {
-      border: 2px solid rgba(212, 175, 55, 0.2);
+      border: 2px solid rgb(212 175 55 / 20%);
       position: relative;
       animation: artdeco-spin 3s linear infinite;
     }
@@ -79,7 +76,7 @@
       color: var(--artdeco-accent-gold);
       letter-spacing: 3px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+      text-shadow: 0 0 10px rgb(212 175 55 / 30%);
     }
 
     @keyframes artdeco-spin {
@@ -89,11 +86,11 @@
 
     @keyframes artdeco-pulse {
       0% {
-        opacity: 0.2;
+        opacity: 20%;
         transform: translate(-50%, -50%) scale(0.7) rotate(45deg);
       }
       100% {
-        opacity: 1;
+        opacity: 100%;
         transform: translate(-50%, -50%) scale(1.1) rotate(45deg);
         box-shadow: 0 0 15px var(--artdeco-accent-gold);
       }

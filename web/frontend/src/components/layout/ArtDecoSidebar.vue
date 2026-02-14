@@ -49,7 +49,7 @@ const preferenceStore = usePreferenceStore()
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-sidebar {
   display: flex;
@@ -73,7 +73,7 @@ const preferenceStore = usePreferenceStore()
       // Hide elements when collapsed
       // Note: TreeMenu needs to handle collapsed state internally or be hidden
       // For now, we rely on CSS hiding
-      opacity: 0;
+      opacity: 0%;
       pointer-events: none;
       display: none; // Force hide
     }
@@ -130,8 +130,7 @@ const preferenceStore = usePreferenceStore()
 
 .sidebar-content {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   
   // Custom scrollbar
   &::-webkit-scrollbar {
@@ -173,7 +172,7 @@ const preferenceStore = usePreferenceStore()
   }
   
   .footer-version {
-    opacity: 0.6;
+    opacity: 60%;
     font-family: var(--artdeco-font-mono);
   }
 }

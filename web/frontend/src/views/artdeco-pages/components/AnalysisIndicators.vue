@@ -4,7 +4,7 @@
         <ArtDecoCard title="指标分类" hoverable class="category-card">
             <div class="category-list">
                 <button
-                    v-for="category in categories"
+                    v-for="(category, _idx) in categories"
                     :key="category.key"
                     class="category-item"
                     :class="{ active: activeCategory === category.key }"
@@ -20,7 +20,7 @@
         <!-- Indicators Grid -->
         <div class="indicators-grid">
             <ArtDecoCard
-                v-for="indicator in indicators"
+                v-for="(indicator, _idx) in indicators"
                 :key="indicator.id"
                 :title="indicator.name"
                 hoverable
@@ -55,7 +55,7 @@ defineEmits(['update:activeCategory', 'select'])
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .indicators-layout {
     display: grid;
@@ -75,11 +75,11 @@ defineEmits(['update:activeCategory', 'select'])
     gap: var(--artdeco-spacing-3);
     padding: var(--artdeco-spacing-3);
     background: var(--artdeco-bg-card);
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid rgb(212 175 55 / 10%);
     color: var(--artdeco-fg-primary);
     cursor: pointer;
     &.active {
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         border-color: var(--artdeco-gold-primary);
         color: var(--artdeco-gold-primary);
     }

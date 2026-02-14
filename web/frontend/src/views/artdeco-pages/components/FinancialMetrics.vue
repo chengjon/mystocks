@@ -31,9 +31,9 @@ defineProps({
     gap: 20px;
 }
 .metric-item {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
     padding: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid rgb(212 175 55 / 10%);
     .header {
         display: flex;
         justify-content: space-between;
@@ -41,7 +41,11 @@ defineProps({
         color: var(--artdeco-fg-muted);
         margin-bottom: 10px;
     }
-    .value { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    .value {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
     .comparison {
         display: flex;
         justify-content: space-between;

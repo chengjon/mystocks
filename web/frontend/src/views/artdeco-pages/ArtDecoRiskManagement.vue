@@ -14,12 +14,12 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, watch } from 'vue'
+    import { _ref, computed, _onMounted, watch } from 'vue'
     import { useRoute } from 'vue-router'
     import ArtDecoLoader from '@/components/artdeco/trading/ArtDecoLoader.vue'
     
     // ========== 配置系统集成 ==========
-    import { getPageConfig, isRouteName, type PageConfig } from '@/config/pageConfig'
+    import { getPageConfig, isRouteName, type _PageConfig } from '@/config/pageConfig'
     
     const route = useRoute()
 
@@ -48,7 +48,7 @@
     })
 
     // WebSocket 频道
-    const wsChannel = computed(() => {
+    const _wsChannel = computed(() => {
         const config = currentPageConfig.value
         if (!config) return ''
         if ('wsChannel' in config) {
@@ -58,7 +58,7 @@
     })
 
     // 组件名称
-    const componentName = computed(() => {
+    const _componentName = computed(() => {
         return currentPageConfig.value?.component || ''
     })
 
@@ -74,7 +74,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-risk-management {
         padding: var(--artdeco-spacing-6);

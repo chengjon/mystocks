@@ -32,7 +32,7 @@ import {
 } from '@/config/pageConfig'
 
 // 消息回调类型
-type MessageCallback = (data: any) => void
+type MessageCallback = (data: unknown) => void
 
 // 路由名称类型（从 PAGE_CONFIG 的键推导）
 type RouteName = keyof typeof PAGE_CONFIG
@@ -345,7 +345,7 @@ export function useWebSocketWithConfig() {
  * const route = useRoute()
  * const { autoSubscribeByCurrentRoute } = useWebSocketWithConfig()
  *
- * const handleMessage = (data: any) => {
+ * const handleMessage = (data: unknown) => {
  *   console.log('收到WebSocket消息:', data)
  * }
  *

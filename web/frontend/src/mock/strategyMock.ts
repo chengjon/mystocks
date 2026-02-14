@@ -8,7 +8,7 @@ import type {
   StrategyVM as Strategy,
   StrategyPerformanceVM as StrategyPerformance,
   BacktestRequestVM as BacktestTask,
-  BacktestResultVM,
+  _BacktestResultVM,
 } from '@/api/types/extensions';
 
 /**
@@ -139,12 +139,12 @@ export const mockStrategyList = {
 /**
  * Mock single strategy detail
  */
-export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0] as any;
+export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0] as unknown;
 
 /**
  * Mock backtest result
  */
-export const mockBacktestResult: any = {
+export const mockBacktestResult: unknown = {
   strategy_id: '1',
   symbol: '000001',
   start_date: '2024-01-01',
@@ -301,7 +301,7 @@ export const mockBacktestTasks: BacktestTask[] = [
     result: {
       ...mockBacktestResult,
       strategy_id: '2',
-    } as any,
+    } as Record<string, unknown>,
   },
   {
     strategy_id: '3',
@@ -322,14 +322,14 @@ export const mockBacktestTasks: BacktestTask[] = [
  */
 export function getRandomStrategy(): Strategy {
   const strategies = mockStrategyList.strategies;
-  return strategies[Math.floor(Math.random() * strategies.length)] as any;
+  return strategies[Math.floor(Math.random() * strategies.length)] as unknown;
 }
 
 /**
  * Get strategy by ID
  */
 export function getMockStrategyById(id: string): Strategy | undefined {
-  return mockStrategyList.strategies.find((s) => s.id === id) as any;
+  return mockStrategyList.strategies.find((s) => s.id === id) as unknown;
 }
 
 /**

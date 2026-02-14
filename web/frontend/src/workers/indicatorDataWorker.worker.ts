@@ -9,7 +9,7 @@ interface WorkerMessage {
   payload: {
     data: KLineData[];
     indicatorType: string;
-    params?: Record<string, any>;  // Runtime parameters (period, std, fast, slow, etc.)
+    params?: Record<string, unknown>;  // Runtime parameters (period, std, fast, slow, etc.)
   };
 }
 
@@ -246,7 +246,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     const lows = data.map(d => d.low);
     const timestamps = data.map(d => d.timestamp);
 
-    let result: any;
+    let result: unknown;
 
     switch (indicatorType.toUpperCase()) {
       case 'MA': {

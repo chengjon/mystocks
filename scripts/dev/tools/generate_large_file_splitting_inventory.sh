@@ -10,20 +10,52 @@ cd "$ROOT_DIR"
 OUTDIR="reports/plans/inventory"
 mkdir -p "$OUTDIR"
 
-EXCL=(
-  -g '!archived/**'
-  -g '!docs/**'
-  -g '!node_modules/**'
-  -g '!scripts/dev/development/**'
-  -g '!scripts/tests/testing/**'
-  -g '!web/frontend/src/views/converted.archive/**'
-  -g '!web/frontend/src/layouts/archive/**'
-  -g '!web/frontend/archives/**'
+EXCL_DIRS=(
+  .archive
+  archived
+  docs
+  node_modules
+  scripts/dev/development
+  scripts/tests/testing
+  web/frontend/src/views/converted.archive
+  web/frontend/src/layouts/archive
+  web/frontend/archives
+  .venv venv __pycache__ .git dist build
 )
+
+FIND_PRUNE=()
+for d in "${EXCL_DIRS[@]}"; do
+  FIND_PRUNE+=(-path "./$d" -prune -o -path "*/$d/*" -prune -o)
+done
+
+list_files() {
+  local ext="$1"
+  if command -v rg &>/dev/null; then
+    rg --files -g "*.$ext" \
+      -g '!.archive/**' -g '!archived/**' -g '!docs/**' -g '!node_modules/**' \
+      -g '!scripts/dev/development/**' -g '!scripts/tests/testing/**' \
+      -g '!web/frontend/src/views/converted.archive/**' \
+      -g '!web/frontend/src/layouts/archive/**' \
+      -g '!web/frontend/archives/**' \
+      -g '!.venv/**' -g '!venv/**' -g '!__pycache__/**' -g '!.git/**' \
+      -g '!dist/**' -g '!build/**'
+  else
+    find . -name "*.${ext}" \
+      -not -path "*/.archive/*" -not -path "*/archived/*" -not -path "*/docs/*" \
+      -not -path "*/node_modules/*" -not -path "*/scripts/dev/development/*" \
+      -not -path "*/scripts/tests/testing/*" \
+      -not -path "*/web/frontend/src/views/converted.archive/*" \
+      -not -path "*/web/frontend/src/layouts/archive/*" \
+      -not -path "*/web/frontend/archives/*" \
+      -not -path "*/.venv/*" -not -path "*/venv/*" \
+      -not -path "*/__pycache__/*" -not -path "*/.git/*" \
+      -not -path "*/dist/*" -not -path "*/build/*"
+  fi
+}
 
 # Python source > 800
 : > "$OUTDIR/python_source_gt800.tsv"
-rg --files -g '*.py' "${EXCL[@]}" | while IFS= read -r f; do
+list_files py | while IFS= read -r f; do
   l=$(wc -l < "$f")
   b=$(basename "$f")
   if [[ "$f" != *"/tests/"* && "$f" != *"/test_"* && "$b" != test_*.py && "$b" != *_test.py ]]; then
@@ -34,7 +66,7 @@ sort -nr "$OUTDIR/python_source_gt800.tsv" -o "$OUTDIR/python_source_gt800.tsv"
 
 # Python test > 1000
 : > "$OUTDIR/python_test_gt1000.tsv"
-rg --files -g '*.py' "${EXCL[@]}" | while IFS= read -r f; do
+list_files py | while IFS= read -r f; do
   l=$(wc -l < "$f")
   b=$(basename "$f")
   if [[ "$f" == *"/tests/"* || "$f" == *"/test_"* || "$b" == test_*.py || "$b" == *_test.py ]]; then
@@ -45,7 +77,7 @@ sort -nr "$OUTDIR/python_test_gt1000.tsv" -o "$OUTDIR/python_test_gt1000.tsv"
 
 # Vue > 500
 : > "$OUTDIR/vue_gt500.tsv"
-rg --files -g '*.vue' "${EXCL[@]}" | while IFS= read -r f; do
+list_files vue | while IFS= read -r f; do
   l=$(wc -l < "$f")
   if (( l > 500 )); then printf '%s\t%s\n' "$l" "$f" >> "$OUTDIR/vue_gt500.tsv"; fi
 done
@@ -53,8 +85,8 @@ sort -nr "$OUTDIR/vue_gt500.tsv" -o "$OUTDIR/vue_gt500.tsv"
 
 # TypeScript > 500 (excluding approved exceptions)
 : > "$OUTDIR/ts_gt500.tsv"
-rg --files -g '*.ts' "${EXCL[@]}" | while IFS= read -r f; do
-  if [[ "$f" == 'web/frontend/src/api/types/generated-types.ts' ]]; then
+list_files ts | while IFS= read -r f; do
+  if [[ "$f" == *'generated-types.ts' ]]; then
     continue
   fi
   # Exclude declaration files by policy (*.d.ts are type declaration artifacts)

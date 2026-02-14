@@ -65,7 +65,7 @@
     <div v-else class="alerts-content">
       <el-timeline>
         <el-timeline-item
-          v-for="alert in alerts"
+          v-for="(alert, _idx) in alerts"
           :key="alert.id"
           :timestamp="formatTimestamp(alert.timestamp)"
           :type="getTimelineType(alert.severity)"
@@ -137,10 +137,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { _computed } from 'vue'
 import {
   Bell, Connection, Close, Select, Delete, CircleCheck,
-  Refresh, Warning, InfoFilled
+  Refresh, _Warning, _InfoFilled
 } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import { useRiskAlerts } from '@/composables/useSSE'
@@ -170,7 +170,7 @@ const {
   isConnected,
   error,
   alerts,
-  latestAlert,
+  _latestAlert,
   unreadCount,
   connectionCount,
   retryCount,
@@ -372,7 +372,7 @@ const getValueClass = (value, threshold) => {
 
         &:hover {
           transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
         }
 
         &.severity-low {
@@ -464,10 +464,10 @@ const getValueClass = (value, threshold) => {
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
   }
   50% {
-    opacity: 0.3;
+    opacity: 30%;
   }
 }
 </style>

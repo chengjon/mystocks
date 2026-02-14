@@ -203,15 +203,12 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-trade-form-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      inset: 0 0 0 0;
+      background: rgb(0 0 0 / 70%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -221,7 +218,7 @@
 
     .artdeco-trade-form {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-5);
       min-width: 500px;
       max-width: 600px;
@@ -237,7 +234,7 @@
       width: 16px;
       height: 16px;
       pointer-events: none;
-      opacity: 0.4;
+      opacity: 40%;
     }
 
     .artdeco-corner-tl {
@@ -261,7 +258,7 @@
       align-items: center;
       margin-bottom: var(--artdeco-spacing-5);
       padding-bottom: var(--artdeco-spacing-4);
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 1px solid rgb(212 175 55 / 20%);
     }
 
     .form-title {
@@ -319,7 +316,7 @@
     .artdeco-input,
     .artdeco-textarea {
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -336,7 +333,7 @@
 
     .artdeco-input:disabled,
     .artdeco-textarea:disabled {
-      opacity: 0.5;
+      opacity: 50%;
       cursor: not-allowed;
     }
 
@@ -351,7 +348,7 @@
       font-weight: 700;
       padding: var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       text-align: center;
     }
 
@@ -373,7 +370,7 @@
       color: var(--artdeco-fg-muted);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
     }
 
     /* Form footer */
@@ -382,13 +379,13 @@
       justify-content: flex-end;
       gap: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-4);
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      border-top: 1px solid rgb(212 175 55 / 20%);
     }
 
     /* Button styles */
     .artdeco-btn {
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-5);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);
@@ -413,7 +410,7 @@
     }
 
     .artdeco-btn:disabled {
-      opacity: 0.5;
+      opacity: 50%;
       cursor: not-allowed;
     }
 
@@ -435,7 +432,7 @@
     .artdeco-spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(212, 175, 55, 0.2);
+      border: 2px solid rgb(212 175 55 / 20%);
       border-top-color: var(--artdeco-accent-gold);
       border-radius: 50%;
       animation: spin 0.6s linear infinite;

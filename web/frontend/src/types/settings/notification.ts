@@ -72,7 +72,7 @@ export interface NotificationItem {
   message: string;
   priority: NotificationPriority;
   channels: NotificationChannel[];
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   read: boolean;
   createdAt?: string;
   expiresAt?: string;

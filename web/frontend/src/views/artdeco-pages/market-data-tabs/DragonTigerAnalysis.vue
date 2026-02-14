@@ -10,7 +10,7 @@
         />
         <div class="lhb-filters">
           <button 
-            v-for="f in filters" 
+            v-for="(f, _idx) in filters" 
             :key="f.key"
             class="filter-btn" 
             :class="{ active: activeFilter === f.key }"
@@ -30,7 +30,7 @@
 import { ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
 
 interface Props {
-  lhbData: any[]
+  lhbData: unknown[]
   lhbDate: string
   activeFilter: string
 }
@@ -62,7 +62,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .lhb-controls {
   display: flex;
@@ -87,7 +87,7 @@ const columns = [
   &.active {
     border-color: var(--artdeco-accent-gold);
     color: var(--artdeco-accent-gold);
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
   }
 }
 </style>

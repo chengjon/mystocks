@@ -117,7 +117,7 @@ const mockStocks = [
 const generateNavigationCommands = (): CommandItem[] => {
   const commands: CommandItem[] = []
   
-  const traverse = (items: any[], parentLabel = '') => {
+  const traverse = (items: unknown[], parentLabel = '') => {
     items.forEach(item => {
       if (item.children) {
         traverse(item.children, item.label)
@@ -245,7 +245,7 @@ const groupedResults = computed<CommandGroup[]>(() => {
 })
 
 // Navigation Logic
-const flatItems = computed(() => {
+const _flatItems = computed(() => {
   return groupedResults.value.flatMap(g => g.items)
 })
 
@@ -356,195 +356,5 @@ watch(searchQuery, () => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-
-.command-palette-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 15vh;
-}
-
-.command-palette {
-  width: 100%;
-  max-width: 640px;
-  background: var(--artdeco-bg-surface);
-  border: 1px solid var(--artdeco-border-primary);
-  border-radius: var(--artdeco-radius-lg);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: 80vh;
-}
-
-.command-header {
-  display: flex;
-  align-items: center;
-  padding: var(--artdeco-spacing-4);
-  border-bottom: 1px solid var(--artdeco-border-subtle);
-}
-
-.search-icon {
-  color: var(--artdeco-fg-muted);
-  margin-right: var(--artdeco-spacing-3);
-}
-
-.command-input {
-  flex: 1;
-  font-size: 16px;
-  color: var(--artdeco-fg-primary);
-  background: transparent;
-  border: none;
-  outline: none;
-  
-  &::placeholder {
-    color: var(--artdeco-fg-muted);
-  }
-}
-
-.shortcut-hint {
-  font-size: 12px;
-  color: var(--artdeco-fg-muted);
-  border: 1px solid var(--artdeco-border-subtle);
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-
-.command-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--artdeco-spacing-2) 0;
-}
-
-.no-results {
-  padding: var(--artdeco-spacing-8);
-  text-align: center;
-  color: var(--artdeco-fg-muted);
-  
-  .no-results-icon {
-    margin-bottom: var(--artdeco-spacing-4);
-    opacity: 0.5;
-  }
-}
-
-.group-header {
-  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--artdeco-fg-muted);
-  letter-spacing: 0.05em;
-  margin-top: var(--artdeco-spacing-2);
-  
-  &:first-child {
-    margin-top: 0;
-  }
-}
-
-.command-item {
-  display: flex;
-  align-items: center;
-  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-  cursor: pointer;
-  border-left: 2px solid transparent;
-  transition: background 0.1s;
-  
-  &.active {
-    background: var(--artdeco-bg-elevated);
-    border-left-color: var(--artdeco-gold-primary);
-    
-    .command-icon {
-      color: var(--artdeco-gold-primary);
-    }
-  }
-  
-  .command-icon {
-    color: var(--artdeco-fg-muted);
-    margin-right: var(--artdeco-spacing-3);
-  }
-  
-  .command-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .command-label {
-    font-size: 14px;
-    color: var(--artdeco-fg-primary);
-  }
-  
-  .command-sublabel {
-    font-size: 12px;
-    color: var(--artdeco-fg-muted);
-  }
-  
-  .command-shortcut {
-    kbd {
-      font-family: var(--artdeco-font-mono);
-      font-size: 11px;
-      padding: 2px 4px;
-      background: var(--artdeco-bg-global);
-      border: 1px solid var(--artdeco-border-subtle);
-      border-radius: 3px;
-      color: var(--artdeco-fg-muted);
-    }
-  }
-  
-  .arrow-icon {
-    color: var(--artdeco-fg-muted);
-    opacity: 0.5;
-  }
-}
-
-.command-footer {
-  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-  background: var(--artdeco-bg-elevated);
-  border-top: 1px solid var(--artdeco-border-subtle);
-  font-size: 11px;
-  color: var(--artdeco-fg-muted);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.keyboard-shortcuts {
-  display: flex;
-  gap: var(--artdeco-spacing-4);
-  
-  .shortcut-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    
-    kbd {
-      font-family: var(--artdeco-font-mono);
-      background: var(--artdeco-bg-surface);
-      border: 1px solid var(--artdeco-border-subtle);
-      border-radius: 3px;
-      padding: 1px 4px;
-      min-width: 18px;
-      text-align: center;
-    }
-  }
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+@import "./styles/CommandPalette.scss";
 </style>

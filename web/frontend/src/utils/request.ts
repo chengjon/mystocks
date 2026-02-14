@@ -9,7 +9,7 @@
  * - Request/response interceptors
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
+import axios, { AxiosInstance, _AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
 import { ElMessage, ElNotification } from 'element-plus'
 import type { APIResponse } from '@/api/types/generated-types'
 
@@ -17,14 +17,14 @@ import type { APIResponse } from '@/api/types/generated-types'
 export interface RequestConfig extends Partial<Omit<InternalAxiosRequestConfig, 'headers'>> {
   skipErrorHandler?: boolean
   skipCSRF?: boolean
-  headers?: any
+  headers?: unknown
 }
 
 export interface ErrorResponse {
   success: false
   code: number
   message: string
-  details?: any
+  details?: unknown
   request_id: string
   timestamp: string
 }
@@ -41,7 +41,7 @@ const instance: AxiosInstance = axios.create({
 
 // Request interceptor for CSRF token
 instance.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig<any>) => {
+  async (config: InternalAxiosRequestConfig<unknown>) => {
     // Initialize headers if not exists
     if (!config.headers) {
       config.headers = {} as AxiosRequestHeaders
@@ -50,7 +50,7 @@ instance.interceptors.request.use(
     // Skip CSRF for GET requests and explicitly marked requests
     if (
       config.method?.toUpperCase() !== 'GET' &&
-      !(config as any).skipCSRF &&
+      !(config as Record<string, unknown>).skipCSRF &&
       config.headers['X-CSRF-Token'] === undefined
     ) {
       try {
@@ -92,7 +92,7 @@ instance.interceptors.response.use(
           return response
         } else {
           // Throw error for API-level errors
-          const errorMessage = 'message' in apiResponse ? (apiResponse as any).message : 'Request failed'
+          const errorMessage = 'message' in apiResponse ? (apiResponse as unknown).message : 'Request failed'
           throw new Error(errorMessage)
         }
       }
@@ -239,23 +239,23 @@ function handleError(message: string, type: 'success' | 'warning' | 'error' | 'i
 
 // Export common request methods
 export const request = {
-  get<T = any>(url: string, config?: RequestConfig): Promise<T> {
+  get<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     return instance.get(url, config)
   },
 
-  post<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return instance.post(url, data, config)
   },
 
-  put<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return instance.put(url, data, config)
   },
 
-  patch<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return instance.patch(url, data, config)
   },
 
-  delete<T = any>(url: string, config?: RequestConfig): Promise<T> {
+  delete<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     return instance.delete(url, config)
   }
 }

@@ -4,34 +4,27 @@
   --color-primary: #c9a227;
   --color-primary-light: #e0c252;
   --color-primary-dark: #a38620;
-  --color-primary-alpha: rgba(201, 162, 39, 0.1);
-  --color-primary-alpha-2: rgba(201, 162, 39, 0.2);
-
+  --color-primary-alpha: rgb(201 162 39 / 10%);
+  --color-primary-alpha-2: rgb(201 162 39 / 20%);
   --color-up: #26a69a;
   --color-up-light: #42a5f5;
   --color-down: #ef5350;
   --color-down-light: #ff7043;
-
   --color-bg-primary: #0d1117;
   --color-bg-secondary: #161b22;
   --color-bg-tertiary: #21262d;
   --color-bg-hover: #30363d;
-
   --color-text-primary: #e6edf3;
   --color-text-secondary: #8b949e;
   --color-text-muted: #6e7681;
-
   --color-border: #30363d;
   --color-border-light: #21262d;
-
   --color-success: #26a69a;
   --color-warning: #ffa726;
   --color-error: #ef5350;
   --color-info: #42a5f5;
-
   --font-mono: 'SF Mono', 'Roboto Mono', 'Fira Code', monospace;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
   --font-size-xs: 10px;
   --font-size-sm: 12px;
   --font-size-md: 14px;
@@ -39,7 +32,6 @@
   --font-size-xl: 18px;
   --font-size-2xl: 24px;
   --font-size-3xl: 32px;
-
   --spacing-xs: 2px;
   --spacing-sm: 4px;
   --spacing-md: 8px;
@@ -47,20 +39,16 @@
   --spacing-xl: 24px;
   --spacing-2xl: 32px;
   --spacing-3xl: 48px;
-
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 40%);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 50%);
   --transition-fast: 150ms ease;
   --transition-normal: 300ms ease;
   --transition-slow: 500ms ease;
-
   --chart-up-color: #26a69a;
   --chart-down-color: #ef5350;
   --chart-up-border-color: #26a69a;
@@ -68,30 +56,26 @@
   --chart-up-wick-color: #26a69a;
   --chart-down-wick-color: #ef5350;
   --chart-grid-color: #30363d;
-  --chart-crosshair-color: rgba(255, 255, 255, 0.3);
-  --chart-tooltip-bg: rgba(0, 0, 0, 0.85);
+  --chart-crosshair-color: rgb(255 255 255 / 30%);
+  --chart-tooltip-bg: rgb(0 0 0 / 85%);
 }
 
 [data-theme="light"] {
-  --color-bg-primary: #ffffff;
+  --color-bg-primary: #fff;
   --color-bg-secondary: #f6f8fa;
   --color-bg-tertiary: #e1e4e8;
   --color-bg-hover: #d0d7de;
-
   --color-text-primary: #24292f;
   --color-text-secondary: #57606a;
   --color-text-muted: #8b949e;
-
   --color-border: #d0d7de;
   --color-border-light: #e1e4e8;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
-
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 10%);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 15%);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 20%);
   --chart-grid-color: #e1e4e8;
-  --chart-crosshair-color: rgba(0, 0, 0, 0.2);
-  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-crosshair-color: rgb(0 0 0 / 20%);
+  --chart-tooltip-bg: rgb(255 255 255 / 95%);
 }
 
 @mixin card {
@@ -110,7 +94,7 @@
 
 @mixin button-primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: #000000;
+  color: #000;
   border: none;
   border-radius: var(--radius-md);
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -193,7 +177,6 @@
 
 @mixin text-gradient {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }

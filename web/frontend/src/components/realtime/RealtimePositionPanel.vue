@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, _computed, onMounted, onUnmounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { TrendCharts, Refresh, Download } from '@element-plus/icons-vue'
 
@@ -217,7 +217,7 @@ const connectWebSocket = () => {
   }
 }
 
-const handleWebSocketMessage = (data: any) => {
+const handleWebSocketMessage = (data: unknown) => {
   if (data.action === 'connected') {
     if (data.snapshot) {
       updateSnapshot(data.snapshot)
@@ -408,113 +408,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-.realtime-position-panel {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
-
-    h3 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-  }
-
-  .portfolio-summary {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 16px;
-    padding: 16px;
-    background: #f5f7fa;
-    border-radius: 8px;
-
-    .summary-item {
-      text-align: center;
-
-      .label {
-        display: block;
-        font-size: 12px;
-        color: #909399;
-        margin-bottom: 4px;
-      }
-
-      .value {
-        font-size: 20px;
-        font-weight: 600;
-
-        small {
-          font-size: 12px;
-          font-weight: normal;
-        }
-
-        &.positive { color: #67c23a; }
-        &.negative { color: #f56c6c; }
-      }
-
-      &.total-value .value {
-        font-size: 24px;
-      }
-
-      &.profit .value {
-        &.profit-up { color: #67c23a; }
-        &.profit-down { color: #f56c6c; }
-      }
-    }
-  }
-
-  .symbol-cell {
-    .code {
-      display: block;
-      font-weight: 600;
-      color: #303133;
-    }
-
-    .name {
-      font-size: 12px;
-      color: #909399;
-    }
-  }
-
-  .price-up { color: #f56c6c; }
-  .price-down { color: #67c23a; }
-  .change-up { color: #f56c6c; }
-  .change-down { color: #67c23a; }
-
-  .profit-up { color: #67c23a; }
-  .profit-down { color: #f56c6c; }
-
-  :deep(.profit-row) {
-    background-color: rgba(103, 194, 58, 0.05);
-  }
-
-  :deep(.loss-row) {
-    background-color: rgba(245, 108, 108, 0.05);
-  }
-
-  .panel-footer {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-}
+@import "./styles/RealtimePositionPanel.scss";
 </style>

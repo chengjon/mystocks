@@ -458,7 +458,7 @@ onMounted(() => {
 .main-content {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
   overflow: hidden;
 }
 

@@ -54,9 +54,7 @@ declare module 'echarts' {
   export function getInstanceByDom(dom: HTMLElement): ECharts | null;
 
   export function use(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     deps: any[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fn: (...args: any[]) => void
   ): void;
 }

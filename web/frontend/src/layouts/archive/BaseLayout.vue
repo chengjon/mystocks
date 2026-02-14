@@ -51,7 +51,7 @@
         <nav class="sidebar-nav">
                     <ul class="nav-list">
                       <li
-                        v-for="item in menuItemsRef"
+                        v-for="(item, _idx) in menuItemsRef"
                         :key="item.path"
                         class="nav-item"
                         :class="{
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, _onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
 import ArtDecoSkipLink from '@/components/artdeco/base/ArtDecoSkipLink.vue'
@@ -127,7 +127,7 @@ import CommandPalette, { type CommandItem } from '@/components/shared/command-pa
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 import ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
 import ArtDecoToast from '@/components/artdeco/core/ArtDecoToast.vue'
-import { MenuItem } from '@/layouts/archive/MenuConfig'
+import { MenuItem } from '@/layouts/archive/MenuConfig.ts'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { useToastManager } from '@/composables/useToastManager'
 import { fetchMenuItemData, clearMenuDataCache } from '@/services/menuDataFetcher'
@@ -157,7 +157,7 @@ const toast = useToastManager()
 const menuItemsRef = ref<MenuItem[]>(props.menuItems)
 
 // WebSocket Integration
-const { connect, disconnect, message: wsMessage } = useWebSocket()
+const { connect, _disconnect, message: wsMessage } = useWebSocket()
 
 onMounted(() => {
   // Connect to WebSocket server, replace with your actual WebSocket URL
@@ -269,7 +269,7 @@ const fetchItemData = async (item: MenuItem) => {
     } else {
       throw new Error(result.error || '获取数据失败')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`[BaseLayout] Failed to fetch data for ${item.label}:`, error)
     throw error
   }
@@ -296,7 +296,7 @@ const retryApiCall = async (item: MenuItem) => {
 
     // 显示成功提示
     showSuccessToast(`${item.label} 数据已成功重新加载`)
-  } catch (error: any) {
+  } catch (error: unknown) {
     // 保持错误状态
     item.error = error.message || 'API Error'  // Set error message (string, not boolean true)
 
@@ -321,8 +321,8 @@ watch(() => route.path, () => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/theme-tokens.scss';
-@import '@/styles/artdeco-menu.scss';
+@import '@/styles/theme-tokens';
+@import '@/styles/artdeco-menu';
 
 .base-layout {
   display: flex;
@@ -343,6 +343,7 @@ watch(() => route.path, () => {
   border-bottom: 1px solid var(--artdeco-border-default); /* Use ArtDeco border */
   flex-shrink: 0;
   z-index: var(--artdeco-z-header, 100); /* Use ArtDeco z-index */
+
   @include artdeco-geometric-corners(var(--artdeco-gold-dim), 12px, 1px); /* Add geometric corners */
 }
 
@@ -365,6 +366,7 @@ watch(() => route.path, () => {
 
 .sidebar-toggle {
   @include button-secondary;
+
   padding: var(--artdeco-spacing-xs); /* Use ArtDeco spacing */
   background: transparent;
   border: none;
@@ -380,6 +382,7 @@ watch(() => route.path, () => {
   font-weight: var(--artdeco-font-semibold); /* Use ArtDeco font weight */
   color: var(--artdeco-fg-primary); /* Use ArtDeco primary foreground */
   margin: 0;
+
   @include artdeco-gradient-text; /* Apply gradient text for page title */
 }
 
@@ -462,6 +465,7 @@ watch(() => route.path, () => {
   overflow-y: auto;
   transition: width var(--artdeco-transition-base) ease; /* Use ArtDeco transition */
   flex-shrink: 0;
+
   @include artdeco-corner-brackets; /* Add corner brackets */
 
   .sidebar-collapsed & {
@@ -502,6 +506,7 @@ watch(() => route.path, () => {
   text-decoration: none;
   border-radius: var(--artdeco-radius-none); /* ArtDeco minimal radius */
   transition: all var(--artdeco-transition-fast); /* Use ArtDeco fast transition */
+
   @include artdeco-hover-lift-glow; /* Apply hover lift glow mixin */
 
   &:hover {
@@ -548,7 +553,9 @@ watch(() => route.path, () => {
 .content-wrapper {
   padding: var(--artdeco-spacing-lg); /* Use ArtDeco spacing */
   min-height: calc(100vh - var(--header-height) - var(--artdeco-spacing-xl)); /* Use ArtDeco spacing */
+
   @include artdeco-geometric-corners(var(--artdeco-gold-muted), 16px, 1px); /* Add subtle geometric corners */
+
   background: var(--artdeco-bg-card);
   border-radius: var(--artdeco-radius-sm);
   box-shadow: var(--artdeco-shadow-md);
@@ -561,7 +568,7 @@ watch(() => route.path, () => {
 }
 
 // ========== 桌面端优化 (1280px+) ==========
-@media (min-width: 1280px) {
+@media (width >= 1280px) {
   .layout-sidebar {
     width: 280px;
 
@@ -576,7 +583,7 @@ watch(() => route.path, () => {
 }
 
 // ========== 大屏幕优化 (1920px+) ==========
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
   .layout-sidebar {
     width: 320px;
 
@@ -599,5 +606,5 @@ watch(() => route.path, () => {
 // Assuming mixins are available via @import '../styles/artdeco-tokens.scss';
 // If not, they would need to be re-declared or imported differently.
 // For now, I'm assuming @import '../styles/artdeco-tokens.scss'; makes them available.
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 </style>

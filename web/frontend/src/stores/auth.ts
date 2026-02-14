@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { PiniaStoreFactory } from '@/stores/storeFactory'
-import { unifiedApiClient, createLoadingConfig } from '@/api/unifiedApiClient'
+import { _unifiedApiClient, createLoadingConfig } from '@/api/unifiedApiClient'
 import { authApi } from '@/api/index.js'
 
 export interface User {
@@ -108,7 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Login with standardized API pattern
-  const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: any }> => {
+  const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: unknown }> => {
     try {
       // Use authApi.login which correctly sets Content-Type to application/x-www-form-urlencoded
       const response = await authApi.login(username, password)

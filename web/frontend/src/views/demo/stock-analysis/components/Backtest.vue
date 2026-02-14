@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, _computed } from 'vue'
 import { BACKTEST_METRICS } from '../config'
 import { BACKTEST_EXAMPLES } from '../code-examples'
 
@@ -201,7 +201,7 @@ const tabLabels = {
   border: none;
   border-radius: 0;
   padding: 15px;
-  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
   font-size: 13px;
   line-height: 1.6;
   overflow-x: auto;

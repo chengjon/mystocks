@@ -2,9 +2,9 @@
 // 负责界面功能切换、节点展开状态、加载状态、缓存管理等UI相关状态
 
 import { defineStore } from 'pinia'
-import { ref, reactive, computed, watch } from 'vue'
+import { _ref, reactive, computed, watch } from 'vue'
 
-interface CachedData<T = any> {
+interface CachedData<T = unknown> {
     data: T
     timestamp: number
     ttl: number
@@ -12,7 +12,7 @@ interface CachedData<T = any> {
 
 interface RealtimeUpdate {
     type: string
-    data: any
+    data: unknown
     timestamp: number
 }
 
@@ -112,7 +112,7 @@ export const useUiStore = defineStore('ui', () => {
         }
     }
 
-    const setupRealtimeUpdates = (updates: RealtimeUpdate[]): any => {
+    const setupRealtimeUpdates = (updates: RealtimeUpdate[]): unknown => {
         // 这里可以实现实时更新逻辑
         console.log('Setting up realtime updates:', updates)
         return {

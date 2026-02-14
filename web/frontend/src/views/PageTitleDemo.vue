@@ -85,7 +85,7 @@
             <div class="demo-controls">
                 <el-select v-model="selectedTemplate" placeholder="选择预定义模板" style="width: 300px">
                     <el-option
-                        v-for="template in templateOptions"
+                        v-for="(template, _idx) in templateOptions"
                         :key="template.value"
                         :label="template.label"
                         :value="template.value"
@@ -228,7 +228,7 @@
         }
     }
 
-    const setSEOOptimizedTitle = () => {
+    const _setSEOOptimizedTitle = () => {
         if (seoTitle.value && seoDescription.value) {
             setSEOOptimized({
                 title: seoTitle.value,
@@ -362,7 +362,7 @@
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .page-title-demo {
             padding: 10px;
         }

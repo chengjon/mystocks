@@ -55,7 +55,7 @@ import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .skeleton-demo {
   padding: 32px;

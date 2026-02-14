@@ -9,11 +9,11 @@
 
 <script setup lang="ts">
 import BaseLayout from './BaseLayout.vue'
-import { ARTDECO_MENU_ITEMS } from './MenuConfig'
+import { ARTDECO_MENU_ITEMS } from './MenuConfig.ts'
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     // ============================================
     //   ART DECO LAYOUT
@@ -46,19 +46,19 @@ import { ARTDECO_MENU_ITEMS } from './MenuConfig'
     // ============================================
     //   RESPONSIVE DESIGN
     // ============================================
-    @media (max-width: 1400px) {
+    @media (width <= 1400px) {
         .artdeco-main {
             margin-left: 280px; // Match responsive sidebar width
         }
     }
 
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
         .artdeco-main {
             margin-left: 260px; // Match responsive sidebar width
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         // For mobile/tablet, we might need to hide sidebar or make it overlay
         // But since we only support desktop, this is kept for reference
         .artdeco-main {

@@ -16,7 +16,7 @@ export interface TitleContext {
         name?: string
         path?: string
     }
-    data?: Record<string, any>
+    data?: Record<string, unknown>
     app?: {
         name?: string
         version?: string
@@ -39,9 +39,9 @@ export class TitleGenerator {
     }
 
     // 通过路径获取对象值 (支持点号分隔)
-    private getValueByPath(path: string, context: TitleContext): any {
+    private getValueByPath(path: string, context: TitleContext): unknown {
         const keys = path.split('.')
-        let current: any = context
+        let current: unknown = context
 
         for (const key of keys) {
             if (current && typeof current === 'object' && key in current) {

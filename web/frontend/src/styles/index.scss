@@ -55,7 +55,7 @@ body,
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .hide-on-mobile {
     display: none !important;
   }

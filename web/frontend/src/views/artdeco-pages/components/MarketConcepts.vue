@@ -42,13 +42,13 @@ defineProps({
     display: flex;
     align-items: center;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgb(255 255 255 / 3%);
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
 .concept-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgb(255 255 255 / 5%);
     transform: translateX(5px);
 }
 

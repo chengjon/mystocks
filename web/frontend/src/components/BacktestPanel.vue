@@ -154,7 +154,7 @@ const emit = defineEmits<{
 
 const show = computed(() => !!props.strategy);
 
-const { startBacktest, pollBacktestStatus } = useBacktest();
+const { startBacktest, _pollBacktestStatus } = useBacktest();
 
 // State
 const hasStarted = ref(false);
@@ -164,7 +164,7 @@ const isStarting = ref(false);
 const progress = ref(0);
 const statusText = ref('正在初始化...');
 const logs = ref<string[]>([]);
-const result = ref<any>(null);
+const result = ref<unknown>(null);
 
 // Configuration
 const config = ref({
@@ -316,7 +316,7 @@ watch(
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .btn-start {
@@ -334,11 +334,11 @@ watch(
 
 .btn-start:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgb(16 185 129 / 30%);
 }
 
 .btn-start:disabled {
-  opacity: 0.6;
+  opacity: 60%;
   cursor: not-allowed;
 }
 

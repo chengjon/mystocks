@@ -12,15 +12,15 @@
   background-image:
     repeating-linear-gradient(
       45deg,
-      rgba(212, 175, 55, 0.03) 0px,
-      rgba(212, 175, 55, 0.03) 1px,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
       transparent 1px,
       transparent 4px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(212, 175, 55, 0.03) 0px,
-      rgba(212, 175, 55, 0.03) 1px,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
       transparent 1px,
       transparent 4px
     );
@@ -29,8 +29,8 @@
 // Grid pattern (blockchain/network theme)
 .artdeco-bg-grid {
   background-image:
-    linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+    linear-gradient(rgb(212 175 55 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(212 175 55 / 5%) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
@@ -38,9 +38,9 @@
 .artdeco-bg-sunburst {
   background: radial-gradient(
     ellipse at center,
-    rgba(212, 175, 55, 0.1) 0%,
-    rgba(212, 175, 55, 0.05) 25%,
-    rgba(212, 175, 55, 0.02) 50%,
+    rgb(212 175 55 / 10%) 0%,
+    rgb(212 175 55 / 5%) 25%,
+    rgb(212 175 55 / 2%) 50%,
     transparent 75%
   );
 }
@@ -90,7 +90,7 @@
     background: linear-gradient(
       to right,
       transparent,
-      rgba(212, 175, 55, 0.3),
+      rgb(212 175 55 / 30%),
       transparent
     );
   }
@@ -108,7 +108,7 @@
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(212, 175, 55, 0.2),
+    rgb(212 175 55 / 20%),
     transparent
   );
 }
@@ -171,12 +171,9 @@
   &::before {
     content: '';
     position: absolute;
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
-    border: 2px solid rgba(212, 175, 55, 0.5);
-    background: rgba(212, 175, 55, 0.05);
+    inset: 8px 8px 8px 8px;
+    border: 2px solid rgb(212 175 55 / 50%);
+    background: rgb(212 175 55 / 5%);
   }
 
   img {
@@ -263,20 +260,20 @@
 // ============================================
 
 // Hide on mobile, show on desktop
-@media (max-width: 767px) {
+@media (width <= 767px) {
   .artdeco-hidden-mobile {
     display: none !important;
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .artdeco-hidden-desktop {
     display: none !important;
   }
 }
 
 // Typography scaling
-@media (max-width: 640px) {
+@media (width <= 640px) {
   :root {
     --artdeco-text-6xl: 2.5rem;    // 40px on mobile
     --artdeco-text-7xl: 3rem;     // 48px on mobile

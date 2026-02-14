@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-quant-extended';
 
 .history-view {
     min-height: 900px;
@@ -12,6 +12,7 @@
 
         h3 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-xl);
             font-weight: 700;
@@ -184,7 +185,7 @@
         small {
             font-family: var(--artdeco-font-body);
             font-size: var(--artdeco-text-xs);
-            opacity: 0.7;
+            opacity: 70%;
         }
     }
 }
@@ -194,7 +195,7 @@
     .detail-header {
         margin-bottom: var(--artdeco-spacing-6);
         padding-bottom: var(--artdeco-spacing-4);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        border-bottom: 1px solid rgb(212 175 55 / 20%);
 
         .detail-meta {
             display: flex;
@@ -224,7 +225,7 @@
                     align-items: center;
                     padding: var(--artdeco-spacing-3);
                     background: var(--artdeco-bg-card);
-                    border: 1px solid rgba(212, 175, 55, 0.1);
+                    border: 1px solid rgb(212 175 55 / 10%);
                     border-radius: var(--artdeco-radius-none);
 
                     .info-label {
@@ -252,6 +253,7 @@
 
         h4 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-lg);
             font-weight: 600;
@@ -280,7 +282,7 @@
                 align-items: center;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgba(212, 175, 55, 0.1);
+                border: 1px solid rgb(212 175 55 / 10%);
                 border-radius: var(--artdeco-radius-none);
 
                 .strategy-label {
@@ -300,7 +302,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
     .history-view {
         .stats-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -312,7 +314,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .history-view {
         .view-header {
             flex-direction: column;
@@ -352,7 +354,7 @@
     .trade-stats,
     .trade-history-section,
     .pnl-analysis-section {
-        animation: fadeInUp 0.6s ease-out;
+        animation: fade-in-up 0.6s ease-out;
     }
 
     .trade-stats {
@@ -368,13 +370,13 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateY(0);
     }
 }

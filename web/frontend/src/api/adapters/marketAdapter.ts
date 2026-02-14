@@ -50,7 +50,7 @@ export class MarketAdapter {
 
       // Handle missing fields gracefully - backend API may not have all fields yet
       // Use type assertions to access fields that may not be in the type definition
-      const apiData = data as any;
+      const apiData = data as unknown;
 
       const rise = apiData.rise_fall_count?.rise || 0;
       const fall = apiData.rise_fall_count?.fall || 0;
@@ -185,7 +185,7 @@ export class MarketAdapter {
         categoryData,
         values,
         volumes,
-      } as any;
+      } as Record<string, unknown>;
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt K-line data:', error);
       return this.getMockKLineData();

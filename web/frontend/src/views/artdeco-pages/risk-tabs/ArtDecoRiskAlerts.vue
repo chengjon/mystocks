@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-quant-extended';
 
 .risk-alerts {
     min-height: 800px;
@@ -12,6 +12,7 @@
 
         h2 {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-2xl);
             font-weight: 700;
@@ -53,6 +54,7 @@
 
         .section-title {
             @include artdeco-gold-accent;
+
             font-family: var(--artdeco-font-display);
             font-size: var(--artdeco-text-xl);
             font-weight: 600;
@@ -67,8 +69,8 @@
             align-items: center;
             justify-content: center;
             padding: var(--artdeco-spacing-12);
-            background: rgba(0, 230, 118, 0.05);
-            border: 1px solid rgba(0, 230, 118, 0.2);
+            background: rgb(0 230 118 / 5%);
+            border: 1px solid rgb(0 230 118 / 20%);
             border-radius: var(--artdeco-radius-none);
             color: var(--artdeco-up);
 
@@ -103,7 +105,7 @@
                 justify-content: space-between;
                 padding: var(--artdeco-spacing-3);
                 background: var(--artdeco-bg-card);
-                border: 1px solid rgba(212, 175, 55, 0.1);
+                border: 1px solid rgb(212 175 55 / 10%);
                 border-radius: var(--artdeco-radius-none);
 
                 .setting-label {
@@ -171,7 +173,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
     .risk-alerts {
         .alerts-stats .stats-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -179,7 +181,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .risk-alerts {
         .alerts-header {
             flex-direction: column;
@@ -214,7 +216,7 @@
     .active-alerts-section,
     .alerts-history-section,
     .risk-settings-section {
-        animation: fadeInUp 0.6s ease-out;
+        animation: fade-in-up 0.6s ease-out;
     }
 
     .alerts-stats {
@@ -234,13 +236,13 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes fade-in-up {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateY(0);
     }
 }
@@ -248,7 +250,7 @@
 // 告警动画
 .alerts-list {
     .artdeco-alert {
-        animation: slideInLeft 0.5s ease-out;
+        animation: slide-in-left 0.5s ease-out;
     }
 
     .artdeco-alert:nth-child(1) { animation-delay: 0.1s; }
@@ -256,13 +258,13 @@
     .artdeco-alert:nth-child(3) { animation-delay: 0.3s; }
 }
 
-@keyframes slideInLeft {
+@keyframes slide-in-left {
     from {
-        opacity: 0;
+        opacity: 0%;
         transform: translateX(-30px);
     }
     to {
-        opacity: 1;
+        opacity: 100%;
         transform: translateX(0);
     }
 }

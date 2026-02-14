@@ -62,7 +62,7 @@ const handleClick = (event: MouseEvent) => {
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens.scss';
+@import '@/styles/theme-tokens';
 
 // ============================================
 //   DATA-DENSE CARD - 数据密集型卡片

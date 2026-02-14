@@ -26,7 +26,7 @@ export interface AccountSettings {
     sms?: boolean;
     browser?: boolean;
   };
-  preferences?: Record<string, any>;
+  preferences?: Record<string, unknown>;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface UpdateAccountSettingsRequest {
     push?: boolean;
     sms?: boolean;
   };
-  preferences?: Record<string, any>;
+  preferences?: Record<string, unknown>;
 }
 
 /**

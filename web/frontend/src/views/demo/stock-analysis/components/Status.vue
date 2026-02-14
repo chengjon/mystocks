@@ -241,7 +241,7 @@ const timelineItems = [
     padding: 4px 8px;
     background: var(--bg-dark);
     border-radius: var(--radius-sm);
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
     font-size: 12px;
     margin-left: 8px;
   }

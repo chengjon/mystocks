@@ -7,9 +7,9 @@
 import { request } from '@/utils/request'
 import { UserAdapter } from '@/utils/user-adapters'
 import type {
-  UserProfileResponse,
-  WatchlistResponse,
-  NotificationResponse
+  _UserProfileResponse,
+  _WatchlistResponse,
+  _NotificationResponse
 } from '@/api/types/additional-types'
 import type {
   UserProfileVM,
@@ -479,7 +479,7 @@ class UserApiService {
     type: string
     action: string
     target: string
-    details: Record<string, any>
+    details: Record<string, unknown>
     timestamp: string
     ipAddress?: string
     userAgent?: string

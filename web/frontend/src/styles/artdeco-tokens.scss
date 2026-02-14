@@ -26,9 +26,9 @@
 // ============================================
 
 // 字体加载 (从 Google Fonts，非阻塞)
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap';
 
 // ============================================
 //   COLORS - 颜色系统 V3.0
@@ -46,7 +46,7 @@
   // Foregrounds - 浅色前景系列
   --artdeco-fg-primary: #F2F0E4;      // 香槟奶油 - 主要文本
   --artdeco-fg-muted: #A0A0A0;        // 锚色 - 次要文本（提升对比度，WCAG AA）
-  --artdeco-fg-subtle: rgba(255,255,255,0.6); // 微妙 - 占位符
+  --artdeco-fg-subtle: rgb(255 255 255 / 60%); // 微妙 - 占位符
 
   // Accent - 金色强调系列 V3.0 (大阻使用，提升品牌识别度）
   --artdeco-gold-primary: #D4AF37;    // ✨ 古典金 - 主品牌色（大幅增加使用）
@@ -56,9 +56,9 @@
   --artdeco-gold-dim: #8B7355;       // 暗金 - 优雅阴影
 
   // Borders - 边界系列（UI Pro Max优化：提升透明度以改善可见性和无障碍性）
-  --artdeco-border-default: rgba(212, 175, 55, 0.3); // 默认边框（从20%提升到30%）
-  --artdeco-border-hover: rgba(212, 175, 55, 1);       // 悬停边框（提升到100%，完全可见）
-  --artdeco-border-accent: rgba(212, 175, 55, 0.8); // 强调边框
+  --artdeco-border-default: rgb(212 175 55 / 30%); // 默认边框（从20%提升到30%）
+  --artdeco-border-hover: rgb(212 175 55 / 100%);       // 悬停边框（提升到100%，完全可见）
+  --artdeco-border-accent: rgb(212 175 55 / 80%); // 强调边框
   --artdeco-border-gold: #D4AF37;      // ✨ V3.0新增：金色边框（用于装饰性元素）
 
   // ============================================
@@ -173,8 +173,6 @@
   --artdeco-silver-dim: var(--artdeco-fg-muted);      // 旧代码兼容
   --artdeco-silver-light: var(--artdeco-fg-primary);    // 旧代码兼容
   --artdeco-gold-border: var(--artdeco-border-gold);    // 旧代码兼容
-  --artdeco-gold-dim: var(--artdeco-gold-dim);        // 旧代码兼容
-  --artdeco-gold-border: var(--artdeco-border-gold);    // 旧代码兼容
 }
 
 // ============================================
@@ -186,11 +184,11 @@
 // 页面加载动效 - 金色光晕扫过
 @keyframes artdeco-page-load {
   0% {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(20px);
   }
   100% {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }
@@ -216,7 +214,7 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(212, 175, 55, 0.3) 0%,
+    rgb(212 175 55 / 30%) 0%,
     transparent 70%
   );
   transform: translate(-50%, -50%);
@@ -231,14 +229,14 @@
 // 卡片Hover - 金色光晕效果
 .artdeco-card {
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .artdeco-card:hover {
   transform: translateY(-4px);
   box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.2),
-    0 0 20px rgba(212, 175, 55, 0.3);
+    0 8px 16px rgb(0 0 0 / 20%),
+    0 0 20px rgb(212 175 55 / 30%);
   border-color: var(--artdeco-gold-light);
 }
 
@@ -248,7 +246,7 @@
     background-color: transparent;
   }
   50% {
-    background-color: rgba(212, 175, 55, 0.2);
+    background-color: rgb(212 175 55 / 20%);
   }
 }
 
@@ -284,7 +282,7 @@
 .artdeco-loader {
   width: 60px;
   height: 60px;
-  border: 4px solid rgba(212, 175, 55, 0.2);
+  border: 4px solid rgb(212 175 55 / 20%);
   border-top: 4px solid var(--artdeco-gold);
   border-radius: 0;  // 方形而非圆形 - ArtDeco几何感
   animation: artdeco-spin 1.2s linear infinite;
@@ -359,15 +357,15 @@
 
 :root {
   --artdeco-shadow-none: 0 0 #0000;
-  --artdeco-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --artdeco-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --artdeco-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --artdeco-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --artdeco-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --artdeco-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
+  --artdeco-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+  --artdeco-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
 
   // Art Deco specific glows (gold-tinted)
-  --artdeco-glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);
-  --artdeco-glow-intense: 0 0 20px rgba(212, 175, 55, 0.4);
-  --artdeco-glow-max: 0 0 30px rgba(212, 175, 55, 0.6);
+  --artdeco-glow-subtle: 0 0 15px rgb(212 175 55 / 20%);
+  --artdeco-glow-intense: 0 0 20px rgb(212 175 55 / 40%);
+  --artdeco-glow-max: 0 0 30px rgb(212 175 55 / 60%);
 }
 
 // ============================================
@@ -380,7 +378,6 @@
   --artdeco-transition-base: 400ms;       // 标准（从300ms增加，更戏剧性）
   --artdeco-transition-slow: 600ms;        // 慢速（从500ms增加）
   --artdeco-transition-dramatic: 800ms;    // 戏剧性（新增，用于Hero元素）
-
   --artdeco-ease-linear: linear;
   --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);
   --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
@@ -432,7 +429,6 @@
 // Gradient text (for headlines)
 @mixin artdeco-gradient-text {
   background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-hover));
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -488,7 +484,7 @@
     height: $size;
     border-top: $border-width solid $color;
     border-left: $border-width solid $color;
-    opacity: 0.4;
+    opacity: 40%;
     transition: opacity var(--artdeco-transition-base);
   }
 
@@ -501,7 +497,7 @@
     height: $size;
     border-bottom: $border-width solid $color;
     border-right: $border-width solid $color;
-    opacity: 0.4;
+    opacity: 40%;
     transition: opacity var(--artdeco-transition-base);
   }
 }
@@ -528,7 +524,7 @@
 
 @mixin artdeco-crosshatch-bg {
   background: var(--artdeco-bg-global);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
 }
 
 // Content spacing

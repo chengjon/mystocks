@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { _ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
 
@@ -77,7 +77,7 @@ const props = defineProps({
 
 // 当前路由
 const route = useRoute()
-const router = useRouter()
+const _router = useRouter()
 
 // 面包屑数据
 const breadcrumbs = computed(() => {
@@ -171,7 +171,7 @@ export default {
   align-items: center;
   height: 60px;
   padding: 0 24px;
-  background: #ffffff;
+  background: #fff;
   border-bottom: 2px solid #409eff;
   overflow: hidden;
 
@@ -181,7 +181,7 @@ export default {
     content: '';
     position: absolute;
     background: #409eff;
-    opacity: 0.6;
+    opacity: 60%;
   }
 
   // 左上角装饰
@@ -190,7 +190,7 @@ export default {
     left: 0;
     width: 20px;
     height: 2px;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 10px rgb(212 175 55 / 50%);
   }
 
   // 右上角装饰
@@ -199,7 +199,7 @@ export default {
     right: 0;
     width: 2px;
     height: 20px;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 10px rgb(212 175 55 / 50%);
   }
 }
 
@@ -215,7 +215,7 @@ export default {
     #409eff 50%,
     transparent 100%
   );
-  opacity: 0.3;
+  opacity: 30%;
 }
 
 .breadcrumb {
@@ -225,7 +225,7 @@ export default {
   :deep(.el-breadcrumb__item) {
     display: inline-flex;
     align-items: center;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Inter, system-ui, sans-serif;
     font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
@@ -235,12 +235,12 @@ export default {
     .el-breadcrumb__inner {
       display: inline-flex;
       align-items: center;
-      color: rgba(212, 175, 55, 0.7);
+      color: rgb(212 175 55 / 70%);
       transition: all 0.3s;
 
       &:hover {
         color: #409eff;
-        text-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+        text-shadow: 0 2px 4px rgb(64 158 255 / 10%);
       }
     }
 
@@ -249,7 +249,7 @@ export default {
       .el-breadcrumb__inner {
         color: #409eff;
         font-weight: 700;
-        text-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
+        text-shadow: 0 4px 8px rgb(64 158 255 / 20%);
         cursor: default;
       }
     }
@@ -258,7 +258,7 @@ export default {
   // 分隔符样式
   :deep(.el-breadcrumb__separator) {
     color: #409eff;
-    opacity: 0.4;
+    opacity: 40%;
     margin: 0 12px;
     font-size: 12px;
   }
@@ -273,19 +273,19 @@ export default {
 .breadcrumb-icon {
   font-size: 16px;
   color: #409eff;
-  opacity: 0.8;
+  opacity: 80%;
   transition: all 0.3s;
 
   &:hover {
-    opacity: 1;
-    filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+    opacity: 100%;
+    filter: drop-shadow(0 0 4px rgb(212 175 55 / 50%));
   }
 }
 
 .breadcrumb-active {
   color: #409eff;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+  text-shadow: 0 2px 4px rgb(64 158 255 / 10%);
 }
 
 /* 面包屑过渡动画 */
@@ -295,17 +295,17 @@ export default {
 }
 
 .breadcrumb-enter-from {
-  opacity: 0;
+  opacity: 0%;
   transform: translateX(20px);
 }
 
 .breadcrumb-leave-to {
-  opacity: 0;
+  opacity: 0%;
   transform: translateX(-20px);
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .breadcrumb-container {
     height: 50px;
     padding: 0 12px;
@@ -341,7 +341,7 @@ export default {
 }
 
 /* 大屏幕优化 */
-@media (min-width: 1440px) {
+@media (width >= 1440px) {
   .breadcrumb-container {
     padding: 0 32px;
 

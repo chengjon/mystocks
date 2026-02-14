@@ -47,7 +47,7 @@
                             @change="handleFilterChange(filter.key)"
                         >
                             <el-option
-                                v-for="option in filter.options"
+                                v-for="(option, _idx) in filter.options"
                                 :key="option.value"
                                 :label="option.label"
                                 :value="option.value"
@@ -108,7 +108,7 @@
             <div v-if="showQuickFilters && quickFilters.length > 0" class="quick-filters">
                 <span class="quick-filters-label">QUICK:</span>
                 <button
-                    v-for="quick in quickFilters"
+                    v-for="(quick, _idx) in quickFilters"
                     :key="quick.key"
                     class="quick-filter-btn"
                     :class="{ active: activeQuickFilter === quick.key }"
@@ -127,7 +127,7 @@
 
     interface FilterOption {
         label: string
-        value: any
+        value: unknown
     }
 
     interface Filter {
@@ -149,7 +149,7 @@
     interface QuickFilter {
         key: string
         label: string
-        filters: Record<string, any>
+        filters: Record<string, unknown>
     }
 
     interface Props {
@@ -174,7 +174,7 @@
     })
 
     const emit = defineEmits<{
-        filterChange: [filters: Record<string, any>]
+        filterChange: [filters: Record<string, unknown>]
         reset: []
         clear: []
     }>()
@@ -182,8 +182,8 @@
     const expanded = ref(props.defaultExpanded)
     const activeQuickFilter = ref<string>('')
 
-    const filterValues = reactive<Record<string, any>>(() => {
-        const values: Record<string, any> = {}
+    const filterValues = reactive<Record<string, unknown>>(() => {
+        const values: Record<string, unknown> = {}
         props.filters.forEach(filter => {
             if (filter.type === 'number') {
                 values[`${filter.key}_min`] = null
@@ -197,7 +197,7 @@
         return values
     })
 
-    const activeFiltersCount = computed(() => {
+    const _activeFiltersCount = computed(() => {
         let count = 0
         Object.values(filterValues).forEach(value => {
             if (value !== null && value !== '' && (Array.isArray(value) ? value.length > 0 : true)) {
@@ -256,11 +256,11 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-filter-bar {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-4);
       display: flex;
       flex-direction: column;
@@ -347,7 +347,7 @@
     .artdeco-input {
       width: 100%;
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-mono);
       font-size: var(--artdeco-font-size-base); // 14px - Compact v3.1
@@ -406,7 +406,7 @@
       align-items: center;
       gap: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .quick-filters-label {
@@ -421,7 +421,7 @@
     .quick-filter-btn {
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-body);
       font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1

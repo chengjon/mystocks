@@ -4,17 +4,17 @@
   --art-deco-bg-tertiary: #1A1A1A;
   --art-deco-fg-primary: #F2F0E4;
   --art-deco-fg-secondary: #C4C0B4;
-  --art-deco-fg-muted: #888888;
+  --art-deco-fg-muted: #888;
   --art-deco-gold: #D4AF37;
   --art-deco-gold-light: #F2E8C4;
   --art-deco-gold-dark: #B8960E;
-  --art-deco-gold-glow: rgba(212, 175, 55, 0.3);
+  --art-deco-gold-glow: rgb(212 175 55 / 30%);
   --art-deco-blue: #1E3D59;
   --art-deco-red: #F92855;
   --art-deco-green: #2DC08E;
-  --art-deco-border: rgba(212, 175, 55, 0.3);
-  --art-deco-border-hover: rgba(212, 175, 55, 0.8);
-  --art-deco-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  --art-deco-border: rgb(212 175 55 / 30%);
+  --art-deco-border-hover: rgb(212 175 55 / 80%);
+  --art-deco-shadow: 0 0 20px rgb(212 175 55 / 15%);
   --art-deco-radius: 0px;
   --art-deco-border-width: 1px;
   --art-deco-font-display: 'Marcellus', serif;
@@ -22,7 +22,7 @@
   --art-deco-font-mono: 'Roboto Mono', monospace;
 }
 
-@media (max-width: 1920px) {
+@media (width <= 1920px) {
   :root {
     --font-size-base: 14px;
     --font-size-sm: 12px;
@@ -31,7 +31,7 @@
   }
 }
 
-@media (max-width: 1440px) {
+@media (width <= 1440px) {
   :root {
     --font-size-base: 13px;
     --font-size-sm: 11px;
@@ -40,7 +40,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   :root {
     --font-size-base: 12px;
     --font-size-sm: 10px;
@@ -68,7 +68,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   :root {
     --font-size-base: 11px;
     --font-size-sm: 9px;
@@ -117,7 +117,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   :root {
     --font-size-base: 10px;
     --font-size-sm: 8px;
@@ -160,7 +160,7 @@
   }
 }
 
-@media (max-width: 375px) {
+@media (width <= 375px) {
   :root {
     --font-size-base: 9px;
     --font-size-sm: 7px;
@@ -181,7 +181,7 @@
   }
 }
 
-@media (min-width: 2560px) {
+@media (width >= 2560px) {
   :root {
     --font-size-base: 16px;
     --font-size-sm: 14px;
@@ -210,10 +210,10 @@
 
 @media print {
   :root {
-    --art-deco-bg-primary: #ffffff;
+    --art-deco-bg-primary: #fff;
     --art-deco-bg-secondary: #f5f5f5;
-    --art-deco-gold: #000000;
-    --art-deco-border: #cccccc;
+    --art-deco-gold: #000;
+    --art-deco-border: #ccc;
   }
 
   .chart-toolbar,
@@ -255,8 +255,8 @@
 }
 
 .high-contrast {
-  --art-deco-border: rgba(212, 175, 55, 0.6);
-  --art-deco-gold-glow: rgba(212, 175, 55, 0.5);
+  --art-deco-border: rgb(212 175 55 / 60%);
+  --art-deco-gold-glow: rgb(212 175 55 / 50%);
 }
 
 .reduced-motion * {
@@ -279,7 +279,7 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .chart-container::after {
@@ -290,7 +290,7 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .kline-chart {

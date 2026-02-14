@@ -6,9 +6,9 @@
  */
 
 import { apiClient } from '@/api/apiClient'
-import { ElMessage, ElNotification } from 'element-plus'
+import { _ElMessage, ElNotification } from 'element-plus'
 
-interface ApiVersion {
+interface _ApiVersion {
   name: string
   version: string
   prefix: string
@@ -112,7 +112,7 @@ class ApiVersionNegotiator {
           this.detectedVersions.set(endpoint, contractResponse.data.version)
           return { endpoint, version: contractResponse.data.version, source: 'contract' }
         }
-      } catch (error) {
+      } catch (_error) {
         const defaultVersion = VERSION_CONFIG.endpoints[endpoint]
         this.detectedVersions.set(endpoint, defaultVersion)
         return { endpoint, version: defaultVersion, source: 'config' }
@@ -163,7 +163,7 @@ class ApiVersionNegotiator {
   private isVersionCompatible(current: string, required: string): boolean {
     const compatibilityMatrix = VERSION_CONFIG.compatibilityMatrix
 
-    for (const [baseVersion, compatibleVersions] of Object.entries(compatibilityMatrix)) {
+    for (const [_baseVersion, compatibleVersions] of Object.entries(compatibilityMatrix)) {
       if (compatibleVersions.includes(required)) {
         return compatibleVersions.includes(current)
       }
@@ -231,7 +231,7 @@ class ApiVersionNegotiator {
   private findFallbackVersion(apiName: string, preferredVersion: string): string | null {
     const compatibilityMatrix = VERSION_CONFIG.compatibilityMatrix
 
-    for (const [baseVersion, compatibleVersions] of Object.entries(compatibilityMatrix)) {
+    for (const [_baseVersion, compatibleVersions] of Object.entries(compatibilityMatrix)) {
       if (compatibleVersions.includes(preferredVersion)) {
         const currentVersion = this.detectedVersions.get(apiName)
         if (currentVersion && compatibleVersions.includes(currentVersion)) {

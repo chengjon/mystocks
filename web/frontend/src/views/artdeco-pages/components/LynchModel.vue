@@ -55,11 +55,18 @@ function getPegPosition(v) {
     margin-bottom: 30px;
 }
 .metric-card {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
     padding: 20px;
     text-align: center;
-    .label { font-size: 12px; color: var(--artdeco-fg-muted); margin-bottom: 10px; }
-    .value { font-size: 24px; font-weight: bold; }
+    .label {
+      font-size: 12px;
+      color: var(--artdeco-fg-muted);
+      margin-bottom: 10px;
+    }
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
     .value.good { color: var(--artdeco-rise); }
 }
 .scale-track {
@@ -67,7 +74,12 @@ function getPegPosition(v) {
     background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
     position: relative;
     border-radius: 5px;
-    .marker { position: absolute; top: 15px; font-size: 10px; transform: translateX(-50%); }
+    .marker {
+      position: absolute;
+      top: 15px;
+      font-size: 10px;
+      transform: translateX(-50%);
+    }
     .pointer {
         position: absolute;
         top: -5px;

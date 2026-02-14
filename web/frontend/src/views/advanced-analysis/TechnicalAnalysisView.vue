@@ -42,7 +42,7 @@
     import { computed } from 'vue'
 
     interface Props {
-        data: any
+        data: unknown
     }
 
     const props = defineProps<Props>()
@@ -50,7 +50,7 @@
     const indicators = computed(() => {
         if (!props.data?.indicators) return []
 
-        return props.data.indicators.map((indicator: any) => ({
+        return props.data.indicators.map((indicator: unknown) => ({
             name: indicator.name,
             value: indicator.value,
             signal: indicator.signal || '中性',

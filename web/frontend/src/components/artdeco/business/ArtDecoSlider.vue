@@ -29,7 +29,7 @@
             <div v-if="showTicks" class="artdeco-slider-ticks">
                 <div
                     class="artdeco-slider-tick"
-                    v-for="tick in ticks"
+                    v-for="(tick, _idx) in ticks"
                     :key="tick.value"
                     :style="{ left: tick.position + '%' }"
                 >
@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, onUnmounted } from 'vue'
+    import { ref, computed, _onMounted, onUnmounted } from 'vue'
 
     // ============================================
     // COMPONENT: ArtDecoSlider
@@ -225,7 +225,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     // ============================================
     // ART DECO SLIDER - 精密滑块组件
@@ -239,7 +239,7 @@
 
     // Disabled state
     .artdeco-slider-container.is-disabled {
-        opacity: 0.5;
+        opacity: 50%;
         pointer-events: none;
     }
 
@@ -357,7 +357,7 @@
 
     // Disabled state
     .artdeco-slider-thumb:disabled {
-        opacity: 0.4;
+        opacity: 40%;
         cursor: not-allowed;
         background: var(--artdeco-silver-dim);
         border-color: var(--artdeco-gold-dim);

@@ -140,7 +140,7 @@ import ArtDecoCard from './base/ArtDecoCard.vue'
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .card-header {
   h3 {
@@ -192,7 +192,7 @@ import ArtDecoCard from './base/ArtDecoCard.vue'
   transition: background-color var(--artdeco-transition-base);
 
   &:hover {
-    background-color: rgba(212, 175, 55, 0.05);
+    background-color: rgb(212 175 55 / 5%);
     border-radius: var(--artdeco-radius-sm);
   }
 }

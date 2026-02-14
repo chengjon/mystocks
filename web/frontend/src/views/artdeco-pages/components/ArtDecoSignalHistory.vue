@@ -64,17 +64,15 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .artdeco-signal-history {
         position: relative;
         width: 100%;
 
         @include artdeco-stepped-corners(8px);
-
         @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
-
         @include artdeco-hover-lift-glow;
     }
 
@@ -120,12 +118,12 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-signal-history__type--buy {
-            background: rgba(255, 82, 82, 0.1);
+            background: rgb(255 82 82 / 10%);
             color: var(--artdeco-up);
         }
 
         &.artdeco-signal-history__type--sell {
-            background: rgba(0, 230, 118, 0.1);
+            background: rgb(0 230 118 / 10%);
             color: var(--artdeco-down);
         }
     }
@@ -161,12 +159,12 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         &.artdeco-signal-history__outcome--win {
-            background: rgba(0, 230, 118, 0.1);
+            background: rgb(0 230 118 / 10%);
             color: var(--artdeco-down);
         }
 
         &.artdeco-signal-history__outcome--loss {
-            background: rgba(255, 82, 82, 0.1);
+            background: rgb(255 82 82 / 10%);
             color: var(--artdeco-up);
         }
     }
@@ -192,7 +190,7 @@
         height: 16px;
         border-color: var(--artdeco-gold-primary);
         border-style: solid;
-        opacity: 0.4;
+        opacity: 40%;
         transition: opacity var(--artdeco-transition-base);
         z-index: 1;
     }

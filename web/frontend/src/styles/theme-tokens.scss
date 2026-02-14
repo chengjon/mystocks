@@ -23,7 +23,7 @@
   --color-bg-elevated: #4a4a4a;       // Elevated background (hover states, popovers)
 
   // Text Colors (High contrast for readability - WCAG AA compliant)
-  --color-text-primary: #ffffff;      // Primary text (white on dark)
+  --color-text-primary: #fff;      // Primary text (white on dark)
   --color-text-secondary: #d0d0d0;    // Secondary text (light gray) - WCAG AA: 7.5:1
   --color-text-tertiary: #a0a0a0;     // Tertiary text (medium gray) - WCAG AA: 5.3:1
   --color-text-disabled: #505050;     // Disabled text (dim gray)
@@ -51,15 +51,15 @@
   --color-border-hover: #D4AF37;       // Hover border (Bloomberg gold)
 
   // Semi-transparent Colors (for backgrounds, overlays, shadows)
-  --color-accent-alpha-90: rgba(212, 175, 55, 0.1);   // 10% opacity (Bloomberg gold)
-  --color-accent-alpha-80: rgba(212, 175, 55, 0.2);   // 20% opacity
-  --color-accent-alpha-70: rgba(212, 175, 55, 0.3);   // 30% opacity
-  --color-accent-alpha-50: rgba(212, 175, 55, 0.5);   // 50% opacity
-  --color-stock-up-alpha-90: rgba(255, 71, 87, 0.1);        // 10% opacity (RED)
-  --color-stock-up-alpha-80: rgba(255, 71, 87, 0.2);        // 20% opacity (RED)
-  --color-stock-down-alpha-90: rgba(0, 217, 36, 0.1);       // 10% opacity (GREEN)
-  --color-stock-down-alpha-80: rgba(0, 217, 36, 0.2);       // 20% opacity (GREEN)
-  --color-bg-elevated-alpha-80: rgba(74, 74, 74, 0.2);  // 20% opacity (for #4a4a4a)
+  --color-accent-alpha-90: rgb(212 175 55 / 10%);   // 10% opacity (Bloomberg gold)
+  --color-accent-alpha-80: rgb(212 175 55 / 20%);   // 20% opacity
+  --color-accent-alpha-70: rgb(212 175 55 / 30%);   // 30% opacity
+  --color-accent-alpha-50: rgb(212 175 55 / 50%);   // 50% opacity
+  --color-stock-up-alpha-90: rgb(255 71 87 / 10%);        // 10% opacity (RED)
+  --color-stock-up-alpha-80: rgb(255 71 87 / 20%);        // 20% opacity (RED)
+  --color-stock-down-alpha-90: rgb(0 217 36 / 10%);       // 10% opacity (GREEN)
+  --color-stock-down-alpha-80: rgb(0 217 36 / 20%);       // 20% opacity (GREEN)
+  --color-bg-elevated-alpha-80: rgb(74 74 74 / 20%);  // 20% opacity (for #4a4a4a)
   --color-bg-elevated-hover: #4e4e4e;                     // Lighter hover version
 
   // ============================================================
@@ -119,10 +119,10 @@
   // Shadow System (Elevation)
   // ============================================================
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);         // Subtle elevation
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);         // Medium elevation (dropdowns, cards)
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);        // Large elevation (modals, popovers)
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);        // Extra large (dialogs)
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);         // Subtle elevation
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 40%);         // Medium elevation (dropdowns, cards)
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 50%);        // Large elevation (modals, popovers)
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 60%);        // Extra large (dialogs)
 
   // ============================================================
   // Transition Animations
@@ -152,19 +152,19 @@
   // Candlestick Colors (Red = Up, Green = Down for China market)
   --chart-up-color: var(--color-stock-up);          // Red for up
   --chart-down-color: var(--color-stock-down);      // Green for down
-  --chart-up-border-color: #ff0000;                 // Bright red border
-  --chart-down-border-color: #00ff00;               // Bright green border
+  --chart-up-border-color: #f00;                 // Bright red border
+  --chart-down-border-color: #0f0;               // Bright green border
   --chart-up-wick-color: var(--chart-up-color);
   --chart-down-wick-color: var(--chart-down-color);
-  --chart-up-fill-color: rgba(255, 71, 87, 0.2);    // Red fill
-  --chart-down-fill-color: rgba(0, 217, 36, 0.2);   // Green fill
+  --chart-up-fill-color: rgb(255 71 87 / 20%);    // Red fill
+  --chart-down-fill-color: rgb(0 217 36 / 20%);   // Green fill
 
   // Chart Grid and Axis
-  --chart-grid-color: rgba(255, 255, 255, 0.1);
-  --chart-axis-color: rgba(255, 255, 255, 0.3);
-  --chart-crosshair-color: rgba(255, 255, 255, 0.5);
-  --chart-tooltip-bg: rgba(26, 26, 26, 0.95);
-  --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+  --chart-grid-color: rgb(255 255 255 / 10%);
+  --chart-axis-color: rgb(255 255 255 / 30%);
+  --chart-crosshair-color: rgb(255 255 255 / 50%);
+  --chart-tooltip-bg: rgb(26 26 26 / 95%);
+  --chart-tooltip-border: rgb(255 255 255 / 10%);
 
   // Technical Indicator Colors
   --chart-indicator-ma: #f39c12;       // Moving Average (orange)
@@ -255,7 +255,7 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 50%;
     cursor: not-allowed;
   }
 }
@@ -294,7 +294,7 @@
   &:focus {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);  // Bloomberg gold focus ring
+    box-shadow: 0 0 0 2px rgb(212 175 55 / 20%);  // Bloomberg gold focus ring
   }
 
   &::placeholder {
@@ -302,7 +302,7 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 50%;
     cursor: not-allowed;
   }
 }
@@ -392,7 +392,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }

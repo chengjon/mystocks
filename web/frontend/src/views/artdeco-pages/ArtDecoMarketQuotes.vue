@@ -2,6 +2,9 @@
     <div class="artdeco-market-quotes">
         <!-- Page Header -->
         <div class="page-header">
+            <button @click="fetchRealtimeQuotes" style="background: red; color: white; padding: 10px; position: fixed; top: 10px; right: 10px; z-index: 9999;">
+                FORCE REFRESH DEBUG
+            </button>
             <div class="header-content">
                 <h1 class="page-title">市场行情中心</h1>
                 <p class="page-subtitle">全方位实时行情监控与技术分析平台</p>
@@ -52,7 +55,7 @@
         <!-- Main Tabs -->
         <nav class="main-tabs">
             <button
-                v-for="tab in mainTabs"
+                v-for="(tab, _idx) in mainTabs"
                 :key="tab.key"
                 class="main-tab"
                 :class="{ active: activeTab === tab.key }"
@@ -73,7 +76,7 @@
                     </div>
                     <div class="sort-controls">
                         <button
-                            v-for="sort in sortOptions"
+                            v-for="(sort, _idx) in sortOptions"
                             :key="sort.key"
                             class="sort-btn"
                             :class="{ active: activeSort === sort.key }"
@@ -96,21 +99,42 @@
                             <div class="col-pe">市盈率</div>
                         </div>
                         <div class="table-body">
-                            <div
-                                class="table-row"
-                                v-for="stock in realtimeQuotes"
-                                :key="stock.code"
-                                :class="{ 'price-up': stock.change > 0, 'price-down': stock.change < 0 }"
-                            >
-                                <div class="col-code">{{ stock.code }}</div>
-                                <div class="col-name">{{ stock.name }}</div>
-                                <div class="col-price">{{ stock.price }}</div>
-                                <div class="col-change">{{ stock.change > 0 ? '+' : '' }}{{ stock.change }}%</div>
-                                <div class="col-volume">{{ stock.volume }}</div>
-                                <div class="col-amount">{{ stock.amount }}</div>
-                                <div class="col-turnover">{{ stock.turnover }}%</div>
-                                <div class="col-pe">{{ stock.pe }}</div>
-                            </div>
+                            <template v-if="loading">
+                                <div class="table-row skeleton" v-for="i in 10" :key="i">
+                                    <div class="col-code"><ArtDecoSkeleton variant="text" width="60px" /></div>
+                                    <div class="col-name"><ArtDecoSkeleton variant="text" width="100px" /></div>
+                                    <div class="col-price"><ArtDecoSkeleton variant="text" width="50px" /></div>
+                                    <div class="col-change"><ArtDecoSkeleton variant="text" width="50px" /></div>
+                                    <div class="col-volume"><ArtDecoSkeleton variant="text" width="80px" /></div>
+                                    <div class="col-amount"><ArtDecoSkeleton variant="text" width="80px" /></div>
+                                    <div class="col-turnover"><ArtDecoSkeleton variant="text" width="40px" /></div>
+                                    <div class="col-pe"><ArtDecoSkeleton variant="text" width="40px" /></div>
+                                </div>
+                            </template>
+                            <template v-else-if="realtimeQuotes.length > 0">
+                                <div
+                                    class="table-row"
+                                    v-for="(stock, _idx) in realtimeQuotes"
+                                    :key="stock.code"
+                                    :class="{ 'price-up': stock.change > 0, 'price-down': stock.change < 0 }"
+                                >
+                                    <div class="col-code">{{ stock.code }}</div>
+                                    <div class="col-name">{{ stock.name }}</div>
+                                    <div class="col-price">{{ stock.price }}</div>
+                                    <div class="col-change">{{ stock.change > 0 ? '+' : '' }}{{ stock.change }}%</div>
+                                    <div class="col-volume">{{ stock.volume }}</div>
+                                    <div class="col-amount">{{ stock.amount }}</div>
+                                    <div class="col-turnover">{{ stock.turnover }}%</div>
+                                    <div class="col-pe">{{ stock.pe }}</div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="empty-state">
+                                    <ArtDecoIcon name="search" size="xl" />
+                                    <p>暂无行情数据，请刷新重试</p>
+                                    <p v-if="errorMsg" class="error-detail">{{ errorMsg }}</p>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </ArtDecoCard>
@@ -203,7 +227,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getPageConfig, isRouteName, isStandardConfig } from '@/config/pageConfig'
+import {
+    ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
+    ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading,
+    ArtDecoSelect, ArtDecoInput
+} from '@/components/artdeco'
+import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
+import { marketService } from '@/api/services/marketService'
 
 const route = useRoute()
 
@@ -257,7 +287,7 @@ const apiEndpoint = computed(() => {
     const config = currentPageConfig.value
     if (!config) return ''
     if ('apiEndpoint' in config) {
-        return config.apiEndpoint
+        return (config as any).apiEndpoint
     }
     return ''
 })
@@ -267,21 +297,21 @@ const wsChannel = computed(() => {
     const config = currentPageConfig.value
     if (!config) return ''
     if ('wsChannel' in config) {
-        return config.wsChannel
+        return (config as any).wsChannel
     }
     return ''
 })
 
 // 组件名称
-const componentName = computed(() => {
+const _componentName = computed(() => {
     return currentPageConfig.value?.component || ''
 })
 
 // Tab 配置（如果有）
-const tabConfig = computed(() => {
+const _tabConfig = computed(() => {
     const config = currentPageConfig.value
     if (config && 'tabs' in config) {
-        return (config as any).tabs || []
+        return (config as Record<string, unknown>).tabs || []
     }
     return []
 })
@@ -291,9 +321,11 @@ const selectedMarket = ref('sh')
 const analysisSymbol = ref('')
 const analysisPeriod = ref('1d')
 const activeSort = ref('code')
+const loading = ref(false)
+const errorMsg = ref('')
 
 const realtimeQuotes = ref<Stock[]>([])
-const hotSectors = ref([])
+const _hotSectors = ref([])
 const abnormalStocks = ref<AbnormalStock[]>([])
 
 // 主标签配置
@@ -335,34 +367,54 @@ onMounted(() => {
     if (metaTab) {
         activeTab.value = metaTab
     }
-    console.log('ArtDecoMarketQuotes 已加载')
-    console.log('当前路由:', currentRouteName.value)
-    console.log('API端点:', apiEndpoint.value)
-    console.log('WebSocket频道:', wsChannel.value)
+    fetchRealtimeQuotes()
 })
 
-// 监听路由变化
-watch(() => route.name, (newRoute) => {
-    const metaTab = route.meta.activeTab
-    if (metaTab) {
-        activeTab.value = metaTab
-    }
-    console.log('路由切换到:', newRoute)
-    console.log('API端点:', apiEndpoint.value)
-    console.log('WebSocket频道:', wsChannel.value)
+// 监听排序或市场变化
+watch([selectedMarket, activeSort], () => {
+    fetchRealtimeQuotes()
 })
+
+async function fetchRealtimeQuotes() {
+    loading.value = true
+    errorMsg.value = ''
+    try {
+        // 调用标准化的 getQuotes
+        const quotes = await marketService.getQuotes()
+        
+        // 数据转换逻辑
+        realtimeQuotes.value = quotes.map((item: any) => ({
+            code: item.symbol || item.code,
+            name: item.name,
+            price: item.latest_price || item.price || 0,
+            change: item.change_percent || item.change || 0,
+            volume: formatLargeNumber(item.volume),
+            amount: formatLargeNumber(item.amount),
+            turnover: item.turnover_ratio || item.turnover || 0,
+            pe: item.pe_ratio || item.pe || 0
+        }))
+    } catch (e: any) {
+        console.error('Failed to fetch quotes:', e)
+        errorMsg.value = '行情数据加载失败，请重试'
+    } finally {
+        loading.value = false
+    }
+}
+
+function formatLargeNumber(num: number | string) {
+    const n = Number(num)
+    if (isNaN(n)) return '--'
+    if (n >= 100000000) return (n / 100000000).toFixed(2) + '亿'
+    if (n >= 10000) return (n / 10000).toFixed(2) + '万'
+    return n.toString()
+}
 
 function switchTab(tabKey: string) {
     activeTab.value = tabKey
 }
 
 function refreshData() {
-    if (!apiEndpoint.value) {
-        console.warn('未配置的API端点:', currentRouteName.value)
-        return
-    }
-    console.log('刷新行情 - API端点:', apiEndpoint.value)
-    // TODO: 使用 apiEndpoint 调用 API
+    fetchRealtimeQuotes()
 }
 
 function analyzeStock() {
@@ -375,7 +427,7 @@ function analyzeStock() {
 }
 
 // 观察者模式 - 订阅 WebSocket
-const subscribeWebSocket = () => {
+const _subscribeWebSocket = () => {
     if (!wsChannel.value) {
         console.warn('未配置的WebSocket频道:', currentRouteName.value)
         return

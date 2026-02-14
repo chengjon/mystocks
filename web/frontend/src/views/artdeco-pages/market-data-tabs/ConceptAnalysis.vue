@@ -3,7 +3,7 @@
     <ArtDecoCard title="概念板块热度排行" hoverable class="concepts-card">
       <div class="concepts-heat-map">
         <div 
-          v-for="concept in conceptRanking" 
+          v-for="(concept, _idx) in conceptRanking" 
           :key="concept.name"
           class="concept-item" 
           :class="{ active: selectedConcept?.name === concept.name }"
@@ -65,8 +65,8 @@
 import { ArtDecoCard, ArtDecoIcon } from '@/components/artdeco'
 
 interface Props {
-  conceptRanking: any[]
-  selectedConcept: any | null
+  conceptRanking: unknown[]
+  selectedConcept: unknown | null
 }
 
 defineProps<Props>()
@@ -74,7 +74,7 @@ const emit = defineEmits(['select-concept'])
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .concept-analysis {
   display: grid;
@@ -94,14 +94,14 @@ const emit = defineEmits(['select-concept'])
   align-items: center;
   padding: var(--artdeco-spacing-4);
   background: var(--artdeco-bg-card);
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgb(212 175 55 / 10%);
   border-radius: var(--artdeco-radius-none);
   transition: all var(--artdeco-transition-base);
   cursor: pointer;
 
   &:hover, &.active {
     border-color: var(--artdeco-gold-primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
   }
 
   &.active {

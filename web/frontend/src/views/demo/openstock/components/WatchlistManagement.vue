@@ -97,7 +97,7 @@
           <select v-model="moveToGroupId" class="select">
             <option :value="null">选择目标分组</option>
             <option
-              v-for="group in groups.filter(g => g.id !== currentGroupId)"
+              v-for="(group, _idx) in groups.filter(g => g.id !== currentGroupId)"
               :key="group.id"
               :value="group.id"
             >
@@ -123,34 +123,34 @@ import axios from 'axios'
 import WatchlistGroupManager from '@/components/watchlist/WatchlistGroupManager.vue'
 
 interface Props {
-  groups: any[]
+  groups: unknown[]
 }
 
-const props = defineProps<Props>()
+const _props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'get-quote': [stock: any]
+  'get-quote': [stock: unknown]
   'groups-changed': []
   'api-tested': [feature: string]
 }>()
 
-const groupManagerRef = ref<any>(null)
-const currentGroupId = ref<any>(null)
+const groupManagerRef = ref<unknown>(null)
+const currentGroupId = ref<unknown>(null)
 const currentGroupName = ref('')
-const currentGroupStocks = ref<any[]>([])
+const currentGroupStocks = ref<unknown[]>([])
 const watchlistLoading = ref(false)
-const moveToGroupId = ref<any>(null)
+const moveToGroupId = ref<unknown>(null)
 const showMovePopover = ref(false)
-const selectedStock = ref<any>(null)
+const selectedStock = ref<unknown>(null)
 
-const handleGroupSelected = (group: any) => {
+const handleGroupSelected = (group: unknown) => {
   currentGroupId.value = group.id
   currentGroupName.value = group.group_name
   fetchGroupStocks()
 }
 
 const handleGroupCreated = () => emit('groups-changed')
-const handleGroupUpdated = (group: any) => {
+const handleGroupUpdated = (group: unknown) => {
   if (currentGroupId.value === group.id) {
     currentGroupName.value = group.group_name
   }
@@ -169,14 +169,14 @@ const fetchGroupStocks = async () => {
     })
     currentGroupStocks.value = response.data
     emit('api-tested', 'watchlist')
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('获取分组股票失败: ' + (error.response?.data?.detail || error.message))
   } finally {
     watchlistLoading.value = false
   }
 }
 
-const openMovePopover = (stock: any) => {
+const openMovePopover = (stock: unknown) => {
   selectedStock.value = stock
   showMovePopover.value = true
 }
@@ -203,7 +203,7 @@ const moveStock = async () => {
     emit('groups-changed')
     fetchGroupStocks()
     closeMovePopover()
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('移动失败: ' + (error.response?.data?.detail || error.message))
   }
 }
@@ -225,14 +225,14 @@ const clearCurrentGroup = async () => {
     ElMessage.success('分组已清空')
     emit('groups-changed')
     fetchGroupStocks()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('清空失败: ' + (error.response?.data?.detail || error.message))
     }
   }
 }
 
-const removeFromWatchlist = async (stock: any) => {
+const removeFromWatchlist = async (stock: unknown) => {
   try {
     await ElMessageBox.confirm('确定要从自选股中删除吗?', '提示', {
       confirmButtonText: '确定',
@@ -247,14 +247,14 @@ const removeFromWatchlist = async (stock: any) => {
     ElMessage.success('已从自选股删除')
     emit('groups-changed')
     fetchGroupStocks()
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败: ' + (error.response?.data?.detail || error.message))
     }
   }
 }
 
-const updateNotes = async (stock: any) => {
+const updateNotes = async (stock: unknown) => {
   try {
     const token = localStorage.getItem('token') || ''
     const API_BASE = '/api'
@@ -264,7 +264,7 @@ const updateNotes = async (stock: any) => {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     ElMessage.success('备注已更新')
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('更新失败: ' + (error.response?.data?.detail || error.message))
   }
 }
@@ -363,11 +363,8 @@ const updateNotes = async (stock: any) => {
 
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  inset: 0 0 0 0;
+  background: rgb(0 0 0 / 30%);
   display: flex;
   align-items: center;
   justify-content: center;

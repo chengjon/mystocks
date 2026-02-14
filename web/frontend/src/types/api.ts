@@ -20,7 +20,7 @@
  * 统一API响应格式
  * 符合后端契约管理平台的响应规范
  */
-export interface UnifiedResponse<TData = any> {
+export interface UnifiedResponse<TData = unknown> {
   code: string | number        // 响应码 (SUCCESS, ERROR等)
   message: string              // 响应消息
   data: TData                  // 响应数据
@@ -54,7 +54,7 @@ export type PaginatedResponse<T> = UnifiedResponse<PaginatedData<T>>
 export interface APIError {
   code: string                 // 错误码 (如: CONTRACT_VERSION_NOT_FOUND)
   message: string              // 错误消息
-  details?: any                // 错误详情
+  details?: unknown                // 错误详情
   timestamp?: number           // 错误时间戳
 }
 
@@ -104,8 +104,8 @@ export interface APIRequestConfig {
 export interface APIEndpoint {
   url: string                 // 端点URL
   method: HTTPMethod          // HTTP方法
-  params?: Record<string, any>     // 查询参数
-  data?: Record<string, any>       // 请求体数据
+  params?: Record<string, unknown>     // 查询参数
+  data?: Record<string, unknown>       // 请求体数据
   config?: APIRequestConfig  // 请求配置
 }
 
@@ -127,7 +127,7 @@ export type WSMessageType =
 /**
  * WebSocket 消息结构
  */
-export interface WSMessage<T = any> {
+export interface WSMessage<T = unknown> {
   type: WSMessageType
   data: T
   timestamp?: number

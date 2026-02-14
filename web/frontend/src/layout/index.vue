@@ -206,7 +206,7 @@ const handleCommand = (command) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .layout-container {
   height: 100%;
@@ -245,12 +245,12 @@ const handleCommand = (command) => {
         transition: all var(--artdeco-transition-base);
 
         &:hover {
-          background-color: rgba(212, 175, 55, 0.1);  // 金色半透明背景
+          background-color: rgb(212 175 55 / 10%);  // 金色半透明背景
           color: var(--artdeco-gold-primary);
         }
 
         &.is-active {
-          background-color: rgba(212, 175, 55, 0.15);  // 金色半透明背景
+          background-color: rgb(212 175 55 / 15%);  // 金色半透明背景
           color: var(--artdeco-gold-primary);  // 金色文本
           position: relative;
 
@@ -306,7 +306,7 @@ const handleCommand = (command) => {
        top: -2px;
        border-radius: 50%;
        background: var(--artdeco-gold-primary);
-       box-shadow: 0 0 2px rgba(212, 175, 55, 0.3);
+       box-shadow: 0 0 2px rgb(212 175 55 / 30%);
      }
      
      // 装饰点动画
@@ -319,7 +319,8 @@ const handleCommand = (command) => {
        top: -2px;
        border-radius: 50%;
        background: var(--artdeco-gold-primary);
-       box-shadow: 0 0 2px rgba(212, 175, 55, 0.3);
+       box-shadow: 0 0 2px rgb(212 175 55 / 30%);
      }
    }
- </style>
+}
+</style>

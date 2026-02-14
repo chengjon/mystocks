@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  tdengine:
+    image: tdengine/tdengine:3.0
+    container_name: mystocks_tdengine_test
+    hostname: tdengine
+    environment:
+      - TAOS_FQDN=tdengine
+      - TAOS_PORT=6030
+    ports:
+      - "6030:6030"
+      - "6041:6041"
+    volumes:
+      - tdengine_test_data:/var/lib/taos
+    networks:
+      - mystocks_test_network
+    healthcheck:
+      test: ["CMD", "taos", "-s", "SELECT 1;"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgresql:
+    image: timescale/timescaledb:latest-pg15
+    container_name: mystocks_postgresql_test
+    hostname: postgresql
+    environment:
+      - POSTGRES_DB=mystocks_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - mystocks_test_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  tdengine_test_data:
+  postgres_test_data:
+
+networks:
+  mystocks_test_network:
+    driver: bridge

@@ -49,7 +49,7 @@ interface StockItem {
   volume: number
 }
 
-const props = defineProps({
+const _props = defineProps({
   items: {
     type: Array as () => StockItem[],
     required: true
@@ -88,7 +88,7 @@ const formatVolume = (volume: number) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .virtual-stock-list {
   border: 1px solid var(--artdeco-border-default);
@@ -130,12 +130,30 @@ const formatVolume = (volume: number) => {
   overflow: hidden;
   text-overflow: ellipsis;
   
-  &.symbol { flex: 0 0 80px; font-weight: 600; }
+  &.symbol {
+    flex: 0 0 80px;
+    font-weight: 600;
+  }
   &.name { flex: 2; }
-  &.price { flex: 0 0 100px; text-align: right; font-family: var(--artdeco-font-mono); }
-  &.change { flex: 0 0 80px; text-align: right; font-family: var(--artdeco-font-mono); }
-  &.volume { flex: 0 0 100px; text-align: right; color: var(--artdeco-fg-muted); }
-  &.actions { flex: 0 0 80px; text-align: right; }
+  &.price {
+    flex: 0 0 100px;
+    text-align: right;
+    font-family: var(--artdeco-font-mono);
+  }
+  &.change {
+    flex: 0 0 80px;
+    text-align: right;
+    font-family: var(--artdeco-font-mono);
+  }
+  &.volume {
+    flex: 0 0 100px;
+    text-align: right;
+    color: var(--artdeco-fg-muted);
+  }
+  &.actions {
+    flex: 0 0 80px;
+    text-align: right;
+  }
 }
 
 .text-up { color: var(--artdeco-up); }

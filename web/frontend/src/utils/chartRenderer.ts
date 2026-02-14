@@ -68,7 +68,7 @@ export class ChartRenderer {
     minPrice -= pricePadding;
     maxPrice += pricePadding;
 
-    const volumeHeight = chartHeight * 0.2;
+    const _volumeHeight = chartHeight * 0.2;
     const volumeMax = maxVolume * 1.1;
 
     const candleSpacing = Math.max(1, Math.floor(chartWidth / data.length) - 1);
@@ -112,7 +112,7 @@ export class ChartRenderer {
   }
 
   render(): void {
-    const { data, padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
+    const { _data, padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
 
     this.calculateMetrics();
     this.clear();
@@ -163,7 +163,7 @@ export class ChartRenderer {
 
     const chartHeight = this.options.height - padding.top - padding.bottom;
     const volumeHeight = chartHeight * 0.2;
-    const volumeTop = this.options.height - padding.bottom - volumeHeight;
+    const _volumeTop = this.options.height - padding.bottom - volumeHeight;
 
     this.ctx.fillStyle = upColor;
 

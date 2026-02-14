@@ -96,7 +96,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-roman-numeral {
         font-family: var(--artdeco-font-display); // Marcellus - classic Roman

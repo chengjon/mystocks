@@ -1,321 +1,88 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-数据分类枚举模块
+MyStocks 量化交易数据管理系统 - 重构版
+完全基于原始设计理念实现的配置驱动、自动化管理系统
 
-定义MyStocks系统的5层数据分类体系(23个子项)和数据库类型枚举。
-这是整个系统架构的基础,所有数据路由决策都基于这些枚举。
+设计理念：
+1. 配置驱动 - 通过YAML配置文件管理所有表结构
+2. 自动化管理 - 避免人工手工管理数据库和表
+3. 完整监控 - 专门的监控数据库记录所有操作
+4. 数据分类 - 基于数据特性的5大分类体系
+5. 业务分离 - 监控数据库与业务数据库完全分离
 
-创建日期: 2025-10-11
-版本: 1.0.0
+作者: MyStocks项目组
+版本: v2.0 重构版
+日期: 2025-09-21
 """
 
+import logging
+import os
+import traceback
+from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import Any, Dict, List, Optional
+
+import yaml
+
+# 导入现有的数据库管理模块
+from src.storage.database.database_manager import DatabaseTableManager as OriginalDatabaseTableManager
+from src.storage.database.database_manager import (
+    DatabaseType,
+)
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("mystocks_system.log", encoding="utf-8"),
+        logging.StreamHandler(),
+    ],
+)
+logger = logging.getLogger("MyStocksSystem")
+
+class DataClassification(Enum):
+    """数据分类体系 - 基于原始设计的5大分类"""
+
+    # 第1类：市场数据（Market Data）- 时间序列价格数据
+    TICK_DATA = "tick_data"  # Tick数据 → TDengine
+    MINUTE_KLINE = "minute_kline"  # 分钟K线 → TDengine
+    DAILY_KLINE = "daily_kline"  # 日线数据 → PostgreSQL+TimescaleDB
+    REALTIME_QUOTES = "realtime_quotes"  # 实时行情快照 → PostgreSQL
+    DEPTH_DATA = "depth_data"  # 深度数据 → TDengine
+
+    # 第2类：参考数据（Reference Data）- 相对静态的描述性数据
+    SYMBOLS_INFO = "symbols_info"  # 标的列表 → PostgreSQL
+    CONTRACT_INFO = "contract_info"  # 合约信息 → PostgreSQL
+    CONSTITUENT_INFO = "constituent_info"  # 成分股信息 → PostgreSQL
+    TRADE_CALENDAR = "trade_calendar"  # 交易日历 → PostgreSQL
+
+    # 第3类：衍生数据（Derived Data）- 通过原始数据计算得出
+    TECHNICAL_INDICATORS = "technical_indicators"  # 技术指标 → PostgreSQL+TimescaleDB
+    QUANTITATIVE_FACTORS = "quantitative_factors"  # 量化因子 → PostgreSQL+TimescaleDB
+    MODEL_OUTPUTS = "model_outputs"  # 模型输出 → PostgreSQL+TimescaleDB
+    TRADING_SIGNALS = "trading_signals"  # 交易信号 → PostgreSQL+TimescaleDB
+
+    # 第4类：交易数据（Transaction Data）- 策略执行和账户活动
+    ORDER_RECORDS = "order_records"  # 订单记录 → PostgreSQL
+    TRANSACTION_RECORDS = "transaction_records"  # 成交记录 → PostgreSQL
+    POSITION_RECORDS = "position_records"  # 持仓记录 → PostgreSQL
+    ACCOUNT_FUNDS = "account_funds"  # 账户资金 → PostgreSQL
+    REALTIME_POSITIONS = "realtime_positions"  # 实时持仓 → PostgreSQL（应用层缓存）
+    REALTIME_ACCOUNT = "realtime_account"  # 实时账户 → PostgreSQL（应用层缓存）
+
+    # 第5类：元数据（Meta Data）- 关于数据的数据和系统配置
+    DATA_SOURCE_STATUS = "data_source_status"  # 数据源状态 → PostgreSQL
+    TASK_SCHEDULES = "task_schedules"  # 任务调度 → PostgreSQL
+    STRATEGY_PARAMETERS = "strategy_parameters"  # 策略参数 → PostgreSQL
+    SYSTEM_CONFIG = "system_config"  # 系统配置 → PostgreSQL
+
+
+class DatabaseTarget(Enum):
+    """目标数据库类型 - 基于数据特性选择 (Week 3简化后)"""
+
+    TDENGINE = "TDengine"  # 高频时序数据专用
+    POSTGRESQL = "PostgreSQL"  # 通用数据仓库+TimescaleDB时序扩展
 
 
-class DataClassification(str, Enum):
-    """
-    数据分类枚举 - 23个子项完整定义
-
-    基于宪法第I节: 5层数据分类体系 (不可协商)
-    所有数据必须归属以下23个分类之一
-    """
-
-    # ==================== 第1类: 市场数据 (6项) ====================
-    # 高频时序数据 → TDengine
-
-    TICK_DATA = "TICK_DATA"
-    """Tick数据 - 逐笔成交数据,毫秒级,超高频"""
-
-    MINUTE_KLINE = "MINUTE_KLINE"
-    """分钟K线 - 1/5/15/30/60分钟行情数据,分钟级,高频"""
-
-    DAILY_KLINE = "DAILY_KLINE"
-    """日线/周线/月线 - 日度及以上K线数据,中低频,历史回溯"""
-
-    ORDER_BOOK_DEPTH = "ORDER_BOOK_DEPTH"
-    """深度数据 - 订单簿数据,高频,实时订单队列"""
-
-    LEVEL2_SNAPSHOT = "LEVEL2_SNAPSHOT"
-    """盘口快照 - Level-2逐笔委托、十档行情,高频,3秒/次"""
-
-    INDEX_QUOTES = "INDEX_QUOTES"
-    """指数行情 - 指数分时和日线数据,分时高频+日线中频"""
-
-    # ==================== 第2类: 参考数据 (9项) ====================
-    # 相对静态的描述性数据 → PostgreSQL
-
-    SYMBOLS_INFO = "SYMBOLS_INFO"
-    """股票信息 - 代码、名称、上市日期等基础属性,静态"""
-
-    INDUSTRY_CLASS = "INDUSTRY_CLASS"
-    """行业分类 - 申万一级/二级、证监会行业等分类标准,半静态"""
-
-    CONCEPT_CLASS = "CONCEPT_CLASS"
-    """概念分类 - AI、新能源、国企改革等概念标签,半静态,动态更新"""
-
-    INDEX_CONSTITUENTS = "INDEX_CONSTITUENTS"
-    """成分股信息 - 沪深300、中证500等指数成分,半静态,定期调整"""
-
-    TRADE_CALENDAR = "TRADE_CALENDAR"
-    """交易日历 - 交易日、节假日信息,静态,预定义"""
-
-    FUNDAMENTAL_METRICS = "FUNDAMENTAL_METRICS"
-    """结构化财务指标 - 营收、净利润、EPS、ROE等,低频,季度/年度"""
-
-    DIVIDEND_DATA = "DIVIDEND_DATA"
-    """分红送配 - 分红比例、除权除息日、送股数量,低频,不定期"""
-
-    SHAREHOLDER_DATA = "SHAREHOLDER_DATA"
-    """股东数据 - 大股东增减持、机构持仓变化,低频,月度"""
-
-    MARKET_RULES = "MARKET_RULES"
-    """市场规则 - 涨跌幅限制、停牌规则、退市标准,静态,系统级"""
-
-    # ==================== 第3类: 衍生数据 (6项) ====================
-    # 计算分析结果 → PostgreSQL+TimescaleDB
-
-    TECHNICAL_INDICATORS = "TECHNICAL_INDICATORS"
-    """技术指标 - MACD、RSI、布林带等,计算密集,时序"""
-
-    QUANT_FACTORS = "QUANT_FACTORS"
-    """量化因子 - 动量因子、价值因子、基于财务指标的因子,计算密集,多维度"""
-
-    MODEL_OUTPUT = "MODEL_OUTPUT"
-    """模型输出 - AI模型预测结果(结构化),二进制权重可选对象存储"""
-
-    TRADE_SIGNALS = "TRADE_SIGNALS"
-    """交易信号 - 策略生成的买卖信号,时序,触发式"""
-
-    BACKTEST_RESULTS = "BACKTEST_RESULTS"
-    """回测结果 - 收益曲线、最大回撤、夏普比率等,非时序+时序混合"""
-
-    RISK_METRICS = "RISK_METRICS"
-    """风险指标 - VaR、行业暴露度、Beta等,计算密集,多维度"""
-
-    # ==================== 第4类: 交易数据 (7项) ====================
-    # 冷热分离 → PostgreSQL (冷) + TDengine (热)
-
-    ORDER_RECORDS = "ORDER_RECORDS"
-    """订单记录 - 历史委托记录,持久化,关联成交"""
-
-    TRADE_RECORDS = "TRADE_RECORDS"
-    """成交记录 - 历史成交明细,持久化,时序"""
-
-    POSITION_HISTORY = "POSITION_HISTORY"
-    """持仓记录 - 历史持仓快照,持久化,历史回溯"""
-
-    REALTIME_POSITIONS = "REALTIME_POSITIONS"
-    """实时持仓 - 当前持仓状态,热数据,高频读写 (TDengine)"""
-
-    REALTIME_ACCOUNT = "REALTIME_ACCOUNT"
-    """实时账户 - 当前账户资金状态,热数据,高频更新 (TDengine)"""
-
-    FUND_FLOW = "FUND_FLOW"
-    """资金流水 - 资金转入/转出、手续费、分红到账,持久化,时序,审计"""
-
-    ORDER_QUEUE = "ORDER_QUEUE"
-    """委托队列 - 未成交委托排队状态,热数据,实时更新 (TDengine)"""
-
-    # ==================== 第5类: 元数据 (6项) ====================
-    # 系统配置和监控 → PostgreSQL
-
-    DATA_SOURCE_STATUS = "DATA_SOURCE_STATUS"
-    """数据源状态 - 数据源健康度、更新状态、完整性校验,配置型,实时监控"""
-
-    TASK_SCHEDULE = "TASK_SCHEDULE"
-    """任务调度 - 定时任务配置和执行记录,配置型,定时触发"""
-
-    STRATEGY_PARAMS = "STRATEGY_PARAMS"
-    """策略参数 - 策略配置参数、版本管理,配置型,版本化"""
-
-    SYSTEM_CONFIG = "SYSTEM_CONFIG"
-    """系统配置 - 系统级参数、权限配置,配置型,全局生效"""
-
-    DATA_QUALITY_METRICS = "DATA_QUALITY_METRICS"
-    """数据质量指标 - 完整性率、缺失率、更新延迟,监控型,时序"""
-
-    USER_CONFIG = "USER_CONFIG"
-    """用户配置 - 自定义标的组合、看板设置,个性化,用户关联"""
-
-    # ==================== 向后兼容别名 ====================
-    # 为了兼容旧代码，添加一些常用别名
-
-    DEPTH_DATA = ORDER_BOOK_DEPTH
-    """深度数据别名 (ORDER_BOOK_DEPTH) - 向后兼容"""
-
-    QUANTITATIVE_FACTORS = QUANT_FACTORS
-    """量化因子别名 (QUANT_FACTORS) - 向后兼容"""
-
-    MODEL_OUTPUTS = MODEL_OUTPUT
-    """模型输出别名 (MODEL_OUTPUT) - 向后兼容"""
-
-    TRADING_SIGNALS = TRADE_SIGNALS
-    """交易信号别名 (TRADE_SIGNALS) - 向后兼容"""
-
-    TRANSACTION_RECORDS = TRADE_RECORDS
-    """交易记录别名 (TRADE_RECORDS) - 向后兼容"""
-
-    REFERENCE_DATA = SYMBOLS_INFO
-    """参考数据别名 (SYMBOLS_INFO) - 向后兼容"""
-
-    POSITION_RECORDS = POSITION_HISTORY
-    """持仓记录别名 (POSITION_HISTORY) - 向后兼容"""
-
-    # ==================== 向后兼容别名 (旧代码) ====================
-    # 这些是旧系统中使用的枚举名称,为了兼容性保留
-
-    ACCOUNT_FUNDS = REALTIME_ACCOUNT
-    """账户资金别名 (REALTIME_ACCOUNT) - 向后兼容旧代码"""
-
-    REALTIME_QUOTES = LEVEL2_SNAPSHOT
-    """实时行情别名 (LEVEL2_SNAPSHOT) - 向后兼容旧代码"""
-
-    STOCK_INFO = SYMBOLS_INFO
-    """股票信息别名 (SYMBOLS_INFO) - 向后兼容旧代码"""
-
-    FINANCIAL_REPORTS = FUNDAMENTAL_METRICS
-    """财务报告别名 (FUNDAMENTAL_METRICS) - 向后兼容旧代码"""
-
-    MARKET_DATA_DAILY = DAILY_KLINE
-    """日线市场数据别名 (DAILY_KLINE) - 向后兼容旧代码"""
-
-    MARKET_DATA_MIN5 = MINUTE_KLINE
-    """5分钟市场数据别名 (MINUTE_KLINE) - 向后兼容旧代码"""
-
-    MARKET_DATA_MIN1 = MINUTE_KLINE
-    """1分钟市场数据别名 (MINUTE_KLINE) - 向后兼容旧代码"""
-
-    # Category-level aliases (旧系统的分类级别枚举)
-    MARKET_DATA = TICK_DATA
-    """市场数据分类别名 (TICK_DATA) - 向后兼容旧代码"""
-
-    DERIVATIVE_DATA = TECHNICAL_INDICATORS
-    """衍生数据分类别名 (TECHNICAL_INDICATORS) - 向后兼容旧代码"""
-
-    TRADE_DATA = ORDER_RECORDS
-    """交易数据分类别名 (ORDER_RECORDS) - 向后兼容旧代码"""
-
-    METADATA = DATA_SOURCE_STATUS
-    """元数据分类别名 (DATA_SOURCE_STATUS) - 向后兼容旧代码"""
-
-    @classmethod
-    def get_all_classifications(cls) -> List[str]:
-        """返回所有23个数据分类的列表"""
-        return [c.value for c in cls]
-
-    @classmethod
-    def get_market_data_classifications(cls) -> List[str]:
-        """返回市场数据分类 (6项)"""
-        return [
-            cls.TICK_DATA.value,
-            cls.MINUTE_KLINE.value,
-            cls.DAILY_KLINE.value,
-            cls.ORDER_BOOK_DEPTH.value,
-            cls.LEVEL2_SNAPSHOT.value,
-            cls.INDEX_QUOTES.value,
-        ]
-
-    @classmethod
-    def get_reference_data_classifications(cls) -> List[str]:
-        """返回参考数据分类 (9项)"""
-        return [
-            cls.SYMBOLS_INFO.value,
-            cls.INDUSTRY_CLASS.value,
-            cls.CONCEPT_CLASS.value,
-            cls.INDEX_CONSTITUENTS.value,
-            cls.TRADE_CALENDAR.value,
-            cls.FUNDAMENTAL_METRICS.value,
-            cls.DIVIDEND_DATA.value,
-            cls.SHAREHOLDER_DATA.value,
-            cls.MARKET_RULES.value,
-        ]
-
-    @classmethod
-    def get_derived_data_classifications(cls) -> List[str]:
-        """返回衍生数据分类 (6项)"""
-        return [
-            cls.TECHNICAL_INDICATORS.value,
-            cls.QUANT_FACTORS.value,
-            cls.MODEL_OUTPUT.value,
-            cls.TRADE_SIGNALS.value,
-            cls.BACKTEST_RESULTS.value,
-            cls.RISK_METRICS.value,
-        ]
-
-    @classmethod
-    def get_transaction_data_classifications(cls) -> List[str]:
-        """返回交易数据分类 (7项)"""
-        return [
-            cls.ORDER_RECORDS.value,
-            cls.TRADE_RECORDS.value,
-            cls.POSITION_HISTORY.value,
-            cls.REALTIME_POSITIONS.value,
-            cls.REALTIME_ACCOUNT.value,
-            cls.FUND_FLOW.value,
-            cls.ORDER_QUEUE.value,
-        ]
-
-    @classmethod
-    def get_metadata_classifications(cls) -> List[str]:
-        """返回元数据分类 (6项)"""
-        return [
-            cls.DATA_SOURCE_STATUS.value,
-            cls.TASK_SCHEDULE.value,
-            cls.STRATEGY_PARAMS.value,
-            cls.SYSTEM_CONFIG.value,
-            cls.DATA_QUALITY_METRICS.value,
-            cls.USER_CONFIG.value,
-        ]
-
-
-class DatabaseTarget(str, Enum):
-    """
-    数据库类型枚举
-
-    定义系统支持的2种数据库类型,每种数据库针对特定数据特性优化
-    """
-
-    TDENGINE = "tdengine"
-    """TDengine - 时序数据库,超高压缩比(20:1),极致写入性能,用于高频市场数据和实时热数据"""
-
-    POSTGRESQL = "postgresql"
-    """PostgreSQL+TimescaleDB - 复杂时序查询,自动分区,ACID合规,用于参考数据、衍生数据、元数据和历史分析"""
-
-    def __str__(self) -> str:
-        """返回枚举值作为字符串"""
-        return self.value
-
-    @classmethod
-    def get_all_targets(cls) -> List[str]:
-        """返回所有数据库类型列表"""
-        return [t.value for t in cls]
-
-
-class DeduplicationStrategy(str, Enum):
-    """
-    数据去重策略枚举
-
-    定义4种智能去重策略，用于处理重复数据的不同场景
-    """
-
-    LATEST_WINS = "latest_wins"
-    """最新数据覆盖旧数据 - 适用于全量且准确的新数据"""
-
-    FIRST_WINS = "first_wins"
-    """保留首次数据，拒绝重复 - 适用于一次性数据"""
-
-    MERGE = "merge"
-    """智能合并数据 - 适用于多源头、字段不完整的数据"""
-
-    REJECT = "reject"
-    """拒绝重复数据，记录警告 - 适用于严格去重场景"""
-
-    @classmethod
-    def get_all_strategies(cls) -> List[str]:
-        """返回所有去重策略列表"""
-        return [s.value for s in cls]
-
-
-# 版本信息
-__version__ = "1.0.0"
-__all__ = ["DataClassification", "DatabaseTarget", "DeduplicationStrategy"]

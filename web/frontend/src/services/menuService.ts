@@ -8,20 +8,20 @@
  * @updated 2026-01-20
  */
 
-import { ref, reactive } from 'vue'
+import { ref, _reactive } from 'vue'
 import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
 import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
 
 // ========== 类型定义 ==========
 export interface MenuApiResponse {
   path: string
-  data: any
+  data: unknown
   timestamp: number
 }
 
 export interface MenuDataCache {
   [path: string]: {
-    data: any
+    data: unknown
     timestamp: number
     ttl: number
   }
@@ -29,7 +29,7 @@ export interface MenuDataCache {
 
 export interface WebSocketMessage {
   channel: string
-  data: any
+  data: unknown
   timestamp: number
 }
 
@@ -45,7 +45,7 @@ const CACHE: MenuDataCache = {}
 class WebSocketManager {
   private ws: WebSocket | null = null
   private channels: Set<string> = new Set()
-  private messageHandlers: Map<string, ((data: any) => void)[]> = new Map()
+  private messageHandlers: Map<string, ((data: unknown) => void)[]> = new Map()
   private reconnectTimer: number | null = null
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
@@ -97,7 +97,7 @@ class WebSocketManager {
   /**
    * 订阅频道
    */
-  subscribe(channel: string, handler?: (data: any) => void): void {
+  subscribe(channel: string, handler?: (data: unknown) => void): void {
     this.channels.add(channel)
 
     if (handler) {
@@ -116,7 +116,7 @@ class WebSocketManager {
   /**
    * 取消订阅频道
    */
-  unsubscribe(channel: string, handler?: (data: any) => void): void {
+  unsubscribe(channel: string, handler?: (data: unknown) => void): void {
     if (handler) {
       const handlers = this.messageHandlers.get(channel)
       if (handlers) {
@@ -212,7 +212,7 @@ export class MenuService {
   /**
    * 获取菜单数据（带缓存）
    */
-  async getMenuData(menuItem: MenuItem, forceRefresh = false): Promise<any> {
+  async getMenuData(menuItem: MenuItem, forceRefresh = false): Promise<unknown> {
     if (!menuItem.apiEndpoint) {
       return null
     }
@@ -272,8 +272,8 @@ export class MenuService {
   /**
    * 批量获取菜单数据
    */
-  async getBatchMenuData(menuItems: MenuItem[]): Promise<Map<string, any>> {
-    const results = new Map<string, any>()
+  async getBatchMenuData(menuItems: MenuItem[]): Promise<Map<string, unknown>> {
+    const results = new Map<string, unknown>()
 
     await Promise.allSettled(
       menuItems.map(async (item) => {
@@ -295,7 +295,7 @@ export class MenuService {
    */
   subscribeToLiveUpdates(
     menuItem: MenuItem,
-    callback: (data: any) => void
+    callback: (data: unknown) => void
   ): () => void {
     if (!menuItem.wsChannel) {
       return () => {}
@@ -382,7 +382,7 @@ export function useMenuService() {
       menuService.getMenuData(menuItem, forceRefresh),
     getBatchMenuData: (menuItems: MenuItem[]) =>
       menuService.getBatchMenuData(menuItems),
-    subscribeToLiveUpdates: (menuItem: MenuItem, callback: (data: any) => void) =>
+    subscribeToLiveUpdates: (menuItem: MenuItem, callback: (data: unknown) => void) =>
       menuService.subscribeToLiveUpdates(menuItem, callback),
     getLiveUpdateMenus: () => menuService.getLiveUpdateMenus(),
     clearCache: (path?: string) => menuService.clearCache(path),

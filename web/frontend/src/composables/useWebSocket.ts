@@ -1,10 +1,10 @@
 // web/frontend/src/composables/useWebSocket.ts
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, _onMounted, onUnmounted } from 'vue'
 
 export function useWebSocket() {
   const ws = ref<WebSocket | null>(null)
   const isConnected = ref(false)
-  const message = ref<any | null>(null)
+  const message = ref<unknown | null>(null)
   const error = ref<Event | null>(null)
 
   const connect = (url: string) => {
@@ -18,7 +18,7 @@ export function useWebSocket() {
     ws.value.onmessage = (event) => {
       try {
         message.value = JSON.parse(event.data)
-      } catch (e) {
+      } catch (_e) {
         message.value = event.data
       }
     }
@@ -40,7 +40,7 @@ export function useWebSocket() {
     }
   }
 
-  const send = (data: any) => {
+  const send = (data: unknown) => {
     if (ws.value && isConnected.value) {
       ws.value.send(JSON.stringify(data))
     } else {

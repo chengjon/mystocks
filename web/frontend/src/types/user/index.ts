@@ -18,10 +18,10 @@ export interface UserProfile {
   avatar?: string;
   role?: string;
   status?: string;
-  preferences?: Record<string, any>;
-  permissions?: Record<string, any>;
-  subscription?: Record<string, any>;
-  statistics?: Record<string, any>;
+  preferences?: Record<string, unknown>;
+  permissions?: Record<string, unknown>;
+  subscription?: Record<string, unknown>;
+  statistics?: Record<string, unknown>;
   createdAt?: string;
   lastLoginAt?: string;
   lastUpdateAt?: string;

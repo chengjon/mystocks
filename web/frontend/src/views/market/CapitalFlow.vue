@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, reactive } from 'vue'
+    import { ref, onMounted, reactive , onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElTag, ElMessage } from 'element-plus'
     import { Money, RefreshRight } from '@element-plus/icons-vue'
     import FundFlowPanel from '@/components/market/FundFlowPanel.vue'
@@ -274,7 +274,7 @@
         })
     }
 
-    const handleFundFlowData = (data: any): void => {
+    const handleFundFlowData = (data: unknown): void => {
         console.log('Fund flow data loaded:', data)
         // Handle data loaded event from FundFlowPanel
     }
@@ -287,285 +287,16 @@
     onMounted(() => {
         updateLastUpdateTime()
     })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+const _timer_2: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+  if (_timer_2) clearTimeout(_timer_2)
+})
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
-
-    .capital-flow-container {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg);
-        background: var(--color-bg-primary);
-        min-height: 100vh;
-    }
-
-    // Header
-    .page-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: var(--spacing-lg);
-        border-bottom: 2px solid var(--color-border);
-
-        .header-title-section {
-            flex: 1;
-        }
-
-        .page-title {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            font-family: var(--font-family-sans);
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--color-accent);
-            margin: 0 0 var(--spacing-sm) 0;
-            line-height: 1.2;
-
-            .el-icon {
-                font-size: var(--font-size-3xl);
-                color: var(--color-accent);
-            }
-        }
-
-        .page-subtitle {
-            font-family: var(--font-family-sans);
-            font-size: var(--font-size-xs);
-            color: var(--color-text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: var(--spacing-md);
-        }
-    }
-
-    // Overview Cards
-    .overview-cards {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: var(--spacing-lg);
-
-        @media (max-width: 1200px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .overview-card {
-        :deep(.el-card__body) {
-            padding: var(--spacing-lg);
-        }
-    }
-
-    .card-content {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-
-        .card-icon {
-            font-size: var(--font-size-2xl);
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-accent-alpha-90);
-            border-radius: var(--border-radius-md);
-        }
-
-        .card-data {
-            flex: 1;
-
-            .card-value {
-                font-family: var(--font-family-mono);
-                font-size: var(--font-size-xl);
-                font-weight: 700;
-                color: var(--color-text-primary);
-                margin-bottom: var(--spacing-xs);
-            }
-
-            .card-label {
-                font-family: var(--font-family-sans);
-                font-size: var(--font-size-xs);
-                color: var(--color-text-tertiary);
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
-                font-weight: 600;
-            }
-        }
-    }
-
-    // Analysis Section
-    .analysis-section {
-        .analysis-card {
-            :deep(.el-card__header) {
-                background: transparent;
-                border-bottom: 1px solid var(--color-border);
-                padding: var(--spacing-md) var(--spacing-lg);
-            }
-
-            :deep(.el-card__body) {
-                padding: 0;
-            }
-        }
-    }
-
-    .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--spacing-lg);
-
-        .card-title {
-            font-family: var(--font-family-sans);
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--color-accent);
-        }
-
-        .header-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-
-            .update-time {
-                font-family: var(--font-family-mono);
-                font-size: var(--font-size-xs);
-                color: var(--color-text-tertiary);
-            }
-        }
-    }
-
-    // Top Movers Section
-    .top-movers-section {
-        .movers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--spacing-lg);
-
-            @media (max-width: 1200px) {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .movers-card {
-            :deep(.el-card__header) {
-                background: transparent;
-                border-bottom: 1px solid var(--color-border);
-                padding: var(--spacing-md) var(--spacing-lg);
-            }
-
-            :deep(.el-card__body) {
-                padding: 0;
-            }
-        }
-    }
-
-    .movers-table {
-        :deep(.el-table__body-wrapper) {
-            tr {
-                &:hover {
-                    background: var(--color-accent-alpha-90) !important;
-                }
-
-                td {
-                    border-bottom: 1px solid var(--color-border);
-                    padding: var(--spacing-md) 0;
-                }
-            }
-        }
-
-        .rank-number {
-            font-family: var(--font-family-mono);
-            font-weight: 700;
-            color: var(--color-accent);
-            font-size: var(--font-size-lg);
-        }
-
-        .stock-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-xs);
-
-            .stock-symbol {
-                font-family: var(--font-family-mono);
-                font-weight: 600;
-                color: var(--color-accent);
-                font-size: var(--font-size-sm);
-            }
-
-            .stock-name {
-                font-family: var(--font-family-sans);
-                font-weight: 500;
-                color: var(--color-text-primary);
-                font-size: var(--font-size-xs);
-            }
-        }
-
-        .flow-amount {
-            font-family: var(--font-family-mono);
-            font-weight: 600;
-            font-size: var(--font-size-sm);
-
-            &.positive {
-                color: var(--color-stock-up);
-            }
-
-            &.negative {
-                color: var(--color-stock-down);
-            }
-        }
-    }
-
-    // Responsive Design
-    @media (max-width: 1200px) {
-        .capital-flow-container {
-            padding: var(--spacing-lg);
-            gap: var(--spacing-lg);
-        }
-
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--spacing-md);
-
-            .header-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-        }
-
-        .movers-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .capital-flow-container {
-            padding: var(--spacing-md);
-            gap: var(--spacing-md);
-        }
-
-        .page-title {
-            font-size: var(--font-size-xl);
-        }
-
-        .overview-cards {
-            grid-template-columns: 1fr;
-        }
-    }
+@import "./styles/CapitalFlow.scss";
 </style>

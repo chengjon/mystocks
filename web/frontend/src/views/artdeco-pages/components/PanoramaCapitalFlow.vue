@@ -44,8 +44,15 @@ defineProps({
 }
 .flow-item {
     text-align: center;
-    .label { font-size: 12px; color: var(--artdeco-fg-muted); margin-bottom: 5px; }
-    .value { font-size: 18px; font-weight: bold; }
+    .label {
+      font-size: 12px;
+      color: var(--artdeco-fg-muted);
+      margin-bottom: 5px;
+    }
+    .value {
+      font-size: 18px;
+      font-weight: bold;
+    }
     .value.rise { color: var(--artdeco-rise); }
     .value.fall { color: var(--artdeco-fall); }
 }
@@ -58,7 +65,13 @@ defineProps({
     padding: 4px 12px;
     font-size: 12px;
     border-radius: 4px;
-    &.in { background: rgba(76, 175, 80, 0.1); color: var(--artdeco-rise); }
-    &.out { background: rgba(244, 67, 54, 0.1); color: var(--artdeco-fall); }
+    &.in {
+      background: rgb(76 175 80 / 10%);
+      color: var(--artdeco-rise);
+    }
+    &.out {
+      background: rgb(244 67 54 / 10%);
+      color: var(--artdeco-fall);
+    }
 }
 </style>

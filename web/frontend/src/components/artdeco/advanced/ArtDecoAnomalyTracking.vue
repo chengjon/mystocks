@@ -33,7 +33,7 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-anomaly-tracking {
     padding: 20px;

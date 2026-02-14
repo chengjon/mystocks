@@ -18,7 +18,7 @@ export interface MarketOverview {
   flat_count?: number;
   total_volume?: number | null;
   total_turnover?: number | null;
-  top_gainers?: Record<string, any>[];
-  top_losers?: Record<string, any>[];
-  most_active?: Record<string, any>[];
+  top_gainers?: Record<string, unknown>[];
+  top_losers?: Record<string, unknown>[];
+  most_active?: Record<string, unknown>[];
 }

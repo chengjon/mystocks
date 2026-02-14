@@ -57,7 +57,7 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.getStrategy(id);
-      return StrategyAdapter.adaptStrategyDetail(response) as any;
+      return StrategyAdapter.adaptStrategyDetail(response) as unknown;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取策略详情失败: ${errorMsg}`;
@@ -184,7 +184,7 @@ export function useStrategy(autoFetch = true) {
    */
   const startStrategy = async (
     id: string,
-    config?: Record<string, any>
+    config?: Record<string, unknown>
   ): Promise<boolean> => {
     loading.value = true;
     error.value = null;
@@ -332,7 +332,7 @@ export function useStrategy(autoFetch = true) {
  */
 export function useBacktest() {
   // State
-  const backtestTasks = ref<any[]>([]);
+  const backtestTasks = ref<unknown[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -360,7 +360,7 @@ export function useBacktest() {
 
     try {
       // Convert camelCase params to snake_case for API
-      const backtestParams: any = {
+      const backtestParams: unknown = {
         strategy_id: parseInt(strategyId, 10),
         start_date: params.startDate,
         end_date: params.endDate,
@@ -397,7 +397,7 @@ export function useBacktest() {
   const pollBacktestStatus = async (
     taskId: string,
     interval = 2000
-  ): Promise<any> => {
+  ): Promise<unknown> => {
     return new Promise((resolve, reject) => {
       const poll = async () => {
         try {

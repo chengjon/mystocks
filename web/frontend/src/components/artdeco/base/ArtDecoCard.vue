@@ -64,7 +64,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     // ============================================
     //   BASE CARD STYLES - 基础卡片样式
@@ -74,7 +74,6 @@
     .artdeco-card {
         // Art Deco signature: 锐利直角 (radius-none = 0px)
         border-radius: var(--artdeco-radius-none);
-
         background: var(--artdeco-bg-card);
         border: 2px solid var(--artdeco-border-default);  // UI Pro Max优化：从1px增加到2px，增强视觉层级
         padding: var(--artdeco-spacing-4);
@@ -94,23 +93,20 @@
     .artdeco-card::before {
         content: '';
         position: absolute;
-        top: 6px;
-        left: 6px;
-        right: 6px;
-        bottom: 6px;
-        border: 1px solid rgba(212, 175, 55, 0.15);
+        inset: 6px 6px 6px 6px;
+        border: 1px solid rgb(212 175 55 / 15%);
         pointer-events: none;
-        opacity: 0.3;
+        opacity: 30%;
         transition: opacity var(--artdeco-transition-base);
     }
 
     .artdeco-card:hover::before {
-        opacity: 0.6;
+        opacity: 60%;
     }
 
     .artdeco-card:hover::before,
     .artdeco-card:hover::after {
-        opacity: 0.8;
+        opacity: 80%;
         border-color: var(--artdeco-gold-hover);
     }
 
@@ -147,7 +143,7 @@
     .artdeco-card__footer {
         margin-top: var(--artdeco-spacing-3);
         padding-top: var(--artdeco-spacing-3);
-        border-top: 1px solid rgba(212, 175, 55, 0.2);
+        border-top: 1px solid rgb(212 175 55 / 20%);
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-font-size-sm);
     }
@@ -241,7 +237,7 @@
 
     .artdeco-card--elevated {
         box-shadow: var(--artdeco-shadow-md);
-        border-color: rgba(212, 175, 55, 0.3);
+        border-color: rgb(212 175 55 / 30%);
         background: var(--artdeco-bg-surface);
     }
 </style>

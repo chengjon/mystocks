@@ -89,7 +89,7 @@ const emit = defineEmits<{
 
 const quoteSymbol = ref('')
 const quoteMarket = ref('cn')
-const currentQuote = ref<any>(null)
+const currentQuote = ref<unknown>(null)
 const quoteLoading = ref(false)
 
 const fetchQuote = async () => {
@@ -113,7 +113,7 @@ const fetchQuote = async () => {
     currentQuote.value = response.data
     emit('api-tested', 'quote')
     ElMessage.success('行情获取成功')
-  } catch (error: any) {
+  } catch (error: unknown) {
     ElMessage.error('获取行情失败: ' + (error.response?.data?.detail || error.message))
   } finally {
     quoteLoading.value = false
@@ -240,7 +240,7 @@ defineExpose({
     padding: 2px 8px;
     background: var(--bg-dark);
     border-radius: var(--radius-sm);
-    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
   }
 }
 
@@ -260,7 +260,7 @@ defineExpose({
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

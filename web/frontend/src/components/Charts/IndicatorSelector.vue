@@ -13,7 +13,7 @@
           <div class="group-title">主图叠加</div>
           <div class="indicator-buttons">
             <button
-              v-for="indicator in mainIndicators"
+              v-for="(indicator, _idx) in mainIndicators"
               :key="indicator.type"
               :class="['indicator-btn', { active: activeIndicators.has(indicator.type) }]"
               @click="toggleIndicator(indicator.type)"
@@ -27,7 +27,7 @@
           <div class="group-title">副图指标</div>
           <div class="indicator-buttons">
             <button
-              v-for="indicator in oscillatorIndicators"
+              v-for="(indicator, _idx) in oscillatorIndicators"
               :key="indicator.type"
               :class="['indicator-btn', { active: activeIndicators.has(indicator.type) }]"
               @click="toggleIndicator(indicator.type)"
@@ -87,8 +87,8 @@ import { ref, computed, watch } from 'vue';
 import type { IndicatorConfig, IndicatorType } from '@/utils/indicator';
 import type { OscillatorConfig, OscillatorType } from '@/utils/indicator';
 
-type IndicatorEntry = [IndicatorType, IndicatorConfig];
-type OscillatorEntry = [OscillatorType, OscillatorConfig];
+type _IndicatorEntry = [IndicatorType, IndicatorConfig];
+type _OscillatorEntry = [OscillatorType, OscillatorConfig];
 
 const props = defineProps<{
   modelValue: (IndicatorConfig | OscillatorConfig)[];
@@ -270,7 +270,7 @@ watch(() => props.modelValue, (newVal) => {
 }
 
 .indicator-btn.active {
-  background: rgba(212, 175, 55, 0.15);
+  background: rgb(212 175 55 / 15%);
   border-color: var(--art-deco-gold);
   color: var(--art-deco-gold);
 }
@@ -341,13 +341,13 @@ watch(() => props.modelValue, (newVal) => {
 }
 
 .settings-btn.apply {
-  background: rgba(212, 175, 55, 0.15);
+  background: rgb(212 175 55 / 15%);
   border-color: var(--art-deco-gold);
   color: var(--art-deco-gold);
 }
 
 .settings-btn.apply:hover {
-  background: rgba(212, 175, 55, 0.25);
+  background: rgb(212 175 55 / 25%);
 }
 
 .settings-btn.reset {

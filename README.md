@@ -378,9 +378,9 @@ class AlertManager:
 
 ## 📋 四、系统架构概览
 
-### 🗂️ 项目目录结构 (2025-11-09重组后)
+### 🗂️ 项目目录结构 (2026-02-13 二次重组)
 
-**项目已完成全面重组**: 从42个杂乱的根目录精简到13个科学组织的目录，符合Python最佳实践。
+**项目已完成二次全面重组**: 从87个根目录+50个根文件精简到11个目录+18个根文件，释放~237GB磁盘空间。
 
 #### 📁 根目录 (入口点外壳)
 ```
@@ -388,12 +388,22 @@ mystocks_spec/
 ├── README.md                 # 项目主文档 (本文件)
 ├── CLAUDE.md                 # Claude Code集成指南
 ├── IFLOW.md                  # 工作流指令
+├── AGENTS.md                 # AI Agent协作指南
 ├── requirements.txt          # Python依赖清单
-├── core.py                   # 核心模块入口点 (Re-export)
-├── data_access.py           # 数据访问入口点 (Re-export)
-├── monitoring.py            # 监控模块入口点 (Re-export)
-├── unified_manager.py       # 统一管理器入口点 (Re-export)
-└── __init__.py              # Python包标识
+├── pyproject.toml            # Python项目配置
+├── package.json              # Monorepo根级工具配置 (playwright/vitest)
+├── vitest.config.ts          # Vitest测试配置
+├── mypy.ini                  # MyPy类型检查配置
+├── pytest.ini                # Pytest测试配置
+├── core.py                   # 核心模块入口点 (Re-export → src.core)
+├── data_access.py            # 数据访问入口点 (Re-export → src.data_access)
+├── monitoring.py             # 监控模块入口点 (Re-export → src.monitoring)
+├── unified_manager.py        # 统一管理器入口点 (Re-export → src.core)
+├── conftest.py               # Pytest全局配置
+├── __init__.py               # Python包标识
+├── LICENSE                   # MIT许可证
+├── docker-compose.*.yml      # → config/docker/ 的符号链接
+└── monitoring-stack.yml      # → config/docker/ 的符号链接
 ```
 
 #### 📂 主要目录组织
@@ -405,24 +415,28 @@ mystocks_spec/
 │   ├── core/                # 核心管理类 (数据分类、路由策略)
 │   ├── data_access/         # 数据库访问层 (TDengine/PostgreSQL)
 │   ├── monitoring/          # 监控和告警
-│   └── storage/             # 存储层基础设施
-│
-├── architecture/             # 🏛️ 架构定义与域边界 (DOMAIN_BOUNDARIES.md)
-│
-├── config/                   # ⚙️ 配置文件 (集中收敛)
-│   ├── playwright/          # E2E 测试配置
-│   ├── pm2/                 # 进程管理配置 (ecosystem)
-│   ├── table_config.yaml    # 数据库表结构配置
-│   └── indicators_registry.yaml # 指标注册配置
+│   ├── storage/             # 存储层基础设施
+│   ├── services/            # 业务服务层
+│   └── utils/               # 工具函数
 │
 ├── web/                      # 🌐 Web 应用层
 │   ├── backend/             # FastAPI 后端 (API V1 标准化)
 │   └── frontend/            # Vue 3 前端 (Pinia + Vite)
 │
-├── docs/                     # 📚 文档库
+├── config/                   # ⚙️ 配置文件 (集中收敛)
+│   ├── docker/              # Docker Compose 配置
+│   ├── monitoring-stack/    # 监控栈 (Grafana/Prometheus/Loki)
+│   ├── playwright/          # E2E 测试配置
+│   └── pm2/                 # 进程管理配置
+│
+├── architecture/             # 🏛️ 架构定义与域边界
+├── docs/                     # 📚 文档库 (guides/api/architecture/reports)
 ├── scripts/                  # 🔧 维护与开发工具脚本
 ├── tests/                    # 🧪 测试代码库
-└── data/                     # 💾 本地数据与模型
+├── data/                     # 💾 本地数据与模型
+├── reports/                  # 📊 生成的分析报告
+├── openspec/                 # 📋 OpenSpec 变更管理
+└── archived/                 # 🗄️ 归档目录 (已完成的工具/旧代码)
 ```
 
 #### 🔑 重要变更说明

@@ -30,9 +30,9 @@ defineProps({
     gap: 20px;
 }
 .pattern-card {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
     padding: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid rgb(212 175 55 / 10%);
     .pattern-header {
         display: flex;
         justify-content: space-between;
@@ -43,7 +43,10 @@ defineProps({
     .pattern-body {
         font-size: 14px;
         color: var(--artdeco-fg-muted);
-        .count { margin-top: 10px; color: var(--artdeco-gold-primary); }
+        .count {
+          margin-top: 10px;
+          color: var(--artdeco-gold-primary);
+        }
     }
 }
 </style>

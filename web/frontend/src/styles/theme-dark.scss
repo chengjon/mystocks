@@ -45,7 +45,7 @@
 
   /// Overlay/Mask background - 遮罩层
   /// 用于模态框背景、加载遮罩
-  --bg-overlay: rgba(11, 15, 25, 0.85);
+  --bg-overlay: rgb(11 15 25 / 85%);
 
   /* ------------------------------------------
      A-Share Market Colors - A股市场颜色 (CRITICAL)
@@ -59,7 +59,7 @@
 
   /// UP background - 红色背景（淡化）
   /// 用于: 上涨趋势背景、买入按钮
-  --color-up-bg: rgba(255, 82, 82, 0.15);
+  --color-up-bg: rgb(255 82 82 / 15%);
 
   /// DOWN color - 绿色 (下跌)
   /// 用于: 价格下跌、负值、收益减少、卖出信号
@@ -68,14 +68,14 @@
 
   /// DOWN background - 绿色背景（淡化）
   /// 用于: 下跌趋势背景、卖出按钮
-  --color-down-bg: rgba(0, 230, 118, 0.15);
+  --color-down-bg: rgb(0 230 118 / 15%);
 
   /// FLAT color - 灰色 (平盘)
   /// 用于: 价格不变、零值、持平状态
   --color-flat: #B0B3B8;
 
   /// FLAT background - 灰色背景（淡化）
-  --color-flat-bg: rgba(176, 179, 184, 0.15);
+  --color-flat-bg: rgb(176 179 184 / 15%);
 
   /* ------------------------------------------
      Accent Colors - 功能强调色
@@ -115,7 +115,7 @@
 
   /// Primary text - 纯白
   /// 用于: 标题、重要文本、主要信息
-  --text-primary: #FFFFFF;
+  --text-primary: #FFF;
 
   /// Secondary text - 浅灰色
   /// 用于: 正文、描述文本、次要信息
@@ -169,19 +169,19 @@
 
   /// Level 1 shadow - 轻微阴影
   /// 用于: 卡片默认状态、按钮
-  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-1: 0 2px 8px rgb(0 0 0 / 30%);
 
   /// Level 2 shadow - 中等阴影
   /// 用于: 下拉菜单、弹出框
-  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 4px 16px rgb(0 0 0 / 40%);
 
   /// Level 3 shadow - 深度阴影
   /// 用于: 模态框、对话框
-  --shadow-3: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 8px 32px rgb(0 0 0 / 50%);
 
   /// Glow effect - 发光效果
   /// 用于: 重要元素高亮、聚焦状态
-  --shadow-glow: 0 0 20px rgba(41, 121, 255, 0.4);
+  --shadow-glow: 0 0 20px rgb(41 121 255 / 40%);
 
   /* ------------------------------------------
      Spacing Scale - 间距系统
@@ -213,9 +213,7 @@
 
   --font-family-base: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
-
   --font-family-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
-
   --font-size-xs: 12px;
   --font-size-sm: 13px;
   --font-size-base: 14px;
@@ -223,12 +221,10 @@
   --font-size-lg: 18px;
   --font-size-xl: 20px;
   --font-size-xxl: 24px;
-
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-
   --line-height-tight: 1.25;
   --line-height-base: 1.5;
   --line-height-loose: 1.75;
@@ -557,7 +553,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
@@ -583,17 +579,17 @@
   pre,
   blockquote {
     border: 1px solid #999;
-    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   img {
-    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   h1,
   h2,
   h3 {
-    page-break-after: avoid;
+    break-after: avoid;
   }
 }
 
@@ -602,7 +598,7 @@
    移动端优化
    ============================================ */
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   :root {
     /* Mobile - 调整间距 */
     --spacing-md: 12px;
@@ -676,42 +672,42 @@
    微交互动画
    ============================================ */
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
   to {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
-@keyframes slideInUp {
+@keyframes slide-in-up {
   from {
     transform: translateY(20px);
-    opacity: 0;
+    opacity: 0%;
   }
   to {
     transform: translateY(0);
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
   }
   50% {
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
 
 /* 动画工具类 */
 .animate-fade-in {
-  animation: fadeIn var(--transition-base);
+  animation: fade-in var(--transition-base);
 }
 
 .animate-slide-in-up {
-  animation: slideInUp var(--transition-base);
+  animation: slide-in-up var(--transition-base);
 }
 
 .animate-pulse {

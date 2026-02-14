@@ -13,14 +13,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import * as echarts from 'echarts'
+import echarts from '@/utils/echarts'
 import type { ECharts, EChartsOption } from 'echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import { Loading, WarningFilled } from '@element-plus/icons-vue'
 
 interface Props {
   chartType: 'line' | 'bar' | 'pie' | 'scatter'
-  data: any[]
+  data: unknown[]
   options?: EChartsOption
   height?: string | number
   loading?: boolean
@@ -46,7 +46,7 @@ const getChartOption = (): EChartsOption => {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: props.chartType === 'pie' ? 'item' : 'axis',
-      backgroundColor: 'rgba(26, 26, 26, 0.95)', // Matches --color-bg-elevated
+      backgroundColor: 'rgb(26 26 26 / 95%)', // Matches --color-bg-elevated
       borderColor: '#D4AF37', // Matches --color-accent (gold)
       textStyle: {
         color: '#E5E5E5' // Matches --color-text-primary
@@ -61,14 +61,14 @@ const getChartOption = (): EChartsOption => {
     },
     xAxis: props.chartType !== 'pie' ? {
       type: 'category',
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } }, // Gold accent
+      axisLine: { lineStyle: { color: 'rgb(212 175 55 / 30%)' } }, // Gold accent
       axisLabel: { color: '#A0A0A0' } // Matches --color-text-secondary
     } : undefined,
     yAxis: props.chartType !== 'pie' ? {
       type: 'value',
-      axisLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.3)' } }, // Gold accent
+      axisLine: { lineStyle: { color: 'rgb(212 175 55 / 30%)' } }, // Gold accent
       axisLabel: { color: '#A0A0A0' }, // Matches --color-text-secondary
-      splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } } // Gold with low opacity
+      splitLine: { lineStyle: { color: 'rgb(212 175 55 / 10%)' } } // Gold with low opacity
     } : undefined
   }
 
@@ -149,7 +149,7 @@ defineExpose({
 
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
-@import '@/styles/theme-tokens.scss';
+@import '@/styles/theme-tokens';
 
 .chart-container {
   position: relative;

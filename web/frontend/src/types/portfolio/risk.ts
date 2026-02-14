@@ -38,7 +38,7 @@ export interface RiskReport {
   summary?: string;
   recommendations?: string[];
   metrics: RiskMetrics;
-  exposure?: Record<string, any>;
+  exposure?: Record<string, unknown>;
 }
 
 /**

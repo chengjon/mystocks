@@ -44,7 +44,7 @@ export interface WorkerMessage {
   type: WorkerMessageType       // Message type
   priority: MessagePriority     // Processing priority
   timestamp: number            // Message creation time
-  payload: any                 // Message data
+  payload: unknown                 // Message data
   timeout?: number             // Optional timeout in milliseconds
   replyTo?: string             // For request-response pattern
 }
@@ -54,7 +54,7 @@ export interface WorkerResponse extends WorkerMessage {
   success: boolean
   error?: string
   duration?: number           // Processing duration in milliseconds
-  result?: any               // Operation result
+  result?: unknown               // Operation result
 }
 
 // Progress update interface
@@ -104,7 +104,7 @@ export class WorkerMessageUtils {
    */
   static createMessage(
     type: WorkerMessageType,
-    payload: any,
+    payload: unknown,
     priority: MessagePriority = MessagePriority.NORMAL,
     timeout?: number
   ): WorkerMessage {
@@ -124,7 +124,7 @@ export class WorkerMessageUtils {
   static createResponse(
     originalMessage: WorkerMessage,
     success: boolean,
-    result?: any,
+    result?: unknown,
     error?: string
   ): WorkerResponse {
     const duration = Date.now() - originalMessage.timestamp
@@ -189,7 +189,7 @@ export class WorkerMessageUtils {
   /**
    * Validate message structure
    */
-  static validateMessage(message: any): message is WorkerMessage {
+  static validateMessage(message: unknown): message is WorkerMessage {
     return (
       message &&
       typeof message.id === 'string' &&

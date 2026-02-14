@@ -45,7 +45,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-import { init, dispose } from 'klinecharts'
+import { init, _dispose } from 'klinecharts'
 
 const emit = defineEmits<{
   'api-tested': [feature: string]
@@ -54,7 +54,7 @@ const emit = defineEmits<{
 const chartSymbol = ref('600000')
 const chartMarket = ref('CN')
 const chartLoading = ref(false)
-let chart: any = null
+let chart: unknown = null
 
 const loadKlineChart = async () => {
   if (!chartSymbol.value.trim()) {
@@ -102,7 +102,7 @@ const loadKlineChart = async () => {
     } else {
       ElMessage.warning('没有获取到K线数据')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error.response?.status === 404) {
       ElMessage.error('K线数据接口未实现，请先实现后端接口: GET /api/market/kline')
     } else {
@@ -186,19 +186,16 @@ const loadKlineChart = async () => {
   overflow: hidden;
 
   &.loading {
-    opacity: 0.7;
+    opacity: 70%;
   }
 
   .loading-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     z-index: 10;
 
     .loading-text {
@@ -212,7 +209,7 @@ const loadKlineChart = async () => {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

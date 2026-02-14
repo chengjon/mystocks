@@ -8071,84 +8071,84 @@
       "age_days": 11
     },
     {
-      "path": "guides/multi-cli-tasks/TASK_TEMPLATE.md",
+      "path": "guides/.multi-cli-tasks/TASK_TEMPLATE.md",
       "size_bytes": 12730,
       "size_kb": 12.43,
       "modified": "2025-12-31 21:01:00",
       "age_days": 6
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md",
       "size_bytes": 55158,
       "size_kb": 53.87,
       "modified": "2025-12-29 14:24:23",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md",
+      "path": "guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md",
       "size_bytes": 29491,
       "size_kb": 28.8,
       "modified": "2025-12-31 21:01:00",
       "age_days": 6
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md",
       "size_bytes": 46537,
       "size_kb": 45.45,
       "modified": "2025-12-29 14:27:46",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md",
+      "path": "guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md",
       "size_bytes": 13699,
       "size_kb": 13.38,
       "modified": "2025-12-31 21:01:00",
       "age_days": 6
     },
     {
-      "path": "guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md",
+      "path": "guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md",
       "size_bytes": 7397,
       "size_kb": 7.22,
       "modified": "2025-12-31 21:01:00",
       "age_days": 6
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md",
       "size_bytes": 49631,
       "size_kb": 48.47,
       "modified": "2025-12-29 14:18:22",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md",
       "size_bytes": 30548,
       "size_kb": 29.83,
       "modified": "2025-12-29 14:30:46",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-1_PHASE3_TASKS.md",
       "size_bytes": 19126,
       "size_kb": 18.68,
       "modified": "2025-12-29 13:43:25",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md",
+      "path": "guides/.multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md",
       "size_bytes": 56374,
       "size_kb": 55.05,
       "modified": "2025-12-29 14:14:32",
       "age_days": 9
     },
     {
-      "path": "guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md",
+      "path": "guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md",
       "size_bytes": 16613,
       "size_kb": 16.22,
       "modified": "2025-12-31 21:01:00",
       "age_days": 6
     },
     {
-      "path": "guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md",
+      "path": "guides/.multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md",
       "size_bytes": 16711,
       "size_kb": 16.32,
       "modified": "2025-12-29 14:33:06",
@@ -15990,51 +15990,51 @@
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/TASK_TEMPLATE.md",
+        "file": "guides/.multi-cli-tasks/TASK_TEMPLATE.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md",
+        "file": "guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI_WORKFLOW_GUIDE.md",
+        "file": "guides/.multi-cli-tasks/CLI_WORKFLOW_GUIDE.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md",
+        "file": "guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-1_PHASE3_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md",
+        "file": "guides/.multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md",
+        "file": "guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {
-        "file": "guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md",
+        "file": "guides/.multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md",
         "issue": "包含大写字母（推荐使用kebab-case）"
       },
       {

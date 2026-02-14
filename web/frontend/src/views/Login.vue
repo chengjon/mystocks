@@ -113,7 +113,7 @@ const handleLogin = async (): Promise<void> => {
     } else {
       ElMessage.error(result.message || 'LOGIN FAILED')
     }
-  } catch (error) {
+  } catch (_error) {
     ElMessage.error('LOGIN FAILED')
   } finally {
     loading.value = false
@@ -141,7 +141,7 @@ const handleLogin = async (): Promise<void> => {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 4%;
   background-image:
     repeating-linear-gradient(
         45deg,
@@ -166,7 +166,7 @@ const handleLogin = async (): Promise<void> => {
     border: 1px solid var(--accent-gold);
     border-radius: var(--radius-none);
     padding: var(--spacing-8);
-    box-shadow: 0 0 40px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 40px rgb(212 175 55 / 10%);
     z-index: 1;
     transition: all var(--transition-base);
   }
@@ -176,7 +176,7 @@ const handleLogin = async (): Promise<void> => {
     width: 24px;
     height: 24px;
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 60%;
   }
 
   .corner-tl {
@@ -221,7 +221,7 @@ const handleLogin = async (): Promise<void> => {
           var(--accent-gold),
           transparent
         );
-        opacity: 0.5;
+        opacity: 50%;
       }
     }
 
@@ -268,8 +268,6 @@ const handleLogin = async (): Promise<void> => {
       margin-bottom: var(--spacing-6);
 
       .form-group {
-        margin-bottom: var(--spacing-4);
-
           display: block;
           font-family: var(--font-display);
           font-size: var(--font-size-xs);
@@ -301,7 +299,7 @@ const handleLogin = async (): Promise<void> => {
           &:focus {
             outline: none;
             border-bottom-color: var(--accent-gold-light);
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 4px 10px rgb(212 175 55 / 20%);
           }
         }
       }
@@ -324,7 +322,7 @@ const handleLogin = async (): Promise<void> => {
         margin-top: var(--spacing-4);
 
         &:disabled {
-          opacity: 0.5;
+          opacity: 50%;
           cursor: not-allowed;
         }
 
@@ -332,7 +330,7 @@ const handleLogin = async (): Promise<void> => {
           display: inline-block;
           width: 20px;
           height: 20px;
-          border: 2px solid rgba(0, 0, 0, 0.1);
+          border: 2px solid rgb(0 0 0 / 10%);
           border-top-color: currentColor;
           border-radius: 50%;
           animation: spin 0.6s linear infinite;
@@ -357,7 +355,7 @@ const handleLogin = async (): Promise<void> => {
     .test-accounts {
       text-align: center;
       padding-top: var(--spacing-4);
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      border-top: 1px solid rgb(212 175 55 / 20%);
 
       .account-buttons {
         display: flex;
@@ -376,7 +374,7 @@ const handleLogin = async (): Promise<void> => {
             var(--accent-gold),
             transparent
           );
-          opacity: 0.3;
+          opacity: 30%;
         }
 
           font-family: var(--font-display);

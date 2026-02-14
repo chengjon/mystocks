@@ -39,6 +39,7 @@ ALLOWED_ROOT_FILES=(
   "monitoring.py"
   "unified_manager.py"
   "__init__.py"
+  "ecosystem.test.config.js"
 )
 
 ALLOWED_ROOT_PATTERNS=(

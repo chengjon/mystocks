@@ -71,7 +71,7 @@ const handleCurrentChange = (val: number) => {
 
   :deep(.el-pagination) {
     .el-pagination__total {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: Inter, -apple-system, sans-serif;
       font-size: 13px;
       color: #909399;
       font-weight: 500;
@@ -80,18 +80,18 @@ const handleCurrentChange = (val: number) => {
     .el-pagination__sizes {
       .el-select .el-input__wrapper {
         background: transparent;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 1px solid rgb(212 175 55 / 30%);
         border-radius: 0;
         box-shadow: none;
         transition: all 0.3s;
 
         &:hover {
           border-color: #409eff;
-          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
         }
 
         .el-input__inner {
-          font-family: 'Inter', system-ui, sans-serif;
+          font-family: Inter, system-ui, sans-serif;
           color: #409eff;
           font-weight: 600;
           text-transform: uppercase;
@@ -102,24 +102,24 @@ const handleCurrentChange = (val: number) => {
     .btn-prev,
     .btn-next {
       background: transparent;
-      border: 2px solid rgba(212, 175, 55, 0.3);
+      border: 2px solid rgb(212 175 55 / 30%);
       border-radius: 0;
       color: #409eff;
       font-weight: 600;
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       transition: all 0.3s;
 
       &:hover {
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         border-color: #409eff;
-        box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+        box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
       }
 
       &:disabled {
-        opacity: 0.3;
+        opacity: 30%;
         cursor: not-allowed;
         background: transparent;
-        border-color: rgba(212, 175, 55, 0.1);
+        border-color: rgb(212 175 55 / 10%);
         box-shadow: none;
       }
 
@@ -131,24 +131,24 @@ const handleCurrentChange = (val: number) => {
     .el-pager {
       .number {
         background: transparent;
-        border: 2px solid rgba(212, 175, 55, 0.3);
+        border: 2px solid rgb(212 175 55 / 30%);
         border-radius: 0;
         color: #409eff;
         font-weight: 600;
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: Inter, system-ui, sans-serif;
         transition: all 0.3s;
 
         &:hover {
-          background: rgba(212, 175, 55, 0.1);
+          background: rgb(212 175 55 / 10%);
           border-color: #409eff;
-          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
         }
 
         &.is-active {
           background: #409eff;
           border-color: #409eff;
-          color: #ffffff;
-          box-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
+          color: #fff;
+          box-shadow: 0 4px 8px rgb(64 158 255 / 20%);
         }
       }
 
@@ -165,7 +165,7 @@ const handleCurrentChange = (val: number) => {
     }
 
     .el-pagination__jump {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       font-size: 13px;
       color: #909399;
       font-weight: 600;
@@ -173,7 +173,7 @@ const handleCurrentChange = (val: number) => {
 
       .el-input__wrapper {
         background: transparent;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 1px solid rgb(212 175 55 / 30%);
         border-radius: 0;
         box-shadow: none;
         transition: all 0.3s;
@@ -181,11 +181,11 @@ const handleCurrentChange = (val: number) => {
 
         &:hover {
           border-color: #409eff;
-          box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+          box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
         }
 
         .el-input__inner {
-          font-family: 'Inter', system-ui, sans-serif;
+          font-family: Inter, system-ui, sans-serif;
           color: #409eff;
           font-weight: 600;
           text-align: center;
@@ -195,7 +195,7 @@ const handleCurrentChange = (val: number) => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .pagination {
     :deep(.el-pagination) {
       .el-pagination__sizes,

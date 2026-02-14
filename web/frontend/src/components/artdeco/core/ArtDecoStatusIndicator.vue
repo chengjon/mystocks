@@ -15,7 +15,7 @@ interface Props {
   size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   label: '',
   value: '',
   animated: false,
@@ -96,10 +96,10 @@ const props = withDefaults(defineProps<Props>(), {
 
   @keyframes pulse {
     0%, 100% {
-      opacity: 1;
+      opacity: 100%;
     }
     50% {
-      opacity: 0.5;
+      opacity: 50%;
     }
   }
 

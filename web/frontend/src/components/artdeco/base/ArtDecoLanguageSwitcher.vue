@@ -17,7 +17,7 @@
             <template #dropdown>
                 <el-dropdown-menu role="listbox" :aria-label="$t('settings.language')">
                     <el-dropdown-item
-                        v-for="localeItem in supportedLocales"
+                        v-for="(localeItem, _idx) in supportedLocales"
                         :key="localeItem.code"
                         :command="localeItem.code"
                         :class="{ 'is-active': localeItem.code === locale }"
@@ -74,7 +74,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-language-switcher {
         display: inline-block;
@@ -95,8 +95,8 @@
 
             &:hover {
                 border-color: var(--artdeco-gold-primary);
-                background: rgba(212, 175, 55, 0.05);
-                box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+                background: rgb(212 175 55 / 5%);
+                box-shadow: 0 0 10px rgb(212 175 55 / 20%);
             }
 
             &:active {
@@ -110,7 +110,7 @@
                 box-shadow:
                     0 0 0 2px var(--artdeco-bg-global),
                     0 0 0 4px var(--artdeco-gold-primary),
-                    0 0 12px rgba(212, 175, 55, 0.4);
+                    0 0 12px rgb(212 175 55 / 40%);
             }
 
             .language-flag {
@@ -156,12 +156,12 @@
             transition: all var(--artdeco-transition-fast);
 
             &:hover {
-                background: rgba(212, 175, 55, 0.1);
+                background: rgb(212 175 55 / 10%);
                 color: var(--artdeco-gold-primary);
             }
 
             &.is-active {
-                background: rgba(212, 175, 55, 0.15);
+                background: rgb(212 175 55 / 15%);
                 color: var(--artdeco-gold-primary);
                 font-weight: 600;
             }

@@ -33,7 +33,7 @@ interface Action {
   icon?: Component
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'info' | 'default'
   component?: string | Component
-  props?: Record<string, any>
+  props?: Record<string, unknown>
   handler: () => void
 }
 
@@ -72,7 +72,7 @@ withDefaults(defineProps<Props>(), {
   }
 
   .page-title {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Inter, system-ui, sans-serif;
     font-size: 24px;
     font-weight: 600;
     text-transform: uppercase;
@@ -82,7 +82,7 @@ withDefaults(defineProps<Props>(), {
   }
 
   .page-subtitle {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: Inter, -apple-system, sans-serif;
     font-size: 13px;
     color: #909399;
     text-transform: uppercase;
@@ -100,7 +100,7 @@ withDefaults(defineProps<Props>(), {
       align-items: center;
       gap: 8px;
       padding: 12px 24px;
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
@@ -113,18 +113,18 @@ withDefaults(defineProps<Props>(), {
       color: #409eff;
 
       &:hover {
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         border-color: #409eff;
-        box-shadow: 0 2px 4px rgba(64, 158, 255, 0.1);
+        box-shadow: 0 2px 4px rgb(64 158 255 / 10%);
       }
 
       &.variant-primary {
         background: #409eff;
-        color: #ffffff;
+        color: #fff;
 
         &:hover {
           background: #66b1ff;
-          box-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
+          box-shadow: 0 4px 8px rgb(64 158 255 / 20%);
         }
       }
 
@@ -133,7 +133,7 @@ withDefaults(defineProps<Props>(), {
         color: #f56c6c;
 
         &:hover {
-          background: rgba(231, 76, 60, 0.1);
+          background: rgb(231 76 60 / 10%);
           border-color: #E74C3C;
         }
       }
@@ -143,7 +143,7 @@ withDefaults(defineProps<Props>(), {
         color: #67c23a;
 
         &:hover {
-          background: rgba(103, 194, 58, 0.1);
+          background: rgb(103 194 58 / 10%);
           border-color: #67C23A;
         }
       }
@@ -153,7 +153,7 @@ withDefaults(defineProps<Props>(), {
         color: #E6A23C;
 
         &:hover {
-          background: rgba(230, 162, 60, 0.1);
+          background: rgb(230 162 60 / 10%);
           border-color: #E6A23C;
         }
       }
@@ -163,7 +163,7 @@ withDefaults(defineProps<Props>(), {
         color: #909399;
 
         &:hover {
-          background: rgba(144, 147, 153, 0.1);
+          background: rgb(144 147 153 / 10%);
           border-color: #909399;
         }
       }
@@ -182,7 +182,7 @@ withDefaults(defineProps<Props>(), {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .page-header {
     .header-content {
       flex-direction: column;

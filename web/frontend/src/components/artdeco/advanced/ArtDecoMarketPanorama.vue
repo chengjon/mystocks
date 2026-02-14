@@ -50,7 +50,7 @@ const {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-market-panorama {
     padding: 20px;
@@ -73,9 +73,12 @@ const {
     padding: 20px;
     .activity-bar {
         height: 6px;
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         margin-top: 15px;
-        .fill { height: 100%; background: var(--artdeco-gold-primary); }
+        .fill {
+          height: 100%;
+          background: var(--artdeco-gold-primary);
+        }
     }
 }
 </style>

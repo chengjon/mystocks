@@ -23,7 +23,7 @@
   --fintech-accent-info: #13c2c2;       /* 信息青 */
 
   /* ⚫ 黑白灰度系统（10级精确灰度） */
-  --fintech-gray-1: #ffffff;    /* 纯白 */
+  --fintech-gray-1: #fff;    /* 纯白 */
   --fintech-gray-2: #f0f0f0;
   --fintech-gray-3: #d9d9d9;
   --fintech-gray-4: #bfbfbf;
@@ -32,25 +32,25 @@
   --fintech-gray-7: #434343;
   --fintech-gray-8: #262626;
   --fintech-gray-9: #1f1f1f;
-  --fintech-gray-10: #000000;   /* 纯黑 */
+  --fintech-gray-10: #000;   /* 纯黑 */
 
   /* 📏 文字颜色系统 */
-  --fintech-text-primary: rgba(255, 255, 255, 0.95);
-  --fintech-text-secondary: rgba(255, 255, 255, 0.75);
-  --fintech-text-tertiary: rgba(255, 255, 255, 0.55);
-  --fintech-text-disabled: rgba(255, 255, 255, 0.35);
+  --fintech-text-primary: rgb(255 255 255 / 95%);
+  --fintech-text-secondary: rgb(255 255 255 / 75%);
+  --fintech-text-tertiary: rgb(255 255 255 / 55%);
+  --fintech-text-disabled: rgb(255 255 255 / 35%);
 
   /* 🔲 边框颜色系统 */
-  --fintech-border-light: rgba(255, 255, 255, 0.15);
-  --fintech-border-base: rgba(255, 255, 255, 0.10);
-  --fintech-border-dark: rgba(255, 255, 255, 0.05);
+  --fintech-border-light: rgb(255 255 255 / 15%);
+  --fintech-border-base: rgb(255 255 255 / 10%);
+  --fintech-border-dark: rgb(255 255 255 / 5%);
 
   /* 🌊 阴影系统（多层次深度） */
-  --fintech-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --fintech-shadow-base: 0 2px 8px 0 rgba(0, 0, 0, 0.4);
-  --fintech-shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
-  --fintech-shadow-lg: 0 8px 24px 0 rgba(0, 0, 0, 0.6);
-  --fintech-shadow-xl: 0 16px 48px 0 rgba(0, 0, 0, 0.7);
+  --fintech-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 30%);
+  --fintech-shadow-base: 0 2px 8px 0 rgb(0 0 0 / 40%);
+  --fintech-shadow-md: 0 4px 12px 0 rgb(0 0 0 / 50%);
+  --fintech-shadow-lg: 0 8px 24px 0 rgb(0 0 0 / 60%);
+  --fintech-shadow-xl: 0 16px 48px 0 rgb(0 0 0 / 70%);
 
   /* 🎯 圆角系统（专业微圆角） */
   --fintech-radius-none: 0;
@@ -347,20 +347,20 @@ body {
 
 @keyframes fintech-fade-in {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
   to {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
 @keyframes fintech-slide-up {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(8px);
   }
   to {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 }
@@ -380,14 +380,14 @@ body {
    ======================================== */
 
 /* 仅桌面端（项目明确不支持移动端） */
-@media (max-width: 1280px) {
+@media (width <= 1280px) {
   :root {
     --fintech-font-size-base: 12px;
   }
 }
 
 /* 高分辨率优化 */
-@media (min-width: 1920px) {
+@media (width >= 1920px) {
   :root {
     --fintech-font-size-base: 14px;
   }

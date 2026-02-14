@@ -22,7 +22,7 @@
    - 解决2个关键协作问题
    - 提供完整的实施步骤
    - 包含检查清单和最佳实践
-   - 位置: `docs/guides/multi-cli-tasks/`
+   - 位置: `docs/guides/.multi-cli-tasks/`
 
 3. **`check_file_conflicts.sh`** - 冲突检测脚本
    - 自动检测潜在文件冲突
@@ -155,9 +155,9 @@ CLI-5:
 
 ## 📖 相关文档
 
-- **[冲突预防规范](./docs/guides/multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南
-- **[Git远程名称标准化](./docs/guides/multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)** - 远程名称规范
-- **[主CLI工作规范](./docs/guides/multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准
+- **[冲突预防规范](./docs/guides/.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)** - 完整指南
+- **[Git远程名称标准化](./docs/guides/.multi-cli-tasks/GIT_REMOTE_NAME_STANDARD.md)** - 远程名称规范
+- **[主CLI工作规范](./docs/guides/.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)** - 工作流程标准
 
 ---
 

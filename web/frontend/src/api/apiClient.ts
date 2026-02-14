@@ -9,14 +9,14 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // UnifiedResponse v2.0.0 format
-export interface UnifiedResponse<T = any> {
+export interface UnifiedResponse<T = unknown> {
   success: boolean;
   code: number;
   message: string;
   data: T;
   timestamp: string;
   request_id: string;
-  errors: any;
+  errors: unknown;
 }
 
 // Request configuration
@@ -48,9 +48,9 @@ instance.interceptors.request.use(
     const jwtToken = getJWTToken();
     if (jwtToken) {
       if (!config.headers) {
-        config.headers = {} as any;
+        config.headers = {} as Record<string, string>;
       }
-      (config.headers as any)['Authorization'] = `Bearer ${jwtToken}`;
+      (config.headers as unknown)['Authorization'] = `Bearer ${jwtToken}`;
     }
 
     // Add CSRF token for POST/PUT/PATCH/DELETE
@@ -62,9 +62,9 @@ instance.interceptors.request.use(
       try {
         const token = await getCSRFToken();
         if (!config.headers) {
-          config.headers = {} as any;
+          config.headers = {} as Record<string, string>;
         }
-        (config.headers as any)['X-CSRF-Token'] = token;
+        (config.headers as unknown)['X-CSRF-Token'] = token;
       } catch (error) {
         console.error('[apiClient] Failed to get CSRF token:', error);
       }
@@ -77,7 +77,7 @@ instance.interceptors.request.use(
 
 // Response interceptor - returns full UnifiedResponse
 instance.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse>): any => {
+  (response: AxiosResponse<UnifiedResponse>): unknown => {
     // Return full response for fallback handling
     return response.data;
   },
@@ -163,21 +163,21 @@ export const apiClient = {
     return instance.get(url, config);
   },
 
-  post<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  post<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.post<T>(url, data, config);
     }
     return instance.post(url, data, config);
   },
 
-  put<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  put<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.put<T>(url, data, config);
     }
     return instance.put(url, data, config);
   },
 
-  patch<T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  patch<T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     if (import.meta.env.VITE_USE_MOCK_DATA) {
       return mockApiClient.patch<T>(url, data, config);
     }
@@ -193,15 +193,15 @@ export const apiClient = {
 };
 
 // Convenience wrappers
-export const apiGet = <T = UnifiedResponse>(url: string, params?: any, config?: RequestConfig): Promise<T> => {
+export const apiGet = <T = UnifiedResponse>(url: string, params?: unknown, config?: RequestConfig): Promise<T> => {
   return apiClient.get<T>(url, { ...config, params });
 };
 
-export const apiPost = <T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
+export const apiPost = <T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
   return apiClient.post<T>(url, data, config);
 };
 
-export const apiPut = <T = UnifiedResponse>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
+export const apiPut = <T = UnifiedResponse>(url: string, data?: unknown, config?: RequestConfig): Promise<T> => {
   return apiClient.put<T>(url, data, config);
 };
 

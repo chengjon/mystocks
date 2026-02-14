@@ -19,7 +19,7 @@ import type {
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-// type StrategyConfigResponse = any  // Currently unused
+// type StrategyConfigResponse = Record<string, unknown>  // Currently unused
 
 class StrategyApiService {
   private baseUrl = '/api/strategy'
@@ -60,7 +60,7 @@ class StrategyApiService {
     description?: string
     type: string
     code?: string
-    parameters?: any
+    parameters?: unknown
   }): Promise<StrategyConfigVM> {
     const rawData = await request.post(`${this.baseUrl}`, strategyData)
     return StrategyAdapter.toStrategyConfigVM(rawData)
@@ -69,7 +69,7 @@ class StrategyApiService {
   /**
    * Update strategy configuration
    */
-  async updateStrategy(id: string, strategyData: any): Promise<StrategyConfigVM> {
+  async updateStrategy(id: string, strategyData: unknown): Promise<StrategyConfigVM> {
     const rawData = await request.put(`${this.baseUrl}/${id}`, strategyData)
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
@@ -84,7 +84,7 @@ class StrategyApiService {
   /**
    * Start strategy execution
    */
-  async startStrategy(id: string, config?: any): Promise<void> {
+  async startStrategy(id: string, config?: unknown): Promise<void> {
     await request.post(`${this.baseUrl}/${id}/start`, config)
   }
 
@@ -124,7 +124,7 @@ class StrategyApiService {
     const rawData = await request.get(`${this.baseUrl}/${strategyId}/backtests`)
     // ✅ 修复：添加result类型注解，避免隐式any
     // 使用any避免BacktestResultResponse类型未找到的错误
-    return rawData.map((result: any) => StrategyAdapter.toBacktestResultVM(result))
+    return rawData.map((result: unknown) => StrategyAdapter.toBacktestResultVM(result))
   }
 
   /**
@@ -138,7 +138,7 @@ class StrategyApiService {
   /**
    * Get strategy performance summary
    */
-  async getStrategyPerformance(id: string, period?: string): Promise<any> {
+  async getStrategyPerformance(id: string, period?: string): Promise<unknown> {
     return request.get(`${this.baseUrl}/${id}/performance`, {
       params: { period }
     })
@@ -151,21 +151,21 @@ class StrategyApiService {
     limit?: number
     offset?: number
     status?: string
-  }): Promise<any> {
+  }): Promise<unknown> {
     return request.get(`${this.baseUrl}/${id}/trades`, { params })
   }
 
   /**
    * Get available strategy templates
    */
-  async getStrategyTemplates(): Promise<any[]> {
+  async getStrategyTemplates(): Promise<unknown[]> {
     return request.get(`${this.baseUrl}/templates`)
   }
 
   /**
    * Clone strategy from template
    */
-  async cloneFromTemplate(templateId: string, strategyData: any): Promise<StrategyConfigVM> {
+  async cloneFromTemplate(templateId: string, strategyData: unknown): Promise<StrategyConfigVM> {
     const rawData = await request.post(`${this.baseUrl}/clone/${templateId}`, strategyData)
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
@@ -188,7 +188,7 @@ class StrategyApiService {
     level?: string
     limit?: number
     since?: string
-  }): Promise<any[]> {
+  }): Promise<unknown[]> {
     return request.get(`${this.baseUrl}/${id}/logs`, { params })
   }
 

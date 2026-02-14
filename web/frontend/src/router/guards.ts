@@ -1,13 +1,29 @@
 import { useAuthStore } from '@/stores/auth'
 import type { RouteLocationNormalized } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { getActivePinia } from 'pinia'
 
 /**
  * Authentication guard for Vue Router
  * Checks if user is authenticated before allowing access to protected routes
  */
 export const authGuard = (to: RouteLocationNormalized) => {
-  const authStore = useAuthStore()
+  // 检查 Pinia 是否已初始化（使用官方 API）
+  const pinia = getActivePinia()
+  if (!pinia) {
+    // Pinia 未初始化，允许导航（在应用启动阶段）
+    // 这是正常行为，因为路由可能在 Pinia 之前初始化
+    return true
+  }
+
+  let authStore
+  try {
+    authStore = useAuthStore()
+  } catch (error) {
+    // Store 访问失败，允许导航
+    console.warn('[authGuard] Failed to access auth store:', error)
+    return true
+  }
 
   // Check if route requires authentication (default: true)
   const requiresAuth = to.meta.requiresAuth !== false
@@ -36,7 +52,7 @@ export const authGuard = (to: RouteLocationNormalized) => {
 /**
  * Global error handler for authentication-related errors
  */
-export const handleAuthError = (error: any) => {
+export const handleAuthError = (error: unknown) => {
   const authStore = useAuthStore()
 
   // Handle 401 Unauthorized

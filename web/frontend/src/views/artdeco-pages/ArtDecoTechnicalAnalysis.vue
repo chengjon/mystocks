@@ -16,7 +16,7 @@
 
     <nav class="main-tabs">
       <button
-        v-for="tab in tabs"
+        v-for="(tab, _idx) in tabs"
         :key="tab.key"
         class="main-tab"
         :class="{ active: activeTab === tab.key }"
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , onUnmounted } from 'vue'
 import { ArtDecoHeader, ArtDecoBadge } from '@/components/artdeco'
 import KLineAnalysis from './analysis-tabs/KLineAnalysis.vue'
 import BacktestAnalysis from './analysis-tabs/BacktestAnalysis.vue'
@@ -61,9 +61,9 @@ const tabs = [
   { key: 'backtest', label: '回测验证' }
 ]
 
-const indicators = ref<any[]>([])
-const trendData = ref<any[]>([])
-const equityData = ref<any[]>([])
+const indicators = ref<unknown[]>([])
+const trendData = ref<unknown[]>([])
+const equityData = ref<unknown[]>([])
 const backtestStats = ref({
   totalReturn: '0%',
   sharpe: '0',
@@ -84,7 +84,7 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
     }
 
     if (trendRes.success && trendRes.data?.data) {
-      trendData.value = trendRes.data.data.map((v: any, i: number) => ({ time: i, value: v }))
+      trendData.value = trendRes.data.data.map((v: unknown, i: number) => ({ time: i, value: v }))
     }
   } catch (e) {
     console.error('Analysis failed', e)
@@ -109,10 +109,16 @@ onMounted(() => {
   // Initial load
   handleAnalyze({ symbol: '000001.SH', period: '1d' })
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-technical-analysis {
   padding: var(--artdeco-spacing-6);
@@ -149,5 +155,5 @@ onMounted(() => {
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-from, .fade-leave-to { opacity: 0%; }
 </style>

@@ -66,7 +66,7 @@ export function usePageTitle() {
     }
 
     // 基于数据更新标题
-    const updateTitleFromData = (data: any, template: string, dataKey: string = 'name', fallbackTitle?: string) => {
+    const updateTitleFromData = (data: unknown, template: string, dataKey: string = 'name', fallbackTitle?: string) => {
         if (!data) {
             if (fallbackTitle) setTitle(fallbackTitle)
             return
@@ -83,7 +83,7 @@ export function usePageTitle() {
 
     // 监听数据变化自动更新标题
     const watchDataForTitle = (
-        dataRef: any,
+        dataRef: unknown,
         template: string,
         options: {
             dataKey?: string
@@ -114,7 +114,7 @@ export function usePageTitle() {
 
     // 使用条件规则
     const useConditionalRules = (ruleName: keyof typeof TitleGenerator.CONDITIONAL_RULES) => {
-        const rules = [...TitleGenerator.CONDITIONAL_RULES[ruleName]] as any
+        const rules = [...TitleGenerator.CONDITIONAL_RULES[ruleName]] as unknown
         const title = titleGenerator.generateConditional(rules, titleContext.value)
         setTitle({ title, dynamic: true })
     }

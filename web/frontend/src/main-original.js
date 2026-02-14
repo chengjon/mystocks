@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 // ✅ Element Plus自动导入配置（通过vite.config.ts插件处理）
 // Element Plus核心功能现在通过unplugin-vue-components自动导入
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+import _zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 
 import App from './App.vue'
 import router from './router/index.ts'
@@ -34,7 +34,7 @@ import './styles/bloomberg-terminal-override.scss'
 import { initializeSecurity } from './services/httpClient.js'
 
 // API版本协商服务
-import { versionNegotiator, showVersionNotifications } from './services/versionNegotiator.ts'
+import { _versionNegotiator, showVersionNotifications } from './services/versionNegotiator.ts'
 
 const app = createApp(App)
 const pinia = createPinia()

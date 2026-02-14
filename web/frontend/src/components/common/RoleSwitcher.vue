@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, _computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -48,7 +48,7 @@ const handleRoleChange = (role) => {
   gap: 10px;
   padding: 0 20px;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgb(255 255 255 / 90%);
 }
 
 .role-label {

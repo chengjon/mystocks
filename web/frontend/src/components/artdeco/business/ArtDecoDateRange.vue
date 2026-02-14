@@ -38,14 +38,14 @@
     })
 
     const emit = defineEmits<{
-        'update:modelValue': [value: any]
+        'update:modelValue': [value: unknown]
     }>()
 
     const pickerRef = ref()
     const isPickerVisible = ref(false)
 
     const internalValue = computed({
-        get: () => props.modelValue as any,
+        get: () => props.modelValue as unknown,
         set: val => emit('update:modelValue', val)
     })
 
@@ -73,7 +73,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-date-range {
         position: relative;
@@ -86,7 +86,7 @@
         gap: var(--artdeco-spacing-3);
         padding: 8px 16px;
         background: var(--artdeco-bg-header);
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 1px solid rgb(212 175 55 / 20%);
         cursor: pointer;
         transition: all var(--artdeco-transition-base);
     }
@@ -116,7 +116,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        opacity: 0;
+        opacity: 0%;
         z-index: -1;
         pointer-events: none; /* Let clicks pass through to trigger if needed, but we handle click manually */
     }
@@ -126,8 +126,8 @@
     /* Global Popper Styles for this component */
     .artdeco-date-popper.el-picker__popper {
         background: #161b22 !important; /* var(--artdeco-bg-card) */
-        border: 1px solid #d4af37 !important; /* rgba(212, 175, 55, 0.2) */
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #d4af37 !important; /* rgb(212 175 55 / 20%) */
+        box-shadow: 0 4px 20px rgb(0 0 0 / 50%) !important;
     }
 
     .artdeco-date-popper .el-date-table th {
@@ -140,7 +140,7 @@
     }
 
     .artdeco-date-popper .el-date-table td.in-range .el-date-table-cell {
-        background-color: rgba(212, 175, 55, 0.15) !important;
+        background-color: rgb(212 175 55 / 15%) !important;
     }
 
     .artdeco-date-popper .el-date-table td.start-date .el-date-table-cell__text,

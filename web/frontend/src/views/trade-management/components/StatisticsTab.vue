@@ -47,8 +47,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
-import * as echarts from 'echarts'
-import type { ECharts } from 'echarts'
+import echarts from '@/utils/echarts'
+
 import { artDecoTheme } from '@/utils/echarts'
 import { tradeApi } from '@/api/trade'
 
@@ -144,7 +144,7 @@ const renderAssetsChart = () => {
       type: 'value',
       axisLine: { lineStyle: { color: '#D4AF37' } },
       axisLabel: { color: '#F2F0E4', formatter: '¥{value}' },
-      splitLine: { lineStyle: { color: 'rgba(212, 175, 55, 0.1)' } }
+      splitLine: { lineStyle: { color: 'rgb(212 175 55 / 10%)' } }
     },
     series: [
       {
@@ -161,8 +161,8 @@ const renderAssetsChart = () => {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(212, 175, 55, 0.3)' },
-              { offset: 1, color: 'rgba(212, 175, 55, 0.1)' }
+              { offset: 0, color: 'rgb(212 175 55 / 30%)' },
+              { offset: 1, color: 'rgb(212 175 55 / 10%)' }
             ]
           }
         }
@@ -203,7 +203,7 @@ const renderProfitChart = () => {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(212, 175, 55, 0.5)'
+            shadowColor: 'rgb(212 175 55 / 50%)'
           }
         },
         itemStyle: {
@@ -260,8 +260,8 @@ defineExpose({
 <style scoped lang="scss">
 
 .subcard {
-  background: rgba(212, 175, 55, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgb(212 175 55 / 5%);
+  border: 1px solid rgb(212 175 55 / 20%);
   border-radius: var(--radius-none);
   padding: var(--spacing-6);
   height: 100%;
@@ -269,7 +269,7 @@ defineExpose({
   .subcard-header {
     margin-bottom: var(--spacing-4);
     padding-bottom: var(--spacing-3);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgb(212 175 55 / 20%);
 
     .subcard-title {
       font-family: var(--font-display);
@@ -283,21 +283,21 @@ defineExpose({
   }
 
   :deep(.el-descriptions__label) {
-    background: rgba(212, 175, 55, 0.1) !important;
+    background: rgb(212 175 55 / 10%) !important;
     color: var(--fg-muted) !important;
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider);
-    border-color: rgba(212, 175, 55, 0.3) !important;
+    border-color: rgb(212 175 55 / 30%) !important;
   }
 
   :deep(.el-descriptions__content) {
     background: transparent !important;
     color: var(--fg-primary) !important;
     font-family: var(--font-body);
-    border-color: rgba(212, 175, 55, 0.3) !important;
+    border-color: rgb(212 175 55 / 30%) !important;
   }
 }
 

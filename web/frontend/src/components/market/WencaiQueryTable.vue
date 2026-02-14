@@ -67,7 +67,7 @@
         width="120"
       />
       <el-table-column
-        v-for="col in dynamicColumns"
+        v-for="(col, _idx) in dynamicColumns"
         :key="col"
         :prop="col"
         :label="col"
@@ -129,7 +129,7 @@ const props = defineProps({
   queryDescription: String
 })
 
-const emit = defineEmits(['back'])
+const _emit = defineEmits(['back'])
 
 const loading = ref(false)
 const currentPage = ref(1)

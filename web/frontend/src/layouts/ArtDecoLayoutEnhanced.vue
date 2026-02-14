@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, _computed, _watch, _onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'
@@ -65,13 +65,13 @@ import { ARTDECO_MENU_ENHANCED } from './MenuConfig.enhanced'
 
 // Store & Route
 const route = useRoute()
-const menuStore = useMenuStore()
+const _menuStore = useMenuStore()
 const preferenceStore = usePreferenceStore()
 
 // Layout State
 const unreadCount = ref(3) // Mock data
 const userName = ref('Admin User')
-const commandPaletteRef = ref<any>(null)
+const commandPaletteRef = ref<unknown>(null)
 const devMode = import.meta.env.DEV
 
 // Live Data Management - Simplified for layout, detailed logic in specific views
@@ -138,8 +138,7 @@ const toggleUserMenu = () => {
 // Content Container
 .artdeco-content {
   flex: 1;
-  overflow-y: auto; // Main scrollable area
-  overflow-x: hidden;
+  overflow: hidden auto; // Main scrollable area
   padding: var(--artdeco-space-6);
   position: relative;
   scroll-behavior: smooth;
@@ -165,7 +164,7 @@ const toggleUserMenu = () => {
   position: absolute;
   top: var(--artdeco-space-2);
   right: var(--artdeco-space-6);
-  background: rgba(244, 67, 54, 0.1); // Error color with opacity
+  background: rgb(244 67 54 / 10%); // Error color with opacity
   border: 1px solid var(--artdeco-error);
   color: var(--artdeco-error);
   padding: 4px 12px;
@@ -185,12 +184,12 @@ const toggleUserMenu = () => {
 }
 
 .fade-slide-enter-from {
-  opacity: 0;
+  opacity: 0%;
   transform: translateY(10px);
 }
 
 .fade-slide-leave-to {
-  opacity: 0;
+  opacity: 0%;
   transform: translateY(-10px);
 }
 </style>

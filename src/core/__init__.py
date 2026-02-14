@@ -1,17 +1,6 @@
-from .config_driven_table_manager import ConfigDrivenTableManager
-from .data_classification import (
-    DatabaseTarget,
-    DataClassification,
-    DeduplicationStrategy,
-)
-from .data_manager import DataManager
-from .unified_manager import MyStocksUnifiedManager
+"""core 拆分包"""
+from .data_classification import DataClassification  # noqa: F401
+from .data_classification import DatabaseTarget  # noqa: F401
+from .deduplication_strategy import DeduplicationStrategy  # noqa: F401
 
-__all__ = [
-    "DataClassification",
-    "DatabaseTarget",
-    "DeduplicationStrategy",
-    "DataManager",
-    "ConfigDrivenTableManager",
-    "MyStocksUnifiedManager",
-]
+__all__ = ['DataClassification', 'DatabaseTarget', 'DeduplicationStrategy']

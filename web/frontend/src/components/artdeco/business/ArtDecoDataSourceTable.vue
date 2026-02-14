@@ -182,7 +182,7 @@ const getQualityColor = (quality: number) => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .status-section {
   margin-bottom: var(--artdeco-spacing-8); // 32px
@@ -219,7 +219,7 @@ const getQualityColor = (quality: number) => {
 }
 
 .status-table thead {
-  background: rgba(212, 175, 55, 0.05);
+  background: rgb(212 175 55 / 5%);
 }
 
 .status-table th {
@@ -243,7 +243,7 @@ const getQualityColor = (quality: number) => {
   transition: background-color var(--artdeco-transition-base);
 
   &:hover {
-    background: rgba(212, 175, 55, 0.03);
+    background: rgb(212 175 55 / 3%);
   }
 }
 
@@ -287,10 +287,10 @@ const getQualityColor = (quality: number) => {
 
 @keyframes pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
   }
   50% {
-    opacity: 0.5;
+    opacity: 50%;
   }
 }
 
@@ -331,7 +331,7 @@ const getQualityColor = (quality: number) => {
 }
 
 // 响应式
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .status-table {
     font-size: var(--artdeco-text-xs); // 12px
   }

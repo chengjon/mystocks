@@ -9,7 +9,7 @@
     <div class="card main-card">
       <div class="tabs-container">
         <button
-          v-for="tab in tabs"
+          v-for="(tab, _idx) in tabs"
           :key="tab.name"
           class="tab-button"
           :class="{ active: activeTab === tab.name }"
@@ -58,7 +58,7 @@ const tabs = [
   padding: 20px;
   min-height: 100vh;
   background: var(--bg-primary);
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
 }
 
 .page-header {
@@ -161,13 +161,13 @@ const tabs = [
 
   &:hover {
     color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgb(212 175 55 / 5%);
   }
 
   &.active {
     color: var(--gold-primary);
     border-bottom-color: var(--gold-primary);
-    background: rgba(212, 175, 55, 0.08);
+    background: rgb(212 175 55 / 8%);
   }
 }
 
@@ -176,7 +176,7 @@ const tabs = [
   min-height: 500px;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .market-data-view {
     padding: 10px;
   }

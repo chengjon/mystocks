@@ -1,0 +1,75 @@
+    .artdeco-trading-center {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: var(--artdeco-bg-primary);
+        color: var(--artdeco-fg-primary);
+    }
+
+    .trading-center-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .function-tree-panel {
+        width: 320px;
+        border-right: 1px solid var(--artdeco-bg-tertiary);
+        background: var(--artdeco-bg-secondary);
+        overflow-y: auto;
+    }
+
+    .content-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .dynamic-content {
+        flex: 1;
+        padding: var(--artdeco-spacing-4);
+        overflow-y: auto;
+    }
+
+    .status-indicators {
+        display: flex;
+        gap: var(--artdeco-spacing-6);
+    }
+
+    .footer-info {
+        display: flex;
+        align-items: center;
+        gap: var(--artdeco-spacing-4);
+
+        .last-update {
+            color: var(--artdeco-fg-muted);
+            font-size: 12px;
+        }
+
+        .version-info {
+            color: var(--artdeco-gold-primary);
+            font-weight: 600;
+            font-size: 12px;
+        }
+    }
+
+    // 响应式设计
+    @media (width <= 1024px) {
+        .function-tree-panel {
+            width: 280px;
+        }
+    }
+
+    @media (width <= 768px) {
+        .trading-center-content {
+            flex-direction: column;
+        }
+
+        .function-tree-panel {
+            width: 100%;
+            height: 200px;
+            border-right: none;
+            border-bottom: 1px solid var(--artdeco-bg-tertiary);
+        }
+    }

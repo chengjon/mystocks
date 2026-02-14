@@ -38,7 +38,7 @@
                 <!-- 传统滚动模式 -->
                 <template v-else>
                     <ArtDecoTicker
-                        v-for="ticker in displayTickers"
+                        v-for="(ticker, _idx) in displayTickers"
                         :key="ticker.symbol"
                         :symbol="ticker.symbol"
                         :name="ticker.name"
@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+    import { ref, computed, onMounted, onBeforeUnmount, _watch } from 'vue'
     import ArtDecoTicker from './ArtDecoTicker.vue'
 
     interface TickerItem {
@@ -107,7 +107,7 @@
     const containerWidth = ref(0)
 
     // 虚拟滚动计算
-    const totalWidth = computed(() => props.tickers.length * props.itemWidth)
+    const _totalWidth = computed(() => props.tickers.length * props.itemWidth)
     const visibleRange = computed(() => {
         const start = Math.max(0, Math.floor(offset.value / props.itemWidth) - props.bufferSize)
         const end = Math.min(
@@ -175,7 +175,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/data-dense/index.scss';
+    @import '@/styles/data-dense/index';
 
     // ============================================
     //   HYBRID TICKER LIST - 数据密集型行情列表
@@ -184,6 +184,7 @@
 
     .hybrid-ticker-list {
         width: 100%;
+
         @include hybrid-card;
         @include gpu-accelerated;
 
@@ -191,12 +192,13 @@
         &--virtual {
             .hybrid-ticker-list__container {
                 @include virtual-scroll-container;
-                overflow-x: auto;
-                overflow-y: hidden;
+
+                overflow: auto hidden;
             }
 
             .hybrid-ticker-list__content {
                 @include gpu-accelerated;
+
                 will-change: transform;
                 position: relative;
                 height: 100%;
@@ -204,6 +206,7 @@
 
             .hybrid-ticker-list__item-wrapper {
                 @include gpu-accelerated;
+
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -229,6 +232,7 @@
 
     .hybrid-ticker-list__header {
         @include data-dense-spacing;
+
         display: flex;
         align-items: center;
         border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
@@ -237,6 +241,7 @@
 
     .hybrid-ticker-list__title {
         @include artdeco-gold-accent;
+
         font-family: var(--hybrid-font-display);
         font-size: var(--data-dense-font-base);
         font-weight: 600;
@@ -267,8 +272,8 @@
         top: 2px;
         right: 2px;
         font-size: 10px;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(0, 0, 0, 0.8);
+        color: rgb(255 255 255 / 50%);
+        background: rgb(0 0 0 / 80%);
         padding: 2px 4px;
         border-radius: 0px;
         font-family: var(--hybrid-font-mono);
@@ -280,7 +285,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .hybrid-ticker-list {
             .hybrid-ticker-list__title {
                 font-size: var(--data-dense-font-sm);

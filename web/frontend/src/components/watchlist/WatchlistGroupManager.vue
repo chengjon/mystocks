@@ -17,7 +17,7 @@
     <el-scrollbar height="500px">
       <div v-loading="loading" class="group-list">
         <div
-          v-for="group in groups"
+          v-for="(group, _idx) in groups"
           :key="group.id"
           :class="['group-item', { active: group.id === modelValue }]"
           @click="selectGroup(group)"
@@ -195,7 +195,7 @@ const confirmDelete = async (group) => {
       }
     )
     await deleteGroup(group)
-  } catch (error) {
+  } catch (_error) {
     // 用户取消
   }
 }
@@ -302,11 +302,11 @@ onMounted(() => {
 .group-actions {
   display: flex;
   gap: 5px;
-  opacity: 0;
+  opacity: 0%;
   transition: opacity 0.3s;
 }
 
 .group-item:hover .group-actions {
-  opacity: 1;
+  opacity: 100%;
 }
 </style>

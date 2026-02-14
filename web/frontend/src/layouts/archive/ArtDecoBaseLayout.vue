@@ -65,7 +65,8 @@
                 <nav class="sidebar-nav">
                     <ul class="nav-list">
                         <li
-                            v-for="item in menuItems"
+                            v-for="(item, _idx) in menuItems"
+                            :key="item.path"
                             :key="item.path"
                             class="nav-item"
                             :class="{ active: isActive(item.path) }"
@@ -150,7 +151,7 @@
     }
 
     // Mobile detection
-    const checkMobile = () => {
+    const _checkMobile = () => {
         isMobile.value = window.innerWidth <= 1024
     }
 
@@ -183,8 +184,8 @@
     const onCommandPaletteOpen = () => {
         try {
             // Analytics tracking
-            if (typeof window !== 'undefined' && (window as any).gtag) {
-                ;(window as any).gtag('event', 'command_palette_open', {
+            if (typeof window !== 'undefined' && (window as unknown as { gtag: (...args: unknown[]) => void }).gtag) {
+                ;(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'command_palette_open', {
                     event_category: 'navigation',
                     event_label: props.pageTitle
                 })
@@ -197,8 +198,8 @@
     const onCommandPaletteClose = () => {
         try {
             // Analytics tracking
-            if (typeof window !== 'undefined' && (window as any).gtag) {
-                ;(window as any).gtag('event', 'command_palette_close', {
+            if (typeof window !== 'undefined' && (window as unknown as { gtag: (...args: unknown[]) => void }).gtag) {
+                ;(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'command_palette_close', {
                     event_category: 'navigation',
                     event_label: props.pageTitle
                 })
@@ -211,8 +212,8 @@
     const onCommandPaletteNavigate = (path: string) => {
         try {
             // Analytics tracking
-            if (typeof window !== 'undefined' && (window as any).gtag) {
-                ;(window as any).gtag('event', 'command_palette_navigate', {
+            if (typeof window !== 'undefined' && (window as unknown as { gtag: (...args: unknown[]) => void }).gtag) {
+                ;(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'command_palette_navigate', {
                     event_category: 'navigation',
                     event_label: path
                 })
@@ -233,7 +234,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     // ============================================
     //   ART DECO BASE LAYOUT
@@ -274,7 +275,7 @@
             height: 20px;
             border-top: 2px solid var(--artdeco-gold-primary);
             border-left: 2px solid var(--artdeco-gold-primary);
-            opacity: 0.4;
+            opacity: 40%;
         }
 
         &::after {
@@ -286,7 +287,7 @@
             height: 20px;
             border-top: 2px solid var(--artdeco-gold-primary);
             border-right: 2px solid var(--artdeco-gold-primary);
-            opacity: 0.4;
+            opacity: 40%;
         }
     }
 
@@ -321,9 +322,9 @@
         color: var(--artdeco-gold-primary);
 
         &:hover {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgb(212 175 55 / 15%);
             border-color: var(--artdeco-gold-primary);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 12px rgb(212 175 55 / 40%);
             transform: translateY(-1px);
         }
 
@@ -341,7 +342,7 @@
         text-transform: uppercase;
         letter-spacing: var(--artdeco-tracking-wider, 0.2em);
         margin: 0;
-        text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
+        text-shadow: 0 1px 2px rgb(212 175 55 / 30%);
     }
 
     // Search Trigger
@@ -357,7 +358,7 @@
         color: var(--artdeco-fg-muted);
 
         &:hover {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
             border-color: var(--artdeco-gold-primary);
             color: var(--artdeco-gold-primary);
         }
@@ -391,7 +392,7 @@
         transition: all var(--artdeco-transition-base);
 
         &:hover {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
             border-color: var(--artdeco-gold-primary);
         }
 
@@ -430,7 +431,7 @@
             transition: all var(--artdeco-transition-base);
 
             &:hover {
-                background: rgba(212, 175, 55, 0.1);
+                background: rgb(212 175 55 / 10%);
                 border-color: var(--artdeco-gold-primary);
             }
 
@@ -467,8 +468,7 @@
         width: 280px;
         background: var(--artdeco-bg-base);
         border-right: 2px solid var(--artdeco-border-default);
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow: hidden auto;
         transition: width var(--artdeco-transition-base) var(--artdeco-ease-out);
         flex-shrink: 0;
         position: relative;
@@ -477,26 +477,23 @@
         &::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0 0 0 0;
             background-image:
                 repeating-linear-gradient(
                     45deg,
-                    rgba(212, 175, 55, 0.02) 0px,
-                    rgba(212, 175, 55, 0.02) 1px,
+                    rgb(212 175 55 / 2%) 0px,
+                    rgb(212 175 55 / 2%) 1px,
                     transparent 1px,
                     transparent 4px
                 ),
                 repeating-linear-gradient(
                     -45deg,
-                    rgba(212, 175, 55, 0.02) 0px,
-                    rgba(212, 175, 55, 0.02) 1px,
+                    rgb(212 175 55 / 2%) 0px,
+                    rgb(212 175 55 / 2%) 1px,
                     transparent 1px,
                     transparent 4px
                 );
-            opacity: 0.5;
+            opacity: 50%;
             pointer-events: none;
         }
 
@@ -536,7 +533,7 @@
             height: 16px;
             border-bottom: 2px solid var(--artdeco-gold-primary);
             border-left: 2px solid var(--artdeco-gold-primary);
-            opacity: 0.3;
+            opacity: 30%;
         }
 
         &::after {
@@ -548,7 +545,7 @@
             height: 16px;
             border-bottom: 2px solid var(--artdeco-gold-primary);
             border-right: 2px solid var(--artdeco-gold-primary);
-            opacity: 0.3;
+            opacity: 30%;
         }
     }
 
@@ -631,16 +628,16 @@
         position: relative;
 
         &:hover {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(212, 175, 55, 0.04));
+            background: linear-gradient(135deg, rgb(212 175 55 / 8%), rgb(212 175 55 / 4%));
             color: var(--artdeco-gold-primary);
             border-left-color: var(--artdeco-gold-primary);
-            box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.2);
+            box-shadow: inset 0 0 8px rgb(212 175 55 / 20%);
             transform: translateX(2px);
         }
 
         &.active,
         &.router-link-active {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgb(212 175 55 / 15%);
             color: var(--artdeco-gold-primary);
             border-left-color: var(--artdeco-gold-primary);
 
@@ -691,26 +688,23 @@
         &::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0 0 0 0;
             background-image:
                 repeating-linear-gradient(
                     45deg,
-                    rgba(212, 175, 55, 0.015) 0px,
-                    rgba(212, 175, 55, 0.015) 1px,
+                    rgb(212 175 55 / 1.5%) 0px,
+                    rgb(212 175 55 / 1.5%) 1px,
                     transparent 1px,
                     transparent 4px
                 ),
                 repeating-linear-gradient(
                     -45deg,
-                    rgba(212, 175, 55, 0.015) 0px,
-                    rgba(212, 175, 55, 0.015) 1px,
+                    rgb(212 175 55 / 1.5%) 0px,
+                    rgb(212 175 55 / 1.5%) 1px,
                     transparent 1px,
                     transparent 4px
                 );
-            opacity: 0.3;
+            opacity: 30%;
             pointer-events: none;
             z-index: 0;
         }
@@ -755,7 +749,7 @@
     // ============================================
 
     // Large screens - enhanced ArtDeco experience
-    @media (min-width: 1920px) {
+    @media (width >= 1920px) {
         .artdeco-layout-sidebar {
             width: 320px;
 
@@ -783,7 +777,7 @@
     }
 
     // Standard desktop optimization
-    @media (min-width: 1440px) {
+    @media (width >= 1440px) {
         .artdeco-layout-sidebar {
             width: 300px;
 

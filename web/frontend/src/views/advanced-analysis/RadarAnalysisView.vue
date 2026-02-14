@@ -123,7 +123,7 @@
     import { ref, onMounted, watch, nextTick } from 'vue'
 
     interface Props {
-        data: any
+        data: unknown
     }
 
     const props = defineProps<Props>()
@@ -242,9 +242,9 @@
         { immediate: true }
     )
 
-    const updateDimensions = (data: any) => {
+    const updateDimensions = (data: unknown) => {
         if (data.dimensions) {
-            dimensions.value = data.dimensions.map((dim: any) => ({
+            dimensions.value = data.dimensions.map((dim: unknown) => ({
                 ...dim,
                 insights: dim.insights || []
             }))
@@ -321,7 +321,7 @@
         centerY: number,
         radius: number,
         angles: number[],
-        data: any[]
+        data: unknown[]
     ) => {
         ctx.beginPath()
         angles.forEach((angle, i) => {
@@ -337,7 +337,7 @@
         })
         ctx.closePath()
 
-        ctx.fillStyle = 'rgba(67, 200, 58, 0.3)'
+        ctx.fillStyle = 'rgb(67 200 58 / 30%)'
         ctx.fill()
         ctx.strokeStyle = '#67C23A'
         ctx.lineWidth = 2

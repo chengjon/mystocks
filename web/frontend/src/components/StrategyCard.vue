@@ -114,7 +114,7 @@ const handleDelete = () => {
 }
 
 .strategy-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   transform: translateY(-2px);
 }
 
@@ -252,7 +252,7 @@ const handleDelete = () => {
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 .btn:active {
@@ -286,7 +286,7 @@ const handleDelete = () => {
   background-color: #dc2626;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .strategy-card {
     padding: 12px;
   }

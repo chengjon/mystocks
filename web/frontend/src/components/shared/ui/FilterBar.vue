@@ -2,7 +2,7 @@
   <div class="filter-bar">
     <el-form :inline="true" :model="formData" class="filter-form">
       <el-form-item
-        v-for="filter in filters"
+        v-for="(filter, _idx) in filters"
         :key="filter.key"
         :label="filter.label"
       >
@@ -25,7 +25,7 @@
           :style="{ width: filter.width || '120px' }"
         >
           <el-option
-            v-for="option in filter.options"
+            v-for="(option, _idx) in filter.options"
             :key="option.value"
             :label="option.label"
             :value="option.value"
@@ -82,12 +82,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { _ref, reactive, watch } from 'vue'
 import { Search, RefreshLeft } from '@element-plus/icons-vue'
 
 export interface FilterOption {
   label: string
-  value: any
+  value: unknown
 }
 
 export interface FilterItem {
@@ -97,19 +97,19 @@ export interface FilterItem {
   placeholder?: string
   width?: string
   options?: FilterOption[]
-  defaultValue?: any
+  defaultValue?: unknown
 }
 
 interface Props {
   filters: FilterItem[]
   loading?: boolean
-  modelValue?: Record<string, any>
+  modelValue?: Record<string, unknown>
 }
 
 interface Emits {
-  (e: 'search', params: Record<string, any>): void
+  (e: 'search', params: Record<string, unknown>): void
   (e: 'reset'): void
-  (e: 'update:modelValue', value: Record<string, any>): void
+  (e: 'update:modelValue', value: Record<string, unknown>): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -119,7 +119,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const formData = reactive<Record<string, any>>({})
+const formData = reactive<Record<string, unknown>>({})
 
 // Initialize form data with defaults
 props.filters.forEach(filter => {
@@ -161,7 +161,7 @@ const handleReset = () => {
 defineExpose({
   reset: handleReset,
   getFormData: () => ({ ...formData }),
-  setFieldValue: (key: string, value: any) => {
+  setFieldValue: (key: string, value: unknown) => {
     formData[key] = value
   }
 })
@@ -170,7 +170,7 @@ defineExpose({
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens.scss';
+@import '@/styles/theme-tokens';
 
 .filter-bar {
   margin-bottom: var(--spacing-xl);

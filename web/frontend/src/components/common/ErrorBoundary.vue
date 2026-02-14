@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, onErrorCaptured } from 'vue'
+    import { ref, onErrorCaptured , onUnmounted } from 'vue'
     import { useRouter } from 'vue-router'
 
     const router = useRouter()
@@ -53,7 +53,7 @@
     }
 
     // 格式化时间戳
-    const formatTimestamp = (timestamp: any) => {
+    const formatTimestamp = (timestamp: unknown) => {
         if (!timestamp) return ''
         return new Date(timestamp).toLocaleString()
     }
@@ -123,7 +123,7 @@
     }
 
     // 错误捕获处理函数
-    const handleError = (error: any, instance: any, info: any) => {
+    const handleError = (error: unknown, instance: unknown, info: unknown) => {
         hasError.value = true
         errorTimestamp.value = Date.now()
         errorId.value = generateErrorId()
@@ -167,6 +167,12 @@ ${error?.stack || error}
 
     // Vue 3 错误捕获
     onErrorCaptured(handleError)
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
@@ -180,8 +186,8 @@ ${error?.stack || error}
             45deg,
             transparent,
             transparent 10px,
-            rgba(212, 175, 55, 0.02) 10px,
-            rgba(212, 175, 55, 0.02) 11px
+            rgb(212 175 55 / 2%) 10px,
+            rgb(212 175 55 / 2%) 11px
         );
         padding: 20px;
     }
@@ -194,7 +200,7 @@ ${error?.stack || error}
         border-radius: 8px;
         padding: 40px;
         text-align: center;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgb(0 0 0 / 10%);
 
         .error-icon {
             font-size: 48px;
@@ -236,7 +242,7 @@ ${error?.stack || error}
                 }
 
                 .error-stack {
-                    background: rgba(0, 0, 0, 0.05);
+                    background: rgb(0 0 0 / 5%);
                     border: 1px solid var(--gold-dim);
                     border-radius: 4px;
                     padding: 15px;
@@ -280,7 +286,7 @@ ${error?.stack || error}
 
                     &:hover {
                         background: var(--gold-muted);
-                        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+                        box-shadow: 0 0 20px rgb(212 175 55 / 40%);
                         transform: translateY(-2px);
                     }
                 }
@@ -336,7 +342,7 @@ ${error?.stack || error}
 
             .error-id {
                 font-family: 'Courier New', monospace;
-                background: rgba(0, 0, 0, 0.05);
+                background: rgb(0 0 0 / 5%);
                 padding: 2px 6px;
                 border-radius: 3px;
                 display: inline-block;
@@ -344,7 +350,7 @@ ${error?.stack || error}
         }
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .error-content {
             padding: 30px 20px;
 

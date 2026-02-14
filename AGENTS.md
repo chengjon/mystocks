@@ -136,6 +136,16 @@ python ai_test_optimizer_toolkit/bin/ai_test_optimizer.py --run-all
 - Monitoring stack: `monitoring-stack/` directory for observability
 - OpenSpec: `openspec/` directory for change management
 
+### Skill 手动加载
+
+当自动激活未触发时，可使用 `/skill` 命令手动加载技能包：
+
+```
+/skill vue3          # 加载 Vue 3 官方指南与 API 参考（全局 skill）
+```
+
+全局 skill 位置：`/root/.claude/skills/`，项目级 skill 位置：`.claude/skills/`。
+
 ### Database Architecture (Week 3+)
 - Dual database: TDengine for high-frequency time-series, PostgreSQL for everything else
 - Use `MyStocksUnifiedManager` for automatic routing

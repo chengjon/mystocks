@@ -111,7 +111,7 @@ const emit = defineEmits<{
 }>()
 
 const loading = ref(false)
-const positions = ref<any[]>([])
+const positions = ref<unknown[]>([])
 
 const loadPositions = async () => {
   loading.value = true
@@ -207,8 +207,8 @@ defineExpose({
 .action-bar {
   margin-bottom: 20px;
   padding: 16px;
-  background: rgba(0, 128, 255, 0.03);
-  border: 1px solid rgba(0, 128, 255, 0.2);
+  background: rgb(0 128 255 / 3%);
+  border: 1px solid rgb(0 128 255 / 20%);
   border-radius: 4px;
 }
 
@@ -255,7 +255,7 @@ defineExpose({
       transition: background 0.2s ease;
 
       &:hover {
-        background: rgba(0, 128, 255, 0.05) !important;
+        background: rgb(0 128 255 / 5%) !important;
       }
 
       td {
@@ -271,7 +271,7 @@ defineExpose({
   .mono-text {
     font-family: 'Roboto Mono', monospace;
     font-size: 13px;
-    color: #FFFFFF;
+    color: #FFF;
   }
 
   .profit-up {
@@ -284,7 +284,7 @@ defineExpose({
 }
 
 // Responsive Design
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .action-bar {
     padding: 12px;
 

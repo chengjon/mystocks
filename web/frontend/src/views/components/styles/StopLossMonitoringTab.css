@@ -1,0 +1,74 @@
+.stop-loss-monitoring-tab {
+  padding: 20px;
+}
+
+.control-panel {
+  margin-bottom: 20px;
+}
+
+.positions-card, .history-card {
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.price-up {
+  color: #67C23A;
+  font-weight: bold;
+}
+
+.price-down {
+  color: #F56C6C;
+  font-weight: bold;
+}
+
+.distance-danger {
+  color: #F56C6C;
+  font-weight: bold;
+}
+
+.distance-warning {
+  color: #E6A23C;
+  font-weight: bold;
+}
+
+.distance-safe {
+  color: #67C23A;
+}
+
+.loss-amount, .loss-percentage {
+  color: #F56C6C;
+  font-weight: bold;
+}
+
+.slider-hint {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 5px;
+  text-align: center;
+}
+
+:deep(.el-dialog) {
+  border-radius: 8px;
+}
+
+:deep(.el-dialog__header) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
+
+:deep(.el-dialog__title) {
+  color: white;
+  font-weight: 600;
+}

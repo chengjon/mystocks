@@ -17,7 +17,7 @@ import axios from 'axios';
 import type { components } from '@/types/market-data-api';
 
 // Extract type aliases for convenience
-type UnifiedResponse<T> = components['schemas']['UnifiedResponse'];
+type UnifiedResponse<_T> = components['schemas']['UnifiedResponse'];
 type MarketOverviewData = components['schemas']['MarketOverviewData'];
 type FundFlowData = components['schemas']['FundFlowData'];
 type KlineData = components['schemas']['KlineData'];

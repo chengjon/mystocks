@@ -63,7 +63,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-info-card {
       padding: var(--artdeco-spacing-4);
@@ -107,13 +107,13 @@
       font-weight: 600;
       color: var(--artdeco-accent-gold);
       line-height: 1;
-      word-break: break-word;
+      overflow-wrap: break-word;
     }
 
     .artdeco-info-footer {
       margin-top: var(--artdeco-spacing-3);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      border-top: 1px solid rgb(212 175 55 / 20%);
     }
 
     .artdeco-info-description {
@@ -131,7 +131,7 @@
       margin-top: var(--artdeco-spacing-3);
       padding: var(--artdeco-spacing-2);
       background: var(--artdeco-bg-header);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       border-radius: var(--artdeco-radius-none);
     }
 

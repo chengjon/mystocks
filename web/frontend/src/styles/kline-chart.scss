@@ -4,17 +4,17 @@
   --art-deco-bg-tertiary: #1A1A1A;
   --art-deco-fg-primary: #F2F0E4;
   --art-deco-fg-secondary: #C4C0B4;
-  --art-deco-fg-muted: #888888;
+  --art-deco-fg-muted: #888;
   --art-deco-gold: #D4AF37;
   --art-deco-gold-light: #F2E8C4;
   --art-deco-gold-dark: #B8960E;
-  --art-deco-gold-glow: rgba(212, 175, 55, 0.3);
+  --art-deco-gold-glow: rgb(212 175 55 / 30%);
   --art-deco-blue: #1E3D59;
   --art-deco-red: #F92855;
   --art-deco-green: #2DC08E;
-  --art-deco-border: rgba(212, 175, 55, 0.3);
-  --art-deco-border-hover: rgba(212, 175, 55, 0.8);
-  --art-deco-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  --art-deco-border: rgb(212 175 55 / 30%);
+  --art-deco-border-hover: rgb(212 175 55 / 80%);
+  --art-deco-shadow: 0 0 20px rgb(212 175 55 / 15%);
   --art-deco-radius: 0px;
   --art-deco-border-width: 1px;
   --art-deco-font-display: 'Marcellus', serif;
@@ -36,7 +36,7 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .chart-container::after {
@@ -47,7 +47,7 @@
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--art-deco-gold), transparent);
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .kline-chart {
@@ -143,14 +143,11 @@
 
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0 0 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 10, 10, 0.8);
+  background: rgb(10 10 10 / 80%);
   z-index: 100;
 }
 
@@ -202,7 +199,7 @@
   top: 8px;
   left: 8px;
   padding: 8px 12px;
-  background: rgba(20, 20, 20, 0.9);
+  background: rgb(20 20 20 / 90%);
   border: 1px solid var(--art-deco-border);
   font-family: var(--art-deco-font-mono);
   font-size: 11px;

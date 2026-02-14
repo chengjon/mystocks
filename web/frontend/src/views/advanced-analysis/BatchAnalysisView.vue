@@ -47,7 +47,7 @@
     import { computed } from 'vue'
 
     interface Props {
-        results: any
+        results: unknown
     }
 
     const props = defineProps<Props>()
@@ -57,13 +57,13 @@
     const analysesCount = computed(() => Object.keys(results.value).length)
 
     const completedAnalyses = computed(
-        () => Object.values(results.value).filter((result: any) => result.success).length
+        () => Object.values(results.value).filter((result: unknown) => result.success).length
     )
 
     const avgScore = computed(() => {
         const scores = Object.values(results.value)
-            .filter((result: any) => result.success && result.data?.overall_score)
-            .map((result: any) => result.data.overall_score)
+            .filter((result: unknown) => result.success && result.data?.overall_score)
+            .map((result: unknown) => result.data.overall_score)
 
         if (scores.length === 0) return 'N/A'
         return Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length)
@@ -78,7 +78,7 @@
         return names[analysisType] || analysisType
     }
 
-    const getKeyMetrics = (data: any) => {
+    const getKeyMetrics = (data: unknown) => {
         if (!data) return []
 
         const metrics = []

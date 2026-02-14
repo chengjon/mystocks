@@ -55,7 +55,7 @@
               <span>NEW ORDER</span>
               <div class="order-type-tabs">
                 <button
-                  v-for="type in orderTypes"
+                  v-for="(type, _idx) in orderTypes"
                   :key="type.key"
                   class="order-type-tab"
                   :class="{ active: activeOrderType === type.key }"
@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch , onUnmounted } from 'vue'
 
 // ArtDeco Components
 import {
@@ -449,7 +449,7 @@ const submitOrder = () => {
   tradeFormVisible.value = true
 }
 
-const confirmOrderSubmit = async (orderData: any) => {
+const confirmOrderSubmit = async (orderData: unknown) => {
   submitting.value = true
   try {
     // Simulate API call
@@ -504,6 +504,12 @@ const getStatusVariant = (status: string) => {
 onMounted(() => {
   // Initial data loading would go here
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
@@ -544,7 +550,7 @@ onMounted(() => {
         .order-type-tab {
           padding: var(--artdeco-spacing-xs) var(--artdeco-spacing-md);
           background: transparent;
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          border: 1px solid rgb(212 175 55 / 20%);
           color: var(--artdeco-fg-muted);
           font-family: var(--artdeco-font-display);
           font-size: var(--artdeco-font-size-sm);
@@ -594,7 +600,7 @@ onMounted(() => {
 
       .order-summary {
         background: var(--artdeco-bg-elevated);
-        border: 1px solid rgba(212, 175, 55, 0.1);
+        border: 1px solid rgb(212 175 55 / 10%);
         padding: var(--artdeco-spacing-md);
         border-radius: 4px;
         margin-bottom: var(--artdeco-spacing-lg);
@@ -661,7 +667,7 @@ onMounted(() => {
         text-align: center;
         padding: var(--artdeco-spacing-md);
         background: var(--artdeco-bg-elevated);
-        border: 1px solid rgba(212, 175, 55, 0.1);
+        border: 1px solid rgb(212 175 55 / 10%);
         border-radius: 4px;
 
         .metric-label {

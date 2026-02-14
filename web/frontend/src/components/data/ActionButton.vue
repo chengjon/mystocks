@@ -61,22 +61,18 @@ const handleClick = (event: MouseEvent) => {
   // 紧凑设计：最小化 padding
   padding: 0 16px;
   height: 36px; // md size
-
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 13px; // 紧凑字体
   font-weight: 500;
-
   background: #1A1A1A;
   border: 1px solid #2A2A2A;
   border-radius: 4px;
   color: #E5E5E5;
   cursor: pointer;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 
   &:hover:not(:disabled) {
@@ -93,7 +89,7 @@ const handleClick = (event: MouseEvent) => {
   }
 
   &.action-button-disabled {
-    opacity: 0.5;
+    opacity: 50%;
     cursor: not-allowed;
   }
 
@@ -134,7 +130,7 @@ const handleClick = (event: MouseEvent) => {
   &.action-button-success {
     background: #00E676;
     border-color: #00E676;
-    color: #000000;
+    color: #000;
 
     &:hover:not(:disabled) {
       background: #00C853;

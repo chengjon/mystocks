@@ -251,7 +251,7 @@
             height - padding.bottom - ((value - minValue) / valueRange) * (height - padding.top - padding.bottom)
 
         // Draw zero line
-        context.strokeStyle = 'rgba(212, 175, 55, 0.3)'
+        context.strokeStyle = 'rgb(212 175 55 / 30%)'
         context.lineWidth = 2
         context.setLineDash([5, 5])
         context.beginPath()
@@ -262,7 +262,7 @@
         context.setLineDash([])
 
         // Draw grid lines
-        context.strokeStyle = 'rgba(212, 175, 55, 0.1)'
+        context.strokeStyle = 'rgb(212 175 55 / 10%)'
         context.lineWidth = 1
         for (let i = 0; i <= 5; i++) {
             const y = padding.top + (i / 5) * (height - padding.top - padding.bottom)
@@ -284,8 +284,8 @@
 
         // Create gradient fill
         const gradient = context.createLinearGradient(0, padding.top, 0, height - padding.bottom)
-        gradient.addColorStop(0, 'rgba(255, 82, 82, 0.3)')
-        gradient.addColorStop(1, 'rgba(255, 82, 82, 0.05)')
+        gradient.addColorStop(0, 'rgb(255 82 82 / 30%)')
+        gradient.addColorStop(1, 'rgb(255 82 82 / 5%)')
         context.fillStyle = gradient
         context.fill()
 
@@ -320,11 +320,11 @@
 
         // Highlight drawdown areas
         const drawdownPeriods = identifyDrawdownPeriods()
-        drawdownPeriods.forEach((period: any) => {
+        drawdownPeriods.forEach((period: unknown) => {
             const startX = getX(period.start)
             const endX = getX(period.end)
 
-            context.fillStyle = 'rgba(255, 82, 82, 0.05)'
+            context.fillStyle = 'rgb(255 82 82 / 5%)'
             context.fillRect(startX, padding.top, endX - startX, height - padding.top - padding.bottom)
         })
     }
@@ -427,307 +427,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-
-    // ============================================
-    //   ART DECO DRAWDOWN CHART
-    // ============================================
-
-    .artdeco-drawdown-chart {
-        width: 100%;
-    }
-
-    .chart-card {
-        :deep(.card-header) {
-            padding: 0;
-        }
-    }
-
-    // ============================================
-    //   CHART HEADER
-    // ============================================
-
-    .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: var(--artdeco-spacing-6);
-        padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-4);
-
-            .title-icon {
-                font-size: var(--artdeco-text-2xl);
-                opacity: 0.8;
-            }
-
-            .title-text {
-                .title-main {
-                    font-family: var(--artdeco-font-heading);
-                    font-size: var(--artdeco-text-lg);
-                    font-weight: 700;
-                    color: var(--artdeco-gold-primary);
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                    line-height: var(--artdeco-leading-tight);
-                }
-
-                .title-sub {
-                    font-family: var(--artdeco-font-body);
-                    font-size: var(--artdeco-text-xs);
-                    font-weight: 600;
-                    color: var(--artdeco-fg-muted);
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                    margin-top: var(--artdeco-spacing-1);
-                }
-            }
-        }
-
-        .header-stats {
-            display: flex;
-            gap: var(--artdeco-spacing-6);
-
-            .stat-item {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                gap: var(--artdeco-spacing-1);
-
-                .stat-label {
-                    font-family: var(--artdeco-font-body);
-                    font-size: var(--artdeco-text-xs);
-                    font-weight: 600;
-                    color: var(--artdeco-fg-muted);
-                    text-transform: uppercase;
-                    letter-spacing: var(--artdeco-tracking-wide);
-                }
-
-                .stat-value {
-                    font-family: var(--artdeco-font-mono);
-                    font-size: var(--artdeco-text-base);
-                    font-weight: 700;
-
-                    &.severe {
-                        color: #d32f2f;
-                    }
-
-                    &.high {
-                        color: #f57c00;
-                    }
-
-                    &.moderate {
-                        color: #fbc02d;
-                    }
-
-                    &.mild {
-                        color: var(--artdeco-fall);
-                    }
-
-                    &.neutral {
-                        color: var(--artdeco-fg-primary);
-                    }
-                }
-            }
-        }
-    }
-
-    // ============================================
-    //   CHART CONTAINER
-    // ============================================
-
-    .chart-container {
-        position: relative;
-        min-height: 400px;
-        padding: var(--artdeco-spacing-4);
-
-        &.loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
-
-    .chart-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .chart-canvas {
-        width: 100%;
-        display: block;
-        cursor: crosshair;
-    }
-
-    // ============================================
-    //   EMPTY STATE
-    // ============================================
-
-    .empty-state {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-
-        .empty-icon {
-            font-size: var(--artdeco-text-5xl);
-            margin-bottom: var(--artdeco-spacing-4);
-            opacity: 0.3;
-        }
-
-        .empty-text {
-            font-family: var(--artdeco-font-heading);
-            font-size: var(--artdeco-text-lg);
-            font-weight: 600;
-            color: var(--artdeco-fg-muted);
-            margin-bottom: var(--artdeco-spacing-2);
-        }
-
-        .empty-hint {
-            font-family: var(--artdeco-font-body);
-            font-size: var(--artdeco-text-xs);
-            font-weight: 600;
-            color: var(--artdeco-fg-dim);
-            text-transform: uppercase;
-            letter-spacing: var(--artdeco-tracking-wide);
-        }
-    }
-
-    // ============================================
-    //   TOOLTIP
-    // ============================================
-
-    .chart-tooltip {
-        position: absolute;
-        background: var(--artdeco-bg-card);
-        border: 1px solid var(--artdeco-gold-dim);
-        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-        border-radius: 4px;
-        pointer-events: none;
-        z-index: 100;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        min-width: 150px;
-
-        .tooltip-date {
-            font-family: var(--artdeco-font-mono);
-            font-size: var(--artdeco-text-xs);
-            color: var(--artdeco-fg-muted);
-            margin-bottom: var(--artdeco-spacing-2);
-            padding-bottom: var(--artdeco-spacing-2);
-            border-bottom: 1px solid var(--artdeco-gold-dim);
-        }
-
-        .tooltip-drawdown {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: var(--artdeco-spacing-3);
-            margin-bottom: var(--artdeco-spacing-2);
-
-            .drawdown-label {
-                font-family: var(--artdeco-font-body);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-muted);
-                text-transform: uppercase;
-            }
-
-            .drawdown-value {
-                font-family: var(--artdeco-font-mono);
-                font-size: var(--artdeco-text-sm);
-                font-weight: 700;
-
-                &.severe {
-                    color: #d32f2f;
-                }
-
-                &.high {
-                    color: #f57c00;
-                }
-
-                &.moderate {
-                    color: #fbc02d;
-                }
-
-                &.mild {
-                    color: var(--artdeco-fall);
-                }
-            }
-        }
-
-        .tooltip-recovery {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .recovery-label {
-                font-family: var(--artdeco-font-body);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-muted);
-                text-transform: uppercase;
-            }
-
-            .recovery-value {
-                font-family: var(--artdeco-font-mono);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-primary);
-            }
-        }
-    }
-
-    // ============================================
-    //   LEGEND
-    // ============================================
-
-    .chart-legend {
-        display: flex;
-        justify-content: center;
-        gap: var(--artdeco-spacing-6);
-        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4) var(--artdeco-spacing-4);
-        border-top: 1px solid var(--artdeco-gold-dim);
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: var(--artdeco-spacing-2);
-
-            .legend-color {
-                width: 16px;
-                height: 16px;
-                border-radius: 2px;
-                border: 1px solid var(--artdeco-gold-dim);
-
-                &.severe {
-                    background: rgba(211, 47, 47, 0.8);
-                }
-
-                &.high {
-                    background: rgba(245, 124, 0, 0.6);
-                }
-
-                &.moderate {
-                    background: rgba(251, 192, 45, 0.4);
-                }
-
-                &.mild {
-                    background: rgba(255, 82, 82, 0.2);
-                }
-            }
-
-            .legend-text {
-                font-family: var(--artdeco-font-body);
-                font-size: var(--artdeco-text-xs);
-                font-weight: 600;
-                color: var(--artdeco-fg-muted);
-                text-transform: uppercase;
-                letter-spacing: var(--artdeco-tracking-wide);
-            }
-        }
-    }
+@import "./styles/DrawdownChart.scss";
 </style>

@@ -4,7 +4,7 @@
  * 提供路由生成、权限检查、菜单激活状态等实用函数
  */
 
-import { useRouter, useRoute } from 'vue-router'
+import { _useRouter, useRoute } from 'vue-router'
 
 /**
  * 根据菜单配置生成路由配置

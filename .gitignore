@@ -241,6 +241,7 @@ monitoring-stack/.env.*
 # ========================================
 # Documentation directory
 docs/
+!docs/guides/WEB_ACCESS_VERIFICATION_STANDARD.md
 
 # HTML Prototypes and Samples (development artifacts)
 docs/design/html_sample/
@@ -307,3 +308,16 @@ web/frontend/.vite/
 
 # TypeScript Build Info
 *.tsbuildinfo
+
+# ========================================
+# CLEANUP PREVENTION (added during reorg)
+# ========================================
+# Backup directories
+bak/
+
+# Coverage artifacts
+coverage.xml
+coverage.json
+
+# Test timing artifacts
+test_timing.csv

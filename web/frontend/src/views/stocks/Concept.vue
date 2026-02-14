@@ -41,7 +41,7 @@
 
         <div class="concepts-grid">
             <el-card
-                v-for="concept in concepts"
+                v-for="(concept, _idx) in concepts"
                 :key="concept.name"
                 class="concept-card"
                 :class="{ 'hot-concept': concept.isHot }"
@@ -148,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive } from 'vue'
+    import { ref, reactive, onUnmounted } from 'vue'
     import { ElCard, ElButton, ElTable, ElTableColumn, ElTag, ElMessage } from 'element-plus'
     import { Box, RefreshRight } from '@element-plus/icons-vue'
 
@@ -278,21 +278,29 @@
         }
     ])
 
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const refreshData = async () => {
-        await new Promise(resolve => setTimeout(resolve, 500))
+        timer = setTimeout(() => {
+            // Update concept data
+            concepts.value.forEach(concept => {
+                const change = (Math.random() - 0.5) * 0.05
+                concept.changePercent = parseFloat((concept.changePercent + change).toFixed(2))
+                concept.volume = Math.round(concept.volume * (0.98 + Math.random() * 0.04))
+                concept.heatIndex = Math.min(100, Math.max(0, concept.heatIndex + Math.floor((Math.random() - 0.5) * 10)))
+            })
 
-        // Update concept data
-        concepts.value.forEach(concept => {
-            const change = (Math.random() - 0.5) * 0.05
-            concept.changePercent = parseFloat((concept.changePercent + change).toFixed(2))
-            concept.volume = Math.round(concept.volume * (0.98 + Math.random() * 0.04))
-            concept.heatIndex = Math.min(100, Math.max(0, concept.heatIndex + Math.floor((Math.random() - 0.5) * 10)))
-        })
-
-        ElMessage.success('Concept data refreshed')
+            ElMessage.success('Concept data refreshed')
+        }, 500)
     }
 
-    const selectConcept = (concept: any) => {
+    onUnmounted(() => {
+        if (timer) {
+            clearTimeout(timer)
+            timer = null
+        }
+    })
+
+    const selectConcept = (concept: unknown) => {
         selectedConcept.value = concept
     }
 
@@ -304,266 +312,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/theme-tokens.scss';
-
-    .concept-container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-lg);
-      padding: var(--spacing-lg);
-      background: var(--color-bg-primary);
-      min-height: 100vh);
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: var(--spacing-lg);
-      border-bottom: 2px solid var(--color-border);
-
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-2xl);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--color-accent);
-
-        .el-icon { font-size: var(--font-size-3xl); color: var(--color-accent); }
-      }
-
-      .page-subtitle {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-xs);
-        color: var(--color-text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin: var(--spacing-sm) 0 0 0;
-      }
-    }
-
-    .concepts-overview .overview-card :deep(.el-card__body) { padding: var(--spacing-lg); }
-    .overview-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-lg); }
-    .stat-item { text-align: center; padding: var(--spacing-md); background: var(--color-bg-secondary); border-radius: var(--border-radius-md); }
-    .stat-label { display: block; font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--spacing-xs); }
-    .stat-value { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text-primary); }
-
-    .concepts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: var(--spacing-lg);
-    }
-
-    .concept-card {
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px var(--color-accent-alpha-50);
-      }
-
-      &.hot-concept {
-        border: 2px solid var(--color-stock-up);
-        background: linear-gradient(135deg, var(--color-stock-up-alpha-95), var(--color-bg-secondary));
-      }
-
-      :deep(.el-card__body) {
-        padding: var(--spacing-lg);
-      }
-    }
-
-    .concept-header {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .concept-badge {
-      font-size: var(--font-size-2xl);
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-
-      &.hot {
-        background: linear-gradient(135deg, #ff6b6b, #ffa726);
-        color: white;
-      }
-    }
-
-    .concept-info {
-      flex: 1;
-    }
-
-    .concept-name {
-      font-family: var(--font-family-sans);
-      font-size: var(--font-size-lg);
-      font-weight: 600;
-      color: var(--color-text-primary);
-      margin: 0 0 var(--spacing-xs) 0;
-    }
-
-    .concept-description {
-      font-family: var(--font-family-sans);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .concept-metrics {
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .metric-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: var(--spacing-md);
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    .metric-item {
-      text-align: center;
-      flex: 1;
-    }
-
-    .metric-value {
-      display: block;
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-lg);
-      font-weight: 700;
-      color: var(--color-text-primary);
-
-      &.positive { color: var(--color-stock-up); }
-      &.negative { color: var(--color-stock-down); }
-    }
-
-    .metric-label {
-      font-family: var(--font-family-sans);
-      font-size: var(--font-size-xs);
-      color: var(--color-text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .concept-trend {
-      .trend-bar {
-        height: 6px;
-        background: var(--color-bg-secondary);
-        border-radius: 3px;
-        overflow: hidden;
-        margin-bottom: var(--spacing-xs);
-      }
-
-      .trend-fill {
-        height: 100%;
-        border-radius: 3px;
-
-        &.rising { background: var(--color-stock-up); }
-        &.falling { background: var(--color-stock-down); }
-      }
-
-      .trend-label {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-xs);
-        color: var(--color-text-tertiary);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        text-align: center;
-      }
-    }
-
-    .concept-detail {
-      .detail-card :deep(.el-card__header) {
-        padding: var(--spacing-md) var(--spacing-lg);
-        border-bottom: 1px solid var(--color-border);
-      }
-
-      .detail-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--spacing-lg);
-      }
-
-      .concept-title-section {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-md);
-      }
-
-      .concept-icon {
-        font-size: var(--font-size-xl);
-      }
-
-      .detail-title {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-lg);
-        font-weight: 600;
-        color: var(--color-accent);
-      }
-
-      .concept-meta {
-        display: flex;
-        gap: var(--spacing-lg);
-      }
-
-      .meta-item {
-        font-family: var(--font-family-mono);
-        font-size: var(--font-size-sm);
-        color: var(--color-text-tertiary);
-      }
-
-      .concept-description-full {
-        font-family: var(--font-family-sans);
-        font-size: var(--font-size-sm);
-        color: var(--color-text-secondary);
-        margin-bottom: var(--spacing-lg);
-        line-height: 1.6;
-      }
-
-      .concept-stocks-section {
-        .section-title {
-          font-family: var(--font-family-sans);
-          font-size: var(--font-size-sm);
-          font-weight: 600;
-          color: var(--color-accent);
-          margin: 0 0 var(--spacing-md) 0;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-      }
-
-      .concept-stocks-table :deep(.el-table__header th) {
-        background: var(--color-bg-secondary);
-      }
-    }
-
-    .positive { color: var(--color-stock-up); }
-    .negative { color: var(--color-stock-down); }
-
-    @media (max-width: 1200px) {
-      .concepts-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    }
-
-    @media (max-width: 768px) {
-      .concept-container { padding: var(--spacing-md); }
-      .page-header { flex-direction: column; align-items: flex-start; gap: var(--spacing-md); }
-      .concepts-grid { grid-template-columns: 1fr; }
-      .overview-stats { grid-template-columns: 1fr; }
-      .concept-header { flex-direction: column; text-align: center; }
-      .metric-row { flex-direction: column; gap: var(--spacing-sm); }
-      .detail-header { flex-direction: column; align-items: flex-start; gap: var(--spacing-md); }
-      .concept-meta { justify-content: space-between; width: 100%; }
-    }
+@import "./styles/Concept.scss";
 </style>

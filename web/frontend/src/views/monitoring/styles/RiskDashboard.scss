@@ -1,0 +1,652 @@
+/* ========================================
+   Bloomberg-Level Risk Management Dashboard
+   ======================================== */
+
+.risk-dashboard {
+  min-height: 100vh;
+  padding: var(--fintech-space-4);
+  background: var(--fintech-bg-primary);
+}
+
+/* 标题栏样式 */
+.header-section {
+  margin-bottom: var(--fintech-space-6);
+  background: linear-gradient(135deg, var(--fintech-bg-elevated) 0%, var(--fintech-bg-secondary) 100%);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-6);
+}
+
+.title-section h1 {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-3xl);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: var(--fintech-font-size-md);
+  opacity: 80%;
+}
+
+.actions-section {
+  display: flex;
+  gap: var(--fintech-space-3);
+}
+
+/* 核心指标网格 */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--fintech-space-4);
+  margin-bottom: var(--fintech-space-6);
+}
+
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--fintech-bg-secondary) 0%, var(--fintech-bg-tertiary) 100%);
+  transition: all var(--fintech-transition-base);
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--fintech-shadow-base);
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-4);
+  margin-bottom: var(--fintech-space-4);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fintech-bg-elevated);
+  border-radius: var(--fintech-radius-base);
+  font-size: 20px;
+  color: var(--fintech-accent-primary);
+}
+
+.metric-info h3 {
+  margin: 0 0 var(--fintech-space-1) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+}
+
+.metric-info p {
+  margin: 0;
+  font-size: var(--fintech-font-size-sm);
+}
+
+.metric-value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fintech-space-2);
+  margin-bottom: var(--fintech-space-3);
+}
+
+.value-number {
+  font-size: var(--fintech-font-size-3xl);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+  letter-spacing: 0.01em;
+}
+
+.value-unit {
+  font-size: var(--fintech-font-size-base);
+}
+
+.metric-trend .trend-indicator {
+  font-size: var(--fintech-font-size-sm);
+  font-weight: 500;
+  padding: var(--fintech-space-1) var(--fintech-space-2);
+  border-radius: var(--fintech-radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.trend-indicator.positive {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.trend-indicator.negative {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.trend-indicator.neutral {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.metric-gauge {
+  margin-top: var(--fintech-space-3);
+}
+
+.gauge-container {
+  width: 100%;
+  height: 8px;
+  background: var(--fintech-bg-tertiary);
+  border-radius: var(--fintech-radius-sm);
+  overflow: hidden;
+}
+
+.gauge-track {
+  width: 100%;
+  height: 100%;
+  background: var(--fintech-bg-tertiary);
+  border-radius: var(--fintech-radius-sm);
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fintech-accent-success) 0%, var(--fintech-accent-warning) 50%, var(--fintech-accent-danger) 100%);
+  border-radius: var(--fintech-radius-sm);
+  transition: width var(--fintech-transition-slow);
+}
+
+.metric-breakdown {
+  display: flex;
+  gap: var(--fintech-space-4);
+  margin-top: var(--fintech-space-3);
+}
+
+.breakdown-item {
+  text-align: center;
+}
+
+.breakdown-label {
+  display: block;
+  font-size: var(--fintech-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--fintech-space-1);
+}
+
+.breakdown-value {
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+}
+
+.alert-breakdown {
+  display: flex;
+  gap: var(--fintech-space-3);
+  margin-top: var(--fintech-space-3);
+  justify-content: flex-end;
+}
+
+.alert-level {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-2);
+}
+
+.level-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.level-dot.critical {
+  background: var(--fintech-accent-danger);
+}
+
+.level-dot.warning {
+  background: var(--fintech-accent-warning);
+}
+
+.level-dot.info {
+  background: var(--fintech-accent-info);
+}
+
+.level-count {
+  font-size: var(--fintech-font-size-sm);
+  font-weight: 500;
+  font-family: var(--fintech-font-family-data);
+}
+
+/* 主内容网格 */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--fintech-space-6);
+  align-items: start;
+}
+
+.alerts-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-4);
+}
+
+.analysis-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-4);
+}
+
+/* 面板通用样式 */
+.alert-panel,
+.analysis-panel {
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-4);
+  padding: var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.panel-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fintech-bg-elevated);
+  border-radius: var(--fintech-radius-base);
+  font-size: 18px;
+  color: var(--fintech-accent-primary);
+}
+
+.panel-info h3 {
+  margin: 0 0 var(--fintech-space-1) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+}
+
+.panel-info p {
+  margin: 0;
+  font-size: var(--fintech-font-size-sm);
+}
+
+.panel-count {
+  margin-left: auto;
+}
+
+.count-badge {
+  padding: var(--fintech-space-1) var(--fintech-space-3);
+  border-radius: var(--fintech-radius-base);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.count-badge.critical {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.count-badge.warning {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.count-badge.info {
+  background: var(--fintech-accent-info);
+  color: white;
+}
+
+/* 告警列表 */
+.alerts-list {
+  padding: var(--fintech-space-5);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.alerts-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-3);
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fintech-space-4);
+  padding: var(--fintech-space-4);
+  border: 1px solid var(--fintech-border-dark);
+  border-radius: var(--fintech-radius-base);
+  background: var(--fintech-bg-tertiary);
+  transition: all var(--fintech-transition-fast);
+}
+
+.alert-item:hover {
+  border-color: var(--fintech-border-light);
+  background: var(--fintech-bg-elevated);
+}
+
+.alert-icon {
+  font-size: 20px;
+  color: var(--fintech-accent-danger);
+  margin-top: var(--fintech-space-1);
+}
+
+.critical-item .alert-icon {
+  color: var(--fintech-accent-danger);
+}
+
+.warning-item .alert-icon {
+  color: var(--fintech-accent-warning);
+}
+
+.info-item .alert-icon {
+  color: var(--fintech-accent-info);
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-symbol {
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--fintech-space-1);
+}
+
+.alert-message {
+  font-size: var(--fintech-font-size-base);
+  margin-bottom: var(--fintech-space-1);
+  line-height: 1.4;
+}
+
+.alert-time {
+  font-size: var(--fintech-font-size-xs);
+}
+
+.alert-actions {
+  margin-top: var(--fintech-space-2);
+}
+
+.alert-actions .fintech-btn {
+  padding: var(--fintech-space-2) var(--fintech-space-4);
+  font-size: var(--fintech-font-size-sm);
+}
+
+/* 空状态 */
+.empty-alerts,
+.empty-suggestions,
+.empty-sector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fintech-space-8);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: var(--fintech-gray-6);
+  margin-bottom: var(--fintech-space-4);
+  opacity: 50%;
+}
+
+.empty-text h4 {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 500;
+}
+
+.empty-text p {
+  margin: 0;
+  font-size: var(--fintech-font-size-base);
+}
+
+/* 建议列表 */
+.suggestions-list {
+  padding: var(--fintech-space-5);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestions-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-4);
+}
+
+.suggestion-item {
+  padding: var(--fintech-space-4);
+  border: 1px solid var(--fintech-border-dark);
+  border-radius: var(--fintech-radius-base);
+  background: var(--fintech-bg-tertiary);
+  transition: all var(--fintech-transition-fast);
+}
+
+.suggestion-item:hover {
+  border-color: var(--fintech-border-light);
+  background: var(--fintech-bg-elevated);
+}
+
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--fintech-space-3);
+}
+
+.suggestion-symbol {
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+}
+
+.action-badge {
+  padding: var(--fintech-space-1) var(--fintech-space-3);
+  border-radius: var(--fintech-radius-sm);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.action-buy {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.action-sell {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.action-hold {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.action-rebalance {
+  background: var(--fintech-accent-info);
+  color: white;
+}
+
+.suggestion-content {
+  margin-bottom: var(--fintech-space-3);
+}
+
+.suggestion-reason {
+  font-size: var(--fintech-font-size-base);
+  margin-bottom: var(--fintech-space-2);
+  line-height: 1.4;
+}
+
+.suggestion-impact {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-2);
+  font-size: var(--fintech-font-size-sm);
+}
+
+.impact-label {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.impact-value {
+  font-weight: 500;
+  font-family: var(--fintech-font-family-data);
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: var(--fintech-space-3);
+  justify-content: flex-end;
+}
+
+.suggestion-actions .fintech-btn {
+  padding: var(--fintech-space-2) var(--fintech-space-4);
+  font-size: var(--fintech-font-size-sm);
+}
+
+/* 行业配置 */
+.sector-allocation {
+  padding: var(--fintech-space-5);
+}
+
+.sector-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-4);
+}
+
+.sector-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fintech-space-2);
+}
+
+.sector-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sector-name {
+  font-weight: 500;
+}
+
+.sector-weight {
+  font-family: var(--fintech-font-family-data);
+  font-weight: 600;
+}
+
+.sector-bar {
+  width: 100%;
+}
+
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--fintech-bg-tertiary);
+  border-radius: var(--fintech-radius-sm);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: var(--fintech-radius-sm);
+  transition: width var(--fintech-transition-base);
+}
+
+.sector-tech {
+  background: var(--fintech-accent-primary);
+}
+
+.sector-healthcare {
+  background: var(--fintech-accent-success);
+}
+
+.sector-finance {
+  background: var(--fintech-accent-warning);
+}
+
+.sector-consumer {
+  background: var(--fintech-accent-info);
+}
+
+.sector-energy {
+  background: var(--fintech-accent-danger);
+}
+
+/* 风险指标 */
+.risk-metrics {
+  padding: var(--fintech-space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--fintech-space-4);
+}
+
+.metric-item {
+  text-align: center;
+  padding: var(--fintech-space-4);
+  background: var(--fintech-bg-tertiary);
+  border-radius: var(--fintech-radius-base);
+  border: 1px solid var(--fintech-border-dark);
+}
+
+.metric-name {
+  font-size: var(--fintech-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--fintech-space-2);
+}
+
+.metric-value {
+  font-size: var(--fintech-font-size-xl);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+}
+
+/* 响应式设计 */
+@media (width <= 1400px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-section {
+    order: -1;
+  }
+}
+
+@media (width <= 1280px) {
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .risk-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 高分辨率优化 */
+@media (width >= 1920px) {
+  .risk-dashboard {
+    padding: var(--fintech-space-6);
+  }
+
+  .value-number {
+    font-size: 48px;
+  }
+
+  .panel-info h3 {
+    font-size: var(--fintech-font-size-xl);
+  }
+}

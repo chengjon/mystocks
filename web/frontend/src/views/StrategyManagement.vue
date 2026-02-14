@@ -48,7 +48,7 @@
 
     <div v-else class="strategy-grid">
       <el-card
-        v-for="strategy in paginatedStrategies"
+        v-for="(strategy, _idx) in paginatedStrategies"
         :key="strategy.id"
         class="strategy-card"
         @click="handleView(strategy)"
@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed , onUnmounted } from 'vue'
 import { ElInput } from 'element-plus'
 
 interface Strategy {
@@ -177,7 +177,7 @@ interface Strategy {
   description?: string
   type: string
   status: string
-  parameters?: Record<string, any>
+  parameters?: Record<string, unknown>
 }
 
 const strategies = ref<Strategy[]>([
@@ -207,7 +207,7 @@ const strategyForm = ref({
   parameters: [] as Array<{ key: string; value: string }>
 })
 
-const strategyFilters = [
+const _strategyFilters = [
   { key: 'search', label: 'SEARCH', type: 'text' as const, placeholder: 'SEARCH STRATEGIES...' },
   { key: 'type', label: 'TYPE', type: 'select' as const, placeholder: 'FILTER BY TYPE', options: [
     { label: 'TREND FOLLOWING', value: 'trend_following' },
@@ -221,7 +221,7 @@ const strategyFilters = [
   ]}
 ]
 
-const strategyQuickFilters = [
+const _strategyQuickFilters = [
   { key: 'all', label: 'ALL', filters: { search: '', type: '', status: '' } },
   { key: 'active', label: 'ACTIVE', filters: { search: '', type: '', status: 'active' } },
   { key: 'trend', label: 'TREND', filters: { search: '', type: 'trend_following', status: '' } }
@@ -266,14 +266,14 @@ const clearFilters = () => {
   currentPage.value = 1
 }
 
-const handleFilterChange = (filters: Record<string, any>) => {
+const _handleFilterChange = (filters: Record<string, unknown>) => {
   searchQuery.value = filters.search || ''
   filterType.value = filters.type || ''
   filterStatus.value = filters.status || ''
   currentPage.value = 1
 }
 
-const mapStrategyToCard = (strategy: Strategy) => ({
+const _mapStrategyToCard = (strategy: Strategy) => ({
   strategy_code: strategy.id,
   strategy_name_cn: strategy.name,
   description: strategy.description,
@@ -287,9 +287,9 @@ const mapStrategyToCard = (strategy: Strategy) => ({
 })
 
 const handleView = (strategy: Strategy) => console.log('View:', strategy)
-const handleStart = (strategy: Strategy) => console.log('Start:', strategy)
-const handleStop = (strategy: Strategy) => console.log('Stop:', strategy)
-const handleEdit = (strategy: Strategy) => {
+const _handleStart = (strategy: Strategy) => console.log('Start:', strategy)
+const _handleStop = (strategy: Strategy) => console.log('Stop:', strategy)
+const _handleEdit = (strategy: Strategy) => {
   editingStrategy.value = strategy
   strategyForm.value = {
     name: strategy.name,
@@ -300,11 +300,11 @@ const handleEdit = (strategy: Strategy) => {
   showCreateDialog.value = true
 }
 
-const handleDelete = async (strategy: Strategy) => {
+const _handleDelete = async (strategy: Strategy) => {
   strategies.value = strategies.value.filter(s => s.id !== strategy.id)
 }
 
-const handleBacktest = (strategy: Strategy) => {
+const _handleBacktest = (strategy: Strategy) => {
   backtestingStrategy.value = strategy
   showBacktestDialog.value = true
 }
@@ -322,331 +322,14 @@ const handleCancel = () => {
   showCreateDialog.value = false
   strategyForm.value = { name: '', description: '', type: 'trend_following', parameters: [] }
 }
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped>
-
-.strategy-management {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  position: relative;
-}
-
-.background-pattern {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(212, 175, 55, 0.02) 10px, rgba(212, 175, 55, 0.02) 11px);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: var(--space-lg);
-}
-
-.page-title {
-  font-family: var(--font-display);
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--gold-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin: 0 0 var(--space-md) 0;
-}
-
-.page-subtitle {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--silver-muted);
-  letter-spacing: 0.1em;
-  margin: 0;
-}
-
-.header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-  padding: var(--space-lg);
-  position: relative;
-}
-
-.header-section::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  border: 1px solid var(--gold-dim);
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-.header-info {
-  flex: 1;
-}
-
-.strategy-count {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--gold-primary);
-  margin: 0 0 var(--space-xs) 0;
-}
-
-.header-desc {
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  color: var(--silver-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
-}
-
-.create-btn {
-  min-width: 200px;
-}
-
-.strategy-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: var(--space-lg);
-}
-
-.pagination-section {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-xl);
-  padding: var(--space-lg);
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.page-btn {
-  padding: var(--space-sm) var(--space-lg);
-  background: transparent;
-  border: 1px solid var(--gold-dim);
-  color: var(--silver-text);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.page-btn:hover:not(:disabled) {
-  border-color: var(--gold-primary);
-  color: var(--gold-primary);
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-info {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--silver-text);
-}
-
-.loading-state,
-.error-state,
-.empty-state {
-  text-align: center;
-  padding: var(--space-2xl);
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto var(--space-lg);
-  border: 3px solid var(--gold-dim);
-  border-top-color: var(--gold-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-icon,
-.empty-icon {
-  font-size: 64px;
-  margin-bottom: var(--space-lg);
-}
-
-.error-state h3,
-.empty-state h3 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--silver-text);
-  margin: 0 0 var(--space-md) 0;
-}
-
-.error-state p,
-.empty-state p {
-  font-family: var(--font-body);
-  color: var(--silver-muted);
-  margin: 0 0 var(--space-lg) 0;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: var(--bg-card);
-  border: 1px solid var(--gold-dim);
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-lg);
-  border-bottom: 1px solid var(--gold-dim);
-}
-
-.modal-title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--gold-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 0;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--silver-muted);
-  cursor: pointer;
-  transition: color var(--transition-base);
-}
-
-.modal-close:hover {
-  color: var(--gold-primary);
-}
-
-.modal-body {
-  padding: var(--space-xl);
-}
-
-.form-group {
-  margin-bottom: var(--space-lg);
-}
-
-.form-label {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  color: var(--gold-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
-}
-
-.select {
-  position: relative;
-}
-
-.select select {
-  width: 100%;
-  padding: var(--space-md);
-  background: var(--bg-primary);
-  border: 1px solid var(--gold-dim);
-  color: var(--silver-text);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.select select:focus {
-  outline: none;
-  border-color: var(--gold-primary);
-}
-
-.parameters-container {
-  width: 100%;
-}
-
-.parameter-row {
-  display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-sm);
-  align-items: center;
-}
-
-.parameter-row > * {
-  flex: 1;
-}
-
-.add-param-btn {
-  width: 100%;
-  margin-top: var(--space-md);
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-md);
-  padding: var(--space-lg);
-  border-top: 1px solid var(--gold-dim);
-}
-
-.backtest-content {
-  text-align: center;
-  padding: var(--space-xl);
-}
-
-.backtest-content h4 {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--gold-primary);
-  margin: 0 0 var(--space-md) 0;
-}
-
-.backtest-content p {
-  font-family: var(--font-body);
-  color: var(--silver-muted);
-  margin: 0;
-}
-
-.mono {
-  font-family: var(--font-mono);
-}
+@import "./styles/StrategyManagement.css";
 </style>

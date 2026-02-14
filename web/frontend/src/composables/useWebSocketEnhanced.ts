@@ -21,7 +21,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error'
 
 // 消息回调类型
-type MessageCallback = (data: any) => void
+type MessageCallback = (data: unknown) => void
 
 interface WebSocketConfig {
   url?: string
@@ -37,7 +37,7 @@ interface WebSocketState {
   reconnectTimer: number | null
   heartbeatTimer: number | null
   subscriptions: Map<string, Set<MessageCallback>>
-  lastMessage: any
+  lastMessage: unknown
   error: Event | null
 }
 
@@ -273,7 +273,7 @@ export function useWebSocket(config: WebSocketConfig = {}) {
   /**
    * 发送消息
    */
-  const send = (data: any) => {
+  const send = (data: unknown) => {
     if (globalState.value.ws?.readyState === WebSocket.OPEN) {
       globalState.value.ws.send(JSON.stringify(data))
     } else {

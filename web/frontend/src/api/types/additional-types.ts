@@ -73,7 +73,7 @@ export interface LogEntry {
   message?: string;
   timestamp?: string;
   source?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface DataQualityResponse {
@@ -108,7 +108,7 @@ export interface StrategyConfigResponse {
   name?: string;
   description?: string;
   type?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -196,14 +196,14 @@ export interface OscillatorIndicatorResponse {
 export interface OverlayIndicatorData {
   abbreviation?: string;
   values?: number[];
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 export interface OscillatorIndicatorData {
   abbreviation?: string;
   values?: number[];
   signals?: OscillatorSignal[];
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 export interface OscillatorSignal {
@@ -220,7 +220,7 @@ export interface IndicatorResponse {
   success?: boolean;
   code?: number;
   message?: string;
-  data?: any;
+  data?: unknown;
   timestamp?: string;
 }
 
@@ -231,7 +231,7 @@ export interface IndicatorResponse {
 export interface IndicatorParameter {
   name?: string;
   type?: string;
-  default?: any;
+  default?: unknown;
   min?: number;
   max?: number;
   step?: number;
@@ -252,5 +252,5 @@ export interface NotificationResponse {
   message?: string;
   isRead?: boolean;
   createdAt?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }

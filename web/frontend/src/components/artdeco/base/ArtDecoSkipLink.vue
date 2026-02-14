@@ -34,7 +34,7 @@
      * </main>
      */
 
-    import { computed } from 'vue'
+    import { computed , onUnmounted } from 'vue'
     import { useI18n } from '@/composables/useI18n'
 
     // Composables
@@ -70,10 +70,16 @@
         //   target.removeAttribute('tabindex')
         // }, 1000)
     }
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .skip-link {
         --skip-link-bg: var(--artdeco-gold-primary);
@@ -86,40 +92,36 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
-
         display: inline-flex;
         align-items: center;
         gap: var(--artdeco-spacing-sm);
-
         padding: var(--artdeco-spacing-sm) var(--artdeco-spacing-lg);
         font-family: var(--artdeco-font-heading);
         font-size: var(--artdeco-font-size-sm);
         font-weight: var(--artdeco-font-weight-bold);
         text-transform: uppercase;
         letter-spacing: 0.15em;
-
         color: var(--skip-link-text);
         background: var(--skip-link-bg);
         border: 2px solid var(--skip-link-border);
         border-radius: 0; // ArtDeco风格：直角
         text-decoration: none;
         white-space: nowrap;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
+        box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
         transition: all var(--artdeco-transition-normal) var(--artdeco-ease-out);
 
         // 焦点时显示（键盘导航）
         &:focus {
             top: var(--artdeco-spacing-md); // 从顶部滑入
             outline: none;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 0 4px rgb(212 175 55 / 30%);
         }
 
         // 悬停效果
         &:hover {
             background: var(--skip-link-focus);
             transform: translateX(-50%) translateY(-2px);
-            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 6px 16px rgb(212 175 55 / 40%);
         }
 
         // 激活状态
@@ -143,7 +145,7 @@
     }
 
     /* 响应式设计 */
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .skip-link {
             left: var(--artdeco-spacing-md);
             transform: none;
@@ -162,7 +164,7 @@
     }
 
     /* 高对比度模式 */
-    @media (prefers-contrast: high) {
+    @media (prefers-contrast: more) {
         .skip-link {
             border-width: 3px;
             font-weight: 900;

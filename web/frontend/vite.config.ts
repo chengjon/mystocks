@@ -191,10 +191,15 @@ export default defineConfig(async ({ command }) => {
         output: {
           // 手动分块策略 - 修复循环依赖问题
           manualChunks(id) {
-            // 将Vue和Element Plus打包在一起，避免循环依赖
-            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') ||
-                id.includes('element-plus') || id.includes('@element-plus')) {
-              return 'vue-framework'
+            // Vue 核心框架（vue + vue-router + pinia）
+            if (id.includes('node_modules/vue/') || id.includes('node_modules/@vue/') ||
+                id.includes('node_modules/vue-router/') || id.includes('node_modules/pinia/')) {
+              return 'vue-core'
+            }
+
+            // Element Plus 独立分包（UI 组件库）
+            if (id.includes('element-plus') || id.includes('@element-plus')) {
+              return 'element-plus'
             }
 
             // ECharts图表库（按需引入）

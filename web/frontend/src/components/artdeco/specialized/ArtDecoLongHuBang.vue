@@ -18,7 +18,7 @@
     <div v-else class="long-hu-content">
       <div class="long-hu-list">
         <div
-          v-for="item in longHuData"
+          v-for="(item, _idx) in longHuData"
           :key="item.code"
           class="long-hu-item"
           :class="{ 'is-up': item.change_percent >= 0 }"
@@ -89,7 +89,7 @@ const fetchLongHuBang = async () => {
     const response = await dashboardService.getLongHuBang(undefined, 10)
     const payload = response?.data ?? response
     longHuData.value = Array.isArray(payload) ? payload : FALLBACK_LONG_HU_DATA
-  } catch (err: any) {
+  } catch (_err: unknown) {
     error.value = ''
     longHuData.value = FALLBACK_LONG_HU_DATA
   } finally {
@@ -103,8 +103,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-@import '@/styles/artdeco-quant-extended.scss';
+@import '@/styles/artdeco-tokens';
+@import '@/styles/artdeco-quant-extended';
 
 .card-header {
   display: flex;

@@ -44,7 +44,7 @@
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 4px var(--artdeco-gold-primary, #D4AF37),
-    0 0 12px rgba(212, 175, 55, 0.4) !important;
+    0 0 12px rgb(212 175 55 / 40%) !important;
 
   /* 确保焦点元素在最上层 */
   z-index: 1000;
@@ -74,8 +74,8 @@ button:focus-visible,
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 5px var(--artdeco-gold-primary, #D4AF37),
-    0 0 20px rgba(212, 175, 55, 0.5),
-    inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
+    0 0 20px rgb(212 175 55 / 50%),
+    inset 0 0 10px rgb(212 175 55 / 20%) !important;
 }
 
 /**
@@ -94,8 +94,8 @@ select:focus-visible,
 
   /* 金色光晕 */
   box-shadow:
-    0 0 0 3px rgba(212, 175, 55, 0.2),
-    0 0 12px rgba(212, 175, 55, 0.3) !important;
+    0 0 0 3px rgb(212 175 55 / 20%),
+    0 0 12px rgb(212 175 55 / 30%) !important;
 }
 
 /**
@@ -131,7 +131,7 @@ a:focus-visible,
   box-shadow:
     0 0 0 3px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 6px var(--artdeco-gold-primary, #D4AF37),
-    0 8px 24px rgba(212, 175, 55, 0.3) !important;
+    0 8px 24px rgb(212 175 55 / 30%) !important;
 }
 
 /**
@@ -143,7 +143,6 @@ a:focus-visible,
 .el-select:focus-visible {
   outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
   outline-offset: 2px !important;
-
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 4px var(--artdeco-gold-primary, #D4AF37) !important;
@@ -159,8 +158,7 @@ th:focus-visible,
 [role="columnheader"]:focus-visible {
   outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
   outline-offset: -2px !important;
-
-  background-color: rgba(212, 175, 55, 0.1) !important;
+  background-color: rgb(212 175 55 / 10%) !important;
 }
 
 /**
@@ -172,14 +170,14 @@ th:focus-visible,
   outline: none !important; /* 下拉菜单使用背景色代替outline */
 
   /* 金色背景 */
-  background-color: rgba(212, 175, 55, 0.15) !important;
+  background-color: rgb(212 175 55 / 15%) !important;
 
   /* 左侧金色指示条 */
   border-left: 3px solid var(--artdeco-gold-primary, #D4AF37);
   padding-left: calc(var(--spacing-sm) - 3px) !important;
 
   /* 轻微光晕 */
-  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2) !important;
+  box-shadow: inset 0 0 10px rgb(212 175 55 / 20%) !important;
 }
 
 /**
@@ -190,11 +188,10 @@ th:focus-visible,
 .el-message-box:focus-visible {
   outline: 3px solid var(--artdeco-gold-primary, #D4AF37) !important;
   outline-offset: 4px !important;
-
   box-shadow:
     0 0 0 4px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 8px var(--artdeco-gold-primary, #D4AF37),
-    0 20px 60px rgba(0, 0, 0, 0.8) !important;
+    0 20px 60px rgb(0 0 0 / 80%) !important;
 }
 
 /**
@@ -204,7 +201,6 @@ th:focus-visible,
 .el-tabs__item:focus-visible {
   outline: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
   outline-offset: 2px !important;
-
   border-bottom: 2px solid var(--artdeco-gold-primary, #D4AF37) !important;
 }
 
@@ -223,7 +219,7 @@ th:focus-visible,
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 4px #ef4444,
-    0 0 12px rgba(239, 68, 68, 0.4) !important;
+    0 0 12px rgb(239 68 68 / 40%) !important;
 }
 
 /**
@@ -235,7 +231,7 @@ th:focus-visible,
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 4px #f59e0b,
-    0 0 12px rgba(245, 158, 11, 0.4) !important;
+    0 0 12px rgb(245 158 11 / 40%) !important;
 }
 
 /**
@@ -247,7 +243,7 @@ th:focus-visible,
   box-shadow:
     0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
     0 0 0 4px #10b981,
-    0 0 12px rgba(16, 185, 129, 0.4) !important;
+    0 0 12px rgb(16 185 129 / 40%) !important;
 }
 
 /* ============================================
@@ -287,7 +283,7 @@ th:focus-visible,
     box-shadow:
       0 0 0 2px var(--artdeco-bg-global, #0A0A0A),
       0 0 0 6px var(--artdeco-gold-primary, #D4AF37),
-      0 0 20px rgba(212, 175, 55, 0.6) !important;
+      0 0 20px rgb(212 175 55 / 60%) !important;
   }
 }
 

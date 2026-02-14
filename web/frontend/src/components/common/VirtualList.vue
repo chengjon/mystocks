@@ -26,11 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, _onMounted, _onUnmounted } from 'vue'
 
 const props = defineProps({
   items: {
-    type: Array as () => any[],
+    type: Array as () => unknown[],
     required: true,
     default: () => []
   },

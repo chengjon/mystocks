@@ -4,7 +4,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, reactive, computed } from 'vue'
+import { _ref, reactive, computed } from 'vue'
 import { indexedDB } from '@/utils/indexedDB'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import { workersManager } from '@/utils/workersManager'
@@ -17,7 +17,7 @@ interface MarketAnalysis {
     sentiment?: number
     volatility?: number
     volume?: number
-    [key: string]: any
+    [key: string]: unknown
 }
 
 interface CacheMetadata {
@@ -236,7 +236,7 @@ export const useMarketDataStore = defineStore('marketData', () => {
     /**
      * Load technical indicators for a symbol using Web Workers
      */
-    const loadTechnicalIndicators = async (symbol: string, indicator: string, params: Record<string, any> = {}) => {
+    const loadTechnicalIndicators = async (symbol: string, indicator: string, params: Record<string, unknown> = {}) => {
         try {
             const cacheKey = `indicator_${symbol}_${indicator}_${JSON.stringify(params)}`
 
@@ -297,8 +297,8 @@ export const useMarketDataStore = defineStore('marketData', () => {
     const getHistoricalDataForIndicator = async (
         symbol: string,
         indicator: string,
-        params: Record<string, any>
-    ): Promise<any[]> => {
+        params: Record<string, unknown>
+    ): Promise<unknown[]> => {
         // Determine required data points based on indicator and parameters
         const period = params.period || getDefaultPeriodForIndicator(indicator)
 

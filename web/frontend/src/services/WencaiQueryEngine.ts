@@ -43,12 +43,12 @@ export interface StockMatch {
     name: string
     matchScore: number
     reasons: string[]
-    data: Record<string, any>
+    data: Record<string, unknown>
 }
 
 export interface QueryFilter {
     type: string
-    value: any
+    value: unknown
     description: string
 }
 
@@ -258,7 +258,7 @@ export class WencaiQueryEngine {
      */
     private async executeBackendQuery(
         pattern: QueryPattern,
-        filters: Record<string, any>,
+        filters: Record<string, unknown>,
         maxResults: number
     ): Promise<{ success: boolean; data?: QueryResultData }> {
         try {
@@ -354,7 +354,7 @@ export class WencaiQueryEngine {
     /**
      * Build filter list from raw filters
      */
-    private buildFilterList(filters: Record<string, any>): QueryFilter[] {
+    private buildFilterList(filters: Record<string, unknown>): QueryFilter[] {
         const filterList: QueryFilter[] = []
 
         for (const [key, value] of Object.entries(filters)) {
@@ -373,8 +373,8 @@ export class WencaiQueryEngine {
     /**
      * Get human-readable filter description
      */
-    private getFilterDescription(key: string, value: any): string {
-        const descriptions: Record<string, (value: any) => string> = {
+    private getFilterDescription(key: string, value: unknown): string {
+        const descriptions: Record<string, (value: unknown) => string> = {
             price_min: v => `股价 ≥ ¥${v}`,
             price_max: v => `股价 ≤ ¥${v}`,
             volume_multiplier: v => `成交量放大 ${v} 倍`,

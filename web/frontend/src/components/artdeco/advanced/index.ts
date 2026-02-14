@@ -44,22 +44,22 @@ export interface AnalysisComponent {
     title: string
     description: string
     icon: string
-    component: any
+    component: unknown
 }
 
 export interface AnalysisData {
-    fundamental?: any
-    technical?: any
-    'trading-signals'?: any
-    'time-series'?: any
-    'market-panorama'?: any
-    'capital-flow'?: any
-    'chip-distribution'?: any
-    'anomaly-tracking'?: any
-    'financial-valuation'?: any
-    sentiment?: any
-    'decision-models'?: any
-    'multidimensional-radar'?: any
+    fundamental?: unknown
+    technical?: unknown
+    'trading-signals'?: unknown
+    'time-series'?: unknown
+    'market-panorama'?: unknown
+    'capital-flow'?: unknown
+    'chip-distribution'?: unknown
+    'anomaly-tracking'?: unknown
+    'financial-valuation'?: unknown
+    sentiment?: unknown
+    'decision-models'?: unknown
+    'multidimensional-radar'?: unknown
 }
 
 // 组件映射表

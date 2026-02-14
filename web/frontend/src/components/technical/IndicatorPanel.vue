@@ -84,7 +84,7 @@
         <el-scrollbar height="400px">
           <div class="indicators-grid">
             <el-card
-              v-for="indicator in filteredIndicators"
+              v-for="(indicator, _idx) in filteredIndicators"
               :key="indicator.abbreviation"
               class="indicator-card"
               shadow="hover"
@@ -152,7 +152,7 @@
         <!-- 参数列表 -->
         <el-form label-width="140px" label-position="left">
           <el-form-item
-            v-for="param in currentIndicatorConfig.parameters"
+            v-for="(param, _idx) in currentIndicatorConfig.parameters"
             :key="param.name"
             :label="param.displayName"
           >
@@ -279,8 +279,8 @@ const filteredIndicators = computed(() => {
     indicators = indicators.filter(ind => {
       return (
         ind.abbreviation.toLowerCase().includes(query) ||
-        ind.full_name ?? ind.fullName.toLowerCase().includes(query) ||
-        ind.chinese_name ?? ind.chineseName.includes(query)
+        (ind.full_name ?? ind.fullName ?? '').toLowerCase().includes(query) ||
+        (ind.chinese_name ?? ind.chineseName ?? '').includes(query)
       )
     })
   }
@@ -423,148 +423,5 @@ const formatParameters = (parameters) => {
 </script>
 
 <style scoped lang="scss">
-.indicator-panel {
-  padding: 0 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  .search-section {
-    padding: 0;
-  }
-
-  .category-tabs {
-    :deep(.el-radio-group) {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-  }
-
-  .selected-section {
-    background: #f5f7fa;
-    padding: 16px;
-    border-radius: 8px;
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-
-      h4 {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #303133;
-      }
-    }
-
-    .selected-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-
-      .selected-indicator-tag {
-        cursor: pointer;
-
-        .indicator-name {
-          font-weight: 600;
-        }
-      }
-    }
-  }
-
-  .indicators-section {
-    .section-header {
-      margin-bottom: 12px;
-
-      h4 {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #303133;
-      }
-    }
-
-    .indicators-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-
-      .indicator-card {
-        cursor: pointer;
-        transition: all 0.3s;
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .indicator-card-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-
-          .indicator-abbr {
-            font-size: 16px;
-            font-weight: 700;
-            color: #409eff;
-          }
-        }
-
-        .indicator-info {
-          padding: 8px 0;
-
-          .indicator-full-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #303133;
-            margin: 0 0 4px 0;
-          }
-
-          .indicator-chinese-name {
-            font-size: 13px;
-            color: #606266;
-            margin: 0 0 8px 0;
-          }
-
-          .indicator-description {
-            font-size: 12px;
-            color: #909399;
-            line-height: 1.6;
-            margin: 0 0 8px 0;
-          }
-
-          .indicator-params {
-            padding-top: 8px;
-            border-top: 1px solid #ebeef5;
-          }
-        }
-      }
-    }
-  }
-}
-
-// 增强: 参数配置对话框样式
-.config-dialog-content {
-  .indicator-desc {
-    margin: 8px 0 0 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #606266;
-  }
-
-  .param-description {
-    .el-text {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-
-      .el-icon {
-        flex-shrink: 0;
-      }
-    }
-  }
-}
+@import "./styles/IndicatorPanel.scss";
 </style>

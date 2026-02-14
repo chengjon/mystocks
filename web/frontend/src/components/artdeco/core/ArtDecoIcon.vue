@@ -312,7 +312,7 @@ const iconComponent = computed(() => {
   const strokeLinejoin: 'round' | 'miter' | 'bevel' = 'miter'
 
   // SVG filters for glow effect
-  const filters: any[] = []
+  const filters: unknown[] = []
   if (props.animated || props.variant === 'decorative') {
     filters.push(h('filter', { id: 'gold-glow' }, [
       h('feGaussianBlur', { stdDeviation: '1.5', result: 'blur' }),
@@ -389,7 +389,7 @@ const iconProps = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .artdeco-icon {
   display: inline-flex;
@@ -437,7 +437,7 @@ const iconProps = computed(() => {
 
   // 悬停效果
   &:hover {
-    opacity: 0.8;
+    opacity: 80%;
     transition: opacity 150ms ease;
   }
 }

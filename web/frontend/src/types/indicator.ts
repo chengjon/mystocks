@@ -50,7 +50,7 @@ export interface IndicatorMetadata {
  */
 export interface IndicatorSpec {
   abbreviation: string;
-  parameters: Record<string, any>;
+  parameters: Record<string, unknown>;
 }
  
 /**
@@ -78,7 +78,7 @@ export interface IndicatorValueOutput {
  */
 export interface IndicatorResult {
   abbreviation: string;
-  parameters: Record<string, any>;
+  parameters: Record<string, unknown>;
   outputs: IndicatorValueOutput[];
   panelType: PanelType;
   referenceLines: number[] | null;
@@ -160,10 +160,10 @@ export interface IndicatorConfigUpdateRequest {
 /**
  * API响应包装器
  */
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   data: T | null;
-  error: { errorCode: string; errorMessage: string; details?: Record<string, any> } | null;
+  error: { errorCode: string; errorMessage: string; details?: Record<string, unknown> } | null;
   timestamp: string;
 }
  

@@ -10,7 +10,7 @@
  */
 
 @use 'sass:color';
-@import './theme-tokens.scss';
+@import './theme-tokens';
 
 // ============================================================
 // Element Plus CSS Variable Mappings
@@ -36,7 +36,6 @@
   --el-color-success-light-8: color.adjust(var(--color-success), $lightness: 45%);
   --el-color-success-light-9: color.adjust(var(--color-success), $lightness: 50%);
   --el-color-success-dark-2: color.adjust(var(--color-success), $lightness: -10%);
-
   --el-color-warning: var(--color-warning);
   --el-color-warning-light-3: color.adjust(var(--color-warning), $lightness: 20%);
   --el-color-warning-light-5: color.adjust(var(--color-warning), $lightness: 30%);
@@ -44,7 +43,6 @@
   --el-color-warning-light-8: color.adjust(var(--color-warning), $lightness: 45%);
   --el-color-warning-light-9: color.adjust(var(--color-warning), $lightness: 50%);
   --el-color-warning-dark-2: color.adjust(var(--color-warning), $lightness: -10%);
-
   --el-color-danger: var(--color-danger);
   --el-color-danger-light-3: color.adjust(var(--color-danger), $lightness: 20%);
   --el-color-danger-light-5: color.adjust(var(--color-danger), $lightness: 30%);
@@ -52,7 +50,6 @@
   --el-color-danger-light-8: color.adjust(var(--color-danger), $lightness: 45%);
   --el-color-danger-light-9: color.adjust(var(--color-danger), $lightness: 50%);
   --el-color-danger-dark-2: color.adjust(var(--color-danger), $lightness: -10%);
-
   --el-color-error: var(--color-danger);
   --el-color-error-light-3: color.adjust(var(--color-danger), $lightness: 20%);
   --el-color-error-light-5: color.adjust(var(--color-danger), $lightness: 30%);
@@ -60,7 +57,6 @@
   --el-color-error-light-8: color.adjust(var(--color-danger), $lightness: 45%);
   --el-color-error-light-9: color.adjust(var(--color-danger), $lightness: 50%);
   --el-color-error-dark-2: color.adjust(var(--color-danger), $lightness: -10%);
-
   --el-color-info: var(--color-info);
   --el-color-info-light-3: color.adjust(var(--color-info), $lightness: 20%);
   --el-color-info-light-5: color.adjust(var(--color-info), $lightness: 30%);
@@ -73,7 +69,7 @@
 
   --el-bg-color: var(--color-bg-primary);
   --el-bg-color-page: var(--color-bg-primary);
-  --el-bg-color-overlay: #000000;
+  --el-bg-color-overlay: #000;
 
   // ========== Text Colors ==========
 
@@ -109,7 +105,6 @@
   --el-font-size-medium: var(--font-size-lg);
   --el-font-size-large: var(--font-size-xl);
   --el-font-size-extra-large: var(--font-size-2xl);
-
   --el-font-family: var(--font-family-sans);
   --el-font-family-primary: var(--font-family-sans);
   --el-font-family-mono: var(--font-family-mono);
@@ -123,9 +118,9 @@
 
   // ========== Shadows ==========
 
-  --el-box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --el-box-shadow-dark: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --el-box-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.2);
+  --el-box-shadow-base: 0 2px 8px rgb(0 0 0 / 30%);
+  --el-box-shadow-dark: 0 4px 16px rgb(0 0 0 / 50%);
+  --el-box-shadow-light: 0 1px 4px rgb(0 0 0 / 20%);
 
   // ========== Component Sizes (Compact for data density) ==========
 
@@ -162,7 +157,7 @@
   &.el-button--primary {
     --el-button-bg-color: var(--color-accent);
     --el-button-border-color: var(--color-accent);
-    --el-button-text-color: #ffffff;
+    --el-button-text-color: #fff;
     --el-button-hover-bg-color: var(--color-accent-hover);
     --el-button-hover-border-color: var(--color-accent-hover);
     --el-button-active-bg-color: var(--color-accent-active);
@@ -173,28 +168,28 @@
   &.el-button--success {
     --el-button-bg-color: var(--color-stock-up);    // RED for up
     --el-button-border-color: var(--color-stock-up);
-    --el-button-text-color: #ffffff;
+    --el-button-text-color: #fff;
   }
 
   // Danger button (stock DOWN - GREEN for China market)
   &.el-button--danger {
     --el-button-bg-color: var(--color-stock-down);  // GREEN for down
     --el-button-border-color: var(--color-stock-down);
-    --el-button-text-color: #000000;
+    --el-button-text-color: #000;
   }
 
   // Warning button
   &.el-button--warning {
     --el-button-bg-color: var(--color-warning);
     --el-button-border-color: var(--color-warning);
-    --el-button-text-color: #000000;
+    --el-button-text-color: #000;
   }
 
   // Info button
   &.el-button--info {
     --el-button-bg-color: var(--color-info);
     --el-button-border-color: var(--color-info);
-    --el-button-text-color: #ffffff;
+    --el-button-text-color: #fff;
   }
 }
 
@@ -531,7 +526,7 @@
 
     &.is-active {
       background-color: var(--color-accent);
-      color: #ffffff;
+      color: #fff;
       border-color: var(--color-accent);
     }
   }

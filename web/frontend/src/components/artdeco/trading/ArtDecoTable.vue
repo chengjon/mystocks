@@ -12,7 +12,7 @@
                 <thead class="hybrid-table__thead">
                     <tr>
                         <th
-                            v-for="col in columns"
+                            v-for="(col, _idx) in columns"
                             :key="col.key"
                             @click="sort(col.key)"
                             :class="['hybrid-table__cell--head', { 'hybrid-table__cell--sortable': col.sortable }]"
@@ -44,7 +44,7 @@
                             @click="handleRowClick(row, startIndex + virtualIndex)"
                         >
                             <td
-                                v-for="col in columns"
+                                v-for="(col, _idx) in columns"
                                 :key="col.key"
                                 :class="getCellClass(row, col)"
                                 :style="{ height: `${rowHeight}px` }"
@@ -117,13 +117,13 @@
         label: string
         sortable?: boolean
         width?: string
-        format?: (value: any) => string
-        class?: (row: any) => string | string[]
+        format?: (value: unknown) => string
+        class?: (row: unknown) => string | string[]
     }
 
     interface Props {
         columns?: Column[]
-        data: any[]
+        data: unknown[]
         title?: string
         rowKey?: string
         pagination?: boolean
@@ -136,7 +136,7 @@
         currentPage?: number
         defaultSort?: string
         defaultSortOrder?: 'asc' | 'desc'
-        activeRow?: any
+        activeRow?: unknown
         showPerformanceInfo?: boolean
     }
 
@@ -159,7 +159,7 @@
     })
 
     const emit = defineEmits<{
-        'row-click': [row: any, index: number]
+        'row-click': [row: unknown, index: number]
         sort: [column: string, order: 'asc' | 'desc']
         'page-change': [page: number]
     }>()
@@ -188,7 +188,7 @@
         const col = props.columns.find(c => c.key === sortColumn.value)
         if (!col) return props.data
 
-        return [...props.data].sort((a: any, b: any) => {
+        return [...props.data].sort((a: unknown, b: unknown) => {
             const aVal = getRowValue(a, sortColumn.value)
             const bVal = getRowValue(b, sortColumn.value)
 
@@ -233,15 +233,15 @@
         return sortedData.value.slice(visibleRange.value.start, visibleRange.value.end)
     })
 
-    function getRowKey(row: any, index: number) {
+    function getRowKey(row: unknown, index: number) {
         return row[props.rowKey] || index
     }
 
-    function getRowValue(row: any, key: string) {
+    function getRowValue(row: unknown, key: string) {
         return key.split('.').reduce((obj, k) => obj?.[k], row)
     }
 
-    function formatCellValue(row: any, col: Column) {
+    function formatCellValue(row: unknown, col: Column) {
         const value = getRowValue(row, col.key)
         if (col.format) {
             return col.format(value)
@@ -255,7 +255,7 @@
         return value
     }
 
-    function getCellClass(row: any, col: Column) {
+    function getCellClass(row: unknown, col: Column) {
         const classes = ['hybrid-table__cell']
         if (col.class) {
             const colClass = col.class(row)
@@ -268,11 +268,11 @@
         return classes
     }
 
-    function isRowActive(row: any) {
+    function isRowActive(row: unknown) {
         return props.activeRow && getRowKey(row, 0) === getRowKey(props.activeRow, 0)
     }
 
-    function handleRowClick(row: any, index: number) {
+    function handleRowClick(row: unknown, index: number) {
         emit('row-click', row, index)
     }
 
@@ -324,300 +324,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/data-dense/index.scss';
-
-    // ============================================
-    //   HYBRID TABLE - 数据密集型表格
-    //   Art Deco 视觉 + 数据密集性能优化
-    // ============================================
-
-    .hybrid-table {
-        @include hybrid-card;
-        @include gpu-accelerated;
-
-        // 虚拟滚动模式
-        &--virtual {
-            .hybrid-table__container {
-                @include virtual-scroll-container;
-                overflow-y: auto;
-                overflow-x: hidden;
-                max-height: v-bind('containerHeight + "px"');
-            }
-
-            .hybrid-table__tbody {
-                position: relative;
-            }
-
-            .hybrid-table__spacer {
-                height: v-bind('totalHeight + "px"');
-            }
-        }
-
-        // 传统模式
-        &:not(&--virtual) {
-            .hybrid-table__container {
-                overflow-x: auto;
-            }
-        }
-    }
-
-    .hybrid-table__header {
-        @include data-dense-spacing;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
-    }
-
-    .hybrid-table__title {
-        @include artdeco-gold-accent;
-        font-family: var(--hybrid-font-display);
-        font-size: var(--data-dense-font-lg);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin: 0;
-    }
-
-    .hybrid-table__actions {
-        display: flex;
-        gap: var(--data-dense-gap-sm);
-    }
-
-    .hybrid-table__container {
-        position: relative;
-    }
-
-    .hybrid-table__content {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: var(--hybrid-font-body);
-    }
-
-    .hybrid-table__thead {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background-color: var(--artdeco-bg-card);
-    }
-
-    // 表头单元格
-    .hybrid-table__cell--head {
-        @include artdeco-gold-accent;
-        font-family: var(--hybrid-font-display);
-        font-size: var(--data-dense-font-sm);
-        font-weight: 600;
-        text-align: left;
-        padding: var(--data-dense-table-cell-padding);
-        border-bottom: var(--data-dense-border-width) solid var(--artdeco-gold-primary);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-        user-select: none;
-        background-color: rgba(212, 175, 55, 0.05);
-        height: var(--data-dense-table-header-height);
-    }
-
-    .hybrid-table__cell--sortable {
-        cursor: pointer;
-        @include data-dense-transitions;
-
-        &:hover {
-            background-color: rgba(212, 175, 55, 0.1);
-        }
-    }
-
-    .hybrid-table__head-content {
-        display: flex;
-        align-items: center;
-        gap: var(--data-dense-gap-xs);
-    }
-
-    .hybrid-table__head-label {
-        flex: 1;
-    }
-
-    .hybrid-table__sort-icon {
-        color: rgba(212, 175, 55, 0.4);
-        font-size: var(--data-dense-font-xs);
-        @include data-dense-transitions;
-    }
-
-    .hybrid-table__cell--sortable:hover .hybrid-table__sort-icon {
-        color: var(--artdeco-gold-primary);
-    }
-
-    // 表体单元格
-    .hybrid-table__cell {
-        @include data-dense-typography;
-        padding: var(--data-dense-table-cell-padding);
-        color: var(--artdeco-fg-primary);
-        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
-        @include data-dense-transitions;
-
-        // 金融数据颜色
-        &--up {
-            color: var(--artdeco-up);
-            font-weight: 600;
-        }
-        &--down {
-            color: var(--artdeco-down);
-            font-weight: 600;
-        }
-        &--flat {
-            color: var(--artdeco-flat);
-        }
-        &--profit {
-            color: var(--artdeco-profit);
-        }
-        &--loss {
-            color: var(--artdeco-loss);
-        }
-    }
-
-    .hybrid-table__tbody tr {
-        @include gpu-accelerated;
-
-        &:hover .hybrid-table__cell {
-            background-color: rgba(212, 175, 55, 0.05);
-        }
-    }
-
-    .hybrid-table__row--active .hybrid-table__cell {
-        background-color: rgba(212, 175, 55, 0.1);
-        color: var(--artdeco-gold-primary);
-    }
-
-    .hybrid-table__cell--actions {
-        display: flex;
-        gap: var(--data-dense-gap-sm);
-        align-items: center;
-        white-space: nowrap;
-    }
-
-    // 分页
-    .hybrid-table__pagination {
-        @include data-dense-spacing;
-        border-top: var(--data-dense-border-width) solid var(--data-dense-border-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .hybrid-table__pagination-info {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-    }
-
-    // 加载状态
-    .hybrid-table__loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: var(--data-dense-padding-lg);
-        gap: var(--data-dense-gap-sm);
-    }
-
-    .hybrid-table__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid rgba(212, 175, 55, 0.2);
-        border-top-color: var(--artdeco-gold-primary);
-        border-radius: 0px; // Art Deco sharp corners
-        animation: hybrid-spin 1s linear infinite;
-    }
-
-    @keyframes hybrid-spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .hybrid-table__loading p {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-        margin: 0;
-    }
-
-    // 空状态
-    .hybrid-table__empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--data-dense-padding-lg);
-    }
-
-    .hybrid-table__empty p {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-        margin: 0;
-    }
-
-    // 性能监控
-    .hybrid-table__perf {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(0, 0, 0, 0.8);
-        padding: 2px 4px;
-        border-radius: 0px;
-        font-family: var(--hybrid-font-mono);
-        pointer-events: none;
-        z-index: 10;
-    }
-
-    // 尺寸变体
-    .hybrid-table--sm {
-        .hybrid-table__cell--head,
-        .hybrid-table__cell {
-            padding: 4px 8px;
-            font-size: var(--data-dense-font-xs);
-        }
-    }
-
-    .hybrid-table--lg {
-        .hybrid-table__cell--head,
-        .hybrid-table__cell {
-            padding: 8px 16px;
-            font-size: var(--data-dense-font-base);
-        }
-    }
-
-    // ============================================
-    //   RESPONSIVE DESIGN - 响应式设计
-    // ============================================
-
-    @media (max-width: 768px) {
-        .hybrid-table {
-            .hybrid-table__title {
-                font-size: var(--data-dense-font-base);
-            }
-
-            .hybrid-table__cell--head,
-            .hybrid-table__cell {
-                padding: var(--data-dense-padding-xs);
-                font-size: var(--data-dense-font-xs);
-            }
-        }
-    }
-
-    // ============================================
-    //   PERFORMANCE NOTES - 性能说明
-    // ============================================
-
-    /*
-  数据密集型优化：
-  1. 虚拟滚动：只渲染可见行，大幅提升大数据集性能
-  2. GPU加速：transform属性启用硬件加速
-  3. 防抖滚动：减少不必要的重渲染
-  4. 紧凑间距：最大化数据密度
-
-  预期性能提升：
-  - 1000+ 行数据时，从 ~20fps 提升到 ~60fps
-  - 内存使用减少 80%
-  - 初始渲染时间减少 90%
-*/
+@import "./styles/ArtDecoTable.scss";
 </style>

@@ -107,7 +107,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-stat-card {
       padding: var(--artdeco-spacing-4);
@@ -138,7 +138,7 @@
 
     .artdeco-stat-icon {
       font-size: var(--artdeco-font-size-md); // 18px - Compact v3.1
-      color: rgba(212, 175, 55, 0.2);
+      color: rgb(212 175 55 / 20%);
     }
 
     .artdeco-stat-value {
@@ -181,17 +181,17 @@
 
     .artdeco-stat-change-rise {
       color: var(--artdeco-up);
-      background: rgba(255, 82, 82, 0.1);
+      background: rgb(255 82 82 / 10%);
     }
 
     .artdeco-stat-change-fall {
       color: var(--artdeco-down);
-      background: rgba(0, 230, 118, 0.1);
+      background: rgb(0 230 118 / 10%);
     }
 
     .artdeco-stat-change-flat {
       color: var(--artdeco-fg-muted);
-      background: rgba(184, 184, 184, 0.1);
+      background: rgb(184 184 184 / 10%);
     }
 
     .artdeco-stat-description {
@@ -212,17 +212,17 @@
 
     .artdeco-stat-card-gold:hover .artdeco-stat-value {
       color: var(--artdeco-gold-light);
-      text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+      text-shadow: 0 0 15px rgb(212 175 55 / 50%);
     }
 
     .artdeco-stat-card-rise:hover .artdeco-stat-value {
       color: var(--artdeco-up);
-      text-shadow: 0 0 15px rgba(255, 82, 82, 0.5);
+      text-shadow: 0 0 15px rgb(255 82 82 / 50%);
     }
 
     .artdeco-stat-card-fall:hover .artdeco-stat-value {
       color: var(--artdeco-down);
-      text-shadow: 0 0 15px rgba(0, 230, 118, 0.5);
+      text-shadow: 0 0 15px rgb(0 230 118 / 50%);
     }
 
     // ============================================

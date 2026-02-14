@@ -1,0 +1,209 @@
+.risk-overview-tab {
+  padding: 20px;
+}
+
+.metrics-row {
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  height: 120px;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%);
+}
+
+.metric-card.normal {
+  border-left: 4px solid #67C23A;
+}
+
+.metric-card.warning {
+  border-left: 4px solid #E6A23C;
+}
+
+.metric-card.danger {
+  border-left: 4px solid #F56C6C;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.metric-icon {
+  font-size: 24px;
+  color: #409EFF;
+  margin-right: 12px;
+}
+
+.metric-info {
+  flex: 1;
+}
+
+.metric-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 2px;
+}
+
+.metric-subtitle {
+  font-size: 12px;
+  color: #909399;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 8px;
+}
+
+.metric-change {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.metric-change.positive {
+  color: #67C23A;
+}
+
+.metric-change.negative {
+  color: #F56C6C;
+}
+
+.charts-row {
+  margin-bottom: 20px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.status-row {
+  margin-bottom: 20px;
+}
+
+.health-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.health-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.indicator-label {
+  font-weight: 500;
+  color: #606266;
+}
+
+.indicator-value {
+  font-weight: 600;
+}
+
+.indicator-value.healthy {
+  color: #67C23A;
+}
+
+.indicator-value.warning {
+  color: #E6A23C;
+}
+
+.indicator-value.error {
+  color: #F56C6C;
+}
+
+.monitoring-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #409EFF;
+}
+
+.activity-item.portfolio {
+  border-left-color: #67C23A;
+}
+
+.activity-item.stock {
+  border-left-color: #E6A23C;
+}
+
+.activity-item.alert {
+  border-left-color: #F56C6C;
+}
+
+.activity-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  color: #409EFF;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-message {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 2px;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #909399;
+}

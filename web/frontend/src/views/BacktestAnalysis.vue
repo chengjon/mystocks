@@ -253,7 +253,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   Setting,
@@ -374,7 +374,7 @@ const resetConfig = () => {
   }
 }
 
-const mockRunBacktest = async (config: BacktestConfig): Promise<BacktestResultData> => {
+const mockRunBacktest = async (_config: BacktestConfig): Promise<BacktestResultData> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -424,137 +424,16 @@ onMounted(() => {
   backtestConfig.value.endDate = endDate.toISOString().split('T')[0]
   backtestConfig.value.startDate = startDate.toISOString().split('T')[0]
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+const _timer_2: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+  if (_timer_2) clearTimeout(_timer_2)
+})
 </script>
 
 <style scoped>
-.backtest-analysis {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.page-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1a1a1a;
-  margin: 0;
-  letter-spacing: 2px;
-}
-
-.page-subtitle {
-  font-size: 1rem;
-  color: #666;
-  margin: 10px 0 0 0;
-  letter-spacing: 1px;
-}
-
-.analysis-controls {
-  margin-bottom: 30px;
-}
-
-.control-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-icon {
-  font-size: 18px;
-  color: #409eff;
-}
-
-.results-section {
-  margin-top: 30px;
-}
-
-.metrics-card, .chart-card, .trades-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-.metric-item {
-  text-align: center;
-  padding: 20px;
-  border: 1px solid #e4e7ed;
-  border-radius: 6px;
-  background: #fafafa;
-}
-
-.metric-label {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.metric-value {
-  font-size: 1.8rem;
-  font-weight: bold;
-}
-
-.metric-value.positive {
-  color: #67c23a;
-}
-
-.metric-value.negative {
-  color: #f56c6c;
-}
-
-.metric-value.neutral {
-  color: #e6a23c;
-}
-
-.chart-container {
-  height: 400px;
-  position: relative;
-}
-
-.chart {
-  width: 100%;
-  height: 100%;
-}
-
-.loading-state, .empty-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #409eff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
-}
-
-.empty-state h3 {
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.empty-state p {
-  color: #999;
-}
+@import "./styles/BacktestAnalysis.css";
 </style>

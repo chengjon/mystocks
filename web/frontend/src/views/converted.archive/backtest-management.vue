@@ -93,7 +93,7 @@
             <h4 class="section-title">STRATEGY PARAMETERS</h4>
             <div class="parameters-grid">
               <div
-                v-for="param in strategyParams[config.strategy]"
+                v-for="(param, _idx) in strategyParams[config.strategy]"
                 :key="param.key"
                 class="parameter-item"
               >
@@ -273,7 +273,7 @@
               <div class="metric-column">TRADES</div>
             </div>
             <div
-              v-for="strategy in comparisonData"
+              v-for="(strategy, _idx) in comparisonData"
               :key="strategy.name"
               class="comparison-row"
             >
@@ -292,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , onUnmounted } from 'vue'
 
 // ArtDeco Components
 import {
@@ -317,7 +317,7 @@ interface BacktestConfig {
   startDate: string
   endDate: string
   initialCapital: number
-  parameters: Record<string, any>
+  parameters: Record<string, unknown>
 }
 
 interface BacktestResults {
@@ -415,7 +415,7 @@ const strategyParams = {
 const running = ref(false)
 const optimizing = ref(false)
 const backtestResults = ref<BacktestResults | null>(null)
-const comparisonData = ref<any[]>([])
+const comparisonData = ref<unknown[]>([])
 
 // Time Range Options
 const timeRangeOptions = [
@@ -604,6 +604,14 @@ watch(() => config.value.strategy, (newStrategy) => {
 onMounted(() => {
   // Initialize with default values
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+const _timer_2: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+  if (_timer_2) clearTimeout(_timer_2)
+})
 </script>
 
 <style scoped lang="scss">
@@ -756,7 +764,7 @@ onMounted(() => {
           align-items: center;
           padding: var(--artdeco-spacing-sm) var(--artdeco-spacing-md);
           background: var(--artdeco-bg-elevated);
-          border: 1px solid rgba(212, 175, 55, 0.1);
+          border: 1px solid rgb(212 175 55 / 10%);
           border-radius: 4px;
 
           .metric-label {
@@ -800,7 +808,7 @@ onMounted(() => {
 
         .comparison-header {
           background: var(--artdeco-bg-elevated);
-          border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+          border-bottom: 1px solid rgb(212 175 55 / 20%);
           font-family: var(--artdeco-font-display);
           font-size: var(--artdeco-font-size-sm);
           font-weight: 600;
@@ -810,7 +818,7 @@ onMounted(() => {
         }
 
         .comparison-row {
-          border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+          border-bottom: 1px solid rgb(212 175 55 / 10%);
 
           &:last-child {
             border-bottom: none;

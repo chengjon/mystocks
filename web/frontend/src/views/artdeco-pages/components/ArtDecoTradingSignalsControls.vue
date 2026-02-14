@@ -2,7 +2,7 @@
     <div class="artdeco-trading-signals-controls">
         <div class="artdeco-trading-signals-controls__filters">
             <button
-                v-for="filter in signalFilters"
+                v-for="(filter, _idx) in signalFilters"
                 :key="filter.key"
                 class="artdeco-trading-signals-controls__chip"
                 :class="{ 'artdeco-trading-signals-controls__chip--active': activeSignalFilter === filter.key }"
@@ -40,8 +40,8 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .artdeco-trading-signals-controls {
         display: flex;

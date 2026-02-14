@@ -1,0 +1,317 @@
+.monitoring-alert-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-4);
+  padding: var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.panel-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--fintech-radius-base);
+  font-size: 18px;
+}
+
+.icon-critical {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.icon-warning {
+  background: var(--fintech-accent-warning);
+  color: white;
+}
+
+.icon-info {
+  background: var(--fintech-accent-info);
+  color: white;
+}
+
+.icon-success {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.icon-default {
+  background: var(--fintech-accent-primary);
+  color: white;
+}
+
+.panel-info h3 {
+  margin: 0 0 var(--fintech-space-1) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+}
+
+.panel-info p {
+  margin: 0;
+  font-size: var(--fintech-font-size-sm);
+}
+
+.panel-count {
+  margin-left: auto;
+}
+
+.count-badge {
+  padding: var(--fintech-space-1) var(--fintech-space-3);
+  border-radius: var(--fintech-radius-base);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-critical {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.badge-warning {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.badge-info {
+  background: var(--fintech-accent-info);
+  color: white;
+}
+
+.badge-success {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.badge-default {
+  background: var(--fintech-accent-primary);
+  color: white;
+}
+
+/* 告警容器 */
+.alerts-container {
+  flex: 1;
+  max-height: v-bind(maxHeight);
+  overflow-y: auto;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fintech-space-4);
+  padding: var(--fintech-space-4);
+  border-bottom: 1px solid var(--fintech-border-dark);
+  cursor: pointer;
+  transition: all var(--fintech-transition-fast);
+}
+
+.alert-item:hover {
+  background: var(--fintech-bg-tertiary);
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+.alert-icon {
+  font-size: 20px;
+  margin-top: var(--fintech-space-1);
+  flex-shrink: 0;
+}
+
+.level-critical .alert-icon {
+  color: var(--fintech-accent-danger);
+}
+
+.level-warning .alert-icon {
+  color: var(--fintech-accent-warning);
+}
+
+.level-info .alert-icon {
+  color: var(--fintech-accent-info);
+}
+
+.level-success .alert-icon {
+  color: var(--fintech-accent-success);
+}
+
+.level-tip .alert-icon {
+  color: var(--fintech-accent-warning);
+}
+
+.alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-title {
+  font-size: var(--fintech-font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--fintech-space-1);
+  overflow-wrap: break-word;
+}
+
+.alert-message {
+  font-size: var(--fintech-font-size-sm);
+  line-height: 1.5;
+  margin-bottom: var(--fintech-space-2);
+  overflow-wrap: break-word;
+}
+
+.alert-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fintech-space-3);
+}
+
+.alert-time {
+  font-size: var(--fintech-font-size-xs);
+  font-family: var(--fintech-font-family-data);
+}
+
+.alert-priority {
+  padding: 2px 8px;
+  border-radius: var(--fintech-radius-sm);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.priority-high {
+  background: var(--fintech-accent-danger);
+  color: white;
+}
+
+.priority-medium {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.priority-low {
+  background: var(--fintech-gray-6);
+  color: var(--fintech-text-secondary);
+}
+
+.alert-actions {
+  flex-shrink: 0;
+}
+
+.default-actions {
+  display: flex;
+  gap: var(--fintech-space-2);
+}
+
+.default-actions .fintech-btn {
+  padding: var(--fintech-space-2) var(--fintech-space-3);
+  font-size: var(--fintech-font-size-xs);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fintech-space-8);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: var(--fintech-gray-6);
+  margin-bottom: var(--fintech-space-4);
+  opacity: 50%;
+}
+
+.empty-content h4 {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 500;
+}
+
+.empty-content p {
+  margin: 0;
+  font-size: var(--fintech-font-size-base);
+}
+
+/* 面板底部 */
+.panel-footer {
+  padding: var(--fintech-space-4) var(--fintech-space-5);
+  border-top: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+/* 变体样式覆盖 */
+.variant-critical .panel-header {
+  border-left: 3px solid var(--fintech-accent-danger);
+}
+
+.variant-warning .panel-header {
+  border-left: 3px solid var(--fintech-accent-warning);
+}
+
+.variant-info .panel-header {
+  border-left: 3px solid var(--fintech-accent-info);
+}
+
+.variant-success .panel-header {
+  border-left: 3px solid var(--fintech-accent-success);
+}
+
+/* 优先级动画 */
+.alert-item.priority-high {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 100%; }
+  50% { opacity: 80%; }
+  100% { opacity: 100%; }
+}
+
+/* 响应式设计 */
+@media (width <= 768px) {
+  .alert-item {
+    flex-direction: column;
+    gap: var(--fintech-space-3);
+  }
+
+  .alert-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--fintech-space-2);
+  }
+
+  .default-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .default-actions .fintech-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* 高分辨率优化 */
+@media (width >= 1920px) {
+  .panel-info h3 {
+    font-size: var(--fintech-font-size-xl);
+  }
+
+  .alert-title {
+    font-size: var(--fintech-font-size-lg);
+  }
+}

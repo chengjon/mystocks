@@ -32,8 +32,8 @@ import { ArtDecoInput, ArtDecoSelect, ArtDecoButton, ArtDecoCard } from '@/compo
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
 interface Props {
-  indicators: any[]
-  trendData: any[]
+  indicators: unknown[]
+  trendData: unknown[]
 }
 
 const props = defineProps<Props>()
@@ -53,10 +53,10 @@ const trendOption = computed(() => {
   
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: props.trendData.map((d: any) => d.time) },
+    xAxis: { type: 'category', data: props.trendData.map((d: unknown) => d.time) },
     yAxis: { type: 'value', scale: true },
     series: [{ 
-      data: props.trendData.map((d: any) => d.value), 
+      data: props.trendData.map((d: unknown) => d.value), 
       type: 'line', 
       smooth: true, 
       color: 'var(--artdeco-accent-gold)' 
@@ -66,7 +66,7 @@ const trendOption = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .analysis-controls {
   display: flex;
@@ -95,8 +95,16 @@ const trendOption = computed(() => {
   border: 1px solid var(--artdeco-border-gold-subtle);
   text-align: center;
 
-  .indicator-name { font-size: 12px; color: var(--artdeco-fg-muted); text-transform: uppercase; }
-  .indicator-value { font-family: var(--artdeco-font-mono); font-size: 18px; margin: 4px 0; }
+  .indicator-name {
+    font-size: 12px;
+    color: var(--artdeco-fg-muted);
+    text-transform: uppercase;
+  }
+  .indicator-value {
+    font-family: var(--artdeco-font-mono);
+    font-size: 18px;
+    margin: 4px 0;
+  }
   .indicator-signal { font-weight: 600; 
     &.rise { color: var(--artdeco-up); }
     &.fall { color: var(--artdeco-down); }

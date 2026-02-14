@@ -10,7 +10,7 @@
  */
 
 @use 'sass:color';
-@import './artdeco-tokens.scss';
+@import './artdeco-tokens';
 
 // ============================================================
 // Element Plus CSS Variable Mappings - ArtDeco Style
@@ -52,8 +52,8 @@
   --el-color-danger-light-3: #FF7D7D;
   --el-color-danger-light-5: #FFA3A3;
   --el-color-danger-light-7: #FFC9C9;
-  --el-color-danger-light-8: #FFDDDD;
-  --el-color-danger-light-9: #FFEEEE;
+  --el-color-danger-light-8: #FDD;
+  --el-color-danger-light-9: #FEE;
   --el-color-danger-dark-2: #E60000;
 
   // Error (Same as Danger)
@@ -78,7 +78,7 @@
 
   --el-bg-color: var(--artdeco-bg-base);
   --el-bg-color-page: var(--artdeco-bg-global);
-  --el-bg-color-overlay: #000000;
+  --el-bg-color-overlay: #000;
 
   // ========== Text Colors ==========
 
@@ -86,14 +86,14 @@
   --el-text-color-regular: var(--artdeco-fg-muted);
   --el-text-color-secondary: #A0A0A0;
   --el-text-color-placeholder: var(--artdeco-fg-subtle);
-  --el-text-color-disabled: #555555;
+  --el-text-color-disabled: #555;
 
   // ========== Border Colors ==========
 
   --el-border-color: var(--artdeco-border-default);
-  --el-border-color-light: rgba(212, 175, 55, 0.15);
-  --el-border-color-lighter: rgba(212, 175, 55, 0.1);
-  --el-border-color-extra-light: rgba(212, 175, 55, 0.05);
+  --el-border-color-light: rgb(212 175 55 / 15%);
+  --el-border-color-lighter: rgb(212 175 55 / 10%);
+  --el-border-color-extra-light: rgb(212 175 55 / 5%);
   --el-border-color-dark: var(--artdeco-border-hover);
   --el-border-color-darker: var(--artdeco-border-accent);
 
@@ -245,15 +245,15 @@
   }
 
   td.el-table__cell {
-    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    border-bottom: 1px solid rgb(212 175 55 / 10%);
   }
 
   tr:hover > td {
-    background-color: rgba(212, 175, 55, 0.05) !important;
+    background-color: rgb(212 175 55 / 5%) !important;
   }
 
   .el-table__body tr.current-row > td {
-    background-color: rgba(212, 175, 55, 0.1) !important;
+    background-color: rgb(212 175 55 / 10%) !important;
   }
 }
 
@@ -268,13 +268,13 @@
     font-family: var(--artdeco-font-body);
 
     &:hover {
-      background-color: rgba(212, 175, 55, 0.1);
+      background-color: rgb(212 175 55 / 10%);
       color: var(--artdeco-gold-primary);
     }
 
     &.is-selected {
       color: var(--artdeco-gold-primary);
-      background-color: rgba(212, 175, 55, 0.15);
+      background-color: rgb(212 175 55 / 15%);
     }
   }
 }
@@ -339,25 +339,25 @@
   border: 1px solid;
 
   &.el-tag--success {
-    background-color: rgba(0, 230, 118, 0.1);
+    background-color: rgb(0 230 118 / 10%);
     border-color: var(--artdeco-success);
     color: var(--artdeco-success);
   }
 
   &.el-tag--warning {
-    background-color: rgba(255, 215, 0, 0.1);
+    background-color: rgb(255 215 0 / 10%);
     border-color: var(--artdeco-warning);
     color: var(--artdeco-warning);
   }
 
   &.el-tag--danger {
-    background-color: rgba(255, 82, 82, 0.1);
+    background-color: rgb(255 82 82 / 10%);
     border-color: var(--artdeco-error);
     color: var(--artdeco-error);
   }
 
   &.el-tag--info {
-    background-color: rgba(79, 195, 247, 0.1);
+    background-color: rgb(79 195 247 / 10%);
     border-color: var(--artdeco-info);
     color: var(--artdeco-info);
   }
@@ -438,25 +438,25 @@
   border: 1px solid;
 
   &.el-alert--success {
-    background-color: rgba(0, 230, 118, 0.1);
+    background-color: rgb(0 230 118 / 10%);
     border-color: var(--artdeco-success);
     color: var(--artdeco-success);
   }
 
   &.el-alert--warning {
-    background-color: rgba(255, 215, 0, 0.1);
+    background-color: rgb(255 215 0 / 10%);
     border-color: var(--artdeco-warning);
     color: var(--artdeco-warning);
   }
 
   &.el-alert--error {
-    background-color: rgba(255, 82, 82, 0.1);
+    background-color: rgb(255 82 82 / 10%);
     border-color: var(--artdeco-error);
     color: var(--artdeco-error);
   }
 
   &.el-alert--info {
-    background-color: rgba(79, 195, 247, 0.1);
+    background-color: rgb(79 195 247 / 10%);
     border-color: var(--artdeco-info);
     color: var(--artdeco-info);
   }
@@ -501,7 +501,7 @@
 // ========== Loading ==========
 
 .el-loading-mask {
-  background-color: rgba(10, 10, 10, 0.8);
+  background-color: rgb(10 10 10 / 80%);
 
   .el-loading-spinner {
     .path {
@@ -526,17 +526,17 @@
   color: var(--artdeco-fg-primary);
 
   &.el-message--success {
-    background-color: rgba(0, 230, 118, 0.1);
+    background-color: rgb(0 230 118 / 10%);
     border-color: var(--artdeco-success);
   }
 
   &.el-message--warning {
-    background-color: rgba(255, 215, 0, 0.1);
+    background-color: rgb(255 215 0 / 10%);
     border-color: var(--artdeco-warning);
   }
 
   &.el-message--error {
-    background-color: rgba(255, 82, 82, 0.1);
+    background-color: rgb(255 82 82 / 10%);
     border-color: var(--artdeco-error);
   }
 }

@@ -54,7 +54,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-select {
       position: relative;
@@ -70,12 +70,10 @@
       font-weight: 500;
       color: var(--artdeco-fg-secondary);
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       border-radius: var(--artdeco-radius-none);
       cursor: pointer;
       appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
       transition: all var(--artdeco-transition-base);
     }
 
@@ -90,7 +88,7 @@
     }
 
     .artdeco-select select:disabled {
-      opacity: 0.5;
+      opacity: 50%;
       cursor: not-allowed;
       background: var(--artdeco-bg-header);
     }

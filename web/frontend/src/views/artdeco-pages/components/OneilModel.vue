@@ -55,11 +55,17 @@ defineProps({
     }
     .content {
         flex: 1;
-        .name { font-size: 14px; margin-bottom: 4px; }
+        .name {
+          font-size: 14px;
+          margin-bottom: 4px;
+        }
         .score-bar {
             height: 4px;
-            background: rgba(212, 175, 55, 0.1);
-            .score-fill { height: 100%; background: var(--artdeco-gold-primary); }
+            background: rgb(212 175 55 / 10%);
+            .score-fill {
+              height: 100%;
+              background: var(--artdeco-gold-primary);
+            }
         }
     }
 }
@@ -67,7 +73,7 @@ defineProps({
     display: flex;
     align-items: center;
     justify-content: center;
-    border-left: 1px solid rgba(212, 175, 55, 0.2);
+    border-left: 1px solid rgb(212 175 55 / 20%);
     .gauge {
         text-align: center;
         .value {

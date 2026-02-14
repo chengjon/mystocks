@@ -25,7 +25,7 @@
                 <!-- 背景网格 -->
                 <defs>
                     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(212, 175, 55, 0.1)" stroke-width="1" />
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgb(212 175 55 / 10%)" stroke-width="1" />
                     </pattern>
 
                     <!-- 渐变定义 -->
@@ -114,7 +114,7 @@
                 <g class="hybrid-depth-chart__axis">
                     <!-- X轴价格标签 -->
                     <text
-                        v-for="tick in xTicks"
+                        v-for="(tick, _idx) in xTicks"
                         :key="tick.value"
                         :x="tick.x"
                         :y="height - margin.bottom + 15"
@@ -126,7 +126,7 @@
 
                     <!-- Y轴数量标签 -->
                     <text
-                        v-for="tick in yTicks"
+                        v-for="(tick, _idx) in yTicks"
                         :key="tick.value"
                         :x="margin.left - 10"
                         :y="tick.y"
@@ -227,7 +227,7 @@
         mode: 'combined'
     })
 
-    const emit = defineEmits<{
+    const _emit = defineEmits<{
         'price-hover': [price: number, volume: number, side: 'bid' | 'ask']
     }>()
 
@@ -309,7 +309,7 @@
 
         let path = `M ${margin.left} ${props.height - margin.bottom}`
 
-        props.bidData.forEach((item, index) => {
+        props.bidData.forEach((item, _index) => {
             const x =
                 margin.left +
                 ((item.price - priceMin) / (priceMax - priceMin)) * (props.width - margin.left - margin.right)
@@ -340,7 +340,7 @@
 
         let path = `M ${cx} ${props.height - margin.bottom}`
 
-        props.askData.forEach((item, index) => {
+        props.askData.forEach((item, _index) => {
             const x = cx + (((item.price - pMin) / (pMax - pMin)) * (props.width - margin.left - margin.right)) / 2
             const y =
                 props.height - margin.bottom - ((item.total - 0) / vMax) * (props.height - margin.top - margin.bottom)
@@ -481,198 +481,5 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/data-dense/index.scss';
-
-    // ============================================
-    //   HYBRID DEPTH CHART - 混合深度图表
-    //   Art Deco 视觉 + 数据密集型图表
-    // ============================================
-
-    .hybrid-depth-chart {
-        @include hybrid-card;
-        position: relative;
-
-        &--loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-    }
-
-    .hybrid-depth-chart__header {
-        @include data-dense-spacing;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
-    }
-
-    .hybrid-depth-chart__title {
-        @include artdeco-gold-accent;
-        font-family: var(--hybrid-font-display);
-        font-size: var(--data-dense-font-lg);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin: 0;
-    }
-
-    .hybrid-depth-chart__controls {
-        display: flex;
-        gap: var(--data-dense-gap-sm);
-    }
-
-    .hybrid-depth-chart__container {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hybrid-depth-chart__svg {
-        @include gpu-accelerated;
-        cursor: crosshair;
-
-        &:hover {
-            cursor: grab;
-        }
-
-        &:active {
-            cursor: grabbing;
-        }
-    }
-
-    .hybrid-depth-chart__bid-area,
-    .hybrid-depth-chart__ask-area {
-        @include gpu-accelerated;
-        opacity: 0.7;
-        transition: opacity var(--data-dense-transition-fast);
-    }
-
-    .hybrid-depth-chart__bid-line,
-    .hybrid-depth-chart__ask-line {
-        @include gpu-accelerated;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    .hybrid-depth-chart__axis-label {
-        @include data-dense-typography;
-        fill: var(--artdeco-fg-muted);
-        font-size: var(--data-dense-font-xs);
-    }
-
-    .hybrid-depth-chart__legend-text {
-        @include data-dense-typography;
-        fill: var(--artdeco-fg-primary);
-        font-size: var(--data-dense-font-xs);
-    }
-
-    // 工具提示
-    .hybrid-depth-chart__tooltip {
-        position: absolute;
-        pointer-events: none;
-        z-index: 1000;
-        transform: translate(-50%, -100%);
-        margin-top: -10px;
-    }
-
-    .hybrid-depth-chart__tooltip-content {
-        @include hybrid-card;
-        padding: var(--data-dense-padding-sm);
-        min-width: 120px;
-        box-shadow: var(--data-dense-shadow-md);
-    }
-
-    .hybrid-depth-chart__tooltip-row {
-        display: flex;
-        justify-content: space-between;
-        gap: var(--data-dense-gap-sm);
-        margin-bottom: var(--data-dense-margin-xs);
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    .hybrid-depth-chart__tooltip-label {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-    }
-
-    .hybrid-depth-chart__tooltip-value {
-        @include data-dense-typography;
-        font-weight: 600;
-
-        &.text-up {
-            color: var(--artdeco-up);
-        }
-        &.text-down {
-            color: var(--artdeco-down);
-        }
-    }
-
-    // 加载和空状态
-    .hybrid-depth-chart__loading,
-    .hybrid-depth-chart__empty {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--data-dense-gap-sm);
-    }
-
-    .hybrid-depth-chart__spinner {
-        width: 24px;
-        height: 24px;
-        border: 2px solid rgba(212, 175, 55, 0.2);
-        border-top-color: var(--artdeco-gold-primary);
-        border-radius: 0px;
-        animation: hybrid-spin 1s linear infinite;
-    }
-
-    @keyframes hybrid-spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .hybrid-depth-chart__loading p,
-    .hybrid-depth-chart__empty p {
-        @include data-dense-typography;
-        color: var(--artdeco-fg-muted);
-        margin: 0;
-    }
-
-    // ============================================
-    //   RESPONSIVE DESIGN - 响应式设计
-    // ============================================
-
-    @media (max-width: 768px) {
-        .hybrid-depth-chart {
-            .hybrid-depth-chart__title {
-                font-size: var(--data-dense-font-base);
-            }
-
-            .hybrid-depth-chart__legend {
-                display: none; // 移动端隐藏图例节省空间
-            }
-        }
-    }
-
-    // ============================================
-    //   PERFORMANCE NOTES - 性能说明
-    // ============================================
-
-    /*
-  深度图性能优化：
-  1. SVG渲染：硬件加速，适合复杂路径
-  2. 渐进式加载：支持实时数据更新
-  3. 内存优化：只保留当前可见数据点
-  4. 交互优化：防抖鼠标事件，GPU加速变换
-
-  预期性能：
-  - 支持数千个深度级别而不影响60fps
-  - 实时更新延迟 < 16ms
-*/
+@import "./styles/DepthChart.scss";
 </style>

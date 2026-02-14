@@ -41,7 +41,7 @@
 import { ArtDecoStatCard, ArtDecoCard, ArtDecoTable } from '@/components/artdeco'
 
 interface Props {
-  auctionData: any[]
+  auctionData: unknown[]
 }
 
 defineProps<Props>()
@@ -58,7 +58,7 @@ const columns = [
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .auction-overview {
   display: grid;

@@ -59,6 +59,17 @@ export default [
     ]
   },
 
+  // 类型声明文件和自动生成文件：允许 any（第三方库类型补充、API 自动生成）
+  {
+    files: [
+      'src/types/**/*.d.ts',
+      'src/api/types/generated-types.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
   // Vue and TypeScript configuration
   {
     files: ['**/*.vue', '**/*.ts', '**/*.tsx'],
@@ -219,5 +230,23 @@ export default [
   },
 
   // Apply Prettier config last to override other formatting rules
-  eslintConfigPrettier
+  eslintConfigPrettier,
+  // 类型声明文件和自动生成的类型文件 - 禁用 no-explicit-any
+  // 这些文件中的 any 是合理的：自动生成的类型、第三方库声明、通用 API 类型
+  {
+    files: [
+      'src/types/**/*.d.ts',
+      'src/shims-vue.d.ts',
+      'src/api/types/generated-types.ts',
+      'src/api/types/common.ts',
+      'src/api/types/analysis.ts',
+      'src/api/types/strategy.ts',
+      'src/api/types/admin.ts',
+      'src/api/types/global.d.ts',
+      'src/types/klinecharts.d.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]

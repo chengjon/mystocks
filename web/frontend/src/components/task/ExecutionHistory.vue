@@ -175,7 +175,7 @@ const handleCleanup = async () => {
       type: 'warning'
     })
     emit('cleanup')
-  } catch (error) {
+  } catch (_error) {
     // 用户取消
   }
 }

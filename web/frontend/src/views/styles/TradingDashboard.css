@@ -1,0 +1,357 @@
+    .trading-dashboard {
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgb(0 0 0 / 30%);
+    }
+
+    .page-subtitle {
+        font-size: 1.2rem;
+        opacity: 90%;
+        margin-bottom: 15px;
+        letter-spacing: 2px;
+    }
+
+    .page-decorative-line {
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, #ffd89b, #19547b);
+        margin: 0 auto 20px;
+        border-radius: 2px;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        opacity: 80%;
+    }
+
+    .control-panel {
+        background: rgb(255 255 255 / 10%);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgb(255 255 255 / 20%);
+    }
+
+    .control-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .control-btn {
+        width: 100%;
+        height: 50px;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgb(0 0 0 / 20%);
+    }
+
+    .btn-icon {
+        margin-right: 8px;
+    }
+
+    .status-overview {
+        margin-bottom: 30px;
+    }
+
+    .metric-card {
+        background: rgb(255 255 255 / 95%);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgb(0 0 0 / 10%);
+    }
+
+    .metric-card.profit {
+        border-color: #67c23a;
+    }
+
+    .metric-card.loss {
+        border-color: #f56c6c;
+    }
+
+    .metric-card.warning {
+        border-color: #e6a23c;
+    }
+
+    .metric-icon {
+        margin-right: 15px;
+        color: #409eff;
+    }
+
+    .metric-content {
+        flex: 1;
+    }
+
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #303133;
+        margin-bottom: 5px;
+    }
+
+    .metric-label {
+        font-size: 0.9rem;
+        color: #909399;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .metric-change {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+
+    .metric-change.increase {
+        color: #67c23a;
+    }
+
+    .metric-change.decrease {
+        color: #f56c6c;
+    }
+
+    .main-content {
+        margin-bottom: 30px;
+    }
+
+    .content-card {
+        background: rgb(255 255 255 / 95%);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgb(255 255 255 / 30%);
+        height: 100%;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-icon {
+        color: #409eff;
+    }
+
+    .trading-details {
+        margin-bottom: 30px;
+    }
+
+    .strategy-performance h4 {
+        margin-bottom: 15px;
+        color: #303133;
+    }
+
+    .performance-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .performance-metrics > div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .metric-key {
+        font-weight: bold;
+        color: #606266;
+    }
+
+    .metric-value {
+        color: #409eff;
+    }
+
+    .market-snapshot {
+        margin-bottom: 20px;
+    }
+
+    .market-data {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .market-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .market-item:last-child {
+        border-bottom: none;
+    }
+
+    .symbol {
+        font-weight: bold;
+        color: #303133;
+        min-width: 60px;
+    }
+
+    .price {
+        font-weight: bold;
+        color: #303133;
+    }
+
+    .change,
+    .change-percent {
+        min-width: 60px;
+        text-align: right;
+    }
+
+    .change.positive,
+    .change-percent.positive {
+        color: #67c23a;
+    }
+
+    .change.negative,
+    .change-percent.negative {
+        color: #f56c6c;
+    }
+
+    .risk-panel {
+        margin-bottom: 20px;
+    }
+
+    .risk-metrics {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .risk-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .risk-item:last-child {
+        border-bottom: none;
+    }
+
+    .risk-label {
+        font-weight: 500;
+        color: #606266;
+    }
+
+    .risk-value {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .risk-value.profit {
+        color: #67c23a;
+    }
+
+    .risk-value.loss {
+        color: #f56c6c;
+    }
+
+    .risk-value.high-risk {
+        color: #f56c6c;
+    }
+
+    .risk-value.normal-risk {
+        color: #67c23a;
+    }
+
+    .risk-value.small {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: #909399;
+    }
+
+    .strategy-management {
+        min-height: 300px;
+    }
+
+    .risk-report {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .risk-details {
+        margin-top: 20px;
+    }
+
+    .risk-details h4 {
+        margin: 20px 0 10px 0;
+        color: #303133;
+    }
+
+    .risk-details ul {
+        padding-left: 20px;
+    }
+
+    .risk-details li {
+        margin-bottom: 5px;
+        color: #606266;
+    }
+
+    /* 响应式设计 */
+    @media (width <= 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .control-buttons .el-col {
+            margin-bottom: 10px;
+        }
+
+        .metric-card {
+            padding: 15px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* 滚动条样式 */
+    .market-data::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .market-data::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .market-data::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    .market-data::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }

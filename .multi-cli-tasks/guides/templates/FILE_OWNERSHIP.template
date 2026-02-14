@@ -1,0 +1,58 @@
+# Git Worktree文件所有权映射模板
+# ============================================================
+# 使用说明：
+# 1. 复制此文件到项目根目录，命名为 .FILE_OWNERSHIP
+# 2. 根据项目实际情况修改CLI分配
+# 3. 每次分配新任务时更新此文件
+# 4. 将此文件提交到Git仓库
+# ============================================================
+
+# 维护者：Main CLI
+# 更新频率：每次分配新任务时更新
+# 格式：目录/文件模式: 拥有者CLI | 说明
+
+# ========== 主仓库（主CLI）==========
+# 主CLI负责维护核心代码和全局配置
+src/                               main      | 核心业务逻辑
+config/                            main      | 配置文件
+scripts/dev/                       main      | 开发工具
+pyproject.toml                     main      | 项目配置
+.pre-commit-config.yaml            main      | Pre-commit配置（所有CLI继承）
+requirements.txt                   main      | Python依赖
+
+# ========== CLI-1: [任务名称] ==========
+# 示例：前端组件开发
+# web/frontend/src/components/XXX/    cli-1     | XXX组件
+# web/frontend/src/api/xxxApi.ts      cli-1     | XXX API
+
+# ========== CLI-2: [任务名称] ==========
+# 示例：后端API开发
+# web/backend/app/api/xxx/            cli-2     | XXX API端点
+# web/backend/app/schemas/xxx.py      cli-2     | XXX数据模式
+
+# ========== CLI-3: [任务名称] ==========
+# 示例：数据库相关
+# src/db/                             cli-3     | 数据库代码
+# migrations/                         cli-3     | 数据库迁移
+
+# ========== CLI-N: [更多CLI...] ==========
+# 根据实际任务需要添加更多CLI
+
+# ========== 共享文件（协调修改）==========
+README.md                           main+clis | 主CLI维护，CLI可建议
+CLAUDE.md                           main      | 主CLI维护
+CHANGELOG.md                        main      | 主CLI维护
+AGENTS.md                           main      | 主CLI维护
+
+# ========== 规则说明 ==========
+# 1. 拥有者CLI可以修改其拥有的文件
+# 2. 其他CLI只读这些文件，修改需要协调
+# 3. 共享文件需要主CLI协调修改
+# 4. 未知所有权的文件默认属于主CLI
+# 5. 新增文件时，应在对应CLI的worktree中创建
+# 6. 跨worktree文件修改必须先请示主CLI
+
+# ========== 冲突解决优先级 ==========
+# 1. .FILE_OWNERSHIP 定义优先
+# 2. 目录结构物理隔离
+# 3. 主CLI协调决策

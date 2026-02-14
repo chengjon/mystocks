@@ -55,7 +55,7 @@
 <script setup lang="ts">
     import { computed } from 'vue'
     import { useRoute } from 'vue-router'
-    import type { RouteLocationNormalized } from 'vue-router'
+    import type { _RouteLocationNormalized } from 'vue-router'
     import ArtDecoIcon from './ArtDecoIcon.vue'
 
     /**
@@ -152,7 +152,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-breadcrumb {
         --artdeco-breadcrumb-bg: var(--artdeco-bg-base);
@@ -175,7 +175,7 @@
             width: 1px;
             height: 40%;
             background: linear-gradient(to bottom, transparent, var(--artdeco-gold-primary), transparent);
-            opacity: 0.3;
+            opacity: 30%;
 
             &--left {
                 left: var(--artdeco-spacing-md);
@@ -194,7 +194,7 @@
             width: 100%;
             height: 1px;
             background: linear-gradient(90deg, transparent 0%, var(--artdeco-gold-primary) 50%, transparent 100%);
-            opacity: 0.2;
+            opacity: 20%;
         }
 
         // 右侧角落装饰
@@ -204,7 +204,7 @@
             right: 0;
             width: 20px;
             height: 20px;
-            opacity: 0.15;
+            opacity: 15%;
             z-index: 1;
 
             svg {
@@ -246,14 +246,14 @@
 
         &:hover {
             color: var(--artdeco-breadcrumb-text-hover);
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 0 10px rgb(212 175 55 / 30%);
         }
 
         &--active {
             color: var(--artdeco-breadcrumb-text-active);
             font-weight: var(--artdeco-font-weight-bold);
             cursor: default;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            text-shadow: 0 0 15px rgb(212 175 55 / 40%);
         }
     }
 
@@ -263,7 +263,7 @@
         justify-content: center;
         font-size: var(--artdeco-font-size-base);
         color: inherit;
-        opacity: 0.7;
+        opacity: 70%;
         transition: all var(--artdeco-transition-normal) var(--artdeco-ease-out);
     }
 
@@ -279,7 +279,7 @@
         height: 20px;
         margin: 0 var(--artdeco-spacing-sm);
         color: var(--artdeco-gold-primary);
-        opacity: 0.4;
+        opacity: 40%;
 
         svg {
             width: 100%;
@@ -289,7 +289,7 @@
     }
 
     /* 响应式设计 */
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .artdeco-breadcrumb {
             height: var(--artdeco-spacing-lg);
             padding: 0 var(--artdeco-spacing-md);
@@ -316,9 +316,9 @@
         }
     }
 
-    @media (max-width: 480px) {
+    @media (width <= 480px) {
         // 移动端：隐藏中间面包屑，只显示首页和当前页
-        .breadcrumb-item:not(:first-child):not(:last-child) {
+        .breadcrumb-item:not(:first-child, :last-child) {
             display: none;
         }
 
@@ -330,7 +330,7 @@
     }
 
     /* 大屏幕优化 */
-    @media (min-width: 1440px) {
+    @media (width >= 1440px) {
         .artdeco-breadcrumb {
             padding: 0 var(--artdeco-spacing-xl);
         }
@@ -366,7 +366,7 @@
     }
 
     /* 高对比度模式 */
-    @media (prefers-contrast: high) {
+    @media (prefers-contrast: more) {
         .artdeco-breadcrumb {
             border-bottom: 2px solid var(--artdeco-gold-primary);
         }

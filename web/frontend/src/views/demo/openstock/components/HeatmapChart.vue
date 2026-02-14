@@ -59,7 +59,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-import * as echarts from 'echarts'
+import echarts from '@/utils/echarts'
 
 const emit = defineEmits<{
   'api-tested': [feature: string]
@@ -68,7 +68,7 @@ const emit = defineEmits<{
 const heatmapMarket = ref('cn')
 const heatmapLoading = ref(false)
 const heatmapContainerRef = ref<HTMLElement | null>(null)
-let heatmapChart: any = null
+let heatmapChart: unknown = null
 
 const initHeatmapChart = () => {
   if (!heatmapContainerRef.value) return
@@ -80,7 +80,7 @@ const initHeatmapChart = () => {
     if (heatmapChart) heatmapChart.resize()
   }
   window.addEventListener('resize', resizeHandler)
-  ;(heatmapChart as any)._resizeHandler = resizeHandler
+  ;(heatmapChart as unknown)._resizeHandler = resizeHandler
 }
 
 const loadHeatmapData = async () => {
@@ -99,7 +99,7 @@ const loadHeatmapData = async () => {
     renderHeatmap(response.data)
     emit('api-tested', 'heatmap')
     ElMessage.success('热力图加载成功')
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('加载热力图失败:', error)
     if (error.response?.status === 404) {
       ElMessage.warning('热力图API未实现，使用模拟数据展示')
@@ -112,7 +112,7 @@ const loadHeatmapData = async () => {
   }
 }
 
-const renderHeatmap = (data: any[]) => {
+const renderHeatmap = (data: unknown[]) => {
   if (!heatmapChart || !data || data.length === 0) return
   const treeData = {
     name: heatmapMarket.value === 'cn' ? 'A股市场' : '港股市场',
@@ -133,7 +133,7 @@ const renderHeatmap = (data: any[]) => {
       textStyle: { color: '#333', fontSize: 18 }
     },
     tooltip: {
-      formatter: (info: any) => {
+      formatter: (info: unknown) => {
         const data = info.data
         if (!data) return ''
         return [
@@ -159,7 +159,7 @@ const renderHeatmap = (data: any[]) => {
       colorMappingBy: 'value',
       colorAlpha: [0.8, 1],
       colorSaturation: [0.3, 0.7],
-      color: (params: any) => {
+      color: (params: unknown) => {
         const value = params.value
         if (value > 5) return '#d32f2f'
         if (value > 2) return '#ef5350'
@@ -176,7 +176,7 @@ const renderHeatmap = (data: any[]) => {
 
 const generateMockHeatmapData = () => {
   const sectors = ['金融', '科技', '医药', '消费', '能源', '制造', '房地产', '通信']
-  const data: any[] = []
+  const data: unknown[] = []
   for (let i = 0; i < 30; i++) {
     const sector = sectors[Math.floor(Math.random() * sectors.length)]
     const changePct = (Math.random() - 0.5) * 20
@@ -202,7 +202,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (heatmapChart) {
-    const resizeHandler = (heatmapChart as any)._resizeHandler
+    const resizeHandler = (heatmapChart as unknown)._resizeHandler
     if (resizeHandler) window.removeEventListener('resize', resizeHandler)
     heatmapChart.dispose()
     heatmapChart = null
@@ -263,19 +263,16 @@ onUnmounted(() => {
   overflow: hidden;
 
   &.loading {
-    opacity: 0.7;
+    opacity: 70%;
   }
 
   .loading-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     z-index: 10;
 
     .loading-text {
@@ -289,7 +286,7 @@ onUnmounted(() => {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgb(255 255 255 / 30%);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

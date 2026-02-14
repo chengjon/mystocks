@@ -56,11 +56,11 @@
         gap: 16px;
         margin-bottom: 24px;
 
-        @media (max-width: 1200px) {
+        @media (width <= 1200px) {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        @media (max-width: 600px) {
+        @media (width <= 600px) {
             grid-template-columns: 1fr;
         }
     }

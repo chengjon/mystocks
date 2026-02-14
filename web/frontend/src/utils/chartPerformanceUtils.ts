@@ -215,7 +215,7 @@ export interface CacheConfig {
 }
 
 export class ChartDataCache {
-    private cache = new Map<string, { data: any; timestamp: number; accessCount: number }>()
+    private cache = new Map<string, { data: unknown; timestamp: number; accessCount: number }>()
     private maxSize: number
     private ttl: number
     private strategy: 'lru' | 'lfu' | 'fifo'
@@ -229,7 +229,7 @@ export class ChartDataCache {
     /**
      * 获取缓存数据
      */
-    get(key: string): any | null {
+    get(key: string): unknown | null {
         const item = this.cache.get(key)
 
         if (!item) return null
@@ -250,7 +250,7 @@ export class ChartDataCache {
     /**
      * 设置缓存数据
      */
-    set(key: string, data: any): void {
+    set(key: string, data: unknown): void {
         // 如果缓存已满，根据策略移除项目
         if (this.cache.size >= this.maxSize) {
             this.evict()
@@ -328,7 +328,7 @@ export class RenderOptimizer {
     /**
      * 增量更新配置
      */
-    static createIncrementalUpdate(baseOption: EChartsOption, newData: any, dataPath: string[]): EChartsOption {
+    static createIncrementalUpdate(baseOption: EChartsOption, newData: unknown, dataPath: string[]): EChartsOption {
         const updateOption: EChartsOption = { ...baseOption }
 
         // 使用ECharts的增量更新特性
@@ -336,7 +336,7 @@ export class RenderOptimizer {
         for (let i = 0; i < dataPath.length - 1; i++) {
             const key = dataPath[i]
             if (!current[key]) current[key] = {}
-            current = current[key] as any
+            current = current[key] as unknown
         }
 
         const lastKey = dataPath[dataPath.length - 1]
@@ -349,12 +349,12 @@ export class RenderOptimizer {
      * 分批渲染大数据
      */
     static createProgressiveRender(
-        data: any[],
+        data: unknown[],
         batchSize: number = 1000,
         delay: number = 16 // ~60fps
-    ): Promise<any[]> {
+    ): Promise<unknown[]> {
         return new Promise(resolve => {
-            const result: any[] = []
+            const result: unknown[] = []
             let index = 0
 
             const processBatch = () => {
@@ -377,7 +377,7 @@ export class RenderOptimizer {
     /**
      * Web Workers 数据处理
      */
-    static async processInWorker(data: any[], processor: (data: any[]) => any, workerPath?: string): Promise<any> {
+    static async processInWorker(data: unknown[], processor: (data: unknown[]) => unknown, workerPath?: string): Promise<unknown> {
         // 检查是否支持Web Workers
         if (typeof Worker === 'undefined') {
             return processor(data)
@@ -406,7 +406,7 @@ export class RenderOptimizer {
                     reject(error)
                     worker.terminate()
                 }
-            } catch (error) {
+            } catch (_error) {
                 // 如果Web Workers失败，回退到主线程处理
                 resolve(processor(data))
             }
@@ -422,7 +422,7 @@ export class RenderOptimizer {
             // 禁用不必要的动画
             animation: false,
             // 减少渐变和阴影
-            series: baseOption.series?.map((series: any) => ({
+            series: baseOption.series?.map((series: unknown) => ({
                 ...series,
                 // 简化样式
                 itemStyle: {
@@ -449,7 +449,7 @@ export class RenderOptimizer {
         enableProgressive: boolean
     } {
         // 检测内存
-        const memory = (navigator as any).deviceMemory || 4
+        const memory = (navigator as unknown).deviceMemory || 4
         // 检测CPU核心数
         const cores = navigator.hardwareConcurrency || 2
         // 检测是否为移动设备

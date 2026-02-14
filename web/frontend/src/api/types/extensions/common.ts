@@ -48,7 +48,7 @@ export type date_type = string; // ISO 8601 format: "2025-01-19T10:30:00Z"
 /**
  * Standard API response wrapper
  */
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
@@ -60,7 +60,7 @@ export interface APIResponse<T = any> {
 /**
  * Paginated API response
  */
-export interface PaginatedResponse<T = any> extends APIResponse<list<T>> {
+export interface PaginatedResponse<T = unknown> extends APIResponse<list<T>> {
   pagination: {
     current_page: number;
     total_pages: number;
@@ -77,7 +77,7 @@ export interface PaginatedResponse<T = any> extends APIResponse<list<T>> {
 export interface APIError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
   path?: string;
   method?: string;
@@ -109,13 +109,13 @@ export interface SearchParams {
  * Filter parameters
  */
 export interface FilterParams {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
  * Standard API response wrapper (ViewModel)
  */
-export interface APIResponseVM<T = any> {
+export interface APIResponseVM<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
@@ -127,7 +127,7 @@ export interface APIResponseVM<T = any> {
 /**
  * Paginated API response (ViewModel)
  */
-export interface PaginatedResponseVM<T = any> extends APIResponseVM<list<T>> {
+export interface PaginatedResponseVM<T = unknown> extends APIResponseVM<list<T>> {
   pagination: {
     current_page: number;
     total_pages: number;
@@ -144,7 +144,7 @@ export interface PaginatedResponseVM<T = any> extends APIResponseVM<list<T>> {
 export interface APIErrorVM {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
   path?: string;
   method?: string;
@@ -174,7 +174,7 @@ export interface SearchParamsVM {
  * Filter parameters (ViewModel)
  */
 export interface FilterParamsVM {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -203,7 +203,7 @@ export interface ValidationError {
   field: string;
   code: string;
   message: string;
-  value?: any;
+  value?: unknown;
   expected_type?: string;
 }
 
@@ -249,7 +249,7 @@ export interface ValidationErrorVM {
   field: string;
   code: string;
   message: string;
-  value?: any;
+  value?: unknown;
   expected_type?: string;
 }
 
@@ -305,13 +305,13 @@ export interface WSMessageVM {
 export interface WSSubscriptionVM extends WSMessageVM {
   type: 'subscribe' | 'unsubscribe';
   channel: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
 /**
  * WebSocket data message (ViewModel)
  */
-export interface WSDataMessageVM<T = any> extends WSMessageVM {
+export interface WSDataMessageVM<T = unknown> extends WSMessageVM {
   type: 'data';
   channel: string;
   data: T;
@@ -324,7 +324,7 @@ export interface WSErrorMessageVM extends WSMessageVM {
   type: 'error';
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 /**
@@ -333,13 +333,13 @@ export interface WSErrorMessageVM extends WSMessageVM {
 export interface WSSubscription extends WSMessageVM {
   type: 'subscribe' | 'unsubscribe';
   channel: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
 /**
  * WebSocket data message
  */
-export interface WSDataMessage<T = any> extends WSMessageVM {
+export interface WSDataMessage<T = unknown> extends WSMessageVM {
   type: 'data';
   channel: string;
   data: T;
@@ -358,7 +358,7 @@ export interface ValidationErrorVM {
   field: string;
   code: string;
   message: string;
-  value?: any;
+  value?: unknown;
   expected_type?: string;
 }
 
@@ -397,10 +397,10 @@ export interface WSMessageVM {
 export interface WSSubscriptionVM extends WSMessageVM {
   type: 'subscribe' | 'unsubscribe';
   channel: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
-export interface WSDataMessageVM<T = any> extends WSMessageVM {
+export interface WSDataMessageVM<T = unknown> extends WSMessageVM {
   type: 'data';
   channel: string;
   data: T;
@@ -410,7 +410,7 @@ export interface WSErrorMessageVM extends WSMessageVM {
   type: 'error';
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 // ========== Utility Types ==========
@@ -442,7 +442,7 @@ export type NonNullable<T> = T extends null | undefined ? never : T;
 /**
  * Function type for async operations
  */
-export type AsyncFunction<T = any, Args extends any[] = []> = (...args: Args) => Promise<T>;
+export type AsyncFunction<T = unknown, Args extends unknown[] = []> = (...args: Args) => Promise<T>;
 
 /**
  * Timeout wrapper

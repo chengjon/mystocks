@@ -1,35 +1,35 @@
 import { defineStore } from 'pinia'
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, _reactive } from 'vue'
 import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG, type ApiConfig } from '@/api/unifiedApiClient'
 import type { CacheConfig, LoadingConfig, RetryConfig } from '@/api/unifiedApiClient'
 import { marketDataWebSocket, tradingWebSocket, riskWebSocket, WebSocketState } from '@/utils/webSocketManager'
 import type { WebSocketMessage } from '@/utils/webSocketManager'
 
-export interface StoreState<T = any> {
+export interface StoreState<T = unknown> {
   data: T | null
   loading: boolean
   error: string | null
   lastFetch: number | null
 }
 
-export interface StoreActions<T = any> {
-  fetch: (params?: any) => Promise<T>
-  refresh: (params?: any) => Promise<T>
+export interface StoreActions<T = unknown> {
+  fetch: (params?: unknown) => Promise<T>
+  refresh: (params?: unknown) => Promise<T>
   clear: () => void
   setData: (data: T) => void
   setError: (error: string | null) => void
   setLoading: (loading: boolean) => void
 }
 
-export interface StoreConfig<T = any> {
+export interface StoreConfig<T = unknown> {
   id: string
   endpoint: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   cache?: CacheConfig
   retry?: RetryConfig
   loading?: LoadingConfig
-  transform?: (data: any) => T
-  validate?: (data: any) => boolean
+  transform?: (data: unknown) => T
+  validate?: (data: unknown) => boolean
   initialData?: T
 }
 
@@ -47,7 +47,7 @@ export class PiniaStoreFactory {
   /**
    * Create a basic API data store
    */
-  static createApiStore<T = any>(config: StoreConfig<T>) {
+  static createApiStore<T = unknown>(config: StoreConfig<T>) {
     const {
       id,
       endpoint,
@@ -106,7 +106,7 @@ export class PiniaStoreFactory {
         lastFetch.value = null
       }
 
-      const fetch = async (params?: any): Promise<T> => {
+      const fetch = async (params?: unknown): Promise<T> => {
         try {
           setLoading(true)
           setError(null)
@@ -121,7 +121,7 @@ export class PiniaStoreFactory {
             loading: loadingConfig
           }
 
-          let result: any
+          let result: unknown
 
           switch (method) {
             case 'GET':
@@ -151,7 +151,7 @@ export class PiniaStoreFactory {
         }
       }
 
-      const refresh = async (params?: any): Promise<T> => {
+      const refresh = async (params?: unknown): Promise<T> => {
         // Force refresh by clearing cache if enabled
         if (cache?.enabled) {
           // Note: In a real implementation, you'd need to clear the specific cache entry
@@ -187,7 +187,7 @@ export class PiniaStoreFactory {
   /**
    * Create a paginated data store
    */
-  static createPaginatedStore<T = any>(config: StoreConfig<T[]> & {
+  static createPaginatedStore<T = unknown>(config: StoreConfig<T[]> & {
     pageSize?: number
     initialPage?: number
   }) {
@@ -274,7 +274,7 @@ export class PiniaStoreFactory {
   /**
    * Create a real-time data store with WebSocket support
    */
-  static createRealtimeStore<T = any>(config: StoreConfig<T> & {
+  static createRealtimeStore<T = unknown>(config: StoreConfig<T> & {
     wsManager?: typeof marketDataWebSocket | typeof tradingWebSocket | typeof riskWebSocket
     wsChannel?: string
     updateInterval?: number
@@ -284,8 +284,8 @@ export class PiniaStoreFactory {
     return defineStore(`${baseConfig.id}-realtime`, () => {
       // Base store
       const baseStore = PiniaStoreFactory.createApiStore<T>(baseConfig)() as unknown as {
-        setData: (data: any) => void
-        refresh: () => Promise<any>
+        setData: (data: unknown) => void
+        refresh: () => Promise<unknown>
       }
 
       // Real-time state

@@ -20,7 +20,7 @@
     <!-- ArtDeco Tab Navigation -->
     <div class="decision-tabs">
       <button
-        v-for="tab in decisionTabs"
+        v-for="(tab, _idx) in decisionTabs"
         :key="tab.id"
         :class="['artdeco-tab', { active: activeTab === tab.id }]"
         @click="activeTab = tab.id"
@@ -284,11 +284,11 @@
   <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import * as echarts from 'echarts'
+import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
-import BloombergStatCard from '@/components/BloombergStatCard.vue'
-import MarketDataView from '@/views/market/MarketDataView.vue'
+import _BloombergStatCard from '@/components/BloombergStatCard.vue'
+import _MarketDataView from '@/views/market/MarketDataView.vue'
 import { useTradingDataStore } from '@/stores/tradingData'
 
 // Tab definitions
@@ -311,11 +311,11 @@ const tradingStats = computed(() => {
   const pos = tradingDataStore.state.positionMonitor
 
   return {
-    totalAssets: (pos?.pnlAnalysis as any)?.total_assets || 0,
-    availableCash: (pos?.pnlAnalysis as any)?.available_cash || 0,
-    positionValue: (pos?.pnlAnalysis as any)?.position_value || 0,
-    totalProfit: (perf?.metrics as any)?.total_profit || 0,
-    profitRate: (perf?.metrics as any)?.profit_rate || 0
+    totalAssets: (pos?.pnlAnalysis as unknown)?.total_assets || 0,
+    availableCash: (pos?.pnlAnalysis as unknown)?.available_cash || 0,
+    positionValue: (pos?.pnlAnalysis as unknown)?.position_value || 0,
+    totalProfit: (perf?.metrics as unknown)?.total_profit || 0,
+    profitRate: (perf?.metrics as unknown)?.profit_rate || 0
   }
 })
 
@@ -358,13 +358,13 @@ const currentPrice = computed(() => {
 })
 
 // Market tabs
-const marketTabs = [
+const _marketTabs = [
   { name: 'fund-flow', label: '资金流向' },
   { name: 'etf-data', label: 'ETF行情' },
   { name: 'chip-race', label: '竞价抢筹' },
   { name: 'longhubang', label: '龙虎榜' }
 ]
-const activeMarketTab = ref('fund-flow')
+const _activeMarketTab = ref('fund-flow')
 
 // Quick action handlers
 const handleQuickAction = (action: string) => {
@@ -404,7 +404,7 @@ const handleQuickSell = () => {
   // TODO: Call trading API
 }
 
-const handleSearchStock = async () => {
+const _handleSearchStock = async () => {
   if (!orderForm.symbol) {
     ElMessage.warning('请输入股票代码')
     return
@@ -424,7 +424,7 @@ const getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'dan
 
 // Market data chart initialization
 const marketDataRef = ref<HTMLElement>()
-let marketDataChart: any = null
+let marketDataChart: unknown = null
 
 onMounted(() => {
   if (marketDataRef.value) {
@@ -533,7 +533,7 @@ const handleRefreshOrders = () => {
   // TODO: Refresh orders panel
 }
 
-const handleRefreshPortfolio = () => {
+const _handleRefreshPortfolio = () => {
   ElMessage.success('投资组合刷新成功')
   // TODO: Refresh portfolio panel
 }
@@ -566,204 +566,5 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-
-.decision-header {
-  padding: var(--artdeco-spacing-4);
-  text-align: center;
-  border-bottom: 2px solid var(--artdeco-border-gold);
-  margin-bottom: var(--artdeco-spacing-4);
-  background: var(--artdeco-bg-elevated);
-  
-  .page-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--artdeco-gold-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 var(--artdeco-spacing-2) 0;
-    font-size: var(--artdeco-text-3xl);
-  }
-
-  .page-subtitle {
-    font-family: var(--font-body);
-    font-size: var(--artdeco-text-sm);
-    color: var(--artdeco-fg-muted);
-    margin: 0;
-  }
-
-  .header-actions {
-    display: flex;
-    gap: var(--artdeco-spacing-compact-sm);
-  justify-content: center;
-    margin-top: var(--artdeco-spacing-2);
-  }
-}
-
-.decision-tabs {
-  display: flex;
-  gap: var(--artdeco-spacing-2);
-  justify-content: center;
-  padding: var(--artdeco-spacing-3);
-  border-bottom: 1px solid var(--artdeco-border-default);
-  margin-bottom: var(--artdeco-spacing-4);
-}
-
-.artdeco-tab {
-  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-compact-md);
-  background: transparent;
-  border: none;
-  color: var(--artdeco-fg-muted);
-  font-family: var(--font-body);
-  font-size: var(--artdeco-text-sm);
-  cursor: pointer;
-  transition: all var(--artdeco-transition-base);
-
-  &:hover {
-    color: var(--artdeco-gold-primary);
-    border-bottom: 3px solid var(--artdeco-border-gold);
-  }
-
-  &.active {
-    color: var(--artdeco-gold-primary);
-    border-bottom: 3px solid var(--artdeco-border-gold);
-  }
-}
-
-.decision-content {
-  min-height: calc(100vh - 180px);  // 减去header高度
-  padding: var(--artdeco-spacing-4);
-  background-color: var(--artdeco-bg-global);
-}
-
-// Tab Content Areas
-.overview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: var(--artdeco-spacing-compact-md);
-}
-
-.tab-content {
-  min-height: calc(100vh - 250px);
-}
-
-// Quick Actions Grid
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--artdeco-spacing-compact-md);
-  margin-top: var(--artdeco-spacing-3);
-}
-
-.action-card {
-  background-color: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-border-default);
-  border-radius: var(--artdeco-radius-md);
-  padding: var(--artdeco-spacing-3);
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--artdeco-transition-base);
-
-  &:hover {
-    border-color: var(--artdeco-border-gold);
-    box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-subtle);
-    transform: translateY(-4px);
-  }
-}
-
-.action-icon {
-  font-size: var(--artdeco-text-lg);
-  color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-spacing-2);
-}
-
-.action-label {
-  font-family: var(--font-body);
-  font-size: var(--artdeco-text-compact-sm);
-  color: var(--artdeco-fg-muted);
-}
-
-// ArtDeco V3.0 Gold CTA Buttons
-.artdeco-gold-cta {
-  background-color: var(--artdeco-gold-primary) !important;
-  border-color: var(--artdeco-border-gold) !important;
-  color: var(--artdeco-bg-global) !important;
-  font-family: var(--font-display);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1px solid var(--artdeco-border-gold);
-  padding: 6px 16px;
-  height: 32px;
-  cursor: pointer;
-  box-shadow: var(--artdeco-shadow-sm), var(--artdeco-glow-subtle);
-  transition: all var(--artdeco-transition-base);
-
-  &:hover {
-    background-color: var(--artdeco-bronze) !important;
-    border-color: var(--artdeco-bronze) !important;
-    box-shadow: var(--artdeco-shadow-md), var(--artdeco-glow-intense);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    background-color: var(--artdeco-gold-primary) !important;
-    transform: translateY(0);
-  }
-}
-
-// Chart Container
-.chart-container {
-  min-height: 400px;
-  background-color: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-border-default);
-  border-radius: var(--artdeco-radius-md);
-  padding: var(--artdeco-spacing-3);
-}
-
-// Panel Components
-.panel-section {
-  background-color: var(--artdeco-bg-card);
-  border: 1px solid var(--artdeco-border-default);
-  border-radius: var(--artdeco-radius-md);
-  margin-bottom: var(--artdeco-spacing-3);
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--artdeco-spacing-3);
-  border-bottom: 1px solid var(--artdeco-border-default);
-  margin-bottom: 0;
-
-  h3 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    color: var(--artdeco-gold-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0;
-    font-size: var(--artdeco-text-xl);
-  }
-}
-
-.panel-actions {
-  display: flex;
-  gap: var(--artdeco-spacing-compact-sm);
-}
-
-.panel-content {
-  padding: var(--artdeco-spacing-3);
-}
-
-// Placeholder state
-.placeholder-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: var(--artdeco-fg-muted);
-}
+@import "./styles/TradingDecisionCenter.scss";
 </style>

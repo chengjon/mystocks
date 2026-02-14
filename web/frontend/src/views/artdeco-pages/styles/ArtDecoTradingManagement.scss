@@ -1,0 +1,271 @@
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
+
+    .artdeco-trading-management {
+        padding: 2rem;
+        max-width: 1600px;
+        margin: 0 auto;
+        position: relative;
+
+        // 添加装饰性背景图案
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgb(255 215 0 / 3%) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgb(255 165 0 / 3%) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+    }
+
+    .trading-management-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    // 状态栏
+    .status-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+
+        @media (width <= 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // 核心功能网格 - 戏剧性布局
+    .artdeco-content-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+
+        @media (width >= 1200px) {
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+    }
+
+    // 卡片样式增强
+    .overview-card,
+    .controls-card,
+    .realtime-panel,
+    .history-panel {
+        position: relative;
+        overflow: hidden;
+
+        // 添加金色装饰边框
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 0;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, #ffd700, #ffa500, #ffd700) 1;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 70%;
+        }
+
+        // 悬停效果
+        &:hover::before {
+            opacity: 100%;
+            box-shadow: 0 0 30px rgb(255 215 0 / 30%);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+    }
+
+    .overview-card {
+        background: linear-gradient(135deg, rgb(255 215 0 / 5%), rgb(255 165 0 / 2%));
+    }
+
+    .controls-card {
+        background: linear-gradient(135deg, rgb(255 255 255 / 95%), rgb(248 249 250 / 90%));
+    }
+
+    .realtime-panel {
+        background: linear-gradient(135deg, rgb(34 197 94 / 5%), rgb(22 163 74 / 2%));
+        position: relative;
+
+        // 实时数据脉动效果
+        &::after {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+    }
+
+    .history-panel {
+        background: linear-gradient(135deg, rgb(59 130 246 / 5%), rgb(37 99 235 / 2%));
+    }
+
+    // 卡片头部样式
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        &.dramatic {
+            background: linear-gradient(90deg, rgb(255 215 0 / 10%), rgb(255 165 0 / 5%));
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgb(255 215 0 / 20%);
+        }
+
+        &.elegant {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 1rem;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #1f2937;
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+    }
+
+    .header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        background: linear-gradient(135deg, #ffd700, #ffa500);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgb(255 215 0 / 30%);
+    }
+
+    .header-content {
+        flex: 1;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    // 面板网格布局
+    .panel-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+
+        @media (width >= 1024px) {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .panel-section {
+        background: rgb(255 255 255 / 80%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid rgb(255 215 0 / 20%);
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgb(255 215 0 / 15%);
+        }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgb(0 0 0 / 10%);
+
+        h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #374151;
+        }
+
+        .count-badge {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+    }
+
+    // 历史区域布局
+    .history-controls,
+    .history-data {
+        margin-bottom: 1.5rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // 动画效果
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 100%;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 70%;
+            transform: scale(1.1);
+        }
+    }
+
+    // 响应式设计
+    @media (width <= 1024px) {
+        .artdeco-trading-management {
+            padding: 1rem;
+        }
+
+        .artdeco-content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .panel-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (width <= 768px) {
+        .status-bar {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header.dramatic {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }

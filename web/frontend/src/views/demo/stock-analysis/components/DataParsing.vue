@@ -193,7 +193,7 @@ const codeExamples = computed<Record<string, string>>(() => ({
   border: none;
   border-radius: 0;
   padding: 15px;
-  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
   font-size: 13px;
   line-height: 1.6;
   overflow-x: auto;

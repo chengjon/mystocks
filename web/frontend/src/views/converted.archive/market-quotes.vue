@@ -11,7 +11,7 @@
     <div class="market-overview">
       <ArtDecoGrid columns="4" responsive class="overview-grid">
         <ArtDecoStatCard
-          v-for="index in marketIndices"
+          v-for="(index, _idx) in marketIndices"
           :key="index.code"
           :title="index.name"
           :value="index.value"
@@ -26,7 +26,7 @@
     <!-- Market Status Badges -->
     <div class="market-status">
       <ArtDecoBadge
-        v-for="status in marketStatuses"
+        v-for="(status, _idx) in marketStatuses"
         :key="status.id"
         :variant="status.variant"
         animated
@@ -116,7 +116,7 @@
           >
             <div class="gainers-list">
               <div
-                v-for="stock in topGainers"
+                v-for="(stock, _idx) in topGainers"
                 :key="stock.symbol"
                 class="gainer-item"
                 @click="handleStockClick(stock)"
@@ -145,7 +145,7 @@
           >
             <div class="losers-list">
               <div
-                v-for="stock in topLosers"
+                v-for="(stock, _idx) in topLosers"
                 :key="stock.symbol"
                 class="loser-item"
                 @click="handleStockClick(stock)"
@@ -179,7 +179,7 @@
             <!-- Heatmap will be rendered here -->
             <div class="sector-indicators">
               <div
-                v-for="sector in marketSectors"
+                v-for="(sector, _idx) in marketSectors"
                 :key="sector.name"
                 class="sector-item"
                 :style="{ backgroundColor: getSectorColor(sector) }"
@@ -203,7 +203,7 @@
       >
         <div class="market-alerts">
           <div
-            v-for="alert in marketAlerts"
+            v-for="(alert, _idx) in marketAlerts"
             :key="alert.id"
             class="alert-item"
             :class="alert.type"
@@ -433,7 +433,7 @@ let wsConnection: WebSocket | null = null
 let updateInterval: NodeJS.Timeout | null = null
 
 // Methods
-const handleTickerClick = (ticker: any) => {
+const handleTickerClick = (ticker: unknown) => {
   console.log('Ticker clicked:', ticker)
   // TODO: Navigate to stock detail page
 }
@@ -443,30 +443,30 @@ const handleSortChange = (sortKey: string, sortOrder: string) => {
   // TODO: Sort ticker data
 }
 
-const handleStockClick = (stock: any) => {
+const handleStockClick = (stock: unknown) => {
   console.log('Stock clicked:', stock)
   // TODO: Navigate to stock detail
 }
 
 // Utility methods
-const getPriceClass = (ticker: any) => {
+const getPriceClass = (ticker: unknown) => {
   return ticker.change > 0 ? 'positive' : ticker.change < 0 ? 'negative' : 'neutral'
 }
 
-const getChangeClass = (item: any) => {
+const getChangeClass = (item: unknown) => {
   const change = item.change || item
   return change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral'
 }
 
-const getChangeIcon = (ticker: any) => {
+const getChangeIcon = (ticker: unknown) => {
   return ticker.change > 0 ? 'fas fa-arrow-up' : ticker.change < 0 ? 'fas fa-arrow-down' : 'fas fa-minus'
 }
 
-const getSectorColor = (sector: any) => {
-  if (sector.change > 1.5) return 'rgba(0, 230, 118, 0.8)'
-  if (sector.change > 0) return 'rgba(255, 215, 0, 0.8)'
-  if (sector.change > -1) return 'rgba(158, 158, 158, 0.8)'
-  return 'rgba(255, 82, 82, 0.8)'
+const getSectorColor = (sector: unknown) => {
+  if (sector.change > 1.5) return 'rgb(0 230 118 / 80%)'
+  if (sector.change > 0) return 'rgb(255 215 0 / 80%)'
+  if (sector.change > -1) return 'rgb(158 158 158 / 80%)'
+  return 'rgb(255 82 82 / 80%)'
 }
 
 const formatPrice = (price: number) => {
@@ -565,14 +565,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
-
-.market-quotes-page {
-  @include artdeco-layout;
-  position: relative;
-
-  // Art Deco geometric corner decorations
-  @include artdeco-geometric-corners(var(--artdeco-gold-primary));
+@import './styles/market-quotes.scss';
 
   // Gold accent top border
   &::before {
@@ -609,6 +602,7 @@ onUnmounted(() => {
 
     .index-card {
       @include artdeco-hover-lift-glow;
+
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-dim);
       transition: all var(--artdeco-transition-base);
@@ -644,6 +638,7 @@ onUnmounted(() => {
   // Ticker list card with real-time updates
   .ticker-list-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
     margin-bottom: var(--artdeco-spacing-8);
@@ -670,13 +665,13 @@ onUnmounted(() => {
         transition: all var(--artdeco-transition-fast);
 
         &:nth-child(even) {
-          background: rgba(212, 175, 55, 0.02);
+          background: rgb(212 175 55 / 2%);
         }
 
         &:hover {
-          background: rgba(212, 175, 55, 0.08);
+          background: rgb(212 175 55 / 8%);
           transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+          box-shadow: 0 4px 12px rgb(212 175 55 / 20%);
         }
 
         .price-change-indicator {
@@ -754,7 +749,7 @@ onUnmounted(() => {
       align-items: center;
       gap: var(--artdeco-spacing-3);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-      background: rgba(10, 10, 10, 0.8);
+      background: rgb(10 10 10 / 80%);
       backdrop-filter: blur(8px);
       border-radius: var(--artdeco-radius-md);
       border: 1px solid var(--artdeco-gold-dim);
@@ -767,7 +762,7 @@ onUnmounted(() => {
 
         &.active {
           background: var(--artdeco-success);
-          box-shadow: 0 0 8px rgba(39, 174, 96, 0.6);
+          box-shadow: 0 0 8px rgb(39 174 96 / 60%);
           animation: artdeco-pulse-dot 2s ease-in-out infinite;
         }
       }
@@ -798,6 +793,7 @@ onUnmounted(() => {
     .gainers-card,
     .losers-card {
       @include artdeco-hover-lift-glow;
+
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-dim);
 
@@ -813,13 +809,13 @@ onUnmounted(() => {
           justify-content: space-between;
           align-items: center;
           padding: var(--artdeco-spacing-4);
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
           border-radius: var(--artdeco-radius-sm);
           cursor: pointer;
           transition: all var(--artdeco-transition-fast);
 
           &:hover {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
             transform: translateY(-2px);
             box-shadow: var(--artdeco-glow-subtle);
           }
@@ -891,6 +887,7 @@ onUnmounted(() => {
   // Heatmap card
   .heatmap-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
     margin-bottom: var(--artdeco-spacing-8);
@@ -903,7 +900,7 @@ onUnmounted(() => {
         height: 100%;
         background: linear-gradient(135deg,
           var(--artdeco-bg-card) 0%,
-          rgba(212, 175, 55, 0.05) 50%,
+          rgb(212 175 55 / 5%) 50%,
           var(--artdeco-bg-card) 100%
         );
         border-radius: var(--artdeco-radius-md);
@@ -975,6 +972,7 @@ onUnmounted(() => {
   // Alerts card
   .alerts-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
 
@@ -993,23 +991,23 @@ onUnmounted(() => {
         transition: all var(--artdeco-transition-fast);
 
         &.announcement {
-          background: rgba(255, 215, 0, 0.1);
+          background: rgb(255 215 0 / 10%);
           border-left-color: var(--artdeco-warning);
         }
 
         &.price-alert {
-          background: rgba(255, 82, 82, 0.1);
+          background: rgb(255 82 82 / 10%);
           border-left-color: var(--artdeco-danger);
         }
 
         &.volume-alert {
-          background: rgba(39, 174, 96, 0.1);
+          background: rgb(39 174 96 / 10%);
           border-left-color: var(--artdeco-success);
         }
 
         &:hover {
           transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
         }
 
         .alert-icon {
@@ -1066,28 +1064,28 @@ onUnmounted(() => {
 
 // Art Deco animations for market quotes
 @keyframes artdeco-price-flash-up {
-  0% { background-color: rgba(0, 230, 118, 0.2); }
+  0% { background-color: rgb(0 230 118 / 20%); }
   100% { background-color: transparent; }
 }
 
 @keyframes artdeco-price-flash-down {
-  0% { background-color: rgba(255, 82, 82, 0.2); }
+  0% { background-color: rgb(255 82 82 / 20%); }
   100% { background-color: transparent; }
 }
 
 @keyframes artdeco-pulse-dot {
   0%, 100% {
-    opacity: 1;
+    opacity: 100%;
     transform: scale(1);
   }
   50% {
-    opacity: 0.7;
+    opacity: 70%;
     transform: scale(1.2);
   }
 }
 
 // Responsive design for Art Deco market quotes
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .market-quotes-page {
     .overview-grid {
       grid-template-columns: 1fr 1fr;
@@ -1099,7 +1097,7 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .market-quotes-page {
     .market-status {
       justify-content: flex-start;

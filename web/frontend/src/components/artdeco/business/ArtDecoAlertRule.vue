@@ -133,11 +133,11 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     .artdeco-alert-rule {
       background: var(--artdeco-bg-card);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       padding: var(--artdeco-spacing-4);
       position: relative;
       overflow: hidden;
@@ -153,7 +153,7 @@
     }
 
     .artdeco-alert-rule.disabled {
-      opacity: 0.5;
+      opacity: 50%;
     }
 
     /* Corner decorations */
@@ -163,7 +163,7 @@
       width: 16px;
       height: 16px;
       pointer-events: none;
-      opacity: 0.4;
+      opacity: 40%;
     }
 
     .artdeco-corner-tl {
@@ -204,7 +204,7 @@
 
     .rule-indicator.active {
       background: var(--artdeco-rise);
-      box-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
+      box-shadow: 0 0 8px rgb(0 230 118 / 60%);
     }
 
     .rule-title {
@@ -251,7 +251,7 @@
       color: var(--artdeco-fg-secondary);
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
     }
 
     .rule-meta {
@@ -313,7 +313,7 @@
     .action-tag {
       padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
       background: var(--artdeco-bg-primary);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       font-family: var(--artdeco-font-body);
       font-size: var(--artdeco-font-size-sm); // 12px - Compact v3.1
       color: var(--artdeco-fg-secondary);
@@ -325,13 +325,13 @@
       display: flex;
       gap: var(--artdeco-spacing-2);
       padding-top: var(--artdeco-spacing-3);
-      border-top: 1px solid rgba(212, 175, 55, 0.1);
+      border-top: 1px solid rgb(212 175 55 / 10%);
     }
 
     .artdeco-btn-mini {
       flex: 1;
       padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgb(212 175 55 / 20%);
       background: var(--artdeco-bg-card);
       color: var(--artdeco-fg-secondary);
       font-family: var(--artdeco-font-display);

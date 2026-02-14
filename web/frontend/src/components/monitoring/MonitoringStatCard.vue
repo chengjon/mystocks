@@ -209,7 +209,7 @@ const formattedValue = computed(() => {
 
 .stat-unit {
   font-size: var(--fintech-font-size-base);
-  opacity: 0.8;
+  opacity: 80%;
 }
 
 .stat-meta {
@@ -369,7 +369,7 @@ const formattedValue = computed(() => {
 }
 
 /* 响应式 */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .stat-header {
     flex-direction: column;
     align-items: flex-start;

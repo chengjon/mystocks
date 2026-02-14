@@ -41,7 +41,7 @@
       <div class="ranking-controls">
         <div class="time-filters">
           <button
-            v-for="filter in timeFilters"
+            v-for="(filter, _idx) in timeFilters"
             :key="filter.key"
             class="filter-btn"
             :class="{ active: activeTimeFilter === filter.key }"
@@ -70,9 +70,9 @@ import { ArtDecoStatCard, ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/com
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
 interface Props {
-  fundData: any
-  stockRanking: any[]
-  trendData: any[]
+  fundData: unknown
+  stockRanking: unknown[]
+  trendData: unknown[]
   activeTimeFilter: string
   rankingType: string
 }
@@ -108,13 +108,13 @@ const trendChartOption = computed(() => {
   
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: props.trendData.map((d: any) => d.date) },
+    xAxis: { type: 'category', data: props.trendData.map((d: unknown) => d.date) },
     yAxis: { type: 'value' },
     series: [{
-      data: props.trendData.map((d: any) => d.value),
+      data: props.trendData.map((d: unknown) => d.value),
       type: 'bar',
       itemStyle: {
-        color: (params: any) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
+        color: (params: unknown) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
       }
     }]
   }
@@ -122,7 +122,7 @@ const trendChartOption = computed(() => {
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import '@/styles/artdeco-tokens';
 
 .fund-overview {
   display: grid;
@@ -158,7 +158,7 @@ const trendChartOption = computed(() => {
   &.active {
     border-color: var(--artdeco-accent-gold);
     color: var(--artdeco-accent-gold);
-    background: rgba(212, 175, 55, 0.1);
+    background: rgb(212 175 55 / 10%);
   }
 }
 

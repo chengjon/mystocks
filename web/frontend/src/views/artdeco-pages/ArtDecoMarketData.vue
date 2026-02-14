@@ -20,7 +20,7 @@
         <!-- Main Navigation Tabs -->
         <nav class="main-tabs">
             <button
-                v-for="tab in mainTabs"
+                v-for="(tab, _idx) in mainTabs"
                 :key="tab.key"
                 class="main-tab"
                 :class="{ active: activeTab === tab.key }"
@@ -300,7 +300,7 @@ watch(activeTab, refreshData)
 
     &:hover, &.active {
         border-color: var(--artdeco-accent-gold);
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
     }
 
     &.active {
@@ -328,5 +328,5 @@ watch(activeTab, refreshData)
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-from, .fade-leave-to { opacity: 0%; }
 </style>

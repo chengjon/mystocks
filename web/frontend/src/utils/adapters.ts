@@ -9,17 +9,17 @@
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KlineResponse,
+  _KlineResponse,
   KLineDataResponse,
-  FundFlowItem,
+  _FundFlowItem,
   StockSearchResult
 } from '@/api/types/generated-types'
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
-type IndexData = any
-type SectorData = any
-type KLinePoint = any
+type _IndexData = Record<string, unknown>
+type _SectorData = Record<string, unknown>
+type _KLinePoint = Record<string, unknown>
 
 // ViewModel interfaces for UI consumption
 export interface MarketOverviewVM {
@@ -77,7 +77,7 @@ export class DataAdapter {
    */
   static toMarketOverviewVM(data: MarketOverviewResponse): MarketOverviewVM {
     // Handle indices - API uses 'indices' field with IndexQuote type
-    const indices = (data.indices || []).map((item: any) => ({
+    const indices = (data.indices || []).map((item: unknown) => ({
       name: item.indexName || item.name || '',
       current: item.currentPrice || item.current || 0,
       change: item.change || 0,
@@ -87,7 +87,7 @@ export class DataAdapter {
     }))
 
     // Handle sectors - API uses 'hot_sectors' with HotSector type
-    const sectors = (data.hot_sectors || []).map((item: any) => ({
+    const sectors = (data.hot_sectors || []).map((item: unknown) => ({
       name: item.sectorName || '',
       changePercent: this.formatPercent(item.changePercent || 0),
       stockCount: item.stockCount || 0,
@@ -118,9 +118,9 @@ export class DataAdapter {
    */
   static toFundFlowChartData(data: FundFlowResponse): FundFlowChartPoint[] {
     // Handle different API response formats
-    const items = (data as any).items || (data as any).fundFlow || []
+    const items = (data as Record<string, unknown>).items || (data as Record<string, unknown>).fundFlow || []
 
-    return items.map((item: any) => ({
+    return items.map((item: unknown) => ({
       date: item.tradeDate || '',
       mainInflow: this.convertToWan(item.mainNetInflow || item.mainInflow || 0),
       mainOutflow: Math.abs(this.convertToWan(item.mainNetInflow || 0)),
@@ -135,13 +135,13 @@ export class DataAdapter {
    */
   static toKLineChartData(data: KLineDataResponse): KLineChartData {
     // Handle different response formats
-    const points = (data as any).points ||
-      (data as any).data ||
-      (data as any).candles || []
+    const points = (data as Record<string, unknown>).points ||
+      (data as Record<string, unknown>).data ||
+      (data as Record<string, unknown>).candles || []
 
     return {
-      categoryData: points.map((p: any) => p.date || p.tradeDate || p[0] || ''),
-      values: points.map((p: any) => {
+      categoryData: points.map((p: unknown) => p.date || p.tradeDate || p[0] || ''),
+      values: points.map((p: unknown) => {
         if (Array.isArray(p)) {
           return [p[1] || 0, p[2] || 0, p[3] || 0, p[4] || 0] // open, close, low, high
         }
@@ -152,7 +152,7 @@ export class DataAdapter {
           p.high || 0
         ]
       }),
-      volumes: points.map((p: any) => {
+      volumes: points.map((p: unknown) => {
         if (Array.isArray(p)) return p[5] || 0 // volume is 6th element
         return p.volume || 0
       })
@@ -163,7 +163,7 @@ export class DataAdapter {
    * Convert Stock Search results to ViewModel
    */
   static toStockSearchVM(data: StockSearchResult[]): StockSearchVM[] {
-    return data.map((item: any) => ({
+    return data.map((item: unknown) => ({
       symbol: item.symbol || '',
       name: item.name || '',
       market: item.market || '',

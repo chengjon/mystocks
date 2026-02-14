@@ -54,7 +54,7 @@ defineProps({
     }
     .score-bar {
         height: 4px;
-        background: rgba(212, 175, 55, 0.1);
+        background: rgb(212 175 55 / 10%);
         margin-bottom: 8px;
         .score-fill {
             height: 100%;
@@ -72,7 +72,7 @@ defineProps({
     display: flex;
     align-items: center;
     justify-content: center;
-    border-left: 1px solid rgba(212, 175, 55, 0.2);
+    border-left: 1px solid rgb(212 175 55 / 20%);
     .gauge {
         text-align: center;
         .value {

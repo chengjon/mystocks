@@ -140,7 +140,7 @@
 
   &:hover {
     border-color: var(--gold-primary);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 15px rgb(212 175 55 / 30%);
   }
 }
 
@@ -173,7 +173,7 @@
 
 .status-badge {
   padding: 6px 14px;
-  background: rgba(0, 230, 118, 0.15);
+  background: rgb(0 230 118 / 15%);
   border: 1px solid var(--fall);
   color: var(--fall);
   font-family: var(--font-display);
@@ -182,7 +182,7 @@
   letter-spacing: 1px;
 
   &.success {
-    background: rgba(0, 230, 118, 0.15);
+    background: rgb(0 230 118 / 15%);
     border-color: var(--fall);
     color: var(--fall);
   }
@@ -210,7 +210,7 @@
     }
 
     &:nth-child(even) {
-      background: rgba(212, 175, 55, 0.03);
+      background: rgb(212 175 55 / 3%);
     }
 
     label {
@@ -289,7 +289,7 @@
 
   &:hover {
     border-color: var(--gold-primary);
-    box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 0 12px rgb(212 175 55 / 25%);
     transform: translateY(-2px);
   }
 
@@ -338,7 +338,7 @@
   gap: 16px;
   margin-top: 25px;
   padding: 20px;
-  background: rgba(64, 158, 255, 0.08);
+  background: rgb(64 158 255 / 8%);
   border: 1px solid var(--gold-dim);
   position: relative;
 
@@ -368,7 +368,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .demo-card {
     padding: 15px;
   }

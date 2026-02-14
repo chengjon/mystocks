@@ -120,9 +120,9 @@ export class StrategyApiService {
    */
   async startStrategy(
     id: string,
-    config?: Record<string, any>
-  ): Promise<UnifiedResponse<any>> {
-    return apiPost<UnifiedResponse<any>>(`${this.baseUrl}/${id}/start`, config);
+    config?: Record<string, unknown>
+  ): Promise<UnifiedResponse<unknown>> {
+    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/start`, config);
   }
 
   /**
@@ -131,8 +131,8 @@ export class StrategyApiService {
    * @param id - Strategy ID
    * @returns UnifiedResponse with stop confirmation
    */
-  async stopStrategy(id: string): Promise<UnifiedResponse<any>> {
-    return apiPost<UnifiedResponse<any>>(`${this.baseUrl}/${id}/stop`);
+  async stopStrategy(id: string): Promise<UnifiedResponse<unknown>> {
+    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/stop`);
   }
 
   /**
@@ -141,8 +141,8 @@ export class StrategyApiService {
    * @param id - Strategy ID
    * @returns UnifiedResponse with pause confirmation
    */
-  async pauseStrategy(id: string): Promise<UnifiedResponse<any>> {
-    return apiPost<UnifiedResponse<any>>(`${this.baseUrl}/${id}/pause`);
+  async pauseStrategy(id: string): Promise<UnifiedResponse<unknown>> {
+    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/pause`);
   }
 
   /**
@@ -151,8 +151,8 @@ export class StrategyApiService {
    * @param id - Strategy ID
    * @returns UnifiedResponse with resume confirmation
    */
-  async resumeStrategy(id: string): Promise<UnifiedResponse<any>> {
-    return apiPost<UnifiedResponse<any>>(`${this.baseUrl}/${id}/resume`);
+  async resumeStrategy(id: string): Promise<UnifiedResponse<unknown>> {
+    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/resume`);
   }
 
   /**
@@ -224,8 +224,8 @@ export class StrategyApiService {
   async getStrategyPerformance(
     id: string,
     period?: string
-  ): Promise<UnifiedResponse<any>> {
-    return apiGet<UnifiedResponse<any>>(`${this.baseUrl}/${id}/performance`, {
+  ): Promise<UnifiedResponse<unknown>> {
+    return apiGet<UnifiedResponse<unknown>>(`${this.baseUrl}/${id}/performance`, {
       period,
     });
   }
@@ -244,8 +244,8 @@ export class StrategyApiService {
       offset?: number;
       status?: string;
     }
-  ): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(
+  ): Promise<UnifiedResponse<unknown[]>> {
+    return apiGet<UnifiedResponse<unknown[]>>(
       `${this.baseUrl}/${id}/trades`,
       params
     );
@@ -256,8 +256,8 @@ export class StrategyApiService {
    *
    * @returns UnifiedResponse with templates array
    */
-  async getStrategyTemplates(): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(`${this.baseUrl}/templates`);
+  async getStrategyTemplates(): Promise<UnifiedResponse<unknown[]>> {
+    return apiGet<UnifiedResponse<unknown[]>>(`${this.baseUrl}/templates`);
   }
 
   /**
@@ -269,8 +269,7 @@ export class StrategyApiService {
    */
   async cloneFromTemplate(
     templateId: string,
-    strategyData: any
-  ): Promise<UnifiedResponse<Strategy>> {
+    strategyData: unknown): Promise<UnifiedResponse<Strategy>> {
     return apiPost<UnifiedResponse<Strategy>>(
       `${this.baseUrl}/clone/${templateId}`,
       strategyData
@@ -288,7 +287,7 @@ export class StrategyApiService {
     code: string,
     type: string
   ): Promise<UnifiedResponse<{ valid: boolean; errors?: string[]; warnings?: string[] }>> {
-    return apiPost<UnifiedResponse<any>>(`${this.baseUrl}/validate`, { code, type });
+    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/validate`, { code, type });
   }
 
   /**
@@ -305,8 +304,8 @@ export class StrategyApiService {
       limit?: number;
       since?: string;
     }
-  ): Promise<UnifiedResponse<any[]>> {
-    return apiGet<UnifiedResponse<any[]>>(`${this.baseUrl}/${id}/logs`, params);
+  ): Promise<UnifiedResponse<unknown[]>> {
+    return apiGet<UnifiedResponse<unknown[]>>(`${this.baseUrl}/${id}/logs`, params);
   }
 
   /**
@@ -317,7 +316,7 @@ export class StrategyApiService {
    * @returns Promise with Blob (file data)
    */
   async exportStrategy(id: string, format: 'json' | 'yaml' = 'json'): Promise<Blob> {
-    const response = await apiGet<any>(
+    const response = await apiGet<unknown>(
       `${this.baseUrl}/${id}/export`,
       { format }
     );

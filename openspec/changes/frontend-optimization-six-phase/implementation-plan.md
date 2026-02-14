@@ -311,16 +311,16 @@ CLI-6 (质量保证) → 主CLI (集成)
 
 1. **[Multi-CLI Worktree Management](../../../docs/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md)** - 完整的多CLI协作手册
 2. **[Git Worktree Main CLI Manual](../../../docs/guides/GIT_WORKTREE_MAIN_CLI_MANUAL.md)** - Git Worktree命令参考
-3. **[Progress Monitoring & Milestones](../../../docs/guides/multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md)** - 进度监控与里程碑管理
+3. **[Progress Monitoring & Milestones](../../../docs/guides/.multi-cli-tasks/PROGRESS_MONITORING_AND_MILESTONES.md)** - 进度监控与里程碑管理
 
 ### Task Allocation Files
 
-1. **[CLI-1 Phase 3 Tasks](../../../docs/guides/multi-cli-tasks/CLI-1_PHASE3_TASKS.md)** - K线图任务分配
-2. **[CLI-2 API Contract Tasks](../../../docs/guides/multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md)** - API契约任务分配
-3. **[CLI-3 Phase 4 Complete Tasks](../../../docs/guides/multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md)** - Phase 4完整任务分配
-4. **[CLI-4 Phase 5 AI Screening Tasks](../../../docs/guides/multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md)** - AI筛选任务分配
-5. **[CLI-5 Phase 6 GPU Monitoring Tasks](../../../docs/guides/multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md)** - GPU监控任务分配
-6. **[CLI-6 Quality Assurance Tasks](../../../docs/guides/multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md)** - 质量保证任务分配
+1. **[CLI-1 Phase 3 Tasks](../../../docs/guides/.multi-cli-tasks/CLI-1_PHASE3_TASKS.md)** - K线图任务分配
+2. **[CLI-2 API Contract Tasks](../../../docs/guides/.multi-cli-tasks/CLI-2_API_CONTRACT_TASKS.md)** - API契约任务分配
+3. **[CLI-3 Phase 4 Complete Tasks](../../../docs/guides/.multi-cli-tasks/CLI-3_PHASE4_COMPLETE_TASKS.md)** - Phase 4完整任务分配
+4. **[CLI-4 Phase 5 AI Screening Tasks](../../../docs/guides/.multi-cli-tasks/CLI-4_PHASE5_AI_SCREENING_TASKS.md)** - AI筛选任务分配
+5. **[CLI-5 Phase 6 GPU Monitoring Tasks](../../../docs/guides/.multi-cli-tasks/CLI-5_PHASE6_GPU_MONITORING_TASKS.md)** - GPU监控任务分配
+6. **[CLI-6 Quality Assurance Tasks](../../../docs/guides/.multi-cli-tasks/CLI-6_QUALITY_ASSURANCE_TASKS.md)** - 质量保证任务分配
 
 ### Original Proposal
 

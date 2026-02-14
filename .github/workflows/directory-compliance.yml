@@ -24,6 +24,22 @@ jobs:
         run: |
           mkdir -p reports/compliance
       
+      - name: Check root directory count
+        run: |
+          ROOT_DIRS=$(find . -maxdepth 1 -type d ! -name '.*' ! -name '.' ! -name 'node_modules' ! -name '__pycache__' | wc -l)
+          ROOT_FILES=$(find . -maxdepth 1 -type f ! -name '.*' | wc -l)
+          echo "Root directories: $ROOT_DIRS (max: 13)"
+          echo "Root files: $ROOT_FILES (max: 20)"
+          if [ "$ROOT_DIRS" -gt 13 ]; then
+            echo "❌ FAIL: Too many root directories ($ROOT_DIRS > 13)"
+            exit 1
+          fi
+          if [ "$ROOT_FILES" -gt 20 ]; then
+            echo "❌ FAIL: Too many root files ($ROOT_FILES > 20)"
+            exit 1
+          fi
+          echo "✅ Root directory structure is compliant"
+
       - name: Check directory structure
         run: |
           python scripts/hooks/check_directory_structure.py || exit 1

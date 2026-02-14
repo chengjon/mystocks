@@ -18,7 +18,7 @@ export const MarketAnalysisSchema = z.object({
     sentiment: OptionalNumberSchema,
     volatility: OptionalNumberSchema,
     volume: OptionalNumberSchema
-}).catchall(z.any()) // 允许扩展属性
+}).catchall(z.unknown()) // 允许扩展属性
 
 // 交易数据验证器
 export const TradingFiltersSchema = z.object({
@@ -26,14 +26,14 @@ export const TradingFiltersSchema = z.object({
     dateFrom: OptionalStringSchema,
     dateTo: OptionalStringSchema,
     status: OptionalStringSchema
-}).catchall(z.any())
+}).catchall(z.unknown())
 
 // 回测结果验证器
 export const BacktestResultSchema = z.object({
     id: OptionalStringSchema,
     strategyId: OptionalStringSchema,
     status: z.enum(['pending', 'running', 'completed', 'failed']).optional(),
-    result: z.any().optional(),
+    result: z.unknown().optional(),
     error: OptionalStringSchema,
     startTime: z.date().optional(),
     endTime: z.date().optional()
@@ -45,7 +45,7 @@ export const OptimizationTaskSchema = z.object({
     strategyId: OptionalStringSchema,
     status: z.enum(['pending', 'running', 'completed', 'failed']).optional(),
     parameters: z.record(z.string(), z.unknown()).optional(),
-    result: z.any().optional(),
+    result: z.unknown().optional(),
     error: OptionalStringSchema,
     startTime: z.date().optional(),
     endTime: z.date().optional()
@@ -53,7 +53,7 @@ export const OptimizationTaskSchema = z.object({
 
 // 缓存数据验证器
 export const CachedDataSchema = z.object({
-    data: z.any(),
+    data: z.unknown(),
     timestamp: z.number(),
     ttl: z.number()
 })
@@ -61,43 +61,43 @@ export const CachedDataSchema = z.object({
 // 实时更新验证器
 export const RealtimeUpdateSchema = z.object({
     type: z.string(),
-    data: z.any(),
+    data: z.unknown(),
     timestamp: z.number()
 })
 
 // Store状态验证器
 export const MarketStateSchema = z.object({
-    marketOverview: z.any().nullable(),
+    marketOverview: z.unknown().nullable(),
     marketAnalysis: MarketAnalysisSchema.nullable(),
     lastUpdateTime: z.string()
 })
 
 export const TradingDataStateSchema = z.object({
-    tradingSignals: z.any().nullable(),
-    tradingHistory: z.any().nullable(),
-    positionMonitor: z.any().nullable(),
-    performanceAnalysis: z.any().nullable(),
+    tradingSignals: z.unknown().nullable(),
+    tradingHistory: z.unknown().nullable(),
+    positionMonitor: z.unknown().nullable(),
+    performanceAnalysis: z.unknown().nullable(),
     lastUpdateTime: z.string()
 })
 
 export const StrategyStateSchema = z.object({
-    strategyManagement: z.any().nullable(),
+    strategyManagement: z.unknown().nullable(),
     backtestResults: z.array(BacktestResultSchema),
     optimizationTasks: z.array(OptimizationTaskSchema),
     lastUpdateTime: z.string()
 })
 
 export const RiskStateSchema = z.object({
-    riskMonitor: z.any().nullable(),
-    announcementMonitor: z.any().nullable(),
-    riskAlerts: z.any().nullable(),
+    riskMonitor: z.unknown().nullable(),
+    announcementMonitor: z.unknown().nullable(),
+    riskAlerts: z.unknown().nullable(),
     lastUpdateTime: z.string()
 })
 
 export const SystemStateSchema = z.object({
-    monitoringDashboard: z.any().nullable(),
-    systemSettings: z.any().nullable(),
-    systemHealth: z.any().nullable(),
+    monitoringDashboard: z.unknown().nullable(),
+    systemSettings: z.unknown().nullable(),
+    systemHealth: z.unknown().nullable(),
     systemConfig: z.record(z.string(), z.unknown()).nullable(),
     lastUpdateTime: z.string()
 })
@@ -106,12 +106,12 @@ export const UiStateSchema = z.object({
     activeFunction: z.string(),
     expandedNodes: z.instanceof(Set).transform(set => Array.from(set)),
     loadingStates: z.record(z.string(), z.boolean()).optional(),
-    cache: z.any(), // Map类型在Zod中处理比较复杂，使用any暂时
+    cache: z.unknown(), // Map类型在Zod中处理比较复杂，使用any暂时
     lastUpdateTime: z.string()
 })
 
 // 验证函数
-export function validateMarketState(data: any): boolean {
+export function validateMarketState(data: unknown): boolean {
     try {
         MarketStateSchema.parse(data)
         return true
@@ -121,7 +121,7 @@ export function validateMarketState(data: any): boolean {
     }
 }
 
-export function validateTradingDataState(data: any): boolean {
+export function validateTradingDataState(data: unknown): boolean {
     try {
         TradingDataStateSchema.parse(data)
         return true
@@ -131,7 +131,7 @@ export function validateTradingDataState(data: any): boolean {
     }
 }
 
-export function validateStrategyState(data: any): boolean {
+export function validateStrategyState(data: unknown): boolean {
     try {
         StrategyStateSchema.parse(data)
         return true
@@ -141,7 +141,7 @@ export function validateStrategyState(data: any): boolean {
     }
 }
 
-export function validateRiskState(data: any): boolean {
+export function validateRiskState(data: unknown): boolean {
     try {
         RiskStateSchema.parse(data)
         return true
@@ -151,7 +151,7 @@ export function validateRiskState(data: any): boolean {
     }
 }
 
-export function validateSystemState(data: any): boolean {
+export function validateSystemState(data: unknown): boolean {
     try {
         SystemStateSchema.parse(data)
         return true
@@ -161,7 +161,7 @@ export function validateSystemState(data: any): boolean {
     }
 }
 
-export function validateUiState(data: any): boolean {
+export function validateUiState(data: unknown): boolean {
     try {
         UiStateSchema.parse(data)
         return true
@@ -172,7 +172,7 @@ export function validateUiState(data: any): boolean {
 }
 
 // 通用验证函数
-export function validateWithSchema<T>(data: any, schema: z.ZodSchema<T>): T | null {
+export function validateWithSchema<T>(data: unknown, schema: z.ZodSchema<T>): T | null {
     try {
         return schema.parse(data)
     } catch (error) {
@@ -184,7 +184,7 @@ export function validateWithSchema<T>(data: any, schema: z.ZodSchema<T>): T | nu
 // 开发模式下的严格验证
 export const isDevelopment = import.meta.env.DEV
 
-export function validateInDevelopment<T>(data: any, schema: z.ZodSchema<T>, context: string): T | null {
+export function validateInDevelopment<T>(data: unknown, schema: z.ZodSchema<T>, context: string): T | null {
     if (!isDevelopment) return data
 
     const result = validateWithSchema(data, schema)

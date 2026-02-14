@@ -59,7 +59,7 @@
     import { computed } from 'vue'
 
     interface Props {
-        data: any
+        data: unknown
     }
 
     const props = defineProps<Props>()
@@ -67,7 +67,7 @@
     const signals = computed(() => {
         if (!props.data?.signals) return []
 
-        return props.data.signals.map((signal: any, index: number) => ({
+        return props.data.signals.map((signal: unknown, index: number) => ({
             id: index,
             type: signal.type || 'neutral',
             title: signal.title || '交易信号',
@@ -77,7 +77,7 @@
         }))
     })
 
-    const buySignals = computed(() => signals.value.filter((s: any) => s.type === 'buy').length)
-    const sellSignals = computed(() => signals.value.filter((s: any) => s.type === 'sell').length)
-    const neutralSignals = computed(() => signals.value.filter((s: any) => s.type === 'neutral').length)
+    const buySignals = computed(() => signals.value.filter((s: unknown) => s.type === 'buy').length)
+    const sellSignals = computed(() => signals.value.filter((s: unknown) => s.type === 'sell').length)
+    const neutralSignals = computed(() => signals.value.filter((s: unknown) => s.type === 'neutral').length)
 </script>

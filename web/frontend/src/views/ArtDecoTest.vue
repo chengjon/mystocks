@@ -140,14 +140,14 @@ console.log('Imported components:', {
 .test-section {
   margin-bottom: 2rem;
   padding: 1rem;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgb(212 175 55 / 20%);
   background: var(--artdeco-bg-card, #141414);
 }
 
 .test-row {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgb(212 175 55 / 10%);
   background: var(--artdeco-bg-surface, #1a1a1a);
 
   > * {

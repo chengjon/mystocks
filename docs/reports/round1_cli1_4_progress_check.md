@@ -518,8 +518,8 @@ CLI-6 (质量保证) - 贯穿全程 ✅
 - **[CLI-2任务分配](../phase6-api-contract/README.md)**
 - **[CLI-5任务分配](../phase6-monitoring/README.md)**
 - **[CLI-6任务分配](../phase6-quality/README.md)**
-- **[多CLI协作规范](./multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)**
-- **[主CLI工作标准](./multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)**
+- **[多CLI协作规范](./.multi-cli-tasks/GIT_WORKTREE_COLLABORATION_CONFLICT_PREVENTION.md)**
+- **[主CLI工作标准](./.multi-cli-tasks/MAIN_CLI_WORKFLOW_STANDARDS.md)**
 
 ---
 

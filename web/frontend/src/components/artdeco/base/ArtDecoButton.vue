@@ -118,8 +118,8 @@
 
 <style scoped lang="scss">
     // Import Art Deco tokens
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     // ============================================
     //   BASE BUTTON STYLES - 按钮基础样式
@@ -163,7 +163,7 @@
         &:disabled,
         &--disabled {
             cursor: not-allowed;
-            opacity: 0.5;
+            opacity: 50%;
         }
 
         // Block button (full width)
@@ -217,13 +217,13 @@
         color: var(--artdeco-gold-primary); // Use theme variable
         border: 2px solid var(--artdeco-gold-primary);
 
-        &:hover:not(:disabled):not(&--disabled) {
+        &:hover:not(:disabled, &--disabled) {
             background-color: var(--artdeco-gold-primary);
             color: var(--artdeco-bg-global); // Black text on gold = excellent contrast
             box-shadow: var(--artdeco-glow-intense); // Use theme glow
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -240,13 +240,13 @@
         color: var(--artdeco-bg-global); // Black on gold = 12.6:1 contrast (AAA)
         border: 2px solid var(--artdeco-gold-primary);
 
-        &:hover:not(:disabled):not(&--disabled) {
+        &:hover:not(:disabled, &--disabled) {
             background-color: var(--artdeco-gold-hover);
             border-color: var(--artdeco-gold-hover);
             box-shadow: var(--artdeco-glow-intense);
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(-1px);
             background-color: var(--artdeco-gold-primary);
         }
@@ -265,14 +265,14 @@
         color: var(--artdeco-gold-primary);
         border: 1px solid var(--artdeco-gold-primary);
 
-        &:hover:not(:disabled):not(&--disabled) {
-            background-color: rgba(212, 175, 55, 0.1); // 10% gold fill
+        &:hover:not(:disabled, &--disabled) {
+            background-color: rgb(212 175 55 / 10%); // 10% gold fill
             border-color: var(--artdeco-gold-hover);
             color: var(--artdeco-gold-hover);
             box-shadow: var(--artdeco-glow-subtle);
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -287,12 +287,12 @@
         color: var(--artdeco-up);
         border: 2px solid var(--artdeco-up);
 
-        &:hover:not(:disabled):not(&--disabled) {
-            background-color: rgba(255, 82, 82, 0.15);
-            box-shadow: 0 0 15px rgba(255, 82, 82, 0.4);
+        &:hover:not(:disabled, &--disabled) {
+            background-color: rgb(255 82 82 / 15%);
+            box-shadow: 0 0 15px rgb(255 82 82 / 40%);
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -307,12 +307,12 @@
         color: var(--artdeco-down);
         border: 2px solid var(--artdeco-down);
 
-        &:hover:not(:disabled):not(&--disabled) {
-            background-color: rgba(0, 230, 118, 0.15);
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        &:hover:not(:disabled, &--disabled) {
+            background-color: rgb(0 230 118 / 15%);
+            box-shadow: 0 0 15px rgb(0 230 118 / 40%);
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -333,17 +333,14 @@
         &::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            inset: -2px -2px -2px -2px;
             border: 2px solid var(--artdeco-gold-primary);
             border-radius: inherit;
             animation: pulse-ring 2s infinite;
-            opacity: 0;
+            opacity: 0%;
         }
 
-        &:hover:not(:disabled):not(&--disabled) {
+        &:hover:not(:disabled, &--disabled) {
             background-color: var(--artdeco-gold-primary);
             color: var(--artdeco-bg-global);
             box-shadow: var(--artdeco-glow-intense);
@@ -353,11 +350,11 @@
     @keyframes pulse-ring {
         0%, 100% {
             transform: scale(1);
-            opacity: 0;
+            opacity: 0%;
         }
         50% {
             transform: scale(1.1);
-            opacity: 0.6;
+            opacity: 60%;
         }
     }
 
@@ -378,10 +375,7 @@
         &::before {
             content: '';
             position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
+            inset: 4px 4px 4px 4px;
             border: 1px solid var(--artdeco-gold-primary);
             pointer-events: none;
             transition: all var(--artdeco-transition-base);
@@ -392,10 +386,7 @@
         &::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0 0 0 0;
             border: 2px solid var(--artdeco-gold-primary);
             pointer-events: none;
             transition: all var(--artdeco-transition-base);
@@ -409,15 +400,12 @@
             z-index: 2;
         }
 
-        &:hover:not(:disabled):not(&--disabled) {
+        &:hover:not(:disabled, &--disabled) {
             color: var(--artdeco-gold-hover);
 
             &::before {
                 border-color: var(--artdeco-gold-hover);
-                top: 2px;
-                left: 2px;
-                right: 2px;
-                bottom: 2px;
+                inset: 2px 2px 2px 2px;
             }
 
             &::after {
@@ -426,15 +414,12 @@
             }
         }
 
-        &:active:not(:disabled):not(&--disabled) {
+        &:active:not(:disabled, &--disabled) {
             transform: translateY(0);
 
             &::before,
             &::after {
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                inset: 0 0 0 0;
             }
         }
     }

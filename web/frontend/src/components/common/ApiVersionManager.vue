@@ -179,7 +179,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , onUnmounted } from 'vue'
 import {
   InfoFilled,
   Monitor,
@@ -258,6 +258,12 @@ onMounted(() => {
   setTimeout(() => {
     showVersionNotifications()
   }, 2000)
+})
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1 = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
 })
 </script>
 

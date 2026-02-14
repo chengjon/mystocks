@@ -11,7 +11,7 @@
     <div class="market-stats">
       <ArtDecoGrid columns="4" responsive class="stats-grid">
         <ArtDecoStatCard
-          v-for="stat in marketStats"
+          v-for="(stat, _idx) in marketStats"
           :key="stat.id"
           :title="stat.title"
           :value="stat.value"
@@ -152,7 +152,7 @@
       >
         <div class="updates-list">
           <div
-            v-for="update in realtimeUpdates"
+            v-for="(update, _idx) in realtimeUpdates"
             :key="update.id"
             class="update-item"
             :class="{ 'new-update': update.isNew }"
@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed , onUnmounted } from 'vue'
 // ArtDeco component imports
 import {
   ArtDecoHeader,
@@ -351,7 +351,7 @@ const activeUpdates = computed(() =>
 )
 
 // Methods
-const handleFilterChange = (newFilters: any) => {
+const handleFilterChange = (newFilters: unknown) => {
   console.log('Filters changed:', newFilters)
   // TODO: Apply filters to market data
 }
@@ -361,7 +361,7 @@ const handleSortChange = (sortKey: string, sortOrder: string) => {
   // TODO: Sort market data
 }
 
-const handleRowClick = (row: any) => {
+const handleRowClick = (row: unknown) => {
   console.log('Row clicked:', row)
   // TODO: Navigate to stock detail
 }
@@ -385,11 +385,11 @@ const exportData = () => {
 }
 
 // Utility methods
-const getPriceClass = (row: any) => {
+const getPriceClass = (row: unknown) => {
   return row.change > 0 ? 'positive' : row.change < 0 ? 'negative' : 'neutral'
 }
 
-const getChangeClass = (row: any) => {
+const getChangeClass = (row: unknown) => {
   return row.change > 0 ? 'positive' : row.change < 0 ? 'negative' : 'neutral'
 }
 
@@ -445,13 +445,17 @@ const loadData = async () => {
 onMounted(() => {
   loadData()
 })
+
+// Auto-generated: cleanup timers to prevent memory leaks
+const _timer_1: ReturnType<typeof setTimeout> | null = null
+onUnmounted(() => {
+  if (_timer_1) clearTimeout(_timer_1)
+})
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens.scss';
+@import './styles/market-data.scss';
 
-.market-data-page {
-  @include artdeco-layout;
   position: relative;
 
   // Art Deco geometric corner decorations
@@ -492,6 +496,7 @@ onMounted(() => {
 
     .market-stat-card {
       @include artdeco-hover-lift-glow;
+
       background: var(--artdeco-bg-card);
       border: 1px solid var(--artdeco-gold-dim);
       transition: all var(--artdeco-transition-base);
@@ -509,6 +514,7 @@ onMounted(() => {
     border: 1px solid var(--artdeco-gold-dim);
     border-radius: var(--artdeco-radius-md);
     padding: var(--artdeco-spacing-6);
+
     @include artdeco-geometric-corners(var(--artdeco-gold-primary), 12px);
 
     :deep(.filter-actions) {
@@ -564,7 +570,7 @@ onMounted(() => {
           height: 100%;
           background: linear-gradient(90deg,
             transparent,
-            rgba(255, 255, 255, 0.2),
+            rgb(255 255 255 / 20%),
             transparent
           );
           transition: left var(--artdeco-transition-slow);
@@ -589,6 +595,7 @@ onMounted(() => {
   // Market table card with geometric decorations
   .market-table-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
     position: relative;
@@ -600,10 +607,7 @@ onMounted(() => {
     &::after {
       content: '';
       position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
+      inset: -2px -2px -2px -2px;
       background: linear-gradient(45deg,
         transparent 0%,
         var(--artdeco-gold-dim) 25%,
@@ -613,7 +617,7 @@ onMounted(() => {
       );
       border-radius: var(--artdeco-radius-md);
       z-index: -1;
-      opacity: 0.3;
+      opacity: 30%;
     }
 
     .market-data-table {
@@ -634,11 +638,11 @@ onMounted(() => {
         transition: all var(--artdeco-transition-fast);
 
         &:nth-child(even) {
-          background: rgba(212, 175, 55, 0.02);
+          background: rgb(212 175 55 / 2%);
         }
 
         &:hover {
-          background: rgba(212, 175, 55, 0.08);
+          background: rgb(212 175 55 / 8%);
           transform: translateX(4px);
         }
 
@@ -689,11 +693,8 @@ onMounted(() => {
     // Loading overlay with Art Deco animation
     .loading-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(10, 10, 10, 0.8);
+      inset: 0 0 0 0;
+      background: rgb(10 10 10 / 80%);
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
@@ -716,6 +717,7 @@ onMounted(() => {
   // Market chart card
   .market-chart-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
     margin-bottom: var(--artdeco-spacing-8);
@@ -728,7 +730,7 @@ onMounted(() => {
         height: 100%;
         background: linear-gradient(135deg,
           var(--artdeco-bg-card) 0%,
-          rgba(212, 175, 55, 0.05) 50%,
+          rgb(212 175 55 / 5%) 50%,
           var(--artdeco-bg-card) 100%
         );
         border-radius: var(--artdeco-radius-md);
@@ -746,7 +748,7 @@ onMounted(() => {
           display: flex;
           flex-direction: column;
           gap: var(--artdeco-spacing-3);
-          background: rgba(10, 10, 10, 0.8);
+          background: rgb(10 10 10 / 80%);
           backdrop-filter: blur(8px);
           padding: var(--artdeco-spacing-4);
           border-radius: var(--artdeco-radius-md);
@@ -801,6 +803,7 @@ onMounted(() => {
   // Real-time updates card
   .realtime-updates-card {
     @include artdeco-hover-lift-glow;
+
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-dim);
 
@@ -830,16 +833,16 @@ onMounted(() => {
         transition: all var(--artdeco-transition-fast);
 
         &:hover {
-          background: rgba(212, 175, 55, 0.05);
+          background: rgb(212 175 55 / 5%);
         }
 
         &.new-update {
-          background: rgba(39, 174, 96, 0.1);
+          background: rgb(39 174 96 / 10%);
           border-left: 3px solid var(--artdeco-success);
 
           .update-indicator {
             background: var(--artdeco-success);
-            box-shadow: 0 0 8px rgba(39, 174, 96, 0.6);
+            box-shadow: 0 0 8px rgb(39 174 96 / 60%);
           }
         }
 
@@ -860,7 +863,7 @@ onMounted(() => {
             font-family: var(--artdeco-font-mono);
             font-weight: var(--artdeco-font-bold);
             color: var(--artdeco-gold-primary);
-            background: rgba(212, 175, 55, 0.1);
+            background: rgb(212 175 55 / 10%);
             padding: 2px 6px;
             border-radius: var(--artdeco-radius-sm);
             font-size: var(--artdeco-text-xs);
@@ -888,17 +891,17 @@ onMounted(() => {
 
           &.buy {
             background: var(--artdeco-up);
-            box-shadow: 0 0 6px rgba(255, 82, 82, 0.6);
+            box-shadow: 0 0 6px rgb(255 82 82 / 60%);
           }
 
           &.sell {
             background: var(--artdeco-down);
-            box-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
+            box-shadow: 0 0 6px rgb(0 230 118 / 60%);
           }
 
           &.suspended {
             background: var(--artdeco-warning);
-            box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 6px rgb(255 215 0 / 60%);
           }
         }
       }
@@ -909,15 +912,15 @@ onMounted(() => {
 // Art Deco animations
 @keyframes artdeco-pulse-text {
   0%, 100% {
-    opacity: 0.7;
+    opacity: 70%;
   }
   50% {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
 // Responsive design for Art Deco market data
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .market-data-page {
     .stats-grid {
       grid-template-columns: 1fr 1fr;
@@ -925,7 +928,7 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .market-data-page {
     .market-stats {
       .stats-grid {
@@ -965,9 +968,8 @@ onMounted(() => {
             position: static;
             margin-top: var(--artdeco-spacing-4);
             width: 100%;
-            flex-direction: row;
+            flex-flow: row wrap;
             justify-content: space-around;
-            flex-wrap: wrap;
           }
         }
       }

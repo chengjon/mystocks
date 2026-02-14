@@ -2,7 +2,7 @@
 // 负责交易信号、历史、持仓监控、绩效分析等交易相关数据
 
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { _ref, reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type {
     TradingSignals,
@@ -17,7 +17,7 @@ interface TradingFilters {
     dateFrom?: string
     dateTo?: string
     status?: string
-    [key: string]: any
+    [key: string]: unknown
 }
 
 interface TradingDataState {

@@ -100,7 +100,7 @@
 
                             <div v-if="stocksIndustries.length > 0" class="category-list">
                                 <el-tag
-                                    v-for="industry in stocksIndustries.slice(0, 10)"
+                                    v-for="(industry, _idx) in stocksIndustries.slice(0, 10)"
                                     :key="industry.code"
                                     size="small"
                                     class="category-tag"
@@ -131,7 +131,7 @@
 
                             <div v-if="stocksConcepts.length > 0" class="category-list">
                                 <el-tag
-                                    v-for="concept in stocksConcepts.slice(0, 10)"
+                                    v-for="(concept, _idx) in stocksConcepts.slice(0, 10)"
                                     :key="concept.code"
                                     size="small"
                                     class="category-tag"
@@ -331,7 +331,7 @@
     }
 
     // 响应式设计
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
         .market-data-demo {
             padding: 10px;
         }

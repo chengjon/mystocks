@@ -127,7 +127,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
+    @import '@/styles/artdeco-tokens';
 
     // ============================================
     //   ART DECO TICKER - 股票行情组件
@@ -261,17 +261,17 @@
 
         &.change-up {
             color: var(--artdeco-up);
-            background: rgba(255, 82, 82, 0.1);
+            background: rgb(255 82 82 / 10%);
         }
 
         &.change-down {
             color: var(--artdeco-down);
-            background: rgba(0, 230, 118, 0.1);
+            background: rgb(0 230 118 / 10%);
         }
 
         &.change-flat {
             color: var(--artdeco-fg-muted);
-            background: rgba(184, 184, 184, 0.1);
+            background: rgb(184 184 184 / 10%);
         }
     }
 

@@ -164,7 +164,7 @@ body {
   border-color: var(--color-success) !important;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 85%;
   }
 }
 
@@ -173,7 +173,7 @@ body {
   border-color: var(--color-warning) !important;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 85%;
   }
 }
 
@@ -182,7 +182,7 @@ body {
   border-color: var(--color-danger) !important;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 85%;
   }
 }
 
@@ -191,7 +191,7 @@ body {
   border-color: var(--color-info) !important;
 
   &:hover {
-    opacity: 0.85;
+    opacity: 85%;
   }
 }
 
@@ -615,32 +615,32 @@ body {
    Animations - 动画效果
    ============================================ */
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
-    opacity: 0;
+    opacity: 0%;
   }
   to {
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
-@keyframes slideInUp {
+@keyframes slide-in-up {
   from {
     transform: translateY(20px);
-    opacity: 0;
+    opacity: 0%;
   }
   to {
     transform: translateY(0);
-    opacity: 1;
+    opacity: 100%;
   }
 }
 
 .fade-in {
-  animation: fadeIn var(--transition-base);
+  animation: fade-in var(--transition-base);
 }
 
 .slide-in-up {
-  animation: slideInUp var(--transition-base);
+  animation: slide-in-up var(--transition-base);
 }
 
 /* ============================================
@@ -648,7 +648,7 @@ body {
    移动端适配
    ============================================ */
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   /* Mobile - 减小阴影 */
   .el-card,
   .chart-card {

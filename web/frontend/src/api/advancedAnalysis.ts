@@ -5,9 +5,9 @@ import request from '@/utils/request'
 
 // 创建专用的 http 客户端
 const http = {
-    get: (url: string, config?: any) => request.get(url, config).then((resp: any) => resp.data || resp),
-    post: (url: string, data?: any, config?: any) =>
-        request.post(url, data, config).then((resp: any) => resp.data || resp)
+    get: (url: string, config?: unknown) => request.get(url, config).then((resp: unknown) => resp.data || resp),
+    post: (url: string, data?: unknown, config?: unknown) =>
+        request.post(url, data, config).then((resp: unknown) => resp.data || resp)
 }
 
 export interface AnalysisRequest {
@@ -26,7 +26,7 @@ export interface BatchAnalysisRequest {
 export interface AnalysisResponse {
     success: boolean
     message?: string
-    data?: any
+    data?: unknown
 }
 
 // 基本面分析

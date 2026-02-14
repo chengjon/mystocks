@@ -7,7 +7,7 @@
 
 import { ref, readonly, onMounted } from 'vue';
 import { marketService } from '@/api/services/marketService';
-import { MarketAdapter } from '@/api/adapters/marketAdapter';
+import { _MarketAdapter } from '@/api/adapters/marketAdapter';
 import { getCache } from '@/utils/cache';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 
@@ -260,7 +260,7 @@ export function useMarket(options?: {
       }
 
       // Adapt parameters for API (startDate -> start_date)
-      const apiParams = {
+      const _apiParams = {
         symbol: params.symbol,
         interval: params.interval,
         start_date: params.startDate,
@@ -274,7 +274,7 @@ export function useMarket(options?: {
       const response = await marketService.getKLine(params.symbol, params.interval);
 
       // For now, create a simple adapter since response format may not match
-      const vm: KLineChartData[] = (response.data || []).map((item: any) => ({
+      const vm: KLineChartData[] = (response.data || []).map((item: unknown) => ({
         timestamp: item.timestamp || item.date || '',
         date: item.date || item.timestamp || '',
         open: item.open || 0,

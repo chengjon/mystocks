@@ -3,10 +3,10 @@ import { createAdapter } from '@/utils/adapterUtils'
 // Create data adapter for market quotes API response
 export const marketQuotesAdapter = createAdapter({
   // Transform API response to standardized format
-  transform: (apiData: any) => {
+  transform: (apiData: unknown) => {
     if (!apiData || !Array.isArray(apiData)) return []
 
-    return apiData.map((item: any) => ({
+    return apiData.map((item: unknown) => ({
       symbol: item.symbol || item.code,
       name: item.name || item.symbol,
       price: parseFloat(item.price) || 0,
@@ -25,7 +25,7 @@ export const marketQuotesAdapter = createAdapter({
   },
 
   // Validate transformed data
-  validate: (data: any[]) => {
+  validate: (data: unknown[]) => {
     return data.every(item =>
       item.symbol &&
       typeof item.price === 'number' &&
@@ -36,10 +36,10 @@ export const marketQuotesAdapter = createAdapter({
 
 // Create data adapter for stock symbols reference data
 export const stockSymbolsAdapter = createAdapter({
-  transform: (apiData: any) => {
+  transform: (apiData: unknown) => {
     if (!apiData || !Array.isArray(apiData)) return []
 
-    return apiData.map((item: any) => ({
+    return apiData.map((item: unknown) => ({
       symbol: item.symbol || item.code,
       name: item.name || item.symbol,
       exchange: item.exchange || 'UNKNOWN',
@@ -52,7 +52,7 @@ export const stockSymbolsAdapter = createAdapter({
     }))
   },
 
-  validate: (data: any[]) => {
+  validate: (data: unknown[]) => {
     return data.every(item =>
       item.symbol &&
       item.name &&
@@ -63,7 +63,7 @@ export const stockSymbolsAdapter = createAdapter({
 
 // Create data adapter for technical indicators
 export const technicalIndicatorsAdapter = createAdapter({
-  transform: (apiData: any) => {
+  transform: (apiData: unknown) => {
     // Handle different API response formats
     const data = apiData.data || apiData.indicators || apiData
 
@@ -83,7 +83,7 @@ export const technicalIndicatorsAdapter = createAdapter({
     }
   },
 
-  validate: (data: any) => {
+  validate: (data: unknown) => {
     return data &&
            data.symbol &&
            data.indicator &&
@@ -93,10 +93,10 @@ export const technicalIndicatorsAdapter = createAdapter({
 
 // Create data adapter for trading history
 export const tradingHistoryAdapter = createAdapter({
-  transform: (apiData: any) => {
+  transform: (apiData: unknown) => {
     if (!apiData || !Array.isArray(apiData)) return []
 
-    return apiData.map((item: any) => ({
+    return apiData.map((item: unknown) => ({
       id: item.id || item.order_id,
       symbol: item.symbol,
       type: item.type || item.order_type,
@@ -111,7 +111,7 @@ export const tradingHistoryAdapter = createAdapter({
     }))
   },
 
-  validate: (data: any[]) => {
+  validate: (data: unknown[]) => {
     return data.every(item =>
       item.id &&
       item.symbol &&

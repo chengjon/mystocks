@@ -1,0 +1,597 @@
+/* ========================================
+   Bloomberg-Level Financial Terminal UI
+   ======================================== */
+
+.watchlist-management {
+  min-height: 100vh;
+  padding: var(--fintech-space-4);
+  background: var(--fintech-bg-primary);
+}
+
+/* 标题栏样式 */
+.header-section {
+  margin-bottom: var(--fintech-space-6);
+  background: linear-gradient(135deg, var(--fintech-bg-elevated) 0%, var(--fintech-bg-secondary) 100%);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-6);
+}
+
+.title-section h1 {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-3xl);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: var(--fintech-font-size-md);
+  opacity: 80%;
+}
+
+.actions-section .fintech-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-2);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* 统计面板网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--fintech-space-4);
+  margin-bottom: var(--fintech-space-6);
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--fintech-space-5);
+  background: linear-gradient(135deg, var(--fintech-bg-secondary) 0%, var(--fintech-bg-tertiary) 100%);
+  border: 1px solid var(--fintech-border-base);
+  transition: all var(--fintech-transition-base);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--fintech-shadow-base);
+  border-color: var(--fintech-accent-primary);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: var(--fintech-font-size-3xl);
+  font-weight: 600;
+  font-family: var(--fintech-font-family-data);
+  margin-bottom: var(--fintech-space-1);
+  letter-spacing: 0.01em;
+}
+
+.stat-label {
+  font-size: var(--fintech-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 80%;
+}
+
+.stat-icon {
+  font-size: 32px;
+  opacity: 60%;
+  color: var(--fintech-accent-primary);
+}
+
+/* 主内容网格 */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--fintech-space-6);
+  align-items: start;
+}
+
+.main-content {
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+}
+
+.sidebar {
+  position: sticky;
+  top: var(--fintech-space-4);
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-4) var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.card-title {
+  margin: 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.card-actions .fintech-btn {
+  padding: var(--fintech-space-2);
+  min-width: auto;
+}
+
+/* 组合列表 */
+.portfolio-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.portfolio-item {
+  margin: var(--fintech-space-3);
+  padding: var(--fintech-space-4);
+  border: 1px solid var(--fintech-border-dark);
+  background: var(--fintech-bg-tertiary);
+  cursor: pointer;
+  transition: all var(--fintech-transition-fast);
+}
+
+.portfolio-item:hover {
+  border-color: var(--fintech-accent-primary);
+  background: var(--fintech-bg-elevated);
+  transform: translateY(-1px);
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--fintech-space-3);
+}
+
+.portfolio-info {
+  flex: 1;
+}
+
+.portfolio-name {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 500;
+}
+
+.portfolio-meta {
+  display: flex;
+  gap: var(--fintech-space-4);
+  align-items: center;
+}
+
+.portfolio-type {
+  padding: var(--fintech-space-1) var(--fintech-space-2);
+  border-radius: var(--fintech-radius-sm);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.portfolio-type.type-manual {
+  background: var(--fintech-accent-primary);
+  color: white;
+}
+
+.portfolio-type.type-strategy {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.portfolio-type.type-benchmark {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.portfolio-count {
+  font-size: var(--fintech-font-size-sm);
+  font-family: var(--fintech-font-family-data);
+}
+
+.portfolio-status .status-indicator {
+  padding: var(--fintech-space-1) var(--fintech-space-3);
+  border-radius: var(--fintech-radius-sm);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.portfolio-status .active {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.portfolio-status .inactive {
+  background: var(--fintech-gray-6);
+  color: white;
+}
+
+.portfolio-actions {
+  display: flex;
+  gap: var(--fintech-space-2);
+  justify-content: flex-end;
+}
+
+.portfolio-actions .fintech-btn {
+  padding: var(--fintech-space-2);
+  min-width: auto;
+}
+
+/* 空状态 */
+.empty-state {
+  padding: var(--fintech-space-8);
+  text-align: center;
+}
+
+.empty-content .empty-icon {
+  font-size: 64px;
+  color: var(--fintech-gray-6);
+  margin-bottom: var(--fintech-space-4);
+  opacity: 50%;
+}
+
+.empty-content h3 {
+  margin: 0 0 var(--fintech-space-2) 0;
+  font-size: var(--fintech-font-size-xl);
+  font-weight: 500;
+}
+
+.empty-content p {
+  margin: 0 0 var(--fintech-space-6) 0;
+  font-size: var(--fintech-font-size-base);
+}
+
+/* 快速概览 */
+.overview-content {
+  padding: var(--fintech-space-4);
+}
+
+.overview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-3) 0;
+  border-bottom: 1px solid var(--fintech-border-dark);
+}
+
+.overview-item:last-child {
+  border-bottom: none;
+}
+
+.overview-label {
+  font-size: var(--fintech-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.overview-value {
+  font-size: var(--fintech-font-size-lg);
+  font-weight: 500;
+  font-family: var(--fintech-font-family-data);
+}
+
+/* 抽屉样式 */
+.stock-drawer-overlay {
+  position: fixed;
+  inset: 0 0 0 0;
+  background: rgb(0 0 0 / 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.stock-drawer {
+  width: 90vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--fintech-bg-secondary);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.drawer-title {
+  margin: 0;
+  font-size: var(--fintech-font-size-xl);
+  font-weight: 600;
+}
+
+.drawer-actions {
+  display: flex;
+  gap: var(--fintech-space-3);
+}
+
+.drawer-content {
+  padding: var(--fintech-space-5);
+  max-height: calc(90vh - 120px);
+  overflow-y: auto;
+}
+
+.stock-table-container {
+  background: var(--fintech-bg-primary);
+  border-radius: var(--fintech-radius-base);
+  overflow: hidden;
+  border: 1px solid var(--fintech-border-base);
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th {
+  padding: var(--fintech-space-3) var(--fintech-space-4);
+  text-align: left;
+  font-weight: 600;
+  font-size: var(--fintech-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--fintech-bg-tertiary);
+  border-bottom: 1px solid var(--fintech-border-base);
+  white-space: nowrap;
+}
+
+.stock-table td {
+  padding: var(--fintech-space-3) var(--fintech-space-4);
+  border-bottom: 1px solid var(--fintech-border-dark);
+  font-family: var(--fintech-font-family-data);
+}
+
+.stock-row:hover {
+  background: var(--fintech-bg-tertiary);
+}
+
+.reason-tag {
+  padding: var(--fintech-space-1) var(--fintech-space-2);
+  border-radius: var(--fintech-radius-sm);
+  font-size: var(--fintech-font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.reason-technical {
+  background: var(--fintech-accent-primary);
+  color: white;
+}
+
+.reason-volume {
+  background: var(--fintech-accent-success);
+  color: white;
+}
+
+.reason-manual {
+  background: var(--fintech-accent-warning);
+  color: var(--fintech-bg-primary);
+}
+
+.reason-value {
+  background: var(--fintech-accent-info);
+  color: white;
+}
+
+/* 模态框样式 */
+.modal-overlay {
+  position: fixed;
+  inset: 0 0 0 0;
+  background: rgb(0 0 0 / 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: 90vw;
+  max-width: 600px;
+  background: var(--fintech-bg-secondary);
+  border: 1px solid var(--fintech-border-base);
+  border-radius: var(--fintech-radius-lg);
+  box-shadow: var(--fintech-shadow-xl);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fintech-space-5);
+  border-bottom: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: var(--fintech-font-size-xl);
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--fintech-text-secondary);
+  cursor: pointer;
+  padding: var(--fintech-space-2);
+  border-radius: var(--fintech-radius-sm);
+  transition: all var(--fintech-transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--fintech-bg-primary);
+  color: var(--fintech-text-primary);
+}
+
+.modal-content {
+  padding: var(--fintech-space-5);
+}
+
+.confirm-message {
+  margin: 0 0 var(--fintech-space-3) 0;
+  font-size: var(--fintech-font-size-base);
+}
+
+.confirm-warning {
+  margin: 0;
+  font-size: var(--fintech-font-size-sm);
+}
+
+.modal-form {
+  padding: var(--fintech-space-5);
+}
+
+.form-group {
+  margin-bottom: var(--fintech-space-4);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fintech-space-4);
+  margin-bottom: var(--fintech-space-4);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--fintech-space-2);
+  font-size: var(--fintech-font-size-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: var(--fintech-space-3);
+  background: var(--fintech-bg-tertiary);
+  border: 1px solid var(--fintech-border-base);
+  border-radius: var(--fintech-radius-sm);
+  color: var(--fintech-text-primary);
+  font-size: var(--fintech-font-size-base);
+  font-family: var(--fintech-font-family-ui);
+  transition: all var(--fintech-transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--fintech-accent-primary);
+  box-shadow: 0 0 0 2px rgb(0 128 255 / 20%);
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: var(--fintech-space-4);
+}
+
+.form-slider {
+  flex: 1;
+  height: 6px;
+  background: var(--fintech-bg-tertiary);
+  border-radius: var(--fintech-radius-sm);
+  outline: none;
+  appearance: none;
+}
+
+.form-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--fintech-accent-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--fintech-shadow-sm);
+}
+
+.form-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--fintech-accent-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--fintech-shadow-sm);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 120px;
+  font-size: var(--fintech-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.slider-value {
+  font-family: var(--fintech-font-family-data);
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--fintech-space-3);
+  padding: var(--fintech-space-5);
+  border-top: 1px solid var(--fintech-border-base);
+  background: var(--fintech-bg-tertiary);
+}
+
+/* 响应式设计 */
+@media (width <= 1280px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+/* 高分辨率优化 */
+@media (width >= 1920px) {
+  .watchlist-management {
+    padding: var(--fintech-space-6);
+  }
+
+  .portfolio-name {
+    font-size: var(--fintech-font-size-xl);
+  }
+
+  .stat-value {
+    font-size: 48px;
+  }
+}

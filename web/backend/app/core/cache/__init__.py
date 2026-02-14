@@ -1,39 +1,13 @@
-"""Cache Module for MyStocks"""
+"""缓存管理器包"""
+from .core import CacheCoreInit
+from .fetch_write import CacheFetchWriteMixin
+from .batch_ops import CacheBatchMixin
+from .stats_health import CacheStatsHealthMixin
 
-from .decorators import (
-    CACHE_POLICIES,
-    CacheInvalidator,
-    CachePolicy,
-    cached,
-    cached_sync,
-    get_invalidator,
-    invalidate_market_cache,
-    invalidate_stock_cache,
-)
-from .multi_level import (
-    CacheConfig,
-    MemoryCache,
-    MultiLevelCache,
-    close_cache,
-    generate_cache_key,
-    get_cache,
-    init_cache,
-)
 
-__all__ = [
-    "MultiLevelCache",
-    "MemoryCache",
-    "CacheConfig",
-    "get_cache",
-    "init_cache",
-    "close_cache",
-    "generate_cache_key",
-    "cached",
-    "cached_sync",
-    "CachePolicy",
-    "CACHE_POLICIES",
-    "CacheInvalidator",
-    "get_invalidator",
-    "invalidate_stock_cache",
-    "invalidate_market_cache",
-]
+class CacheManager(CacheCoreInit, CacheFetchWriteMixin, CacheBatchMixin, CacheStatsHealthMixin):
+    """缓存管理器"""
+    pass
+
+
+__all__ = ["CacheManager"]

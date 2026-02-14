@@ -163,7 +163,7 @@ defineExpose({
 <style scoped lang="scss">
 // Phase 3.4: Design Token Migration
 @use 'sass:color';
-@import '@/styles/theme-tokens.scss';
+@import '@/styles/theme-tokens';
 
 .detail-dialog {
   :deep(.el-dialog) {
@@ -352,7 +352,7 @@ defineExpose({
       }
 
       &:disabled {
-        opacity: 0.5;
+        opacity: 50%;
         cursor: not-allowed;
       }
     }

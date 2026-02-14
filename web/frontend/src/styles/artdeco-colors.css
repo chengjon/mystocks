@@ -25,6 +25,6 @@
   --artdeco-text-muted: #6c757d;
   
   /* Border Colors */
-  --artdeco-border-primary: rgba(255, 255, 255, 0.1);
-  --artdeco-border-secondary: rgba(255, 255, 255, 0.05);
+  --artdeco-border-primary: rgb(255 255 255 / 10%);
+  --artdeco-border-secondary: rgb(255 255 255 / 5%);
 }

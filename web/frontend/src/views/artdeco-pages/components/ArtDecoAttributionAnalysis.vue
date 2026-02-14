@@ -107,17 +107,18 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens.scss';
-    @import '@/styles/artdeco-patterns.scss';
+    @import '@/styles/artdeco-tokens';
+    @import '@/styles/artdeco-patterns';
 
     .attribution-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: var(--artdeco-spacing-4);
         position: relative;
+
         @include artdeco-geometric-corners(var(--artdeco-gold-primary), 16px, 2px);
 
-        @media (max-width: 900px) {
+        @media (width <= 900px) {
             grid-template-columns: 1fr;
         }
     }
@@ -163,7 +164,7 @@
 
                     .category-bar {
                         height: 8px;
-                        background: rgba(255, 255, 255, 0.1);
+                        background: rgb(255 255 255 / 10%);
                         border-radius: var(--artdeco-radius-sm);
                         overflow: hidden;
 
@@ -209,12 +210,12 @@
                         letter-spacing: var(--artdeco-tracking-wider);
 
                         &.buy {
-                            background: rgba(255, 82, 82, 0.15);
+                            background: rgb(255 82 82 / 15%);
                             color: var(--artdeco-up);
                         }
 
                         &.sell {
-                            background: rgba(0, 230, 118, 0.15);
+                            background: rgb(0 230 118 / 15%);
                             color: var(--artdeco-down);
                         }
                     }

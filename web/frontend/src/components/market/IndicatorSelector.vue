@@ -117,7 +117,7 @@
     <!-- 已选指标标签 -->
     <div v-if="showSelectedTags && selectedIndicators.length > 0" class="selected-tags">
       <el-tag
-        v-for="indicator in selectedIndicators"
+        v-for="(indicator, _idx) in selectedIndicators"
         :key="indicator"
         closable
         size="small"

@@ -1,0 +1,2 @@
+export { StrategyType, StrategyStatus, RiskLevel, Strategy, StrategyParams, StrategyParamValue, ParamObject, StrategyRule, RuleCondition, RuleAction, BacktestConfig, BacktestTimeRange, BacktestParams, SlippageConfig, RiskControlParams, TradingFeeConfig, BacktestResult, PerformanceMetrics, TradeRecord, PositionRecord, EquityCurvePoint } from './part-1';
+export { BacktestSummary, StrategyEvaluation, StrategyComparison, StrategyOptimization, StrategyMonitoring, StrategyAlert } from './types-2';

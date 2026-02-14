@@ -14,7 +14,7 @@
         <thead>
           <tr>
             <th
-              v-for="col in columns"
+              v-for="(col, _idx) in columns"
               :key="col.key"
               @click="sort(col.key)"
               :class="{ sortable: col.sortable }"
@@ -39,7 +39,7 @@
             @click="handleRowClick(row, index)"
           >
             <td
-              v-for="col in columns"
+              v-for="(col, _idx) in columns"
               :key="col.key"
               :class="getCellClass(row, col)"
             >
@@ -85,13 +85,13 @@ interface Column {
   key: string
   label: string
   sortable?: boolean
-  format?: (value: any) => string
-  class?: (row: any) => string | string[]
+  format?: (value: unknown) => string
+  class?: (row: unknown) => string | string[]
 }
 
 interface Props {
   columns: Column[]
-  data: any[]
+  data: unknown[]
   title?: string
   rowKey?: string
   pagination?: boolean
@@ -99,7 +99,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   defaultSort?: string
   defaultSortOrder?: 'asc' | 'desc'
-  activeRow?: any
+  activeRow?: unknown
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -114,11 +114,11 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'row-click': [row: any, index: number]
+  'row-click': [row: unknown, index: number]
   'sort': [column: string, order: 'asc' | 'desc']
 }>()
 
-const slots = useSlots()
+const _slots = useSlots()
 
 const sortColumn = ref(props.defaultSort)
 const sortOrder = ref<'asc' | 'desc'>(props.defaultSortOrder)
@@ -144,15 +144,15 @@ const sortedData = computed(() => {
   })
 })
 
-function getRowKey(row: any, index: number) {
+function getRowKey(row: unknown, index: number) {
   return row[props.rowKey] || index
 }
 
-function getRowValue(row: any, key: string) {
+function getRowValue(row: unknown, key: string) {
   return key.split('.').reduce((obj, k) => obj?.[k], row)
 }
 
-function formatCellValue(row: any, col: Column) {
+function formatCellValue(row: unknown, col: Column) {
   const value = getRowValue(row, col.key)
   if (col.format) {
     return col.format(value)
@@ -166,7 +166,7 @@ function formatCellValue(row: any, col: Column) {
   return value
 }
 
-function getCellClass(row: any, col: Column) {
+function getCellClass(row: unknown, col: Column) {
   const classes = []
   if (col.class) {
     const colClass = col.class(row)
@@ -179,11 +179,11 @@ function getCellClass(row: any, col: Column) {
   return classes
 }
 
-function isRowActive(row: any) {
+function isRowActive(row: unknown) {
   return props.activeRow && getRowKey(row, 0) === getRowKey(props.activeRow, 0)
 }
 
-function handleRowClick(row: any, index: number) {
+function handleRowClick(row: unknown, index: number) {
   emit('row-click', row, index)
 }
 
@@ -219,7 +219,7 @@ function sort(column: string) {
 }
 
 .data-table-header h3 {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: #E5E5E5;
@@ -245,7 +245,7 @@ function sort(column: string) {
 .data-table thead th {
   background: #141414;
   color: #E5E5E5;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   text-align: left;
@@ -278,7 +278,7 @@ function sort(column: string) {
 }
 
 .table-sort-icon {
-  color: #666666;
+  color: #666;
   font-size: 12px;
   transition: color 150ms ease;
 }
@@ -316,7 +316,7 @@ function sort(column: string) {
 }
 
 .data-table tbody td.data-flat {
-  color: #666666;
+  color: #666;
 }
 
 .data-table-pagination {
@@ -359,7 +359,7 @@ function sort(column: string) {
 }
 
 .data-table-loading p {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
   color: #A0A0A0;
   margin: 0;
@@ -374,9 +374,9 @@ function sort(column: string) {
 }
 
 .data-table-empty p {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   font-size: 12px;
-  color: #666666;
+  color: #666;
   margin: 0;
 }
 </style>

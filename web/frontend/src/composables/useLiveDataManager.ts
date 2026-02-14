@@ -6,7 +6,7 @@ import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
  * Live Data Manager Composable
  * Handles WebSocket subscriptions and data updates for the layout
  */
-export function useLiveDataManager(menus: MenuItem[]) {
+export function useLiveDataManager(_menus: MenuItem[]) {
   const { subscribeToLiveUpdates, getLiveUpdateMenus } = useMenuService()
   
   // Track active subscriptions for cleanup
@@ -23,7 +23,7 @@ export function useLiveDataManager(menus: MenuItem[]) {
 
     liveMenus.forEach(menu => {
       // Create subscription
-      const unsubscribe = subscribeToLiveUpdates(menu, (data: any) => {
+      const unsubscribe = subscribeToLiveUpdates(menu, (_data: unknown) => {
         // Handle incoming data
         // For now we just log, but this could dispatch to a Pinia store
         // or emit an event bus

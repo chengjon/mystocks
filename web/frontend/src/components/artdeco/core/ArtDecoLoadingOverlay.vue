@@ -24,7 +24,7 @@ defineProps<{
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgb(0 0 0 / 70%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -40,7 +40,7 @@ defineProps<{
     background-color: var(--artdeco-bg-secondary, #1a1a1a);
     border: 1px solid var(--artdeco-border-color, #333);
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 50%);
     min-width: 200px;
 
     .spinner {
