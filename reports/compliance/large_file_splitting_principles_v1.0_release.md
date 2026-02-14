@@ -1,7 +1,7 @@
 # Large File Splitting Principles v1.0 Release Record
 
 ## Status
-- Document: `large_file_splitting_principles.md`
+- Document: `architecture/standards/large_file_splitting_principles.md`
 - Version: v1.0
 - Approved Date: 2026-02-13
 - Effective Date: 2026-02-13
@@ -42,4 +42,3 @@
 - Target file list is generated against v1.0 thresholds.
 - Each target has acceptance tests and rollback path defined.
 - Work is executed in small batches with regression checks.
-
