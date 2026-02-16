@@ -19,9 +19,35 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # 项目 Claude AI 集成指南 (Project Claude AI Integration Guide)
 
-**本指南说明 MyStocks 中 Claude/OpenCode 的使用方式、开发约束与协作规范。它与 `AGENTS.md`、`docs/` 文档共同构成 AI 工作手册。**
+> **⚠️ 核心约束 (Critical Requirement)**:
+> 在执行任何代码修改或架构设计前，**必须**首先阅读并遵守 [architecture/STANDARDS.md](architecture/STANDARDS.md) 定义的工程红线。任何违反准则（如硬编码 App.vue、单例未初始化等）的操作将被视为无效交付。
 
-## 1. 项目基础认知：Claude AI 集成总览 (Project Basic Cognition: Claude AI Integration Overview)
+## 1. 推荐开发流程：六步走战略 (V3.1 Implementation Path)
+
+为了避免接口分裂、循环依赖和后端崩溃，所有新功能开发必须严格遵循以下阶段：
+
+### 1.1 第一阶段：契约先行 (Contract First)
+*   **原则**：先定义 OpenAPI 规范，再生成 Pydantic 模型，最后运行 `generate_frontend_types.py`。
+*   **目标**：消除前后端字段不匹配。
+
+### 1.2 第二阶段：单体骨架 (Monolithic Skeleton)
+*   **原则**：严格分层（Core -> Domain -> Infra -> Application -> UI/API），严禁反向依赖。
+
+### 1.3 第三阶段：Mock 驱动开发 (Mock Driven)
+*   **要求**：使用 MSW 或后端 Mock。前端 UI/UX 必须能在无后端时独立验收通过。
+
+### 1.4 第四阶段：后端垂直切片 (Vertical Slicing)
+*   **要求**：一次只通一个垂直流程（DB -> UI）。严禁一次性堆砌大量无法运行的路由。
+
+### 1.5 第五阶段：集成与可观测性 (Observability)
+*   **要求**：实现 RequestId 全链路追踪，提供 `/health/ready` 探针。前端启动必须校验后端就绪状态。
+
+### 1.6 第六阶段：自动化防护网 (Safety Net)
+*   **要求**：核心修改必须通过 [scripts/run_e2e_pm2.sh](scripts/run_e2e_pm2.sh) 进行全量回归。
+
+---
+
+## 2. 项目基础认知 (Project Basic Cognition)
 
 ### 1.1 项目定位与Claude核心功能 (Project Positioning and Core Claude Functions)
 

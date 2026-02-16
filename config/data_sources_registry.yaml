@@ -617,244 +617,244 @@ data_sources:
       max_response_time: 20.0
       required_columns: ["date", "open", "high", "low", "close"]
 
-   akshare_futures_basis_analysis:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.futures_basis_analysis"
-     call_method: "function_call"
+  akshare_futures_basis_analysis:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.futures_basis_analysis"
+    call_method: "function_call"
 
-     # 5层数据分类绑定
-     data_category: "FUTURES_DATA"
-     data_classification: "derived_data"
-     classification_level: 2
-     target_db: "postgresql"
-     table_name: "futures_basis_analysis"
+    # 5层数据分类绑定
+    data_category: "FUTURES_DATA"
+    data_classification: "derived_data"
+    classification_level: 2
+    target_db: "postgresql"
+    table_name: "futures_basis_analysis"
 
-     # 参数定义
-     parameters:
-       symbol:
-         type: "string"
-         required: true
-         description: "期货合约代码"
-         example: "IF2401"
-       start_date:
-         type: "string"
-         required: true
-         format: "YYYYMMDD"
-         description: "开始日期"
-         example: "20240101"
-       end_date:
-         type: "string"
-         required: true
-         format: "YYYYMMDD"
-         description: "结束日期"
-         example: "20240131"
+    # 参数定义
+    parameters:
+      symbol:
+        type: "string"
+        required: true
+        description: "期货合约代码"
+        example: "IF2401"
+      start_date:
+        type: "string"
+        required: true
+        format: "YYYYMMDD"
+        description: "开始日期"
+        example: "20240101"
+      end_date:
+        type: "string"
+        required: true
+        format: "YYYYMMDD"
+        description: "结束日期"
+        example: "20240131"
 
-     description: "AKShare股指期货期现基差分析"
-     update_frequency: "daily"
-     data_quality_score: 8.0
-     priority: 2
-     status: "active"
-     tags: ["futures", "basis", "arbitrage", "analysis", "akshare"]
+    description: "AKShare股指期货期现基差分析"
+    update_frequency: "daily"
+    data_quality_score: 8.0
+    priority: 2
+    status: "active"
+    tags: ["futures", "basis", "arbitrage", "analysis", "akshare"]
 
    # ==========================================================================
    # AKShare 数据源 - 市场总貌数据
    # ==========================================================================
 
-   akshare_sse_market_summary:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.stock_sse_summary"
-     call_method: "function_call"
+  akshare_sse_market_summary:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_sse_summary"
+    call_method: "function_call"
 
      # 5层数据分类绑定
-     data_category: "MARKET_DATA"
-     data_classification: "market_data"
-     classification_level: 1
-     target_db: "postgresql"
-     table_name: "sse_market_summary"
+    data_category: "MARKET_DATA"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "sse_market_summary"
 
      # 参数定义
-     parameters: {}  # 无参数
+    parameters: {}  # 无参数
 
-     description: "AKShare上海证券交易所市场总貌数据"
-     update_frequency: "daily"
-     data_quality_score: 9.0
-     priority: 1
-     status: "active"
-     tags: ["market", "summary", "sse", "exchange", "akshare", "high-quality"]
+    description: "AKShare上海证券交易所市场总貌数据"
+    update_frequency: "daily"
+    data_quality_score: 9.0
+    priority: 1
+    status: "active"
+    tags: ["market", "summary", "sse", "exchange", "akshare", "high-quality"]
 
      # 测试参数
-     test_parameters: {}
+    test_parameters: {}
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 8
-       max_response_time: 10.0
-       required_columns: ["项目", "股票", "科创板", "主板"]
+    quality_rules:
+      min_record_count: 8
+      max_response_time: 10.0
+      required_columns: ["项目", "股票", "科创板", "主板"]
 
-   akshare_szse_market_summary:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.stock_szse_summary"
-     call_method: "function_call"
+  akshare_szse_market_summary:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_szse_summary"
+    call_method: "function_call"
 
      # 5层数据分类绑定
-     data_category: "MARKET_DATA"
-     data_classification: "market_data"
-     classification_level: 1
-     target_db: "postgresql"
-     table_name: "szse_market_summary"
+    data_category: "MARKET_DATA"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "szse_market_summary"
 
      # 参数定义
-     parameters:
-       date:
-         type: "string"
-         required: false
-         format: "YYYYMMDD"
-         description: "查询日期"
-         example: "20240101"
+    parameters:
+      date:
+        type: "string"
+        required: false
+        format: "YYYYMMDD"
+        description: "查询日期"
+        example: "20240101"
 
-     description: "AKShare深圳证券交易所市场总貌数据"
-     update_frequency: "daily"
-     data_quality_score: 9.0
-     priority: 1
-     status: "active"
-     tags: ["market", "summary", "szse", "exchange", "akshare", "high-quality"]
+    description: "AKShare深圳证券交易所市场总貌数据"
+    update_frequency: "daily"
+    data_quality_score: 9.0
+    priority: 1
+    status: "active"
+    tags: ["market", "summary", "szse", "exchange", "akshare", "high-quality"]
 
      # 测试参数
-     test_parameters:
-       date: "20240101"
+    test_parameters:
+      date: "20240101"
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 10
-       max_response_time: 10.0
-       required_columns: ["证券类别", "数量", "成交金额", "总市值", "流通市值"]
+    quality_rules:
+      min_record_count: 10
+      max_response_time: 10.0
+      required_columns: ["证券类别", "数量", "成交金额", "总市值", "流通市值"]
 
-   akshare_szse_area_trading:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.stock_szse_area_summary"
-     call_method: "function_call"
+  akshare_szse_area_trading:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_szse_area_summary"
+    call_method: "function_call"
 
      # 5层数据分类绑定
-     data_category: "MARKET_DATA"
-     data_classification: "market_data"
-     classification_level: 1
-     target_db: "postgresql"
-     table_name: "szse_area_trading"
+    data_category: "MARKET_DATA"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "szse_area_trading"
 
      # 参数定义
-     parameters:
-       date:
-         type: "string"
-         required: true
-         format: "YYYYMM"
-         description: "查询年月"
-         example: "202412"
+    parameters:
+      date:
+        type: "string"
+        required: true
+        format: "YYYYMM"
+        description: "查询年月"
+        example: "202412"
 
-     description: "AKShare深圳证券交易所地区交易排序数据"
-     update_frequency: "monthly"
-     data_quality_score: 8.5
-     priority: 2
-     status: "active"
-     tags: ["market", "regional", "trading", "szse", "akshare"]
+    description: "AKShare深圳证券交易所地区交易排序数据"
+    update_frequency: "monthly"
+    data_quality_score: 8.5
+    priority: 2
+    status: "active"
+    tags: ["market", "regional", "trading", "szse", "akshare"]
 
      # 测试参数
-     test_parameters:
-       date: "202412"
+    test_parameters:
+      date: "202412"
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 30
-       max_response_time: 15.0
-       required_columns: ["地区", "总交易额", "占市场", "股票交易额"]
+    quality_rules:
+      min_record_count: 30
+      max_response_time: 15.0
+      required_columns: ["地区", "总交易额", "占市场", "股票交易额"]
 
-   akshare_szse_sector_trading:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.stock_szse_sector_summary"
-     call_method: "function_call"
+  akshare_szse_sector_trading:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_szse_sector_summary"
+    call_method: "function_call"
 
      # 5层数据分类绑定
-     data_category: "MARKET_DATA"
-     data_classification: "market_data"
-     classification_level: 1
-     target_db: "postgresql"
-     table_name: "szse_sector_trading"
+    data_category: "MARKET_DATA"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "szse_sector_trading"
 
      # 参数定义
-     parameters:
-       symbol:
-         type: "string"
-         required: true
-         options: ["当月", "当年"]
-         description: "统计周期"
-         example: "当月"
-       date:
-         type: "string"
-         required: true
-         format: "YYYYMM"
-         description: "年月"
-         example: "202412"
+    parameters:
+      symbol:
+        type: "string"
+        required: true
+        options: ["当月", "当年"]
+        description: "统计周期"
+        example: "当月"
+      date:
+        type: "string"
+        required: true
+        format: "YYYYMM"
+        description: "年月"
+        example: "202412"
 
-     description: "AKShare深圳证券交易所股票行业成交数据"
-     update_frequency: "monthly"
-     data_quality_score: 8.5
-     priority: 2
-     status: "active"
-     tags: ["market", "sector", "industry", "trading", "szse", "akshare"]
+    description: "AKShare深圳证券交易所股票行业成交数据"
+    update_frequency: "monthly"
+    data_quality_score: 8.5
+    priority: 2
+    status: "active"
+    tags: ["market", "sector", "industry", "trading", "szse", "akshare"]
 
      # 测试参数
-     test_parameters:
-       symbol: "当月"
-       date: "202412"
+    test_parameters:
+      symbol: "当月"
+      date: "202412"
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 15
-       max_response_time: 20.0
-       required_columns: ["项目名称", "交易天数", "成交金额-人民币元"]
+    quality_rules:
+      min_record_count: 15
+      max_response_time: 20.0
+      required_columns: ["项目名称", "交易天数", "成交金额-人民币元"]
 
-   akshare_sse_daily_deal:
-     source_name: "akshare"
-     source_type: "api_library"
-     endpoint_name: "akshare.stock_sse_deal_daily"
-     call_method: "function_call"
+  akshare_sse_daily_deal:
+    source_name: "akshare"
+    source_type: "api_library"
+    endpoint_name: "akshare.stock_sse_deal_daily"
+    call_method: "function_call"
 
      # 5层数据分类绑定
-     data_category: "MARKET_DATA"
-     data_classification: "market_data"
-     classification_level: 1
-     target_db: "postgresql"
-     table_name: "sse_daily_deal"
+    data_category: "MARKET_DATA"
+    data_classification: "market_data"
+    classification_level: 1
+    target_db: "postgresql"
+    table_name: "sse_daily_deal"
 
      # 参数定义
-     parameters:
-       date:
-         type: "string"
-         required: true
-         format: "YYYYMMDD"
-         description: "查询日期"
-         example: "20241220"
+    parameters:
+      date:
+        type: "string"
+        required: true
+        format: "YYYYMMDD"
+        description: "查询日期"
+        example: "20241220"
 
-     description: "AKShare上海证券交易所每日概况数据"
-     update_frequency: "daily"
-     data_quality_score: 9.0
-     priority: 1
-     status: "active"
-     tags: ["market", "daily", "deal", "sse", "exchange", "akshare", "high-quality"]
+    description: "AKShare上海证券交易所每日概况数据"
+    update_frequency: "daily"
+    data_quality_score: 9.0
+    priority: 1
+    status: "active"
+    tags: ["market", "daily", "deal", "sse", "exchange", "akshare", "high-quality"]
 
      # 测试参数
-     test_parameters:
-       date: "20241220"
+    test_parameters:
+      date: "20241220"
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 6
-       max_response_time: 10.0
-       required_columns: ["单日情况", "股票", "主板A", "科创板"]
+    quality_rules:
+      min_record_count: 6
+      max_response_time: 10.0
+      required_columns: ["单日情况", "股票", "主板A", "科创板"]
 
     # 测试参数
     test_parameters:
@@ -863,10 +863,10 @@ data_sources:
       end_date: "20240131"
 
      # 数据质量规则
-     quality_rules:
-       min_record_count: 10
-       max_response_time: 25.0
-       required_columns: ["date", "futures_price", "spot_index", "basis"]
+    quality_rules:
+      min_record_count: 10
+      max_response_time: 25.0
+      required_columns: ["date", "futures_price", "spot_index", "basis"]
 
     # ==========================================================================
     # AKShare 数据源 - 个股信息数据 (Phase 2)

@@ -23,7 +23,7 @@ export function useArtDecoSettings() {
           security: {
               twoFactor: false,
               passwordStrength: 'strong',
-              autoLogout: '60'
+              autoLogout: 60
           },
           notifications: {
               trade: {

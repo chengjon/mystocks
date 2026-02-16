@@ -12,11 +12,12 @@ const fetchScannerData = async () => {
   const response = await exec(() => dataApi.getStocksBasic({ limit: 20 }), {
     silent: true
   });
-  
-  if (response && response.items) {
+
+  const items = (response as Record<string, unknown>)?.data as unknown[] | undefined;
+  if (response && items) {
     // 模拟添加一些技术指标评分数据
-    scannerResults.value = response.items.map((stock: any) => ({
-      ...stock,
+    scannerResults.value = items.map((stock: unknown) => ({
+      ...(stock as Record<string, unknown>),
       rsi: (Math.random() * 40 + 30).toFixed(2),
       macd_signal: Math.random() > 0.5 ? 'BULL' : 'BEAR',
       trend_score: (Math.random() * 10).toFixed(1)

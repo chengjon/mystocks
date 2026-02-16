@@ -2,6 +2,9 @@
 
 ## 🧠 核心开发准则 (Core Development Guidelines)
 
+> **⚠️ 顶层约束 (Master Guideline)**:
+> 遵循 [architecture/STANDARDS.md](../architecture/STANDARDS.md) 定义的工程红线。任何违反准则的代码均为不可接受交付。
+
 ### 🚀 推荐开发流程：六步走战略
 
 > **核心理念**：预防问题优于修复问题，每个阶段解决一类特定痛点。
