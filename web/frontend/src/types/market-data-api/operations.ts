@@ -1,3 +1,4 @@
+import type { components } from './types-1';
 
 export interface operations {
     getMarketOverview: {

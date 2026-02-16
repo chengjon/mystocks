@@ -61,7 +61,7 @@
                     <div class="capital-heatmap-visualization">
                         <div class="heatmap-grid">
                             <div
-                                v-for="(sector, _idx) in sectorFlows"
+                                v-for="(sector, _idx) in typedSectorFlows"
                                 :key="sector.name"
                                 class="heatmap-cell"
                                 :style="{
@@ -144,7 +144,7 @@
                         <div class="scatter-plot">
                             <div class="plot-area">
                                 <div
-                                    v-for="(stock, _idx) in clusteredStocks"
+                                    v-for="(stock, _idx) in typedClusteredStocks"
                                     :key="stock.code"
                                     class="data-point"
                                     :style="{
@@ -167,7 +167,7 @@
                     </div>
 
                     <div class="cluster-list">
-                        <div v-for="cluster in clusters" :key="cluster.id" class="cluster-item">
+                        <div v-for="cluster in typedClusters" :key="cluster.id" class="cluster-item">
                             <div class="cluster-header">
                                 <div
                                     class="cluster-indicator"
@@ -270,7 +270,7 @@
                 <div class="control-ranking">
                     <h5>主力控盘排行</h5>
                     <div class="ranking-list">
-                        <div v-for="stock in mainForceRanking" :key="stock.code" class="ranking-item">
+                        <div v-for="stock in typedMainForceRanking" :key="stock.code" class="ranking-item">
                             <div class="rank-number">{{ stock.rank }}</div>
                             <div class="stock-info">
                                 <div class="stock-name">{{ stock.name }}</div>
@@ -341,7 +341,7 @@
                 <div class="opportunity-sectors">
                     <h5>热点板块机会</h5>
                     <div class="sector-opportunities">
-                        <div v-for="sector in hotSectors" :key="sector.name" class="sector-opportunity">
+                        <div v-for="sector in typedHotSectors" :key="sector.name" class="sector-opportunity">
                             <div class="sector-header">
                                 <div class="sector-name">{{ sector.name }}</div>
                                 <div class="sector-score">
@@ -378,7 +378,7 @@
                     <h5>投资洞察</h5>
                     <div class="insights-grid">
                         <div
-                            v-for="(insight, _idx) in investmentInsights"
+                            v-for="(insight, _idx) in typedInvestmentInsights"
                             :key="insight.id"
                             class="insight-card"
                             :class="insight.type"
@@ -419,13 +419,148 @@
 </template>
 
 <script setup lang="ts">
+    import { toRef, computed } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-import { useArtDecoCapitalFlow } from './composables/useArtDecoCapitalFlow'
+    import { useArtDecoCapitalFlow } from './composables/useArtDecoCapitalFlow'
 
-const { props, heatmapPeriod, flowType, showLabels, capitalFlows, clusteringData, mainForceData, opportunityData, northboundFlow, southboundFlow, mainForceFlow, retailFlow, sectorFlows, minFlow, flows, maxFlow, flows, clusters, clusteredStocks, mainForceControl, top5Concentration, top10Concentration, mainForceRanking, marketSentiment, fundAttention, sectorRotation, opportunityWindow, hotSectors, investmentInsights, periodOptions, flowTypeOptions, getNorthboundFlow, getSouthboundFlow, getMainForceFlow, getRetailFlow, formatFlow, sign, absFlow, formatVolume, getHeatmapColor, intensity, green, alpha, intensity, red, alpha, getHeatmapOpacity, maxAbsFlow, getSectorCode, codes, getMaxClusterSize, getClusteringDensity, avgClusterSize, maxClusterSize, getDispersionIndex, volumes, flows, volumeMean, flowMean, volumeVariance, flowVariance, getClusterColor, colors, getXPosition, volumes, minVol, maxVol, range, getYPosition, flows, minFlow, maxFlow, range, getSentimentClass, getAttentionClass, getRotationClass, getWindowClass } = useArtDecoCapitalFlow()
+    // Type definitions for template data
+    interface SectorFlowItem {
+        name: string
+        flow: number
+    }
+
+    interface ClusteredStockItem {
+        code: string
+        name: string
+        volume: number
+        flow: number
+        cluster: number
+    }
+
+    interface ClusterItem {
+        id: number
+        stocks: { length: number }
+        totalFlow: number
+        avgFlow: number
+        avgVolume: number
+        representative: string
+    }
+
+    interface RankingItem {
+        rank: number
+        code: string
+        name: string
+        controlLevel: number
+        mainPosition: number
+    }
+
+    interface HotSectorItem {
+        name: string
+        opportunityScore: number
+        flow: number
+        leadingStock: string
+        duration: number
+        opportunityReason: string
+    }
+
+    interface InsightItem {
+        id: number
+        type: string
+        title: string
+        description: string
+    }
+
+    // Define props
+    interface Props {
+        data: Record<string, unknown>
+        symbol?: string
+        loading?: boolean
+    }
+
+    const props = defineProps<Props>()
+
+    // Use composable with props converted to refs
+    const {
+        heatmapPeriod,
+        flowType,
+        showLabels,
+        capitalFlows,
+        clusteringData,
+        mainForceData,
+        opportunityData,
+        northboundFlow,
+        southboundFlow,
+        mainForceFlow,
+        retailFlow,
+        sectorFlows,
+        minFlow,
+        maxFlow,
+        clusters,
+        clusteredStocks,
+        mainForceControl,
+        top5Concentration,
+        top10Concentration,
+        mainForceRanking,
+        marketSentiment,
+        fundAttention,
+        sectorRotation,
+        opportunityWindow,
+        hotSectors,
+        investmentInsights,
+        periodOptions,
+        flowTypeOptions,
+        getNorthboundFlow,
+        getSouthboundFlow,
+        getMainForceFlow,
+        getRetailFlow,
+        formatFlow,
+        formatVolume,
+        getHeatmapColor,
+        getHeatmapOpacity,
+        getSectorCode,
+        getMaxClusterSize,
+        getClusteringDensity,
+        getDispersionIndex,
+        getClusterColor,
+        getXPosition,
+        getYPosition,
+        getSentimentClass,
+        getAttentionClass,
+        getRotationClass,
+        getWindowClass
+    } = useArtDecoCapitalFlow({
+        data: toRef(props, 'data') as { value: Record<string, unknown> },
+        symbol: toRef(props, 'symbol'),
+        loading: toRef(props, 'loading')
+    })
+
+    // Typed computed properties for template
+    const typedSectorFlows = computed((): SectorFlowItem[] => {
+        return sectorFlows.value as SectorFlowItem[]
+    })
+
+    const typedClusteredStocks = computed((): ClusteredStockItem[] => {
+        return clusteredStocks.value as ClusteredStockItem[]
+    })
+
+    const typedClusters = computed((): ClusterItem[] => {
+        return clusters.value as ClusterItem[]
+    })
+
+    const typedMainForceRanking = computed((): RankingItem[] => {
+        return mainForceRanking.value as RankingItem[]
+    })
+
+    const typedHotSectors = computed((): HotSectorItem[] => {
+        return hotSectors.value as HotSectorItem[]
+    })
+
+    const typedInvestmentInsights = computed((): InsightItem[] => {
+        return investmentInsights.value as InsightItem[]
+    })
 </script>
 
 <style scoped lang="scss">

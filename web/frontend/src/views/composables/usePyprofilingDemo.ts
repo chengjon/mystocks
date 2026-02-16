@@ -18,7 +18,12 @@ const tabs = [
 // 模型预测
 const modelStep = ref(0)
 const modelLoading = ref(false)
-const modelResults = ref(null)
+const modelResults = ref<{
+  rmse: string
+  trainSamples: string
+  testSamples: string
+  featureDim: string
+} | null>(null)
 
 const runModelDemo = async () => {
   modelLoading.value = true

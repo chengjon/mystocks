@@ -5,6 +5,7 @@
 """
 
 import logging
+import os
 from typing import Dict, Any
 from datetime import datetime
 from psycopg2 import pool
@@ -28,6 +29,10 @@ class ConnectionService:
 
     def initialize_pool(self, minconn: int = 1, maxconn: int = None) -> bool:
         try:
+            db_password = os.getenv("POSTGRESQL_PASSWORD", "")
+            if not db_password:
+                raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
+
             self.connection_pool = pool.SimpleConnectionPool(
                 minconn=minconn,
                 maxconn=maxconn or self.pool_size,
@@ -35,11 +40,11 @@ class ConnectionService:
                 cur_limit=1,
                 idle_timeout=300,
                 conn_timeout=30,
-                dbname="mystocks",
-                user="mystocks_user",
-                password="mystocks_password",
-                host="localhost",
-                port="5432",
+                dbname=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+                user=os.getenv("POSTGRESQL_USER", "mystocks_user"),
+                password=db_password,
+                host=os.getenv("POSTGRESQL_HOST", "localhost"),
+                port=os.getenv("POSTGRESQL_PORT", "5432"),
             )
             self.is_connected = True
             self.last_connected_at = datetime.now()

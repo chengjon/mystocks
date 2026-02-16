@@ -197,7 +197,8 @@ class RealtimeMarketService {
   }
 
   private handleMessage(data: unknown): void {
-    switch (data.action) {
+    const msg = data as Record<string, unknown>
+    switch (msg.action) {
       case 'connected':
         this.emit('connected', data)
         break
@@ -217,8 +218,9 @@ class RealtimeMarketService {
         this.emit('message', data)
     }
 
-    if (data.snapshot?.positions) {
-      for (const [symbol, position] of Object.entries(data.snapshot.positions) as [string, PositionSnapshot][]) {
+    const snapshot = msg.snapshot as { positions?: Record<string, PositionSnapshot> } | undefined
+    if (snapshot?.positions) {
+      for (const [symbol, position] of Object.entries(snapshot.positions) as [string, PositionSnapshot][]) {
         if (position.market_price) {
           this.lastPrice.value[symbol] = position.market_price
         }
@@ -308,7 +310,8 @@ class RealtimeMarketService {
 
   private emit(event: string, data: unknown): void {
     this.listeners.get(event)?.forEach(callback => callback(data))
-    this.listeners.get('*')?.forEach(callback => callback({ event, ...data }))
+    const dataObj = typeof data === 'object' && data !== null ? data : {}
+    this.listeners.get('*')?.forEach(callback => callback({ event, ...dataObj as object }))
   }
 
   getLastPrice(symbol: string): number | undefined {

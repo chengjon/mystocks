@@ -2,12 +2,13 @@
 // Advanced Analysis API Client
 
 import request from '@/utils/request'
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 // 创建专用的 http 客户端
 const http = {
-    get: (url: string, config?: unknown) => request.get(url, config).then((resp: unknown) => resp.data || resp),
-    post: (url: string, data?: unknown, config?: unknown) =>
-        request.post(url, data, config).then((resp: unknown) => resp.data || resp)
+    get: (url: string, config?: AxiosRequestConfig) => request.get(url, config).then((resp: AxiosResponse) => resp.data || resp),
+    post: (url: string, data?: unknown, config?: AxiosRequestConfig) =>
+        request.post(url, data, config).then((resp: AxiosResponse) => resp.data || resp)
 }
 
 export interface AnalysisRequest {

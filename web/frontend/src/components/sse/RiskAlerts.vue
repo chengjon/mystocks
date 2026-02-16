@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { _computed } from 'vue'
+import { computed } from 'vue'
 import {
   Bell, Connection, Close, Select, Delete, CircleCheck,
   Refresh, _Warning, _InfoFilled

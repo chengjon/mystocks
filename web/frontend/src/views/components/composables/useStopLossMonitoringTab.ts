@@ -1,15 +1,41 @@
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, type Ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+// Type definitions
+interface Position {
+  id: string
+  symbol: string
+  entry_price: number
+  quantity: number
+  stop_loss_type: string
+  k_factor: number
+  trailing_percentage: number
+  custom_stop_price: number | null
+  [key: string]: unknown
+}
+
+interface ExecutionHistoryItem {
+  id: string
+  symbol: string
+  position_id: string
+  execution_time: Date | string
+  stop_loss_price: number
+  loss_amount: number
+  loss_percentage: number
+  strategy_type: string
+  trigger_reason: string
+  [key: string]: unknown
+}
 
 export function useStopLossMonitoringTab() {
 
 // 响应式数据
-const loading = ref(false)
-const historyLoading = ref(false)
-const saving = ref(false)
-const positionDialogVisible = ref(false)
-const isEditing = ref(false)
-const historyPeriod = ref('7d')
+const loading: Ref<boolean> = ref(false)
+const historyLoading: Ref<boolean> = ref(false)
+const saving: Ref<boolean> = ref(false)
+const positionDialogVisible: Ref<boolean> = ref(false)
+const isEditing: Ref<boolean> = ref(false)
+const historyPeriod: Ref<string> = ref('7d')
 
 const stats = reactive({
   activePositions: 0,
@@ -18,8 +44,8 @@ const stats = reactive({
   avgHoldingTime: 0
 })
 
-const positions = reactive([])
-const executionHistory = reactive([])
+const positions: Position[] = reactive([])
+const executionHistory: ExecutionHistoryItem[] = reactive([])
 
 const positionForm = reactive({
   symbol: '',
@@ -83,6 +109,7 @@ const loadExecutionHistory = async () => {
       // 暂时使用模拟数据
       executionHistory.splice(0, executionHistory.length, ...[
         {
+          id: 'EXE_001',
           symbol: '600519',
           position_id: 'POS_001',
           execution_time: new Date(Date.now() - 86400000),
@@ -93,6 +120,7 @@ const loadExecutionHistory = async () => {
           trigger_reason: 'Stop loss triggered by price movement'
         },
         {
+          id: 'EXE_002',
           symbol: '000001',
           position_id: 'POS_002',
           execution_time: new Date(Date.now() - 172800000),
@@ -115,19 +143,19 @@ const loadExecutionHistory = async () => {
   }
 }
 
-const addPosition = () => {
+const addPosition = (): void => {
   resetPositionForm()
   isEditing.value = false
   positionDialogVisible.value = true
 }
 
-const editPosition = (position) => {
+const editPosition = (position: Position): void => {
   Object.assign(positionForm, position)
   isEditing.value = true
   positionDialogVisible.value = true
 }
 
-const removePosition = async (position) => {
+const removePosition = async (position: Position): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `确定要移除持仓监控: ${position.symbol} (${position.position_id})?`,
@@ -188,7 +216,7 @@ const savePosition = async () => {
   }
 }
 
-const resetPositionForm = () => {
+const resetPositionForm = (): void => {
   Object.assign(positionForm, {
     symbol: '',
     position_id: '',
@@ -201,39 +229,40 @@ const resetPositionForm = () => {
   })
 }
 
-const refreshData = () => {
+const refreshData = (): void => {
   loadData()
 }
 
-const getPriceClass = (row) => {
-  const change = (row.current_price - row.entry_price) / row.entry_price
+const getPriceClass = (row: Position): string => {
+  const currentPrice = row.current_price as number
+  const change = (currentPrice - row.entry_price) / row.entry_price
   return change >= 0 ? 'price-up' : 'price-down'
 }
 
-const getStrategyTagType = (strategy) => {
+const getStrategyTagType = (strategy: string): string => {
   return strategy === 'volatility_adaptive' ? 'primary' : 'success'
 }
 
-const formatStrategyName = (strategy) => {
+const formatStrategyName = (strategy: string): string => {
   return strategy === 'volatility_adaptive' ? 'VOLATILITY' : 'TRAILING'
 }
 
-const getDistanceClass = (distance) => {
+const getDistanceClass = (distance: number): string => {
   if (distance <= 1) return 'distance-danger'
   if (distance <= 3) return 'distance-warning'
   return 'distance-safe'
 }
 
-const formatDateTime = (date) => {
+const formatDateTime = (date: Date | string): string => {
   return new Date(date).toLocaleString()
 }
 
-const truncateText = (text, maxLength) => {
+const truncateText = (text: string, maxLength: number): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
 // 处理实时止损更新
-const handleStopLossUpdate = (data) => {
+const handleStopLossUpdate = (data: { symbol: string; stop_loss_price: number }) => {
   ElMessage.info(`止损执行: ${data.symbol} @ ¥${data.stop_loss_price}`)
   loadData() // 重新加载数据
 }
@@ -262,22 +291,14 @@ onMounted(() => {
     positionForm,
     positionFormRules,
     loadData,
-    response,
-    data,
     loadExecutionHistory,
-    response,
-    data,
     addPosition,
     editPosition,
     removePosition,
-    response,
     savePosition,
-    response,
-    result,
     resetPositionForm,
     refreshData,
     getPriceClass,
-    change,
     getStrategyTagType,
     formatStrategyName,
     getDistanceClass,

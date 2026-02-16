@@ -1,4 +1,5 @@
 <template>
+  <div class="openstock-demo">
 
     <div class="page-header">
       <h1 class="page-title">OPENSTOCK</h1>
@@ -14,6 +15,7 @@
           <div class="alert-title">NOT LOGGED IN</div>
           <div class="alert-desc">Please login before using search features</div>
         </div>
+        <button class="btn btn-primary" @click="_goToLogin">
           GO TO LOGIN
         </button>
       </div>
@@ -118,9 +120,22 @@ const tabs = TABS
 
 const apiStatus = ref<ApiStatus>({ ...DEFAULT_API_STATUS })
 
-const stockQuoteRef: Ref<unknown> = ref(null)
-const stockNewsRef: Ref<unknown> = ref(null)
-const featureStatusRef: Ref<unknown> = ref(null)
+interface StockRef {
+  setQuote?: (symbol: string, market: string) => void
+  fetchQuote?: () => void
+  setNews?: (symbol: string, market: string) => void
+  fetchNews?: () => void
+  updateStatus?: (feature: string, status: boolean) => void
+}
+
+interface StockInfo {
+  symbol: string
+  market: string
+}
+
+const stockQuoteRef: Ref<StockRef | null> = ref(null)
+const stockNewsRef: Ref<StockRef | null> = ref(null)
+const featureStatusRef: Ref<StockRef | null> = ref(null)
 
 const groups = ref<unknown[]>([])
 
@@ -138,23 +153,23 @@ const fetchGroups = async () => {
 const handleApiTest = (feature: keyof ApiStatus) => {
   apiStatus.value[feature] = true
   if (featureStatusRef.value) {
-    featureStatusRef.value.updateStatus(feature, true)
+    featureStatusRef.value.updateStatus?.(feature, true)
   }
 }
 
-const handleGetQuote = (stock: unknown) => {
+const handleGetQuote = (stock: StockInfo) => {
   activeTab.value = 'quote'
   if (stockQuoteRef.value) {
-    stockQuoteRef.value.setQuote(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
-    stockQuoteRef.value.fetchQuote()
+    stockQuoteRef.value.setQuote?.(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
+    stockQuoteRef.value.fetchQuote?.()
   }
 }
 
-const handleGetNews = (stock: unknown) => {
+const handleGetNews = (stock: StockInfo) => {
   activeTab.value = 'news'
   if (stockNewsRef.value) {
-    stockNewsRef.value.setNews(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
-    stockNewsRef.value.fetchNews()
+    stockNewsRef.value.setNews?.(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
+    stockNewsRef.value.fetchNews?.()
   }
 }
 

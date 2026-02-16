@@ -1,4 +1,5 @@
 <template>
+  <div class="alert-rules-management">
     <PageHeader
       title="告警规则管理"
       subtitle="ALERT RULES MANAGEMENT"
@@ -185,10 +186,9 @@
 </template>
 
 <script setup lang="ts">
-import type { _TableColumn } from '@/components/shared'
 import { useAlertRulesManagement } from './composables/useAlertRulesManagement'
 
-const { alertRules, loading, showCreateDialog, editingRule, pagination, ruleTypes, ruleForm, tableColumns, paginatedRules, start, end, _getRuleTypeClass, getRuleTypeTag, formatRuleType, typeMap, _getNotificationLevelClass, getNotificationLevelType, fetchAlertRules, response, editRule, saveRule, deleteRule, resetForm, handleCloseDialog, handleSizeChange, handleCurrentChange } = useAlertRulesManagement()
+const { alertRules, loading, showCreateDialog, editingRule, pagination, ruleTypes, ruleForm, tableColumns, paginatedRules, getRuleTypeTag, formatRuleType, getNotificationLevelType, fetchAlertRules, editRule, saveRule, deleteRule, resetForm, handleCloseDialog, handleSizeChange, handleCurrentChange } = useAlertRulesManagement()
 </script>
 
 <style scoped lang="scss">

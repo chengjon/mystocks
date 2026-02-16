@@ -1,34 +1,90 @@
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, type Ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
+  Plus, List, TrendCharts, Bell, DataLine, Tickets,
+  Delete, InfoFilled, Warning, CircleCheck, CircleClose
+} from '@element-plus/icons-vue'
 import HealthRadarChart from '@/components/chart/HealthRadarChart.vue'
 
+// Type definitions
+interface Watchlist {
+  id: number
+  name: string
+  watchlist_type: string
+  total_score?: number
+  stocks_count?: number
+}
+
+interface WatchlistStock {
+  id: number
+  stock_code: string
+  entry_price: number
+  entry_reason?: string
+  stop_loss_price?: number
+  target_price?: number
+  weight: number
+}
+
+interface PortfolioSummary {
+  total_score?: number
+  position_count?: number
+  [key: string]: unknown
+}
+
+interface RadarScores {
+  trend: number
+  technical: number
+  momentum: number
+  volatility: number
+  risk: number
+}
+
+interface AlertItem {
+  id: number
+  type: string
+  level: string
+  message: string
+  priority?: string
+}
+
+interface AlertSummary {
+  critical: number
+  warning: number
+  info: number
+}
+
+interface StockForm {
+  stock_code: string
+  entry_price: number | null
+  entry_reason: string | null
+  stop_loss_price: number | null
+  target_price: number | null
+  weight: number
+}
+
 export function usePortfolioManagement() {
-  Plus, List, TrendCharts, Bell, DataLine, Tickets,
-  Delete, InfoFilled, Warning, CircleCheck, _CircleClose
-} from '@element-plus/icons-vue'
 
 // State
-const loading = ref(false)
-const activeTab = ref('watchlists')
+const loading: Ref<boolean> = ref(false)
+const activeTab: Ref<string> = ref('watchlists')
 
 // Data
-const watchlists = ref([])
-const selectedWatchlist = ref(null)
-const watchlistStocks = ref([])
-const portfolioSummary = ref({})
-const radarScores = ref({ trend: 50, technical: 50, momentum: 50, volatility: 50, risk: 50 })
-const allAlerts = ref([])
-const alertSummary = ref({ critical: 0, warning: 0, info: 0 })
-const rebalanceSuggestions = ref([])
+const watchlists: Ref<Watchlist[]> = ref([])
+const selectedWatchlist: Ref<Watchlist | null> = ref(null)
+const watchlistStocks: Ref<WatchlistStock[]> = ref([])
+const portfolioSummary: Ref<PortfolioSummary> = ref({})
+const radarScores: Ref<RadarScores> = ref({ trend: 50, technical: 50, momentum: 50, volatility: 50, risk: 50 })
+const allAlerts: Ref<AlertItem[]> = ref([])
+const alertSummary: Ref<AlertSummary> = ref({ critical: 0, warning: 0, info: 0 })
+const rebalanceSuggestions: Ref<unknown[]> = ref([])
 
 // Dialogs
-const createDialogVisible = ref(false)
-const addStockDialogVisible = ref(false)
-const healthDetailVisible = ref(false)
-const editingWatchlist = ref(null)
-const currentStock = ref(null)
-const currentStockHealth = ref(null)
+const createDialogVisible: Ref<boolean> = ref(false)
+const addStockDialogVisible: Ref<boolean> = ref(false)
+const healthDetailVisible: Ref<boolean> = ref(false)
+const editingWatchlist: Ref<Watchlist | null> = ref(null)
+const currentStock: Ref<WatchlistStock | null> = ref(null)
+const currentStockHealth: Ref<unknown> = ref(null)
 
 // Forms
 const watchlistForm = reactive({
@@ -36,7 +92,7 @@ const watchlistForm = reactive({
   watchlist_type: 'manual'
 })
 
-const stockForm = reactive({
+const stockForm: StockForm = reactive({
   stock_code: '',
   entry_price: null,
   entry_reason: null,
@@ -60,9 +116,9 @@ const loadWatchlists = async () => {
       watchlists.value = data.data
       // Calculate portfolio summary
       if (data.data && data.data.length > 0) {
-        const avgScore = data.data.reduce((sum, w) => sum + (w.total_score || 0), 0) / data.data.length
+        const avgScore = data.data.reduce((sum: number, w: Record<string, any>) => sum + (w.total_score || 0), 0) / data.data.length
         portfolioSummary.value.total_score = avgScore
-        portfolioSummary.value.position_count = data.data.reduce((sum, w) => sum + (w.stocks_count || 0), 0)
+        portfolioSummary.value.position_count = data.data.reduce((sum: number, w: Record<string, any>) => sum + (w.stocks_count || 0), 0)
       }
     }
   } catch (error) {
@@ -73,14 +129,14 @@ const loadWatchlists = async () => {
   }
 }
 
-const selectWatchlist = async (row) => {
+const selectWatchlist = async (row: Watchlist): Promise<void> => {
   selectedWatchlist.value = row
   activeTab.value = 'analysis' // Switch to analysis tab to show radar chart
   await loadWatchlistDetails(row.id)
   await loadPortfolioAnalysis(row.id)
 }
 
-const loadWatchlistDetails = async (watchlistId) => {
+const loadWatchlistDetails = async (watchlistId: number): Promise<void> => {
   try {
     const res = await fetch(`${API_BASE}/watchlists/${watchlistId}/stocks`)
     const data = await res.json()
@@ -92,7 +148,7 @@ const loadWatchlistDetails = async (watchlistId) => {
   }
 }
 
-const loadPortfolioAnalysis = async (watchlistId) => {
+const loadPortfolioAnalysis = async (watchlistId: number): Promise<void> => {
   try {
     const [summaryRes, alertsRes, rebalanceRes] = await Promise.all([
       fetch(`${API_BASE}/analysis/portfolio/${watchlistId}/summary`),
@@ -179,7 +235,7 @@ const handleCreateWatchlist = async () => {
   }
 }
 
-const deleteWatchlist = async (id) => {
+const deleteWatchlist = async (id: number): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定删除此清单？', '提示', { type: 'warning' })
     const res = await fetch(`${API_BASE}/watchlists/${id}`, { method: 'DELETE' })
@@ -200,7 +256,7 @@ const deleteWatchlist = async (id) => {
   }
 }
 
-const manageStocks = (row) => {
+const manageStocks = (row: Watchlist): void => {
   selectWatchlist(row)
 }
 
@@ -219,9 +275,14 @@ const showAddStock = () => {
   addStockDialogVisible.value = true
 }
 
-const handleAddStock = async () => {
+const handleAddStock = async (): Promise<void> => {
   if (!stockForm.stock_code || !stockForm.entry_price) {
     ElMessage.warning('请填写股票代码和入库价格')
+    return
+  }
+
+  if (!selectedWatchlist.value) {
+    ElMessage.warning('请先选择一个清单')
     return
   }
 
@@ -246,9 +307,10 @@ const handleAddStock = async () => {
   }
 }
 
-const removeStock = async (stockId) => {
+const removeStock = async (stockId: number): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定移除此股票？', '提示', { type: 'warning' })
+    if (!selectedWatchlist.value) return
     const res = await fetch(`${API_BASE}/watchlists/${selectedWatchlist.value.id}/stocks/${stockId}`, {
       method: 'DELETE'
     })
@@ -266,7 +328,7 @@ const removeStock = async (stockId) => {
 }
 
 // Health Calculation
-const calculateHealth = async (stock) => {
+const calculateHealth = async (stock: WatchlistStock): Promise<void> => {
   currentStock.value = stock
   try {
     const res = await fetch(`${API_BASE}/analysis/calculate`, {
@@ -292,62 +354,62 @@ const calculateHealth = async (stock) => {
 }
 
 // Helper Functions
-const getHealthColor = (score) => {
+const getHealthColor = (score: number | undefined): string => {
   if (!score) return '#909399'
   if (score >= 70) return '#67C23A'
   if (score >= 50) return '#E6A23C'
   return '#F56C6C'
 }
 
-const getRiskColor = (score) => {
+const getRiskColor = (score: number | undefined): string => {
   if (!score) return '#909399'
   if (score >= 70) return '#F56C6C'
   if (score >= 50) return '#E6A23C'
   return '#67C23A'
 }
 
-const getAlertColor = () => {
+const getAlertColor = (): string => {
   const total = alertSummary.value.critical + alertSummary.value.warning + alertSummary.value.info
   if (alertSummary.value.critical > 0) return '#F56C6C'
   if (total > 0) return '#E6A23C'
   return '#67C23A'
 }
 
-const getTypeTagType = (type) => {
-  const types = { manual: '', strategy: 'success', benchmark: 'info' }
+const getTypeTagType = (type: string): string => {
+  const types: Record<string, string> = { manual: '', strategy: 'success', benchmark: 'info' }
   return types[type] || ''
 }
 
-const getTypeText = (type) => {
-  const texts = { manual: '手动', strategy: '策略', benchmark: '基准' }
+const getTypeText = (type: string): string => {
+  const texts: Record<string, string> = { manual: '手动', strategy: '策略', benchmark: '基准' }
   return texts[type] || type
 }
 
-const getScoreClass = (score) => {
+const getScoreClass = (score: number | undefined): string => {
   if (!score) return ''
   if (score >= 70) return 'score-excellent'
   if (score >= 50) return 'score-good'
   return 'score-fair'
 }
 
-const getProgressColor = (score) => {
+const getProgressColor = (score: number): string => {
   if (score >= 70) return '#67C23A'
   if (score >= 50) return '#E6A23C'
   return '#F56C6C'
 }
 
-const getPriorityTagType = (priority) => {
-  const types = { critical: 'danger', high: 'warning', medium: '' }
+const getPriorityTagType = (priority: string): string => {
+  const types: Record<string, string> = { critical: 'danger', high: 'warning', medium: '' }
   return types[priority] || ''
 }
 
-const getAlertType = (level) => {
-  const types = { critical: 'error', warning: 'warning', info: 'info' }
+const getAlertType = (level: string): string => {
+  const types: Record<string, string> = { critical: 'error', warning: 'warning', info: 'info' }
   return types[level] || 'info'
 }
 
-const getAlertTypeText = (type) => {
-  const texts = {
+const getAlertTypeText = (type: string): string => {
+  const texts: Record<string, string> = {
     stop_loss: '止损触发',
     profit_target: '止盈目标',
     weight_drift: '权重偏离'
@@ -355,7 +417,7 @@ const getAlertTypeText = (type) => {
   return texts[type] || type
 }
 
-const getHealthResultIcon = (score) => {
+const getHealthResultIcon = (score: number | undefined): typeof CircleCheck | undefined => {
   if (!score) return undefined
   if (score >= 70) return CircleCheck
   if (score >= 50) return Warning
@@ -363,7 +425,7 @@ const getHealthResultIcon = (score) => {
 }
 
 const getScoresTableData = () => {
-  const labels = { trend: '趋势', technical: '技术', momentum: '动量', volatility: '波动', risk: '风险' }
+  const labels: Record<string, string> = { trend: '趋势', technical: '技术', momentum: '动量', volatility: '波动', risk: '风险' }
   return Object.entries(radarScores.value).map(([key, value]) => ({
     label: labels[key] || key,
     score: value
@@ -396,52 +458,40 @@ onMounted(() => {
     riskTolerance,
     API_BASE,
     loadWatchlists,
-    res,
-    data,
-    avgScore,
     selectWatchlist,
     loadWatchlistDetails,
-    res,
-    data,
     loadPortfolioAnalysis,
     showCreateWatchlist,
     handleCreateWatchlist,
-    url,
-    method,
-    res,
-    data,
     deleteWatchlist,
-    res,
-    data,
     manageStocks,
     showAddStock,
     handleAddStock,
-    res,
-    data,
     removeStock,
-    res,
-    data,
     calculateHealth,
-    res,
-    data,
     getHealthColor,
     getRiskColor,
     getAlertColor,
-    total,
     getTypeTagType,
-    types,
     getTypeText,
-    texts,
     getScoreClass,
     getProgressColor,
     getPriorityTagType,
-    types,
     getAlertType,
-    types,
     getAlertTypeText,
-    texts,
     getHealthResultIcon,
     getScoresTableData,
-    labels,
+    Plus,
+    List,
+    TrendCharts,
+    Bell,
+    DataLine,
+    Tickets,
+    Delete,
+    InfoFilled,
+    Warning,
+    CircleCheck,
+    CircleClose,
+    HealthRadarChart,
   }
 }

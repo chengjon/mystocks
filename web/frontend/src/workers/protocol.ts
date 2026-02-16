@@ -190,13 +190,14 @@ export class WorkerMessageUtils {
    * Validate message structure
    */
   static validateMessage(message: unknown): message is WorkerMessage {
+    const msg = message as Record<string, unknown>
     return (
-      message &&
-      typeof message.id === 'string' &&
-      Object.values(WorkerMessageType).includes(message.type) &&
-      Object.values(MessagePriority).includes(message.priority) &&
-      typeof message.timestamp === 'number' &&
-      message.payload !== undefined
+      msg &&
+      typeof msg.id === 'string' &&
+      Object.values(WorkerMessageType).includes(msg.type as WorkerMessageType) &&
+      Object.values(MessagePriority).includes(msg.priority as MessagePriority) &&
+      typeof msg.timestamp === 'number' &&
+      msg.payload !== undefined
     )
   }
 

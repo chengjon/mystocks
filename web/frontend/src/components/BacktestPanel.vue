@@ -154,7 +154,17 @@ const emit = defineEmits<{
 
 const show = computed(() => !!props.strategy);
 
-const { startBacktest, _pollBacktestStatus } = useBacktest();
+const { startBacktest, pollBacktestStatus: _pollBacktestStatus } = useBacktest();
+
+// Result type
+interface BacktestResult {
+  totalReturn: number;
+  annualReturn: number;
+  sharpeRatio: number;
+  maxDrawdown: number;
+  winRate: number;
+  totalTrades: number;
+}
 
 // State
 const hasStarted = ref(false);
@@ -164,7 +174,7 @@ const isStarting = ref(false);
 const progress = ref(0);
 const statusText = ref('正在初始化...');
 const logs = ref<string[]>([]);
-const result = ref<unknown>(null);
+const result = ref<BacktestResult | null>(null);
 
 // Configuration
 const config = ref({

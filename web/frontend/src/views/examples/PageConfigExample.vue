@@ -16,11 +16,11 @@
             <code>{{ routeName }}</code>
           </el-descriptions-item>
           <el-descriptions-item v-if="isStandardPage" label="API端点">
-            <code>{{ (pageConfig as unknown).apiEndpoint }}</code>
+            <code>{{ standardPageConfig?.apiEndpoint }}</code>
           </el-descriptions-item>
           <el-descriptions-item label="WebSocket频道">
-            <el-tag v-if="isStandardPage && (pageConfig as unknown).wsChannel" type="warning" size="small">
-              {{ (pageConfig as unknown).wsChannel }}
+            <el-tag v-if="isStandardPage && standardPageConfig?.wsChannel" type="warning" size="small">
+              {{ standardPageConfig.wsChannel }}
             </el-tag>
             <span v-else class="text-muted">不需要</span>
           </el-descriptions-item>
@@ -39,7 +39,7 @@
         <el-button type="primary" @click="loadData" :loading="loading">
           加载数据
         </el-button>
-        <el-button v-if="isStandardPage && (pageConfig as unknown).wsChannel" @click="toggleWebSocket">
+        <el-button v-if="isStandardPage && standardPageConfig?.wsChannel" @click="toggleWebSocket">
           {{ wsConnected ? '断开' : '连接' }} WebSocket
         </el-button>
       </div>
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getPageConfig, isRouteName, type PageConfig } from '@/config/pageConfig'
+import { getPageConfig, isRouteName, isStandardConfig, type PageConfig, type StandardPageConfig } from '@/config/pageConfig'
 import axios from 'axios'
 
 // 路由相关
@@ -71,6 +71,9 @@ const routeName = computed(() => route.name as string)
 // 页面配置
 const pageConfig = computed(() => getPageConfig(routeName.value))
 const isStandardPage = computed(() => pageConfig.value?.type === 'page')
+const standardPageConfig = computed((): StandardPageConfig | null =>
+  pageConfig.value && isStandardConfig(pageConfig.value) ? pageConfig.value : null
+)
 
 // 数据状态
 const data = ref<unknown>(null)
@@ -95,13 +98,13 @@ const loadData = async () => {
 
   try {
     // ✅ 使用统一配置的API端点（避免硬编码）
-    const apiEndpoint = isStandardPage.value ? (pageConfig.value as unknown).apiEndpoint : '/api/default'
+    const apiEndpoint = standardPageConfig.value?.apiEndpoint || '/api/default'
     const response = await axios.get(apiEndpoint)
     data.value = response.data
 
     console.log(`✅ 数据加载成功: ${apiEndpoint}`)
   } catch (err: unknown) {
-    error.value = err.message || '数据加载失败'
+    error.value = (err as Error).message || '数据加载失败'
     console.error(`❌ 数据加载失败`, err)
   } finally {
     loading.value = false
@@ -112,7 +115,7 @@ const loadData = async () => {
  * 切换WebSocket连接 - 使用统一配置的频道
  */
 const toggleWebSocket = () => {
-  const wsChannel = isStandardPage.value ? (pageConfig.value as unknown)?.wsChannel : null
+  const wsChannel = isStandardPage.value ? (standardPageConfig.value as StandardPageConfig | null)?.wsChannel : null
   if (!wsChannel) {
     console.warn('当前路由不需要WebSocket连接')
     return

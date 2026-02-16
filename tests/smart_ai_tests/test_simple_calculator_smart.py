@@ -15,6 +15,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import simple_calculator
 
 
+class TestSimpleCalculatorSmart(unittest.TestCase):
+    """智能AI生成的测试类"""
+
+
 
     def test_simple_calculator_bug_prevention_sql_injection(self):
         """Bug防护测试 - 存在SQL注入风险"""

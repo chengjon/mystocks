@@ -1,8 +1,6 @@
-import { ref, computed, onMounted } from 'vue'
-import {
+import { ref, computed, onMounted, type Ref } from 'vue'
 import { ElMessage as message } from 'element-plus'
-
-export function useRiskDashboard() {
+import {
   AlertOutlined,
   HeartOutlined,
   WarningOutlined,
@@ -12,20 +10,45 @@ export function useRiskDashboard() {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
   BulbOutlined,
-  // BalanceOutlined,  // Not available in @ant-design/icons-vue
   PieChartOutlined,
   BarChartOutlined
 } from '@ant-design/icons-vue'
 
-const props = defineProps({
-  watchlistId: {
-    type: Number,
-    required: true
-  }
-})
+interface AlertItem {
+  level: 'critical' | 'warning' | 'info'
+  stock_code: string
+  [key: string]: unknown
+}
+
+interface SuggestionItem {
+  id: string | number
+  action: string
+  stock_code: string
+  [key: string]: unknown
+}
+
+interface SummaryData {
+  total_score: number
+  risk_score: number
+  position_count: number
+  sector_allocation: Record<string, number>
+  alert_summary: { critical: number; warning: number; info: number }
+  sharpe_ratio: number | null
+  sortino_ratio: number | null
+  max_drawdown: number | null
+  volatility: number | null
+  [key: string]: unknown
+}
+
+interface UseRiskDashboardOptions {
+  watchlistId: Ref<number>
+}
+
+export function useRiskDashboard(options: UseRiskDashboardOptions) {
+  const { watchlistId } = options
 
 const loading = ref(false)
-const summary = ref({
+const summary = ref<SummaryData>({
   total_score: 0,
   risk_score: 50,
   position_count: 0,
@@ -36,15 +59,14 @@ const summary = ref({
   max_drawdown: null,
   volatility: null
 })
-const alerts = ref([])
-const suggestions = ref([])
+const alerts = ref<AlertItem[]>([])
+const suggestions = ref<SuggestionItem[]>([])
 
 const criticalAlerts = computed(() => alerts.value.filter(a => a.level === 'critical'))
 const warningAlerts = computed(() => alerts.value.filter(a => a.level === 'warning'))
 const infoAlerts = computed(() => alerts.value.filter(a => a.level === 'info'))
 
 const activePositions = computed(() => {
-  // 模拟数据：假设80%的持仓是活跃的
   return Math.floor((summary.value.position_count || 0) * 0.8)
 })
 
@@ -53,27 +75,26 @@ const inactivePositions = computed(() => {
 })
 
 // 工具函数
-const _getScoreColor = (score) => {
+const getScoreColor = (score: number): string => {
   if (score >= 70) return 'fintech-text-up'
   if (score >= 50) return 'fintech-text-flat'
   return 'fintech-text-down'
 }
 
-const getScoreTrend = (score) => {
+const getScoreTrend = (score: number): string => {
   if (score >= 70) return 'positive'
   if (score >= 50) return 'neutral'
   return 'negative'
 }
 
-const getScoreChange = (score) => {
-  // 模拟趋势数据
+const getScoreChange = (score: number): string => {
   const change = (Math.random() - 0.5) * 10
   const sign = change >= 0 ? '+' : ''
   return `${sign}${change.toFixed(1)}%`
 }
 
-const getActionClass = (action) => {
-  const classes = {
+const getActionClass = (action: string): string => {
+  const classes: Record<string, string> = {
     'BUY': 'action-buy',
     'SELL': 'action-sell',
     'HOLD': 'action-hold',
@@ -82,14 +103,13 @@ const getActionClass = (action) => {
   return classes[action] || 'action-hold'
 }
 
-const getSectorColor = (sector) => {
-  // 根据行业返回不同的颜色类
+const getSectorColor = (sector: string): string => {
   const colors = ['sector-tech', 'sector-healthcare', 'sector-finance', 'sector-consumer', 'sector-energy']
   const index = sector.length % colors.length
   return colors[index]
 }
 
-const formatCurrency = (value) => {
+const formatCurrency = (value: number | null | undefined): string => {
   if (!value) return '$0.00'
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -98,7 +118,7 @@ const formatCurrency = (value) => {
   }).format(value)
 }
 
-const formatTime = (timestamp) => {
+const formatTime = (timestamp: string | null | undefined): string => {
   if (!timestamp) return 'Unknown'
   const date = new Date(timestamp)
   return date.toLocaleTimeString('en-US', {
@@ -108,28 +128,24 @@ const formatTime = (timestamp) => {
 }
 
 // 事件处理函数
-const refresh = async () => {
+const refresh = async (): Promise<void> => {
   await fetchData()
   message.success('Dashboard refreshed')
 }
 
-const exportReport = () => {
-  // 模拟导出功能
+const exportReport = (): void => {
   message.info('Export functionality coming soon')
 }
 
-const handleAlert = (alert) => {
-  // 处理告警
+const handleAlert = (alert: AlertItem): void => {
   message.success(`Alert acknowledged: ${alert.stock_code}`)
 }
 
-const applySuggestion = (suggestion) => {
-  // 应用建议
+const applySuggestion = (suggestion: SuggestionItem): void => {
   message.success(`Suggestion applied: ${suggestion.action} ${suggestion.stock_code}`)
 }
 
-const dismissSuggestion = (suggestion) => {
-  // 忽略建议
+const dismissSuggestion = (suggestion: SuggestionItem): void => {
   const index = suggestions.value.findIndex(s => s.id === suggestion.id)
   if (index > -1) {
     suggestions.value.splice(index, 1)
@@ -137,13 +153,13 @@ const dismissSuggestion = (suggestion) => {
   }
 }
 
-const fetchData = async () => {
+const fetchData = async (): Promise<void> => {
   loading.value = true
   try {
     const [summaryRes, alertsRes, suggestionsRes] = await Promise.all([
-      fetch(`/api/monitoring/analysis/portfolio/${props.watchlistId}/summary`),
-      fetch(`/api/monitoring/analysis/portfolio/${props.watchlistId}/alerts`),
-      fetch(`/api/monitoring/analysis/portfolio/${props.watchlistId}/rebalance`)
+      fetch(`/api/monitoring/analysis/portfolio/${watchlistId.value}/summary`),
+      fetch(`/api/monitoring/analysis/portfolio/${watchlistId.value}/alerts`),
+      fetch(`/api/monitoring/analysis/portfolio/${watchlistId.value}/rebalance`)
     ])
 
     if (summaryRes.ok) {
@@ -178,12 +194,8 @@ onMounted(() => {
   fetchData()
 })
 
-defineExpose({
-  refresh: fetchData
-})
-
   return {
-    props,
+    watchlistId,
     loading,
     summary,
     alerts,
@@ -193,28 +205,33 @@ defineExpose({
     infoAlerts,
     activePositions,
     inactivePositions,
-    _getScoreColor,
+    getScoreColor,
     getScoreTrend,
     getScoreChange,
-    change,
-    sign,
     getActionClass,
-    classes,
     getSectorColor,
-    colors,
-    index,
     formatCurrency,
     formatTime,
-    date,
     refresh,
     exportReport,
     handleAlert,
     applySuggestion,
     dismissSuggestion,
-    index,
     fetchData,
-    data,
-    data,
-    data,
   }
+}
+
+// Export icons for component use
+export {
+  AlertOutlined,
+  HeartOutlined,
+  WarningOutlined,
+  StockOutlined,
+  ReloadOutlined,
+  ExportOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  BulbOutlined,
+  PieChartOutlined,
+  BarChartOutlined
 }

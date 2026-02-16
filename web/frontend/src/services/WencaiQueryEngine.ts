@@ -268,12 +268,13 @@ export class WencaiQueryEngine {
                 limit: maxResults
             })
 
-            if (response.data?.success) {
+            const respData = response as Record<string, any>
+            if (respData?.data?.success) {
                 return {
                     success: true,
                     data: {
-                        stocks: response.data.data.stocks || [],
-                        total: response.data.data.total || 0,
+                        stocks: respData.data.data?.stocks || [],
+                        total: respData.data.data?.total || 0,
                         query: '',
                         pattern,
                         filters: []
@@ -374,7 +375,7 @@ export class WencaiQueryEngine {
      * Get human-readable filter description
      */
     private getFilterDescription(key: string, value: unknown): string {
-        const descriptions: Record<string, (value: unknown) => string> = {
+        const descriptions: Record<string, (value: number) => string> = {
             price_min: v => `股价 ≥ ¥${v}`,
             price_max: v => `股价 ≤ ¥${v}`,
             volume_multiplier: v => `成交量放大 ${v} 倍`,
@@ -386,7 +387,7 @@ export class WencaiQueryEngine {
             volatility_min: v => `波动率 ≥ ${(v * 100).toFixed(1)}%`
         }
 
-        return descriptions[key]?.(value) || `${key}: ${value}`
+        return descriptions[key]?.(value as number) || `${key}: ${value}`
     }
 
     /**

@@ -56,11 +56,11 @@ class EncryptionManager:
         if master_password is None:
             master_password = os.getenv("ENCRYPTION_MASTER_PASSWORD")
             if not master_password:
-                logger.warning(
-                    "⚠️ No encryption master password provided. "
-                    "Using insecure default. Set ENCRYPTION_MASTER_PASSWORD in production!"
+                logger.error(
+                    "❌ Missing ENCRYPTION_MASTER_PASSWORD. "
+                    "Refusing to initialize EncryptionManager with insecure defaults."
                 )
-                master_password = "default-insecure-password-change-me"
+                raise ValueError("ENCRYPTION_MASTER_PASSWORD environment variable must be set")
 
         self.master_password = master_password
         self.current_key_version = key_version

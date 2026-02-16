@@ -1,9 +1,7 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { API_ENDPOINTS } from '@/config/api'
 import {
-
-export function useWencaiPanelV2() {
   Search,
   Refresh,
   Edit,
@@ -12,31 +10,57 @@ export function useWencaiPanelV2() {
   Download
 } from '@element-plus/icons-vue'
 
+// Type definitions
+interface WencaiQuery {
+  query_name: string
+  query_text: string
+  id?: string
+  [key: string]: unknown
+}
+
+interface TreeNode {
+  label: string
+  type: string
+  data?: WencaiQuery
+  children: TreeNode[]
+}
+
+interface TableDataItem {
+  [key: string]: unknown
+}
+
+interface SelectedStock {
+  symbol: string
+  name: string
+  [key: string]: unknown
+}
+
+export function useWencaiPanelV2() {
 // ============================================================================
 // 数据状态
 // ============================================================================
 
 // 查询相关
-const queries = ref([])
-const loadingQueries = ref(false)
-const customQueryText = ref('')
-const executingCustomQuery = ref(false)
+const queries: Ref<WencaiQuery[]> = ref([])
+const loadingQueries: Ref<boolean> = ref(false)
+const customQueryText: Ref<string> = ref('')
+const executingCustomQuery: Ref<boolean> = ref(false)
 
 // 当前查询信息
-const currentQueryName = ref('')
-const currentQueryText = ref('')
+const currentQueryName: Ref<string> = ref('')
+const currentQueryText: Ref<string> = ref('')
 
 // 表格数据
-const tableData = ref([])
-const loadingResults = ref(false)
-const currentPage = ref(1)
-const pageSize = ref(20)
-const total = ref(0)
+const tableData: Ref<TableDataItem[]> = ref([])
+const loadingResults: Ref<boolean> = ref(false)
+const currentPage: Ref<number> = ref(1)
+const pageSize: Ref<number> = ref(20)
+const total: Ref<number> = ref(0)
 
 // 分组相关
-const groupDialogVisible = ref(false)
-const selectedStock = ref(null)
-const groupForm = ref({
+const groupDialogVisible: Ref<boolean> = ref(false)
+const selectedStock: Ref<SelectedStock | null> = ref(null)
+const groupForm: Ref<{ groupName: string }> = ref({
   groupName: 'default'
 })
 
@@ -49,8 +73,8 @@ const treeProps = {
   label: 'label'
 }
 
-const treeData = computed(() => {
-  const data = [
+const treeData: ComputedRef<TreeNode[]> = computed(() => {
+  const data: TreeNode[] = [
     {
       label: '默认查询',
       type: 'folder',
@@ -75,11 +99,12 @@ const treeData = computed(() => {
 
   // 将 qs_1 到 qs_9 放入默认查询
   const defaultFolder = data[0]
-  queries.value.forEach(query => {
+  queries.value.forEach((query: WencaiQuery) => {
     defaultFolder.children.push({
       label: query.query_name,
       type: 'query',
-      data: query
+      data: query,
+      children: []
     })
   })
 
@@ -99,32 +124,33 @@ const paginatedTableData = computed(() => {
 // ============================================================================
 
 // 加载查询列表
-const loadQueries = async () => {
+const loadQueries = async (): Promise<void> => {
   loadingQueries.value = true
   try {
     const response = await fetch(API_ENDPOINTS.wencai.queries)
     if (!response.ok) throw new Error('加载失败')
-    const data = await response.json()
+    const data: { queries?: WencaiQuery[] } = await response.json()
     queries.value = data.queries || []
     ElMessage.success(`加载成功：${queries.value.length} 个查询`)
-  } catch (error) {
-    ElMessage.error('加载失败: ' + error.message)
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : '未知错误'
+    ElMessage.error('加载失败: ' + errorMsg)
   } finally {
     loadingQueries.value = false
   }
 }
 
 // 树节点点击
-const handleNodeClick = (data) => {
-  if (data.type === 'query') {
+const handleNodeClick = (nodeData: TreeNode): void => {
+  if (nodeData.type === 'query' && nodeData.data) {
     // 点击查询节点，显示查询语句但不执行
-    currentQueryName.value = data.data.query_name
-    currentQueryText.value = data.data.query_text
+    currentQueryName.value = nodeData.data.query_name
+    currentQueryText.value = nodeData.data.query_text
   }
 }
 
 // 执行预定义查询
-const executeQuery = async (queryData) => {
+const executeQuery = async (queryData: WencaiQuery): Promise<void> => {
   console.log('executeQuery called with:', queryData)
 
   loadingResults.value = true
@@ -155,16 +181,17 @@ const executeQuery = async (queryData) => {
 
     // 2. 获取结果
     await loadResults(queryData.query_name)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Execute query error:', error)
-    ElMessage.error('执行失败: ' + error.message)
+    const errorMsg = error instanceof Error ? error.message : '未知错误'
+    ElMessage.error('执行失败: ' + errorMsg)
   } finally {
     loadingResults.value = false
   }
 }
 
 // 执行自定义查询
-const executeCustomQuery = async () => {
+const executeCustomQuery = async (): Promise<void> => {
   if (!customQueryText.value) {
     ElMessage.warning('请输入查询条件')
     return
@@ -195,8 +222,9 @@ const executeCustomQuery = async () => {
     } else {
       ElMessage.warning(data.message || '查询失败')
     }
-  } catch (error) {
-    ElMessage.error('查询失败: ' + error.message)
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : '未知错误'
+    ElMessage.error('查询失败: ' + errorMsg)
   } finally {
     executingCustomQuery.value = false
     loadingResults.value = false
@@ -204,10 +232,10 @@ const executeCustomQuery = async () => {
 }
 
 // 处理自定义查询结果
-const processCustomQueryResults = (data) => {
+const processCustomQueryResults = (data: { results: Record<string, unknown>[]; total_records: number }): void => {
   const queryDate = new Date().toLocaleDateString('zh-CN')
 
-  tableData.value = data.results.map((item, index) => ({
+  tableData.value = data.results.map((item: Record<string, unknown>, index: number): TableDataItem => ({
     序号: index + 1,
     股票代码: item['股票代码'] || item.code,
     股票简称: item['股票简称'] || item.name,
@@ -225,7 +253,7 @@ const processCustomQueryResults = (data) => {
 }
 
 // 加载预定义查询结果
-const loadResults = async (queryName) => {
+const loadResults = async (queryName: string): Promise<void> => {
   try {
     const response = await fetch(
       `${API_ENDPOINTS.wencai.results(queryName)}?limit=${pageSize.value}&offset=${(currentPage.value - 1) * pageSize.value}`
@@ -236,16 +264,17 @@ const loadResults = async (queryName) => {
 
     // 处理结果
     processQueryResults(data)
-  } catch (error) {
-    ElMessage.error('加载失败: ' + error.message)
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : '未知错误'
+    ElMessage.error('加载失败: ' + errorMsg)
   }
 }
 
 // 处理查询结果
-const processQueryResults = (data) => {
+const processQueryResults = (data: { results: Record<string, unknown>[]; total: number }): void => {
   const queryDate = new Date().toLocaleDateString('zh-CN')
 
-  tableData.value = data.results.map((item, index) => ({
+  tableData.value = data.results.map((item: Record<string, unknown>, index: number): TableDataItem => ({
     序号: (currentPage.value - 1) * pageSize.value + index + 1,
     股票代码: item['股票代码'] || item.code,
     股票简称: item['股票简称'] || item.name,
@@ -262,27 +291,27 @@ const processQueryResults = (data) => {
 }
 
 // 格式化数字（保留3位小数）
-const formatNumber = (value, decimals = 3) => {
+const formatNumber = (value: unknown, decimals = 3): string => {
   if (value === null || value === undefined || value === '') return '-'
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num)) return value
+  const num = typeof value === 'string' ? parseFloat(value) : (value as number)
+  if (isNaN(num)) return String(value)
   return num.toFixed(decimals)
 }
 
 // 格式化百分比（保留2位小数）
-const formatPercent = (value) => {
+const formatPercent = (value: unknown): string => {
   if (value === null || value === undefined || value === '') return '-'
 
-  const num = typeof value === 'string' ? parseFloat(value.replace('%', '')) : value
-  if (isNaN(num)) return value
+  const num = typeof value === 'string' ? parseFloat(value.replace('%', '')) : (value as number)
+  if (isNaN(num)) return String(value)
 
   return `${num.toFixed(2)}%`
 }
 
 // 获取涨跌幅颜色class
-const getPriceChangeClass = (value) => {
+const getPriceChangeClass = (value: unknown): string => {
   if (!value) return ''
-  const num = typeof value === 'string' ? parseFloat(value.replace('%', '')) : value
+  const num = typeof value === 'string' ? parseFloat((value as string).replace('%', '')) : (value as number)
   if (num > 0) return 'price-up'
   if (num < 0) return 'price-down'
   return ''
@@ -324,8 +353,12 @@ const exportData = () => {
 }
 
 // 显示分组对话框
-const showGroupDialog = (row) => {
-  selectedStock.value = row
+const showGroupDialog = (row: Record<string, unknown>) => {
+  selectedStock.value = {
+    symbol: String(row['股票代码'] || row['symbol'] || ''),
+    name: String(row['股票简称'] || row['name'] || ''),
+    ...row
+  }
   groupDialogVisible.value = true
 }
 
@@ -337,7 +370,7 @@ const confirmAddToGroup = () => {
   }
 
   // TODO: 实现实际的分组保存逻辑
-  ElMessage.success(`已将 ${selectedStock.value['股票简称']} 加入到 ${groupForm.value.groupName} 分组`)
+  ElMessage.success(`已将 ${selectedStock.value?.['股票简称'] || ''} 加入到 ${groupForm.value.groupName} 分组`)
   groupDialogVisible.value = false
 }
 
@@ -366,41 +399,19 @@ onMounted(() => {
     groupForm,
     treeProps,
     treeData,
-    data,
-    defaultFolder,
     paginatedTableData,
     loadQueries,
-    response,
-    data,
     handleNodeClick,
     executeQuery,
-    response,
-    errorData,
-    data,
     executeCustomQuery,
-    response,
-    data,
     processCustomQueryResults,
-    queryDate,
     loadResults,
-    response,
-    data,
     processQueryResults,
-    queryDate,
     formatNumber,
-    num,
     formatPercent,
-    num,
     getPriceChangeClass,
-    num,
     handlePageChange,
     exportData,
-    headers,
-    csvContent,
-    value,
-    blob,
-    link,
-    url,
     showGroupDialog,
     confirmAddToGroup,
   }

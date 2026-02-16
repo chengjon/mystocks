@@ -9,9 +9,10 @@
  * - Request/response interceptors
  */
 
-import axios, { AxiosInstance, _AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig, AxiosRequestHeaders } from 'axios'
 import { ElMessage, ElNotification } from 'element-plus'
 import type { APIResponse } from '@/api/types/generated-types'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 
 // Type definitions
 export interface RequestConfig extends Partial<Omit<InternalAxiosRequestConfig, 'headers'>> {
@@ -31,7 +32,7 @@ export interface ErrorResponse {
 
 // Create Axios instance
 const instance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -50,7 +51,7 @@ instance.interceptors.request.use(
     // Skip CSRF for GET requests and explicitly marked requests
     if (
       config.method?.toUpperCase() !== 'GET' &&
-      !(config as Record<string, unknown>).skipCSRF &&
+      !(config as unknown as Record<string, unknown>).skipCSRF &&
       config.headers['X-CSRF-Token'] === undefined
     ) {
       try {
@@ -92,8 +93,8 @@ instance.interceptors.response.use(
           return response
         } else {
           // Throw error for API-level errors
-          const errorMessage = 'message' in apiResponse ? (apiResponse as unknown).message : 'Request failed'
-          throw new Error(errorMessage)
+          const errorMessage = 'message' in apiResponse ? (apiResponse as Record<string, unknown>).message : 'Request failed'
+          throw new Error(errorMessage as string)
         }
       }
     }
@@ -202,7 +203,7 @@ async function getCSRFToken(): Promise<string> {
 async function fetchCSRFToken(): Promise<string> {
   try {
     const response = await axios.get('/api/auth/csrf', {
-      baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+      baseURL: API_BASE_URL,
       withCredentials: true
     })
 
@@ -240,23 +241,23 @@ function handleError(message: string, type: 'success' | 'warning' | 'error' | 'i
 // Export common request methods
 export const request = {
   get<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
-    return instance.get(url, config)
+    return instance.get(url, config as AxiosRequestConfig)
   },
 
   post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
-    return instance.post(url, data, config)
+    return instance.post(url, data, config as AxiosRequestConfig)
   },
 
   put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
-    return instance.put(url, data, config)
+    return instance.put(url, data, config as AxiosRequestConfig)
   },
 
   patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
-    return instance.patch(url, data, config)
+    return instance.patch(url, data, config as AxiosRequestConfig)
   },
 
   delete<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
-    return instance.delete(url, config)
+    return instance.delete(url, config as AxiosRequestConfig)
   }
 }
 

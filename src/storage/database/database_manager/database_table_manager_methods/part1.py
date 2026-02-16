@@ -36,6 +36,21 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
+# Import from parent module
+from .._build_monitor_db_url import Base, DatabaseType, _build_monitor_db_url
+
+# Build the monitor database URL
+MONITOR_DB_URL = _build_monitor_db_url()
+
+# TDengine availability check
+try:
+    import taos
+    TAOS_AVAILABLE = True
+    TAOS_MODULE_TYPE = "taosws" if hasattr(taos, 'connect') else "taosrest"
+except ImportError:
+    TAOS_AVAILABLE = False
+    TAOS_MODULE_TYPE = None
+
 # 加载环境变量
 load_dotenv()
 

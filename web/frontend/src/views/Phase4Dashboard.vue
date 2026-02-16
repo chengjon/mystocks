@@ -86,7 +86,7 @@
           <button
             v-for="(tab, _idx) in tabs"
             :key="tab.name"
-            :class="tab', { active: activeTab === tab.name }]"
+            :class="['tab', { active: activeTab === tab.name }]"
             @click="activeTab = tab.name"
           >
             {{ tab.label }}
@@ -213,7 +213,7 @@
 <script setup lang="ts">
 import { usePhase4Dashboard } from './composables/usePhase4Dashboard'
 
-const { loading, activeTab, tabs, marketOverview, watchlist, portfolio, riskAlerts, marketStats, watchlistStats, portfolioStats, riskStats, indicesChartRef, distributionChartRef, portfolioChartRef, indicesChart, distributionChart, portfolioChart, gainersColumns, losersColumns, watchlistColumns, alertColumns, formatVolume, _formatCurrency, getAlertLevelText, getAlertLevelVariant, initCharts, updateIndicesChart, option, idx, updateDistributionChart, option, updatePortfolioChart, option, loadDashboardData, refreshDashboard, handleMarkAllRead } = usePhase4Dashboard()
+const { loading, activeTab, tabs, marketOverview, watchlist, portfolio, riskAlerts, marketStats, watchlistStats, portfolioStats, riskStats, indicesChartRef, distributionChartRef, portfolioChartRef, gainersColumns, losersColumns, watchlistColumns, alertColumns, formatVolume, formatCurrency, getAlertLevelText, getAlertLevelVariant, initCharts, updateIndicesChart, updateDistributionChart, updatePortfolioChart, loadDashboardData, refreshDashboard, handleMarkAllRead } = usePhase4Dashboard()
 </script>
 
 <style scoped lang="scss">

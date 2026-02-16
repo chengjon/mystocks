@@ -260,8 +260,27 @@
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
     import ArtDecoSlider from '@/components/artdeco/business/ArtDecoSlider.vue'
 
+    interface TradingSignal {
+        type: 'buy' | 'sell'
+        strength: number
+        symbol: string
+        [key: string]: unknown
+    }
+
+    interface SignalHistoryItem {
+        result: 'profit' | 'loss' | 'pending'
+        holdingPeriod?: number
+        [key: string]: unknown
+    }
+
+    interface TradingSignalsData {
+        signals?: TradingSignal[]
+        history?: SignalHistoryItem[]
+        [key: string]: unknown
+    }
+
     interface Props {
-        data: unknown
+        data: TradingSignalsData
         symbol?: string
         loading?: boolean
     }
@@ -291,9 +310,9 @@
 
     const filteredSignals = computed(() => {
         if (signalFilter.value === 'all') return tradingSignals.value
-        if (signalFilter.value === 'buy') return tradingSignals.value.filter((s: unknown) => s.type === 'buy')
-        if (signalFilter.value === 'sell') return tradingSignals.value.filter((s: unknown) => s.type === 'sell')
-        return tradingSignals.value.filter((s: unknown) => s.strength >= 80)
+        if (signalFilter.value === 'buy') return tradingSignals.value.filter((s: TradingSignal) => s.type === 'buy')
+        if (signalFilter.value === 'sell') return tradingSignals.value.filter((s: TradingSignal) => s.type === 'sell')
+        return tradingSignals.value.filter((s: TradingSignal) => s.strength >= 80)
     })
 
     const signalHistory = computed(() => props.data?.history || [])
@@ -331,29 +350,29 @@
 
     // 辅助函数
     const getBuySignalsCount = (): string => {
-        return tradingSignals.value.filter((s: unknown) => s.type === 'buy').length.toString()
+        return tradingSignals.value.filter((s: TradingSignal) => s.type === 'buy').length.toString()
     }
 
     const getSellSignalsCount = (): string => {
-        return tradingSignals.value.filter((s: unknown) => s.type === 'sell').length.toString()
+        return tradingSignals.value.filter((s: TradingSignal) => s.type === 'sell').length.toString()
     }
 
     const getSuccessRate = (): string => {
         const history = signalHistory.value
         if (history.length === 0) return 'N/A'
 
-        const successful = history.filter((h: unknown) => h.result === 'profit').length
-        const total = history.filter((h: unknown) => h.result !== 'pending').length
+        const successful = history.filter((h: SignalHistoryItem) => h.result === 'profit').length
+        const total = history.filter((h: SignalHistoryItem) => h.result !== 'pending').length
 
         if (total === 0) return 'N/A'
         return `${((successful / total) * 100).toFixed(1)}%`
     }
 
     const getAvgHoldingPeriod = (): string => {
-        const completedTrades = signalHistory.value.filter((h: unknown) => h.result !== 'pending' && h.holdingPeriod)
+        const completedTrades = signalHistory.value.filter((h: SignalHistoryItem) => h.result !== 'pending' && h.holdingPeriod)
         if (completedTrades.length === 0) return 'N/A'
 
-        const totalPeriod = completedTrades.reduce((sum: unknown, trade: unknown) => sum + trade.holdingPeriod, 0)
+        const totalPeriod = completedTrades.reduce((sum: number, trade: SignalHistoryItem) => sum + (trade.holdingPeriod || 0), 0)
         const avgPeriod = totalPeriod / completedTrades.length
 
         if (avgPeriod < 60) return `${avgPeriod.toFixed(0)}分钟`
@@ -361,7 +380,7 @@
         return `${(avgPeriod / 1440).toFixed(1)}天`
     }
 
-    const getSignalClass = (signal: unknown): string => {
+    const getSignalClass = (signal: TradingSignal): string => {
         return `${signal.type} strength-${signal.strength >= 80 ? 'high' : signal.strength >= 60 ? 'medium' : 'low'}`
     }
 
@@ -396,7 +415,7 @@
         })
     }
 
-    const handleSignalAction = (signal: unknown, action: string) => {
+    const handleSignalAction = (signal: TradingSignal, action: string) => {
         // 处理信号操作
         console.log(`Signal action: ${action} for ${signal.symbol}`)
         // 这里可以调用API执行相应的操作

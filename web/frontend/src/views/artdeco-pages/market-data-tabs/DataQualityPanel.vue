@@ -56,9 +56,24 @@
 <script setup lang="ts">
 import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 
+interface QualityData {
+  integrity: number
+  accuracy: number
+  timeliness: number
+  consistency: number
+}
+
+interface DataSourceItem {
+  name: string
+  type: string
+  status: 'healthy' | 'warning' | 'error'
+  statusText: string
+  quality: number
+}
+
 interface Props {
-  qualityData: unknown
-  dataSources: unknown[]
+  qualityData: QualityData
+  dataSources: DataSourceItem[]
 }
 
 defineProps<Props>()

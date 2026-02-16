@@ -203,9 +203,64 @@ git commit -m "fix: Remove accidentally committed credentials"
 
 ## 相关文档
 
+- **硬编码治理分级指南**: [HARDCODING_GOVERNANCE_TIERING_GUIDE.md](../guides/HARDCODING_GOVERNANCE_TIERING_GUIDE.md)
+- **P0 轮换处置模板**: [PHASE0_CREDENTIAL_ROTATION_GUIDE.md](PHASE0_CREDENTIAL_ROTATION_GUIDE.md)
 - **安全审计报告**: [SECURITY_AUDIT_REPORT_20251130.md](SECURITY_AUDIT_REPORT_20251130.md)
 - **安全快速参考**: [SECURITY_QUICK_REFERENCE.md](SECURITY_QUICK_REFERENCE.md)
 - **后续安全计划**: [SECURITY_FOLLOWUP_PLAN_20251130.md](SECURITY_FOLLOWUP_PLAN_20251130.md)
+
+---
+
+## 硬编码治理必需环境变量（2026-02-15 起）
+
+> 本节为补充规范，不替代现有环境配置说明。
+
+以下变量在运行代码中已切换为“缺失即失败”或“仅开发环境本地回退”策略：
+
+```bash
+# Backend / Database
+POSTGRESQL_HOST=
+POSTGRESQL_PORT=
+POSTGRESQL_USER=
+POSTGRESQL_PASSWORD=
+POSTGRESQL_DATABASE=
+
+MYSQL_HOST=
+MYSQL_PORT=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DATABASE=
+
+TDENGINE_HOST=
+TDENGINE_PORT=
+TDENGINE_USER=
+TDENGINE_PASSWORD=
+TDENGINE_DATABASE=
+
+# Encryption
+ENCRYPTION_MASTER_PASSWORD=
+
+# Monitoring DB (optional override)
+MONITOR_DB_HOST=
+MONITOR_DB_PORT=
+MONITOR_DB_USER=
+MONITOR_DB_PASSWORD=
+MONITOR_DB_NAME=
+
+# Frontend runtime endpoints
+VITE_API_BASE_URL=
+VITE_WS_BASE_URL=
+
+# TDX server pool override (optional)
+TDX_SERVER_POOL_FILE=
+TDX_NETWORK_SERVERS=
+```
+
+### 启动失败策略
+
+- 非开发环境（`APP_ENV/ENVIRONMENT` 非 `dev/development/test/local`）缺失关键连接参数时，服务应直接失败启动。
+- 密码类变量（如 `POSTGRESQL_PASSWORD`、`TDENGINE_PASSWORD`、`ENCRYPTION_MASTER_PASSWORD`）缺失时，禁止使用任何明文默认值。
+- 前端地址配置建议通过 `.env.*` 管理，避免在组件/服务中散落 URL 字面量。
 
 ---
 

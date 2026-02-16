@@ -31,6 +31,16 @@ export interface LazyComponentOptions {
 }
 
 /**
+ * Result of loading a component
+ */
+export interface LoadComponentResult<T = Component> {
+  component: T | null
+  loading: boolean
+  error: Error | null
+  retry: () => void
+}
+
+/**
  * Performance monitor
  */
 export class PerformanceMonitor {
@@ -107,7 +117,7 @@ export class PerformanceMonitor {
    */
   getMemoryUsage(): number | undefined {
     if ('memory' in performance) {
-      return (performance as unknown).memory.usedJSHeapSize
+      return (performance as unknown as { memory: { usedJSHeapSize: number } }).memory.usedJSHeapSize
     }
     return undefined
   }
@@ -195,7 +205,7 @@ export class LazyComponentLoader {
     // Check cache first
     if (this.cache.has(cacheKey)) {
       return {
-        component: this.cache.get(cacheKey),
+        component: this.cache.get(cacheKey) as T | null,
         loading: false,
         error: null,
         retry: () => {}
@@ -236,7 +246,7 @@ export class LazyComponentLoader {
         }
 
         return {
-          component: null as unknown,
+          component: null as T | null,
           loading: false,
           error: error as Error,
           retry: () => {
@@ -249,7 +259,7 @@ export class LazyComponentLoader {
 
     // Start with loading state
     const initialResult: LoadComponentResult<T> = {
-      component: null as unknown,
+      component: null as T | null,
       loading: true,
       error: null,
       retry: () => {}

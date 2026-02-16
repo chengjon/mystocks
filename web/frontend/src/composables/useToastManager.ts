@@ -12,7 +12,16 @@
  */
 
 import { reactive, watch } from 'vue'
-import type { ToastConfig } from '@/components/artdeco/core/ArtDecoToast.vue'
+
+// Define ToastConfig locally since it can't be imported from .vue file
+export interface ToastConfig {
+  id?: string
+  type?: 'success' | 'error' | 'warning' | 'info'
+  message: string
+  title?: string
+  duration?: number
+  closable?: boolean
+}
 
 export interface ToastInstance extends Required<Pick<ToastConfig, 'type' | 'message'>> {
   id: string

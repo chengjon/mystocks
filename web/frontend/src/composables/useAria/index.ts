@@ -1,2 +1,2 @@
 export { useAria } from './use-aria';
-export { unknown } from './unknown';
+export type { AriaProps, HtmlProps } from './unknown';

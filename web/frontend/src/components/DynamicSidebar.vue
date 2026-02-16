@@ -103,16 +103,16 @@
         return MENU_CONFIG_MAP[moduleKey as keyof MenuConfigMap]
     }
 
-    const switchModule = (moduleKey: unknown) => {
+    const switchModule = (moduleKey: string) => {
         activeModule.value = moduleKey
     }
 
-    const getModuleIcon = (moduleKey: unknown) => {
-        return moduleIcons[moduleKey] || TrendCharts
+    const getModuleIcon = (moduleKey: string) => {
+        return moduleIcons[moduleKey as keyof typeof moduleIcons] || TrendCharts
     }
 
-    const getMenuIcon = (iconName: unknown) => {
-        return menuIcons[iconName] || Monitor
+    const getMenuIcon = (iconName: string) => {
+        return menuIcons[iconName as keyof typeof menuIcons] || Monitor
     }
 
     // Expose for parent components

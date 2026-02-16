@@ -17,6 +17,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.security import User, get_current_user
+from .signal_history_response import (
+    ActiveSignalItem,
+    ActiveSignalsResponse,
+    SignalStatisticsResponse,
+    StrategyDetailedHealthResponse,
+)
 
 logger = logging.getLogger(__name__)
 

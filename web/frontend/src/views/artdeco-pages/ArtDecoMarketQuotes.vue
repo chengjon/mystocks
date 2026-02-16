@@ -234,6 +234,7 @@ import {
 } from '@/components/artdeco'
 import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
 import { marketService } from '@/api/services/marketService'
+import { getPageConfig, isRouteName } from '@/config/pageConfig'
 
 const route = useRoute()
 
@@ -363,7 +364,7 @@ const periodOptions: SelectOption[] = [
 
 // 根据路由 meta.activeTab 设置初始 tab
 onMounted(() => {
-    const metaTab = route.meta.activeTab
+    const metaTab = route.meta.activeTab as string | undefined
     if (metaTab) {
         activeTab.value = metaTab
     }

@@ -67,7 +67,6 @@
                         <li
                             v-for="(item, _idx) in menuItems"
                             :key="item.path"
-                            :key="item.path"
                             class="nav-item"
                             :class="{ active: isActive(item.path) }"
                         >

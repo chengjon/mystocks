@@ -64,9 +64,29 @@
 <script setup lang="ts">
 import { ArtDecoCard, ArtDecoIcon } from '@/components/artdeco'
 
+interface TopStock {
+  code: string
+  name: string
+  change: number
+}
+
+interface ConceptItem {
+  name: string
+  stockCount: number
+  change: number
+  heat: number
+}
+
+interface SelectedConceptDetail {
+  name: string
+  stockCount: number
+  avgChange: number
+  topStocks: TopStock[]
+}
+
 interface Props {
-  conceptRanking: unknown[]
-  selectedConcept: unknown | null
+  conceptRanking: ConceptItem[]
+  selectedConcept: SelectedConceptDetail | null
 }
 
 defineProps<Props>()

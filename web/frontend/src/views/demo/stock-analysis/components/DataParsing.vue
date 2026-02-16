@@ -77,6 +77,7 @@
       </div>
 
       <div class="section">
+        <div class="alert-card">
           <div class="alert-content">
             <strong>⚠️ 注意事项</strong>
             <ul class="warning-list">

@@ -1,28 +1,51 @@
-    import { ref, reactive, onMounted, _onUnmounted, _nextTick } from 'vue'
-    import {
-    import { DataLine, RefreshRight, Setting, Search } from '@element-plus/icons-vue'
-    interface Indicator {
+import { ref, reactive, onMounted } from 'vue'
+import { DataLine, RefreshRight, Setting, Search } from '@element-plus/icons-vue'
+import {
+    ElCard,
+    ElButton,
+    ElInput,
+    ElDatePicker,
+    ElRadioGroup,
+    ElRadioButton,
+    ElSelect,
+    ElOption,
+    ElTag,
+    ElDrawer,
+    ElCheckbox,
+    ElEmpty,
+    ElMessage
+} from 'element-plus'
+
+interface Indicator {
+    name: string
+    displayName: string
+    params: Record<string, unknown>
+}
+
+interface IndicatorOption {
+    name: string
+    displayName: string
+    description: string
+    selected: boolean
+}
+
+interface OHLCVData {
+    dates: string[]
+    open: number[]
+    high: number[]
+    low: number[]
+    close: number[]
+    volume: number[]
+}
+
+interface ChartData {
+    symbol: string
+    symbolName: string
+    ohlcv: OHLCVData | null
+    indicators: unknown[][]
+}
 
 export function useTechnical() {
-        ElCard,
-        ElButton,
-        ElInput,
-        ElDatePicker,
-        ElRadioGroup,
-        ElRadioButton,
-        ElSelect,
-        ElOption,
-        ElTag,
-        ElDrawer,
-        ElCheckbox,
-        ElEmpty,
-        ElMessage
-    } from 'element-plus'
-
-        name: string
-        displayName: string
-        params: Record<string, unknown>
-    }
 
     // Reactive data
     const loading = ref(false)
@@ -36,11 +59,11 @@ export function useTechnical() {
     const showIndicatorPanel = ref(false)
 
     // Chart data
-    const chartData = reactive({
+    const chartData = reactive<ChartData>({
         symbol: '',
         symbolName: '',
-        ohlcv: null as unknown,
-        indicators: [] as unknown[][]
+        ohlcv: null,
+        indicators: []
     })
 
     // Selected indicators
@@ -281,7 +304,7 @@ export function useTechnical() {
         })
     }
 
-    const handleIndicatorToggle = (indicator: unknown) => {
+    const handleIndicatorToggle = (indicator: IndicatorOption) => {
         if (indicator.selected) {
             addIndicator(indicator)
         } else {
@@ -289,7 +312,7 @@ export function useTechnical() {
         }
     }
 
-    const addIndicator = (indicator: unknown) => {
+    const addIndicator = (indicator: IndicatorOption) => {
         if (!selectedIndicators.value.find(i => i.name === indicator.name)) {
             selectedIndicators.value.push({
                 name: indicator.name,
@@ -308,8 +331,8 @@ export function useTechnical() {
         }
     }
 
-    const getDefaultParams = (indicatorName: string) => {
-        const defaultParams: { [key: string]: unknown } = {
+    const getDefaultParams = (indicatorName: string): Record<string, unknown> => {
+        const defaultParams: Record<string, Record<string, unknown>> = {
             sma: { period: 20 },
             ema: { period: 20 },
             rsi: { period: 14 },
@@ -317,7 +340,7 @@ export function useTechnical() {
             bbands: { period: 20, stdDev: 2 },
             stoch: { kPeriod: 14, dPeriod: 3 }
         }
-        return defaultParams[indicatorName] || {}
+        return defaultParams[indicatorName] || ({} as Record<string, unknown>)
     }
 
     const calculateIndicators = () => {
@@ -325,7 +348,7 @@ export function useTechnical() {
         // This would integrate with the backend API for technical calculations
     }
 
-    const formatParams = (params: unknown) => {
+    const formatParams = (params: Record<string, unknown>) => {
         return Object.entries(params)
             .map(([key, value]) => `${key}=${value}`)
             .join(', ')
@@ -352,12 +375,6 @@ export function useTechnical() {
     selectedIndicators,
     indicatorCategories,
     dateShortcuts,
-    end,
-    start,
-    end,
-    start,
-    end,
-    start,
     handleSymbolChange,
     handleDateRangeChange,
     handlePeriodChange,
@@ -365,30 +382,11 @@ export function useTechnical() {
     refreshData,
     fetchChartData,
     generateMockOHLCV,
-    dates,
-    open,
-    high,
-    low,
-    close,
-    volume,
-    startDate,
-    endDate,
-    currentDate,
-    basePrice,
-    dailyChange,
-    openPrice,
-    volatility,
-    highPrice,
-    lowPrice,
-    closePrice,
     updateLastUpdateTime,
-    now,
     handleIndicatorToggle,
     addIndicator,
     removeIndicator,
-    index,
     getDefaultParams,
-    defaultParams,
     calculateIndicators,
     formatParams,
   }

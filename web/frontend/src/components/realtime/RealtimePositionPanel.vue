@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, _computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { TrendCharts, Refresh, Download } from '@element-plus/icons-vue'
 
@@ -144,6 +144,11 @@ interface PortfolioSnapshot {
   position_count: number
   last_update: string
   positions: Record<string, PositionSnapshot>
+}
+
+interface WebSocketMessage {
+  action: 'connected' | 'portfolio_update' | 'snapshot' | 'pong'
+  snapshot?: PortfolioSnapshot
 }
 
 const props = defineProps<{
@@ -190,7 +195,7 @@ const connectWebSocket = () => {
 
     ws.value.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data)
+        const data = JSON.parse(event.data) as WebSocketMessage
         handleWebSocketMessage(data)
       } catch (e) {
         console.error('Failed to parse WebSocket message:', e)
@@ -217,7 +222,7 @@ const connectWebSocket = () => {
   }
 }
 
-const handleWebSocketMessage = (data: unknown) => {
+const handleWebSocketMessage = (data: WebSocketMessage) => {
   if (data.action === 'connected') {
     if (data.snapshot) {
       updateSnapshot(data.snapshot)

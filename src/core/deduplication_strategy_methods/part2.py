@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 # 导入现有的数据库管理模块
+from src.core.data_classification import DataClassification
 from src.storage.database.database_manager import DatabaseTableManager as OriginalDatabaseTableManager
 from src.storage.database.database_manager import (
     DatabaseType,

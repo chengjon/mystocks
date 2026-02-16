@@ -5,8 +5,11 @@ module.exports = {
       script: 'python3',
       args: '-m uvicorn app.main:app --host 0.0.0.0 --port 8000',
       cwd: './web/backend',
+      min_uptime: '10s',
+      restart_delay: 5000,
+      max_restarts: 10,
       env: {
-        PYTHONPATH: '.', // 在 web/backend 下运行
+        PYTHONPATH: '.', 
         VITE_APP_MODE: 'mock'
       }
     },

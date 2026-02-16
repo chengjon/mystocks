@@ -7,8 +7,8 @@
 
 import { ref, readonly, onMounted } from 'vue';
 import { marketService } from '@/api/services/marketService';
-import { _MarketAdapter } from '@/api/adapters/marketAdapter';
-import { getCache } from '@/utils/cache';
+import { MarketAdapter } from '@/api/adapters/marketAdapter';
+import { getCache } from '@/utils/cache/part-1';
 import type { MarketOverviewVM, FundFlowChartPoint, KLineChartData } from '@/api/types/extensions';
 
 /**
@@ -270,18 +270,34 @@ export function useMarket(options?: {
 
       console.log(`[useMarket] 🔄 Fetching K-Line for ${params.symbol} from API...`);
 
-      // Use getKLine instead of getKLineData
-      const response = await marketService.getKLine(params.symbol, params.interval);
+      // Use getKline instead of getKLine
+      const response = await marketService.getKline({
+        stock_code: params.symbol,
+        period: params.interval,
+      });
 
       // For now, create a simple adapter since response format may not match
-      const vm: KLineChartData[] = (response.data || []).map((item: unknown) => ({
-        timestamp: item.timestamp || item.date || '',
-        date: item.date || item.timestamp || '',
+      interface KLineItem {
+        timestamp?: string | number
+        date?: string | number
+        open?: number
+        high?: number
+        low?: number
+        close?: number
+        volume?: number
+        amount?: number
+      }
+      const vm: KLineChartData[] = ((response as unknown as { data?: KLineItem[] }).data || []).map((item) => ({
+        timestamp: String(item.timestamp || item.date || ''),
+        date: String(item.date || item.timestamp || ''),
         open: item.open || 0,
         high: item.high || 0,
         low: item.low || 0,
         close: item.close || 0,
-        volume: item.volume || 0
+        volume: item.volume || 0,
+        amount: item.amount || 0,
+        symbol: params.symbol,
+        interval: params.interval
       }));
 
       // Cache the result

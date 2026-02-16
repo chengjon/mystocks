@@ -140,7 +140,7 @@ import { Search, Refresh } from '@element-plus/icons-vue'
 import echarts from '@/utils/echarts'
 import type { ECharts, EChartsOption } from '@/types/echarts'
 import { artDecoTheme } from '@/utils/echarts'
-import request from '@/api'
+import { apiClient } from '@/api/apiClient'
 
 // ============================================
 // 类型定义
@@ -186,7 +186,7 @@ const handleQuery = async (): Promise<void> => {
 
   loading.value = true
   try {
-    const params: unknown = {
+    const params: Record<string, string> = {
       symbol: queryForm.symbol,
       timeframe: queryForm.timeframe
     }
@@ -196,8 +196,8 @@ const handleQuery = async (): Promise<void> => {
       params.end_date = dateRange.value[1]
     }
 
-    const response = await request.get('/market/fund-flow', { params })
-    fundFlowData.value = response.data.fund_flow || []
+    const response = await apiClient.get('/market/fund-flow', { params })
+    fundFlowData.value = (response as unknown as { data?: { fund_flow?: FundFlowItem[] } }).data?.fund_flow || []
 
     if (fundFlowData.value.length === 0) {
       ElMessage.info('未查询到数据')
@@ -208,7 +208,8 @@ const handleQuery = async (): Promise<void> => {
       renderChart()
     }
   } catch (error: unknown) {
-    ElMessage.error(`查询失败: ${error.response?.data?.detail || error.message}`)
+    const err = error as { response?: { data?: { detail?: string } }; message?: string }
+    ElMessage.error(`查询失败: ${err.response?.data?.detail || err.message || '未知错误'}`)
   } finally {
     loading.value = false
   }
@@ -223,7 +224,7 @@ const handleRefresh = async (): Promise<void> => {
 
   refreshing.value = true
   try {
-    await request.post('/market/fund-flow/refresh', null, {
+    await apiClient.post('/market/fund-flow/refresh', null, {
       params: {
         symbol: queryForm.symbol,
         timeframe: queryForm.timeframe
@@ -234,7 +235,8 @@ const handleRefresh = async (): Promise<void> => {
     // 自动重新查询
     await handleQuery()
   } catch (error: unknown) {
-    ElMessage.error(`刷新失败: ${error.response?.data?.detail || error.message}`)
+    const err = error as { response?: { data?: { detail?: string } }; message?: string }
+    ElMessage.error(`刷新失败: ${err.response?.data?.detail || err.message || '未知错误'}`)
   } finally {
     refreshing.value = false
   }
@@ -270,7 +272,7 @@ const renderChart = (): void => {
   if (!chartRef.value || fundFlowData.value.length === 0) return
 
   if (!chartInstance) {
-    chartInstance = echarts.init(chartRef.value, artDecoTheme)
+    chartInstance = echarts.init(chartRef.value, artDecoTheme) as unknown as ECharts
   }
 
   const dates = fundFlowData.value.map(d => d.trade_date)
@@ -289,8 +291,9 @@ const renderChart = (): void => {
     tooltip: {
       trigger: 'axis',
       formatter: function (params: unknown) {
-        let result = params[0].axisValue + '<br/>'
-        params.forEach((param: unknown) => {
+        const paramsArr = params as Array<{ axisValue: string; seriesName: string; value: string }>
+        let result = paramsArr[0].axisValue + '<br/>'
+        paramsArr.forEach((param) => {
           const value = parseFloat(param.value)
           const color = value >= 0 ? '#67C23A' : '#F56C6C'
           result += `<span style="color: ${color}">${param.seriesName}: ${value} 万元</span><br/>`
@@ -363,7 +366,7 @@ const renderChart = (): void => {
     ]
   }
 
-  chartInstance.setOption(option, true)
+  chartInstance?.setOption(option, true)
 
   // 调整图表大小
   nextTick(() => {

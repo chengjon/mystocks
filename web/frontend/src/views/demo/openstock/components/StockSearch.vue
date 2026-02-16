@@ -104,33 +104,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 
+// Type definitions
+interface StockGroup {
+  id: number
+  group_name: string
+  stock_count: number
+}
+
+interface SearchResult {
+  symbol: string
+  name: string
+  market: string
+  exchange?: string
+  [key: string]: unknown
+}
+
+interface GroupSuggestion {
+  value: string
+  count: number
+  id: number
+}
+
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
+
 interface Props {
   isAuthenticated: boolean
-  groups: unknown[]
+  groups: StockGroup[]
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'get-quote': [stock: unknown]
-  'get-news': [stock: unknown]
+  'get-quote': [stock: SearchResult]
+  'get-news': [stock: SearchResult]
   'api-tested': [feature: string]
 }>()
 
-const searchQuery = ref('')
-const searchMarket = ref('auto')
-const searchResults = ref<unknown[]>([])
-const searchLoading = ref(false)
-const selectedGroupName = ref('')
-const showAddPopover = ref(false)
-const selectedStock = ref<unknown>(null)
-const groupSuggestions = ref<unknown[]>([])
+const searchQuery: Ref<string> = ref('')
+const searchMarket: Ref<string> = ref('auto')
+const searchResults: Ref<SearchResult[]> = ref([])
+const searchLoading: Ref<boolean> = ref(false)
+const selectedGroupName: Ref<string> = ref('')
+const showAddPopover: Ref<boolean> = ref(false)
+const selectedStock: Ref<SearchResult | null> = ref(null)
+const groupSuggestions: Ref<GroupSuggestion[]> = ref([])
 
-const handleSearch = async () => {
+const handleSearch = async (): Promise<void> => {
   if (!searchQuery.value.trim()) {
     ElMessage.warning('请输入搜索关键词')
     return
@@ -151,36 +181,37 @@ const handleSearch = async () => {
     emit('api-tested', 'search')
     ElMessage.success(`找到 ${response.data.length} 条结果`)
   } catch (error: unknown) {
-    ElMessage.error('搜索失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('搜索失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
   } finally {
     searchLoading.value = false
   }
 }
 
-const clearSearch = () => {
+const clearSearch = (): void => {
   searchQuery.value = ''
   searchResults.value = []
 }
 
-const queryGroupSuggestions = () => {
-  const suggestions = props.groups.map((group: unknown) => ({
+const queryGroupSuggestions = (): void => {
+  const suggestions: GroupSuggestion[] = props.groups.map((group: StockGroup): GroupSuggestion => ({
     value: group.group_name,
     count: group.stock_count,
     id: group.id
   }))
   const query = selectedGroupName.value.toLowerCase()
   groupSuggestions.value = query
-    ? suggestions.filter((item: unknown) => item.value.toLowerCase().includes(query))
+    ? suggestions.filter((item: GroupSuggestion) => item.value.toLowerCase().includes(query))
     : suggestions
 }
 
-const openAddPopover = (stock: unknown) => {
+const openAddPopover = (stock: SearchResult): void => {
   selectedStock.value = stock
   queryGroupSuggestions()
   showAddPopover.value = true
 }
 
-const closeAddPopover = () => {
+const closeAddPopover = (): void => {
   showAddPopover.value = false
   selectedGroupName.value = ''
 }

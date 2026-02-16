@@ -14,7 +14,8 @@
  */
 
 import axios from 'axios';
-import type { components } from '@/types/market-data-api';
+import type { components } from '@/types/market-data-api/types-1';
+import { API_BASE_URL } from '@/config/runtime-endpoints';
 
 // Extract type aliases for convenience
 type UnifiedResponse<_T> = components['schemas']['UnifiedResponse'];
@@ -33,7 +34,6 @@ type APIResponse<T> = UnifiedResponse<T>;
 /**
  * 配置
  */
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const API_TIMEOUT = 10000; // 10 seconds
 const API_PREFIX = '/api/market';
 
@@ -45,7 +45,7 @@ const API_PREFIX = '/api/market';
  */
 class MarketApiService {
   private client = axios.create({
-    baseURL: `${API_BASE}${API_PREFIX}`,
+    baseURL: `${API_BASE_URL}${API_PREFIX}`,
     timeout: API_TIMEOUT,
     headers: {
       'Content-Type': 'application/json',

@@ -55,7 +55,7 @@
 <script setup lang="ts">
     import { computed } from 'vue'
     import { useRoute } from 'vue-router'
-    import type { _RouteLocationNormalized } from 'vue-router'
+    import type { RouteLocationNormalized } from 'vue-router'
     import ArtDecoIcon from './ArtDecoIcon.vue'
 
     /**

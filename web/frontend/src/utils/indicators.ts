@@ -111,7 +111,7 @@ export function calculateMACD(data: KLineDataPoint[]): {
   }
 
   try {
-    const macdData = MACD.calculate(macdInput as unknown)
+    const macdData = MACD.calculate(macdInput as Parameters<typeof MACD.calculate>[0])
 
     // ✅ 修复：使用类型断言确保返回number[]类型
     // 替换无效值而非过滤，保持长度一致

@@ -25,6 +25,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from app.mock.unified_mock_data import get_mock_data_manager
+from app.schemas.backtest_schemas import BacktestRequest
 from src.core import DataClassification
 from src.monitoring.monitoring_database import MonitoringDatabase
 

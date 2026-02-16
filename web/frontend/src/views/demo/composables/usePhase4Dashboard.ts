@@ -70,15 +70,18 @@ const riskStats = reactive({
   unread: 0
 })
 
-const indicesChartRef = ref(null)
-const distributionChartRef = ref(null)
-const portfolioChartRef = ref(null)
+const indicesChartRef = ref<HTMLElement | null>(null)
+const distributionChartRef = ref<HTMLElement | null>(null)
+const portfolioChartRef = ref<HTMLElement | null>(null)
 
-let indicesChart = null
-let distributionChart = null
-let portfolioChart = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let indicesChart: any = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let distributionChart: any = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let portfolioChart: any = null
 
-const formatCurrency = (value) => {
+const formatCurrency = (value: number | string | undefined | null): string => {
   if (typeof value === 'undefined' || value === null) return '¥0.00'; // Handle undefined/null
   // Ensure value is a number for toFixed
   const numericValue = Number(value);
@@ -87,8 +90,8 @@ const formatCurrency = (value) => {
   return `¥${(numericValue / 10000).toFixed(2)}万`
 }
 
-const getAlertBadgeClass = (level) => {
-  const classes = {
+const getAlertBadgeClass = (level: string): string => {
+  const classes: Record<string, string> = {
     'info': 'badge-info',
     'warning': 'badge-warning',
     'critical': 'badge-danger'
@@ -96,7 +99,7 @@ const getAlertBadgeClass = (level) => {
   return classes[level] || 'badge-info'
 }
 
-const loadDashboardData = async () => {
+const loadDashboardData = async (): Promise<void> => {
   try {
     loading.value = true
 
@@ -104,33 +107,37 @@ const loadDashboardData = async () => {
     const response = await dashboardService.getDashboardSummary(1001)
 
     if (response.success && response.data) {
-      const data = response.data
+      const data = response.data as Record<string, unknown>
 
       if (data.marketOverview) { // Using marketOverview from DashboardSummary
-        Object.assign(marketOverview, data.marketOverview)
-        marketStats.indexCount = data.marketOverview.indices?.length || 0
-        marketStats.trend = `${data.marketOverview.up_count || 0} UP / ${data.marketOverview.down_count || 0} DOWN`
-        marketStats.trendClass = (data.marketOverview.up_count || 0) > (data.marketOverview.down_count || 0) ? 'change-up' : 'change-down'
+        const mo = data.marketOverview as Record<string, unknown>
+        Object.assign(marketOverview, mo)
+        marketStats.indexCount = (mo.indices as unknown[])?.length || 0
+        marketStats.trend = `${(mo.up_count as number) || 0} UP / ${(mo.down_count as number) || 0} DOWN`
+        marketStats.trendClass = ((mo.up_count as number) || 0) > ((mo.down_count as number) || 0) ? 'change-up' : 'change-down'
       }
 
       if (data.watchlist) { // Using watchlist from DashboardSummary
-        Object.assign(watchlist, data.watchlist)
-        watchlistStats.count = data.watchlist.total_count
-        watchlistStats.avgChange = data.watchlist.avg_change_percent?.toFixed(2) || 0
-        watchlistStats.trendClass = (data.watchlist.avg_change_percent || 0) > 0 ? 'change-up' : 'change-down'
+        const wl = data.watchlist as Record<string, unknown>
+        Object.assign(watchlist, wl)
+        watchlistStats.count = wl.total_count as number
+        watchlistStats.avgChange = Number((wl.avg_change_percent as number)?.toFixed(2) || 0)
+        watchlistStats.trendClass = ((wl.avg_change_percent as number) || 0) > 0 ? 'change-up' : 'change-down'
       }
 
       if (data.portfolio) { // Using portfolio from DashboardSummary
-        Object.assign(portfolio, data.portfolio)
-        portfolioStats.totalValue = formatCurrency(data.portfolio.total_market_value)
-        portfolioStats.profitLoss = formatCurrency(data.portfolio.total_profit_loss)
-        portfolioStats.trendClass = (data.portfolio.total_profit_loss || 0) > 0 ? 'change-up' : 'change-down'
+        const pf = data.portfolio as Record<string, unknown>
+        Object.assign(portfolio, pf)
+        portfolioStats.totalValue = formatCurrency(pf.total_market_value as number)
+        portfolioStats.profitLoss = formatCurrency(pf.total_profit_loss as number)
+        portfolioStats.trendClass = ((pf.total_profit_loss as number) || 0) > 0 ? 'change-up' : 'change-down'
       }
 
       if (data.riskAlerts) { // Using riskAlerts from DashboardSummary
-        Object.assign(riskAlerts, data.riskAlerts)
-        riskStats.total = data.riskAlerts.total_count
-        riskStats.unread = data.riskAlerts.unread_count
+        const ra = data.riskAlerts as Record<string, unknown>
+        Object.assign(riskAlerts, ra)
+        riskStats.total = ra.total_count as number
+        riskStats.unread = ra.unread_count as number
       }
     } else {
       ElMessage.error(response.message || 'Failed to load dashboard data')
@@ -139,10 +146,11 @@ const loadDashboardData = async () => {
     updateCharts()
 
     ElMessage.success('Dashboard data loaded successfully')
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Failed to load dashboard data:', error)
     // Check if error is an AxiosError and extract message properly if not UnifiedResponse
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to load dashboard data'
+    const errorObj = error as Record<string, unknown>
+    const errorMessage = (errorObj.response as Record<string, unknown>)?.data?.message || (errorObj.message as string) || 'Failed to load dashboard data'
     ElMessage.error(errorMessage)
   } finally {
     loading.value = false
@@ -333,28 +341,15 @@ onMounted(() => {
     indicesChartRef,
     distributionChartRef,
     portfolioChartRef,
-    indicesChart,
-    distributionChart,
-    portfolioChart,
     formatCurrency,
-    numericValue,
     getAlertBadgeClass,
-    classes,
     loadDashboardData,
-    response,
-    data,
-    errorMessage,
     updateCharts,
     updateIndicesChart,
-    option,
     updateDistributionChart,
-    option,
     updatePortfolioChart,
-    option,
-    chartData,
     initCharts,
     _refreshDashboard,
     _handleMarkAllRead,
-    intervalId,
   }
 }

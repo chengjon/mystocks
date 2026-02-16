@@ -1,8 +1,6 @@
-import { ref, reactive, computed, onMounted } from 'vue'
-import {
+import { ref, reactive, computed, onMounted, type Ref } from 'vue'
 import { ElMessage as message } from 'element-plus'
-
-export function useWatchlistManagement() {
+import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
@@ -14,24 +12,59 @@ export function useWatchlistManagement() {
   ReloadOutlined
 } from '@ant-design/icons-vue'
 
-const loading = ref(false)
-const watchlists = ref([])
-const watchlistStocks = ref([])
-const stockDrawerVisible = ref(false)
-const createModalVisible = ref(false)
-const addStockModalVisible = ref(false)
-const deleteConfirmVisible = ref(false)
-const currentWatchlist = ref(null)
-const editingWatchlist = ref(null)
-const portfolioToDelete = ref(null)
+// Type definitions
+interface Watchlist {
+  id: number
+  name: string
+  watchlist_type: string
+  stocks_count?: number
+  risk_profile?: { risk_tolerance?: number }
+}
 
-const watchlistForm = reactive({
+interface WatchlistStock {
+  id: number
+  stock_code: string
+  entry_price?: number
+  current_price?: number
+  weight?: number
+  entry_reason?: string
+}
+
+interface WatchlistForm {
+  name: string
+  watchlist_type: string
+  risk_profile: { risk_tolerance?: number }
+}
+
+interface StockFormType {
+  stock_code: string
+  entry_price: number | null
+  entry_reason: string | null
+  stop_loss_price: number | null
+  target_price: number | null
+  weight: number
+}
+
+export function useWatchlistManagement() {
+
+const loading: Ref<boolean> = ref(false)
+const watchlists: Ref<Watchlist[]> = ref([])
+const watchlistStocks: Ref<WatchlistStock[]> = ref([])
+const stockDrawerVisible: Ref<boolean> = ref(false)
+const createModalVisible: Ref<boolean> = ref(false)
+const addStockModalVisible: Ref<boolean> = ref(false)
+const deleteConfirmVisible: Ref<boolean> = ref(false)
+const currentWatchlist: Ref<Watchlist | null> = ref(null)
+const editingWatchlist: Ref<Watchlist | null> = ref(null)
+const portfolioToDelete: Ref<Watchlist | null> = ref(null)
+
+const watchlistForm: WatchlistForm = reactive({
   name: '',
   watchlist_type: 'manual',
   risk_profile: {}
 })
 
-const stockForm = reactive({
+const stockForm: StockFormType = reactive({
   stock_code: '',
   entry_price: null,
   entry_reason: null,
@@ -79,8 +112,8 @@ const activeAlerts = computed(() => {
 })
 
 // 工具函数
-const getTypeClass = (type) => {
-  const classes = {
+const getTypeClass = (type: string): string => {
+  const classes: Record<string, string> = {
     manual: 'type-manual',
     strategy: 'type-strategy',
     benchmark: 'type-benchmark'
@@ -88,8 +121,8 @@ const getTypeClass = (type) => {
   return classes[type] || 'type-manual'
 }
 
-const getTypeText = (type) => {
-  const texts = {
+const getTypeText = (type: string): string => {
+  const texts: Record<string, string> = {
     manual: 'MANUAL',
     strategy: 'STRATEGY',
     benchmark: 'BENCHMARK'
@@ -97,14 +130,14 @@ const getTypeText = (type) => {
   return texts[type] || type
 }
 
-const getPnlClass = (stock) => {
+const getPnlClass = (stock: WatchlistStock): string => {
   const current = stock.current_price || stock.entry_price || 0
   const entry = stock.entry_price || 0
   const pnl = ((current - entry) / entry) * 100
   return pnl >= 0 ? 'fintech-text-up' : 'fintech-text-down'
 }
 
-const getPnlPercent = (stock) => {
+const getPnlPercent = (stock: WatchlistStock): string => {
   const current = stock.current_price || stock.entry_price || 0
   const entry = stock.entry_price || 0
   if (entry === 0) return '0.00%'
@@ -112,8 +145,8 @@ const getPnlPercent = (stock) => {
   return `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%`
 }
 
-const getReasonClass = (reason) => {
-  const classes = {
+const getReasonClass = (reason: string): string => {
+  const classes: Record<string, string> = {
     'macd_gold_cross': 'reason-technical',
     'rsi_oversold': 'reason-technical',
     'volume_breakout': 'reason-volume',
@@ -123,8 +156,8 @@ const getReasonClass = (reason) => {
   return classes[reason] || 'reason-manual'
 }
 
-const getReasonText = (reason) => {
-  const texts = {
+const getReasonText = (reason: string): string => {
+  const texts: Record<string, string> = {
     'macd_gold_cross': 'MACD CROSS',
     'rsi_oversold': 'RSI OVERSOLD',
     'volume_breakout': 'VOL BREAKOUT',
@@ -134,7 +167,7 @@ const getReasonText = (reason) => {
   return texts[reason] || reason || 'UNKNOWN'
 }
 
-const formatCurrency = (value) => {
+const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'CNY',
@@ -142,12 +175,12 @@ const formatCurrency = (value) => {
   }).format(value || 0)
 }
 
-const formatPrice = (price) => {
+const formatPrice = (price: number | undefined | null): string => {
   return price ? price.toFixed(2) : '-'
 }
 
 // 数据获取函数
-const fetchWatchlists = async () => {
+const fetchWatchlists = async (): Promise<void> => {
   loading.value = true
   try {
     const res = await fetch('/api/monitoring/watchlists')
@@ -163,7 +196,7 @@ const fetchWatchlists = async () => {
   }
 }
 
-const fetchWatchlistStocks = async (watchlistId) => {
+const fetchWatchlistStocks = async (watchlistId: number): Promise<void> => {
   try {
     const res = await fetch(`/api/monitoring/watchlists/${watchlistId}/stocks`)
     const data = await res.json()
@@ -175,7 +208,7 @@ const fetchWatchlistStocks = async (watchlistId) => {
   }
 }
 
-const refreshData = async () => {
+const refreshData = async (): Promise<void> => {
   await fetchWatchlists()
   if (currentWatchlist.value) {
     await fetchWatchlistStocks(currentWatchlist.value.id)
@@ -184,13 +217,13 @@ const refreshData = async () => {
 }
 
 // 事件处理函数
-const handlePortfolioClick = (portfolio) => {
+const handlePortfolioClick = (portfolio: Watchlist): void => {
   currentWatchlist.value = portfolio
   stockDrawerVisible.value = true
   fetchWatchlistStocks(portfolio.id)
 }
 
-const showCreateModal = () => {
+const showCreateModal = (): void => {
   editingWatchlist.value = null
   watchlistForm.name = ''
   watchlistForm.watchlist_type = 'manual'
@@ -198,7 +231,7 @@ const showCreateModal = () => {
   createModalVisible.value = true
 }
 
-const editWatchlist = (record) => {
+const editWatchlist = (record: Watchlist): void => {
   editingWatchlist.value = record
   watchlistForm.name = record.name
   watchlistForm.watchlist_type = record.watchlist_type
@@ -206,7 +239,7 @@ const editWatchlist = (record) => {
   createModalVisible.value = true
 }
 
-const handleCreateOrUpdate = async () => {
+const handleCreateOrUpdate = async (): Promise<void> => {
   try {
     watchlistForm.risk_profile = { risk_tolerance: riskTolerance.value }
 
@@ -236,12 +269,12 @@ const handleCreateOrUpdate = async () => {
   }
 }
 
-const confirmDelete = (portfolio) => {
+const confirmDelete = (portfolio: Watchlist): void => {
   portfolioToDelete.value = portfolio
   deleteConfirmVisible.value = true
 }
 
-const deleteWatchlist = async (id) => {
+const deleteWatchlist = async (id: number): Promise<void> => {
   try {
     const res = await fetch(`/api/monitoring/watchlists/${id}`, { method: 'DELETE' })
     const data = await res.json()
@@ -259,13 +292,13 @@ const deleteWatchlist = async (id) => {
   }
 }
 
-const manageStocks = (record) => {
+const manageStocks = (record: Watchlist): void => {
   currentWatchlist.value = record
   stockDrawerVisible.value = true
   fetchWatchlistStocks(record.id)
 }
 
-const showAddStockModal = () => {
+const showAddStockModal = (): void => {
   stockForm.stock_code = ''
   stockForm.entry_price = null
   stockForm.entry_reason = null
@@ -275,7 +308,8 @@ const showAddStockModal = () => {
   addStockModalVisible.value = true
 }
 
-const handleAddStock = async () => {
+const handleAddStock = async (): Promise<void> => {
+  if (!currentWatchlist.value) return
   try {
     const res = await fetch(`/api/monitoring/watchlists/${currentWatchlist.value.id}/stocks`, {
       method: 'POST',
@@ -298,12 +332,13 @@ const handleAddStock = async () => {
   }
 }
 
-const confirmRemoveStock = (stock) => {
+const confirmRemoveStock = (stock: WatchlistStock): void => {
   // 简化版：直接删除
   removeStock(stock.id)
 }
 
-const removeStock = async (stockId) => {
+const removeStock = async (stockId: number): Promise<void> => {
+  if (!currentWatchlist.value) return
   try {
     const res = await fetch(`/api/monitoring/watchlists/${currentWatchlist.value.id}/stocks/${stockId}`, {
       method: 'DELETE'
@@ -343,61 +378,30 @@ onMounted(() => {
     riskTolerance,
     totalStocks,
     totalValue,
-    price,
     totalPnL,
-    current,
-    entry,
-    pnl,
     winRate,
-    winners,
-    current,
-    entry,
     activeAlerts,
     getTypeClass,
-    classes,
     getTypeText,
-    texts,
     getPnlClass,
-    current,
-    entry,
-    pnl,
     getPnlPercent,
-    current,
-    entry,
-    pnl,
     getReasonClass,
-    classes,
     getReasonText,
-    texts,
     formatCurrency,
     formatPrice,
     fetchWatchlists,
-    res,
-    data,
     fetchWatchlistStocks,
-    res,
-    data,
     refreshData,
     handlePortfolioClick,
     showCreateModal,
     editWatchlist,
     handleCreateOrUpdate,
-    url,
-    method,
-    res,
-    data,
     confirmDelete,
     deleteWatchlist,
-    res,
-    data,
     manageStocks,
     showAddStockModal,
     handleAddStock,
-    res,
-    data,
     confirmRemoveStock,
     removeStock,
-    res,
-    data,
   }
 }

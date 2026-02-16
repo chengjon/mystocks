@@ -11,8 +11,9 @@ from .system_health import get_system_logs_from_db  # noqa: F401
 from .system_health import get_mock_system_logs  # noqa: F401
 from .system_health import get_system_logs  # noqa: F401
 from .system_health import get_logs_summary  # noqa: F401
+from .system_health import router  # noqa: F401
 from .get_system_architecture import get_system_architecture  # noqa: F401
 from .get_system_architecture import database_health  # noqa: F401
 from .get_system_architecture import database_stats  # noqa: F401
 
-__all__ = ['system_health', 'get_adapters_health', 'get_datasources', 'ConnectionTestRequest', 'ConnectionTestResponse', 'test_database_connection', 'SystemLog', 'LogQueryResponse', 'get_system_logs_from_db', 'get_mock_system_logs', 'get_system_logs', 'get_logs_summary', 'get_system_architecture', 'database_health', 'database_stats']
+__all__ = ['system_health', 'get_adapters_health', 'get_datasources', 'ConnectionTestRequest', 'ConnectionTestResponse', 'test_database_connection', 'SystemLog', 'LogQueryResponse', 'get_system_logs_from_db', 'get_mock_system_logs', 'get_system_logs', 'get_logs_summary', 'get_system_architecture', 'database_health', 'database_stats', 'router']

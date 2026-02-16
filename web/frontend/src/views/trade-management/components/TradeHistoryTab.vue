@@ -112,6 +112,18 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { tradeApi } from '@/api/trade'
 
+interface TradeRecord {
+  trade_time: string
+  type: 'buy' | 'sell'
+  symbol: string
+  stock_name: string
+  quantity: number
+  price: number
+  commission: number
+  status: 'pending' | 'completed' | 'failed' | 'cancelled'
+  remark?: string
+}
+
 interface TradeFilter {
   type: string
   symbol: string
@@ -125,7 +137,7 @@ interface Pagination {
 }
 
 const loading = ref(false)
-const trades = ref<unknown[]>([])
+const trades = ref<TradeRecord[]>([])
 const dateStart = ref('')
 const dateEnd = ref('')
 

@@ -1,3 +1,4 @@
+import { LRUCache, getCache, type CacheOptions, type CacheConfig, type CacheStats } from './part-1'
 
 /**
  * Cache Manager - Wrapper class for LRUCache with simplified API

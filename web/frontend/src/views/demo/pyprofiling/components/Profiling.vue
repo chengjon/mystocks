@@ -38,6 +38,7 @@
         </div>
       </div>
 
+      <div class="alert-card">
         <div class="alert-title">OPTIMIZATION WORKFLOW</div>
         <div class="alert-content">
           <ol>

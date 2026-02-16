@@ -1,43 +1,29 @@
-import { ref, reactive, onMounted, watch, type Ref, computed , onUnmounted } from 'vue'
+import { ref, reactive, onMounted, watch, type Ref, computed, onUnmounted } from 'vue'
 import { ElMessage, ElNotification, ElMessageBox } from 'element-plus'
 import StockSearchBar from '@/components/technical/StockSearchBar.vue'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
 import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
-import { ElCard, ElButton, _ElInput, ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
+import { ElCard, ElButton, ElInput, ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
 import { indicatorService, handleIndicatorError } from '@/services/indicatorService.ts'
 import { dataApi } from '@/api/index.js'
 import { calculateTechnicalIndicators } from '@/utils/technicalIndicators.js'
-interface IndicatorParameters {
-interface SelectedIndicator {
-interface OHLCVData {
-interface IndicatorOutput {
-interface ChartIndicator {
-interface ChartData {
-interface DateRangeShortcut {
-interface KlineDataItem {
-interface KlineApiResponse {
-interface IndicatorConfig {
-interface ConfigListResponse {
-interface ConfigOption {
-  interface Window {
-
-export function useTechnicalAnalysis() {
-// @ts-nocheck
-
 
 // ============================================
 // 类型定义
 // ============================================
 
-  [key: string]: number | string | boolean
+interface IndicatorParameters {
+  [key: string]: number | string | boolean | undefined
   timeperiod?: number
 }
 
+interface SelectedIndicator {
   abbreviation: string
   parameters: IndicatorParameters
 }
 
+interface OHLCVData {
   dates: string[]
   open: number[]
   high: number[]
@@ -46,17 +32,20 @@ export function useTechnicalAnalysis() {
   volume: number[]
 }
 
+interface IndicatorOutput {
   output_name: string
   values: (number | null)[]
   displayName: string
 }
 
+interface ChartIndicator {
   abbreviation: string
   parameters: IndicatorParameters
   outputs: IndicatorOutput[]
   panelType: 'overlay' | 'separate'
 }
 
+interface ChartData {
   symbol: string
   symbolName: string
   ohlcv: OHLCVData | null
@@ -64,10 +53,12 @@ export function useTechnicalAnalysis() {
   calculationTime: number
 }
 
+interface DateRangeShortcut {
   text: string
   value: () => Date[]
 }
 
+interface KlineDataItem {
   date: string
   open: number
   high: number
@@ -76,6 +67,7 @@ export function useTechnicalAnalysis() {
   volume: number
 }
 
+interface KlineApiResponse {
   success: boolean
   data: KlineDataItem[]
   stock_code?: string
@@ -83,18 +75,30 @@ export function useTechnicalAnalysis() {
   total?: number
 }
 
+interface IndicatorConfig {
   id: number
   name: string
   indicators: SelectedIndicator[]
 }
 
+interface ConfigListResponse {
   total_count: number
   configs: IndicatorConfig[]
 }
 
+interface ConfigOption {
   label: string
   value: number
 }
+
+declare global {
+  interface Window {
+    deleteConfig: (configId: number) => Promise<void>
+  }
+}
+
+export function useTechnicalAnalysis() {
+// @ts-nocheck
 
 // ============================================
 // 状态管理
@@ -218,13 +222,13 @@ const fetchKlineData = async (): Promise<void> => {
   loading.value = true
 
   try {
-    const response: KlineApiResponse = await dataApi.getKline({
+    const response = await dataApi.getKline({
       symbol: selectedSymbol.value,
       start_date: dateRange.value[0],
       end_date: dateRange.value[1],
       period: selectedPeriod.value,
       adjust: 'qfq'
-    })
+    }) as unknown as KlineApiResponse
 
     if (response.success && response.data && response.data.length > 0) {
       const dates = response.data.map(item => item.date)
@@ -253,7 +257,7 @@ const fetchKlineData = async (): Promise<void> => {
       const endTime = performance.now()
 
       const indicatorsResult = Object.keys(calculatedIndicators).map(key => {
-        const values = calculatedIndicators[key]
+        const values = (calculatedIndicators as Record<string, (number | null)[]>)[key]
         return {
           abbreviation: key,
           parameters: {},
@@ -281,16 +285,17 @@ const fetchKlineData = async (): Promise<void> => {
     }
   } catch (error: unknown) {
     console.error('Failed to fetch kline data:', error)
-    const errorMessage = error.response?.data?.msg || error.message || 'Failed to fetch K-line data'
+    const errorObj = error as Record<string, any>
+    const errorMessage = errorObj?.response?.data?.msg || errorObj?.message || 'Failed to fetch K-line data'
 
     ElNotification({
       title: 'DATA LOAD FAILED',
-      message: errorMessage,
+      message: errorMessage as string,
       type: 'error',
       duration: 3000
     })
 
-    if (error.response?.status === 404) {
+    if (errorObj?.response?.status === 404) {
       ElMessage.info('No historical data available in database')
     }
   } finally {
@@ -389,7 +394,7 @@ const handleSaveConfig = async (): Promise<void> => {
       ElMessage.success(`Config "${value}" saved`)
     } catch (error: unknown) {
       console.error('Failed to save config:', error)
-      const errorMessage = handleIndicatorError(error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       ElMessage.error(`Save failed: ${errorMessage}`)
     }
   }).catch(() => {
@@ -399,7 +404,7 @@ const handleSaveConfig = async (): Promise<void> => {
 
 const handleLoadConfig = async (): Promise<void> => {
   try {
-    const response: ConfigListResponse = await indicatorService.listConfigs()
+    const response = await indicatorService.listConfigs() as unknown as ConfigListResponse
 
     if (response.total_count === 0) {
       ElMessage.info('No saved configs available')
@@ -426,7 +431,7 @@ const handleLoadConfig = async (): Promise<void> => {
           }
 
           indicatorService.getConfig(parseInt(selectedConfigId))
-            .then((config: IndicatorConfig) => {
+            .then(((config: IndicatorConfig): void => {
               selectedIndicators.value = config.indicators
               ElMessage.success(`Config "${config.name}" loaded`)
 
@@ -435,7 +440,7 @@ const handleLoadConfig = async (): Promise<void> => {
               }
 
               done()
-            })
+            }) as any)
             .catch((error: unknown) => {
               console.error('Failed to load config:', error)
               ElMessage.error('Load failed')
@@ -455,7 +460,7 @@ const handleLoadConfig = async (): Promise<void> => {
 
 const handleManageConfigs = async (): Promise<void> => {
   try {
-    const response: ConfigListResponse = await indicatorService.listConfigs()
+    const response = await indicatorService.listConfigs() as unknown as ConfigListResponse
 
     if (response.total_count === 0) {
       ElMessage.info('No saved configs available')
@@ -513,11 +518,6 @@ const deleteConfig = async (configId: number): Promise<void> => {
   }
 }
 
-declare global {
-    deleteConfig: (configId: number) => Promise<void>
-  }
-}
-
 window.deleteConfig = deleteConfig
 
 // Auto-generated: cleanup timers to prevent memory leaks
@@ -537,50 +537,18 @@ onUnmounted(() => {
     lastUpdateTime,
     handleRetry,
     dateRangeShortcuts,
-    end,
-    start,
-    end,
-    start,
-    end,
-    start,
-    end,
-    start,
     handleStockSearch,
-    end,
-    start,
     handleDateRangeChange,
     refreshData,
     fetchKlineData,
-    response,
-    dates,
-    opens,
-    highs,
-    lows,
-    closes,
-    volumes,
-    startTime,
-    calculatedIndicators,
-    endTime,
-    indicatorsResult,
-    values,
-    errorMessage,
     handleAddIndicator,
     handleRemoveIndicator,
     handleIndicatorRemove,
-    cachedSymbol,
-    cachedDateRange,
     saveToLocalStorage,
     handleConfigCommand,
     handleSaveConfig,
-    errorMessage,
     handleLoadConfig,
-    response,
-    _configOptions,
-    selectedConfigId,
     handleManageConfigs,
-    response,
-    configListHtml,
     deleteConfig,
-    _timer_1,
   }
 }

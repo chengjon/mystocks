@@ -243,6 +243,6 @@ export const INDICATOR_COLORS = ['#2196F3', '#4CAF50', '#FF9800', '#9C27B0', '#0
  * @param {number} index
  * @returns {string}
  */
-export const getIndicatorColor = (index) => {
+export const getIndicatorColor = (index: number): string => {
   return INDICATOR_COLORS[index % INDICATOR_COLORS.length]
 }

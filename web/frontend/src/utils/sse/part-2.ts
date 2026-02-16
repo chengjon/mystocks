@@ -32,6 +32,9 @@
  * }
  * ```
  */
+
+import { SSEManager, SSEConnection, type SSEOptions } from './part-1'
+
 export function useSSE(name: string, options: SSEOptions) {
   // This function is now a placeholder. See the documentation above
   // for how to create a Vue composable wrapper.

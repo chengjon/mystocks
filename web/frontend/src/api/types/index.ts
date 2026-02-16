@@ -1,5 +1,5 @@
 // Auto-generated index file for TypeScript types
-// Generated at: 2026-02-14T21:49:36.273968
+// Generated at: 2026-02-16T09:55:55.173093
 
 // Admin domain types
 export * from './admin';

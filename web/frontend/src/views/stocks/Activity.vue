@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
     import { ref, reactive, computed , onUnmounted } from 'vue'
-    import { _ElCard, ElButton, _ElTable, _ElTableColumn, _ElSelect, _ElOption, _ElTag, ElMessage } from 'element-plus'
+    import { ElCard as _ElCard, ElButton, ElTable as _ElTable, ElTableColumn as _ElTableColumn, ElSelect as _ElSelect, ElOption as _ElOption, ElTag as _ElTag, ElMessage } from 'element-plus'
     import { Tickets, RefreshRight } from '@element-plus/icons-vue'
 
     const _activityFilter = ref('all')

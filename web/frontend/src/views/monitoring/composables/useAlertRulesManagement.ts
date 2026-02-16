@@ -1,19 +1,10 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { monitoringApi } from '@/api'
-import {
-import type { _TableColumn } from '@/components/shared'
+import { PageHeader, StockListTable, PaginationBar, DetailDialog } from '@/components/shared'
+import type { TableColumn } from '@/components/shared'
+
 interface AlertRule {
-interface RuleForm {
-
-export function useAlertRulesManagement() {
-  PageHeader,
-  StockListTable,
-  PaginationBar,
-  DetailDialog
-} from '@/components/shared'
-
-
   id: string
   rule_name: string
   symbol: string
@@ -28,6 +19,7 @@ export function useAlertRulesManagement() {
   is_active: boolean
 }
 
+interface RuleForm {
   id: string
   rule_name: string
   symbol: string
@@ -45,6 +37,8 @@ export function useAlertRulesManagement() {
   priority: number
   is_active: boolean
 }
+
+export function useAlertRulesManagement() {
 
 const alertRules = ref<AlertRule[]>([])
 const loading = ref(false)
@@ -222,7 +216,7 @@ const fetchAlertRules = async (): Promise<void> => {
   loading.value = true
   try {
     const response = await monitoringApi.getAlertRules()
-    alertRules.value = response.data || []
+    alertRules.value = (response.data || []) as unknown as AlertRule[]
     pagination.total = alertRules.value.length
   } catch (error) {
     console.error('获取告警规则失败:', error)
@@ -330,16 +324,10 @@ onMounted(() => {
     ruleForm,
     tableColumns,
     paginatedRules,
-    start,
-    end,
-    _getRuleTypeClass,
     getRuleTypeTag,
     formatRuleType,
-    typeMap,
-    _getNotificationLevelClass,
     getNotificationLevelType,
     fetchAlertRules,
-    response,
     editRule,
     saveRule,
     deleteRule,

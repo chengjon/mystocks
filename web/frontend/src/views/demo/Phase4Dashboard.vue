@@ -1,4 +1,5 @@
 <template>
+  <div class="phase4-dashboard">
 
     <div class="page-header">
       <h1 class="page-title">PHASE 4 DASHBOARD</h1>
@@ -74,6 +75,7 @@
       <div class="card chart-card">
         <div class="card-header">
           <h3 class="card-title">MARKET OVERVIEW</h3>
+          <button class="btn" @click="loadDashboardData">
             <span>REFRESH</span>
           </button>
         </div>

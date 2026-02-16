@@ -17,6 +17,14 @@ use_mock = os.getenv("USE_MOCK_DATA", "false").lower() == "true"
 
 router = APIRouter()
 
+
+def _required_env(env_name: str) -> str:
+    value = os.getenv(env_name, "").strip()
+    if not value:
+        raise RuntimeError(f"Missing required environment variable: {env_name}")
+    return value
+
+
 @router.get("/health")
 async def system_health():
     """
@@ -209,6 +217,11 @@ async def test_database_connection(request: ConnectionTestRequest):
     port = request.port
 
     try:
+        pg_user = os.getenv("POSTGRESQL_USER", "postgres")
+        pg_password = _required_env("POSTGRESQL_PASSWORD")
+        td_user = os.getenv("TDENGINE_USER", "root")
+        td_password = _required_env("TDENGINE_PASSWORD")
+
         if db_type == "postgresql":
             # 测试 PostgreSQL 连接 - 连接到默认的 postgres 数据库
             connection = None
@@ -217,8 +230,8 @@ async def test_database_connection(request: ConnectionTestRequest):
                 connection = psycopg2.connect(
                     host=host,
                     port=port,
-                    user="postgres",
-                    password="your-postgresql-password",
+                    user=pg_user,
+                    password=pg_password,
                     database="postgres",  # 连接到默认数据库
                     connect_timeout=5,
                 )
@@ -265,8 +278,8 @@ async def test_database_connection(request: ConnectionTestRequest):
                 connection = taos.connect(
                     host=host,
                     port=port,
-                    user="root",
-                    password="taosdata",
+                    user=td_user,
+                    password=td_password,
                     config="/etc/taos",
                     timeout=5000,
                 )
@@ -330,6 +343,9 @@ async def test_database_connection(request: ConnectionTestRequest):
         else:
             return ConnectionTestResponse(success=False, error=f"PostgreSQL 连接错误: {error_msg}")
 
+    except RuntimeError as e:
+        return ConnectionTestResponse(success=False, error=str(e))
+
     except Exception as e:
         return ConnectionTestResponse(success=False, error=f"连接测试失败: {str(e)}")
 
@@ -381,13 +397,17 @@ def get_system_logs_from_db(
     conn = None
     cursor = None
     try:
+        monitor_password = os.getenv("MONITOR_DB_PASSWORD") or os.getenv("POSTGRESQL_PASSWORD")
+        if not monitor_password:
+            raise RuntimeError("Missing MONITOR_DB_PASSWORD or POSTGRESQL_PASSWORD for log query")
+
         # 连接到PostgreSQL监控数据库
         conn = psycopg2.connect(
-            host="localhost",
-            port=5432,
-            user="postgres",
-            password="your-postgresql-password",
-            database="mystocks_monitoring",
+            host=os.getenv("MONITOR_DB_HOST", "localhost"),
+            port=int(os.getenv("MONITOR_DB_PORT", "5432")),
+            user=os.getenv("MONITOR_DB_USER", "postgres"),
+            password=monitor_password,
+            database=os.getenv("MONITOR_DB_NAME", "mystocks_monitoring"),
             connect_timeout=5,
         )
         cursor = conn.cursor()
@@ -688,5 +708,3 @@ async def get_logs_summary():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取日志统计失败: {str(e)}")
-
-

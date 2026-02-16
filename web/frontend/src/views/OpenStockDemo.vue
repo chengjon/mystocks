@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { TABS, DEFAULT_API_STATUS, type ApiStatus } from './demo/openstock/config'
 import {
@@ -116,12 +116,37 @@ const tabs = TABS
 const apiStatus = ref<ApiStatus>({ ...DEFAULT_API_STATUS })
 
 // 组件引用
-const stockQuoteRef: Ref<unknown> = ref(null)
-const stockNewsRef: Ref<unknown> = ref(null)
-const featureStatusRef: Ref<unknown> = ref(null)
+interface StockQuoteComponent {
+  setQuote: (symbol: string, market: string) => void
+  fetchQuote: () => void
+}
+
+interface StockNewsComponent {
+  setNews: (symbol: string, market: string) => void
+  fetchNews: () => void
+}
+
+interface FeatureStatusComponent {
+  updateStatus: (feature: string, status: boolean) => void
+}
+
+const stockQuoteRef = ref<StockQuoteComponent | null>(null)
+const stockNewsRef = ref<StockNewsComponent | null>(null)
+const featureStatusRef = ref<FeatureStatusComponent | null>(null)
 
 // 分组数据（用于搜索组件的自动完成）
-const groups = ref<unknown[]>([])
+interface StockGroup {
+  id: number
+  group_name: string
+  stock_count: number
+}
+
+interface WatchlistGroup {
+  id: number
+  group_name: string
+}
+
+const groups = ref<StockGroup[]>([])
 
 // 获取分组列表
 const fetchGroups = async () => {
@@ -129,7 +154,7 @@ const fetchGroups = async () => {
     const response = await axios.get(`${API_BASE}/watchlist/groups`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
-    groups.value = response.data
+    groups.value = response.data as StockGroup[]
   } catch (error) {
     console.error('获取分组失败:', error)
   }
@@ -143,8 +168,14 @@ const handleApiTest = (feature: keyof ApiStatus) => {
   }
 }
 
+// Stock item type
+interface StockItem {
+  symbol: string
+  market: string
+}
+
 // 处理获取行情
-const handleGetQuote = (stock: unknown) => {
+const handleGetQuote = (stock: StockItem) => {
   activeTab.value = 'quote'
   if (stockQuoteRef.value) {
     stockQuoteRef.value.setQuote(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')
@@ -153,7 +184,7 @@ const handleGetQuote = (stock: unknown) => {
 }
 
 // 处理获取新闻
-const handleGetNews = (stock: unknown) => {
+const handleGetNews = (stock: StockItem) => {
   activeTab.value = 'news'
   if (stockNewsRef.value) {
     stockNewsRef.value.setNews(stock.symbol, stock.market === 'CN' ? 'cn' : 'hk')

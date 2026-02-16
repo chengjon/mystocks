@@ -215,7 +215,7 @@ import { ref, onMounted, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { dataApi } from '@/api'
 import _echarts from '@/utils/echarts'
-import type { _ECharts, _EChartsOption } from '@/types/echarts'
+import type { ECharts, EChartsOption } from '@/types/echarts'
 import { ElMessage, ElCard, ElButton, ElInput } from 'element-plus'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
 

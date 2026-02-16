@@ -122,15 +122,51 @@
 <script setup lang="ts">
     import { ref, onMounted, watch, nextTick } from 'vue'
 
+    interface InsightItem {
+        id: number
+        type: string
+        label: string
+        description: string
+    }
+
+    interface DimensionData {
+        key: string
+        label: string
+        score: number
+        color: string
+        icon: string
+        insights: InsightItem[]
+    }
+
+    interface AdviceItem {
+        id: number
+        type: string
+        title: string
+        description: string
+    }
+
+    interface PrimaryAdvice {
+        type: 'success' | 'warning' | 'error'
+        title: string
+        description: string
+    }
+
+    interface RadarData {
+        dimensions?: DimensionData[]
+        overall_score?: number
+        primary_advice?: PrimaryAdvice
+        secondary_advices?: AdviceItem[]
+    }
+
     interface Props {
-        data: unknown
+        data: RadarData | null
     }
 
     const props = defineProps<Props>()
     const radarChart = ref<HTMLElement>()
 
     // 雷达图维度数据
-    const dimensions = ref([
+    const dimensions = ref<DimensionData[]>([
         {
             key: 'fundamental',
             label: '基本面',
@@ -201,13 +237,13 @@
 
     const overallScore = ref(73)
 
-    const primaryAdvice = ref({
-        type: 'success' as 'success' | 'warning' | 'error',
+    const primaryAdvice = ref<PrimaryAdvice>({
+        type: 'success',
         title: '建议买入',
         description: '综合分析显示，该股票具有较好的投资价值，建议投资者适量买入并长期持有。'
     })
 
-    const secondaryAdvices = ref([
+    const secondaryAdvices = ref<AdviceItem[]>([
         {
             id: 1,
             type: 'success',
@@ -242,9 +278,9 @@
         { immediate: true }
     )
 
-    const updateDimensions = (data: unknown) => {
+    const updateDimensions = (data: RadarData) => {
         if (data.dimensions) {
-            dimensions.value = data.dimensions.map((dim: unknown) => ({
+            dimensions.value = data.dimensions.map((dim) => ({
                 ...dim,
                 insights: dim.insights || []
             }))
@@ -321,7 +357,7 @@
         centerY: number,
         radius: number,
         angles: number[],
-        data: unknown[]
+        data: DimensionData[]
     ) => {
         ctx.beginPath()
         angles.forEach((angle, i) => {

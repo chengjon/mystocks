@@ -1,9 +1,36 @@
 import { defineStore } from 'pinia'
-import { ref, computed, _reactive } from 'vue'
-import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG, type ApiConfig } from '@/api/unifiedApiClient'
-import type { CacheConfig, LoadingConfig, RetryConfig } from '@/api/unifiedApiClient'
+import { ref, computed, reactive } from 'vue'
+import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG } from '@/api/unifiedApiClient'
 import { marketDataWebSocket, tradingWebSocket, riskWebSocket, WebSocketState } from '@/utils/webSocketManager'
 import type { WebSocketMessage } from '@/utils/webSocketManager'
+
+// Local type definitions for store configuration
+interface CacheConfig {
+  use?: boolean
+  ttl?: number
+  enabled?: boolean
+  key?: string
+  strategy?: 'memory' | 'sessionStorage' | 'localStorage'
+}
+
+interface LoadingConfig {
+  show?: boolean
+  enabled?: boolean
+  key?: string
+}
+
+interface RetryConfig {
+  retries?: number
+  delay?: number
+}
+
+interface ApiConfig {
+  endpoint: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  cache?: CacheConfig
+  retry?: RetryConfig
+  loading?: LoadingConfig
+}
 
 export interface StoreState<T = unknown> {
   data: T | null
@@ -70,7 +97,7 @@ export class PiniaStoreFactory {
       // Getters
       const isStale = computed(() => {
         if (!cache?.enabled || !lastFetch.value) return false
-        return Date.now() - lastFetch.value > cache.ttl
+        return Date.now() - lastFetch.value > (cache.ttl || 0)
       })
 
       const hasData = computed(() => data.value !== null)
@@ -111,7 +138,7 @@ export class PiniaStoreFactory {
           setLoading(true)
           setError(null)
 
-          const apiConfig: ApiConfig = {
+          const apiConfig: Partial<ApiConfig> = {
             cache: cache ? {
               ...cache,
               enabled: cache.enabled ?? true,
@@ -140,7 +167,7 @@ export class PiniaStoreFactory {
               throw new Error(`Unsupported method: ${method}`)
           }
 
-          setData(result)
+          setData(result as T)
           return data.value as T
         } catch (err) {
           const errorMessage = err instanceof Error ? err.message : 'Fetch failed'
@@ -197,9 +224,10 @@ export class PiniaStoreFactory {
       // Base store
       const baseStore = PiniaStoreFactory.createApiStore<T[]>({
         ...baseConfig,
-        transform: (data) => {
+        transform: (data: unknown) => {
           // Assume API returns { items: T[], total: number, page: number }
-          return baseConfig.transform ? baseConfig.transform(data.items || data) : (data.items || data)
+          const dataObj = data as { items?: T[]; [key: string]: unknown }
+          return baseConfig.transform ? baseConfig.transform(dataObj.items || data) : (dataObj.items || data) as T[]
         }
       })()
 
@@ -400,8 +428,8 @@ export const createMarketDataStore = (id: string, endpoint: string) =>
     id,
     endpoint,
     method: 'GET',
-    cache: createCacheConfig(`${id}-cache`, 'realtime'),
-    loading: createLoadingConfig(`${id}-loading`),
+    cache: createCacheConfig(true),
+    loading: createLoadingConfig(true),
     wsManager: marketDataWebSocket,
     wsChannel: 'market-data',
     updateInterval: 30000, // 30 seconds
@@ -412,8 +440,8 @@ export const createReferenceDataStore = (id: string, endpoint: string) =>
     id,
     endpoint,
     method: 'GET',
-    cache: createCacheConfig(`${id}-cache`, 'reference'),
-    loading: createLoadingConfig(`${id}-loading`),
+    cache: createCacheConfig(true),
+    loading: createLoadingConfig(true),
   })
 
 export const createUserDataStore = (id: string, endpoint: string) =>
@@ -421,8 +449,8 @@ export const createUserDataStore = (id: string, endpoint: string) =>
     id,
     endpoint,
     method: 'GET',
-    cache: createCacheConfig(`${id}-cache`, 'user'),
-    loading: createLoadingConfig(`${id}-loading`),
+    cache: createCacheConfig(true),
+    loading: createLoadingConfig(true),
   })
 
 export default PiniaStoreFactory

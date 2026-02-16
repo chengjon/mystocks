@@ -1,3 +1,7 @@
+<template>
+  <div class="position-monitor"></div>
+</template>
+
 <style scoped lang="scss">
 @import '@/styles/artdeco-quant-extended';
 

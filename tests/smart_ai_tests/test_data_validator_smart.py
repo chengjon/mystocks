@@ -15,6 +15,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import data_validator
 
 
+class TestDataValidatorSmart(unittest.TestCase):
+    """智能AI生成的测试类"""
+
+
 
     def test_data_validator_validate_price_data_security(self):
         """安全测试 - validate_price_data"""

@@ -1,4 +1,6 @@
 
+import type { BacktestSummary } from './types-2'
+
 /**
  * 策略类型
  */

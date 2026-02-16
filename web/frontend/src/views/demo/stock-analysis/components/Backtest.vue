@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, _computed } from 'vue'
+import { ref, computed } from 'vue'
 import { BACKTEST_METRICS } from '../config'
 import { BACKTEST_EXAMPLES } from '../code-examples'
 

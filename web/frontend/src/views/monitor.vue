@@ -1,4 +1,5 @@
 <template>
+  <div class="monitor-page">
     <!-- 页面头部 -->
     <PageHeader
       title="系统监控"

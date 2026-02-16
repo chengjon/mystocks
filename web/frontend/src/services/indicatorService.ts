@@ -5,6 +5,7 @@
 
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { ElMessage } from 'element-plus'
+import { API_BASE_URL } from '@/config/runtime-endpoints'
 import type {
   IndicatorCalculateRequest,
   IndicatorCalculateResponse,
@@ -20,7 +21,6 @@ import type {
 /**
  * API 基础配置
  */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const API_TIMEOUT = 30000 // 30 seconds
 
 /**
@@ -68,7 +68,8 @@ export function classifyError(error: AxiosError): ErrorInfo {
     const data = error.response.data as Record<string, unknown>
 
     // 优先使用服务器返回的错误消息
-    const serverMessage = data?.error_message || data?.detail || ''
+    const rawMessage = data?.error_message || data?.detail || ''
+    const serverMessage = typeof rawMessage === 'string' ? rawMessage : ''
 
     if (status === 401) {
       return {

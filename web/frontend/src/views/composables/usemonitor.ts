@@ -2,17 +2,36 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useApiService } from '@/composables/useApiService'
 import { PageHeader, StockListTable } from '@/components/shared'
 import type { TableColumn } from '@/components/shared'
-interface _ServiceStatus {
-
-export function usemonitor() {
 
 // Define service status type instead of using any
+interface ServiceStatus {
   frontend: 'normal' | 'warning'
   api: 'normal' | 'warning'
   postgresql: 'normal' | 'warning'
   tdengine: 'normal' | 'warning'
   overallStatus: 'normal' | 'warning'
 }
+
+interface HealthData {
+  frontend: number
+  frontendResponseTime: number
+  api: number
+  postgresql: string
+  tdengine: string
+  [key: string]: unknown
+}
+
+interface HistoryRow {
+  timestamp: number
+  frontend: number | string
+  api: number | string
+  postgresql: number | string
+  tdengine: number | string
+  overallStatus: 'normal' | 'warning'
+  [key: string]: unknown
+}
+
+export function usemonitor() {
 
 const { getHealthData } = useApiService()
 
@@ -51,43 +70,43 @@ const historyColumns = computed((): unknown[] => [
     prop: 'timestamp',
     label: '时间',
     width: 180,
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => formatDateTime(cellValue)
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: number, _index: number) => formatDateTime(cellValue)
   },
   {
     prop: 'frontend',
     label: '前端',
     width: 80,
     align: 'center',
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => getStatusText(cellValue)
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: number | string, _index: number) => getStatusText(cellValue)
   },
   {
     prop: 'api',
     label: 'API',
     width: 80,
     align: 'center',
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => getStatusText(cellValue)
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: number | string, _index: number) => getStatusText(cellValue)
   },
   {
     prop: 'postgresql',
     label: 'PostgreSQL',
     width: 100,
     align: 'center',
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => getStatusText(cellValue)
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: number | string, _index: number) => getStatusText(cellValue)
   },
   {
     prop: 'tdengine',
     label: 'TDengine',
     width: 100,
     align: 'center',
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => getStatusText(cellValue)
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: number | string, _index: number) => getStatusText(cellValue)
   },
   {
     prop: 'overallStatus',
     label: '整体状态',
     width: 100,
     align: 'center',
-    colorClass: (row: unknown) => row.overallStatus === 'normal' ? 'status-normal' : 'status-warning',
-    formatter: (row: unknown, column: TableColumn, cellValue: unknown, _index: number) => cellValue === 'normal' ? '正常' : '异常'
+    colorClass: (row: HistoryRow) => row.overallStatus === 'normal' ? 'status-normal' : 'status-warning',
+    formatter: (row: HistoryRow, column: TableColumn, cellValue: string, _index: number) => cellValue === 'normal' ? '正常' : '异常'
   }
 ])
 
@@ -137,7 +156,7 @@ const checkService = async (serviceName: 'frontend' | 'api' | 'postgresql' | 'td
     isLoading.value = true
     error.value = null
 
-    const healthData = await getHealthData()
+    const healthData = await getHealthData() as HealthData
 
     if (serviceName === 'frontend') {
       services.value.frontend = healthData.frontend === 200 ? 'normal' : 'warning'
@@ -164,7 +183,8 @@ const checkService = async (serviceName: 'frontend' | 'api' | 'postgresql' | 'td
     addToHistory(healthData)
   } catch (err: unknown) {
     console.error(`检查服务 ${serviceName} 失败:`, err)
-    error.value = `检查服务 ${serviceName} 失败: ${err.message}`
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    error.value = `检查服务 ${serviceName} 失败: ${errorMsg}`
   } finally {
     isLoading.value = false
   }
@@ -175,7 +195,7 @@ const refreshData = async () => {
     isLoading.value = true
     error.value = null
 
-    const healthData = await getHealthData()
+    const healthData = await getHealthData() as HealthData
 
     services.value.frontend = healthData.frontend === 200 ? 'normal' : 'warning'
     services.value.api = healthData.api === 200 ? 'normal' : 'warning'
@@ -198,20 +218,21 @@ const refreshData = async () => {
     addToHistory(healthData)
   } catch (err: unknown) {
     console.error('刷新数据失败:', err)
-    error.value = `刷新数据失败: ${err.message}`
+    const errorMsg = err instanceof Error ? err.message : String(err)
+    error.value = `刷新数据失败: ${errorMsg}`
   } finally {
     isLoading.value = false
   }
 }
 
-const addToHistory = (healthData: unknown) => {
+const addToHistory = (healthData: HealthData) => {
   historyData.value.unshift({
-    timestamp: healthData.timestamp,
+    timestamp: healthData.timestamp as number,
     frontend: healthData.frontend,
     api: healthData.api,
     postgresql: healthData.postgresql,
     tdengine: healthData.tdengine,
-    overallStatus: healthData.overallStatus
+    overallStatus: (healthData.overallStatus as 'normal' | 'warning') || 'normal'
   })
 
   if (historyData.value.length > 10) {
@@ -250,9 +271,10 @@ onMounted(() => {
 
   for (let i = 1; i <= 3; i++) {
     const timestamp = Date.now() - (i * 3600000)
-    const healthData = {
+    const healthData: HealthData = {
       timestamp,
       frontend: 200,
+      frontendResponseTime: 200,
       api: 200,
       postgresql: '正常',
       tdengine: '不可访问'
@@ -278,21 +300,14 @@ onUnmounted(() => {
     historyColumns,
     isSystemHealthy,
     systemStatusMessage,
-    issues,
     formatDateTime,
-    date,
     getStatusText,
     getServiceStatusText,
     checkService,
-    healthData,
     refreshData,
-    healthData,
     addToHistory,
     toggleAutoRefresh,
-    refreshTimer,
     startAutoRefresh,
     stopAutoRefresh,
-    timestamp,
-    healthData,
   }
 }

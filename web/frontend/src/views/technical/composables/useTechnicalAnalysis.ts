@@ -1,36 +1,33 @@
 import { ref, reactive, onMounted, nextTick, computed, type Ref } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
-import {
+import { TrendCharts, DataAnalysis, Odometer } from '@element-plus/icons-vue'
 import { technicalApi } from '@/api'
 import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
-interface SearchForm {
-interface BatchForm {
-interface IndicatorStat {
-interface IndicatorItem {
-interface SelectedStock {
+import type { EChartsOption } from 'echarts'
 
-export function useTechnicalAnalysis() {
-  TrendCharts, DataAnalysis,
-  Odometer
-} from '@element-plus/icons-vue'
-
+// ECharts instance type from echarts core
+type EChartsInstance = ReturnType<typeof echarts.init>
 
 // Type definitions
+interface SearchForm {
   symbol: string
   indicators: string[]
   dateRange: string[]
 }
 
+interface BatchForm {
   symbols: string
   indicators: string[]
 }
 
+interface IndicatorStat {
   trend: number
   momentum: number
   signals: number
 }
 
+interface IndicatorItem {
   id: string
   name: string
   type: 'trend' | 'momentum' | 'volatility' | 'volume'
@@ -41,9 +38,22 @@ export function useTechnicalAnalysis() {
   last_updated: string
 }
 
+interface SelectedStock {
   symbol: string
   name: string
 }
+
+interface BatchResult {
+  success: boolean
+  message?: string
+  data?: {
+    stocks_count: number
+    success_count: number
+    signals_count: number
+  }
+}
+
+export function useTechnicalAnalysis() {
 
 // Reactive state
 const searchForm = reactive<SearchForm>({
@@ -66,8 +76,8 @@ const loading = reactive({
 const selectedStock: Ref<SelectedStock | null> = ref(null)
 const indicatorsData: Ref<IndicatorItem[]> = ref([])
 const chartContainer: Ref<HTMLDivElement | null> = ref(null)
-const chartInstance: Ref<ECharts | null> = ref(null)
-const batchResult: Ref<unknown> = ref(null)
+const chartInstance: Ref<EChartsInstance | null> = ref(null)
+const batchResult: Ref<BatchResult | null> = ref(null)
 
 const availableIndicators = [
   { value: 'ma', label: 'MA (MOVING AVERAGE)' },
@@ -88,8 +98,11 @@ const indicatorStats: Ref<IndicatorStat> = ref({
   signals: 0
 })
 
+// Tag type for Element Plus
+type TagType = 'info' | 'warning' | 'success' | 'danger' | 'primary'
+
 // Utility functions
-const getIndicatorTypeTag = (type: string): string => {
+const getIndicatorTypeTag = (type: string): TagType => {
   switch (type) {
     case 'trend': return 'primary'
     case 'momentum': return 'success'
@@ -127,7 +140,7 @@ const formatIndicatorValue = (row: IndicatorItem): string | number => {
   return row.value
 }
 
-const getSignalTagType = (signal: string): string => {
+const getSignalTagType = (signal: string): TagType => {
   switch (signal) {
     case 'buy': return 'success'
     case 'sell': return 'danger'
@@ -145,7 +158,7 @@ const formatSignal = (signal: string): string => {
   return signalMap[signal] || signal
 }
 
-const getStatusTagType = (status: string): string => {
+const getStatusTagType = (status: string): TagType => {
   switch (status) {
     case 'normal': return 'success'
     case 'warning': return 'warning'
@@ -182,13 +195,14 @@ const fetchTechnicalData = async (): Promise<void> => {
 
   try {
     const response = await technicalApi.getIndicators(searchForm.symbol)
-    indicatorsData.value = (response as Record<string, unknown>).indicators || response
+    const responseData = response as unknown as Record<string, unknown>
+    indicatorsData.value = (responseData.indicators as IndicatorItem[]) || []
 
     updateIndicatorStats()
 
     selectedStock.value = {
       symbol: searchForm.symbol,
-      name: (response as Record<string, unknown>).stock_name || 'UNKNOWN STOCK'
+      name: String(responseData.stock_name || 'UNKNOWN STOCK')
     }
 
     await nextTick()
@@ -352,7 +366,7 @@ const renderChart = (): void => {
     ]
   }
 
-  chartInstance.value.setOption(option)
+  chartInstance.value!.setOption(option)
 
   window.addEventListener('resize', () => {
     chartInstance.value?.resize()
@@ -414,9 +428,9 @@ const calculateBatchIndicators = async (): Promise<void> => {
       indicators: batchForm.indicators
     })
 
-    batchResult.value = response
+    batchResult.value = response as unknown as BatchResult
 
-    if ((response as Record<string, unknown>).success) {
+    if (batchResult.value?.success) {
       ElNotification({
         title: 'BATCH CALCULATION COMPLETED',
         message: `SUCCESSFULLY CALCULATED ${symbols.length} STOCKS`,
@@ -428,9 +442,11 @@ const calculateBatchIndicators = async (): Promise<void> => {
   } catch (error: unknown) {
     console.error('Batch calculation failed:', error)
     ElMessage.error('BATCH CALCULATION FAILED')
+    const errorMessage = ((error as Record<string, unknown>).response as Record<string, unknown>)?.data as Record<string, unknown> | undefined
+    const errMsg = errorMessage?.message || (error as Record<string, unknown>).message || 'Unknown error'
     batchResult.value = {
       success: false,
-      message: 'BATCH CALCULATION FAILED: ' + (error.response?.data?.message || error.message)
+      message: 'BATCH CALCULATION FAILED: ' + errMsg
     }
   } finally {
     loading.batch = false
@@ -454,36 +470,18 @@ onMounted(() => {
     indicatorStats,
     getIndicatorTypeTag,
     formatIndicatorType,
-    typeMap,
     getValueClass,
     formatIndicatorValue,
     getSignalTagType,
     formatSignal,
-    signalMap,
     getStatusTagType,
     formatStatus,
-    statusMap,
     signalCountClass,
-    count,
     fetchTechnicalData,
-    response,
     updateIndicatorStats,
-    stats,
     renderChart,
-    dates,
-    prices,
-    ma5,
-    ma10,
-    rsi,
-    date,
-    price,
-    option,
     resetSearch,
     exportChart,
-    dataUrl,
-    link,
     calculateBatchIndicators,
-    symbols,
-    response,
   }
 }

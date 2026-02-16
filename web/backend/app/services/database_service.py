@@ -39,7 +39,7 @@ class DatabaseConnection:
     port: int = 5432
     database: str = "mystocks"
     username: str = "mystocks_user"
-    password: str = "mystocks_password"
+    password: str = ""
     pool_size: int = 10
     max_overflow: int = 20
     is_connected: bool = False

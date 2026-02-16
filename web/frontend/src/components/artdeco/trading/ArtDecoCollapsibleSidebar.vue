@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { _ref, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import ArtDecoIcon from '../core/ArtDecoIcon.vue'
 import ArtDecoBadge from '../base/ArtDecoBadge.vue'

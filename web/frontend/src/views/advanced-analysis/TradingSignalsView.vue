@@ -58,16 +58,37 @@
 <script setup lang="ts">
     import { computed } from 'vue'
 
+    interface SignalInput {
+        type?: 'buy' | 'sell' | 'neutral'
+        title?: string
+        description?: string
+        strength?: number
+        confidence?: number
+    }
+
+    interface SignalItem {
+        id: number
+        type: string
+        title: string
+        description: string
+        strength: number
+        confidence: number
+    }
+
+    interface TradingData {
+        signals?: SignalInput[]
+    }
+
     interface Props {
-        data: unknown
+        data: TradingData | null
     }
 
     const props = defineProps<Props>()
 
-    const signals = computed(() => {
+    const signals = computed((): SignalItem[] => {
         if (!props.data?.signals) return []
 
-        return props.data.signals.map((signal: unknown, index: number) => ({
+        return props.data.signals.map((signal, index) => ({
             id: index,
             type: signal.type || 'neutral',
             title: signal.title || '交易信号',
@@ -77,7 +98,7 @@
         }))
     })
 
-    const buySignals = computed(() => signals.value.filter((s: unknown) => s.type === 'buy').length)
-    const sellSignals = computed(() => signals.value.filter((s: unknown) => s.type === 'sell').length)
-    const neutralSignals = computed(() => signals.value.filter((s: unknown) => s.type === 'neutral').length)
+    const buySignals = computed(() => signals.value.filter((s) => s.type === 'buy').length)
+    const sellSignals = computed(() => signals.value.filter((s) => s.type === 'sell').length)
+    const neutralSignals = computed(() => signals.value.filter((s) => s.type === 'neutral').length)
 </script>

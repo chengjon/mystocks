@@ -247,6 +247,23 @@ export interface BacktestTradeVM {
   pnl?: number;
 }
 
+export interface BacktestResultVM {
+  strategy_id: string;
+  symbol: string;
+  start_date: string;
+  end_date: string;
+  initial_capital: number;
+  final_capital?: number;
+  parameters: Record<string, unknown>;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  performance?: StrategyPerformanceVM;
+  trades?: BacktestTradeVM[];
+  total_return?: number;
+  equity_curve?: Array<{ date: string; equity: number; drawdown: number }>;
+  created_at?: string;
+  completed_at?: string;
+}
+
 export interface CreateStrategyRequestVM {
   name: string;
   description: string;
@@ -321,13 +338,6 @@ export interface StrategyOptimizationResultVM {
 }
 
 // ========== Type Aliases for Backward Compatibility ==========
-
-/**
- * Backward compatibility alias
- * Use BacktestResultVM instead in new code
- * @deprecated Use BacktestResultVM
- */
-export type BacktestResultVM = BacktestRequestVM;
 
 /**
  * Strategy type alias for simpler imports

@@ -582,5 +582,4 @@ class FileLevelTestRunner:
         </html>
         """
 
-        return html</content>
-<parameter name="filePath">tests/file_level/__init__.py
+        return html

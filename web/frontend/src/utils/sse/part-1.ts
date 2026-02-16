@@ -43,6 +43,11 @@ export interface SSEState {
   error?: Error
 }
 
+// Handler types
+export type SSEEventHandler = (event: SSEEvent) => void
+export type SSEStateHandler = (state: SSEState) => void
+export type SSEErrorHandler = (error: Error) => void
+
 /**
  * SSE Connection Manager
  */
@@ -292,8 +297,9 @@ export class SSEConnection {
       if (filter.type && filter.type !== event.event) return false
       if (filter.handler && !filter.handler(event)) return false
       if (filter.data) {
+        const eventData = event.data as Record<string, unknown>
         return Object.entries(filter.data).every(([key, value]) => {
-          return event.data[key] === value
+          return eventData[key] === value
         })
       }
       return true
@@ -436,7 +442,7 @@ export const SSEHandlers = {
   marketData(callback: (data: { symbol: string; price: number; change: number }) => void) {
     return (event: SSEEvent) => {
       if (event.event === 'market_update') {
-        callback(event.data)
+        callback(event.data as { symbol: string; price: number; change: number })
       }
     }
   },
@@ -447,7 +453,7 @@ export const SSEHandlers = {
   orderUpdate(callback: (data: { orderId: string; status: string; filled: number }) => void) {
     return (event: SSEEvent) => {
       if (event.event === 'order_update') {
-        callback(event.data)
+        callback(event.data as { orderId: string; status: string; filled: number })
       }
     }
   },
@@ -458,7 +464,7 @@ export const SSEHandlers = {
   strategyUpdate(callback: (data: { strategyId: string; status: string; progress: number }) => void) {
     return (event: SSEEvent) => {
       if (event.event === 'strategy_update') {
-        callback(event.data)
+        callback(event.data as { strategyId: string; status: string; progress: number })
       }
     }
   },
@@ -469,7 +475,7 @@ export const SSEHandlers = {
   systemAlert(callback: (data: { id: string; severity: string; message: string }) => void) {
     return (event: SSEEvent) => {
       if (event.event === 'system_alert') {
-        callback(event.data)
+        callback(event.data as { id: string; severity: string; message: string })
       }
     }
   },
@@ -480,7 +486,7 @@ export const SSEHandlers = {
   notification(callback: (data: { id: string; type: string; title: string; message: string }) => void) {
     return (event: SSEEvent) => {
       if (event.event === 'notification') {
-        callback(event.data)
+        callback(event.data as { id: string; type: string; title: string; message: string })
       }
     }
   }

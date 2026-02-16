@@ -35,6 +35,10 @@
  */
 
 import { computed, type ComputedRef } from 'vue'
+import type { AriaProps, HtmlProps } from './unknown'
+
+// Re-export types for external use
+export type { AriaProps, HtmlProps }
 
 /**
  * useAria Composable

@@ -31,8 +31,14 @@
 <script setup lang="ts">
 import { ArtDecoButton, ArtDecoTable } from '@/components/artdeco'
 
+interface WatchlistItem {
+  id: string
+  name: string
+  stocks: unknown[]
+}
+
 interface Props {
-  watchlists: unknown[]
+  watchlists: WatchlistItem[]
   activeWatchlistId: string
   currentStocks: unknown[]
 }

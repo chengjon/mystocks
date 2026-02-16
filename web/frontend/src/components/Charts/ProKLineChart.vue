@@ -46,20 +46,20 @@
       <div class="info-group">
         <div class="info-item">
           <span class="info-label">最新</span>
-          <span :class="['info-value', latestChange >= 0 ? 'up' : 'down']">
+          <span :class="['info-value', (latestChange ?? 0) >= 0 ? 'up' : 'down']">
             {{ latestClose?.toFixed(2) }}
           </span>
         </div>
         <div class="info-item">
           <span class="info-label">涨跌</span>
-          <span :class="['info-value', latestChange >= 0 ? 'up' : 'down']">
-            {{ latestChange >= 0 ? '+' : '' }}{{ latestChange?.toFixed(2) }}
+          <span :class="['info-value', (latestChange ?? 0) >= 0 ? 'up' : 'down']">
+            {{ (latestChange ?? 0) >= 0 ? '+' : '' }}{{ latestChange?.toFixed(2) }}
           </span>
         </div>
         <div class="info-item">
           <span class="info-label">涨幅</span>
-          <span :class="['info-value', latestChange >= 0 ? 'up' : 'down']">
-            {{ latestChange >= 0 ? '+' : '' }}{{ latestChangePercent?.toFixed(2) }}%
+          <span :class="['info-value', (latestChange ?? 0) >= 0 ? 'up' : 'down']">
+            {{ (latestChange ?? 0) >= 0 ? '+' : '' }}{{ latestChangePercent?.toFixed(2) }}%
           </span>
         </div>
       </div>
@@ -131,7 +131,7 @@
 <script setup lang="ts">
 import { useProKLineChart } from './composables/useProKLineChart'
 
-const { props, emit, chartContainer, klineRef, oscillatorRef, chartInstance, oscillatorInstance, selectedSymbol, selectedInterval, selectedAdjust, showOscillatorPanel, activeMainIndicators, activeOscillatorIndicator, availableSymbols, intervals, mainIndicators, oscillatorIndicators, latestClose, latestChange, latestChangePercent, latestHigh, latestLow, latestVolume, formatVolume, initChart, chartStyles, updateChartData, chartData, registerIndicators, closes, result, calcMA, ma, sum, closes, period, stdDev, result, slice, sma, variance, std, toggleMainIndicator, indicators, target, initOscillatorChart, closes, result, calcEMA, ema, k, fastEMA, slowEMA, dea, closes, result, gains, losses, period, change, rs, avgGain, avgLoss, rs, highs, lows, closes, result, n, m1, m2, periodHighs, periodLows, highest, lowest, rsv, prevK, prevD, k, d, j, updateOscillatorIndicator, indicators, onSymbolChange, onIntervalChange, onAdjustChange, toggleOscillatorPanel, handleZoomIn, handleZoomOut, handleResetView, handleRetry, handleResize } = useProKLineChart()
+const { props, emit, chartContainer, klineRef, oscillatorRef, chartInstance, oscillatorInstance, selectedSymbol, selectedInterval, selectedAdjust, showOscillatorPanel, activeMainIndicators, activeOscillatorIndicator, availableSymbols, intervals, mainIndicators, oscillatorIndicators, latestClose, latestChange, latestChangePercent, latestHigh, latestLow, latestVolume, formatVolume, initChart, updateChartData, registerIndicators, toggleMainIndicator, initOscillatorChart, updateOscillatorIndicator, onSymbolChange, onIntervalChange, onAdjustChange, toggleOscillatorPanel, handleZoomIn, handleZoomOut, handleResetView, handleRetry, handleResize, loading, error, limitData, klineData } = useProKLineChart()
 </script>
 
 <style scoped>

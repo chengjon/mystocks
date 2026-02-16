@@ -521,6 +521,21 @@ class TypeScriptGenerator:
             "",
         ]
 
+        if domain == "common":
+            output.extend([
+                "// Standard Unified Response Wrapper",
+                "export interface UnifiedResponse<T = any> {",
+                "  success: boolean;",
+                "  code: number;",
+                "  message: string;",
+                "  data: T;",
+                "  timestamp: string;",
+                "  request_id: string;",
+                "  errors?: any;",
+                "}",
+                "",
+            ])
+
         for name, info in sorted(models.items()):
             if info["type"] == "interface":
                 output.append(f"export interface {name} {{")

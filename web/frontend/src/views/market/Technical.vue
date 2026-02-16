@@ -220,7 +220,30 @@
 <script setup lang="ts">
 import { useTechnical } from './composables/useTechnical'
 
-const { loading, selectedSymbol, symbolName, dateRange, selectedPeriod, chartType, chartHeight, lastUpdate, showIndicatorPanel, chartData, selectedIndicators, indicatorCategories, dateShortcuts, end, start, end, start, end, start, handleSymbolChange, handleDateRangeChange, handlePeriodChange, handleChartTypeChange, refreshData, fetchChartData, generateMockOHLCV, dates, open, high, low, close, volume, startDate, endDate, currentDate, basePrice, dailyChange, openPrice, volatility, highPrice, lowPrice, closePrice, updateLastUpdateTime, now, handleIndicatorToggle, addIndicator, removeIndicator, index, getDefaultParams, defaultParams, calculateIndicators, formatParams } = useTechnical()
+const {
+  loading,
+  selectedSymbol,
+  symbolName,
+  dateRange,
+  selectedPeriod,
+  chartType,
+  chartHeight,
+  lastUpdate,
+  showIndicatorPanel,
+  chartData,
+  selectedIndicators,
+  indicatorCategories,
+  dateShortcuts,
+  handleSymbolChange,
+  handleDateRangeChange,
+  handlePeriodChange,
+  handleChartTypeChange,
+  refreshData,
+  fetchChartData,
+  handleIndicatorToggle,
+  formatParams,
+  removeIndicator
+} = useTechnical()
 </script>
 
 <style scoped lang="scss">

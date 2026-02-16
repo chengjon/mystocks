@@ -1,3 +1,7 @@
+<template>
+  <div class="realtime-monitor"></div>
+</template>
+
 <style scoped lang="scss">
 @import '@/styles/artdeco-quant-extended';
 

@@ -8,9 +8,10 @@
  * @updated 2026-01-20
  */
 
-import { ref, _reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
 import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
+import { API_BASE_URL, WS_BASE_URL } from '@/config/runtime-endpoints'
 
 // ========== 类型定义 ==========
 export interface MenuApiResponse {
@@ -34,9 +35,6 @@ export interface WebSocketMessage {
 }
 
 // ========== API基础配置 ==========
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8000'
-
 // ========== 缓存配置 ==========
 const DEFAULT_CACHE_TTL = 60000 // 60秒
 const CACHE: MenuDataCache = {}

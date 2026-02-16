@@ -103,7 +103,7 @@
           <ArtDecoButton
             variant="outline"
             size="sm"
-            @click="handleView(row)"
+            @click="handleView(row as StockRow)"
           >
             VIEW
           </ArtDecoButton>
@@ -111,7 +111,7 @@
           <ArtDecoButton
             variant="solid"
             size="sm"
-            @click="handleAnalyze(row)"
+            @click="handleAnalyze(row as StockRow)"
           >
             ANALYZE
           </ArtDecoButton>
@@ -140,7 +140,6 @@ import { ref, onMounted, reactive, computed, type Ref } from 'vue'
 import { dataApi } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import type { _FilterItem } from '@/components/shared/types'
 // Import Art Deco components
 import {
   ArtDecoHeader,
@@ -148,14 +147,24 @@ import {
   ArtDecoTable,
   ArtDecoButton,
   ArtDecoBadge,
-  ArtDecoCard,
-  _ArtDecoStatCard
+  ArtDecoCard
 } from '@/components/artdeco'
 import { ElPagination } from 'element-plus'
 
 const router = useRouter()
 const loading = ref(false)
 const currentRow: Ref<string | null> = ref(null)
+
+// Stock row type
+interface StockRow {
+  symbol: string;
+  name: string;
+  price?: number;
+  change?: number;
+  change_pct?: number;
+  volume?: number;
+  market?: string;
+}
 
 const filters = reactive({
   search: '',
@@ -172,13 +181,27 @@ const pagination = reactive({
   pageSize: 20
 })
 
-const stocks = ref([])
+const stocks = ref<any[]>([])
 const total = ref(0)
 
+// Filter config type - matches ArtDecoFilterBar's Filter interface
+interface FilterOption {
+  label: string
+  value: string
+}
+
+interface Filter {
+  type: 'text' | 'select' | 'multi-select' | 'date-range' | 'number' | 'checkbox-group';
+  key: string;
+  label: string;
+  placeholder?: string;
+  options?: FilterOption[];
+}
+
 // FilterBar 配置
-const filterConfig = computed((): unknown[] => [
+const filterConfig = computed((): Filter[] => [
   {
-    type: 'input',
+    type: 'text',
     key: 'search',
     label: '搜索',
     placeholder: '股票代码或名称'
@@ -269,18 +292,18 @@ const loadData = async () => {
 
     const response = await dataApi.getStocksBasic(params)
     if (response.success && response.data) {
-      stocks.value = response.data
-      total.value = response.total || response.data.length
+      stocks.value = response.data as unknown as any[]
+      total.value = (response as unknown as { total?: number }).total || (response.data as unknown as any[]).length
     } else {
-      throw new Error(response.msg || 'API返回数据格式错误')
+      throw new Error((response as unknown as { msg?: string }).msg || 'API返回数据格式错误')
     }
   } catch (error: unknown) {
     console.error('加载数据失败:', error)
 
     if (error && typeof error === 'object' && 'response' in error) {
       // Axios错误
-      const axiosError = error as Error
-      ElMessage.error(`加载数据失败: ${axiosError.response.data?.msg || axiosError.response.data?.detail || '服务器错误'}`)
+      const axiosError = error as { response?: { data?: { msg?: string; detail?: string } } }
+      ElMessage.error(`加载数据失败: ${axiosError.response?.data?.msg || axiosError.response?.data?.detail || '服务器错误'}`)
     } else if (error instanceof Error) {
       // 标准Error
       ElMessage.error(`加载数据失败: ${error.message}`)
@@ -327,15 +350,15 @@ const handleSizeChange = (size: number) => {
   loadData()
 }
 
-const handleView = (row: { symbol: string; name: string }) => {
+const handleView = (row: StockRow) => {
   router.push({ name: 'stock-detail', params: { symbol: row.symbol }, query: { name: row.name } })
 }
 
-const handleAnalyze = (row: { symbol: string; name: string }) => {
+const handleAnalyze = (row: StockRow) => {
   ElMessage.info(`分析股票: ${row.name} (${row.symbol})`)
 }
 
-const handleRowClick = (row: { symbol: string; name: string }) => {
+const handleRowClick = (row: StockRow) => {
   currentRow.value = row.symbol
   handleView(row)
 }

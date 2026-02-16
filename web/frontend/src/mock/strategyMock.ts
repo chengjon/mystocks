@@ -8,7 +8,7 @@ import type {
   StrategyVM as Strategy,
   StrategyPerformanceVM as StrategyPerformance,
   BacktestRequestVM as BacktestTask,
-  _BacktestResultVM,
+  BacktestResultVM,
 } from '@/api/types/extensions';
 
 /**
@@ -139,17 +139,18 @@ export const mockStrategyList = {
 /**
  * Mock single strategy detail
  */
-export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0] as unknown;
+export const mockStrategyDetail: Strategy = mockStrategyList.strategies[0] as Strategy;
 
 /**
  * Mock backtest result
  */
-export const mockBacktestResult: unknown = {
+export const mockBacktestResult: BacktestResultVM = {
   strategy_id: '1',
   symbol: '000001',
   start_date: '2024-01-01',
   end_date: '2024-12-31',
   initial_capital: 100000,
+  final_capital: 125600,
   parameters: {},
   status: 'completed',
   performance: {
@@ -168,19 +169,11 @@ export const mockBacktestResult: unknown = {
     calmar_ratio: 2.52,
     information_ratio: 1.45,
   },
-  trades: generateMockTrades(20).map(t => ({
-    symbol: t.symbol,
-    entry_date: t.timestamp.toISOString(),
-    exit_date: new Date(t.timestamp.getTime() + 86400000).toISOString(),
-    entry_price: t.price,
-    exit_price: t.price * (1 + (Math.random() - 0.4) * 0.1),
-    pnl: (Math.random() - 0.4) * 1000
-  })),
   total_return: 0.256,
   equity_curve: generateMockEquityCurve().map(item => ({
     date: item.date,
     equity: item.value,
-    drawdown: item.drawdown
+    drawdown: item.drawdown ?? 0
   })),
   created_at: new Date('2025-01-24T10:00:00').toISOString(),
   completed_at: new Date('2025-01-24T10:05:30').toISOString(),
@@ -200,7 +193,7 @@ export const mockBacktestTask: BacktestTask = {
   created_at: new Date('2025-01-24T10:00:00').toISOString(),
   startTime: new Date('2025-01-24T10:00:00').toISOString(),
   progress: 100,
-  result: mockBacktestResult,
+  result: mockBacktestResult as BacktestResultVM | undefined,
 };
 
 /**
@@ -301,7 +294,7 @@ export const mockBacktestTasks: BacktestTask[] = [
     result: {
       ...mockBacktestResult,
       strategy_id: '2',
-    } as Record<string, unknown>,
+    } as BacktestResultVM,
   },
   {
     strategy_id: '3',
@@ -322,14 +315,14 @@ export const mockBacktestTasks: BacktestTask[] = [
  */
 export function getRandomStrategy(): Strategy {
   const strategies = mockStrategyList.strategies;
-  return strategies[Math.floor(Math.random() * strategies.length)] as unknown;
+  return strategies[Math.floor(Math.random() * strategies.length)] as Strategy;
 }
 
 /**
  * Get strategy by ID
  */
 export function getMockStrategyById(id: string): Strategy | undefined {
-  return mockStrategyList.strategies.find((s) => s.id === id) as unknown;
+  return mockStrategyList.strategies.find((s) => s.id === id) as Strategy | undefined;
 }
 
 /**

@@ -46,6 +46,7 @@
         </tbody>
       </table>
 
+      <div class="alert-card">
         <div class="alert-title">INTEGRATION NOTE</div>
         <div class="alert-content">
           Feature selection modules are currently standalone examples and not integrated with the main prediction pipeline. To use them, import from <code>featselection/</code> directory and manually integrate into <code>model.py</code>.

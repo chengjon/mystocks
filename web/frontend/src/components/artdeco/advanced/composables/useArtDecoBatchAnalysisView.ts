@@ -1,19 +1,65 @@
-    import { ref, computed, onMounted, watch } from 'vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-    import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-    import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-    interface Props {
+import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
+import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
+import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
+import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
+import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
+import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 
-export function useArtDecoBatchAnalysisView() {
+interface AnalysisResult {
+    signal: 'buy' | 'sell' | 'hold'
+    confidence: number
+    analysisType: string
+    symbol: string
+    completedAt: string
+    [key: string]: unknown
+}
 
-        data: unknown
-        loading?: boolean
-    }
+interface ProgressData {
+    total?: number
+    completed?: number
+    running?: number
+    pending?: number
+    failed?: number
+    [key: string]: unknown
+}
 
-    const props = defineProps<Props>()
+interface ReportInsight {
+    id: string
+    type: 'success' | 'warning' | 'error' | 'info'
+    title: string
+    description: string
+}
+
+interface ReportData {
+    dataQuality?: number
+    analysisDepth?: number
+    insights?: ReportInsight[]
+    [key: string]: unknown
+}
+
+interface BatchData {
+    progress?: ProgressData
+    results?: AnalysisResult[]
+    report?: ReportData
+    startTime?: string
+    endTime?: string
+    totalDataSize?: number
+    [key: string]: unknown
+}
+
+interface PropsData {
+    batch?: BatchData
+    [key: string]: unknown
+}
+
+interface UseArtDecoBatchAnalysisViewOptions {
+    data: Ref<PropsData>
+    loading?: Ref<boolean>
+}
+
+export function useArtDecoBatchAnalysisView(options: UseArtDecoBatchAnalysisViewOptions) {
+    const { data, loading = ref(false) } = options
 
     // 响应式数据
     const autoRefresh = ref(true)
@@ -21,7 +67,7 @@ export function useArtDecoBatchAnalysisView() {
     const resultsSort = ref('time')
 
     // 计算属性
-    const batchData = computed(() => props.data?.batch || {})
+    const batchData = computed(() => data.value?.batch || {})
     const progressData = computed(() => batchData.value?.progress || {})
     const resultsData = computed(() => batchData.value?.results || [])
     const reportData = computed(() => batchData.value?.report || {})
@@ -41,13 +87,13 @@ export function useArtDecoBatchAnalysisView() {
     // 结果相关计算属性
     const avgConfidence = computed(() => {
         if (!resultsData.value.length) return 0
-        const total = resultsData.value.reduce((sum: number, r: unknown) => sum + r.confidence, 0)
+        const total = resultsData.value.reduce((sum: number, r: AnalysisResult) => sum + r.confidence, 0)
         return total / resultsData.value.length
     })
 
     const signalCoverage = computed(() => {
         if (!resultsData.value.length) return 0
-        const signaled = resultsData.value.filter((r: unknown) => r.signal !== 'hold').length
+        const signaled = resultsData.value.filter((r: AnalysisResult) => r.signal !== 'hold').length
         return (signaled / resultsData.value.length) * 100
     })
 
@@ -69,10 +115,10 @@ export function useArtDecoBatchAnalysisView() {
     })
 
     // 信号统计
-    const buySignals = computed(() => resultsData.value.filter((r: unknown) => r.signal === 'buy').length)
-    const sellSignals = computed(() => resultsData.value.filter((r: unknown) => r.signal === 'sell').length)
-    const holdSignals = computed(() => resultsData.value.filter((r: unknown) => r.signal === 'hold').length)
-    const highConfidenceSignals = computed(() => resultsData.value.filter((r: unknown) => r.confidence >= 80).length)
+    const buySignals = computed(() => resultsData.value.filter((r: AnalysisResult) => r.signal === 'buy').length)
+    const sellSignals = computed(() => resultsData.value.filter((r: AnalysisResult) => r.signal === 'sell').length)
+    const holdSignals = computed(() => resultsData.value.filter((r: AnalysisResult) => r.signal === 'hold').length)
+    const highConfidenceSignals = computed(() => resultsData.value.filter((r: AnalysisResult) => r.confidence >= 80).length)
 
     // 图表数据
     const taskStatusData = computed(() => [
@@ -108,7 +154,7 @@ export function useArtDecoBatchAnalysisView() {
 
     const analysisTypeData = computed(() => {
         const types: Record<string, number> = {}
-        resultsData.value.forEach((r: unknown) => {
+        resultsData.value.forEach((r: AnalysisResult) => {
             types[r.analysisType] = (types[r.analysisType] || 0) + 1
         })
 
@@ -125,27 +171,27 @@ export function useArtDecoBatchAnalysisView() {
         // 过滤
         if (resultsFilter.value !== 'all') {
             if (resultsFilter.value === 'buy') {
-                filtered = filtered.filter(r => r.signal === 'buy')
+                filtered = filtered.filter((r: AnalysisResult) => r.signal === 'buy')
             } else if (resultsFilter.value === 'sell') {
-                filtered = filtered.filter(r => r.signal === 'sell')
+                filtered = filtered.filter((r: AnalysisResult) => r.signal === 'sell')
             } else if (resultsFilter.value === 'high-confidence') {
-                filtered = filtered.filter(r => r.confidence >= 80)
+                filtered = filtered.filter((r: AnalysisResult) => r.confidence >= 80)
             }
         }
 
         // 排序
         if (resultsSort.value === 'time') {
-            filtered.sort((a: unknown, b: unknown) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+            filtered.sort((a: AnalysisResult, b: AnalysisResult) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
         } else if (resultsSort.value === 'confidence') {
-            filtered.sort((a: unknown, b: unknown) => b.confidence - a.confidence)
+            filtered.sort((a: AnalysisResult, b: AnalysisResult) => b.confidence - a.confidence)
         } else if (resultsSort.value === 'symbol') {
-            filtered.sort((a: unknown, b: unknown) => a.symbol.localeCompare(b.symbol))
+            filtered.sort((a: AnalysisResult, b: AnalysisResult) => a.symbol.localeCompare(b.symbol))
         }
 
         return filtered
     })
 
-    const reportInsights = computed(() => reportData.value?.insights || [])
+    const reportInsights = computed((): ReportInsight[] => reportData.value?.insights || [])
 
     // 配置选项
     const filterOptions = [
@@ -194,7 +240,7 @@ export function useArtDecoBatchAnalysisView() {
         return 'starting'
     }
 
-    const getResultClass = (result: unknown): string => {
+    const getResultClass = (result: AnalysisResult): string => {
         if (result.signal === 'buy') return 'buy-signal'
         if (result.signal === 'sell') return 'sell-signal'
         return 'hold-signal'
@@ -312,7 +358,7 @@ export function useArtDecoBatchAnalysisView() {
     })
 
   return {
-    props,
+    loading,
     autoRefresh,
     resultsFilter,
     resultsSort,
@@ -327,16 +373,12 @@ export function useArtDecoBatchAnalysisView() {
     failedTasks,
     overallProgress,
     avgConfidence,
-    total,
     signalCoverage,
-    signaled,
     dataQuality,
     analysisDepth,
     batchStartTime,
     batchEndTime,
     totalDuration,
-    start,
-    end,
     avgTaskDuration,
     buySignals,
     sellSignals,
@@ -344,26 +386,19 @@ export function useArtDecoBatchAnalysisView() {
     highConfidenceSignals,
     taskStatusData,
     analysisTypeData,
-    types,
     filteredResults,
-    filtered,
     reportInsights,
     filterOptions,
     sortOptions,
     getTotalTasks,
     getAvgProcessingTime,
-    duration,
     getSuccessRate,
-    successRate,
     getTotalDataSize,
-    size,
     getProgressClass,
     getResultClass,
     getSignalClass,
     getSignalText,
-    texts,
     getAnalysisTypeText,
-    texts,
     getQualityClass,
     formatTime,
     formatDuration,

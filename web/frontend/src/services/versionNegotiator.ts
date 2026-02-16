@@ -6,7 +6,7 @@
  */
 
 import { apiClient } from '@/api/apiClient'
-import { _ElMessage, ElNotification } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 
 interface _ApiVersion {
   name: string

@@ -177,7 +177,6 @@
                         <el-card
                             v-for="(stock, _idx) in paginatedStocks"
                             :key="stock.symbol"
-                            :key="stock.symbol"
                             class="stock-card"
                             @click="viewStockDetail(stock)"
                         >

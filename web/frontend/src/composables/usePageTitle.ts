@@ -10,7 +10,7 @@ import { titleManager } from '@/services/titleManager'
 import { titleGenerator, TitleGenerator } from '@/services/titleGenerator'
 import { useAuthStore } from '@/stores/auth'
 import type { TitleConfig, MetaConfig } from '@/services/titleManager'
-import type { TitleContext } from '@/services/titleGenerator'
+import type { TitleContext, ConditionalTitleRule } from '@/services/titleGenerator'
 
 export function usePageTitle() {
     const route = useRoute()
@@ -74,7 +74,7 @@ export function usePageTitle() {
 
         const context: TitleContext = {
             ...titleContext.value,
-            data: { [dataKey]: data[dataKey] || data }
+            data: { [dataKey]: (data as Record<string, unknown>)[dataKey] || data }
         }
 
         const title = generateTitle(template, context)
@@ -94,7 +94,7 @@ export function usePageTitle() {
         const { dataKey = 'name', fallbackTitle, immediate = true } = options
 
         const stopWatcher = watch(
-            dataRef,
+            dataRef as object,
             newData => {
                 updateTitleFromData(newData, template, dataKey, fallbackTitle)
             },
@@ -114,7 +114,7 @@ export function usePageTitle() {
 
     // 使用条件规则
     const useConditionalRules = (ruleName: keyof typeof TitleGenerator.CONDITIONAL_RULES) => {
-        const rules = [...TitleGenerator.CONDITIONAL_RULES[ruleName]] as unknown
+        const rules = [...TitleGenerator.CONDITIONAL_RULES[ruleName]] as ConditionalTitleRule[]
         const title = titleGenerator.generateConditional(rules, titleContext.value)
         setTitle({ title, dynamic: true })
     }

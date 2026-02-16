@@ -322,6 +322,6 @@ export class ConnectionHealthMonitor {
 }
 
 // 创建默认的健康监控实例
-export const createHealthMonitor = (options?: unknown): ConnectionHealthMonitor => {
+export const createHealthMonitor = (options?: Record<string, unknown>): ConnectionHealthMonitor => {
   return new ConnectionHealthMonitor(options)
 }

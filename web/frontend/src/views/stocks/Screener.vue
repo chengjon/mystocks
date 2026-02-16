@@ -281,7 +281,7 @@
                 mid: stock.marketCap >= 5000000000 && stock.marketCap <= 50000000000,
                 small: stock.marketCap < 5000000000
             }
-            if (filters.marketCapRange !== 'any' && !(capRanges as unknown)[filters.marketCapRange]) return false
+            if (filters.marketCapRange !== 'any' && !(capRanges as Record<string, boolean>)[filters.marketCapRange]) return false
 
             return true
         })
@@ -303,7 +303,7 @@
 
     const clearFilters = () => {
         Object.keys(filters).forEach(key => {
-            ;(filters as unknown)[key] = key.includes('Type') || key.includes('Range') ? 'any' : undefined
+            ;(filters as Record<string, unknown>)[key] = key.includes('Type') || key.includes('Range') ? 'any' : undefined
         })
         ElMessage.info('Filters cleared')
     }

@@ -332,20 +332,24 @@ export class APIError extends Error {
     this.name = 'APIError'
   }
 
+  private static hasCode(error: unknown): error is { code: number } {
+    return typeof error === 'object' && error !== null && 'code' in error
+  }
+
   static isNotFound(error: unknown): error is NotFoundResponse {
-    return error?.code === 404
+    return APIError.hasCode(error) && error.code === 404
   }
 
   static isUnauthorized(error: unknown): error is UnauthorizedResponse {
-    return error?.code === 401
+    return APIError.hasCode(error) && error.code === 401
   }
 
   static isValidation(error: unknown): error is ValidationErrorResponse {
-    return error?.code === 422 || error?.code === 400
+    return APIError.hasCode(error) && (error.code === 422 || error.code === 400)
   }
 
   static isServerError(error: unknown): error is ServerErrorResponse {
-    return error?.code >= 500
+    return APIError.hasCode(error) && error.code >= 500
   }
 }
 
@@ -371,7 +375,7 @@ export function isErrorResponse(response: UnifiedResponse): response is UnifiedR
  * 检查是否为分页响应
  */
 export function isPaginatedResponse<T>(response: unknown): response is UnifiedPaginatedResponse<T> {
-  return response?.pagination !== undefined
+  return typeof response === 'object' && response !== null && 'pagination' in response
 }
 
 // ============================================

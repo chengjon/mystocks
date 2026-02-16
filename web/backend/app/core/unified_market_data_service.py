@@ -51,6 +51,25 @@ from sqlalchemy.orm import sessionmaker
 logger = structlog.get_logger()
 
 
+def _is_dev_like_environment() -> bool:
+    env_name = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    return env_name in {
+        "dev",
+        "development",
+        "test",
+        "local",
+    }
+
+
+def _resolve_env_value(name: str, dev_default: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    if _is_dev_like_environment():
+        return dev_default
+    raise ValueError(f"{name} environment variable must be set in non-dev environments")
+
+
 class UnifiedMarketDataService:
     """
     Unified market data service consolidating MarketDataService and MarketDataServiceV2.
@@ -135,11 +154,13 @@ class UnifiedMarketDataService:
 
     def _build_db_url(self) -> str:
         """Build database URL from environment variables"""
-        user = os.getenv("POSTGRESQL_USER", "postgres")
+        user = _resolve_env_value("POSTGRESQL_USER", "postgres")
         password = os.getenv("POSTGRESQL_PASSWORD")
-        host = os.getenv("POSTGRESQL_HOST", "localhost")
-        port = os.getenv("POSTGRESQL_PORT", "5438")
-        database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        host = _resolve_env_value("POSTGRESQL_HOST", "127.0.0.1")
+        port = _resolve_env_value("POSTGRESQL_PORT", "5432")
+        database = _resolve_env_value("POSTGRESQL_DATABASE", "mystocks")
+        if not password:
+            raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
 
         return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
 

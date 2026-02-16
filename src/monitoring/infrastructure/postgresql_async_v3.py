@@ -33,6 +33,25 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def _is_dev_like_environment() -> bool:
+    env_name = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    return env_name in {
+        "dev",
+        "development",
+        "test",
+        "local",
+    }
+
+
+def _resolve_env_value(name: str, dev_default: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    if _is_dev_like_environment():
+        return dev_default
+    raise RuntimeError(f"{name} environment variable must be set in non-dev environments")
+
+
 @dataclass
 class WatchlistCreate:
     """创建清单参数"""
@@ -93,23 +112,27 @@ class MonitoringPostgreSQLAccess:
         初始化连接池（FastAPI startup事件调用）
 
         使用环境变量配置：
-        POSTGRESQL_HOST=localhost
-        POSTGRESQL_PORT=5438
-        POSTGRESQL_USER=postgres
+        POSTGRESQL_HOST=<required_in_prod>
+        POSTGRESQL_PORT=<required_in_prod>
+        POSTGRESQL_USER=<required_in_prod>
         POSTGRESQL_PASSWORD=<从环境变量获取>
-        POSTGRESQL_DATABASE=mystocks
+        POSTGRESQL_DATABASE=<required_in_prod>
         """
         if not ASYNCPG_AVAILABLE:
             logger.error("❌ asyncpg 不可用，无法初始化连接池")
             raise RuntimeError("asyncpg module not available")
 
         try:
+            pg_password = os.getenv("POSTGRESQL_PASSWORD")
+            if not pg_password:
+                raise RuntimeError("POSTGRESQL_PASSWORD environment variable must be set")
+
             self.pool = await asyncpg.create_pool(
-                host=os.getenv("POSTGRESQL_HOST", "localhost"),
-                port=int(os.getenv("POSTGRESQL_PORT", 5438)),
-                user=os.getenv("POSTGRESQL_USER", "postgres"),
-                password=os.getenv("POSTGRESQL_PASSWORD"),
-                database=os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+                host=_resolve_env_value("POSTGRESQL_HOST", "127.0.0.1"),
+                port=int(_resolve_env_value("POSTGRESQL_PORT", "5432")),
+                user=_resolve_env_value("POSTGRESQL_USER", "postgres"),
+                password=pg_password,
+                database=_resolve_env_value("POSTGRESQL_DATABASE", "mystocks"),
                 min_size=5,
                 max_size=20,
                 command_timeout=60,

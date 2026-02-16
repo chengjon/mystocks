@@ -1,29 +1,69 @@
-    import { ref, onMounted, onUnmounted } from 'vue'
-    import {
-    import axios from 'axios'
+import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue'
+import axios from 'axios'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import {
+    VideoPlay,
+    VideoPause,
+    RefreshRight,
+    Setting,
+    Warning,
+    DataAnalysis,
+    TrendCharts,
+    ArrowUp,
+    ArrowDown
+} from '@element-plus/icons-vue'
+
+// Type definitions
+interface TradingData {
+    current_drawdown?: number
+    total_pnl?: number
+    active_positions?: number
+    win_rate?: number
+    [key: string]: unknown
+}
+
+interface StrategyPerformance {
+    id: string
+    name: string
+    type: string
+    pnl: number
+    win_rate: number
+    [key: string]: unknown
+}
+
+interface MarketData {
+    market_status?: string
+    volatility?: number
+    [key: string]: unknown
+}
+
+interface RiskData {
+    risk_level?: string
+    max_drawdown?: number
+    [key: string]: unknown
+}
+
+interface ApiErrorResponse {
+    response?: {
+        data?: {
+            detail?: string
+        }
+    }
+    message?: string
+}
 
 export function useTradingDashboard() {
-        VideoPlay,
-        VideoPause,
-        RefreshRight,
-        Setting,
-        Warning,
-        DataAnalysis,
-        TrendCharts,
-        ArrowUp,
-        ArrowDown
-    } from '@element-plus/icons-vue'
 
     // 响应式数据
-    const isRunning = ref(false)
-    const controlLoading = ref(false)
-    const refreshLoading = ref(false)
-    const strategyLoading = ref(false)
+    const isRunning: Ref<boolean> = ref(false)
+    const controlLoading: Ref<boolean> = ref(false)
+    const refreshLoading: Ref<boolean> = ref(false)
+    const strategyLoading: Ref<boolean> = ref(false)
 
-    const tradingData = ref({})
-    const strategyPerformance = ref([])
-    const marketData = ref({})
-    const riskData = ref({})
+    const tradingData: Ref<TradingData> = ref({})
+    const strategyPerformance: Ref<StrategyPerformance[]> = ref([])
+    const marketData: Ref<MarketData> = ref({})
+    const riskData: Ref<RiskData> = ref({})
 
     const strategyDialogVisible = ref(false)
     const riskDialogVisible = ref(false)
@@ -71,7 +111,7 @@ export function useTradingDashboard() {
             return { text: '已停止', type: 'info' }
         }
 
-        if (tradingData.value.current_drawdown > 0.05) {
+        if ((tradingData.value.current_drawdown ?? 0) > 0.05) {
             return { text: '高风险', type: 'warning' }
         }
 
@@ -95,20 +135,22 @@ export function useTradingDashboard() {
                 isRunning.value = true
                 await loadTradingData()
             }
-        } catch (error) {
-            ElMessage.error(`操作失败: ${error.response?.data?.detail || error.message}`)
+        } catch (error: unknown) {
+            const apiError = error as ApiErrorResponse
+            ElMessage.error(`操作失败: ${apiError.response?.data?.detail || apiError.message || '未知错误'}`)
         } finally {
             controlLoading.value = false
         }
     }
 
-    const refreshData = async () => {
+    const refreshData = async (): Promise<void> => {
         refreshLoading.value = true
         try {
             await Promise.all([loadTradingData(), loadStrategyPerformance(), loadMarketData(), loadRiskData()])
             ElMessage.success('数据已刷新')
-        } catch (error) {
-            ElMessage.error(`刷新失败: ${error.message}`)
+        } catch (error: unknown) {
+            const apiError = error as ApiErrorResponse
+            ElMessage.error(`刷新失败: ${apiError.message || '未知错误'}`)
         } finally {
             refreshLoading.value = false
         }
@@ -181,14 +223,15 @@ export function useTradingDashboard() {
             ElMessage.success('策略添加成功')
             newStrategy.value.type = ''
             await loadStrategyPerformance()
-        } catch (error) {
-            ElMessage.error(`添加策略失败: ${error.response?.data?.detail || error.message}`)
+        } catch (error: unknown) {
+            const apiError = error as ApiErrorResponse
+            ElMessage.error(`添加策略失败: ${apiError.response?.data?.detail || apiError.message || '未知错误'}`)
         } finally {
             strategyLoading.value = false
         }
     }
 
-    const removeStrategy = async strategyName => {
+    const removeStrategy = async (strategyName: string): Promise<void> => {
         try {
             await ElMessageBox.confirm(`确定要移除策略 "${strategyName}" 吗？`, '确认移除', {
                 confirmButtonText: '确定',
@@ -199,53 +242,54 @@ export function useTradingDashboard() {
             await axios.delete(`/api/trading/strategies/${strategyName}`)
             ElMessage.success('策略移除成功')
             await loadStrategyPerformance()
-        } catch (error) {
+        } catch (error: unknown) {
             if (error !== 'cancel') {
-                ElMessage.error(`移除策略失败: ${error.response?.data?.detail || error.message}`)
+                const apiError = error as ApiErrorResponse
+                ElMessage.error(`移除策略失败: ${apiError.response?.data?.detail || apiError.message || '未知错误'}`)
             }
         }
     }
 
-    const viewStrategyDetails = strategy => {
-        ElMessage.info(`查看策略详情: ${strategy.strategy_name}`)
+    const viewStrategyDetails = (strategy: StrategyPerformance): void => {
+        ElMessage.info(`查看策略详情: ${strategy.name}`)
         // 这里可以打开策略详情对话框
     }
 
-    const formatNumber = (num, decimals = 2) => {
+    const formatNumber = (num: number, decimals = 2): string => {
         return Number(num).toLocaleString('zh-CN', {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals
         })
     }
 
-    const formatPercent = (num, decimals = 2) => {
+    const formatPercent = (num: number, decimals = 2): string => {
         return `${(num * 100).toFixed(decimals)}%`
     }
 
-    const formatTime = timestamp => {
+    const formatTime = (timestamp: number | string): string => {
         return new Date(timestamp).toLocaleString('zh-CN')
     }
 
-    const formatPerformanceMetrics = metrics => {
+    const formatPerformanceMetrics = (metrics: Record<string, unknown>): { key: string; value: string }[] => {
         if (!metrics) return []
 
         const formatted = []
-        if (metrics.expected_return !== undefined) {
+        if (metrics.expected_return !== undefined && metrics.expected_return !== null) {
             formatted.push({
                 key: '预期收益',
-                value: formatPercent(metrics.expected_return)
+                value: formatPercent(Number(metrics.expected_return))
             })
         }
-        if (metrics.sharpe_ratio !== undefined) {
+        if (metrics.sharpe_ratio !== undefined && metrics.sharpe_ratio !== null) {
             formatted.push({
                 key: '夏普比率',
-                value: metrics.sharpe_ratio.toFixed(2)
+                value: Number(metrics.sharpe_ratio).toFixed(2)
             })
         }
-        if (metrics.win_rate !== undefined) {
+        if (metrics.win_rate !== undefined && metrics.win_rate !== null) {
             formatted.push({
                 key: '胜率',
-                value: formatPercent(metrics.win_rate)
+                value: formatPercent(Number(metrics.win_rate))
             })
         }
 
@@ -253,7 +297,7 @@ export function useTradingDashboard() {
     }
 
     // 自动刷新定时器
-    let refreshTimer = null
+    let refreshTimer: ReturnType<typeof setInterval> | null = null
 
     const startAutoRefresh = () => {
         refreshTimer = setInterval(() => {
@@ -299,16 +343,11 @@ export function useTradingDashboard() {
     statusMetrics,
     tradingStatus,
     toggleTradingSession,
-    _response,
     refreshData,
     loadTradingData,
-    response,
     loadStrategyPerformance,
-    response,
     loadMarketData,
-    response,
     loadRiskData,
-    response,
     openStrategyManager,
     openRiskReport,
     addStrategy,
@@ -318,8 +357,6 @@ export function useTradingDashboard() {
     formatPercent,
     formatTime,
     formatPerformanceMetrics,
-    formatted,
-    refreshTimer,
     startAutoRefresh,
     stopAutoRefresh,
   }

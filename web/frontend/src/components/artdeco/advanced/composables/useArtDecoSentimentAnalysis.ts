@@ -1,18 +1,39 @@
-    import { ref, computed, onMounted, nextTick, watch } from 'vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-    import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-    import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    interface Props {
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
+import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
+import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
+import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
+import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
+
+interface SentimentDataType {
+    overallIndex?: number
+    bullish?: number
+    bearish?: number
+    neutral?: number
+}
+
+interface ResearchDataType {
+    total?: number
+    avgRating?: number
+    avgTargetPrice?: number
+    avgUpside?: number
+    recent?: unknown[]
+}
+
+interface PropsData {
+    sentiment?: SentimentDataType
+    research?: ResearchDataType
+    news?: Record<string, unknown>
+    popularity?: Record<string, unknown>
+}
+
+interface Props {
+    data: PropsData | null
+    symbol: string
+    loading?: boolean
+}
 
 export function useArtDecoSentimentAnalysis() {
-
-        data: unknown
-        symbol: string
-        loading?: boolean
-    }
-
     const props = defineProps<Props>()
 
     // 响应式数据
@@ -150,8 +171,8 @@ export function useArtDecoSentimentAnalysis() {
     }
 
     const getAttentionTrend = (): string => {
-        const trend = popularityData.value?.attentionTrend || '稳定'
-        return trend
+        const trend = popularityData.value?.attentionTrend
+        return typeof trend === 'string' ? trend : '稳定'
     }
 
     // 雷达图渲染
@@ -282,28 +303,10 @@ export function useArtDecoSentimentAnalysis() {
     formatDate,
     formatTime,
     getSentimentColor,
-    colors,
     getSentimentTypeText,
-    texts,
     getSentimentClass,
     getHeatClass,
     getAttentionTrend,
-    trend,
     renderRadarChart,
-    ctx,
-    canvas,
-    width,
-    height,
-    centerX,
-    centerY,
-    radius,
-    axes,
-    angle,
-    x,
-    y,
-    sentimentValues,
-    angle,
-    x,
-    y,
   }
 }

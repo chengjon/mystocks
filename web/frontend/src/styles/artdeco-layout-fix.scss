@@ -1,0 +1,421 @@
+// ============================================
+//   ART DECO LAYOUT FIX V1.0
+//   统一布局系统 - 修复页面混乱问题
+//   遵循 Art Deco 设计原则：几何对称、金色点缀、深色主题
+// ============================================
+
+// ============================================
+//   1. 全局布局容器
+// ============================================
+
+.artdeco-dashboard,
+.artdeco-page {
+  // 统一页面容器
+  --page-padding: var(--artdeco-spacing-6);
+  --section-gap: var(--artdeco-spacing-6);
+  --card-gap: var(--artdeco-spacing-4);
+
+  min-height: 100vh;
+  padding: var(--page-padding);
+  max-width: 1600px;
+  margin: 0 auto;
+
+  // 移除重复的背景装饰，保持简洁
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
+
+// ============================================
+//   2. 页面头部统一
+// ============================================
+
+.page-header,
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--section-gap);
+  padding-bottom: var(--artdeco-spacing-4);
+  border-bottom: 1px solid var(--artdeco-border-default);
+  flex-wrap: wrap;
+  gap: var(--artdeco-spacing-4);
+
+  .header-content {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-4);
+    flex-wrap: wrap;
+  }
+}
+
+// ============================================
+//   3. 卡片网格系统
+// ============================================
+
+// 统计卡片网格 - 4列布局
+.stats-grid,
+.summary-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--card-gap);
+
+  @media (width <= 1280px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 内容网格 - 2列布局（主要内容 + 侧边栏）
+.content-grid,
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--section-gap);
+
+  @media (width <= 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 图表网格 - 3列等宽
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--card-gap);
+
+  @media (width <= 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (width <= 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// 双列流式布局
+.flow-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--card-gap);
+
+  @media (width <= 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ============================================
+//   4. 卡片组件统一样式
+// ============================================
+
+.artdeco-card {
+  // 统一卡片基础样式
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none); // Art Deco: 直角
+  padding: var(--artdeco-spacing-4);
+
+  // 卡片头部
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-2);
+    margin-bottom: var(--artdeco-spacing-4);
+    padding-bottom: var(--artdeco-spacing-3);
+    border-bottom: 1px solid rgb(212 175 55 / 10%);
+
+    h3, h4 {
+      font-family: var(--font-display);
+      font-size: var(--artdeco-text-lg);
+      font-weight: 600;
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
+      margin: 0;
+    }
+  }
+
+  // 悬停效果
+  transition: border-color var(--artdeco-transition-quick),
+              box-shadow var(--artdeco-transition-quick);
+
+  &:hover {
+    border-color: var(--artdeco-border-hover);
+    box-shadow: var(--artdeco-glow-subtle);
+  }
+}
+
+// ============================================
+//   5. 统计卡片统一尺寸
+// ============================================
+
+.artdeco-stat-card {
+  // 统一内边距
+  padding: var(--artdeco-spacing-4);
+
+  // 标签样式
+  .stat-label {
+    font-family: var(--font-body);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+    margin-bottom: var(--artdeco-spacing-1);
+  }
+
+  // 数值样式
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: var(--artdeco-text-2xl);
+    font-weight: 600;
+    color: var(--artdeco-fg-primary);
+    line-height: 1.2;
+  }
+
+  // 变化值样式
+  .stat-change {
+    font-family: var(--font-mono);
+    font-size: var(--artdeco-text-sm);
+    margin-top: var(--artdeco-spacing-1);
+
+    &.rise { color: var(--artdeco-rise); }
+    &.fall { color: var(--artdeco-down); }
+    &.flat { color: var(--artdeco-flat); }
+  }
+}
+
+// ============================================
+//   6. 市场全景区块优化
+// ============================================
+
+.market-panorama {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+  margin-bottom: var(--section-gap);
+}
+
+.enhanced-fund-flow {
+  .fund-flow-overview {
+    // 资金流向卡片
+    .summary-section {
+      margin-bottom: var(--artdeco-spacing-4);
+    }
+
+    .chart-section {
+      border-top: 1px solid rgb(212 175 55 / 10%);
+      padding-top: var(--artdeco-spacing-4);
+      margin-top: var(--artdeco-spacing-4);
+    }
+  }
+}
+
+// ============================================
+//   7. 指标区块优化
+// ============================================
+
+.indicators-section {
+  margin-top: var(--section-gap);
+
+  .charts-section {
+    .indicator-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--artdeco-spacing-3);
+      background: var(--artdeco-bg-elevated);
+      border: 1px solid var(--artdeco-border-default);
+
+      .indicator-name {
+        font-family: var(--font-body);
+        font-size: var(--artdeco-text-sm);
+        color: var(--artdeco-fg-muted);
+      }
+
+      .indicator-value {
+        font-family: var(--font-mono);
+        font-size: var(--artdeco-text-base);
+        font-weight: 600;
+        color: var(--artdeco-fg-primary);
+      }
+
+      .indicator-trend {
+        font-family: var(--font-body);
+        font-size: var(--artdeco-text-xs);
+        text-transform: uppercase;
+        padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+
+        &.rise {
+          color: var(--artdeco-rise);
+          background: rgb(255 82 82 / 10%);
+        }
+        &.fall {
+          color: var(--artdeco-down);
+          background: rgb(0 230 118 / 10%);
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+//   8. 按钮和徽章统一
+// ============================================
+
+.header-metrics {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-3);
+}
+
+.time-refresh {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-4);
+
+  .time-display {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-2);
+
+    .time-value {
+      font-family: var(--font-mono);
+      font-size: var(--artdeco-text-sm);
+      color: var(--artdeco-gold-primary);
+    }
+  }
+}
+
+// ============================================
+//   9. 响应式断点覆盖
+// ============================================
+
+@media (width <= 1280px) {
+  .artdeco-dashboard,
+  .artdeco-page {
+    --page-padding: var(--artdeco-spacing-4);
+    --section-gap: var(--artdeco-spacing-4);
+  }
+}
+
+@media (width <= 768px) {
+  .artdeco-dashboard,
+  .artdeco-page {
+    --page-padding: var(--artdeco-spacing-3);
+    --section-gap: var(--artdeco-spacing-3);
+    --card-gap: var(--artdeco-spacing-3);
+  }
+
+  .page-header,
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}
+
+// ============================================
+//   10. 加载和错误状态
+// ============================================
+
+.skeleton-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-4);
+}
+
+.skeleton-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-4);
+  background: var(--artdeco-bg-elevated);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-8);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+}
+
+// ============================================
+//   11. Art Deco 装饰元素
+// ============================================
+
+// 角落装饰 - 统一使用
+.artdeco-corner-decorated {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--artdeco-gold-primary);
+    border-style: solid;
+    opacity: 40%;
+    transition: opacity var(--artdeco-transition-quick);
+  }
+
+  &::before {
+    top: 4px;
+    left: 4px;
+    border-width: 2px 0 0 2px;
+  }
+
+  &::after {
+    bottom: 4px;
+    right: 4px;
+    border-width: 0 2px 2px 0;
+  }
+
+  &:hover::before,
+  &:hover::after {
+    opacity: 100%;
+  }
+}
+
+// 分隔线装饰
+.artdeco-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-4);
+  margin: var(--section-gap) 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--artdeco-border-default),
+      transparent
+    );
+  }
+
+  .divider-icon {
+    color: var(--artdeco-gold-primary);
+    opacity: 60%;
+  }
+}

@@ -129,29 +129,28 @@ jobs:
 
     - name: Analyze memory usage
       run: |
-        python -c "
-import sys
-sys.path.insert(0, '.')
-from src.core.memory_manager import MemoryManager
-import psutil
-import os
+        python - << 'PY'
+        import os
+        import psutil
+        import sys
 
-print('=== 内存使用分析 ===')
-process = psutil.Process(os.getpid())
-memory_info = process.memory_info()
-print(f'进程内存使用: {memory_info.rss / 1024 / 1024:.2f} MB')
-print(f'虚拟内存: {memory_info.vms / 1024 / 1024:.2f} MB')
-print(f'CPU 使用率: {process.cpu_percent()}%')
+        sys.path.insert(0, '.')
+        from src.core.memory_manager import MemoryManager
 
-# 检查内存管理器状态
-try:
-    from src.core.memory_manager import MemoryManager
-    manager = MemoryManager()
-    stats = manager.get_memory_stats()
-    print(f'管理内存统计: {stats}')
-except Exception as e:
-    print(f'内存管理器初始化失败: {e}')
-"
+        print('=== 内存使用分析 ===')
+        process = psutil.Process(os.getpid())
+        memory_info = process.memory_info()
+        print(f'进程内存使用: {memory_info.rss / 1024 / 1024:.2f} MB')
+        print(f'虚拟内存: {memory_info.vms / 1024 / 1024:.2f} MB')
+        print(f'CPU 使用率: {process.cpu_percent()}%')
+
+        try:
+            manager = MemoryManager()
+            stats = manager.get_memory_stats()
+            print(f'管理内存统计: {stats}')
+        except Exception as e:
+            print(f'内存管理器初始化失败: {e}')
+        PY
 
     - name: Upload performance results
       uses: actions/upload-artifact@v3
@@ -303,43 +302,44 @@ except Exception as e:
         # 添加Pylint结果
         if [ -f pylint-report.json ]; then
           echo "### Pylint 分析结果" >> quality-reports/quality-summary.md
-          python -c "
-import json
-with open('pylint-report.json') as f:
-    try:
-        data = json.load(f)
-        if isinstance(data, list) and data:
-            # 处理JSON数组格式
-            errors = sum(1 for msg in data if msg.get('type') == 'convention')
-            warnings = sum(1 for msg in data if msg.get('type') == 'refactor')
-            criticals = sum(1 for msg in data if msg.get('type') == 'error')
-            print(f'- 错误: {errors}')
-            print(f'- 警告: {warnings}')
-            print(f'- 重构建议: {criticals}')
-        else:
-            print('- 解析Pylint报告时出错')
-    except:
-        print('- 无法解析Pylint报告')
-" >> quality-reports/quality-summary.md
+          python - << 'PY' >> quality-reports/quality-summary.md
+          import json
+
+          try:
+              with open('pylint-report.json') as f:
+                  data = json.load(f)
+              if isinstance(data, list) and data:
+                  errors = sum(1 for msg in data if msg.get('type') == 'convention')
+                  warnings = sum(1 for msg in data if msg.get('type') == 'refactor')
+                  criticals = sum(1 for msg in data if msg.get('type') == 'error')
+                  print(f'- 错误: {errors}')
+                  print(f'- 警告: {warnings}')
+                  print(f'- 重构建议: {criticals}')
+              else:
+                  print('- 解析Pylint报告时出错')
+          except Exception:
+              print('- 无法解析Pylint报告')
+          PY
         fi
 
         # 添加覆盖率结果
         if [ -f coverage.xml ]; then
           echo -e "\n### 测试覆盖率" >> quality-reports/quality-summary.md
-          python -c "
-import xml.etree.ElementTree as ET
-try:
-    tree = ET.parse('coverage.xml')
-    root = tree.getroot()
-    coverage = float(root.get('line-rate', '0')) * 100
-    print(f'- 代码覆盖率: {coverage:.1f}%')
-    if coverage < 80:
-        print('- ⚠️  覆盖率低于80%目标')
-    else:
-        print('- ✅ 覆盖率达到目标')
-except:
-    print('- 无法解析覆盖率报告')
-" >> quality-reports/quality-summary.md
+          python - << 'PY' >> quality-reports/quality-summary.md
+          import xml.etree.ElementTree as ET
+
+          try:
+              tree = ET.parse('coverage.xml')
+              root = tree.getroot()
+              coverage = float(root.get('line-rate', '0')) * 100
+              print(f'- 代码覆盖率: {coverage:.1f}%')
+              if coverage < 80:
+                  print('- ⚠️  覆盖率低于80%目标')
+              else:
+                  print('- ✅ 覆盖率达到目标')
+          except Exception:
+              print('- 无法解析覆盖率报告')
+          PY
         fi
 
         # 添加复杂度结果
@@ -391,19 +391,21 @@ except:
 
         # 检查Pylint错误
         if [ -f pylint-report.json ]; then
-          ERROR_COUNT=$(python -c "
-import json
-try:
-    with open('pylint-report.json') as f:
-        data = json.load(f)
-    if isinstance(data, list):
-        error_count = len([msg for msg in data if msg.get('type') == 'error'])
-        print(error_count)
-    else:
-        print('10')  # 默认错误数
-except:
-    print('10')
-")
+          ERROR_COUNT=$(python - << 'PY'
+          import json
+
+          try:
+              with open('pylint-report.json') as f:
+                  data = json.load(f)
+              if isinstance(data, list):
+                  error_count = len([msg for msg in data if msg.get('type') == 'error'])
+                  print(error_count)
+              else:
+                  print('10')
+          except Exception:
+              print('10')
+          PY
+          )
           if [ "$ERROR_COUNT" -gt 20 ]; then
             QUALITY_PASS=false
             QUALITY_ISSUES="$QUALITY_ISSUES Pylint错误过多: $ERROR_COUNT 个"
@@ -412,16 +414,18 @@ except:
 
         # 检查测试覆盖率
         if [ -f coverage.xml ]; then
-          COVERAGE=$(python -c "
-import xml.etree.ElementTree as ET
-try:
-    tree = ET.parse('coverage.xml')
-    root = tree.getroot()
-    coverage = float(root.get('line-rate', '0')) * 100
-    print(f'{coverage:.1f}')
-except:
-    print('0.0')
-")
+          COVERAGE=$(python - << 'PY'
+          import xml.etree.ElementTree as ET
+
+          try:
+              tree = ET.parse('coverage.xml')
+              root = tree.getroot()
+              coverage = float(root.get('line-rate', '0')) * 100
+              print(f'{coverage:.1f}')
+          except Exception:
+              print('0.0')
+          PY
+          )
           COVERAGE_NUM=$(echo $COVERAGE | cut -d. -f1)
           if [ "$COVERAGE_NUM" -lt 80 ]; then
             QUALITY_PASS=false
@@ -460,6 +464,92 @@ except:
           })
 
   # 最终整合报告
+  hardcoding-governance:
+    name: Hardcoding Governance Gate
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install governance dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyyaml detect-secrets bandit
+
+    - name: Run detect-secrets scan
+      run: |
+        detect-secrets scan --all-files --exclude-files "(^docs/|^tests/|\\.md$)" > detect-secrets-report.json
+
+    - name: Run gitleaks scan
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run bandit runtime scan
+      run: |
+        bandit -r src/ web/backend/app/ -q -f json -o bandit-hardcoding-gate.json || true
+
+    - name: Validate hardcoding exceptions
+      run: |
+        python scripts/security/validate_hardcoding_exceptions.py --file config/security/hardcoding_exceptions.yml
+
+    - name: Generate hardcoding gate report
+      run: |
+        python scripts/security/hardcoding_scan.py --scope runtime --format json --out reports/security/hardcoding/ci-latest.json
+        python scripts/security/hardcoding_scan.py --scope runtime --format md --out reports/security/hardcoding/ci-latest.md
+
+    - name: Enforce hardcoding threshold
+      run: |
+        python - << 'PY'
+        import json
+        from pathlib import Path
+        current = json.loads(Path("reports/security/hardcoding/ci-latest.json").read_text(encoding="utf-8"))
+        baseline_path = Path("reports/security/hardcoding/baseline-2026-02-15.json")
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8")) if baseline_path.exists() else {"hits": []}
+
+        def p0_keys(report):
+            keys = set()
+            for item in report.get("hits", []):
+                if item.get("severity") == "P0":
+                    keys.add((item.get("rule_id"), item.get("file"), int(item.get("line", 0))))
+            return keys
+
+        baseline_p0 = p0_keys(baseline)
+        current_p0 = p0_keys(current)
+        new_p0 = sorted(current_p0 - baseline_p0)
+        expired = int(current["stats"].get("expired_exceptions", 0))
+
+        print(f"Baseline P0 findings: {len(baseline_p0)}")
+        print(f"Current P0 findings: {len(current_p0)}")
+        print(f"New P0 findings: {len(new_p0)}")
+        print(f"Expired exceptions: {expired}")
+
+        if new_p0:
+            for rule_id, file_path, line_no in new_p0[:20]:
+                print(f"- NEW P0 {rule_id} {file_path}:{line_no}")
+            raise SystemExit("Hardcoding gate failed: new P0 findings detected.")
+        if expired > 0:
+            raise SystemExit("Hardcoding gate failed: expired exceptions must be 0.")
+        print("Hardcoding gate passed.")
+        PY
+
+    - name: Upload hardcoding artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: hardcoding-governance-results
+        path: |
+          detect-secrets-report.json
+          bandit-hardcoding-gate.json
+          reports/security/hardcoding/ci-latest.json
+          reports/security/hardcoding/ci-latest.md
+
   final-report:
     name: Final Integration Report
     runs-on: ubuntu-latest

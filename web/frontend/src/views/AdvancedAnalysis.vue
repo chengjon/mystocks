@@ -458,5 +458,23 @@
     import BatchAnalysisView from './advanced-analysis/BatchAnalysisView.vue'
 import { useAdvancedAnalysis } from './composables/useAdvancedAnalysis'
 
-const { loading, batchLoading, analysisResult, batchResults, realtimeInterval, form, healthStatus, overviewMetrics, metrics, result, getAnalysisTitle, titles, getOverallSignalType, signal, getSignalClass, signalLower, runAnalysis, params, response, runBatchAnalysis, batchData, response, startRealtimeUpdates, stopRealtimeUpdates, websocket, connectWebSocket, protocol, wsUrl, data, disconnectWebSocket, handleWebSocketMessage, updateAnalysisProgress, updateAnalysisResult, checkSystemHealth } = useAdvancedAnalysis()
+const {
+  loading,
+  batchLoading,
+  analysisResult,
+  batchResults,
+  form,
+  healthStatus,
+  overviewMetrics,
+  getAnalysisTitle,
+  getOverallSignalType,
+  getSignalClass,
+  runAnalysis,
+  runBatchAnalysis,
+  startRealtimeUpdates,
+  stopRealtimeUpdates,
+  connectWebSocket,
+  disconnectWebSocket,
+  checkSystemHealth
+} = useAdvancedAnalysis()
 </script>

@@ -74,9 +74,41 @@
 </template>
 
 <script setup lang="ts">
+import { RefreshRight } from '@element-plus/icons-vue'
 import { useProKLineChart } from './composables/useProKLineChart'
 
-const { props, emit, chartContainer, chartInstance, loading, selectedPeriod, selectedIndicators, showPriceLimits, useForwardAdjusted, currentKLineData, priceLimitMarkers, availableIndicators, initChart, styleConfig, d, loadHistoricalData, klineData, rawData, chartData, calculatePriceLimitMarkers, current, prevClose, status, applyPriceLimitOverlay, handlePeriodChange, zoomLevel, visibleRange, visibleRangeData, chartAny, timeScaleRange, chartAny, applyIndicators, _data, indicators, chartAny, applyMAIndicator, chartAny, applyVolumeIndicator, chartAny, applyMACDIndicator, chartAny, applyRSIIndicator, chartAny, applyKDJIndicator, chartAny, handleIndicatorChange, handleRefresh, handleTogglePriceLimits, handleToggleAdjustment, adjustType } = useProKLineChart()
+const {
+  props,
+  emit,
+  chartContainer,
+  chartInstance,
+  loading,
+  selectedPeriod,
+  selectedIndicators,
+  showPriceLimits,
+  useForwardAdjusted,
+  currentKLineData,
+  priceLimitMarkers,
+  availableIndicators,
+  initChart,
+  loadHistoricalData,
+  calculatePriceLimitMarkers,
+  applyPriceLimitOverlay,
+  handlePeriodChange,
+  applyIndicators,
+  applyMAIndicator,
+  applyVolumeIndicator,
+  applyMACDIndicator,
+  applyRSIIndicator,
+  applyKDJIndicator,
+  handleIndicatorChange,
+  handleRefresh,
+  handleTogglePriceLimits,
+  handleToggleAdjustment,
+} = useProKLineChart()
+
+// Expose periods from props for template usage
+const periods = props.periods
 </script>
 
 <style scoped lang="scss">

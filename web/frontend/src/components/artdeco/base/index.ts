@@ -3,6 +3,7 @@
 //   基础UI组件库
 // ============================================
 
+export { default as ArtDecoAlert } from './ArtDecoAlert.vue'
 export { default as ArtDecoCard } from './ArtDecoCard.vue'
 export { default as ArtDecoStatCard } from './ArtDecoStatCard.vue'
 export { default as ArtDecoButton } from './ArtDecoButton.vue'

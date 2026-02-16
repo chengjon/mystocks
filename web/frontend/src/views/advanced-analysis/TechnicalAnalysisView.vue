@@ -41,8 +41,19 @@
 <script setup lang="ts">
     import { computed } from 'vue'
 
+    interface IndicatorInput {
+        name: string
+        value: string | number
+        signal?: string
+        description?: string
+    }
+
+    interface TechnicalData {
+        indicators?: IndicatorInput[]
+    }
+
     interface Props {
-        data: unknown
+        data: TechnicalData | null
     }
 
     const props = defineProps<Props>()
@@ -50,7 +61,7 @@
     const indicators = computed(() => {
         if (!props.data?.indicators) return []
 
-        return props.data.indicators.map((indicator: unknown) => ({
+        return props.data.indicators.map((indicator) => ({
             name: indicator.name,
             value: indicator.value,
             signal: indicator.signal || '中性',

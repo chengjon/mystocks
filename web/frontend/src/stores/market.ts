@@ -41,7 +41,7 @@ export const useMarketStoreExtended = () => {
     ).then(result => {
       // 更新最后更新时间（仅当result中有时）
       if (baseStore.state.data && result?.lastUpdate) {
-        ;(baseStore.state.data as unknown).lastUpdateTime = result.lastUpdate
+        ;(baseStore.state.data as Record<string, any>).lastUpdateTime = result.lastUpdate
       }
       return result
     })
@@ -58,8 +58,9 @@ export const useMarketStoreExtended = () => {
       }
     ).then(result => {
       // 更新最后更新时间
-      if (baseStore.state.data && result?.lastUpdateTime) {
-        ;(baseStore.state.data as unknown).lastUpdateTime = result.lastUpdateTime
+      const resultData = result as Record<string, any> | null
+      if (baseStore.state.data && resultData?.lastUpdateTime) {
+        ;(baseStore.state.data as Record<string, any>).lastUpdateTime = resultData.lastUpdateTime
       }
       return result
     })

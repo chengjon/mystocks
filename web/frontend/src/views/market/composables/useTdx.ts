@@ -1,37 +1,37 @@
-    import { ref, _reactive, onMounted, _onUnmounted } from 'vue'
-    import {
-    import { Connection, RefreshRight, Timer, DataLine, Search } from '@element-plus/icons-vue'
-    interface TdxQuote {
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { Connection, RefreshRight, Timer, DataLine, Search } from '@element-plus/icons-vue'
+import {
+    ElCard,
+    ElButton,
+    ElInput,
+    ElSelect,
+    ElOption,
+    ElDatePicker,
+    ElTag,
+    ElEmpty,
+    ElMessage
+} from 'element-plus'
+
+interface TdxQuote {
+    code: string
+    name: string
+    price: number
+    change: number
+    change_pct: number
+    open: number
+    pre_close: number
+    high: number
+    low: number
+    volume: number
+    amount: number
+    ask1: number
+    ask1_volume: number
+    bid1: number
+    bid1_volume: number
+    status: 'trading' | 'closed'
+}
 
 export function useTdx() {
-        ElCard,
-        ElButton,
-        ElInput,
-        ElSelect,
-        ElOption,
-        ElDatePicker,
-        ElTag,
-        ElEmpty,
-        ElMessage
-    } from 'element-plus'
-
-        code: string
-        name: string
-        price: number
-        change: number
-        change_pct: number
-        open: number
-        pre_close: number
-        high: number
-        low: number
-        volume: number
-        amount: number
-        ask1: number
-        ask1_volume: number
-        bid1: number
-        bid1_volume: number
-        status: 'trading' | 'closed'
-    }
 
     // Reactive data
     const loading = ref(false)
@@ -253,7 +253,6 @@ export function useTdx() {
     changeDateRange,
     loadChartData,
     updateLastUpdateTime,
-    now,
     getPriceClass,
     formatChange,
     formatChangePct,

@@ -18,18 +18,18 @@
       class="stock-list-container"
     >
       <template #default="{ item }">
-        <div class="stock-row" @click="handleRowClick(item)">
-          <div class="col symbol">{{ item.symbol }}</div>
-          <div class="col name">{{ item.name }}</div>
-          <div class="col price" :class="getPriceColor(item.change)">
-            {{ formatPrice(item.price) }}
+        <div class="stock-row" @click="handleRowClick(typedItem(item))">
+          <div class="col symbol">{{ typedItem(item).symbol }}</div>
+          <div class="col name">{{ typedItem(item).name }}</div>
+          <div class="col price" :class="getPriceColor(typedItem(item).change)">
+            {{ formatPrice(typedItem(item).price) }}
           </div>
-          <div class="col change" :class="getPriceColor(item.change)">
-            {{ formatChange(item.change) }}%
+          <div class="col change" :class="getPriceColor(typedItem(item).change)">
+            {{ formatChange(typedItem(item).change) }}%
           </div>
-          <div class="col volume">{{ formatVolume(item.volume) }}</div>
+          <div class="col volume">{{ formatVolume(typedItem(item).volume) }}</div>
           <div class="col actions">
-            <button @click.stop="emit('trade', item)">Trade</button>
+            <button @click.stop="emit('trade', typedItem(item))">Trade</button>
           </div>
         </div>
       </template>
@@ -61,6 +61,9 @@ const _props = defineProps({
 })
 
 const emit = defineEmits(['row-click', 'trade'])
+
+// Type helper for VirtualList slot item
+const typedItem = (item: unknown): StockItem => item as StockItem
 
 const handleRowClick = (item: StockItem) => {
   emit('row-click', item)

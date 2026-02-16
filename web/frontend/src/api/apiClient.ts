@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * API Client for Strategy Module
  *
@@ -7,17 +6,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-
-// UnifiedResponse v2.0.0 format
-export interface UnifiedResponse<T = unknown> {
-  success: boolean;
-  code: number;
-  message: string;
-  data: T;
-  timestamp: string;
-  request_id: string;
-  errors: unknown;
-}
+import { UnifiedResponse } from './types/common';
 
 // Request configuration
 interface RequestConfig extends AxiosRequestConfig {
@@ -47,24 +36,18 @@ instance.interceptors.request.use(
     // Add JWT token for authentication
     const jwtToken = getJWTToken();
     if (jwtToken) {
-      if (!config.headers) {
-        config.headers = {} as Record<string, string>;
-      }
-      (config.headers as unknown)['Authorization'] = `Bearer ${jwtToken}`;
+      config.headers.Authorization = `Bearer ${jwtToken}`;
     }
 
     // Add CSRF token for POST/PUT/PATCH/DELETE
     if (
       config.method?.toUpperCase() !== 'GET' &&
       !(config as RequestConfig).skipCSRF &&
-      !config.headers?.['X-CSRF-Token']
+      !config.headers['X-CSRF-Token']
     ) {
       try {
         const token = await getCSRFToken();
-        if (!config.headers) {
-          config.headers = {} as Record<string, string>;
-        }
-        (config.headers as unknown)['X-CSRF-Token'] = token;
+        config.headers['X-CSRF-Token'] = token;
       } catch (error) {
         console.error('[apiClient] Failed to get CSRF token:', error);
       }
@@ -77,11 +60,26 @@ instance.interceptors.request.use(
 
 // Response interceptor - returns full UnifiedResponse
 instance.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse>): unknown => {
-    // Return full response for fallback handling
-    return response.data;
+  (response: AxiosResponse<UnifiedResponse<any>>): any => {
+    // Extract tracing headers
+    const requestId = response.headers['x-request-id'] || ''
+    const processTime = response.headers['x-process-time'] || ''
+
+    // Merge tracing into data if it's a UnifiedResponse
+    if (response.data && typeof response.data === 'object') {
+      response.data.request_id = requestId || response.data.request_id || ''
+      // We can also attach process time to the object if needed for monitoring
+      if (processTime) {
+        (response.data as any).process_time = processTime
+      }
+    }
+
+    return response.data
   },
   (error) => {
+    // Extract tracing headers even on error if available
+    const requestId = error.response?.headers?.['x-request-id'] || '';
+    
     // Handle JWT token expiration
     if (error.response?.status === 401) {
       // Clear expired token
@@ -93,13 +91,13 @@ instance.interceptors.response.use(
         window.location.href = '/login';
       }
 
-      const unifiedError: UnifiedResponse = {
+      const unifiedError: UnifiedResponse<null> = {
         success: false,
         code: 401,
         message: '登录已过期，请重新登录',
         data: null,
         timestamp: new Date().toISOString(),
-        request_id: '',
+        request_id: requestId,
         errors: null,
       };
 
@@ -107,13 +105,13 @@ instance.interceptors.response.use(
     }
 
     // Transform error to UnifiedResponse format
-    const unifiedError: UnifiedResponse = {
+    const unifiedError: UnifiedResponse<null> = {
       success: false,
       code: error.response?.status || 500,
       message: error.response?.data?.message || error.message || 'Request failed',
       data: null,
       timestamp: new Date().toISOString(),
-      request_id: '',
+      request_id: requestId,
       errors: error.response?.data || null,
     };
 
@@ -143,7 +141,7 @@ async function getCSRFToken(): Promise<string> {
 
     if (response.data?.data?.csrf_token) {
       csrfTokenCache = response.data.data.csrf_token;
-      return csrfTokenCache;
+      return csrfTokenCache || '';
     }
   } catch (error) {
     console.error('[apiClient] Failed to fetch CSRF token:', error);

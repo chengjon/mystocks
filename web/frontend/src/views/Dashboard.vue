@@ -204,6 +204,10 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick , onUnmounted } from 'vue'
 import echarts from '@/utils/echarts'
+import type { EChartsOption } from 'echarts'
+
+// ECharts instance type
+type ECharts = ReturnType<typeof echarts.init>
 
 import { ElCard, ElButton, ElTable, ElTableColumn, ElTag } from 'element-plus'
 import BloombergStatCard from '@/components/BloombergStatCard.vue'

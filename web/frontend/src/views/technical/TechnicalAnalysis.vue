@@ -155,7 +155,7 @@
         <el-table-column prop="name" label="INDICATOR" width="180">
           <template #default="{ row }">
             <strong class="gradient-text">{{ row.name }}</strong>
-            <el-tag size="small" :type="getIndicatorTypeTag(row.type) as unknown" class="web3-tag">
+            <el-tag size="small" :type="getIndicatorTypeTag(row.type)" class="web3-tag">
               {{ formatIndicatorType(row.type) }}
             </el-tag>
           </template>
@@ -171,7 +171,7 @@
 
         <el-table-column prop="signal" label="SIGNAL" width="120" align="center">
           <template #default="{ row }">
-            <el-tag v-if="row.signal" :type="getSignalTagType(row.signal) as unknown" size="small" class="web3-tag">
+            <el-tag v-if="row.signal" :type="getSignalTagType(row.signal)" size="small" class="web3-tag">
               {{ formatSignal(row.signal) }}
             </el-tag>
             <span v-else>-</span>
@@ -180,7 +180,7 @@
 
         <el-table-column prop="status" label="STATUS" width="120" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusTagType(row.status) as unknown" size="small" class="web3-tag">
+            <el-tag :type="getStatusTagType(row.status)" size="small" class="web3-tag">
               {{ formatStatus(row.status) }}
             </el-tag>
           </template>
@@ -259,7 +259,33 @@
 <script setup lang="ts">
 import { useTechnicalAnalysis } from './composables/useTechnicalAnalysis'
 
-const { searchForm, batchForm, loading, selectedStock, indicatorsData, chartContainer, chartInstance, batchResult, availableIndicators, indicatorStats, getIndicatorTypeTag, formatIndicatorType, typeMap, getValueClass, formatIndicatorValue, getSignalTagType, formatSignal, signalMap, getStatusTagType, formatStatus, statusMap, signalCountClass, count, fetchTechnicalData, response, updateIndicatorStats, stats, renderChart, dates, prices, ma5, ma10, rsi, date, price, option, resetSearch, exportChart, dataUrl, link, calculateBatchIndicators, symbols, response } = useTechnicalAnalysis()
+const {
+  searchForm,
+  batchForm,
+  loading,
+  selectedStock,
+  indicatorsData,
+  chartContainer,
+  chartInstance,
+  batchResult,
+  availableIndicators,
+  indicatorStats,
+  getIndicatorTypeTag,
+  formatIndicatorType,
+  getValueClass,
+  formatIndicatorValue,
+  getSignalTagType,
+  formatSignal,
+  getStatusTagType,
+  formatStatus,
+  signalCountClass,
+  fetchTechnicalData,
+  updateIndicatorStats,
+  renderChart,
+  resetSearch,
+  exportChart,
+  calculateBatchIndicators
+} = useTechnicalAnalysis()
 </script>
 
 <style scoped lang="scss">

@@ -97,7 +97,7 @@ services:
     restart: unless-stopped
     environment:
       TAOS_USER: root
-      TAOS_PASSWORD: taosdata
+      TAOS_PASSWORD: ${TDENGINE_PASSWORD}
       TAOS_DATABASE: market_data
     ports:
       - "6030:6030"
@@ -107,7 +107,7 @@ services:
     networks:
       - mystocks-network
     healthcheck:
-      test: ["CMD", "taos", "-h", "localhost", "-u", "root", "-p", "taosdata", "-e", "SELECT server_status();"]
+      test: ["CMD-SHELL", "taos -h localhost -u root -p ${TDENGINE_PASSWORD} -e \"SELECT server_status();\""]
       interval: 30s
       timeout: 10s
       retries: 3

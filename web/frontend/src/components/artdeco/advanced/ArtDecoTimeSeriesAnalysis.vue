@@ -343,7 +343,7 @@
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
 import { useArtDecoTimeSeriesAnalysis } from './composables/useArtDecoTimeSeriesAnalysis'
 
-const { props, chartType, analysisType, showInflectionPoints, showTrend, predictionMethod, predictionHorizon, chartCanvas, timeSeriesData, inflectionPoints, periodicityData, predictionData, chartTypeOptions, analysisTypeOptions, predictionMethodOptions, predictionHorizonOptions, getDataPointsCount, getInflectionPointsCount, getTrendStrength, trend, strength, getPeriodicityConfidence, periodicity, getMaxChangeAmplitude, maxAmplitude, getAvgChangePeriod, timestamps, intervals, avgInterval, days, getInflectionType, getPointTypeText, formatTime, dominantPeriods, periods, getPeriodLabel, labels, spectrumData, getSpectrumColor, colors, getPredictionAccuracy, accuracy, getPredictionInterval, interval, getModelConfidence, confidence, predictionInsights, renderChart, ctx, canvas, width, height, y, x, data, maxValue, minValue, valueRange, x, y } = useArtDecoTimeSeriesAnalysis()
+const { props, chartType, analysisType, showInflectionPoints, showTrend, predictionMethod, predictionHorizon, chartCanvas, timeSeriesData, inflectionPoints, periodicityData, predictionData, chartTypeOptions, analysisTypeOptions, predictionMethodOptions, predictionHorizonOptions, getDataPointsCount, getInflectionPointsCount, getTrendStrength, getPeriodicityConfidence, getMaxChangeAmplitude, getAvgChangePeriod, getInflectionType, getPointTypeText, formatTime, dominantPeriods, getPeriodLabel, spectrumData, getSpectrumColor, getPredictionAccuracy, getPredictionInterval, getModelConfidence, predictionInsights, renderChart } = useArtDecoTimeSeriesAnalysis()
 </script>
 
 <style scoped lang="scss">

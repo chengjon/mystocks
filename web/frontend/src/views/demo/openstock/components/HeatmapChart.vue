@@ -61,6 +61,27 @@ import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import echarts from '@/utils/echarts'
 
+// Type definitions
+interface HeatmapItem {
+  name: string
+  symbol: string
+  price: number
+  change: number
+  change_pct: number
+  volume: number
+  market_cap?: number
+}
+
+interface ApiErrorResponse {
+  response?: {
+    status?: number
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
+
 const emit = defineEmits<{
   'api-tested': [feature: string]
 }>()
@@ -68,7 +89,7 @@ const emit = defineEmits<{
 const heatmapMarket = ref('cn')
 const heatmapLoading = ref(false)
 const heatmapContainerRef = ref<HTMLElement | null>(null)
-let heatmapChart: unknown = null
+let heatmapChart: echarts.ECharts | null = null
 
 const initHeatmapChart = () => {
   if (!heatmapContainerRef.value) return
@@ -80,7 +101,7 @@ const initHeatmapChart = () => {
     if (heatmapChart) heatmapChart.resize()
   }
   window.addEventListener('resize', resizeHandler)
-  ;(heatmapChart as unknown)._resizeHandler = resizeHandler
+  ;(heatmapChart as unknown & { _resizeHandler: () => void })._resizeHandler = resizeHandler
 }
 
 const loadHeatmapData = async () => {
@@ -101,18 +122,19 @@ const loadHeatmapData = async () => {
     ElMessage.success('热力图加载成功')
   } catch (error: unknown) {
     console.error('加载热力图失败:', error)
-    if (error.response?.status === 404) {
+    const apiError = error as ApiErrorResponse
+    if (apiError.response?.status === 404) {
       ElMessage.warning('热力图API未实现，使用模拟数据展示')
       renderHeatmap(generateMockHeatmapData())
     } else {
-      ElMessage.error('加载热力图失败: ' + (error.response?.data?.detail || error.message))
+      ElMessage.error('加载热力图失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
     }
   } finally {
     heatmapLoading.value = false
   }
 }
 
-const renderHeatmap = (data: unknown[]) => {
+const renderHeatmap = (data: HeatmapItem[]) => {
   if (!heatmapChart || !data || data.length === 0) return
   const treeData = {
     name: heatmapMarket.value === 'cn' ? 'A股市场' : '港股市场',
@@ -133,14 +155,14 @@ const renderHeatmap = (data: unknown[]) => {
       textStyle: { color: '#333', fontSize: 18 }
     },
     tooltip: {
-      formatter: (info: unknown) => {
+      formatter: (info: { data: { name: string; symbol?: string; value?: number; price?: number; change?: number; market_cap?: number } }) => {
         const data = info.data
         if (!data) return ''
         return [
           `<div style="font-weight: bold; margin-bottom: 5px;">${data.name} (${data.symbol || '-'})</div>`,
-          `涨跌幅: <span style="color: ${data.value >= 0 ? '#ef5350' : '#26a69a'};">${data.value >= 0 ? '+' : ''}${data.value?.toFixed(2) || 0}%</span>`,
+          `涨跌幅: <span style="color: ${data.value && data.value >= 0 ? '#ef5350' : '#26a69a'};">${data.value && data.value >= 0 ? '+' : ''}${data.value?.toFixed(2) || 0}%</span>`,
           `当前价: ${data.price?.toFixed(2) || '-'}`,
-          `涨跌额: ${data.change >= 0 ? '+' : ''}${data.change?.toFixed(2) || '-'}`,
+          `涨跌额: ${data.change && data.change >= 0 ? '+' : ''}${data.change?.toFixed(2) || '-'}`,
           data.market_cap ? `市值: ${(data.market_cap / 100000000).toFixed(2)}亿` : ''
         ].filter(Boolean).join('<br/>')
       }
@@ -159,8 +181,8 @@ const renderHeatmap = (data: unknown[]) => {
       colorMappingBy: 'value',
       colorAlpha: [0.8, 1],
       colorSaturation: [0.3, 0.7],
-      color: (params: unknown) => {
-        const value = params.value
+      color: (params: { value?: number }) => {
+        const value = params.value || 0
         if (value > 5) return '#d32f2f'
         if (value > 2) return '#ef5350'
         if (value > 0) return '#ffcdd2'
@@ -174,9 +196,9 @@ const renderHeatmap = (data: unknown[]) => {
   heatmapChart.setOption(option)
 }
 
-const generateMockHeatmapData = () => {
+const generateMockHeatmapData = (): HeatmapItem[] => {
   const sectors = ['金融', '科技', '医药', '消费', '能源', '制造', '房地产', '通信']
-  const data: unknown[] = []
+  const data: HeatmapItem[] = []
   for (let i = 0; i < 30; i++) {
     const sector = sectors[Math.floor(Math.random() * sectors.length)]
     const changePct = (Math.random() - 0.5) * 20
@@ -202,7 +224,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (heatmapChart) {
-    const resizeHandler = (heatmapChart as unknown)._resizeHandler
+    const resizeHandler = (heatmapChart as unknown & { _resizeHandler?: () => void })._resizeHandler
     if (resizeHandler) window.removeEventListener('resize', resizeHandler)
     heatmapChart.dispose()
     heatmapChart = null

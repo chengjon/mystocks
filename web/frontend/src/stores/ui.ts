@@ -2,7 +2,7 @@
 // 负责界面功能切换、节点展开状态、加载状态、缓存管理等UI相关状态
 
 import { defineStore } from 'pinia'
-import { _ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 
 interface CachedData<T = unknown> {
     data: T
@@ -101,7 +101,7 @@ export const useUiStore = defineStore('ui', () => {
             return null
         }
 
-        return cached.data
+        return cached.data as T | null
     }
 
     const clearCache = (key?: string): void => {

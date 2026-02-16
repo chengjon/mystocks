@@ -1,5 +1,16 @@
+<template>
+  <div class="announcement-monitor">
+    <p>Announcement Monitor - Component under development</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Placeholder component - under development
+</script>
+
 <style scoped lang="scss">
 @import '@/styles/artdeco-quant-extended';
+@import '@/styles/data-dense/index';
 
 .announcement-monitor {
     min-height: 900px;

@@ -1,5 +1,8 @@
 /* 全局样式 */
 
+// 导入布局修复
+@import './artdeco-layout-fix.scss';
+
 * {
   margin: 0;
   padding: 0;

@@ -183,7 +183,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted , onUnmounted } from 'vue'
-import { _ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   PieChart,
   TrendCharts,

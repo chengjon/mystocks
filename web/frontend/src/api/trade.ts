@@ -25,7 +25,7 @@ class TradeApiService {
    */
   async getAccountOverview(): Promise<AccountOverviewVM> {
     const rawData = await request.get(`${this.baseUrl}/account`)
-    return TradeAdapter.toAccountOverviewVM(rawData)
+    return TradeAdapter.toAccountOverviewVM(rawData as Record<string, unknown>)
   }
 
   /**
@@ -41,7 +41,7 @@ class TradeApiService {
     offset?: number
   }): Promise<OrderVM[]> {
     const rawData = await request.get(`${this.baseUrl}/orders`, { params })
-    return TradeAdapter.toOrderVM(rawData)
+    return TradeAdapter.toOrderVM(rawData as Record<string, unknown>[])
   }
 
   /**
@@ -49,7 +49,7 @@ class TradeApiService {
    */
   async getOrder(orderId: string): Promise<OrderVM> {
     const rawData = await request.get(`${this.baseUrl}/orders/${orderId}`)
-    return TradeAdapter.toOrderVM([rawData])[0]
+    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
   }
 
   /**
@@ -57,7 +57,7 @@ class TradeApiService {
    */
   async createOrder(orderData: OrderRequest): Promise<OrderVM> {
     const rawData = await request.post(`${this.baseUrl}/order`, orderData)
-    return TradeAdapter.toOrderVM([rawData])[0]
+    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
   }
 
   /**
@@ -75,7 +75,7 @@ class TradeApiService {
     price?: number
   }): Promise<OrderVM> {
     const rawData = await request.patch(`${this.baseUrl}/orders/${orderId}`, modifications)
-    return TradeAdapter.toOrderVM([rawData])[0]
+    return TradeAdapter.toOrderVM([rawData as Record<string, unknown>])[0]
   }
 
   /**
@@ -86,7 +86,7 @@ class TradeApiService {
     side?: string
   }): Promise<PositionVM[]> {
     const rawData = await request.get(`${this.baseUrl}/positions`, { params })
-    return TradeAdapter.toPositionVM(rawData)
+    return TradeAdapter.toPositionVM(rawData as Record<string, unknown>[])
   }
 
   /**
@@ -101,7 +101,7 @@ class TradeApiService {
    */
   async getPosition(symbol: string): Promise<PositionVM> {
     const rawData = await request.get(`${this.baseUrl}/positions/${symbol}`)
-    return TradeAdapter.toPositionVM([rawData])[0]
+    return TradeAdapter.toPositionVM([rawData as Record<string, unknown>])[0]
   }
 
   /**
@@ -115,7 +115,7 @@ class TradeApiService {
     limit?: number
   }): Promise<TradeHistoryVM[]> {
     const rawData = await request.get(`${this.baseUrl}/history`, { params })
-    return TradeAdapter.toTradeHistoryVM(rawData)
+    return TradeAdapter.toTradeHistoryVM(rawData as Record<string, unknown>[])
   }
 
   /**
@@ -239,7 +239,7 @@ class TradeApiService {
       params,
       responseType: 'blob'
     })
-    return response
+    return response as Blob
   }
 }
 

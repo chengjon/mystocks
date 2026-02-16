@@ -1,18 +1,71 @@
-    import { ref, computed } from 'vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-    import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    interface Props {
+import { ref, computed, type Ref } from 'vue'
 
-export function useArtDecoCapitalFlow() {
+// Type definitions
+interface CapitalFlows {
+  northbound?: number
+  southbound?: number
+  mainForce?: number
+  retail?: number
+  sectorFlows?: SectorFlow[]
+  [key: string]: unknown
+}
 
-        data: unknown
-        symbol?: string
-        loading?: boolean
-    }
+interface SectorFlow {
+  flow: number
+  [key: string]: unknown
+}
 
-    const props = defineProps<Props>()
+interface Cluster {
+  stocks?: unknown[]
+  [key: string]: unknown
+}
+
+interface ClusteringData {
+  clusters?: Cluster[]
+  stocks?: ClusteredStock[]
+  [key: string]: unknown
+}
+
+interface ClusteredStock {
+  volume: number
+  flow: number
+  [key: string]: unknown
+}
+
+interface MainForceData {
+  controlLevel?: number
+  top5Concentration?: number
+  top10Concentration?: number
+  ranking?: unknown[]
+  [key: string]: unknown
+}
+
+interface OpportunityData {
+  marketSentiment?: string
+  fundAttention?: string
+  sectorRotation?: string
+  opportunityWindow?: string
+  hotSectors?: unknown[]
+  insights?: unknown[]
+  [key: string]: unknown
+}
+
+interface CapitalFlowData {
+  capitalFlows?: CapitalFlows
+  clustering?: ClusteringData
+  mainForce?: MainForceData
+  opportunity?: OpportunityData
+  [key: string]: unknown
+}
+
+interface UseArtDecoCapitalFlowOptions {
+  data: Ref<CapitalFlowData>
+  symbol?: Ref<string>
+  loading?: Ref<boolean>
+}
+
+export function useArtDecoCapitalFlow(options: UseArtDecoCapitalFlowOptions) {
+    const { data, symbol = ref(''), loading = ref(false) } = options
 
     // 响应式数据
     const heatmapPeriod = ref('1d')
@@ -20,45 +73,45 @@ export function useArtDecoCapitalFlow() {
     const showLabels = ref(true)
 
     // 计算属性
-    const capitalFlows = computed(() => props.data?.capitalFlows || {})
-    const clusteringData = computed(() => props.data?.clustering || {})
-    const mainForceData = computed(() => props.data?.mainForce || {})
-    const opportunityData = computed(() => props.data?.opportunity || {})
+    const capitalFlows = computed((): CapitalFlows => data.value?.capitalFlows || {})
+    const clusteringData = computed((): ClusteringData => data.value?.clustering || {})
+    const mainForceData = computed((): MainForceData => data.value?.mainForce || {})
+    const opportunityData = computed((): OpportunityData => data.value?.opportunity || {})
 
     // 资金流向相关计算属性
-    const northboundFlow = computed(() => capitalFlows.value?.northbound || 0)
-    const southboundFlow = computed(() => capitalFlows.value?.southbound || 0)
-    const mainForceFlow = computed(() => capitalFlows.value?.mainForce || 0)
-    const retailFlow = computed(() => capitalFlows.value?.retail || 0)
+    const northboundFlow = computed((): number => capitalFlows.value?.northbound || 0)
+    const southboundFlow = computed((): number => capitalFlows.value?.southbound || 0)
+    const mainForceFlow = computed((): number => capitalFlows.value?.mainForce || 0)
+    const retailFlow = computed((): number => capitalFlows.value?.retail || 0)
 
-    const sectorFlows = computed(() => capitalFlows.value?.sectorFlows || [])
-    const minFlow = computed(() => {
-        const flows = sectorFlows.value.map((s: unknown) => s.flow)
+    const sectorFlows = computed((): SectorFlow[] => capitalFlows.value?.sectorFlows || [])
+    const minFlow = computed((): number => {
+        const flows = sectorFlows.value.map((s) => s.flow)
         return flows.length > 0 ? Math.min(...flows) : 0
     })
-    const maxFlow = computed(() => {
-        const flows = sectorFlows.value.map((s: unknown) => s.flow)
+    const maxFlow = computed((): number => {
+        const flows = sectorFlows.value.map((s) => s.flow)
         return flows.length > 0 ? Math.max(...flows) : 0
     })
 
     // 聚类分析相关计算属性
-    const clusters = computed(() => clusteringData.value?.clusters || [])
-    const clusteredStocks = computed(() => clusteringData.value?.stocks || [])
+    const clusters = computed((): Cluster[] => clusteringData.value?.clusters || [])
+    const clusteredStocks = computed((): ClusteredStock[] => clusteringData.value?.stocks || [])
 
     // 主力控盘相关计算属性
-    const mainForceControl = computed(() => mainForceData.value?.controlLevel || 0)
-    const top5Concentration = computed(() => mainForceData.value?.top5Concentration || 0)
-    const top10Concentration = computed(() => mainForceData.value?.top10Concentration || 0)
-    const mainForceRanking = computed(() => mainForceData.value?.ranking || [])
+    const mainForceControl = computed((): number => mainForceData.value?.controlLevel || 0)
+    const top5Concentration = computed((): number => mainForceData.value?.top5Concentration || 0)
+    const top10Concentration = computed((): number => mainForceData.value?.top10Concentration || 0)
+    const mainForceRanking = computed((): unknown[] => mainForceData.value?.ranking || [])
 
     // 风口诊断相关计算属性
-    const marketSentiment = computed(() => opportunityData.value?.marketSentiment || '中性')
-    const fundAttention = computed(() => opportunityData.value?.fundAttention || '一般')
-    const sectorRotation = computed(() => opportunityData.value?.sectorRotation || '稳定')
-    const opportunityWindow = computed(() => opportunityData.value?.opportunityWindow || '关闭')
+    const marketSentiment = computed((): string => opportunityData.value?.marketSentiment || '中性')
+    const fundAttention = computed((): string => opportunityData.value?.fundAttention || '一般')
+    const sectorRotation = computed((): string => opportunityData.value?.sectorRotation || '稳定')
+    const opportunityWindow = computed((): string => opportunityData.value?.opportunityWindow || '关闭')
 
-    const hotSectors = computed(() => opportunityData.value?.hotSectors || [])
-    const investmentInsights = computed(() => opportunityData.value?.insights || [])
+    const hotSectors = computed((): unknown[] => opportunityData.value?.hotSectors || [])
+    const investmentInsights = computed((): unknown[] => opportunityData.value?.insights || [])
 
     // 配置选项
     const periodOptions = [
@@ -153,7 +206,7 @@ export function useArtDecoCapitalFlow() {
     // 聚类分析辅助函数
     const getMaxClusterSize = (): number => {
         if (!clusters.value.length) return 0
-        return Math.max(...clusters.value.map((c: unknown) => c.stocks?.length || 0))
+        return Math.max(...clusters.value.map((c) => c.stocks?.length || 0))
     }
 
     const getClusteringDensity = (): number => {
@@ -165,15 +218,15 @@ export function useArtDecoCapitalFlow() {
 
     const getDispersionIndex = (): number => {
         if (!clusteredStocks.value.length) return 0
-        const volumes = clusteredStocks.value.map((s: unknown) => s.volume)
-        const flows = clusteredStocks.value.map((s: unknown) => s.flow)
+        const volumes = clusteredStocks.value.map((s) => s.volume)
+        const flows = clusteredStocks.value.map((s) => s.flow)
 
-        const volumeMean = volumes.reduce((sum: unknown, v: unknown) => sum + v, 0) / volumes.length
-        const flowMean = flows.reduce((sum: unknown, f: unknown) => sum + f, 0) / flows.length
+        const volumeMean = volumes.reduce((sum, v) => sum + v, 0) / volumes.length
+        const flowMean = flows.reduce((sum, f) => sum + f, 0) / flows.length
 
         const volumeVariance =
-            volumes.reduce((sum: unknown, v: unknown) => sum + Math.pow(v - volumeMean, 2), 0) / volumes.length
-        const flowVariance = flows.reduce((sum: unknown, f: unknown) => sum + Math.pow(f - flowMean, 2), 0) / flows.length
+            volumes.reduce((sum, v) => sum + Math.pow(v - volumeMean, 2), 0) / volumes.length
+        const flowVariance = flows.reduce((sum, f) => sum + Math.pow(f - flowMean, 2), 0) / flows.length
 
         return Math.sqrt(volumeVariance + flowVariance)
     }
@@ -184,7 +237,7 @@ export function useArtDecoCapitalFlow() {
     }
 
     const getXPosition = (volume: number): number => {
-        const volumes = clusteredStocks.value.map((s: unknown) => s.volume)
+        const volumes = clusteredStocks.value.map((s) => s.volume)
         const minVol = Math.min(...volumes)
         const maxVol = Math.max(...volumes)
         const range = maxVol - minVol
@@ -193,12 +246,12 @@ export function useArtDecoCapitalFlow() {
     }
 
     const getYPosition = (flow: number): number => {
-        const flows = clusteredStocks.value.map((s: unknown) => s.flow)
-        const minFlow = Math.min(...flows)
-        const maxFlow = Math.max(...flows)
-        const range = maxFlow - minFlow
+        const flows = clusteredStocks.value.map((s) => s.flow)
+        const minFlowVal = Math.min(...flows)
+        const maxFlowVal = Math.max(...flows)
+        const range = maxFlowVal - minFlowVal
         if (range === 0) return 50
-        return ((flow - minFlow) / range) * 80 + 10 // 10%到90%的范围
+        return ((flow - minFlowVal) / range) * 80 + 10 // 10%到90%的范围
     }
 
     // 风口诊断辅助函数
@@ -227,7 +280,6 @@ export function useArtDecoCapitalFlow() {
     }
 
   return {
-    props,
     heatmapPeriod,
     flowType,
     showLabels,
@@ -241,9 +293,7 @@ export function useArtDecoCapitalFlow() {
     retailFlow,
     sectorFlows,
     minFlow,
-    flows,
     maxFlow,
-    flows,
     clusters,
     clusteredStocks,
     mainForceControl,
@@ -263,43 +313,16 @@ export function useArtDecoCapitalFlow() {
     getMainForceFlow,
     getRetailFlow,
     formatFlow,
-    sign,
-    absFlow,
     formatVolume,
     getHeatmapColor,
-    intensity,
-    green,
-    alpha,
-    intensity,
-    red,
-    alpha,
     getHeatmapOpacity,
-    maxAbsFlow,
     getSectorCode,
-    codes,
     getMaxClusterSize,
     getClusteringDensity,
-    avgClusterSize,
-    maxClusterSize,
     getDispersionIndex,
-    volumes,
-    flows,
-    volumeMean,
-    flowMean,
-    volumeVariance,
-    flowVariance,
     getClusterColor,
-    colors,
     getXPosition,
-    volumes,
-    minVol,
-    maxVol,
-    range,
     getYPosition,
-    flows,
-    minFlow,
-    maxFlow,
-    range,
     getSentimentClass,
     getAttentionClass,
     getRotationClass,

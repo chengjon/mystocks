@@ -6,7 +6,7 @@
  */
 
 import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient';
-import type { UnifiedResponse } from '../apiClient';
+import type { UnifiedResponse } from '../types/common';
 import type {
   StrategyVM as Strategy,
   CreateStrategyRequestVM as CreateStrategyRequest,
@@ -287,7 +287,7 @@ export class StrategyApiService {
     code: string,
     type: string
   ): Promise<UnifiedResponse<{ valid: boolean; errors?: string[]; warnings?: string[] }>> {
-    return apiPost<UnifiedResponse<unknown>>(`${this.baseUrl}/validate`, { code, type });
+    return apiPost<UnifiedResponse<{ valid: boolean; errors?: string[]; warnings?: string[] }>>(`${this.baseUrl}/validate`, { code, type });
   }
 
   /**

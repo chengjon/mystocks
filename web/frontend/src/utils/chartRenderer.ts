@@ -112,7 +112,7 @@ export class ChartRenderer {
   }
 
   render(): void {
-    const { _data, padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
+    const { data, padding = { top: 20, right: 60, bottom: 30, left: 10 }, colors } = this.options;
 
     this.calculateMetrics();
     this.clear();

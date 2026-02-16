@@ -11,11 +11,12 @@
  *
  * @example
  * const { connect, disconnect, subscribe, unsubscribe } = useWebSocket()
- * connect('ws://localhost:8000/api/ws')
+ * connect('/api/ws')
  * subscribe('market:realtime', (data) => console.log(data))
  */
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { wsUrl } from '@/config/runtime-endpoints'
 
 // WebSocket连接状态
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -56,7 +57,7 @@ const globalState = ref<WebSocketState>({
 export function useWebSocket(config: WebSocketConfig = {}) {
   // 合并配置
   const {
-    url = 'ws://localhost:8000/api/ws',
+    url = wsUrl('/api/ws'),
     reconnectInterval = 3000,
     maxReconnectAttempts = 10,
     heartbeatInterval = 30000

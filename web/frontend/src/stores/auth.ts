@@ -15,6 +15,18 @@ export interface User {
 
 // Create a login API store using the factory
 // Transform response to match expected format: backend returns {data: {token}}, we need {access_token}
+interface LoginResponse {
+  data?: {
+    token?: string
+    token_type?: string
+    user?: User
+  }
+  access_token?: string
+  token?: string
+  token_type?: string
+  user?: User
+}
+
 const useLoginStore = PiniaStoreFactory.createApiStore<{
   access_token: string
   token_type: string
@@ -23,8 +35,8 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
   id: 'auth-login',
   endpoint: '/auth/login',
   method: 'POST',
-  loading: createLoadingConfig('auth-login'),
-  transform: (data) => {
+  loading: createLoadingConfig(true),
+  transform: (data: LoginResponse) => {
     // Backend returns {success, data: {token, ...}, message, ...}
     // We need to return {access_token, token_type, user}
     if (data?.data?.token) {
@@ -41,7 +53,7 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
       user: data?.user
     }
   },
-  validate: (data) => data && (data.access_token || data.token)
+  validate: (data: LoginResponse): boolean => !!(data && (data.access_token || data.token))
 })
 
 export const useAuthStore = defineStore('auth', () => {
@@ -111,14 +123,14 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: unknown }> => {
     try {
       // Use authApi.login which correctly sets Content-Type to application/x-www-form-urlencoded
-      const response = await authApi.login(username, password)
+      const response = await authApi.login(username, password) as LoginResponse
 
       // Backend returns {success, data: {token, token_type, user}, message}
       // Extract token from nested data structure
-      const token = response?.data?.token || response?.access_token || response?.token
-      const user = response?.data?.user || response?.user
+      const tokenValue = response?.data?.token || response?.access_token || response?.token
+      const userData = response?.data?.user || response?.user
 
-      if (!token) {
+      if (!tokenValue) {
         return {
           success: false,
           message: 'Invalid response from server',
@@ -127,13 +139,13 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // Set token and user data
-      setToken(token)
+      setToken(tokenValue)
       setUser({
-        id: user?.id || 1,
+        id: userData?.id || 1,
         username: username,
-        email: user?.email || `${username}@example.com`,
-        role: user?.role || 'user',
-        permissions: user?.permissions || []
+        email: userData?.email || `${username}@example.com`,
+        role: userData?.role || 'user',
+        permissions: userData?.permissions || []
       })
 
       return { success: true }

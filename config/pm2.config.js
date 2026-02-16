@@ -88,13 +88,13 @@ module.exports = {
         // 数据库配置
         POSTGRESQL_HOST: 'localhost',
         POSTGRESQL_USER: 'postgres',
-        POSTGRESQL_PASSWORD: 'your-postgresql-password',
+        POSTGRESQL_PASSWORD: process.env.POSTGRESQL_PASSWORD || '',
         POSTGRESQL_DATABASE: 'mystocks',
         POSTGRESQL_PORT: '5438',
 
         TDENGINE_HOST: 'localhost',
         TDENGINE_USER: 'root',
-        TDENGINE_PASSWORD: 'taosdata',
+        TDENGINE_PASSWORD: process.env.TDENGINE_PASSWORD || '',
         TDENGINE_DATABASE: 'market_data_cache',
         TDENGINE_PORT: '6030',
 

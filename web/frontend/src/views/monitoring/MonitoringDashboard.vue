@@ -101,7 +101,6 @@
         row-key="symbol"
         :loading="loading.realtime"
                 :default-sort="{ prop: 'change_percent', order: 'descending' }"
-                :default-sort="{ prop: 'change_percent', order: 'descending' }"
         @sort="handleRealtimeSort"
       >
         <template #cell-symbol="{ value }">
@@ -196,7 +195,6 @@
         row-key="symbol"
         :loading="loading.dragonTiger"
                 :default-sort="{ prop: 'net_amount', order: 'descending' }"
-                :default-sort="{ prop: 'net_amount', order: 'descending' }"
         @sort="handleDragonTigerSort"
       >
         <template #cell-symbol="{ value }">
@@ -226,9 +224,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, _reactive } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { ElCard } from 'element-plus'
-import { ElTable, _ElTableColumn } from 'element-plus'
+import { ElTable, ElTableColumn } from 'element-plus'
 
 interface Summary {
   total_stocks: number

@@ -83,13 +83,36 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 
+interface StockQuote {
+  name?: string
+  symbol: string
+  current?: number
+  change?: number
+  percent_change?: number
+  open?: number
+  high?: number
+  low?: number
+  previous_close?: number
+  volume?: number
+  [key: string]: unknown
+}
+
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
+
 const emit = defineEmits<{
   'api-tested': [feature: string]
 }>()
 
 const quoteSymbol = ref('')
 const quoteMarket = ref('cn')
-const currentQuote = ref<unknown>(null)
+const currentQuote = ref<StockQuote | null>(null)
 const quoteLoading = ref(false)
 
 const fetchQuote = async () => {
@@ -114,7 +137,8 @@ const fetchQuote = async () => {
     emit('api-tested', 'quote')
     ElMessage.success('行情获取成功')
   } catch (error: unknown) {
-    ElMessage.error('获取行情失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('获取行情失败: ' + (apiError.response?.data?.detail || apiError.message))
   } finally {
     quoteLoading.value = false
   }

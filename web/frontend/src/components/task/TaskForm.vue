@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, watch, _computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({

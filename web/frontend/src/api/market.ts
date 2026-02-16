@@ -9,7 +9,8 @@ import { DataAdapter } from '@/utils/adapters'
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  KlineResponse
+  KlineResponse,
+  StockSearchResult
 } from '@/api/types/generated-types'
 import type {
   MarketOverviewVM,
@@ -63,10 +64,10 @@ class MarketApiService {
    * Search stocks
    */
   async searchStocks(query: string, limit: number = 20): Promise<StockSearchVM[]> {
-    const rawData = await request.get(`/api/stock-search`, {
+    const rawData = await request.get<StockSearchResult[]>(`/api/stock-search`, {
       params: { q: query, limit }
     })
-    return DataAdapter.toStockSearchVM(rawData)
+    return DataAdapter.toStockSearchVM(rawData as unknown as StockSearchResult[])
   }
 
   /**

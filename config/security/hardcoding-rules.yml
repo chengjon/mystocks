@@ -1,0 +1,88 @@
+version: 1
+metadata:
+  name: mystocks-hardcoding-rules
+  owner: security
+  description: Tiered hardcoding detection rules for runtime code paths
+
+scopes:
+  runtime:
+    include:
+      - src
+      - web/backend/app
+      - web/frontend/src
+      - config/pm2
+      - config/pm2.config.js
+      - config/tdx_settings.conf
+    exclude:
+      - ".worktrees/**"
+      - "node_modules/**"
+      - "**/__pycache__/**"
+      - "**/*.md"
+      - "**/*.bak"
+      - "**/*.bak*"
+      - "**/*.backup*"
+      - "**/*.min.js"
+      - "tests/**"
+      - "**/test_*.py"
+      - "**/*_test.py"
+      - "docs/**"
+      - "scripts/archive/**"
+      - "web/frontend/dist/**"
+
+rules:
+  - id: HC-P0-PLAINTEXT-CREDENTIAL
+    severity: P0
+    description: Potential plaintext credential assignment
+    regex: "(?i)\\b(password|passwd|pwd|secret|token|api[_-]?key)\\b\\s*[:=]\\s*['\\\"][^'\\\"]{4,}['\\\"]"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".env", ".conf"]
+    excludes:
+      - "(?i)(example|sample|template|mock|dummy|test)"
+      - "\\$\\{[A-Z0-9_]+\\}"
+
+  - id: HC-P0-CONNECTION-URI-WITH-CREDS
+    severity: P0
+    description: Connection URI with embedded credentials
+    regex: "(?i)\\b(?:postgres(?:ql)?|mysql|redis|mongodb|amqp|taos)://[^\\s:@/]+:[^\\s@/]+@"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".env", ".conf"]
+    excludes:
+      - "\\{[^}]+\\}"
+      - "(?i)user:password@"
+
+  - id: HC-P0-KNOWN-DEFAULT-SECRET
+    severity: P0
+    description: Known insecure/default secret literal
+    regex: "(?i)(default-insecure-password-change-me|your-postgresql-password|taosdata|mystocks_password|your-secret-key-here|your-encryption-key)"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".env", ".conf"]
+    excludes:
+      - "(?i)taosdata\\.com"
+      - "(?i)taosdata\\\\\\.com"
+
+  - id: HC-P1-HARDCODED-IPV4
+    severity: P1
+    description: Hardcoded IPv4 address
+    regex: "(?<![\\w.])(?!(?:127|0|255)\\.)(?:\\d{1,3}\\.){3}\\d{1,3}(?![\\w.])"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".env", ".conf"]
+
+  - id: HC-P1-ENV-WITH-STATIC-DEFAULT
+    severity: P1
+    description: Environment variable API with static fallback default
+    regex: "(?i)os\\.getenv\\(\\s*['\\\"][A-Z0-9_]+['\\\"]\\s*,\\s*['\\\"][^'\\\"]+['\\\"]\\s*\\)"
+    include_extensions: [".py"]
+
+  - id: HC-P2-LOCALHOST-HTTP
+    severity: P2
+    description: Localhost HTTP URL literal
+    regex: "(?i)\\bhttps?://localhost(?::\\d+)?"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".conf"]
+
+  - id: HC-P2-LOCALHOST-WS
+    severity: P2
+    description: Localhost WebSocket URL literal
+    regex: "(?i)\\bws://localhost(?::\\d+)?"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".conf"]
+
+  - id: HC-P2-LOOPBACK-URL
+    severity: P2
+    description: Loopback URL literal
+    regex: "(?i)\\b(?:https?|ws)://127\\.0\\.0\\.1(?::\\d+)?"
+    include_extensions: [".py", ".js", ".ts", ".tsx", ".vue", ".json", ".yaml", ".yml", ".sh", ".conf"]

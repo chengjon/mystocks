@@ -14,7 +14,7 @@
           <span class="stat-label">TOTAL INDICATORS</span>
           <span class="stat-value gold">{{ registry?.total_count || 0 }}</span>
         </div>
-        <div v-for="(count, category) in (registry as unknown)?.categories" :key="category" class="stat-item">
+        <div v-for="(count, category) in categoryCounts" :key="category" class="stat-item">
           <span class="stat-label">{{ getCategoryLabel(String(category)) }}</span>
           <span class="stat-value">{{ count }}</span>
         </div>
@@ -35,10 +35,9 @@
             v-model="searchQuery"
             placeholder="SEARCH INDICATOR NAME, ABBREVIATION OR DESCRIPTION..."
             class="search-input"
-            @input="handleFilterChange"
           />
 
-          <select v-model="selectedCategory" @change="handleFilterChange" class="category-select">
+          <select v-model="selectedCategory" class="category-select">
             <option value="">ALL CATEGORIES</option>
             <option value="trend">TREND</option>
             <option value="momentum">MOMENTUM</option>
@@ -75,15 +74,15 @@
             <span class="indicator-abbr">{{ indicator.abbreviation }}</span>
             <div class="indicator-badges">
               <span class="web3-tag category-tag">{{ getCategoryLabel(indicator.category) }}</span>
-              <span class="web3-tag panel-tag">{{ getPanelLabel(indicator.panel_type || (indicator as unknown).panelType) }}</span>
+              <span class="web3-tag panel-tag">{{ getPanelLabel(indicator.panel_type || indicator.panelType) }}</span>
             </div>
           </div>
         </template>
 
         <div class="indicator-content">
           <div class="info-section">
-            <h3>{{ indicator.full_name || (indicator as unknown).fullName }}</h3>
-            <h4>{{ indicator.chinese_name || (indicator as unknown).chineseName }}</h4>
+            <h3>{{ indicator.full_name || indicator.fullName }}</h3>
+            <h4>{{ indicator.chinese_name || indicator.chineseName }}</h4>
             <p class="description">{{ indicator.description }}</p>
           </div>
 
@@ -94,7 +93,7 @@
             </h4>
             <div class="params-grid">
               <div v-for="param in indicator.parameters" :key="param.name" class="param-item">
-                <span class="param-label mono">{{ param.display_name || (param as unknown).displayName }}</span>
+                <span class="param-label mono">{{ param.display_name || param.displayName }}</span>
                 <span class="param-type mono">{{ param.type }}</span>
                 <span class="param-default mono">{{ param.default }}</span>
                 <span class="param-range mono">
@@ -162,7 +161,8 @@ import type { IndicatorMetadata, IndicatorRegistryResponse } from '@/api/types/g
 
 interface IndicatorParameters {
   name: string
-  display_name: string
+  display_name?: string
+  displayName?: string
   type: string
   default: unknown
   min?: number
@@ -178,6 +178,10 @@ interface IndicatorOutput {
 interface IndicatorData extends Omit<IndicatorMetadata, 'parameters' | 'outputs'> {
   parameters: IndicatorParameters[]
   outputs: IndicatorOutput[]
+  // Optional camelCase aliases for snake_case properties
+  fullName?: string
+  chineseName?: string
+  panelType?: string
 }
 
 const loading: Ref<boolean> = ref(false)
@@ -208,7 +212,13 @@ const _indicatorFilters = [
   }
 ]
 
-const quickFilters = [
+interface QuickFilter {
+  key: string
+  label: string
+  filters: { search: string; category: string }
+}
+
+const quickFilters: QuickFilter[] = [
   {
     key: 'all',
     label: 'ALL',
@@ -254,18 +264,18 @@ const filteredIndicators: ComputedRef<IndicatorData[]> = computed(() => {
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    indicators = indicators.filter((ind: unknown) => {
+    indicators = indicators.filter((ind: IndicatorData) => {
       return (
-        ind.abbreviation.toLowerCase().includes(query) ||
+        (ind.abbreviation ?? '').toLowerCase().includes(query) ||
         (ind.full_name ?? ind.fullName ?? '').toLowerCase().includes(query) ||
         (ind.chinese_name ?? ind.chineseName ?? '').includes(query) ||
-        ind.description.toLowerCase().includes(query)
+        (ind.description ?? '').toLowerCase().includes(query)
       )
     })
   }
 
   if (selectedCategory.value) {
-    indicators = indicators.filter((ind: unknown) => ind.category === selectedCategory.value)
+    indicators = indicators.filter((ind: IndicatorData) => ind.category === selectedCategory.value)
   }
 
   return indicators as IndicatorData[]
@@ -277,8 +287,8 @@ const handleFilterChange = (filters: Record<string, unknown> | string) => {
     // In this case, the filters are already bound by v-model
     return
   }
-  searchQuery.value = filters.search || ''
-  selectedCategory.value = filters.category || ''
+  searchQuery.value = (filters.search as string) || ''
+  selectedCategory.value = (filters.category as string) || ''
 }
 
 const getCategoryLabel = (category: string | undefined): string => {
@@ -292,6 +302,17 @@ const getCategoryLabel = (category: string | undefined): string => {
   }
   return labelMap[category] || category
 }
+
+// Computed property for category counts
+const categoryCounts: ComputedRef<Record<string, number>> = computed(() => {
+  if (!registry.value?.indicators) return {}
+  const counts: Record<string, number> = {}
+  for (const ind of registry.value.indicators as IndicatorData[]) {
+    const cat = ind.category || 'other'
+    counts[cat] = (counts[cat] || 0) + 1
+  }
+  return counts
+})
 
 const _getStatVariant = (category: string | undefined): 'default' | 'gold' | 'rise' | 'fall' => {
   if (!category) return 'default'
@@ -321,11 +342,11 @@ const getPanelLabel = (panelType: string | undefined): string => {
   return panelType === 'overlay' ? 'MAIN OVERLAY' : 'SEPARATE PANEL'
 }
 
-const isActiveFilter = (filter: unknown): boolean => {
+const isActiveFilter = (filter: QuickFilter): boolean => {
   return filter.filters.search === searchQuery.value && filter.filters.category === selectedCategory.value
 }
 
-const applyQuickFilter = (filter: unknown): void => {
+const applyQuickFilter = (filter: QuickFilter): void => {
   searchQuery.value = filter.filters.search
   selectedCategory.value = filter.filters.category
   // 不需要调用 handleFilterChange，因为已经直接设置了值

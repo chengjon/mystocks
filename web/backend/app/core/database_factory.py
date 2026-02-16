@@ -21,6 +21,25 @@ from sqlalchemy.orm import Session, sessionmaker
 logger = structlog.get_logger()
 
 
+def _is_dev_like_environment() -> bool:
+    env_name = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    return env_name in {
+        "dev",
+        "development",
+        "test",
+        "local",
+    }
+
+
+def _resolve_env_value(name: str, dev_default: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    if _is_dev_like_environment():
+        return dev_default
+    raise ValueError(f"{name} environment variable must be set in non-dev environments")
+
+
 class DatabaseFactory:
     """
     Factory for creating database connections and sessions
@@ -31,11 +50,11 @@ class DatabaseFactory:
     BEFORE (in each service):
     ```python
     def _build_db_url():
-        host = os.getenv("POSTGRESQL_HOST", "localhost")
-        port = os.getenv("POSTGRESQL_PORT", "5438")
-        user = os.getenv("POSTGRESQL_USER", "postgres")
-        password = os.getenv("POSTGRESQL_PASSWORD", "your-postgresql-password")
-        database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        host = os.getenv("POSTGRESQL_HOST")
+        port = os.getenv("POSTGRESQL_PORT")
+        user = os.getenv("POSTGRESQL_USER")
+        password = os.getenv("POSTGRESQL_PASSWORD")
+        database = os.getenv("POSTGRESQL_DATABASE")
         return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
     ```
 
@@ -75,12 +94,14 @@ class DatabaseFactory:
 
         SECURITY: Use environment variables for credentials, never hardcode
         """
-        # Get credentials from environment or use defaults
-        host = host or os.getenv("POSTGRESQL_HOST", "localhost")
-        port = port or int(os.getenv("POSTGRESQL_PORT", "5438"))
-        user = user or os.getenv("POSTGRESQL_USER", "postgres")
+        # Get credentials from environment
+        host = host or _resolve_env_value("POSTGRESQL_HOST", "127.0.0.1")
+        port = port or int(_resolve_env_value("POSTGRESQL_PORT", "5432"))
+        user = user or _resolve_env_value("POSTGRESQL_USER", "postgres")
         password = password or os.getenv("POSTGRESQL_PASSWORD")
-        database = database or os.getenv("POSTGRESQL_DATABASE", "mystocks")
+        database = database or _resolve_env_value("POSTGRESQL_DATABASE", "mystocks")
+        if not password:
+            raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
 
         # Build connection URL
         url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
@@ -135,11 +156,13 @@ class DatabaseFactory:
         Returns:
             Tuple of (engine, SessionLocal)
         """
-        host = host or os.getenv("MYSQL_HOST", "localhost")
-        port = port or int(os.getenv("MYSQL_PORT", "3306"))
-        user = user or os.getenv("MYSQL_USER", "root")
+        host = host or _resolve_env_value("MYSQL_HOST", "127.0.0.1")
+        port = port or int(_resolve_env_value("MYSQL_PORT", "3306"))
+        user = user or _resolve_env_value("MYSQL_USER", "root")
         password = password or os.getenv("MYSQL_PASSWORD")
-        database = database or os.getenv("MYSQL_DATABASE", "mystocks")
+        database = database or _resolve_env_value("MYSQL_DATABASE", "mystocks")
+        if not password:
+            raise ValueError("MYSQL_PASSWORD environment variable must be set")
 
         url = f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
 

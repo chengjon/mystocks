@@ -13,11 +13,11 @@ import configparser
 import logging
 import os
 import random
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 from dotenv import load_dotenv
-
-load_dotenv()  # Load environment variables from .env
+import yaml
 
 load_dotenv()  # Load environment variables from .env
 
@@ -59,6 +59,10 @@ class TdxServerConfig:
                 config_file = os.path.join(project_root, "temp", "connect.cfg")
 
         self.config_file = config_file
+        self.server_pool_file = os.getenv(
+            "TDX_SERVER_POOL_FILE",
+            str(Path(__file__).resolve().parents[2] / "config" / "tdx_servers.yaml"),
+        )
         self.servers = []  # [(host, port, name), ...]
         self.primary_index = 0  # 主服务器索引
 
@@ -76,10 +80,11 @@ class TdxServerConfig:
 
         编码处理: connect.cfg使用GBK编码(中文Windows默认)
         """
+        pool_servers = self._load_servers_from_pool_file()
+
         if not os.path.exists(self.config_file):
             self.logger.warning("TDX配置文件不存在: %s, 使用默认服务器", self.config_file)
-            # 使用默认服务器
-            self.servers = [("101.227.73.20", 7709, "默认服务器")]
+            self.servers = pool_servers or self._get_env_fallback_server()
             self.primary_index = 0
             return
 
@@ -99,7 +104,7 @@ class TdxServerConfig:
             # 解析[HQHOST]部分
             if "HQHOST" not in config:
                 self.logger.error("配置文件中未找到[HQHOST]部分")
-                self.servers = [("101.227.73.20", 7709, "默认服务器")]
+                self.servers = pool_servers or self._get_env_fallback_server()
                 return
 
             hq_section = config["HQHOST"]
@@ -138,9 +143,36 @@ class TdxServerConfig:
 
         except Exception:
             self.logger.error("解析TDX配置文件失败: {e}", exc_info=True)
-            # 使用默认服务器
-            self.servers = [("101.227.73.20", 7709, "默认服务器")]
+            self.servers = pool_servers or self._get_env_fallback_server()
             self.primary_index = 0
+
+    def _load_servers_from_pool_file(self) -> List[Tuple[str, int, str]]:
+        if not os.path.exists(self.server_pool_file):
+            return []
+        try:
+            with open(self.server_pool_file, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            servers = data.get("servers", [])
+            result: List[Tuple[str, int, str]] = []
+            for item in servers:
+                if not isinstance(item, dict):
+                    continue
+                if not item.get("enabled", True):
+                    continue
+                host = str(item.get("host", "")).strip()
+                port = int(item.get("port", 0))
+                name = str(item.get("name") or item.get("id") or "server").strip()
+                if host and port > 0:
+                    result.append((host, port, name))
+            return result
+        except Exception:
+            self.logger.error("读取TDX地址池配置失败: %s", self.server_pool_file, exc_info=True)
+            return []
+
+    def _get_env_fallback_server(self) -> List[Tuple[str, int, str]]:
+        host = os.getenv("TDX_SERVER_HOST") or "127.0.0.1"
+        port = int(os.getenv("TDX_SERVER_PORT") or "7709")
+        return [(host, port, "环境回退服务器")]
 
     def get_primary_server(self) -> Tuple[str, int]:
         """
@@ -155,7 +187,8 @@ class TdxServerConfig:
             >>> print(f"主服务器: {host}:{port}")
         """
         if not self.servers:
-            return ("101.227.73.20", 7709)
+            host, port, _ = self._get_env_fallback_server()[0]
+            return (host, port)
 
         host, port, _ = self.servers[self.primary_index]
         return (host, port)
@@ -172,7 +205,8 @@ class TdxServerConfig:
             - 主服务器繁忙时的备选方案
         """
         if not self.servers:
-            return ("101.227.73.20", 7709)
+            host, port, _ = self._get_env_fallback_server()[0]
+            return (host, port)
 
         host, port, _ = random.choice(self.servers)
         return (host, port)
@@ -235,7 +269,8 @@ class TdxServerConfig:
             >>>         continue  # 尝试下一个服务器
         """
         if not self.servers:
-            return [("101.227.73.20", 7709)]
+            host, port, _ = self._get_env_fallback_server()[0]
+            return [(host, port)]
 
         # 1. 主服务器
         primary = self.servers[self.primary_index]

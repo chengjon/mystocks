@@ -11,7 +11,6 @@
           Current <code>server.py</code> only implements welcome page, no ML prediction endpoints exposed.
           Model prediction logic only exists in <code>model.py</code> as standalone script.
         </div>
-      </div>
 
       <h3 style="margin-top: 20px">EXISTING ENDPOINTS</h3>
       <div class="info-grid" style="margin-top: 15px">
@@ -53,6 +52,7 @@
         </tbody>
       </table>
 
+      <div class="alert-card">
         <div class="alert-title">INTEGRATION RECOMMENDATIONS</div>
         <div class="alert-content">
           <strong>Recommended PyProfiling Integration:</strong>

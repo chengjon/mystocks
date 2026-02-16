@@ -1,4 +1,5 @@
 <template>
+  <div class="wencai-page">
 
     <div class="page-header">
       <h1 class="page-title">WENCAI</h1>

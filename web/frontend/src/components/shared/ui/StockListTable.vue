@@ -77,7 +77,7 @@
                 v-if="action.type === 'button'"
                 :type="action.variant || 'default'"
                 :size="action.size || 'small'"
-                :icon="action.icon"
+                :icon="action.icon as string | undefined"
                 :disabled="action.disabled?.(row) || false"
                 :loading="action.loading?.(row) || false"
                 @click.stop="handleAction(action, row, $index)"
@@ -94,7 +94,7 @@
                 <el-button
                   :type="action.variant || 'default'"
                   :size="action.size || 'small'"
-                  :icon="action.icon"
+                  :icon="action.icon as string | undefined"
                   :disabled="action.disabled?.(row) || false"
                   :loading="action.loading?.(row) || false"
                   circle
@@ -143,9 +143,9 @@
 </template>
 
 <script setup lang="ts">
-import { _ref, _computed } from 'vue'
+import { ref, computed } from 'vue'
 import { ArrowDown, DocumentDelete } from '@element-plus/icons-vue'
-import type { _TableColumnCtx } from 'element-plus'
+import type { TableColumnCtx } from 'element-plus'
 
 export interface TableColumn {
   prop: string
@@ -166,7 +166,7 @@ export interface TableAction {
   type: 'button' | 'icon' | 'dropdown'
   variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'default'
   size?: 'large' | 'default' | 'small'
-  icon?: unknown
+  icon?: string | object
   disabled?: (row: unknown) => boolean
   loading?: (row: unknown) => boolean
   handler?: (row: unknown, index: number) => void
@@ -176,7 +176,7 @@ export interface TableAction {
 export interface TableActionItem {
   key: string
   text: string
-  icon?: unknown
+  icon?: string | object
   disabled?: (row: unknown) => boolean
   handler?: (row: unknown, index: number) => void
 }
@@ -265,7 +265,7 @@ const formatCellValue = (value: unknown, column: TableColumn) => {
   return value
 }
 
-const getCellClass = (row: unknown, column: TableColumn) => {
+const getCellClass = (row: Record<string, unknown>, column: TableColumn) => {
   if (column.colorClass) {
     return column.colorClass(row[column.prop], row)
   }

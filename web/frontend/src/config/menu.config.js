@@ -35,14 +35,14 @@ const menuConfig = [
       {
         id: 'market-realtime',
         title: '实时行情',
-        path: '/tdx-market',
+        path: '/market/realtime',
         icon: 'DataLine',
         disabled: false
       },
       {
         id: 'market-kline',
         title: 'K线图',
-        path: '/market/kline',
+        path: '/market/technical',
         icon: 'DataAnalysis',
         disabled: false
       },
@@ -105,22 +105,18 @@ const menuConfig = [
       },
       {
         id: 'strategy-risk',
-        title: '风险管理',
+        title: '策略参数',
         path: '/strategy/risk',
-        icon: 'Warning',
+        icon: 'Operation',
         disabled: false
-      }
-    ]
-  },
-
-  // 机器学习
-  {
-    id: 'ml',
-    title: '机器学习',
-    icon: 'Connection',
-    disabled: false,
-    roles: ['admin'],
-    children: [
+      },
+      {
+        id: 'strategy-signals',
+        title: '信号监控',
+        path: '/strategy/signals',
+        icon: 'Broadcast',
+        disabled: false
+      },
       {
         id: 'ml-training',
         title: '模型训练',
@@ -138,36 +134,86 @@ const menuConfig = [
     ]
   },
 
-  // 自选股管理
+  // 风险管理 (Risk Management) - V3.1 System
   {
-    id: 'watchlist',
-    title: '自选股',
-    path: '/watchlist',
-    icon: 'Star',
+    id: 'risk-management',
+    title: '风险管理',
+    icon: 'Warning',
     disabled: false,
-    roles: ['admin', 'user']
-  },
-
-  // 数据管理
-  {
-    id: 'data',
-    title: '数据管理',
-    icon: 'FolderOpened',
-    disabled: false,
-    roles: ['admin'],
+    roles: ['admin', 'user'],
     children: [
       {
-        id: 'data-import',
-        title: '数据导入',
-        path: '/data/import',
-        icon: 'Upload',
+        id: 'risk-overview',
+        title: '风险概览',
+        path: '/risk/overview',
+        icon: 'DataAnalysis',
         disabled: false
       },
       {
-        id: 'data-quality',
-        title: '数据质量',
-        path: '/data/quality',
-        icon: 'Checked',
+        id: 'risk-stop-loss',
+        title: '止损监控',
+        path: '/monitoring/watchlists', // 暂时映射到监控清单，未来升级为专用止损界面
+        icon: 'Aim',
+        disabled: false
+      },
+      {
+        id: 'risk-alerts',
+        title: '告警中心',
+        path: '/risk/alerts',
+        icon: 'Bell',
+        disabled: false
+      },
+      {
+        id: 'risk-rules',
+        title: '规则引擎',
+        path: '/risk/alerts', // 暂时复用告警中心，未来分离
+        icon: 'Setting',
+        disabled: false
+      },
+      {
+        id: 'risk-announcement',
+        title: '公告监控',
+        path: '/risk/announcement',
+        icon: 'Document',
+        disabled: false
+      }
+    ]
+  },
+
+  // 自选组合 (Watchlist & Portfolio) - DDD Phase 11B
+  {
+    id: 'watchlist',
+    title: '自选组合',
+    icon: 'Star',
+    disabled: false,
+    roles: ['admin', 'user'],
+    children: [
+      {
+        id: 'watchlist-manage',
+        title: '自选管理',
+        path: '/stocks/management',
+        icon: 'List',
+        disabled: false
+      },
+      {
+        id: 'watchlist-portfolio',
+        title: '持仓透视',
+        path: '/stocks/portfolio',
+        icon: 'PieChart',
+        disabled: false
+      },
+      {
+        id: 'watchlist-scanner',
+        title: '技术扫描',
+        path: '/stocks/management', // 暂复用管理页，待独立视图开发
+        icon: 'Aim',
+        disabled: false
+      },
+      {
+        id: 'watchlist-prediction',
+        title: '智能预测',
+        path: '/stocks/management', // 暂复用管理页，待独立视图开发
+        icon: 'TrendCharts',
         disabled: false
       }
     ]
@@ -212,8 +258,15 @@ const menuConfig = [
       {
         id: 'system-config',
         title: '系统配置',
-        path: '/system/config',
+        path: '/system/settings',
         icon: 'Tools',
+        disabled: false
+      },
+      {
+        id: 'data-import',
+        title: '数据导入',
+        path: '/data/import',
+        icon: 'Upload',
         disabled: false
       }
     ]

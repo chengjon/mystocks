@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- PWA Manifest and Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#D4AF37" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MyStocks" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <meta name="msapplication-TileColor" content="#D4AF37" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Fonts: 合并为单次请求 + 异步加载避免阻塞渲染 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+
+    <!-- CSP temporarily disabled for debugging -->
+    <!--
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                   img-src 'self' data: https: blob:;
+                   font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com data:;
+                   connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 ws://localhost:8000;
+                   form-action 'self';
+                   base-uri 'self';" />
+    -->
+
+    <!-- Prevent clickjacking attacks -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- CSRF Token meta tag for frontend to use -->
+    <meta name="csrf-token" content="">
+
+    <title>MyStocks - Professional Stock Analysis</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="app-skeleton" style="display:flex;height:100vh;background:#0a0a0f;color:#d4af37;font-family:system-ui,sans-serif">
+        <div style="width:220px;background:#111118;padding:20px">
+          <div style="width:120px;height:24px;background:#1a1a24;border-radius:4px;margin-bottom:32px"></div>
+          <div style="width:160px;height:16px;background:#1a1a24;border-radius:4px;margin-bottom:16px"></div>
+          <div style="width:140px;height:16px;background:#1a1a24;border-radius:4px;margin-bottom:16px"></div>
+          <div style="width:150px;height:16px;background:#1a1a24;border-radius:4px;margin-bottom:16px"></div>
+        </div>
+        <div style="flex:1;padding:24px">
+          <div style="width:200px;height:28px;background:#1a1a24;border-radius:4px;margin-bottom:24px"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+            <div style="height:100px;background:#111118;border-radius:8px"></div>
+            <div style="height:100px;background:#111118;border-radius:8px"></div>
+            <div style="height:100px;background:#111118;border-radius:8px"></div>
+          </div>
+          <div style="height:300px;background:#111118;border-radius:8px"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main-standard.ts"></script>
+  </body>
+</html>

@@ -77,6 +77,13 @@ import { ARTDECO_MENU_ENHANCED } from '@/layouts/MenuConfig.enhanced'
 // Types
 type CommandType = 'navigation' | 'action' | 'search' | 'external'
 
+interface MenuItem {
+  label: string
+  path?: string
+  icon?: string
+  children?: MenuItem[]
+}
+
 interface CommandItem {
   id: string
   label: string
@@ -116,12 +123,12 @@ const mockStocks = [
 // Commands Generation
 const generateNavigationCommands = (): CommandItem[] => {
   const commands: CommandItem[] = []
-  
-  const traverse = (items: unknown[], parentLabel = '') => {
+
+  const traverse = (items: MenuItem[], parentLabel = '') => {
     items.forEach(item => {
       if (item.children) {
         traverse(item.children, item.label)
-      } else {
+      } else if (item.path) {
         commands.push({
           id: `nav-${item.path}`,
           label: item.label,
@@ -129,7 +136,7 @@ const generateNavigationCommands = (): CommandItem[] => {
           type: 'navigation',
           icon: item.icon || 'FileText',
           handler: () => {
-            router.push(item.path)
+            router.push(item.path!)
             close()
           },
           keywords: [item.label, parentLabel, 'page', 'nav']
@@ -137,8 +144,8 @@ const generateNavigationCommands = (): CommandItem[] => {
       }
     })
   }
-  
-  traverse(ARTDECO_MENU_ENHANCED)
+
+  traverse(ARTDECO_MENU_ENHANCED as MenuItem[])
   return commands
 }
 

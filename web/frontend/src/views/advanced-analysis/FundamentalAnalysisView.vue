@@ -5,7 +5,7 @@
             <h4>财务比率</h4>
             <div class="ratios-grid">
                 <div v-for="ratio in financialRatios" :key="ratio.key" class="ratio-item">
-                    <div class="ratio-value" :class="getRatioClass(ratio.value)">{{ ratio.value }}</div>
+                    <div class="ratio-value" :class="getRatioClass(String(ratio.value))">{{ ratio.value }}</div>
                     <div class="ratio-label">{{ ratio.label }}</div>
                 </div>
             </div>
@@ -87,8 +87,23 @@
 <script setup lang="ts">
     import { computed } from 'vue'
 
+    interface FundamentalData {
+        pe_ratio?: number
+        pb_ratio?: number
+        roe?: number
+        debt_ratio?: number
+        gross_margin?: number
+        net_margin?: number
+        return_on_assets?: number
+        asset_turnover?: string
+        current_ratio?: number
+        quick_ratio?: number
+        cash_ratio?: number
+        interest_coverage?: number
+    }
+
     interface Props {
-        data: unknown
+        data: FundamentalData
     }
 
     const props = defineProps<Props>()
@@ -123,28 +138,31 @@
     const profitabilityMetrics = computed(() => {
         if (!props.data) return []
 
+        const grossMargin = props.data.gross_margin ?? 0
+        const netMargin = props.data.net_margin ?? 0
+        const returnOnAssets = props.data.return_on_assets ?? 0
+
         return [
             {
                 key: 'gross_margin',
                 label: '毛利率',
                 value: props.data.gross_margin ? `${props.data.gross_margin}%` : 'N/A',
                 benchmark: '15-25%',
-                evaluation: props.data.gross_margin > 20 ? '优秀' : props.data.gross_margin > 15 ? '良好' : '一般'
+                evaluation: grossMargin > 20 ? '优秀' : grossMargin > 15 ? '良好' : '一般'
             },
             {
                 key: 'net_margin',
                 label: '净利率',
                 value: props.data.net_margin ? `${props.data.net_margin}%` : 'N/A',
                 benchmark: '5-10%',
-                evaluation: props.data.net_margin > 8 ? '优秀' : props.data.net_margin > 5 ? '良好' : '一般'
+                evaluation: netMargin > 8 ? '优秀' : netMargin > 5 ? '良好' : '一般'
             },
             {
                 key: 'return_on_assets',
                 label: '总资产报酬率',
                 value: props.data.return_on_assets ? `${props.data.return_on_assets}%` : 'N/A',
                 benchmark: '8-15%',
-                evaluation:
-                    props.data.return_on_assets > 12 ? '优秀' : props.data.return_on_assets > 8 ? '良好' : '一般'
+                evaluation: returnOnAssets > 12 ? '优秀' : returnOnAssets > 8 ? '良好' : '一般'
             }
         ]
     })

@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ZOOM_LEVELS, ANIMATION_DURATION, PAN_DISTANCE } from '@/components/technical/config/klineChartConfig'
 
@@ -9,7 +9,7 @@ import { ZOOM_LEVELS, ANIMATION_DURATION, PAN_DISTANCE } from '@/components/tech
  * @param {Ref} performanceMonitorRef - Reference to performance monitor component
  * @returns {Object} Chart control functions and state
  */
-export function useKLineControls(chartRef, performanceMonitorRef) {
+export function useKLineControls(chartRef: Ref<any>, performanceMonitorRef: Ref<any>) {
   const currentZoomIndex = ref(2)
   const showPerformanceMonitor = ref(false)
 
@@ -61,7 +61,7 @@ export function useKLineControls(chartRef, performanceMonitorRef) {
    * Pan chart in specified direction
    * @param {string} direction - 'left', 'right', 'up', 'down'
    */
-  const panChart = (direction) => {
+  const panChart = (direction: string) => {
     if (!chartRef.value) return
 
     try {
@@ -114,10 +114,10 @@ export function useKLineControls(chartRef, performanceMonitorRef) {
    * Change chart type (candle, ohlc, area, etc.)
    * @param {string} type - Chart type identifier
    */
-  const handleChartTypeChange = (type) => {
+  const handleChartTypeChange = (type: string) => {
     if (!chartRef.value) return
 
-    const typeMap = {
+    const typeMap: Record<string, string> = {
       'candle_solid': '蜡烛图',
       'candle_stroke': '空心蜡烛',
       'candle_up_stroke': '涨空心跌实心',
@@ -145,7 +145,7 @@ export function useKLineControls(chartRef, performanceMonitorRef) {
    * Handle period change
    * @param {string} period - Period identifier
    */
-  const handlePeriodChange = (period) => {
+  const handlePeriodChange = (period: string) => {
     console.log('[useKLineControls] Period changed to:', period)
     ElMessage.info('周期切换功能即将实现')
   }
@@ -164,7 +164,7 @@ export function useKLineControls(chartRef, performanceMonitorRef) {
    * @param {string} metricName - Metric name for logging
    * @returns {Promise<unknown>}
    */
-  const measurePerformance = async (fn, metricName = 'operation') => {
+  const measurePerformance = async (fn: () => Promise<unknown>, metricName = 'operation') => {
     const startTime = performance.now()
     try {
       const result = await fn()

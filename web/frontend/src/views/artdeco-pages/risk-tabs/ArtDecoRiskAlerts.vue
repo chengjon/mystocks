@@ -1,5 +1,16 @@
+<template>
+  <div class="risk-alerts">
+    <p>Risk Alerts - Component under development</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Placeholder component - under development
+</script>
+
 <style scoped lang="scss">
 @import '@/styles/artdeco-quant-extended';
+@import '@/styles/data-dense/index';
 
 .risk-alerts {
     min-height: 800px;

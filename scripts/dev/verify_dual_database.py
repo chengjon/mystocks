@@ -150,7 +150,7 @@ async def verify_dual_db_architecture():
 async def verify_data_adapters():
     """验证数据源适配器"""
     print("\n" + "=" * 60)
-    print🔌 验证数据源适配器")
+    print("🔌 验证数据源适配器")
     print("=" * 60)
 
     try:

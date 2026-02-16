@@ -6,10 +6,10 @@
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
-     import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type _PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
-     import type { _MarketOverviewResponse, _FundFlowAPIResponse } from '@/api/types/generated-types'
-     import { _marketService } from '@/api/services/marketService'
-     import { _strategyApiService } from '@/api/services/strategyService'
+     import { getPageConfig, getTabConfig, isRouteName, isMonolithicConfig, type PageConfig, type MonolithicPageConfig, type TabConfig } from '@/config/pageConfig'
+     import type { MarketOverviewResponse, FundFlowAPIResponse } from '@/api/types/generated-types'
+     import { marketService } from '@/api/services/marketService'
+     import { strategyApiService } from '@/api/services/strategyService'
 
 export function useArtDecoTradingManagement() {
 
@@ -152,7 +152,7 @@ export function useArtDecoTradingManagement() {
     const marketStatus = computed(() => '正常')
     const marketTrend = computed(() => 'up')
     const marketStatusColor = computed(() => 'gold' as const)
-    const activeSignalsCount = computed(() => tradingSignals.value.length)
+    const activeSignalsCount = computed(() => tradingSignals.value.signals?.length || 0)
     const todayPnL = computed(() => '+2,450.80')
     const todayPnLTrend = computed(() => 'up')
     const todayPnLColor = computed(() => 'gold' as const)
@@ -210,28 +210,47 @@ export function useArtDecoTradingManagement() {
     ])
 
     // 交易信号
-    const tradingSignals = ref<unknown[]>([
-        {
-            id: 'SIG001',
-            symbol: '600036',
-            name: '招商银行',
-            type: '买入',
-            price: 38.9,
-            confidence: 0.85,
-            timestamp: '2025-01-14 14:32:15',
-            status: '待执行'
-        },
-        {
-            id: 'SIG002',
-            symbol: '000858',
-            name: '五粮液',
-            type: '卖出',
-            price: 128.3,
-            confidence: 0.72,
-            timestamp: '2025-01-14 14:28:42',
-            status: '待执行'
-        }
-    ])
+    interface TradingSignal {
+        id: string
+        symbol: string
+        name: string
+        type: string
+        price: number
+        confidence: number
+        timestamp: string
+        status: string
+    }
+
+    interface TradingSignalsData {
+        signals?: TradingSignal[]
+        history?: unknown[]
+        [key: string]: unknown
+    }
+
+    const tradingSignals = ref<TradingSignalsData>({
+        signals: [
+            {
+                id: 'SIG001',
+                symbol: '600036',
+                name: '招商银行',
+                type: '买入',
+                price: 38.9,
+                confidence: 0.85,
+                timestamp: '2025-01-14 14:32:15',
+                status: '待执行'
+            },
+            {
+                id: 'SIG002',
+                symbol: '000858',
+                name: '五粮液',
+                type: '卖出',
+                price: 128.3,
+                confidence: 0.72,
+                timestamp: '2025-01-14 14:28:42',
+                status: '待执行'
+            }
+        ]
+    })
 
     // 交易历史
     const tradingHistory = ref<unknown[]>([
@@ -379,18 +398,11 @@ onUnmounted(() => {
     currentRouteName,
     currentPageConfig,
     isMonolithic,
-    config,
     activeTab,
     mainTabs,
-    config,
     currentTabConfig,
-    _config,
     apiEndpoint,
-    config,
-    _wsChannel,
-    config,
     switchTab,
-    targetPath,
     tradingStats,
     signalFilters,
     activeSignalFilter,
@@ -409,8 +421,6 @@ onUnmounted(() => {
     todayPnL,
     todayPnLTrend,
     todayPnLColor,
-    _realtimeStatus,
-    _realtimeStatusColor,
     refreshing,
     attributionDateRange,
     selectedPortfolio,
@@ -423,18 +433,13 @@ onUnmounted(() => {
     historyLoading,
     handleExportCsv,
     handleBatchExecute,
-    refreshData,
     openSettings,
-    _handleStopSignals,
-    _handleUpdateConfig,
     handleClosePosition,
     handleAdjustPosition,
     handleExecuteSignal,
     handleCancelSignal,
     handleHistoryFilter,
-    _handleExportHistory,
     handleLoadMoreHistory,
     handleAttributionAnalysis,
-    _timer_1,
   }
 }

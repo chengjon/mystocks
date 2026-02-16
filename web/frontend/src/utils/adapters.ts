@@ -9,11 +9,46 @@
 import type {
   MarketOverviewResponse,
   FundFlowResponse,
-  _KlineResponse,
+  KlineResponse,
   KLineDataResponse,
-  _FundFlowItem,
+  FundFlowItem,
   StockSearchResult
 } from '@/api/types/generated-types'
+
+// Type definitions for API response items
+interface IndexQuoteItem {
+  indexName?: string
+  name?: string
+  currentPrice?: number
+  current?: number
+  change?: number
+  changePercent?: number
+  volume?: number
+}
+
+interface HotSectorItem {
+  sectorName?: string
+  changePercent?: number
+  stockCount?: number
+  leadingStock?: string
+  leaderStock?: string
+}
+
+interface FundFlowDataItem {
+  tradeDate?: string
+  mainNetInflow?: number
+  mainInflow?: number
+}
+
+interface KLinePointItem {
+  date?: string
+  tradeDate?: string
+  open?: number
+  close?: number
+  low?: number
+  high?: number
+  volume?: number
+}
 
 // Temporary: Use any for missing generated types
 // TODO: Fix type generation to include these types
@@ -77,7 +112,8 @@ export class DataAdapter {
    */
   static toMarketOverviewVM(data: MarketOverviewResponse): MarketOverviewVM {
     // Handle indices - API uses 'indices' field with IndexQuote type
-    const indices = (data.indices || []).map((item: unknown) => ({
+    const rawData = data as Record<string, unknown>
+    const indices = ((rawData.indices || []) as IndexQuoteItem[]).map((item: IndexQuoteItem) => ({
       name: item.indexName || item.name || '',
       current: item.currentPrice || item.current || 0,
       change: item.change || 0,
@@ -87,7 +123,7 @@ export class DataAdapter {
     }))
 
     // Handle sectors - API uses 'hot_sectors' with HotSector type
-    const sectors = (data.hot_sectors || []).map((item: unknown) => ({
+    const sectors = ((rawData.hot_sectors || []) as HotSectorItem[]).map((item: HotSectorItem) => ({
       name: item.sectorName || '',
       changePercent: this.formatPercent(item.changePercent || 0),
       stockCount: item.stockCount || 0,
@@ -118,9 +154,10 @@ export class DataAdapter {
    */
   static toFundFlowChartData(data: FundFlowResponse): FundFlowChartPoint[] {
     // Handle different API response formats
-    const items = (data as Record<string, unknown>).items || (data as Record<string, unknown>).fundFlow || []
+    const rawData = data as Record<string, unknown>
+    const items = (rawData.items || rawData.fundFlow || []) as FundFlowDataItem[]
 
-    return items.map((item: unknown) => ({
+    return items.map((item: FundFlowDataItem) => ({
       date: item.tradeDate || '',
       mainInflow: this.convertToWan(item.mainNetInflow || item.mainInflow || 0),
       mainOutflow: Math.abs(this.convertToWan(item.mainNetInflow || 0)),
@@ -135,26 +172,29 @@ export class DataAdapter {
    */
   static toKLineChartData(data: KLineDataResponse): KLineChartData {
     // Handle different response formats
-    const points = (data as Record<string, unknown>).points ||
-      (data as Record<string, unknown>).data ||
-      (data as Record<string, unknown>).candles || []
+    const rawData = data as Record<string, unknown>
+    const points = (rawData.points || rawData.data || rawData.candles || []) as (KLinePointItem | unknown[])[]
 
     return {
-      categoryData: points.map((p: unknown) => p.date || p.tradeDate || p[0] || ''),
-      values: points.map((p: unknown) => {
+      categoryData: points.map((p) => {
+        if (Array.isArray(p)) return String(p[0] || '')
+        return (p as KLinePointItem).date || (p as KLinePointItem).tradeDate || ''
+      }),
+      values: points.map((p): number[] => {
         if (Array.isArray(p)) {
-          return [p[1] || 0, p[2] || 0, p[3] || 0, p[4] || 0] // open, close, low, high
+          return [Number(p[1]) || 0, Number(p[2]) || 0, Number(p[3]) || 0, Number(p[4]) || 0] // open, close, low, high
         }
+        const point = p as KLinePointItem
         return [
-          p.open || 0,
-          p.close || 0,
-          p.low || 0,
-          p.high || 0
+          point.open || 0,
+          point.close || 0,
+          point.low || 0,
+          point.high || 0
         ]
       }),
-      volumes: points.map((p: unknown) => {
-        if (Array.isArray(p)) return p[5] || 0 // volume is 6th element
-        return p.volume || 0
+      volumes: points.map((p): number => {
+        if (Array.isArray(p)) return Number(p[5]) || 0
+        return (p as KLinePointItem).volume || 0
       })
     }
   }
@@ -164,12 +204,12 @@ export class DataAdapter {
    */
   static toStockSearchVM(data: StockSearchResult[]): StockSearchVM[] {
     return data.map((item: unknown) => ({
-      symbol: item.symbol || '',
-      name: item.name || '',
-      market: item.market || '',
-      current: item.current || 0,
-      changePercent: this.formatPercent(item.changePercent || item.change_percent || 0),
-      trend: this.getTrend(item.change || 0)
+      symbol: (item as StockSearchResult).symbol || '',
+      name: (item as StockSearchResult).name || '',
+      market: (item as StockSearchResult).market || '',
+      current: (item as StockSearchResult).current || 0,
+      changePercent: this.formatPercent((item as StockSearchResult).changePercent || 0),
+      trend: this.getTrend((item as StockSearchResult).change || 0)
     }))
   }
 

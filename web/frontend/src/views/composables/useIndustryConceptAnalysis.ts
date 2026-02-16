@@ -1,9 +1,7 @@
-import { ref, computed, onMounted, _watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { TableColumn } from '@/components/shared'
 import {
-
-export function useIndustryConceptAnalysis() {
   getIndustryList,
   getConceptList,
   getIndustryStocks,
@@ -11,17 +9,49 @@ export function useIndustryConceptAnalysis() {
   getIndustryPerformance
 } from '@/api/industryConcept.js'
 
+// Type definitions
+interface IndustryItem {
+  industry_code: string
+  industry_name: string
+  [key: string]: unknown
+}
+
+interface ConceptItem {
+  concept_code: string
+  concept_name: string
+  [key: string]: unknown
+}
+
+interface CategoryData {
+  category_name?: string
+  change_percent?: number
+  stock_count?: number
+  leader_stock?: string
+  up_count?: number
+  down_count?: number
+  flat_count?: number
+  [key: string]: unknown
+}
+
+interface StockItem {
+  code: string
+  name: string
+  [key: string]: unknown
+}
+
+export function useIndustryConceptAnalysis() {
+
 const activeTab = ref<'industry' | 'concept'>('industry')
 const loading = ref(false)
 const stocksLoading = ref(false)
 
-const industryList = ref<unknown[]>([])
-const conceptList = ref<unknown[]>([])
+const industryList = ref<IndustryItem[]>([])
+const conceptList = ref<ConceptItem[]>([])
 const selectedIndustry = ref('')
 const selectedConcept = ref('')
 
-const currentCategory = ref<unknown>(null)
-const stocks = ref<unknown[]>([])
+const currentCategory = ref<CategoryData | null>(null)
+const stocks = ref<StockItem[]>([])
 
 const searchKeyword = ref('')
 const currentPage = ref(1)
@@ -130,7 +160,7 @@ const tableColumns = computed((): TableColumn[] => [
     label: '涨跌幅',
     width: 120,
     align: 'right',
-    colorClass: (row: unknown) => getChangeColorClass(row.change_percent),
+    colorClass: (row: Record<string, any>) => getChangeColorClass(row.change_percent),
     formatter: (value: number) => formatPercent(value)
   },
   {
@@ -156,7 +186,7 @@ const paginatedStocks = computed(() => {
 
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    result = stocks.value.filter((stock: unknown) =>
+    result = stocks.value.filter((stock: Record<string, any>) =>
       stock.symbol.toLowerCase().includes(keyword) ||
       (stock.name && stock.name.toLowerCase().includes(keyword))
     )
@@ -222,7 +252,8 @@ const refreshData = async () => {
     ElMessage.success('数据刷新成功')
   } catch (error: unknown) {
     console.error('数据刷新失败:', error)
-    ElMessage.error('数据刷新失败: ' + error.message)
+    const err = error as Record<string, any>
+    ElMessage.error('数据刷新失败: ' + (err?.message || 'Unknown error'))
   } finally {
     loading.value = false
   }
@@ -361,16 +392,11 @@ onMounted(() => {
     pageSize,
     stats,
     pieChartData,
-    data,
     pieChartOptions,
     barChartData,
     barChartOptions,
     tableColumns,
     paginatedStocks,
-    start,
-    end,
-    result,
-    keyword,
     formatPercent,
     formatPrice,
     formatVolume,
@@ -379,13 +405,9 @@ onMounted(() => {
     getChangeColorClass,
     refreshData,
     loadIndustryList,
-    response,
     loadConceptList,
-    response,
     loadIndustryStocks,
     loadConceptStocks,
-    response,
-    concept,
     handleTabChange,
     handleIndustryChange,
     handleConceptChange,

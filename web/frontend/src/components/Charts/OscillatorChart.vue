@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { init, dispose, type Chart, type LayoutChildType, type _ActionType } from 'klinecharts';
+import { init, dispose, type Chart, type LayoutChildType, type ActionType } from 'klinecharts';
 import type { KLineData } from '@/types/kline';
 import type { OscillatorType } from '@/utils/indicator';
 import { calculateOscillator, formatOscillatorValue } from '@/utils/indicator/oscillator';

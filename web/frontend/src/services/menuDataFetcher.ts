@@ -10,7 +10,7 @@
  */
 
 import { apiClient } from '@/api/apiClient'
-import type { UnifiedResponse } from '@/api/apiClient'
+import type { UnifiedResponse } from '@/api/types/common'
 import type { MenuItem } from '@/layouts/MenuConfig.enhanced'
 
 export interface MenuDataFetchOptions {
@@ -110,7 +110,7 @@ export async function fetchMenuItemData<T = unknown>(
       console.log(`[MenuDataFetcher] Cache hit for: ${cacheKey}`)
       return {
         success: true,
-        data: cachedData,
+        data: cachedData as T,
         cached: true
       }
     }
@@ -162,7 +162,8 @@ export async function fetchMenuItemData<T = unknown>(
       }
     } catch (error: unknown) {
       lastError = error
-      console.warn(`[MenuDataFetcher] Attempt ${attempt + 1} failed:`, error.message)
+      const errMsg = error instanceof Error ? error.message : String(error)
+      console.warn(`[MenuDataFetcher] Attempt ${attempt + 1} failed:`, errMsg)
 
       // 最后一次重试失败，不再继续
       if (attempt === retries) {
@@ -176,7 +177,7 @@ export async function fetchMenuItemData<T = unknown>(
   }
 
   // 所有重试都失败
-  const errorMessage = lastError?.message || `获取数据失败: ${item.label}`
+  const errorMessage = lastError instanceof Error ? lastError.message : `获取数据失败: ${item.label}`
 
   console.error(`[MenuDataFetcher] All retries failed: ${method} ${item.apiEndpoint}`, lastError)
 

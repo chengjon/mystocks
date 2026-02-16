@@ -122,43 +122,65 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import WatchlistGroupManager from '@/components/watchlist/WatchlistGroupManager.vue'
 
+interface WatchlistGroup {
+  id: number
+  group_name: string
+}
+
+interface WatchlistStock {
+  symbol: string
+  displayName?: string
+  market: string
+  exchange: string
+  notes?: string
+}
+
 interface Props {
-  groups: unknown[]
+  groups: WatchlistGroup[]
 }
 
 const _props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'get-quote': [stock: unknown]
+  'get-quote': [stock: WatchlistStock]
   'groups-changed': []
   'api-tested': [feature: string]
 }>()
 
 const groupManagerRef = ref<unknown>(null)
-const currentGroupId = ref<unknown>(null)
+const currentGroupId = ref<number | undefined>(undefined)
 const currentGroupName = ref('')
-const currentGroupStocks = ref<unknown[]>([])
+const currentGroupStocks = ref<WatchlistStock[]>([])
 const watchlistLoading = ref(false)
-const moveToGroupId = ref<unknown>(null)
+const moveToGroupId = ref<number | null>(null)
 const showMovePopover = ref(false)
-const selectedStock = ref<unknown>(null)
+const selectedStock = ref<WatchlistStock | null>(null)
 
-const handleGroupSelected = (group: unknown) => {
+const handleGroupSelected = (group: WatchlistGroup): void => {
   currentGroupId.value = group.id
   currentGroupName.value = group.group_name
   fetchGroupStocks()
 }
 
-const handleGroupCreated = () => emit('groups-changed')
-const handleGroupUpdated = (group: unknown) => {
+const handleGroupCreated = (): void => emit('groups-changed')
+const handleGroupUpdated = (group: WatchlistGroup): void => {
   if (currentGroupId.value === group.id) {
     currentGroupName.value = group.group_name
   }
   emit('groups-changed')
 }
-const handleGroupDeleted = () => emit('groups-changed')
+const handleGroupDeleted = (): void => emit('groups-changed')
 
-const fetchGroupStocks = async () => {
+interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string
+    }
+  }
+  message?: string
+}
+
+const fetchGroupStocks = async (): Promise<void> => {
   if (!currentGroupId.value) return
   watchlistLoading.value = true
   try {
@@ -170,25 +192,30 @@ const fetchGroupStocks = async () => {
     currentGroupStocks.value = response.data
     emit('api-tested', 'watchlist')
   } catch (error: unknown) {
-    ElMessage.error('获取分组股票失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('获取分组股票失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
   } finally {
     watchlistLoading.value = false
   }
 }
 
-const openMovePopover = (stock: unknown) => {
+const openMovePopover = (stock: WatchlistStock): void => {
   selectedStock.value = stock
   showMovePopover.value = true
 }
 
-const closeMovePopover = () => {
+const closeMovePopover = (): void => {
   showMovePopover.value = false
   moveToGroupId.value = null
 }
 
-const moveStock = async () => {
+const moveStock = async (): Promise<void> => {
   if (!moveToGroupId.value) {
     ElMessage.warning('请选择目标分组')
+    return
+  }
+  if (!selectedStock.value) {
+    ElMessage.warning('请选择要移动的股票')
     return
   }
   try {
@@ -204,11 +231,12 @@ const moveStock = async () => {
     fetchGroupStocks()
     closeMovePopover()
   } catch (error: unknown) {
-    ElMessage.error('移动失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('移动失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
   }
 }
 
-const clearCurrentGroup = async () => {
+const clearCurrentGroup = async (): Promise<void> => {
   try {
     await ElMessageBox.confirm(
       `确定要清空分组 "${currentGroupName.value}" 中的所有股票吗？此操作不可恢复！`,
@@ -227,12 +255,13 @@ const clearCurrentGroup = async () => {
     fetchGroupStocks()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error('清空失败: ' + (error.response?.data?.detail || error.message))
+      const apiError = error as ApiErrorResponse
+      ElMessage.error('清空失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
     }
   }
 }
 
-const removeFromWatchlist = async (stock: unknown) => {
+const removeFromWatchlist = async (stock: WatchlistStock): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定要从自选股中删除吗?', '提示', {
       confirmButtonText: '确定',
@@ -249,12 +278,13 @@ const removeFromWatchlist = async (stock: unknown) => {
     fetchGroupStocks()
   } catch (error: unknown) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败: ' + (error.response?.data?.detail || error.message))
+      const apiError = error as ApiErrorResponse
+      ElMessage.error('删除失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
     }
   }
 }
 
-const updateNotes = async (stock: unknown) => {
+const updateNotes = async (stock: WatchlistStock): Promise<void> => {
   try {
     const token = localStorage.getItem('token') || ''
     const API_BASE = '/api'
@@ -265,7 +295,8 @@ const updateNotes = async (stock: unknown) => {
     )
     ElMessage.success('备注已更新')
   } catch (error: unknown) {
-    ElMessage.error('更新失败: ' + (error.response?.data?.detail || error.message))
+    const apiError = error as ApiErrorResponse
+    ElMessage.error('更新失败: ' + (apiError.response?.data?.detail || apiError.message || '未知错误'))
   }
 }
 </script>

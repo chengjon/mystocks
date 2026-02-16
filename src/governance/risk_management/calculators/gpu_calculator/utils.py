@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from src.governance.risk_management.core import IRiskCalculator, PortfolioRiskMetrics, StockRiskMetrics
+from .gpu_risk_calculator import GPURiskCalculator
 
 # 复用现有的GPU基础设施
 try:

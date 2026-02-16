@@ -67,7 +67,7 @@ class TDengineManager:
         host: Optional[str] = None,
         port: int = 6030,
         user: str = "root",
-        password: str = "taosdata",
+        password: Optional[str] = None,
         database: str = "mystocks_cache",
         precision: str = "ms",
         min_pool_size: int = 5,
@@ -89,7 +89,9 @@ class TDengineManager:
         self.host = host or os.getenv("TDENGINE_HOST", "127.0.0.1")
         self.port = port or int(os.getenv("TDENGINE_PORT", "6030"))
         self.user = user or os.getenv("TDENGINE_USER", "root")
-        self.password = password or os.getenv("TDENGINE_PASSWORD", "taosdata")
+        self.password = password or os.getenv("TDENGINE_PASSWORD")
+        if not self.password:
+            raise ValueError("TDENGINE_PASSWORD environment variable must be set")
         self.database = database or os.getenv("TDENGINE_DATABASE", "mystocks_cache")
         self.precision = precision
 

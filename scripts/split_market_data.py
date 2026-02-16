@@ -104,6 +104,7 @@ def extract_module(content: str, module_name: str, module_info: dict) -> str:
 
 从原文件 {SOURCE_FILE.name} 提取
 """
+'''
     module_content = header + '\n'.join(module_lines)
     
     return module_content
@@ -149,7 +150,27 @@ def main():
     print("=" * 80)
     print("生成 __init__.py 文件...")
     
-    init_content = \"\"\"\nMarket Data Adapter Modules\n\n本目录包含从原 market_data.py 拆分的模块\n\"\"\"\n\n# 导入各个模块\nfrom .base import _retry_api_call\nfrom .market_overview import get_market_overview_sse, get_market_overview_szse\nfrom .stock_info import get_stock_industry_concept\n\n# 导出列表\n__all__ = [\n    \"_retry_api_call\",\n    \"get_market_overview_sse\",\n    \"get_market_overview_szse\",\n    \"get_szse_area_trading_summary\",\n    \"get_szse_sector_trading_summary\",\n    \"get_stock_industry_concept\",\n]\n\"\"\"
+    init_content = '''"""
+Market Data Adapter Modules
+
+本目录包含从原 market_data.py 拆分的模块
+"""
+
+# 导入各个模块
+from .base import _retry_api_call
+from .market_overview import get_market_overview_sse, get_market_overview_szse
+from .stock_info import get_stock_industry_concept
+
+# 导出列表
+__all__ = [
+    "_retry_api_call",
+    "get_market_overview_sse",
+    "get_market_overview_szse",
+    "get_szse_area_trading_summary",
+    "get_szse_sector_trading_summary",
+    "get_stock_industry_concept",
+]
+'''
     
     modules_content["__init__.py"] = init_content
     print(f"   ✅ __init__.py 生成完成: {len(init_content.split('\\n')):,} 行")

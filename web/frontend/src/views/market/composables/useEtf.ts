@@ -1,29 +1,49 @@
-    import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-    import {
-    import { TrendCharts, RefreshRight, Search } from '@element-plus/icons-vue'
+import { ref, reactive, computed, onMounted, onUnmounted, type Ref } from 'vue'
+import { TrendCharts, RefreshRight, Search } from '@element-plus/icons-vue'
+import {
+    ElCard,
+    ElButton,
+    ElTable,
+    ElTableColumn,
+    ElTabs,
+    ElTabPane,
+    ElInput,
+    ElSelect,
+    ElOption,
+    ElTag,
+    ElSwitch,
+    ElMessage
+} from 'element-plus'
+
+// ETF data interface
+interface ETFItem {
+    code: string
+    name: string
+    price: number
+    changePercent: number
+    volume: number
+    nav: number
+    assets?: number
+    trackingIndex?: string
+    expenseRatio?: number
+    dividendYield?: number
+    change?: number
+    premium?: number
+    amount?: number
+    type?: string
+    status?: string
+    [key: string]: unknown
+}
 
 export function useEtf() {
-        ElCard,
-        ElButton,
-        ElTable,
-        ElTableColumn,
-        ElTabs,
-        ElTabPane,
-        ElInput,
-        ElSelect,
-        ElOption,
-        ElTag,
-        ElSwitch,
-        ElMessage
-    } from 'element-plus'
 
     // Reactive data
-    const loading = ref(false)
-    const autoRefresh = ref(false)
-    const activeCategory = ref('broad-market')
-    const searchQuery = ref('')
-    const sortBy = ref('changePercent')
-    const refreshInterval = ref<NodeJS.Timeout | null>(null)
+    const loading: Ref<boolean> = ref(false)
+    const autoRefresh: Ref<boolean> = ref(false)
+    const activeCategory: Ref<string> = ref('broad-market')
+    const searchQuery: Ref<string> = ref('')
+    const sortBy: Ref<string> = ref('changePercent')
+    const refreshInterval: Ref<NodeJS.Timeout | null> = ref(null)
 
     // ETF Market Overview
     const etfMarketOverview = reactive({
@@ -73,7 +93,7 @@ export function useEtf() {
     ]
 
     // ETF Data by Category
-    const etfDataByCategory: Record<string, unknown[]> = {
+    const etfDataByCategory: Record<string, ETFItem[]> = {
         'broad-market': [
             {
                 code: '159919',
@@ -394,7 +414,7 @@ export function useEtf() {
 
         // Update ETF data with random changes
         Object.keys(etfDataByCategory).forEach((category: string) => {
-            etfDataByCategory[category].forEach((etf: unknown) => {
+            etfDataByCategory[category].forEach((etf: ETFItem) => {
                 const priceChange = (Math.random() - 0.5) * 0.1
                 etf.price = parseFloat((etf.price + priceChange).toFixed(3))
                 etf.change = parseFloat((etf.price - etf.nav).toFixed(3))
@@ -501,13 +521,9 @@ export function useEtf() {
     topVolume,
     currentETFs,
     filteredETFs,
-    etfs,
     refreshAllData,
     loadETFData,
-    priceChange,
     loadTopPerformers,
-    change,
-    change,
     changeCategory,
     filterETFs,
     sortETFs,

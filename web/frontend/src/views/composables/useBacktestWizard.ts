@@ -4,9 +4,37 @@ import echarts from '@/utils/echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import ArtDecoCardCompact from '@/components/artdeco/base/ArtDecoCardCompact.vue'
 import { TrendCharts } from '@element-plus/icons-vue'
+
 interface StrategyTemplate {
+  id: string
+  name: string
+  description: string
+  defaultParams: Record<string, unknown>
+}
+
 interface BacktestHistoryItem {
+  id: string
+  name: string
+  strategyName: string
+  totalReturn: number
+  sharpeRatio: number
+  maxDrawdown: number
+  winRate: number
+  runAt: string
+  params: Record<string, number>
+}
+
 interface BacktestComparison {
+  backtest1: string
+  backtest2: string
+  diffData: Array<{
+    param: string
+    backtest1Value: number
+    backtest2Value: number
+    difference: number
+    highlight: boolean
+  }>
+}
 
 export function useBacktestWizard() {
 
@@ -57,12 +85,6 @@ const customTemplates = ref<StrategyTemplate[]>([])
 const showSaveTemplateDialog = ref(false)
 
 // Strategy templates
-  id: string
-  name: string
-  description: string
-  defaultParams: Record<string, unknown>
-}
-
 const strategyTemplates: StrategyTemplate[] = [
   {
     id: 'ma_cross',
@@ -138,17 +160,6 @@ const backtestResults = ref({
 })
 
 // Comparison backtests history
-  id: string
-  name: string
-  strategyName: string
-  totalReturn: number
-  sharpeRatio: number
-  maxDrawdown: number
-  winRate: number
-  runAt: string
-  params: Record<string, unknown>
-}
-
 const backtestHistory = ref<BacktestHistoryItem[]>([
   {
     id: 'bt-001',
@@ -168,17 +179,6 @@ const selectedBacktest1 = ref('')
 const selectedBacktest2 = ref('')
 
 // Comparison backtests interface
-  backtest1: string
-  backtest2: string
-  diffData: Array<{
-    param: string
-    backtest1Value: number
-    backtest2Value: number
-    difference: number
-    highlight: boolean
-  }>
-}
-
 const comparisonData = computed<BacktestComparison | null>(() => {
   if (!selectedBacktest1.value || !selectedBacktest2.value) {
     return null
@@ -215,7 +215,7 @@ const comparisonData = computed<BacktestComparison | null>(() => {
 
 // Chart reference
 const backtestChartRef = ref<HTMLElement>()
-let backtestChart: unknown = null
+let backtestChart: ReturnType<typeof echarts.init> | null = null
 
 // Computed: can proceed to next step
 const canProceed = computed(() => {
@@ -341,20 +341,15 @@ onBeforeUnmount(() => {
     selectedBacktest1,
     selectedBacktest2,
     comparisonData,
-    bt1,
-    bt2,
     backtestChartRef,
     backtestChart,
     canProceed,
     selectStrategy,
-    template,
     nextStep,
     prevStep,
     resetWizard,
     getSelectedStrategyName,
-    template,
     formatDate,
     initBacktestChart,
-    option,
   }
 }

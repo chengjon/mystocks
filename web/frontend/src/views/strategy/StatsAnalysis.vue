@@ -1,4 +1,5 @@
 <template>
+  <div class="stats-analysis-page">
     <div class="page-header">
       <div class="page-title">策略统计分析</div>
       <div class="page-subtitle">STRATEGY STATISTICAL ANALYSIS</div>

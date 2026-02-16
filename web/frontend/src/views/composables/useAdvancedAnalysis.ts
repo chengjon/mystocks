@@ -1,53 +1,74 @@
-    import { ref, computed, onMounted, onUnmounted } from 'vue'
-    import { ElMessage } from 'element-plus'
-    import { advancedAnalysisApi } from '@/api/advancedAnalysis'
-    import { PageHeader } from '@/components/shared'
-    import FundamentalAnalysisView from './advanced-analysis/FundamentalAnalysisView.vue'
-    import TechnicalAnalysisView from './advanced-analysis/TechnicalAnalysisView.vue'
-    import RadarAnalysisView from './advanced-analysis/RadarAnalysisView.vue'
-    import TradingSignalsView from './advanced-analysis/TradingSignalsView.vue'
-    import TimeSeriesView from './advanced-analysis/TimeSeriesView.vue'
-    import MarketPanoramaView from './advanced-analysis/MarketPanoramaView.vue'
-    import CapitalFlowView from './advanced-analysis/CapitalFlowView.vue'
-    import ChipDistributionView from './advanced-analysis/ChipDistributionView.vue'
-    import AnomalyTrackingView from './advanced-analysis/AnomalyTrackingView.vue'
-    import FinancialValuationView from './advanced-analysis/FinancialValuationView.vue'
-    import SentimentAnalysisView from './advanced-analysis/SentimentAnalysisView.vue'
-    import DecisionModelsView from './advanced-analysis/DecisionModelsView.vue'
-    import BatchAnalysisView from './advanced-analysis/BatchAnalysisView.vue'
-    interface AnalysisForm {
-    interface AnalysisResult {
-    interface HealthStatus {
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { advancedAnalysisApi } from '@/api/advancedAnalysis'
+import { PageHeader } from '@/components/shared'
+import FundamentalAnalysisView from './advanced-analysis/FundamentalAnalysisView.vue'
+import TechnicalAnalysisView from './advanced-analysis/TechnicalAnalysisView.vue'
+import RadarAnalysisView from './advanced-analysis/RadarAnalysisView.vue'
+import TradingSignalsView from './advanced-analysis/TradingSignalsView.vue'
+import TimeSeriesView from './advanced-analysis/TimeSeriesView.vue'
+import MarketPanoramaView from './advanced-analysis/MarketPanoramaView.vue'
+import CapitalFlowView from './advanced-analysis/CapitalFlowView.vue'
+import ChipDistributionView from './advanced-analysis/ChipDistributionView.vue'
+import AnomalyTrackingView from './advanced-analysis/AnomalyTrackingView.vue'
+import FinancialValuationView from './advanced-analysis/FinancialValuationView.vue'
+import SentimentAnalysisView from './advanced-analysis/SentimentAnalysisView.vue'
+import DecisionModelsView from './advanced-analysis/DecisionModelsView.vue'
+import BatchAnalysisView from './advanced-analysis/BatchAnalysisView.vue'
+
+interface AnalysisForm {
+    symbol: string
+    analysisType: string
+    includeRawData: boolean
+    enableRealtime: boolean
+}
+
+interface AnalysisResult {
+    overall_signal?: string
+    fundamental?: unknown
+    technical?: unknown
+    trading_signals?: unknown
+    time_series?: unknown
+    market_panorama?: unknown
+    capital_flow?: unknown
+    chip_distribution?: unknown
+    anomaly_tracking?: unknown
+    financial_valuation?: unknown
+    sentiment?: unknown
+    decision_models?: unknown
+    multidimensional_radar?: unknown
+}
+
+interface HealthStatus {
+    database: string
+    api: string
+    gpu: string
+}
+
+interface ApiResponse<T = unknown> {
+    success?: boolean
+    data?: T
+    message?: string
+}
+
+interface ApiErrorResponse {
+    response?: {
+        data?: {
+            detail?: string
+        }
+    }
+    message?: string
+}
+
+interface WebSocketMessage {
+    type: string
+    status?: string
+    data?: unknown
+    result?: unknown
+    analysis_type?: string
+}
 
 export function useAdvancedAnalysis() {
-
-    // 分析结果视图组件
-
-        symbol: string
-        analysisType: string
-        includeRawData: boolean
-        enableRealtime: boolean
-    }
-
-        overall_signal?: string
-        fundamental?: unknown
-        technical?: unknown
-        trading_signals?: unknown
-        time_series?: unknown
-        market_panorama?: unknown
-        capital_flow?: unknown
-        chip_distribution?: unknown
-        anomaly_tracking?: unknown
-        financial_valuation?: unknown
-        sentiment?: unknown
-        decision_models?: unknown
-        multidimensional_radar?: unknown
-    }
-
-        database: string
-        api: string
-        gpu: string
-    }
 
     const loading = ref(false)
     const batchLoading = ref(false)
@@ -134,7 +155,8 @@ export function useAdvancedAnalysis() {
                 include_raw_data: form.value.includeRawData
             }
 
-            const response = await (advancedAnalysisApi as unknown)[form.value.analysisType](params)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response = await (advancedAnalysisApi as any)[form.value.analysisType](params)
 
             if (response.data?.success) {
                 analysisResult.value = response.data.data
@@ -149,7 +171,8 @@ export function useAdvancedAnalysis() {
             }
         } catch (error: unknown) {
             console.error('分析失败:', error)
-            ElMessage.error('分析失败: ' + (error.response?.data?.detail || error.message))
+            const apiError = error as ApiErrorResponse
+            ElMessage.error('分析失败: ' + (apiError.response?.data?.detail || apiError.message))
         } finally {
             loading.value = false
         }
@@ -171,17 +194,18 @@ export function useAdvancedAnalysis() {
                 }
             }
 
-            const response = await advancedAnalysisApi.batch(batchData)
+            const response = await advancedAnalysisApi.batch(batchData) as ApiResponse
 
-            if (response.data?.success) {
-                batchResults.value = response.data.data
+            if (response.success) {
+                batchResults.value = response.data
                 ElMessage.success('批量分析完成')
             } else {
-                ElMessage.error(response.data?.message || '批量分析失败')
+                ElMessage.error(response.message || '批量分析失败')
             }
         } catch (error: unknown) {
             console.error('批量分析失败:', error)
-            ElMessage.error('批量分析失败: ' + (error.response?.data?.detail || error.message))
+            const apiError = error as ApiErrorResponse
+            ElMessage.error('批量分析失败: ' + (apiError.response?.data?.detail || apiError.message))
         } finally {
             batchLoading.value = false
         }
@@ -250,16 +274,17 @@ export function useAdvancedAnalysis() {
     }
 
     const handleWebSocketMessage = (data: unknown) => {
-        if (data.type === 'analysis_progress') {
+        const msg = data as WebSocketMessage
+        if (msg.type === 'analysis_progress') {
             // 处理分析进度更新
-            updateAnalysisProgress(data)
-        } else if (data.type === 'analysis_complete') {
+            updateAnalysisProgress(msg)
+        } else if (msg.type === 'analysis_complete') {
             // 处理分析完成事件
-            updateAnalysisResult(data)
+            updateAnalysisResult(msg)
         }
     }
 
-    const updateAnalysisProgress = (data: unknown) => {
+    const updateAnalysisProgress = (data: WebSocketMessage) => {
         // 更新UI显示分析进度
         console.log('Analysis progress:', data)
 
@@ -269,20 +294,20 @@ export function useAdvancedAnalysis() {
             if (data.data) {
                 analysisResult.value = {
                     ...analysisResult.value,
-                    [data.analysis_type]: data.data
+                    [data.analysis_type ?? 'unknown']: data.data
                 }
             }
         }
     }
 
-    const updateAnalysisResult = (data: unknown) => {
+    const updateAnalysisResult = (data: WebSocketMessage) => {
         // 更新分析结果
         console.log('Analysis complete:', data)
 
         if (data.result) {
             analysisResult.value = {
                 ...analysisResult.value,
-                [data.analysis_type]: data.result
+                [data.analysis_type ?? 'unknown']: data.result
             }
         }
     }
@@ -324,27 +349,14 @@ export function useAdvancedAnalysis() {
     form,
     healthStatus,
     overviewMetrics,
-    metrics,
-    result,
     getAnalysisTitle,
-    titles,
     getOverallSignalType,
-    signal,
     getSignalClass,
-    signalLower,
     runAnalysis,
-    params,
-    response,
     runBatchAnalysis,
-    batchData,
-    response,
     startRealtimeUpdates,
     stopRealtimeUpdates,
-    websocket,
     connectWebSocket,
-    protocol,
-    wsUrl,
-    data,
     disconnectWebSocket,
     handleWebSocketMessage,
     updateAnalysisProgress,

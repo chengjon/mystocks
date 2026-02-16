@@ -6,123 +6,7 @@
         <span v-if="!isCollapse">MyStocks</span>
         <span v-else>MS</span>
       </div>
-      <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse"
-        :router="false"
-        background-color="transparent"
-        text-color="#B8B8B8"
-        active-text-color="#D4AF37"
-        @select="handleMenuSelect"
-        class="artdeco-menu"
-      >
-        <!-- 3 Core Workflows - Phase 1 Optimization -->
-        <!-- Workflow 1: Trading (交易决策) -->
-        <el-sub-menu index="/trading">
-          <template #title>
-            <el-icon><Tickets /></el-icon>
-            <span>交易决策</span>
-          </template>
-          <el-menu-item index="/trade">
-            <template #title>交易执行</template>
-          </el-menu-item>
-          <el-menu-item index="/strategy">
-            <template #title>策略管理</template>
-          </el-menu-item>
-          <el-menu-item index="/risk">
-            <template #title>风险监控</template>
-          </el-menu-item>
-         </el-sub-menu>
-
-         <!-- ArtDeco Gold Divider -->
-         <div class="artdeco-gold-divider"></div>
-
-         <!-- Workflow 2: Analysis (分析与回测) -->
-        <el-sub-menu index="/analysis">
-          <template #title>
-            <el-icon><DataAnalysis /></el-icon>
-            <span>分析研究</span>
-          </template>
-          <el-menu-item index="/backtest">
-            <template #title>策略回测</template>
-          </el-menu-item>
-          <el-menu-item index="/technical">
-            <template #title>技术分析</template>
-          </el-menu-item>
-          <el-menu-item index="/indicators">
-            <template #title>指标库</template>
-          </el-menu-item>
-          <el-menu-item index="/analysis">
-            <template #title>数据分析</template>
-          </el-menu-item>
-         </el-sub-menu>
-
-         <!-- ArtDeco Gold Divider -->
-         <div class="artdeco-gold-divider"></div>
-
-         <!-- Workflow 3: Portfolio (持仓与表现) -->
-        <el-sub-menu index="/portfolio">
-          <template #title>
-            <el-icon><Grid /></el-icon>
-            <span>投资组合</span>
-          </template>
-          <el-menu-item index="/dashboard">
-            <template #title>市场概览</template>
-          </el-menu-item>
-          <el-menu-item index="/stocks">
-            <template #title>自选股</template>
-          </el-menu-item>
-          <el-menu-item index="/market-data">
-            <template #title>市场数据</template>
-          </el-menu-item>
-        </el-sub-menu>
-
-        <!-- Market Data Quick Access -->
-        <el-sub-menu index="/market">
-          <template #title>
-            <el-icon><TrendCharts /></el-icon>
-            <span>市场行情</span>
-          </template>
-          <el-menu-item index="/market">
-            <template #title>实时行情</template>
-          </el-menu-item>
-          <el-menu-item index="/tdx-market">
-            <template #title>TDX行情</template>
-          </el-menu-item>
-        </el-sub-menu>
-
-        <!-- Demo (功能演示) -->
-        <el-sub-menu index="/demo">
-          <template #title>
-            <el-icon><Operation /></el-icon>
-            <span>功能演示</span>
-          </template>
-          <el-menu-item index="/demo/openstock">
-            <template #title>OpenStock</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/freqtrade">
-            <template #title>Freqtrade</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/stock-analysis">
-            <template #title>Stock-Analysis</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/tdxpy">
-            <template #title>pytdx</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/phase4-dashboard">
-            <template #title>Phase 4 Dashboard</template>
-          </el-menu-item>
-          <el-menu-item index="/demo/wencai">
-            <template #title>Wencai</template>
-          </el-menu-item>
-        </el-sub-menu>
-
-        <!-- Settings (系统设置) -->
-        <el-menu-item index="/settings">
-          <el-icon><Setting /></el-icon>
-          <template #title>系统设置</template>
-        </el-menu-item>
-      </el-menu>
+      <SidebarMenu :is-collapse="isCollapse" />
     </el-aside>
 
     <!-- 主内容区 -->
@@ -163,30 +47,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import ApiVersionManager from '@/components/common/ApiVersionManager.vue'
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import ApiVersionManager from '@/components/common/ApiVersionManager.vue';
+import SidebarMenu from '@/components/layout/SidebarMenu.vue';
 
-const route = useRoute()
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
-const isCollapse = ref(false)
-const user = computed(() => authStore.user)
-const activeMenu = computed(() => route.path)
+const isCollapse = ref(false);
+const user = computed(() => authStore.user);
 
 const toggleSidebar = () => {
-  isCollapse.value = !isCollapse.value
-}
+  isCollapse.value = !isCollapse.value;
+};
 
-const handleMenuSelect = (index) => {
-  console.log('Menu selected:', index)
-  if (index && index.startsWith('/')) {
-    router.push(index)
-  }
-}
 
 const handleCommand = (command) => {
   if (command === 'logout') {

@@ -31,9 +31,21 @@ import { ref, computed } from 'vue'
 import { ArtDecoInput, ArtDecoSelect, ArtDecoButton, ArtDecoCard } from '@/components/artdeco'
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
+interface IndicatorItem {
+  name: string
+  value: string | number
+  signal: string
+  signalType: 'rise' | 'fall' | 'neutral'
+}
+
+interface TrendDataPoint {
+  time: string | number
+  value: number
+}
+
 interface Props {
-  indicators: unknown[]
-  trendData: unknown[]
+  indicators: IndicatorItem[]
+  trendData: TrendDataPoint[]
 }
 
 const props = defineProps<Props>()
@@ -50,16 +62,16 @@ const periodOptions = [
 
 const trendOption = computed(() => {
   if (!props.trendData || props.trendData.length === 0) return {}
-  
+
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: props.trendData.map((d: unknown) => d.time) },
+    xAxis: { type: 'category', data: props.trendData.map((d) => d.time) },
     yAxis: { type: 'value', scale: true },
-    series: [{ 
-      data: props.trendData.map((d: unknown) => d.value), 
-      type: 'line', 
-      smooth: true, 
-      color: 'var(--artdeco-accent-gold)' 
+    series: [{
+      data: props.trendData.map((d) => d.value),
+      type: 'line',
+      smooth: true,
+      color: 'var(--artdeco-accent-gold)'
     }]
   }
 })

@@ -1,12 +1,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-import axios from 'axios'
-
-export function useAnnouncementMonitor() {
   Document, Calendar, Warning, Bell, Search, Refresh,
   Setting, Plus, Collection, Lightning
 } from '@element-plus/icons-vue'
+import axios from 'axios'
+
+export function useAnnouncementMonitor() {
 
 // API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
@@ -199,17 +199,21 @@ const evaluateRules = async () => {
 }
 
 // 编辑规则
-const editRule = (rule) => {
+const editRule = (rule: Record<string, any>): void => {
   editingRule.value = {
-    ...rule,
+    id: rule.id || null,
+    rule_name: rule.rule_name || '',
     stock_codes_str: rule.stock_codes ? rule.stock_codes.join(',') : '',
-    keywords_str: rule.keywords ? rule.keywords.join(',') : ''
+    keywords_str: rule.keywords ? rule.keywords.join(',') : '',
+    min_importance_level: rule.min_importance_level || 3,
+    notify_enabled: rule.notify_enabled !== false,
+    is_active: rule.is_active !== false
   }
   showRuleDialog.value = true
 }
 
 // 删除规则
-const deleteRule = async (id) => {
+const deleteRule = async (id: number): Promise<void> => {
   try {
     await ElMessageBox.confirm('确定要删除这个监控规则吗？', '确认删除', {
       confirmButtonText: '确定',
@@ -255,42 +259,42 @@ const saveRule = async () => {
       is_active: editingRule.value.is_active
     }
 
-    let response
     if (editingRule.value.id) {
       // 更新规则
-      response = await axios.put(`${API_BASE_URL}/api/announcement/monitor-rules/${editingRule.value.id}`, ruleData)
+      await axios.put(`${API_BASE_URL}/api/announcement/monitor-rules/${editingRule.value.id}`, ruleData)
       ElMessage.success('更新成功')
     } else {
       // 创建规则
-      _response = await axios.post(`${API_BASE_URL}/api/announcement/monitor-rules`, ruleData)
+      await axios.post(`${API_BASE_URL}/api/announcement/monitor-rules`, ruleData)
       ElMessage.success('创建成功')
     }
 
     // 重新获取规则列表
     fetchMonitorRules()
     showRuleDialog.value = false
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('保存规则失败:', error)
-    ElMessage.error('保存规则失败: ' + (error.response?.data?.detail || error.message))
+    const errorObj = error as Record<string, any>
+    ElMessage.error('保存规则失败: ' + (errorObj?.response?.data?.detail || errorObj?.message || 'Unknown error'))
   }
 }
 
 // 打开公告原文
-const openAnnouncement = (url) => {
+const openAnnouncement = (url: string): void => {
   if (url) {
     window.open(url, '_blank')
   }
 }
 
 // 获取重要性级别样式类
-const getImportanceClass = (level) => {
+const getImportanceClass = (level: number): string => {
   if (level >= 4) return 'text-important'
   if (level >= 3) return 'text-medium'
   return 'text-normal'
 }
 
 // 获取情感倾向类型
-const getSentimentType = (sentiment) => {
+const getSentimentType = (sentiment: string): string => {
   switch (sentiment) {
     case 'positive':
       return 'success'
@@ -302,8 +306,8 @@ const getSentimentType = (sentiment) => {
 }
 
 // 格式化情感倾向
-const formatSentiment = (sentiment) => {
-  const map = {
+const formatSentiment = (sentiment: string): string => {
+  const map: Record<string, string> = {
     'positive': '正面',
     'negative': '负面',
     'neutral': '中性'
@@ -312,14 +316,14 @@ const formatSentiment = (sentiment) => {
 }
 
 // 处理分页大小变化
-const handleSizeChange = (size) => {
+const handleSizeChange = (size: number): void => {
   pagination.pageSize = size
   pagination.page = 1
   fetchAnnouncements()
 }
 
 // 处理当前页变化
-const handleCurrentChange = (page) => {
+const handleCurrentChange = (page: number): void => {
   pagination.page = page
   fetchAnnouncements()
 }
@@ -338,7 +342,6 @@ onMounted(() => {
 })
 
   return {
-    API_BASE_URL,
     stats,
     announcements,
     monitorRules,
@@ -351,33 +354,19 @@ onMounted(() => {
     editingRule,
     ruleFormRules,
     fetchStats,
-    response,
     fetchAnnouncements,
-    params,
-    response,
     fetchTodayAnnouncements,
-    response,
     fetchImportantAnnouncements,
-    response,
     fetchMonitorRules,
-    response,
     fetchTriggeredRecords,
-    response,
     evaluateRules,
-    response,
     editRule,
     deleteRule,
-    response,
     saveRule,
-    stockCodes,
-    keywords,
-    ruleData,
-    response,
     openAnnouncement,
     getImportanceClass,
     getSentimentType,
     formatSentiment,
-    map,
     handleSizeChange,
     handleCurrentChange,
     refreshData,

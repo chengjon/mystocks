@@ -54,9 +54,10 @@ export const authGuard = (to: RouteLocationNormalized) => {
  */
 export const handleAuthError = (error: unknown) => {
   const authStore = useAuthStore()
+  const err = error as Record<string, any>
 
   // Handle 401 Unauthorized
-  if (error?.response?.status === 401) {
+  if (err?.response?.status === 401) {
     console.warn('Authentication token expired or invalid')
     authStore.logout()
 
@@ -71,14 +72,14 @@ export const handleAuthError = (error: unknown) => {
   }
 
   // Handle 403 Forbidden
-  if (error?.response?.status === 403) {
+  if (err?.response?.status === 403) {
     console.warn('Insufficient permissions for this action')
     ElMessage.error('您没有权限执行此操作')
     return
   }
 
   // Handle network errors
-  if (error?.code === 'NETWORK_ERROR' || !error?.response) {
+  if (err?.code === 'NETWORK_ERROR' || !err?.response) {
     ElMessage.error('网络连接失败，请检查网络连接')
     return
   }

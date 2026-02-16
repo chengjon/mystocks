@@ -54,6 +54,7 @@
       </div>
 
       <div class="section">
+        <div class="alert-card">
           <div class="alert-content">
             <strong>💡 数据源说明</strong>
             <p>Stock-Analysis 使用通达信本地数据,优势在于:</p>

@@ -123,7 +123,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useWebSocketWithConfig } from '@/composables/useWebSocketWithConfig'
-import type { _PageConfig } from '@/config/pageConfig'
+import type { PageConfig } from '@/config/pageConfig'
 
 // WebSocket功能
 const {
@@ -135,11 +135,14 @@ const {
   subscriptionStats,
   getAllWebSocketChannels,
   subscribeByRoute,
-  _unsubscribeByRoute,
+  unsubscribeByRoute,
   subscribeAllWebSocketRoutes,
   connect,
   disconnect
 } = useWebSocketWithConfig()
+
+// Alias for backwards compatibility
+const _unsubscribeByRoute = unsubscribeByRoute
 
 // 所有WebSocket路由信息
 const allWebSocketRoutes = ref(getAllWebSocketChannels())

@@ -1,5 +1,0 @@
-1009	./scripts/tests/test_column_mapper.py
-1348	./scripts/tests/test_data_quality_validator.py
-1027	./scripts/tests/test_db_connection_retry.py
-1003	./scripts/tests/test_data_format_converter.py
-1225	./scripts/tests/test_security_authentication.py

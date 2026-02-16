@@ -6,7 +6,7 @@
  */
 
 import type { EChartsOption } from 'echarts'
-import { FINANCIAL_COLORS, GRADIENTS } from '../styles/chart-theme'
+import { FINANCIAL_COLORS, GRADIENTS } from '@/styles/chart-theme/functions-1'
 
 // ================ 数据类型定义 ================
 

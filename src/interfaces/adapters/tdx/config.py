@@ -12,6 +12,7 @@ import configparser
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
+import yaml
 
 
 class TdxConfigManager:
@@ -24,6 +25,35 @@ class TdxConfigManager:
     - 连接超时和重试参数
     - 数据验证参数
     """
+
+    @staticmethod
+    def _load_tdx_network_servers() -> str:
+        env_servers = os.getenv("TDX_NETWORK_SERVERS")
+        if env_servers:
+            return env_servers
+
+        project_root = Path(__file__).parent.parent.parent.parent
+        pool_file = Path(os.getenv("TDX_SERVER_POOL_FILE", str(project_root / "config" / "tdx_servers.yaml")))
+        if not pool_file.exists():
+            return ""
+
+        try:
+            with pool_file.open("r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            servers = data.get("servers", [])
+            pairs: List[str] = []
+            for item in servers:
+                if not isinstance(item, dict):
+                    continue
+                if not item.get("enabled", True):
+                    continue
+                host = str(item.get("host", "")).strip()
+                port = item.get("port")
+                if host and port:
+                    pairs.append(f"{host}:{int(port)}")
+            return ",".join(pairs)
+        except Exception:
+            return ""
 
 
     def __init__(self, config_file: str = None):
@@ -60,14 +90,14 @@ class TdxConfigManager:
         """创建默认配置文件"""
         # 创建默认配置节
         self.config["TDX"] = {
-            "install_path": os.getenv("TDX_DATA_PATH", "D:\\ProgramData\\tdx_new"),
+            "install_path": os.getenv("TDX_DATA_PATH") or "D:\\ProgramData\\tdx_new",
             "exe_name": "TdxW.exe",
             "local_host": "127.0.0.1",
             "local_port": "7709",
         }
 
         self.config["SERVER"] = {
-            "network_servers": "180.153.18.170:7709,101.227.73.20:7709,119.147.212.81:7709,114.80.63.12:7709"
+            "network_servers": self._load_tdx_network_servers()
         }
 
         self.config["PERFORMANCE"] = {

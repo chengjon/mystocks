@@ -267,9 +267,9 @@ const clearFilters = () => {
 }
 
 const _handleFilterChange = (filters: Record<string, unknown>) => {
-  searchQuery.value = filters.search || ''
-  filterType.value = filters.type || ''
-  filterStatus.value = filters.status || ''
+  searchQuery.value = (filters.search as string) || ''
+  filterType.value = (filters.type as string) || ''
+  filterStatus.value = (filters.status as string) || ''
   currentPage.value = 1
 }
 

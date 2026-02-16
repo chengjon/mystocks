@@ -1,19 +1,71 @@
-    import { ref, computed, onMounted, nextTick, watch } from 'vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-    import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-    import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    interface Props {
+import { ref, computed, onMounted, nextTick, watch, type Ref } from 'vue'
+import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
+import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
+import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
+import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
+import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
 
-export function useArtDecoTimeSeriesAnalysis() {
+interface TimeSeriesPoint {
+    value: number
+    timestamp?: string
+    [key: string]: unknown
+}
 
-        data: unknown
-        symbol: string
-        loading?: boolean
-    }
+interface InflectionPoint {
+    type: string
+    timestamp: string
+    changeAmplitude?: number
+    [key: string]: unknown
+}
 
-    const props = defineProps<Props>()
+interface PeriodData {
+    frequency: string
+    strength: number
+    [key: string]: unknown
+}
+
+interface PeriodicityInfo {
+    confidence?: number
+    dominantPeriods?: PeriodData[]
+    [key: string]: unknown
+}
+
+interface PredictionInfo {
+    accuracy?: number
+    confidenceInterval?: number
+    modelConfidence?: number
+    insights?: Array<{
+        id: number
+        type: string
+        text: string
+        confidence: number
+    }>
+    [key: string]: unknown
+}
+
+interface TrendInfo {
+    strength?: number
+    direction?: string
+    [key: string]: unknown
+}
+
+interface TimeSeriesData {
+    timeSeries?: TimeSeriesPoint[]
+    inflectionPoints?: InflectionPoint[]
+    periodicity?: PeriodicityInfo
+    prediction?: PredictionInfo
+    trend?: TrendInfo
+    [key: string]: unknown
+}
+
+interface UseArtDecoTimeSeriesAnalysisOptions {
+    data: Ref<TimeSeriesData>
+    symbol: Ref<string>
+    loading?: Ref<boolean>
+}
+
+export function useArtDecoTimeSeriesAnalysis(options: UseArtDecoTimeSeriesAnalysisOptions) {
+    const { data, symbol, loading = ref(false) } = options
 
     // 响应式数据
     const chartType = ref('line')
@@ -26,10 +78,10 @@ export function useArtDecoTimeSeriesAnalysis() {
     const chartCanvas = ref<HTMLCanvasElement>()
 
     // 计算属性
-    const timeSeriesData = computed(() => props.data?.timeSeries || [])
-    const inflectionPoints = computed(() => props.data?.inflectionPoints || [])
-    const periodicityData = computed(() => props.data?.periodicity || {})
-    const predictionData = computed(() => props.data?.prediction || {})
+    const timeSeriesData = computed(() => data.value?.timeSeries || [])
+    const inflectionPoints = computed(() => data.value?.inflectionPoints || [])
+    const periodicityData = computed(() => data.value?.periodicity || {})
+    const predictionData = computed(() => data.value?.prediction || {})
 
     // 配置选项
     const chartTypeOptions = [
@@ -70,7 +122,7 @@ export function useArtDecoTimeSeriesAnalysis() {
     }
 
     const getTrendStrength = (): string => {
-        const trend = props.data?.trend
+        const trend = data.value?.trend
         if (!trend) return 'N/A'
 
         const strength = trend.strength || 0
@@ -91,14 +143,14 @@ export function useArtDecoTimeSeriesAnalysis() {
     const getMaxChangeAmplitude = (): string => {
         if (!inflectionPoints.value.length) return 'N/A'
 
-        const maxAmplitude = Math.max(...inflectionPoints.value.map((p: unknown) => Math.abs(p.changeAmplitude || 0)))
+        const maxAmplitude = Math.max(...inflectionPoints.value.map((p: InflectionPoint) => Math.abs(p.changeAmplitude || 0)))
         return `${maxAmplitude.toFixed(2)}%`
     }
 
     const getAvgChangePeriod = (): string => {
         if (!inflectionPoints.value.length) return 'N/A'
 
-        const timestamps = inflectionPoints.value.map((p: unknown) => new Date(p.timestamp).getTime())
+        const timestamps = inflectionPoints.value.map((p: InflectionPoint) => new Date(p.timestamp).getTime())
         const intervals = []
 
         for (let i = 1; i < timestamps.length; i++) {
@@ -107,13 +159,13 @@ export function useArtDecoTimeSeriesAnalysis() {
 
         if (!intervals.length) return 'N/A'
 
-        const avgInterval = intervals.reduce((sum: unknown, interval: unknown) => sum + interval, 0) / intervals.length
+        const avgInterval = intervals.reduce((sum: number, interval: number) => sum + interval, 0) / intervals.length
         const days = Math.round(avgInterval / (1000 * 60 * 60 * 24))
 
         return `${days}天`
     }
 
-    const getInflectionType = (point: unknown): string => {
+    const getInflectionType = (point: InflectionPoint): string => {
         if (point.type === 'peak') return 'peak'
         if (point.type === 'valley') return 'valley'
         return 'neutral'
@@ -136,7 +188,7 @@ export function useArtDecoTimeSeriesAnalysis() {
 
     const dominantPeriods = computed(() => {
         const periods = periodicityData.value?.dominantPeriods || []
-        return periods.slice(0, 5).map((period: unknown) => ({
+        return periods.slice(0, 5).map((period: PeriodData) => ({
             frequency: period.frequency,
             strength: period.strength * 100
         }))
@@ -259,13 +311,13 @@ export function useArtDecoTimeSeriesAnalysis() {
             ctx.lineWidth = 2
             ctx.beginPath()
 
-            const data = timeSeriesData.value
-            const maxValue = Math.max(...data.map((d: unknown) => d.value))
-            const minValue = Math.min(...data.map((d: unknown) => d.value))
+            const chartData = timeSeriesData.value
+            const maxValue = Math.max(...chartData.map((d: TimeSeriesPoint) => d.value))
+            const minValue = Math.min(...chartData.map((d: TimeSeriesPoint) => d.value))
             const valueRange = maxValue - minValue
 
-            data.forEach((point: unknown, index: unknown) => {
-                const x = (width / (data.length - 1)) * index
+            chartData.forEach((point: TimeSeriesPoint, index: number) => {
+                const x = (width / (chartData.length - 1)) * index
                 const y = height - ((point.value - minValue) / valueRange) * height * 0.8 - height * 0.1
 
                 if (index === 0) {
@@ -286,7 +338,7 @@ export function useArtDecoTimeSeriesAnalysis() {
 
     // 监听数据变化重新渲染
     watch(
-        () => props.data,
+        () => data.value,
         () => {
             renderChart()
         },
@@ -294,7 +346,8 @@ export function useArtDecoTimeSeriesAnalysis() {
     )
 
   return {
-    props,
+    symbol,
+    loading,
     chartType,
     analysisType,
     showInflectionPoints,
@@ -313,46 +366,20 @@ export function useArtDecoTimeSeriesAnalysis() {
     getDataPointsCount,
     getInflectionPointsCount,
     getTrendStrength,
-    trend,
-    strength,
     getPeriodicityConfidence,
-    periodicity,
     getMaxChangeAmplitude,
-    maxAmplitude,
     getAvgChangePeriod,
-    timestamps,
-    intervals,
-    avgInterval,
-    days,
     getInflectionType,
     getPointTypeText,
     formatTime,
     dominantPeriods,
-    periods,
     getPeriodLabel,
-    labels,
     spectrumData,
     getSpectrumColor,
-    colors,
     getPredictionAccuracy,
-    accuracy,
     getPredictionInterval,
-    interval,
     getModelConfidence,
-    confidence,
     predictionInsights,
     renderChart,
-    ctx,
-    canvas,
-    width,
-    height,
-    y,
-    x,
-    data,
-    maxValue,
-    minValue,
-    valueRange,
-    x,
-    y,
   }
 }

@@ -48,7 +48,6 @@
                         <router-link
                             v-for="(item, _idx) in section.items"
                             :key="item.path"
-                            :key="item.path"
                             :to="item.path"
                             class="nav-item"
                             :class="{ 'nav-item-active': isActive(item.path) }"

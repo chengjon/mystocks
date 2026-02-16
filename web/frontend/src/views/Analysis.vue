@@ -333,7 +333,38 @@
 import TimeSeriesChart from '@/components/artdeco/charts/TimeSeriesChart.vue'
 import { useAnalysis } from './composables/useAnalysis'
 
-const { menuItems, breadcrumbItems, form, showAdvancedOptions, loading, stockInfo, analysisResults, analysisTypes, timePeriods, availableIndicators, chartTimeRanges, exportSettings, indicatorColumns, isFormValid, handleSymbolChange, runAnalysis, resetForm, toggleAdvancedOptions, loadPreset, generatePriceData, data, basePrice, currentPrice, date, change, generateVolumeData, data, baseVolume, date, volume, generateIndicatorValues, data, date, generateRecentSignals, signals, types, date, getTrendVariant, getSignalVariant, getOverallTrendClass, getStrengthClass, exportToPDF, exportToExcel, exportToJSON, _timer_1 } = useAnalysis()
+const {
+  menuItems,
+  breadcrumbItems,
+  form,
+  showAdvancedOptions,
+  loading,
+  stockInfo,
+  analysisResults,
+  analysisTypes,
+  timePeriods,
+  availableIndicators,
+  chartTimeRanges,
+  exportSettings,
+  indicatorColumns,
+  isFormValid,
+  handleSymbolChange,
+  runAnalysis,
+  resetForm,
+  toggleAdvancedOptions,
+  loadPreset,
+  generatePriceData,
+  generateVolumeData,
+  generateIndicatorValues,
+  generateRecentSignals,
+  getTrendVariant,
+  getSignalVariant,
+  getOverallTrendClass,
+  getStrengthClass,
+  exportToPDF,
+  exportToExcel,
+  exportToJSON
+} = useAnalysis()
 </script>
 
 <style scoped lang="scss">

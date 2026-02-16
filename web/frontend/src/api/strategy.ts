@@ -17,9 +17,26 @@ import type {
 // TechnicalIndicatorVM  // Currently unused
 } from '@/utils/strategy-adapters'
 
-// Temporary: Use any for missing generated types
-// TODO: Fix type generation to include these types
-// type StrategyConfigResponse = Record<string, unknown>  // Currently unused
+// Type definitions for API responses
+interface StrategyListResponse {
+  strategies: unknown[]
+  total?: number
+}
+
+interface StrategyConfigResponse {
+  id: string
+  name: string
+  type: string
+  parameters?: unknown
+  [key: string]: unknown
+}
+
+interface BacktestResultResponse {
+  strategy_id: string
+  results: unknown
+  metrics?: unknown
+  [key: string]: unknown
+}
 
 class StrategyApiService {
   private baseUrl = '/api/strategy'
@@ -32,7 +49,7 @@ class StrategyApiService {
     status?: string
     limit?: number
   }): Promise<StrategyListItemVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/list`, { params })
+    const rawData = await request.get(`${this.baseUrl}/list`, { params }) as StrategyListResponse[]
     return StrategyAdapter.toStrategyListVM(rawData)
   }
 
@@ -40,7 +57,7 @@ class StrategyApiService {
    * Get strategy details
    */
   async getStrategy(id: string): Promise<StrategyConfigVM> {
-    const rawData = await request.get(`${this.baseUrl}/${id}`)
+    const rawData = await request.get(`${this.baseUrl}/${id}`) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 
@@ -48,7 +65,7 @@ class StrategyApiService {
    * Get strategy configuration
    */
   async getStrategyConfig(id: string): Promise<StrategyConfigVM> {
-    const rawData = await request.get(`${this.baseUrl}/${id}/config`)
+    const rawData = await request.get(`${this.baseUrl}/${id}/config`) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 
@@ -62,7 +79,7 @@ class StrategyApiService {
     code?: string
     parameters?: unknown
   }): Promise<StrategyConfigVM> {
-    const rawData = await request.post(`${this.baseUrl}`, strategyData)
+    const rawData = await request.post(`${this.baseUrl}`, strategyData) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 
@@ -70,7 +87,7 @@ class StrategyApiService {
    * Update strategy configuration
    */
   async updateStrategy(id: string, strategyData: unknown): Promise<StrategyConfigVM> {
-    const rawData = await request.put(`${this.baseUrl}/${id}`, strategyData)
+    const rawData = await request.put(`${this.baseUrl}/${id}`, strategyData) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 
@@ -113,7 +130,7 @@ class StrategyApiService {
    * Run backtest
    */
   async runBacktest(backtestData: BacktestRequest): Promise<BacktestResultVM> {
-    const rawData = await request.post(`${this.baseUrl}/backtest`, backtestData)
+    const rawData = await request.post(`${this.baseUrl}/backtest`, backtestData) as BacktestResultResponse
     return StrategyAdapter.toBacktestResultVM(rawData)
   }
 
@@ -121,17 +138,15 @@ class StrategyApiService {
    * Get backtest results
    */
   async getBacktestResults(strategyId: string): Promise<BacktestResultVM[]> {
-    const rawData = await request.get(`${this.baseUrl}/${strategyId}/backtests`)
-    // ✅ 修复：添加result类型注解，避免隐式any
-    // 使用any避免BacktestResultResponse类型未找到的错误
-    return rawData.map((result: unknown) => StrategyAdapter.toBacktestResultVM(result))
+    const rawData = await request.get(`${this.baseUrl}/${strategyId}/backtests`) as BacktestResultResponse[]
+    return rawData.map((result: BacktestResultResponse) => StrategyAdapter.toBacktestResultVM(result))
   }
 
   /**
    * Get backtest details
    */
   async getBacktestDetails(backtestId: string): Promise<BacktestResultVM> {
-    const rawData = await request.get(`/api/backtest/${backtestId}`)
+    const rawData = await request.get(`/api/backtest/${backtestId}`) as BacktestResultResponse
     return StrategyAdapter.toBacktestResultVM(rawData)
   }
 
@@ -159,14 +174,14 @@ class StrategyApiService {
    * Get available strategy templates
    */
   async getStrategyTemplates(): Promise<unknown[]> {
-    return request.get(`${this.baseUrl}/templates`)
+    return request.get(`${this.baseUrl}/templates`) as unknown[]
   }
 
   /**
    * Clone strategy from template
    */
   async cloneFromTemplate(templateId: string, strategyData: unknown): Promise<StrategyConfigVM> {
-    const rawData = await request.post(`${this.baseUrl}/clone/${templateId}`, strategyData)
+    const rawData = await request.post(`${this.baseUrl}/clone/${templateId}`, strategyData) as StrategyConfigResponse
     return StrategyAdapter.toStrategyConfigVM(rawData)
   }
 
@@ -178,7 +193,11 @@ class StrategyApiService {
     errors?: string[]
     warnings?: string[]
   }> {
-    return request.post(`${this.baseUrl}/validate`, { code, type })
+    return request.post(`${this.baseUrl}/validate`, { code, type }) as Promise<{
+      valid: boolean
+      errors?: string[]
+      warnings?: string[]
+    }>
   }
 
   /**
@@ -189,7 +208,7 @@ class StrategyApiService {
     limit?: number
     since?: string
   }): Promise<unknown[]> {
-    return request.get(`${this.baseUrl}/${id}/logs`, { params })
+    return request.get(`${this.baseUrl}/${id}/logs`, { params }) as unknown[]
   }
 
   /**
@@ -199,7 +218,7 @@ class StrategyApiService {
     const response = await request.get(`${this.baseUrl}/${id}/export`, {
       params: { format },
       responseType: 'blob'
-    })
+    }) as unknown as Blob
     return response
   }
 

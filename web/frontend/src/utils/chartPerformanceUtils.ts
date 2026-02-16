@@ -332,11 +332,11 @@ export class RenderOptimizer {
         const updateOption: EChartsOption = { ...baseOption }
 
         // 使用ECharts的增量更新特性
-        let current = updateOption
+        let current: Record<string, unknown> = updateOption as Record<string, unknown>
         for (let i = 0; i < dataPath.length - 1; i++) {
             const key = dataPath[i]
             if (!current[key]) current[key] = {}
-            current = current[key] as unknown
+            current = current[key] as Record<string, unknown>
         }
 
         const lastKey = dataPath[dataPath.length - 1]
@@ -422,18 +422,21 @@ export class RenderOptimizer {
             // 禁用不必要的动画
             animation: false,
             // 减少渐变和阴影
-            series: baseOption.series?.map((series: unknown) => ({
-                ...series,
-                // 简化样式
-                itemStyle: {
-                    ...series.itemStyle,
-                    shadowBlur: 0,
-                    shadowColor: 'transparent'
+            series: (baseOption.series as unknown[])?.map((series: unknown) => {
+                const s = series as Record<string, unknown>
+                return {
+                    ...s,
+                    // 简化样式
+                    itemStyle: {
+                        ...(s.itemStyle as Record<string, unknown> || {}),
+                        shadowBlur: 0,
+                        shadowColor: 'transparent'
+                    }
                 }
-            })),
+            }),
             // 优化工具提示
             tooltip: {
-                ...baseOption.tooltip,
+                ...(baseOption.tooltip as Record<string, unknown> || {}),
                 confine: true,
                 enterable: false
             }
@@ -449,7 +452,7 @@ export class RenderOptimizer {
         enableProgressive: boolean
     } {
         // 检测内存
-        const memory = (navigator as unknown).deviceMemory || 4
+        const memory = (navigator as unknown as { deviceMemory?: number }).deviceMemory || 4
         // 检测CPU核心数
         const cores = navigator.hardwareConcurrency || 2
         // 检测是否为移动设备

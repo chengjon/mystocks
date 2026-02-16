@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, _computed, _watch, _onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'

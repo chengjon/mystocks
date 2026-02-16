@@ -43,7 +43,7 @@ from .core.socketio_manager import get_socketio_manager
 from .core.validation import request_middleware
 
 # 导入统一响应格式中间件
-from .middleware.response_format import ProcessTimeMiddleware, ResponseFormatMiddleware
+from .middleware.response_format import ResponseFormatMiddleware
 
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
@@ -195,7 +195,7 @@ def create_app() -> FastAPI:
     app.middleware("http")(request_middleware)
 
     # 配置统一响应格式中间件 (API标准化)
-    app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
+    # app.add_middleware(ProcessTimeMiddleware)  # 已移除，功能由 ResponseFormatMiddleware 覆盖
     app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
 
     # 初始化Socket.IO服务器

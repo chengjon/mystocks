@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, _computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 

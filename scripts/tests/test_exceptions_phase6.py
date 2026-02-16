@@ -325,7 +325,7 @@ class TestValidationExceptions:
         """测试RequiredFieldError"""
         exc = RequiredFieldError("Required field missing")
         assert exc.code == "REQUIRED_FIELD_ERROR"
-        assert exc.severity = "HIGH"
+        assert exc.severity == "HIGH"
         assert isinstance(exc, ValidationException)
 
 

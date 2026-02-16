@@ -25,8 +25,11 @@ from app.adapters.akshare_extension import get_akshare_extension
 from app.adapters.tqlex_adapter import get_tqlex_adapter
 from app.core.cache_integration import get_cache_integration
 from app.models.market_data import ChipRaceEndData, ChipRaceOpenData, ETFData, FundFlow, LongHuBangData
+from .market_data_service import MarketDataService
 
 logger = logging.getLogger(__name__)
+
+_market_data_service: Optional[MarketDataService] = None
 
 def get_market_data_service() -> MarketDataService:
     """获取市场数据服务单例"""

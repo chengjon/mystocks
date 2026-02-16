@@ -5,7 +5,7 @@
  * Implements fallback to mock data on API failures.
  */
 
-import type { UnifiedResponse } from '../apiClient';
+import type { UnifiedResponse } from '../types/common';
 import type {
   MarketOverviewVM,
   FundFlowChartPoint,
@@ -19,16 +19,28 @@ import type {
 // Import new API types
 import type {
   MarketOverviewDetailedResponse as MarketOverviewResponse,
-  FundFlowAPIResponse,
-  KLineDataResponse,
+  FundFlowDataResponse as FundFlowAPIResponse,
+  KlineResponse as KLineDataResponse,
   ChipRaceResponse,
   LongHuBangResponse,
-} from '../types/generated-types';
+} from '../types/common';
 
 // Import Mock data as fallback
 // import mockMarketOverview from '@/mock/marketOverview';  // Unused - using inline mock
 import mockFundFlow from '@/mock/fundFlow';
 import mockKLineData from '@/mock/klineData';
+
+interface AdaptedKLineData {
+  categoryData: string[];
+  values: {
+    open: number;
+    close: number;
+    low: number;
+    high: number;
+    volume: number;
+  }[];
+  volumes: number[];
+}
 
 export class MarketAdapter {
   /**
@@ -50,7 +62,7 @@ export class MarketAdapter {
 
       // Handle missing fields gracefully - backend API may not have all fields yet
       // Use type assertions to access fields that may not be in the type definition
-      const apiData = data as unknown;
+      const apiData = data as any;
 
       const rise = apiData.rise_fall_count?.rise || 0;
       const fall = apiData.rise_fall_count?.fall || 0;
@@ -95,10 +107,10 @@ export class MarketAdapter {
 
     try {
       // Access fundFlow array directly from the response data
-      const fundFlowData = apiResponse.data?.fundFlow || [];
+      const fundFlowData = apiResponse.data?.fund_flow || [];
 
       // Transform API data to match FundFlowChartPoint interface
-      return fundFlowData.map((item) => ({
+      return fundFlowData.map((item: any) => ({
         date: item.trade_date || '',
         timestamp: item.trade_date ? new Date(item.trade_date).getTime() : Date.now(),
 
@@ -161,7 +173,7 @@ export class MarketAdapter {
    */
   static adaptKLineData(
     apiResponse: UnifiedResponse<KLineDataResponse>
-  ): KLineChartData {
+  ): AdaptedKLineData {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[MarketAdapter] K-line API failed, using mock data:', apiResponse.message);
       return this.getMockKLineData();
@@ -171,21 +183,21 @@ export class MarketAdapter {
       const klineData = apiResponse.data;
       const points = klineData.data || [];
 
-      const categoryData = points.map((p) => p.datetime || '');
-      const values = points.map((p) => ({
+      const categoryData = points.map((p: any) => p.datetime || '');
+      const values = points.map((p: any) => ({
         open: p.open || 0,
         close: p.close || 0,
         low: p.low || 0,
         high: p.high || 0,
         volume: p.volume || 0,
       }));
-      const volumes = points.map((p) => p.volume || 0);
+      const volumes = points.map((p: any) => p.volume || 0);
 
       return {
         categoryData,
         values,
         volumes,
-      } as Record<string, unknown>;
+      };
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt K-line data:', error);
       return this.getMockKLineData();
@@ -203,7 +215,7 @@ export class MarketAdapter {
       }
       // Handle both single item and array responses
       const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
-      return items.map(stock => ({
+      return items.map((stock: any) => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
           raceAmount: stock.race_amount || 0,
@@ -222,7 +234,7 @@ export class MarketAdapter {
       }
       // Handle both single item and array responses
       const items = Array.isArray(apiResponse.data) ? apiResponse.data : [apiResponse.data];
-      return items.map(stock => ({
+      return items.map((stock: any) => ({
           symbol: stock.symbol || '',
           name: stock.name || '',
           net_amount: stock.net_amount || 0,
@@ -349,7 +361,7 @@ export class MarketAdapter {
   /**
    * Get mock K-line data
    */
-  private static getMockKLineData(): KLineChartData {
+  private static getMockKLineData(): AdaptedKLineData {
     console.log('[MarketAdapter] 📦 Using Mock K-Line data');
 
     // Wrap mock data in KlineResponse structure

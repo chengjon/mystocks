@@ -96,14 +96,14 @@ database:
     host: "localhost"
     port: 6030
     user: "root"
-    password: "taosdata"
+    password: "${TDENGINE_PASSWORD}"
     database: "market_data"
 
   postgresql:
     host: "localhost"
     port: 5432
     user: "postgres"
-    password: "postgres"
+    password: "${POSTGRESQL_PASSWORD}"
     database: "mystocks"
     pool_size: 20
 
@@ -111,7 +111,7 @@ database:
     host: "localhost"
     port: 5432
     user: "postgres"
-    password: "postgres"
+    password: "${MONITOR_DB_PASSWORD}"
     database: "gpu_api_monitoring"
 
 # 监控配置
@@ -147,7 +147,7 @@ security:
   authentication:
     enabled: true
     type: "jwt"  # jwt, api_key
-    secret_key: "your-secret-key-here"
+    secret_key: "${GPU_API_JWT_SECRET}"
     token_expiry_hours: 24
 
   rate_limit:
@@ -158,7 +158,7 @@ security:
   encryption:
     enabled: true
     algorithm: "AES-256"
-    key: "your-encryption-key"
+    key: "${GPU_API_ENCRYPTION_KEY}"
 
 # 缓存配置
 cache:

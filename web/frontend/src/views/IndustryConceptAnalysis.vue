@@ -166,7 +166,45 @@
 import type { TableColumn } from '@/components/shared'
 import { useIndustryConceptAnalysis } from './composables/useIndustryConceptAnalysis'
 
-const { activeTab, loading, stocksLoading, industryList, conceptList, selectedIndustry, selectedConcept, currentCategory, stocks, searchKeyword, currentPage, pageSize, stats, pieChartData, data, pieChartOptions, barChartData, barChartOptions, tableColumns, paginatedStocks, start, end, result, keyword, formatPercent, formatPrice, formatVolume, formatAmount, getChangeColor, getChangeColorClass, refreshData, loadIndustryList, response, loadConceptList, response, loadIndustryStocks, loadConceptStocks, response, concept, handleTabChange, handleIndustryChange, handleConceptChange, resetFilters, handleSizeChange, handleCurrentChange, exportStocks } = useIndustryConceptAnalysis()
+const {
+  activeTab,
+  loading,
+  stocksLoading,
+  industryList,
+  conceptList,
+  selectedIndustry,
+  selectedConcept,
+  currentCategory,
+  stocks,
+  searchKeyword,
+  currentPage,
+  pageSize,
+  stats,
+  pieChartData,
+  pieChartOptions,
+  barChartData,
+  barChartOptions,
+  tableColumns,
+  paginatedStocks,
+  formatPercent,
+  formatPrice,
+  formatVolume,
+  formatAmount,
+  getChangeColor,
+  getChangeColorClass,
+  refreshData,
+  loadIndustryList,
+  loadConceptList,
+  loadIndustryStocks,
+  loadConceptStocks,
+  handleTabChange,
+  handleIndustryChange,
+  handleConceptChange,
+  resetFilters,
+  handleSizeChange,
+  handleCurrentChange,
+  exportStocks
+} = useIndustryConceptAnalysis()
 </script>
 
 <style scoped lang="scss">

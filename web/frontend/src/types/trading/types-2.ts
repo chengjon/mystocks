@@ -1,3 +1,4 @@
+import type { TradingFees, CreateOrderRequest, ATradingRule } from './part-1'
 
 /**
  * 持仓汇总

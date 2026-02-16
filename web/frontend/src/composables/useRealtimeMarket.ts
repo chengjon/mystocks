@@ -23,6 +23,20 @@ export interface RealtimeMarketData {
   timestamp: number
 }
 
+interface RawMarketData {
+  symbol?: string
+  name?: string
+  price: number
+  change: number
+  changePercent: number
+  volume: number
+  timestamp?: number
+}
+
+interface WsStatusData {
+  status: string
+}
+
 export interface WebSocketStatus {
   connected: boolean
   connecting: boolean
@@ -80,7 +94,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
       wsManager.connect()
 
       // 监听连接状态（通过订阅一个状态频道）
-      const statusHandler = (data: unknown) => {
+      const statusHandler = (data: WsStatusData) => {
         if (data.status === 'connected') {
           wsStatus.value.connected = true
           wsStatus.value.connecting = false
@@ -132,7 +146,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
     }
 
     // 创建消息处理器
-    const handler = (rawData: unknown) => {
+    const handler = (rawData: RawMarketData) => {
       const data: RealtimeMarketData = {
         symbol: rawData.symbol || symbol,
         name: rawData.name,

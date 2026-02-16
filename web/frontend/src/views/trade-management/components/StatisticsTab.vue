@@ -48,6 +48,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
 import echarts from '@/utils/echarts'
+import type { EChartsType } from 'echarts/core'
 
 import { artDecoTheme } from '@/utils/echarts'
 import { tradeApi } from '@/api/trade'
@@ -66,8 +67,8 @@ interface Statistics {
 const assetsChartRef = ref<HTMLElement>()
 const profitChartRef = ref<HTMLElement>()
 
-let assetsChartInstance: ECharts | null = null
-let profitChartInstance: ECharts | null = null
+let assetsChartInstance: EChartsType | null = null
+let profitChartInstance: EChartsType | null = null
 
 const statistics = reactive<Statistics>({
   total_trades: 2,

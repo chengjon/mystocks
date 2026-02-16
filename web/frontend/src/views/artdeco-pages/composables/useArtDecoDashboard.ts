@@ -1,44 +1,84 @@
-    import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-    import {
-    import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
-    import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
-    import ArtDecoLongHuBang from '@/components/artdeco/specialized/ArtDecoLongHuBang.vue'
-    import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
-    import { marketService } from '@/api/services/marketService'
-    import { mockWebSocket } from '@/api/mockWebSocket'
-    import dashboardService from '@/api/services/dashboardService'
+import { ref, computed, onMounted, onUnmounted, watch, type Ref, type ComputedRef } from 'vue'
+import {
+    ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
+    ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading
+} from '@/components/artdeco'
+import ArtDecoSkeleton from '@/components/artdeco/core/ArtDecoSkeleton.vue'
+import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
+import ArtDecoLongHuBang from '@/components/artdeco/specialized/ArtDecoLongHuBang.vue'
+import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
+import { marketService } from '@/api/services/marketService'
+import { mockWebSocket } from '@/api/mockWebSocket'
+import dashboardService from '@/api/services/dashboardService'
+
+// Type definitions
+interface MarketHeatItem {
+    name: string
+    change: number
+    amount?: number
+}
+
+interface FundFlowItem {
+    amount: number
+    change?: number
+    monthly?: number
+    percentage?: number
+}
+
+interface MarketData {
+    shanghai: { index: string; change: string }
+    shenzhen: { index: string; change: string }
+    chuangye: { index: string; change: string }
+    fundFlow: {
+        hgt: FundFlowItem
+        sgt: FundFlowItem
+        northTotal: FundFlowItem
+        mainForce: FundFlowItem
+    }
+    northFund: { amount: string; change: number }
+    stocks: { up: number; down: number }
+    volume: { amount: string }
+}
+
+interface TopStock {
+    code: string
+    name: string
+    price: string
+    change: number
+}
+
+interface IndicatorItem {
+    name: string
+    value: string
+    trend: string
+    signal: string
+}
+
+interface SystemHealthItem {
+    name: string
+    status: string
+    value: string
+}
 
 export function useArtDecoDashboard() {
-        ArtDecoStatCard, ArtDecoCard, ArtDecoButton, ArtDecoCollapsible,
-        ArtDecoHeader, ArtDecoIcon, ArtDecoBadge, ArtDecoLoading
-    } from '@/components/artdeco'
-    
-    // Import Skeleton
-    
-    // Import Charts
-
-    // 导入新组件
-
-    // 导入API服务
-    
     // Chart Options Generation
     const fundFlowChartOption = computed(() => {
         const data = marketData.value.fundFlow
         const categories = ['沪股通', '深股通', '主力']
         const values = [data.hgt.amount, data.sgt.amount, data.mainForce.amount]
-        
+
         return {
             tooltip: { trigger: 'axis' },
             grid: { top: 30, bottom: 20, left: 40, right: 10, containLabel: true },
-            xAxis: { 
-                type: 'category', 
+            xAxis: {
+                type: 'category',
                 data: categories,
                 axisLine: { show: false },
                 axisTick: { show: false }
             },
-            yAxis: { 
-                type: 'value', 
-                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } } 
+            yAxis: {
+                type: 'value',
+                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } }
             },
             series: [{
                 type: 'bar',
@@ -60,21 +100,21 @@ export function useArtDecoDashboard() {
         // Generate time labels (simplified)
         const dataLength = trendData.value.length;
         const hours = Array.from({length: dataLength}, (_, i) => i); // Placeholder x-axis
-        
+
         return {
             tooltip: { trigger: 'axis' },
             grid: { top: 10, bottom: 20, left: 40, right: 10, containLabel: true },
-            xAxis: { 
-                type: 'category', 
+            xAxis: {
+                type: 'category',
                 data: hours,
                 boundaryGap: false,
                 axisLine: { show: false },
                 axisLabel: { show: false } // Hide labels for clean look
             },
-            yAxis: { 
-                type: 'value', 
+            yAxis: {
+                type: 'value',
                 scale: true, // Auto scale
-                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } } 
+                splitLine: { show: true, lineStyle: { color: 'rgb(255 255 255 / 5%)' } }
             },
             series: [{
                 type: 'line',
@@ -110,7 +150,7 @@ export function useArtDecoDashboard() {
 
         return {
             tooltip: {
-                formatter: (params) => {
+                formatter: (params: { data: { name: string; change: number } }): string => {
                     const { name, change } = params.data
                     const sign = change > 0 ? '+' : ''
                     return `${name}: ${sign}${change}%`
@@ -138,25 +178,25 @@ export function useArtDecoDashboard() {
     })
 
     // 响应式数据
-    const currentTime = ref('')
-    const activeFlowTab = ref('1day')
-    const activePoolTab = ref('watchlist')
-    const refreshing = ref(false)
-    const trendData = ref([])
-    const activeStrategiesCount = ref(0)
-    const todayPnLValue = ref('¥0.00')
-    const indicatorList = ref([
+    const currentTime: Ref<string> = ref('')
+    const activeFlowTab: Ref<string> = ref('1day')
+    const activePoolTab: Ref<string> = ref('watchlist')
+    const refreshing: Ref<boolean> = ref(false)
+    const trendData: Ref<number[]> = ref([])
+    const activeStrategiesCount: Ref<number> = ref(0)
+    const todayPnLValue: Ref<string> = ref('¥0.00')
+    const indicatorList: Ref<IndicatorItem[]> = ref([
         { name: 'RSI', value: '--', trend: 'neutral', signal: '--' },
         { name: 'MACD', value: '--', trend: 'neutral', signal: '--' },
         { name: 'KDJ', value: '--', trend: 'neutral', signal: '--' },
         { name: '布林带', value: '--', trend: 'neutral', signal: '--' }
     ])
-    const systemHealth = ref([])
+    const systemHealth: Ref<SystemHealthItem[]> = ref([])
 
     // ============================================
     // 加载状态管理
     // ============================================
-    const loading = ref({
+    const loading: Ref<{ market: boolean; fundFlow: boolean; industry: boolean; indicators: boolean; monitoring: boolean; strategies: boolean; pnl: boolean }> = ref({
         market: true,
         fundFlow: true,
         industry: true,
@@ -166,13 +206,13 @@ export function useArtDecoDashboard() {
         pnl: true
     })
 
-    const error = ref({
+    const error: Ref<{ market: string; fundFlow: string; industry: string }> = ref({
         market: '',
         fundFlow: '',
         industry: ''
     })
 
-    const marketData = ref({
+    const marketData: Ref<MarketData> = ref({
         shanghai: { index: '0.00', change: '0.00' },
         shenzhen: { index: '0.00', change: '0.00' },
         chuangye: { index: '0.00', change: '0.00' },
@@ -187,8 +227,8 @@ export function useArtDecoDashboard() {
         volume: { amount: '0.00亿' }
     })
 
-    const marketHeat = ref([])
-    const capitalFlowData = ref([])
+    const marketHeat: Ref<MarketHeatItem[]> = ref([])
+    const capitalFlowData: Ref<unknown[]> = ref([])
 
     const flowTabs = [
         { key: '1day', label: '1日' },
@@ -202,17 +242,17 @@ export function useArtDecoDashboard() {
         { key: 'focus', label: '重点' }
     ]
 
-    const topStocks = ref([
+    const topStocks: Ref<TopStock[]> = ref([
         { code: '600519', name: '贵州茅台', price: '1850.00', change: 2.1 },
         { code: '300750', name: '宁德时代', price: '245.60', change: 1.8 },
         { code: '000001', name: '平安银行', price: '12.85', change: -0.4 },
         { code: '600036', name: '招商银行', price: '38.45', change: 0.9 }
     ])
 
-    const indicatorsExpanded = ref(true)
-    const monitoringExpanded = ref(true)
+    const indicatorsExpanded: Ref<boolean> = ref(true)
+    const monitoringExpanded: Ref<boolean> = ref(true)
 
-    const toNumber = (value, fallback = 0) => {
+    const toNumber = (value: unknown, fallback = 0): number => {
         const numeric = Number(value)
         return Number.isFinite(numeric) ? numeric : fallback
     }
@@ -259,15 +299,15 @@ export function useArtDecoDashboard() {
         return 'warning'
     })
 
-    const handleIndicatorsToggle = (expanded) => {
+    const handleIndicatorsToggle = (expanded: boolean): void => {
         indicatorsExpanded.value = typeof expanded === 'boolean' ? expanded : !indicatorsExpanded.value
     }
 
-    const handleMonitoringToggle = (expanded) => {
+    const handleMonitoringToggle = (expanded: boolean): void => {
         monitoringExpanded.value = typeof expanded === 'boolean' ? expanded : !monitoringExpanded.value
     }
 
-    const fetchMarketOverview = async () => {
+    const fetchMarketOverview = async (): Promise<void> => {
         loading.value.market = true
         error.value.market = ''
 
@@ -277,7 +317,7 @@ export function useArtDecoDashboard() {
                 ? response.data
                 : (Array.isArray(response) ? response : [])
 
-            const formatIndex = (item) => ({
+            const formatIndex = (item: Record<string, unknown>): { index: string; change: string } => ({
                 index: toNumber(item?.latest_price ?? item?.price).toFixed(2),
                 change: toNumber(item?.change_percent ?? item?.change).toFixed(2)
             })
@@ -370,13 +410,13 @@ export function useArtDecoDashboard() {
 
     const fetchTrendData = async () => {
         try {
-            const response = await marketService.getTrend('000001.SH')
+            const response = await (marketService as Record<string, any>).getMarketTrend?.('000001.SH') || marketService.getQuotes?.('000001.SH')
             const payload = response?.data ?? response
             const source = Array.isArray(payload?.data)
                 ? payload.data
                 : (Array.isArray(payload) ? payload : [])
 
-            trendData.value = source.map((point) => toNumber(point)).filter((point) => Number.isFinite(point))
+            trendData.value = source.map((point: unknown) => toNumber(point)).filter((point: number) => Number.isFinite(point))
         } catch {
             trendData.value = []
         }
@@ -390,20 +430,20 @@ export function useArtDecoDashboard() {
             // 1. 获取策略数
             const stratRes = await dashboardService.getActiveStrategies(1) // mock uid
             activeStrategiesCount.value = stratRes.data?.length || 0
-            
+
             // 2. 获取收益与风险
             const riskRes = await dashboardService.getPositionRisk(1)
             todayPnLValue.value = `¥${riskRes.data?.totalPnL?.toLocaleString() || '0.00'}`
-            
+
             // 3. 获取系统健康度
             const healthRes = await dashboardService.getSystemHealth()
-            systemHealth.value = healthRes.data || []
-            
+            systemHealth.value = (healthRes.data || []) as unknown as SystemHealthItem[]
+
             // 4. 获取技术指标建议
             const indRes = await dashboardService.getTechnicalIndicators(['000001.SH'], ['RSI', 'MACD', 'KDJ', 'BOLL'])
             const stockInds = indRes.data?.['000001.SH'] || []
             if (stockInds.length > 0) {
-                indicatorList.value = stockInds
+                indicatorList.value = stockInds as IndicatorItem[]
             }
         } catch (e) {
             console.error('Failed to fetch system stats', e)
@@ -434,7 +474,7 @@ export function useArtDecoDashboard() {
     }
 
     // 更新时间
-    let timeInterval
+    let timeInterval: ReturnType<typeof setInterval> | null = null
 
     const updateTime = () => {
         currentTime.value = new Date().toLocaleString('zh-CN', {
@@ -447,7 +487,7 @@ export function useArtDecoDashboard() {
         })
     }
 
-    const handleTrendUpdate = (msg) => {
+    const handleTrendUpdate = (msg: Record<string, any>): void => {
         if (msg.data && msg.data.price) {
             // Append new point
             // For ECharts dynamic update, we might need to shift if array is too long
@@ -488,15 +528,8 @@ export function useArtDecoDashboard() {
 
   return {
     fundFlowChartOption,
-    data,
-    categories,
-    values,
     marketTrendOption,
-    dataLength,
-    hours,
     heatmapOption,
-    data,
-    sign,
     currentTime,
     activeFlowTab,
     activePoolTab,
@@ -517,47 +550,20 @@ export function useArtDecoDashboard() {
     indicatorsExpanded,
     monitoringExpanded,
     toNumber,
-    numeric,
     marketSentiment,
-    upCount,
-    downCount,
-    total,
     sentimentColor,
     marketStatus,
-    shanghaiChange,
     marketStatusType,
-    shanghaiChange,
     handleIndicatorsToggle,
     handleMonitoringToggle,
     fetchMarketOverview,
-    response,
-    marketList,
-    formatIndex,
     fetchFundFlow,
-    response,
-    flowData,
-    normalized,
     fetchIndustryFlow,
-    response,
-    flowList,
     fetchStockFlowRanking,
-    response,
-    rankingList,
     fetchTrendData,
-    response,
-    payload,
-    source,
     fetchSystemStats,
-    stratRes,
-    riskRes,
-    healthRes,
-    indRes,
-    stockInds,
     refreshData,
-    timeInterval,
     updateTime,
     handleTrendUpdate,
-    newPoint,
-    newData,
   }
 }

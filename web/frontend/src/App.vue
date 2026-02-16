@@ -1,15 +1,20 @@
 <template>
   <div class="app-container">
-    <!-- FORCE RENDER: 直接渲染指挥中心，绕过路由 -->
-    <ArtDecoDashboard />
+    <!-- RESTORED: 使用路由视图，恢复 ArtDeco 3.1 布局系统 -->
+    <router-view />
   </div>
 </template>
 
-<script setup>
-import ArtDecoDashboard from '@/views/artdeco-pages/ArtDecoDashboard.vue'
-console.log('🔥 FORCE RENDER: ArtDecoDashboard')
+<script setup lang="ts">
+// 已恢复路由控制
 </script>
 
-<style>
-.app-container { min-height: 100vh; background: #0a0a0f; color: gold; }
+<style lang="scss">
+@import '@/styles/artdeco-tokens.scss';
+
+.app-container {
+  min-height: 100vh;
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+}
 </style>

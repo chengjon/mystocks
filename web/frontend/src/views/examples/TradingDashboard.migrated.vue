@@ -117,9 +117,9 @@
 </template>
 
 <script setup lang="ts">
-import { useTradingDashboard.migrated } from './composables/useTradingDashboard.migrated'
+import { useTradingDashboardMigrated } from './composables/useTradingDashboard.migrated'
 
-const { HARDCODED_API, TRADING_PAGE_CONFIG, getTradingConfig, isRunning, loading, activeTab, configDialogVisible, tradingData, strategyPerformance, marketData, riskData, usedConfigs, loadTradingData, config, response, loadStrategyPerformance, config, response, loadMarketData, config, response, loadRiskData, config, response, toggleTradingSession, loadAllData, showConfigInfo, getRiskLevelType, riskScore, getRiskLevelText, riskScore } = useTradingDashboard.migrated()
+const { TRADING_PAGE_CONFIG, getTradingConfig, isRunning, loading, activeTab, configDialogVisible, tradingData, strategyPerformance, marketData, riskData, usedConfigs, loadTradingData, loadStrategyPerformance, loadMarketData, loadRiskData, toggleTradingSession, loadAllData, showConfigInfo, getRiskLevelType, getRiskLevelText } = useTradingDashboardMigrated()
 </script>
 
 <style scoped>

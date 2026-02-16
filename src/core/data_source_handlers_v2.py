@@ -14,11 +14,22 @@
 
 import importlib
 import logging
+import os
 from typing import Any, Dict
 
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_tdx_runtime_value(name: str, dev_default: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    env_name = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    if env_name in {"dev", "development", "test", "local"}:
+        return dev_default
+    raise ValueError(f"{name} environment variable must be set in non-dev environments")
 
 
 class BaseDataSourceHandler:
@@ -343,8 +354,8 @@ class TdxHandler(BaseDataSourceHandler):
         self.is_connected = False
 
         self.conn_config = endpoint_info.get("source_config", {})
-        self.host = self.conn_config.get("host", "119.147.212.81")
-        self.port = self.conn_config.get("port", 7709)
+        self.host = self.conn_config.get("host") or _resolve_tdx_runtime_value("TDX_SERVER_HOST", "127.0.0.1")
+        self.port = self.conn_config.get("port") or int(_resolve_tdx_runtime_value("TDX_SERVER_PORT", "7709"))
 
     def fetch(self, **kwargs) -> pd.DataFrame:
         """调用通达信接口"""

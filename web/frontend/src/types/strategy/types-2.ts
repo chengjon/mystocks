@@ -1,3 +1,4 @@
+import type { BacktestTimeRange, PerformanceMetrics, StrategyParamValue, PositionRecord, StrategyStatus } from './part-1'
 
 /**
  * 回测摘要

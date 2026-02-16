@@ -1,0 +1,6 @@
+version: 1
+metadata:
+  owner: security
+  description: Hardcoding governance exceptions registry
+
+exceptions: []

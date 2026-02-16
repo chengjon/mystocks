@@ -4,10 +4,14 @@ Provides request latency, count, and active request metrics for all API endpoint
 """
 
 import time
+import uuid
 from typing import Callable
 
+import structlog
 from fastapi import Response
 from prometheus_client import Counter, Gauge, Histogram, Info, generate_latest
+
+logger = structlog.get_logger()
 
 REQUEST_LATENCY = Histogram(
     "http_request_duration_seconds",
@@ -62,7 +66,7 @@ def get_endpoint_name(path: str) -> str:
 
 
 class PerformanceMiddleware:
-    """Performance monitoring middleware for FastAPI"""
+    """Performance monitoring middleware for FastAPI with Request ID and Structured Logging"""
 
     def __init__(self, app=None):
         self.app = app
@@ -82,19 +86,26 @@ class PerformanceMiddleware:
 
     async def __call__(self, scope: dict, receive: Callable, send: Callable) -> None:
         """Process incoming request and track metrics"""
-        import sys
-
-        print(f"[PERF-MW] path={scope.get('path', 'unknown')}", file=sys.stderr, flush=True)
-
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
         self.setup()
 
+        # Generate Request ID
+        request_id = str(uuid.uuid4())
+        
+        # Store in scope for other middlewares
+        if "state" not in scope:
+            scope["state"] = {}
+        scope["state"]["request_id"] = request_id
+        
         method = scope["method"]
         path = scope["path"]
         endpoint = get_endpoint_name(path)
+
+        # Contextual logger
+        log = logger.new(request_id=request_id, method=method, path=path)
 
         start_time = time.perf_counter()
         active_requests = ACTIVE_REQUESTS.labels(method=method, endpoint=endpoint)
@@ -111,6 +122,11 @@ class PerformanceMiddleware:
                 response_started = True
                 status_code = message["status"]
                 latency = time.perf_counter() - start_time
+
+                # Inject Request ID into headers
+                headers = message.get("headers", [])
+                headers.append((b"x-request-id", request_id.encode()))
+                message["headers"] = headers
 
                 REQUEST_LATENCY.labels(
                     method=method,
@@ -134,6 +150,9 @@ class PerformanceMiddleware:
                         method=method,
                         endpoint=endpoint,
                     ).inc()
+                    log.warning("Slow request detected", latency=latency, status_code=status_code)
+                else:
+                    log.info("Request completed", latency=latency, status_code=status_code)
 
                 ACTIVE_REQUESTS.labels(method=method, endpoint=endpoint).dec()
                 in_progress.dec()
@@ -142,9 +161,11 @@ class PerformanceMiddleware:
 
         try:
             await self.app(scope, receive, send_wrapper)
-        except Exception:
+        except Exception as e:
             latency = time.perf_counter() - start_time
             status_code = 500
+
+            log.error("Request failed", latency=latency, error=str(e))
 
             REQUEST_LATENCY.labels(
                 method=method,
@@ -166,6 +187,7 @@ class PerformanceMiddleware:
             if not response_started:
                 ACTIVE_REQUESTS.labels(method=method, endpoint=endpoint).dec()
                 in_progress.dec()
+
 
 
 def metrics_endpoint() -> Response:

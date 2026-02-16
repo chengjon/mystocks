@@ -50,6 +50,7 @@
 
       <div class="section">
         <h3>中文字体配置</h3>
+        <div class="alert-card">
           <div class="alert-content">
             <strong>Matplotlib 中文显示</strong>
             <p>项目使用 SimHei 字体显示中文标签。如遇到乱码：</p>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { apiGet } from '@/api/apiClient';
-import type { UnifiedResponse } from '@/api/apiClient';
+import type { UnifiedResponse } from '@/api/types/common';
 
 // 补充缺失的类型定义
 interface SystemHealthData {

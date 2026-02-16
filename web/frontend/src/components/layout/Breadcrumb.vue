@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { _ref, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
 

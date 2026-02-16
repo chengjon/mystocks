@@ -4,12 +4,8 @@ import { ElMessage } from 'element-plus'
 import { Document, Money, PieChart, Grid } from '@element-plus/icons-vue'
 import { useDashboardCharts } from '@/composables/useDashboardCharts'
 import { useDashboardWatchlist } from '@/composables/useDashboardWatchlist'
+
 interface StockData {
-interface StrategyStock {
-interface StatItem {
-
-export function useEnhancedDashboard() {
-
   symbol: string
   name: string
   price: number
@@ -19,6 +15,7 @@ export function useEnhancedDashboard() {
   industry?: string
 }
 
+interface StrategyStock {
   symbol: string
   name: string
   price: number
@@ -28,6 +25,7 @@ export function useEnhancedDashboard() {
   signal: string
 }
 
+interface StatItem {
   title: string
   value: string
   icon: unknown
@@ -35,6 +33,8 @@ export function useEnhancedDashboard() {
   trend: string
   trendClass: string
 }
+
+export function useEnhancedDashboard() {
 
 const loading = reactive({
   main: false,
@@ -284,6 +284,34 @@ onMounted(() => {
     activeMarketTab,
     activeSectorTab,
     industryStandard,
+    priceDistributionData,
+    priceDistributionOptions,
+    marketHeatData,
+    marketHeatOptions,
+    leadingSectorData,
+    leadingSectorOptions,
+    capitalFlowData,
+    capitalFlowOptions,
+    capitalFlowData2,
+    capitalFlowOptions2,
+    industryData,
+    industryOptions,
+    priceDistributionChartRef,
+    marketHeatChartRef,
+    leadingSectorChartRef,
+    capitalFlowChartRef,
+    capitalFlowChartRef2,
+    industryChartRef,
+    updatePriceDistributionChart,
+    initCharts,
+    watchlistLoading,
+    watchlistStocks,
+    showAddDialog,
+    addForm,
+    loadWatchlist,
+    handleAddToWatchlist,
+    confirmAddToWatchlist,
+    removeFromWatchlist,
     stats,
     hotIndustries,
     hotConcepts,
@@ -295,19 +323,11 @@ onMounted(() => {
     formatPriceChange,
     getSignalTagType,
     loadMarketOverview,
-    response,
-    marketData,
-    marketStats,
     loadPriceDistribution,
-    response,
     loadHotIndustries,
-    response,
     loadHotConcepts,
-    response,
     loadFavoriteStocks,
-    response,
     loadStrategyStocks,
-    response,
     handleRetry,
     handleRefresh,
     loadData,

@@ -1,5 +1,5 @@
 // web/frontend/src/composables/useWebSocket.ts
-import { ref, _onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 export function useWebSocket() {
   const ws = ref<WebSocket | null>(null)

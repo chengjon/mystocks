@@ -53,7 +53,7 @@
     }
 
     // 格式化时间戳
-    const formatTimestamp = (timestamp: unknown) => {
+    const formatTimestamp = (timestamp: number | string | Date | null | undefined) => {
         if (!timestamp) return ''
         return new Date(timestamp).toLocaleString()
     }
@@ -129,9 +129,12 @@
         errorId.value = generateErrorId()
 
         // 构造错误详情
-        const componentName = instance?.$?.type?.name || instance?.$?.type || 'Unknown'
-        const componentFile = instance?.$?.type?.__file || 'Unknown'
+        const inst = instance as Record<string, unknown> | null
+        const instType = (inst?.$ as Record<string, unknown>)?.type as Record<string, unknown> | undefined
+        const componentName = instType?.name || instType || 'Unknown'
+        const componentFile = (instType as Record<string, unknown>)?.__file || 'Unknown'
 
+        const err = error as Error | null
         errorDetails.value = `
 错误时间: ${new Date(errorTimestamp.value).toISOString()}
 错误ID: ${errorId.value}
@@ -140,7 +143,7 @@
 Vue信息: ${info}
 
 错误堆栈:
-${error?.stack || error}
+${err?.stack || error}
 
 组件实例: ${JSON.stringify(instance, null, 2)}
   `.trim()

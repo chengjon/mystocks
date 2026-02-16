@@ -4,7 +4,7 @@
  * Comprehensive type definitions for chart components, utilities, and data structures
  */
 
-import type { _EChartsOption } from 'echarts'
+import type { EChartsOption } from 'echarts'
 
 /**
  * 基础数据点接口

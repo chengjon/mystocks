@@ -14,12 +14,12 @@
 </template>
 
 <script setup lang="ts">
-    import { _ref, computed, _onMounted, watch } from 'vue'
+    import { ref, computed, onMounted, watch } from 'vue'
     import { useRoute } from 'vue-router'
     import ArtDecoLoader from '@/components/artdeco/trading/ArtDecoLoader.vue'
     
     // ========== 配置系统集成 ==========
-    import { getPageConfig, isRouteName, type _PageConfig } from '@/config/pageConfig'
+    import { getPageConfig, isRouteName, type PageConfig } from '@/config/pageConfig'
     
     const route = useRoute()
 

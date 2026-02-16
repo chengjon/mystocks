@@ -1,13 +1,8 @@
 import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api'
+import { apiClient } from '@/api/apiClient'
+
 interface DatabaseInfo {
-interface DisplaySettings {
-interface LogEntry {
-interface LogSummary {
-
-export function useSettings() {
-
   id: string
   name: string
   host: string
@@ -16,10 +11,12 @@ export function useSettings() {
   message: string
 }
 
+interface DisplaySettings {
   fontFamily: string
   fontSize: 'small' | 'default' | 'large' | 'extra-large'
 }
 
+interface LogEntry {
   id?: number
   timestamp: string
   level: string
@@ -30,10 +27,21 @@ export function useSettings() {
   details?: Record<string, unknown>
 }
 
+interface LogSummary {
   total_logs: number
   recent_errors_1h: number
   level_counts: Record<string, number>
 }
+
+export function useSettings() {
+
+const defaultDbHost =
+  import.meta.env.VITE_DB_HOST ||
+  (typeof window !== 'undefined' ? window.location.hostname : 'localhost')
+const defaultMysqlPort = import.meta.env.VITE_MYSQL_PORT || '3306'
+const defaultPostgresqlPort = import.meta.env.VITE_POSTGRESQL_PORT || '5432'
+const defaultTdenginePort = import.meta.env.VITE_TDENGINE_PORT || '6030'
+const defaultRedisPort = import.meta.env.VITE_REDIS_PORT || '6379'
 
 const activeTab: Ref<string> = ref('basic')
 
@@ -106,32 +114,32 @@ const databases: Ref<DatabaseInfo[]> = ref([
   {
     id: 'mysql',
     name: 'MySQL',
-    host: 'localhost',
-    port: '3306',
+    host: defaultDbHost,
+    port: defaultMysqlPort,
     status: 'unknown',
     message: ''
   },
   {
     id: 'postgresql',
     name: 'PostgreSQL',
-    host: 'localhost',
-    port: '5438',
+    host: defaultDbHost,
+    port: defaultPostgresqlPort,
     status: 'unknown',
     message: ''
   },
   {
     id: 'tdengine',
     name: 'TDengine',
-    host: 'localhost',
-    port: '6030',
+    host: defaultDbHost,
+    port: defaultTdenginePort,
     status: 'unknown',
     message: ''
   },
   {
     id: 'redis',
     name: 'Redis',
-    host: 'localhost',
-    port: '6379',
+    host: defaultDbHost,
+    port: defaultRedisPort,
     status: 'unknown',
     message: ''
   }
@@ -142,13 +150,13 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
   database.message = ''
 
   try {
-    const response = await api.post('/api/system/test-connection', {
+    const response = await apiClient.post('/api/system/test-connection', {
       db_type: database.id,
       host: database.host,
       port: parseInt(database.port)
     })
 
-    const result = (response as Record<string, unknown>)?.data || response
+    const result = (response as unknown as Record<string, any>)?.data || response
     if (result && result.success !== false) {
       database.status = 'success'
       database.message = result.message || 'CONNECTION SUCCESSFUL'
@@ -160,7 +168,8 @@ const testConnection = async (database: DatabaseInfo): Promise<void> => {
     }
   } catch (error: unknown) {
     database.status = 'error'
-    database.message = error.response?.data?.detail || error.message || 'NETWORK ERROR'
+    const err = error as Record<string, any>
+    database.message = err?.response?.data?.detail || err?.message || 'NETWORK ERROR'
     ElMessage.error(`${database.name} CONNECTION FAILED`)
   }
 }
@@ -200,8 +209,8 @@ const fetchLogs = async (): Promise<void> => {
     if (selectedLevel.value) params.level = selectedLevel.value
     if (selectedCategory.value) params.category = selectedCategory.value
 
-    const response = await api.get('/api/system/logs', { params })
-    const data = (response as Record<string, unknown>)?.data || response
+    const response = await apiClient.get('/api/system/logs', { params })
+    const data = (response as unknown as Record<string, any>)?.data || response
 
     if (Array.isArray(data)) {
       logs.value = data
@@ -242,14 +251,15 @@ const generateMockLogs = (): LogEntry[] => {
 
 const fetchLogSummary = async (): Promise<void> => {
   try {
-    const response = await api.get('/api/system/logs/summary')
-    const data = (response as Record<string, unknown>)?.data || response
+    const response = await apiClient.get('/api/system/logs/summary')
+    const data = (response as unknown as Record<string, any>)?.data || response
 
     if (typeof data === 'object' && data !== null) {
+      const d = data as Record<string, any>
       logSummary.value = {
-        total_logs: data.total_logs || data.total || 0,
-        recent_errors_1h: data.recent_errors_1h || data.errors || 0,
-        level_counts: data.level_counts || {}
+        total_logs: d.total_logs || d.total || 0,
+        recent_errors_1h: d.recent_errors_1h || d.errors || 0,
+        level_counts: d.level_counts || {}
       }
     }
   } catch (error: unknown) {
@@ -396,15 +406,11 @@ onUnmounted((): void => {
     fontSizeMap,
     previewStyle,
     applyDisplaySettings,
-    root,
     _saveDisplaySettings,
     _resetDisplaySettings,
     loadDisplaySettings,
-    saved,
     databases,
     testConnection,
-    response,
-    result,
     _testAllConnections,
     logs,
     logSummary,
@@ -415,33 +421,18 @@ onUnmounted((): void => {
     currentPage,
     pageSize,
     totalLogs,
-    autoRefreshTimer,
     fetchLogs,
-    params,
-    response,
-    data,
     generateMockLogs,
-    logs,
-    levels,
-    categories,
-    operations,
     fetchLogSummary,
-    response,
-    data,
     _toggleFilter,
     _refreshLogs,
     handleSizeChange,
     handleCurrentChange,
     viewLogDetails,
-    details,
     getStatusBadgeClass,
-    classes,
     getStatusText,
-    texts,
     getLevelBadgeClass,
-    classes,
     formatTime,
     _showLogDetails,
-    detailsHtml,
   }
 }

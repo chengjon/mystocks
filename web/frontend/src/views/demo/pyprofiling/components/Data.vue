@@ -46,6 +46,7 @@
         </div>
       </div>
 
+      <div class="alert-card">
         <div class="alert-title">DATA PROCESSING FLOW</div>
         <div class="alert-content">
           <strong>Conversion steps:</strong>

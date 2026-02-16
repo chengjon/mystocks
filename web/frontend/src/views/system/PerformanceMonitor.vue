@@ -408,7 +408,7 @@
     }
 
     const getCLSProgress = (value: number): number => {
-        return Math.min((value / 25%) * 100, 100)
+        return Math.min((value / 0.25) * 100, 100)
     }
 
     const getBundleStatus = (): string => {

@@ -29,8 +29,9 @@ export function usePerformanceMonitor() {
       lastTime = now
 
       // Memory (Chrome only)
-      if ((performance as unknown).memory) {
-        const mem = (performance as unknown).memory
+      const perfWithMemory = performance as unknown as { memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number } }
+      if (perfWithMemory.memory) {
+        const mem = perfWithMemory.memory
         metrics.value.memory = {
           used: Math.round(mem.usedJSHeapSize / 1048576),
           total: Math.round(mem.totalJSHeapSize / 1048576),

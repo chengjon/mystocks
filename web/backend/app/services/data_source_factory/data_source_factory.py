@@ -35,6 +35,16 @@ from app.services.data_source_interface import (
     IDataSource,
 )
 from app.services.market_data_adapter import MarketDataSourceAdapter
+from .data_source_mode import (
+    BaseDataSource,
+    DataSourceConfig,
+    DataSourceMetrics,
+    DataSourceMode,
+    DynamicConfigManager,
+    HybridDataSource,
+    MockDataSource,
+    RealDataSource,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -283,6 +293,8 @@ class DataSourceFactory:
         async with data_source:
             yield data_source
 
+
+_global_factory: Optional[DataSourceFactory] = None
 
 async def get_data_source_factory() -> DataSourceFactory:
     """获取全局数据源工厂实例"""

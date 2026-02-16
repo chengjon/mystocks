@@ -96,8 +96,8 @@
     import ArtDecoLoadingOverlay from '@/components/artdeco/core/ArtDecoLoadingOverlay.vue'
 
     // ========== 配置系统集成 ==========
-    import { getPageConfig, _getTabConfig } from '@/config/pageConfig'
-    import { _marketService } from '@/api/services/marketService'
+    import { getPageConfig, getTabConfig } from '@/config/pageConfig'
+    import { marketService } from '@/api/services/marketService'
     import { strategyApiService } from '@/api/services/strategyService'
 
     const routeName = 'artdeco-trading-center'
@@ -142,6 +142,14 @@
     // 组合式API
     const tradingStore = useTradingStore()
     const authStore = useAuthStore()
+
+    // Type definitions
+    interface TreeNode {
+        key: string
+        label: string
+        icon?: string
+        children?: TreeNode[]
+    }
 
     // 响应式数据
     const activeFunction = ref('market-overview')
@@ -317,7 +325,7 @@
     // 当前面包屑
     const currentBreadcrumbs = computed(() => {
         const _breadcrumbs = []
-        const findNode = (nodes: unknown[], targetKey: string): unknown[] => {
+        const findNode = (nodes: TreeNode[], targetKey: string): TreeNode[] => {
             for (const node of nodes) {
                 if (node.key === targetKey) {
                     return [node]
@@ -332,7 +340,7 @@
             return []
                 }
 
-        const path = findNode(functionTreeData.value, activeFunction.value)
+        const path = findNode(functionTreeData.value as TreeNode[], activeFunction.value)
         return path.map(node => ({
             key: node.key,
             label: node.label,

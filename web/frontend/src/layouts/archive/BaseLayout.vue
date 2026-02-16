@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, _onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
 import ArtDecoSkipLink from '@/components/artdeco/base/ArtDecoSkipLink.vue'
@@ -157,20 +157,30 @@ const toast = useToastManager()
 const menuItemsRef = ref<MenuItem[]>(props.menuItems)
 
 // WebSocket Integration
-const { connect, _disconnect, message: wsMessage } = useWebSocket()
+const { connect, disconnect: _disconnect, message: wsMessage } = useWebSocket()
 
 onMounted(() => {
   // Connect to WebSocket server, replace with your actual WebSocket URL
   connect('ws://localhost:8000/api/ws')
 })
 
+// WebSocket message type
+interface WsMessage {
+  type: string;
+  payload?: {
+    path: string;
+    status: string;
+  };
+}
+
 // Watch for WebSocket messages and update menu item status
 watch(wsMessage, (newMessage) => {
-  if (newMessage && newMessage.type === 'menu_status_update' && newMessage.payload) {
-    const { path, status } = newMessage.payload
+  const msg = newMessage as WsMessage | null
+  if (msg && msg.type === 'menu_status_update' && msg.payload) {
+    const { path, status } = msg.payload
     const itemIndex = menuItemsRef.value.findIndex(item => item.path === path)
     if (itemIndex > -1) {
-      menuItemsRef.value[itemIndex].status = status // Assuming MenuItem has a status property
+      menuItemsRef.value[itemIndex].status = status as 'idle' | 'loading' | 'success' | 'error'
       // Trigger reactivity
       menuItemsRef.value = [...menuItemsRef.value]
     }
@@ -298,12 +308,13 @@ const retryApiCall = async (item: MenuItem) => {
     showSuccessToast(`${item.label} 数据已成功重新加载`)
   } catch (error: unknown) {
     // 保持错误状态
-    item.error = error.message || 'API Error'  // Set error message (string, not boolean true)
+    const errMsg = error instanceof Error ? error.message : String(error)
+    item.error = errMsg || 'API Error'  // Set error message (string, not boolean true)
 
     // 显示错误提示
     showErrorToast(
       `重新加载 ${item.label} 数据失败`,
-      error.message || String(error)
+      errMsg
     )
   }
 }

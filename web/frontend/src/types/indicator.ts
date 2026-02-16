@@ -3,7 +3,7 @@
  * 技术指标类型定义
  */
 
-import type { PanelType, IndicatorCategory } from './backend_types';
+import type { PanelType, IndicatorCategory } from './backend_types/index';
 
 // Re-export types from backend_types for convenience
 export type { PanelType, IndicatorCategory };

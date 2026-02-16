@@ -60,12 +60,18 @@ const tabs = [
   { key: 'attribution', label: '行业归因' }
 ]
 
+interface WatchlistItem {
+  id: string
+  name: string
+  stocks: unknown[]
+}
+
 const activeWatchlistId = ref('')
-const watchlists = ref<unknown[]>([])
+const watchlists = ref<WatchlistItem[]>([])
 const positions = ref<unknown[]>([])
 
 const currentWatchlistStocks = computed(() => {
-  return watchlists.value.find((l: unknown) => l.id === activeWatchlistId.value)?.stocks || []
+  return watchlists.value.find((l) => l.id === activeWatchlistId.value)?.stocks || []
 })
 
 const fetchData = async () => {
@@ -76,9 +82,9 @@ const fetchData = async () => {
     ])
 
     if (wlRes.data?.success) {
-      watchlists.value = wlRes.data.data
+      watchlists.value = wlRes.data.data as WatchlistItem[]
       if (watchlists.value.length > 0 && !activeWatchlistId.value) {
-        activeWatchlistId.value = (watchlists.value[0] as unknown).id
+        activeWatchlistId.value = watchlists.value[0].id
       }
     }
 

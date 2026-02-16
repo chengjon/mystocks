@@ -15,6 +15,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import volume_data_processor
 
 
+class TestVolumeDataProcessorSmart(unittest.TestCase):
+    """智能AI生成的测试类"""
+
+
 
     def test_volume_data_processor_detect_volume_anomaly_security(self):
         """安全测试 - detect_volume_anomaly"""

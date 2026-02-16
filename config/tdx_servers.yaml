@@ -1,0 +1,29 @@
+version: 1
+metadata:
+  owner: data-platform
+  description: Centralized TDX server pool
+  updated_at: "2026-02-15"
+
+primary: "shanghai-main"
+
+servers:
+  - id: "shanghai-main"
+    host: "180.153.18.170"
+    port: 7709
+    name: "上海主站"
+    enabled: true
+  - id: "shanghai-backup"
+    host: "101.227.73.20"
+    port: 7709
+    name: "上海备用"
+    enabled: true
+  - id: "shenzhen-main"
+    host: "119.147.212.81"
+    port: 7709
+    name: "深圳主站"
+    enabled: true
+  - id: "shenzhen-backup"
+    host: "114.80.63.12"
+    port: 7709
+    name: "深圳备用"
+    enabled: true

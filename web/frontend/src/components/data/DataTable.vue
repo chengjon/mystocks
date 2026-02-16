@@ -91,7 +91,7 @@ interface Column {
 
 interface Props {
   columns: Column[]
-  data: unknown[]
+  data: Record<string, unknown>[]
   title?: string
   rowKey?: string
   pagination?: boolean
@@ -99,7 +99,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   defaultSort?: string
   defaultSortOrder?: 'asc' | 'desc'
-  activeRow?: unknown
+  activeRow?: Record<string, unknown>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -114,7 +114,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'row-click': [row: unknown, index: number]
+  'row-click': [row: Record<string, unknown>, index: number]
   'sort': [column: string, order: 'asc' | 'desc']
 }>()
 
@@ -144,15 +144,15 @@ const sortedData = computed(() => {
   })
 })
 
-function getRowKey(row: unknown, index: number) {
+function getRowKey(row: Record<string, unknown>, index: number) {
   return row[props.rowKey] || index
 }
 
-function getRowValue(row: unknown, key: string) {
-  return key.split('.').reduce((obj, k) => obj?.[k], row)
+function getRowValue(row: Record<string, unknown>, key: string) {
+  return key.split('.').reduce((obj: Record<string, unknown> | undefined, k) => obj?.[k] as Record<string, unknown> | undefined, row)
 }
 
-function formatCellValue(row: unknown, col: Column) {
+function formatCellValue(row: Record<string, unknown>, col: Column) {
   const value = getRowValue(row, col.key)
   if (col.format) {
     return col.format(value)
@@ -166,7 +166,7 @@ function formatCellValue(row: unknown, col: Column) {
   return value
 }
 
-function getCellClass(row: unknown, col: Column) {
+function getCellClass(row: Record<string, unknown>, col: Column) {
   const classes = []
   if (col.class) {
     const colClass = col.class(row)

@@ -176,7 +176,7 @@ const handleSubmit = async () => {
     emit('submitted')
   } catch (error: unknown) {
     console.error('交易失败:', error)
-    ElMessage.error('TRADE FAILED: ' + (error.message || 'UNKNOWN ERROR'))
+    ElMessage.error('TRADE FAILED: ' + ((error as Error).message || 'UNKNOWN ERROR'))
   } finally {
     submitting.value = false
   }

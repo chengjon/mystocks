@@ -13,9 +13,9 @@
       class="virtual-list-content" 
       :style="{ transform: `translate3d(0, ${offsetY}px, 0)` }"
     >
-      <div 
-        v-for="(item, index) in visibleItems" 
-        :key="item[keyField] || index"
+      <div
+        v-for="(item, index) in visibleItems"
+        :key="(item as Record<string, unknown>)[keyField] as string || index"
         class="virtual-list-item"
         :style="{ height: itemHeight + 'px' }"
       >
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, _onMounted, _onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   items: {

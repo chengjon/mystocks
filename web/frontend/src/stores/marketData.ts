@@ -4,13 +4,12 @@
  */
 
 import { defineStore } from 'pinia'
-import { _ref, reactive, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { indexedDB } from '@/utils/indexedDB'
 import { tradingApiManager } from '@/services/TradingApiManager'
-import { workersManager } from '@/utils/workersManager'
+import { workersManager, type TechnicalIndicatorResult } from '@/utils/workersManager/index'
 import type { MarketOverview } from '@/services/TradingApiManager'
 import type { MarketData } from '@/utils/indexedDB'
-import type { TechnicalIndicatorResult } from '@/utils/workersManager'
 
 interface MarketAnalysis {
     trend?: string
@@ -300,7 +299,7 @@ export const useMarketDataStore = defineStore('marketData', () => {
         params: Record<string, unknown>
     ): Promise<unknown[]> => {
         // Determine required data points based on indicator and parameters
-        const period = params.period || getDefaultPeriodForIndicator(indicator)
+        const period = (params.period as number) || getDefaultPeriodForIndicator(indicator)
 
         // Get extra data for warmup periods (typically 50% more than needed)
         const requiredPoints = Math.max(period * 1.5, 100)
@@ -315,7 +314,7 @@ export const useMarketDataStore = defineStore('marketData', () => {
                     .sort((a, b) => a.timestamp - b.timestamp)
                     .slice(-requiredPoints) // Get the most recent N points
 
-                if (symbolData && symbolData.length >= period) {
+                if (symbolData && symbolData.length >= (period as number)) {
                     console.log(`📊 Using cached historical data for ${symbol} (${symbolData.length} points)`)
                     return symbolData
                 }

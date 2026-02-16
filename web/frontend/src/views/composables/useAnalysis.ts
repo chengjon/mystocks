@@ -1,12 +1,5 @@
 import { ref, computed, onMounted , onUnmounted } from 'vue'
 import {
-import TimeSeriesChart from '@/components/artdeco/charts/TimeSeriesChart.vue'
-interface AnalysisForm {
-interface StockInfo {
-
-export function useAnalysis() {
-
-// ArtDeco Components
   ArtDecoHeader,
   ArtDecoCard,
   ArtDecoInput,
@@ -16,10 +9,10 @@ export function useAnalysis() {
   ArtDecoTable,
   ArtDecoSidebar
 } from '@/components/artdeco'
+import TimeSeriesChart from '@/components/artdeco/charts/TimeSeriesChart.vue'
 
-// Specialized Components
-
-// Types
+// Types - exported for use in components
+export interface AnalysisForm {
   symbol: string
   analysisType: string
   period: string
@@ -30,11 +23,42 @@ export function useAnalysis() {
   signalThreshold: number
 }
 
+export interface StockInfo {
   name: string
   price: number
   change: number
 }
 
+export interface ChartDataPoint {
+  date: string
+  value: number
+}
+
+export interface SignalData {
+  buy: number
+  sell: number
+  hold: number
+  overallTrend: string
+}
+
+export interface RecentSignal {
+  id: string
+  date: string
+  time: string
+  type: string
+  symbol: string
+  strength: number
+}
+
+export interface AnalysisResults {
+  priceData: ChartDataPoint[]
+  volumeData: ChartDataPoint[]
+  indicatorValues: unknown[]
+  signals: SignalData
+  recentSignals: RecentSignal[]
+}
+
+export function useAnalysis() {
 // Reactive Data
 const menuItems = ref([
   { label: 'TECHNICAL ANALYSIS', icon: '📊', path: '/analysis', active: true },
@@ -65,7 +89,7 @@ const loading = ref(false)
 const stockInfo = ref<StockInfo>({ name: '', price: 0, change: 0 })
 
 // Analysis Results
-const analysisResults = ref<unknown>(null)
+const analysisResults = ref<AnalysisResults | null>(null)
 
 // Options Data
 const analysisTypes = [
@@ -110,13 +134,22 @@ const exportSettings = ref({
   includeRawData: false
 })
 
-// Table Columns
-const indicatorColumns: unknown[] = [
+// Table Column type - matching ArtDecoTable's Column interface
+interface IndicatorColumn {
+  key: string
+  label: string
+  sortable?: boolean
+  width?: string
+  format?: (value: unknown) => string
+}
+
+// Table Columns - cast to readonly to help with type inference
+const indicatorColumns: IndicatorColumn[] = [
   { key: 'date', label: 'DATE', sortable: true, width: '120px' },
-  { key: 'price', label: 'PRICE', width: '100px', format: (value: unknown) => `¥${value.toFixed(2)}` },
-  { key: 'ma', label: 'MA(20)', width: '80px', format: (value: unknown) => value?.toFixed(2) || '-' },
-  { key: 'rsi', label: 'RSI', width: '80px', format: (value: unknown) => value?.toFixed(2) || '-' },
-  { key: 'macd', label: 'MACD', width: '100px', format: (value: unknown) => value?.toFixed(4) || '-' },
+  { key: 'price', label: 'PRICE', width: '100px', format: (value: unknown) => typeof value === 'number' ? `¥${value.toFixed(2)}` : '-' },
+  { key: 'ma', label: 'MA(20)', width: '80px', format: (value: unknown) => typeof value === 'number' ? value.toFixed(2) : '-' },
+  { key: 'rsi', label: 'RSI', width: '80px', format: (value: unknown) => typeof value === 'number' ? value.toFixed(2) : '-' },
+  { key: 'macd', label: 'MACD', width: '100px', format: (value: unknown) => typeof value === 'number' ? value.toFixed(4) : '-' },
   { key: 'trend', label: 'TREND', width: '100px' },
   { key: 'signal', label: 'SIGNAL', width: '100px' }
 ]
@@ -262,8 +295,8 @@ const generateIndicatorValues = () => {
   return data
 }
 
-const generateRecentSignals = () => {
-  const signals = []
+const generateRecentSignals = (): RecentSignal[] => {
+  const signals: RecentSignal[] = []
   const types = ['BUY', 'SELL', 'HOLD']
 
   for (let i = 0; i < 10; i++) {
@@ -273,7 +306,9 @@ const generateRecentSignals = () => {
     signals.push({
       id: `signal-${i}`,
       date: date.toISOString().split('T')[0],
+      time: date.toISOString().split('T')[0],
       type: types[Math.floor(Math.random() * types.length)],
+      symbol: '000001',
       strength: Math.floor(Math.random() * 40) + 60
     })
   }
@@ -349,23 +384,9 @@ onUnmounted(() => {
     toggleAdvancedOptions,
     loadPreset,
     generatePriceData,
-    data,
-    basePrice,
-    currentPrice,
-    date,
-    change,
     generateVolumeData,
-    data,
-    baseVolume,
-    date,
-    volume,
     generateIndicatorValues,
-    data,
-    date,
     generateRecentSignals,
-    signals,
-    types,
-    date,
     getTrendVariant,
     getSignalVariant,
     getOverallTrendClass,

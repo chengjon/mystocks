@@ -107,6 +107,7 @@ def add_module_header(output_file: Path, module_name: str) -> None:
 生成时间: 2025-12-29
 模块: {module_name}
 """
+'''
 
     # 检查是否已有文件头
     if not content.startswith('"""'):

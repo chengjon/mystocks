@@ -31,8 +31,17 @@
 <script setup lang="ts">
 import { ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 
+interface ETFItem {
+  code: string
+  name: string
+  type: string
+  price: number
+  change: number
+  volume: number
+}
+
 interface Props {
-  etfRanking: unknown[]
+  etfRanking: ETFItem[]
 }
 
 defineProps<Props>()

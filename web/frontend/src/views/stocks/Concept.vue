@@ -300,7 +300,7 @@
         }
     })
 
-    const selectConcept = (concept: unknown) => {
+    const selectConcept = (concept: Concept) => {
         selectedConcept.value = concept
     }
 

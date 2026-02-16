@@ -208,7 +208,41 @@
 <script setup lang="ts">
 import { useSettings } from './composables/useSettings'
 
-const { activeTab, displaySettings, fontSizeMap, previewStyle, applyDisplaySettings, root, _saveDisplaySettings, _resetDisplaySettings, loadDisplaySettings, saved, databases, testConnection, response, result, _testAllConnections, logs, logSummary, logsLoading, filterErrors, selectedLevel, selectedCategory, currentPage, pageSize, totalLogs, autoRefreshTimer, fetchLogs, params, response, data, generateMockLogs, logs, levels, categories, operations, fetchLogSummary, response, data, _toggleFilter, _refreshLogs, handleSizeChange, handleCurrentChange, viewLogDetails, details, getStatusBadgeClass, classes, getStatusText, texts, getLevelBadgeClass, classes, formatTime, _showLogDetails, detailsHtml } = useSettings()
+const {
+  activeTab,
+  displaySettings,
+  fontSizeMap,
+  previewStyle,
+  applyDisplaySettings,
+  _saveDisplaySettings,
+  _resetDisplaySettings,
+  loadDisplaySettings,
+  databases,
+  testConnection,
+  _testAllConnections,
+  logs,
+  logSummary,
+  logsLoading,
+  filterErrors,
+  selectedLevel,
+  selectedCategory,
+  currentPage,
+  pageSize,
+  totalLogs,
+  fetchLogs,
+  generateMockLogs,
+  fetchLogSummary,
+  _toggleFilter,
+  _refreshLogs,
+  handleSizeChange,
+  handleCurrentChange,
+  viewLogDetails,
+  getStatusBadgeClass,
+  getStatusText,
+  getLevelBadgeClass,
+  formatTime,
+  _showLogDetails
+} = useSettings()
 </script>
 
 <style scoped lang="scss">

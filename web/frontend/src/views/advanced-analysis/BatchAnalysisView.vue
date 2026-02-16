@@ -46,8 +46,20 @@
 <script setup lang="ts">
     import { computed } from 'vue'
 
+    interface AnalysisData {
+        overall_score?: number
+        overall_signal?: string
+        score?: number
+        [key: string]: unknown
+    }
+
+    interface AnalysisResult {
+        success: boolean
+        data?: AnalysisData
+    }
+
     interface Props {
-        results: unknown
+        results: Record<string, AnalysisResult> | null
     }
 
     const props = defineProps<Props>()
@@ -57,16 +69,16 @@
     const analysesCount = computed(() => Object.keys(results.value).length)
 
     const completedAnalyses = computed(
-        () => Object.values(results.value).filter((result: unknown) => result.success).length
+        () => Object.values(results.value).filter((result) => result.success).length
     )
 
     const avgScore = computed(() => {
         const scores = Object.values(results.value)
-            .filter((result: unknown) => result.success && result.data?.overall_score)
-            .map((result: unknown) => result.data.overall_score)
+            .filter((result) => result.success && result.data?.overall_score)
+            .map((result) => result.data!.overall_score!)
 
         if (scores.length === 0) return 'N/A'
-        return Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length)
+        return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
     })
 
     const getAnalysisName = (analysisType: string): string => {
@@ -78,10 +90,10 @@
         return names[analysisType] || analysisType
     }
 
-    const getKeyMetrics = (data: unknown) => {
+    const getKeyMetrics = (data: AnalysisData | undefined) => {
         if (!data) return []
 
-        const metrics = []
+        const metrics: { key: string; label: string; value: unknown }[] = []
         if (data.overall_signal) {
             metrics.push({ key: 'signal', label: '信号', value: data.overall_signal })
         }

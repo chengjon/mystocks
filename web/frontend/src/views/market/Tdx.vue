@@ -267,7 +267,7 @@
 <script setup lang="ts">
 import { useTdx } from './composables/useTdx'
 
-const { loading, quoteLoading, chartLoading, searchSymbol, selectedPeriod, chartHeight, lastUpdate, connectionStatus, responseTime, activeSessions, primaryServer, backupServers, currentQuote, chartDateRange, refreshAllData, checkConnectionStatus, fetchQuote, changePeriod, changeDateRange, loadChartData, updateLastUpdateTime, now, getPriceClass, formatChange, formatChangePct, formatVolume, formatAmount } = useTdx()
+const { loading, quoteLoading, chartLoading, searchSymbol, selectedPeriod, chartHeight, lastUpdate, connectionStatus, responseTime, activeSessions, primaryServer, backupServers, currentQuote, chartDateRange, refreshAllData, checkConnectionStatus, fetchQuote, changePeriod, changeDateRange, loadChartData, updateLastUpdateTime, getPriceClass, formatChange, formatChangePct, formatVolume, formatAmount } = useTdx()
 </script>
 
 <style scoped lang="scss">

@@ -36,7 +36,7 @@ from .core.middleware.performance import PerformanceMiddleware, metrics_endpoint
 from .core.socketio_manager import get_socketio_manager
 
 # 导入统一响应格式中间件
-from .middleware.response_format import ProcessTimeMiddleware
+from .middleware.response_format import ResponseFormatMiddleware
 
 # 导入OpenAPI配置
 from .openapi_config import get_openapi_config
@@ -358,14 +358,14 @@ app.add_middleware(
 # 配置响应压缩 (性能优化)
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)  # 仅压缩大于1KB的响应  # 压缩等级1-9, 5为平衡
 
-# 配置统一响应格式中间件 (API标准化)
-app.add_middleware(ProcessTimeMiddleware)  # 处理时间记录
-# TEMP: Commenting out ResponseFormatMiddleware to debug 500 error
-# app.add_middleware(ResponseFormatMiddleware)  # 统一响应格式和request_id
-
 # Phase 5: 配置性能监控中间件
-performance_middleware = PerformanceMiddleware()
+# PerformanceMiddleware 负责指标收集、Request ID 生成和日志记录
 app.add_middleware(PerformanceMiddleware)
+
+# 配置统一响应格式中间件 (API标准化)
+# 负责自动包装 UnifiedResponse
+from .middleware.response_format import ResponseFormatMiddleware
+app.add_middleware(ResponseFormatMiddleware)
 
 # Phase Security: 配置速率限制中间件 (防止暴力破解)
 # 【设计边界】本地部署默认禁用，仅公网暴露时通过 RATE_LIMIT_ENABLED=true 启用

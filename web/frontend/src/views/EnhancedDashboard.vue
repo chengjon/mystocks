@@ -21,6 +21,7 @@
     </div>
 
     <div class="market-grid">
+      <el-col :xs="24" :lg="12">
       <el-card class="chart-card">
           <template #header>
             <PageHeader
@@ -294,7 +295,45 @@
 <script setup lang="ts">
 import { useEnhancedDashboard } from './composables/useEnhancedDashboard'
 
-const { loading, activeMarketTab, activeSectorTab, industryStandard, stats, hotIndustries, hotConcepts, favoriteStocks, strategyStocks, getIconComponent, getColorType, getPriceChangeClass, formatPriceChange, getSignalTagType, loadMarketOverview, response, marketData, marketStats, loadPriceDistribution, response, loadHotIndustries, response, loadHotConcepts, response, loadFavoriteStocks, response, loadStrategyStocks, response, handleRetry, handleRefresh, loadData } = useEnhancedDashboard()
+const {
+  loading,
+  activeMarketTab,
+  activeSectorTab,
+  industryStandard,
+  priceDistributionData,
+  priceDistributionOptions,
+  watchlistLoading,
+  watchlistStocks,
+  showAddDialog,
+  addForm,
+  loadWatchlist,
+  handleAddToWatchlist,
+  confirmAddToWatchlist,
+  removeFromWatchlist,
+  stats,
+  hotIndustries,
+  hotConcepts,
+  favoriteStocks,
+  strategyStocks,
+  marketHeatData,
+  marketHeatOptions,
+  leadingSectorData,
+  leadingSectorOptions,
+  capitalFlowData,
+  capitalFlowOptions,
+  capitalFlowData2,
+  capitalFlowOptions2,
+  industryData,
+  industryOptions,
+  getIconComponent,
+  getColorType,
+  getPriceChangeClass,
+  formatPriceChange,
+  getSignalTagType,
+  loadMarketOverview,
+  handleRetry,
+  handleRefresh
+} = useEnhancedDashboard()
 </script>
 
 <style scoped lang="scss">

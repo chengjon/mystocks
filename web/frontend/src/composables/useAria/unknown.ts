@@ -34,10 +34,63 @@
  * })
  */
 
-import { computed, type ComputedRef } from 'vue'
-
 /**
  * 导出类型定义
  */
-export type { AriaProps }
+export interface AriaProps {
+    'aria-label'?: string
+    'aria-labelledby'?: string
+    'aria-describedby'?: string
+    'aria-live'?: 'off' | 'polite' | 'assertive'
+    'aria-atomic'?: boolean | 'false' | 'true'
+    'aria-relevant'?: 'additions' | 'removals' | 'text' | 'all'
+    'aria-disabled'?: boolean | 'false' | 'true'
+    'aria-hidden'?: boolean | 'false' | 'true'
+    'aria-expanded'?: boolean | 'false' | 'true'
+    'aria-controls'?: string
+    'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
+    'aria-pressed'?: boolean | 'false' | 'true' | 'mixed'
+    'aria-current'?: boolean | 'false' | 'true' | 'page' | 'step' | 'location' | 'date' | 'time'
+    'aria-required'?: boolean | 'false' | 'true'
+    'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
+    'aria-readonly'?: boolean | 'false' | 'true'
+    'aria-checked'?: boolean | 'false' | 'true' | 'mixed'
+    'aria-selected'?: boolean | 'false' | 'true'
+    'aria-activedescendant'?: string
+    'aria-owns'?: string
+    'aria-errormessage'?: string
+    'aria-modal'?: boolean | 'false' | 'true'
+    'aria-orientation'?: 'horizontal' | 'vertical'
+    'aria-valuenow'?: number
+    'aria-valuetext'?: string
+    'aria-valuemin'?: number
+    'aria-valuemax'?: number
+    'aria-sort'?: 'ascending' | 'descending' | 'none' | 'other'
+    'aria-colcount'?: number
+    'aria-rowcount'?: number
+    'aria-colindex'?: number
+    'aria-rowindex'?: number
+    'aria-colspan'?: number
+    'aria-rowspan'?: number
+    'aria-setsize'?: number
+    'aria-posinset'?: number
+    'aria-level'?: number
+    'aria-multiselectable'?: boolean | 'false' | 'true'
+    'aria-dropeffect'?: 'copy' | 'move' | 'link' | 'execute' | 'popup' | 'none'
+    'aria-grabbed'?: boolean | 'false' | 'true'
+    'aria-autocomplete'?: 'inline' | 'list' | 'both' | 'none'
+    'aria-busy'?: boolean | 'false' | 'true'
+    role?: string
+    tabindex?: number | string
+    [key: `aria-${string}`]: unknown
+}
 
+export interface HtmlProps {
+    id?: string
+    class?: string | Record<string, boolean> | Array<string | Record<string, boolean>>
+    style?: string | Record<string, string>
+    title?: string
+    lang?: string
+    dir?: 'ltr' | 'rtl' | 'auto'
+    hidden?: boolean | 'hidden' | 'until-found'
+}

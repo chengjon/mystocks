@@ -2,6 +2,9 @@
 /**
  * 模型评估结果
  */
+
+import type { ModelPerformance, PredictionHorizon } from './part-1'
+
 export interface ModelEvaluationResult {
   /** 评估ID */
   id: string;

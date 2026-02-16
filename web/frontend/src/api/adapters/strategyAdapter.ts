@@ -5,7 +5,7 @@
  * Implements fallback to mock data on API failures.
  */
 
-import type { UnifiedResponse } from '../apiClient';
+import type { UnifiedResponse } from '../types/common';
 import type {
   StrategyVM as Strategy,
   StrategyPerformanceVM as StrategyPerformance,
@@ -28,14 +28,14 @@ export class StrategyAdapter {
   ): Strategy[] {
     if (!apiResponse.success || !apiResponse.data) {
       console.warn('[StrategyAdapter] API failed, using mock data:', apiResponse.message);
-      return mockStrategyList.strategies as unknown;
+      return mockStrategyList.strategies as unknown as Strategy[];
     }
 
     try {
       return (apiResponse.data.strategies || []).map((s: unknown) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
-      return mockStrategyList.strategies as unknown;
+      return mockStrategyList.strategies as unknown as Strategy[];
     }
   }
 
@@ -45,7 +45,7 @@ export class StrategyAdapter {
    * @param apiStrategy - Raw strategy object from API
    * @returns Adapted Strategy object
    */
-  static adaptStrategy(apiStrategy: unknown): Strategy {
+  static adaptStrategy(apiStrategy: any): Strategy {
     return {
       id: apiStrategy.id || '',
       name: apiStrategy.name || 'Unnamed Strategy',
@@ -67,7 +67,7 @@ export class StrategyAdapter {
    * @param apiPerf - Raw performance object from API
    * @returns Adapted StrategyPerformance object
    */
-  static adaptPerformance(apiPerf: unknown): StrategyPerformance {
+  static adaptPerformance(apiPerf: any): StrategyPerformance {
     return {
       total_return: apiPerf.total_return || apiPerf.totalReturn || 0,
       annualized_return: apiPerf.annualized_return || apiPerf.annual_return || apiPerf.annualReturn || 0,
@@ -101,7 +101,7 @@ export class StrategyAdapter {
     }
 
     try {
-      const task = apiResponse.data as unknown; // Support both snake_case and camelCase
+      const task: any = apiResponse.data as any; // Support both snake_case and camelCase
       return {
         strategy_id: task.strategy_id || task.strategyId || task.task_id || task.id || '',
         symbol: task.symbol || '',
@@ -128,7 +128,7 @@ export class StrategyAdapter {
    * @param apiResult - Raw backtest result from API
    * @returns Adapted BacktestResultVM object
    */
-  static adaptBacktestResult(apiResult: unknown): BacktestResultVM {
+  static adaptBacktestResult(apiResult: any): BacktestResultVM {
     // BacktestResultVM is aliased to BacktestRequestVM, so return a valid BacktestRequestVM object
     // plus additional fields that the UI might need
     return {
@@ -141,7 +141,7 @@ export class StrategyAdapter {
       // Additional fields for UI display (not in the original interface)
       status: apiResult.status || 'completed',
       performance: apiResult.summary || apiResult.performance || {},
-      trades: (apiResult.trades || []).map((t: unknown) => ({
+      trades: (apiResult.trades || []).map((t: any) => ({
         symbol: t.symbol || '',
         entry_date: t.entry_date || t.entryDate || '',
         exit_date: t.exit_date || t.exitDate || '',
@@ -293,7 +293,7 @@ export class StrategyAdapter {
    * @param params - Backtest parameters to validate
    * @returns True if valid, false otherwise
    */
-  static validateBacktestParams(params: unknown): params is BacktestRequest {
+  static validateBacktestParams(params: any): params is BacktestRequest {
     if (!params.startDate || !params.endDate) {
       console.error('[StrategyAdapter] Missing required date parameters');
       return false;

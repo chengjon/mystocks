@@ -15,6 +15,7 @@ Features:
 import queue
 import threading
 import time
+import os
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -63,7 +64,7 @@ class TDengineConnectionPool:
         host: str = "127.0.0.1",
         port: int = 6030,
         user: str = "root",
-        password: str = "taosdata",
+        password: Optional[str] = None,
         database: Optional[str] = None,
         min_size: int = 5,
         max_size: int = 20,
@@ -87,7 +88,9 @@ class TDengineConnectionPool:
         self.host = host
         self.port = port
         self.user = user
-        self.password = password
+        self.password = password or os.getenv("TDENGINE_PASSWORD")
+        if not self.password:
+            raise ValueError("TDENGINE_PASSWORD environment variable must be set")
         self.database = database
         self.min_size = min_size
         self.max_size = max_size

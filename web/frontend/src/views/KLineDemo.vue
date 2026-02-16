@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import ProKLineChart from '@/components/Charts/ProKLineChart.vue';
+import ProKLineChart from '@/components/charts/ProKLineChart.vue';
 </script>
 
 <style scoped lang="scss">

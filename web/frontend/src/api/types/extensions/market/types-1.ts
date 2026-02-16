@@ -470,3 +470,21 @@ export interface MarketHeatmapData {
   };
 }
 
+/**
+ * Sector heatmap item
+ */
+export interface SectorHeatmapItem {
+  sector_code: string;
+  sector_name: string;
+  change_percent: number;
+  volume: number;
+  amount: number;
+  stock_count: number;
+  up_count: number;
+  down_count: number;
+  leading_stock?: {
+    code: string;
+    name: string;
+    change_percent: number;
+  };
+}

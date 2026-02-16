@@ -88,8 +88,9 @@ class CICDMonitor:
                 avg_response_time = sum(response_times) / len(response_times)
                 if avg_response_time > 2.0:
                     score -= (avg_response_time - 2.0) * 20  # 每超0.1秒减2分
-                print(".2f"        else:
-            print("⚠️ 无API响应时间数据")
+                print(f"📈 平均API响应时间: {avg_response_time:.2f}秒")
+            else:
+                print("⚠️ 无API响应时间数据")
 
         # CPU使用率评分 (目标: <80%)
         if metrics.get('cpu_usage', {}).get('data', {}).get('result'):
@@ -102,7 +103,8 @@ class CICDMonitor:
                 avg_cpu = sum(cpu_values) / len(cpu_values)
                 if avg_cpu > 80:
                     score -= (avg_cpu - 80) * 0.5  # 每超1%减0.5分
-                print(".1f"            else:
+                print(f"🖥️ 平均CPU使用率: {avg_cpu:.1f}%")
+            else:
                 print("⚠️ 无CPU使用率数据")
 
         # 内存使用率评分 (目标: <85%)
@@ -116,7 +118,8 @@ class CICDMonitor:
                 avg_mem = sum(mem_values) / len(mem_values)
                 if avg_mem > 85:
                     score -= (avg_mem - 85) * 0.5  # 每超1%减0.5分
-                print(".1f"            else:
+                print(f"💾 平均内存使用率: {avg_mem:.1f}%")
+            else:
                 print("⚠️ 无内存使用率数据")
 
         return max(0.0, min(100.0, score))
@@ -138,7 +141,8 @@ class CICDMonitor:
                     score -= (avg_error_rate - 5.0) * 5  # 每超1%减5分
                 elif avg_error_rate > 1.0:
                     score -= (avg_error_rate - 1.0) * 2  # 1-5%之间每超1%减2分
-                print(".2f"            else:
+                print(f"🚨 平均错误率: {avg_error_rate:.2f}%")
+            else:
                 print("⚠️ 无错误率数据")
 
         return max(0.0, min(100.0, score))
@@ -294,8 +298,9 @@ class CICDMonitor:
             performance_score = self.analyze_performance_score(metrics)
             security_score = self.analyze_security_score(metrics)
 
-            print("
-🎯 质量评分:"            print(".1f"            print(".1f"
+            print("\n🎯 质量评分:")
+            print(f"   性能评分: {performance_score:.1f}/100")
+            print(f"   安全评分: {security_score:.1f}/100")
             # 3. 检查质量门禁
             quality_gates = self.check_quality_gates(performance_score, security_score)
 

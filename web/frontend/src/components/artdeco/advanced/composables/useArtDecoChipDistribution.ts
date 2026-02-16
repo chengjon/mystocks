@@ -1,19 +1,63 @@
-    import { ref, computed, onMounted, nextTick, watch } from 'vue'
-    import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
-    import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
-    import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
-    import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
-    import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-    interface Props {
+import { ref, computed, onMounted, nextTick, watch, type Ref } from 'vue'
 
-export function useArtDecoChipDistribution() {
+// Type definitions
+interface ChipDistribution {
+  currentPrice?: number
+  concentrationIndex?: number
+  priceRange?: { min: number; max: number }
+  distribution?: { density: number }[]
+  [key: string]: unknown
+}
 
-        data: unknown
-        symbol: string
-        loading?: boolean
-    }
+interface CostAnalysis {
+  zones?: unknown[]
+  averageCost?: number
+  supportLevel?: number
+  resistanceLevel?: number
+  [key: string]: unknown
+}
 
-    const props = defineProps<Props>()
+interface ProfitAnalysis {
+  profitRatio?: number
+  avgMultiplier?: number
+  profitMultiplier?: number
+  distributionZones?: unknown[]
+  [key: string]: unknown
+}
+
+interface StabilityInsight {
+  id: string
+  type: 'stable' | 'unstable' | 'warning'
+  title: string
+  description: string
+}
+
+interface StabilityAnalysis {
+  stabilityIndex?: number
+  turnoverStability?: number
+  positionConcentration?: number
+  chipLockPeriod?: number
+  timeline?: { stability: number }[]
+  insights?: StabilityInsight[]
+  [key: string]: unknown
+}
+
+interface ChipData {
+  chipDistribution?: ChipDistribution
+  costAnalysis?: CostAnalysis
+  profitAnalysis?: ProfitAnalysis
+  stabilityAnalysis?: StabilityAnalysis
+  [key: string]: unknown
+}
+
+interface UseArtDecoChipDistributionOptions {
+  data: Ref<ChipData>
+  symbol: Ref<string>
+  loading?: Ref<boolean>
+}
+
+export function useArtDecoChipDistribution(options: UseArtDecoChipDistributionOptions) {
+    const { data, symbol, loading = ref(false) } = options
 
     // 响应式数据
     const distributionType = ref('cost')
@@ -23,12 +67,12 @@ export function useArtDecoChipDistribution() {
     const distributionCanvas = ref<HTMLCanvasElement>()
 
     // 计算属性
-    const chipDistribution = computed(() => props.data?.chipDistribution || {})
-    const costAnalysis = computed(() => props.data?.costAnalysis || {})
-    const profitAnalysis = computed(() => props.data?.profitAnalysis || {})
-    const stabilityAnalysis = computed(() => props.data?.stabilityAnalysis || {})
+    const chipDistribution = computed((): ChipDistribution => data.value?.chipDistribution || {})
+    const costAnalysis = computed((): CostAnalysis => data.value?.costAnalysis || {})
+    const profitAnalysis = computed((): ProfitAnalysis => data.value?.profitAnalysis || {})
+    const stabilityAnalysis = computed((): StabilityAnalysis => data.value?.stabilityAnalysis || {})
 
-    const currentPrice = computed(() => chipDistribution.value?.currentPrice || 0)
+    const currentPrice = computed((): number => chipDistribution.value?.currentPrice || 0)
 
     // 配置选项
     const distributionTypeOptions = [
@@ -46,23 +90,23 @@ export function useArtDecoChipDistribution() {
     ]
 
     // 计算辅助属性
-    const costZones = computed(() => costAnalysis.value?.zones || [])
-    const profitChipRatio = computed(() => profitAnalysis.value?.profitRatio || 0)
-    const avgProfitMultiplier = computed(() => profitAnalysis.value?.avgMultiplier || 0)
-    const profitMultiplier = computed(() => profitAnalysis.value?.profitMultiplier || 0)
-    const profitDistributionZones = computed(() => profitAnalysis.value?.distributionZones || [])
+    const costZones = computed((): unknown[] => costAnalysis.value?.zones || [])
+    const profitChipRatio = computed((): number => profitAnalysis.value?.profitRatio || 0)
+    const avgProfitMultiplier = computed((): number => profitAnalysis.value?.avgMultiplier || 0)
+    const profitMultiplier = computed((): number => profitAnalysis.value?.profitMultiplier || 0)
+    const profitDistributionZones = computed((): unknown[] => profitAnalysis.value?.distributionZones || [])
 
-    const stabilityIndex = computed(() => stabilityAnalysis.value?.stabilityIndex || 0)
-    const turnoverStability = computed(() => stabilityAnalysis.value?.turnoverStability || 0)
-    const positionConcentration = computed(() => stabilityAnalysis.value?.positionConcentration || 0)
-    const chipLockPeriod = computed(() => stabilityAnalysis.value?.chipLockPeriod || 0)
-    const stabilityTimeline = computed(() => stabilityAnalysis.value?.timeline || [])
-    const maxStability = computed(() => {
-        const stabilities = stabilityTimeline.value.map((s: unknown) => s.stability)
+    const stabilityIndex = computed((): number => stabilityAnalysis.value?.stabilityIndex || 0)
+    const turnoverStability = computed((): number => stabilityAnalysis.value?.turnoverStability || 0)
+    const positionConcentration = computed((): number => stabilityAnalysis.value?.positionConcentration || 0)
+    const chipLockPeriod = computed((): number => stabilityAnalysis.value?.chipLockPeriod || 0)
+    const stabilityTimeline = computed((): { stability: number }[] => stabilityAnalysis.value?.timeline || [])
+    const maxStability = computed((): number => {
+        const stabilities = stabilityTimeline.value.map((s) => s.stability)
         return stabilities.length > 0 ? Math.max(...stabilities) : 1
     })
 
-    const stabilityInsights = computed(() => stabilityAnalysis.value?.insights || [])
+    const stabilityInsights = computed((): StabilityInsight[] => stabilityAnalysis.value?.insights || [])
 
     // 格式化函数
     const getConcentrationIndex = (): string => {
@@ -94,17 +138,19 @@ export function useArtDecoChipDistribution() {
         return volume.toString()
     }
 
-    const getZoneClass = (zone: unknown): string => {
-        if (zone.range.includes('成本')) return 'cost-zone'
-        if (zone.range.includes('获利')) return 'profit-zone'
-        if (zone.range.includes('套牢')) return 'loss-zone'
+    const getZoneClass = (zone: { range?: string }): string => {
+        const range = zone?.range || ''
+        if (range.includes('成本')) return 'cost-zone'
+        if (range.includes('获利')) return 'profit-zone'
+        if (range.includes('套牢')) return 'loss-zone'
         return 'neutral-zone'
     }
 
-    const getZoneBarClass = (zone: unknown): string => {
-        if (zone.range.includes('成本')) return 'cost-fill'
-        if (zone.range.includes('获利')) return 'profit-fill'
-        if (zone.range.includes('套牢')) return 'loss-fill'
+    const getZoneBarClass = (zone: { range?: string }): string => {
+        const range = zone?.range || ''
+        if (range.includes('成本')) return 'cost-fill'
+        if (range.includes('获利')) return 'profit-fill'
+        if (range.includes('套牢')) return 'loss-fill'
         return 'neutral-fill'
     }
 
@@ -118,11 +164,12 @@ export function useArtDecoChipDistribution() {
         return resistance.toFixed(2)
     }
 
-    const getProfitZoneClass = (zone: unknown): string => {
-        if (zone.range.includes('亏损')) return 'loss-zone-fill'
-        if (zone.range.includes('小盈')) return 'small-profit-fill'
-        if (zone.range.includes('中盈')) return 'medium-profit-fill'
-        if (zone.range.includes('大盈')) return 'large-profit-fill'
+    const getProfitZoneClass = (zone: { range?: string }): string => {
+        const range = zone?.range || ''
+        if (range.includes('亏损')) return 'loss-zone-fill'
+        if (range.includes('小盈')) return 'small-profit-fill'
+        if (range.includes('中盈')) return 'medium-profit-fill'
+        if (range.includes('大盈')) return 'large-profit-fill'
         return 'neutral-zone-fill'
     }
 
@@ -167,7 +214,7 @@ export function useArtDecoChipDistribution() {
     }
 
     // 图表渲染
-    const renderDistributionChart = async () => {
+    const renderDistributionChart = async (): Promise<void> => {
         await nextTick()
         if (!distributionCanvas.value) return
 
@@ -211,7 +258,7 @@ export function useArtDecoChipDistribution() {
             ctx.lineWidth = 3
             ctx.beginPath()
 
-            distribution.forEach((point: unknown, index: unknown) => {
+            distribution.forEach((point, index) => {
                 const x = (width / (distribution.length - 1)) * index
                 const y = height - (point.density / 100) * height * 0.8 - height * 0.1
 
@@ -227,7 +274,7 @@ export function useArtDecoChipDistribution() {
             // 填充区域
             ctx.fillStyle = 'rgb(212 175 55 / 10%)'
             ctx.beginPath()
-            distribution.forEach((point: unknown, index: unknown) => {
+            distribution.forEach((point, index) => {
                 const x = (width / (distribution.length - 1)) * index
                 const y = height - (point.density / 100) * height * 0.8 - height * 0.1
 
@@ -251,7 +298,7 @@ export function useArtDecoChipDistribution() {
 
     // 监听数据变化重新渲染
     watch(
-        () => props.data,
+        () => data.value,
         () => {
             renderDistributionChart()
         },
@@ -259,7 +306,6 @@ export function useArtDecoChipDistribution() {
     )
 
   return {
-    props,
     distributionType,
     timeRange,
     showCurrentPrice,
@@ -282,43 +328,23 @@ export function useArtDecoChipDistribution() {
     chipLockPeriod,
     stabilityTimeline,
     maxStability,
-    stabilities,
     stabilityInsights,
     getConcentrationIndex,
-    index,
     getProfitChipRatio,
     getLossChipRatio,
-    lossRatio,
     getAverageCost,
-    avgCost,
     formatChipVolume,
     getZoneClass,
     getZoneBarClass,
     getSupportLevel,
-    support,
     getResistanceLevel,
-    resistance,
     getProfitZoneClass,
     getCurrentPricePosition,
-    distribution,
-    current,
-    range,
     getStabilityClass,
     getStabilityDesc,
     getTurnoverStabilityClass,
     getTurnoverStabilityDesc,
     formatDate,
     renderDistributionChart,
-    ctx,
-    canvas,
-    width,
-    height,
-    y,
-    x,
-    distribution,
-    x,
-    y,
-    x,
-    y,
   }
 }

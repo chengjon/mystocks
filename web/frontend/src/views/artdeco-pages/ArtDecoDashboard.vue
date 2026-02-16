@@ -415,7 +415,46 @@
     import ArtDecoBlockTrading from '@/components/artdeco/specialized/ArtDecoBlockTrading.vue'
 import { useArtDecoDashboard } from './composables/useArtDecoDashboard'
 
-const { fundFlowChartOption, data, categories, values, marketTrendOption, dataLength, hours, heatmapOption, data, sign, currentTime, activeFlowTab, activePoolTab, refreshing, trendData, activeStrategiesCount, todayPnLValue, indicatorList, systemHealth, loading, error, marketData, marketHeat, capitalFlowData, flowTabs, poolTabs, topStocks, indicatorsExpanded, monitoringExpanded, toNumber, numeric, marketSentiment, upCount, downCount, total, sentimentColor, marketStatus, shanghaiChange, marketStatusType, shanghaiChange, handleIndicatorsToggle, handleMonitoringToggle, fetchMarketOverview, response, marketList, formatIndex, fetchFundFlow, response, flowData, normalized, fetchIndustryFlow, response, flowList, fetchStockFlowRanking, response, rankingList, fetchTrendData, response, payload, source, fetchSystemStats, stratRes, riskRes, healthRes, indRes, stockInds, refreshData, timeInterval, updateTime, handleTrendUpdate, newPoint, newData } = useArtDecoDashboard()
+const {
+  fundFlowChartOption,
+  marketTrendOption,
+  heatmapOption,
+  currentTime,
+  activeFlowTab,
+  activePoolTab,
+  refreshing,
+  trendData,
+  activeStrategiesCount,
+  todayPnLValue,
+  indicatorList,
+  systemHealth,
+  loading,
+  error,
+  marketData,
+  marketHeat,
+  capitalFlowData,
+  flowTabs,
+  poolTabs,
+  topStocks,
+  indicatorsExpanded,
+  monitoringExpanded,
+  toNumber,
+  marketSentiment,
+  sentimentColor,
+  marketStatus,
+  marketStatusType,
+  handleIndicatorsToggle,
+  handleMonitoringToggle,
+  fetchMarketOverview,
+  fetchFundFlow,
+  fetchIndustryFlow,
+  fetchStockFlowRanking,
+  fetchTrendData,
+  fetchSystemStats,
+  refreshData,
+  updateTime,
+  handleTrendUpdate
+} = useArtDecoDashboard()
 </script>
 
 <style scoped lang="scss">

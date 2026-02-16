@@ -112,7 +112,7 @@
             <div class="cost-analysis">
                 <div class="cost-zones">
                     <div class="zone-grid">
-                        <div v-for="zone in costZones" :key="zone.range" class="cost-zone" :class="getZoneClass(zone)">
+                        <div v-for="zone in typedCostZones" :key="zone.range" class="cost-zone" :class="getZoneClass(zone)">
                             <div class="zone-header">
                                 <div class="zone-range">{{ zone.range }}</div>
                                 <div class="zone-percentage">{{ zone.percentage }}%</div>
@@ -245,7 +245,7 @@
                 <div class="profit-distribution">
                     <h5>盈利分布区间</h5>
                     <div class="distribution-zones">
-                        <div v-for="zone in profitDistributionZones" :key="zone.range" class="distribution-zone">
+                        <div v-for="zone in typedProfitDistributionZones" :key="zone.range" class="distribution-zone">
                             <div class="zone-header">
                                 <div class="zone-range">{{ zone.range }}</div>
                                 <div class="zone-count">{{ zone.count }}手</div>
@@ -319,7 +319,7 @@
                         <div class="timeline-visualization">
                             <div class="timeline-axis">
                                 <div class="time-points">
-                                    <span v-for="point in stabilityTimeline" :key="point.date" class="time-point">
+                                    <span v-for="point in typedStabilityTimeline" :key="point.date || point.stability" class="time-point">
                                         {{ formatDate(point.date) }}
                                     </span>
                                 </div>
@@ -327,14 +327,14 @@
                             <div class="timeline-line">
                                 <div class="stability-points">
                                     <div
-                                        v-for="(point, index) in stabilityTimeline"
-                                        :key="point.date"
+                                        v-for="(point, index) in typedStabilityTimeline"
+                                        :key="point.date || index"
                                         class="stability-point"
                                         :style="{
-                                            left: (index / (stabilityTimeline.length - 1)) * 100 + '%',
+                                            left: (index / (typedStabilityTimeline.length - 1)) * 100 + '%',
                                             top: (1 - point.stability / maxStability) * 100 + '%'
                                         }"
-                                        :title="`${formatDate(point.date)}: ${point.stability.toFixed(2)}`"
+                                        :title="`${point.date ? formatDate(point.date) : ''}: ${point.stability.toFixed(2)}`"
                                     ></div>
                                 </div>
                             </div>
@@ -388,14 +388,95 @@
 </template>
 
 <script setup lang="ts">
+    import { toRef, computed } from 'vue'
     import ArtDecoCard from '@/components/artdeco/base/ArtDecoCard.vue'
     import ArtDecoStatCard from '@/components/artdeco/base/ArtDecoStatCard.vue'
     import _ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoSelect from '@/components/artdeco/base/ArtDecoSelect.vue'
     import ArtDecoSwitch from '@/components/artdeco/base/ArtDecoSwitch.vue'
-import { useArtDecoChipDistribution } from './composables/useArtDecoChipDistribution'
+    import { useArtDecoChipDistribution } from './composables/useArtDecoChipDistribution'
 
-const { props, distributionType, timeRange, showCurrentPrice, distributionCanvas, chipDistribution, costAnalysis, profitAnalysis, stabilityAnalysis, currentPrice, distributionTypeOptions, timeRangeOptions, costZones, profitChipRatio, avgProfitMultiplier, profitMultiplier, profitDistributionZones, stabilityIndex, turnoverStability, positionConcentration, chipLockPeriod, stabilityTimeline, maxStability, stabilities, stabilityInsights, getConcentrationIndex, index, getProfitChipRatio, getLossChipRatio, lossRatio, getAverageCost, avgCost, formatChipVolume, getZoneClass, getZoneBarClass, getSupportLevel, support, getResistanceLevel, resistance, getProfitZoneClass, getCurrentPricePosition, distribution, current, range, getStabilityClass, getStabilityDesc, getTurnoverStabilityClass, getTurnoverStabilityDesc, formatDate, renderDistributionChart, ctx, canvas, width, height, y, x, distribution, x, y, x, y } = useArtDecoChipDistribution()
+    // Type definitions for template data
+    interface ZoneItem {
+        range: string
+        percentage?: number
+        volume?: number
+    }
+
+    interface StabilityTimelineItem {
+        stability: number
+        date?: string
+    }
+
+    // Define props
+    interface Props {
+        data: Record<string, unknown>
+        symbol: string
+        loading?: boolean
+    }
+
+    const props = defineProps<Props>()
+
+    // Use composable with props converted to refs
+    const {
+        distributionType,
+        timeRange,
+        showCurrentPrice,
+        distributionCanvas,
+        chipDistribution,
+        costAnalysis,
+        profitAnalysis,
+        stabilityAnalysis,
+        currentPrice,
+        distributionTypeOptions,
+        timeRangeOptions,
+        costZones,
+        profitChipRatio,
+        avgProfitMultiplier,
+        profitMultiplier,
+        profitDistributionZones,
+        stabilityIndex,
+        turnoverStability,
+        positionConcentration,
+        chipLockPeriod,
+        stabilityTimeline,
+        maxStability,
+        stabilityInsights,
+        getConcentrationIndex,
+        getProfitChipRatio,
+        getLossChipRatio,
+        getAverageCost,
+        formatChipVolume,
+        getZoneClass,
+        getZoneBarClass,
+        getSupportLevel,
+        getResistanceLevel,
+        getProfitZoneClass,
+        getCurrentPricePosition,
+        getStabilityClass,
+        getStabilityDesc,
+        getTurnoverStabilityClass,
+        getTurnoverStabilityDesc,
+        formatDate,
+        renderDistributionChart
+    } = useArtDecoChipDistribution({
+        data: toRef(props, 'data') as { value: Record<string, unknown> },
+        symbol: toRef(props, 'symbol'),
+        loading: toRef(props, 'loading')
+    })
+
+    // Typed computed properties for template
+    const typedCostZones = computed((): ZoneItem[] => {
+        return costZones.value as ZoneItem[]
+    })
+
+    const typedProfitDistributionZones = computed((): ZoneItem[] => {
+        return profitDistributionZones.value as ZoneItem[]
+    })
+
+    const typedStabilityTimeline = computed((): StabilityTimelineItem[] => {
+        return stabilityTimeline.value as StabilityTimelineItem[]
+    })
 </script>
 
 <style scoped lang="scss">

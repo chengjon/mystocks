@@ -52,6 +52,7 @@
               <rect x="160" y="60" width="25" height="40" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
               <rect x="195" y="40" width="25" height="60" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
               <rect x="230" y="20" width="25" height="20" fill="url(#fundPositive)" stroke="#E74C3C" stroke-width="1" />
+            </defs>
             </svg>
         </div>
       </div>
@@ -110,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, _computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   stockCode: {

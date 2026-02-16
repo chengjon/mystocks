@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, _watch, _nextTick } from 'vue'
+    import { ref, computed, watch, nextTick } from 'vue'
 
     interface Props {
         modelValue: string

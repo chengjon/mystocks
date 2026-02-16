@@ -1,6 +1,6 @@
-import { ref, _Ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { watchlistApi } from '@/api'
+import { apiClient } from '@/api/apiClient'
 import type { WatchlistItem } from '@/api/types/common'
 
 interface StockData {
@@ -11,6 +11,13 @@ interface StockData {
   volume?: number
   turnover?: number
   industry?: string
+}
+
+// Watchlist API wrapper
+const watchlistApi = {
+  getWatchlist: () => apiClient.get('/api/watchlist'),
+  addToWatchlist: (data: { symbol: string; display_name?: string }) => apiClient.post('/api/watchlist', data),
+  removeFromWatchlist: (symbol: string) => apiClient.delete(`/api/watchlist/${symbol}`)
 }
 
 export function useDashboardWatchlist() {
@@ -26,9 +33,10 @@ export function useDashboardWatchlist() {
     loading.value = true
     try {
       const response = await watchlistApi.getWatchlist()
-      const apiResponse = response.data as { success?: boolean; data?: unknown; message?: string }
+      const apiResponse = response as { success?: boolean; data?: { items?: WatchlistItem[] } | WatchlistItem[]; message?: string }
       if (apiResponse?.success && apiResponse.data) {
-        const data: WatchlistItem[] = apiResponse.data.items || apiResponse.data || []
+        const items = (apiResponse.data as { items?: WatchlistItem[] }).items || apiResponse.data as WatchlistItem[]
+        const data: WatchlistItem[] = Array.isArray(items) ? items : []
         watchlistStocks.value = data.map((item: WatchlistItem): StockData => ({
           symbol: item.symbol || '',
           name: item.name || item.symbol || '',

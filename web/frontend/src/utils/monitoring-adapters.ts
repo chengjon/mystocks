@@ -126,35 +126,47 @@ export class MonitoringAdapter {
    * 2. cpu/memory/disk as object { current, total, percentage } - expected format
    */
   static toSystemStatusVM(data: SystemStatusResponse): SystemStatusVM {
+    // Type alias for internal metric data
+    type MetricData = { current: number; total: number; percentage: number }
+    type NetworkData = { inbound: number; outbound: number; errors: number; status: string; unit: string }
+    type DatabaseData = { connected: boolean; responseTime: number; connections: number; maxConnections: number; status: string }
+    type ApiData = { uptime: number; requestsPerMinute: number; averageResponseTime: number; errorRate: number }
+
+    const rawData = data as Record<string, unknown>
+
     // Handle cpu - can be number or object
-    const cpuData = data.cpu
-    const cpu = typeof cpuData === 'number'
+    const cpuData = rawData.cpu
+    const cpu: MetricData = typeof cpuData === 'number'
       ? { current: cpuData, total: 100, percentage: cpuData }
-      : (cpuData as unknown) || { current: 0, total: 100, percentage: 0 }
+      : (cpuData as MetricData) || { current: 0, total: 100, percentage: 0 }
 
     // Handle memory - can be number (MB) or object
-    const memoryData = data.memory
-    const memory = typeof memoryData === 'number'
+    const memoryData = rawData.memory
+    const memory: MetricData = typeof memoryData === 'number'
       ? { current: memoryData, total: 0, percentage: 0 }
-      : (memoryData as unknown) || { current: 0, total: 0, percentage: 0 }
+      : (memoryData as MetricData) || { current: 0, total: 0, percentage: 0 }
 
     // Handle disk - can be number (GB) or object
-    const diskData = data.disk
-    const disk = typeof diskData === 'number'
+    const diskData = rawData.disk
+    const disk: MetricData = typeof diskData === 'number'
       ? { current: diskData, total: 0, percentage: 0 }
-      : (diskData as unknown) || { current: 0, total: 0, percentage: 0 }
+      : (diskData as MetricData) || { current: 0, total: 0, percentage: 0 }
 
     // Handle network - can be object or undefined
-    const networkData = (data as Record<string, unknown>).network
-    const network = networkData || { inbound: 0, outbound: 0, errors: 0, status: 'normal' as const, unit: 'req/s' }
+    const networkData = rawData.network as NetworkData | undefined
+    const network: NetworkData = networkData || { inbound: 0, outbound: 0, errors: 0, status: 'normal', unit: 'req/s' }
 
     // Handle database - can be object or undefined
-    const databaseData = (data as Record<string, unknown>).database
-    const database = databaseData || { connected: false, responseTime: 0, connections: 0, maxConnections: 0, status: 'critical' as const }
+    const databaseData = rawData.database as DatabaseData | undefined
+    const database: DatabaseData = databaseData || { connected: false, responseTime: 0, connections: 0, maxConnections: 0, status: 'critical' }
 
     // Handle api - can be object or undefined
-    const apiData = (data as Record<string, unknown>).api
-    const api = apiData || { uptime: 0, requestsPerMinute: 0, averageResponseTime: 0, errorRate: 0, status: 'normal' as const }
+    const apiData = rawData.api as ApiData | undefined
+    const api: ApiData = apiData || { uptime: 0, requestsPerMinute: 0, averageResponseTime: 0, errorRate: 0 }
+
+    // Type for service data
+    type ServiceData = { name: string; status: string; cpu?: number; memory?: number; lastCheck?: string | number; healthEndpoint?: string }
+    type WebsocketData = { connected?: boolean }
 
     return {
       cpu: {
@@ -199,17 +211,17 @@ export class MonitoringAdapter {
         errorRate: api.errorRate ?? 0,
         status: this.getApiStatus(api)
       },
-      websocket: ((data as Record<string, unknown>).websocket as unknown)?.connected ?? false,
-      services: ((data as Record<string, unknown>).services || []).map((service: unknown) => ({
+      websocket: (rawData.websocket as WebsocketData)?.connected ?? false,
+      services: ((rawData.services || []) as ServiceData[]).map((service: ServiceData) => ({
         name: service.name || '',
         status: this.getServiceStatus(service.status),
         cpu: service.cpu ?? 0,
         memory: service.memory ?? 0,
-        lastCheck: this.formatDateTime(service.lastCheck),
+        lastCheck: this.formatDateTime(service.lastCheck || Date.now()),
         healthEndpoint: service.healthEndpoint
       })),
       lastUpdate: Date.now(),
-      status: this.getOverallStatus(data)
+      status: this.getOverallStatus(rawData)
     }
   }
 
@@ -218,17 +230,32 @@ export class MonitoringAdapter {
    * Note: API returns alerts array inside alerts field, with different field names
    */
   static toMonitoringAlertVM(data: MonitoringAlertResponse[]): MonitoringAlertVM[] {
-    // Handle different response formats
-    const alerts = Array.isArray(data)
-      ? data
-      : (data as Record<string, unknown>).alerts || []
+    // Type for alert data
+    type AlertData = {
+      id?: string | number
+      message?: string
+      title?: string
+      description?: string
+      severity?: string
+      source?: string
+      timestamp?: string | number
+      acknowledged?: boolean
+      resolved?: boolean
+      assignee?: string
+    }
 
-    return alerts.map((alert: unknown) => ({
+    // Handle different response formats
+    const rawData = data as unknown
+    const alerts: AlertData[] = Array.isArray(data)
+      ? data
+      : ((rawData as Record<string, unknown>).alerts || []) as AlertData[]
+
+    return alerts.map((alert: AlertData) => ({
       id: String(alert.id || ''),
       title: alert.message || alert.title || '系统告警',
       description: alert.message || alert.description || '',
-      severity: this.getSeverity(alert.severity),
-      category: 'system',
+      severity: this.getSeverity(alert.severity || ''),
+      category: 'system' as const,
       source: alert.source || 'system',
       timestamp: alert.timestamp ? new Date(alert.timestamp).getTime() : Date.now(),
       acknowledged: alert.acknowledged || false,
@@ -243,15 +270,27 @@ export class MonitoringAdapter {
    * Note: API returns logs array inside logs field, with different field names
    */
   static toLogEntryVM(data: LogEntryResponse[]): LogEntryVM[] {
-    // Handle different response formats
-    const logs = Array.isArray(data)
-      ? data
-      : (data as Record<string, unknown>).logs || []
+    // Type for log data
+    type LogData = {
+      id?: string | number
+      timestamp?: string | number
+      level?: string
+      source?: string
+      logger?: string
+      message?: string
+      module?: string
+    }
 
-    return logs.map((log: unknown) => ({
+    // Handle different response formats
+    const rawData = data as unknown
+    const logs: LogData[] = Array.isArray(data)
+      ? data
+      : ((rawData as Record<string, unknown>).logs || []) as LogData[]
+
+    return logs.map((log: LogData) => ({
       id: String(log.id || Date.now()),
-      timestamp: this.formatDateTime(log.timestamp),
-      level: this.getLogLevel(log.level) as 'debug' | 'info' | 'warning' | 'error' | 'fatal',
+      timestamp: this.formatDateTime(log.timestamp || Date.now()),
+      level: this.getLogLevel(log.level || '') as 'debug' | 'info' | 'warning' | 'error' | 'fatal',
       logger: log.source || log.logger || 'system',
       message: log.message || '',
       module: log.module || 'unknown',
@@ -265,21 +304,39 @@ export class MonitoringAdapter {
    * Note: API returns checks array and summary, not the expected format
    */
   static toDataQualityVM(data: DataQualityResponse): DataQualityVM {
+    // Types for data quality response
+    type CheckData = { status: string }
+    type SummaryData = {
+      completeness?: number | { score?: number; details?: string }
+      accuracy?: number | { score?: number; details?: string }
+      timeliness?: number | { score?: number; details?: string }
+      consistency?: number | { score?: number; details?: string }
+    }
+
+    const rawData = data as Record<string, unknown>
+
     // Handle actual API response format
-    const checks = (data as Record<string, unknown>).checks || []
-    const summary = (data as Record<string, unknown>).summary || {}
+    const checks = (rawData.checks || []) as CheckData[]
+    const summary = (rawData.summary || {}) as SummaryData
 
     // Calculate overall score from checks
-    const passedChecks = checks.filter((c: unknown) => c.status === 'passed' || c.status === 'success').length
+    const passedChecks = checks.filter((c: CheckData) => c.status === 'passed' || c.status === 'success').length
     const totalChecks = checks.length
     const overallScore = totalChecks > 0 ? (passedChecks / totalChecks) * 100 : 0
 
+    // Helper to extract score from number or object
+    const extractScore = (val: unknown): number => {
+      if (typeof val === 'number') return val
+      if (val && typeof val === 'object' && 'score' in val) return (val as { score: number }).score
+      return overallScore
+    }
+
     return {
       overallScore,
-      completeness: this.toQualityMetric(summary.completeness || overallScore),
-      accuracy: this.toQualityMetric(summary.accuracy || overallScore),
-      timeliness: this.toQualityMetric(summary.timeliness || overallScore),
-      consistency: this.toQualityMetric(summary.consistency || overallScore),
+      completeness: this.toQualityMetric(extractScore(summary.completeness)),
+      accuracy: this.toQualityMetric(extractScore(summary.accuracy)),
+      timeliness: this.toQualityMetric(extractScore(summary.timeliness)),
+      consistency: this.toQualityMetric(extractScore(summary.consistency)),
       lastCheck: this.formatDateTime(Date.now()),
       issues: []
     }
@@ -288,11 +345,11 @@ export class MonitoringAdapter {
   /**
    * Convert quality metric to ViewModel
    */
-  private static toQualityMetric(metric: unknown): QualityMetricVM {
+  private static toQualityMetric(score: number): QualityMetricVM {
     return {
-      score: metric.score || 0,
-      status: this.getQualityStatus(metric.score),
-      details: metric.details || ''
+      score: score || 0,
+      status: this.getQualityStatus(score || 0),
+      details: ''
     }
   }
 
@@ -319,9 +376,11 @@ export class MonitoringAdapter {
   /**
    * Get API status
    */
-  private static getApiStatus(api: unknown): 'normal' | 'warning' | 'critical' {
-    const hasIssue = api.errorRate >= 1 || api.averageResponseTime > 1000
-    const hasCriticalIssue = api.errorRate >= 5 || api.averageResponseTime > 3000
+  private static getApiStatus(api: { errorRate?: number; averageResponseTime?: number }): 'normal' | 'warning' | 'critical' {
+    const errorRate = api.errorRate ?? 0
+    const avgResponseTime = api.averageResponseTime ?? 0
+    const hasIssue = errorRate >= 1 || avgResponseTime > 1000
+    const hasCriticalIssue = errorRate >= 5 || avgResponseTime > 3000
 
     if (hasCriticalIssue) return 'critical'
     if (hasIssue) return 'warning'
@@ -353,18 +412,29 @@ export class MonitoringAdapter {
   /**
    * Get overall system status
    */
-  private static getOverallStatus(data: unknown): 'healthy' | 'warning' | 'critical' {
+  private static getOverallStatus(data: Record<string, unknown>): 'healthy' | 'warning' | 'critical' {
+    type MetricObj = { percentage?: number }
+    type DatabaseObj = { connected?: boolean }
+    type ApiObj = { errorRate?: number }
+    type NetworkObj = { errors?: number }
+
+    const cpu = data.cpu as MetricObj | undefined
+    const memory = data.memory as MetricObj | undefined
+    const database = data.database as DatabaseObj | undefined
+    const api = data.api as ApiObj | undefined
+    const network = data.network as NetworkObj | undefined
+
     const hasCritical =
-      data.cpu?.percentage >= 90 ||
-      data.memory?.percentage >= 90 ||
-      !data.database?.connected ||
-      data.api?.errorRate >= 10
+      (cpu?.percentage ?? 0) >= 90 ||
+      (memory?.percentage ?? 0) >= 90 ||
+      database?.connected === false ||
+      (api?.errorRate ?? 0) >= 10
 
     const hasWarning =
-      data.cpu?.percentage >= 70 ||
-      data.memory?.percentage >= 70 ||
-      data.network?.errorRate >= 3 ||
-      data.api?.errorRate >= 3
+      (cpu?.percentage ?? 0) >= 70 ||
+      (memory?.percentage ?? 0) >= 70 ||
+      (network?.errors ?? 0) >= 3 ||
+      (api?.errorRate ?? 0) >= 3
 
     if (hasCritical) return 'critical'
     if (hasWarning) return 'warning'

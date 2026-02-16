@@ -140,7 +140,26 @@ import ProKLineChart from '@/components/market/ProKLineChart.vue'
 import IndicatorPanel from '@/components/technical/IndicatorPanel.vue'
 import { useTechnicalAnalysis } from './composables/useTechnicalAnalysis'
 
-const { loading, selectedSymbol, dateRange, showIndicatorPanel, selectedPeriod, selectedIndicators, chartData, lastUpdateTime, handleRetry, dateRangeShortcuts, end, start, end, start, end, start, end, start, handleStockSearch, end, start, handleDateRangeChange, refreshData, fetchKlineData, response, dates, opens, highs, lows, closes, volumes, startTime, calculatedIndicators, endTime, indicatorsResult, values, errorMessage, handleAddIndicator, handleRemoveIndicator, handleIndicatorRemove, cachedSymbol, cachedDateRange, saveToLocalStorage, handleConfigCommand, handleSaveConfig, errorMessage, handleLoadConfig, response, _configOptions, selectedConfigId, handleManageConfigs, response, configListHtml, deleteConfig, _timer_1 } = useTechnicalAnalysis()
+const {
+  loading,
+  selectedSymbol,
+  dateRange,
+  showIndicatorPanel,
+  selectedPeriod,
+  selectedIndicators,
+  chartData,
+  lastUpdateTime,
+  handleRetry,
+  dateRangeShortcuts,
+  handleStockSearch,
+  handleDateRangeChange,
+  refreshData,
+  fetchKlineData,
+  handleAddIndicator,
+  handleRemoveIndicator,
+  handleIndicatorRemove,
+  handleConfigCommand
+} = useTechnicalAnalysis()
 </script>
 
 <style scoped>

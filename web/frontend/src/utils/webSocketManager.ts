@@ -2,6 +2,7 @@
  * WebSocket Connection Manager for Real-time Data
  * Handles connection lifecycle, reconnection, and message routing
  */
+import { wsUrl } from '@/config/runtime-endpoints'
 
 export interface WebSocketConfig {
   url: string
@@ -308,21 +309,21 @@ class WebSocketManager {
 
 // Global WebSocket manager instances
 const marketDataWebSocket = new WebSocketManager({
-  url: 'ws://localhost:8000/ws/market',
+  url: wsUrl('/ws/market'),
   reconnectAttempts: 10,
   reconnectInterval: 2000,
   heartbeatInterval: 30000
 })
 
 const tradingWebSocket = new WebSocketManager({
-  url: 'ws://localhost:8000/ws/trading',
+  url: wsUrl('/ws/trading'),
   reconnectAttempts: 5,
   reconnectInterval: 3000,
   heartbeatInterval: 30000
 })
 
 const riskWebSocket = new WebSocketManager({
-  url: 'ws://localhost:8000/ws/risk',
+  url: wsUrl('/ws/risk'),
   reconnectAttempts: 5,
   reconnectInterval: 3000,
   heartbeatInterval: 45000

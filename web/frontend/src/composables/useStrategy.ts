@@ -57,7 +57,7 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.getStrategy(id);
-      return StrategyAdapter.adaptStrategyDetail(response) as unknown;
+      return StrategyAdapter.adaptStrategyDetail(response) as unknown as Strategy | undefined;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取策略详情失败: ${errorMsg}`;
@@ -360,14 +360,14 @@ export function useBacktest() {
 
     try {
       // Convert camelCase params to snake_case for API
-      const backtestParams: unknown = {
+      const backtestParams = {
         strategy_id: parseInt(strategyId, 10),
         start_date: params.startDate,
         end_date: params.endDate,
         initial_capital: params.initialCapital,
         symbols: params.symbols,
       };
-      const response = await strategyService.startBacktest(strategyId, backtestParams);
+      const response = await strategyService.startBacktest(strategyId, backtestParams as any);
       const task = StrategyAdapter.adaptBacktestTask(response);
 
       if (task) {

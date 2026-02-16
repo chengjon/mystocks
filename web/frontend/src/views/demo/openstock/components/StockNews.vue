@@ -61,6 +61,14 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 
+interface NewsItem {
+  datetime: number
+  headline: string
+  summary: string
+  source: string
+  url?: string
+}
+
 const emit = defineEmits<{
   'api-tested': [feature: string]
 }>()
@@ -68,7 +76,7 @@ const emit = defineEmits<{
 const newsSymbol = ref('')
 const newsMarket = ref('cn')
 const newsDays = ref(7)
-const newsList = ref<unknown[]>([])
+const newsList = ref<NewsItem[]>([])
 const newsLoading = ref(false)
 
 const fetchNews = async () => {

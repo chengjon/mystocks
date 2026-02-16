@@ -46,7 +46,8 @@ async def run_file_tests(
     Returns:
         Complete test suite results
     """
-    print("🚀 Starting File-Level API Testing"    print(f"📁 API Directory: {api_dir}")
+    print("🚀 Starting File-Level API Testing")
+    print(f"📁 API Directory: {api_dir}")
     print(f"🌐 Base URL: {base_url}")
     print(f"⚡ Max Workers: {max_workers}")
     print(f"📊 Output Format: {output_format}")
@@ -60,8 +61,8 @@ async def run_file_tests(
         result = await runner.run_file_tests()
 
         # Print summary
-        print("
-📊 Test Results Summary"        print(f"📁 Files Tested: {result.files_tested}")
+        print("\n📊 Test Results Summary")
+        print(f"📁 Files Tested: {result.files_tested}")
         print(f"✅ Files Passed: {result.files_passed}")
         print(f"❌ Files Failed: {result.files_failed}")
         print(f"📊 Total Endpoints: {result.total_endpoints}")
@@ -69,8 +70,8 @@ async def run_file_tests(
         print(f"⏱️  Execution Time: {result.total_execution_time:.2f}s")
 
         if verbose and result.file_results:
-            print("
-📋 Detailed Results:"            for file_result in result.file_results:
+            print("\n📋 Detailed Results:")
+            for file_result in result.file_results:
                 status_icon = "✅" if file_result.status == "passed" else "❌"
                 print(f"  {status_icon} {file_result.file_name}: "
                       f"{file_result.endpoints_passed}/{file_result.endpoints_tested} endpoints "
@@ -155,7 +156,7 @@ Examples:
             print(f"\n❌ Tests completed with {result.files_failed} failed files")
             sys.exit(1)
         else:
-            print("\n✅ All tests passed!"
+            print("\n✅ All tests passed!")
             sys.exit(0)
 
     except KeyboardInterrupt:
@@ -167,5 +168,4 @@ Examples:
 
 
 if __name__ == "__main__":
-    main()</content>
-<parameter name="filePath">tests/file_level/test_runner.py
+    main()

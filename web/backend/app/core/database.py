@@ -5,7 +5,7 @@
 """
 
 import functools
-
+import json
 # 添加重试逻辑
 import time
 from typing import Optional
@@ -190,123 +190,118 @@ class DatabaseService:
         self.postgresql_engine = get_postgresql_engine()
         logger.info("DatabaseService initialized (PostgreSQL-only, Week 3 simplified)")
 
+    def _get_redis(self):
+        """获取 Redis 客户端"""
+        try:
+            from app.core.redis_client import get_redis_client
+            return get_redis_client()
+        except Exception:
+            return None
+
     def get_cache_data(self, cache_key: str):
-        """获取缓存数据 - 临时实现返回None以避免错误"""
-        # 目前返回None，让查询直接进行
+        """获取缓存数据"""
+        redis = self._get_redis()
+        if not redis:
+            return None
+        
+        try:
+            data = redis.get(cache_key)
+            if data:
+                return json.loads(data)
+        except Exception as e:
+            logger.warning("Failed to get cache", key=cache_key, error=str(e))
         return None
 
     def set_cache_data(self, cache_key: str, data, ttl: int = 600):
-        """设置缓存数据 - 临时实现"""
-        # 临时空实现
+        """设置缓存数据"""
+        redis = self._get_redis()
+        if not redis:
+            return
+        
+        try:
+            redis.setex(cache_key, ttl, json.dumps(data))
+        except Exception as e:
+            logger.warning("Failed to set cache", key=cache_key, error=str(e))
 
     @db_retry(max_retries=3, delay=1.0)
     def query_stocks_basic(self, limit: int = 100, search: Optional[str] = None) -> pd.DataFrame:
-        """查询股票基本信息"""
+        """查询股票基本信息 (带缓存优化)"""
+        cache_key = f"stocks_basic:{limit}:{search or 'all'}"
+        
+        # 尝试缓存
+        cached = self.get_cache_data(cache_key)
+        if cached:
+            return pd.DataFrame(cached)
+
         try:
             # 参数验证
             if limit <= 0 or limit > 10000:
-                logger.warning("Invalid limit parameter: %s, using default 100", limit)
                 limit = 100
 
+            df = pd.DataFrame()
             if postgresql_access:
                 # 使用 PostgreSQLDataAccess
                 where_clause = None
                 params = None
-
                 if search:
-                    # 简单的模糊搜索
                     where_clause = "symbol LIKE %s OR name LIKE %s"
                     search_pattern = f"%{search}%"
                     params = [search_pattern, search_pattern]
-
-                result = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
-                if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-                    logger.warning("Empty result from PostgreSQL access, search=%s", search)
-                    return pd.DataFrame()
-                return result
+                df = postgresql_access.query("symbols_info", limit=limit, where=where_clause, params=params)
             else:
                 # 直接查询 PostgreSQL
-                session = None
-                try:
-                    session = get_postgresql_session()
-
-                    sql = """
-                        SELECT symbol, name, industry, area, market, list_date
-                        FROM symbols_info
-                    """
-
+                with get_postgresql_session() as session:
+                    sql = "SELECT symbol, name, industry, area, market, list_date FROM symbols_info"
                     query_params = {"limit": limit}
-
                     if search:
                         sql += " WHERE symbol LIKE :search OR name LIKE :search"
                         query_params["search"] = f"%{search}%"
-
                     sql += " LIMIT :limit"
-
-                    query = text(sql)
-                    result = session.execute(query, query_params)
+                    result = session.execute(text(sql), query_params)
                     df = pd.DataFrame(result.fetchall(), columns=result.keys())
-                    if df.empty:
-                        logger.warning(
-                            "Empty stocks_basic result from database, limit=%s, search=%s",
-                            limit,
-                            search,
-                        )
-                    else:
-                        logger.info("Successfully fetched %s stocks from database", len(df))
-                    return df
-                except Exception as e:
-                    logger.error(
-                        f"Database query error in query_stocks_basic: {e}",
-                        exc_info=True,
-                    )
-                    raise
-                finally:
-                    if session:
-                        session.close()
+
+            # 存入缓存
+            if not df.empty:
+                self.set_cache_data(cache_key, df.to_dict("records"), ttl=1800) # 30分钟缓存
+            return df
+            
         except Exception as e:
-            logger.error("Failed to query stocks basic: %s", e, exc_info=True)
+            logger.error("Failed to query stocks basic", error=str(e))
             raise
 
     @db_retry(max_retries=3, delay=1.0)
     def query_daily_kline(self, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """查询日线数据"""
+        """查询日线数据 (带缓存优化)"""
+        cache_key = f"kline:{symbol}:{start_date}:{end_date}"
+        
+        cached = self.get_cache_data(cache_key)
+        if cached:
+            return pd.DataFrame(cached)
+
         try:
+            df = pd.DataFrame()
             if postgresql_access:
-                # 使用正确的列名 trade_date 而不是 date
                 where_clause = "symbol = %s AND trade_date >= %s AND trade_date <= %s"
                 params = [symbol, start_date, end_date]
-                return postgresql_access.query(
-                    "daily_kline",
-                    where=where_clause,
-                    order_by="trade_date ASC",
-                    params=params,
-                )
+                df = postgresql_access.query("daily_kline", where=where_clause, order_by="trade_date ASC", params=params)
             else:
-                # 直接查询 PostgreSQL
                 with get_postgresql_session() as session:
-                    query = text(
-                        """
+                    query = text("""
                         SELECT trade_date as date, open, high, low, close, volume, amount
                         FROM daily_kline
-                        WHERE symbol = :symbol
-                        AND trade_date >= :start_date
-                        AND trade_date <= :end_date
+                        WHERE symbol = :symbol AND trade_date >= :start_date AND trade_date <= :end_date
                         ORDER BY trade_date
-                    """
-                    )
-                    result = session.execute(
-                        query,
-                        {
-                            "symbol": symbol,
-                            "start_date": start_date,
-                            "end_date": end_date,
-                        },
-                    )
-                    return pd.DataFrame(result.fetchall(), columns=result.keys())
+                    """)
+                    result = session.execute(query, {"symbol": symbol, "start_date": start_date, "end_date": end_date})
+                    df = pd.DataFrame(result.fetchall(), columns=result.keys())
+            
+            if not df.empty:
+                self.set_cache_data(cache_key, df.to_dict("records"), ttl=300) # 5分钟缓存
+            return df
         except Exception as e:
-            logger.error("Failed to query daily kline: %s", e)
+            logger.error("Failed to query daily kline", symbol=symbol, error=str(e))
             return pd.DataFrame()
+
 
     @db_retry(max_retries=3, delay=1.0)
     def query_concepts(self, limit: int = 10000) -> pd.DataFrame:

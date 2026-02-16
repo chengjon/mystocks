@@ -4,7 +4,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getPageConfig, isRouteName, isStandardConfig } from '@/config/pageConfig'
-import type { _PageConfig } from '@/config/pageConfig'
+import type { PageConfig } from '@/config/pageConfig'
 import axios from 'axios'
 
 // 路由名称类型
@@ -115,7 +115,8 @@ export const usePageConfigExampleStore = defineStore('pageConfigExample', () => 
       console.log(`✅ 数据加载成功: ${config.description}`)
       return response.data
     } catch (err: unknown) {
-      const errorMsg = err.response?.data?.message || err.message || '加载失败'
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string }
+      const errorMsg = axiosErr.response?.data?.message || axiosErr.message || '加载失败'
       error.value = errorMsg
       console.error(`❌ 数据加载失败: ${config.apiEndpoint}`, err)
       throw err

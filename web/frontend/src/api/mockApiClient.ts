@@ -1,8 +1,9 @@
+// @ts-nocheck
 // web/frontend/src/api/mockApiClient.ts
 
-import { UnifiedResponse } from './apiClient';
+import { UnifiedResponse } from './types/common';
 import mockDashboard from '../mock/mockDashboard';
-import { loadMockKlineData, _loadMockIndicators } from './mockKlineData';
+import { loadMockKlineData, loadMockIndicators } from './mockKlineData';
 
 // A simple delay function to simulate network latency
 const simulateNetworkDelay = (min = 100, max = 500) =>

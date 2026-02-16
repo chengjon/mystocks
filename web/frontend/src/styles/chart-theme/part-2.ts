@@ -5,6 +5,7 @@
  */
 
 import type { EChartsOption } from 'echarts'
+import { CHART_THEME, DARK_CHART_THEME, COMPACT_CHART_THEME, MOBILE_CHART_THEME } from './functions-1'
 
 // 导出便捷函数
 export const getChartTheme = (

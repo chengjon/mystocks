@@ -1,28 +1,6 @@
-import { ref, _computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-type TradingRouteName = keyof typeof TRADING_PAGE_CONFIG
-type TradingPageConfig = typeof TRADING_PAGE_CONFIG[TradingRouteName]
-
-export function useTradingDashboard.migrated() {
-
-// ====================================================================
-// ❌ 迁移前：硬编码API端点（不推荐）
-// ====================================================================
-/*
-const HARDCODED_API = {
-  START: '/api/trading/start',
-  STOP: '/api/trading/stop',
-  STATUS: '/api/trading/status',
-  PERFORMANCE: '/api/trading/strategies/performance',
-  MARKET: '/api/trading/market/snapshot',
-  RISK: '/api/trading/risk/metrics',
-  ADD_STRATEGY: '/api/trading/strategies/add'
-}
-
-// 使用硬编码的代码：
-// const response = await axios.post(HARDCODED_API.START)
-*/
 
 // ====================================================================
 // ✅ 迁移后：使用统一配置（推荐）
@@ -61,7 +39,32 @@ const TRADING_PAGE_CONFIG = {
   }
 } as const
 
+type TradingRouteName = keyof typeof TRADING_PAGE_CONFIG
+type TradingPageConfig = typeof TRADING_PAGE_CONFIG[TradingRouteName]
+
+export function useTradingDashboardMigrated() {
+
+// ====================================================================
+// ❌ 迁移前：硬编码API端点（不推荐）
+// ====================================================================
+/*
+const HARDCODED_API = {
+  START: '/api/trading/start',
+  STOP: '/api/trading/stop',
+  STATUS: '/api/trading/status',
+  PERFORMANCE: '/api/trading/strategies/performance',
+  MARKET: '/api/trading/market/snapshot',
+  RISK: '/api/trading/risk/metrics',
+  ADD_STRATEGY: '/api/trading/strategies/add'
+}
+
+// 使用硬编码的代码：
+// const response = await axios.post(HARDCODED_API.START)
+*/
+
+// ====================================================================
 // 类型定义
+// ====================================================================
 
 /**
  * 获取交易配置（类型安全）
@@ -260,7 +263,7 @@ const showConfigInfo = () => {
 const getRiskLevelType = () => {
   if (!riskData.value) return 'info'
 
-  const riskScore = riskData.value.risk_score || 0
+  const riskScore = (riskData.value as Record<string, unknown>).risk_score as number || 0
   if (riskScore < 30) return 'success'
   if (riskScore < 70) return 'warning'
   return 'danger'
@@ -272,7 +275,7 @@ const getRiskLevelType = () => {
 const getRiskLevelText = () => {
   if (!riskData.value) return '未知'
 
-  const riskScore = riskData.value.risk_score || 0
+  const riskScore = (riskData.value as Record<string, unknown>).risk_score as number || 0
   if (riskScore < 30) return '低风险'
   if (riskScore < 70) return '中等风险'
   return '高风险'
@@ -285,7 +288,6 @@ onMounted(() => {
 })
 
   return {
-    HARDCODED_API,
     TRADING_PAGE_CONFIG,
     getTradingConfig,
     isRunning,
@@ -298,23 +300,13 @@ onMounted(() => {
     riskData,
     usedConfigs,
     loadTradingData,
-    config,
-    response,
     loadStrategyPerformance,
-    config,
-    response,
     loadMarketData,
-    config,
-    response,
     loadRiskData,
-    config,
-    response,
     toggleTradingSession,
     loadAllData,
     showConfigInfo,
     getRiskLevelType,
-    riskScore,
     getRiskLevelText,
-    riskScore,
   }
 }

@@ -64,7 +64,7 @@ for split in splits:
     with open(output_file, 'w', encoding='utf-8') as f:
         f.writelines(content)
     
-    print(f"✅ 创建 {split['name']: {split['end'] - split['start']:,} 行")
+    print(f"✅ 创建 {split['name']}: {split['end'] - split['start']:,} 行")
 
 print()
 print("=" * 80)

@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, _computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 /**

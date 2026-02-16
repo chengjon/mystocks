@@ -1,11 +1,42 @@
-import { ref, _computed } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   RENDER_BATCH_SIZE,
   ENABLE_DATA_CACHING,
   CACHE_MAX_SIZE,
-  _DEBOUNCE_DELAY
+  DEBOUNCE_DELAY
 } from '@/components/technical/config/klineChartConfig'
+
+interface OHLCVData {
+  dates: string[]
+  open: number[]
+  high: number[]
+  low: number[]
+  close: number[]
+  volume: number[]
+  turnover?: number[]
+  [key: string]: unknown
+}
+
+interface KLineDataItem {
+  timestamp: number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  turnover?: number
+}
+
+interface ChartRef {
+  applyNewData: (data: KLineDataItem[]) => void
+  applyMoreData: (data: KLineDataItem[]) => void
+}
+
+interface Props {
+  ohlcvData?: OHLCVData
+  [key: string]: unknown
+}
 
 /**
  * Composable for K-Line chart data management
@@ -14,24 +45,24 @@ import {
  * @param {Object} props - Component props containing ohlcvData
  * @returns {Object} Data management functions and state
  */
-export function useKLineData(chartRef, _props) {
+export function useKLineData(chartRef: Ref<ChartRef | null>, _props: Props) {
   // State
-  const dataCache = ref(new Map())
+  const dataCache = ref(new Map<string, KLineDataItem[]>())
   const lastDataHash = ref('')
   const loadingProgress = ref(0)
   const showLoadingProgress = ref(false)
   const loadingText = ref('加载数据中...')
   const loadingSubText = ref('')
-  const debounceTimer = ref(null)
+  const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 
   /**
    * Generate a unique hash for data to detect changes
    * @param {Object} ohlcvData
    * @returns {string}
    */
-  const generateDataHash = (ohlcvData) => {
+  const generateDataHash = (ohlcvData: OHLCVData): string => {
     try {
-      const { dates, _open, _high, _low, close, _volume } = ohlcvData
+      const { dates, close } = ohlcvData
       const length = dates?.length || 0
       const firstDate = length > 0 ? new Date(dates[0]).getTime() : 0
       const lastDate = length > 0 ? new Date(dates[length - 1]).getTime() : 0
@@ -50,14 +81,14 @@ export function useKLineData(chartRef, _props) {
    * @param {Object} ohlcvData
    * @returns {Array}
    */
-  const convertToKlineData = (ohlcvData) => {
+  const convertToKlineData = (ohlcvData: OHLCVData): KLineDataItem[] => {
     try {
       const { dates, open, high, low, close, volume, turnover } = ohlcvData
       const length = dates.length
-      const klineData = new Array(length)
+      const klineData: KLineDataItem[] = new Array(length)
 
       for (let i = 0; i < length; i++) {
-        const item = {
+        const item: KLineDataItem = {
           timestamp: new Date(dates[i]).getTime(),
           open: open[i],
           high: high[i],
@@ -85,7 +116,7 @@ export function useKLineData(chartRef, _props) {
    * @param {string} hash
    * @param {Array} data
    */
-  const manageCache = (hash, data) => {
+  const manageCache = (hash: string, data: KLineDataItem[]): void => {
     if (!ENABLE_DATA_CACHING) return
 
     if (dataCache.value.size >= CACHE_MAX_SIZE) {
@@ -102,7 +133,7 @@ export function useKLineData(chartRef, _props) {
    * @param {number} totalPoints
    * @returns {Promise<void>}
    */
-  const renderDataInBatches = async (klineData, totalPoints) => {
+  const renderDataInBatches = async (klineData: KLineDataItem[], totalPoints: number): Promise<void> => {
     showLoadingProgress.value = true
     console.log(`[useKLineData] Rendering ${totalPoints} data points in batches...`)
 
@@ -110,7 +141,7 @@ export function useKLineData(chartRef, _props) {
     const totalBatches = Math.ceil(totalPoints / RENDER_BATCH_SIZE)
 
     const firstBatch = klineData.slice(0, RENDER_BATCH_SIZE)
-    chartRef.value.applyNewData(firstBatch)
+    chartRef.value?.applyNewData(firstBatch)
 
     loadingProgress.value = Math.round((RENDER_BATCH_SIZE / totalPoints) * 100)
     loadingSubText.value = `已加载 ${RENDER_BATCH_SIZE}/${totalPoints} 个数据点`
@@ -120,9 +151,9 @@ export function useKLineData(chartRef, _props) {
       const endIdx = Math.min((i + 1) * RENDER_BATCH_SIZE, totalPoints)
       const batch = klineData.slice(startIdx, endIdx)
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         setTimeout(() => {
-          chartRef.value.applyMoreData(batch)
+          chartRef.value?.applyMoreData(batch)
           loadingProgress.value = Math.round((endIdx / totalPoints) * 100)
           loadingSubText.value = `已加载 ${endIdx}/${totalPoints} 个数据点`
           resolve()
@@ -149,7 +180,7 @@ export function useKLineData(chartRef, _props) {
    * @param {Object} ohlcvData
    * @returns {Promise<void>}
    */
-  const updateChartData = async (ohlcvData) => {
+  const updateChartData = async (ohlcvData: OHLCVData): Promise<void> => {
     if (!chartRef.value || !ohlcvData) return
 
     try {
@@ -195,8 +226,8 @@ export function useKLineData(chartRef, _props) {
    * @param {number} delay
    * @returns {Function}
    */
-  const debounce = (fn, delay) => {
-    return (...args) => {
+  const debounce = <T extends unknown[]>(fn: (...args: T) => void, delay: number) => {
+    return (...args: T) => {
       if (debounceTimer.value) {
         clearTimeout(debounceTimer.value)
       }

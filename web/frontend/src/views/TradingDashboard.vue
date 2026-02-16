@@ -145,7 +145,6 @@
                                     <div class="performance-metrics">
                                         <div
                                             v-for="(metric, _idx) in formatPerformanceMetrics(scope.row.performance_metrics)"
-                                             :key="metric.key"
                                             :key="metric.key"
                                         >
                                             <span class="metric-key">{{ metric.key }}:</span>

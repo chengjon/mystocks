@@ -1,2 +1,2 @@
-export { DataPoint, RiskBreakdown, TimeSeriesPoint, ChartTheme, BaseChartConfig, SankeyNode, SankeyLink, SankeyData, SankeyChartConfig, TreeNode, TreeChartConfig, RelationNode, RelationLink, RelationCategory, RelationChartConfig, HeatmapDataPoint, AdvancedHeatmapConfig, ChartEvent, SankeyEvent, TreeEvent, RelationEvent, HeatmapEvent, NumberFormatOptions, TimeFormatOptions, AggregationOptions, ValidationResult } from './types-1';
-export { SamplingConfig } from './sampling-config';
+export type { DataPoint, RiskBreakdown, TimeSeriesPoint, ChartTheme, BaseChartConfig, SankeyNode, SankeyLink, SankeyData, SankeyChartConfig, TreeNode, TreeChartConfig, RelationNode, RelationLink, RelationCategory, RelationChartConfig, HeatmapDataPoint, AdvancedHeatmapConfig, ChartEvent, SankeyEvent, TreeEvent, RelationEvent, HeatmapEvent, NumberFormatOptions, TimeFormatOptions, AggregationOptions, ValidationResult } from './types-1';
+export type { SamplingConfig } from './sampling-config';

@@ -9,7 +9,8 @@
         <!-- 输入框 -->
         <el-input
           v-if="filter.type === 'input'"
-          v-model="formData[filter.key]"
+          :model-value="getInputValue(filter.key)"
+          @update:model-value="formData[filter.key] = $event ?? ''"
           :placeholder="filter.placeholder || `Search ${filter.label}`"
           clearable
           :style="{ width: filter.width || '150px' }"
@@ -19,7 +20,8 @@
         <!-- 下拉选择 -->
         <el-select
           v-else-if="filter.type === 'select'"
-          v-model="formData[filter.key]"
+          :model-value="getSelectValue(filter.key)"
+          @update:model-value="formData[filter.key] = $event ?? ''"
           :placeholder="filter.placeholder || 'All'"
           clearable
           :style="{ width: filter.width || '120px' }"
@@ -35,7 +37,8 @@
         <!-- 日期选择器 -->
         <el-date-picker
           v-else-if="filter.type === 'date-picker'"
-          v-model="formData[filter.key]"
+          :model-value="getDateValue(filter.key)"
+          @update:model-value="formData[filter.key] = $event ?? null"
           type="date"
           :placeholder="filter.placeholder || 'Select date'"
           :style="{ width: filter.width || '150px' }"
@@ -44,7 +47,8 @@
         <!-- 日期范围选择器 -->
         <el-date-picker
           v-else-if="filter.type === 'date-range'"
-          v-model="formData[filter.key]"
+          :model-value="getDateValue(filter.key)"
+          @update:model-value="formData[filter.key] = $event ?? null"
           type="daterange"
           range-separator="TO"
           start-placeholder="START DATE"
@@ -82,12 +86,12 @@
 </template>
 
 <script setup lang="ts">
-import { _ref, reactive, watch } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { Search, RefreshLeft } from '@element-plus/icons-vue'
 
 export interface FilterOption {
   label: string
-  value: unknown
+  value: string | number
 }
 
 export interface FilterItem {
@@ -97,13 +101,13 @@ export interface FilterItem {
   placeholder?: string
   width?: string
   options?: FilterOption[]
-  defaultValue?: unknown
+  defaultValue?: string | number | string[] | Date | null
 }
 
 interface Props {
   filters: FilterItem[]
   loading?: boolean
-  modelValue?: Record<string, unknown>
+  modelValue?: Record<string, string | number | string[] | Date | null>
 }
 
 interface Emits {
@@ -119,7 +123,26 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const formData = reactive<Record<string, unknown>>({})
+const formData = reactive<Record<string, string | number | string[] | Date | null>>({})
+
+// Helper methods for type-safe access
+const getInputValue = (key: string): string | number | undefined => {
+  const val = formData[key]
+  if (val === null || val instanceof Date || Array.isArray(val)) return undefined
+  return val
+}
+
+const getSelectValue = (key: string): string | number | string[] | number[] | undefined => {
+  const val = formData[key]
+  if (val === null || val instanceof Date) return undefined
+  return val as string | number | string[] | number[]
+}
+
+const getDateValue = (key: string): string | Date | (string | Date)[] | undefined => {
+  const val = formData[key]
+  if (val === null || typeof val === 'number') return undefined
+  return val as string | Date | (string | Date)[]
+}
 
 // Initialize form data with defaults
 props.filters.forEach(filter => {
@@ -161,7 +184,7 @@ const handleReset = () => {
 defineExpose({
   reset: handleReset,
   getFormData: () => ({ ...formData }),
-  setFieldValue: (key: string, value: unknown) => {
+  setFieldValue: (key: string, value: string | number | string[] | Date | null) => {
     formData[key] = value
   }
 })

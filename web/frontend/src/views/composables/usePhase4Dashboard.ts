@@ -4,14 +4,9 @@ import type { EChartsOption } from 'echarts'
 import { artDecoTheme } from '@/utils/echarts'
 import { ElCard } from 'element-plus'
 import { ElButton } from 'element-plus'
-import { ElTable, _ElTableColumn } from 'element-plus'
+import { ElTable, ElTableColumn } from 'element-plus'
+
 interface MarketOverview {
-interface Watchlist {
-interface Position {
-interface RiskAlert {
-
-export function usePhase4Dashboard() {
-
   indices: Array<{ name: string; current_price: number; change_percent: number }>
   up_count: number
   down_count: number
@@ -20,21 +15,26 @@ export function usePhase4Dashboard() {
   top_losers: Array<{ symbol: string; name: string; price: number; change_percent: number; volume: number }>
 }
 
+interface Watchlist {
   total_count: number
   items: Array<{ symbol: string; name: string; current_price: number; change_percent: number; note: string }>
 }
 
+interface Position {
   name: string
   symbol: string
   market_value: number
 }
 
+interface RiskAlert {
   alert_level: string
   alert_type: string
   symbol: string
   message: string
   is_read: boolean
 }
+
+export function usePhase4Dashboard() {
 
 const loading = ref(false)
 const activeTab = ref('indices')
@@ -142,7 +142,7 @@ function formatVolume(value: number): string {
   return value.toLocaleString()
 }
 
-function _formatCurrency(value: number): string {
+function formatCurrency(value: number): string {
   if (!value) return '¥0.00'
   return `¥${(value / 10000).toFixed(2)}万`
 }
@@ -207,7 +207,8 @@ function updateIndicesChart() {
       data: marketOverview.indices.map(idx => idx.current_price),
       itemStyle: {
         color: (params: unknown) => {
-          const idx = marketOverview.indices[params.dataIndex]
+          const p = params as { dataIndex: number }
+          const idx = marketOverview.indices[p.dataIndex]
           return idx.change_percent > 0 ? '#C94042' : '#3D9970'
         }
       }
@@ -363,25 +364,18 @@ onUnmounted(() => {
     indicesChartRef,
     distributionChartRef,
     portfolioChartRef,
-    indicesChart,
-    distributionChart,
-    portfolioChart,
     gainersColumns,
     losersColumns,
     watchlistColumns,
     alertColumns,
     formatVolume,
-    _formatCurrency,
+    formatCurrency,
     getAlertLevelText,
     getAlertLevelVariant,
     initCharts,
     updateIndicesChart,
-    option,
-    idx,
     updateDistributionChart,
-    option,
     updatePortfolioChart,
-    option,
     loadDashboardData,
     refreshDashboard,
     handleMarkAllRead,

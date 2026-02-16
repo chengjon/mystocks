@@ -100,14 +100,18 @@ check_dependencies() {
     fi
 
     # 检查PostgreSQL
-    if python -c "import psycopg2; conn = psycopg2.connect(host='postgresql', database='mystocks', user='postgres', password='postgres')" 2>/dev/null; then
+    if [[ -z "${POSTGRESQL_PASSWORD:-}" ]]; then
+        log_warn "PostgreSQL: ⚠️  缺少 POSTGRESQL_PASSWORD，跳过连接检查"
+    elif python -c "import os, psycopg2; conn = psycopg2.connect(host=os.getenv('POSTGRESQL_HOST', 'postgresql'), database=os.getenv('POSTGRESQL_DATABASE', 'mystocks'), user=os.getenv('POSTGRESQL_USER', 'postgres'), password=os.environ['POSTGRESQL_PASSWORD']); conn.close()" 2>/dev/null; then
         log_info "PostgreSQL: ✅ 连接成功"
     else
         log_warn "PostgreSQL: ❌ 连接失败"
     fi
 
     # 检查TDengine
-    if python -c "import taos; conn = taos.connect(host='tdengine', user='root', password='taosdata')" 2>/dev/null; then
+    if [[ -z "${TDENGINE_PASSWORD:-}" ]]; then
+        log_warn "TDengine: ⚠️  缺少 TDENGINE_PASSWORD，跳过连接检查"
+    elif python -c "import os, taos; conn = taos.connect(host=os.getenv('TDENGINE_HOST', 'tdengine'), user=os.getenv('TDENGINE_USER', 'root'), password=os.environ['TDENGINE_PASSWORD']); conn.close()" 2>/dev/null; then
         log_info "TDengine: ✅ 连接成功"
     else
         log_warn "TDengine: ❌ 连接失败"

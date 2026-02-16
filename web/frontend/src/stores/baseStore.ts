@@ -1,6 +1,6 @@
 // stores/baseStore.ts - 统一Store模板
 import { defineStore } from 'pinia'
-import { _ref, reactive, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 
 export interface BaseStoreState {
   data: unknown | null
@@ -97,11 +97,20 @@ export function createBaseStore(
   })
 }
 
+interface ApiErrorResponse {
+  response?: {
+    status: number
+    data?: { message?: string }
+  }
+  request?: unknown
+}
+
 function handleApiError(error: unknown, context: string): string {
   console.error(`API Error in ${context}:`, error)
 
-  if (error.response) {
-    const status = error.response.status
+  const apiError = error as ApiErrorResponse
+  if (apiError.response) {
+    const status = apiError.response.status
     switch (status) {
       case 401:
         return '登录已过期，请重新登录'
@@ -114,9 +123,9 @@ function handleApiError(error: unknown, context: string): string {
       case 500:
         return '服务器内部错误'
       default:
-        return error.response.data?.message || '请求失败'
+        return apiError.response.data?.message || '请求失败'
     }
-  } else if (error.request) {
+  } else if (apiError.request) {
     return '网络连接失败，请检查网络连接'
   } else {
     return '请求配置错误'

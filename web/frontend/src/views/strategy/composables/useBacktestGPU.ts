@@ -1,50 +1,50 @@
-    import { ref, onMounted, onUnmounted, reactive } from 'vue'
-    import {
-    import { ElMessage } from 'element-plus'
-    interface GPUStatus {
-    interface LogEntry {
+import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ElMessage } from 'element-plus'
+import {
+    Cpu,
+    VideoPlay,
+    TrendCharts,
+    Memo,
+    HotWater,
+    Lightning,
+    Top,
+    Setting,
+    Refresh,
+    RefreshRight,
+    Document
+} from '@element-plus/icons-vue'
+
+// Types
+interface GPUStatus {
+    available: boolean
+    model: string
+    driverVersion: string
+    availability: number
+    utilization: number
+    peakUtilization: number
+    averageUtilization: number
+    memoryUsed: number
+    memoryTotal: number
+    memoryFree: number
+    memoryUsagePercent: number
+    temperature: number
+    maxTemperature: number
+    minTemperature: number
+    averageTemperature: number
+    coreClock: number
+    memoryClock: number
+    fanSpeed: number
+    powerUsage: number
+}
+
+interface LogEntry {
+    id: string
+    timestamp: number
+    level: 'info' | 'warning' | 'error'
+    message: string
+}
 
 export function useBacktestGPU() {
-        Cpu,
-        VideoPlay,
-        TrendCharts,
-        Memo,
-        HotWater,
-        Lightning,
-        Top,
-        Setting,
-        Refresh,
-        RefreshRight,
-        Document
-    } from '@element-plus/icons-vue'
-
-    // Types
-        available: boolean
-        model: string
-        driverVersion: string
-        availability: number
-        utilization: number
-        peakUtilization: number
-        averageUtilization: number
-        memoryUsed: number
-        memoryTotal: number
-        memoryFree: number
-        memoryUsagePercent: number
-        temperature: number
-        maxTemperature: number
-        minTemperature: number
-        averageTemperature: number
-        coreClock: number
-        memoryClock: number
-        fanSpeed: number
-        powerUsage: number
-    }
-
-        id: string
-        timestamp: number
-        level: 'info' | 'warning' | 'error'
-        message: string
-    }
 
     // Reactive state
     const gpuStatus = reactive<GPUStatus>({
@@ -276,20 +276,15 @@ export function useBacktestGPU() {
     getTemperatureStatus,
     getTemperatureStatusText,
     formatBytes,
-    k,
-    sizes,
-    i,
     formatTime,
     toggleAutoRefresh,
     manualRefresh,
     refreshGPUStatus,
     startAutoRefresh,
-    interval,
     stopAutoRefresh,
     handleComputeModeChange,
     handleMonitorFrequencyChange,
     runBenchmark,
-    newRatio,
     resetGPU,
   }
 }

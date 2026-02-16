@@ -69,10 +69,27 @@ import { computed } from 'vue'
 import { ArtDecoStatCard, ArtDecoCard, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
+interface FundChannel {
+  amount: number
+  change: number
+}
+
+interface FundData {
+  shanghai: FundChannel
+  shenzhen: FundChannel
+  north: FundChannel
+  main: FundChannel
+}
+
+interface TrendItem {
+  date: string
+  value: number
+}
+
 interface Props {
-  fundData: unknown
+  fundData: FundData
   stockRanking: unknown[]
-  trendData: unknown[]
+  trendData: TrendItem[]
   activeTimeFilter: string
   rankingType: string
 }
@@ -103,18 +120,22 @@ const columns = [
   { key: 'mainForce', label: '主力净额' }
 ]
 
+interface ChartParams {
+  value: number
+}
+
 const trendChartOption = computed(() => {
   if (!props.trendData || props.trendData.length === 0) return {}
-  
+
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: props.trendData.map((d: unknown) => d.date) },
+    xAxis: { type: 'category', data: props.trendData.map((d) => d.date) },
     yAxis: { type: 'value' },
     series: [{
-      data: props.trendData.map((d: unknown) => d.value),
+      data: props.trendData.map((d) => d.value),
       type: 'bar',
       itemStyle: {
-        color: (params: unknown) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
+        color: (params: ChartParams) => params.value >= 0 ? 'var(--artdeco-up)' : 'var(--artdeco-down)'
       }
     }]
   }

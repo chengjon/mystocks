@@ -13,12 +13,32 @@ Date: 2026-01-09
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Any, Dict, Optional
 
 from .base import DataSourceManagerV2
 
 logger = logging.getLogger(__name__)
+
+
+def _is_dev_like_environment() -> bool:
+    env_name = (os.getenv("APP_ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    return env_name in {
+        "dev",
+        "development",
+        "test",
+        "local",
+    }
+
+
+def _resolve_env_value(name: str, dev_default: str) -> str:
+    value = os.getenv(name)
+    if value:
+        return value
+    if _is_dev_like_environment():
+        return dev_default
+    raise RuntimeError(f"{name} environment variable must be set in non-dev environments")
 
 
 class LineageIntegrationMixin:
@@ -69,12 +89,13 @@ class LineageIntegrationMixin:
 
             # 异步创建连接
             async def create_connection():
+                db_config = self._get_db_config()
                 conn = await asyncpg.connect(
-                    host=self._get_db_config().get("host", "localhost"),
-                    port=self._get_db_config().get("port", 5432),
-                    user=self._get_db_config().get("user", "postgres"),
-                    password=self._get_db_config().get("password"),
-                    database=self._get_db_config().get("database", "mystocks"),
+                    host=db_config["host"],
+                    port=db_config["port"],
+                    user=db_config["user"],
+                    password=db_config["password"],
+                    database=db_config["database"],
                 )
                 return conn
 
@@ -98,14 +119,16 @@ class LineageIntegrationMixin:
         Returns:
             数据库配置字典
         """
-        import os
+        password = os.getenv("POSTGRESQL_PASSWORD")
+        if not password:
+            raise RuntimeError("POSTGRESQL_PASSWORD environment variable must be set for lineage tracker")
 
         return {
-            "host": os.getenv("POSTGRESQL_HOST", "localhost"),
-            "port": int(os.getenv("POSTGRESQL_PORT", 5432)),
-            "user": os.getenv("POSTGRESQL_USER", "postgres"),
-            "password": os.getenv("POSTGRESQL_PASSWORD"),
-            "database": os.getenv("POSTGRESQL_DATABASE", "mystocks"),
+            "host": _resolve_env_value("POSTGRESQL_HOST", "127.0.0.1"),
+            "port": int(_resolve_env_value("POSTGRESQL_PORT", "5432")),
+            "user": _resolve_env_value("POSTGRESQL_USER", "postgres"),
+            "password": password,
+            "database": _resolve_env_value("POSTGRESQL_DATABASE", "mystocks"),
         }
 
     def _record_lineage_fetch(

@@ -1,6 +1,6 @@
 // web/frontend/src/composables/useChart.ts
 
-import { ref, onMounted, onUnmounted, _nextTick, _watch, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch, type Ref } from 'vue'
 import echarts from '@/utils/echarts'
 
 
@@ -24,7 +24,7 @@ export function useChart(chartRef: Ref<HTMLElement | undefined>) {
     if (!chartInstance.value) {
       initChart()
     }
-    chartInstance.value?.setOption(option)
+    chartInstance.value?.setOption(option as echarts.EChartsCoreOption)
   }
 
   const resize = () => {

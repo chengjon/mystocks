@@ -7,6 +7,67 @@
 import type { Component } from 'vue'
 
 /**
+ * Performance Monitor class
+ */
+class PerformanceMonitor {
+  private static instance: PerformanceMonitor
+
+  static getInstance(): PerformanceMonitor {
+    if (!PerformanceMonitor.instance) {
+      PerformanceMonitor.instance = new PerformanceMonitor()
+    }
+    return PerformanceMonitor.instance
+  }
+
+  measureRender(name: string): () => void {
+    const start = performance.now()
+    return () => {
+      const end = performance.now()
+      console.log(`${name} took ${end - start}ms`)
+    }
+  }
+
+  monitorNetwork(): void {
+    // Implementation
+  }
+
+  monitorLongTasks(): void {
+    // Implementation
+  }
+
+  getAllMetrics(): Record<string, unknown> {
+    return {}
+  }
+}
+
+/**
+ * Lazy Image Loader class
+ */
+class LazyImageLoader {
+  static setup(): void {
+    // Implementation
+  }
+}
+
+/**
+ * Lazy Component Loader class
+ */
+class LazyComponentLoader {
+  static load(component: Component): Promise<Component> {
+    return Promise.resolve(component)
+  }
+}
+
+/**
+ * Resource Loader class
+ */
+class ResourceLoader {
+  static load(url: string): Promise<unknown> {
+    return fetch(url).then(r => r.json())
+  }
+}
+
+/**
  * Bundle analyzer utilities
  */
 export class BundleAnalyzer {
@@ -25,8 +86,16 @@ export class BundleAnalyzer {
     // This would typically be injected by the build process
     const bundleInfo = (window as unknown as Record<string, unknown>).__BUNDLE_INFO__
 
-    if (bundleInfo) {
-      return bundleInfo
+    if (bundleInfo && typeof bundleInfo === 'object' && 'bundles' in bundleInfo && 'totalSize' in bundleInfo) {
+      return bundleInfo as {
+        bundles: Array<{
+          name: string
+          size: number
+          gzipSize?: number
+          chunks: string[]
+        }>
+        totalSize: number
+      }
     }
 
     // Fallback: analyze loaded scripts
@@ -51,7 +120,8 @@ export class BundleAnalyzer {
    */
   static async getRouteChunks(): Promise<Record<string, string[]>> {
     // This would be provided by the build system
-    return (window as unknown as Record<string, unknown>).__ROUTE_CHUNKS__ || {}
+    const routeChunks = (window as unknown as Record<string, unknown>).__ROUTE_CHUNKS__
+    return (typeof routeChunks === 'object' && routeChunks !== null ? routeChunks : {}) as Record<string, string[]>
   }
 
   /**

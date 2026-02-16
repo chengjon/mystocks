@@ -98,43 +98,9 @@
               </el-option>
             </el-select>
           </div>
-
           <div class="selection-item">
             <label>选择回测2：</label>
             <el-select v-model="selectedBacktest2" placeholder="请选择回测2" filterable>
-              <el-option
-                v-for="(bt, _idx) in backtestHistory"
-                :key="bt.id"
-                :label="bt.name"
-                :value="bt.id"
-              >
-                {{ bt.name }}
-              </el-option>
-              <el-option
-                v-for="(template, _idx) in strategyTemplates"
-                :key="template.id"
-                :label="template.name"
-                :value="template.id"
-              >
-                {{ template.name }}
-              </el-option>
-              </el-select>
-          </div>
-        </div>
-      </ArtDecoCardCompact>
-    </div>
-  </div>
-
-    <!-- Step 2.5: Compare Parameters -->
-    <div v-if="currentStep === 2.5" class="step-content">
-      <ArtDecoCardCompact>
-        <template #header>
-          <h3>参数对比与选择</h3>
-        </template>
-        <div class="compare-selection">
-          <div class="selection-item">
-            <label>选择回测1：</label>
-            <el-select v-model="selectedBacktest1" placeholder="请选择回测1" filterable>
               <el-option
                 v-for="(bt, _idx) in backtestHistory"
                 :key="bt.id"
@@ -144,18 +110,6 @@
                 {{ bt.name }}
               </el-option>
             </el-select>
-          </div>
-          <div class="selection-item">
-            <label>选择回测2：</label>
-            <el-select v-model="selectedBacktest2" placeholder="请选择回测2" filterable>
-              <el-option
-                v-for="(bt, _idx) in backtestHistory"
-                :key="bt.id"
-                :label="bt.name"
-                :value="bt.id"
-              >
-                {{ bt.name }}
-              </el-option>
           </div>
         </div>
 

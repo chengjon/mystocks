@@ -18,12 +18,25 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ArtDecoButton, ArtDecoStatCard, ArtDecoCard } from '@/components/artdeco'
 import ArtDecoChart from '@/components/artdeco/charts/ArtDecoChart.vue'
 
+interface BacktestStats {
+  totalReturn: string | number
+  sharpe: string | number
+  maxDrawdown: string | number
+  winRate: string | number
+}
+
+interface EquityDataPoint {
+  time: string
+  value: number
+}
+
 interface Props {
-  stats: unknown
-  equityData: unknown[]
+  stats: BacktestStats
+  equityData: EquityDataPoint[]
 }
 
 const props = defineProps<Props>()
@@ -31,13 +44,13 @@ const emit = defineEmits(['run'])
 
 const equityOption = computed(() => {
   if (!props.equityData || props.equityData.length === 0) return {}
-  
+
   return {
     tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: props.equityData.map((d: unknown) => d.time) },
+    xAxis: { type: 'category', data: props.equityData.map((d) => d.time) },
     yAxis: { type: 'value', scale: true },
     series: [{
-      data: props.equityData.map((d: unknown) => d.value),
+      data: props.equityData.map((d) => d.value),
       type: 'line',
       areaStyle: { opacity: 0.1, color: 'var(--artdeco-accent-gold)' },
       color: 'var(--artdeco-accent-gold)'

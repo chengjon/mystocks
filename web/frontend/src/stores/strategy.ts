@@ -2,7 +2,7 @@
 // 负责策略配置、回测结果、优化任务等策略相关数据
 
 import { defineStore } from 'pinia'
-import { _ref, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type { StrategyManagementData } from '@/services/TradingApiManager'
 

@@ -1,5 +1,50 @@
 
 /**
+ * Cache type definitions
+ */
+export interface CacheEntry<T> {
+  value: T
+  timestamp: number
+  accessCount: number
+  ttl?: number
+  tags?: string[]
+  priority?: number
+  dependencies?: string[]
+}
+
+export interface CacheStats {
+  hits: number
+  misses: number
+  sets: number
+  deletes: number
+  evictions: number
+  size: number
+  maxSize: number
+  hitRate: number
+}
+
+export interface CacheOptions {
+  ttl?: number | string
+  maxSize?: number
+  tags?: string[]
+  priority?: number
+  persist?: boolean
+  persistToStorage?: boolean
+  storageKey?: string
+  dependencies?: string[]
+}
+
+export interface CacheConfig {
+  defaultTTL: number
+  maxSize: number
+  storageKey: string
+  storagePrefix?: string
+  enableStats: boolean
+  cleanupInterval: number
+  refreshAheadThreshold?: number
+}
+
+/**
  * LRU Cache with TTL support
  */
 export class LRUCache<T = unknown> {
@@ -344,10 +389,10 @@ export function getCache<T = unknown>(
       maxSize: 100,
       cleanupInterval: 60 * 1000, // 1 minute
       storagePrefix: `cache:${name}`,
-      enableMetrics: true,
+      enableStats: true,
       refreshAheadThreshold: 30 * 1000, // 30 seconds
       ...config
-    })
+    } as Partial<CacheConfig>)
     globalCaches.set(name, cache)
   }
 
@@ -362,6 +407,23 @@ export function cached<T extends (...args: unknown[]) => Promise<unknown>>(
     keyGenerator?: (...args: Parameters<T>) => string
     cache?: string
   } = {}
+) {
+  return (fn: T): T => {
+    const cache = options.cache ? getCache(options.cache, options) : getCache('default', options)
+    const keyGen = options.keyGenerator || ((...args: Parameters<T>) => JSON.stringify(args))
+
+    return (async (...args: Parameters<T>) => {
+      const key = keyGen(...args)
+      const cachedValue = cache.get(key)
+      if (cachedValue !== undefined) {
+        return cachedValue
+      }
+      const result = await fn(...args)
+      cache.set(key, result)
+      return result
+    }) as T
+  }
+}
 
 /**
  * Memoization decorator for pure functions
@@ -371,6 +433,26 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
     keyGenerator?: (...args: Parameters<T>) => string
     maxSize?: number
   } = {}
+) {
+  const cache = new Map<string, unknown>()
+  const keyGen = options.keyGenerator || ((...args: Parameters<T>) => JSON.stringify(args))
+
+  return (fn: T): T => {
+    return ((...args: Parameters<T>) => {
+      const key = keyGen(...args)
+      if (cache.has(key)) {
+        return cache.get(key)
+      }
+      const result = fn(...args)
+      cache.set(key, result)
+      if (options.maxSize && cache.size > options.maxSize) {
+        const firstKey = cache.keys().next().value
+        cache.delete(firstKey)
+      }
+      return result
+    }) as T
+  }
+}
 
 /**
  * React hook for caching

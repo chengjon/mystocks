@@ -1,2 +1,5 @@
-// 向后兼容入口 - 实际实现已拆分至 ./common/
-export * from './common';
+// Unified Re-exports for Wave 3 Large File Splitting
+export * from './domains/system-base';
+export * from './domains/market-data';
+export * from './domains/trading-ops';
+export * from './domains/strategy-types';

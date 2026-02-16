@@ -69,8 +69,11 @@ class MonitoringService:
         host = os.getenv("POSTGRESQL_HOST", "localhost")
         port = os.getenv("POSTGRESQL_PORT", "5438")
         user = os.getenv("POSTGRESQL_USER", "postgres")
-        password = os.getenv("POSTGRESQL_PASSWORD", "your-postgresql-password")
+        password = os.getenv("POSTGRESQL_PASSWORD")
         database = os.getenv("POSTGRESQL_DATABASE", "mystocks")
+
+        if not password:
+            raise ValueError("POSTGRESQL_PASSWORD environment variable must be set")
 
         return f"postgresql://{user}:{password}@{host}:{port}/{database}"
 

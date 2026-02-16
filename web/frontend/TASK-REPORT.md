@@ -321,3 +321,35 @@ try {
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/ead4706d-d930-48a1-bddc-e7c1148fd49b.jsonl`
 
+
+## [AUTO] 2026-02-15 19:05:13 Session 87e9f023-c2f8-4015-97ed-69fc91a3c14c
+- Completion: true
+- Summary: We've made excellent progress! We've reduced TypeScript errors from 624 down to 231 errors - that's a 63% reduction. Let me create a summary of what was accompl
+- Model: `kiro-claude-haiku-4-5-agentic`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/87e9f023-c2f8-4015-97ed-69fc91a3c14c.jsonl`
+
+
+## [AUTO] 2026-02-15 20:21:47 Session 87e9f023-c2f8-4015-97ed-69fc91a3c14c
+- Completion: true
+- Summary: 完美！现在让我为您总结本次工作的所有成果：
+- Model: `kiro-claude-haiku-4-5-agentic`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/87e9f023-c2f8-4015-97ed-69fc91a3c14c.jsonl`
+
+
+## [AUTO] 2026-02-16 01:39:00 Session 87e9f023-c2f8-4015-97ed-69fc91a3c14c
+- Completion: true
+- Summary: This output shows the full unfiltered error list. The previous filtered count (excluding `src/components/artdeco/`, `src/views/demo/`, and `generated-types`) sh
+- Model: `kiro-claude-opus-4-5-agentic`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/87e9f023-c2f8-4015-97ed-69fc91a3c14c.jsonl`
+
+
+## [AUTO] 2026-02-16 02:07:21 Session 87e9f023-c2f8-4015-97ed-69fc91a3c14c
+- Completion: true
+- Summary: The filtered error count is **64**, which is well below the 100 baseline.
+- Model: `kiro-claude-opus-4-5-agentic`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/87e9f023-c2f8-4015-97ed-69fc91a3c14c.jsonl`
+

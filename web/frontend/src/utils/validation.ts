@@ -185,7 +185,7 @@ export function validateWithSchema<T>(data: unknown, schema: z.ZodSchema<T>): T 
 export const isDevelopment = import.meta.env.DEV
 
 export function validateInDevelopment<T>(data: unknown, schema: z.ZodSchema<T>, context: string): T | null {
-    if (!isDevelopment) return data
+    if (!isDevelopment) return data as T
 
     const result = validateWithSchema(data, schema)
     if (result === null) {

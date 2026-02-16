@@ -3,6 +3,17 @@
  * 字段名映射配置
  * 定义后端snake_case字段与前端camelCase字段的映射关系
  */
+
+// Type definitions for enums
+export type SignalType = 'buy' | 'sell' | 'hold' | 'strong_buy' | 'strong_sell'
+export type SignalStrength = 'weak' | 'medium' | 'strong' | 'very_strong'
+export type StrategyType = 'trend_following' | 'mean_reversion' | 'momentum' | 'arbitrage'
+export type ParameterConfigType = 'fixed' | 'dynamic' | 'adaptive'
+export type RiskLevel = 'low' | 'medium' | 'high' | 'very_high'
+export type TradeType = 'long' | 'short' | 'neutral'
+export type TradeStatus = 'pending' | 'open' | 'closed' | 'cancelled' | 'failed'
+export type TradeDirection = 'buy' | 'sell'
+
 export const FIELD_NAME_MAPPING = {
   // ============ Market Data Fields ============
   'full_name': 'fullName',

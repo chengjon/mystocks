@@ -36,6 +36,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
+# Create declarative base for SQLAlchemy models
+Base = declarative_base()
+
 # 加载环境变量
 load_dotenv()
 
