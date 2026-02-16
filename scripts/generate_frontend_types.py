@@ -537,21 +537,74 @@ class TypeScriptGenerator:
             ])
 
         for name, info in sorted(models.items()):
-            if info["type"] == "interface":
-                output.append(f"export interface {name} {{")
-                for field_name, field_info in info["fields"].items():
-                    ts_type = self.type_converter.convert_type(field_info["type"])
-                    output.append(f"  {field_name}?: {ts_type};")
-                output.append("}")
-            elif info["type"] == "enum":
-                if info["values"]:
-                    union = " | ".join(info["values"])
-                    output.append(f"export type {name} = {union};")
-                else:
-                    output.append(f"export type {name} = any;")
-            output.append("")
+            output.extend(self._render_model(name, info))
 
         return "\n".join(output)
+
+    def _render_model(self, name: str, info: Dict) -> List[str]:
+        lines: List[str] = []
+        if info["type"] == "interface":
+            lines.append(f"export interface {name} {{")
+            for field_name, field_info in info["fields"].items():
+                ts_type = self.type_converter.convert_type(field_info["type"])
+                lines.append(f"  {field_name}?: {ts_type};")
+            lines.append("}")
+        elif info["type"] == "enum":
+            if info["values"]:
+                union = " | ".join(info["values"])
+                lines.append(f"export type {name} = {union};")
+            else:
+                lines.append(f"export type {name} = any;")
+        lines.append("")
+        return lines
+
+    def write_common_split_files(self, models: Dict[str, Dict], output_dir: Path) -> int:
+        common_dir = output_dir / "common"
+        common_dir.mkdir(parents=True, exist_ok=True)
+
+        # 1. 将所有实际类型定义生成到 common/all.ts (手术级隔离)
+        all_common_code = self.generate_domain("common", models)
+        (common_dir / "all.ts").write_text(all_common_code, encoding="utf-8")
+
+        # 2. 瘦身 common.ts 入口文件
+        # 只保留极少量的核心基础接口定义，其他全部外迁
+        common_entry_lines = [
+            "// MyStocks ArtDeco v3.1 Common Types Entry",
+            f"// Generated at: {datetime.now().isoformat()}",
+            "",
+            "/**",
+            " * ⚠️ 警告: 本文件已通过工程红线瘦身。",
+            " * 实际类型定义已迁移至 ./common/all.ts",
+            " */",
+            "",
+            "// 核心响应契约 (保留在入口方便查阅)",
+            "export interface UnifiedResponse<T = any> {",
+            "  success: boolean;",
+            "  code: number;",
+            "  message: string;",
+            "  data: T;",
+            "  timestamp: string;",
+            "  request_id: string;",
+            "  errors?: any;",
+            "}",
+            "",
+            "// 重定向导出所有业务类型",
+            "export * from './common/all';",
+            "",
+        ]
+        (output_dir / "common.ts").write_text("\n".join(common_entry_lines), encoding="utf-8")
+
+        return 1
+
+    def write_generated_types_compat_barrel(self, output_dir: Path) -> None:
+        generated_types_lines = [
+            "// Auto-generated compatibility barrel for legacy imports",
+            f"// Generated at: {datetime.now().isoformat()}",
+            "",
+            "export * from './index';",
+            "",
+        ]
+        (output_dir / "generated-types.ts").write_text("\n".join(generated_types_lines), encoding="utf-8")
 
 
 def generate_index_file(domains: List[str]) -> str:
@@ -625,8 +678,11 @@ def main():
         # Generate multi-file output organized by domain
         domains = set(extractor.domain_models.keys())
         generated_domains = []
+        non_common_used_models = set()
 
         for domain in sorted(domains):
+            if domain == "common":
+                continue
             models = extractor.domain_models[domain]
             if models:
                 ts_code = generator.generate_domain(domain, models)
@@ -635,22 +691,18 @@ def main():
                     f.write(ts_code)
                 print(f"  ✅ Generated {domain}.ts ({len(models)} models)")
                 generated_domains.append(domain)
+                non_common_used_models.update(models.keys())
 
-        # Generate common types for models without domain
-        if "common" in domains or extractor.models:
-            # Include remaining models in common
-            used_models = set()
-            for domain_models in extractor.domain_models.values():
-                used_models.update(domain_models.keys())
+        # Generate split common types, including explicit common models and uncategorized leftovers.
+        common_models: Dict[str, Dict] = dict(extractor.domain_models.get("common", {}))
+        for name, info in extractor.models.items():
+            if name not in non_common_used_models:
+                common_models.setdefault(name, info)
 
-            common_models = {k: v for k, v in extractor.models.items() if k not in used_models}
-            if common_models:
-                ts_code = generator.generate_domain("common", common_models)
-                common_file = OUTPUT_DIR / "common.ts"
-                with open(common_file, "w", encoding="utf-8") as f:
-                    f.write(ts_code)
-                print(f"  ✅ Generated common.ts ({len(common_models)} models)")
-                generated_domains.append("common")
+        if common_models:
+            chunk_count = generator.write_common_split_files(common_models, OUTPUT_DIR)
+            print(f"  ✅ Generated common.ts + common/index.ts + {chunk_count} chunk files")
+            generated_domains.append("common")
 
         # Generate index file
         index_code = generate_index_file(generated_domains)
